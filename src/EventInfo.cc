@@ -11,9 +11,9 @@
 
 const std::map<std::string, Float_t> EventInfo::decayMode_idString =
 {
-  { "ttH_hww", static_cast<Float_t>(24) },
-  { "ttH_hzz", static_cast<Float_t>(23) },
-  { "ttH_htt", static_cast<Float_t>(15) }
+  { "ttH_hww", 24 },
+  { "ttH_hzz", 23 },
+  { "ttH_htt", 15 },
 };
 
 EventInfo::EventInfo()
@@ -88,11 +88,12 @@ EventInfo::getDecayModeString() const
   {
     throw cms::Exception("EventInfo")
       << "The event " << *this << " is not a signal event => request "
-         "for a decay mode as a string is not applicable\n";
+         "for a decay mode as a string is not applicable\n"
+    ;
   }
   for(const auto & kv: EventInfo::decayMode_idString)
   {
-    if(std::fabs(genHiggsDecayMode - kv.second) < EPS)
+    if(genHiggsDecayMode == kv.second)
     {
       return kv.first;
     }
@@ -116,7 +117,6 @@ EventInfo::str() const
 {
   std::stringstream ss;
   ss << run << ':' << lumi << ':' << event;
-  // ss << "run " << run << " lumi " << lumi << " evt " << event; // Giovanni's format
   return ss.str();
 }
 

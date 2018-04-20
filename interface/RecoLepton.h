@@ -67,12 +67,12 @@ public:
    *
    * CV: note that leptons have different pT values, 
    *     depending on whether or not they pass the "tight" lepton selection criteria
-   *    (cf. lines 304-306 of AN-2016/211 v4)
+   *    (cf. lines 289-291 of AN-2017/029 v5)
    *     The factor 0.85 has been updated to 0.90 for the analysis of 2017 data.
    *     The different pT definitions are as follows:
    *       - The lepton_pt() and pt() functions always return the pT of the reco lepton
-   *       - The cone_pt() function returns the pT of the reco lepton if the lepton passes the "tight" lepton selection criteria,
-   *         otherwise 0.90*jet pT is returned
+   *       - The cone_pt() function returns the pT of the reco lepton if the lepton passes the "tight" lepton MVA
+   *         (and if the lepton is a muon, it is required to pass Medium muon ID definition), otherwise 0.90*jet pT is returned
    *       - The assocJet_pt() function always returns 0.90*jet pT
    *     Giovanni clarified via email on 02/23/2018 that the cone_pt() function is to be used everywhere in the analysis:
    *       - for sorting the leptons by decreasing pT
@@ -99,10 +99,10 @@ public:
   virtual const Particle::LorentzVector &
   p4() const;
 
-  Double_t
+  virtual Double_t
   cone_pt() const;
 
-  const Particle::LorentzVector &
+  virtual const Particle::LorentzVector &
   cone_p4() const;
 
   Double_t

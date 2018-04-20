@@ -179,14 +179,15 @@ RecoHadTauSelectorBase::set(const std::string & cut)
   set_max_raw_cut_dR03(1.e+6);
   set_min_id_cut_dR05(-1000);
   set_max_raw_cut_dR05(1.e+6);
-  if      ( cut == "dR03mvaVVLoose" ) set_min_id_mva_dR03(1);
-  else if ( cut == "dR03mvaVLoose"  ) set_min_id_mva_dR03(2);
-  else if ( cut == "dR03mvaLoose"   ) set_min_id_mva_dR03(3);
-  else if ( cut == "dR03mvaMedium"  ) set_min_id_mva_dR03(4);
-  else if ( cut == "dR03mvaTight"   ) set_min_id_mva_dR03(5);
-  else if ( cut == "dR03mvaVTight"  ) set_min_id_mva_dR03(6);
-  else if ( cut == "dR03mvaVVTight" ) set_min_id_mva_dR03(7);
-  else {
+  if     (cut == "dR03mvaVVLoose") set_min_id_mva_dR03(1);
+  else if(cut == "dR03mvaVLoose" ) set_min_id_mva_dR03(2);
+  else if(cut == "dR03mvaLoose"  ) set_min_id_mva_dR03(3);
+  else if(cut == "dR03mvaMedium" ) set_min_id_mva_dR03(4);
+  else if(cut == "dR03mvaTight"  ) set_min_id_mva_dR03(5);
+  else if(cut == "dR03mvaVTight" ) set_min_id_mva_dR03(6);
+  else if(cut == "dR03mvaVVTight") set_min_id_mva_dR03(7);
+  else
+  {
     throw cmsException(this, __func__)
       << "Invalid Configuration parameter 'cut' = " << cut;
   }

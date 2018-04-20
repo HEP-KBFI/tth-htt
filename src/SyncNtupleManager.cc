@@ -136,7 +136,7 @@ SyncNtupleManager::initializeBranches()
 
     floatMap[FloatVariableType::mvaOutput_HTT_SUM_VT],     "mvaOutput_1l_2tau_HTT_SUM_VT",
 
-    floatMap[FloatVariableType::mvaOutput_plainKin_1B_VT], "mvaOutput_2l_2tau_plainKin_1B_VT",
+    floatMap[FloatVariableType::mvaOutput_plainKin_1B_VT],  "mvaOutput_2l_2tau_plainKin_1B_VT",
     floatMap[FloatVariableType::mvaOutput_plainKin_SUM_VT], "mvaOutput_2l_2tau_plainKin_SUM_VT",
 
     floatMap[FloatVariableType::mvaOutput_2lss_ttV],                 "mvaOutput_2lss_ttV",

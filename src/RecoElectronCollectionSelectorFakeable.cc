@@ -11,7 +11,6 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , debug_(debug)
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
-  , tightElectronSelector_(era_, index, debug, false)
   , min_cone_pt_(10.)
   , min_lepton_pt_(7.)
   , max_absEta_(2.5)
@@ -251,10 +250,6 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   if(set_selection_flags_)
   {
     electron.set_isFakeable();
-    if(tightElectronSelector_(electron))
-    {
-      electron.set_isTight();
-    }
   }
 
   return true;

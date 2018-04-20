@@ -21,7 +21,7 @@ CutFlowTableHistManager::bookHistograms(TFileDirectory & dir)
 
   for(int i = 1; i <= numCuts; ++i)
   {
-    xAxis->SetBinLabel(i, cuts_[i].data());
+    xAxis->SetBinLabel(i, cuts_.at(i - 1).data());
   }
 }
 

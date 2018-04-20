@@ -47,6 +47,12 @@ public:
   bool
   is_muon() const override;
 
+  Double_t
+  cone_pt() const override;
+
+  const Particle::LorentzVector &
+  cone_p4() const override;
+
 //--- observables specific to muons
   Bool_t passesLooseIdPOG_;      ///< flag indicating if muon passes (true) or fails (false) loose PFMuon id
   Bool_t passesMediumIdPOG_;     ///< flag indicating if muon passes (true) or fails (false) medium PFMuon id

@@ -21,7 +21,7 @@ public:
   UInt_t    run;               ///< run number
   UInt_t    lumi;              ///< luminosity
   ULong64_t event;             ///< event number
-  Float_t   genHiggsDecayMode; ///< Higgs decay mode (only if MC signal)
+  Int_t     genHiggsDecayMode; ///< Higgs decay mode (only if MC signal)
   Float_t   genWeight;         ///< generator-level weight (only if MC)
   Float_t   genWeight_tH;      ///< reweight tH MC sample from kappa=-1 to kappa=+1 (SM) case
   Float_t   pileupWeight;      ///< pile-up weight (only if MC)
