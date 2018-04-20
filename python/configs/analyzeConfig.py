@@ -67,7 +67,8 @@ class analyzeConfig:
                  do_sync = False,
                  verbose = False,
                  dry_run = False,
-                 isDebug = False):
+                 isDebug = False,
+                 template_dir = None):
 
         self.configDir = configDir
         self.outputDir = outputDir
@@ -105,9 +106,12 @@ class analyzeConfig:
 
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)
-        self.template_dir = os.path.join(
-            os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'test', 'templates'
-        )
+        if template_dir:
+            self.template_dir = template_dir
+        else:
+            self.template_dir = os.path.join(
+                os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'test', 'templates'
+            )
         logging.info("Templates directory is: %s" % self.template_dir)
 
         create_if_not_exists(self.configDir)
