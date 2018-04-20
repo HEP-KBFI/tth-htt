@@ -558,6 +558,7 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("mu1_jetPtRel", "F", "n_presel_mu >= 1", 100., -0.01, 10.));
   branchesToCompare.push_back(new branchEntryType("mu1_miniIsoNeutral", "F", "n_presel_mu >= 1", 100, -0.01, 100.));
   branchesToCompare.push_back(new branchEntryType("mu1_miniIsoCharged", "F", "n_presel_mu >= 1", 100, -0.01, 100.));
+  branchesToCompare.push_back(new branchEntryType("mu1_PFRelIso04", "F", "n_presel_mu >= 1", 100, -0.01, 10.));
   branchesToCompare.push_back(new branchEntryType("mu1_E", "F", "n_presel_mu >= 1", 100, 0., 250.));
   branchesToCompare.push_back(new branchEntryType("mu1_conept", "F", "", 100, 0., 1000.));
   branchesToCompare.push_back(new branchEntryType("mu1_jetPtRatio", "F", "n_presel_mu >= 1", 100, -0.01, 3.));
@@ -579,6 +580,7 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("mu2_jetPtRel", "F", "n_presel_mu >= 2", 100., -0.01, 10.));
   branchesToCompare.push_back(new branchEntryType("mu2_miniIsoNeutral", "F", "n_presel_mu >= 2", 100, -0.01, 100.));
   branchesToCompare.push_back(new branchEntryType("mu2_miniIsoCharged", "F", "n_presel_mu >= 2", 100, -0.01, 100.));
+  branchesToCompare.push_back(new branchEntryType("mu2_PFRelIso04", "F", "n_presel_mu >= 2", 100, -0.01, 10.));
   branchesToCompare.push_back(new branchEntryType("mu2_E", "F", "n_presel_mu >= 2", 100, 0., 250.));
   branchesToCompare.push_back(new branchEntryType("mu2_conept", "F", "", 100, 0., 500.));
   branchesToCompare.push_back(new branchEntryType("mu2_jetPtRatio", "F", "n_presel_mu >= 2", 100, -0.01, 3.));
@@ -601,6 +603,7 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("ele1_jetPtRel", "F", "n_presel_ele >= 1", 100, -0.01, 10.));
   branchesToCompare.push_back(new branchEntryType("ele1_miniIsoNeutral", "F", "n_presel_ele >= 1", 100, -0.01, 100.));
   branchesToCompare.push_back(new branchEntryType("ele1_miniIsoCharged", "F", "n_presel_ele >= 1", 100, -0.01, 100.));
+  branchesToCompare.push_back(new branchEntryType("ele1_PFRelIso04", "F", "n_presel_ele >= 1", 100, -0.01, 10.));
   branchesToCompare.push_back(new branchEntryType("ele1_E", "F", "n_presel_ele >= 1", 100, 0., 250.));
   branchesToCompare.push_back(new branchEntryType("ele1_conept", "F", "n_presel_ele >= 1", 100, 0., 1000.));
   branchesToCompare.push_back(new branchEntryType("ele1_jetPtRatio", "F", "n_presel_ele >= 1", 100, -0.01, 3.));
@@ -614,6 +617,11 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("ele1_eta", "F", "n_presel_ele >= 1", 100, -3.0, +3.0));
   branchesToCompare.push_back(new branchEntryType("ele1_dz", "F", "n_presel_ele >= 1", 100, -0.2, +0.2));
   branchesToCompare.push_back(new branchEntryType("ele1_nMissingHits", "I", "n_presel_ele >= 1", 2, -0.5, +1.5));
+  branchesToCompare.push_back(new branchEntryType("ele1_sigmaEtaEta", "F", "n_presel_ele >= 1", 100, -0., +0.1));
+  branchesToCompare.push_back(new branchEntryType("ele1_HoE", "F", "n_presel_ele >= 1", 100, 0., +0.1));
+  branchesToCompare.push_back(new branchEntryType("ele1_deltaEta", "F", "n_presel_ele >= 1", 100, 0., +0.02));
+  branchesToCompare.push_back(new branchEntryType("ele1_deltaPhi", "F", "n_presel_ele >= 1", 100, 0., +0.1));
+  branchesToCompare.push_back(new branchEntryType("ele1_OoEminusOoP", "F", "n_presel_ele >= 1", 100, 0., +0.02));
   branchesToCompare.push_back(new branchEntryType("ele1_isChargeConsistent", "I", "n_presel_ele >= 1", 2, -0.5, +1.5));
   branchesToCompare.push_back(new branchEntryType("ele1_isfakeablesel", "I", "n_presel_ele >= 1", 2, -0.5, +1.5));
   branchesToCompare.push_back(new branchEntryType("ele1_ismvasel", "I", "n_presel_ele >= 1", 2, -0.5, +1.5));
@@ -623,6 +631,7 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("ele2_jetPtRel", "F", "n_presel_ele >= 2", 100, -0.01, 10.));
   branchesToCompare.push_back(new branchEntryType("ele2_miniIsoNeutral", "F", "n_presel_ele >= 2", 100, -0.01, 100.));
   branchesToCompare.push_back(new branchEntryType("ele2_miniIsoCharged", "F", "n_presel_ele >= 2", 100, -0.01, 100.));
+  branchesToCompare.push_back(new branchEntryType("ele2_PFRelIso04", "F", "n_presel_ele >= 2", 100, -0.01, 10.));
   branchesToCompare.push_back(new branchEntryType("ele2_E", "F", "n_presel_ele >= 2", 100, 0., 250.));
   branchesToCompare.push_back(new branchEntryType("ele2_conept", "F", "n_presel_ele >= 2", 100, 0., 500.));
   branchesToCompare.push_back(new branchEntryType("ele2_jetPtRatio", "F", "n_presel_ele >= 2", 100, -0.01, 3.));
@@ -636,6 +645,11 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("ele2_eta", "F", "n_presel_ele >= 2", 100, -3.0, +3.0));
   branchesToCompare.push_back(new branchEntryType("ele2_dz", "F", "n_presel_ele >= 2", 100, -0.2, +0.2));
   branchesToCompare.push_back(new branchEntryType("ele2_nMissingHits", "I", "n_presel_ele >= 2", 2, -0.5, +1.5));
+  branchesToCompare.push_back(new branchEntryType("ele2_sigmaEtaEta", "F", "n_presel_ele >= 2", 100, -0., +0.1));
+  branchesToCompare.push_back(new branchEntryType("ele2_HoE", "F", "n_presel_ele >= 2", 100, 0., +0.1));
+  branchesToCompare.push_back(new branchEntryType("ele2_deltaEta", "F", "n_presel_ele >= 2", 100, 0., +0.02));
+  branchesToCompare.push_back(new branchEntryType("ele2_deltaPhi", "F", "n_presel_ele >= 2", 100, 0., +0.1));
+  branchesToCompare.push_back(new branchEntryType("ele2_OoEminusOoP", "F", "n_presel_ele >= 2", 100, 0., +0.02));
   branchesToCompare.push_back(new branchEntryType("ele2_isChargeConsistent", "I", "n_presel_ele >= 2", 2, -0.5, +1.5));
   branchesToCompare.push_back(new branchEntryType("ele2_isfakeablesel", "I", "n_presel_ele >= 2", 2, -0.5, +1.5));
   branchesToCompare.push_back(new branchEntryType("ele2_ismvasel", "I", "n_presel_ele >= 2", 2, -0.5, +1.5));
