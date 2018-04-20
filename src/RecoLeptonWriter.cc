@@ -80,7 +80,7 @@ void RecoLeptonWriter::setBranchNames()
   branchName_dxy_ = Form("%s_%s", branchName_obj_.data(), "dxy");
   branchName_dz_ = Form("%s_%s", branchName_obj_.data(), "dz");
   branchName_relIso_all_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_all");
-  branchName_pfRelIso04_all_ = Form("%s_%s", branchName_obj_.data(), "pfRelIso03_chg");
+  branchName_pfRelIso04_all_ = Form("%s_%s", branchName_obj_.data(), "pfRelIso04_all");
   branchName_absIso_chg_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_chg");
   branchName_absIso_neu_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_neu");
   branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
