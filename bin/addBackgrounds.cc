@@ -111,9 +111,10 @@ int main(int argc, char* argv[])
                the_process_input.find("ttH_hzz") != std::string::npos ) {
             continue;
           } 
-	  if ( std::string((*subdir_level2)->GetName()).find("genEvt")  != std::string::npos ||
-	       std::string((*subdir_level2)->GetName()).find("lheInfo") != std::string::npos ||
-	       std::string((*subdir_level2)->GetName()).find("cutFlow") != std::string::npos ) {
+	  if ( std::string((*subdir_level2)->GetName()).find("genEvt")    != std::string::npos ||
+	       std::string((*subdir_level2)->GetName()).find("lheInfo")   != std::string::npos ||
+	       std::string((*subdir_level2)->GetName()).find("cutFlow")   != std::string::npos ||
+	       std::string((*subdir_level2)->GetName()).find("evtntuple") != std::string::npos ) {
 	    continue;
 	  }
 	  throw cms::Exception("addBackgrounds") 
