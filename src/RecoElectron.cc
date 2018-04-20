@@ -2,10 +2,8 @@
 
 RecoElectron::RecoElectron(const RecoLepton & lepton,
                            Double_t eCorr,
-                           Double_t mvaRawPOG,
-                           Bool_t mvaRawPOG_WP80,
-                           Bool_t mvaRawPOG_WP90,
-                           Bool_t mvaRawPOG_WPL,
+                           Double_t mvaRaw_POG,
+			   Bool_t mvaID_POG,
                            Double_t sigmaEtaEta,
                            Double_t HoE,
                            Double_t deltaEta,
@@ -16,10 +14,8 @@ RecoElectron::RecoElectron(const RecoLepton & lepton,
                            Int_t cutbasedID_HLT)
   : RecoLepton(lepton)
   , eCorr_(eCorr)
-  , mvaRawPOG_(mvaRawPOG)
-  , mvaRawPOG_WP80_(mvaRawPOG_WP80)
-  , mvaRawPOG_WP90_(mvaRawPOG_WP90)
-  , mvaRawPOG_WPL_(mvaRawPOG_WPL)
+  , mvaRaw_POG_(mvaRaw_POG)
+  , mvaID_POG_(mvaID_POG)
   , sigmaEtaEta_(sigmaEtaEta)
   , HoE_(HoE)
   , deltaEta_(deltaEta) 
@@ -37,39 +33,15 @@ RecoElectron::eCorr() const
 }
 
 Double_t
-RecoElectron::mvaRawPOG() const
+RecoElectron::mvaRaw_POG() const
 {
-  return mvaRawPOG_;
+  return mvaRaw_POG_;
 }
 
 Bool_t
-RecoElectron::mvaRawPOG_WP80() const
+RecoElectron::mvaID_POG() const
 {
-  return mvaRawPOG_WP80_;
-}
-
-Bool_t
-RecoElectron::mvaRawPOG_WP90() const
-{
-  return mvaRawPOG_WP90_;
-}
-
-Bool_t
-RecoElectron::mvaRawPOG_WPL() const
-{
-  return mvaRawPOG_WPL_;
-}
-
-Bool_t
-RecoElectron::mvaRawPOG_WP(EGammaPOG wp) const
-{
-  switch(wp)
-  {
-    case EGammaPOG::kWP80: return mvaRawPOG_WP80();
-    case EGammaPOG::kWP90: return mvaRawPOG_WP90();
-    case EGammaPOG::kWPL:  return mvaRawPOG_WPL();
-    default: assert(0);
-  }
+  return mvaID_POG_;
 }
 
 Double_t
@@ -138,10 +110,8 @@ operator<<(std::ostream & stream,
 {
   stream << static_cast<const RecoLepton & >(electron)                   << ",\n "
             "eCorr = "                << electron.eCorr()                << ", "
-            "mvaRawPOG = "            << electron.mvaRawPOG()            << " ("
-            "80/90/Loose = "          << electron.mvaRawPOG_WP80()       << '/'
-                                      << electron.mvaRawPOG_WP90()       << '/'
-                                      << electron.mvaRawPOG_WPL()        << "), "
+            "mvaRaw_POG = "           << electron.mvaRaw_POG()           << " ("
+            "mvaID_POG = "            << electron.mvaID_POG()            << "), "
             "nLostHits = "            << electron.nLostHits()            << ",\n "
             "passesConversionVeto = " << electron.passesConversionVeto() << ", "
             "sigmaEtaEta = "          << electron.sigmaEtaEta()          << ", "

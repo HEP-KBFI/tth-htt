@@ -61,7 +61,7 @@ ElectronHistManager::fillHistograms(const RecoElectron & electron,
   fillWithOverFlow(histogram_jetPtRatio_,    electron.jetPtRatio(),    evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_jetBtagCSV_,    electron.jetBtagCSV(),    evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_tightCharge_,   electron.tightCharge(),   evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaRawPOG_,     electron.mvaRawPOG(),     evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaRawPOG_,     electron.mvaRaw_POG(),    evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_sigmaEtaEta_,   electron.sigmaEtaEta(),   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_HoE_,           electron.HoE(),           evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_deltaEta_,      electron.deltaEta(),      evtWeight, evtWeightErr);

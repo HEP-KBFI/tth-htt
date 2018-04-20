@@ -16,7 +16,6 @@ RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era,
   , max_dz_(0.1)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
-  , mvaPOGwp_(EGammaPOG::kWPL)
   , apply_tightCharge_(false)
   , apply_conversionVeto_(false)
   , max_nLostHits_(1)
@@ -103,11 +102,11 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  if(electron.mvaRawPOG_WP(mvaPOGwp_) < 1)
+  if(! electron.mvaID_POG())
   {
     if(debug_)
     {
-      std::cout << "FAILS mvaPOG = " << as_integer(mvaPOGwp_) << " loose cut\n";
+      std::cout << "FAILS EGamma POG MVA loose cut\n";
     }
     return false;
   }

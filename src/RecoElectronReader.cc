@@ -4,6 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // setValue_float()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2016, kEra_2017
 
 std::map<std::string, int> RecoElectronReader::numInstances_;
 std::map<std::string, RecoElectronReader *> RecoElectronReader::instances_;
@@ -16,15 +17,14 @@ RecoElectronReader::RecoElectronReader(int era,
 RecoElectronReader::RecoElectronReader(int era,
                                        const std::string & branchName_obj,
                                        bool readGenMatching)
-  : branchName_num_(Form("n%s", branchName_obj.data()))
+  : era_(era)
+  , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , readUncorrected_(false)
   , leptonReader_(new RecoLeptonReader(branchName_obj_, readGenMatching))
   , eCorr_(nullptr)
-  , mvaRawPOG_(nullptr)
-  , mvaRawPOG_WP80_(nullptr)
-  , mvaRawPOG_WP90_(nullptr)
-  , mvaRawPOG_WPL_(nullptr)
+  , mvaRaw_POG_(nullptr)
+  , mvaID_POG_(nullptr)
   , sigmaEtaEta_(nullptr)
   , HoE_(nullptr)
   , deltaEta_(nullptr)
@@ -49,10 +49,8 @@ RecoElectronReader::~RecoElectronReader()
     RecoElectronReader * const gInstance = instances_[branchName_obj_];
     assert(gInstance);
     delete[] gInstance->eCorr_;
-    delete[] gInstance->mvaRawPOG_;
-    delete[] gInstance->mvaRawPOG_WP80_;
-    delete[] gInstance->mvaRawPOG_WP90_;
-    delete[] gInstance->mvaRawPOG_WPL_;
+    delete[] gInstance->mvaRaw_POG_;
+    delete[] gInstance->mvaID_POG_;
     delete[] gInstance->sigmaEtaEta_;
     delete[] gInstance->HoE_;
     delete[] gInstance->deltaEta_;
@@ -70,12 +68,15 @@ RecoElectronReader::setBranchNames()
 {
   if (numInstances_[branchName_obj_] == 0)
   {
-    const std::string mvaString = RecoElectron::useNoIso ? "mvaFall17noIso" : "mvaFall17Iso";
     branchName_eCorr_ = Form("%s_%s", branchName_obj_.data(), "eCorr");
-    branchName_mvaRawPOG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
-    branchName_mvaRawPOG_WP80_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP80", mvaString.data()));
-    branchName_mvaRawPOG_WP90_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP90", mvaString.data()));
-    branchName_mvaRawPOG_WPL_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WPL", mvaString.data()));
+    if ( era_ == kEra_2016 ) {
+      branchName_mvaRaw_POG_ = Form("%s_%s", branchName_obj_.data(), "");
+      branchName_mvaID_POG_ = Form("%s_%s", branchName_obj_.data(), "");
+    } else if ( era_ == kEra_2017 ) {
+      std::string mvaString = RecoElectron::useNoIso ? "mvaFall17noIso" : "mvaFall17Iso";
+      branchName_mvaRaw_POG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
+      branchName_mvaID_POG_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WPL", mvaString.data()));
+    } else assert(0);
     branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "sieie");
     branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "hoe");
     branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "deltaEtaSC_trackatVtx");
@@ -110,10 +111,8 @@ RecoElectronReader::setBranchAddresses(TTree * tree)
 
     BranchAddressInitializer bai(tree, max_nLeptons);
     bai.setBranchAddress(eCorr_, branchName_eCorr_);
-    bai.setBranchAddress(mvaRawPOG_, branchName_mvaRawPOG_);
-    bai.setBranchAddress(mvaRawPOG_WP80_, branchName_mvaRawPOG_WP80_);
-    bai.setBranchAddress(mvaRawPOG_WP90_, branchName_mvaRawPOG_WP90_);
-    bai.setBranchAddress(mvaRawPOG_WPL_, branchName_mvaRawPOG_WPL_);
+    bai.setBranchAddress(mvaRaw_POG_, branchName_mvaRaw_POG_);
+    bai.setBranchAddress(mvaID_POG_, branchName_mvaID_POG_);
     bai.setBranchAddress(sigmaEtaEta_, branchName_sigmaEtaEta_);
     bai.setBranchAddress(HoE_, branchName_HoE_);
     bai.setBranchAddress(deltaEta_, branchName_deltaEta_);
@@ -182,10 +181,8 @@ RecoElectronReader::read() const
             gLeptonReader->filterBits_[idxLepton]
           },
           gElectronReader->eCorr_[idxLepton],
-          gElectronReader->mvaRawPOG_[idxLepton],
-          gElectronReader->mvaRawPOG_WP80_[idxLepton],
-          gElectronReader->mvaRawPOG_WP90_[idxLepton],
-          gElectronReader->mvaRawPOG_WPL_[idxLepton],
+          gElectronReader->mvaRaw_POG_[idxLepton],
+          gElectronReader->mvaID_POG_[idxLepton],
           gElectronReader->sigmaEtaEta_[idxLepton],
           gElectronReader->HoE_[idxLepton],
           gElectronReader->deltaEta_[idxLepton],

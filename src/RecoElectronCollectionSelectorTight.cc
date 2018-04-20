@@ -17,7 +17,6 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , max_dz_(0.1)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
-  , mvaPOGwp_(EGammaPOG::kWPL)
   , binning_absEta_({ 0.8, 1.479 })
   , min_pt_trig_(-1.) // Lines:237-240 in AN_2017_029_V5
   , max_sigmaEtaEta_trig_({ 0.011, 0.011, 0.030 })
@@ -167,11 +166,11 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  if(! electron.mvaRawPOG_WP(mvaPOGwp_))
+  if(! electron.mvaID_POG())
   {
     if(debug_)
     {
-      std::cout << "FAILS mvaPOG = " << as_integer(mvaPOGwp_) << " tight cut\n";
+      std::cout << "FAILS EGamma POG MVA tight cut\n";
     }
     return false;
   }

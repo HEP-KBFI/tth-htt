@@ -3,6 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonWriter.h" // RecoLeptonWriter
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2016, kEra_2017
 
 RecoElectronWriter::RecoElectronWriter(int era)
   : RecoElectronWriter(era, "Electron")
@@ -16,15 +17,14 @@ RecoElectronWriter::RecoElectronWriter(int era,
 RecoElectronWriter::RecoElectronWriter(int era,
                                        const std::string & branchName_num,
                                        const std::string & branchName_obj)
-  : branchName_num_(branchName_num)
+  : era_(era)
+  , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , writeUncorrected_(false)
   , leptonWriter_(nullptr)
   , eCorr_(nullptr)
-  , mvaRawPOG_(nullptr)
-  , mvaRawPOG_WP80_(nullptr)
-  , mvaRawPOG_WP90_(nullptr)
-  , mvaRawPOG_WPL_(nullptr)
+  , mvaRaw_POG_(nullptr)
+  , mvaID_POG_(nullptr)
   , sigmaEtaEta_(nullptr)
   , HoE_(nullptr)
   , deltaEta_(nullptr)
@@ -42,10 +42,8 @@ RecoElectronWriter::~RecoElectronWriter()
 {
   delete leptonWriter_;
   delete[] eCorr_;
-  delete[] mvaRawPOG_;
-  delete[] mvaRawPOG_WP80_;
-  delete[] mvaRawPOG_WP90_;
-  delete[] mvaRawPOG_WPL_;
+  delete[] mvaRaw_POG_;
+  delete[] mvaID_POG_;
   delete[] sigmaEtaEta_;
   delete[] HoE_;
   delete[] deltaEta_;
@@ -59,12 +57,15 @@ RecoElectronWriter::~RecoElectronWriter()
 void
 RecoElectronWriter::setBranchNames()
 {
-  const std::string mvaString = RecoElectron::useNoIso ? "mvaFall17noIso" : "mvaFall17Iso";
   branchName_eCorr_ = Form("%s_%s", branchName_obj_.data(), "eCorr");
-  branchName_mvaRawPOG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
-  branchName_mvaRawPOG_WP80_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP80", mvaString.data()));
-  branchName_mvaRawPOG_WP90_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP90", mvaString.data()));
-  branchName_mvaRawPOG_WPL_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WPL", mvaString.data()));
+  if ( era_ == kEra_2016 ) {
+    branchName_mvaRaw_POG_ = Form("%s_%s", branchName_obj_.data(), "");
+    branchName_mvaID_POG_ = Form("%s_%s", branchName_obj_.data(), "");
+  } else if ( era_ == kEra_2017 ) {
+    std::string mvaString = RecoElectron::useNoIso ? "mvaFall17noIso" : "mvaFall17Iso";
+    branchName_mvaRaw_POG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
+    branchName_mvaID_POG_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WPL", mvaString.data()));
+  } else assert(0);
   branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "sieie");
   branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "hoe");
   branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "deltaEtaSC_trackatVtx");
@@ -82,10 +83,8 @@ RecoElectronWriter::setBranches(TTree * tree)
   unsigned int max_nLeptons = leptonWriter_->max_nLeptons_;
   BranchAddressInitializer bai(tree, max_nLeptons, branchName_num_);
   bai.setBranch(eCorr_, branchName_eCorr_);
-  bai.setBranch(mvaRawPOG_, branchName_mvaRawPOG_);
-  bai.setBranch(mvaRawPOG_WP80_, branchName_mvaRawPOG_WP80_);
-  bai.setBranch(mvaRawPOG_WP90_, branchName_mvaRawPOG_WP90_);
-  bai.setBranch(mvaRawPOG_WPL_, branchName_mvaRawPOG_WPL_);
+  bai.setBranch(mvaRaw_POG_, branchName_mvaRaw_POG_);
+  bai.setBranch(mvaID_POG_, branchName_mvaID_POG_);
   bai.setBranch(sigmaEtaEta_, branchName_sigmaEtaEta_);
   bai.setBranch(HoE_, branchName_HoE_);
   bai.setBranch(deltaEta_, branchName_deltaEta_);
@@ -128,10 +127,8 @@ RecoElectronWriter::write(const std::vector<const RecoElectron *> & leptons)
     const RecoElectron * lepton = leptons[idxLepton];
     assert(lepton);
     eCorr_[idxLepton] = lepton->eCorr();
-    mvaRawPOG_[idxLepton] = lepton->mvaRawPOG();
-    mvaRawPOG_WP80_[idxLepton] = lepton->mvaRawPOG_WP80();
-    mvaRawPOG_WP90_[idxLepton] = lepton->mvaRawPOG_WP90();
-    mvaRawPOG_WPL_[idxLepton] = lepton->mvaRawPOG_WPL();
+    mvaRaw_POG_[idxLepton] = lepton->mvaRaw_POG();
+    mvaID_POG_[idxLepton] = lepton->mvaID_POG();
     sigmaEtaEta_[idxLepton] = lepton->sigmaEtaEta();
     HoE_[idxLepton] = lepton->HoE();
     deltaEta_[idxLepton] = lepton->deltaEta();

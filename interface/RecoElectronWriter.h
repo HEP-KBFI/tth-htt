@@ -44,6 +44,8 @@ protected:
   void
   setBranchNames();
 
+  int era_;
+
   std::string branchName_num_;
   std::string branchName_obj_;
 
@@ -52,10 +54,8 @@ protected:
   RecoLeptonWriter * leptonWriter_;
 
   std::string branchName_eCorr_;
-  std::string branchName_mvaRawPOG_;
-  std::string branchName_mvaRawPOG_WP80_;
-  std::string branchName_mvaRawPOG_WP90_;
-  std::string branchName_mvaRawPOG_WPL_;
+  std::string branchName_mvaRaw_POG_;
+  std::string branchName_mvaID_POG_;
   std::string branchName_sigmaEtaEta_;
   std::string branchName_HoE_;
   std::string branchName_deltaEta_;
@@ -66,10 +66,8 @@ protected:
   std::string branchName_cutbasedID_HLT_;
 
   Float_t * eCorr_;
-  Float_t * mvaRawPOG_;
-  Bool_t * mvaRawPOG_WP80_;
-  Bool_t * mvaRawPOG_WP90_;
-  Bool_t * mvaRawPOG_WPL_;
+  Float_t * mvaRaw_POG_;
+  Bool_t * mvaID_POG_;
   Float_t * sigmaEtaEta_;
   Float_t * HoE_;
   Float_t * deltaEta_;

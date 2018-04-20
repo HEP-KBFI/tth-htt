@@ -34,7 +34,6 @@ protected:
 //--- define cuts that dependent on eta
 //    format: central region (|eta| < 0.8) / transition region (0.8 < |eta| < 1.479) / forward region (|eta| > 1.479)
   typedef std::vector<Double_t> vDouble_t;
-  EGammaPOG mvaPOGwp_;                ///< EGamma POG electron MVA WP ID
   vDouble_t binning_absEta_;          ///< eta values separating central, transition and forward region (0.8, 1.479)
 //-------------------------------------------------------------------------------
   bool apply_tightCharge_;            ///< apply (True) or do not apply (False) tight charge cut
