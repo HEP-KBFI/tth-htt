@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
 # file generated at 2018-03-06 18:34:21 with the following command:
-# find_samples.py -V -m python/samples/metaDict_2017_data.py -d ../NanoAOD/test/datasets_data.txt
+# find_samples.py -V -m python/samples/metaDict_2017_data.py -d ../NanoAOD/test/datasets_data_2017.txt
 
 meta_dictionary = OD()
 
