@@ -51,6 +51,9 @@ std::vector<size_t>
 sort_indexes(const std::vector<double> &v);
 
 std::vector<size_t>
-calRank(std::vector<const RecoJet*>& selJetsIt);
+calRank(std::vector<double> & btag_discEnter);
+
+std::vector<double>
+getBdiscr(std::vector<const RecoJet*> selJetsIt);
 
 #endif

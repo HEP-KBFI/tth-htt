@@ -55,6 +55,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorHTTv2.h" // RecoJetSelectorHTTv2
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorAK12.h" // RecoJetSelectorAK12
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorAK8.h" // RecoJetSelectorAK8
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManager.h" // JetHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManagerHTTv2.h" // JetHistManagerHTTv2
@@ -217,6 +218,7 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelector jetSelector(era);
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
+  RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
 
   RecoJetReaderHTTv2* jetReaderHTTv2 = new RecoJetReaderHTTv2(era, branchName_jetsHTTv2, branchName_subjetsHTTv2);
   inputTree -> registerReader(jetReaderHTTv2);
@@ -356,7 +358,7 @@ int main(int argc, char* argv[])
     std::vector<RecoJetHTTv2> jetsHTTv2 = jetReaderHTTv2->read();
     std::vector<const RecoJetHTTv2*> jet_ptrsHTTv2raw = convert_to_ptrs(jetsHTTv2);
     std::vector<const RecoJetHTTv2*> jet_ptrsHTTv2 =  jetSelectorHTTv2(jet_ptrsHTTv2raw, isHigherPt);
-    //std::cout << "after load HTT"  << std::endl;
+    //std::cout << "after load HTT "<< jet_ptrsHTTv2raw.size()<< " " <<  jet_ptrsHTTv2 .size() << std::endl;
 //--- build collections of jets reconstructed by anti-kT algorithm with dR=1.2 (AK12)
     std::vector<RecoJetAK12> jetsAK12 = jetReaderAK12->read();
     std::vector<const RecoJetAK12*> jet_ptrsAK12raw = convert_to_ptrs(jetsAK12);
@@ -367,6 +369,12 @@ int main(int argc, char* argv[])
     std::vector<const RecoJetAK8*> jet_ptrsAK8raw = convert_to_ptrs(jetsAK8);
     std::vector<const RecoJetAK8*> jet_ptrsAK8 = jetSelectorAK8(jet_ptrsAK8raw , isHigherPt);
     //std::cout << "after load ak8"  << std::endl;
+
+    // cleaned RecoJet collection -- to keep b-tag ordering consistent in cat2
+    std::vector<const RecoJet*> cleanedJets;
+    if (inAK12) cleanedJets = jetCleaner(selJets, jet_ptrsAK12);
+    else cleanedJets = jetCleaner(selJets, jet_ptrsAK8);
+
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     std::vector<GenJet> genJets;
     if ( isMC && redoGenMatching ) {
@@ -377,7 +385,7 @@ int main(int argc, char* argv[])
 
 //--- match reconstructed to generator level particles
     if ( isMC && redoGenMatching ) {
-      jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
+      jetGenMatcher.addGenJetMatch(selJets, genJets, 0.4);
     }
 
     if ( isMC ) {
@@ -397,8 +405,7 @@ int main(int argc, char* argv[])
 
 		std::cout << "\nTreeEntry "<<analyzedEntries << " passed selection conditions "<< genWJets.size() << std::endl;
     std::cout << "Size of jet collections "
-      <<jet_ptrsHTTv2.size()<< " "<< jet_ptrsAK8.size() << " "<< jet_ptrsAK12.size() << " " << selJets.size() << std::endl;
-    int collectionSize = 0;
+      <<jet_ptrsHTTv2.size()<< " "<< jet_ptrsAK8.size() << " "<< jet_ptrsAK12.size() << " " << cleanedJets.size() << " " << selJets.size() << std::endl;
     Particle::LorentzVector unfittedHadTopP4, selBJet, selWJet1, selWJet2 ;
     bool isGenMatched = false;
 		bool fatjet_isGenMatched = false;
@@ -406,87 +413,100 @@ int main(int argc, char* argv[])
     double genTopPtProbeTop = -1.;
     double genTopPtProbeAntiTop = -1.;
     double genTopPt = -1.;
+    // to be used at analysis level
     int typeTop = -1; // 1 - FatTop; 2 - countFatAK8 ? countFatAK12; 3- countResolved;
-    if (inAK12) typeTop = getType(jet_ptrsHTTv2.size(), jet_ptrsAK12.size(), selJets.size());
-    else typeTop = getType(jet_ptrsHTTv2.size(), jet_ptrsAK8.size(), selJets.size());
+    //if (inAK12) typeTop = getType(jet_ptrsHTTv2.size(), jet_ptrsAK12.size(), selJets.size());
+    //else typeTop = getType(jet_ptrsHTTv2.size(), jet_ptrsAK8.size(), selJets.size());
     // start loops in jets
-    if (typeTop == 1) {
-      collectionSize = jet_ptrsHTTv2.size();
-      countFatTop++;
+    //if (typeTop == 1) {
+      if (jet_ptrsHTTv2.size() > 0) countFatTop++;
+      typeTop = 1;
       for ( std::vector<const RecoJetHTTv2*>::const_iterator jetIter = jet_ptrsHTTv2.begin();
         jetIter != jet_ptrsHTTv2.end(); ++jetIter ) {
           unfittedHadTopP4 = (*jetIter)->p4();
-          // I just take the subjet with highest b-tag score to be the b-candidate
-          const RecoSubjetHTTv2* recSubJet[3];
-          recSubJet[0] = (*jetIter)->subJet1();
-          recSubJet[1] = (*jetIter)->subJet2();
-          recSubJet[2] = (*jetIter)->subJet3();
-          std::vector<double> btag_disc = {recSubJet[0]->BtagCSV(), recSubJet[1]->BtagCSV(), recSubJet[2]->BtagCSV()};
-          auto btag_order = sort_indexes(btag_disc);
-          selBJet = recSubJet[btag_order[0]]->p4();
-          selWJet1 = recSubJet[btag_order[1]]->p4();
-          selWJet2 = recSubJet[btag_order[2]]->p4();
-          // checking btag ordering
-          std::cout<<"btag ordering  ";
-          for (auto i: btag_order) std::cout << i << " ";
-          std::cout<<" typeTop = "<<typeTop<<std::endl;
-          std::cout<<"btag discriminant  ";
-          for (auto i: btag_disc) std::cout << i << " ";
-          std::cout<<std::endl;
-          std::cout<<"max btag position "<< btag_order[0] <<" value "<< btag_disc[btag_order[0]] <<std::endl;
-          //std::cout<<"mass "<< unfittedHadTopP4.mass() <<" value "<< (selBJet + selWJet1 + selWJet2).mass() <<std::endl;
-          // calculate matching
-          std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop, typeTop, unfittedHadTopP4);
-          std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(selBJet, selWJet1,  selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop, typeTop, unfittedHadTopP4);
-          if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
-          if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
-          isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
-          fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
-          b_isGenMatched = (genMatchingTop[kGenMatchedBJet] || genMatchingAntiTop[kGenMatchedBJet]);
-          if (isGenMatched) hadtruth1++;
-          if ( bdt_filler ) {
-            (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2); // calculates the quantities that take only kinematics
-            const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-            for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-              mvaInput != mvaInputs.end(); ++mvaInput ) {
-              bdt_filler->operator()(mvaInput->first, mvaInput->second);
+            int perm [5] = { 0, 1, 2, 0, 1 }; // I do not care about the ordering of wj1/2 so no fancy permutation solution is required
+            const RecoSubjetHTTv2* recSubJet[3];
+            recSubJet[0] = (*jetIter)->subJet1();
+            recSubJet[1] = (*jetIter)->subJet2();
+            recSubJet[2] = (*jetIter)->subJet3();
+            double btag_orderType1 = -1;
+            double btag_discType1 = -1;
+            for (int ii = 0; ii < 3; ii++) {
+              selBJet = recSubJet[perm[ii]]->p4();
+              selWJet1 = recSubJet[perm[ii+1]]->p4();
+              selWJet2 = recSubJet[perm[ii+2]]->p4();
+              std::vector<double> btag_disc1 = {recSubJet[perm[ii]]->BtagCSV(), recSubJet[perm[ii+1]]->BtagCSV(), recSubJet[perm[ii+2]]->BtagCSV()};
+              auto btag_order1 = calRank(btag_disc1);
+              btag_orderType1 = btag_order1[0];
+              btag_discType1 = btag_disc1[0];
+            // Example: I just take the subjet with highest b-tag score to be the b-candidate
+            //std::vector<double> btag_disc = {recSubJet[0]->BtagCSV(), recSubJet[1]->BtagCSV(), recSubJet[2]->BtagCSV()};
+            //auto btag_order = sort_indexes(btag_disc);
+            //selBJet = recSubJet[btag_order[0]]->p4();
+            //selWJet1 = recSubJet[btag_order[1]]->p4();
+            //selWJet2 = recSubJet[btag_order[2]]->p4();
+            // checking btag ordering
+            //std::cout<<"btag ordering  ";
+            //for (auto i: btag_order1) std::cout << i << " ";
+            //std::cout<<" typeTop = "<<typeTop << " b is subjet:" << perm[ii] << " wj2 is subjet: " << perm[ii+2] <<std::endl;
+            std::cout<<" btag position of bjet "<< btag_order1[0] <<" value "<< btag_disc1[0] <<std::endl;
+            //std::cout<<"mass "<< unfittedHadTopP4.mass() <<" value "<< (selBJet + selWJet1 + selWJet2).mass() <<std::endl;
+            // calculate matching
+            std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop, typeTop, unfittedHadTopP4);
+            std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(selBJet, selWJet1,  selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop, typeTop, unfittedHadTopP4);
+            if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
+            if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
+            isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
+            fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
+            b_isGenMatched = (genMatchingTop[kGenMatchedBJet] || genMatchingAntiTop[kGenMatchedBJet]);
+            if (isGenMatched) {hadtruth1++; continue;}
+            } // end loop on subjets
+            if ( bdt_filler ) {
+              (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2); // calculates the quantities that take only kinematics
+              const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+              for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+                mvaInput != mvaInputs.end(); ++mvaInput ) {
+                bdt_filler->operator()(mvaInput->first, mvaInput->second);
+              }
+              bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
+              ("typeTop",              typeTop)
+              ("tau32Top",             (*jetIter)->tau3()/(*jetIter)->tau2())
+              ("massTop",              unfittedHadTopP4.mass())
+              ("tau21W",               -1.)
+              ("massW_SD",             -1.)
+              ("btagDisc",             btag_discType1)
+              ("qg_Wj1",                -1.)
+              ("qg_Wj2",                -1.)
+              ("genTopPt",             genTopPt)
+              ("collectionSize",       jet_ptrsHTTv2.size())
+              ("bjet_tag_position",    btag_orderType1)
+              ("bWj1Wj2_isGenMatched", isGenMatched)
+              ("fatjet_isGenMatched",  fatjet_isGenMatched)
+              ("b_isGenMatched",       b_isGenMatched)
+              ("counter",              (inputTree -> getProcessedFileCount() - 1))
+                  .fill();
             }
-            bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
-            ("typeTop",              typeTop)
-            ("tau32Top",             (*jetIter)->tau3()/(*jetIter)->tau2())
-            ("massTop",              unfittedHadTopP4.mass())
-            ("tau21W",               -1.)
-            ("massW_SD",             -1.)
-            ("btagDisc",             btag_disc[btag_order[0]])
-            ("qg_Wj1",                -1.)
-            ("qg_Wj2",                -1.)
-            ("genTopPt",             genTopPt)
-            ("collectionSize",       collectionSize)
-            ("bjet_tag_position",    1)
-            ("bWj1Wj2_isGenMatched", isGenMatched)
-            ("fatjet_isGenMatched",  fatjet_isGenMatched)
-            ("b_isGenMatched",       b_isGenMatched)
-            ("counter",              (inputTree -> getProcessedFileCount() - 1))
-                .fill();
-          }
-        }
-    } else if (typeTop!=-1) {
-    // store b-tag classification
-    std::cout<<std::endl;
-    auto btag_order = calRank(selJets);
-    std::cout<<"btag ordering  ";
-    for (auto i: btag_order) std::cout << i << " ";
-    std::cout<<" typeTop = "<<typeTop<<std::endl;
+
+        } // end typeTop == 1
+    //} else if (typeTop!=-1) {
+    // store b-tag classification of cleaned jet collection
+    if (cleanedJets.size()>0) {
+    std::vector<double> btag_disc = getBdiscr(cleanedJets);
+    auto btag_order = calRank(btag_disc);
+    //std::cout<<std::endl;
+    //std::cout<<"btag ordering  ";
+    //for (auto i: btag_order) std::cout << i << " ";
     // classify between 2 and 3
-    if (typeTop == 2 and inAK12) {
-      countFatAK12++;
-      collectionSize = jet_ptrsAK12.size();
+    if (inAK12) { // typeTop == 2 and
+      if (jet_ptrsAK12.size() > 0 && cleanedJets.size() > 0) {countFatAK12++; typeTop = 2;}
+      std::cout<<" typeTop = "<<typeTop<<std::endl;
       for ( std::vector<const RecoJetAK12*>::const_iterator jetIter = jet_ptrsAK12.begin();
         jetIter != jet_ptrsAK12.end(); ++jetIter ) {
-          for ( unsigned int bjetCandidate = 0; bjetCandidate < selJets.size(); bjetCandidate++ ) {
+          for ( unsigned int bjetCandidate = 0; bjetCandidate < cleanedJets.size(); bjetCandidate++ ) {
               // add cleaning
-              unfittedHadTopP4 = (*jetIter)->p4() + (*selJets[bjetCandidate]).p4();
-              selBJet = (*selJets[bjetCandidate]).p4();
+              unfittedHadTopP4 = (*jetIter)->p4() + (*cleanedJets[bjetCandidate]).p4();
+              selBJet = (*cleanedJets[bjetCandidate]).p4();
+              if((*jetIter)->subJet1() && (*jetIter)->subJet2()) {
               selWJet1 = (*jetIter)->subJet1()->p4();
               selWJet2 = (*jetIter)->subJet2()->p4();
               //std::cout<<"mass "<< unfittedHadTopP4.mass() <<" value "<< (selBJet + selWJet1 + selWJet2).mass() <<std::endl;
@@ -513,11 +533,11 @@ int main(int argc, char* argv[])
                 ("massTop",              unfittedHadTopP4.mass())
                 ("tau21W",               (*jetIter)->tau2()/(*jetIter)->tau1())
                 ("massW_SD",             (*jetIter)->msoftdrop())
-                ("btagDisc",             (*selJets[bjetCandidate]).BtagCSV())
+                ("btagDisc",             (*cleanedJets[bjetCandidate]).BtagCSV())
                 ("qg_Wj1",                -1.)
                 ("qg_Wj2",                -1.)
                 ("genTopPt",             genTopPt)
-                ("collectionSize",       collectionSize)
+                ("collectionSize",       jet_ptrsAK12.size())
                 ("bjet_tag_position",    btag_order[bjetCandidate])
                 ("bWj1Wj2_isGenMatched", isGenMatched)
                 ("fatjet_isGenMatched",  fatjet_isGenMatched)
@@ -525,16 +545,18 @@ int main(int argc, char* argv[])
                 ("counter",              (inputTree -> getProcessedFileCount() - 1))
                     .fill();
               }
-          }
-        }
-    } else if (typeTop == 2) {
-        countFatAK8++;
-        collectionSize = jet_ptrsAK8.size();
+            } else { std::cout<<" type2 akt12 did not had subjets "<<std::endl; continue;}
+            }
+        } // end typeTop == 2 ak12 loop
+    } else { // if (typeTop == 2)
+        if (jet_ptrsAK8.size() > 0 && cleanedJets.size() > 0) {countFatAK8++; typeTop = 2;}
+        std::cout<<" ak8 typeTop = "<<typeTop<<std::endl;
         for ( std::vector<const RecoJetAK8*>::const_iterator jetIter = jet_ptrsAK8.begin();
           jetIter != jet_ptrsAK8.end(); ++jetIter ) {
-            for ( unsigned int bjetCandidate = 0; bjetCandidate < selJets.size(); bjetCandidate++ ) {
-                unfittedHadTopP4 = (*jetIter)->p4() + (*selJets[bjetCandidate]).p4();
-                selBJet = (*selJets[bjetCandidate]).p4();
+            for ( unsigned int bjetCandidate = 0; bjetCandidate < cleanedJets.size(); bjetCandidate++ ) {
+                unfittedHadTopP4 = (*jetIter)->p4() + (*cleanedJets[bjetCandidate]).p4();
+                selBJet = (*cleanedJets[bjetCandidate]).p4();
+                if((*jetIter)->subJet1() && (*jetIter)->subJet2()) {
                 selWJet1 = (*jetIter)->subJet1()->p4();
                 selWJet2 = (*jetIter)->subJet2()->p4();
                 //std::cout<<"mass "<< unfittedHadTopP4.mass() <<" value "<< (selBJet + selWJet1 + selWJet2).mass() <<std::endl;
@@ -543,6 +565,7 @@ int main(int argc, char* argv[])
                 std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(selBJet, selWJet1,  selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop, typeTop,(*jetIter)->p4());
                 if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
                 if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
+                //std::cout<<" pass gen match "<<std::endl;
                 isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
                 fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
                 b_isGenMatched = (genMatchingTop[kGenMatchedBJet] || genMatchingAntiTop[kGenMatchedBJet]);
@@ -561,11 +584,11 @@ int main(int argc, char* argv[])
                   ("massTop",              unfittedHadTopP4.mass())
                   ("tau21W",               (*jetIter)->tau2()/(*jetIter)->tau1())
                   ("massW_SD",             (*jetIter)->msoftdrop())
-                  ("btagDisc",             (*selJets[bjetCandidate]).BtagCSV())
+                  ("btagDisc",             (*cleanedJets[bjetCandidate]).BtagCSV())
                   ("qg_Wj1",                -1.)
                   ("qg_Wj2",                -1.)
                   ("genTopPt",             genTopPt)
-                  ("collectionSize",       collectionSize)
+                  ("collectionSize",       jet_ptrsAK8.size())
                   ("bjet_tag_position",    btag_order[bjetCandidate])
                   ("bWj1Wj2_isGenMatched", isGenMatched)
                   ("fatjet_isGenMatched",  fatjet_isGenMatched)
@@ -573,31 +596,43 @@ int main(int argc, char* argv[])
                   ("counter",              (inputTree -> getProcessedFileCount() - 1))
                       .fill();
                 }
+              } else { std::cout<<" type2 akt8 did not had subjets "<<std::endl; continue;}
             }
-            }
-        } else if (typeTop == 3) {
+          } // end typeTop == 2 ak8 loop
+        } //end if (inAK12) //else if (typeTop == 3) {
+        } // end if enough cleanJets.size()
+          // store b-tag classification
+          //std::cout<<std::endl;
+          //std::cout<<"btag ordering  ";
+          //for (auto i: btag_order_selJets) std::cout << i << " ";
+          //std::cout<<" typeTop = "<<typeTop<<" collectionSize "<< collectionSize <<std::endl;
+          if (selJets.size() > 2) {
+          std::vector<double> btag_disc = getBdiscr(selJets);
+          auto btag_order_selJets = calRank(btag_disc);
+          typeTop = 3;
+          std::cout<<" typeTop = "<<typeTop<<std::endl;
           countResolved++;
-          collectionSize = selJets.size();
           for ( unsigned int bjetCandidate = 0; bjetCandidate < selJets.size(); bjetCandidate++ )  {
             for ( std::vector<const RecoJet*>::const_iterator selWJet1Candidate = selJets.begin();
               selWJet1Candidate != selJets.end(); ++selWJet1Candidate ) {
                if ( (*selWJet1Candidate)->pt() == (*selJets[bjetCandidate]).pt() ) continue;
                for ( std::vector<const RecoJet*>::const_iterator selWJet2Candidate = selWJet1Candidate + 1;
                  selWJet2Candidate != selJets.end(); ++selWJet2Candidate ) {
+                  //std::cout<<" bjetCandidate = "<<bjetCandidate<<std::endl;
                   if ( (*selWJet2Candidate)->pt() == (*selJets[bjetCandidate]).pt() ) continue;
                   if ( (*selWJet2Candidate)->pt() == (*selWJet1Candidate)->pt() ) continue;
                   selBJet = (*selJets[bjetCandidate]).p4();
                   selWJet1 = (*selWJet1Candidate)->p4();
                   selWJet2 = (*selWJet2Candidate)->p4();
-                  // calculate gen matching
                   std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
                   std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(selBJet, selWJet1,  selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
                   if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
                   if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
                   isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
-                  fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
+                  //fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
                   b_isGenMatched = (genMatchingTop[kGenMatchedBJet] || genMatchingAntiTop[kGenMatchedBJet]);
-                  if (btag_order[bjetCandidate] > cutJetCombo) continue;
+                  //std::cout<<" done loading flags "<<std::endl;
+                  if (btag_order_selJets[bjetCandidate] > cutJetCombo) continue;
                   if (isGenMatched) hadtruth3++;
                   //std::cout<<"btag position = "<< btag_order[bjetCandidate] <<std::endl;
                   if ( bdt_filler ) {
@@ -607,7 +642,7 @@ int main(int argc, char* argv[])
                       mvaInput != mvaInputs.end(); ++mvaInput ) {
                       bdt_filler->operator()(mvaInput->first, mvaInput->second);
                     }
-                  }
+                    //std::cout<<" pass fill kin "<<std::endl;
                   bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
                   ("typeTop",              typeTop)
                   ("tau32Top",              -1.)
@@ -618,19 +653,20 @@ int main(int argc, char* argv[])
                   ("qg_Wj1",               (*selWJet1Candidate)->QGDiscr())
                   ("qg_Wj2",               (*selWJet2Candidate)->QGDiscr())
                   ("genTopPt",             genTopPt)
-                  ("collectionSize",       collectionSize)
-                  ("bjet_tag_position",    btag_order[bjetCandidate])
+                  ("collectionSize",       selJets.size())
+                  ("bjet_tag_position",    btag_order_selJets[bjetCandidate])
                   ("bWj1Wj2_isGenMatched", isGenMatched)
-                  ("fatjet_isGenMatched",  fatjet_isGenMatched)
+                  ("fatjet_isGenMatched",  false)
                   ("b_isGenMatched",       b_isGenMatched)
                   ("counter",              (inputTree -> getProcessedFileCount() - 1))
                       .fill();
-               }
+                 }
+              }
             }
-          }
-    } //else throw cms::Exception("analyze_hadTopTagger")
+          } // end typeTop == 3 loop
+        } // end if has 3 jets
       //<< "Does not fall in any category " << " !!\n";
-  }
+  //}
 
 		++selectedEntries;
     //selectedEntries_weighted += evtWeight;

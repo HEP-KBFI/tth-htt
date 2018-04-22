@@ -307,13 +307,18 @@ sort_indexes(const std::vector<double> &v) {
   return idx;
 }
 
-std::vector<size_t>
-calRank(std::vector<const RecoJet*>& selJetsIt) {
+std::vector<double>
+getBdiscr(std::vector<const RecoJet*> selJetsIt){
   std::vector<double> btag_disc;
   for ( std::vector<const RecoJet*>::const_iterator jetIterB = selJetsIt.begin();
-    jetIterB != selJetsIt.end(); ++jetIterB ) {
-      btag_disc.push_back((*jetIterB)->BtagCSV());
-    }
+  jetIterB != selJetsIt.end(); ++jetIterB ) {
+    btag_disc.push_back((*jetIterB)->BtagCSV());
+  }
+  return btag_disc;
+}
+
+std::vector<size_t>
+calRank( std::vector<double> & btag_disc ) {
     std::vector<size_t> result(btag_disc.size(),0);
     //sorted index
     std::vector<size_t> indx(btag_disc.size());
