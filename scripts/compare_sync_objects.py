@@ -339,8 +339,18 @@ class ParticleWrapper(object):
       ref_val  = getattr(self.ref,  brn)
       test_val = getattr(self.test, brn)
       diff_val = getattr(self.diff, brn)
-      print('  {}  {:{len}}  {:>11.6f}  vs  {:>11.6f}  => {:>11.6f}'.format(
-        self.pfx, brn, ref_val, test_val, diff_val, len = self.maxBrnLen
+
+      ref_fmt  = '{:>13.6f}' if type(ref_val)  == float else '{:^13}'
+      test_fmt = '{:>13.6f}' if type(test_val) == float else '{:^13}'
+      diff_fmt = '{:>13.6f}' if type(diff_val) == float else '{:^13}'
+
+      ref_print  = ref_fmt.format(ref_val)   if ref_val  != -9999 else '{:^13}'.format('-')
+      test_print = test_fmt.format(test_val) if test_val != -9999 else '{:^13}'.format('-')
+      diff_print = diff_fmt.format(diff_val) if ref_val  != -9999 and \
+                                                test_val != -9999 else '{:^13}'.format('-')
+
+      print('  {}  {:{len}}  {}  vs  {}  => {}'.format(
+        self.pfx, brn, ref_print, test_print, diff_print, len = self.maxBrnLen
       ))
 
   def get_summary(self):
@@ -387,12 +397,12 @@ for rle in rle_loop:
   evt.update()
 
   # Modify start
-  if not evt.mu1.isMatched:
+  if not evt.tau1.isMatched:
     continue
 
-  if abs(evt.mu1.diff.leptonMVA) > 0.4:
-    print('RLE %s' % rle)
-    evt.mu1.print()
+  print('RLE %s' % rle)
+  evt.tau1.print()
+
   # Modify end
 
 evt.get_summary()
