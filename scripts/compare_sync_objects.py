@@ -5,10 +5,12 @@ import array
 import math
 import collections
 import argparse
-import os.path
+import os
 import re
 import logging
 import sys
+import matplotlib.pyplot as plt
+import numpy as np
 
 typeMap = {
   'Int_t'     : 'i',
@@ -55,51 +57,122 @@ def positive_float_type(value):
     raise argparse.ArgumentTypeError('Must be a positive float: %s' % value)
   return value_float
 
-parser = argparse.ArgumentParser(
+def positive_int_type(value):
+  try:
+    value_int = int(value)
+  except ValueError:
+    raise argparse.ArgumentTypeError('Not a float: %s' % value)
+  if value_int <= 0.:
+    raise argparse.ArgumentTypeError('Must be a positive integer: %s' % value)
+  return value_int
+
+parent_parser = argparse.ArgumentParser(
   formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
 )
+subparsers = parent_parser.add_subparsers(title = 'commands', dest = 'command')
+inspect_parser = subparsers.add_parser(
+  'inspect', formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
+)
+plot_parser = subparsers.add_parser(
+  'plot', formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
+)
+for parser in subparsers.choices.values():
+  parser.add_argument('-i', '--input-ref',
+    type = str, dest = 'input_ref', metavar = 'path', required = True,
+    help = 'R|Input reference file',
+  )
+  parser.add_argument('-j', '--input-test',
+    type = str, dest = 'input_test', metavar = 'path', required = True,
+    help = 'R|Input test file',
+  )
+  parser.add_argument('-t', '--tree',
+    type = str, dest = 'tree', metavar = 'name', default = 'syncTree', required = False,
+    help = 'R|TTree name',
+  )
+  parser.add_argument('-r', '--rle',
+    type = str, dest = 'rle', metavar = 'path/list', default = [], required = False,
+    help = 'R|Path to the list of run:lumi:event numbers, or explicit space-separated list of those',
+  )
+  parser.add_argument('-n', '--max-events',
+    type = int, dest = 'max_events', metavar = 'number', default = -1, required = False,
+    help = 'R|Maximum number of events to be considered (default: -1, i.e. all dR-matched objects)',
+  )
+  parser.add_argument('-d', '--dr',
+    type = positive_float_type, dest = 'dr', metavar = 'cone size', default = 0.01, required = False,
+    help = 'R|Maximum cone size used in object dR-matching'
+  )
+  parser.add_argument('-v', '--verbose',
+    dest = 'verbose', action = 'store_true', default = False,
+    help = 'R|Enable verbose output',
+  )
+plot_parser.add_argument('-o', '--output-dir',
+  type = str, dest = 'output_dir', metavar = 'path', default = '.', required = False,
+  help = 'R|Output directory for the plots',
+)
+plot_parser.add_argument('-p', '--plot-type',
+  type = str, nargs = '+', dest = 'plot_type', metavar = 'style', required = False,
+  choices = [ 'scatter', 'histogram' ], default = [ 'scatter', 'histogram' ],
+  help = 'R|Plot type',
+)
+plot_parser.add_argument('-s', '--plot-scale',
+  type = str, nargs = '+', dest = 'plot_scale', metavar = 'scale', required = False,
+  choices = [ 'log', 'linear' ], default = [ 'log', 'linear' ],
+  help = 'R|Plot scale',
+)
+plot_parser.add_argument('-b', '--bins',
+  type = positive_int_type, dest = 'bins', metavar = 'number', required = False, default = 101,
+  help = 'R|Number of bins (for the floating point histogram)',
+)
+plot_parser.add_argument('-e', '-extension',
+  type = str, nargs = '+', dest = 'extension', metavar = 'extension', required = False,
+  choices = [ 'png', 'pdf' ], default = [ 'png' ],
+  help = 'R|Output format of the plot',
+)
+plot_parser.add_argument('-R', '--ref-label',
+  type = str, dest = 'ref_label', metavar = 'name', required = False, default = '',
+  help = 'R|Plotting label for reference data',
+)
+plot_parser.add_argument('-T', '--test-label',
+  type = str, dest = 'test_label', metavar = 'name', required = False, default = '',
+  help = 'R|Plotting label for test data',
+)
+plot_parser.add_argument('-f', '--force',
+  dest = 'force', action = 'store_true', default = False,
+  help = "R|Create the output directory if it doesn't exist",
+)
+args = parent_parser.parse_args()
 
-parser.add_argument('-i', '--input-ref',
-  type = str, dest = 'input_ref', metavar = 'path', required = True,
-  help = 'R|Input reference file',
-)
-parser.add_argument('-j', '--input-test',
-  type = str, dest = 'input_test', metavar = 'path', required = True,
-  help = 'R|Input test file',
-)
-parser.add_argument('-t', '--tree',
-  type = str, dest = 'tree', metavar = 'name', default = 'syncTree', required = False,
-  help = 'R|TTree name',
-)
-parser.add_argument('-r', '--rle',
-  type = str, dest = 'rle', metavar = 'path/list', default = [], required = False,
-  help = 'R|Path to the list of run:lumi:event numbers, or explicit space-separated list of those',
-)
-parser.add_argument('-n', '--max-events',
-  type = int, dest = 'max_events', metavar = 'number', default = -1, required = False,
-  help = 'R|Maximum number of events to be considered (default: -1, i.e. all dR-matched objects)',
-)
-parser.add_argument('-d', '--dr',
-  type = positive_float_type, dest = 'dr', metavar = 'cone size', default = 0.01, required = False,
-  help = 'R|Maximum cone size used in object dR-matching'
-)
-parser.add_argument('-v', '--verbose',
-  dest = 'verbose', action = 'store_true', default = False,
-  help = 'R|Enable verbose output',
-)
-args = parser.parse_args()
+filename_ref    = args.input_ref
+filename_test   = args.input_test
+tree_name       = args.tree
+max_events      = args.max_events
+dr_max          = args.dr
 
-filename_ref  = args.input_ref
-filename_test = args.input_test
-tree_name     = args.tree
-max_events    = args.max_events
-dr_max        = args.dr
+enable_plot     = args.command == 'plot'
+plot_output_dir = args.output_dir
+plot_type       = args.plot_type
+plot_scale      = args.plot_scale
+plot_bins       = args.bins
+plot_ref_label  = args.ref_label  if args.ref_label  else os.path.basename(filename_ref)
+plot_test_label = args.test_label if args.test_label else os.path.basename(filename_test)
+plot_force      = args.force
+plot_extension  = args.extension
 
 logging.basicConfig(
   stream = sys.stdout,
   level  = logging.DEBUG if args.verbose else logging.INFO,
   format = '%(asctime)s - %(levelname)s: %(message)s'
 )
+
+if enable_plot and not os.path.isdir(plot_output_dir):
+  if plot_force:
+    logging.debug('Directory %s does not exist; attempting to create it')
+    try:
+      os.makedirs(plot_output_dir)
+    except IOError as reason:
+      raise ValueError('Could not create directory %s because: %s' % (plot_output_dir, reason))
+  else:
+    raise ValueError('Directory %s does not exist (use -f/--force to create it)' % plot_output_dir)
 
 rle_selection = []
 rle_pattern = re.compile('\d+:\d+:\d+')
@@ -128,7 +201,7 @@ for filename in [filename_ref, filename_test]:
   if not os.path.isfile(filename):
     raise ValueError('No such file: %s' % filename)
 
-file_ref  = ROOT.TFile.Open(filename_ref, 'read')
+file_ref = ROOT.TFile.Open(filename_ref, 'read')
 if not file_ref:
   raise ValueError('File %s is not a valid ROOT file' % filename_ref)
 file_test = ROOT.TFile.Open(filename_test, 'read')
@@ -151,10 +224,10 @@ ls_branch_name  = 'ls'
 evt_branch_name = 'nEvent'
 
 objects_map = {
-  'mu'  : { 'n' : 2 },
-  'ele' : { 'n' : 2 },
-  'tau' : { 'n' : 2 },
-  'jet' : { 'n' : 4 },
+  'mu'  : { 'n' : 2, 'human_name' : 'muon'     },
+  'ele' : { 'n' : 2, 'human_name' : 'electron' },
+  'tau' : { 'n' : 2, 'human_name' : 'tau'      },
+  'jet' : { 'n' : 4, 'human_name' : 'jet'      },
 }
 
 common_branch_names = { 'pt', 'eta', 'phi', 'E', }
@@ -288,6 +361,97 @@ if rle_selection:
     else:
       rle_loop.append(rle)
 
+def isinteger(x):
+  # Credit to: https://stackoverflow.com/a/7236784
+  return np.equal(np.mod(x, 1), 0).all()
+
+def plot(var_name, ref_values, test_values, output_dir, plot_type, scale, ref_label, test_label,
+         human_name, extensions, nof_bins):
+
+  skip_plot = False
+  fig = plt.figure(figsize = (10, 8))
+  if plot_type == 'scatter':
+    filtered_values = list(filter(
+      lambda value_pair: value_pair[0] != -9999 and value_pair[1] != -9999,
+      zip(ref_values, test_values)
+    ))
+    ref_values_filtered  = np.asarray([ filtered_value[0] for filtered_value in filtered_values ])
+    test_values_filtered = np.asarray([ filtered_value[1] for filtered_value in filtered_values ])
+
+    xmin = ref_values_filtered.min()
+    xmax = ref_values_filtered.max()
+    ymin = test_values_filtered.min()
+    ymax = test_values_filtered.max()
+
+    if isinteger(ref_values_filtered) and isinteger(test_values_filtered):
+      xmin -= 0.5
+      xmax += 0.5
+      ymin -= 0.5
+      ymax += 0.5
+    else:
+      xmin *= 0.95 if xmin > 0. else 1.05
+      xmax *= 1.05 if xmax > 0. else 0.95
+      ymin *= 0.95 if ymin > 0. else 1.05
+      ymax *= 1.05 if ymax > 0. else 0.95
+
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
+
+    plt.plot(ref_values_filtered, test_values_filtered, 'o')
+    plt.xlabel(ref_label)
+    plt.ylabel(test_label)
+
+    if scale == 'log':
+      if xmin > 0 and xmax > 0:
+        plt.xscale('log')
+        plt.yscale('log')
+      else:
+        logging.debug(
+          'Skipping scatter plot w/ logarithmic axes b/c %s contains negative values' % var_name
+        )
+        skip_plot = True
+  elif plot_type == 'histogram':
+    ref_values_filtered  = np.asarray([ value for value in ref_values  if value != -9999 ])
+    test_values_filtered = np.asarray([ value for value in test_values if value != -9999 ])
+
+    xmin = min(ref_values_filtered.min(), test_values_filtered.min())
+    xmax = max(ref_values_filtered.max(), test_values_filtered.max())
+
+    if isinteger(ref_values_filtered) and isinteger(test_values_filtered):
+      xmin -= 1
+      xmax += 2
+      nof_bins = xmax - xmin + 1
+    else:
+      xmin *= 0.95 if xmin > 0. else 1.05
+      xmax *= 1.05 if xmax > 0. else 0.95
+
+    plt.xlim(xmin, xmax)
+    bins = np.linspace(xmin, xmax, nof_bins)
+
+    ref_label  = '%s (%d)' % (ref_label,  len(ref_values_filtered))
+    test_label = '%s (%d)' % (test_label, len(test_values_filtered))
+
+    plt.hist(ref_values_filtered,  bins = bins, label = ref_label,  alpha = 0.4, edgecolor = 'black')
+    plt.hist(test_values_filtered, bins = bins, label = test_label, alpha = 0.4, edgecolor = 'black')
+    plt.legend(loc = 'upper right')
+    plt.xlabel(var_name)
+    plt.ylabel('# of dR-matched %s' % human_name)
+
+    if scale == 'log':
+      plt.yscale('log', nonposy = 'clip')
+  else:
+    raise ValueError('Invalid plot type: %s' % plot_type)
+
+  plt.title('%s of dR-matched %s (%d)' % (var_name, human_name, len(ref_values)))
+  plt.grid(True)
+
+  if not skip_plot:
+    for extension in extensions:
+      output_filename = os.path.join(
+        output_dir, '%s_%s_%s.%s' % (var_name, plot_type, scale, extension)
+      )
+      plt.savefig(output_filename, bbox_inches = 'tight')
+
 class ParticleBase(object):
   pass
 
@@ -297,12 +461,13 @@ class Particle(ParticleBase):
       setattr(self, branch_name, branches['%s_%s' % (prefix, branch_name)][0])
 
   def isValid(self):
-    return not (self.eta < -10. or self.phi < -10.)
+    return not (self.eta == -9999. or self.phi == -9999.)
 
 class ParticleWrapper(object):
-  def __init__(self, prefix, branch_names):
+  def __init__(self, prefix, branch_names, human_name):
     self.prefix       = prefix
     self.branch_names = branch_names
+    self.human_name   = human_name
 
     self.ref  = None
     self.test = None
@@ -313,6 +478,7 @@ class ParticleWrapper(object):
       'test'   : 0,
       'common' : 0,
     }
+    self.recordings = {}
     self.isMatched = False
     self.max_branch_name_len = max(map(lambda branch_name: len(branch_name), self.branch_names)) + 1
 
@@ -335,10 +501,10 @@ class ParticleWrapper(object):
     return dr < dr_max
 
   def print(self, branch_names_selection = []):
-    missing_brns = set(branch_names_selection) - set(self.branch_names)
-    if missing_brns:
+    missing_branch_names = set(branch_names_selection) - set(self.branch_names)
+    if missing_branch_names:
       raise ValueError(
-        'Invalid branch names requested for %s: %s' % (self.prefix, ', '.join(missing_brns))
+        'Invalid branch names requested for %s: %s' % (self.prefix, ', '.join(missing_branch_names))
       )
     branch_names_to_print = branch_names_selection if branch_names_selection else self.branch_names
     for branch_name in branch_names_to_print:
@@ -365,16 +531,52 @@ class ParticleWrapper(object):
       '%s:' % self.prefix, self.counter['ref'], self.counter['test'], self.counter['common']
     ))
 
+  def record(self, branch_names_selection = []):
+    missing_branch_names = set(branch_names_selection) - set(self.branch_names)
+    if missing_branch_names:
+      raise ValueError(
+        'Invalid branch names requested for %s: %s' % (self.prefix, ', '.join(missing_branch_names))
+      )
+    branch_names_to_plot = branch_names_selection if branch_names_selection else self.branch_names
+
+    if not self.isMatched:
+      return
+
+    for branch_name in branch_names_to_plot:
+      if branch_name not in self.recordings:
+        self.recordings[branch_name] = { 'ref' : [], 'test' : [] }
+      for source in self.recordings[branch_name]:
+        source_instance = getattr(self, source)
+        recorded_value  = getattr(source_instance, branch_name)
+        self.recordings[branch_name][source].append(recorded_value)
+
+  def plot(self, output_dir, plot_types, scales, ref_label, test_label, extension, bins):
+    human_name = '%ss' % self.human_name
+    for branch_name in self.recordings:
+      ref_values  = self.recordings[branch_name]['ref']
+      test_values = self.recordings[branch_name]['test']
+      assert(len(ref_values) == len(test_values))
+      for scale in scales:
+        for plot_type in plot_types:
+          plot(
+            branch_name, ref_values, test_values, output_dir, plot_type, scale, ref_label,
+            test_label, human_name, extension, bins
+          )
+
 class Event(object):
   def __init__(self, max_events):
     self.max_events = max_events
     self.counter    = 0
 
+    leading_types = [ 'leading', 'subleading', 'third', 'fourth' ]
+
     self.objects_list = []
     for obj_prefix, obj_entry in objects_map.items():
       for obj_idx in range(1, obj_entry['n'] + 1):
         prefix = '%s%d' % (obj_prefix, obj_idx)
-        setattr(self, prefix, ParticleWrapper(prefix, obj_entry['branch_names']))
+        assert(obj_idx <= len(leading_types))
+        human_name = '%s %s' % (leading_types[obj_idx - 1], obj_entry['human_name'])
+        setattr(self, prefix, ParticleWrapper(prefix, obj_entry['branch_names'], human_name))
         self.objects_list.append(prefix)
 
   def update(self):
@@ -392,6 +594,11 @@ class Event(object):
       particle_instance = getattr(self, obj_prefix)
       particle_instance.get_summary()
 
+  def plot(self, output_dir, plot_type, scale, ref_label, test_label, extension, bins):
+    for obj_prefix in self.objects_list:
+      particle_instance = getattr(self, obj_prefix)
+      particle_instance.plot(output_dir, plot_type, scale, ref_label, test_label, extension, bins)
+
 evt = Event(max_events)
 
 for rle in rle_loop:
@@ -404,12 +611,19 @@ for rle in rle_loop:
   evt.update()
 
   # Modify start
-  if not evt.tau1.isMatched:
+
+  if not evt.mu1.isMatched:
     continue
 
-  print('RLE %s' % rle)
-  evt.tau1.print()
+  #print('RLE %s' % rle)
+  #evt.mu1.print()
+  evt.mu1.record(['pt', 'isfakeablesel'])
 
   # Modify end
 
 evt.get_summary()
+if enable_plot:
+  evt.plot(
+    plot_output_dir, plot_type, plot_scale, plot_ref_label, plot_test_label, plot_extension,
+    plot_bins
+  )
