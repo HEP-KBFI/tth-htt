@@ -348,7 +348,10 @@ common_rles = []
 for rle in rle_ref:
   if rle in rle_test:
     common_rles.append(rle)
-logging.debug('Found %d common events by run, lumi and event numbers' % len(common_rles))
+logging.debug(
+  'Found %d/%d/%d common/in ref/in test events by run, lumi and event numbers' % \
+  (len(common_rles), len(rle_ref), len(rle_test))
+)
 
 # Make sure that if the user provided a list of RLE numbers for selection, that they are present
 # in both Ntuples; if not, then ignore the RLE number(s) specified by the user
@@ -366,7 +369,7 @@ def isinteger(x):
   return np.equal(np.mod(x, 1), 0).all()
 
 def plot(var_name, ref_values, test_values, output_dir, plot_type, scale, ref_label, test_label,
-         human_name, extensions, nof_bins):
+         human_name, prefix, extensions, nof_bins):
 
   skip_plot = False
   fig = plt.figure(figsize = (10, 8))
@@ -448,9 +451,11 @@ def plot(var_name, ref_values, test_values, output_dir, plot_type, scale, ref_la
   if not skip_plot:
     for extension in extensions:
       output_filename = os.path.join(
-        output_dir, '%s_%s_%s.%s' % (var_name, plot_type, scale, extension)
+        output_dir, '%s_%s_%s_%s.%s' % (prefix, var_name, plot_type, scale, extension)
       )
       plt.savefig(output_filename, bbox_inches = 'tight')
+      logging.debug('Created plot: %s' % output_filename)
+  plt.clf()
 
 class ParticleBase(object):
   pass
@@ -560,7 +565,7 @@ class ParticleWrapper(object):
         for plot_type in plot_types:
           plot(
             branch_name, ref_values, test_values, output_dir, plot_type, scale, ref_label,
-            test_label, human_name, extension, bins
+            test_label, human_name, self.prefix, extension, bins
           )
 
 class Event(object):
@@ -615,9 +620,12 @@ for rle in rle_loop:
   if not evt.mu1.isMatched:
     continue
 
-  #print('RLE %s' % rle)
-  #evt.mu1.print()
-  evt.mu1.record(['pt', 'isfakeablesel'])
+  if evt.mu1.ref.isfakeablesel == evt.mu1.test.isfakeablesel:
+    continue
+
+  print('RLE %s' % rle)
+  evt.mu1.print()
+  evt.mu1.record()
 
   # Modify end
 
