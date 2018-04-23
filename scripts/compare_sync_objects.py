@@ -310,6 +310,7 @@ class ParticleWrapper(object):
       'common' : 0,
     }
     self.isMatched = False
+    self.maxBrnLen = max(map(lambda brn: len(brn), self.brns)) + 1
 
   def update(self):
     self.ref  = Particle(self.pfx, brs_ref,  self.brns)
@@ -327,18 +328,26 @@ class ParticleWrapper(object):
     dr = math.sqrt(self.diff.eta ** 2 + self.diff.phi ** 2)
     return dr < dr_max
 
-  def print(self):
-    for brn in self.brns:
+  def print(self, brns_selection = []):
+    missing_brns = set(brns_selection) - set(self.brns)
+    if missing_brns:
+      raise ValueError(
+        'Invalid branch names requested for %s: %s' % (self.pfx, ', '.join(missing_brns))
+      )
+    brns_to_print = brns_selection if brns_selection else self.brns
+    for brn in brns_to_print:
       ref_val  = getattr(self.ref,  brn)
       test_val = getattr(self.test, brn)
       diff_val = getattr(self.diff, brn)
-      print('  %s: %.6f vs %.6f => %.6f' % (brn, ref_val, test_val, diff_val))
+      print('  {}  {:{len}}  {:>11.6f}  vs  {:>11.6f}  => {:>11.6f}'.format(
+        self.pfx, brn, ref_val, test_val, diff_val, len = self.maxBrnLen
+      ))
 
   def get_summary(self):
     print(
-      '%s: %d in ref, %d in test, %d dR-matched' % \
-      (self.pfx, self.counter['ref'], self.counter['test'], self.counter['common'])
-    )
+      '{:<6} {:>7} in ref, {:>7} in test, {:>7} dR-matched'.format(
+      '%s:' % self.pfx, self.counter['ref'], self.counter['test'], self.counter['common']
+    ))
 
 class Event(object):
   def __init__(self, maxn):
