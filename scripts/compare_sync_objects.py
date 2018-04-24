@@ -67,7 +67,7 @@ COMMON_BRANCH_NAMES = { 'pt', 'eta', 'phi', 'E', }
 LEPTON_BRANCH_NAMES = COMMON_BRANCH_NAMES | {
   'charge', 'dxy', 'dz', 'miniRelIso', 'miniIsoCharged', 'miniIsoNeutral', 'PFRelIso04',
   'jetNDauChargedMVASel', 'jetPtRel', 'jetPtRatio', 'jetCSV', 'sip3D', 'dxyAbs',
-  'isfakeablesel', 'ismvasel', 'leptonMVA',
+  'isfakeablesel', 'ismvasel', 'leptonMVA', 'conept',
 }
 
 OBJECTS_MAP['mu']['branch_names'] = LEPTON_BRANCH_NAMES | {
@@ -240,8 +240,9 @@ class ParticleWrapper(object):
     :return: None
     '''
     print(
-      '{:<6} {:>7} in ref, {:>7} in test, {:>7} dR-matched'.format(
-      '%s:' % self.prefix, self.counter['ref'], self.counter['test'], self.counter['common']
+      '{:<6} {:>7} ({:>7}) in ref, {:>7} ({:>7}) in test, {:>7} dR-matched'.format(
+        '%s:' % self.prefix, self.counter['ref'], self.counter['ref'] - self.counter['common'],
+        self.counter['test'], self.counter['test'] - self.counter['common'], self.counter['common'],
     ))
 
   def record(self, branch_names_selection = []):
@@ -791,14 +792,15 @@ max_events      = args.max_events
 dr_max          = args.dr
 
 enable_plot     = args.command == 'plot'
-plot_output_dir = args.output_dir
-plot_type       = args.plot_type
-plot_scale      = args.plot_scale
-plot_bins       = args.bins
-plot_ref_label  = args.ref_label  if args.ref_label  else os.path.basename(filename_ref)
-plot_test_label = args.test_label if args.test_label else os.path.basename(filename_test)
-plot_force      = args.force
-plot_extension  = args.extension
+if enable_plot:
+  plot_output_dir = args.output_dir
+  plot_type       = args.plot_type
+  plot_scale      = args.plot_scale
+  plot_bins       = args.bins
+  plot_ref_label  = args.ref_label  if args.ref_label  else os.path.basename(filename_ref)
+  plot_test_label = args.test_label if args.test_label else os.path.basename(filename_test)
+  plot_force      = args.force
+  plot_extension  = args.extension
 
 # Enable verbose output if the user requested so
 logging.basicConfig(
@@ -985,12 +987,17 @@ for rle in rle_loop:
   if not evt.mu1.is_matched:
     continue
 
-  if evt.mu1.ref.isfakeablesel == evt.mu1.test.isfakeablesel:
+  if not (evt.mu1.ref.ismvasel == 0 and evt.mu1.test.ismvasel == 1 and \
+          evt.mu1.ref.isfakeablesel == 1 and evt.mu1.test.isfakeablesel == 1):
+    continue
+
+  if evt.mu1.test.leptonMVA > 0.9:
     continue
 
   print('RLE %s' % rle)
   evt.mu1.print()
-  evt.mu1.record()
+
+  #evt.mu2.record()
   ##################################################################################################
 
 # Print the summary of dR-matched objects
