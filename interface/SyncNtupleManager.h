@@ -225,7 +225,7 @@ private:
   {
     for(int i = 0; i < count; ++i)
     {
-      var[i] = placeholder_value;
+      var[i] = typeid(T) != typeid(Bool_t) ? placeholder_value : 0;
     }
   }
 
@@ -246,7 +246,7 @@ private:
   void
   reset(T & var)
   {
-    var = placeholder_value;
+    var = typeid(T) != typeid(Bool_t) ? placeholder_value : 0;
   }
 
   template<typename T,
