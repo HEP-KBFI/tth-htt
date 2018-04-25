@@ -17,6 +17,7 @@
 #include <TMatrixD.h> // TMatrixD
 #include <TError.h> // gErrorAbortLevel, kError
 #include <TMath.h> // TMath::Pi()
+#include <TLorentzVector.h>
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -267,7 +268,7 @@ int main(int argc, char* argv[])
        makeHistManager_cfg(process_string, Form("%s/evtntuple", histogramDir.data()), "central")
        );
     bdt_filler->register_variable<float_type>(
-      ///* // computed by (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
+      /* // computed by (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
       "m_bWj1Wj2", "m_Wj1Wj2", "m_bWj1", "m_bWj2",
       "m_Wj1Wj2_div_m_bWj1Wj2",
       "pT_b", "eta_b", //"phi_b", "mass_b",
@@ -291,7 +292,12 @@ int main(int argc, char* argv[])
       //*/
       "tau32Top", "massTop",
       "tau21W", "massW_SD",
-      "genTopPt",
+      "genTopPt", "genTopEta",
+      "genTopPTall", "genTopEtaAll",
+      "drT_gen", "drB_gen", "drW_gen", "drWj1_gen", "drWj2_gen",
+      "etaB_gen",  "etaWj1_gen", "etaWj2_gen",
+      "ptB_gen",  "ptWj1_gen", "ptWj2_gen",
+      "dr_b_wj1", "dr_b_wj2", "dr_wj1_wj2",
       "btagDisc", "qg_Wj1", "qg_Wj2"
     );
 
@@ -323,9 +329,14 @@ int main(int argc, char* argv[])
   int hadtruth1 = 0; // counter for diagnosis
   int hadtruth2 = 0; // counter for diagnosis
   int hadtruth3 = 0; // counter for diagnosis
+  int ca1_cat2 = 0;
+  int cat2_cat3 = 0;
+  int cat3_cat1 = 0 ;
+  int cat3_cat2_cat1 = 0;
 
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
+    //if (analyzedEntries > 10001) continue;
     if ( isDEBUG ) {
       std::cout << "processing run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
     }
@@ -413,6 +424,30 @@ int main(int argc, char* argv[])
     double genTopPtProbeTop = -1.;
     double genTopPtProbeAntiTop = -1.;
     double genTopPt = -1.;
+    double genTopEtaProbeTop = -1.;
+    double genTopEtaProbeAntiTop = -1.;
+    double genTopEta = -1.;
+    double genTopPTall = -1.;
+    double drT_gen = -1.;
+    double drW_gen = -1.;
+    double drB_gen = -1.;
+    double drWj1_gen = -1.;
+    double drWj2_gen = -1.;
+    double genTopEtaall = -2.5;
+    double etaB_gen = -1;
+    double etaWj1_gen = -1;
+    double etaWj2_gen = -1;
+    double ptB_gen = -1;
+    double ptWj1_gen = -1;
+    double ptWj2_gen = -1;
+    double drb_wj1 = -1;
+    double drb_wj2 = -1;
+    double drwj1_wj2 = -1;
+    //
+    bool cat1 = false;
+    bool cat2 = false;
+    bool cat3 = false;
+
     // to be used at analysis level
     int typeTop = -1; // 1 - FatTop; 2 - countFatAK8 ? countFatAK12; 3- countResolved;
     //if (inAK12) typeTop = getType(jet_ptrsHTTv2.size(), jet_ptrsAK12.size(), selJets.size());
@@ -423,70 +458,167 @@ int main(int argc, char* argv[])
       typeTop = 1;
       for ( std::vector<const RecoJetHTTv2*>::const_iterator jetIter = jet_ptrsHTTv2.begin();
         jetIter != jet_ptrsHTTv2.end(); ++jetIter ) {
+          genTopPTall = -1.;
+          genTopEta = -2.5;
           unfittedHadTopP4 = (*jetIter)->p4();
-            int perm [5] = { 0, 1, 2, 0, 1 }; // I do not care about the ordering of wj1/2 so no fancy permutation solution is required
-            const RecoSubjetHTTv2* recSubJet[3];
-            recSubJet[0] = (*jetIter)->subJet1();
-            recSubJet[1] = (*jetIter)->subJet2();
-            recSubJet[2] = (*jetIter)->subJet3();
-            double btag_orderType1 = -1;
-            double btag_discType1 = -1;
-            for (int ii = 0; ii < 3; ii++) {
-              selBJet = recSubJet[perm[ii]]->p4();
-              selWJet1 = recSubJet[perm[ii+1]]->p4();
-              selWJet2 = recSubJet[perm[ii+2]]->p4();
-              std::vector<double> btag_disc1 = {recSubJet[perm[ii]]->BtagCSV(), recSubJet[perm[ii+1]]->BtagCSV(), recSubJet[perm[ii+2]]->BtagCSV()};
-              auto btag_order1 = calRank(btag_disc1);
-              btag_orderType1 = btag_order1[0];
-              btag_discType1 = btag_disc1[0];
-            // Example: I just take the subjet with highest b-tag score to be the b-candidate
-            //std::vector<double> btag_disc = {recSubJet[0]->BtagCSV(), recSubJet[1]->BtagCSV(), recSubJet[2]->BtagCSV()};
-            //auto btag_order = sort_indexes(btag_disc);
-            //selBJet = recSubJet[btag_order[0]]->p4();
-            //selWJet1 = recSubJet[btag_order[1]]->p4();
-            //selWJet2 = recSubJet[btag_order[2]]->p4();
-            // checking btag ordering
-            //std::cout<<"btag ordering  ";
-            //for (auto i: btag_order1) std::cout << i << " ";
-            //std::cout<<" typeTop = "<<typeTop << " b is subjet:" << perm[ii] << " wj2 is subjet: " << perm[ii+2] <<std::endl;
-            std::cout<<" btag position of bjet "<< btag_order1[0] <<" value "<< btag_disc1[0] <<std::endl;
-            //std::cout<<"mass "<< unfittedHadTopP4.mass() <<" value "<< (selBJet + selWJet1 + selWJet2).mass() <<std::endl;
-            // calculate matching
-            std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop, typeTop, unfittedHadTopP4);
-            std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(selBJet, selWJet1,  selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop, typeTop, unfittedHadTopP4);
-            if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
-            if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
-            isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
-            fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
-            b_isGenMatched = (genMatchingTop[kGenMatchedBJet] || genMatchingAntiTop[kGenMatchedBJet]);
-            if (isGenMatched) {hadtruth1++; continue;}
-            } // end loop on subjets
-            if ( bdt_filler ) {
-              (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2); // calculates the quantities that take only kinematics
-              const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-              for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-                mvaInput != mvaInputs.end(); ++mvaInput ) {
-                bdt_filler->operator()(mvaInput->first, mvaInput->second);
-              }
-              bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
-              ("typeTop",              typeTop)
-              ("tau32Top",             (*jetIter)->tau3()/(*jetIter)->tau2())
-              ("massTop",              unfittedHadTopP4.mass())
-              ("tau21W",               -1.)
-              ("massW_SD",             -1.)
-              ("btagDisc",             btag_discType1)
-              ("qg_Wj1",                -1.)
-              ("qg_Wj2",                -1.)
-              ("genTopPt",             genTopPt)
-              ("collectionSize",       jet_ptrsHTTv2.size())
-              ("bjet_tag_position",    btag_orderType1)
-              ("bWj1Wj2_isGenMatched", isGenMatched)
-              ("fatjet_isGenMatched",  fatjet_isGenMatched)
-              ("b_isGenMatched",       b_isGenMatched)
-              ("counter",              (inputTree -> getProcessedFileCount() - 1))
-                  .fill();
-            }
+          const RecoSubjetHTTv2* recSubJet[3];
+          recSubJet[0] = (*jetIter)->subJet1();
+          recSubJet[1] = (*jetIter)->subJet2();
+          recSubJet[2] = (*jetIter)->subJet3();
+          double btag_orderType1 = -1;
+          double btag_discType1 = -1;
+          bool foundtruth = false;
+          //for (int bb = 0; bb < 3; bb++) {
+          //  if (foundtruth) continue;
+          //  for (int wj1 = 0; wj1 < 3; wj1++) {
+          //    if (bb == wj1) continue;
+          //    for (int wj2 = 0; wj2 < 3; wj2++) {
+          //      if (bb == wj2 || wj1 == wj2 || foundtruth) continue;
+          //        selBJet = recSubJet[bb]->p4();
+          //        selWJet1 = recSubJet[wj1]->p4();
+          //        selWJet2 = recSubJet[wj2]->p4();
+          //        std::vector<double> btag_disc1 = {recSubJet[bb]->BtagCSV(), recSubJet[wj1]->BtagCSV(), recSubJet[wj2]->BtagCSV()};
+          int perm [5] = { 0, 1, 2, 0, 1 }; // I do not care about the ordering of wj1/2 so no fancy permutation solution is required
+          for (int bb = 0; bb < 3; bb++) {
+                  if (foundtruth) continue;
+                  selBJet = recSubJet[perm[bb]]->p4();
+                  selWJet1 = recSubJet[perm[bb+1]]->p4();
+                  selWJet2 = recSubJet[perm[bb+2]]->p4();
+                  std::vector<double> btag_disc1 = {recSubJet[perm[bb]]->BtagCSV(), recSubJet[perm[bb+1]]->BtagCSV(), recSubJet[perm[bb+2]]->BtagCSV()};
 
+                  auto btag_order1 = calRank(btag_disc1);
+                  btag_orderType1 = btag_order1[0];
+                  btag_discType1 = btag_disc1[0];
+                  std::cout<<" btag position of bjet "<< btag_order1[0] <<" value "<< btag_disc1[0] <<std::endl;
+
+                  // Example: I just take the subjet with highest b-tag score to be the b-candidate
+                  //std::vector<double> btag_disc = {recSubJet[0]->BtagCSV(), recSubJet[1]->BtagCSV(), recSubJet[2]->BtagCSV()};
+                  //auto btag_order = sort_indexes(btag_disc);
+                  //selBJet = recSubJet[btag_order[0]]->p4();
+                  //selWJet1 = recSubJet[btag_order[1]]->p4();
+                  //selWJet2 = recSubJet[btag_order[2]]->p4();
+                  // checking btag ordering
+                  //std::cout<<"btag ordering  ";
+                  //for (auto i: btag_order1) std::cout << i << " ";
+                  //std::cout<<" typeTop = "<<typeTop << " b is subjet:" << perm[ii] << " wj2 is subjet: " << perm[ii+2] <<std::endl;
+                  //std::cout<<" btag position of bjet "<< btag_order1[0] <<" value "<< btag_disc1[0] <<std::endl;
+                  //std::cout<<"mass "<< unfittedHadTopP4.mass() <<" value "<< (selBJet + selWJet1 + selWJet2).mass() <<std::endl;
+                  // calculate matching
+                  std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
+                    selBJet, selWJet1, selWJet2,
+                    genTopQuarks, genBJets, genWBosons, genWJets,
+                    kGenTop, genTopPtProbeTop, genTopEtaProbeTop,
+                    typeTop, unfittedHadTopP4
+                  );
+                  std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
+                    selBJet, selWJet1,  selWJet2,
+                    genTopQuarks, genBJets, genWBosons, genWJets,
+                    kGenAntiTop, genTopPtProbeAntiTop, genTopEtaProbeAntiTop,
+                    typeTop, unfittedHadTopP4
+                  );
+                  if(genMatchingTop[kGenMatchedTriplet]) {genTopPt=genTopPtProbeTop; genTopEta=genTopEtaProbeTop;}
+                  if(genMatchingAntiTop[kGenMatchedTriplet]) {genTopPt=genTopPtProbeAntiTop; genTopEta=genTopEtaProbeAntiTop;}
+                  isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
+                  fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
+                  b_isGenMatched = (genMatchingTop[kGenMatchedBJet] || genMatchingAntiTop[kGenMatchedBJet]);
+                  if (isGenMatched) {hadtruth1++; foundtruth = true; cat1 = true;}
+          //}}} // end loop on subjets
+          } // end loop on subjets
+          // debug gen-matching
+          std::map<int, double> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
+          std::map<int, double> genVarAnti = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
+          Particle::LorentzVector genB_fromT, genWj1_fromT, genWj2_fromT, genB_fromAntiT, genWj1_fromAntiT, genWj2_fromAntiT, genT, genAntiT;
+          genB_fromT.SetCoordinates(genVar[kGenPtTopB],genVar[kGenEtaTopB],genVar[kGenPhiTopB],genVar[kGenMTopB]);
+          genWj1_fromT.SetCoordinates(genVar[kGenPtTopWj1],genVar[kGenEtaTopWj1],genVar[kGenPhiTopWj1],genVar[kGenMTopWj1]);
+          genWj2_fromT.SetCoordinates(genVar[kGenPtTopWj2],genVar[kGenEtaTopWj2],genVar[kGenPhiTopWj2],genVar[kGenMTopWj2]);
+          genT.SetCoordinates(genVar[kGenPtTop],genVar[kGenEtaTop],genVar[kGenPhiTop],genVar[kGenMTop]);
+
+          genB_fromAntiT.SetCoordinates(genVarAnti[kGenPtTopB],genVarAnti[kGenEtaTopB],genVarAnti[kGenPhiTopB],genVarAnti[kGenMTopB]);
+          genWj1_fromAntiT.SetCoordinates(genVarAnti[kGenPtTopWj1],genVarAnti[kGenEtaTopWj1],genVarAnti[kGenPhiTopWj1],genVarAnti[kGenMTopWj1]);
+          genWj2_fromAntiT.SetCoordinates(genVarAnti[kGenPtTopWj2],genVarAnti[kGenEtaTopWj2],genVarAnti[kGenPhiTopWj2],genVarAnti[kGenMTopWj2]);
+          genAntiT.SetCoordinates(genVarAnti[kGenPtTop],genVarAnti[kGenEtaTop],genVarAnti[kGenPhiTop],genVarAnti[kGenMTop]);
+
+          std::cout<<" top "<<deltaR(selBJet, genB_fromT) <<" "<< deltaR(selWJet1, genWj1_fromT) <<" "<< deltaR(selWJet2, genWj2_fromT)<<" "<<  deltaR(selWJet1, genWj2_fromT) <<" "<< deltaR(selWJet2, genWj1_fromT)<<" "<< genVar[kGenPtTop] <<std::endl;
+          std::cout<<" Anti top "<<deltaR(selBJet, genB_fromAntiT) <<" "<< deltaR(selWJet1, genWj1_fromAntiT) <<" "<< deltaR(selWJet2, genWj2_fromAntiT) <<" "<< deltaR(selWJet1, genWj2_fromAntiT) <<" "<< deltaR(selWJet2, genWj1_fromAntiT)<<" "<< genVarAnti[kGenPtTop] <<std::endl;
+
+          double minT = deltaR(selBJet, genB_fromT) + std::min(deltaR(selWJet1, genWj1_fromT),deltaR(selWJet1, genWj2_fromT)) + std::min(deltaR(selWJet2, genWj1_fromT),deltaR(selWJet2, genWj2_fromT));
+          double minAntiT = deltaR(selBJet, genB_fromAntiT) +std::min(deltaR(selWJet1, genWj1_fromAntiT),deltaR(selWJet1, genWj2_fromAntiT))+ std::min(deltaR(selWJet2, genWj1_fromAntiT),deltaR(selWJet2, genWj2_fromAntiT));
+          if ( minT < minAntiT ){
+            genTopPTall = genVar[kGenPtTop];
+            genTopEtaall = genVar[kGenEtaTop];
+            drT_gen = deltaR(unfittedHadTopP4, genT);
+            drB_gen = deltaR(selBJet, genB_fromT);
+            drWj1_gen = std::min(deltaR(selWJet1, genWj1_fromT),deltaR(selWJet1, genWj2_fromT));
+            drWj2_gen = std::min(deltaR(selWJet2, genWj1_fromT),deltaR(selWJet2, genWj2_fromT));
+            etaB_gen = genVar[kGenEtaTopB];
+            etaWj1_gen = genVar[kGenEtaTopWj1];
+            etaWj2_gen = genVar[kGenEtaTopWj2];
+            ptB_gen = genVar[kGenPtTopB];
+            ptWj1_gen = genVar[kGenPtTopWj1];
+            ptWj2_gen = genVar[kGenPtTopWj2];
+            drb_wj1 = deltaR(selBJet, selWJet1);
+            drb_wj2 = deltaR(selBJet, selWJet2);
+            drwj1_wj2 = deltaR(selBJet, selWJet2);
+            drW_gen = deltaR(selWJet1 + selWJet2 , genWj1_fromT + genWj2_fromT);
+            // both drWj combinations are of the same order, so the inequality on the if is still effective even if the order of Wj's is exchanged on that inequality
+          } else {
+            genTopPTall = genVarAnti[kGenPtTop];
+            genTopEtaall = genVarAnti[kGenEtaTop];
+            drT_gen = deltaR(unfittedHadTopP4, genAntiT);
+            drB_gen = deltaR(selBJet, genB_fromAntiT);
+            drWj1_gen = std::min(deltaR(selWJet1, genWj1_fromAntiT),deltaR(selWJet1, genWj2_fromAntiT));
+            drWj2_gen = std::min(deltaR(selWJet2, genWj1_fromAntiT),deltaR(selWJet2, genWj2_fromAntiT));
+            etaB_gen = genVar[kGenEtaTopB];
+            etaWj1_gen = genVar[kGenEtaTopWj1];
+            etaWj2_gen = genVar[kGenEtaTopWj2];
+            ptB_gen = genVar[kGenPtTopB];
+            ptWj1_gen = genVar[kGenPtTopWj1];
+            ptWj2_gen = genVar[kGenPtTopWj2];
+            drW_gen = deltaR(selWJet1 + selWJet2 , genWj1_fromAntiT + genWj2_fromAntiT);
+          }
+
+          if ( bdt_filler ) {
+            //(*hadTopTaggerFill)(selBJet, selWJet1, selWJet2); // calculates the quantities that take only kinematics
+            //const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+            //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+            //  mvaInput != mvaInputs.end(); ++mvaInput ) {
+            //  bdt_filler->operator()(mvaInput->first, mvaInput->second);
+            //}
+            bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
+            ("typeTop",              typeTop)
+            ("tau32Top",             (*jetIter)->tau3()/(*jetIter)->tau2())
+            ("massTop",              unfittedHadTopP4.mass())
+            ("tau21W",               -1.)
+            ("massW_SD",             -1.)
+            ("btagDisc",             btag_discType1)
+            ("qg_Wj1",                -1.)
+            ("qg_Wj2",                -1.)
+            ("genTopPt",             genTopPt)
+            ("genTopEta",            std::fabs(genTopEta))
+            ("genTopPTall", genTopPTall)
+            ("genTopEtaAll",         std::fabs(genTopEtaall))
+            ("drT_gen",       drT_gen)
+            ("drB_gen", drB_gen)
+            ("drW_gen", drW_gen)
+            ("drWj1_gen", drWj1_gen)
+            ("drWj2_gen", drWj2_gen)
+            ("etaB_gen", etaB_gen)
+            ("etaWj1_gen", etaWj1_gen)
+            ("etaWj2_gen", etaWj2_gen)
+            ("ptB_gen", ptB_gen)
+            ("ptWj1_gen", ptWj1_gen)
+            ("ptWj2_gen", ptWj2_gen)
+            ("dr_b_wj1", drb_wj1)
+            ("dr_b_wj2", drb_wj2)
+            ("dr_wj1_wj2", drwj1_wj2)
+            ("collectionSize",       jet_ptrsHTTv2.size())
+            ("bjet_tag_position",    btag_orderType1)
+            ("bWj1Wj2_isGenMatched", isGenMatched)
+            ("fatjet_isGenMatched",  fatjet_isGenMatched)
+            ("b_isGenMatched",       b_isGenMatched)
+            ("counter",              (inputTree -> getProcessedFileCount() - 1))
+                .fill();
+          }
         } // end typeTop == 1
     //} else if (typeTop!=-1) {
     // store b-tag classification of cleaned jet collection
@@ -511,22 +643,86 @@ int main(int argc, char* argv[])
               selWJet2 = (*jetIter)->subJet2()->p4();
               //std::cout<<"mass "<< unfittedHadTopP4.mass() <<" value "<< (selBJet + selWJet1 + selWJet2).mass() <<std::endl;
               // calculate matching
-              std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop, typeTop,(*jetIter)->p4());
-              std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(selBJet, selWJet1,  selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop, typeTop,(*jetIter)->p4());
-              if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
-              if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
+              std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
+                selBJet, selWJet1, selWJet2,
+                genTopQuarks, genBJets, genWBosons, genWJets,
+                kGenTop, genTopPtProbeTop, genTopEtaProbeTop,
+                typeTop,(*jetIter)->p4()
+              );
+              std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
+                selBJet, selWJet1,  selWJet2,
+                genTopQuarks, genBJets, genWBosons, genWJets,
+                kGenAntiTop, genTopPtProbeAntiTop,  genTopEtaProbeAntiTop,
+                typeTop,(*jetIter)->p4()
+              );
+              if(genMatchingTop[kGenMatchedTriplet]) {genTopPt=genTopPtProbeTop; genTopEta=genTopEtaProbeTop;}
+              if(genMatchingAntiTop[kGenMatchedTriplet]) {genTopPt=genTopPtProbeAntiTop; genTopEta=genTopEtaProbeAntiTop;}
               isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
               fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
               b_isGenMatched = (genMatchingTop[kGenMatchedBJet] || genMatchingAntiTop[kGenMatchedBJet]);
               if (btag_order[bjetCandidate] > cutJetCombo) continue;
-              if (isGenMatched) hadtruth2++;
+              if (isGenMatched) {hadtruth2++; cat2 = true;}
+
+              // debug gen-matching
+              std::map<int, double> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
+              std::map<int, double> genVarAnti = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
+              Particle::LorentzVector genB_fromT, genWj1_fromT, genWj2_fromT, genB_fromAntiT, genWj1_fromAntiT, genWj2_fromAntiT, genT, genAntiT;
+              genB_fromT.SetCoordinates(genVar[kGenPtTopB],genVar[kGenEtaTopB],genVar[kGenPhiTopB],genVar[kGenMTopB]);
+              genWj1_fromT.SetCoordinates(genVar[kGenPtTopWj1],genVar[kGenEtaTopWj1],genVar[kGenPhiTopWj1],genVar[kGenMTopWj1]);
+              genWj2_fromT.SetCoordinates(genVar[kGenPtTopWj2],genVar[kGenEtaTopWj2],genVar[kGenPhiTopWj2],genVar[kGenMTopWj2]);
+              genT.SetCoordinates(genVar[kGenPtTop],genVar[kGenEtaTop],genVar[kGenPhiTop],genVar[kGenMTop]);
+
+              genB_fromAntiT.SetCoordinates(genVarAnti[kGenPtTopB],genVarAnti[kGenEtaTopB],genVarAnti[kGenPhiTopB],genVarAnti[kGenMTopB]);
+              genWj1_fromAntiT.SetCoordinates(genVarAnti[kGenPtTopWj1],genVarAnti[kGenEtaTopWj1],genVarAnti[kGenPhiTopWj1],genVarAnti[kGenMTopWj1]);
+              genWj2_fromAntiT.SetCoordinates(genVarAnti[kGenPtTopWj2],genVarAnti[kGenEtaTopWj2],genVarAnti[kGenPhiTopWj2],genVarAnti[kGenMTopWj2]);
+              genAntiT.SetCoordinates(genVarAnti[kGenPtTop],genVarAnti[kGenEtaTop],genVarAnti[kGenPhiTop],genVarAnti[kGenMTop]);
+
+              std::cout<<" top "<<deltaR(selBJet, genB_fromT) <<" "<< deltaR(selWJet1, genWj1_fromT) <<" "<< deltaR(selWJet2, genWj2_fromT)<<" "<<  deltaR(selWJet1, genWj2_fromT) <<" "<< deltaR(selWJet2, genWj1_fromT)<<" "<< genVar[kGenPtTop] <<std::endl;
+              std::cout<<" Anti top "<<deltaR(selBJet, genB_fromAntiT) <<" "<< deltaR(selWJet1, genWj1_fromAntiT) <<" "<< deltaR(selWJet2, genWj2_fromAntiT) <<" "<< deltaR(selWJet1, genWj2_fromAntiT) <<" "<< deltaR(selWJet2, genWj1_fromAntiT)<<" "<< genVarAnti[kGenPtTop] <<std::endl;
+
+              double minT = std::min(deltaR(selWJet1, genWj1_fromT),deltaR(selWJet1, genWj2_fromT)) + std::min(deltaR(selWJet2, genWj1_fromT),deltaR(selWJet2, genWj2_fromT));
+              double minAntiT = std::min(deltaR(selWJet1, genWj1_fromAntiT),deltaR(selWJet1, genWj2_fromAntiT))+ std::min(deltaR(selWJet2, genWj1_fromAntiT),deltaR(selWJet2, genWj2_fromAntiT));
+              if ( minT < minAntiT ){
+                genTopPTall = genVar[kGenPtTop];
+                genTopEtaall = genVar[kGenEtaTop];
+                drT_gen = deltaR(unfittedHadTopP4, genT);
+                drB_gen = deltaR(selBJet, genB_fromT);
+                drWj1_gen = std::min(deltaR(selWJet1, genWj1_fromT),deltaR(selWJet1, genWj2_fromT));
+                drWj2_gen = std::min(deltaR(selWJet2, genWj1_fromT),deltaR(selWJet2, genWj2_fromT));
+                etaB_gen = genVar[kGenEtaTopB];
+                etaWj1_gen = genVar[kGenEtaTopWj1];
+                etaWj2_gen = genVar[kGenEtaTopWj2];
+                ptB_gen = genVar[kGenPtTopB];
+                ptWj1_gen = genVar[kGenPtTopWj1];
+                ptWj2_gen = genVar[kGenPtTopWj2];
+                drb_wj1 = deltaR(selBJet, selWJet1);
+                drb_wj2 = deltaR(selBJet, selWJet2);
+                drwj1_wj2 = deltaR(selBJet, selWJet2);
+                drW_gen = deltaR(unfittedHadTopP4 , genWj1_fromT + genWj2_fromT);
+                // both drWj combinations are of the same order, so the inequality on the if is still effective even if the order of Wj's is exchanged on that inequality
+              } else {
+                genTopPTall = genVarAnti[kGenPtTop];
+                genTopEtaall = genVarAnti[kGenEtaTop];
+                drT_gen = deltaR(unfittedHadTopP4, genAntiT);
+                drB_gen = deltaR(selBJet, genB_fromAntiT);
+                drWj1_gen = std::min(deltaR(selWJet1, genWj1_fromAntiT),deltaR(selWJet1, genWj2_fromAntiT));
+                drWj2_gen = std::min(deltaR(selWJet2, genWj1_fromAntiT),deltaR(selWJet2, genWj2_fromAntiT));
+                etaB_gen = genVar[kGenEtaTopB];
+                etaWj1_gen = genVar[kGenEtaTopWj1];
+                etaWj2_gen = genVar[kGenEtaTopWj2];
+                ptB_gen = genVar[kGenPtTopB];
+                ptWj1_gen = genVar[kGenPtTopWj1];
+                ptWj2_gen = genVar[kGenPtTopWj2];
+                drW_gen = deltaR(unfittedHadTopP4 , genWj1_fromAntiT + genWj2_fromAntiT);
+              }
+
               if ( bdt_filler ) {
-                (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
-                const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-                for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-                  mvaInput != mvaInputs.end(); ++mvaInput ) {
-                  bdt_filler->operator()(mvaInput->first, mvaInput->second);
-                }
+                //(*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
+                //const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+                //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+                //  mvaInput != mvaInputs.end(); ++mvaInput ) {
+                //  bdt_filler->operator()(mvaInput->first, mvaInput->second);
+                //}
                 bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
                 ("typeTop",              typeTop)
                 ("tau32Top",             -1.)
@@ -537,6 +733,23 @@ int main(int argc, char* argv[])
                 ("qg_Wj1",                -1.)
                 ("qg_Wj2",                -1.)
                 ("genTopPt",             genTopPt)
+                ("genTopEta",             std::fabs(genTopEta))
+                ("genTopPTall", genTopPTall)
+                ("genTopEtaAll",         std::fabs(genTopEtaall))
+                ("drT_gen",       drT_gen)
+                ("drB_gen", drB_gen)
+                ("drW_gen", drW_gen)
+                ("drWj1_gen", drWj1_gen)
+                ("drWj2_gen", drWj2_gen)
+                ("etaB_gen", etaB_gen)
+                ("etaWj1_gen", etaWj1_gen)
+                ("etaWj2_gen", etaWj2_gen)
+                ("ptB_gen", ptB_gen)
+                ("ptWj1_gen", ptWj1_gen)
+                ("ptWj2_gen", ptWj2_gen)
+                ("dr_b_wj1", drb_wj1)
+                ("dr_b_wj2", drb_wj2)
+                ("dr_wj1_wj2", drwj1_wj2)
                 ("collectionSize",       jet_ptrsAK12.size())
                 ("bjet_tag_position",    btag_order[bjetCandidate])
                 ("bWj1Wj2_isGenMatched", isGenMatched)
@@ -550,7 +763,7 @@ int main(int argc, char* argv[])
         } // end typeTop == 2 ak12 loop
     } else { // if (typeTop == 2)
         if (jet_ptrsAK8.size() > 0 && cleanedJets.size() > 0) {countFatAK8++; typeTop = 2;}
-        std::cout<<" ak8 typeTop = "<<typeTop<<std::endl;
+        //std::cout<<" ak8 typeTop = "<<typeTop<<std::endl;
         for ( std::vector<const RecoJetAK8*>::const_iterator jetIter = jet_ptrsAK8.begin();
           jetIter != jet_ptrsAK8.end(); ++jetIter ) {
             for ( unsigned int bjetCandidate = 0; bjetCandidate < cleanedJets.size(); bjetCandidate++ ) {
@@ -561,23 +774,86 @@ int main(int argc, char* argv[])
                 selWJet2 = (*jetIter)->subJet2()->p4();
                 //std::cout<<"mass "<< unfittedHadTopP4.mass() <<" value "<< (selBJet + selWJet1 + selWJet2).mass() <<std::endl;
                 // calculate matching
-                std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop, typeTop,(*jetIter)->p4());
-                std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(selBJet, selWJet1,  selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop, typeTop,(*jetIter)->p4());
-                if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
-                if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
+                std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
+                  selBJet, selWJet1, selWJet2,
+                  genTopQuarks, genBJets, genWBosons, genWJets,
+                  kGenTop, genTopPtProbeTop, genTopEtaProbeTop,
+                  typeTop,(*jetIter)->p4()
+                );
+                std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
+                  selBJet, selWJet1,  selWJet2,
+                  genTopQuarks, genBJets, genWBosons, genWJets,
+                  kGenAntiTop, genTopPtProbeAntiTop, genTopEtaProbeAntiTop,
+                  typeTop,(*jetIter)->p4()
+                );
+                if(genMatchingTop[kGenMatchedTriplet]) {genTopPt=genTopPtProbeTop; genTopEta=genTopEtaProbeTop;}
+                if(genMatchingAntiTop[kGenMatchedTriplet]) {genTopPt=genTopPtProbeAntiTop; genTopEta=genTopEtaProbeAntiTop;}
                 //std::cout<<" pass gen match "<<std::endl;
                 isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
                 fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
                 b_isGenMatched = (genMatchingTop[kGenMatchedBJet] || genMatchingAntiTop[kGenMatchedBJet]);
                 if (btag_order[bjetCandidate] > cutJetCombo) continue;
-                if (isGenMatched) hadtruth2++;
+                if (isGenMatched) {hadtruth2++; cat2 = true;}
+
+                // debug gen-matching
+                std::map<int, double> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
+                std::map<int, double> genVarAnti = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
+                Particle::LorentzVector genB_fromT, genWj1_fromT, genWj2_fromT, genB_fromAntiT, genWj1_fromAntiT, genWj2_fromAntiT, genT, genAntiT;
+                genB_fromT.SetCoordinates(genVar[kGenPtTopB],genVar[kGenEtaTopB],genVar[kGenPhiTopB],genVar[kGenMTopB]);
+                genWj1_fromT.SetCoordinates(genVar[kGenPtTopWj1],genVar[kGenEtaTopWj1],genVar[kGenPhiTopWj1],genVar[kGenMTopWj1]);
+                genWj2_fromT.SetCoordinates(genVar[kGenPtTopWj2],genVar[kGenEtaTopWj2],genVar[kGenPhiTopWj2],genVar[kGenMTopWj2]);
+                genT.SetCoordinates(genVar[kGenPtTop],genVar[kGenEtaTop],genVar[kGenPhiTop],genVar[kGenMTop]);
+
+                genB_fromAntiT.SetCoordinates(genVarAnti[kGenPtTopB],genVarAnti[kGenEtaTopB],genVarAnti[kGenPhiTopB],genVarAnti[kGenMTopB]);
+                genWj1_fromAntiT.SetCoordinates(genVarAnti[kGenPtTopWj1],genVarAnti[kGenEtaTopWj1],genVarAnti[kGenPhiTopWj1],genVarAnti[kGenMTopWj1]);
+                genWj2_fromAntiT.SetCoordinates(genVarAnti[kGenPtTopWj2],genVarAnti[kGenEtaTopWj2],genVarAnti[kGenPhiTopWj2],genVarAnti[kGenMTopWj2]);
+                genAntiT.SetCoordinates(genVarAnti[kGenPtTop],genVarAnti[kGenEtaTop],genVarAnti[kGenPhiTop],genVarAnti[kGenMTop]);
+
+                std::cout<<" top "<<deltaR(selBJet, genB_fromT) <<" "<< deltaR(selWJet1, genWj1_fromT) <<" "<< deltaR(selWJet2, genWj2_fromT)<<" "<<  deltaR(selWJet1, genWj2_fromT) <<" "<< deltaR(selWJet2, genWj1_fromT)<<" "<< genVar[kGenPtTop] <<std::endl;
+                std::cout<<" Anti top "<<deltaR(selBJet, genB_fromAntiT) <<" "<< deltaR(selWJet1, genWj1_fromAntiT) <<" "<< deltaR(selWJet2, genWj2_fromAntiT) <<" "<< deltaR(selWJet1, genWj2_fromAntiT) <<" "<< deltaR(selWJet2, genWj1_fromAntiT)<<" "<< genVarAnti[kGenPtTop] <<std::endl;
+
+                double minT = std::min(deltaR(selWJet1, genWj1_fromT),deltaR(selWJet1, genWj2_fromT)) + std::min(deltaR(selWJet2, genWj1_fromT),deltaR(selWJet2, genWj2_fromT));
+                double minAntiT = std::min(deltaR(selWJet1, genWj1_fromAntiT),deltaR(selWJet1, genWj2_fromAntiT))+ std::min(deltaR(selWJet2, genWj1_fromAntiT),deltaR(selWJet2, genWj2_fromAntiT));
+                if ( minT < minAntiT ){
+                  genTopPTall = genVar[kGenPtTop];
+                  genTopEtaall = genVar[kGenEtaTop];
+                  drT_gen = deltaR(unfittedHadTopP4, genT);
+                  drB_gen = deltaR(selBJet, genB_fromT);
+                  drWj1_gen = std::min(deltaR(selWJet1, genWj1_fromT),deltaR(selWJet1, genWj2_fromT));
+                  drWj2_gen = std::min(deltaR(selWJet2, genWj1_fromT),deltaR(selWJet2, genWj2_fromT));
+                  etaB_gen = genVar[kGenEtaTopB];
+                  etaWj1_gen = genVar[kGenEtaTopWj1];
+                  etaWj2_gen = genVar[kGenEtaTopWj2];
+                  ptB_gen = genVar[kGenPtTopB];
+                  ptWj1_gen = genVar[kGenPtTopWj1];
+                  ptWj2_gen = genVar[kGenPtTopWj2];
+                  drb_wj1 = deltaR(selBJet, selWJet1);
+                  drb_wj2 = deltaR(selBJet, selWJet2);
+                  drwj1_wj2 = deltaR(selBJet, selWJet2);
+                  drW_gen = deltaR(unfittedHadTopP4 , genWj1_fromT + genWj2_fromT);
+                } else {
+                  genTopPTall = genVarAnti[kGenPtTop];
+                  genTopEtaall = genVarAnti[kGenEtaTop];
+                  drT_gen = deltaR(unfittedHadTopP4, genAntiT);
+                  drB_gen = deltaR(selBJet, genB_fromAntiT);
+                  drWj1_gen = std::min(deltaR(selWJet1, genWj1_fromAntiT),deltaR(selWJet1, genWj2_fromAntiT));
+                  drWj2_gen = std::min(deltaR(selWJet2, genWj1_fromAntiT),deltaR(selWJet2, genWj2_fromAntiT));
+                  etaB_gen = genVar[kGenEtaTopB];
+                  etaWj1_gen = genVar[kGenEtaTopWj1];
+                  etaWj2_gen = genVar[kGenEtaTopWj2];
+                  ptB_gen = genVar[kGenPtTopB];
+                  ptWj1_gen = genVar[kGenPtTopWj1];
+                  ptWj2_gen = genVar[kGenPtTopWj2];
+                  drW_gen = deltaR(unfittedHadTopP4 , genWj1_fromAntiT + genWj2_fromAntiT);
+                }
+
                 if ( bdt_filler ) {
-                  (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
-                  const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-                  for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-                    mvaInput != mvaInputs.end(); ++mvaInput ) {
-                    bdt_filler->operator()(mvaInput->first, mvaInput->second);
-                  }
+                  //(*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
+                  //const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+                  //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+                  //  mvaInput != mvaInputs.end(); ++mvaInput ) {
+                  //  bdt_filler->operator()(mvaInput->first, mvaInput->second);
+                  //}
                   bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
                   ("typeTop",              typeTop)
                   ("tau32Top",             -1.)
@@ -588,6 +864,23 @@ int main(int argc, char* argv[])
                   ("qg_Wj1",                -1.)
                   ("qg_Wj2",                -1.)
                   ("genTopPt",             genTopPt)
+                  ("genTopEta",             genTopEta)
+                  ("genTopPTall", genTopPTall)
+                  ("genTopEtaAll",         std::fabs(genTopEtaall))
+                  ("drT_gen",       drT_gen)
+                  ("drB_gen", drB_gen)
+                  ("drW_gen", drW_gen)
+                  ("drWj1_gen", drWj1_gen)
+                  ("drWj2_gen", drWj2_gen)
+                  ("etaB_gen", etaB_gen)
+                  ("etaWj1_gen", etaWj1_gen)
+                  ("etaWj2_gen", etaWj2_gen)
+                  ("ptB_gen", ptB_gen)
+                  ("ptWj1_gen", ptWj1_gen)
+                  ("ptWj2_gen", ptWj2_gen)
+                  ("dr_b_wj1", drb_wj1)
+                  ("dr_b_wj2", drb_wj2)
+                  ("dr_wj1_wj2", drwj1_wj2)
                   ("collectionSize",       jet_ptrsAK8.size())
                   ("bjet_tag_position",    btag_order[bjetCandidate])
                   ("bWj1Wj2_isGenMatched", isGenMatched)
@@ -624,24 +917,33 @@ int main(int argc, char* argv[])
                   selBJet = (*selJets[bjetCandidate]).p4();
                   selWJet1 = (*selWJet1Candidate)->p4();
                   selWJet2 = (*selWJet2Candidate)->p4();
-                  std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
-                  std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(selBJet, selWJet1,  selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
-                  if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
-                  if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
+                  std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
+                    selBJet, selWJet1, selWJet2,
+                    genTopQuarks, genBJets, genWBosons, genWJets,
+                    kGenTop, genTopPtProbeTop, genTopEtaProbeTop
+                  );
+                  std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
+                    selBJet, selWJet1,  selWJet2,
+                    genTopQuarks, genBJets, genWBosons, genWJets,
+                    kGenAntiTop, genTopPtProbeAntiTop, genTopEtaProbeAntiTop
+                  );
+                  if(genMatchingTop[kGenMatchedTriplet]) {genTopPt=genTopPtProbeTop; genTopEta=genTopEtaProbeTop;}
+                  if(genMatchingAntiTop[kGenMatchedTriplet]) {genTopPt=genTopPtProbeAntiTop; genTopEta=genTopEtaProbeAntiTop;}
                   isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
                   //fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
                   b_isGenMatched = (genMatchingTop[kGenMatchedBJet] || genMatchingAntiTop[kGenMatchedBJet]);
                   //std::cout<<" done loading flags "<<std::endl;
                   if (btag_order_selJets[bjetCandidate] > cutJetCombo) continue;
-                  if (isGenMatched) hadtruth3++;
+                  if (isGenMatched) {hadtruth3++; cat3 = true;}
                   //std::cout<<"btag position = "<< btag_order[bjetCandidate] <<std::endl;
+
                   if ( bdt_filler ) {
-                    (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
-                    const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-                    for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-                      mvaInput != mvaInputs.end(); ++mvaInput ) {
-                      bdt_filler->operator()(mvaInput->first, mvaInput->second);
-                    }
+                    //(*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
+                    //const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+                    //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+                    //  mvaInput != mvaInputs.end(); ++mvaInput ) {
+                    //  bdt_filler->operator()(mvaInput->first, mvaInput->second);
+                    //}
                     //std::cout<<" pass fill kin "<<std::endl;
                   bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
                   ("typeTop",              typeTop)
@@ -653,6 +955,23 @@ int main(int argc, char* argv[])
                   ("qg_Wj1",               (*selWJet1Candidate)->QGDiscr())
                   ("qg_Wj2",               (*selWJet2Candidate)->QGDiscr())
                   ("genTopPt",             genTopPt)
+                  ("genTopEta",             genTopEta)
+                  ("genTopPTall", genTopPTall)
+                  ("genTopEtaAll",         std::fabs(genTopEtaall))
+                  ("drT_gen",       drT_gen)
+                  ("drB_gen", drB_gen)
+                  ("drW_gen", drW_gen)
+                  ("drWj1_gen", drWj1_gen)
+                  ("drWj2_gen", drWj2_gen)
+                  ("etaB_gen", etaB_gen)
+                  ("etaWj1_gen", etaWj1_gen)
+                  ("etaWj2_gen", etaWj2_gen)
+                  ("ptB_gen", ptB_gen)
+                  ("ptWj1_gen", ptWj1_gen)
+                  ("ptWj2_gen", ptWj2_gen)
+                  ("dr_b_wj1", drb_wj1)
+                  ("dr_b_wj2", drb_wj2)
+                  ("dr_wj1_wj2", drwj1_wj2)
                   ("collectionSize",       selJets.size())
                   ("bjet_tag_position",    btag_order_selJets[bjetCandidate])
                   ("bWj1Wj2_isGenMatched", isGenMatched)
@@ -671,13 +990,17 @@ int main(int argc, char* argv[])
 		++selectedEntries;
     //selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
+    if (cat1 && cat2 && !cat3) ca1_cat2++;
+    if (cat2 && cat3 && !cat1) cat2_cat3++;
+    if (cat3 && cat1 && !cat2) cat3_cat1++ ;
+    if (cat3 && cat2 && cat1) cat3_cat2_cat1++;
   }
   //if(bdt_filler) bdt_filler->write();
 
   std::cout << "AK8 separation = " << countFatTop << " " << countFatAK8 << " " << countResolved<< " " << countFatTop+countFatAK8+countResolved<<std::endl;
   std::cout << "AK12 separation = " << countFatTop << " " << countFatAK12 << " " << countResolved<< " " << countFatTop+countFatAK12+countResolved<<std::endl;
   std::cout << "truth counters = "<<hadtruth1 << " "<<hadtruth2 << " "<<hadtruth3 << std::endl;
-
+  std::cout << "overlaps = "<< ca1_cat2 << " "<< cat2_cat3 << " "<< cat3_cat1 << " " << cat3_cat2_cat1 << std::endl;
 
   std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
             << " (limited by " << maxEvents << ") processed in "

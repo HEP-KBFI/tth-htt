@@ -14,8 +14,8 @@ enum {
 enum {
   kGenPtTop, kGenPtTopB, kGenPtTopW, kGenPtTopWj1, kGenPtTopWj2,
   kGenEtaTop, kGenEtaTopB, kGenEtaTopW, kGenEtaTopWj1, kGenEtaTopWj2,
-  kGenPhiTopB, kGenPhiTopWj1, kGenPhiTopWj2,
-  kGenMTopB, kGenMTopWj1, kGenMTopWj2
+  kGenPhiTop, kGenPhiTopB, kGenPhiTopWj1, kGenPhiTopWj2,
+  kGenMTop, kGenMTopB, kGenMTopWj1, kGenMTopWj2
 };
 
 std::map<int, bool>
@@ -28,6 +28,7 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
                        const std::vector<GenParticle> & genWJets,
                        int mode,
                        double & genTopPt,
+                       double & genTopEta,
 											 int TypeTop = 3,
 											 const Particle::LorentzVector & recFatJet = Particle::LorentzVector(0., 0., 0., 0.));
 

@@ -16,6 +16,7 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
                        const std::vector<GenParticle> & genWJets,
                        int mode,
                        double & genTopPt,
+                       double & genTopEta,
 											 int TypeTop,
 											 const Particle::LorentzVector & recFatJet)
 {
@@ -54,6 +55,7 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
     }
   }
   genTopPt = genTop->pt();
+  genTopEta = genTop->eta();
 
   const GenParticle * genWBosonFromTop = nullptr;
   for(const GenParticle & genWBoson: genWBosons)
@@ -113,6 +115,8 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
 
 	double jetGenMatchdRThrsh = 0.2;
 	double fatjetGenMatchdRThrsh = 0.2;
+  if (TypeTop==1) fatjetGenMatchdRThrsh = 0.75;
+  if (TypeTop==2) fatjetGenMatchdRThrsh = 0.6;
 	if (TypeTop==1 || TypeTop==2) {
 		jetGenMatchdRThrsh = 0.15;
 		fatjetGenMatchdRThrsh = 0.15;
@@ -165,9 +169,11 @@ isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
     { kGenEtaTopW,   -100. },
     { kGenEtaTopWj1, -100. },
     { kGenEtaTopWj2, -100. },
+    { kGenPhiTop,   -100. },
     { kGenPhiTopB,   -100. },
     { kGenPhiTopWj1, -100. },
     { kGenPhiTopWj2, -100. },
+    { kGenMTop,     -100. },
     { kGenMTopB,     -100. },
     { kGenMTopWj1,   -100. },
     { kGenMTopWj2,   -100. },
@@ -199,6 +205,8 @@ isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
       genTop = &genTopQuark;
       genMatchValues[kGenPtTop]  = genTopQuark.pt();
       genMatchValues[kGenEtaTop] = genTopQuark.eta();
+      genMatchValues[kGenPhiTop]  = genTopQuark.pt();
+      genMatchValues[kGenMTop]    = genTopQuark.p4().energy();
     }
   }
 
@@ -222,7 +230,7 @@ isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
       genMatchValues[kGenPtTopB]  = genBJet.pt();
       genMatchValues[kGenEtaTopB] = genBJet.eta();
       genMatchValues[kGenPhiTopB] = genBJet.phi();
-      genMatchValues[kGenMTopB]   = genBJet.mass();
+      genMatchValues[kGenMTopB]   = genBJet.p4().energy();
     }
   }
 
@@ -271,8 +279,8 @@ isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
     genMatchValues[kGenEtaTopWj2] = genWJetFromTop_sublead->eta();
     genMatchValues[kGenPhiTopWj1] = genWJetFromTop_lead->phi();
     genMatchValues[kGenPhiTopWj2] = genWJetFromTop_sublead->phi();
-    genMatchValues[kGenMTopWj1]   = genWJetFromTop_lead->mass();
-    genMatchValues[kGenMTopWj2]   = genWJetFromTop_sublead->mass();
+    genMatchValues[kGenMTopWj1]   = genWJetFromTop_lead->p4().energy();
+    genMatchValues[kGenMTopWj2]   = genWJetFromTop_sublead->p4().energy();
   }
 
   return genMatchValues;
@@ -326,8 +334,8 @@ calRank( std::vector<double> & btag_disc ) {
     sort(indx.begin(),indx.end(),[&btag_disc](int i1, int i2){return btag_disc[i1]>btag_disc[i2];});
     //return ranking
     for(size_t iter=0;iter<btag_disc.size();++iter) result[indx[iter]]=iter+1;
-    std::cout<<"btag discriminant  ";
-    for (auto i: btag_disc) std::cout << i << " ";
-    std::cout<<std::endl;
+    //std::cout<<"btag discriminant  ";
+    //for (auto i: btag_disc) std::cout << i << " ";
+    //std::cout<<std::endl;
     return result;
 }

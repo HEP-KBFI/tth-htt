@@ -1595,8 +1595,10 @@ int main(int argc, char* argv[])
     	    if ( genWJets.size() >= 2 && genBJets.size() >= 1 && genTopQuarks.size() >= 1 && genWBosons.size() >= 1 ){
 	      double genTopPtProbeTop=-10;
 	      double genTopPtProbeAntiTop=-10;
-            std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet((*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(), genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
-            std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet((*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(), genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
+        double genTopEtaProbeTop=-10;
+	      double genTopEtaProbeAntiTop=-10;
+            std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet((*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(), genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop, genTopEtaProbeTop);
+            std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet((*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(), genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop, genTopEtaProbeAntiTop);
 	      if ( genMatchingTop[kGenMatchedTriplet]     ) genTopPt = genTopPtProbeTop;
 	      if ( genMatchingAntiTop[kGenMatchedTriplet] ) genTopPt = genTopPtProbeAntiTop;
 	      isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
