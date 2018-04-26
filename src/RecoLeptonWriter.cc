@@ -12,7 +12,6 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   : max_nLeptons_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , branchName_btag_("csvv2")
   , genLeptonWriter_(nullptr)
   , genHadTauWriter_(nullptr)
   , genJetWriter_(nullptr)
