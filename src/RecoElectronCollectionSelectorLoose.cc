@@ -89,7 +89,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS conversion veto\n";
+      std::cout << "FAILS conversion veto loose cut\n";
     }
     return false;
   }
@@ -97,7 +97,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS tight charge\n";
+      std::cout << "FAILS tight charge loose cut\n";
     }
     return false;
   }
