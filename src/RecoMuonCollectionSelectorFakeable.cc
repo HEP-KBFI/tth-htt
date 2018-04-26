@@ -32,6 +32,10 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
+  assert(binning_mvaTTH_.size() == 1);
+  assert(min_jetPtRatio_.size() == binning_mvaTTH_.size() + 1);
+  assert(min_segmentCompatibility_.size() == binning_mvaTTH_.size() + 1);
+  assert(max_jetBtagCSV_.size() == binning_mvaTTH_.size() + 1);
   // L -- inherited from the preselection (loose cut)
   // F -- additional fakeable cut not applied in the preselection
   // [*] https://gitlab.cern.ch/ttH_leptons/doc/blob/dbb7082bb3668bb3e839293602bc16f47f11c515/2017/objects.md
