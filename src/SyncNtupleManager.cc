@@ -488,7 +488,7 @@ SyncNtupleManager::read(const std::vector<const RecoJet *> & jets)
     jet_eta[i] = jet -> eta();
     jet_phi[i] = jet -> phi();
     jet_E[i] = (jet -> p4()).E();
-    jet_CSV[i] = jet -> BtagCSV();
+    jet_CSV[i] = std::max(jet -> BtagCSV(), 0.);
   }
 }
 
