@@ -24,14 +24,14 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = BtagWP_deepCSV_2017.at(BtagWP::kMedium); // [*]
+      max_jetBtagCSV_ = BtagWP_deepCSV_2017.at(BtagWP::kMedium); // F
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
   // F -- inherited from the fakeable selection
+  //      https://gitlab.cern.ch/ttH_leptons/doc/blob/dbb7082bb3668bb3e839293602bc16f47f11c515/2017/objects.md
   // T -- additional tight cut not applied in the fakeable selection
-  // [*] https://gitlab.cern.ch/ttH_leptons/doc/blob/dbb7082bb3668bb3e839293602bc16f47f11c515/2017/objects.md
 }
 
 bool
