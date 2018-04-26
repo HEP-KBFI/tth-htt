@@ -155,6 +155,10 @@ RecoElectronReader::read() const
     {
       if(std::abs(gLeptonReader->pdgId_[idxLepton]) == 11)
       {
+        // Karl: For *some* leptons that don't have an associated jet,
+        //       the deepCSV score is nan (and not -1) for an unknown reason.
+        //       Adding a safeguard for these instances.
+        const double jetBtagCSV = gLeptonReader->jetBtagCSV_[idxLepton];
         const double ptCorr = readUncorrected_ ? gElectronReader->eCorr_[idxLepton] : 1.;
         electrons.push_back({
           {
@@ -175,7 +179,7 @@ RecoElectronReader::read() const
             gLeptonReader->mvaRawTTH_[idxLepton],
             gLeptonReader->jetPtRatio_[idxLepton],
             gLeptonReader->jetPtRel_[idxLepton],
-            gLeptonReader->jetBtagCSV_[idxLepton],
+            std::isnan(jetBtagCSV) ? -1. : jetBtagCSV,
             gLeptonReader->jetNDauChargedMVASel_[idxLepton],
             gLeptonReader->tightCharge_[idxLepton],
             gLeptonReader->charge_[idxLepton],
