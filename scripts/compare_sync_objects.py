@@ -153,10 +153,10 @@ class ParticleWrapper(object):
     :param dr_max: float, maximum dR within which the two objects from reference and test Ntuples
                           must be in order to consider them ,,dR-matched''
     '''
-    self.prefix       = prefix
-    self.branch_names = branch_names
-    self.dr_max       = dr_max
-    self.branches_ref = branches_ref
+    self.prefix        = prefix
+    self.branch_names  = branch_names
+    self.dr_max        = dr_max
+    self.branches_ref  = branches_ref
     self.branches_test = branches_test
 
     self.ref  = None
@@ -166,13 +166,20 @@ class ParticleWrapper(object):
     # To book-keep the number of objects stored in both reference and test sync Ntuples, as well
     # as the number of dR-matched objects.
     self.counter = {
-      'ref'    : 0,
-      'test'   : 0,
-      'common' : 0,
+      'ref'    : collections.OrderedDict([( 'ispresel', 0 )]),
+      'test'   : collections.OrderedDict([( 'ispresel', 0 )]),
+      'common' : collections.OrderedDict([( 'ispresel', 0 )]),
     }
     self.recordings = {} # data for plotting
     self.is_matched = False
     self.max_branch_name_len = max(map(lambda branch_name: len(branch_name), self.branch_names)) + 1
+
+    self.selection_branches = [ 'isfakeablesel', 'ismvasel' ]
+    self.record_fakeable_and_tight = not bool(set(self.selection_branches) - set(self.branch_names))
+    if self.record_fakeable_and_tight:
+      for branch_name in self.selection_branches:
+        for record_entry in self.counter.values():
+          record_entry[branch_name] = 0
 
   def update(self):
     '''Update the values of all variables in this collection
@@ -192,9 +199,28 @@ class ParticleWrapper(object):
     self.is_matched = self.get_matching()
 
     # Record the findings
-    self.counter['ref']    += int(self.ref.is_valid)
-    self.counter['test']   += int(self.test.is_valid)
-    self.counter['common'] += int(self.is_matched)
+    self.counter['ref']['ispresel']    += int(self.ref.is_valid)
+    self.counter['test']['ispresel']   += int(self.test.is_valid)
+    self.counter['common']['ispresel'] += int(self.is_matched)
+
+    if self.record_fakeable_and_tight:
+      for branch_name in self.selection_branches:
+        for record_type in [ 'ref', 'test' ]:
+          source = getattr(self, record_type)
+
+          is_valid = int(getattr(source, 'is_valid'))
+          passes_selection = int(getattr(source, branch_name))
+
+          # Increment the counter only if the object is actually a valid one -- in case
+          # the isfakeablesel and ismvasel branches are filled incorrectly, we might overestimate
+          # the number of fakeable and tight objects
+          self.counter[record_type][branch_name] += min(is_valid, passes_selection)
+
+        passes_selection_ref  = getattr(self.ref,  branch_name)
+        passes_selection_test = getattr(self.test, branch_name)
+        self.counter['common'][branch_name] += int(
+          passes_selection_ref and passes_selection_test and self.is_matched
+        )
 
   def get_matching(self):
     '''Check if the object in the refernce data matches to the object in the test data
@@ -242,11 +268,24 @@ class ParticleWrapper(object):
        objects were actually dR-matched.
     :return: None
     '''
-    print(
-      '{:<6} {:>7} ({:>7}) in ref, {:>7} ({:>7}) in test, {:>7} dR-matched'.format(
-        '%s:' % self.prefix, self.counter['ref'], self.counter['ref'] - self.counter['common'],
-        self.counter['test'], self.counter['test'] - self.counter['common'], self.counter['common'],
-    ))
+    preselection_keys = [ 'ispresel' ]
+    all_selection_keys = preselection_keys + self.selection_branches
+
+    selection_keys = all_selection_keys if self.record_fakeable_and_tight else preselection_keys
+    max_key_len = max(map(len, all_selection_keys))
+
+    for selection_key in selection_keys:
+      print(
+        '{:<{len}}  {:<6} {:>7} ({:>7}) in ref, {:>7} ({:>7}) in test, {:>7} dR-matched'.format(
+          selection_key,
+          '%s:' % self.prefix,
+          self.counter['ref'][selection_key],
+          self.counter['ref'][selection_key] - self.counter['common'][selection_key],
+          self.counter['test'][selection_key],
+          self.counter['test'][selection_key] - self.counter['common'][selection_key],
+          self.counter['common'][selection_key],
+          len = max_key_len,
+      ))
 
   def record(self, branch_names_selection = []):
     '''Record current values for a selection of variables only if the object at hand is dR-matched
@@ -1054,11 +1093,7 @@ for rle in rle_loop:
   if not evt.mu1.is_matched:
     continue
 
-  if not (evt.mu1.ref.ismvasel == 0 and evt.mu1.test.ismvasel == 1 and \
-          evt.mu1.ref.isfakeablesel == 1 and evt.mu1.test.isfakeablesel == 1):
-    continue
-
-  if evt.mu1.test.leptonMVA > 0.9:
+  if evt.mu1.diff.isfakeablesel == 0:
     continue
 
   print('RLE %s' % rle)
