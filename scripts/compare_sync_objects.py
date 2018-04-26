@@ -53,12 +53,15 @@ PLACEHOLDER = -9999
 #   to the documentation of synchronization
 # - when investigating a particular problem, there's no need to fire up the documentation page in
 #   order to search for the correct branch names; instead, the user can copy the name from this file
-OBJECTS_MAP = {
-  'mu'  : { 'n' : 2, 'human_name' : 'muon'     },
-  'ele' : { 'n' : 2, 'human_name' : 'electron' },
-  'tau' : { 'n' : 2, 'human_name' : 'tau'      },
-  'jet' : { 'n' : 4, 'human_name' : 'jet'      },
-}
+OBJECTS_MAP = collections.OrderedDict()
+OBJECTS_MAP['mu']  = { 'n' : 2, 'human_name' : 'muon'     }
+OBJECTS_MAP['ele'] = { 'n' : 2, 'human_name' : 'electron' }
+OBJECTS_MAP['tau'] = { 'n' : 2, 'human_name' : 'tau'      }
+OBJECTS_MAP['jet'] = { 'n' : 4, 'human_name' : 'jet'      }
+
+# For counting the number of preselected objects
+PRESELECTION_COUNTER_BRANCHES = [ 'n_presel_%s' % object_prefix for object_prefix in OBJECTS_MAP ]
+MAX_PRESELECTION_BRANCH_NAME_LEN = max(map(len, PRESELECTION_COUNTER_BRANCHES))
 
 # 4-momentum should be written for all objects
 COMMON_BRANCH_NAMES = { 'pt', 'eta', 'phi', 'E', }
@@ -702,6 +705,49 @@ def positive_int_type(value):
     raise argparse.ArgumentTypeError('Must be a positive integer: %s' % value)
   return value_int
 
+def get_stats(filenames, object_tree_name, count_objects):
+  for filename in filenames:
+    if not os.path.isfile(filename):
+      raise ValueError('No such file: %s' % filename)
+    root_file = ROOT.TFile.Open(filename, 'read')
+    if not root_file:
+      raise ValueError('Not a valid ROOT file: %s' % filename)
+    tree_keys = [ key.GetName() for key in root_file.GetListOfKeys() if key.GetClassName() == 'TTree' ]
+    event_counts = { tree_name : root_file.Get(tree_name).GetEntries() for tree_name in tree_keys }
+    max_tree_len = max(map(len, event_counts)) + 1
+    print('%s:' % filename)
+    for tree_name in sorted(event_counts.keys()):
+      print('  {:<{len}} {}'.format('%s:' % tree_name, event_counts[tree_name], len = max_tree_len))
+    if count_objects:
+      if object_tree_name not in tree_keys:
+        raise ValueError('No such TTree in %s: %s' % (object_tree_name, filename))
+      object_tree = root_file.Get(object_tree_name)
+      available_object_branches = {
+        branch.GetName() : branch for branch in object_tree.GetListOfBranches()
+      }
+      missing_branches = set(PRESELECTION_COUNTER_BRANCHES) - set(available_object_branches.keys())
+      if missing_branches:
+        raise ValueError(
+          'TTree %s in file %s is missing the following branches: %s' % \
+          (object_tree_name, filename, ', '.join(missing_branches))
+        )
+      counter_map = collections.OrderedDict()
+      for preselection_branch_name in PRESELECTION_COUNTER_BRANCHES:
+        counter_map[preselection_branch_name] = {
+          'counter' : 0,
+          'branch'  : get_array(object_tree, available_object_branches[preselection_branch_name])
+        }
+      nof_entries = object_tree.GetEntries()
+      for event_idx in range(nof_entries):
+        object_tree.GetEntry(event_idx)
+        for map_entry in counter_map.values():
+          map_entry['counter'] += int(map_entry['branch'][0] > 0)
+      for branch_name, map_entry in counter_map.items():
+        print('  {:<{len}} {}'.format(
+          '%s:' % branch_name, map_entry['counter'], len = MAX_PRESELECTION_BRANCH_NAME_LEN + 1
+        ))
+
+
 ####################################################################################################
 
 # The actual program starts here
@@ -711,13 +757,30 @@ parent_parser = argparse.ArgumentParser(
   formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
 )
 subparsers = parent_parser.add_subparsers(title = 'commands', dest = 'command')
+count_parser = subparsers.add_parser(
+  'count', formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
+)
 inspect_parser = subparsers.add_parser(
   'inspect', formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
 )
 plot_parser = subparsers.add_parser(
   'plot', formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
 )
-for parser in subparsers.choices.values():
+count_parser.add_argument('-i', '--input',
+  type = str, nargs = '+', dest = 'input', metavar = 'path', required = True,
+  help = 'R|Input files',
+)
+count_parser.add_argument('-t', '--tree',
+  type = str, dest = 'tree', metavar = 'name', default = 'syncTree', required = False,
+  help = 'R|TTree name',
+)
+count_parser.add_argument('-o', '--count-objects',
+  dest = 'count_objects', action = 'store_true', default = False,
+  help = 'R|Count the number of preselected objects',
+)
+for parser_name, parser in subparsers.choices.items():
+  if parser_name == 'count':
+    continue
   parser.add_argument('-i', '--input-ref',
     type = str, dest = 'input_ref', metavar = 'path', required = True,
     help = 'R|Input reference file',
@@ -785,13 +848,17 @@ plot_parser.add_argument('-f', '--force',
 # Parse the command line arguments
 args = parent_parser.parse_args()
 
-filename_ref    = args.input_ref
-filename_test   = args.input_test
-tree_name       = args.tree
-max_events      = args.max_events
-dr_max          = args.dr
+if args.command == 'count':
+  get_stats(args.input, args.tree, args.count_objects)
+  sys.exit(0)
 
-enable_plot     = args.command == 'plot'
+filename_ref  = args.input_ref
+filename_test = args.input_test
+tree_name     = args.tree
+max_events    = args.max_events
+dr_max        = args.dr
+
+enable_plot = args.command == 'plot'
 if enable_plot:
   plot_output_dir = args.output_dir
   plot_type       = args.plot_type
