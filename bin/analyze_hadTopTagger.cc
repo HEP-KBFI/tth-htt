@@ -269,7 +269,7 @@ int main(int argc, char* argv[])
        makeHistManager_cfg(process_string, Form("%s/evtntuple", histogramDir.data()), "central")
        );
     bdt_filler->register_variable<float_type>(
-      /* // computed by (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
+      ///* // computed by (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
       "m_bWj1Wj2", "m_Wj1Wj2", "m_bWj1", "m_bWj2",
       "m_Wj1Wj2_div_m_bWj1Wj2",
       "pT_b", "eta_b", //"phi_b", "mass_b",
@@ -461,14 +461,16 @@ int main(int argc, char* argv[])
     bool cat2 = false;
     bool cat3 = false;
 
+    // it returns the gen-triplets organized in top/anti-top
+    std::map<int, Particle::LorentzVector> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
+    std::map<int, Particle::LorentzVector> genVarAnti = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
+
     // to be used at analysis level
     int typeTop = -1; // 1 - FatTop; 2 - countFatAK8 ? countFatAK12; 3- countResolved;
     //if (inAK12) typeTop = getType(jet_ptrsHTTv2.size(), jet_ptrsAK12.size(), selJets.size());
     //else typeTop = getType(jet_ptrsHTTv2.size(), jet_ptrsAK8.size(), selJets.size());
     // start loops in jets
     //if (typeTop == 1) {
-    std::map<int, Particle::LorentzVector> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
-    std::map<int, Particle::LorentzVector> genVarAnti = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
 
       if (jet_ptrsHTTv2.size() > 0 ) countFatTop++;
       typeTop = 1;
@@ -596,12 +598,12 @@ int main(int argc, char* argv[])
           }
 
           if ( bdt_filler ) {
-            //(*hadTopTaggerFill)(selBJet, selWJet1, selWJet2); // calculates the quantities that take only kinematics
-            //const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-            //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-            //  mvaInput != mvaInputs.end(); ++mvaInput ) {
-            //  bdt_filler->operator()(mvaInput->first, mvaInput->second);
-            //}
+            (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2); // calculates the quantities that take only kinematics
+            const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+            for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+              mvaInput != mvaInputs.end(); ++mvaInput ) {
+              bdt_filler->operator()(mvaInput->first, mvaInput->second);
+            }
             bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
             ("typeTop",              typeTop)
             ("tau32Top",             (*jetIter)->tau3()/(*jetIter)->tau2())
@@ -690,10 +692,6 @@ int main(int argc, char* argv[])
               if (btag_order[bjetCandidate] > cutJetCombo) continue;
               if (isGenMatched) {hadtruth2++; cat2 = true;}
 
-              // debug gen-matching
-              //std::map<int, Particle::LorentzVector> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
-              //std::map<int, Particle::LorentzVector> genVarAnti = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
-
               double minT;
               double minAntiT;
               if (loopB) {
@@ -745,12 +743,12 @@ int main(int argc, char* argv[])
               }
 
               if ( bdt_filler ) {
-                //(*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
-                //const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-                //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-                //  mvaInput != mvaInputs.end(); ++mvaInput ) {
-                //  bdt_filler->operator()(mvaInput->first, mvaInput->second);
-                //}
+                (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
+                const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+                for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+                  mvaInput != mvaInputs.end(); ++mvaInput ) {
+                  bdt_filler->operator()(mvaInput->first, mvaInput->second);
+                }
                 bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
                 ("typeTop",              typeTop)
                 ("tau32Top",             -1.)
@@ -828,10 +826,6 @@ int main(int argc, char* argv[])
                 if (btag_order[bjetCandidate] > cutJetCombo) continue;
                 if (isGenMatched) {hadtruth2++; cat2 = true;}
 
-                // debug gen-matching
-                //std::map<int, Particle::LorentzVector> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
-                //std::map<int, Particle::LorentzVector> genVarAnti = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
-
                 double minT;
                 double minAntiT;
                 if (loopB) {
@@ -879,12 +873,12 @@ int main(int argc, char* argv[])
                 }
 
                 if ( bdt_filler ) {
-                  //(*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
-                  //const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-                  //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-                  //  mvaInput != mvaInputs.end(); ++mvaInput ) {
-                  //  bdt_filler->operator()(mvaInput->first, mvaInput->second);
-                  //}
+                  (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
+                  const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+                  for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+                    mvaInput != mvaInputs.end(); ++mvaInput ) {
+                    bdt_filler->operator()(mvaInput->first, mvaInput->second);
+                  }
                   bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
                   ("typeTop",              typeTop)
                   ("tau32Top",             -1.)
@@ -966,7 +960,7 @@ int main(int argc, char* argv[])
                   if(genMatchingTop[kGenMatchedTriplet]) {genTopPt=genTopPtProbeTop; genTopEta=genTopEtaProbeTop;}
                   if(genMatchingAntiTop[kGenMatchedTriplet]) {genTopPt=genTopPtProbeAntiTop; genTopEta=genTopEtaProbeAntiTop;}
                   isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
-                  //fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
+                  fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
                   b_isGenMatched = (genMatchingTop[kGenMatchedBJet] || genMatchingAntiTop[kGenMatchedBJet]);
                   wj1_isGenMatched = (genMatchingTop[kGenMatchedWJet1] || genMatchingAntiTop[kGenMatchedWJet1]);
                   wj2_isGenMatched = (genMatchingTop[kGenMatchedWJet2] || genMatchingAntiTop[kGenMatchedWJet2]);
@@ -1013,12 +1007,12 @@ int main(int argc, char* argv[])
                   }
 
                   if ( bdt_filler ) {
-                    //(*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
-                    //const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-                    //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-                    //  mvaInput != mvaInputs.end(); ++mvaInput ) {
-                    //  bdt_filler->operator()(mvaInput->first, mvaInput->second);
-                    //}
+                    (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
+                    const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+                    for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+                      mvaInput != mvaInputs.end(); ++mvaInput ) {
+                      bdt_filler->operator()(mvaInput->first, mvaInput->second);
+                    }
                     //std::cout<<" pass fill kin "<<std::endl;
                   bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
                   ("typeTop",              typeTop)
