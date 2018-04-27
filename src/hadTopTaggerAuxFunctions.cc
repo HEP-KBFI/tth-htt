@@ -118,8 +118,8 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
   if (TypeTop==1) fatjetGenMatchdRThrsh = 0.75;
   if (TypeTop==2) fatjetGenMatchdRThrsh = 0.6;
 	if (TypeTop==1 || TypeTop==2) {
-		jetGenMatchdRThrsh = 0.15;
-		fatjetGenMatchdRThrsh = 0.15;
+		jetGenMatchdRThrsh = 0.1;
+		fatjetGenMatchdRThrsh = 0.1;
 	}
 
 
@@ -151,32 +151,19 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
 }
 
 
-std::map<int, double>
+std::map<int, Particle::LorentzVector>
 isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
                           const std::vector<GenParticle> & genBJets,
                           const std::vector<GenParticle> & genWBosons,
                           const std::vector<GenParticle> & genWJets,
                           int mode)
 {
-  std::map<int, double> genMatchValues = {
-    { kGenPtTop,       -1. },
-    { kGenPtTopB,      -1. },
-    { kGenPtTopW,      -1. },
-    { kGenPtTopWj1,    -1. },
-    { kGenPtTopWj2,    -1. },
-    { kGenEtaTop,    -100. },
-    { kGenEtaTopB,   -100. },
-    { kGenEtaTopW,   -100. },
-    { kGenEtaTopWj1, -100. },
-    { kGenEtaTopWj2, -100. },
-    { kGenPhiTop,   -100. },
-    { kGenPhiTopB,   -100. },
-    { kGenPhiTopWj1, -100. },
-    { kGenPhiTopWj2, -100. },
-    { kGenMTop,     -100. },
-    { kGenMTopB,     -100. },
-    { kGenMTopWj1,   -100. },
-    { kGenMTopWj2,   -100. },
+  std::map<int, Particle::LorentzVector> genMatchValues = {
+    { kGenTop,       dumbIni },
+    { kGenTopB,      dumbIni },
+    { kGenTopW,      dumbIni },
+    { kGenTopWj1,      dumbIni },
+    { kGenTopWj2,      dumbIni }
   };
 
   int pddIdTop, pddIdWBoson, pdgIdBJet;
@@ -203,10 +190,7 @@ isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
     if(genTopQuark.pdgId() == pddIdTop && ! genTop)
     {
       genTop = &genTopQuark;
-      genMatchValues[kGenPtTop]  = genTopQuark.pt();
-      genMatchValues[kGenEtaTop] = genTopQuark.eta();
-      genMatchValues[kGenPhiTop]  = genTopQuark.pt();
-      genMatchValues[kGenMTop]    = genTopQuark.p4().energy();
+      genMatchValues[kGenTop].SetPxPyPzE(genTopQuark.p4().x(), genTopQuark.p4().y(), genTopQuark.p4().z(), genTopQuark.p4().energy());
     }
   }
 
@@ -216,8 +200,7 @@ isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
     if(genWBoson.pdgId() == pddIdWBoson && ! genWBosonFromTop)
     {
       genWBosonFromTop = &genWBoson;
-      genMatchValues[kGenPtTopW]  = genWBoson.pt();
-      genMatchValues[kGenEtaTopW] = genWBoson.eta();
+      genMatchValues[kGenTopW].SetPxPyPzE(genWBoson.p4().x(), genWBoson.p4().y(), genWBoson.p4().z(), genWBoson.p4().energy());
     }
   }
 
@@ -227,10 +210,7 @@ isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
     if(genBJet.pdgId() == pdgIdBJet && ! genBJetFromTop )
     {
       genBJetFromTop = &genBJet;
-      genMatchValues[kGenPtTopB]  = genBJet.pt();
-      genMatchValues[kGenEtaTopB] = genBJet.eta();
-      genMatchValues[kGenPhiTopB] = genBJet.phi();
-      genMatchValues[kGenMTopB]   = genBJet.p4().energy();
+      genMatchValues[kGenTopB].SetPxPyPzE(genBJet.p4().x(), genBJet.p4().y(), genBJet.p4().z(), genBJet.p4().energy());
     }
   }
 
@@ -273,16 +253,9 @@ isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
   );
   if(passWbosonMassVeto_top)
   {
-    genMatchValues[kGenPtTopWj1]  = genWJetFromTop_lead->pt();
-    genMatchValues[kGenPtTopWj2]  = genWJetFromTop_sublead->pt();
-    genMatchValues[kGenEtaTopWj1] = genWJetFromTop_lead->eta();
-    genMatchValues[kGenEtaTopWj2] = genWJetFromTop_sublead->eta();
-    genMatchValues[kGenPhiTopWj1] = genWJetFromTop_lead->phi();
-    genMatchValues[kGenPhiTopWj2] = genWJetFromTop_sublead->phi();
-    genMatchValues[kGenMTopWj1]   = genWJetFromTop_lead->p4().energy();
-    genMatchValues[kGenMTopWj2]   = genWJetFromTop_sublead->p4().energy();
+    genMatchValues[kGenTopWj1].SetPxPyPzE(genWJetFromTop_lead->p4().x(), genWJetFromTop_lead->p4().y(), genWJetFromTop_lead->p4().z(), genWJetFromTop_lead->p4().energy());
+    genMatchValues[kGenTopWj2].SetPxPyPzE(genWJetFromTop_sublead->p4().x(), genWJetFromTop_sublead->p4().y(), genWJetFromTop_sublead->p4().z(), genWJetFromTop_sublead->p4().energy());
   }
-
   return genMatchValues;
 }
 

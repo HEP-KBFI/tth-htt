@@ -613,6 +613,12 @@ def plot(prefix, variable_name, ref_values, test_values, output_dir, plot_type, 
   :return: None
   '''
 
+  logging.debug(
+    'Creating {} {} plot for {} variable using {} collection'.format(
+      plot_type, scale, variable_name, prefix
+    )
+  )
+
   human_name = get_human_name(prefix) # need this later when giving the plot a title
   fig = plt.figure(figsize = (10, 8)) # in inches
   skip_plot = False # can only be set to True in case of a scatter plot w/ log axes and negative data
@@ -623,7 +629,8 @@ def plot(prefix, variable_name, ref_values, test_values, output_dir, plot_type, 
     # If we were to keep such erroneous values, the scatter plot would stretch beyond the region
     # of interest.
     filtered_values = list(filter(
-      lambda value_pair: value_pair[0] != PLACEHOLDER and value_pair[1] != PLACEHOLDER,
+      lambda value_pair: value_pair[0] != PLACEHOLDER and value_pair[1] != PLACEHOLDER and \
+                         not math.isnan(value_pair[0]) and not math.isnan(value_pair[1]),
       zip(ref_values, test_values)
     ))
     ref_values_filtered  = np.asarray([ filtered_value[0] for filtered_value in filtered_values ])
@@ -670,8 +677,12 @@ def plot(prefix, variable_name, ref_values, test_values, output_dir, plot_type, 
   elif plot_type == 'histogram':
     # Unlike to the case of scatter plot, we don't care if a group has filled a variable
     # consistently or not at all: we can still plot the histogram of the other group
-    ref_values_filtered  = np.asarray([ value for value in ref_values  if value != PLACEHOLDER ])
-    test_values_filtered = np.asarray([ value for value in test_values if value != PLACEHOLDER ])
+    ref_values_filtered  = np.asarray([
+      value for value in ref_values  if value != PLACEHOLDER and not math.isnan(value)
+    ])
+    test_values_filtered = np.asarray([
+      value for value in test_values if value != PLACEHOLDER and not math.isnan(value)
+    ])
 
     xmin = min(ref_values_filtered.min(), test_values_filtered.min())
     xmax = max(ref_values_filtered.max(), test_values_filtered.max())
@@ -712,6 +723,7 @@ def plot(prefix, variable_name, ref_values, test_values, output_dir, plot_type, 
       )
       plt.savefig(output_filename, bbox_inches = 'tight')
       logging.debug('Created plot: %s' % output_filename)
+  fig.clf()
   plt.clf()
 
 def positive_float_type(value):
@@ -833,7 +845,7 @@ for parser_name, parser in subparsers.choices.items():
     help = 'R|TTree name',
   )
   parser.add_argument('-r', '--rle',
-    type = str, dest = 'rle', metavar = 'path/list', default = [], required = False,
+    type = str, dest = 'rle', nargs = '+', metavar = 'path/list', default = [], required = False,
     help = 'R|Path to the list of run:lumi:event numbers, or explicit space-separated list of those',
   )
   parser.add_argument('-n', '--max-events',
@@ -953,8 +965,11 @@ else:
   # The user provided a space-delimited list of run, lumi and event numbers
   # We check that these numbers are specified in the format 'run:lumi:event'; if not, then
   # raise an exception
-  if not all(map(lambda rle_nr: RLE_PATTERN.match(rle_nr), args.rle)):
-    raise ValueError("Not all RLE numbers adhere to format 'run:lumi:event'")
+  unmatched_rles = [ rle_nr for rle_nr in args.rle if not RLE_PATTERN.match(rle_nr) ]
+  if unmatched_rles:
+    raise ValueError(
+      "Not all RLE numbers adhere to the format 'run:lumi:event': %s" % ', '.join(unmatched_rles)
+    )
   rle_selection = args.rle
 
 for filename in [filename_ref, filename_test]:
@@ -1093,13 +1108,22 @@ for rle in rle_loop:
   if not evt.mu1.is_matched:
     continue
 
-  if evt.mu1.diff.isfakeablesel == 0:
+  if not (evt.mu1.ref.isfakeablesel == 1 and evt.mu1.test.isfakeablesel == 0):
     continue
 
-  print('RLE %s' % rle)
-  evt.mu1.print()
+  if abs(evt.mu1.diff.leptonMVA) > 1e-3:
+    continue
 
-  #evt.mu2.record()
+  if abs(evt.mu1.diff.conept) < 1e-2:
+    continue
+
+#  if abs(evt.mu1.diff.leptonMVA) > 1e-3:
+#    continue
+
+  print('RLE %s' % rle)
+#  evt.mu1.print(['pt', 'eta', 'phi', 'conept', 'leptonMVA', 'isfakeablesel', 'ismvasel'])
+  evt.mu1.print()
+#  evt.mu1.record()
   ##################################################################################################
 
 # Print the summary of dR-matched objects
