@@ -180,7 +180,8 @@ def write_rles(fn, rles):
   logging.debug('Writing file %s' % fn)
   with open(fn, 'w') as f:
     f.write('\n'.join(rles))
-    f.write('\n')
+    if rles:
+      f.write('\n')
 
 # Now we can start looping over the entries in each TTree simultaneously and construct the so-called
 # Venn diagram
