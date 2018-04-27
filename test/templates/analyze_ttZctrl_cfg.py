@@ -31,15 +31,27 @@ process.analyze_ttZctrl = cms.PSet(
     use_triggers_1mu = cms.bool(True),
     triggers_2mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"),
     use_triggers_2mu = cms.bool(True),
-    #triggers_1e1mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v", "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
     triggers_1e1mu = cms.vstring('HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v', 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v'),
     use_triggers_1e1mu = cms.bool(True),
+    triggers_1e2mu = cms.vstring("HLT_BIT_HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v"),
+    use_triggers_1e2mu = cms.bool(True),
+    triggers_2e1mu = cms.vstring('HLT_BIT_HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v'),
+    use_triggers_2e1mu = cms.bool(True),
+    triggers_3mu = cms.vstring('HLT_BIT_HLT_TripleMu_12_10_5_v'),
+    use_triggers_3mu = cms.bool(True),
+    triggers_3e = cms.vstring('HLT_BIT_HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v'),
+    use_triggers_3e = cms.bool(True),
 
     apply_offline_e_trigger_cuts_1e = cms.bool(True),
     apply_offline_e_trigger_cuts_2e = cms.bool(True),
     apply_offline_e_trigger_cuts_1mu = cms.bool(True),
     apply_offline_e_trigger_cuts_2mu = cms.bool(True),
     apply_offline_e_trigger_cuts_1e1mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_1e2mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_2e1mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_3e = cms.bool(True),
+    apply_offline_e_trigger_cuts_3mu = cms.bool(True),
+
 
     hadTauSelection = cms.string('Tight|dR03mvaLoose'),
 

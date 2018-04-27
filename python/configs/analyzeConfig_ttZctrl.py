@@ -54,7 +54,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']))
     lines.append("process.analyze_ttZctrl.process = cms.string('%s')" % jobOptions['sample_category'])
     lines.append("process.analyze_ttZctrl.era = cms.string('%s')" % self.era)
-    for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu' ]:
+    for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu', '1e2mu', '2e1mu', '3mu', '3e' ]:
       lines.append("process.analyze_ttZctrl.triggers_%s = cms.vstring(%s)" % \
         (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
       lines.append("process.analyze_ttZctrl.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))

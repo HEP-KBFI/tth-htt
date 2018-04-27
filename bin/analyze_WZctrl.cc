@@ -1,4 +1,3 @@
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
@@ -198,12 +197,28 @@ int main(int argc, char* argv[])
   vstring triggerNames_1e1mu = cfg_analyze.getParameter<vstring>("triggers_1e1mu");
   std::vector<hltPath*> triggers_1e1mu = create_hltPaths(triggerNames_1e1mu);
   bool use_triggers_1e1mu = cfg_analyze.getParameter<bool>("use_triggers_1e1mu");
+  vstring triggerNames_1e2mu = cfg_analyze.getParameter<vstring>("triggers_1e2mu");
+  std::vector<hltPath*> triggers_1e2mu = create_hltPaths(triggerNames_1e2mu);
+  bool use_triggers_1e2mu = cfg_analyze.getParameter<bool>("use_triggers_1e2mu");
+  vstring triggerNames_2e1mu = cfg_analyze.getParameter<vstring>("triggers_2e1mu");
+  std::vector<hltPath*> triggers_2e1mu = create_hltPaths(triggerNames_2e1mu);
+  bool use_triggers_2e1mu = cfg_analyze.getParameter<bool>("use_triggers_2e1mu");
+  vstring triggerNames_3mu = cfg_analyze.getParameter<vstring>("triggers_3mu");
+  std::vector<hltPath*> triggers_3mu = create_hltPaths(triggerNames_3mu);
+  bool use_triggers_3mu = cfg_analyze.getParameter<bool>("use_triggers_3mu");
+  vstring triggerNames_3e = cfg_analyze.getParameter<vstring>("triggers_3e");
+  std::vector<hltPath*> triggers_3e = create_hltPaths(triggerNames_3e);
+  bool use_triggers_3e = cfg_analyze.getParameter<bool>("use_triggers_3e");
 
   bool apply_offline_e_trigger_cuts_1e = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e");
   bool apply_offline_e_trigger_cuts_2e = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_2e");
   bool apply_offline_e_trigger_cuts_1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1mu");
   bool apply_offline_e_trigger_cuts_2mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_2mu");
   bool apply_offline_e_trigger_cuts_1e1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e1mu");
+  bool apply_offline_e_trigger_cuts_1e2mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e2mu");
+  bool apply_offline_e_trigger_cuts_2e1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_2e1mu");
+  bool apply_offline_e_trigger_cuts_3mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_3mu");
+  bool apply_offline_e_trigger_cuts_3e = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_3e");
 
   TString hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection").data();
   TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
@@ -279,9 +294,12 @@ int main(int argc, char* argv[])
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 
-  for ( const std::vector<hltPath*> hltPaths: { triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu } ) {
-    inputTree -> registerReader(hltPaths);
-  }
+  for(const std::vector<hltPath*> hltPaths: { triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu, triggers_1e2mu, triggers_2e1mu, triggers_3e, triggers_3mu })
+    {
+      inputTree -> registerReader(hltPaths);
+    }
+
+
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons);
@@ -608,74 +626,150 @@ int main(int argc, char* argv[])
     bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu) || (isMC && !apply_trigger_bits);
     bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu) || (isMC && !apply_trigger_bits);
     bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu) || (isMC && !apply_trigger_bits);
+    bool isTriggered_1e2mu = hltPaths_isTriggered(triggers_1e2mu) || (isMC && !apply_trigger_bits);
+    bool isTriggered_2e1mu = hltPaths_isTriggered(triggers_2e1mu) || (isMC && !apply_trigger_bits);
+    bool isTriggered_3mu = hltPaths_isTriggered(triggers_3mu) || (isMC && !apply_trigger_bits);
+    bool isTriggered_3e = hltPaths_isTriggered(triggers_3e) || (isMC && !apply_trigger_bits);
 
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_2e = use_triggers_2e && isTriggered_2e;
     bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
     bool selTrigger_2mu = use_triggers_2mu && isTriggered_2mu;
     bool selTrigger_1e1mu = use_triggers_1e1mu && isTriggered_1e1mu;
-    if ( !(selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu) ) {
+    bool selTrigger_1e2mu = use_triggers_1e2mu && isTriggered_1e2mu;
+    bool selTrigger_2e1mu = use_triggers_2e1mu && isTriggered_2e1mu;
+    bool selTrigger_3mu = use_triggers_3mu && isTriggered_3mu;
+    bool selTrigger_3e = use_triggers_3e && isTriggered_3e;
+
+    if ( !(selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu || selTrigger_1e2mu || selTrigger_2e1mu || selTrigger_3e || selTrigger_3mu) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection." << std::endl; 
-	std::cout << " (selTrigger_1e = " << selTrigger_1e 
-		  << ", selTrigger_2e = " << selTrigger_2e 
-		  << ", selTrigger_1mu = " << selTrigger_1mu 
-		  << ", selTrigger_2mu = " << selTrigger_2mu 
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu << ")" << std::endl;
+	std::cout << "event FAILS trigger selection." << std::endl;
+	std::cout << " (selTrigger_1e = " << selTrigger_1e
+		  << ", selTrigger_1mu = " << selTrigger_1mu
+		  << ", selTrigger_2e = " << selTrigger_2e
+		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
+		  << ", selTrigger_2mu = " << selTrigger_2mu
+		  << ", selTrigger_3e = " << selTrigger_3e
+		  << ", selTrigger_2e1mu = " << selTrigger_2e1mu
+		  << ", selTrigger_1e2mu = " << selTrigger_1e2mu
+		  << ", selTrigger_3mu = " << selTrigger_3mu << ")" << std::endl;
       }
       continue;
     }
+
+
+
+
     
 //--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
 //    the ranking of the triggers is as follows: 2mu, 1e1mu, 2e, 1mu, 1e
 // CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
     if ( !isMC ) {
-      if ( selTrigger_1e && (isTriggered_2e || isTriggered_1mu || isTriggered_2mu || isTriggered_1e1mu) ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl; 
-	  std::cout << " (selTrigger_1e = " << selTrigger_1e 
-		    << ", isTriggered_2e = " << isTriggered_2e 
-		    << ", isTriggered_1mu = " << isTriggered_1mu 
-		    << ", isTriggered_2mu = " << isTriggered_2mu 
-		    << ", isTriggered_1e1mu = " << isTriggered_1e1mu << ")" << std::endl;
-	}
-	continue; 
+
+      if ( selTrigger_1e && (isTriggered_1mu || isTriggered_2e || isTriggered_1e1mu || isTriggered_2mu || isTriggered_3e || isTriggered_2e1mu || isTriggered_1e2mu || isTriggered_3mu) ) {
+        if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_1e = " << selTrigger_1e
+                    << ", isTriggered_1mu = " << isTriggered_1mu
+                    << ", isTriggered_2e = " << isTriggered_2e
+                    << ", isTriggered_1e1mu = " << isTriggered_1e1mu
+                    << ", isTriggered_2mu = " << isTriggered_2mu
+                    << ", isTriggered_3e = " << isTriggered_3e
+                    << ", isTriggered_2e1mu = " << isTriggered_2e1mu
+                    << ", isTriggered_1e2mu = " << isTriggered_1e2mu
+                    << ", isTriggered_3mu = " << isTriggered_3mu << ")" << std::endl;
+        }
+        continue;
       }
-      if ( selTrigger_2e && (isTriggered_2mu || isTriggered_1e1mu) ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl; 
-	  std::cout << " (selTrigger_2e = " << selTrigger_2e 
-		    << ", isTriggered_2mu = " << isTriggered_2mu 
-		    << ", isTriggered_1e1mu = " << isTriggered_1e1mu << ")" << std::endl;
-	}
-	continue; 
+      if ( selTrigger_1mu && (isTriggered_2e || isTriggered_1e1mu || isTriggered_2mu || isTriggered_3e || isTriggered_2e1mu || isTriggered_1e2mu || isTriggered_3mu) ) {
+        if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_1mu = " << selTrigger_1mu
+                    << ", isTriggered_2e = " << isTriggered_2e
+                    << ", isTriggered_1e1mu = " << isTriggered_1e1mu
+                    << ", isTriggered_2mu = " << isTriggered_2mu
+                    << ", isTriggered_3e = " << isTriggered_3e
+                    << ", isTriggered_2e1mu = " << isTriggered_2e1mu
+                    << ", isTriggered_1e2mu = " << isTriggered_1e2mu
+                    << ", isTriggered_3mu = " << isTriggered_3mu << ")" << std::endl;
+        }
+        continue;
       }
-      if ( selTrigger_1mu && (isTriggered_2e || isTriggered_2mu || isTriggered_1e1mu) ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl; 
-	  std::cout << " (selTrigger_1mu = " << selTrigger_1mu 
-		    << ", isTriggered_2e = " << isTriggered_2e 
-		    << ", isTriggered_2mu = " << isTriggered_2mu 
-		    << ", isTriggered_1e1mu = " << isTriggered_1e1mu << ")" << std::endl;
-	}
-	continue; 
+      if ( selTrigger_2e && (isTriggered_1e1mu || isTriggered_2mu || isTriggered_3e || isTriggered_2e1mu || isTriggered_1e2mu || isTriggered_3mu) ) {
+        if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_2e = " << selTrigger_2e
+                    << ", isTriggered_1e1mu = " << isTriggered_1e1mu
+                    << ", isTriggered_2mu = " << isTriggered_2mu
+                    << ", isTriggered_3e = " << isTriggered_3e
+                    << ", isTriggered_2e1mu = " << isTriggered_2e1mu
+                    << ", isTriggered_1e2mu = " << isTriggered_1e2mu
+                    << ", isTriggered_3mu = " << isTriggered_3mu << ")" << std::endl;
+        }
+        continue;
       }
-      if ( selTrigger_1e1mu && isTriggered_2mu ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl; 
-	  std::cout << " (selTrigger_1e1mu = " << selTrigger_1e1mu 
-		    << ", isTriggered_2mu = " << isTriggered_2mu << ")" << std::endl;
-	}
-	continue; 
+      if ( selTrigger_1e1mu && (isTriggered_2mu || isTriggered_3e || isTriggered_2e1mu || isTriggered_1e2mu || isTriggered_3mu) ) {
+        if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_1e1mu = " << selTrigger_1e1mu
+                    << ", isTriggered_2mu = " << isTriggered_2mu
+                    << ", isTriggered_3e = " << isTriggered_3e
+                    << ", isTriggered_2e1mu = " << isTriggered_2e1mu
+                    << ", isTriggered_1e2mu = " << isTriggered_1e2mu
+                    << ", isTriggered_3mu = " << isTriggered_3mu << ")" << std::endl;
+        }
+        continue;
+      }
+      if ( selTrigger_2mu && (isTriggered_3e || isTriggered_2e1mu || isTriggered_1e2mu || isTriggered_3mu) ) {
+        if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_2mu = " << selTrigger_2mu
+                    << ", isTriggered_3e = " << isTriggered_3e
+                    << ", isTriggered_2e1mu = " << isTriggered_2e1mu
+                    << ", isTriggered_1e2mu = " << isTriggered_1e2mu
+                    << ", isTriggered_3mu = " << isTriggered_3mu << ")" << std::endl;
+        }
+        continue;
+      }
+      if ( selTrigger_3e && (isTriggered_2e1mu || isTriggered_1e2mu || isTriggered_3mu) ) {
+        if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_3e = " << selTrigger_3e
+                    << ", isTriggered_2e1mu = " << isTriggered_2e1mu
+                    << ", isTriggered_1e2mu = " << isTriggered_1e2mu
+                    << ", isTriggered_3mu = " << isTriggered_3mu << ")" << std::endl;
+        }
+        continue;
+      }
+      if ( selTrigger_2e1mu && (isTriggered_1e2mu || isTriggered_3mu) ) {
+        if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_2e1mu = " << selTrigger_2e1mu
+                    << ", isTriggered_1e2mu = " << isTriggered_1e2mu
+                    << ", isTriggered_3mu = " << isTriggered_3mu << ")" << std::endl;
+        }
+        continue;
+      }
+      if ( selTrigger_1e2mu && isTriggered_3mu ) {
+        if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_1e2mu = " << selTrigger_1e2mu
+                    << ", isTriggered_3mu = " << isTriggered_3mu << ")" << std::endl;
+        }
+        continue;
       }
     }
     cutFlowTable.update("trigger");
 
-    if ( (selTrigger_2mu   && !apply_offline_e_trigger_cuts_2mu)   ||
-	 (selTrigger_1mu   && !apply_offline_e_trigger_cuts_1mu)   ||
-	 (selTrigger_2e    && !apply_offline_e_trigger_cuts_2e)    ||
-	 (selTrigger_1e1mu && !apply_offline_e_trigger_cuts_1e1mu) ||
-	 (selTrigger_1e    && !apply_offline_e_trigger_cuts_1e)    ) {
+    if ( (selTrigger_3mu     && !apply_offline_e_trigger_cuts_3mu)     ||
+         (selTrigger_3e      && !apply_offline_e_trigger_cuts_3e)      ||
+         (selTrigger_1e2mu   && !apply_offline_e_trigger_cuts_1e2mu)   ||
+         (selTrigger_2e1mu   && !apply_offline_e_trigger_cuts_2e1mu)   ||
+         (selTrigger_2mu     && !apply_offline_e_trigger_cuts_2mu)     ||
+         (selTrigger_1mu     && !apply_offline_e_trigger_cuts_1mu)     ||
+         (selTrigger_2e      && !apply_offline_e_trigger_cuts_2e)      ||
+         (selTrigger_1e1mu   && !apply_offline_e_trigger_cuts_1e1mu)   ||
+         (selTrigger_1e      && !apply_offline_e_trigger_cuts_1e)    ) {
       tightElectronSelector.disable_offline_e_trigger_cuts();
     } else {
       tightElectronSelector.enable_offline_e_trigger_cuts();
@@ -701,13 +795,13 @@ int main(int argc, char* argv[])
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
-    std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, selMuons, selElectrons);
+    std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
     std::vector<const RecoHadTau*> selHadTaus = hadTauSelector(cleanedHadTaus);
     
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selMuons, selElectrons, selHadTaus);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, preselMuons, preselElectrons, selHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
@@ -777,20 +871,20 @@ int main(int argc, char* argv[])
     // apply requirement on jets (incl. b-tagged jets) on preselection level
     if ( !(selJets.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selJets selection (1)." << std::endl;
+	std::cout << "event FAILS selJets selection " << std::endl;
 	std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
       }
       continue;
     }
     cutFlowTable.update(">= 2 jets (1)");
-    if ( !(selBJets_loose.size() <= 1 && selBJets_medium.size() == 0) ) {
+    if ( !(selBJets_loose.size() == 0 && selBJets_medium.size() == 0) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection (1)." << std::endl;
 	std::cout << " (#selBJets_loose = " << selBJets_loose.size() << ", #selBJets_medium = " << selBJets_medium.size() << ")" << std::endl;
       }
       continue;
     }
-    cutFlowTable.update("<= 1 loose b-jets && 0 medium b-jet (1)");
+    cutFlowTable.update("0 loose b-jets && 0 medium b-jets");
   
 //--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();
@@ -919,15 +1013,17 @@ int main(int argc, char* argv[])
     if ( era == kEra_2017 ) minPt_lead = 25.; // CV: increase minimum lepton pT cut to 25 GeV to keep-up with higher trigger thresholds in 2016 data
     else assert(0);
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
-    if ( !(selLepton_lead->pt() > minPt_lead && selLepton_sublead->pt() > minPt_sublead) ) {
+    double minPt_third = selLepton_third ? 10. : -1.;
+    if ( !(selLepton_lead->pt() > minPt_lead && selLepton_sublead->pt() > minPt_sublead && selLepton_third->pt() > minPt_third) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton pT selection." << std::endl;
-	std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead
-		  << ", subleading selLepton pT = " << selLepton_sublead->pt() << ", minPt_sublead = " << minPt_sublead << ")" << std::endl;
+	std::cout << " (leading selLepton pT = "       << selLepton_lead->pt()    << ", minPt_lead = "    << minPt_lead
+                  << ", sub-leading selLepton pT = "   << selLepton_sublead->pt() << ", minPt_sublead = " << minPt_sublead
+                  << ", third leading selLepton pT = " << selLepton_third->pt()   << ", minPt_third = " << minPt_third << ")" << std::endl;
       }
       continue;
     }
-    cutFlowTable.update("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight_2lepton);
+    cutFlowTable.update("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV && third lepton pT > 10 GeV", evtWeight_2lepton);
 
     double mLL = -1.;
     const RecoLepton* selLepton_extra = 0;
