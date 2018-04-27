@@ -12,10 +12,7 @@ enum {
 };
 
 enum {
-  kGenPtTop, kGenPtTopB, kGenPtTopW, kGenPtTopWj1, kGenPtTopWj2,
-  kGenEtaTop, kGenEtaTopB, kGenEtaTopW, kGenEtaTopWj1, kGenEtaTopWj2,
-  kGenPhiTop, kGenPhiTopB, kGenPhiTopWj1, kGenPhiTopWj2,
-  kGenMTop, kGenMTopB, kGenMTopWj1, kGenMTopWj2
+  kGenTopVar, kGenTopB, kGenTopW, kGenTopWj1, kGenTopWj2
 };
 
 std::map<int, bool>
@@ -32,7 +29,7 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
 											 int TypeTop = 3,
 											 const Particle::LorentzVector & recFatJet = Particle::LorentzVector(0., 0., 0., 0.));
 
-std::map<int, double>
+std::map<int, Particle::LorentzVector>
 isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
                           const std::vector<GenParticle> & genBJets,
                           const std::vector<GenParticle> & genWBosons,
@@ -56,5 +53,7 @@ calRank(std::vector<double> & btag_discEnter);
 
 std::vector<double>
 getBdiscr(std::vector<const RecoJet*> selJetsIt);
+
+Particle::LorentzVector dumbIni;
 
 #endif
