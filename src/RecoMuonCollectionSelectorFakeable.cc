@@ -10,28 +10,35 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
   : era_(era)
   , debug_(debug)
   , set_selection_flags_(set_selection_flags)
-  , min_cone_pt_(10.)
-  , min_lepton_pt_(5.)
-  , max_absEta_(2.4)
-  , max_dxy_(0.05)
-  , max_dz_(0.1)
-  , max_relIso_(0.4)
-  , max_sip3d_(8.)
-  , apply_looseIdPOG_(true)
-  , binning_mvaTTH_({ 0.90 }) // Table 6 in AN2017_029_v5
-  , min_jetPtRatio_({ 0.50, -1.e+3 }) // Table 6 in AN2017_029_v5
-  , apply_mediumIdPOG_(false)
-  , min_segmentCompatibility_({0.3, -1.e+3})
+  , min_cone_pt_(10.) // F
+  , min_lepton_pt_(5.) // L
+  , max_absEta_(2.4) // L
+  , max_dxy_(0.05) // L
+  , max_dz_(0.1) // L
+  , max_relIso_(0.4) // L
+  , max_sip3d_(8.) // L
+  , apply_looseIdPOG_(true) // L
+  , binning_mvaTTH_({ 0.90 }) // F; Table 6 in AN2017_029_v5
+  , min_jetPtRatio_({ 0.60, -1.e+3 }) // F; [*]
+  , apply_mediumIdPOG_(false) // L
+  , min_segmentCompatibility_({ 0.3, -1.e+3 }) // F
 {
   switch(era_)
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = { 0.3, BtagWP_CSV_2016.at(BtagWP::kMedium) };  // Table 6 in AN2017_029_v5
+      max_jetBtagCSV_ = { 0.07, BtagWP_deepCSV_2017.at(BtagWP::kMedium) };  // F; [*]
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
+  assert(binning_mvaTTH_.size() == 1);
+  assert(min_jetPtRatio_.size() == binning_mvaTTH_.size() + 1);
+  assert(min_segmentCompatibility_.size() == binning_mvaTTH_.size() + 1);
+  assert(max_jetBtagCSV_.size() == binning_mvaTTH_.size() + 1);
+  // L -- inherited from the preselection (loose cut)
+  // F -- additional fakeable cut not applied in the preselection
+  // [*] https://gitlab.cern.ch/ttH_leptons/doc/blob/dbb7082bb3668bb3e839293602bc16f47f11c515/2017/objects.md
 }
 
 bool

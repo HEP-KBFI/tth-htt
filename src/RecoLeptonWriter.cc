@@ -12,7 +12,6 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   : max_nLeptons_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , branchName_btag_("csvv2")
   , genLeptonWriter_(nullptr)
   , genHadTauWriter_(nullptr)
   , genJetWriter_(nullptr)
@@ -87,7 +86,7 @@ void RecoLeptonWriter::setBranchNames()
   branchName_mvaRawTTH_ = Form("%s_%s", branchName_obj_.data(), "mvaTTH");
   branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio_TTHMVA");
   branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "jetPtRelv2_TTHMVA");
-  branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBTagCSV_TTHMVA");
+  branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBTagDeepCSV_TTHMVA");
   branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
   branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
   branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");

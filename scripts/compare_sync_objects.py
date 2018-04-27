@@ -53,12 +53,15 @@ PLACEHOLDER = -9999
 #   to the documentation of synchronization
 # - when investigating a particular problem, there's no need to fire up the documentation page in
 #   order to search for the correct branch names; instead, the user can copy the name from this file
-OBJECTS_MAP = {
-  'mu'  : { 'n' : 2, 'human_name' : 'muon'     },
-  'ele' : { 'n' : 2, 'human_name' : 'electron' },
-  'tau' : { 'n' : 2, 'human_name' : 'tau'      },
-  'jet' : { 'n' : 4, 'human_name' : 'jet'      },
-}
+OBJECTS_MAP = collections.OrderedDict()
+OBJECTS_MAP['mu']  = { 'n' : 2, 'human_name' : 'muon'     }
+OBJECTS_MAP['ele'] = { 'n' : 2, 'human_name' : 'electron' }
+OBJECTS_MAP['tau'] = { 'n' : 2, 'human_name' : 'tau'      }
+OBJECTS_MAP['jet'] = { 'n' : 4, 'human_name' : 'jet'      }
+
+# For counting the number of preselected objects
+PRESELECTION_COUNTER_BRANCHES = [ 'n_presel_%s' % object_prefix for object_prefix in OBJECTS_MAP ]
+MAX_PRESELECTION_BRANCH_NAME_LEN = max(map(len, PRESELECTION_COUNTER_BRANCHES))
 
 # 4-momentum should be written for all objects
 COMMON_BRANCH_NAMES = { 'pt', 'eta', 'phi', 'E', }
@@ -150,10 +153,10 @@ class ParticleWrapper(object):
     :param dr_max: float, maximum dR within which the two objects from reference and test Ntuples
                           must be in order to consider them ,,dR-matched''
     '''
-    self.prefix       = prefix
-    self.branch_names = branch_names
-    self.dr_max       = dr_max
-    self.branches_ref = branches_ref
+    self.prefix        = prefix
+    self.branch_names  = branch_names
+    self.dr_max        = dr_max
+    self.branches_ref  = branches_ref
     self.branches_test = branches_test
 
     self.ref  = None
@@ -163,13 +166,20 @@ class ParticleWrapper(object):
     # To book-keep the number of objects stored in both reference and test sync Ntuples, as well
     # as the number of dR-matched objects.
     self.counter = {
-      'ref'    : 0,
-      'test'   : 0,
-      'common' : 0,
+      'ref'    : collections.OrderedDict([( 'ispresel', 0 )]),
+      'test'   : collections.OrderedDict([( 'ispresel', 0 )]),
+      'common' : collections.OrderedDict([( 'ispresel', 0 )]),
     }
     self.recordings = {} # data for plotting
     self.is_matched = False
     self.max_branch_name_len = max(map(lambda branch_name: len(branch_name), self.branch_names)) + 1
+
+    self.selection_branches = [ 'isfakeablesel', 'ismvasel' ]
+    self.record_fakeable_and_tight = not bool(set(self.selection_branches) - set(self.branch_names))
+    if self.record_fakeable_and_tight:
+      for branch_name in self.selection_branches:
+        for record_entry in self.counter.values():
+          record_entry[branch_name] = 0
 
   def update(self):
     '''Update the values of all variables in this collection
@@ -189,9 +199,28 @@ class ParticleWrapper(object):
     self.is_matched = self.get_matching()
 
     # Record the findings
-    self.counter['ref']    += int(self.ref.is_valid)
-    self.counter['test']   += int(self.test.is_valid)
-    self.counter['common'] += int(self.is_matched)
+    self.counter['ref']['ispresel']    += int(self.ref.is_valid)
+    self.counter['test']['ispresel']   += int(self.test.is_valid)
+    self.counter['common']['ispresel'] += int(self.is_matched)
+
+    if self.record_fakeable_and_tight:
+      for branch_name in self.selection_branches:
+        for record_type in [ 'ref', 'test' ]:
+          source = getattr(self, record_type)
+
+          is_valid = int(getattr(source, 'is_valid'))
+          passes_selection = int(getattr(source, branch_name))
+
+          # Increment the counter only if the object is actually a valid one -- in case
+          # the isfakeablesel and ismvasel branches are filled incorrectly, we might overestimate
+          # the number of fakeable and tight objects
+          self.counter[record_type][branch_name] += min(is_valid, passes_selection)
+
+        passes_selection_ref  = getattr(self.ref,  branch_name)
+        passes_selection_test = getattr(self.test, branch_name)
+        self.counter['common'][branch_name] += int(
+          passes_selection_ref and passes_selection_test and self.is_matched
+        )
 
   def get_matching(self):
     '''Check if the object in the refernce data matches to the object in the test data
@@ -239,11 +268,24 @@ class ParticleWrapper(object):
        objects were actually dR-matched.
     :return: None
     '''
-    print(
-      '{:<6} {:>7} ({:>7}) in ref, {:>7} ({:>7}) in test, {:>7} dR-matched'.format(
-        '%s:' % self.prefix, self.counter['ref'], self.counter['ref'] - self.counter['common'],
-        self.counter['test'], self.counter['test'] - self.counter['common'], self.counter['common'],
-    ))
+    preselection_keys = [ 'ispresel' ]
+    all_selection_keys = preselection_keys + self.selection_branches
+
+    selection_keys = all_selection_keys if self.record_fakeable_and_tight else preselection_keys
+    max_key_len = max(map(len, all_selection_keys))
+
+    for selection_key in selection_keys:
+      print(
+        '{:<{len}}  {:<6} {:>7} ({:>7}) in ref, {:>7} ({:>7}) in test, {:>7} dR-matched'.format(
+          selection_key,
+          '%s:' % self.prefix,
+          self.counter['ref'][selection_key],
+          self.counter['ref'][selection_key] - self.counter['common'][selection_key],
+          self.counter['test'][selection_key],
+          self.counter['test'][selection_key] - self.counter['common'][selection_key],
+          self.counter['common'][selection_key],
+          len = max_key_len,
+      ))
 
   def record(self, branch_names_selection = []):
     '''Record current values for a selection of variables only if the object at hand is dR-matched
@@ -571,6 +613,12 @@ def plot(prefix, variable_name, ref_values, test_values, output_dir, plot_type, 
   :return: None
   '''
 
+  logging.debug(
+    'Creating {} {} plot for {} variable using {} collection'.format(
+      plot_type, scale, variable_name, prefix
+    )
+  )
+
   human_name = get_human_name(prefix) # need this later when giving the plot a title
   fig = plt.figure(figsize = (10, 8)) # in inches
   skip_plot = False # can only be set to True in case of a scatter plot w/ log axes and negative data
@@ -581,7 +629,8 @@ def plot(prefix, variable_name, ref_values, test_values, output_dir, plot_type, 
     # If we were to keep such erroneous values, the scatter plot would stretch beyond the region
     # of interest.
     filtered_values = list(filter(
-      lambda value_pair: value_pair[0] != PLACEHOLDER and value_pair[1] != PLACEHOLDER,
+      lambda value_pair: value_pair[0] != PLACEHOLDER and value_pair[1] != PLACEHOLDER and \
+                         not math.isnan(value_pair[0]) and not math.isnan(value_pair[1]),
       zip(ref_values, test_values)
     ))
     ref_values_filtered  = np.asarray([ filtered_value[0] for filtered_value in filtered_values ])
@@ -628,8 +677,12 @@ def plot(prefix, variable_name, ref_values, test_values, output_dir, plot_type, 
   elif plot_type == 'histogram':
     # Unlike to the case of scatter plot, we don't care if a group has filled a variable
     # consistently or not at all: we can still plot the histogram of the other group
-    ref_values_filtered  = np.asarray([ value for value in ref_values  if value != PLACEHOLDER ])
-    test_values_filtered = np.asarray([ value for value in test_values if value != PLACEHOLDER ])
+    ref_values_filtered  = np.asarray([
+      value for value in ref_values  if value != PLACEHOLDER and not math.isnan(value)
+    ])
+    test_values_filtered = np.asarray([
+      value for value in test_values if value != PLACEHOLDER and not math.isnan(value)
+    ])
 
     xmin = min(ref_values_filtered.min(), test_values_filtered.min())
     xmax = max(ref_values_filtered.max(), test_values_filtered.max())
@@ -670,6 +723,7 @@ def plot(prefix, variable_name, ref_values, test_values, output_dir, plot_type, 
       )
       plt.savefig(output_filename, bbox_inches = 'tight')
       logging.debug('Created plot: %s' % output_filename)
+  fig.clf()
   plt.clf()
 
 def positive_float_type(value):
@@ -702,6 +756,49 @@ def positive_int_type(value):
     raise argparse.ArgumentTypeError('Must be a positive integer: %s' % value)
   return value_int
 
+def get_stats(filenames, object_tree_name, count_objects):
+  for filename in filenames:
+    if not os.path.isfile(filename):
+      raise ValueError('No such file: %s' % filename)
+    root_file = ROOT.TFile.Open(filename, 'read')
+    if not root_file:
+      raise ValueError('Not a valid ROOT file: %s' % filename)
+    tree_keys = [ key.GetName() for key in root_file.GetListOfKeys() if key.GetClassName() == 'TTree' ]
+    event_counts = { tree_name : root_file.Get(tree_name).GetEntries() for tree_name in tree_keys }
+    max_tree_len = max(map(len, event_counts)) + 1
+    print('%s:' % filename)
+    for tree_name in sorted(event_counts.keys()):
+      print('  {:<{len}} {}'.format('%s:' % tree_name, event_counts[tree_name], len = max_tree_len))
+    if count_objects:
+      if object_tree_name not in tree_keys:
+        raise ValueError('No such TTree in %s: %s' % (object_tree_name, filename))
+      object_tree = root_file.Get(object_tree_name)
+      available_object_branches = {
+        branch.GetName() : branch for branch in object_tree.GetListOfBranches()
+      }
+      missing_branches = set(PRESELECTION_COUNTER_BRANCHES) - set(available_object_branches.keys())
+      if missing_branches:
+        raise ValueError(
+          'TTree %s in file %s is missing the following branches: %s' % \
+          (object_tree_name, filename, ', '.join(missing_branches))
+        )
+      counter_map = collections.OrderedDict()
+      for preselection_branch_name in PRESELECTION_COUNTER_BRANCHES:
+        counter_map[preselection_branch_name] = {
+          'counter' : 0,
+          'branch'  : get_array(object_tree, available_object_branches[preselection_branch_name])
+        }
+      nof_entries = object_tree.GetEntries()
+      for event_idx in range(nof_entries):
+        object_tree.GetEntry(event_idx)
+        for map_entry in counter_map.values():
+          map_entry['counter'] += int(map_entry['branch'][0] > 0)
+      for branch_name, map_entry in counter_map.items():
+        print('  {:<{len}} {}'.format(
+          '%s:' % branch_name, map_entry['counter'], len = MAX_PRESELECTION_BRANCH_NAME_LEN + 1
+        ))
+
+
 ####################################################################################################
 
 # The actual program starts here
@@ -711,13 +808,30 @@ parent_parser = argparse.ArgumentParser(
   formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
 )
 subparsers = parent_parser.add_subparsers(title = 'commands', dest = 'command')
+count_parser = subparsers.add_parser(
+  'count', formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
+)
 inspect_parser = subparsers.add_parser(
   'inspect', formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
 )
 plot_parser = subparsers.add_parser(
   'plot', formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
 )
-for parser in subparsers.choices.values():
+count_parser.add_argument('-i', '--input',
+  type = str, nargs = '+', dest = 'input', metavar = 'path', required = True,
+  help = 'R|Input files',
+)
+count_parser.add_argument('-t', '--tree',
+  type = str, dest = 'tree', metavar = 'name', default = 'syncTree', required = False,
+  help = 'R|TTree name',
+)
+count_parser.add_argument('-o', '--count-objects',
+  dest = 'count_objects', action = 'store_true', default = False,
+  help = 'R|Count the number of preselected objects',
+)
+for parser_name, parser in subparsers.choices.items():
+  if parser_name == 'count':
+    continue
   parser.add_argument('-i', '--input-ref',
     type = str, dest = 'input_ref', metavar = 'path', required = True,
     help = 'R|Input reference file',
@@ -731,7 +845,7 @@ for parser in subparsers.choices.values():
     help = 'R|TTree name',
   )
   parser.add_argument('-r', '--rle',
-    type = str, dest = 'rle', metavar = 'path/list', default = [], required = False,
+    type = str, dest = 'rle', nargs = '+', metavar = 'path/list', default = [], required = False,
     help = 'R|Path to the list of run:lumi:event numbers, or explicit space-separated list of those',
   )
   parser.add_argument('-n', '--max-events',
@@ -785,13 +899,17 @@ plot_parser.add_argument('-f', '--force',
 # Parse the command line arguments
 args = parent_parser.parse_args()
 
-filename_ref    = args.input_ref
-filename_test   = args.input_test
-tree_name       = args.tree
-max_events      = args.max_events
-dr_max          = args.dr
+if args.command == 'count':
+  get_stats(args.input, args.tree, args.count_objects)
+  sys.exit(0)
 
-enable_plot     = args.command == 'plot'
+filename_ref  = args.input_ref
+filename_test = args.input_test
+tree_name     = args.tree
+max_events    = args.max_events
+dr_max        = args.dr
+
+enable_plot = args.command == 'plot'
 if enable_plot:
   plot_output_dir = args.output_dir
   plot_type       = args.plot_type
@@ -847,8 +965,11 @@ else:
   # The user provided a space-delimited list of run, lumi and event numbers
   # We check that these numbers are specified in the format 'run:lumi:event'; if not, then
   # raise an exception
-  if not all(map(lambda rle_nr: RLE_PATTERN.match(rle_nr), args.rle)):
-    raise ValueError("Not all RLE numbers adhere to format 'run:lumi:event'")
+  unmatched_rles = [ rle_nr for rle_nr in args.rle if not RLE_PATTERN.match(rle_nr) ]
+  if unmatched_rles:
+    raise ValueError(
+      "Not all RLE numbers adhere to the format 'run:lumi:event': %s" % ', '.join(unmatched_rles)
+    )
   rle_selection = args.rle
 
 for filename in [filename_ref, filename_test]:
@@ -987,17 +1108,22 @@ for rle in rle_loop:
   if not evt.mu1.is_matched:
     continue
 
-  if not (evt.mu1.ref.ismvasel == 0 and evt.mu1.test.ismvasel == 1 and \
-          evt.mu1.ref.isfakeablesel == 1 and evt.mu1.test.isfakeablesel == 1):
+  if not (evt.mu1.ref.isfakeablesel == 1 and evt.mu1.test.isfakeablesel == 0):
     continue
 
-  if evt.mu1.test.leptonMVA > 0.9:
+  if abs(evt.mu1.diff.leptonMVA) > 1e-3:
     continue
+
+  if abs(evt.mu1.diff.conept) < 1e-2:
+    continue
+
+#  if abs(evt.mu1.diff.leptonMVA) > 1e-3:
+#    continue
 
   print('RLE %s' % rle)
+#  evt.mu1.print(['pt', 'eta', 'phi', 'conept', 'leptonMVA', 'isfakeablesel', 'ismvasel'])
   evt.mu1.print()
-
-  #evt.mu2.record()
+#  evt.mu1.record()
   ##################################################################################################
 
 # Print the summary of dR-matched objects

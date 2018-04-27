@@ -488,7 +488,7 @@ SyncNtupleManager::read(const std::vector<const RecoJet *> & jets)
     jet_eta[i] = jet -> eta();
     jet_phi[i] = jet -> phi();
     jet_E[i] = (jet -> p4()).E();
-    jet_CSV[i] = jet -> BtagCSV();
+    jet_CSV[i] = std::max(jet -> BtagCSV(), 0.);
   }
 }
 
@@ -566,6 +566,7 @@ SyncNtupleManager::reset()
     mu_jetCSV,
     mu_sip3D,
     mu_dxy,
+    mu_dxyAbs,
     mu_dz,
     mu_segmentCompatibility,
     mu_leptonMVA,
@@ -593,6 +594,7 @@ SyncNtupleManager::reset()
     ele_jetCSV,
     ele_sip3D,
     ele_dxy,
+    ele_dxyAbs,
     ele_dz,
     ele_ntMVAeleID,
     ele_leptonMVA,

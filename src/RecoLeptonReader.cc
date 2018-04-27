@@ -16,7 +16,6 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   : max_nLeptons_(64)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
-  , branchName_btag_("csvv2")
   , genLeptonReader_(nullptr)
   , genHadTauReader_(nullptr)
   , genJetReader_(nullptr)
@@ -108,7 +107,7 @@ RecoLeptonReader::setBranchNames()
     branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio_TTHMVA");
     branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "jetPtRelv2_TTHMVA");
     branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
-    branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBTagCSV_TTHMVA");
+    branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBTagDeepCSV_TTHMVA");
     branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
     branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
     branchName_filterBits_ = Form("%s_%s", branchName_obj_.data(), "filterBits");

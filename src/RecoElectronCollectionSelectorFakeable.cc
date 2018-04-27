@@ -11,44 +11,49 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , debug_(debug)
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
-  , min_cone_pt_(10.)
-  , min_lepton_pt_(7.)
-  , max_absEta_(2.5)
-  , max_dxy_(0.05)
-  , max_dz_(0.1)
-  , max_relIso_(0.4)
-  , max_sip3d_(8.)
-  , binning_absEta_({ 0.8, 1.479 })
+  , min_cone_pt_(10.) // F
+  , min_lepton_pt_(7.) // L
+  , max_absEta_(2.5) // L
+  , max_dxy_(0.05) // L
+  , max_dz_(0.1) // L
+  , max_relIso_(0.4) // L
+  , max_sip3d_(8.) // L
+  , binning_absEta_({ 1.479 }) // F; [*]
   , min_pt_trig_(-1.) // LFR sync; used to be 30 GeV Lines:237-240 in AN_2017_029_v5
-  , max_sigmaEtaEta_trig_({ 0.011, 0.011, 0.030 })
-  , max_HoE_trig_({ 0.10, 0.10, 0.07 })
-  , max_deltaEta_trig_({ 0.01, 0.01, 0.008 })
-  , max_deltaPhi_trig_({ 0.04, 0.04, 0.07 })
-  , min_OoEminusOoP_trig_(-0.05)
-  , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })
-  , binning_mvaTTH_({ 0.90 }) // Table 7 in AN2017_029_v5
-  , min_jetPtRatio_({ 0.50, -1.e+3 }) // Table 7 in AN2017_029_v5
-  , apply_conversionVeto_(false) //Table 7 in AN_2017_029_v5
-  , max_nLostHits_(0)
+  , max_sigmaEtaEta_trig_({ 0.011, 0.030 }) // F; [*]
+  , max_HoE_trig_({ 0.10, 0.10 }) // F; [*]
+  , max_deltaEta_trig_({ +1.e+3, +1.e+3 }) // F; [*]
+  , max_deltaPhi_trig_({ +1.e+3, +1.e+3 }) // F; [*]
+  , min_OoEminusOoP_trig_(-0.04) // F; [*]
+  , max_OoEminusOoP_trig_({ +1.e+3, +1.e+3 }) // F; [*]
+  , binning_mvaTTH_({ 0.90 }) // F; Table 7 in AN2017_029_v5
+  , min_jetPtRatio_({ 0.60, -1.e+3 }) // F; [*]
+  , min_mvaIDraw_({ 0.50, -1.e+3 }) // F; [*]
+  , apply_conversionVeto_(false) // Table 7 in AN_2017_029_v5
+  , max_nLostHits_(0) // F
 {
   switch(era_)
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = { 0.3, BtagWP_CSV_2016.at(BtagWP::kMedium) }; // Table 7 in AN2017_029_v5
+      max_jetBtagCSV_ = { 0.07, BtagWP_deepCSV_2017.at(BtagWP::kMedium) }; // F; [*]
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
-  assert(binning_absEta_.size() == 2);
-  assert(max_sigmaEtaEta_trig_.size() == 3);
-  assert(max_HoE_trig_.size() == 3);
-  assert(max_deltaEta_trig_.size() == 3);
-  assert(max_deltaPhi_trig_.size() == 3);
-  assert(max_OoEminusOoP_trig_.size() == 3);
+  assert(binning_absEta_.size() == 1);
+  assert(max_sigmaEtaEta_trig_.size() == binning_absEta_.size() + 1);
+  assert(max_HoE_trig_.size() == binning_absEta_.size() + 1);
+  assert(max_deltaEta_trig_.size() == binning_absEta_.size() + 1);
+  assert(max_deltaPhi_trig_.size() == binning_absEta_.size() + 1);
+  assert(max_OoEminusOoP_trig_.size() == binning_absEta_.size() + 1);
   assert(binning_mvaTTH_.size() == 1);
-  assert(min_jetPtRatio_.size() == 2);
-  assert(max_jetBtagCSV_.size() == 2);
+  assert(min_jetPtRatio_.size() == binning_mvaTTH_.size() + 1);
+  assert(max_jetBtagCSV_.size() == binning_mvaTTH_.size() + 1);
+  assert(min_mvaIDraw_.size() == binning_mvaTTH_.size() + 1);
+  // L -- inherited from the preselection (loose cut)
+  // F -- additional fakeable cut not applied in the preselection
+  // [*] https://gitlab.cern.ch/ttH_leptons/doc/blob/dbb7082bb3668bb3e839293602bc16f47f11c515/2017/objects.md
 }
 
 void
@@ -157,8 +162,6 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  const int idxBin_mvaTTH = electron.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
-
   if(! electron.mvaID_POG())
   {
     if(debug_)
@@ -167,6 +170,8 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     }
     return false;
   }
+
+  const int idxBin_mvaTTH = electron.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
 
   if(electron.jetPtRatio() < min_jetPtRatio_[idxBin_mvaTTH])
   {
@@ -186,11 +191,26 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     return false;
   }
 
+  if(electron.mvaRaw_POG() < min_mvaIDraw_[idxBin_mvaTTH])
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS EGamma POG MVA raw >= " << min_mvaIDraw_[idxBin_mvaTTH] << " fakeable cut\n";
+    }
+    return false;
+  }
+
   if(electron.cone_pt() > min_pt_trig_ && apply_offline_e_trigger_cuts_)
   {
-    const int idxBin_absEta = electron.absEta() <= binning_absEta_[0] ? 0 :
-                             (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
-    ;
+    std::size_t idxBin_absEta = binning_absEta_.size();
+    for(std::size_t binning_absEta_idx = 0; binning_absEta_idx < binning_absEta_.size(); ++binning_absEta_idx)
+    {
+      if(electron.absEta() <= binning_absEta_[binning_absEta_idx])
+      {
+        idxBin_absEta = binning_absEta_idx;
+        break;
+      }
+    }
     if(electron.sigmaEtaEta() > max_sigmaEtaEta_trig_[idxBin_absEta])
     {
       if(debug_)
