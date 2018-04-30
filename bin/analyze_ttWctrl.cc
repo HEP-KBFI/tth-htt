@@ -387,7 +387,6 @@ int main(int argc, char* argv[])
   std::vector<std::string> mvaInputVariables_2lss = get_mvaInputVariables(mvaInputVariables_2lss_ttV, mvaInputVariables_2lss_ttbar);
   std::map<std::string, double> mvaInputs_2lss;
 
-  std::string mvaFileName_2lss_1tau_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttV_sklearn_10var.weights.xml";
   std::vector<std::string> mvaInputVariables_2lss_1tau_ttV;
   mvaInputVariables_2lss_1tau_ttV.push_back("mindr_lep1_jet");
   mvaInputVariables_2lss_1tau_ttV.push_back("mindr_lep2_jet");
@@ -399,9 +398,7 @@ int main(int argc, char* argv[])
   mvaInputVariables_2lss_1tau_ttV.push_back("dr_leps");
   mvaInputVariables_2lss_1tau_ttV.push_back("mTauTauVis1");
   mvaInputVariables_2lss_1tau_ttV.push_back("mTauTauVis2");
-  TMVAInterface mva_2lss_1tau_ttV(mvaFileName_2lss_1tau_ttV, mvaInputVariables_2lss_1tau_ttV);
 
-  std::string mvaFileName_2lss_1tau_ttbar = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttbar_sklearn_11var.weights.xml";
   std::vector<std::string> mvaInputVariables_2lss_1tau_ttbar;
   mvaInputVariables_2lss_1tau_ttbar.push_back("nJet");
   mvaInputVariables_2lss_1tau_ttbar.push_back("mindr_lep1_jet");
@@ -414,7 +411,6 @@ int main(int argc, char* argv[])
   mvaInputVariables_2lss_1tau_ttbar.push_back("dr_leps");
   mvaInputVariables_2lss_1tau_ttbar.push_back("tau_pt");
   mvaInputVariables_2lss_1tau_ttbar.push_back("dr_lep1_tau");
-  TMVAInterface mva_2lss_1tau_ttbar(mvaFileName_2lss_1tau_ttbar, mvaInputVariables_2lss_1tau_ttbar);
 
   std::vector<std::string> mvaInputVariables_2lss_1tau = get_mvaInputVariables(mvaInputVariables_2lss_1tau_ttV, mvaInputVariables_2lss_1tau_ttbar);
   std::map<std::string, double> mvaInputs_2lss_1tau;
@@ -1094,15 +1090,9 @@ int main(int argc, char* argv[])
     mvaInputs_2lss_1tau["mTauTauVis2"]    = mTauTauVis2;
 
     check_mvaInputs(mvaInputs_2lss_1tau, eventInfo);
-    //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs_2lss.begin();
-    //	    mvaInput != mvaInputs_2lss.end(); ++mvaInput ) {
-    //  std::cout << " " << mvaInput->first << " = " << mvaInput->second << std::endl;
-    //}
 
-    double mvaOutput_2lss_1tau_ttV = mva_2lss_1tau_ttV(mvaInputs_2lss_1tau);
-    //std::cout << "mvaOutput_2lss_1tau_ttV = " << mvaOutput_2lss_1tau_ttV << std::endl;
-    double mvaOutput_2lss_1tau_ttbar = mva_2lss_1tau_ttbar(mvaInputs_2lss_1tau);
-    //std::cout << "mvaOutput_2lss_1tau_ttbar = " << mvaOutput_2lss_1tau_ttbar << std::endl;    
+    double mvaOutput_2lss_1tau_ttV = 0.;
+    double mvaOutput_2lss_1tau_ttbar = 0.;
 
 //--- fill histograms with events passing final selection 
     for ( int idxEvtSel = k2lepton; idxEvtSel <= k2lepton_1tau; ++idxEvtSel ) {
