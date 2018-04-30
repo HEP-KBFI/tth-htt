@@ -569,12 +569,9 @@ int main(int argc, char* argv[])
       if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
       evtWeight *= eventInfo.pileupWeight;
       evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
-      for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
-	    jet != selJets.end(); ++jet ) {
-	evtWeight *= (*jet)->BtagWeight();
-      }
-    }    
-    
+      evtWeight *= get_BtagWeight(selJets);
+    }
+
 //--- apply final event selection
 
     // require exactly two electrons passing selection criteria of final event selection

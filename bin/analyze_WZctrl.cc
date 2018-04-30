@@ -100,10 +100,7 @@ double getEvtWeight(double lumiScale, double genWeight, bool apply_genWeight, do
   if ( apply_genWeight ) evtWeight *= boost::math::sign(genWeight);
   evtWeight *= pileupWeight;
   evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
-  for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
-	jet != selJets.end(); ++jet ) {
-    evtWeight *= (*jet)->BtagWeight();
-  }
+  evtWeight *= get_BtagWeight(selJets);
 
   if ( selLepton_third ) {
     dataToMCcorrectionInterface->setLeptons(
