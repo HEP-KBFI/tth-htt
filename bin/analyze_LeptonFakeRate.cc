@@ -974,11 +974,7 @@ main(int argc,
 
       evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
 
-      double btagWeight = 1.;
-      for(const RecoJet * const jet: selJets_dR07)
-      {
-        btagWeight *= jet->BtagWeight();
-      }
+      const double btagWeight = get_BtagWeight(selJets_dR07);
       evtWeight *= btagWeight;
 
       if(isDEBUG)
