@@ -64,7 +64,9 @@ from tthAnalysis.HiggsToTauTau.configs.syncNtupleConfig import syncNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 
-channel_choices = [ '1l_2tau', '2lss', '2lss_1tau', '2l_2tau', '3l', '3l_1tau', '4l', 'inclusive' ]
+channel_choices = [
+  '1l_2tau', '2lss', '2lss_1tau', '2l_2tau', '3l', '3l_1tau', '4l', 'inclusive', 'ttWctrl', 'ttZctrl',
+]
 
 parser = tthAnalyzeParser()
 parser.add_rle_select()

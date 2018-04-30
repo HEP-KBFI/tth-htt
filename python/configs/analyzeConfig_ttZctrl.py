@@ -16,10 +16,11 @@ class analyzeConfig_ttZctrl(analyzeConfig):
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                histograms_to_fit, select_rle_output = False,
-               executable_prep_dcard="prepareDatacards", verbose = False, dry_run = False, isDebug = False):
+               executable_prep_dcard="prepareDatacards", verbose = False, dry_run = False, isDebug = False,
+               do_sync = False, rle_select = '', use_nonnominal = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttZctrl", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      histograms_to_fit, executable_prep_dcard = executable_prep_dcard, verbose = verbose,
+      histograms_to_fit, executable_prep_dcard = executable_prep_dcard, do_sync = do_sync, verbose = verbose,
       dry_run = dry_run, isDebug = isDebug)
 
     self.samples = samples
@@ -36,6 +37,8 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_ttZctrl_cfg.py")
 
     self.select_rle_output = select_rle_output
+    self.rle_select = rle_select
+    self.use_nonnominal = use_nonnominal
 
   def createCfg_analyze(self, jobOptions):
     """Create python configuration file for the analyze_ttZctrl executable (analysis code)
@@ -65,7 +68,12 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     lines.append("process.analyze_ttZctrl.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
     lines.append("process.analyze_ttZctrl.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_ttZctrl.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
+    if self.do_sync:
+      lines.append("process.analyze_ttZctrl.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
+      lines.append("process.analyze_ttZctrl.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
+      lines.append("process.analyze_ttZctrl.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
     lines.append("process.analyze_ttZctrl.isDEBUG = cms.bool(%s)" % self.isDebug)
+    lines.append("process.analyze_ttZctrl.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):
@@ -77,13 +85,13 @@ class analyzeConfig_ttZctrl(analyzeConfig):
         continue
       process_name = sample_info["process_name_specific"]
       key_dir = getKey(process_name)
-      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
+      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
         initDict(self.dirs, [ key_dir, dir_type ])
         if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
           self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, "", process_name)
         else:
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, "", process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_SYNC ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
@@ -135,6 +143,20 @@ class analyzeConfig_ttZctrl(analyzeConfig):
           if len(ntupleFiles) == 0:
             print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_job, ntupleFiles)
             continue
+
+          syncOutput = ''
+          syncTree = ''
+          if self.do_sync:
+            syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s.root' % self.channel)
+            syncTree = 'syncTree_%s' % self.channel
+            self.inputFiles_sync['sync'].append(syncOutput)
+
+          syncRLE = ''
+          if self.do_sync and self.rle_select:
+            syncRLE = self.rle_select % syncTree
+            if not os.path.isfile(syncRLE):
+              raise ValueError('Input RLE file for the sync is missing: %s' % syncRLE)
+
           self.jobOptions_analyze[key_analyze_job] = {
             'ntupleFiles' : ntupleFiles,
             'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%i_cfg.py" % \
@@ -155,6 +177,9 @@ class analyzeConfig_ttZctrl(analyzeConfig):
             'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
             'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
             'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
+            'syncOutput': syncOutput,
+            'syncTree'  : syncTree,
+            'syncRLE'   : syncRLE,
             'process_name_specific': sample_info['process_name_specific'],
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
@@ -167,6 +192,9 @@ class analyzeConfig_ttZctrl(analyzeConfig):
           self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s.root" % \
             (self.channel, process_name))
 
+      if self.do_sync:
+        continue
+
       # initialize input and output file names for hadd_stage2
       key_hadd_stage1 = getKey(process_name)
       key_hadd_stage2 = getKey("all")
@@ -175,6 +203,22 @@ class analyzeConfig_ttZctrl(analyzeConfig):
       self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
       self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s.root" % \
         (self.channel))
+
+    if self.do_sync:
+      if self.is_sbatch:
+        logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
+        self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
+        self.createScript_sbatch_syncNtuple(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+      logging.info("Creating Makefile")
+      lines_makefile = []
+      self.addToMakefile_syncNtuple(lines_makefile)
+      outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
+      self.outputFile_sync['sync'] = outputFile_sync_path
+      self.targets.append(outputFile_sync_path)
+      self.addToMakefile_hadd_sync(lines_makefile)
+      self.createMakefile(lines_makefile)
+      logging.info("Done")
+      return self.num_jobs
 
     logging.info("Creating configuration files to run 'prepareDatacards'")
     for evtSelection in self.evtSelections:

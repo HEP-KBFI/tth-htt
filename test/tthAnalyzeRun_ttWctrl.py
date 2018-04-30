@@ -8,12 +8,16 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_ttWctrl.py -v 2017Dec13 -e 2017
 
+mode_choices     = [ 'default', 'sync', 'sync_noMEM' ]
 sys_choices      = [ 'central', 'full' ]
 systematics.full = systematics.an_ctrl
 
 parser = tthAnalyzeParser()
+parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_tau_id_wp("dR03mvaVLoose")
+parser.add_rle_select()
+parser.add_nonnominal()
 args = parser.parse_args()
 
 # Common arguments
@@ -29,15 +33,26 @@ debug              = args.debug
 sample_filter      = args.filter
 
 # Additional arguments
+mode              = args.mode
 systematics_label = args.systematics
 tau_id_wp         = args.tau_id_wp
+rle_select        = os.path.expanduser(args.rle_select)
+use_nonnominal    = args.original_central
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
+do_sync              = mode.startswith('sync')
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  if mode == 'default':
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  elif mode == 'sync':
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
+  elif mode == 'sync_noMEM':
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+  else:
+    raise ValueError('Internal error: invalid mode: %s' % mode)
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
@@ -85,7 +100,10 @@ if __name__ == '__main__':
       select_rle_output  = True,
       verbose            = idx_job_resubmission > 0,
       dry_run            = dry_run,
+      do_sync            = do_sync,
       isDebug            = debug,
+      rle_select         = rle_select,
+      use_nonnominal     = use_nonnominal,
     )
 
     job_statistics = analysis.create()
