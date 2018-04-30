@@ -887,7 +887,7 @@ int main(int argc, char* argv[])
     preselMEtHistManager.fillHistograms(met, mht_p4, met_LD, 1.);
     preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      -1., -1., -1., -1., -1.,
+      -1., -1., -1., -1.,
       -1., -1., 1.);
   
 //--- apply final event selection 
@@ -1087,61 +1087,39 @@ int main(int argc, char* argv[])
 
     const RecoHadTau* selHadTau = ( selHadTaus.size() >= 1 )  ? selHadTaus[0] : 0;
 
-    double mTauTauVis1 = -1.;
-    double mTauTauVis2 = -1.;
-    if ( selHadTau ) {
-      mTauTauVis1 = (selLepton_lead->p4() + selHadTau->p4()).mass();
-      mTauTauVis2 = (selLepton_sublead->p4() + selHadTau->p4()).mass();
-    }
+//--- compute variables BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
+    const int nJet25_Recl = comp_n_jet25_recl(selJets);
 
-//--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
-//    in 2lss_1tau category of ttH multilepton analysis 
-    mvaInputs_2lss["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(selLepton_lead->eta()), std::fabs(selLepton_sublead->eta()));
-    mvaInputs_2lss["MT_met_lep1"]                = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
-    mvaInputs_2lss["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
-    mvaInputs_2lss["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-    mvaInputs_2lss["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
-    mvaInputs_2lss["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*selLepton_lead);
-    mvaInputs_2lss["LepGood_conePt[iF_Recl[1]]"] = comp_lep2_conePt(*selLepton_sublead);
-    mvaInputs_2lss["min(met_pt,400)"]            = std::min(met.pt(), (Double_t)400.);
-    mvaInputs_2lss["avg_dr_jet"]                 = comp_avg_dr_jet(selJets);
-    
+    const double mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
+    const double mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
+    const double max_lep_eta    = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
+    const double dr_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
+    const double mT_lep1        = comp_MT_met_lep1(*selLepton_lead,    met.pt(), met.phi());
+    const double mT_lep2        = comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi());
+    const double avg_dr_jet     = comp_avg_dr_jet(selJets);
+    const double lep1_conePt    = comp_lep1_conePt(*selLepton_lead);
+    const double lep2_conePt    = comp_lep2_conePt(*selLepton_sublead);
+    const double lep3_conePt    = selLepton_third ? comp_lep3_conePt(*selLepton_third) : -1.;
+    const double minMET400      = std::min(met.pt(), 400.);
+    const double mindr_tau_jet  = selHadTau ? comp_mindr_hadTau1_jet(*selHadTau, selJets) : -1.;
+    const double mbb            = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
+    const double mTauTauVis1    = selHadTau ? (selLepton_lead->p4() + selHadTau->p4()).mass() : -1.;
+    const double mTauTauVis2    = selHadTau ? (selLepton_sublead->p4() + selHadTau->p4()).mass() : -1.;
+
+    std::map<std::string, double> mvaInputs_2lss = {
+      { "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", max_lep_eta                   },
+      { "MT_met_lep1",                                                    mT_lep1                       },
+      { "nJet25_Recl",                                                    nJet25_Recl                   },
+      { "mindr_lep1_jet",                                                 std::min(10., mindr_lep1_jet) },
+      { "mindr_lep2_jet",                                                 std::min(10., mindr_lep2_jet) },
+      { "LepGood_conePt[iF_Recl[0]]",                                     lep1_conePt                   },
+      { "LepGood_conePt[iF_Recl[1]]",                                     lep2_conePt                   },
+      { "min(met_pt,400)",                                                minMET400                     },
+      { "avg_dr_jet",                                                     avg_dr_jet                    },
+    };
     check_mvaInputs(mvaInputs_2lss, eventInfo);
-    
-    double mvaOutput_2lss_ttV = mva_2lss_ttV(mvaInputs_2lss);
-    double mvaOutput_2lss_ttbar = mva_2lss_ttbar(mvaInputs_2lss);
-
-//--- compute integer discriminant based on both BDT outputs,
-//    as defined in Table 16 () of AN-2015/321 (AN-2016/211) for analysis of 2015 (2016) data
-    Double_t mvaDiscr_2lss = -1;
-    if ( era == kEra_2017 ) {
-      if      ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV >  +0.4 ) mvaDiscr_2lss = 7.;
-      else if ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV >  +0.1 ) mvaDiscr_2lss = 6.;
-      else if ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV <= +0.1 ) mvaDiscr_2lss = 5.;
-      else if ( mvaOutput_2lss_ttbar > +0.1 && mvaOutput_2lss_ttV >  +0.3 ) mvaDiscr_2lss = 4.;
-      else if ( mvaOutput_2lss_ttbar > +0.1 && mvaOutput_2lss_ttV <= +0.3 ) mvaDiscr_2lss = 3.;
-      else if ( mvaOutput_2lss_ttbar > -0.2                               ) mvaDiscr_2lss = 2.;
-      else                                                                  mvaDiscr_2lss = 1.;
-    } else assert(0);
-
-//--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar trained by Arun for 2lss_1tau category
-    mvaInputs_2lss_1tau["lep1_pt"]        = selLepton_lead->pt();
-    mvaInputs_2lss_1tau["lep2_pt"]        = selLepton_sublead->pt();
-    mvaInputs_2lss_1tau["max_lep_eta"]    = TMath::Max(selLepton_lead->absEta(), selLepton_sublead->absEta());
-    mvaInputs_2lss_1tau["mindr_lep1_jet"] = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
-    mvaInputs_2lss_1tau["mindr_lep2_jet"] = TMath::Min(10., comp_mindr_lep2_jet(*selLepton_sublead, selJets));
-    mvaInputs_2lss_1tau["avg_dr_jet"]     = comp_avg_dr_jet(selJets);
-    mvaInputs_2lss_1tau["ptmiss"]         = met.pt();
-    mvaInputs_2lss_1tau["mT_lep1"]        = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
-    mvaInputs_2lss_1tau["htmiss"]         = mht_p4.pt();
-    mvaInputs_2lss_1tau["dr_leps"]        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
-    mvaInputs_2lss_1tau["nJet"]           = selJets.size();
-    mvaInputs_2lss_1tau["tau_pt"]         = ( selHadTau ) ? selHadTau->pt() : -1.;
-    mvaInputs_2lss_1tau["dr_lep1_tau"]    = ( selHadTau ) ? deltaR(selLepton_lead->p4(), selHadTau->p4()) : -1.;
-    mvaInputs_2lss_1tau["mTauTauVis1"]    = mTauTauVis1;
-    mvaInputs_2lss_1tau["mTauTauVis2"]    = mTauTauVis2;
-
-    check_mvaInputs(mvaInputs_2lss_1tau, eventInfo);
+    const double mvaOutput_2lss_ttV = mva_2lss_ttV(mvaInputs_2lss);
+    const double mvaOutput_2lss_ttbar = mva_2lss_ttbar(mvaInputs_2lss);
 
     double mvaOutput_2lss_1tau_ttV = 0.;
     double mvaOutput_2lss_1tau_ttbar = 0.;
@@ -1193,7 +1171,7 @@ int main(int argc, char* argv[])
       selHistManager->mvaInputVariables_2lss_1tau_->fillHistograms(mvaInputs_2lss_1tau, evtWeight);
       selHistManager->evt_->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar,
 	sumLeptonCharge, sumLeptonPt, evtWeight);
       if ( isSignal ) {
         const std::string decayModeStr = eventInfo.getDecayModeString();
@@ -1208,7 +1186,6 @@ int main(int argc, char* argv[])
             selBJets_medium.size(),
             mvaOutput_2lss_ttV,
             mvaOutput_2lss_ttbar,
-            mvaDiscr_2lss,
             mvaOutput_2lss_1tau_ttV,
             mvaOutput_2lss_1tau_ttbar,
             sumLeptonCharge,
@@ -1228,6 +1205,125 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
+      const double dr_lep1_tau    = selHadTau                    ? deltaR(selLepton_lead->p4(),    selHadTau->p4()) : -1.;
+      const double dr_lep2_tau    = selHadTau                    ? deltaR(selLepton_sublead->p4(), selHadTau->p4()) : -1.;
+      const double dr_lep3_tau    = selHadTau && selLepton_third ? deltaR(selLepton_third->p4(),   selHadTau->p4()) : -1.;
+      const double max_dr_jet     = comp_max_dr_jet(selJets);
+      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
+      const double avr_dr_lep_tau = (dr_lep1_tau + dr_lep2_tau) / 2;
+      const double max_dr_lep_tau = std::max(dr_lep2_tau, dr_lep1_tau);
+      const double min_dr_lep_tau = std::min(dr_lep2_tau, dr_lep1_tau);
+      const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
+      const double mindr_lep3_jet = selLepton_third ? comp_mindr_lep3_jet(*selLepton_sublead, selJets) : -1.;
+      const double btagWeight     = get_BtagWeight(selJets);
+
+      const bool isGenMatched =
+        selLepton_lead->isGenMatched()    &&
+        selLepton_sublead->isGenMatched()
+      ;
+
+      snm->read(eventInfo);
+      snm->read(preselMuons,     fakeableMuons,     tightMuons);
+      snm->read(preselElectrons, fakeableElectrons, tightElectrons);
+      snm->read(preselHadTaus);
+      snm->read(selJets);
+
+      snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
+      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size());
+
+      snm->read(met.pt(),                               FloatVariableType::PFMET);
+      snm->read(met.phi(),                              FloatVariableType::PFMETphi);
+      snm->read(mht_p4.pt(),                            FloatVariableType::MHT);
+      snm->read(met_LD,                                 FloatVariableType::metLD);
+
+      snm->read(lep1_conePt,                            FloatVariableType::lep1_conept);
+      snm->read(lep2_conePt,                            FloatVariableType::lep2_conept);
+      snm->read(lep3_conePt,                            FloatVariableType::lep3_conept);
+      // lep4_conept not filled
+
+      snm->read(mindr_lep1_jet,                         FloatVariableType::mindr_lep1_jet);
+      snm->read(mindr_lep2_jet,                         FloatVariableType::mindr_lep2_jet);
+      snm->read(mindr_lep3_jet,                         FloatVariableType::mindr_lep3_jet);
+      // mindr_lep4_jet not filled
+
+      snm->read(mindr_tau_jet,                          FloatVariableType::mindr_tau1_jet);
+      // mindr_tau2_jet not filled
+
+      snm->read(avg_dr_jet,                             FloatVariableType::avg_dr_jet);
+      snm->read(avr_dr_lep_tau,                         FloatVariableType::avr_dr_lep_tau);
+      snm->read(max_dr_jet,                             FloatVariableType::max_dr_jet);
+      snm->read(max_dr_lep_tau,                         FloatVariableType::max_dr_lep_tau);
+      snm->read(mindr_tau_jet,                          FloatVariableType::min_dr_tau_jet); // 1 tau
+      snm->read(min_dr_lep_tau,                         FloatVariableType::min_dr_lep_tau);
+      snm->read(min_dr_lep_jet,                         FloatVariableType::min_dr_lep_jet);
+
+      snm->read(dr_leps,                                FloatVariableType::dr_leps);
+      // dr_taus not filled
+
+      // dr_lep_tau_ss not filled
+      snm->read(dr_lep1_tau,                            FloatVariableType::dr_lep1_tau1);
+      // dr_lep1_tau2 not filled
+      snm->read(dr_lep2_tau,                            FloatVariableType::dr_lep2_tau1);
+      snm->read(dr_lep3_tau,                            FloatVariableType::dr_lep3_tau1);
+      // dr_lep2_tau2 not filled
+
+      snm->read(max_lep_eta,                            FloatVariableType::max_lep_eta);
+
+      snm->read(mT_lep1,                                FloatVariableType::mT_met_lep1);
+      snm->read(mT_lep2,                                FloatVariableType::mT_met_lep2);
+      // mT_met_lep3 not filled
+      // mT_met_lep4 not filled
+
+      // mTauTauVis not filled
+      snm->read(mTauTauVis1,                            FloatVariableType::mvis_l1tau);
+      snm->read(mTauTauVis2,                            FloatVariableType::mvis_l2tau);
+
+      snm->read(mbb,                                    FloatVariableType::mbb);
+      snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
+
+      // cosThetaS_hadTau not filled
+      // HTT not filled
+      // HadTop_pt not filled
+      // mvaOutput_Hj_tagger not filled
+
+      // mvaOutput_plainKin_ttV not filled
+      // mvaOutput_plainKin_tt not filled
+      // mvaOutput_plainKin_1B_VT not filled
+      // mvaOutput_HTT_SUM_VT not filled
+
+      // mvaOutput_plainKin_SUM_VT not filled
+
+      snm->read(mvaOutput_2lss_ttV,                     FloatVariableType::mvaOutput_2lss_ttV);
+      snm->read(mvaOutput_2lss_ttbar,                   FloatVariableType::mvaOutput_2lss_tt);
+      // mvaOutput_2lss_1tau_plainKin_tt not filled
+      // mvaOutput_2lss_1tau_plainKin_ttV not filled
+      // mvaOutput_2lss_1tau_plainKin_1B_M not filled
+      // mvaOutput_2lss_1tau_plainKin_SUM_M not filled
+      // mvaOutput_2lss_1tau_HTT_SUM_M not filled
+      // mvaOutput_2lss_1tau_HTTMEM_SUM_M not filled
+
+      // mvaOutput_3l_ttV not filled
+      // mvaOutput_3l_ttbar not filled
+      // mvaOutput_plainKin_SUM_M not filled
+      // mvaOutput_plainKin_1B_M not filled
+
+      // weight_fakeRate not filled
+      // triggerWeight not filled
+      // leptonSF_weight not filled
+      // tauSF_weight not filled
+      snm->read(btagWeight,                             FloatVariableType::bTagSF_weight);
+      snm->read(eventInfo.pileupWeight,                 FloatVariableType::PU_weight);
+      snm->read(boost::math::sign(eventInfo.genWeight), FloatVariableType::MC_weight);
+
+      // memOutput_ttH not filled
+      // memOutput_ttZ not filled
+      // memOutput_ttZ_Zll not filled
+      // memOutput_tt not filled
+      // memOutput_type not filled
+      // memOutput_LR not filled
+
+      snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
+
       snm->fill();
     }
 
