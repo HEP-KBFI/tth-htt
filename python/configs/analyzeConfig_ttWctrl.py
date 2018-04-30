@@ -74,6 +74,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       lines.append("process.analyze_ttWctrl.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
     lines.append("process.analyze_ttWctrl.isDEBUG = cms.bool(%s)" % self.isDebug)
     lines.append("process.analyze_ttWctrl.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
+    lines.append("process.analyze_ttWctrl.redoGenMatching = cms.bool(False)")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):
