@@ -1486,8 +1486,8 @@ int main(int argc, char* argv[])
                        "subleading lepton charge (pdgId) = " << selLepton_sublead->charge() << " (" << selLepton_sublead->pdgId()
                     << ") => misId prob = " << prob_chargeMisId_sublead << ")\n"
           ;
-          continue;
         }
+        continue;
       }
     }
     cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);

@@ -1742,8 +1742,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
                     << ") => misId prob = " << prob_chargeMisId_sublead << "); "
                        "tau charge = " << selHadTau->charge() << ")\n"
           ;
-          continue;
         }
+        continue;
       }
     }
     cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
