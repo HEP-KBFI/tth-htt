@@ -75,5 +75,9 @@ process.analyze_ttZctrl = cms.PSet(
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
     isDEBUG = cms.bool(False),
+    syncNtuple = cms.PSet(
+        tree = cms.string(''),
+        output = cms.string(''),
+    ),
     useNonNominal = cms.bool(False),
 )
