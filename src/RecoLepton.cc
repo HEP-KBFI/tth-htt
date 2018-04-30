@@ -297,6 +297,9 @@ operator<<(std::ostream & stream,
             " jetPtRatio = "    << lepton.jetPtRatio()    << ",\n"
             " jetPtRel = "      << lepton.jetPtRel()      << ","
             " mvaRawTTH = "     << lepton.mvaRawTTH()     << ",\n"
+            " is loose/fakeable/tight = " << lepton.isLoose()    << '/'
+                                          << lepton.isFakeable() << '/'
+                                          << lepton.isTight()    << ",\n"
             " gen. matching:";
   stream << ",\n  lepton = " << lepton.genLepton();
   if(lepton.genLepton())

@@ -232,12 +232,15 @@ std::ostream &
 operator<<(std::ostream & stream,
            const RecoHadTau & hadTau)
 {
-  stream << static_cast<const GenHadTau &>(hadTau)              << ",\n"
-            " decayModeFinding = " << hadTau.decayModeFinding() << ","
-            " id_mva_dR03 = "      << hadTau.id_mva_dR03()      <<
-            " (raw = "             << hadTau.raw_mva_dR03()     << "),\n"
-            " antiElectron = "     << hadTau.antiElectron()     << ","
-            " antiMuon = "         << hadTau.antiMuon()         << ",\n"
+  stream << static_cast<const GenHadTau &>(hadTau)               << ",\n"
+            " decayModeFinding = " << hadTau.decayModeFinding()  << ","
+            " id_mva_dR03 = "      << hadTau.id_mva_dR03()       <<
+            " (raw = "             << hadTau.raw_mva_dR03()      << "),\n"
+            " antiElectron = "     << hadTau.antiElectron()      << ","
+            " antiMuon = "         << hadTau.antiMuon()          << ",\n"
+            " is loose/fakeable/tight = " << hadTau.isLoose()    << '/'
+                                          << hadTau.isFakeable() << '/'
+                                          << hadTau.isTight()    << ",\n"
             " gen. matching:";
   stream << ",\n  lepton = " << hadTau.genLepton();
   if(hadTau.genLepton())
