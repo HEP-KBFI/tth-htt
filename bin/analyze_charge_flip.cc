@@ -614,7 +614,7 @@ int main(int argc, char* argv[])
     if ( selElectron_lead->genLepton() && abs(selElectron_lead->genLepton()->pdgId()) == 11 ) {
       genElectron_lead = selElectron_lead->genLepton();
     }
-    double selElectron_lead_pT = selElectron_lead->pt();
+    double selElectron_lead_pT = selElectron_lead->cone_pt();
     double selElectron_lead_eta = selElectron_lead->eta();
     double selElectron_lead_absEta = std::fabs(selElectron_lead_eta);
     double selElectron_lead_phi = selElectron_lead->phi();
@@ -625,7 +625,7 @@ int main(int argc, char* argv[])
     if ( selElectron_sublead->genLepton() && abs(selElectron_sublead->genLepton()->pdgId()) == 11 ) {
       genElectron_sublead = selElectron_sublead->genLepton();
     }
-    double selElectron_sublead_pT = selElectron_sublead->pt();
+    double selElectron_sublead_pT = selElectron_sublead->cone_pt();
     double selElectron_sublead_eta = selElectron_sublead->eta();
     double selElectron_sublead_absEta = std::fabs(selElectron_sublead_eta);
     double selElectron_sublead_phi = selElectron_sublead->phi();
@@ -697,7 +697,7 @@ int main(int argc, char* argv[])
     
     double minPt_lead = 20.;
     double minPt_sublead = 15.;
-    if ( !(selElectron_lead_p4.pt() > minPt_lead && selElectron_sublead_p4.pt() > minPt_sublead) ) {
+    if ( !(selElectron_lead_pT > minPt_lead && selElectron_sublead_pT > minPt_sublead) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton pT selection." << std::endl;
 	std::cout << " (leading selLepton pT = " << selElectron_lead_p4.pt() << ", minPt_lead = " << minPt_lead

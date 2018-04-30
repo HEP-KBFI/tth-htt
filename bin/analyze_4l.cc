@@ -1154,7 +1154,8 @@ int main(int argc, char* argv[])
     //    (combined efficiency of single lepton, double lepton, and triple lepton triggers assumed to be high,
     //     even if one or two leptons and fakes and hence cone_pt may be significantly smaller than lepton_pt,
     //     on which pT cuts are applied on trigger level)
-    if ( !(selLepton_lead->cone_pt() > minPt_lead && selLepton_sublead->cone_pt() > minPt_sublead && selLepton_third->cone_pt() > minPt_third && selLepton_fourth->cone_pt() > minPt_fourth) ) {
+    if ( !(selLepton_lead->cone_pt() > minPt_lead && selLepton_sublead->cone_pt() > minPt_sublead &&
+           selLepton_third->cone_pt() > minPt_third && selLepton_fourth->cone_pt() > minPt_fourth) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton pT selection." << std::endl;
 	std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead

@@ -1020,7 +1020,7 @@ int main(int argc, char* argv[])
     else assert(0);
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
     double minPt_third = selLepton_third ? 10. : -1.;
-    if ( !(selLepton_lead->pt() > minPt_lead && selLepton_sublead->pt() > minPt_sublead && selLepton_third->pt() > minPt_third) ) {
+    if ( !(selLepton_lead->cone_pt() > minPt_lead && selLepton_sublead->cone_pt() > minPt_sublead && selLepton_third->cone_pt() > minPt_third) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton pT selection." << std::endl;
 	std::cout << " (leading selLepton pT = "       << selLepton_lead->pt()    << ", minPt_lead = "    << minPt_lead

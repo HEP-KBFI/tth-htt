@@ -1172,7 +1172,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
 
     double minPt = selLepton->is_electron() ? 25. : 20.;
-    if ( !(selLepton->pt() > minPt) ) continue;
+    if ( !(selLepton->cone_pt() > minPt) ) continue;
     cutFlowTable.update("sel lepton pT > 25(e)/20(mu) GeV", evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton pT > 25(e)/20(mu) GeV", evtWeight);
 
