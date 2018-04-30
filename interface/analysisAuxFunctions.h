@@ -179,7 +179,7 @@ int
 getHadTau_genPdgId(const RecoHadTau * hadTau);
 
 double
-get_BtagWeight(const std::vector<RecoJet *> & jets);
+get_BtagWeight(const std::vector<const RecoJet *> & jets);
 
 /**
  * @brief Compute MHT
