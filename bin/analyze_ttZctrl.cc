@@ -1385,7 +1385,9 @@ int main(int argc, char* argv[])
       snm->read(preselHadTaus);
       snm->read(selJets);
 
-      snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
+      snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu,
+                  triggers_1e1mu, triggers_1e2mu, triggers_2e1mu,
+                  triggers_3e, triggers_3mu });
       snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size());
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
