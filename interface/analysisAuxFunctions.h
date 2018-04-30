@@ -178,6 +178,9 @@ pickFirstNobjects(const std::vector<T> & objects_input,
 int
 getHadTau_genPdgId(const RecoHadTau * hadTau);
 
+double
+get_BtagWeight(const std::vector<RecoJet *> & jets);
+
 /**
  * @brief Compute MHT
  */

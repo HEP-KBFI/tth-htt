@@ -6,6 +6,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
+#include <numeric> // std::accumulate()
+
 double
 get_BtagWP(int era,
            BtagWP wp)
@@ -61,6 +63,18 @@ getHadTau_genPdgId(const RecoHadTau * hadTau)
   if     (hadTau->genHadTau()) hadTau_genPdgId = 15;
   else if(hadTau->genLepton()) hadTau_genPdgId = std::abs(hadTau->genLepton()->pdgId());
   return hadTau_genPdgId;
+}
+
+double
+get_BtagWeight(const std::vector<RecoJet *> & jets)
+{
+  return std::accumulate(
+    jets.cbegin(), jets.cend(), 1.,
+    [](double btagWeight, const RecoJet * jet) -> double
+    {
+      return btagWeight * jet->BtagWeight();
+    }
+  );
 }
 
 Particle::LorentzVector
