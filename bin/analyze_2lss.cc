@@ -1475,6 +1475,23 @@ int main(int argc, char* argv[])
       double prob_chargeMisId_lead = prob_chargeMisId(getLeptonType(selLepton_lead->pdgId()), selLepton_lead->pt(), selLepton_lead->eta());
       double prob_chargeMisId_sublead = prob_chargeMisId(getLeptonType(selLepton_sublead->pdgId()), selLepton_sublead->pt(), selLepton_sublead->eta());
       evtWeight *= ( prob_chargeMisId_lead + prob_chargeMisId_sublead);
+
+      // Karl: reject the event, if the applied probability of charge misidentification is 0;
+      //       we assume that the event weight was not 0 before including the charge flip weights
+      //       Note that this can happen only if both selected leptons are muons (their misId prob is 0).
+      if(evtWeight == 0.)
+      {
+        if(run_lumi_eventSelector)
+        {
+          std::cout << "event FAILS charge flip selection\n"
+                       "(leading lepton charge (pdgId) = " << selLepton_lead->charge() << " (" << selLepton_lead->pdgId()
+                    << ") => misId prob = " << prob_chargeMisId_lead << "; "
+                       "subleading lepton charge (pdgId) = " << selLepton_sublead->charge() << " (" << selLepton_sublead->pdgId()
+                    << ") => misId prob = " << prob_chargeMisId_sublead << ")\n"
+          ;
+          continue;
+        }
+      }
     }
     cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton-pair OS/SS charge", evtWeight);
