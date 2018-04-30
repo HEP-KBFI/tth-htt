@@ -61,6 +61,7 @@ process.analyze_ttWctrl = cms.PSet(
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
     isDEBUG = cms.bool(False),
+    useNonNominal = cms.bool(False),
 )
 
 
