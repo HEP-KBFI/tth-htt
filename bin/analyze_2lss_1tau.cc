@@ -1726,25 +1726,27 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           if ( selLepton_lead->charge()*selHadTau->charge()    < 0 ) evtWeight *= prob_chargeMisId_lead;
           if ( selLepton_sublead->charge()*selHadTau->charge() < 0 ) evtWeight *= prob_chargeMisId_sublead;
         } else assert(0);
-
-        // Karl: reject the event, if the applied probability of charge misidentification is 0;
-        //       we assume that the event weight was not 0 before including the charge flip weights
-        if(evtWeight == 0.)
-        {
-          if(run_lumi_eventSelector)
-          {
-            std::cout << "event FAILS charge flip selection\n"
-                         "(leading lepton charge (pdgId) = " << selLepton_lead->charge() << " (" << selLepton_lead->pdgId()
-                      << ") => misId prob = " << prob_chargeMisId_lead << "; "
-                         "subleading lepton charge (pdgId) = " << selLepton_sublead->charge() << " (" << selLepton_sublead->pdgId()
-                      << ") => misId prob = " << prob_chargeMisId_sublead << "); "
-                         "tau charge = " << selHadTau->charge() << ")\n"
-            ;
-            continue;
-          }
-        }
       } else {
         evtWeight *= ( prob_chargeMisId_lead + prob_chargeMisId_sublead);
+      }
+      // Karl: reject the event, if the applied probability of charge misidentification is 0;
+      //       we assume that the event weight was not 0 before including the charge flip weights.
+      //       This can happen only if
+      //       1) both selected leptons are muons (their misId prob is 0).
+      //       2) one lepton is a muon and the other is an electron, and the muon has the same sign as the selected tau.
+      if(evtWeight == 0.)
+      {
+        if(run_lumi_eventSelector)
+        {
+          std::cout << "event FAILS charge flip selection\n"
+                       "(leading lepton charge (pdgId) = " << selLepton_lead->charge() << " (" << selLepton_lead->pdgId()
+                    << ") => misId prob = " << prob_chargeMisId_lead << "; "
+                       "subleading lepton charge (pdgId) = " << selLepton_sublead->charge() << " (" << selLepton_sublead->pdgId()
+                    << ") => misId prob = " << prob_chargeMisId_sublead << "); "
+                       "tau charge = " << selHadTau->charge() << ")\n"
+          ;
+          continue;
+        }
       }
     }
     cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
