@@ -78,8 +78,7 @@ process.analyze_2l_2tau = cms.PSet(
         )
     ),
 
-    ##minNumJets = cms.int32(2),
-    minNumJets = cms.int32(1),
+    minNumJets = cms.int32(2),
 
     use_HIP_mitigation_bTag = cms.bool(False),
     use_HIP_mitigation_mediumMuonId = cms.bool(False),
