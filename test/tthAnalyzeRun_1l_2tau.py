@@ -60,7 +60,7 @@ if mode == "VHbb":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
-  hadTau_selection     = "dR03mvaTight"
+  hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "3L"
 
   for sample_name, sample_info in samples_2017.items():
@@ -75,8 +75,8 @@ elif mode == "forBDTtraining":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
-  hadTau_selection         = "dR03mvaMedium"
-  hadTau_selection_relaxed = "dR03mvaLoose"
+  hadTau_selection         = "dR03mvaLoose"
+  hadTau_selection_relaxed = "dR03mvaVLoose"
   applyFakeRateWeights     = "3L"
   hadTau_charge_selections = [ "OS" ]
 elif mode.startswith("sync"):
@@ -86,7 +86,7 @@ elif mode.startswith("sync"):
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
   else:
     raise ValueError("Internal logic error")
-  hadTau_selection     = "dR03mvaTight"
+  hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "3L"
 else:
   raise ValueError("Internal logic error")
