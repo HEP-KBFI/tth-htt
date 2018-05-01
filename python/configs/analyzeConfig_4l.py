@@ -153,6 +153,7 @@ class analyzeConfig_4l(analyzeConfig):
       lines.append("process.analyze_4l.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
       lines.append("process.analyze_4l.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
       lines.append("process.analyze_4l.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
+      lines.append("process.analyze_4l.syncRequireGenMatching = cms.bool(%s)" % jobOptions['syncRequireGenMatching'])
     lines.append("process.analyze_4l.isDEBUG = cms.bool(%s)" % self.isDebug)
     lines.append("process.analyze_4l.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
@@ -290,10 +291,12 @@ class analyzeConfig_4l(analyzeConfig):
 
                 syncOutput = ''
                 syncTree = ''
+                syncRequireGenMatching = False
                 if self.do_sync:
                   if lepton_selection_and_frWeight == 'Tight' and chargeSumSelection == 'OS':
                     syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
                     syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
+                    syncRequireGenMatching = True
                   elif lepton_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and chargeSumSelection == 'OS':
                     syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
@@ -335,6 +338,7 @@ class analyzeConfig_4l(analyzeConfig):
                   'syncOutput': syncOutput,
                   'syncTree'  : syncTree,
                   'syncRLE'   : syncRLE,
+                  'syncRequireGenMatching': syncRequireGenMatching,
                   'process_name_specific': sample_info['process_name_specific'],
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
