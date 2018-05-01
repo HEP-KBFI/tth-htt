@@ -164,7 +164,7 @@ class analyzeConfig_3l(analyzeConfig):
       lines.append("process.analyze_3l.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
       lines.append("process.analyze_3l.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
       lines.append("process.analyze_3l.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
-      lines.append("process.analyze_3l.syncRequireGenMatching = cms.bool(%s)" % jobOptions['syncRequireGenMatching'])
+      lines.append("process.analyze_3l.requireGenMatching = cms.bool(%s)" % jobOptions['syncRequireGenMatching'])
     lines.append("process.analyze_3l.isDEBUG = cms.bool(%s)" % self.isDebug)
     lines.append("process.analyze_3l.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)

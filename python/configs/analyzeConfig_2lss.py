@@ -168,7 +168,7 @@ class analyzeConfig_2lss(analyzeConfig):
       lines.append("process.analyze_2lss.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
       lines.append("process.analyze_2lss.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
       lines.append("process.analyze_2lss.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
-      lines.append("process.analyze_2lss.syncRequireGenMatching = cms.bool(%s)" % jobOptions['syncRequireGenMatching'])
+      lines.append("process.analyze_2lss.requireGenMatching = cms.bool(%s)" % jobOptions['syncRequireGenMatching'])
     lines.append("process.analyze_2lss.isDEBUG = cms.bool(%s)" % self.isDebug)
     lines.append("process.analyze_2lss.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)

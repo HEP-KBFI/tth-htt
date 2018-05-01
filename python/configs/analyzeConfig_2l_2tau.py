@@ -223,7 +223,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       lines.append("process.analyze_2l_2tau.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
       lines.append("process.analyze_2l_2tau.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
       lines.append("process.analyze_2l_2tau.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
-      lines.append("process.analyze_2l_2tau.syncRequireGenMatching = cms.bool(%s)" % jobOptions['syncRequireGenMatching'])
+      lines.append("process.analyze_2l_2tau.requireGenMatching = cms.bool(%s)" % jobOptions['syncRequireGenMatching'])
     lines.append("process.analyze_2l_2tau.isDEBUG = cms.bool(%s)" % self.isDebug)
     lines.append("process.analyze_2l_2tau.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
