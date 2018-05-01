@@ -336,6 +336,12 @@ int main(int argc, char* argv[])
     return false;
   }();
 
+  const double maxAbsEta_lept = 2.1;
+  const double minPt_ele = 30.;
+  const double minPt_mu  = 25.;
+  const double minPt_hadTau_lead    = 30.;
+  const double minPt_hadTau_sublead = 20.;
+
   fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
@@ -819,9 +825,10 @@ int main(int argc, char* argv[])
     ">= 3 jets",
     ">= 2 loose b-jets || 1 medium b-jet (2)",
     "m(ll) > 12 GeV",
-    "sel lepton pT > 25(e)/20(mu) GeV",
-    "sel lepton abs(eta) < 2.1",
-    "sel hadTau pT > 30 GeV",
+    Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_ele, minPt_mu),
+    Form("sel lepton abs(eta) < %.1f", maxAbsEta_lept),
+    Form("sel lead hadTau pT > %.0f GeV", minPt_hadTau_lead),
+    Form("sel sublead hadTau pT > %.0f GeV", minPt_hadTau_sublead),
     "tau-pair OS/SS charge",
     "lepton+tau charge",
     "signal region veto",
@@ -1516,20 +1523,22 @@ int main(int argc, char* argv[])
     cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
     cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
 
-    const double minPt_ele = 30.;
-    const double minPt_mu  = 25.;
     const double minPt = selLepton->is_electron() ? minPt_ele : minPt_mu;
     if ( !(selLepton->cone_pt() > minPt) ) continue;
     cutFlowTable.update(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_ele, minPt_mu), evtWeight);
-    cutFlowHistManager->fillHistograms("sel lepton pT > 25(e)/20(mu) GeV", evtWeight);
+    cutFlowHistManager->fillHistograms(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_ele, minPt_mu), evtWeight);
 
-    if ( !(selLepton->absEta() < 2.1) ) continue;
-    cutFlowTable.update("sel lepton abs(eta) < 2.1", evtWeight);
-    cutFlowHistManager->fillHistograms("sel lepton abs(eta) < 2.1", evtWeight);
+    if ( !(selLepton->absEta() < maxAbsEta_lept) ) continue;
+    cutFlowTable.update(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lept), evtWeight);
+    cutFlowHistManager->fillHistograms(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lept), evtWeight);
 
-    if ( !(selHadTau_lead->pt() > 30.) ) continue;
-    cutFlowTable.update("sel hadTau pT > 30 GeV", evtWeight);
-    cutFlowHistManager->fillHistograms("sel hadTau pT > 30 GeV", evtWeight);
+    if ( !(selHadTau_lead->pt() > minPt_hadTau_lead) ) continue;
+    cutFlowTable.update(Form("sel lead hadTau pT > %.0f GeV", minPt_hadTau_lead), evtWeight);
+    cutFlowHistManager->fillHistograms(Form("sel lead hadTau pT > %.0f GeV", minPt_hadTau_lead), evtWeight);
+
+    if ( !(selHadTau_sublead->pt() > minPt_hadTau_sublead) ) continue;
+    cutFlowTable.update(Form("sel sublead hadTau pT > %.0f GeV", minPt_hadTau_sublead), evtWeight);
+    cutFlowHistManager->fillHistograms(Form("sel sublead hadTau pT > %.0f GeV", minPt_hadTau_sublead), evtWeight);
 
     bool isCharge_SS = selHadTau_lead->charge()*selHadTau_sublead->charge() > 0;
     bool isCharge_OS = selHadTau_lead->charge()*selHadTau_sublead->charge() < 0;
