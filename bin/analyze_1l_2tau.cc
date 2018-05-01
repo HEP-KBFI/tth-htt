@@ -1917,10 +1917,9 @@ int main(int argc, char* argv[])
       const double min_dr_lep_tau  = std::min(dr_lep_tau_lead, dr_lep_tau_sublead);
       const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton->p4()).mass();
 
-      const bool isGenMatched =
-        selLepton->isGenMatched()         &&
-        selHadTau_lead->isGenMatched()    &&
-        selHadTau_sublead->isGenMatched()
+      bool isGenMatched = isMC &&
+        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching) &&
+        ((apply_hadTauGenMatching && selHadTau_genMatch.numGenMatchedJets_ == 0) || ! apply_hadTauGenMatching)
       ;
 
       snm->read(eventInfo);

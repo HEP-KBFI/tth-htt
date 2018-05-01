@@ -1896,9 +1896,8 @@ int main(int argc, char* argv[])
       const double dr_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
       const double max_lep_eta    = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
 
-      const bool isGenMatched =
-        selLepton_lead->isGenMatched()    &&
-        selLepton_sublead->isGenMatched()
+      bool isGenMatched = isMC &&
+        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
       ;
 
       snm->read(eventInfo);

@@ -1690,11 +1690,9 @@ int main(int argc, char* argv[])
       const double mTauTauVis2_sel = (selHadTau_lead->p4() + selLepton_sublead->p4()).mass();
       const double max_lep_eta     = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
 
-      const bool isGenMatched =
-        selLepton_lead->isGenMatched()    &&
-        selLepton_sublead->isGenMatched() &&
-        selHadTau_lead->isGenMatched()    &&
-        selHadTau_sublead->isGenMatched()
+      bool isGenMatched = isMC &&
+        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching) &&
+        ((apply_hadTauGenMatching && selHadTau_genMatch.numGenMatchedJets_ == 0) || ! apply_hadTauGenMatching)
       ;
 
       snm->read(eventInfo);

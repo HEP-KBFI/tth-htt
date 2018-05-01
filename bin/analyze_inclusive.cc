@@ -401,7 +401,7 @@ main(int argc,
     snm->read(btagWeight, FloatVariableType::bTagSF_weight);
     snm->read(mbb,        FloatVariableType::mbb);
     snm->read(mbb_loose,  FloatVariableType::mbb_loose);
-    snm->read(snm->placeholder_value, selBJets_medium.size(), selBJets_loose.size());
+    snm->read(false, selBJets_medium.size(), selBJets_loose.size());
 
 //--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();

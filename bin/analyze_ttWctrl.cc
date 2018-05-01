@@ -1197,11 +1197,6 @@ int main(int argc, char* argv[])
       const double mindr_lep3_jet = selLepton_third ? comp_mindr_lep3_jet(*selLepton_sublead, selJets) : -1.;
       const double btagWeight     = get_BtagWeight(selJets);
 
-      const bool isGenMatched =
-        selLepton_lead->isGenMatched()    &&
-        selLepton_sublead->isGenMatched()
-      ;
-
       snm->read(eventInfo);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
@@ -1209,7 +1204,7 @@ int main(int argc, char* argv[])
       snm->read(selJets);
 
       snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
-      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size());
+      snm->read(false, selBJets_medium.size(), selBJets_loose.size());
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);

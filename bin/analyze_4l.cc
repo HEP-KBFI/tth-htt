@@ -1419,11 +1419,8 @@ int main(int argc, char* argv[])
         selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta(), selLepton_fourth->absEta()
       });
 
-      const bool isGenMatched =
-        selLepton_lead->isGenMatched()    &&
-        selLepton_sublead->isGenMatched() &&
-        selLepton_third->isGenMatched()   &&
-        selLepton_fourth->isGenMatched()
+      bool isGenMatched = isMC &&
+        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
       ;
 
       snm->read(eventInfo);
