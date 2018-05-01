@@ -258,6 +258,7 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  const bool sync_requireGenMatching = syncNtuple_cfg.getParameter<bool>("requireGenMatching");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
@@ -1682,6 +1683,11 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
+      const bool isGenMatched = isMC &&
+        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching) &&
+        ((apply_hadTauGenMatching && selHadTau_genMatch.numGenMatchedJets_ == 0) || ! apply_hadTauGenMatching)
+      ;
+
       const double max_dr_jet      = comp_max_dr_jet(selJets);
       const double mbb             = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[0]->p4()).mass() : -1.;
       const double mbb_loose       = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
@@ -1689,11 +1695,6 @@ int main(int argc, char* argv[])
       const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton_lead->p4()).mass();
       const double mTauTauVis2_sel = (selHadTau_lead->p4() + selLepton_sublead->p4()).mass();
       const double max_lep_eta     = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
-
-      bool isGenMatched = isMC &&
-        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching) &&
-        ((apply_hadTauGenMatching && selHadTau_genMatch.numGenMatchedJets_ == 0) || ! apply_hadTauGenMatching)
-      ;
 
       snm->read(eventInfo);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
@@ -1797,7 +1798,10 @@ int main(int argc, char* argv[])
 
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
-      snm->fill();
+      if((sync_requireGenMatching && isGenMatched) || ! sync_requireGenMatching)
+      {
+        snm->fill();
+      }
     }
 
     ++selectedEntries;

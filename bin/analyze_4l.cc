@@ -209,6 +209,7 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  const bool sync_requireGenMatching = syncNtuple_cfg.getParameter<bool>("requireGenMatching");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
@@ -1397,6 +1398,10 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
+      const bool isGenMatched = isMC &&
+        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
+      ;
+
       const double lep1_conePt    = comp_lep1_conePt(*selLepton_lead);
       const double lep2_conePt    = comp_lep2_conePt(*selLepton_sublead);
       const double lep3_conePt    = comp_lep3_conePt(*selLepton_third);
@@ -1418,10 +1423,6 @@ int main(int argc, char* argv[])
       const double max_lep_eta    = std::max({
         selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta(), selLepton_fourth->absEta()
       });
-
-      bool isGenMatched = isMC &&
-        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
-      ;
 
       snm->read(eventInfo);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
@@ -1529,7 +1530,10 @@ int main(int argc, char* argv[])
 
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
-      snm->fill();
+      if((sync_requireGenMatching && isGenMatched) || ! sync_requireGenMatching)
+      {
+        snm->fill();
+      }
     }
 
     ++selectedEntries;

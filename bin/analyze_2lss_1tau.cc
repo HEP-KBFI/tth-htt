@@ -316,6 +316,7 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  const bool sync_requireGenMatching = syncNtuple_cfg.getParameter<bool>("requireGenMatching");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
@@ -2267,6 +2268,11 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
     if(snm)
     {
+      const bool isGenMatched = isMC &&
+        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching) &&
+        ((apply_hadTauGenMatching && selHadTau_genMatch.numGenMatchedJets_ == 0) || ! apply_hadTauGenMatching)
+      ;
+
       const double dr_lep1_tau1   = deltaR(selLepton_lead->p4(), selHadTau->p4());
       const double dr_lep2_tau1   = deltaR(selLepton_sublead->p4(), selHadTau->p4());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
@@ -2275,11 +2281,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       const double max_dr_lep_tau = std::max(dr_lep2_tau1, dr_lep1_tau1);
       const double min_dr_lep_tau = std::min(dr_lep2_tau1, dr_lep1_tau1);
       const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
-
-      bool isGenMatched = isMC &&
-        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching) &&
-        ((apply_hadTauGenMatching && selHadTau_genMatch.numGenMatchedJets_ == 0) || ! apply_hadTauGenMatching)
-      ;
 
       snm->read(eventInfo);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
@@ -2383,7 +2384,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
-      snm->fill();
+      if((sync_requireGenMatching && isGenMatched) || ! sync_requireGenMatching)
+      {
+        snm->fill();
+      }
     }
 
     ++selectedEntries;

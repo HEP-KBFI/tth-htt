@@ -227,6 +227,7 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  const bool sync_requireGenMatching = syncNtuple_cfg.getParameter<bool>("requireGenMatching");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
@@ -1610,6 +1611,10 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
+      const bool isGenMatched = isMC &&
+        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
+      ;
+
       const double mT_lep1           = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
       const double mT_lep2           = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
       const double mT_lep3           = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
@@ -1619,10 +1624,6 @@ int main(int argc, char* argv[])
       const double min_dr_lep_jet    = std::min({ mindr_lep1_jet, mindr_lep2_jet, mindr_lep3_jet });
       const double dr_leps           = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
       const double max_lep_eta       = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
-
-      bool isGenMatched = isMC &&
-        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
-      ;
 
       snm->read(eventInfo);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
@@ -1730,7 +1731,10 @@ int main(int argc, char* argv[])
 
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
-      snm->fill();
+      if((sync_requireGenMatching && isGenMatched) || ! sync_requireGenMatching)
+      {
+        snm->fill();
+      }
     }
 
     ++selectedEntries;
