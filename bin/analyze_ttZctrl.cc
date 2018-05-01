@@ -838,18 +838,12 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
     std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
     std::vector<const RecoMuon*> selMuons = tightMuons;
-    if(isDEBUG)
+    if(isDEBUG || run_lumi_eventSelector)
     {
-      for(std::size_t idxPreselMuon = 0; idxPreselMuon < preselMuons.size(); ++idxPreselMuon)
-      {
-        std::cout << "preselMuon #" << idxPreselMuon << ":\n" << *preselMuons[idxPreselMuon];
-      }
-      for(std::size_t idxSelMuon = 0; idxSelMuon < selMuons.size(); ++idxSelMuon)
-      {
-        std::cout << "selMuon #" << idxSelMuon << ":\n" << *selMuons[idxSelMuon];
-      }
+      printCollection("preselMuons", preselMuons);
+      printCollection("selMuons",    selMuons);
     }
-    
+
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
@@ -857,16 +851,10 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
     std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
     std::vector<const RecoElectron*> selElectrons = tightElectrons;
-    if(isDEBUG)
+    if(isDEBUG || run_lumi_eventSelector)
     {
-      for(std::size_t idxPreselElectron = 0; idxPreselElectron < preselElectrons.size(); ++idxPreselElectron)
-      {
-        std::cout << "preselElectron #" << idxPreselElectron << ":\n" << *preselElectrons[idxPreselElectron];
-      }
-      for(std::size_t idxSelElectron = 0; idxSelElectron < selElectrons.size(); ++idxSelElectron)
-      {
-        std::cout << "selElectron #" << idxSelElectron << ":\n" << *selElectrons[idxSelElectron];
-      }
+      printCollection("preselElectrons", preselElectrons);
+      printCollection("selElectrons",    selElectrons);
     }
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
@@ -874,36 +862,24 @@ int main(int argc, char* argv[])
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
     std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> selHadTaus = hadTauSelector(cleanedHadTaus);
-    if(isDEBUG)
+    if(isDEBUG || run_lumi_eventSelector)
     {
-      for(std::size_t idxPreselHadTau = 0; idxPreselHadTau < selHadTaus.size(); ++idxPreselHadTau)
-      {
-        std::cout << "preselHadTau #" << idxPreselHadTau << ":\n" << *preselHadTaus[idxPreselHadTau];
-      }
-      for(std::size_t idxSelHadTau = 0; idxSelHadTau < selHadTaus.size(); ++idxSelHadTau)
-      {
-        std::cout << "selHadTau #" << idxSelHadTau << ":\n" << *selHadTaus[idxSelHadTau];
-      }
+      printCollection("preselHadTaus", preselHadTaus);
+      printCollection("selHadTaus",    selHadTaus);
     }
     
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    if(isDEBUG)
-    {
-      if(run_lumi_eventSelector)
-      {
-        std::cout << " (#uncleanedJets = " << jet_ptrs.size() << ")\n";
-        for(std::size_t idxJet = 0; idxJet < jet_ptrs.size(); ++idxJet)
-        {
-          std::cout << "uncleanedJet #" << idxJet << ":" << *jet_ptrs[idxJet];
-        }
-      }
-    }
     std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, preselHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
+    if(isDEBUG || run_lumi_eventSelector)
+    {
+      printCollection("uncleanedJets", jet_ptrs);
+      printCollection("selJets",       selJets);
+    }
   
 //--- build collections of generator level particles (after some cuts are applied, to save computing time)
     if(isMC && ! fillGenEvtHistograms && redoGenMatching)
