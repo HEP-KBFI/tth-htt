@@ -2387,6 +2387,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       {
         snm->fill();
       }
+      else
+      {
+        snm->reset();
+      }
     }
 
     ++selectedEntries;

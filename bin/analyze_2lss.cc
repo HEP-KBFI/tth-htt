@@ -2008,6 +2008,10 @@ int main(int argc, char* argv[])
       {
         snm->fill();
       }
+      else
+      {
+        snm->reset();
+      }
     }
 
     ++selectedEntries;
