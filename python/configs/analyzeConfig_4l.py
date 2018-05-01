@@ -152,8 +152,8 @@ class analyzeConfig_4l(analyzeConfig):
     if self.do_sync:
       lines.append("process.analyze_4l.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
       lines.append("process.analyze_4l.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
+      lines.append("process.analyze_4l.syncNtuple.requireGenMatching = cms.bool(%s)" % jobOptions['syncRequireGenMatching'])
       lines.append("process.analyze_4l.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
-      lines.append("process.analyze_4l.requireGenMatching = cms.bool(%s)" % jobOptions['syncRequireGenMatching'])
     lines.append("process.analyze_4l.isDEBUG = cms.bool(%s)" % self.isDebug)
     lines.append("process.analyze_4l.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
