@@ -24,11 +24,11 @@ def get_venn(sets, select_idxs, reject_idxs):
 
 def get_idx_combinations(x):
   # Generates two groups of combinations
-  return list(
-    [list(y), list(set(range(x)) - set(y))]        \
-      for i in range(1, x + 1)                     \
-      for y in itertools.combinations(range(x), i)
-  )
+  return [
+    [ list(y), list(set(x) - set(y)) ] \
+    for i in range(1, len(x) + 1)      \
+    for y in itertools.combinations(x, i)
+  ]
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -130,17 +130,22 @@ if not trees:
     { key.GetName() for key in file_handle.GetListOfKeys() if key.GetClassName() == 'TTree' } \
     for file_handle in file_handles
   ]
-  common_trees = input_trees[0]
+  superset_trees = input_trees[0]
   for i in range(1, nof_groups):
-    common_trees = common_trees & input_trees[i]
-  trees = common_trees
+    superset_trees = superset_trees | input_trees[i]
+  trees = superset_trees
   logging.debug('Found the following common TTree(s): %s' % ', '.join(trees))
 
 # Make sure that the run, lumi and event branch names are present in all common TTrees in all files
 rle_brs = { run_name, lumi_name, event_name }
-for i, file_handle in enumerate(file_handles):
-  for tree in trees:
+tree_idxs = {}
+for tree in trees:
+  tree_idxs[tree] = []
+  for i, file_handle in enumerate(file_handles):
     tree_handle = file_handle.Get(tree)
+    if not tree_handle:
+      continue
+    tree_idxs[tree].append(i)
     brs = { br.GetName() for br in tree_handle.GetListOfBranches()  }
     if (rle_brs & brs) != rle_brs:
       raise ValueError(
@@ -185,9 +190,11 @@ def write_rles(fn, rles):
 
 # Now we can start looping over the entries in each TTree simultaneously and construct the so-called
 # Venn diagram
-for tree in trees:
-  sets = []
-  for idx in range(nof_groups):
+for tree, idxs in tree_idxs.items():
+  sets = {}
+  if len(idxs) < 2:
+    continue
+  for idx in idxs:
     tree_handle = file_handles[idx].Get(tree)
     nentries = tree_handle.GetEntries()
 
@@ -202,30 +209,36 @@ for tree in trees:
     for j in range(nentries):
       tree_handle.GetEntry(j)
       rles.add(':'.join(map(lambda br: str(br[0]), [run_array, lumi_array, event_array])))
-    sets.append(rles)
+    sets[idx] = rles
 
   # Generate the combinations of groups that select and reject events
-  idx_combinations = get_idx_combinations(nof_groups)
-  for idx_combination in idx_combinations:
-    select_idxs = idx_combination[0]
-    reject_idxs = idx_combination[1]
+  unique_idx_combinations = [
+    combination                                       \
+    for combination_length in range(2, len(idxs) + 1) \
+    for combination in itertools.combinations(idxs, combination_length)
+  ]
+  for unique_idx_combination in unique_idx_combinations:
+    idx_combinations = get_idx_combinations(unique_idx_combination)
+    for idx_combination in idx_combinations:
+      select_idxs = idx_combination[0]
+      reject_idxs = idx_combination[1]
 
-    venn = get_venn(sets, select_idxs, reject_idxs)
+      venn = get_venn(sets, select_idxs, reject_idxs)
 
-    # Construct the file name
-    select_names = list(sorted([ names[select_idx] for select_idx in select_idxs ]))
-    reject_names = list(sorted([ names[reject_idx] for reject_idx in reject_idxs ]))
-    logging.debug(
-      'Found %d event(s) which are selected by %s, but rejected by %s' % \
-      (len(venn), ', '.join(select_names), ', '.join(reject_names))
-    )
-    out_fn = '%s_%s_select' % (tree, '_'.join(select_names))
-    if reject_names:
-      out_fn += '_%s_reject' % '_'.join(reject_names)
-    out_fn += '.txt'
-    out_fn_full = os.path.join(output_dir, out_fn)
+      # Construct the file name
+      select_names = list(sorted([ names[select_idx] for select_idx in select_idxs ]))
+      reject_names = list(sorted([ names[reject_idx] for reject_idx in reject_idxs ]))
+      logging.debug(
+        'Found %d event(s) which are selected by %s, but rejected by %s' % \
+        (len(venn), ', '.join(select_names), ', '.join(reject_names))
+      )
+      out_fn = '%s_%s_select' % (tree, '_'.join(select_names))
+      if reject_names:
+        out_fn += '_%s_reject' % '_'.join(reject_names)
+      out_fn += '.txt'
+      out_fn_full = os.path.join(output_dir, out_fn)
 
-    # Write the files to the output
-    write_rles(out_fn_full, venn)
+      # Write the files to the output
+      write_rles(out_fn_full, venn)
 
 logging.info('All done: check the results in %s' % output_dir)
