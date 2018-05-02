@@ -60,13 +60,8 @@ ATTRIBUTE_OUTPUTFILEPATH = 'config.Data.outLFNDirBase'
 ATTRIBUTE_WHITELIST      = 'config.Site.whitelist'
 ATTRIBUTE_BLACKLIST      = 'config.Site.blacklist'
 
-CRABJOBSUMMARY_REGEX   = r'\s*Jobs status:\s*[a-zA-Z_]+\s*[0-9.%]+\s*\([0-9]+\s*/\s*(?P<numJobs>[0-9]+)\)\s*'
+CRABJOBSUMMARY_REGEX   = r'(?P<numJobs>\d+)'
 CRABJOBSUMMARY_MATCHER = re.compile(CRABJOBSUMMARY_REGEX)
-CRABJOBSUMMARY_HEADER  = ' Job State        Most Recent Site        Runtime   Mem (MB)      CPU %    ' \
-                         'Retries   Restarts      Waste       Exit Code'
-CRABJOBSTATUS_REGEX    = r'\s*(?P<jobId>[0-9]+)\s+(?P<State>[a-zA-Z_]+)\s+[a-zA-Z0-9_]+\s+[0-9:]+' \
-                          '\s+[0-9]+\s+[0-9]+\s+(?P<Retries>[0-9]+)\s+[0-9]+\s+[0-9:]+\s+[a-zA-Z0-9_ ]+\s*'
-CRABJOBSTATUS_MATCHER  = re.compile(CRABJOBSTATUS_REGEX)
 
 TIME_LIMIT = 60 * 60 * 24
 
@@ -307,7 +302,7 @@ if __name__ == '__main__':
 
         # run 'crab status' command (abort after 5 minutes = 300 seconds)
         crabStatus_lines = runCommand_via_shell_with_timeout(
-            '%s status -d %s --long' % (EXECUTABLE_CRAB, crabDir), timeout = 300
+            '%s status -d %s --json' % (EXECUTABLE_CRAB, crabDir), timeout = 300
         )
         if not crabStatus_lines:
             print("Failed to run 'crab -status' command for sample = '%s' --> skipping" % sample)
@@ -380,73 +375,56 @@ if __name__ == '__main__':
 
         # parse job status information returned by executing 'crab status' command
         numJobs = None
-        foundStart = False
-        foundEnd = False
-        isCrabFailure = False
         jobStatus_summary = {}
         jobIds_resubmit = []
         jobIds_force_resubmit = []
         for crabStatus_line in crabStatus_lines:
-            crabStatus_line = crabStatus_line.replace("\n", "")
-            # CV: check if job status cannot be determined,
-            #     due to crab internal error
-            if isCrabFailure:
-                continue
-            if crabStatus_line.find("Traceback (most recent call last):") != -1:
-                print("Failed to execute 'crab status' command --> checking output files:")
-                for jobId in range(1, numJobs):
-                    checkOutputFiles(outputFileInfos, jobId, jobIds_force_resubmit)
-                    isCrabFailure = True
-                CRABJOBSTATUS_REGEX
-            crabJobSummary_match = CRABJOBSUMMARY_MATCHER.match(crabStatus_line)
-            if crabJobSummary_match:
+            crabStatus_line = crabStatus_line.rstrip('\n')
+            if 'Jobs status:' in crabStatus_line:
+                crabStatus_line_whitespaceSplit = crabStatus_line.split()[-1]
+                crabStatus_line_slashSplit = crabStatus_line_whitespaceSplit.split('/')
+                assert(len(crabStatus_line_slashSplit) == 2)
+                crabJobSummary_match = CRABJOBSUMMARY_MATCHER.match(crabStatus_line_slashSplit[1])
+                assert(crabJobSummary_match)
                 numJobs = crabJobSummary_match.group('numJobs')
                 print("Task = '%s' has %s jobs." % (crabJob, numJobs))
                 continue
-            if crabStatus_line == CRABJOBSUMMARY_HEADER:
-                foundStart = True
-                continue
-            if not foundStart or foundEnd:
-                continue
-            jobId = None
-            State = None
-            Retries = None
-            crabJobStatus_match = CRABJOBSTATUS_MATCHER.match(crabStatus_line)
-            if crabJobStatus_match:
-                jobStatus_entry = None
-                if not crabJob in jobStatus_dict_updated.keys():
-                    jobStatus_dict_updated[crabJob] = {}
-                jobId = int(crabJobStatus_match.group('jobId'))
-                if not jobId in jobStatus_dict_updated[crabJob]:
-                    jobStatus_dict_updated[crabJob][jobId] = {}
-                jobStatus_entry = jobStatus_dict_updated[crabJob][jobId]
-                State = crabJobStatus_match.group('State')
-                jobStatus_entry['State'] = State
-                if not State in jobStatus_summary.keys():
-                    jobStatus_summary[State] = 0
-                jobStatus_summary[State] = jobStatus_summary[State] + 1
-                Retries = int(crabJobStatus_match.group('Retries'))
-                jobStatus_entry['Retries'] = Retries
-            else:
-                foundEnd = True
-            if jobId and State and Retries is not None:
-                print("jobId = %i: State = '%s', Retries = %i" % (jobId, State, Retries))
-                if State in [ "finished" ] or force_resubmit:
-                    checkOutputFiles(outputFileInfos, jobId, jobIds_force_resubmit)
-                elif State in [ "failed", "transferring" ]:
-                    # CV: check if job remained in this state for more than one day;
-                    #     if so, assume that crab job got "stuck" and create a new crab task with this job
-                    if crabJob in jobStatus_dict.keys() and jobId in jobStatus_dict[crabJob].keys():
-                        if Retries == jobStatus_dict[crabJob][jobId]['Retries'] and \
-                              (current_time - jobStatus_dict[crabJob]['lastUpdate']) > TIME_LIMIT:
-                            print(
-                                "Info: jobId = %i got stuck in state '%s' --> " \
-                                "creating a new crab task with this job !!" % (jobId, State)
-                            )
-                            jobIds_force_resubmit.append(jobId)
-                    elif State in [ "failed" ]:
-                        print("Info: jobId = %i failed --> resubmitting it" % jobId)
-                        jobIds_resubmit.append(jobId)
+
+            if crabStatus_line.startswith('{'):
+                crab_json = json.loads(crabStatus_line)
+                for jobId_str, jobStatus_entry in crab_json.items():
+                    jobId = int(jobId_str)
+                    if crabJob not in jobStatus_dict_updated.keys():
+                        jobStatus_dict_updated[crabJob] = {}
+                    if jobId not in jobStatus_dict_updated[crabJob]:
+                        jobStatus_dict_updated[crabJob][jobId] = {}
+                    State = jobStatus_entry['State']
+                    Retries = jobStatus_entry['Retries']
+                    jobStatus_dict_updated[crabJob][jobId]['State'] = State
+                    jobStatus_dict_updated[crabJob][jobId]['Retries'] = Retries
+
+                    if State not in jobStatus_summary.keys():
+                        jobStatus_summary[State] = 0
+                    jobStatus_summary[State] += 1
+
+                    print("jobId = %i: State = '%s', Retries = %i" % (jobId, State, Retries))
+                    if State in [ "finished" ] or force_resubmit:
+                        checkOutputFiles(outputFileInfos, jobId, jobIds_force_resubmit)
+                    elif State in [ "failed", "transferring" ]:
+                        # CV: check if job remained in this state for more than one day;
+                        #     if so, assume that crab job got "stuck" and create a new crab task with this job
+                        if crabJob in jobStatus_dict.keys() and jobId in jobStatus_dict[crabJob].keys():
+                            if Retries == jobStatus_dict[crabJob][jobId]['Retries'] and \
+                                  (current_time - jobStatus_dict[crabJob]['lastUpdate']) > TIME_LIMIT:
+                                print(
+                                    "Info: jobId = %i got stuck in state '%s' --> " \
+                                    "creating a new crab task with this job !!" % (jobId, State)
+                                )
+                                jobIds_force_resubmit.append(jobId)
+                        elif State in [ "failed" ]:
+                            print("Info: jobId = %i failed --> resubmitting it" % jobId)
+                            jobIds_resubmit.append(jobId)
+                break
 
         print("Job summary:")
         for jobStatus, numJobs_status in jobStatus_summary.items():
