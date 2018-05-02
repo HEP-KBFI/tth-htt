@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # Suitable for comparing the run, lumi and event numbers between synchronization Ntuples
 # The only requirement is that the TTree names and RLE branch names are common in both Ntuples
@@ -7,8 +8,21 @@
 #
 # compareRootRLENumbers.py \
 # -i sync_LLR_v1.root sync_Tallinn_v5.root -o ~/sandbox/rle_venn_v1 -f -n LLR Tallinn
+#
+# Author: K. Ehatäht
 
-import argparse, ROOT, array, os, logging, sys, re, itertools
+import argparse
+import ROOT
+import array
+import os
+import logging
+import sys
+import re
+import itertools
+import collections
+import prettytable
+import csv
+import subprocess
 
 def get_venn(sets, select_idxs, reject_idxs):
   assert(select_idxs)
@@ -22,12 +36,19 @@ def get_venn(sets, select_idxs, reject_idxs):
     reject = reject | sets[reject_idxs[i]]
   return select - reject
 
-def get_idx_combinations(x):
+def get_set_idx_combinations(x):
   # Generates two groups of combinations
   return [
     [ list(y), list(set(x) - set(y)) ] \
     for i in range(1, len(x) + 1)      \
     for y in itertools.combinations(x, i)
+  ]
+
+def get_idx_combinations(idxs, start, end):
+  return [
+    sorted(combination)                         \
+    for combination_length in range(start, end) \
+    for combination in itertools.combinations(idxs, combination_length)
   ]
 
 class SmartFormatter(argparse.HelpFormatter):
@@ -68,6 +89,10 @@ parser.add_argument('-n', '--names',
   type = str, nargs = '+', dest = 'names', metavar = 'name', default = None, required = True,
   help = 'R|Labels that refer to the input files (e.g. LLR, Tallinn, Cornell)',
 )
+parser.add_argument('-T', '--table',
+  dest = 'table', action = 'store_true', default = False,
+  help = 'R|Save the Venn diagrams as tables (path = output dir + .txt)',
+)
 parser.add_argument('-v', '--verbose',
   dest = 'verbose', action = 'store_true', default = False,
   help = 'R|Enable verbose output',
@@ -76,16 +101,17 @@ parser.add_argument('-f', '--force',
   dest = 'force', action = 'store_true', default = False,
   help = "R|Force creating the output directory if it doesn't exist",
 )
-args       = parser.parse_args()
-input_fns  = args.input_fns
-trees      = args.trees
-run_name   = args.run_name
-lumi_name  = args.lumi_name
-event_name = args.event_name
-output_dir = args.output_dir
-names      = args.names
-verbose    = args.verbose
-force      = args.force
+args        = parser.parse_args()
+input_fns   = args.input_fns
+trees       = args.trees
+run_name    = args.run_name
+lumi_name   = args.lumi_name
+event_name  = args.event_name
+output_dir  = args.output_dir
+names       = args.names
+write_table = args.table
+verbose     = args.verbose
+force       = args.force
 
 nof_groups = len(input_fns)
 assert(nof_groups == len(names) and nof_groups > 1)
@@ -133,12 +159,12 @@ if not trees:
   superset_trees = input_trees[0]
   for i in range(1, nof_groups):
     superset_trees = superset_trees | input_trees[i]
-  trees = superset_trees
+  trees = sorted(superset_trees)
   logging.debug('Found the following common TTree(s): %s' % ', '.join(trees))
 
 # Make sure that the run, lumi and event branch names are present in all common TTrees in all files
 rle_brs = { run_name, lumi_name, event_name }
-tree_idxs = {}
+tree_idxs = collections.OrderedDict()
 for tree in trees:
   tree_idxs[tree] = []
   for i, file_handle in enumerate(file_handles):
@@ -188,10 +214,19 @@ def write_rles(fn, rles):
     if rles:
       f.write('\n')
 
+def get_names(names, idxs):
+  return list(sorted([ names[idx] for idx in idxs ]))
+
+def get_tabname(names):
+  if names:
+    return ' & '.join(names)
+  return 'none'
+
 # Now we can start looping over the entries in each TTree simultaneously and construct the so-called
 # Venn diagram
 for tree, idxs in tree_idxs.items():
   sets = {}
+  totals = {}
   if len(idxs) < 2:
     continue
   for idx in idxs:
@@ -210,15 +245,21 @@ for tree, idxs in tree_idxs.items():
       tree_handle.GetEntry(j)
       rles.add(':'.join(map(lambda br: str(br[0]), [run_array, lumi_array, event_array])))
     sets[idx] = rles
+    totals[get_tabname(get_names(names, [idx]))] = len(rles)
 
   # Generate the combinations of groups that select and reject events
-  unique_idx_combinations = [
-    combination                                       \
-    for combination_length in range(2, len(idxs) + 1) \
-    for combination in itertools.combinations(idxs, combination_length)
-  ]
+  unique_idx_combinations = get_idx_combinations(idxs, 2, len(idxs) + 1)
+
+  table_dict = collections.OrderedDict()
+  for select_idxs in get_idx_combinations(idxs, 1, len(idxs) + 1):
+    select_key = get_tabname(get_names(names, select_idxs))
+    table_dict[select_key] = collections.OrderedDict()
+    for reject_idxs in get_idx_combinations(idxs, 0, len(idxs)):
+      reject_key = get_tabname(get_names(names, reject_idxs))
+      table_dict[select_key][reject_key] = ' '
+
   for unique_idx_combination in unique_idx_combinations:
-    idx_combinations = get_idx_combinations(unique_idx_combination)
+    idx_combinations = get_set_idx_combinations(unique_idx_combination)
     for idx_combination in idx_combinations:
       select_idxs = idx_combination[0]
       reject_idxs = idx_combination[1]
@@ -226,8 +267,14 @@ for tree, idxs in tree_idxs.items():
       venn = get_venn(sets, select_idxs, reject_idxs)
 
       # Construct the file name
-      select_names = list(sorted([ names[select_idx] for select_idx in select_idxs ]))
-      reject_names = list(sorted([ names[reject_idx] for reject_idx in reject_idxs ]))
+      select_names = get_names(names, select_idxs)
+      reject_names = get_names(names, reject_idxs)
+
+      select_tabkey = get_tabname(select_names)
+      reject_tabkey = get_tabname(reject_names)
+      assert(select_tabkey in table_dict and reject_tabkey in table_dict[select_tabkey])
+      table_dict[select_tabkey][reject_tabkey] = len(venn)
+
       logging.debug(
         'Found %d event(s) which are selected by %s, but rejected by %s' % \
         (len(venn), ', '.join(select_names), ', '.join(reject_names))
@@ -240,5 +287,33 @@ for tree, idxs in tree_idxs.items():
 
       # Write the files to the output
       write_rles(out_fn_full, venn)
+
+  if write_table:
+    all_rows = []
+    header = ['%s' % tree] + list(table_dict[list(table_dict.keys())[0]].keys()) + ['total']
+    all_rows.append(header)
+    table = prettytable.PrettyTable(header)
+    table.hrules = prettytable.ALL
+    for select_key, table_entry in table_dict.items():
+      row = [select_key] + list(table_entry.values())
+      row += [totals[select_key] if select_key in select_key in totals else '']
+      table.add_row(row)
+      all_rows.append(row)
+
+    table_fn_txt = os.path.join(output_dir, 'table_%s.txt' % tree)
+    with open(table_fn_txt, 'w') as table_f:
+      table_f.write('%s\n' % table)
+
+    table_fn_csv = os.path.join(output_dir, 'table_%s.csv' % tree)
+    with open(table_fn_csv, 'w') as table_f:
+      table_csv_writer = csv.writer(table_f, quoting = csv.QUOTE_ALL)
+      for row in all_rows:
+        table_csv_writer.writerow(row)
+
+    try:
+      cmd_str = 'unoconv --format xls %s' % table_fn_csv
+      subprocess.call(cmd_str.split())
+    except OSError:
+      logging.debug('Could not convert %s to xls' % table_fn_csv)
 
 logging.info('All done: check the results in %s' % output_dir)
