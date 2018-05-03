@@ -1120,7 +1120,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
     if ( !(selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS trigger selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
         std::cout << " (selTrigger_1e = " << selTrigger_1e
                   << ", selTrigger_2e = " << selTrigger_2e
                   << ", selTrigger_1mu = " << selTrigger_1mu
@@ -1136,7 +1136,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     if ( !isMC && !isDEBUG ) {
       if ( selTrigger_1e && (isTriggered_2e || isTriggered_1mu || isTriggered_2mu || isTriggered_1e1mu) ) {
         if ( run_lumi_eventSelector ) {
-          std::cout << "event FAILS trigger selection." << std::endl;
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
           std::cout << " (selTrigger_1e = " << selTrigger_1e
                     << ", isTriggered_2e = " << isTriggered_2e
                     << ", isTriggered_1mu = " << isTriggered_1mu
@@ -1147,7 +1147,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       if ( selTrigger_2e && (isTriggered_2mu || isTriggered_1e1mu) ) {
         if ( run_lumi_eventSelector ) {
-          std::cout << "event FAILS trigger selection." << std::endl;
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
           std::cout << " (selTrigger_2e = " << selTrigger_2e
                     << ", isTriggered_2mu = " << isTriggered_2mu
                     << ", isTriggered_1e1mu = " << isTriggered_1e1mu << ")" << std::endl;
@@ -1156,7 +1156,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       if ( selTrigger_1mu && (isTriggered_2e || isTriggered_2mu || isTriggered_1e1mu) ) {
         if ( run_lumi_eventSelector ) {
-          std::cout << "event FAILS trigger selection." << std::endl;
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
           std::cout << " (selTrigger_1mu = " << selTrigger_1mu
                     << ", isTriggered_2e = " << isTriggered_2e
                     << ", isTriggered_2mu = " << isTriggered_2mu
@@ -1166,7 +1166,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       if ( selTrigger_1e1mu && isTriggered_2mu ) {
         if ( run_lumi_eventSelector ) {
-          std::cout << "event FAILS trigger selection." << std::endl;
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
           std::cout << " (selTrigger_1e1mu = " << selTrigger_1e1mu
                     << ", isTriggered_2mu = " << isTriggered_2mu << ")" << std::endl;
         }
@@ -1321,7 +1321,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     // require at least two leptons passing loose preselection criteria
     if ( !(preselLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS preselLeptons selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS preselLeptons selection." << std::endl;
         printCollection("preselLeptons", preselLeptons);
       }
       continue;
@@ -1340,7 +1340,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
            (preselElectrons.size() >= 1 && preselMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
            (                               preselMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given preselLepton multiplicity." << std::endl;
         std::cout << " (#preselElectrons = " << preselElectrons.size()
                   << ", #preselMuons = " << preselMuons.size()
                   << ", selTrigger_2mu = " << selTrigger_2mu
@@ -1357,7 +1357,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     if ( !(selJets.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS selJets selection (1)." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS selJets selection (1)." << std::endl;
         printCollection("selJets", selJets);
       }
       continue;
@@ -1366,7 +1366,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowHistManager->fillHistograms(">= 2 jets", lumiScale);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS selBJets selection (1)." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection (1)." << std::endl;
         printCollection("selJets", selJets);
         printCollection("selBJets_loose", selBJets_loose);
         printCollection("selBJets_medium", selBJets_medium);
@@ -1378,7 +1378,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
     if ( !(selHadTaus.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS selHadTaus selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS selHadTaus selection." << std::endl;
         printCollection("selHadTaus", selHadTaus);
       }
       continue;
@@ -1422,7 +1422,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 //--- apply final event selection
     if ( !(selLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS selLeptons selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS selLeptons selection." << std::endl;
         printCollection("selLeptons", selLeptons);
       }
       continue;
@@ -1561,7 +1561,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherConePt);
     if ( !(tightLeptons.size() <= 2) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS tightLeptons selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS tightLeptons selection." << std::endl;
         printCollection("tightLeptons", tightLeptons);
       }
       continue;
@@ -1573,7 +1573,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
            (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
            (                                 fakeableMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS trigger selection for given fakeableLepton multiplicity." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given fakeableLepton multiplicity." << std::endl;
         std::cout << " (#fakeableElectrons = " << fakeableElectrons.size()
                   << ", #fakeableMuons = " << fakeableMuons.size()
                   << ", selTrigger_2mu = " << selTrigger_2mu
@@ -1589,7 +1589,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
     if ( !(selJets.size() >= 3) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS selJets selection (2)." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS selJets selection (2)." << std::endl;
         printCollection("selJets", selJets);
       }
       continue;
@@ -1598,7 +1598,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowHistManager->fillHistograms(">= 3 jets", evtWeight);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS selBJets selection (2)." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection (2)." << std::endl;
         printCollection("selJets", selJets);
         printCollection("selBJets_loose", selBJets_loose);
         printCollection("selBJets_medium", selBJets_medium);
@@ -1610,7 +1610,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
     if ( !(selHadTaus.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS selHadTaus selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS selHadTaus selection." << std::endl;
         printCollection("selHadTaus", selHadTaus);
       }
       continue;
@@ -1621,7 +1621,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     // veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
     if ( !(vetoHadTaus.size() <= 1) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS vetoHadTaus selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS vetoHadTaus selection." << std::endl;
         printCollection("vetoHadTaus", vetoHadTaus);
       }
       continue;
@@ -1642,7 +1642,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
     if ( failsLowMassVeto ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS low mass lepton pair veto." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS low mass lepton pair veto." << std::endl;
       }
       continue;
     }
@@ -1655,7 +1655,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
     if ( !(selLepton_lead->cone_pt() > minPt_lead && selLepton_sublead->cone_pt() > minPt_sublead) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS lepton pT selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS lepton pT selection." << std::endl;
         std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead
                   << ", subleading selLepton pT = " << selLepton_sublead->pt() << ", minPt_sublead = " << minPt_sublead << ")" << std::endl;
       }
@@ -1680,7 +1680,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
     if ( failsTightChargeCut ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS tight lepton charge requirement." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS tight lepton charge requirement." << std::endl;
       }
       //if (!selectBDT)
       continue;
@@ -1692,7 +1692,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     bool isLeptonCharge_OS = selLepton_lead->charge()*selLepton_sublead->charge() < 0;
     if ( leptonChargeSelection == kOS && isLeptonCharge_SS ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS lepton charge selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS lepton charge selection." << std::endl;
         std::cout << " (leading selLepton charge = " << selLepton_lead->charge()
                   << ", subleading selLepton charge = " << selLepton_sublead->charge() << ", leptonChargeSelection = OS)" << std::endl;
       }
@@ -1700,7 +1700,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
     if ( leptonChargeSelection == kSS && isLeptonCharge_OS ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS lepton charge selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS lepton charge selection." << std::endl;
         std::cout << " (leading selLepton charge = " << selLepton_lead->charge()
                   << ", subleading selLepton charge = " << selLepton_sublead->charge() << ", leptonChargeSelection = SS)" << std::endl;
       }
@@ -1736,7 +1736,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       {
         if(run_lumi_eventSelector)
         {
-          std::cout << "event FAILS charge flip selection\n"
+          std::cout << "event " << eventInfo.str() << " FAILS charge flip selection\n"
                        "(leading lepton charge (pdgId) = " << selLepton_lead->charge() << " (" << selLepton_lead->pdgId()
                     << ") => misId prob = " << prob_chargeMisId_lead << "; "
                        "subleading lepton charge (pdgId) = " << selLepton_sublead->charge() << " (" << selLepton_sublead->pdgId()
@@ -1754,7 +1754,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       if ( !((chargeSumSelection == kOS && std::abs(selLepton_lead->charge() + selLepton_sublead->charge() + selHadTau->charge()) == 1) ||
              (chargeSumSelection == kSS && std::abs(selLepton_lead->charge() + selLepton_sublead->charge() + selHadTau->charge()) != 1)) ) {
         if ( run_lumi_eventSelector ) {
-          std::cout << "event FAILS lepton+tau charge selection." << std::endl;
+          std::cout << "event " << eventInfo.str() << " FAILS lepton+tau charge selection." << std::endl;
           std::cout << " (leading selLepton charge = " << selLepton_lead->charge()
                     << ", subleading selLepton charge = " << selLepton_sublead->charge()
                     << ", selHadTau charge = " << selHadTau->charge() << ")" << std::endl;
@@ -1778,7 +1778,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
     if ( failsZbosonMassVeto ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS Z-boson veto." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto." << std::endl;
       }
       continue;
     }
@@ -1786,7 +1786,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowHistManager->fillHistograms("Z-boson mass veto", evtWeight);
     if ( !(fakeableMuons.size() >= 1 || met_LD >= 0.2) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS MET LD selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
         std::cout << " (LD = " << met_LD << ")" << std::endl;
       }
       continue;
@@ -1797,7 +1797,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     if ( leptonSelection == kFakeable || hadTauSelection == kFakeable ) {
       if ( (tightMuons.size() + tightElectrons.size()) >= 2 && tightHadTaus.size() >= 1 ) {
         if ( run_lumi_eventSelector ) {
-          std::cout << "event FAILS tightElectrons+tightMuons selection." << std::endl;
+          std::cout << "event " << eventInfo.str() << " FAILS tightElectrons+tightMuons selection." << std::endl;
           std::cout << " (#tightElectrons = " << tightElectrons.size() << ", #tightMuons = " << tightMuons.size() << ", #tightHadTaus = " << tightHadTaus.size() << ")" << std::endl;
         }
         continue; // CV: avoid overlap with signal region
