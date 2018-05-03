@@ -1,6 +1,9 @@
 #ifndef tthAnalysis_HiggsToTauTau_hadTopTaggerAuxFunctions_h
 #define tthAnalysis_HiggsToTauTau_hadTopTaggerAuxFunctions_h
 
+#include <TString.h> // TString, Form
+#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
+
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 
 enum {
@@ -15,6 +18,8 @@ enum {
   kGenTopVar, kGenTopB, kGenTopW, kGenTopWj1, kGenTopWj2
 };
 
+TString stringTmp = "";
+
 std::map<int, bool>
 isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
                        const Particle::LorentzVector & recWJet1,
@@ -26,8 +31,22 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
                        int mode,
                        double & genTopPt,
                        double & genTopEta,
-											 int TypeTop = 3,
-											 const Particle::LorentzVector & recFatJet = Particle::LorentzVector(0., 0., 0., 0.));
+		       int TypeTop = 3,
+		       const Particle::LorentzVector & recFatJet = Particle::LorentzVector(0., 0., 0., 0.));
+
+std::map<int, bool>
+isGenMatchedJetTriplet_Method2(const Particle::LorentzVector & recBJet,
+                       const Particle::LorentzVector & recWJet1,
+                       const Particle::LorentzVector & recWJet2,
+                       const std::vector<GenParticle> & genTopQuarks,
+                       const std::vector<GenParticle> & genBJets,
+                       const std::vector<GenParticle> & genWBosons,
+                       const std::vector<GenParticle> & genWJets,
+                       int mode,
+                       double & genTopPt,
+		       int TypeTop = 3,
+		       const Particle::LorentzVector & recFatJet = Particle::LorentzVector(0., 0., 0., 0.),
+		       TString & sPrint = stringTmp);
 
 std::map<int, Particle::LorentzVector>
 isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
