@@ -63,7 +63,7 @@ ATTRIBUTE_BLACKLIST      = 'config.Site.blacklist'
 CRABJOBSUMMARY_REGEX   = r'(?P<numJobs>\d+)'
 CRABJOBSUMMARY_MATCHER = re.compile(CRABJOBSUMMARY_REGEX)
 
-TIME_LIMIT = 60 * 60 * 24
+TIME_LIMIT = 172 * 60 * 60 * 24
 
 def runCommand(commandLine):
     print(commandLine)
