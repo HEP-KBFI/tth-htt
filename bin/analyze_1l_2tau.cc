@@ -1351,7 +1351,15 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);
 
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
-    if ( !(selHadTaus.size() >= 2) ) continue;
+    if ( !(selHadTaus.size() >= 2) )
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS because there aren't enough taus:\n";
+        printCollection("selHadTaus", selHadTaus);
+      }
+      continue;
+    }
     cutFlowTable.update(">= 2 sel taus", evtWeight);
     cutFlowHistManager->fillHistograms(">= 2 sel taus", evtWeight);
     const RecoHadTau* selHadTau_lead = selHadTaus[0];
