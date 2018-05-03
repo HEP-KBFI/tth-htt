@@ -1,3 +1,7 @@
+
+// version preprocessor if condition used to comment out 2lss-1tau selection
+
+
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
@@ -12,6 +16,7 @@
 #include <TMatrixD.h> // TMatrixD
 #include <TError.h> // gErrorAbortLevel, kError
 #include <TMath.h> // TMath::Pi()
+#include <TH2.h>
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -100,6 +105,9 @@
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
 
+#define DoNotUse2lss_1tauConditions // uncomment this if 2lss_1tau rec-level selection conditions are not required
+
+
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
 
@@ -107,6 +115,69 @@ typedef std::vector<std::string> vstring;
 //const int hadTauSelection_antiMuon = 1; // Loose
 const int hadTauSelection_antiElectron = -1; // not applied
 const int hadTauSelection_antiMuon = -1; // not applied
+
+
+// Global variables::
+bool isHTTv2FromTop;
+bool isHTTv2FromTop_fatjetPtGt200 = false;
+bool isHTTv2FromTop_fatjetPtGt200_and_subjetPtGt30 = false;
+bool isHTTv2FromTop_selected = false;
+bool isHTTv2FromAntiTop = false;
+bool isHTTv2FromAntiTop_fatjetPtGt200 = false;
+bool isHTTv2FromAntiTop_fatjetPtGt200_and_subjetPtGt30 = false;
+bool isHTTv2FromAntiTop_selected = false;
+
+bool isbCandiFromTop = false;
+bool isW1CandiFromTop = false;
+bool isW2CandiFromTop = false;
+bool isJetTripletFromTop = false;
+bool isbCandiFromAntiTop = false;
+bool isW1CandiFromAntiTop = false;
+bool isW2CandiFromAntiTop = false;
+bool isJetTripletFromAntiTop = false;
+
+bool isbCandiFromTopPtGt30 = false;
+bool isW1CandiFromTopPtGt30 = false;
+bool isW2CandiFromTopPtGt30 = false;
+bool isJetTripletFromTopPtGt30 = false;
+bool isbCandiFromAntiTopPtGt30 = false;
+bool isW1CandiFromAntiTopPtGt30 = false;
+bool isW2CandiFromAntiTopPtGt30 = false;
+bool isJetTripletFromAntiTopPtGt30 = false;
+
+bool isCat1_Gen = false;
+
+TString sPrint;
+
+cutFlowTableType cutFlowTable_2lss_1tau;
+cutFlowTableType cutFlowTable_2lss_1tau_HTTv2;
+cutFlowTableType cutFlowTable_2lss_1tau_AK12;
+cutFlowTableType cutFlowTable_2lss_1tau_resolved;
+
+double evtWeight;
+
+JetHistManagerHTTv2* histManager_jetsHTTv2;
+TH1* histogram_HTTv2_W_ptRec_div_ptGen;
+TH1* histogram_HTTv2_mW;
+TH1* histogram_HTTv2_Top_ptRec_div_ptGen;
+TH1* histogram_HTTv2_mTop;
+TH1* histogram_HTTv2_WJet1_ptRec_div_ptGen;
+TH1* histogram_HTTv2_WJet1_dRmatch;
+TH1* histogram_HTTv2_WJet1_cosThetaStar;
+TH1* histogram_HTTv2_WJet2_ptRec_div_ptGen;
+TH1* histogram_HTTv2_WJet2_dRmatch;
+TH1* histogram_HTTv2_BJet_ptRec_div_ptGen;
+TH1* histogram_HTTv2_BJet_dRmatch;
+TH1* histogram_HTTv2_BJet_cosThetaStar;
+TH1* histogram_HTTv2_GenTop_dRmin;
+TH1* histogram_HTTv2Pt_div_GenTopPt_dRmin;
+TH2* histogram_HTTv2_GenTop_dRmin_vs_HTTv2Pt_div_GenTopPt;
+
+std::vector<GenParticle> genTopQuarks;
+std::vector<GenParticle> genBJets;
+std::vector<GenParticle> genWBosons;
+std::vector<GenParticle> genWJets;
+
 
 void dumpGenParticles(const std::string& label, const std::vector<GenParticle>& particles)
 {
@@ -139,16 +210,408 @@ double comp_theta_t(const Particle::LorentzVector& jet1_p4, double jet1_pullEta,
   }
 }
 
+enum {
+  kTLVGenTop, kTLVGenBJet, kTLVGenWJet1, kTLVGenWJet2
+};
+
+void 
+CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Particle::LorentzVector *genParticle,
+			 std::vector<const RecoJetHTTv2*> jet_ptrsHTTv2,
+			 std::vector<const RecoJet*> selJets,
+			 RecoJetSelectorHTTv2 jetSelectorHTTv2) {
+
+  const GenParticle *genTopQuark = genParticle[kTLVGenTop];
+  const GenParticle *genBJetFromTop = genParticle[kTLVGenBJet];
+  const GenParticle *genWJetFromTop_lead = genParticle[kTLVGenWJet1];
+  const GenParticle *genWJetFromTop_sublead = genParticle[kTLVGenWJet2];
+
+  Particle::LorentzVector genTopP4 = genTopQuark->p4();
+  Particle::LorentzVector genWBosonFromTopP4 = genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4();
+  
+
+  sPrint += Form("Top/AntiTop mode %i\n",kGenMode);
+  /*sPrint += Form(" Top:     (%f, %f, %f, %f); \n b:       (%f, %f, %f, %f); \n W1:      (%f, %f, %f, %f); \n W2:      (%f, %f, %f, %f)\n",
+		 genTopP4.pt(),genTopP4.eta(),genTopP4.phi(),genTopP4.mass(),
+		 genBJetFromTop->pt(),genBJetFromTop->eta(),genBJetFromTop->phi(),genBJetFromTop->mass(),
+		 genWJetFromTop_lead->pt(),genWJetFromTop_lead->eta(),genWJetFromTop_lead->phi(),genWJetFromTop_lead->mass(),
+		 genWJetFromTop_sublead->pt(),genWJetFromTop_sublead->eta(),genWJetFromTop_sublead->phi(),genWJetFromTop_sublead->mass()); */
+ 
+ 
+  if ( (genBJetFromTop     && genWJetFromTop_lead     && genWJetFromTop_sublead     && genTopP4.pt()     > 200.) ) {
+    cutFlowTable_2lss_1tau_HTTv2.update("genTop passes pT > 200 GeV");
+    
+    if ( (genBJetFromTop             && genBJetFromTop->absEta()          < 5.0 &&
+	  genWJetFromTop_lead        && genWJetFromTop_lead->absEta()     < 5.0 &&
+	  genWJetFromTop_sublead     && genWJetFromTop_lead->absEta()     < 5.0) ) {
+      cutFlowTable_2lss_1tau_HTTv2.update("genJet triplet passes abs(eta) < 5.0");
+      
+      if ( (genBJetFromTop             && genBJetFromTop->absEta()      < 2.4) ) {
+	cutFlowTable_2lss_1tau_HTTv2.update("genBJet passes abs(eta) < 2.4");
+	
+	if ( (genBJetFromTop             && genBJetFromTop->absEta()          < 2.4 &&
+	      genWJetFromTop_lead        && genWJetFromTop_lead->absEta()     < 2.4 &&
+	      genWJetFromTop_sublead     && genWJetFromTop_lead->absEta()     < 2.4) ) {
+	  cutFlowTable_2lss_1tau_HTTv2.update("genJet triplet passes abs(eta) < 2.4");
+	  
+	  if ( (genBJetFromTop             && genBJetFromTop->pt()          > 30  &&
+		genWJetFromTop_lead        && genWJetFromTop_lead->pt()     > 30 &&
+		genWJetFromTop_sublead     && genWJetFromTop_lead->pt()     > 30 ) ) {
+	    cutFlowTable_2lss_1tau_HTTv2.update("genJet triplet passes pt > 30");
+	    
+	    
+	    if ( (genBJetFromTop && genWJetFromTop_lead && genWJetFromTop_sublead             &&
+		  deltaR(genTopP4, genBJetFromTop->p4())                                < 1.5 &&
+		  deltaR(genTopP4, genWJetFromTop_lead->p4())                           < 1.5 &&
+		  deltaR(genTopP4, genWJetFromTop_sublead->p4())                        < 1.5) ) {
+	      cutFlowTable_2lss_1tau_HTTv2.update("dR(genBJet, genWJet1, genWJet2) < 1.5");
+	      isCat1_Gen = true;
+	      
+	      if ( (genBJetFromTop && genWJetFromTop_lead && genWJetFromTop_sublead             &&
+		    deltaR(genTopP4, genBJetFromTop->p4())                                < 1.5 &&
+		    deltaR(genTopP4, genWJetFromTop_lead->p4())                           < 1.5 &&
+		    deltaR(genTopP4, genWJetFromTop_sublead->p4())                        < 1.5) )
+		cutFlowTable_2lss_1tau_HTTv2.update("Both top and antitop fall in Category1 (FatTopJet)");
+	      
+	      
+	      if (jet_ptrsHTTv2.size() >= 1) {
+		cutFlowTable_2lss_1tau_HTTv2.update("HTTv2: jet_ptrsHTTv2.size() >= 1");
+	      }
+	      
+	      /*
+		sPrint += "genInfo: (pt, eta, phi, mass)\n";
+		if (genBJetFromTop     && genWJetFromTop_lead     && genWJetFromTop_sublead) {
+		sPrint += Form(" Top:     (%f, %f, %f, %f); \n b:       (%f, %f, %f, %f); \n W1:      (%f, %f, %f, %f); \n W2:      (%f, %f, %f, %f)\n",
+		genTopP4.pt(),genTopP4.eta(),genTopP4.phi(),genTopP4.mass(),
+		genBJetFromTop->pt(),genBJetFromTop->eta(),genBJetFromTop->phi(),genBJetFromTop->mass(),
+		genWJetFromTop_lead->pt(),genWJetFromTop_lead->eta(),genWJetFromTop_lead->phi(),genWJetFromTop_lead->mass(),
+		genWJetFromTop_sublead->pt(),genWJetFromTop_sublead->eta(),genWJetFromTop_sublead->phi(),genWJetFromTop_sublead->mass());
+		}		
+	      */
+	      
+	      int nGenTopMatch = 0;
+	      int nGenBMatch = 0;
+	      int nGenW1Match = 0;
+	      int nGenW2Match = 0;
+	      int nGenTripletMatch = 0;
+	      int nGenTripletAndFatJetMatch = 0;
+	      int nGenTopMatch_1 = 0;
+	      int nGenBMatch_1 = 0;
+	      int nGenW1Match_1 = 0;
+	      int nGenW2Match_1 = 0;
+	      //int nGenTripletMatch_1 = 0;
+
+	      
+	      double dRGenRecTopMin = 1.e+3;
+	      double HTTv2JetPt_dRGenRecTopMin = -1;
+	      double GenTopPt_dRGenRecTopMin = -1;
+	      /*double dRGenRecAntiTopMin = 1.e+3;				
+	      double HTTv2JetPt_dRGenRecAntiTopMin = -1;
+	      double GenTopPt_dRGenRecAntiTopMin = -1; */
+	      
+	      //int kHTTv2JetPassedConditions = 0;
+	      const RecoJetHTTv2* recTop = 0;
+	      const RecoSubjetHTTv2* recBJetFromTop = 0;
+	      const RecoSubjetHTTv2* recWJetFromTop_lead = 0;
+	      const RecoSubjetHTTv2* recWJetFromTop_sublead = 0;
+	      for ( std::vector<const RecoJetHTTv2*>::const_iterator jetHTTv2 = jet_ptrsHTTv2.begin();
+		    jetHTTv2 != jet_ptrsHTTv2.end(); ++jetHTTv2 ) {
+		//kHTTv2Jet++;
+
+		if ( genBJetFromTop && genWJetFromTop_lead && genWJetFromTop_sublead && deltaR((*jetHTTv2)->p4(), genTopP4) < 1.5 ) {
+		  nGenTopMatch++;
+		  
+		  if ((*jetHTTv2)->pt() > 200 && (*jetHTTv2)->eta() < 2.4) {
+		    double dR_1 = deltaR((*jetHTTv2)->p4(), genTopP4);
+		    if (dR_1 < dRGenRecTopMin) {
+		      dRGenRecTopMin = dR_1;
+		      //HTTv2JetPt_dRGenRecTopMin = (*jetHTTv2)->pt();
+		      //GenTopPt_dRGenRecTopMin = genTopP4.pt();
+		    }
+		  } 
+		}		
+		
+		if ( genBJetFromTop && genWJetFromTop_lead && genWJetFromTop_sublead && deltaR((*jetHTTv2)->p4(), genTopP4) < 0.75 ) {
+		  recTop = (*jetHTTv2);
+		  histManager_jetsHTTv2->fillHistograms({ recTop }, evtWeight);
+		  sPrint += " Top matched; \n";
+		} else {
+		  continue;
+		}
+		
+		//kHTTv2JetPassedConditions++;
+		
+		int typeTop = 1;					
+		Particle::LorentzVector unfittedHadTopP4, selBJet, selWJet1, selWJet2, selTmp ;
+		double genTopPtProbeTop = -1.;
+		double genTopPtProbeAntiTop = -1.;
+		//bool b_isGenMatched, Wlead_isGenMatched, Wsublead_isGenMatched;
+		bool isGenMatched = false;
+		//bool fatjet_isGenMatched = false;
+		double dR_tot_min = 1.e+3;
+
+		unfittedHadTopP4 = (*jetHTTv2)->p4();
+		const RecoSubjetHTTv2* recSubJet[3];
+		recSubJet[0] = (*jetHTTv2)->subJet1();
+		recSubJet[1] = (*jetHTTv2)->subJet2();
+		recSubJet[2] = (*jetHTTv2)->subJet3();
+		int perm [5] = { 0, 1, 2, 0, 1 }; // I do not care about the ordering of wj1/2 so no fancy permutation solution is required
+		
+		for (int ii = 0; ii < 3; ii++) {
+		  selBJet = recSubJet[perm[ii]]->p4();
+		  selWJet1 = recSubJet[perm[ii+1]]->p4();
+		  selWJet2 = recSubJet[perm[ii+2]]->p4();
+		  if (selWJet1.pt() < selWJet2.pt()) { // if selWJet1 is not lead then make it
+		    selTmp = selWJet1;
+		    selWJet1 = selWJet2;
+		    selWJet2 = selTmp;
+		  }
+		  
+		  //std::map<int, bool> genMatchingTop     = isGenMatchedJetTriplet(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenMode, genTopPtProbeTop, typeTop, unfittedHadTopP4, sPrint);		  
+		  std::map<int, bool> genMatchingTop     = isGenMatchedJetTriplet_Method2(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenMode, genTopPtProbeTop, typeTop, unfittedHadTopP4, sPrint);
+		  	
+		  double_t dR_1 = deltaR(selBJet,  genBJetFromTop->p4());
+		  double_t dR_2 = deltaR(selWJet1, genWJetFromTop_lead->p4());
+		  double_t dR_3 = deltaR(selWJet2, genWJetFromTop_sublead->p4());
+		  double_t dR_tot = dR_1*dR_1 + dR_2*dR_2 + dR_3*dR_3;
+		  if (dR_tot < dR_tot_min) {
+		    dR_tot_min = dR_tot;
+		    /*b_isGenMatched        = genMatchingTop[kGenMatchedBJet];
+		    Wlead_isGenMatched    = genMatchingTop[kGenMatchedWJet1];
+		    Wsublead_isGenMatched = genMatchingTop[kGenMatchedWJet2];*/	 
+		    isGenMatched          = genMatchingTop[kGenMatchedTriplet];
+		    //fatjet_isGenMatched   = genMatchingTop[kGenMatchedFatJet];		
+
+		    if (isGenMatched) {
+		      recTop = (*jetHTTv2); // just to make sure jet and it's subjet are related
+		                            // recTop is not the last one fulfilling dR(recTop and genTop) < 0.75 condition
+		      
+		      recBJetFromTop         = recSubJet[perm[ii]];
+		      recWJetFromTop_lead    = recSubJet[perm[ii+1]];
+		      recWJetFromTop_sublead = recSubJet[perm[ii+2]];
+		    }		    
+		  }
+		
+		  if (genMatchingTop[kGenMatchedBJet]) {
+		    nGenBMatch++;
+		    if (selBJet.pt() > 30) nGenBMatch_1++;
+		  }
+		  if (genMatchingTop[kGenMatchedWJet1]) {
+		    nGenW1Match++;
+		    if (selWJet1.pt() > 30) nGenW1Match_1++;
+		  }
+		  if (genMatchingTop[kGenMatchedWJet2]) {
+		    nGenW2Match++;
+		    if (selWJet2.pt() > 30) nGenW2Match_1++;
+		  }
+		  
+		  if (genMatchingTop[kGenMatchedTriplet]) nGenTripletMatch++;
+		  
+		  if (genMatchingTop[kGenMatchedTriplet] && genMatchingTop[kGenMatchedFatJet]) nGenTripletAndFatJetMatch++;		  
+		  if (genMatchingTop[kGenMatchedTriplet]) sPrint += Form("\t HTTv2 subjet combination: %i_%i_%i;",perm[ii]+1, perm[ii]+2, perm[ii]+3);
+
+
+		  /*
+		  std::vector<double> dR_b_genJets  = { deltaR(selBJet,  genBJetFromTop->p4()),
+							deltaR(selBJet,  genWJetFromTop_lead->p4()),
+							deltaR(selBJet,  genWJetFromTop_sublead->p4()) };
+		  std::vector<double> dR_W1_genJets = { deltaR(selWJet1, genBJetFromTop->p4()),
+							deltaR(selWJet1, genWJetFromTop_lead->p4()),
+							deltaR(selWJet1, genWJetFromTop_sublead->p4()) };
+		  std::vector<double> dR_W2_genJets = { deltaR(selWJet2, genBJetFromTop->p4()),
+							deltaR(selWJet2, genWJetFromTop_lead->p4()),
+							deltaR(selWJet2, genWJetFromTop_sublead->p4()) };	
+		  
+		  
+		  std::vector<size_t> idx_dR_b_genJets  = sort_indexes(dR_b_genJets); // sort in decending order
+		  std::vector<size_t> idx_dR_W1_genJets = sort_indexes(dR_W1_genJets); 
+		  std::vector<size_t> idx_dR_W2_genJets = sort_indexes(dR_W2_genJets); 
+
+		  double_t dR_1 = dR_b_genJets[idx_dR_b_genJets[idx_dR_b_genJets.size()-1]];
+		  double_t dR_2 = dR_W1_genJets[idx_dR_W1_genJets[idx_dR_W1_genJets.size()-1]];
+		  double_t dR_3 = dR_W2_genJets[idx_dR_W2_genJets[idx_dR_W2_genJets.size()-1]];
+		  double_t dR_tot = dR_1*dR_1 + dR_2*dR_2 + dR_3*dR_3;
+
+		  if (isGenMatched && dR_tot < dR_tot_min) {
+
+		  }
+		  
+		  for (std::vector<size_t>::iterator it=idx_dR_b_genJets.begin(); it != idx_dR_b_genJets.end(); ++it)
+		    sPrint += Form("  %zu (%f)",*it,dR_b_genJets[*it]);
+		  sPrint += "\n";
+
+		  
+
+		  sPrint += Form("dR_b_genJet_min:%f",dR_b_genJet_min);
+		  */
+		}
+
+
+		if ( !isGenMatched ) { // dR(HTTv2, genTop) < 0.75,  but  subjet gen matching failed
+		  sPrint += "\ndR(HTTv2, genTop) < 0.75,  but  subjet gen matching failed\n";
+		  sPrint += Form("genTop: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+				  genTopQuark->pt(), genTopQuark->eta(), genTopQuark->phi(), genTopQuark->mass());
+		  sPrint += Form("genB: \t\t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+				  genBJetFromTop->pt(),genBJetFromTop->eta(),genBJetFromTop->phi(),genBJetFromTop->mass() );
+		  sPrint += Form("genW1: \t\t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+				  genWJetFromTop_lead->pt(),genWJetFromTop_lead->eta(),genWJetFromTop_lead->phi(),genWJetFromTop_lead->mass());
+		  sPrint += Form("genW2: \t\t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+				  genWJetFromTop_sublead->pt(),genWJetFromTop_sublead->eta(),genWJetFromTop_sublead->phi(),genWJetFromTop_sublead->mass());
+
+		  sPrint += Form("\nHTTv2_Top: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+				  recTop->pt(), recTop->eta(), recTop->phi(), recTop->mass());
+		  sPrint += Form("HTTv2_subjet1: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+				  recSubJet[0]->pt(), recSubJet[0]->eta(), recSubJet[0]->phi(), recSubJet[0]->mass());
+		  sPrint += Form("HTTv2_subjet2: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+				  recSubJet[1]->pt(), recSubJet[1]->eta(), recSubJet[1]->phi(), recSubJet[1]->mass());
+		  sPrint += Form("HTTv2_subjet3: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+				  recSubJet[2]->pt(), recSubJet[2]->eta(), recSubJet[2]->phi(), recSubJet[2]->mass());
+
+
+		  sPrint += "\nLooking at AK4 jets within dR < 2.0 of genTop::\n";
+		  bool isAK4JetAroundGenTop = false;
+		  for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin(); selJet != selJets.end(); ++selJet ) {
+		    if ( deltaR((*selJet)->p4(), genTopQuark->p4()) < 2.0 ) {
+		      isAK4JetAroundGenTop = true;
+		    }
+		  }
+
+		  if (isAK4JetAroundGenTop) {		    
+		    sPrint += "\t AK4 jet (dR<2)::\n";
+		    
+		    for (int iGenJet=0; iGenJet<3; iGenJet++) {
+		      sPrint += Form("\t\tgenJet:  pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+				     genParticle[kTLVGenBJet+iGenJet]->pt(),genParticle[kTLVGenBJet+iGenJet]->eta(),genParticle[kTLVGenBJet+iGenJet]->phi(),genParticle[kTLVGenBJet+iGenJet]->mass() );
+		      
+		      bool isHTTv2SubjetMatched = false;
+		      bool isAK4JetMatched = false;
+		      for (int iRecJet=0; iRecJet<3; iRecJet++) {
+			if (deltaR(recSubJet[iRecJet]->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.25) {
+			  sPrint += Form("\t\t\tMATCHES HTTv2 SUBJET (dR<0.25):  pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+					 recSubJet[iRecJet]->pt(), recSubJet[iRecJet]->eta(), recSubJet[iRecJet]->phi(), recSubJet[iRecJet]->mass());
+			  isHTTv2SubjetMatched = true;
+			}			  
+		      }
+		      
+		      if ( !isHTTv2SubjetMatched ) {
+			for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin(); selJet != selJets.end(); ++selJet ) {
+			  if (deltaR((*selJet)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.25) {
+			    sPrint += Form("\t\t\tMATCHES AK4 JET (dR<0.25):  pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+					   (*selJet)->pt(), (*selJet)->eta(), (*selJet)->phi(), (*selJet)->mass());
+			    isAK4JetMatched = true;
+			  }
+			}
+			
+			if ( !isAK4JetMatched ) {
+			  sPrint += "\t\t\tUNMATCHED\n";
+			}
+		      }		      
+		      
+		    }		    
+		  } else {
+		    sPrint += "\t No AK4 jet around genTop dR<2.0\n";
+		  }
+		  
+		}
+
+
+		//~~~~
+	      }
+	      
+	      
+	      if (nGenTopMatch >= 1) cutFlowTable_2lss_1tau_HTTv2.update("HTTv2: GenTop matched (dR < 1.5)");
+	      if (recTop) {
+		cutFlowTable_2lss_1tau_HTTv2.update("HTTv2: GenTop matched (dR < 0.75)");
+		if ((recTop && recTop->pt() > 200)){
+		  cutFlowTable_2lss_1tau_HTTv2.update("HTTv2: GenTop matched (dR < 0.75 && rectop.pt > 200)");
+		}
+		
+		
+		if (nGenBMatch >= 1) cutFlowTable_2lss_1tau_HTTv2.update("HTTv2**: GenBJet matched)");
+		if (nGenBMatch_1 >= 1) cutFlowTable_2lss_1tau_HTTv2.update("HTTv2**: GenBJet matched selBJet.pt > 30)");
+		if (nGenW1Match >= 1) cutFlowTable_2lss_1tau_HTTv2.update("HTTv2**: GenWJet1 matched)");
+		if (nGenW1Match_1 >= 1) cutFlowTable_2lss_1tau_HTTv2.update("HTTv2**: GenWJet1 matched selWJet1.pt > 30)");
+		if (nGenW2Match >= 1) cutFlowTable_2lss_1tau_HTTv2.update("HTTv2**: GenWJet2 matched)");
+		if (nGenW2Match_1 >= 1) cutFlowTable_2lss_1tau_HTTv2.update("HTTv2**: GenWJet2 matched selWJet2.pt > 30)");
+		
+		if (nGenTripletMatch >= 1) cutFlowTable_2lss_1tau_HTTv2.update("HTTv2**: GenTripletJet matched)");
+		if (nGenTripletAndFatJetMatch >= 1) cutFlowTable_2lss_1tau_HTTv2.update("HTTv2**: GenTripletJet and FatJet matched)");
+		
+	      }
+	      
+	      if (dRGenRecTopMin < 1.e+3) {
+		histogram_HTTv2_GenTop_dRmin->Fill(dRGenRecTopMin);
+		histogram_HTTv2_GenTop_dRmin_vs_HTTv2Pt_div_GenTopPt->Fill(HTTv2JetPt_dRGenRecTopMin/GenTopPt_dRGenRecTopMin, dRGenRecTopMin);
+		if (dRGenRecTopMin < 0.5) {
+		  histogram_HTTv2Pt_div_GenTopPt_dRmin->Fill(HTTv2JetPt_dRGenRecTopMin/GenTopPt_dRGenRecTopMin);
+		}
+	      }
+	      
+	      
+	      if ( recBJetFromTop && recWJetFromTop_lead && recWJetFromTop_sublead ) {
+		Particle::LorentzVector recWBosonFromTopP4 = recWJetFromTop_lead->p4() + recWJetFromTop_sublead->p4();
+		if ( genWBosonFromTopP4.pt() > 100. ) {
+		  fillWithOverFlow(histogram_HTTv2_W_ptRec_div_ptGen, recWBosonFromTopP4.pt()/genWBosonFromTopP4.pt(), evtWeight);
+		}
+		fillWithOverFlow(histogram_HTTv2_mW, recWBosonFromTopP4.mass(), evtWeight);
+		Particle::LorentzVector recTopP4 = recBJetFromTop->p4() + recWBosonFromTopP4;
+		if ( genTopP4.pt() > 200. ) {
+		  fillWithOverFlow(histogram_HTTv2_Top_ptRec_div_ptGen, recTopP4.pt()/genTopP4.pt(), evtWeight);
+		}
+		fillWithOverFlow(histogram_HTTv2_mTop, recTopP4.mass(), evtWeight);
+		if ( genWJetFromTop_lead->pt() > 20. ) {
+		  fillWithOverFlow(histogram_HTTv2_WJet1_ptRec_div_ptGen, recWJetFromTop_lead->pt()/genWJetFromTop_lead->pt(), evtWeight);
+		  fillWithOverFlow(histogram_HTTv2_WJet1_dRmatch, deltaR(recWJetFromTop_lead->p4(), genWJetFromTop_lead->p4()), evtWeight);
+		  double cosThetaStar_WJet1 = comp_cosThetaStar(recWJetFromTop_lead->p4(), recWBosonFromTopP4);
+		  fillWithOverFlow(histogram_HTTv2_WJet1_cosThetaStar, cosThetaStar_WJet1, evtWeight);
+		}
+		if ( genWJetFromTop_sublead->pt() > 20. ) {
+		  fillWithOverFlow(histogram_HTTv2_WJet2_ptRec_div_ptGen, recWJetFromTop_sublead->pt()/genWJetFromTop_sublead->pt(), evtWeight);
+		  fillWithOverFlow(histogram_HTTv2_WJet2_dRmatch, deltaR(recWJetFromTop_sublead->p4(), genWJetFromTop_sublead->p4()), evtWeight);
+		}
+		if ( genBJetFromTop->pt() > 20. ) {
+		  fillWithOverFlow(histogram_HTTv2_BJet_ptRec_div_ptGen, recBJetFromTop->pt()/genBJetFromTop->pt(), evtWeight);
+		  fillWithOverFlow(histogram_HTTv2_BJet_dRmatch, deltaR(recBJetFromTop->p4(), genBJetFromTop->p4()), evtWeight);
+		  double cosThetaStar_BJet = comp_cosThetaStar(recBJetFromTop->p4(), recTopP4);
+		  fillWithOverFlow(histogram_HTTv2_BJet_cosThetaStar, cosThetaStar_BJet, evtWeight);
+		}
+		isHTTv2FromTop = true;
+		if ( recTop->pt() > 200 ) {
+		  isHTTv2FromTop_fatjetPtGt200 = true;
+		  if ( recTop->subJet1()->pt() > 30 && recTop->subJet2()->pt() > 30 && recTop->subJet3()->pt() > 30 ) {
+		    isHTTv2FromTop_fatjetPtGt200_and_subjetPtGt30 = true;
+		    if ( jetSelectorHTTv2(*recTop) ) {
+		      /*std::cout << "found boosted hadronic top:" 
+			<< " run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
+			std::cout << "HTTv2 jet:" << std::endl;
+			std::cout << (*recTop);*/
+		      isHTTv2FromTop_selected = true;
+		    }
+		  }
+		}
+	      }
+
+	    }
+	  }
+	}	
+      }
+    }
+  }
+  
+}
+
+
+
+
 /**
  * @brief Check why only 25% of ttH signal events selected in 2lss_1tau category
  *        contain a reconstructible hadronic top
  */
 int main(int argc, char* argv[])
 {
-//--- throw an exception in case ROOT encounters an error
+  //--- throw an exception in case ROOT encounters an error
   gErrorAbortLevel = kError;
-
-//--- parse command-line arguments
+  
+  //--- parse command-line arguments
   if ( argc < 2 ) {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
     return EXIT_FAILURE;
@@ -211,7 +674,8 @@ int main(int argc, char* argv[])
   else if ( leptonChargeSelection_string == "SS" ) leptonChargeSelection = kSS;
   else throw cms::Exception("analyze_hadTopTagger_gen")
     << "Invalid Configuration parameter 'leptonChargeSelection' = " << leptonChargeSelection_string << " !!\n";
-
+	std::cout<<"leptonChargeSelection:"<<leptonChargeSelection<<std::endl;
+	
   std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection").data();
   std::cout << "leptonSelection_string = " << leptonSelection_string << std::endl;
   int leptonSelection = -1;
@@ -252,7 +716,8 @@ int main(int argc, char* argv[])
   else if ( chargeSumSelection_string == "SS" ) chargeSumSelection = kSS;
   else throw cms::Exception("analyze_hadTopTagger_gen")
     << "Invalid Configuration parameter 'chargeSumSelection' = " << chargeSumSelection_string << " !!\n";
-
+	std::cout<<"chargeSumSelection:"<<chargeSumSelection<<std::endl;
+	
   bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
@@ -443,10 +908,6 @@ int main(int argc, char* argv[])
   double selectedEntries_weighted = 0.;
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
-  cutFlowTableType cutFlowTable_2lss_1tau;
-  cutFlowTableType cutFlowTable_2lss_1tau_HTTv2;
-  cutFlowTableType cutFlowTable_2lss_1tau_AK12;
-  cutFlowTableType cutFlowTable_2lss_1tau_resolved;
 
   TH1* histogram_ptTop = fs.make<TH1D>("ptTop", "ptTop", 100, 0., 500.);
   TH1* histogram_etaTop = fs.make<TH1D>("etaTop", "etaTop", 100, -5.0, +5.0);
@@ -459,21 +920,26 @@ int main(int argc, char* argv[])
   TH1* histogram_ptB = fs.make<TH1D>("ptB", "ptB", 100, 0., 500.);
   TH1* histogram_etaB = fs.make<TH1D>("etaB", "etaB", 100, -5.0, +5.0);
 
-  JetHistManagerHTTv2* histManager_jetsHTTv2 = new JetHistManagerHTTv2(makeHistManager_cfg(process_string,
+  histManager_jetsHTTv2 = new JetHistManagerHTTv2(makeHistManager_cfg(process_string,
     Form("%s/sel/jetsHTTv2", histogramDir.data()), central_or_shift));
   histManager_jetsHTTv2->bookHistograms(fs);
-  TH1* histogram_HTTv2_W_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_W_ptRec_div_ptGen", "HTTv2_W_ptRec_div_ptGen", 200, 0., 2.);
-  TH1* histogram_HTTv2_mW = fs.make<TH1D>("HTTv2_mW", "HTTv2_mW", 200, 0., 200.);
-  TH1* histogram_HTTv2_Top_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_Top_ptRec_div_ptGen", "HTTv2_Top_ptRec_div_ptGen", 200, 0., 2.);
-  TH1* histogram_HTTv2_mTop = fs.make<TH1D>("HTTv2_mTop", "HTTv2_mTop", 300, 0., 300.);
-  TH1* histogram_HTTv2_WJet1_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_WJet1_ptRec_div_ptGen", "HTTv2_WJet1_ptRec_div_ptGen", 200, 0., 2.);
-  TH1* histogram_HTTv2_WJet1_dRmatch = fs.make<TH1D>("HTTv2_WJet1_dRmatch", "HTTv2_WJet1_dRmatch", 100, 0., 1.);
-  TH1* histogram_HTTv2_WJet1_cosThetaStar = fs.make<TH1D>("HTTv2_WJet1_cosThetaStar", "HTTv2_WJet1_cosThetaStar", 36, 0., TMath::Pi());
-  TH1* histogram_HTTv2_WJet2_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_WJet2_ptRec_div_ptGen", "HTTv2_WJet2_ptRec_div_ptGen", 200, 0., 2.);
-  TH1* histogram_HTTv2_WJet2_dRmatch = fs.make<TH1D>("HTTv2_WJet2_dRmatch", "HTTv2_WJet2_dRmatch", 100, 0., 1.);
-  TH1* histogram_HTTv2_BJet_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_BJet_ptRec_div_ptGen", "HTTv2_BJet_ptRec_div_ptGen", 200, 0., 2.);
-  TH1* histogram_HTTv2_BJet_dRmatch = fs.make<TH1D>("HTTv2_BJet_dRmatch", "HTTv2_BJet_dRmatch", 100, 0., 1.);
-  TH1* histogram_HTTv2_BJet_cosThetaStar = fs.make<TH1D>("HTTv2_BJet_cosThetaStar", "HTTv2_BJet_cosThetaStar", 36, 0., TMath::Pi());
+  histogram_HTTv2_W_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_W_ptRec_div_ptGen", "HTTv2_W_ptRec_div_ptGen", 200, 0., 2.);
+  histogram_HTTv2_mW = fs.make<TH1D>("HTTv2_mW", "HTTv2_mW", 200, 0., 200.);
+  histogram_HTTv2_Top_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_Top_ptRec_div_ptGen", "HTTv2_Top_ptRec_div_ptGen", 200, 0., 2.);
+  histogram_HTTv2_mTop = fs.make<TH1D>("HTTv2_mTop", "HTTv2_mTop", 300, 0., 300.);
+  histogram_HTTv2_WJet1_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_WJet1_ptRec_div_ptGen", "HTTv2_WJet1_ptRec_div_ptGen", 200, 0., 2.);
+  histogram_HTTv2_WJet1_dRmatch = fs.make<TH1D>("HTTv2_WJet1_dRmatch", "HTTv2_WJet1_dRmatch", 100, 0., 1.);
+  histogram_HTTv2_WJet1_cosThetaStar = fs.make<TH1D>("HTTv2_WJet1_cosThetaStar", "HTTv2_WJet1_cosThetaStar", 36, 0., TMath::Pi());
+  histogram_HTTv2_WJet2_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_WJet2_ptRec_div_ptGen", "HTTv2_WJet2_ptRec_div_ptGen", 200, 0., 2.);
+  histogram_HTTv2_WJet2_dRmatch = fs.make<TH1D>("HTTv2_WJet2_dRmatch", "HTTv2_WJet2_dRmatch", 100, 0., 1.);
+  histogram_HTTv2_BJet_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_BJet_ptRec_div_ptGen", "HTTv2_BJet_ptRec_div_ptGen", 200, 0., 2.);
+  histogram_HTTv2_BJet_dRmatch = fs.make<TH1D>("HTTv2_BJet_dRmatch", "HTTv2_BJet_dRmatch", 100, 0., 1.);
+  histogram_HTTv2_BJet_cosThetaStar = fs.make<TH1D>("HTTv2_BJet_cosThetaStar", "HTTv2_BJet_cosThetaStar", 36, 0., TMath::Pi());
+
+  histogram_HTTv2_GenTop_dRmin = fs.make<TH1D>("HTTv2_GenTop_dRmin", "dRMin(HTTv2 and GenTop)", 100, 0., 1.);
+  histogram_HTTv2Pt_div_GenTopPt_dRmin = fs.make<TH1D>("HTTv2Pt_div_GenTopPt_dRminHTTv2_GenTop_dRmin", "", 200, 0., 2.);
+  histogram_HTTv2_GenTop_dRmin_vs_HTTv2Pt_div_GenTopPt = fs.make<TH2D>("histogram_HTTv2_GenTop_dRmin_vs_HTTv2Pt_div_GenTopPt", "", 200, 0., 2., 100, 0., 1.);
+	
 
   JetHistManagerAK12* histManager_jetsAK12 = new JetHistManagerAK12(makeHistManager_cfg(process_string,
     Form("%s/sel/jetsAK12", histogramDir.data()), central_or_shift));
@@ -513,13 +979,13 @@ int main(int argc, char* argv[])
       std::cout << "processing run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
     }
 
-    if(inputTree -> canReport(reportEvery))
+    if(inputTree -> canReport(reportEvery) )
     {
       std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
                 << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
                 << (inputTree -> getProcessedFileCount() - 1)
                 << " (" << eventInfo
-                << ") file (" << selectedEntries << " Entries selected)\n";
+                << ") file (" << selectedEntries << " Entries selected)"<<std::endl;
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
@@ -529,51 +995,6 @@ int main(int argc, char* argv[])
       continue;
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e) || (isMC && !apply_trigger_bits);
-    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e) || (isMC && !apply_trigger_bits);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu) || (isMC && !apply_trigger_bits);
-    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu) || (isMC && !apply_trigger_bits);
-    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu) || (isMC && !apply_trigger_bits);
-
-    bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
-    bool selTrigger_2e = use_triggers_2e && isTriggered_2e;
-    bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
-    bool selTrigger_2mu = use_triggers_2mu && isTriggered_2mu;
-    bool selTrigger_1e1mu = use_triggers_1e1mu && isTriggered_1e1mu;
-    if ( !(selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu) ) {
-      continue;
-    }
-
-//--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
-//    the ranking of the triggers is as follows: 2mu, 1e1mu, 2e, 1mu, 1e
-// CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
-    if ( !isMC && !isDEBUG ) {
-      if ( selTrigger_1e && (isTriggered_2e || isTriggered_1mu || isTriggered_2mu || isTriggered_1e1mu) ) {
-	continue;
-      }
-      if ( selTrigger_2e && (isTriggered_2mu || isTriggered_1e1mu) ) {
-	continue;
-      }
-      if ( selTrigger_1mu && (isTriggered_2e || isTriggered_2mu || isTriggered_1e1mu) ) {
-	continue;
-      }
-      if ( selTrigger_1e1mu && isTriggered_2mu ) {
-	continue;
-      }
-    }
-    cutFlowTable_2lss_1tau.update("trigger");
-
-    if ( (selTrigger_2mu   && !apply_offline_e_trigger_cuts_2mu)   ||
-	 (selTrigger_1mu   && !apply_offline_e_trigger_cuts_1mu)   ||
-	 (selTrigger_2e    && !apply_offline_e_trigger_cuts_2e)    ||
-	 (selTrigger_1e1mu && !apply_offline_e_trigger_cuts_1e1mu) ||
-	 (selTrigger_1e    && !apply_offline_e_trigger_cuts_1e)    ) {
-      fakeableElectronSelector.disable_offline_e_trigger_cuts();
-      tightElectronSelector.disable_offline_e_trigger_cuts();
-    } else {
-      fakeableElectronSelector.enable_offline_e_trigger_cuts();
-      tightElectronSelector.enable_offline_e_trigger_cuts();
-    }
 
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
@@ -645,10 +1066,12 @@ int main(int argc, char* argv[])
     //}
     selHadTaus = pickFirstNobjects(selHadTaus, 1);
 
+		
+		
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableElectrons, fakeableMuons, preselHadTaus);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons);
     //std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selLeptons, fakeableElectrons, fakeableMuons);
     //std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selLeptons);
     // selLeptons for BDT training is loose, and loose>fakeable
@@ -664,7 +1087,9 @@ int main(int argc, char* argv[])
 //--- build collections of jets reconstructed by anti-kT algorithm with dR=1.2 (AK12)
     std::vector<RecoJetAK12> jetsAK12 = jetReaderAK12->read();
     std::vector<const RecoJetAK12*> jet_ptrsAK12 = convert_to_ptrs(jetsAK12);
+		
 
+		
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     std::vector<GenLepton> genLeptons;
     std::vector<GenLepton> genElectrons;
@@ -708,6 +1133,57 @@ int main(int argc, char* argv[])
       jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
     }
 
+		
+#ifndef DoNotUse2lss_1tauConditions
+#pragma message ("Warning*** DoNotUse2lss_1tauConditions is not defined")		
+
+		bool isTriggered_1e = hltPaths_isTriggered(triggers_1e) || (isMC && !apply_trigger_bits);
+    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e) || (isMC && !apply_trigger_bits);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu) || (isMC && !apply_trigger_bits);
+    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu) || (isMC && !apply_trigger_bits);
+    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu) || (isMC && !apply_trigger_bits);
+
+    bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
+    bool selTrigger_2e = use_triggers_2e && isTriggered_2e;
+    bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
+    bool selTrigger_2mu = use_triggers_2mu && isTriggered_2mu;
+    bool selTrigger_1e1mu = use_triggers_1e1mu && isTriggered_1e1mu;
+    if ( !(selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu) ) {
+      continue;
+    }
+
+//--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
+//    the ranking of the triggers is as follows: 2mu, 1e1mu, 2e, 1mu, 1e
+// CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
+    if ( !isMC && !isDEBUG ) {
+      if ( selTrigger_1e && (isTriggered_2e || isTriggered_1mu || isTriggered_2mu || isTriggered_1e1mu) ) {
+	continue;
+      } 
+      if ( selTrigger_2e && (isTriggered_2mu || isTriggered_1e1mu) ) {
+	continue;
+      }
+      if ( selTrigger_1mu && (isTriggered_2e || isTriggered_2mu || isTriggered_1e1mu) ) {
+	continue;
+      }
+      if ( selTrigger_1e1mu && isTriggered_2mu ) {
+	continue;
+      }
+    }
+    cutFlowTable_2lss_1tau.update("trigger");
+
+    if ( (selTrigger_2mu   && !apply_offline_e_trigger_cuts_2mu)   ||
+	 (selTrigger_1mu   && !apply_offline_e_trigger_cuts_1mu)   ||
+	 (selTrigger_2e    && !apply_offline_e_trigger_cuts_2e)    ||
+	 (selTrigger_1e1mu && !apply_offline_e_trigger_cuts_1e1mu) ||
+	 (selTrigger_1e    && !apply_offline_e_trigger_cuts_1e)    ) {
+      fakeableElectronSelector.disable_offline_e_trigger_cuts();
+      tightElectronSelector.disable_offline_e_trigger_cuts();
+    } else {
+      fakeableElectronSelector.enable_offline_e_trigger_cuts();
+      tightElectronSelector.enable_offline_e_trigger_cuts();
+    }
+		
+		
 //--- apply preselection
     std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
     // require at least two leptons passing loose preselection criteria
@@ -772,17 +1248,22 @@ int main(int argc, char* argv[])
       lheInfoReader->read();
     }
 
+
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
-    double evtWeight = 1.;
+    /*double*/ evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
       if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
       if ( isMC_tH ) evtWeight *= eventInfo.genWeight_tH;
       evtWeight *= eventInfo.pileupWeight;
       evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
-      const double btagWeight = get_BtagWeight(selJets);
+      double btagWeight = 1.;
+      for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
+	    jet != selJets.end(); ++jet ) {
+	btagWeight *= (*jet)->BtagWeight();
+      }
       evtWeight *= btagWeight;
     }
 
@@ -825,6 +1306,7 @@ int main(int argc, char* argv[])
 
       evtWeight *= weight_data_to_MC_correction;
     }
+		
 
     // require exactly two leptons passing tight selection criteria, to avoid overlap with other channels
     std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherPt);
@@ -943,12 +1425,20 @@ int main(int argc, char* argv[])
     if ( selEventsFile ) {
       (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
     }
+		
+#else
+#pragma message ("Warning***   2lss_1tau selection conditions will not be executed ")
+
+    /*double*/ evtWeight = 1.;
+#endif
+
+
 
 //--- build collections of generator level particles
-    std::vector<GenParticle> genTopQuarks = genTopQuarkReader->read();
-    std::vector<GenParticle> genBJets = genBJetReader->read();
-    std::vector<GenParticle> genWBosons = genWBosonReader->read();
-    std::vector<GenParticle> genWJets = genWJetReader->read();
+    /*std::vector<GenParticle>*/ genTopQuarks = genTopQuarkReader->read();
+    /*std::vector<GenParticle>*/ genBJets = genBJetReader->read();
+    /*std::vector<GenParticle>*/ genWBosons = genWBosonReader->read();
+    /*std::vector<GenParticle>*/ genWJets = genWJetReader->read();
 
     if ( isDEBUG ) {
       dumpGenParticles("genTopQuark", genTopQuarks);
@@ -956,6 +1446,7 @@ int main(int argc, char* argv[])
       dumpGenParticles("genWBoson", genWBosons);
       dumpGenParticles("genWJet", genWJets);
     }
+
 
     if ( !(genTopQuarks.size() == 2) ) {
       if ( isDEBUG ) std::cout << "FAILS '2 genTopQuarks' cut !!" << std::endl;
@@ -1221,12 +1712,14 @@ int main(int argc, char* argv[])
       genAntiTopP4 = genBJetFromAntiTop->p4() + genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4();
     }
 
+		
     //-------------------------------------------------------------------------------------------------------------------
     // case 1: all three jets contained within dR=1.5 "fat" jet,
     //         reconstructed by hep-top-tagger (HTTv2) algorithm
 
     cutFlowTable_2lss_1tau_HTTv2.update("genJet triplet");
 
+    /*
     bool isHTTv2FromTop = false;
     bool isHTTv2FromTop_fatjetPtGt200 = false;
     bool isHTTv2FromTop_fatjetPtGt200_and_subjetPtGt30 = false;
@@ -1235,274 +1728,83 @@ int main(int argc, char* argv[])
     bool isHTTv2FromAntiTop_fatjetPtGt200 = false;
     bool isHTTv2FromAntiTop_fatjetPtGt200_and_subjetPtGt30 = false;
     bool isHTTv2FromAntiTop_selected = false;
+    
+    bool isbCandiFromTop = false;
+    bool isW1CandiFromTop = false;
+    bool isW2CandiFromTop = false;
+    bool isJetTripletFromTop = false;
+    bool isbCandiFromAntiTop = false;
+    bool isW1CandiFromAntiTop = false;
+    bool isW2CandiFromAntiTop = false;
+    bool isJetTripletFromAntiTop = false;
+    
+    bool isbCandiFromTopPtGt30 = false;
+    bool isW1CandiFromTopPtGt30 = false;
+    bool isW2CandiFromTopPtGt30 = false;
+    bool isJetTripletFromTopPtGt30 = false;
+    bool isbCandiFromAntiTopPtGt30 = false;
+    bool isW1CandiFromAntiTopPtGt30 = false;
+    bool isW2CandiFromAntiTopPtGt30 = false;
+    bool isJetTripletFromAntiTopPtGt30 = false;
 
-    if ( (genBJetFromTop     && genWJetFromTop_lead     && genWJetFromTop_sublead     && genTopP4.pt()     > 200.) ||
-	 (genBJetFromAntiTop && genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead && genAntiTopP4.pt() > 200.) ) {
-      cutFlowTable_2lss_1tau_HTTv2.update("genTop passes pT > 200 GeV");
+    bool isCat1_Gen = false;
+    */
+    
+    isHTTv2FromTop = false;
+    isHTTv2FromTop_fatjetPtGt200 = false;
+    isHTTv2FromTop_fatjetPtGt200_and_subjetPtGt30 = false;
+    isHTTv2FromTop_selected = false;
+    isHTTv2FromAntiTop = false;
+    isHTTv2FromAntiTop_fatjetPtGt200 = false;
+    isHTTv2FromAntiTop_fatjetPtGt200_and_subjetPtGt30 = false;
+    isHTTv2FromAntiTop_selected = false;
+    
+    isbCandiFromTop = false;
+    isW1CandiFromTop = false;
+    isW2CandiFromTop = false;
+    isJetTripletFromTop = false;
+    isbCandiFromAntiTop = false;
+    isW1CandiFromAntiTop = false;
+    isW2CandiFromAntiTop = false;
+    isJetTripletFromAntiTop = false;
+    
+    isbCandiFromTopPtGt30 = false;
+    isW1CandiFromTopPtGt30 = false;
+    isW2CandiFromTopPtGt30 = false;
+    isJetTripletFromTopPtGt30 = false;
+    isbCandiFromAntiTopPtGt30 = false;
+    isW1CandiFromAntiTopPtGt30 = false;
+    isW2CandiFromAntiTopPtGt30 = false;
+    isJetTripletFromAntiTopPtGt30 = false;
+    
+    isCat1_Gen = false;    
+     
+    //TString sPrint = Form("\n\nEvent %lli:\n",inputTree -> getCurrentMaxEventIdx());
+    sPrint = Form("\n\nEvent %lli:\n",inputTree -> getCurrentMaxEventIdx());
 
-      if ( (genBJetFromTop             && genBJetFromTop->absEta()          < 5.0 &&
-	    genWJetFromTop_lead        && genWJetFromTop_lead->absEta()     < 5.0 &&
-	    genWJetFromTop_sublead     && genWJetFromTop_lead->absEta()     < 5.0) ||
-	   (genBJetFromAntiTop         && genBJetFromAntiTop->absEta()      < 5.0 &&
-	    genWJetFromAntiTop_lead    && genWJetFromAntiTop_lead->absEta() < 5.0 &&
-	    genWJetFromAntiTop_sublead && genWJetFromAntiTop_lead->absEta() < 5.0) ) {
-	cutFlowTable_2lss_1tau_HTTv2.update("genJet triplet passes abs(eta) < 5.0");
-
-	if ( (genBJetFromTop             && genBJetFromTop->absEta()      < 2.4) ||
-	     (genBJetFromAntiTop         && genBJetFromAntiTop->absEta()  < 2.4) ) {
-	  cutFlowTable_2lss_1tau_HTTv2.update("genBJet passes abs(eta) < 2.4");
-
-	  if ( (genBJetFromTop             && genBJetFromTop->absEta()          < 2.4 &&
-		genWJetFromTop_lead        && genWJetFromTop_lead->absEta()     < 2.4 &&
-		genWJetFromTop_sublead     && genWJetFromTop_lead->absEta()     < 2.4) ||
-	       (genBJetFromAntiTop         && genBJetFromAntiTop->absEta()      < 2.4 &&
-		genWJetFromAntiTop_lead    && genWJetFromAntiTop_lead->absEta() < 2.4 &&
-		genWJetFromAntiTop_sublead && genWJetFromAntiTop_lead->absEta() < 2.4) ) {
-	    cutFlowTable_2lss_1tau_HTTv2.update("genJet triplet passes abs(eta) < 2.4");
-
-	    if ( (genBJetFromTop && genWJetFromTop_lead && genWJetFromTop_sublead             &&
-		  deltaR(genTopP4, genBJetFromTop->p4())                                < 1.5 &&
-		  deltaR(genTopP4, genWJetFromTop_lead->p4())                           < 1.5 &&
-		  deltaR(genTopP4, genWJetFromTop_sublead->p4())                        < 1.5) ||
-		 (genBJetFromAntiTop && genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead &&
-		  deltaR(genAntiTopP4, genBJetFromAntiTop->p4())                        < 1.5 &&
-		  deltaR(genAntiTopP4, genWJetFromAntiTop_lead->p4())                   < 1.5 &&
-		  deltaR(genAntiTopP4, genWJetFromAntiTop_sublead->p4())                < 1.5) ) {
-	      cutFlowTable_2lss_1tau_HTTv2.update("dR(genBJet, genWJet1, genWJet2) < 1.5");
-
-	      const RecoJetHTTv2* recTop = 0;
-	      const RecoJetHTTv2* recAntiTop = 0;
-	      for ( std::vector<const RecoJetHTTv2*>::const_iterator jetHTTv2 = jet_ptrsHTTv2.begin();
-		    jetHTTv2 != jet_ptrsHTTv2.end(); ++jetHTTv2 ) {
-		if ( genBJetFromTop && genWJetFromTop_lead && genWJetFromTop_sublead && deltaR((*jetHTTv2)->p4(), genTopP4) < 0.75 ) {
-		  recTop = (*jetHTTv2);
-		  histManager_jetsHTTv2->fillHistograms({ recTop }, evtWeight);
-		}
-		if ( genBJetFromAntiTop && genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead && deltaR((*jetHTTv2)->p4(), genAntiTopP4) < 0.75 ) {
-		  recAntiTop = (*jetHTTv2);
-		  histManager_jetsHTTv2->fillHistograms({ recAntiTop }, evtWeight);
-		}
-	      }
-
-	      if ( recTop && recTop->subJet1() && recTop->subJet2() && recTop->subJet3() ) {
-		const RecoSubjetHTTv2* recBJetFromTop = 0;
-		const RecoSubjetHTTv2* recWJetFromTop_lead = 0;
-		const RecoSubjetHTTv2* recWJetFromTop_sublead = 0;
-		double dR_b_1 = deltaR(genBJetFromTop->p4(), recTop->subJet1()->p4());
-		double dR_b_2 = deltaR(genBJetFromTop->p4(), recTop->subJet2()->p4());
-		double dR_b_3 = deltaR(genBJetFromTop->p4(), recTop->subJet3()->p4());
-		double dR_lead_1 = deltaR(genWJetFromTop_lead->p4(), recTop->subJet1()->p4());
-		double dR_lead_2 = deltaR(genWJetFromTop_lead->p4(), recTop->subJet2()->p4());
-		double dR_lead_3 = deltaR(genWJetFromTop_lead->p4(), recTop->subJet3()->p4());
-		double dR_sublead_1 = deltaR(genWJetFromTop_sublead->p4(), recTop->subJet1()->p4());
-		double dR_sublead_2 = deltaR(genWJetFromTop_sublead->p4(), recTop->subJet2()->p4());
-		double dR_sublead_3 = deltaR(genWJetFromTop_sublead->p4(), recTop->subJet3()->p4());
-		double dR2min = 1.e+3;
-		if ( (square(dR_b_1) + square(dR_lead_2) + square(dR_sublead_3)) < dR2min ) {
-		  if ( dR_b_1 < 0.1 && dR_lead_2 < 0.1 && dR_sublead_3 < 0.1 ) {
-		    recBJetFromTop         = recTop->subJet1();
-		    recWJetFromTop_lead    = recTop->subJet2();
-		    recWJetFromTop_sublead = recTop->subJet3();
-		    dR2min = (square(dR_b_1) + square(dR_lead_2) + square(dR_sublead_3));
-		  }
-		}
-		if ( (square(dR_b_1) + square(dR_lead_3) + square(dR_sublead_2)) < dR2min ) {
-		  if ( dR_b_1 < 0.1 && dR_lead_3 < 0.1 && dR_sublead_2 < 0.1 ) {
-		    recBJetFromTop         = recTop->subJet1();
-		    recWJetFromTop_lead    = recTop->subJet3();
-		    recWJetFromTop_sublead = recTop->subJet2();
-		    dR2min = (square(dR_b_1) + square(dR_lead_3) + square(dR_sublead_2));
-		  }
-		}
-		if ( (square(dR_b_2) + square(dR_lead_1) + square(dR_sublead_3)) < dR2min ) {
-		  if ( dR_b_2 < 0.1 && dR_lead_1 < 0.1 && dR_sublead_3 < 0.1 ) {
-		    recBJetFromTop         = recTop->subJet2();
-		    recWJetFromTop_lead    = recTop->subJet1();
-		    recWJetFromTop_sublead = recTop->subJet3();
-		    dR2min = (square(dR_b_2) + square(dR_lead_1) + square(dR_sublead_3));
-		  }
-		}
-		if ( (square(dR_b_2) + square(dR_lead_3) + square(dR_sublead_1)) < dR2min ) {
-		  if ( dR_b_2 < 0.1 && dR_lead_3 < 0.1 && dR_sublead_1 < 0.1 ) {
-		    recBJetFromTop         = recTop->subJet2();
-		    recWJetFromTop_lead    = recTop->subJet3();
-		    recWJetFromTop_sublead = recTop->subJet1();
-		    dR2min = (square(dR_b_2) + square(dR_lead_3) + square(dR_sublead_1));
-		  }
-		}
-		if ( (square(dR_b_3) + square(dR_lead_1) + square(dR_sublead_2)) < dR2min ) {
-		  if ( dR_b_3 < 0.1 && dR_lead_1 < 0.1 && dR_sublead_2 < 0.1 ) {
-		    recBJetFromTop         = recTop->subJet3();
-		    recWJetFromTop_lead    = recTop->subJet1();
-		    recWJetFromTop_sublead = recTop->subJet2();
-		    dR2min = (square(dR_b_3) + square(dR_lead_1) + square(dR_sublead_2));
-		  }
-		}
-		if ( (square(dR_b_3) + square(dR_lead_2) + square(dR_sublead_1)) < dR2min ) {
-		  if ( dR_b_3 < 0.1 && dR_lead_2 < 0.1 && dR_sublead_1 < 0.1 ) {
-		    recBJetFromTop         = recTop->subJet3();
-		    recWJetFromTop_lead    = recTop->subJet2();
-		    recWJetFromTop_sublead = recTop->subJet1();
-		    dR2min = (square(dR_b_3) + square(dR_lead_2) + square(dR_sublead_1));
-		  }
-		}
-                if ( recBJetFromTop && recWJetFromTop_lead && recWJetFromTop_sublead ) {
-		  Particle::LorentzVector recWBosonFromTopP4 = recWJetFromTop_lead->p4() + recWJetFromTop_sublead->p4();
-		  if ( genWBosonFromTopP4.pt() > 100. ) {
-		    fillWithOverFlow(histogram_HTTv2_W_ptRec_div_ptGen, recWBosonFromTopP4.pt()/genWBosonFromTopP4.pt(), evtWeight);
-		  }
-		  fillWithOverFlow(histogram_HTTv2_mW, recWBosonFromTopP4.mass(), evtWeight);
-		  Particle::LorentzVector recTopP4 = recBJetFromTop->p4() + recWBosonFromTopP4;
-		  if ( genTopP4.pt() > 200. ) {
-		    fillWithOverFlow(histogram_HTTv2_Top_ptRec_div_ptGen, recTopP4.pt()/genTopP4.pt(), evtWeight);
-		  }
-		  fillWithOverFlow(histogram_HTTv2_mTop, recTopP4.mass(), evtWeight);
-		  if ( genWJetFromTop_lead->pt() > 20. ) {
-		    fillWithOverFlow(histogram_HTTv2_WJet1_ptRec_div_ptGen, recWJetFromTop_lead->pt()/genWJetFromTop_lead->pt(), evtWeight);
-		    fillWithOverFlow(histogram_HTTv2_WJet1_dRmatch, deltaR(recWJetFromTop_lead->p4(), genWJetFromTop_lead->p4()), evtWeight);
-		    double cosThetaStar_WJet1 = comp_cosThetaStar(recWJetFromTop_lead->p4(), recWBosonFromTopP4);
-		    fillWithOverFlow(histogram_HTTv2_WJet1_cosThetaStar, cosThetaStar_WJet1, evtWeight);
-		  }
-		  if ( genWJetFromTop_sublead->pt() > 20. ) {
-		    fillWithOverFlow(histogram_HTTv2_WJet2_ptRec_div_ptGen, recWJetFromTop_sublead->pt()/genWJetFromTop_sublead->pt(), evtWeight);
-		    fillWithOverFlow(histogram_HTTv2_WJet2_dRmatch, deltaR(recWJetFromTop_sublead->p4(), genWJetFromTop_sublead->p4()), evtWeight);
-		  }
-		  if ( genBJetFromTop->pt() > 20. ) {
-		    fillWithOverFlow(histogram_HTTv2_BJet_ptRec_div_ptGen, recBJetFromTop->pt()/genBJetFromTop->pt(), evtWeight);
-		    fillWithOverFlow(histogram_HTTv2_BJet_dRmatch, deltaR(recBJetFromTop->p4(), genBJetFromTop->p4()), evtWeight);
-		    double cosThetaStar_BJet = comp_cosThetaStar(recBJetFromTop->p4(), recTopP4);
-		    fillWithOverFlow(histogram_HTTv2_BJet_cosThetaStar, cosThetaStar_BJet, evtWeight);
-		  }
-		  isHTTv2FromTop = true;
-		  if ( recTop->pt() > 200 ) {
-		    isHTTv2FromTop_fatjetPtGt200 = true;
-		    if ( recTop->subJet1()->pt() && recTop->subJet2()->pt() && recTop->subJet3()->pt() ) {
-		      isHTTv2FromTop_fatjetPtGt200_and_subjetPtGt30 = true;
-		      if ( jetSelectorHTTv2(*recTop) ) {
-			std::cout << "found boosted hadronic top:" 
-				  << " run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
-			std::cout << "HTTv2 jet:" << std::endl;
-			std::cout << (*recTop);
-			isHTTv2FromTop_selected = true;
-		      }
-		    }
-		  }
-		}
-	      }
-
-	      if ( recAntiTop && recAntiTop->subJet1() && recAntiTop->subJet2() && recAntiTop->subJet3() ) {
-		const RecoSubjetHTTv2* recBJetFromAntiTop = 0;
-		const RecoSubjetHTTv2* recWJetFromAntiTop_lead = 0;
-		const RecoSubjetHTTv2* recWJetFromAntiTop_sublead = 0;
-		double dR_b_1 = deltaR(genBJetFromAntiTop->p4(), recAntiTop->subJet1()->p4());
-		double dR_b_2 = deltaR(genBJetFromAntiTop->p4(), recAntiTop->subJet2()->p4());
-		double dR_b_3 = deltaR(genBJetFromAntiTop->p4(), recAntiTop->subJet3()->p4());
-		double dR_lead_1 = deltaR(genWJetFromAntiTop_lead->p4(), recAntiTop->subJet1()->p4());
-		double dR_lead_2 = deltaR(genWJetFromAntiTop_lead->p4(), recAntiTop->subJet2()->p4());
-		double dR_lead_3 = deltaR(genWJetFromAntiTop_lead->p4(), recAntiTop->subJet3()->p4());
-		double dR_sublead_1 = deltaR(genWJetFromAntiTop_sublead->p4(), recAntiTop->subJet1()->p4());
-		double dR_sublead_2 = deltaR(genWJetFromAntiTop_sublead->p4(), recAntiTop->subJet2()->p4());
-		double dR_sublead_3 = deltaR(genWJetFromAntiTop_sublead->p4(), recAntiTop->subJet3()->p4());
-		double dR2min = 1.e+3;
-		if ( (square(dR_b_1) + square(dR_lead_2) + square(dR_sublead_3)) < dR2min ) {
-		  if ( dR_b_1 < 0.2 && dR_lead_2 < 0.2 && dR_sublead_3 < 0.2 ) {
-		    recBJetFromAntiTop         = recAntiTop->subJet1();
-		    recWJetFromAntiTop_lead    = recAntiTop->subJet2();
-		    recWJetFromAntiTop_sublead = recAntiTop->subJet3();
-		    dR2min = (square(dR_b_1) + square(dR_lead_2) + square(dR_sublead_3));
-		  }
-		}
-		if ( (square(dR_b_1) + square(dR_lead_3) + square(dR_sublead_2)) < dR2min ) {
-		  if ( dR_b_1 < 0.2 && dR_lead_3 < 0.2 && dR_sublead_2 < 0.2 ) {
-		    recBJetFromAntiTop         = recAntiTop->subJet1();
-		    recWJetFromAntiTop_lead    = recAntiTop->subJet3();
-		    recWJetFromAntiTop_sublead = recAntiTop->subJet2();
-		    dR2min = (square(dR_b_1) + square(dR_lead_3) + square(dR_sublead_2));
-		  }
-		}
-		if ( (square(dR_b_2) + square(dR_lead_1) + square(dR_sublead_3)) < dR2min ) {
-		  if ( dR_b_2 < 0.2 && dR_lead_1 < 0.2 && dR_sublead_3 < 0.2 ) {
-		    recBJetFromAntiTop         = recAntiTop->subJet2();
-		    recWJetFromAntiTop_lead    = recAntiTop->subJet1();
-		    recWJetFromAntiTop_sublead = recAntiTop->subJet3();
-		    dR2min = (square(dR_b_2) + square(dR_lead_1) + square(dR_sublead_3));
-		  }
-		}
-		if ( (square(dR_b_2) + square(dR_lead_3) + square(dR_sublead_1)) < dR2min ) {
-		  if ( dR_b_2 < 0.2 && dR_lead_3 < 0.2 && dR_sublead_1 < 0.2 ) {
-		    recBJetFromAntiTop         = recAntiTop->subJet2();
-		    recWJetFromAntiTop_lead    = recAntiTop->subJet3();
-		    recWJetFromAntiTop_sublead = recAntiTop->subJet1();
-		    dR2min = (square(dR_b_2) + square(dR_lead_3) + square(dR_sublead_1));
-		  }
-		}
-		if ( (square(dR_b_3) + square(dR_lead_1) + square(dR_sublead_2)) < dR2min ) {
-		  if ( dR_b_3 < 0.2 && dR_lead_1 < 0.2 && dR_sublead_2 < 0.2 ) {
-		    recBJetFromAntiTop         = recAntiTop->subJet3();
-		    recWJetFromAntiTop_lead    = recAntiTop->subJet1();
-		    recWJetFromAntiTop_sublead = recAntiTop->subJet2();
-		    dR2min = (square(dR_b_3) + square(dR_lead_1) + square(dR_sublead_2));
-		  }
-		}
-		if ( (square(dR_b_3) + square(dR_lead_2) + square(dR_sublead_1)) < dR2min ) {
-		  if ( dR_b_3 < 0.2 && dR_lead_2 < 0.2 && dR_sublead_1 < 0.2 ) {
-		    recBJetFromAntiTop         = recAntiTop->subJet3();
-		    recWJetFromAntiTop_lead    = recAntiTop->subJet2();
-		    recWJetFromAntiTop_sublead = recAntiTop->subJet1();
-		    dR2min = (square(dR_b_3) + square(dR_lead_2) + square(dR_sublead_1));
-		  }
-		}
-                if ( recBJetFromAntiTop && recWJetFromAntiTop_lead && recWJetFromAntiTop_sublead ) {
-		  Particle::LorentzVector recWBosonFromAntiTopP4 = recWJetFromAntiTop_lead->p4() + recWJetFromAntiTop_sublead->p4();
-		  if ( genWBosonFromAntiTopP4.pt() > 100. ) {
-		    fillWithOverFlow(histogram_HTTv2_W_ptRec_div_ptGen, recWBosonFromAntiTopP4.pt()/genWBosonFromAntiTopP4.pt(), evtWeight);
-		  }
-		  fillWithOverFlow(histogram_HTTv2_mW, recWBosonFromAntiTopP4.mass(), evtWeight);
-		  Particle::LorentzVector recAntiTopP4 = recBJetFromAntiTop->p4() + recWBosonFromAntiTopP4;
-		  if ( genAntiTopP4.pt() > 200. ) {
-		    fillWithOverFlow(histogram_HTTv2_Top_ptRec_div_ptGen, recAntiTopP4.pt()/genAntiTopP4.pt(), evtWeight);
-		  }
-		  fillWithOverFlow(histogram_HTTv2_mTop, recAntiTopP4.mass(), evtWeight);
-		  if ( genWJetFromAntiTop_lead->pt() > 20. ) {
-		    fillWithOverFlow(histogram_HTTv2_WJet1_ptRec_div_ptGen, recWJetFromAntiTop_lead->pt()/genWJetFromAntiTop_lead->pt(), evtWeight);
-		    fillWithOverFlow(histogram_HTTv2_WJet1_dRmatch, deltaR(recWJetFromAntiTop_lead->p4(), genWJetFromAntiTop_lead->p4()), evtWeight);
-		    double cosThetaStar_WJet1 = comp_cosThetaStar(recWJetFromAntiTop_lead->p4(), recWBosonFromAntiTopP4);
-		    fillWithOverFlow(histogram_HTTv2_WJet1_cosThetaStar, cosThetaStar_WJet1, evtWeight);
-		  }
-		  if ( genWJetFromAntiTop_sublead->pt() > 20. ) {
-		    fillWithOverFlow(histogram_HTTv2_WJet2_ptRec_div_ptGen, recWJetFromAntiTop_sublead->pt()/genWJetFromAntiTop_sublead->pt(), evtWeight);
-		    fillWithOverFlow(histogram_HTTv2_WJet2_dRmatch, deltaR(recWJetFromAntiTop_sublead->p4(), genWJetFromAntiTop_sublead->p4()), evtWeight);
-		  }
-		  if ( genBJetFromAntiTop->pt() > 20. ) {
-		    fillWithOverFlow(histogram_HTTv2_BJet_ptRec_div_ptGen, recBJetFromAntiTop->pt()/genBJetFromAntiTop->pt(), evtWeight);
-		    fillWithOverFlow(histogram_HTTv2_BJet_dRmatch, deltaR(recBJetFromAntiTop->p4(), genBJetFromAntiTop->p4()), evtWeight);
-		    double cosThetaStar_BJet = comp_cosThetaStar(recBJetFromAntiTop->p4(), recAntiTopP4);
-		    fillWithOverFlow(histogram_HTTv2_BJet_cosThetaStar, cosThetaStar_BJet, evtWeight);
-		  }
-		  isHTTv2FromAntiTop = true;
-		  if ( recAntiTop->pt() > 200 ) {
-		    isHTTv2FromAntiTop_fatjetPtGt200 = true;
-		    if ( recAntiTop->subJet1()->pt() && recAntiTop->subJet2()->pt() && recAntiTop->subJet3()->pt() ) {
-		      isHTTv2FromAntiTop_fatjetPtGt200_and_subjetPtGt30 = true;
-		      if ( jetSelectorHTTv2(*recAntiTop) ) {
-			std::cout << "found boosted hadronic anti-top:" 
-				  << " run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
-			std::cout << "HTTv2 jet:" << std::endl;
-			std::cout << (*recAntiTop);
-			isHTTv2FromAntiTop_selected = true;
-		      }
-		    }
-		  }
-		}
-	      }
-	    }
-	  }
-	}
-      }
+    //Particle::LorentzVector *genParticle = new Particle::LorentzVector[4];
+    const GenParticle **genParticle = new const GenParticle*[4];
+    if (genBJetFromTop     && genWJetFromTop_lead     && genWJetFromTop_sublead) {
+      genParticle[kTLVGenTop]   = genTopQuark;
+      genParticle[kTLVGenBJet]  = genBJetFromTop;
+      genParticle[kTLVGenWJet1] = genWJetFromTop_lead;
+      genParticle[kTLVGenWJet2] = genWJetFromTop_sublead;
+      
+      CheckGenHTTv2JetMatching(kGenTop, genParticle, jet_ptrsHTTv2, selJets, jetSelectorHTTv2);
+    }
+    if (genBJetFromAntiTop     && genWJetFromAntiTop_lead     && genWJetFromAntiTop_sublead) {
+      genParticle[kTLVGenTop]   = genAntiTopQuark;
+      genParticle[kTLVGenBJet]  = genBJetFromAntiTop;
+      genParticle[kTLVGenWJet1] = genWJetFromAntiTop_lead;
+      genParticle[kTLVGenWJet2] = genWJetFromAntiTop_sublead;
+     
+      CheckGenHTTv2JetMatching(kGenAntiTop, genParticle, jet_ptrsHTTv2, selJets, jetSelectorHTTv2);
     }
 
+    
     if ( isHTTv2FromTop || isHTTv2FromAntiTop ) {
       cutFlowTable_2lss_1tau_HTTv2.update("rec HTTv2");
+      sPrint += " rec HTTv2";      
     }
     if ( isHTTv2FromTop_fatjetPtGt200 || isHTTv2FromAntiTop_fatjetPtGt200 ) {
       cutFlowTable_2lss_1tau_HTTv2.update("rec HTTv2 passes fat-jet pT > 200 GeV");
@@ -1516,8 +1818,32 @@ int main(int argc, char* argv[])
 	(*selEventsFile_boosted) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
       }
     }
+    
+    if (isbCandiFromTop || isbCandiFromAntiTop) {
+      cutFlowTable_2lss_1tau_HTTv2.update("HTTv2_1: GenBJet matched)");
+      if (isbCandiFromTopPtGt30 || isbCandiFromAntiTopPtGt30) {
+	cutFlowTable_2lss_1tau_HTTv2.update("HTTv2_1: GenBJet pt > 30 matched)");
+      }			
+    }
+    if (isW1CandiFromTop || isW1CandiFromAntiTop) {
+      cutFlowTable_2lss_1tau_HTTv2.update("HTTv2_1: GenWJet1 matched)");
+      if (isW1CandiFromTopPtGt30 || isW1CandiFromAntiTopPtGt30) {
+	cutFlowTable_2lss_1tau_HTTv2.update("HTTv2_1: GenWJet1 pt > 30 matched)");
+      }
+    }
+    if (isW2CandiFromTop || isW2CandiFromAntiTop) {
+      cutFlowTable_2lss_1tau_HTTv2.update("HTTv2_1: GenWJet2 matched)");
+      if (isW2CandiFromTopPtGt30 || isW2CandiFromAntiTopPtGt30) {
+	cutFlowTable_2lss_1tau_HTTv2.update("HTTv2_1: GenWJet2 pt > 30 matched)");
+      }
+    }
+    if (isJetTripletFromTop || isJetTripletFromAntiTop) {
+      cutFlowTable_2lss_1tau_HTTv2.update("HTTv2_1: GenTripletJet matched)");
+    }
+    
+    if (isCat1_Gen) std::cout << sPrint << std::endl;
     //-------------------------------------------------------------------------------------------------------------------
-
+		
     //-------------------------------------------------------------------------------------------------------------------
     // case 2: two jets from hadronic W boson decay contained within dR=1.2 "fat" jet,
     //         reconstructed by by anti-kT algorithm with dR=1.2 (AK12),
@@ -1685,12 +2011,12 @@ int main(int argc, char* argv[])
 		      isAK12FromTop_fatjetPtGt130_and_subjetPtGt10 = true;
 		      if ( jetSelectorAK12(*recWBosonFromTop) ) {
 			if ( selBJetFromTop ) {
-			  std::cout << "found semi-boosted hadronic top:" 
+			  /*std::cout << "found semi-boosted hadronic top:" 
 				    << " run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
 			  std::cout << "AK12 jet:" << std::endl;
 			  std::cout << (*recWBosonFromTop);
 			  std::cout << "b-jet:" << std::endl;
-			  std::cout << (*selBJetFromTop);
+			  std::cout << (*selBJetFromTop);*/
 			}
 			isAK12FromTop_selected = true;
 		      }
@@ -1752,12 +2078,12 @@ int main(int argc, char* argv[])
 		      isAK12FromAntiTop_fatjetPtGt130_and_subjetPtGt10 = true;
 		      if ( jetSelectorAK12(*recWBosonFromAntiTop) ) {
 			if ( selBJetFromAntiTop ) {
-			  std::cout << "found semi-boosted hadronic anti-top:" 
+			  /*std::cout << "found semi-boosted hadronic anti-top:" 
 				    << " run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
 			  std::cout << "AK12 jet:" << std::endl;
 			  std::cout << (*recWBosonFromAntiTop);
 			  std::cout << "b-jet:" << std::endl;
-			  std::cout << (*selBJetFromAntiTop);
+			  std::cout << (*selBJetFromAntiTop);*/
 			}
 			isAK12FromAntiTop_selected = true;
 		      }
@@ -1841,6 +2167,7 @@ int main(int argc, char* argv[])
 		  genWJetFromAntiTop_sublead && genWJetFromAntiTop_lead->absEta() < 2.4) ) {
 	      cutFlowTable_2lss_1tau_resolved.update("genJet triplet passes abs(eta) < 2.4");
 
+				
 	      if ( genTopQuark && genWBosonFromTop && genBJetFromTop && genWJetFromTop_lead && genWJetFromTop_sublead ) {
 		fillWithOverFlow(histogram_ptTop, genTopQuark->pt(), evtWeight);
 		fillWithOverFlow(histogram_etaTop, genTopQuark->eta(), evtWeight);
@@ -1880,6 +2207,7 @@ int main(int argc, char* argv[])
 		fillWithOverFlow(histogram_etaB, genBJetFromAntiTop->eta(), evtWeight);
 	      }
 
+
 	      if ( (genBJetFromTop                                                                &&
 		    genWJetFromTop_lead                                                           &&
 		    genWJetFromTop_sublead                                                        &&
@@ -1894,6 +2222,7 @@ int main(int argc, char* argv[])
 		    deltaR(genWJetFromAntiTop_lead->p4(), genWJetFromAntiTop_sublead->p4()) > 0.4) ) {
 		cutFlowTable_2lss_1tau_resolved.update("dR(jet1,jet2) > 0.4 for any pair of genJets in triplet");
 
+		
 		const RecoJet* selBJetFromTop = 0;
 		double dRmin_selBJetFromTop = 1.e+3;
 		const RecoJet* selWJetFromTop_lead = 0;
@@ -1950,6 +2279,8 @@ int main(int argc, char* argv[])
 		    }
 		  }
 		}
+
+
 		if ( (selBJetFromTop             &&
 		      selWJetFromTop_lead        &&
 		      selWJetFromTop_sublead    ) ||
@@ -1972,7 +2303,8 @@ int main(int argc, char* argv[])
 			deltaR(selWJetFromAntiTop_lead->p4(), selWJetFromAntiTop_sublead->p4()) > 0.3) ) {
 		    cutFlowTable_2lss_1tau_resolved.update("dR(jet1,jet2) > 0.3 for any pair of selJets in triplet");
 
-		    if ( selWJetFromTop_lead && selWJetFromTop_sublead ) {
+		    if ( selWJetFromTop_lead && selWJetFromTop_sublead && 1==0) {
+					std::cout<<"here75"<<std::endl;
 		      double cosThetaStar_WJet1 = comp_cosThetaStar(selWJetFromTop_lead->p4(), selWJetFromTop_lead->p4() + selWJetFromTop_sublead->p4());
 		      fillWithOverFlow(histogram_resolved_WJet1_cosThetaStar, cosThetaStar_WJet1, evtWeight);
 		      double cosThetaStar_BJet = comp_cosThetaStar(selBJetFromTop->p4(), selBJetFromTop->p4() + selWJetFromTop_lead->p4() + selWJetFromTop_sublead->p4());
@@ -1986,7 +2318,7 @@ int main(int argc, char* argv[])
 			selWJetFromTop_lead->p4());
 		      fillWithOverFlow(histogram_resolved_theta_t_sublead, theta_t_sublead, evtWeight);
 		    }
-		    if ( selWJetFromAntiTop_lead && selWJetFromAntiTop_sublead ) {
+		    if ( selWJetFromAntiTop_lead && selWJetFromAntiTop_sublead && 1==0) {
 		      double cosThetaStar_WJet1 = comp_cosThetaStar(selWJetFromAntiTop_lead->p4(), selWJetFromAntiTop_lead->p4() + selWJetFromAntiTop_sublead->p4());
 		      fillWithOverFlow(histogram_resolved_WJet1_cosThetaStar, cosThetaStar_WJet1, evtWeight);
 		      double cosThetaStar_BJet = comp_cosThetaStar(selBJetFromAntiTop->p4(), selBJetFromAntiTop->p4() + selWJetFromAntiTop_lead->p4() + selWJetFromAntiTop_sublead->p4());
@@ -2014,7 +2346,7 @@ int main(int argc, char* argv[])
 		    }
 		    if ( selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose ) {
 		      cutFlowTable_2lss_1tau_resolved.update(">= 1 selBJet passes loose b-tagging working-point");
-		      if ( selWJetFromTop_lead && selWJetFromTop_sublead && selBJetFromTop_passesLoose ) {
+		      /*if ( selWJetFromTop_lead && selWJetFromTop_sublead && selBJetFromTop_passesLoose ) {
 			std::cout << "found resolved hadronic top:";
 		      }
 		      if ( selBJetFromAntiTop_passesLoose && selWJetFromAntiTop_lead && selWJetFromAntiTop_sublead ) {
@@ -2029,7 +2361,7 @@ int main(int argc, char* argv[])
 		      if ( selWJetFromAntiTop_sublead ) std::cout << (*selWJetFromAntiTop_sublead);
 		      std::cout << "b-jet:" << std::endl;
 		      if ( selBJetFromTop     ) std::cout << (*selBJetFromTop);
-		      if ( selBJetFromAntiTop ) std::cout << (*selBJetFromAntiTop);
+		      if ( selBJetFromAntiTop ) std::cout << (*selBJetFromAntiTop);*/
 		      isResolved = true;
 		    }
 		  }
@@ -2040,6 +2372,8 @@ int main(int argc, char* argv[])
 	}
       }
     }
+
+
 
     if ( isResolved ) {
       cutFlowTable_2lss_1tau_resolved.update("rec resolved");
@@ -2052,9 +2386,12 @@ int main(int argc, char* argv[])
 	  cutFlowTable_2lss_1tau_resolved.update("!HTTv2 && !AK12");
 	}
       }
+			if ( !((isAK12FromTop_selected && isBJetFromTop) || (isAK12FromAntiTop_selected && isBJetFromAntiTop)) ) {
+				cutFlowTable_2lss_1tau_resolved.update("!AK12");
+			}
     }
     //-------------------------------------------------------------------------------------------------------------------
-
+		
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
