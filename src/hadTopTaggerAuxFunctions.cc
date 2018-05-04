@@ -526,9 +526,9 @@ isGenMatchedJetTriplet_Method2(const Particle::LorentzVector & recBJet,
   double jetBJetGenMatchdRThrsh = 0.3;
   double jetWJetsGenMatchdRThrsh = 0.3;
   if (TypeTop==1) {
-    fatjetGenMatchdRThrsh = 0.75;
-    jetBJetGenMatchdRThrsh = 0.1;
-    jetWJetsGenMatchdRThrsh = 0.1;
+    fatjetGenMatchdRThrsh   = 0.75;
+    jetBJetGenMatchdRThrsh  = 0.25; // 0.1
+    jetWJetsGenMatchdRThrsh = 0.25; //0.1
   }
   if (TypeTop==2) {
     fatjetGenMatchdRThrsh = 0.6;
