@@ -42,7 +42,6 @@ process.analyze_2lss = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
     leptonChargeSelection = cms.string('SS'),
 
     hadTauSelection = cms.string('Tight|dR03mvaVTight'), # veto events containing taus that pass tau ID WP applied in 2l+2tau channel

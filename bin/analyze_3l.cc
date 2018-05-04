@@ -191,8 +191,6 @@ int main(int argc, char* argv[])
   std::vector<leptonGenMatchEntry> leptonGenMatch_definitions = getLeptonGenMatch_definitions_3lepton(apply_leptonGenMatching);
   std::cout << "leptonGenMatch_definitions:" << std::endl;
   std::cout << leptonGenMatch_definitions;
-  bool apply_leptonGenMatching_ttZ_workaround = cfg_analyze.getParameter<bool>("apply_leptonGenMatching_ttZ_workaround");
-  std::cout << "apply_leptonGenMatching_ttZ_workaround = " << apply_leptonGenMatching_ttZ_workaround << std::endl;
 
   TString hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection").data();
   TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
@@ -1029,7 +1027,6 @@ int main(int argc, char* argv[])
     const RecoLepton* preselLepton_third = preselLeptons[2];
     const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton_lead, preselLepton_sublead, preselLepton_third);
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
-    if ( apply_leptonGenMatching_ttZ_workaround ) idxPreselLepton_genMatch = kGen_3l0j;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined3);
 
     // require that trigger paths match event category (with event category based on preselLeptons)
@@ -1121,7 +1118,6 @@ int main(int argc, char* argv[])
     int selLepton_third_type = getLeptonType(selLepton_third->pdgId());
     const leptonGenMatchEntry& selLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, selLepton_lead, selLepton_sublead, selLepton_third);
     int idxSelLepton_genMatch = selLepton_genMatch.idx_;
-    if ( apply_leptonGenMatching_ttZ_workaround ) idxSelLepton_genMatch = kGen_3l0j;
     assert(idxSelLepton_genMatch != kGen_LeptonUndefined3);
     if ( isDEBUG ) {
       std::cout << "selLepton_genMatch = " << getLeptonGenMatch_string(leptonGenMatch_definitions, idxSelLepton_genMatch) << std::endl;

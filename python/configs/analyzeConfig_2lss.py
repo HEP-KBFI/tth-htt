@@ -142,7 +142,6 @@ class analyzeConfig_2lss(analyzeConfig):
       lines.append("process.analyze_2lss.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_2lss.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_2lss.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
-    lines.append("process.analyze_2lss.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))
     lines.append("process.analyze_2lss.leptonChargeSelection = cms.string('%s')" % jobOptions['lepton_charge_selection'])
     lines.append("process.analyze_2lss.hadTauSelection = cms.string('%s')" % jobOptions['hadTauVeto_selection'])
     lines.append("process.analyze_2lss.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
