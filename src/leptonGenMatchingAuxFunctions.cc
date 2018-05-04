@@ -141,7 +141,7 @@ namespace
                         int & numGenMatchedLeptons,
                         int & numGenMatchedJets)
   {
-    if(lepton->genLepton())
+    if(lepton->genLepton() || lepton->genHadTau())
     {
       ++numGenMatchedLeptons;
     }

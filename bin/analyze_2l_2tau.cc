@@ -907,12 +907,16 @@ int main(int argc, char* argv[])
       printCollection("selElectrons",    selElectrons);
     }
 
+    // LEPTONS AS WELL! merge fakeable, tight & selected ele and muon collections => then pick first N
+
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
     std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus, isHigherPt);
     std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(preselHadTaus, isHigherPt);
-    std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(preselHadTaus, isHigherPt);
+    fakeableHadTaus = pickFirstNobjects(fakeableHadTaus, 2);
+    std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(fakeableHadTaus, isHigherPt);
+    tightHadTaus = pickFirstNobjects(tightHadTaus, 2);
     std::vector<const RecoHadTau*> selHadTaus;
     if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
     else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
