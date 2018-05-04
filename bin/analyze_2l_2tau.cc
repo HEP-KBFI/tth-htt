@@ -1442,12 +1442,12 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("met LD", evtWeight);
 
     if ( leptonSelection == kFakeable || hadTauSelection == kFakeable ) {
-      if ( (tightLeptons.size()) >= 2 && tightHadTaus.size() >= 2 ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS tightElectrons+tightMuons selection." << std::endl;
-    std::cout << " (#tightElectrons = " << tightLeptons.size() << ", #tightHadTaus = " << tightHadTaus.size() << ")\n";
-	}
-	continue; // CV: avoid overlap with signal region
+      if ( tightLeptons.size() >= 2 && tightHadTaus.size() >= 2 ) {
+        if ( run_lumi_eventSelector ) {
+          std::cout << "event FAILS tightElectrons+tightMuons selection." << std::endl;
+          std::cout << " (#tightLeptons = " << tightLeptons.size() << ", #tightHadTaus = " << tightHadTaus.size() << ")\n";
+        }
+        continue; // CV: avoid overlap with signal region
       }
       cutFlowTable.update("signal region veto", evtWeight);
       cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
