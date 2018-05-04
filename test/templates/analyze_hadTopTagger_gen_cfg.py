@@ -138,3 +138,30 @@ process.analyze_hadTopTagger_gen.lumiScale = cms.double(0.002600)
 process.analyze_hadTopTagger_gen.apply_genWeight = cms.bool(True)
 process.analyze_hadTopTagger_gen.apply_trigger_bits = cms.bool(True)
 
+
+
+#added by Siddhesh   
+#inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Apr08_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
+inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Apr27_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
+maxInputFiles = 50
+#zombie_files = [ "tree_110.root", ]                                                                                                                                                       
+#zombie_files = [ "tree_110.root", "tree_168.root"]                                                                                                                                        
+zombie_files = [ ]
+import os
+def getInputFiles(inputFilePath):
+    inputFiles = []
+    files_and_subdirectories = os.listdir(inputFilePath)
+    for file_or_subdirectory in files_and_subdirectories:
+        if file_or_subdirectory in zombie_files:
+            continue
+        file_or_subdirectory = os.path.join(inputFilePath, file_or_subdirectory)
+        if os.path.isfile(file_or_subdirectory):
+            if file_or_subdirectory.endswith(".root"):
+                inputFiles.append(file_or_subdirectory)
+        if os.path.isdir(file_or_subdirectory):
+            inputFiles.extend(getInputFiles(file_or_subdirectory))
+    return inputFiles
+inputFiles = getInputFiles(inputFilePath)
+process.fwliteInput.fileNames = cms.vstring(inputFiles[0:maxInputFiles])
+print "inputFiles = ", process.fwliteInput.fileNames
+
