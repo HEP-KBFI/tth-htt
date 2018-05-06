@@ -56,7 +56,6 @@ process.analyze_4l = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
 
     chargeSumSelection = cms.string('OS'),
 
