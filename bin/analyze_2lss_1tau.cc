@@ -1193,7 +1193,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons, isHigherConePt);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons, isHigherConePt);
-    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons, isHigherConePt);
+    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(fakeableMuons, isHigherConePt);
     std::vector<const RecoMuon*> selMuons;
     if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
     else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
@@ -1215,7 +1215,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherConePt);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons, isHigherConePt);
-    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons, isHigherConePt);
+    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(fakeableElectrons, isHigherConePt);
     std::vector<const RecoElectron*> selElectrons;
     if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
     else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
@@ -1231,19 +1231,31 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         std::cout << (*selElectrons[idxSelElectron]);
       }
     }
-    std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons);
+
+    std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
+    std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherConePt);
+    std::vector<const RecoLepton*> tightLeptonsFull = mergeLeptonCollections(tightElectrons, tightMuons, isHigherConePt);
+    std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
+    fakeableLeptons = pickFirstNobjects(fakeableLeptons, 2);
+    std::vector<const RecoLepton*> tightLeptons = pickFirstNobjects(tightLeptonsFull, 2);
+    selLeptons = pickFirstNobjects(selLeptons, 2);
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
     std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus, isHigherPt);
-    std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
-    std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(cleanedHadTaus, isHigherPt);
+    std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(preselHadTaus, isHigherPt);
+    std::vector<const RecoHadTau*> tightHadTausFull = tightHadTauSelector(fakeableHadTaus, isHigherPt);
     std::vector<const RecoHadTau*> selHadTaus;
     if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
     else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
-    else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
+    else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTausFull;
     else assert(0);
+
+    std::vector<const RecoHadTau*> tightHadTaus = pickFirstNobjects(tightHadTausFull, 1);
+    fakeableHadTaus = pickFirstNobjects(fakeableHadTaus, 1);
+    selHadTaus = pickFirstNobjects(selHadTaus, 1);
+
     if ( isDEBUG ) {
       for ( size_t idxPreselHadTau = 0; idxPreselHadTau < preselHadTaus.size(); ++idxPreselHadTau ) {
         std::cout << "preselHadTau #" << idxPreselHadTau << ":" << std::endl;
@@ -1254,7 +1266,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         std::cout << (*selHadTaus[idxSelHadTau]);
       }
     }
-    selHadTaus = pickFirstNobjects(selHadTaus, 1);
 
     // CV: veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
     std::vector<const RecoHadTau*> vetoHadTaus = vetoHadTauSelector(cleanedHadTaus, isHigherPt);
@@ -1271,7 +1282,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         }
       }
     }
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, preselHadTaus);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableLeptons, fakeableHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -1315,7 +1326,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
 
 //--- apply preselection
-    std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
     // require at least two leptons passing loose preselection criteria
     if ( !(preselLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
@@ -1389,7 +1399,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
 //--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();
-    std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
     Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, fakeableHadTaus, selJets);
     double met_LD = compMEt_LD(met.p4(), mht_p4);
 
@@ -1514,7 +1523,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
     bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
     bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
-    bool passesTight_hadTau = isMatched(*selHadTau, tightHadTaus);
+    bool passesTight_hadTau = isMatched(*selHadTau, tightHadTausFull);
 
     double weight_fakeRate = 1.;
     double prob_fake_lepton_lead = 1.;
@@ -1554,11 +1563,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     } // end if !selectBDT
 
     // require exactly two leptons passing tight selection criteria, to avoid overlap with other channels
-    std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherConePt);
-    if ( !(tightLeptons.size() <= 2) ) {
+    if ( !(tightLeptonsFull.size() <= 2) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS tightLeptons selection." << std::endl;
-        printCollection("tightLeptons", tightLeptons);
+        std::cout << "event " << eventInfo.str() << " FAILS tightLeptons selection.\n";
+        printCollection("tightLeptonsFull", tightLeptonsFull);
       }
       continue;
     }
@@ -1666,12 +1674,20 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       if ( (*lepton)->is_electron() ) {
         const RecoElectron* electron = dynamic_cast<const RecoElectron*>(*lepton);
         assert(electron);
-        if ( electron->tightCharge() < 2 ) failsTightChargeCut = true;
+        if ( electron->tightCharge() < 2 )
+        {
+          failsTightChargeCut = true;
+          break;
+        }
       }
-      if ( (*lepton)->is_muon() ) {
+      else if ( (*lepton)->is_muon() ) {
         const RecoMuon* muon = dynamic_cast<const RecoMuon*>(*lepton);
         assert(muon);
-        if ( muon->tightCharge() < 2 ) failsTightChargeCut = true;
+        if ( muon->tightCharge() < 2 )
+        {
+          failsTightChargeCut = true;
+          break;
+        }
       }
     }
     if ( failsTightChargeCut ) {
@@ -1762,7 +1778,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
 
     bool failsZbosonMassVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = fakeableLeptons.begin();
+    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = fakeableLeptons.begin(); //TODO probably use preselected leptons OR use the full collection of fakeable leptons
           lepton1 != fakeableLeptons.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
             lepton2 != fakeableLeptons.end(); ++lepton2 ) {
@@ -1780,10 +1796,11 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
     cutFlowTable.update("Z-boson mass veto", evtWeight);
     cutFlowHistManager->fillHistograms("Z-boson mass veto", evtWeight);
-    if ( !(fakeableMuons.size() >= 1 || met_LD >= 0.2) ) {
+    if ( !(selLepton_lead->is_muon() || selLepton_sublead->is_muon() || met_LD >= 0.2) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
-        std::cout << " (LD = " << met_LD << ")" << std::endl;
+          std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
+          std::cout << " (LD = " << met_LD << ")\n"
+        ;
       }
       continue;
     }
@@ -1791,10 +1808,11 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowHistManager->fillHistograms("met LD > 0.2", evtWeight);
 
     if ( leptonSelection == kFakeable || hadTauSelection == kFakeable ) {
-      if ( (tightMuons.size() + tightElectrons.size()) >= 2 && tightHadTaus.size() >= 1 ) {
+      if ( tightLeptons.size() >= 2 && tightHadTaus.size() >= 1 ) {
         if ( run_lumi_eventSelector ) {
-          std::cout << "event " << eventInfo.str() << " FAILS tightElectrons+tightMuons selection." << std::endl;
-          std::cout << " (#tightElectrons = " << tightElectrons.size() << ", #tightMuons = " << tightMuons.size() << ", #tightHadTaus = " << tightHadTaus.size() << ")" << std::endl;
+          std::cout << "event " << eventInfo.str() << " FAILS tightElectrons+tightMuons selection.\n"
+                       " (#tightLeptons = " << tightLeptons.size() << ", #tightHadTaus = " << tightHadTaus.size() << ")\n"
+          ;
         }
         continue; // CV: avoid overlap with signal region
       }
@@ -2174,11 +2192,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       double lep2_genLepPt=( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.;
       double tau_genTauPt=( selHadTau->genHadTau() != 0 ) ? selHadTau->genHadTau()->pt() : 0.;
 
-      if ( mindr_lep2_jet < 0.3 || mindr_lep1_jet < 0.3 ) {
-        std::cout <<leptonSelection_string <<" (#tightElectrons = " << tightElectrons.size()
-                 <<"("<<fakeableElectrons.size() <<"), #tightMuons = "
-                << tightMuons.size() <<"("<<fakeableMuons.size() <<")" << std::endl;
-      };
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",                        selLepton_lead->pt())
           ("lep1_conePt",                    lep1_conePt)
