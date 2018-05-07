@@ -674,20 +674,20 @@ int main(int argc, char* argv[])
     std::vector<RecoMuon> muons = muonReader->read();
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons, isHigherPt);
+    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons, isHigherConePt);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons, isHigherConePt);
-    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(fakeableMuons, isHigherPt);
+    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(fakeableMuons, isHigherConePt);
     
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
-    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherPt);
+    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherConePt);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons, isHigherConePt);
-    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(fakeableElectrons, isHigherPt);
+    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(fakeableElectrons, isHigherConePt);
 
     std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
     std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherConePt);
-    std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherPt);
+    std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherConePt);
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
