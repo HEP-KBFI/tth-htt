@@ -19,7 +19,7 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
                        Double_t raw_cut_dR05,
                        Int_t antiElectron,
                        Int_t antiMuon,
-                       Int_t filterBits)
+                       UInt_t filterBits)
   : GenHadTau(particle)
   , dxy_(dxy)
   , dz_(dz)
@@ -174,7 +174,7 @@ RecoHadTau::antiMuon() const
   return antiMuon_;
 }
 
-Int_t
+UInt_t
 RecoHadTau::filterBits() const
 {
   return filterBits_;

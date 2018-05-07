@@ -137,7 +137,6 @@ class analyzeConfig_3l(analyzeConfig):
       lines.append("process.analyze_3l.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_3l.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_3l.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
-    lines.append("process.analyze_3l.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))
     lines.append("process.analyze_3l.hadTauSelection = cms.string('%s')" % jobOptions['hadTauVeto_selection'])
     lines.append("process.analyze_3l.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
     lines.append("process.analyze_3l.chargeSumSelection = cms.string('%s')" % jobOptions['chargeSumSelection'])

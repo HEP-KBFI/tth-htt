@@ -56,7 +56,6 @@ process.analyze_3l = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
 
     hadTauSelection = cms.string('Tight|dR03mvaMedium'),
 

@@ -17,7 +17,7 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
                        Int_t    jetNDauChargedMVASel,
                        Int_t    tightCharge,
                        Int_t    charge,
-                       Int_t    filterBits)
+                       UInt_t   filterBits)
   : GenLepton(lepton)
   , dxy_(dxy)
   , dz_(dz)
@@ -227,7 +227,7 @@ RecoLepton::charge() const
   return charge_;
 }
 
-Int_t
+UInt_t
 RecoLepton::filterBits() const
 {
   return filterBits_;

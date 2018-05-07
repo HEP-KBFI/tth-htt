@@ -42,7 +42,6 @@ process.analyze_hadTopTagger_gen = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
     leptonChargeSelection = cms.string('SS'),
 
     hadTauSelection = cms.string('Tight|dR03mvaMedium'),
@@ -86,7 +85,7 @@ process.analyze_hadTopTagger_gen = cms.PSet(
     selEventsFileName_output = cms.string('selEvents_hadTopTagger_gen.txt'),
     selEventsFileName_output_boosted = cms.string('selEvents_hadTopTagger_gen_boosted.txt'),
     selEventsFileName_output_semiboosted = cms.string('selEvents_hadTopTagger_gen_semiboosted.txt'),
-    selEventsFileName_output_resolved = cms.string('selEvents_hadTopTagger_gen_resolved.txt'),    
+    selEventsFileName_output_resolved = cms.string('selEvents_hadTopTagger_gen_resolved.txt'),
     isDEBUG = cms.bool(False),
 )
 
@@ -126,7 +125,6 @@ process.analyze_hadTopTagger_gen.triggers_1e1mu = cms.vstring(['HLT_Mu23_TrkIsoV
 process.analyze_hadTopTagger_gen.use_triggers_1e1mu = cms.bool(True)
 process.analyze_hadTopTagger_gen.leptonSelection = cms.string('Tight')
 process.analyze_hadTopTagger_gen.apply_leptonGenMatching = cms.bool(True)
-process.analyze_hadTopTagger_gen.apply_leptonGenMatching_ttZ_workaround = cms.bool(True)
 process.analyze_hadTopTagger_gen.leptonChargeSelection = cms.string('SS')
 process.analyze_hadTopTagger_gen.hadTauSelection = cms.string('Tight|dR03mvaMedium')
 process.analyze_hadTopTagger_gen.apply_hadTauGenMatching = cms.bool(True)
@@ -137,4 +135,31 @@ process.analyze_hadTopTagger_gen.central_or_shift = cms.string('central')
 process.analyze_hadTopTagger_gen.lumiScale = cms.double(0.002600)
 process.analyze_hadTopTagger_gen.apply_genWeight = cms.bool(True)
 process.analyze_hadTopTagger_gen.apply_trigger_bits = cms.bool(True)
+
+
+
+#added by Siddhesh
+#inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Apr08_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
+inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Apr27_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
+maxInputFiles = 50
+#zombie_files = [ "tree_110.root", ]
+#zombie_files = [ "tree_110.root", "tree_168.root"]
+zombie_files = [ ]
+import os
+def getInputFiles(inputFilePath):
+    inputFiles = []
+    files_and_subdirectories = os.listdir(inputFilePath)
+    for file_or_subdirectory in files_and_subdirectories:
+        if file_or_subdirectory in zombie_files:
+            continue
+        file_or_subdirectory = os.path.join(inputFilePath, file_or_subdirectory)
+        if os.path.isfile(file_or_subdirectory):
+            if file_or_subdirectory.endswith(".root"):
+                inputFiles.append(file_or_subdirectory)
+        if os.path.isdir(file_or_subdirectory):
+            inputFiles.extend(getInputFiles(file_or_subdirectory))
+    return inputFiles
+inputFiles = getInputFiles(inputFilePath)
+process.fwliteInput.fileNames = cms.vstring(inputFiles[0:maxInputFiles])
+print "inputFiles = ", process.fwliteInput.fileNames
 

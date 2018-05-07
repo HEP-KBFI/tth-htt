@@ -42,7 +42,6 @@ process.analyze_2l_2tau = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
     leptonChargeSelection = cms.string('disabled'),
     #leptonChargeSelection = cms.string('SS'),
     #leptonChargeSelection = cms.string('OS'),

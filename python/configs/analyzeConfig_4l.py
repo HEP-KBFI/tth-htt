@@ -135,7 +135,6 @@ class analyzeConfig_4l(analyzeConfig):
       lines.append("process.analyze_4l.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_4l.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_4l.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
-    lines.append("process.analyze_4l.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))
     lines.append("process.analyze_4l.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
     lines.append("process.analyze_4l.chargeSumSelection = cms.string('%s')" % jobOptions['chargeSumSelection'])
     lines.append("process.analyze_4l.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
