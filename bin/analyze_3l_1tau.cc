@@ -1027,7 +1027,7 @@ int main(int argc, char* argv[])
     }
 
 //--- apply preselection
-    // require exactly two leptons passing loose preselection criteria to avoid overlap with 3l category
+    // require exactly three leptons passing loose preselection criteria to avoid overlap with 4l category
     if ( !(preselLeptons.size() >= 3) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS preselLeptons selection." << std::endl;
