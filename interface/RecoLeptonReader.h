@@ -119,7 +119,7 @@ protected:
   Int_t * jetNDauChargedMVASel_;
   Int_t * tightCharge_;
   Int_t * charge_;
-  Int_t * filterBits_;
+  UInt_t * filterBits_;
 
   // CV: make sure that only one RecoLeptonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
