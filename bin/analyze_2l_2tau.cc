@@ -917,14 +917,17 @@ int main(int argc, char* argv[])
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
     std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus, isHigherPt);
     std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(preselHadTaus, isHigherPt);
-    std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(fakeableHadTaus, isHigherPt);
+    std::vector<const RecoHadTau*> tightHadTausFull = tightHadTauSelector(fakeableHadTaus, isHigherPt);
     std::vector<const RecoHadTau*> selHadTaus;
     if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
     else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
-    else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
+    else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTausFull;
     else assert(0);
+
+    std::vector<const RecoHadTau*> tightHadTaus = pickFirstNobjects(tightHadTausFull, 2);
     fakeableHadTaus = pickFirstNobjects(fakeableHadTaus, 2);
     selHadTaus = pickFirstNobjects(selHadTaus, 2);
+
     if(isDEBUG || run_lumi_eventSelector)
     {
       printCollection("preselHadTaus", preselHadTaus);
@@ -1217,9 +1220,9 @@ int main(int argc, char* argv[])
     }
 
     bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
-    bool passesTight_hadTau_lead = isMatched(*selHadTau_lead, tightHadTaus);
+    bool passesTight_hadTau_lead = isMatched(*selHadTau_lead, tightHadTausFull);
     bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
-    bool passesTight_hadTau_sublead = isMatched(*selHadTau_sublead, tightHadTaus);
+    bool passesTight_hadTau_sublead = isMatched(*selHadTau_sublead, tightHadTausFull);
 
     double weight_fakeRate = 1.;
     double prob_fake_lepton_lead = 1.;
