@@ -204,12 +204,6 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_dataToMCcorrectionInterface;  
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
   //cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", isDEBUG);
   cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", false);
