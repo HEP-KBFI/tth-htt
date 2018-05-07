@@ -403,10 +403,6 @@ int main(int argc, char* argv[])
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
   tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
-  RecoHadTauSelectorTight tightHadTauFilter(era, -1, isDEBUG);
-  tightHadTauFilter.set("dR03mvaVTight");
-  tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
-  tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
@@ -1087,15 +1083,11 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons, isHigherConePt);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons, isHigherConePt);
     std::vector<const RecoMuon*> tightMuons = tightMuonSelector(fakeableMuons, isHigherConePt);
-    std::vector<const RecoMuon*> selMuons;
-    if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
-    else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
-    else if ( leptonSelection == kTight    ) selMuons = tightMuons;
-    else assert(0);
     if(isDEBUG || run_lumi_eventSelector)
     {
-      printCollection("preselMuons", preselMuons);
-      printCollection("selMuons",    selMuons);
+      printCollection("preselMuons",   preselMuons);
+      printCollection("fakeableMuons", fakeableMuons);
+      printCollection("tightMuons",    tightMuons);
     }
 
     std::vector<RecoElectron> electrons = electronReader->read();
@@ -1104,45 +1096,48 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherConePt);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons, isHigherConePt);
     std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(fakeableElectrons, isHigherConePt);
-    std::vector<const RecoElectron*> selElectrons;
-    if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
-    else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
-    else if ( leptonSelection == kTight    ) selElectrons = tightElectrons;
-    else assert(0);
     if(isDEBUG || run_lumi_eventSelector)
     {
-      printCollection("preselElectrons", preselElectrons);
-      printCollection("selElectrons",    selElectrons);
+      printCollection("preselElectrons",   preselElectrons);
+      printCollection("fakeableElectrons", fakeableElectrons);
+      printCollection("tightElectrons",    tightElectrons);
     }
 
-    std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
-    std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherConePt);
+    std::vector<const RecoLepton*> preselLeptonsFull = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
+    std::vector<const RecoLepton*> fakeableLeptonsFull = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherConePt);
     std::vector<const RecoLepton*> tightLeptonsFull = mergeLeptonCollections(tightElectrons, tightMuons, isHigherConePt);
-    std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
-    fakeableLeptons = pickFirstNobjects(fakeableLeptons, 1);
-    std::vector<const RecoLepton*> tightLeptons = pickFirstNobjects(tightLeptonsFull, 1);
-    selLeptons = pickFirstNobjects(selLeptons, 1);
+
+    std::vector<const RecoLepton*> preselLeptons = pickFirstNobjects(preselLeptonsFull, 1);
+    std::vector<const RecoLepton*> fakeableLeptons = pickFirstNobjects(fakeableLeptonsFull, 1);
+    std::vector<const RecoLepton*> tightLeptons = getIntersection(fakeableLeptons, tightLeptonsFull, isHigherConePt);
+    std::vector<const RecoLepton*> selLeptons = selectObjects(leptonSelection, preselLeptons, fakeableLeptons, tightLeptons);
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus, isHigherPt);
-    std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(preselHadTaus, isHigherPt);
-    std::vector<const RecoHadTau*> tightHadTausFull = tightHadTauSelector(fakeableHadTaus, isHigherPt);
-    std::vector<const RecoHadTau*> selHadTaus;
-    if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
-    else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
-    else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTausFull;
-    else assert(0);
+    std::vector<const RecoHadTau*> preselHadTausFull = preselHadTauSelector(cleanedHadTaus, isHigherPt);
+    std::vector<const RecoHadTau*> fakeableHadTausFull = fakeableHadTauSelector(preselHadTausFull, isHigherPt);
+    std::vector<const RecoHadTau*> tightHadTausFull = tightHadTauSelector(fakeableHadTausFull, isHigherPt);
 
-    std::vector<const RecoHadTau*> tightHadTaus = pickFirstNobjects(tightHadTausFull, 2);
-    fakeableHadTaus = pickFirstNobjects(fakeableHadTaus, 2);
-    selHadTaus = pickFirstNobjects(selHadTaus, 2);
-
+    std::vector<const RecoHadTau*> preselHadTaus = pickFirstNobjects(preselHadTausFull, 2);
+    std::vector<const RecoHadTau*> fakeableHadTaus = pickFirstNobjects(fakeableHadTausFull, 2);
+    std::vector<const RecoHadTau*> tightHadTaus = getIntersection(fakeableHadTaus, tightHadTausFull, isHigherPt);
+    std::vector<const RecoHadTau*> selHadTaus = selectObjects(hadTauSelection, preselHadTaus, fakeableHadTaus, tightHadTaus);
     if(isDEBUG || run_lumi_eventSelector)
     {
-      printCollection("preselHadTaus", preselHadTaus);
-      printCollection("selHadTaus",    selHadTaus);
+      printCollection("preselHadTaus",   preselHadTaus);
+      printCollection("fakeableHadTaus", fakeableHadTaus);
+      printCollection("tightHadTaus",    tightHadTaus);
+    }
+
+    std::vector<const RecoMuon *> selMuons = getIntersection(preselMuons, selLeptons, isHigherConePt);
+    std::vector<const RecoElectron *> selElectrons = getIntersection(preselElectrons, selLeptons, isHigherConePt);
+    if(isDEBUG || run_lumi_eventSelector)
+    {
+      printCollection("selMuons", selMuons);
+      printCollection("selElectrons", selElectrons);
+      printCollection("selLeptons", selLeptons);
+      printCollection("selHadTaus", selHadTaus);
     }
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
@@ -1187,9 +1182,9 @@ int main(int argc, char* argv[])
       electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.2);
       electronGenMatcher.addGenJetMatch(preselElectrons, genJets, 0.2);
 
-      hadTauGenMatcher.addGenLeptonMatch(preselHadTaus, genLeptons, 0.2);
-      hadTauGenMatcher.addGenHadTauMatch(preselHadTaus, genHadTaus, 0.2);
-      hadTauGenMatcher.addGenJetMatch(preselHadTaus, genJets, 0.2);
+      hadTauGenMatcher.addGenLeptonMatch(preselHadTausFull, genLeptons, 0.2);
+      hadTauGenMatcher.addGenHadTauMatch(preselHadTausFull, genHadTaus, 0.2);
+      hadTauGenMatcher.addGenJetMatch(preselHadTausFull, genJets, 0.2);
 
       jetGenMatcher.addGenLeptonMatch(selJets, genLeptons, 0.2);
       jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.2);
@@ -1198,10 +1193,10 @@ int main(int argc, char* argv[])
 
 //--- apply preselection
     // require exactly one lepton passing loose preselection criteria
-    if ( !(preselLeptons.size() >= 1) ) continue;
+    if ( !(preselLeptonsFull.size() >= 1) ) continue;
     cutFlowTable.update(">= 1 presel lepton");
     cutFlowHistManager->fillHistograms(">= 1 presel lepton", lumiScale);
-    const RecoLepton* preselLepton = preselLeptons[0];
+    const RecoLepton* preselLepton = preselLeptonsFull[0];
     const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton);
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined1);
@@ -1226,11 +1221,11 @@ int main(int argc, char* argv[])
     // require presence of at least two hadronic taus passing loose preselection criteria
     // (do not veto events with more than two loosely selected hadronic tau candidates,
     //  as sample of hadronic tau candidates passing loose preselection criteria contains significant contamination from jets)
-    if ( !(preselHadTaus.size() >= 2) ) continue;
+    if ( !(preselHadTausFull.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 presel taus");
     cutFlowHistManager->fillHistograms(">= 2 presel taus", lumiScale);
-    const RecoHadTau* preselHadTau_lead = preselHadTaus[0];
-    const RecoHadTau* preselHadTau_sublead = preselHadTaus[1];
+    const RecoHadTau* preselHadTau_lead = preselHadTausFull[0];
+    const RecoHadTau* preselHadTau_sublead = preselHadTausFull[1];
     const hadTauGenMatchEntry& preselHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, preselHadTau_lead, preselHadTau_sublead);
     int idxPreselHadTau_genMatch = preselHadTau_genMatch.idx_;
     assert(idxPreselHadTau_genMatch != kGen_HadTauUndefined2);
@@ -1255,7 +1250,7 @@ int main(int argc, char* argv[])
     assert(preselHistManager != 0);
     preselHistManager->electrons_->fillHistograms(preselElectrons, 1.);
     preselHistManager->muons_->fillHistograms(preselMuons, 1.);
-    preselHistManager->hadTaus_->fillHistograms(preselHadTaus, 1.);
+    preselHistManager->hadTaus_->fillHistograms(preselHadTausFull, 1.);
     preselHistManager->leadHadTau_->fillHistograms({ preselHadTau_lead }, 1.);
     preselHistManager->subleadHadTau_->fillHistograms({ preselHadTau_sublead }, 1.);
     preselHistManager->jets_->fillHistograms(selJets, 1.);
@@ -1497,10 +1492,10 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
 
     bool failsLowMassVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptons.begin();
-      lepton1 != preselLeptons.end(); ++lepton1 ) {
+    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
+      lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-        lepton2 != preselLeptons.end(); ++lepton2 ) {
+        lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
         double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
         if ( mass < 12. ) {
           failsLowMassVeto = true;
@@ -1967,7 +1962,7 @@ int main(int argc, char* argv[])
       snm->read(eventInfo);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
-      snm->read(preselHadTaus);
+      snm->read(preselHadTausFull);
       snm->read(selJets);
 
       snm->read({ triggers_1e, triggers_1e1tau, triggers_1mu, triggers_1mu1tau });
