@@ -686,23 +686,20 @@ int main(int argc, char* argv[])
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus, isHigherPt);
-    std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(preselHadTaus, isHigherPt);
-    std::vector<const RecoHadTau*> tightHadTausFull = tightHadTauSelector(fakeableHadTaus, isHigherPt);
-    std::vector<const RecoHadTau*> selHadTaus;
-    if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
-    else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
-    else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTausFull;
-    else assert(0);
+    std::vector<const RecoHadTau*> preselHadTausFull = preselHadTauSelector(cleanedHadTaus, isHigherPt);
+    std::vector<const RecoHadTau*> fakeableHadTausFull = fakeableHadTauSelector(preselHadTausFull, isHigherPt);
+    std::vector<const RecoHadTau*> tightHadTausFull = tightHadTauSelector(fakeableHadTausFull, isHigherPt);
 
-    std::vector<const RecoHadTau*> tightHadTaus = pickFirstNobjects(tightHadTausFull, 3);
-    fakeableHadTaus = pickFirstNobjects(fakeableHadTaus, 3);
-    selHadTaus = pickFirstNobjects(selHadTaus, 3);
-
+    std::vector<const RecoHadTau*> preselHadTaus = pickFirstNobjects(preselHadTausFull, 3);
+    std::vector<const RecoHadTau*> fakeableHadTaus = pickFirstNobjects(fakeableHadTausFull, 3);
+    std::vector<const RecoHadTau*> tightHadTaus = getIntersection(fakeableHadTaus, tightHadTausFull, isHigherPt);
+    std::vector<const RecoHadTau*> selHadTaus = selectObjects(hadTauSelection, preselHadTaus, fakeableHadTaus, tightHadTaus);
     if(isDEBUG || run_lumi_eventSelector)
     {
-      printCollection("preselHadTaus", preselHadTaus);
-      printCollection("selHadTaus",    selHadTaus);
+      printCollection("preselHadTaus",   preselHadTaus);
+      printCollection("fakeableHadTaus", fakeableHadTaus);
+      printCollection("tightHadTaus",    tightHadTaus);
+      printCollection("selHadTaus",      selHadTaus);
     }
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
