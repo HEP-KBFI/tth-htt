@@ -72,6 +72,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
+#include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 
 #include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
 #include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
@@ -187,6 +188,7 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
+  bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
 
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
@@ -611,6 +613,7 @@ int main(int argc, char* argv[])
     ">= 2 loose b-jets || 1 medium b-jet (1)",
     ">= 2 sel taus",
     "no tight leptons",
+    "hlt filter",
     ">= 4 jets",
     ">= 2 loose b-jets || 1 medium b-jet (2)",
     "m(ll) > 12 GeV",
@@ -906,6 +909,21 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("no tight leptons", evtWeight);
     cutFlowHistManager->fillHistograms("no tight leptons", evtWeight);
+
+//--- apply HLT filter
+    if(apply_hlt_filter)
+    {
+      if(! hltFilter({{ hltPathsE::trigger_2tau, selTrigger_2tau }}, {}, selHadTaus))
+      {
+        if(run_lumi_eventSelector || isDEBUG)
+        {
+          std::cout << "event FAILS HLT filter selection\n";
+        }
+        continue;
+      }
+    }
+    cutFlowTable.update("hlt filter", evtWeight);
+    cutFlowHistManager->fillHistograms("hlt filter", evtWeight);
 
     double weight_fakeRate = 1.;
     if ( applyFakeRateWeights == kFR_2tau) {

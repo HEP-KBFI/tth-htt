@@ -65,6 +65,7 @@ process.analyze_0l_3tau = cms.PSet(
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
     apply_trigger_bits = cms.bool(True),
+    apply_hlt_filter = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
 
