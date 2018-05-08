@@ -1056,7 +1056,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("Z-boson mass veto", evtWeight_2lepton);
 
-    if ( !(fakeableMuons.size() >= 1 || met_LD >= 0.2) ) {
+    if ( !(selLepton_lead->is_muon() || selLepton_sublead->is_muon() || met_LD >= 0.2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS MET LD selection." << std::endl;
 	std::cout << " (LD = " << met_LD << ")" << std::endl;
