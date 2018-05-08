@@ -264,7 +264,7 @@ rle_sets = collections.OrderedDict()
 for group_idx in range(len(file_handles)):
   group_trees = []
   for tree, idxs in tree_idxs.items():
-    if len(idxs) < 2:
+    if tree_prefix and not tree.startswith(tree_prefix):
       continue
     if group_idx in idxs:
       group_trees.append(tree)
