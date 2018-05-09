@@ -6,4 +6,5 @@ samples_2017[sync_key]['local_paths'][0]['path'] = '/hdfs/local/karl/sync_ntuple
 samples_2017[sync_key]['nof_files'] = 1
 
 for sample_key in samples_2017:
-  samples_2017[sample_key]['use_it'] = (sample_key == sync_key)
+  if sample_key != sync_key:
+    del samples_2017[sample_key]
