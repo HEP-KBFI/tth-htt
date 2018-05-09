@@ -78,6 +78,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
+#include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
@@ -232,6 +233,7 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits");
+  bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_hadTauFakeRateSF = cfg_analyze.getParameter<bool>("apply_hadTauFakeRateSF");
   const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
@@ -807,6 +809,7 @@ int main(int argc, char* argv[])
     "<= 1 tight leptons",
     "fakeable lepton trigger match",
     ">= 2 sel taus",
+    "hlt filter",
     ">= 3 jets",
     ">= 2 loose b-jets || 1 medium b-jet (2)",
     "m(ll) > 12 GeV",
@@ -1341,6 +1344,28 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(">= 2 sel taus", evtWeight);
     cutFlowHistManager->fillHistograms(">= 2 sel taus", evtWeight);
+
+//--- apply HLT filter
+    if(apply_hlt_filter)
+    {
+      const std::map<hltPathsE, bool> trigger_bits = {
+        { hltPathsE::trigger_1e,      selTrigger_1e      },
+        { hltPathsE::trigger_1mu,     selTrigger_1mu     },
+        { hltPathsE::trigger_1e1tau,  selTrigger_1e1tau  },
+        { hltPathsE::trigger_1mu1tau, selTrigger_1mu1tau },
+      };
+      if(! hltFilter(trigger_bits, selLeptons, selHadTaus))
+      {
+        if(run_lumi_eventSelector || isDEBUG)
+        {
+          std::cout << "event FAILS HLT filter selection\n";
+        }
+        continue;
+      }
+    }
+    cutFlowTable.update("hlt filter", evtWeight);
+    cutFlowHistManager->fillHistograms("hlt filter", evtWeight);
+
     const RecoHadTau* selHadTau_lead = selHadTaus[0];
     const RecoHadTau* selHadTau_sublead = selHadTaus[1];
     const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau_lead, selHadTau_sublead);

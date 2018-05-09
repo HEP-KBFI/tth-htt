@@ -77,6 +77,7 @@ process.analyze_3l = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(True),
+    apply_hlt_filter = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
 
