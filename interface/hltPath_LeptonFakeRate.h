@@ -24,6 +24,7 @@ class hltPath_LeptonFakeRate
                          bool is_trigger_2e,
                          double minPt = -1.,
                          double maxPt = -1.,
+                         double minRecoPt = -1., // NEWLY ADDED AFTER GIOVANNI SYNC
                          double min_jetPt = -1.,
                          double prescale = 1.,
                          double prescale_rand_mc = 1.);
@@ -31,6 +32,7 @@ class hltPath_LeptonFakeRate
 
   std::string getPathName() const;
   double getMinJetPt() const;
+  double getMinRecoPt() const; // NEWLY ADDED AFTER GIOVANNI SYNC 
   double getPrescale() const;
   double getPrescale_rand_mc() const;
   bool is_trigger_1mu() const;
@@ -43,6 +45,7 @@ class hltPath_LeptonFakeRate
   Int_t value_;
   double minPt_;
   double maxPt_;
+  double minRecoPt_;   // NEWLY ADDED AFTER GIOVANNI SYNC 
   double minJetPt_;
   double prescale_;
   double prescale_rand_mc_;
