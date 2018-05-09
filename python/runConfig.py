@@ -98,6 +98,12 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Enable debugging flag in the analysis',
     )
 
+  def add_files_per_job(self, files_per_job):
+    self.add_argument('-j', '--files-per-job',
+      type = int, dest = 'files_per_job', metavar = 'number', default = files_per_job,
+      help = 'R|Number of input files per job',
+    )
+
   def add_modes(self, modes):
     self.add_argument('-m', '--mode',
       type = str, dest = 'mode', metavar = 'mode', default = None, required = True, choices = modes,
