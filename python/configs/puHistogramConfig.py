@@ -4,6 +4,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, ge
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, createFile, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
+from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 
 DKEY_SCRIPTS    = "scripts"
 DKEY_CFGS       = "cfgs"
@@ -11,6 +12,7 @@ DKEY_HISTO_TMP  = "tmp_histograms"
 DKEY_HISTO      = "histograms"
 DKEY_PLOTS      = "plots"
 DKEY_LOGS       = "logs"
+DKEY_HADD_RT    = "hadd_cfg_rt"
 MAKEFILE_TARGET = "sbatch_puProfile"
 
 class puHistogramConfig:
@@ -77,6 +79,7 @@ class puHistogramConfig:
         self.outputFiles_tmp = {}
         self.outputFiles     = {}
 
+        self.phoniesToAdd = []
         self.filesToClean = []
         self.dirs = {}
         for sample_name, sample_info in self.samples.items():
@@ -84,21 +87,24 @@ class puHistogramConfig:
                 continue
             process_name = sample_info["process_name_specific"]
             key_dir = getKey(sample_name)
-            for dir_type in [ DKEY_CFGS, DKEY_HISTO_TMP, DKEY_HISTO, DKEY_PLOTS, DKEY_LOGS, DKEY_SCRIPTS ]:
+            for dir_type in [ DKEY_CFGS, DKEY_HISTO_TMP, DKEY_HISTO, DKEY_PLOTS, DKEY_LOGS, DKEY_SCRIPTS, DKEY_HADD_RT ]:
                 initDict(self.dirs, [ key_dir, dir_type ])
-                if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS ]:
+                if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS, DKEY_HADD_RT ]:
                     self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, process_name)
                 else:
                     self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, process_name)
-        for dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS ]:
+        for dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS, DKEY_HADD_RT ]:
             initDict(self.dirs, [ dir_type ])
-            if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS ]:
+            if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS, DKEY_HADD_RT ]:
                 self.dirs[dir_type] = os.path.join(self.configDir, dir_type)
             else:
                 self.dirs[dir_type] = os.path.join(self.outputDir, dir_type)
 
         self.cvmfs_error_log = {}
-        self.num_jobs = {}
+        self.num_jobs = {
+            'hadd'      : 0,
+            'puProfile' : 0,
+        }
 
 
     def createCfg_puProfile(self, jobOptions):
@@ -138,6 +144,28 @@ class puHistogramConfig:
         )
         return num_jobs
 
+    def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
+        sbatch_hadd_file = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s.py" % hadd_stage_name)
+        sbatch_hadd_file = sbatch_hadd_file.replace(".root", "")
+
+        scriptFile = os.path.join(self.dirs[DKEY_SCRIPTS], os.path.basename(sbatch_hadd_file).replace(".py", ".sh"))
+        logFile    = os.path.join(self.dirs[DKEY_LOGS],    os.path.basename(sbatch_hadd_file).replace(".py", ".log"))
+
+        sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], hadd_stage_name) if self.dirs[DKEY_HADD_RT] else ''
+        self.num_jobs['hadd'] += tools_createScript_sbatch_hadd(
+            sbatch_script_file_name = sbatch_hadd_file,
+            input_file_names        = inputFiles,
+            output_file_name        = outputFile,
+            script_file_name        = scriptFile,
+            log_file_name           = logFile,
+            working_dir             = self.workingDir,
+            auxDirName              = sbatch_hadd_dir,
+            pool_id                 = uuid.uuid4(),
+            verbose                 = self.verbose,
+            dry_run                 = self.dry_run,
+        )
+        return sbatch_hadd_file
+
     def addToMakefile_puProfile(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for running the PU profile production code
         """
@@ -163,12 +191,66 @@ class puHistogramConfig:
                     "",
                 ])
             self.filesToClean.append(output_file)
+        self.phoniesToAdd.append(MAKEFILE_TARGET)
 
     def addToMakefile_hadd(self, lines_makefile):
         scriptFiles = {}
         jobOptions = {}
-        for key_file, output_file in self.outputFiles.items():
-            pass
+        for key, cfg in self.outputFiles.items():
+            scriptFiles[key] = self.create_hadd_python_file(
+                inputFiles      = cfg['inputFiles'],
+                outputFile      = cfg['outputFile'],
+                hadd_stage_name = "_".join([ key, "ClusterHistogramAggregator" ]),
+            )
+            jobOptions[key] = {
+                'inputFiles'   : cfg['inputFiles'],
+                'cfgFile_path' : scriptFiles[key],
+                'outputFile'   : cfg['outputFile'],
+                'logFile'      : os.path.join(
+                    self.dirs[DKEY_LOGS],
+                    'hadd_%s' % os.path.basename(cfg['outputFile']).replace(".root", ".log"),
+                ),
+            }
+
+        sbatchTarget = None
+        if self.is_sbatch:
+            sbatchTarget = "sbatch_hadd"
+            self.phoniesToAdd.append(sbatchTarget)
+
+            sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd.py")
+            self.createScript_sbatch('python', sbatchFile, jobOptions)
+
+            lines_makefile.append(
+                "%s: %s" % \
+                (
+                    sbatchTarget,
+                    " ".join([
+                        " ".join(self.outputFiles[key]['inputFiles']) for key in self.outputFiles
+                    ])
+                )
+            )
+            for cfg in self.outputFiles.values():
+                lines_makefile.append("\trm -f %s" % cfg['outputFile'])
+                lines_makefile.extend([
+                "\tpython %s" % sbatchFile,
+                "",
+            ])
+
+        for key, cfg in self.outputFiles.items():
+            if self.is_sbatch:
+                lines_makefile.extend([
+                    "%s: %s" % (cfg['outputFile'], sbatchTarget),
+                    "\t:",
+                    ""
+                ])
+            else:
+                lines_makefile.extend([
+                    "%s: %s" % (cfg['outputFile'], ' '.join(cfg['inputFiles'])),
+                    "\trm -f %s" % cfg['outputFile'],
+                    "\tpython %s" % scriptFiles[key],
+                    "",
+                ])
+            self.filesToClean.append(cfg['outputFile'])
 
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the PU profile production.
@@ -177,8 +259,15 @@ class puHistogramConfig:
         if self.is_sbatch:
             targets = [ MAKEFILE_TARGET ]
         else:
-            targets = self.outputFiles.values()
-        tools_createMakefile(self.makefile, targets, lines_makefile, self.filesToClean)
+            targets = [ cfg['outputFile'] for cfg in self.outputFiles.values() ]
+        tools_createMakefile(
+            makefileName   = self.makefile,
+            targets        = targets,
+            lines_makefile = lines_makefile,
+            filesToClean   = self.filesToClean,
+            isSbatch       = self.is_sbatch,
+            phoniesToAdd   = self.phoniesToAdd
+        )
         logging.info("Run it with:\tmake -f %s -j %i " % (self.makefile, self.num_parallel_jobs))
 
     def create(self):
@@ -208,7 +297,10 @@ class puHistogramConfig:
             outputFile = os.path.join(
                 self.dirs[key_dir][DKEY_HISTO], "%s.root" % process_name
             )
-            self.outputFiles[outputFile] = []
+            self.outputFiles[process_name] = {
+                'inputFiles' : [],
+                'outputFile' : outputFile
+            }
 
             for jobId in inputFileList.keys():
 
@@ -237,17 +329,17 @@ class puHistogramConfig:
                     'logFile'      : self.logFiles_puProfile[key_file],
                 }
                 self.createCfg_puProfile(self.jobOptions_sbatch[key_file])
-                self.outputFiles[outputFile].append(self.outputFiles_tmp[key_file])
+                self.outputFiles[process_name]['inputFiles'].append(self.outputFiles_tmp[key_file])
 
         if self.is_sbatch:
           logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable)
           self.sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_puProfile.py")
-          self.num_jobs['puProfile'] = self.createScript_sbatch(self.executable, self.sbatchFile, self.jobOptions_sbatch)
+          self.num_jobs['puProfile'] += self.createScript_sbatch(self.executable, self.sbatchFile, self.jobOptions_sbatch)
 
         logging.info("Creating Makefile")
         lines_makefile = []
         self.addToMakefile_puProfile(lines_makefile)
-        #self.addToMakefile_hadd(lines_makefile)
+        self.addToMakefile_hadd(lines_makefile)
         #self.addToMakefile_plot(lines_makefile)
         self.createMakefile(lines_makefile)
         logging.info("Done")
