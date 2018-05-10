@@ -403,8 +403,9 @@ class puHistogramConfig:
 
         if self.is_sbatch:
           logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable)
-          self.sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_puProfile.py")
-          self.num_jobs['puProfile'] += self.createScript_sbatch(self.executable, self.sbatchFile, self.jobOptions_sbatch)
+          self.num_jobs['puProfile'] += self.createScript_sbatch(
+              self.executable, self.sbatchFile_puProfile, self.jobOptions_sbatch
+          )
 
         logging.info("Creating Makefile")
         lines_makefile = []
