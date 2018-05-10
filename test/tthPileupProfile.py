@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os, logging, sys, getpass
 
-from tthAnalysis.HiggsToTauTau.configs.puHistogramConfig import puHistogramConfig
+from tthAnalysis.HiggsToTauTau.configs.puHistogramConfig import puHistogramConfig, validate_pu
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
@@ -19,6 +19,10 @@ mode_choices = [ 'all', 'sync' ]
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_files_per_job(100)
+parser.add_argument('-V', '--validate',
+  dest = 'validate', action = 'store_true', default = False,
+  help = 'R|Validate the results',
+)
 args = parser.parse_args()
 
 # Common arguments
@@ -35,6 +39,7 @@ sample_filter      = args.filter
 # Additional arguments
 mode          = args.mode
 files_per_job = args.files_per_job
+validate      = args.validate
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -61,6 +66,13 @@ if __name__ == '__main__':
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
 
+  configDir = os.path.join("/home",       getpass.getuser(), "ttHPileupProduction", era, version)
+  outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHPileupProduction", era, version)
+
+  if validate:
+    validation_result = validate_pu(outputDir, samples)
+    sys.exit(validation_result)
+
   job_statistics_summary    = {}
   run_puHistogramProduction = False
   is_last_resubmission      = False
@@ -71,18 +83,18 @@ if __name__ == '__main__':
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
     puHistogramProduction = puHistogramConfig(
-      configDir = os.path.join("/home",       getpass.getuser(), "ttHPileupProduction", era, version),
-      outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHPileupProduction", era, version),
-      executable            = "puHistogramProducer.sh",
-      samples               = samples,
-      max_files_per_job     = files_per_job,
-      era                   = era,
-      check_input_files     = check_input_files,
-      running_method        = "sbatch",
-      version               = version,
-      num_parallel_jobs     = 8,
-      verbose               = idx_job_resubmission > 0,
-      dry_run               = dry_run,
+      configDir         = configDir,
+      outputDir         = outputDir,
+      executable        = "puHistogramProducer.sh",
+      samples           = samples,
+      max_files_per_job = files_per_job,
+      era               = era,
+      check_input_files = check_input_files,
+      running_method    = "sbatch",
+      version           = version,
+      num_parallel_jobs = 8,
+      verbose           = idx_job_resubmission > 0,
+      dry_run           = dry_run,
     )
 
     job_statistics = puHistogramProduction.create()
@@ -106,4 +118,3 @@ if __name__ == '__main__':
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
     for job_type, num_jobs in job_statistics_summary[idx_job_resubmission].items():
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
-

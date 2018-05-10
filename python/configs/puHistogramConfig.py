@@ -1,4 +1,4 @@
-import os, logging, uuid
+import os, logging, uuid, ROOT
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, createFile, generateInputFileList
@@ -14,6 +14,48 @@ DKEY_PLOTS      = "plots"
 DKEY_LOGS       = "logs"
 DKEY_HADD_RT    = "hadd_cfg_rt"
 MAKEFILE_TARGET = "sbatch_puProfile"
+
+def get_histogram_entries(path, histogram_name = 'autoPU'):
+    histogram_file = ROOT.TFile.Open(path, 'read')
+    if not histogram_file:
+        logging.error('Not a valid ROOT file: {}'.format(path))
+        return -1
+    histogram = histogram_file.Get('autoPU')
+    if not histogram:
+        logging.error("Could not find histogram '{}' in file {}".format(path, histogram_name))
+        return -2
+    nof_entries = int(histogram.GetEntries())
+    histogram_file.Close()
+    return nof_entries
+
+def validate_pu(outputDir, samples, histogram_name = 'autoPU'):
+    error_code = 0
+    for sample_name, sample_info in samples.items():
+        is_mc = (sample_info["type"] == "mc")
+        if not is_mc:
+            continue
+        process_name = sample_info["process_name_specific"]
+        expected_nof_events = sample_info["nof_tree_events"]
+        logging.info('Validating {} (expecting {} events)'.format(process_name, expected_nof_events))
+        histogram_path = os.path.join(outputDir, DKEY_HISTO, process_name, '%s.root' % process_name)
+        if not os.path.isfile(histogram_path):
+            logging.error(
+                'Histogram file corresponding to sample {} in path {} does not exist: {}'.format(
+                    process_name, outputDir, histogram_path,
+                )
+            )
+            return 1
+        nof_events = get_histogram_entries(histogram_path, histogram_name)
+        if nof_events != expected_nof_events:
+            logging.error(
+                'Histogram {} corresponding to sample {} has {} events, but expected {}'.format(
+                    histogram_path, process_name, nof_events, expected_nof_events,
+                )
+            )
+            error_code += 1
+        else:
+            logging.info('Validation successful for sample {}'.format(process_name))
+    return error_code
 
 class puHistogramConfig:
     """Configuration metadata needed to run PU profile production.
@@ -122,10 +164,6 @@ class puHistogramConfig:
         assert(len(lines) >= 3)
         createFile(jobOptions['cfgFile_path'], lines, nofNewLines = 1)
 
-    def createCfg_hadd(self, jobOptions):
-        # plot_from_histogram.py -i input.root -j autoPU -o output.png -x '# PU interactions' -y '# events' -t 'ttHJetToNonbb' -g
-        pass
-
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
                             key_cfg_file = 'cfgFile_path', key_input_file = 'inputFiles',
                             key_output_file = 'outputFile', key_log_file = 'logFile',
@@ -169,6 +207,7 @@ class puHistogramConfig:
             pool_id                 = uuid.uuid4(),
             verbose                 = self.verbose,
             dry_run                 = self.dry_run,
+            max_input_files_per_job = 10,
         )
         return sbatch_hadd_file
 
