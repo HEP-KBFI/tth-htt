@@ -97,7 +97,7 @@ class prodNtupleConfig:
                     self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, process_name)
         for dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
             initDict(self.dirs, [ dir_type ])
-            if dir_type in [ DKEY_CFGS, DKEY_NTUPLES, DKEY_LOGS ]:
+            if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
                 self.dirs[dir_type] = os.path.join(self.configDir, dir_type)
             else:
                 self.dirs[dir_type] = os.path.join(self.outputDir, dir_type)
