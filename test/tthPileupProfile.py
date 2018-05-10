@@ -66,8 +66,8 @@ if __name__ == '__main__':
   for resubmission_idx in range(resubmission_limit):
     logging.info("Submission attempt #%i" % (resubmission_idx + 1))
     puHistogramProduction = puHistogramConfig(
-      configDir = os.path.join("/home",       getpass.getuser(), "ttHNtupleProduction", era, version),
-      outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHNtupleProduction", era, version),
+      configDir = os.path.join("/home",       getpass.getuser(), "ttHPileupProduction", era, version),
+      outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHPileupProduction", era, version),
       executable            = "puHistogramProducer.sh",
       samples               = samples,
       max_files_per_job     = files_per_job,
