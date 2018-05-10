@@ -60,6 +60,7 @@ process.analyze_2lss = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False),
+    apply_hlt_filter = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
 

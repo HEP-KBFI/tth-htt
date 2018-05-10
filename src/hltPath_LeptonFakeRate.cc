@@ -8,7 +8,8 @@ hltPath_LeptonFakeRate::hltPath_LeptonFakeRate(const std::string & branchName,
                                                bool is_trigger_1e,
                                                bool is_trigger_2e,
                                                double minPt,
-                                               double maxPt,
+                                               double maxPt,  
+                                               double minRecoPt, // NEWLY ADDED AFTER GIOVANNI SYNC
                                                double min_jetPt,
                                                double prescale,
                                                double prescale_rand_mc)
@@ -17,6 +18,7 @@ hltPath_LeptonFakeRate::hltPath_LeptonFakeRate(const std::string & branchName,
   , value_(-1)
   , minPt_(minPt)
   , maxPt_(maxPt)
+  , minRecoPt_(minRecoPt) // NEWLY ADDED AFTER GIOVANNI SYNC
   , minJetPt_(min_jetPt)
   , prescale_(prescale)
   , prescale_rand_mc_(prescale_rand_mc)
@@ -38,6 +40,11 @@ hltPath_LeptonFakeRate::getMinJetPt() const
   return minJetPt_;
 }
 
+double
+hltPath_LeptonFakeRate::getMinRecoPt() const
+{ // NEWLY ADDED AFTER GIOVANNI SYNC
+  return minRecoPt_;
+}
 double
 hltPath_LeptonFakeRate::getPrescale() const
 {

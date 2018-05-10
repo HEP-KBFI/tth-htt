@@ -15,6 +15,8 @@ public:
                              bool set_selection_flags = true);
   ~RecoHadTauSelectorFakeable() {}
 
+  bool operator()(const RecoHadTau & hadTau) const;
+
   friend class RecoHadTauCollectionSelector<RecoHadTauSelectorFakeable>;
 
 protected:

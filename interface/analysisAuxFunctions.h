@@ -67,12 +67,12 @@ get_BtagWP(int era,
            BtagWP wp);
 
 //--- selector class
-template <typename LeptonType>
-std::vector<LeptonType>
+template <typename ObjectType>
+std::vector<ObjectType>
 selectObjects(int objectSelection,
-              const std::vector<LeptonType> & preselObjects,
-              const std::vector<LeptonType> & fakeableObjects,
-              const std::vector<LeptonType> & tightObjects)
+              const std::vector<ObjectType> & preselObjects,
+              const std::vector<ObjectType> & fakeableObjects,
+              const std::vector<ObjectType> & tightObjects)
 {
   switch(objectSelection)
   {
@@ -173,6 +173,29 @@ pickFirstNobjects(const std::vector<T> & objects_input,
   std::vector<T> objects_output;
   std::copy_n(objects_input.begin(), N_input, std::back_inserter(objects_output));
   return objects_output;
+}
+
+template <typename T,
+          typename U,
+          typename F>
+std::vector<T>
+getIntersection(const std::vector<T> & lhs_collection,
+                const std::vector<U> & rhs_collection,
+                bool (*sortFunction)(const F *, const F *))
+{
+  std::vector<T> output_collection;
+  for(const T & lhs_element: lhs_collection)
+  {
+    for(const U & rhs_element: rhs_collection)
+    {
+      if(lhs_element == rhs_element)
+      {
+        output_collection.push_back(lhs_element);
+      }
+    }
+  }
+  std::sort(output_collection.begin(), output_collection.end(), sortFunction);
+  return output_collection;
 }
 
 int

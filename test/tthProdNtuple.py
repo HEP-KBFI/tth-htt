@@ -14,7 +14,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
-mode_choices = [ 'all', 'forBDTtraining_only', 'forBDTtraining_except', 'sync' ]
+mode_choices = [ 'all', 'forBDTtraining_only', 'forBDTtraining_except', 'sync', 'leptonFR_sync' ]
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -53,6 +53,8 @@ version              = "%s_w%sPresel_%s_%s" % (
 
 if mode == 'sync':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017
+elif mode == 'leptonFR_sync':
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_leptonFR_sync import samples_2017
 else:
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017
 
@@ -71,7 +73,7 @@ for sample_key, sample_entry in samples.items():
       sample_entry["use_it"] = mode == "forBDTtraining_only"
     else:
       sample_entry["use_it"] = mode != "forBDTtraining_only"
-  elif mode == 'sync':
+  elif 'sync' in mode:
     pass
   else:
     raise ValueError("Internal logic error")

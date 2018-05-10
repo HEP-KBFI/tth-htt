@@ -153,7 +153,7 @@ protected:
   Int_t * jetNDauChargedMVASel_;
   Int_t * tightCharge_;
   Int_t * charge_;
-  Int_t * filterBits_;
+  UInt_t * filterBits_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoLeptonWriter_h

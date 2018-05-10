@@ -506,18 +506,9 @@ main(int argc,
     {
       if(run_lumi_eventSelector || isDEBUG)
       {
-        std::cout << "event FAILS selLeptons selection.\n"
-                     " (#preselLeptons = " << preselLeptons.size() << ")\n"
-        ;
-        for(std::size_t idxPreselLepton = 0; idxPreselLepton < preselLeptons.size(); ++idxPreselLepton)
-        {
-          std::cout << "preselLepton #" << idxPreselLepton << ":\n" << (*preselLeptons[idxPreselLepton]);
-        }
-        std::cout << " (#selLeptons = " << selLeptons.size() << ")\n";
-        for(std::size_t idxSelLepton = 0; idxSelLepton < selLeptons.size(); ++idxSelLepton)
-        {
-          std::cout << "selLepton #" << idxSelLepton << ":\n" << (*selLeptons[idxSelLepton]);
-        }
+        std::cout << "event FAILS selLeptons selection.\n";
+        printCollection("preselLeptons", preselLeptons);
+        printCollection("selLeptons", selLeptons);
       }
       continue;
     }
@@ -549,18 +540,9 @@ main(int argc,
     {
       if(run_lumi_eventSelector || isDEBUG)
       {
-        std::cout << "event FAILS selHadTaus selection\n"
-                     " (#preselHadTaus = " << preselHadTaus.size() << ")\n"
-        ;
-        for(std::size_t idxPreselHadTau = 0; idxPreselHadTau < preselHadTaus.size(); ++idxPreselHadTau)
-        {
-          std::cout << "preselHadTau #" << idxPreselHadTau << ":\n" << (*preselHadTaus[idxPreselHadTau]);
-        }
-        std::cout << " (#selHadTaus = " << selHadTaus.size() << ")\n";
-        for(std::size_t idxSelHadTau = 0; idxSelHadTau < selHadTaus.size(); ++idxSelHadTau )
-        {
-          std::cout << "selHadTau #" << idxSelHadTau << ":\n" << (*selHadTaus[idxSelHadTau]);
-        }
+        std::cout << "event FAILS selHadTaus selection\n";
+        printCollection("preselHadTaus", preselHadTaus);
+        printCollection("selHadTaus", selHadTaus);
       }
       continue;
     }
@@ -577,13 +559,8 @@ main(int argc,
     {
       if(run_lumi_eventSelector || isDEBUG)
       {
-        std::cout << "event FAILS selJets selection\n"
-                     " (#selJets = " << selJets.size() << ")\n"
-        ;
-        for(std::size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet)
-        {
-          std::cout << "selJet #" << idxSelJet << ":\n" << (*selJets[idxSelJet]);
-        }
+        std::cout << "event FAILS selJets selection\n";
+        printCollection("selJets", selJets);
       }
       continue;
     }
@@ -595,23 +572,10 @@ main(int argc,
     {
       if(run_lumi_eventSelector || isDEBUG)
       {
-        std::cout << "event FAILS selBJets selection\n"
-                     " (#selJets = " << selJets.size() << ")\n"
-        ;
-        for(std::size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet)
-        {
-          std::cout << "selJet #" << idxSelJet << ":\n" << (*selJets[idxSelJet]);
-        }
-        std::cout << " (#selBJets_loose = " << selBJets_loose.size() << ")\n";
-        for(std::size_t idxSelBJet_loose = 0; idxSelBJet_loose < selBJets_loose.size(); ++idxSelBJet_loose)
-        {
-          std::cout << "selBJet_loose #" << idxSelBJet_loose << ":\n" << (*selBJets_loose[idxSelBJet_loose]);
-        }
-        std::cout << " (#selBJets_medium = " << selBJets_medium.size() << ")\n";
-        for(std::size_t idxSelBJet_medium = 0; idxSelBJet_medium < selBJets_medium.size(); ++idxSelBJet_medium)
-        {
-          std::cout << "selBJet_medium #" << idxSelBJet_medium << ":\n" << (*selBJets_medium[idxSelBJet_medium]);
-        }
+        std::cout << "event FAILS selBJets selection\n";
+        printCollection("selJets",         selJets);
+        printCollection("selBJets_loose",  selBJets_loose);
+        printCollection("selBJets_medium", selBJets_medium);
       }
       continue;
     }
