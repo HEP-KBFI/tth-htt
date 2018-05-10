@@ -165,7 +165,7 @@ DATASET_REGEX = re.compile("^/(.*)/(.*)/[0-9A-Za-z]+$")
 def get_crab_string(dataset_name, path):
   if not path:
     return ''
-  version = os.path.filename(path)
+  version = os.path.basename(path)
   dataset_match = DATASET_REGEX.match(dataset_name)
   requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
   if len(requestName) > 100:
