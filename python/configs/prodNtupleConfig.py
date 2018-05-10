@@ -26,7 +26,7 @@ class prodNtupleConfig:
     def __init__(self, configDir, outputDir, executable_prodNtuple, executable_nanoAOD,
                  cfgFile_prodNtuple, samples, max_files_per_job, era, preselection_cuts,
                  leptonSelection, hadTauSelection, check_input_files, running_method,
-                 version, num_parallel_jobs, pool_id = '', verbose = False, dry_run = False,
+                 version, num_parallel_jobs, pileup, pool_id = '', verbose = False, dry_run = False,
                  isDebug = False, use_nonnominal = False):
 
         self.configDir             = configDir
@@ -45,6 +45,7 @@ class prodNtupleConfig:
         self.dry_run               = dry_run
         self.isDebug               = isDebug
         self.use_nonnominal        = use_nonnominal
+        self.pileup                = pileup
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
 
@@ -140,12 +141,20 @@ class prodNtupleConfig:
         inputFiles_prepended = map(lambda path: os.path.basename('%s_ii%s' % os.path.splitext(path)), jobOptions['inputFiles'])
         if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
             raise ValueError("Not all input files have a unique base name: %s" % ', '.join(jobOptions['inputFiles']))
+
+        pileup_distribution = os.path.join(
+            self.pileup, jobOptions['process_name'], '%s.root' % jobOptions['process_name']
+        )
+        if not os.path.isfile(pileup_distribution):
+            raise ValueError('Missing PU distribution file: %s' % pileup_distribution)
+
         lines.extend([
             "process.fwliteInput.fileNames                         = cms.vstring(%s)"  % inputFiles_prepended,
             "inputFiles = %s"   % jobOptions['inputFiles'],
             "executable = '%s'" % self.executable_prodNtuple,
             "isMC = %s" % str(jobOptions['is_mc']),
             "era = %s" % str(self.era),
+            "pileup = '%s'" % pileup_distribution,
         ])
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
@@ -265,6 +274,7 @@ class prodNtupleConfig:
                     'use_HIP_mitigation_mediumMuonId' : True,
                     'is_mc'                           : is_mc,
                     'random_seed'                     : jobId,
+                    'process_name'                    : process_name,
                 }
                 self.createCfg_prodNtuple(jobOptions)
 

@@ -39,6 +39,7 @@ files_per_job  = args.files_per_job
 
 # Custom arguments
 preselection = args.disable_preselection
+pileup       = "/hdfs/local/karl/ttHPileupProduction/2017/2018May11_fullProduction/histograms"
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -129,6 +130,7 @@ if __name__ == '__main__':
       running_method        = "sbatch",
       version               = version,
       num_parallel_jobs     = 8,
+      pileup                = pileup,
       verbose               = resubmission_idx > 0,
       dry_run               = dry_run,
       isDebug               = debug,
