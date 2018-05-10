@@ -71,9 +71,10 @@ class puHistogramConfig:
         ))
 
         self.sbatchFile_puProfile = os.path.join(self.configDir, "sbatch_puProfile.py")
-        self.cfgFiles_puProfile = {}
-        self.logFiles_puProfile = {}
-        self.jobOptions_sbatch = {}
+        self.cfgFiles_puProfile    = {}
+        self.logFiles_puProfile    = {}
+        self.scriptFiles_puProfile = {}
+        self.jobOptions_sbatch     = {}
 
         self.inputFiles      = {}
         self.outputFiles_tmp = {}
@@ -81,6 +82,7 @@ class puHistogramConfig:
 
         self.phoniesToAdd = []
         self.filesToClean = []
+        self.targets = []
 
         self.dirs = {}
         all_dirs = [ DKEY_CFGS, DKEY_HISTO_TMP, DKEY_HISTO, DKEY_PLOTS, DKEY_LOGS, DKEY_SCRIPTS, DKEY_HADD_RT ]
@@ -127,6 +129,7 @@ class puHistogramConfig:
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
                             key_cfg_file = 'cfgFile_path', key_input_file = 'inputFiles',
                             key_output_file = 'outputFile', key_log_file = 'logFile',
+                            key_script_file = 'scriptFile',
                             skipFileSizeCheck = True):
         num_jobs = tools_createScript_sbatch(
             sbatch_script_file_name = sbatchFile,
@@ -134,7 +137,7 @@ class puHistogramConfig:
             command_line_parameters = { key: value[key_cfg_file]    for key, value in jobOptions.items() },
             input_file_names        = { key: value[key_input_file]  for key, value in jobOptions.items() },
             output_file_names       = { key: value[key_output_file] for key, value in jobOptions.items() },
-            script_file_names       = { key: value[key_cfg_file]    for key, value in jobOptions.items() },
+            script_file_names       = { key: value[key_script_file] for key, value in jobOptions.items() },
             log_file_names          = { key: value[key_log_file]    for key, value in jobOptions.items() },
             working_dir             = self.workingDir,
             max_num_jobs            = self.max_num_jobs,
@@ -220,9 +223,6 @@ class puHistogramConfig:
             sbatchTarget = "sbatch_hadd"
             self.phoniesToAdd.append(sbatchTarget)
 
-            sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd.py")
-            self.createScript_sbatch('python', sbatchFile, jobOptions)
-
             lines_makefile.extend([
                 "%s: %s" % \
                 (
@@ -231,12 +231,11 @@ class puHistogramConfig:
                         " ".join(self.outputFiles[key]['inputFiles']) for key in self.outputFiles
                     ])
                 ),
-                "",
             ])
-            for cfg in self.outputFiles.values():
+            for key, cfg in self.outputFiles.items():
                 lines_makefile.append("\trm -f %s" % cfg['outputFile'])
                 lines_makefile.extend([
-                "\tpython %s" % sbatchFile,
+                "\tpython %s" % scriptFiles[key] ,
                 "",
             ])
 
@@ -255,6 +254,7 @@ class puHistogramConfig:
                     "",
                 ])
             self.filesToClean.append(cfg['outputFile'])
+            self.targets.append(cfg['outputFile'])
 
     def addToMakefile_plot(self, lines_makefile):
         phonie_target = "sbatch_plot"
@@ -287,15 +287,17 @@ class puHistogramConfig:
                     }
                 }
             }
-            self.filesToClean.extend([
+            plot_files = [
                 jobOptions[key]['jobs'][plot_type]['outputFile'] for plot_type in jobOptions[key]['jobs']
-            ])
+            ]
+            self.filesToClean.extend(plot_files)
+            self.targets.extend(plot_files)
 
         if self.is_sbatch:
             lines_makefile.append(
                 "%s: %s" % (
-                    " ".join(jobOptions[key]['inputFile'] for key in jobOptions),
                     phonie_target,
+                    " ".join(jobOptions[key]['inputFile'] for key in jobOptions),
                 ),
             )
             for cfg in jobOptions.values():
@@ -307,7 +309,7 @@ class puHistogramConfig:
                 for plot_cfg in cfg['jobs'].values():
                     lines_makefile.extend([
                         "",
-                        "%s: %s" % (phonie_target, plot_cfg['outputFile']),
+                        "%s: %s" % (plot_cfg['outputFile'], phonie_target),
                         "\t:",
                         "",
                     ])
@@ -325,14 +327,9 @@ class puHistogramConfig:
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the PU profile production.
         """
-        targets = None
-        if self.is_sbatch:
-            targets = [ MAKEFILE_TARGET ]
-        else:
-            targets = [ cfg['outputFile'] for cfg in self.outputFiles.values() ]
         tools_createMakefile(
             makefileName   = self.makefile,
-            targets        = targets,
+            targets        = self.targets,
             lines_makefile = lines_makefile,
             filesToClean   = self.filesToClean,
             isSbatch       = self.is_sbatch,
@@ -392,11 +389,15 @@ class puHistogramConfig:
                 self.logFiles_puProfile[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_LOGS], "puProfile_%s_%i.log" % (process_name, jobId)
                 )
+                self.scriptFiles_puProfile[key_file] = os.path.join(
+                    self.dirs[key_dir][DKEY_CFGS], "puProfile_%s_%i_cfg.sh" % (process_name, jobId)
+                )
                 self.jobOptions_sbatch[key_file] = {
                     'inputFiles'   : self.inputFiles[key_file],
                     'cfgFile_path' : self.cfgFiles_puProfile[key_file],
                     'outputFile'   : self.outputFiles_tmp[key_file],
                     'logFile'      : self.logFiles_puProfile[key_file],
+                    'scriptFile'   : self.scriptFiles_puProfile[key_file],
                 }
                 self.createCfg_puProfile(self.jobOptions_sbatch[key_file])
                 self.outputFiles[process_name]['inputFiles'].append(self.outputFiles_tmp[key_file])
