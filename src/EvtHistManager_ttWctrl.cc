@@ -33,12 +33,14 @@ EvtHistManager_ttWctrl::bookHistograms(TFileDirectory & dir)
 
   histogram_mvaOutput_2lss_ttV_   = book1D(dir, "mvaOutput_2lss_ttV",   "mvaOutput_2lss_ttV",   40, -1., +1.);
   histogram_mvaOutput_2lss_ttbar_ = book1D(dir, "mvaOutput_2lss_ttbar", "mvaOutput_2lss_ttbar", 40, -1., +1.);
+  switch(era_)
+  {
+    case kEra_2017: histogram_mvaDiscr_2lss_ = book1D(dir, "mvaDiscr_2lss", "mvaDiscr_2lss", 7, 0.5, 7.5); break;
+    default:        assert(0);
+  }
 
-  histogram_mvaOutput_2lss_1tau_ttV_   = book1D(dir, "mvaOutput_2lss_1tau_ttV",   "mvaOutput_2lss_1tau_ttV",   40, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_ttbar_ = book1D(dir, "mvaOutput_2lss_1tau_ttbar", "mvaOutput_2lss_1tau_ttbar", 40, -1., +1.);
-
-  histogram_sumLeptonCharge_ = book1D(dir, "sumLeptonCharge", "sumLeptonCharge",  7, -3.,  +3.);
   histogram_sumLeptonPt_     = book1D(dir, "sumLeptonPt",     "sumLeptonPt",     40,  0., 400.);
+  
   histogram_EventCounter_    = book1D(dir, "EventCounter",    "EventCounter",     1, -0.5, +0.5);
 }
 
@@ -51,29 +53,25 @@ EvtHistManager_ttWctrl::fillHistograms(int numElectrons,
                                        int numBJets_medium,
                                        double mvaOutput_2lss_ttV,
                                        double mvaOutput_2lss_ttbar,
-                                       double mvaOutput_2lss_1tau_ttV,
-                                       double mvaOutput_2lss_1tau_ttbar,
-                                       int sumLeptonCharge,
+                                       double mvaDiscr_2lss,
                                        double sumLeptonPt,
                                        double evtWeight)
 {
   const double evtWeightErr = 0.;
 
-  fillWithOverFlow(histogram_numElectrons_,    numElectrons,            evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numMuons_,        numMuons,                evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numLeptons_,      numElectrons + numMuons, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numHadTaus_,      numHadTaus,              evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numJets_,         numJets,                 evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,          evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium,         evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numElectrons_,         numElectrons,            evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numMuons_,             numMuons,                evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numLeptons_,           numElectrons + numMuons, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numHadTaus_,           numHadTaus,              evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numJets_,              numJets,                 evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_loose_,       numBJets_loose,          evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_medium_,      numBJets_medium,         evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_2lss_ttV_,   mvaOutput_2lss_ttV,   evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_ttbar_, mvaOutput_2lss_ttbar, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_2lss_ttV_,   mvaOutput_2lss_ttV,      evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_2lss_ttbar_, mvaOutput_2lss_ttbar,    evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaDiscr_2lss_,        mvaDiscr_2lss,           evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_ttV_,   mvaOutput_2lss_1tau_ttV,   evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_ttbar_, mvaOutput_2lss_1tau_ttbar, evtWeight, evtWeightErr);
-
-  fillWithOverFlow(histogram_sumLeptonCharge_, sumLeptonCharge, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_sumLeptonPt_,     sumLeptonPt,     evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_EventCounter_,    0.,              evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_sumLeptonPt_,          sumLeptonPt,             evtWeight, evtWeightErr);
+  
+  fillWithOverFlow(histogram_EventCounter_,         0.,                      evtWeight, evtWeightErr);
 }

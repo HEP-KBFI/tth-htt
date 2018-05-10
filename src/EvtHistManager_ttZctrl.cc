@@ -33,6 +33,11 @@ EvtHistManager_ttZctrl::bookHistograms(TFileDirectory & dir)
 
   histogram_mvaOutput_2lss_ttV_   = book1D(dir, "mvaOutput_2lss_ttV",   "mvaOutput_2lss_ttV",   40, -1., +1.);
   histogram_mvaOutput_2lss_ttbar_ = book1D(dir, "mvaOutput_2lss_ttbar", "mvaOutput_2lss_ttbar", 40, -1., +1.);
+  switch(era_)
+  {
+    case kEra_2017: histogram_mvaDiscr_2lss_ = book1D(dir, "mvaDiscr_2lss", "mvaDiscr_2lss", 7, 0.5, 7.5); break;
+    default:        assert(0);
+  }
 
   histogram_mvaOutput_3l_ttV_   = book1D(dir, "mvaOutput_3l_ttV",   "mvaOutput_3l_ttV",   40, -1., +1.);
   histogram_mvaOutput_3l_ttbar_ = book1D(dir, "mvaOutput_3l_ttbar", "mvaOutput_3l_ttbar", 40, -1., +1.);
@@ -42,12 +47,10 @@ EvtHistManager_ttZctrl::bookHistograms(TFileDirectory & dir)
     default:        assert(0);
   }
 
-  histogram_mvaOutput_2lss_1tau_ttV_   = book1D(dir, "mvaOutput_2lss_1tau_ttV",   "mvaOutput_2lss_1tau_ttV",   40, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_ttbar_ = book1D(dir, "mvaOutput_2lss_1tau_ttbar", "mvaOutput_2lss_1tau_ttbar", 40, -1., +1.);
-
   histogram_mLL_             = book1D(dir, "mLL",             "mLL",             30, 60., 120.);
   histogram_mT_              = book1D(dir, "mT",              "mT",              40,  0., 200.);
   histogram_sumLeptonCharge_ = book1D(dir, "sumLeptonCharge", "sumLeptonCharge",  7, -3.,  +3.);
+  
   histogram_EventCounter_    = book1D(dir, "EventCounter",    "EventCounter",     1, -0.5, +0.5);
 }
 
@@ -60,11 +63,10 @@ EvtHistManager_ttZctrl::fillHistograms(int numElectrons,
                                        int numBJets_medium,
                                        double mvaOutput_2lss_ttV,
                                        double mvaOutput_2lss_ttbar,
+                                       double mvaDiscr_2lss,
                                        double mvaOutput_3l_ttV,
                                        double mvaOutput_3l_ttbar,
                                        double mvaDiscr_3l,
-                                       double mvaOutput_2lss_1tau_ttV,
-                                       double mvaOutput_2lss_1tau_ttbar,
                                        double mLL,
                                        double mT,
                                        int sumLeptonCharge,
@@ -82,16 +84,15 @@ EvtHistManager_ttZctrl::fillHistograms(int numElectrons,
 
   fillWithOverFlow(histogram_mvaOutput_2lss_ttV_,   mvaOutput_2lss_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2lss_ttbar_, mvaOutput_2lss_ttbar, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaDiscr_2lss_,        mvaDiscr_2lss,        evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mvaOutput_3l_ttV_,   mvaOutput_3l_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_3l_ttbar_, mvaOutput_3l_ttbar, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaDiscr_3l_,        mvaDiscr_3l,        evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_ttV_,   mvaOutput_2lss_1tau_ttV,   evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_ttbar_, mvaOutput_2lss_1tau_ttbar, evtWeight, evtWeightErr);
-
   fillWithOverFlow(histogram_mLL_,             mLL,             evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mT_,              mT,              evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_sumLeptonCharge_, sumLeptonCharge, evtWeight, evtWeightErr);
+ 
   fillWithOverFlow(histogram_EventCounter_,    0.,              evtWeight, evtWeightErr);
 }
