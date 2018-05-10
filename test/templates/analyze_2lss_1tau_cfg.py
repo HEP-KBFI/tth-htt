@@ -9,7 +9,7 @@ process.fwliteInput = cms.PSet(
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
-
+ 
 process.fwliteOutput = cms.PSet(
     fileName = cms.string('analyze_2lss_1tau.root')
 )
