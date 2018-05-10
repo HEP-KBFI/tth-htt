@@ -175,9 +175,8 @@ def get_crab_string(dataset_name, path):
   version = os.path.basename(path)
   dataset_match = DATASET_REGEX.match(dataset_name)
   requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
-  if len(requestName) > 100:
-    requestName = requestName[:90] + requestName[-10:]
-  full_path = os.path.join(path, requestName)
+  primary_name = dataset_name.split('/')[1]
+  full_path = os.path.join(path, primary_name, requestName)
   if not os.path.isdir(full_path):
     requestName = ''
   return requestName
