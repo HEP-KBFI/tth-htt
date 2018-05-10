@@ -566,7 +566,9 @@ if __name__ == '__main__':
         sample_category = entry['sample_category'],
         xs              = entry['xs'],
         specific_name   = entry['specific_name'],
-        use_it          = entry['dataset_access_type'] != 'INVALID' and entry['release_pass'],
+        use_it          = entry['dataset_access_type'] != 'INVALID' and     \
+                          entry['release_pass']                     and not \
+                         (entry['sample_category'] == 'TT' and 'PSweights' in entry['specific_name']),
         comment         = "status: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
           entry['dataset_access_type'],
           human_size(entry['size']),
