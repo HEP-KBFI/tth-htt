@@ -51,6 +51,7 @@ class Version:
     version_key = 'ver'
     pre_regex = re.compile(r'pre(?P<%s>[0-9]+)' % version_key)
     patch_regex = re.compile(r'patch(?P<%s>[0-9]+)' % version_key)
+    cand_regex = re.compile(r'cand(?P<%s>[0-9]+)' % version_key)
 
     if len(version_split) > 3:
       pre_or_patch_str = version_split[3]
@@ -66,6 +67,12 @@ class Version:
         if not patch_match:
           raise ValueError("Unparsable version: '%s'" % version)
         self.pre_or_patch_version = patch_match.group('ver')
+      elif 'cand' in pre_or_patch_str:
+        self.is_pre_or_patch = -1 # Let's assume it's a ,,pre''
+        cand_match = cand_regex.match(pre_or_patch_str)
+        if not cand_match:
+          raise ValueError("Unparsable version: '%s'" % version)
+        self.pre_or_patch_version = cand_match.group('ver')
       else:
         raise ValueError("Unparsable version: '%s'" % version)
 
@@ -863,16 +870,17 @@ if __name__ == '__main__':
             }
 
             # Retrieve the integrated luminosity for this sample
-            try:
-              tmp_file = os.path.join(tmp_dir, '%s.json' % selection['specific_name'])
-              lumi_pool.apply_async(
-                get_integrated_lumi,
-                args     = (selection['name'], runlumi_data_golden, brilcalc_path, normtag_path, units, tmp_file),
-                callback = update_lumi_results,
-              )
-            except KeyboardInterrupt:
-              lumi_pool.terminate()
-              sys.exit(1)
+            if compute_lumi:
+              try:
+                tmp_file = os.path.join(tmp_dir, '%s.json' % selection['specific_name'])
+                lumi_pool.apply_async(
+                  get_integrated_lumi,
+                  args     = (selection['name'], runlumi_data_golden, brilcalc_path, normtag_path, units, tmp_file),
+                  callback = update_lumi_results,
+                )
+              except KeyboardInterrupt:
+                lumi_pool.terminate()
+                sys.exit(1)
 
           else:
             print(
