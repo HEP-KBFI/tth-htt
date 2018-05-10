@@ -6,6 +6,7 @@
 
 EvtHistManager_2lss_1tau::EvtHistManager_2lss_1tau(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)
+  , era_(-1)
 {
   const std::string era_string = cfg.getParameter<std::string>("era");
   if(era_string == "2017" )
