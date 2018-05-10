@@ -81,29 +81,31 @@ class puHistogramConfig:
 
         self.phoniesToAdd = []
         self.filesToClean = []
+
         self.dirs = {}
+        all_dirs = [ DKEY_CFGS, DKEY_HISTO_TMP, DKEY_HISTO, DKEY_PLOTS, DKEY_LOGS, DKEY_SCRIPTS, DKEY_HADD_RT ]
+        cfg_dirs = [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS, DKEY_HADD_RT ]
+
         for sample_name, sample_info in self.samples.items():
             if not sample_info["use_it"]:
                 continue
             process_name = sample_info["process_name_specific"]
             key_dir = getKey(sample_name)
-            for dir_type in [ DKEY_CFGS, DKEY_HISTO_TMP, DKEY_HISTO, DKEY_PLOTS, DKEY_LOGS, DKEY_SCRIPTS, DKEY_HADD_RT ]:
+            for dir_type in all_dirs:
                 initDict(self.dirs, [ key_dir, dir_type ])
-                if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS, DKEY_HADD_RT ]:
+                if dir_type in cfg_dirs and dir_type != DKEY_PLOTS:
                     self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, process_name)
                 else:
                     self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, process_name)
-        for dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS, DKEY_HADD_RT ]:
+        for dir_type in cfg_dirs:
             initDict(self.dirs, [ dir_type ])
-            if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS, DKEY_HADD_RT ]:
-                self.dirs[dir_type] = os.path.join(self.configDir, dir_type)
-            else:
-                self.dirs[dir_type] = os.path.join(self.outputDir, dir_type)
+            self.dirs[dir_type] = os.path.join(self.configDir, dir_type)
 
         self.cvmfs_error_log = {}
         self.num_jobs = {
             'hadd'      : 0,
             'puProfile' : 0,
+            'plot'      : 0,
         }
 
 
@@ -119,6 +121,7 @@ class puHistogramConfig:
         createFile(jobOptions['cfgFile_path'], lines, nofNewLines = 1)
 
     def createCfg_hadd(self, jobOptions):
+        # plot_from_histogram.py -i input.root -j autoPU -o output.png -x '# PU interactions' -y '# events' -t 'ttHJetToNonbb' -g
         pass
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
@@ -220,15 +223,16 @@ class puHistogramConfig:
             sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd.py")
             self.createScript_sbatch('python', sbatchFile, jobOptions)
 
-            lines_makefile.append(
+            lines_makefile.extend([
                 "%s: %s" % \
                 (
                     sbatchTarget,
                     " ".join([
                         " ".join(self.outputFiles[key]['inputFiles']) for key in self.outputFiles
                     ])
-                )
-            )
+                ),
+                "",
+            ])
             for cfg in self.outputFiles.values():
                 lines_makefile.append("\trm -f %s" % cfg['outputFile'])
                 lines_makefile.extend([
@@ -251,6 +255,67 @@ class puHistogramConfig:
                     "",
                 ])
             self.filesToClean.append(cfg['outputFile'])
+
+    def addToMakefile_plot(self, lines_makefile):
+        phonie_target = "sbatch_plot"
+
+        cmd_string = "plot_from_histogram.py -i %s -j autoPU -o %s -x '# PU interactions' " \
+                     "-y '# events' -t '%s' -g"
+        cmd_log_string = cmd_string + " -l"
+
+        jobOptions = {}
+        for key, cfg in self.outputFiles.items():
+            plot_linear = os.path.join(self.dirs[DKEY_PLOTS], '%s.png'     % key)
+            plot_log    = os.path.join(self.dirs[DKEY_PLOTS], '%s_log.png' % key)
+            jobOptions[key] = {
+                'inputFile' : cfg['outputFile'],
+                'jobs' : {
+                    'linear' : {
+                        'outputFile' : plot_linear,
+                        'cmd'        : cmd_string % (cfg['outputFile'], plot_linear, key),
+                        'logFile'    : os.path.join(self.dirs[DKEY_LOGS], 'plot_linear_%s.log' % key),
+                    },
+                    'log' : {
+                        'outputFile' : plot_log,
+                        'cmd'        : cmd_log_string % (cfg['outputFile'], plot_log, key),
+                        'logFile'    : os.path.join(self.dirs[DKEY_LOGS], 'plot_log_%s.log' % key),
+                    }
+                }
+            }
+            self.filesToClean.extend([
+                jobOptions[key]['jobs'][plot_type]['outputFile'] for plot_type in jobOptions[key]['jobs']
+            ])
+
+        if self.is_sbatch:
+            lines_makefile.append(
+                "%s: %s" % (
+                    " ".join(jobOptions[key]['inputFile'] for key in jobOptions),
+                    phonie_target,
+                ),
+            )
+            for cfg in jobOptions.values():
+                for plot_cfg in cfg['jobs'].values():
+                  lines_makefile.append(
+                      "\t%s &> %s" % (plot_cfg['cmd'], plot_cfg['logFile'])
+                  )
+            for cfg in jobOptions.values():
+                for plot_cfg in cfg['jobs'].values():
+                    lines_makefile.extend([
+                        "",
+                        "%s: %s" % (phonie_target, plot_cfg['outputFile']),
+                        "\t:",
+                        "",
+                    ])
+                    self.num_jobs['plot'] += 1
+            self.phoniesToAdd.append(phonie_target)
+        else:
+            for cfg in jobOptions:
+                for plot_cfg in cfg['jobs'].values():
+                    lines_makefile.extend([
+                        "%s: %s" % (plot_cfg['outputFile'], cfg['inputFile']),
+                        "\t%s &> %s" % (plot_cfg['cmd'], plot_cfg['logFile']),
+                        "",
+                    ])
 
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the PU profile production.
@@ -340,12 +405,10 @@ class puHistogramConfig:
         lines_makefile = []
         self.addToMakefile_puProfile(lines_makefile)
         self.addToMakefile_hadd(lines_makefile)
-        #self.addToMakefile_plot(lines_makefile)
+        self.addToMakefile_plot(lines_makefile)
         self.createMakefile(lines_makefile)
         logging.info("Done")
 
-
-        print(self.num_jobs)
         return self.num_jobs
 
     def run(self):
