@@ -558,8 +558,9 @@ if __name__ == '__main__':
     meta_dictionary_entries = []
     for dataset in das_query_results:
       entry = das_query_results[dataset]
-      entry['use_it'] = entry['dataset_access_type'] != 'INVALID' and     \
-                        entry['release_pass']                     and not \
+      entry['use_it'] = entry['dataset_access_type'] != 'INVALID'            and     \
+                        entry['release_pass']                                and     \
+                        entry['specific_name'] != 'ttHJetTobb_M125_amcatnlo' and not \
         (
           entry['sample_category'] == 'TT' and entry['specific_name'].endswith('_PSweights')
         )
