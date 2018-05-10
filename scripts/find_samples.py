@@ -558,6 +558,11 @@ if __name__ == '__main__':
     meta_dictionary_entries = []
     for dataset in das_query_results:
       entry = das_query_results[dataset]
+      entry['use_it'] = entry['dataset_access_type'] != 'INVALID' and     \
+                        entry['release_pass']                     and not \
+        (
+          entry['sample_category'] == 'TT' and entry['specific_name'].endswith('_PSweights')
+        )
       meta_dictionary_entries.append(jinja2.Template(METADICT_TEMPLATE_MC).render(
         dataset_name    = entry['name'],
         nof_db_events   = entry['nevents'],
@@ -566,9 +571,7 @@ if __name__ == '__main__':
         sample_category = entry['sample_category'],
         xs              = entry['xs'],
         specific_name   = entry['specific_name'],
-        use_it          = entry['dataset_access_type'] != 'INVALID' and     \
-                          entry['release_pass']                     and not \
-                         (entry['sample_category'] == 'TT' and 'PSweights' in entry['specific_name']),
+        use_it          = entry['use_it'],
         comment         = "status: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
           entry['dataset_access_type'],
           human_size(entry['size']),
@@ -579,7 +582,10 @@ if __name__ == '__main__':
       ))
 
     sum_suffixes = ['_PSweights$', '_ext[1-9]{1}$']
-    specific_names = [ dataset_entry['specific_name'] for dataset_entry in das_query_results.values() ]
+    specific_names = [
+      dataset_entry['specific_name'] for dataset_entry in das_query_results.values() \
+      if dataset_entry['use_it']
+    ]
     sum_events = {}
     for specific_name_ref in specific_names:
       for specific_name_test in specific_names:
