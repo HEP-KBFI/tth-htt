@@ -5,16 +5,9 @@ from tthAnalysis.HiggsToTauTau.configs.prodNtupleConfig import prodNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
-#--------------------------------------------------------------------------------
-# NOTE: set mode flag to
-#   'all'                   : to produce the Ntuples from all samples
-#   'forBDTtraining_only'   : to produce the Ntuples only from the FastSim samples
-#   'forBDTtraining_except' : to produce the Ntuples from all but the FastSim samples
-#--------------------------------------------------------------------------------
-
 # E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
-mode_choices = [ 'all', 'forBDTtraining_only', 'forBDTtraining_except', 'sync', 'leptonFR_sync' ]
+mode_choices = [ 'all', 'sync', 'leptonFR_sync' ]
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -66,13 +59,6 @@ else:
 for sample_key, sample_entry in samples.items():
   if mode == "all":
     sample_entry['use_it'] = True
-  elif mode in ["forBDTtraining_only", "forBDTtraining_except"]:
-    if sample_key in [
-      # list of FastSim samples
-    ]:
-      sample_entry["use_it"] = mode == "forBDTtraining_only"
-    else:
-      sample_entry["use_it"] = mode != "forBDTtraining_only"
   elif 'sync' in mode:
     pass
   else:

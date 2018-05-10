@@ -5,16 +5,9 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
-#--------------------------------------------------------------------------------
-# NOTE: set mode flag to
-#   'VHbb'           : to run the analysis on the VHbb Ntuples, with the nominal event selection
-#   'forBDTtraining' : to run the analysis on the VHbb Ntuples, with a relaxed event selection,
-#                      to increase the BDT training statistics
-#--------------------------------------------------------------------------------
+# E.g.: ./tthAnalyzeRun_2los_1tau.py -v 2017Dec13 -m default -e 2017
 
-# E.g.: ./tthAnalyzeRun_2los_1tau.py -v 2017Dec13 -mode VHbb -e 2017
-
-mode_choices         = [ 'VHbb', 'forBDTtraining' ]
+mode_choices         = [ 'default', 'forBDTtraining' ]
 sys_choices          = [ 'central', 'full', 'extended' ]
 systematics.full     = systematics.an_common
 systematics.extended = systematics.an_extended
@@ -50,7 +43,7 @@ max_files_per_job    = 50 if use_preselected else 1
 
 hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 
-if mode == "VHbb":
+if mode == "default":
   if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
   else:
@@ -66,9 +59,9 @@ if mode == "VHbb":
 
 elif mode == "forBDTtraining":
   if use_preselected:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_preselected import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_preselected import samples_2017
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
   hadTau_selection         = "dR03mvaTight"
   hadTau_selection_relaxed = "dR03mvaVLoose"
   applyFakeRateWeights     = "3L"

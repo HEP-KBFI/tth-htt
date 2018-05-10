@@ -5,14 +5,7 @@ from tthAnalysis.HiggsToTauTau.configs.puHistogramConfig import puHistogramConfi
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
-#--------------------------------------------------------------------------------
-# NOTE: set mode flag to
-#   'all'                   : to produce the Ntuples from all samples
-#   'forBDTtraining_only'   : to produce the Ntuples only from the FastSim samples
-#   'forBDTtraining_except' : to produce the Ntuples from all but the FastSim samples
-#--------------------------------------------------------------------------------
-
-# E.g.: ./tthPileupProfile.py -v 2018May09 -e 2017
+# E.g.: ./tthPileupProfile.py -v 2018May09 -e 2017 -m all
 
 mode_choices = [ 'all', 'sync' ]
 

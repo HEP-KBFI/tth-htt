@@ -5,21 +5,10 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
-#--------------------------------------------------------------------------------
-# NOTE: set mode flag to
-#   'VHbb'                        : to run the analysis directly on the VHbb Ntuples
-#                                  (to e.g. produce the RLE files to run the tthProdNtuple and ttHAddMEM steps)
-#   'addMEM'                      : to run the analysis on the Ntuples with MEM variables added
-#   'forBDTtraining_beforeAddMEM' : to run the analysis on the Ntuples without MEM variables added,
-#                                   and with a relaxed event selection, to increase the BDT training statistics
-#   'forBDTtraining_afterAddMEM'  : to run the analysis on the Ntuples with MEM variables added,
-#                                   and with a relaxed event selection, to increase the BDT training statistics
-#--------------------------------------------------------------------------------
-
-# E.g. to run: ./tthAnalyzeRun_2lss_1tau.py -v 2017Dec13 -mode VHbb -e 2017
+# E.g. to run: ./tthAnalyzeRun_2lss_1tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices         = [
-  'VHbb', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_noMEM'
+  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_noMEM'
 ]
 sys_choices          = [ 'central', 'full', 'extended' ]
 systematics.full     = systematics.an_common
@@ -65,7 +54,7 @@ hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016
 lepton_charge_selections           = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
 chargeSumSelections                = [ "OS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
 
-if mode == "VHbb":
+if mode == "default":
   if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
   else:
@@ -80,14 +69,14 @@ elif mode == "addMEM":
   max_files_per_job     = 1
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_preselected import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_preselected import samples_2017
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
   hadTau_selection         = "dR03mvaLoose"
   hadTau_selection_relaxed = "dR03mvaLoose"
   applyFakeRateWeights     = "2lepton"
 elif mode == "forBDTtraining_afterAddMEM":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_addMEM_2lss1tau import samples_2017
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_addMEM_2lss1tau import samples_2017
   MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaLoose'
   hadTau_selection         = "dR03mvaLoose"
   hadTau_selection_relaxed = "dR03mvaLoose"

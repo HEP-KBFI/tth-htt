@@ -5,15 +5,9 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
-#--------------------------------------------------------------------------------
-# NOTE: set mode flag to
-#   'VHbb'           : to run the analysis directly on the VHbb Ntuples
-#   'forBDTtraining' : to run the analysis with a relaxed event selection, to increase the BDT training statistics
-#--------------------------------------------------------------------------------
+# E.g.: ./tthAnalyzeRun_4l.py -v 2017Dec13 -m default -e 2017
 
-# E.g.: ./tthAnalyzeRun_4l.py -v 2017Dec13 -mode VHbb -e 2017
-
-mode_choices         = [ 'VHbb', 'forBDTtraining', 'sync', 'sync_noMEM' ]
+mode_choices         = [ 'default', 'forBDTtraining', 'sync', 'sync_noMEM' ]
 sys_choices          = [ 'central', 'full', 'extended' ]
 systematics.full     = systematics.an_common
 systematics.extended = systematics.an_extended
@@ -53,16 +47,16 @@ do_sync              = mode.startswith('sync')
 
 chargeSumSelections = [ "OS", "SS" ]
 
-if mode == "VHbb":
+if mode == "default":
   if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
 elif mode == "forBDTtraining":
   if use_preselected:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_preselected import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_preselected import samples_2017
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
   chargeSumSelections = [ "OS" ]
 elif mode == "sync":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017

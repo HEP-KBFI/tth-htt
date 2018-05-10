@@ -5,9 +5,9 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
-# E.g.: ./tthAnalyzeRun_1l_1tau.py -v 2017Dec13 -mode VHbb -e 2017
+# E.g.: ./tthAnalyzeRun_1l_1tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'VHbb' ]
+mode_choices     = [ 'default' ]
 sys_choices      = [ 'central', 'full' ]
 systematics.full = systematics.an_common
 
