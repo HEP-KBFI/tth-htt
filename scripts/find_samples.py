@@ -106,7 +106,7 @@ METADICT_FOOTER = '''
 '''
 
 METADICT_TEMPLATE_DATA = '''meta_dictionary["{{ dataset_name }}"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "{{ crab_string }}"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "{{ process_name_specific }}"),
   ("nof_db_events",         {{ nof_db_events }}),
@@ -123,7 +123,7 @@ METADICT_TEMPLATE_DATA = '''meta_dictionary["{{ dataset_name }}"] =  OD([
 '''
 
 METADICT_TEMPLATE_MC = '''meta_dictionary["{{ dataset_name }}"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "{{ crab_string }}"),
   ("sample_category",       "{{ sample_category }}"),
   ("process_name_specific", "{{ specific_name }}"),
   ("nof_db_events",         {{ nof_db_events }}),
@@ -159,7 +159,21 @@ DASGOCLIENT_QUERY_ANY_STATUS = "dasgoclient -query='dataset dataset=%s status=* 
 DASGOCLIENT_QUERY_RELEASE    = "dasgoclient -query='release dataset=%s' -unique"
 DASGOCLIENT_QUERY_RUNLUMI    = "dasgoclient -query='run,lumi dataset=%s' -unique"
 
-MC_REGEX = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
+MC_REGEX      = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
+DATASET_REGEX = re.compile("^/(.*)/(.*)/[0-9A-Za-z]+$")
+
+def get_crab_string(dataset_name, path):
+  if not path:
+    return ''
+  version = os.path.filename(path)
+  dataset_match = DATASET_REGEX.match(dataset_name)
+  requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
+  if len(requestName) > 100:
+    requestName = requestName[:90] + requestName[-10:]
+  full_path = os.path.join(path, requestName)
+  if not os.path.isdir(full_path):
+    requestName = ''
+  return requestName
 
 def convert_date(date):
   return datetime.datetime.fromtimestamp(int(date)).strftime('%Y-%m-%d %H:%M:%S')
@@ -322,6 +336,10 @@ if __name__ == '__main__':
     type = str, dest = 'dataset', metavar = 'path', default = 'datasets.txt', required = False,
     help = 'R|Output path of the dataset list (valid if -i/--input not provided)',
   )
+  parser.add_argument('-c', '--crab-string',
+    type = str, dest = 'crab_string', metavar = 'path', default = '', required = False,
+    help = 'R|Fill CRAB string',
+  )
   parser.add_argument('-r', '--run',
     type = str, dest = 'run', metavar = 'run', default = '2017', required = False,
     help = 'R|Data collection period',
@@ -406,6 +424,7 @@ if __name__ == '__main__':
   required_cmssw_version_str = args.version
   required_cmssw_version = Version(required_cmssw_version_str)
   verbose = args.verbose
+  crab_string = args.crab_string
 
   primary_datasets = args.primary_datasets
   DATA_GREP_STR = '\\|'.join(map(lambda sample: '^/%s/' % sample, primary_datasets))
@@ -573,6 +592,7 @@ if __name__ == '__main__':
         xs              = entry['xs'],
         specific_name   = entry['specific_name'],
         use_it          = entry['use_it'],
+        crab_string     = get_crab_string(entry['name'], crab_string),
         comment         = "status: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
           entry['dataset_access_type'],
           human_size(entry['size']),
@@ -826,6 +846,7 @@ if __name__ == '__main__':
               nof_db_events         = selection['nevents'],
               nof_db_files          = selection['nfiles'],
               fsize_db              = selection['size'],
+              crab_string           = get_crab_string(selection['name'], crab_string),
               run_range             = minmax_runlumi_data,
               golden_run_range      = minmax_runlumi_data_golden,
               comment               = "status: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
