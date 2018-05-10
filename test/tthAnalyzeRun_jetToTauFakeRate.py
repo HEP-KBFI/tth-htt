@@ -14,6 +14,7 @@ systematics.full = systematics.an_jetToTauFR
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
 parser.add_tau_id_wp("dR03mvaVVLoose")
+parser.add_files_per_job()
 args = parser.parse_args()
 
 # Common arguments
@@ -31,6 +32,7 @@ sample_filter      = args.filter
 # Additional arguments
 systematics_label = args.systematics
 tau_id_wp         = args.tau_id_wp
+files_per_job     = args.files_per_job
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -94,7 +96,7 @@ if __name__ == '__main__':
       absEtaBins                       = [ -1., 1.479, 9.9 ],
       ptBins                           = [ 20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200. ],
       central_or_shifts                = central_or_shift,
-      max_files_per_job                = 1,
+      max_files_per_job                = files_per_job,
       era                              = era,
       use_lumi                         = True,
       lumi                             = lumi,

@@ -22,6 +22,7 @@ parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_tau_id_wp()
 parser.add_hlt_filter()
+parser.add_files_per_job()
 args = parser.parse_args()
 
 # Common arguments
@@ -35,7 +36,6 @@ auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
 sample_filter      = args.filter
-hlt_filter         = args.hlt_filter
 
 # Additional arguments
 mode              = args.mode
@@ -43,11 +43,12 @@ systematics_label = args.systematics
 use_preselected   = args.use_preselected
 rle_select        = os.path.expanduser(args.rle_select)
 use_nonnominal    = args.original_central
+hlt_filter        = args.hlt_filter
+files_per_job     = args.files_per_job
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
-max_files_per_job    = 50 if use_preselected else 1
 do_sync              = mode.startswith('sync')
 
 MEMbranch                          = ''
@@ -68,7 +69,6 @@ elif mode == "addMEM":
   MEMbranch             = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaLoose'
   hadTau_selection      = "dR03mvaLoose"
   applyFakeRateWeights  = "2lepton"
-  max_files_per_job     = 1
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_preselected import samples_2017
@@ -83,7 +83,6 @@ elif mode == "forBDTtraining_afterAddMEM":
   hadTau_selection         = "dR03mvaLoose"
   hadTau_selection_relaxed = "dR03mvaLoose"
   applyFakeRateWeights     = "2lepton"
-  max_files_per_job        = 1
 elif mode.startswith("sync"):
   if mode == "sync":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
@@ -153,7 +152,7 @@ if __name__ == '__main__':
       applyFakeRateWeights      = applyFakeRateWeights,
       chargeSumSelections       = chargeSumSelections,
       central_or_shifts         = central_or_shift,
-      max_files_per_job         = max_files_per_job,
+      max_files_per_job         = files_per_job,
       era                       = era,
       use_lumi                  = True,
       lumi                      = lumi,

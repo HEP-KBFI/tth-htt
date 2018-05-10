@@ -19,6 +19,7 @@ parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_tau_id_wp()
 parser.add_hlt_filter()
+parser.add_files_per_job()
 args = parser.parse_args()
 
 # Common arguments
@@ -40,11 +41,11 @@ use_preselected   = args.use_preselected
 rle_select        = os.path.expanduser(args.rle_select)
 use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
+files_per_job     = args.files_per_job
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
-max_files_per_job    = 50 if use_preselected else 1
 do_sync              = mode.startswith('sync')
 
 chargeSumSelections      = [ "OS", "SS" ]
@@ -124,7 +125,7 @@ if __name__ == '__main__':
       applyFakeRateWeights                  = applyFakeRateWeights,
       chargeSumSelections                   = chargeSumSelections,
       central_or_shifts                     = central_or_shift,
-      max_files_per_job                     = max_files_per_job,
+      max_files_per_job                     = files_per_job,
       era                                   = era,
       use_lumi                              = True,
       lumi                                  = lumi,

@@ -9,6 +9,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 parser = tthAnalyzeParser()
 parser.add_tau_id_wp('dR03mvaLoose')
+parser.add_files_per_job()
 args = parser.parse_args()
 
 # Common arguments
@@ -24,7 +25,8 @@ debug              = args.debug
 sample_filter      = args.filter
 
 # Additional arguments
-tau_id_wp = args.tau_id_wp
+tau_id_wp     = args.tau_id_wp
+files_per_job = args.files_per_job
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -63,7 +65,7 @@ if __name__ == '__main__':
       cfgFile_analyze    = "analyze_hadTopTagger_cfg.py",
       samples            = samples,
       hadTau_selection   = hadTau_selection,
-      max_files_per_job  = 1,
+      max_files_per_job  = files_per_job,
       era                = era,
       use_lumi           = True,
       lumi               = lumi,

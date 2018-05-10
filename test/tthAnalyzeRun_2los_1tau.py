@@ -18,6 +18,7 @@ parser.add_sys(sys_choices)
 parser.add_preselect()
 parser.add_tau_id_wp()
 parser.add_hlt_filter()
+parser.add_files_per_job()
 args = parser.parse_args()
 
 # Common arguments
@@ -31,17 +32,17 @@ auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
 sample_filter      = args.filter
-hlt_filter         = args.hlt_filter
 
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
 use_preselected   = args.use_preselected
+hlt_filter        = args.hlt_filter
+files_per_job     = args.files_per_job
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
-max_files_per_job    = 50 if use_preselected else 1
 
 hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 
@@ -113,7 +114,7 @@ if __name__ == '__main__':
       hadTau_selection          = hadTau_selection,
       applyFakeRateWeights      = applyFakeRateWeights,
       central_or_shifts         = central_or_shift,
-      max_files_per_job         = max_files_per_job,
+      max_files_per_job         = files_per_job,
       era                       = era,
       use_lumi                  = True,
       lumi                      = lumi,

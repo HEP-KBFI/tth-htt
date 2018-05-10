@@ -15,6 +15,7 @@ parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
 parser.add_preselect()
 parser.add_tau_id_wp("dR03mvaLoose")
+parser.add_files_per_job()
 args = parser.parse_args()
 
 # Common arguments
@@ -33,15 +34,15 @@ sample_filter      = args.filter
 systematics_label = args.systematics
 use_preselected   = args.use_preselected
 tau_id_wp         = args.tau_id_wp
+files_per_job     = args.files_per_job
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
-max_files_per_job    = 50 if use_preselected else 1
 
 if era == "2017":
   #from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples 
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
@@ -80,7 +81,7 @@ if __name__ == '__main__':
       hadTauVeto_selection      = tau_id_wp,
       applyFakeRateWeights      = "2lepton",
       central_or_shifts         = central_or_shift,
-      max_files_per_job         = max_files_per_job,
+      max_files_per_job         = files_per_job,
       era                       = era,
       use_lumi                  = True,
       lumi                      = lumi,

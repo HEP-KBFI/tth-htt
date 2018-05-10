@@ -5,6 +5,15 @@ ALLOWED_CONDITION_KEYS = {
   'cat'  : 'sample_category',
 }
 
+def positive_int_type(value):
+  try:
+    value_int = int(value)
+  except ValueError:
+    raise argparse.ArgumentTypeError('Not an integer: %s' % value)
+  if value_int <= 0:
+    raise argparse.ArgumentTypeError('Must be a positive integer: %d' % value_int)
+  return value_int
+
 def condition_type(value):
   value_split = value.split(':')
   if len(value_split) != 2:
@@ -73,7 +82,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
              'R|Run addMEM without actually computing the MEM score',
     )
     self.add_argument('-r', '--resubmission-limit',
-      type = int, dest = 'resubmission_limit', metavar = 'number',
+      type = positive_int_type, dest = 'resubmission_limit', metavar = 'number',
       default = default_resubmission_limit, required = False,
       help = 'R|Maximum number of resubmissions',
     )
@@ -98,9 +107,9 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Enable debugging flag in the analysis',
     )
 
-  def add_files_per_job(self, files_per_job):
+  def add_files_per_job(self, files_per_job = 5):
     self.add_argument('-j', '--files-per-job',
-      type = int, dest = 'files_per_job', metavar = 'number', default = files_per_job,
+      type = positive_int_type, dest = 'files_per_job', metavar = 'number', default = files_per_job,
       help = 'R|Number of input files per job',
     )
 
