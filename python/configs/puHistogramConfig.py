@@ -267,18 +267,23 @@ class puHistogramConfig:
         for key, cfg in self.outputFiles.items():
             plot_linear = os.path.join(self.dirs[DKEY_PLOTS], '%s.png'     % key)
             plot_log    = os.path.join(self.dirs[DKEY_PLOTS], '%s_log.png' % key)
+            logFile_linear = os.path.join(self.dirs[DKEY_LOGS], 'plot_linear_%s.log' % key)
+            logFile_log    = os.path.join(self.dirs[DKEY_LOGS], 'plot_log_%s.log' % key)
+            logFile_linear, logFile_log = get_log_version((
+                logFile_linear, logFile_log
+            ))
             jobOptions[key] = {
                 'inputFile' : cfg['outputFile'],
                 'jobs' : {
                     'linear' : {
                         'outputFile' : plot_linear,
                         'cmd'        : cmd_string % (cfg['outputFile'], plot_linear, key),
-                        'logFile'    : os.path.join(self.dirs[DKEY_LOGS], 'plot_linear_%s.log' % key),
+                        'logFile'    : logFile_linear,
                     },
                     'log' : {
                         'outputFile' : plot_log,
                         'cmd'        : cmd_log_string % (cfg['outputFile'], plot_log, key),
-                        'logFile'    : os.path.join(self.dirs[DKEY_LOGS], 'plot_log_%s.log' % key),
+                        'logFile'    : logFile_log,
                     }
                 }
             }
@@ -414,4 +419,8 @@ class puHistogramConfig:
     def run(self):
         """Runs all PU profile production jobs -- either locally or on the batch system.
         """
-        pass
+        run_cmd(
+            "make -f %s -j %i 2>%s 1>%s" % \
+            (self.makefile, self.num_parallel_jobs, self.stderr_file_path, self.stdout_file_path),
+            False
+        )
