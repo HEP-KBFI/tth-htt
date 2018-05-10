@@ -900,51 +900,52 @@ if __name__ == '__main__':
       totdelivered_colname = 'totdelivered(%s)' % units
       totrecorded_colname  = 'totrecorded(%s)' % units
 
-    with open(args.dataset, 'w+') as f:
-      nof_cols = 5 if compute_lumi else 3
-      dataset_format = '  '.join(['%s'] * nof_cols) + '\n'
+    if args.dataset:
+      with open(args.dataset, 'w+') as f:
+        nof_cols = 5 if compute_lumi else 3
+        dataset_format = '  '.join(['%s'] * nof_cols) + '\n'
 
-      header = [
-        "# DAS name",
-        "run range",
-        "golden run range",
-      ]
-      if compute_lumi:
-        header += [
-          totdelivered_colname,
-          totrecorded_colname,
-        ]
-
-      col_widths = [
-        max(max(map(len,                                  dataset_list.keys())),   len(header[0])),
-        max(max(map(lambda d: len(d['run_range']),        dataset_list.values())), len(header[1])),
-        max(max(map(lambda d: len(d['golden_run_range']), dataset_list.values())), len(header[2]))
-      ]
-      if compute_lumi:
-        col_widths += [
-          max(max(map(lambda d: len(d[header[3]]), lumi_results.values())), len(header[3])),
-          max(max(map(lambda d: len(d[header[4]]), lumi_results.values())), len(header[4])),
-        ]
-
-      f.write(dataset_format % tuple([header[i].ljust(col_widths[i]) for i in range(nof_cols)]))
-      for dataset_name, run_dict in dataset_list.items():
-        values = [
-          dataset_name,
-          run_dict['run_range'],
-          run_dict['golden_run_range'],
+        header = [
+          "# DAS name",
+          "run range",
+          "golden run range",
         ]
         if compute_lumi:
-          values += [
-            lumi_results[dataset_name][header[3]],
-            lumi_results[dataset_name][header[4]],
+          header += [
+            totdelivered_colname,
+            totrecorded_colname,
           ]
-        f.write(dataset_format % tuple([values[i].ljust(col_widths[i]) for i in range(nof_cols)]))
-      f.write(
-        "\n# file generated at %s with the following command:\n# %s\n" % \
-        (execution_datetime, execution_command)
-      )
-      f.write("# golden JSON: %s\n" % os.path.basename(lumimask_location))
-      if compute_lumi:
-        f.write("# normtag: %s\n" % normtag if normtag else 'none')
-        f.write("# %s: %s\n" % (totdelivered_colname, lumi_results['total'][totdelivered_colname]))
-        f.write("# %s: %s\n" % (totrecorded_colname,  lumi_results['total'][totrecorded_colname]))
+
+        col_widths = [
+          max(max(map(len,                                  dataset_list.keys())),   len(header[0])),
+          max(max(map(lambda d: len(d['run_range']),        dataset_list.values())), len(header[1])),
+          max(max(map(lambda d: len(d['golden_run_range']), dataset_list.values())), len(header[2]))
+        ]
+        if compute_lumi:
+          col_widths += [
+            max(max(map(lambda d: len(d[header[3]]), lumi_results.values())), len(header[3])),
+            max(max(map(lambda d: len(d[header[4]]), lumi_results.values())), len(header[4])),
+          ]
+
+        f.write(dataset_format % tuple([header[i].ljust(col_widths[i]) for i in range(nof_cols)]))
+        for dataset_name, run_dict in dataset_list.items():
+          values = [
+            dataset_name,
+            run_dict['run_range'],
+            run_dict['golden_run_range'],
+          ]
+          if compute_lumi:
+            values += [
+              lumi_results[dataset_name][header[3]],
+              lumi_results[dataset_name][header[4]],
+            ]
+          f.write(dataset_format % tuple([values[i].ljust(col_widths[i]) for i in range(nof_cols)]))
+        f.write(
+          "\n# file generated at %s with the following command:\n# %s\n" % \
+          (execution_datetime, execution_command)
+        )
+        f.write("# golden JSON: %s\n" % os.path.basename(lumimask_location))
+        if compute_lumi:
+          f.write("# normtag: %s\n" % normtag if normtag else 'none')
+          f.write("# %s: %s\n" % (totdelivered_colname, lumi_results['total'][totdelivered_colname]))
+          f.write("# %s: %s\n" % (totrecorded_colname,  lumi_results['total'][totrecorded_colname]))
