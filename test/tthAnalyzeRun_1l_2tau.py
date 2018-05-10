@@ -18,6 +18,7 @@ parser.add_preselect()
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_tau_id_wp()
+parser.add_hlt_filter()
 args = parser.parse_args()
 
 # Common arguments
@@ -38,6 +39,7 @@ systematics_label = args.systematics
 use_preselected   = args.use_preselected
 rle_select        = os.path.expanduser(args.rle_select)
 use_nonnominal    = args.original_central
+hlt_filter        = args.hlt_filter
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -154,6 +156,7 @@ if __name__ == '__main__':
       isDebug                               = debug,
       rle_select                            = rle_select,
       use_nonnominal                        = use_nonnominal,
+      hlt_filter                            = hlt_filter,
     )
 
     if mode == "forBDTtraining" :

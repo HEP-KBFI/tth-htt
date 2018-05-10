@@ -16,6 +16,7 @@ parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_preselect()
 parser.add_tau_id_wp("dR03mvaTight")
+parser.add_hlt_filter()
 args = parser.parse_args()
 
 # Common arguments

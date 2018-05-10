@@ -17,6 +17,7 @@ parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_preselect()
 parser.add_tau_id_wp()
+parser.add_hlt_filter()
 args = parser.parse_args()
 
 # Common arguments
@@ -30,6 +31,7 @@ auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
 sample_filter      = args.filter
+hlt_filter         = args.hlt_filter
 
 # Additional arguments
 mode              = args.mode
@@ -132,6 +134,7 @@ if __name__ == '__main__':
       verbose                   = idx_job_resubmission > 0,
       dry_run                   = dry_run,
       isDebug                   = debug,
+      hlt_filter                = hlt_filter,
     )
 
     if mode.find("forBDTtraining") != -1:

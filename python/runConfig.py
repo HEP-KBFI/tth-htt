@@ -141,6 +141,12 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Overwrite tau ID working point',
     )
 
+  def add_hlt_filter(self):
+    self.add_argument('-H', '--hlt-filter',
+      dest = 'hlt_filter', action = 'store_true', default = False,
+      help = 'R|Apply HLT filter',
+    )
+
   @staticmethod
   def cat(choices):
     return ', '.join(map(lambda choice: "'%s'" % str(choice), choices))
