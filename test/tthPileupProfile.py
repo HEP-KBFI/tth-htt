@@ -102,6 +102,10 @@ if __name__ == '__main__':
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
     job_statistics_summary[idx_job_resubmission] = job_statistics
 
+    if job_statistics['plot'] == 0:
+      is_last_resubmission = True
+      break
+
     if idx_job_resubmission == 0:
       if auto_exec:
         run_puHistogramProduction = True
@@ -112,7 +116,7 @@ if __name__ == '__main__':
     if run_puHistogramProduction:
       puHistogramProduction.run()
     else:
-      sys.exit(0)
+      break
 
   for idx_job_resubmission in job_statistics_summary.keys():
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
