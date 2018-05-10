@@ -132,8 +132,6 @@ class puHistogramConfig:
         cfg_dirs = [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS, DKEY_HADD_RT ]
 
         for sample_name, sample_info in self.samples.items():
-            if not sample_info["use_it"]:
-                continue
             process_name = sample_info["process_name_specific"]
             key_dir = getKey(sample_name)
             for dir_type in all_dirs:
