@@ -209,6 +209,7 @@ def createScript_sbatch_hadd(
     pool_id       = '',
     verbose       = False,
     dry_run       = False,
+    max_input_files_per_job = 5,
   ):
     """Creates the python script necessary to submit 'hadd' jobs to the batch system
     """
@@ -227,6 +228,7 @@ def createScript_sbatch_hadd(
         pool_id          = pool_id,
         verbose          = verbose,
         dry_run          = dry_run,
+        max_input_files_per_job = max_input_files_per_job,
     )
     createFile(sbatch_script_file_name, sbatch_hadd_lines)
     return num_jobs
@@ -242,6 +244,7 @@ def generate_sbatch_lines_hadd(
     pool_id     = '',
     verbose     = False,
     dry_run     = False,
+    max_input_files_per_job = 5,
   ):
     template_vars = {
         'working_dir'             : working_dir,
@@ -250,7 +253,7 @@ def generate_sbatch_lines_hadd(
         'waitForJobs'             : waitForJobs,
         'auxDirName'              : auxDirName,
         'pool_id'                 : pool_id,
-        'max_input_files_per_job' : 5,
+        'max_input_files_per_job' : max_input_files_per_job,
         'script_file_name'        : script_file_name,
         'log_file_name'           : log_file_name,
         'verbose'                 : verbose,
