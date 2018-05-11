@@ -82,5 +82,16 @@ typedef ParticleCollectionCleaner<RecoHadTau> RecoHadTauCollectionCleaner;
 
 typedef ParticleCollectionCleaner<RecoJet> RecoJetCollectionCleaner;
 
-#endif // tthAnalysis_HiggsToTauTau_ParticleCollectionCleaner_h
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h"
 
+typedef ParticleCollectionCleaner<RecoJetHTTv2> RecoJetHTTv2CollectionCleaner;
+
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK12.h"
+
+typedef ParticleCollectionCleaner<RecoJetAK12> RecoJetAK12CollectionCleaner;
+
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h"
+
+typedef ParticleCollectionCleaner<RecoJetAK8> RecoJetAK8CollectionCleaner;
+
+#endif // tthAnalysis_HiggsToTauTau_ParticleCollectionCleaner_h
