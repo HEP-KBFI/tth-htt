@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
-mode_choices = [ 'all', 'all_except_forBDTtraining' 'forBDTtraining', 'sync', 'leptonFR_sync' ]
+mode_choices = [ 'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync' ]
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
