@@ -159,7 +159,7 @@ class prodNtupleConfig:
             "executable = '%s'" % self.executable_prodNtuple,
             "isMC = %s" % str(jobOptions['is_mc']),
             "era = %s" % str(self.era),
-            "pileup = '%s'" % self.pileup if jobOptions['is_mc'] else '',
+            "pileup = '%s'" % self.pileup,
             "process_name = '%s'" % jobOptions['process_name'],
         ])
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
