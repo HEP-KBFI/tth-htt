@@ -87,6 +87,7 @@ process.analyze_hadTopTagger = cms.PSet(
     branchName_genBJets = cms.string('GenBQuarkFromTop'),
     branchName_genWBosons = cms.string('GenVbosons'),
     branchName_genWJets = cms.string('GenWZQuark'),
+    branchName_genQuarkFromTop = cms.string('GenQuarkFromTop'),
 
     selEventsFileName_input = cms.string(''),
     ##selEventsFileName_input = cms.string('/home/veelken/CMSSW_9_4_4/src/tthAnalysis/HiggsToTauTau/test/selEvents_hadTopTagger_gen.txt'),

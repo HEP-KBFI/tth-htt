@@ -79,6 +79,7 @@ process.analyze_2lss = cms.PSet(
     branchName_genBJets = cms.string('GenBQuarkFromTop'),
     branchName_genWBosons = cms.string('GenVbosons'),
     branchName_genWJets = cms.string('GenWZQuark'),
+    branchName_genQuarkFromTop = cms.string('GenQuarkFromTop'),
 
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),

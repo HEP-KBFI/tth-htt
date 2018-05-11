@@ -89,6 +89,7 @@ process.analyze_2los_1tau = cms.PSet(
     branchName_genBJets = cms.string('GenBQuarkFromTop'),
     branchName_genWBosons = cms.string('GenVbosons'),
     branchName_genWJets = cms.string('GenWZQuark'),
+    branchName_genQuarkFromTop = cms.string('GenQuarkFromTop'),
 
     redoGenMatching = cms.bool(True),
 
@@ -97,4 +98,3 @@ process.analyze_2los_1tau = cms.PSet(
     selectBDT = cms.bool(False),
     isDEBUG = cms.bool(False),
 )
-
