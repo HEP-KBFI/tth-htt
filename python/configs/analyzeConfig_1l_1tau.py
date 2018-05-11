@@ -44,7 +44,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
                hadTau_selection, chargeSumSelections, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit,
-               select_rle_output = False, verbose = False, dry_run = False, isDebug = False):
+               select_rle_output = False, verbose = False, dry_run = False, isDebug = False, hlt_filter = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "1l_1tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit, verbose = verbose, dry_run = dry_run, isDebug = isDebug)
@@ -113,6 +113,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_1l_1tau_cfg.py")
 
     self.select_rle_output = select_rle_output
+    self.hlt_filter = hlt_filter
 
   def createCfg_analyze(self, jobOptions):
     """Create python configuration file for the analyze_1l_1tau executable (analysis code)
@@ -144,7 +145,6 @@ class analyzeConfig_1l_1tau(analyzeConfig):
       lines.append("process.analyze_1l_1tau.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_1l_1tau.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_1l_1tau.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
-    lines.append("process.analyze_1l_1tau.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))
     lines.append("process.analyze_1l_1tau.hadTauSelection = cms.string('%s')" % jobOptions['hadTau_selection'])
     lines.append("process.analyze_1l_1tau.apply_hadTauGenMatching = cms.bool(%s)" % (jobOptions['apply_hadTauGenMatching'] and jobOptions['is_mc']))
     lines.append("process.analyze_1l_1tau.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
@@ -171,6 +171,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     lines.append("process.analyze_1l_1tau.redoGenMatching = cms.bool(False)")
     lines.append("process.analyze_1l_1tau.fillGenEvtHistograms = cms.bool(True)")
     lines.append("process.analyze_1l_1tau.isDEBUG = cms.bool(%s)" % self.isDebug)
+    lines.append("process.analyze_1l_1tau.apply_hlt_filter = cms.bool(%s)" % self.hlt_filter)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):

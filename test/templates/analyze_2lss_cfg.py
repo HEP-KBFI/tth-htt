@@ -42,12 +42,11 @@ process.analyze_2lss = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
     leptonChargeSelection = cms.string('SS'),
 
-    hadTauSelection = cms.string('Tight|dR03mvaVTight'), # veto events containing taus that pass tau ID WP applied in 2l+2tau channel
+    hadTauSelection = cms.string('Tight|dR03mvaLoose'), # veto events containing taus that pass tau ID WP applied in 2lss+1tau channel
 
-    applyFakeRateWeights = cms.string("disabled"), # either "disabled", "2lepton"
+    applyFakeRateWeights = cms.string("disabled"), # either "disabled" or "2lepton"
     leptonFakeRateWeight = cms.PSet(
         inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2016_data.root"),
         histogramName_e = cms.string("FR_mva075_el_data_comb"),
@@ -61,6 +60,7 @@ process.analyze_2lss = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False),
+    apply_hlt_filter = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
 
@@ -88,6 +88,7 @@ process.analyze_2lss = cms.PSet(
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
+        requireGenMatching = cms.bool(False),
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),

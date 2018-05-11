@@ -51,6 +51,7 @@ class Version:
     version_key = 'ver'
     pre_regex = re.compile(r'pre(?P<%s>[0-9]+)' % version_key)
     patch_regex = re.compile(r'patch(?P<%s>[0-9]+)' % version_key)
+    cand_regex = re.compile(r'cand(?P<%s>[0-9]+)' % version_key)
 
     if len(version_split) > 3:
       pre_or_patch_str = version_split[3]
@@ -66,6 +67,12 @@ class Version:
         if not patch_match:
           raise ValueError("Unparsable version: '%s'" % version)
         self.pre_or_patch_version = patch_match.group('ver')
+      elif 'cand' in pre_or_patch_str:
+        self.is_pre_or_patch = -1 # Let's assume it's a ,,pre''
+        cand_match = cand_regex.match(pre_or_patch_str)
+        if not cand_match:
+          raise ValueError("Unparsable version: '%s'" % version)
+        self.pre_or_patch_version = cand_match.group('ver')
       else:
         raise ValueError("Unparsable version: '%s'" % version)
 
@@ -106,7 +113,7 @@ METADICT_FOOTER = '''
 '''
 
 METADICT_TEMPLATE_DATA = '''meta_dictionary["{{ dataset_name }}"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "{{ crab_string }}"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "{{ process_name_specific }}"),
   ("nof_db_events",         {{ nof_db_events }}),
@@ -123,7 +130,7 @@ METADICT_TEMPLATE_DATA = '''meta_dictionary["{{ dataset_name }}"] =  OD([
 '''
 
 METADICT_TEMPLATE_MC = '''meta_dictionary["{{ dataset_name }}"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "{{ crab_string }}"),
   ("sample_category",       "{{ sample_category }}"),
   ("process_name_specific", "{{ specific_name }}"),
   ("nof_db_events",         {{ nof_db_events }}),
@@ -159,7 +166,20 @@ DASGOCLIENT_QUERY_ANY_STATUS = "dasgoclient -query='dataset dataset=%s status=* 
 DASGOCLIENT_QUERY_RELEASE    = "dasgoclient -query='release dataset=%s' -unique"
 DASGOCLIENT_QUERY_RUNLUMI    = "dasgoclient -query='run,lumi dataset=%s' -unique"
 
-MC_REGEX = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
+MC_REGEX      = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
+DATASET_REGEX = re.compile("^/(.*)/(.*)/[0-9A-Za-z]+$")
+
+def get_crab_string(dataset_name, path):
+  if not path:
+    return ''
+  version = os.path.basename(path)
+  dataset_match = DATASET_REGEX.match(dataset_name)
+  requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
+  primary_name = dataset_name.split('/')[1]
+  full_path = os.path.join(path, primary_name, requestName)
+  if not os.path.isdir(full_path):
+    requestName = ''
+  return requestName
 
 def convert_date(date):
   return datetime.datetime.fromtimestamp(int(date)).strftime('%Y-%m-%d %H:%M:%S')
@@ -322,6 +342,10 @@ if __name__ == '__main__':
     type = str, dest = 'dataset', metavar = 'path', default = 'datasets.txt', required = False,
     help = 'R|Output path of the dataset list (valid if -i/--input not provided)',
   )
+  parser.add_argument('-c', '--crab-string',
+    type = str, dest = 'crab_string', metavar = 'path', default = '', required = False,
+    help = 'R|Fill CRAB string',
+  )
   parser.add_argument('-r', '--run',
     type = str, dest = 'run', metavar = 'run', default = '2017', required = False,
     help = 'R|Data collection period',
@@ -406,6 +430,7 @@ if __name__ == '__main__':
   required_cmssw_version_str = args.version
   required_cmssw_version = Version(required_cmssw_version_str)
   verbose = args.verbose
+  crab_string = args.crab_string
 
   primary_datasets = args.primary_datasets
   DATA_GREP_STR = '\\|'.join(map(lambda sample: '^/%s/' % sample, primary_datasets))
@@ -558,6 +583,12 @@ if __name__ == '__main__':
     meta_dictionary_entries = []
     for dataset in das_query_results:
       entry = das_query_results[dataset]
+      entry['use_it'] = entry['dataset_access_type'] != 'INVALID'            and     \
+                        entry['release_pass']                                and     \
+                        entry['specific_name'] != 'ttHJetTobb_M125_amcatnlo' and not \
+        (
+          entry['sample_category'] == 'TT' and entry['specific_name'].endswith('_PSweights')
+        )
       meta_dictionary_entries.append(jinja2.Template(METADICT_TEMPLATE_MC).render(
         dataset_name    = entry['name'],
         nof_db_events   = entry['nevents'],
@@ -566,7 +597,8 @@ if __name__ == '__main__':
         sample_category = entry['sample_category'],
         xs              = entry['xs'],
         specific_name   = entry['specific_name'],
-        use_it          = entry['dataset_access_type'] != 'INVALID' and entry['release_pass'],
+        use_it          = entry['use_it'],
+        crab_string     = get_crab_string(entry['name'], crab_string),
         comment         = "status: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
           entry['dataset_access_type'],
           human_size(entry['size']),
@@ -577,7 +609,10 @@ if __name__ == '__main__':
       ))
 
     sum_suffixes = ['_PSweights$', '_ext[1-9]{1}$']
-    specific_names = [ dataset_entry['specific_name'] for dataset_entry in das_query_results.values() ]
+    specific_names = [
+      dataset_entry['specific_name'] for dataset_entry in das_query_results.values() \
+      if dataset_entry['use_it']
+    ]
     sum_events = {}
     for specific_name_ref in specific_names:
       for specific_name_test in specific_names:
@@ -817,6 +852,7 @@ if __name__ == '__main__':
               nof_db_events         = selection['nevents'],
               nof_db_files          = selection['nfiles'],
               fsize_db              = selection['size'],
+              crab_string           = get_crab_string(selection['name'], crab_string),
               run_range             = minmax_runlumi_data,
               golden_run_range      = minmax_runlumi_data_golden,
               comment               = "status: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
@@ -833,16 +869,17 @@ if __name__ == '__main__':
             }
 
             # Retrieve the integrated luminosity for this sample
-            try:
-              tmp_file = os.path.join(tmp_dir, '%s.json' % selection['specific_name'])
-              lumi_pool.apply_async(
-                get_integrated_lumi,
-                args     = (selection['name'], runlumi_data_golden, brilcalc_path, normtag_path, units, tmp_file),
-                callback = update_lumi_results,
-              )
-            except KeyboardInterrupt:
-              lumi_pool.terminate()
-              sys.exit(1)
+            if compute_lumi:
+              try:
+                tmp_file = os.path.join(tmp_dir, '%s.json' % selection['specific_name'])
+                lumi_pool.apply_async(
+                  get_integrated_lumi,
+                  args     = (selection['name'], runlumi_data_golden, brilcalc_path, normtag_path, units, tmp_file),
+                  callback = update_lumi_results,
+                )
+              except KeyboardInterrupt:
+                lumi_pool.terminate()
+                sys.exit(1)
 
           else:
             print(
@@ -870,51 +907,52 @@ if __name__ == '__main__':
       totdelivered_colname = 'totdelivered(%s)' % units
       totrecorded_colname  = 'totrecorded(%s)' % units
 
-    with open(args.dataset, 'w+') as f:
-      nof_cols = 5 if compute_lumi else 3
-      dataset_format = '  '.join(['%s'] * nof_cols) + '\n'
+    if args.dataset:
+      with open(args.dataset, 'w+') as f:
+        nof_cols = 5 if compute_lumi else 3
+        dataset_format = '  '.join(['%s'] * nof_cols) + '\n'
 
-      header = [
-        "# DAS name",
-        "run range",
-        "golden run range",
-      ]
-      if compute_lumi:
-        header += [
-          totdelivered_colname,
-          totrecorded_colname,
-        ]
-
-      col_widths = [
-        max(max(map(len,                                  dataset_list.keys())),   len(header[0])),
-        max(max(map(lambda d: len(d['run_range']),        dataset_list.values())), len(header[1])),
-        max(max(map(lambda d: len(d['golden_run_range']), dataset_list.values())), len(header[2]))
-      ]
-      if compute_lumi:
-        col_widths += [
-          max(max(map(lambda d: len(d[header[3]]), lumi_results.values())), len(header[3])),
-          max(max(map(lambda d: len(d[header[4]]), lumi_results.values())), len(header[4])),
-        ]
-
-      f.write(dataset_format % tuple([header[i].ljust(col_widths[i]) for i in range(nof_cols)]))
-      for dataset_name, run_dict in dataset_list.items():
-        values = [
-          dataset_name,
-          run_dict['run_range'],
-          run_dict['golden_run_range'],
+        header = [
+          "# DAS name",
+          "run range",
+          "golden run range",
         ]
         if compute_lumi:
-          values += [
-            lumi_results[dataset_name][header[3]],
-            lumi_results[dataset_name][header[4]],
+          header += [
+            totdelivered_colname,
+            totrecorded_colname,
           ]
-        f.write(dataset_format % tuple([values[i].ljust(col_widths[i]) for i in range(nof_cols)]))
-      f.write(
-        "\n# file generated at %s with the following command:\n# %s\n" % \
-        (execution_datetime, execution_command)
-      )
-      f.write("# golden JSON: %s\n" % os.path.basename(lumimask_location))
-      if compute_lumi:
-        f.write("# normtag: %s\n" % normtag if normtag else 'none')
-        f.write("# %s: %s\n" % (totdelivered_colname, lumi_results['total'][totdelivered_colname]))
-        f.write("# %s: %s\n" % (totrecorded_colname,  lumi_results['total'][totrecorded_colname]))
+
+        col_widths = [
+          max(max(map(len,                                  dataset_list.keys())),   len(header[0])),
+          max(max(map(lambda d: len(d['run_range']),        dataset_list.values())), len(header[1])),
+          max(max(map(lambda d: len(d['golden_run_range']), dataset_list.values())), len(header[2]))
+        ]
+        if compute_lumi:
+          col_widths += [
+            max(max(map(lambda d: len(d[header[3]]), lumi_results.values())), len(header[3])),
+            max(max(map(lambda d: len(d[header[4]]), lumi_results.values())), len(header[4])),
+          ]
+
+        f.write(dataset_format % tuple([header[i].ljust(col_widths[i]) for i in range(nof_cols)]))
+        for dataset_name, run_dict in dataset_list.items():
+          values = [
+            dataset_name,
+            run_dict['run_range'],
+            run_dict['golden_run_range'],
+          ]
+          if compute_lumi:
+            values += [
+              lumi_results[dataset_name][header[3]],
+              lumi_results[dataset_name][header[4]],
+            ]
+          f.write(dataset_format % tuple([values[i].ljust(col_widths[i]) for i in range(nof_cols)]))
+        f.write(
+          "\n# file generated at %s with the following command:\n# %s\n" % \
+          (execution_datetime, execution_command)
+        )
+        f.write("# golden JSON: %s\n" % os.path.basename(lumimask_location))
+        if compute_lumi:
+          f.write("# normtag: %s\n" % normtag if normtag else 'none')
+          f.write("# %s: %s\n" % (totdelivered_colname, lumi_results['total'][totdelivered_colname]))
+          f.write("# %s: %s\n" % (totrecorded_colname,  lumi_results['total'][totrecorded_colname]))

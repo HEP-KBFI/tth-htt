@@ -14,6 +14,7 @@ systematics.full = systematics.an_ctrl
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
 parser.add_tau_id_wp("dR03mvaVLoose")
+parser.add_files_per_job()
 args = parser.parse_args()
 
 # Common arguments
@@ -31,6 +32,7 @@ sample_filter      = args.filter
 # Additional arguments
 systematics_label = args.systematics
 tau_id_wp         = args.tau_id_wp
+files_per_job     = args.files_per_job
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -78,7 +80,7 @@ if __name__ == '__main__':
       samples            = samples,
       hadTau_selection   = tau_id_wp,
       central_or_shifts  = central_or_shift,
-      max_files_per_job  = 1,
+      max_files_per_job  = files_per_job,
       era                = era,
       use_lumi           = True,
       lumi               = lumi,

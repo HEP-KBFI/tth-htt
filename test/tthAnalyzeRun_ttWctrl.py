@@ -13,7 +13,9 @@ systematics.full = systematics.an_ctrl
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp("dR03mvaVLoose")
+parser.add_preselect()
+parser.add_tau_id_wp("dR03mvaLoose")
+parser.add_files_per_job()
 args = parser.parse_args()
 
 # Common arguments
@@ -30,14 +32,17 @@ sample_filter      = args.filter
 
 # Additional arguments
 systematics_label = args.systematics
+use_preselected   = args.use_preselected
 tau_id_wp         = args.tau_id_wp
+files_per_job     = args.files_per_job
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  #from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
@@ -69,23 +74,28 @@ if __name__ == '__main__':
     analysis = analyzeConfig_ttWctrl(
       configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
       outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
-      executable_analyze = "analyze_ttWctrl",
-      cfgFile_analyze    = "analyze_ttWctrl_cfg.py",
-      samples            = samples,
-      hadTau_selection   = tau_id_wp,
-      central_or_shifts  = central_or_shift,
-      max_files_per_job  = 1,
-      era                = era,
-      use_lumi           = True,
-      lumi               = lumi,
-      check_input_files  = check_input_files,
-      running_method     = "sbatch",
-      num_parallel_jobs  = 8,
-      histograms_to_fit  = [ "EventCounter", "numJets" ],
-      select_rle_output  = True,
-      verbose            = idx_job_resubmission > 0,
-      dry_run            = dry_run,
-      isDebug            = debug,
+      executable_analyze        = "analyze_ttWctrl",
+      cfgFile_analyze           = "analyze_ttWctrl_cfg.py",
+      samples                   = samples,
+      lepton_charge_selections  = [ "OS", "SS" ],
+      hadTauVeto_selection      = tau_id_wp,
+      applyFakeRateWeights      = "2lepton",
+      central_or_shifts         = central_or_shift,
+      max_files_per_job         = files_per_job,
+      era                       = era,
+      use_lumi                  = True,
+      lumi                      = lumi,
+      check_input_files         = check_input_files,
+      running_method            = "sbatch",
+      num_parallel_jobs         = 100, # KE: run up to 100 'hadd' jobs in parallel on batch system
+      executable_addBackgrounds = "addBackgrounds",
+      executable_addFakes       = "addBackgroundLeptonFakes",
+      executable_addFlips       = "addBackgroundLeptonFlips",
+      histograms_to_fit         = [ "EventCounter", "numJets" ],
+      select_rle_output         = False,
+      verbose                   = idx_job_resubmission > 0,
+      dry_run                   = dry_run,
+      isDebug                   = debug,
     )
 
     job_statistics = analysis.create()

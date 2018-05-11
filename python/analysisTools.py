@@ -42,17 +42,14 @@ def create_cfg(cfg_file_original, cfg_file_modified, lines):
     f_modified.write(cfg_modified)
     f_modified.close()
 
-def createFile(fileName, lines):
+def createFile(fileName, lines, nofNewLines = 2):
     """Auxiliary function to write new config file,
        containg the lines given as argument.
     """
-    content = ""
-    for line in lines:
-        content += "%s\n" % line
-    content += "\n"
-    f = open(fileName, "w")
-    f.write(content)
-    f.close()
+    content = "\n".join(lines)
+    content += nofNewLines * "\n"
+    with open(fileName, "w") as f:
+      f.write(content)
 
 def initializeInputFileIds(sample_info, max_files_per_job):
     """Retrieves the number of input ROOT files (Ntuples) corresponding to a given sample

@@ -14,6 +14,7 @@ systematics.full = systematics.an_chargeFlip_e
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
+parser.add_files_per_job()
 args = parser.parse_args()
 
 # Common arguments
@@ -30,6 +31,7 @@ sample_filter      = args.filter
 
 # Additional arguments
 systematics_label = args.systematics
+files_per_job     = args.files_per_job
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -92,7 +94,7 @@ if __name__ == '__main__':
       samples            = samples,
       lepton_selections  = [ "Tight" ],
       central_or_shifts  = central_or_shift,
-      max_files_per_job  = 1,
+      max_files_per_job  = files_per_job,
       era                = era,
       use_lumi           = True,
       lumi               = lumi,

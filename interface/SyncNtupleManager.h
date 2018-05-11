@@ -144,6 +144,7 @@ public:
   void read(bool is_genMatched, int n_tags, int n_tags_loose);
   void fill();
   void write();
+  void reset();
 
   static const Int_t placeholder_value;
 
@@ -259,8 +260,6 @@ private:
     reset(var);
     reset(remainingVars...);
   }
-
-  void reset();
 
   TFile * outputFile;
   TTree * outputTree;

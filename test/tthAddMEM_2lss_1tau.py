@@ -74,7 +74,7 @@ if mode == 'default':
   hadTauSelection = "Tight"
   hadTauWP        = "dR03mvaLoose"
 elif mode == 'bdt':
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
 
   leptonSelection = "Loose"
   hadTauSelection = "Tight"

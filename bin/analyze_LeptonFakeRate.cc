@@ -974,11 +974,7 @@ main(int argc,
 
       evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
 
-      double btagWeight = 1.;
-      for(const RecoJet * const jet: selJets_dR07)
-      {
-        btagWeight *= jet->BtagWeight();
-      }
+      const double btagWeight = get_BtagWeight(selJets_dR07);
       evtWeight *= btagWeight;
 
       if(isDEBUG)
@@ -1067,13 +1063,15 @@ main(int argc,
               }
             }
 
-            if( !(selJet->pt() > hltPath_iter->getMinJetPt()) )
+            if( !( (selJet->pt() > hltPath_iter->getMinJetPt()) && (preselElectron.pt() > hltPath_iter->getMinRecoPt()) ) )
             {
               if(run_lumi_eventSelector)
               {
-                std::cout << "jet FAILS trigger dep. Jet Pt cut"                      "\n"
+                std::cout << "electron + jet pair FAILS trigger dep. Pt cuts "      << "\n"
                              "selJet->pt() "        << selJet->pt()                << "\n"
-                             "Trigger Min. Jet pT " << hltPath_iter->getMinJetPt() << '\n';
+                             "Trigger Min. Jet pT " << hltPath_iter->getMinJetPt() << "\n"
+		             "preselElectron.pt() " << preselElectron.pt()         << "\n"
+                             "Min. Reco Lepton pT cut " << hltPath_iter->getMinRecoPt() << "\n";
               }
               continue;
             }else{
@@ -1295,7 +1293,8 @@ main(int argc,
             {
               if(preselMuon.cone_pt() >= hltPath_iter->getMinPt() &&
                  preselMuon.cone_pt()  < hltPath_iter->getMaxPt() &&
-                 selJet->pt()            > hltPath_iter->getMinJetPt())
+                 selJet->pt()          > hltPath_iter->getMinJetPt() &&
+                 preselMuon.pt()       > hltPath_iter->getMinRecoPt())
               {
                 isGoodMuonJetPair = true;
               }
@@ -1314,9 +1313,9 @@ main(int argc,
                            "mu cone pt " << preselMuon.cone_pt() << " "
                            "mu reco pt " << preselMuon.pt()      << " "
                            "mu eta " << preselMuon.eta()         << "\n"
-                           "Paired Jet pt " << sel_Jet_pt_mu     << " "
-                           "Paired Jet eta " << sel_Jet_eta_mu   << '\n'
-               ;
+                           "Min. Jet pt " << sel_Jet_pt_mu     << " "
+                           "Paired Jet eta " << sel_Jet_eta_mu   << " "
+		           "Min. lepton Reco pt " << hltPath_iter->getMinRecoPt() << '\n';
             }
             continue;
           }

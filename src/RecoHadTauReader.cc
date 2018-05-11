@@ -187,7 +187,7 @@ RecoHadTauReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_rawCombIso_dR05_, "", -1.);
     bai.setBranchAddress(hadTau_idAgainstElec_, branchName_idAgainstElec_);
     bai.setBranchAddress(hadTau_idAgainstMu_, branchName_idAgainstMu_);
-    bai.setBranchAddress(hadTau_filterBits_, ""); // branchName_filterBits_
+    bai.setBranchAddress(hadTau_filterBits_, branchName_filterBits_);
   }
 }
 

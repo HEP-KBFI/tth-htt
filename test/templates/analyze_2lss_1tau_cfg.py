@@ -9,7 +9,7 @@ process.fwliteInput = cms.PSet(
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
-
+ 
 process.fwliteOutput = cms.PSet(
     fileName = cms.string('analyze_2lss_1tau.root')
 )
@@ -42,7 +42,6 @@ process.analyze_2lss_1tau = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
     leptonChargeSelection = cms.string('SS'),
 
     hadTauSelection = cms.string('Tight|dR03mvaMedium'),
@@ -77,6 +76,7 @@ process.analyze_2lss_1tau = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False),
+    apply_hlt_filter = cms.bool(False),
     apply_hadTauFakeRateSF = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
@@ -106,6 +106,7 @@ process.analyze_2lss_1tau = cms.PSet(
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
+        requireGenMatching = cms.bool(False),
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),

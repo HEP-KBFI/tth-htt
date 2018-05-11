@@ -159,6 +159,6 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jetNDauChargedMVASel_, branchName_jetNDauChargedMVASel_, -1);
     bai.setBranchAddress(tightCharge_, branchName_tightCharge_);
     bai.setBranchAddress(charge_, branchName_charge_);
-    bai.setBranchAddress(filterBits_, ""); // branchName_filterBits_
+    bai.setBranchAddress(filterBits_, branchName_filterBits_);
   }
 }

@@ -42,7 +42,6 @@ process.analyze_2l_2tau = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
     leptonChargeSelection = cms.string('disabled'),
     #leptonChargeSelection = cms.string('SS'),
     #leptonChargeSelection = cms.string('OS'),
@@ -78,8 +77,7 @@ process.analyze_2l_2tau = cms.PSet(
         )
     ),
 
-    ##minNumJets = cms.int32(2),
-    minNumJets = cms.int32(1),
+    minNumJets = cms.int32(2),
 
     use_HIP_mitigation_bTag = cms.bool(False),
     use_HIP_mitigation_mediumMuonId = cms.bool(False),
@@ -89,6 +87,7 @@ process.analyze_2l_2tau = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False),
+    apply_hlt_filter = cms.bool(False),
     apply_hadTauFakeRateSF = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
@@ -111,6 +110,7 @@ process.analyze_2l_2tau = cms.PSet(
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
+        requireGenMatching = cms.bool(False),
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),

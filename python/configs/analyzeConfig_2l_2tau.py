@@ -47,7 +47,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                running_method, num_parallel_jobs, executable_addBackgrounds, executable_addBackgroundJetToTauFakes,
                histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacards",
                executable_add_syst_dcard = "addSystDatacards", verbose = False, dry_run = False, do_sync = False,
-               isDebug = False, rle_select = '', use_nonnominal = False):
+               isDebug = False, rle_select = '', use_nonnominal = False, hlt_filter = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2l_2tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
@@ -131,6 +131,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     self.select_rle_output = select_rle_output
     self.rle_select = rle_select
     self.use_nonnominal = use_nonnominal
+    self.hlt_filter = hlt_filter
 
     self.isBDTtraining = False
 
@@ -176,7 +177,6 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     lines.append("process.analyze_2l_2tau.leptonChargeSelection = cms.string('%s')" % jobOptions['lepton_chargeSelection'])
     lines.append("process.analyze_2l_2tau.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_2l_2tau.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
-    lines.append("process.analyze_2l_2tau.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))
     lines.append("process.analyze_2l_2tau.hadTauChargeSelection = cms.string('%s')" % jobOptions['hadTau_chargeSelection'])
     lines.append("process.analyze_2l_2tau.hadTauSelection = cms.string('%s')" % jobOptions['hadTau_selection'])
     lines.append("process.analyze_2l_2tau.apply_hadTauGenMatching = cms.bool(%s)" % (jobOptions['apply_hadTauGenMatching'] and jobOptions['is_mc']))
@@ -186,8 +186,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       if self.era == "2017":
         # TODO: update the FR file for 2017 analysis
         lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root')")
-        # CV: use data/MC corrections determined for dR03mvaLoose discriminator for 2016 data
-        fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
+        # CV: use data/MC corrections determined for dR03mvaVLoose discriminator for 2016 data
+        fitFunctionName = "jetToTauFakeRate/dR03mvaVLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
       else:
         raise ValueError("Invalid parameter 'era' = %s !!" % era)
       lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('%s')" % fitFunctionName)
@@ -222,9 +222,11 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     if self.do_sync:
       lines.append("process.analyze_2l_2tau.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
       lines.append("process.analyze_2l_2tau.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
+      lines.append("process.analyze_2l_2tau.syncNtuple.requireGenMatching = cms.bool(%s)" % jobOptions['syncRequireGenMatching'])
       lines.append("process.analyze_2l_2tau.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
     lines.append("process.analyze_2l_2tau.isDEBUG = cms.bool(%s)" % self.isDebug)
     lines.append("process.analyze_2l_2tau.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
+    lines.append("process.analyze_2l_2tau.apply_hlt_filter = cms.bool(%s)" % self.hlt_filter)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):
@@ -377,10 +379,12 @@ class analyzeConfig_2l_2tau(analyzeConfig):
 
                     syncOutput = ''
                     syncTree = ''
+                    syncRequireGenMatching = False
                     if self.do_sync:
                       if lepton_and_hadTau_selection_and_frWeight == 'Tight' and chargeSumSelection == 'OS':
                         syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
                         syncTree = 'syncTree_%s_SR' % self.channel.replace('_', '')
+                        syncRequireGenMatching = True
                       elif lepton_and_hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and chargeSumSelection == 'OS':
                         syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
                         syncTree = 'syncTree_%s_Fake' % self.channel.replace('_', '')
@@ -429,6 +433,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                       'syncOutput': syncOutput,
                       'syncTree' : syncTree,
                       'syncRLE' : syncRLE,
+                      'syncRequireGenMatching': syncRequireGenMatching,
                       'process_name_specific' : sample_info['process_name_specific'],
                     }
                     self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])

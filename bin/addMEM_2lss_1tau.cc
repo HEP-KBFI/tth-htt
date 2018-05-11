@@ -380,10 +380,7 @@ int main(int argc,
     );
     if(isDEBUG)
     {
-      for(std::size_t idxSelMuon = 0; idxSelMuon < selMuons.size(); ++idxSelMuon)
-      {
-        std::cout << "selMuon #" << idxSelMuon << ":\n" << (*selMuons[idxSelMuon]);
-      }
+      printCollection("selMuons", selMuons);
     }
 
     const std::vector<RecoElectron> electrons = electronReader->read();
@@ -397,10 +394,7 @@ int main(int argc,
     );
     if(isDEBUG)
     {
-      for (std::size_t idxSelElectron = 0; idxSelElectron < selElectrons.size(); ++idxSelElectron)
-      {
-        std::cout << "selElectron #" << idxSelElectron << ":\n" << (*selElectrons[idxSelElectron]);
-      }
+      printCollection("selElectrons", selElectrons);
     }
 
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
@@ -412,17 +406,9 @@ int main(int argc,
     const std::vector<const RecoHadTau *> selHadTaus      = selectObjects(
       hadTauSelection, preselHadTaus, fakeableHadTaus, tightHadTaus
     );
-    std::cout << "Hadronic taus:\n";
-    for(const RecoHadTau * preselHadTau: preselHadTaus)
-    {
-      std::cout << *preselHadTau;
-    }
     if(isDEBUG)
     {
-      for(std::size_t idxSelHadTau = 0; idxSelHadTau < selHadTaus.size(); ++idxSelHadTau)
-      {
-        std::cout << "selHadTau #" << idxSelHadTau << ":\n" << (*selHadTaus[idxSelHadTau]);
-      }
+      printCollection("selHadTaus", selHadTaus);
     }
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
@@ -505,11 +491,7 @@ int main(int argc,
             );
             if(isDEBUG)
             {
-              for(std::size_t idxSelHadTau = 0; idxSelHadTau < selHadTaus_mem.size(); ++idxSelHadTau)
-              {
-                std::cout << central_or_shift << ": selHadTau #" << idxSelHadTau << ":\n"
-                          << (*selHadTaus_mem[idxSelHadTau]);
-              }
+              printCollection(central_or_shift + " selHadTaus", selHadTaus_mem);
             }
 
             const std::vector<RecoJet> jets_mem = jetReader->read();
@@ -555,10 +537,7 @@ int main(int argc,
                             << " hadTau (charge = :"   << selHadTau -> charge() << ") "
                                                        << *(static_cast<const Particle *>(selHadTau))
                             << " MET:                " << met_mem << '\n';
-                  for(std::size_t idxJet = 0; idxJet < selJets_mem_cleaned.size(); ++idxJet)
-                  {
-                    std::cout << " jet #"   << idxJet << ": " << *(selJets_mem_cleaned[idxJet]);
-                  }
+                  printCollection("cleaned MEM jets", selJets_mem_cleaned);
 
                   MEMOutput_2lss_1tau memOutput_2lss_1tau;
                   if(dryRun)

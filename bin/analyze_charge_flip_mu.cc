@@ -42,6 +42,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
@@ -225,6 +226,8 @@ int main(int argc, char* argv[])
   inputTree->registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
+  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
+  preselHadTauSelector.set(hadTauSelection);
   RecoHadTauCollectionSelectorTight hadTauSelector(era);
   hadTauSelector.set(hadTauSelection);
 
@@ -649,12 +652,13 @@ int main(int argc, char* argv[])
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, selMuons, selElectrons);
+    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> selHadTaus = hadTauSelector(cleanedHadTaus);
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selMuons, selElectrons, selHadTaus);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, preselHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
@@ -761,11 +765,8 @@ int main(int argc, char* argv[])
       if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
       evtWeight *= eventInfo.pileupWeight;
       evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
-      for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
-	    jet != selJets.end(); ++jet ) {
-      	evtWeight *= (*jet)->BtagWeight();
-      }
-    }    
+      evtWeight *= get_BtagWeight(selJets);
+    }
 
    if ( isMC ) {
       dataToMCcorrectionInterface->setLeptons(
@@ -841,8 +842,8 @@ int main(int argc, char* argv[])
     
     double pt0, pt1;
     //std::cout << "Before " << selLepton_lead->pt() << ", " << selLepton_sublead->pt() << "   " << central_or_shift << std::endl;
-    pt0 = selLepton_lead->pt();
-    pt1 = selLepton_sublead->pt();
+    pt0 = selLepton_lead->cone_pt();
+    pt1 = selLepton_sublead->cone_pt();
     if(muon_option == kMuon_ESBarrel1Up)
     {
       if (etaL0 < 0.9) pt0 *= 1.02;

@@ -110,6 +110,35 @@ def generate_sbatch_lines(
     lines_sbatch.append("m.waitForJobs()")
     return lines_sbatch, num_jobs
 
+def is_file_ok(output_file_name, min_file_size = 20000, skipFileSizeCheck = False):
+  command = "%s %s" % (executable_rm, output_file_name)
+  output_file_size = os.stat(output_file_name).st_size
+  logging.info("output file %s already exists, size = %i" % (output_file_name, output_file_size))
+  if output_file_size > min_file_size or skipFileSizeCheck:
+    root_tfile = ROOT.TFile(output_file_name, "read")
+    if root_tfile.IsZombie():
+      logging.info("--> output file is corrupted, deleting file and resubmitting job")
+      run_cmd(command)
+    else:
+      # Let's open the file via bash as well to see if ROOT tries to recover the file
+      open_cmd = "root -b -l -q %s 2>&1 > /dev/null | grep 'trying to recover' | wc -l" % output_file_name
+      open_out = run_cmd(open_cmd)
+      if open_out.rstrip('\n') != '0':
+        logging.info("--> output file is probably corrupted, deleting file and resubmitting job")
+        command = "%s %s" % (executable_rm, output_file_name)
+        run_cmd(command)
+      else:
+        root_tfile.Close()
+        logging.info("--> skipping job because it has size greater than 20000")
+        return True
+    root_tfile.Close()
+  else:
+    logging.info(
+      "--> deleting output file and resubmitting job because it has size smaller %i" % min_file_size
+    )
+    run_cmd(command)
+  return False
+
 def generate_sbatch_line(
     executable,
     command_line_parameter,
@@ -123,32 +152,8 @@ def generate_sbatch_line(
     skipFileSizeCheck = False,
   ):
     if output_file_name and os.path.exists(output_file_name):
-        command = "%s %s" % (executable_rm, output_file_name)
-        output_file_size = os.stat(output_file_name).st_size
-        logging.info("output file %s already exists, size = %i" % (output_file_name, output_file_size))
-        if output_file_size > min_file_size or skipFileSizeCheck:
-            root_tfile = ROOT.TFile(output_file_name, "read")
-            if root_tfile.IsZombie():
-                logging.info("--> output file is corrupted, deleting file and resubmitting job")
-                run_cmd(command)
-            else:
-                # Let's open the file via bash as well to see if ROOT tries to recover the file
-                open_cmd = "root -b -l -q %s 2>&1 > /dev/null | grep 'trying to recover' | wc -l" % output_file_name
-                open_out = run_cmd(open_cmd)
-                if open_out.rstrip('\n') != '0':
-                    logging.info("--> output file is probably corrupted, deleting file and resubmitting job")
-                    command = "%s %s" % (executable_rm, output_file_name)
-                    run_cmd(command)
-                else:
-                    root_tfile.Close()
-                    logging.info("--> skipping job because it has size greater than 20000")
-                    return None
-            root_tfile.Close()
-        else:
-            logging.info(
-                "--> deleting output file and resubmitting job because it has size smaller %i" % min_file_size
-            )
-            run_cmd(command)
+        if is_file_ok(output_file_name, min_file_size, skipFileSizeCheck):
+          return None
 
         if log_file_name and os.path.exists(log_file_name):
             log_file = open(log_file_name)
@@ -209,6 +214,7 @@ def createScript_sbatch_hadd(
     pool_id       = '',
     verbose       = False,
     dry_run       = False,
+    max_input_files_per_job = 5,
   ):
     """Creates the python script necessary to submit 'hadd' jobs to the batch system
     """
@@ -227,6 +233,7 @@ def createScript_sbatch_hadd(
         pool_id          = pool_id,
         verbose          = verbose,
         dry_run          = dry_run,
+        max_input_files_per_job = max_input_files_per_job,
     )
     createFile(sbatch_script_file_name, sbatch_hadd_lines)
     return num_jobs
@@ -242,6 +249,7 @@ def generate_sbatch_lines_hadd(
     pool_id     = '',
     verbose     = False,
     dry_run     = False,
+    max_input_files_per_job = 5,
   ):
     template_vars = {
         'working_dir'             : working_dir,
@@ -250,7 +258,7 @@ def generate_sbatch_lines_hadd(
         'waitForJobs'             : waitForJobs,
         'auxDirName'              : auxDirName,
         'pool_id'                 : pool_id,
-        'max_input_files_per_job' : 5,
+        'max_input_files_per_job' : max_input_files_per_job,
         'script_file_name'        : script_file_name,
         'log_file_name'           : log_file_name,
         'verbose'                 : verbose,

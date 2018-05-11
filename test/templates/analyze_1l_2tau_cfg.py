@@ -39,7 +39,6 @@ process.analyze_1l_2tau = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(False),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
 
     hadTauSelection = cms.string('Tight|dR03mvaTight'),
     hadTauChargeSelection = cms.string('OS'),
@@ -76,6 +75,7 @@ process.analyze_1l_2tau = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(True),
+    apply_hlt_filter = cms.bool(False),
     apply_hadTauFakeRateSF = cms.bool(False),
     isBDTtraining = cms.bool(False),
 
@@ -111,6 +111,7 @@ process.analyze_1l_2tau = cms.PSet(
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
+        requireGenMatching = cms.bool(False),
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),

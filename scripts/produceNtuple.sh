@@ -34,6 +34,7 @@ FILES=$(python -c "from $SCRIPT_FILE import inputFiles; print(' '.join(inputFile
 EXECUTABLE=$(python -c "from $SCRIPT_FILE import executable; print(executable)")
 IS_MC=$(python -c "from $SCRIPT_FILE import isMC; print(isMC)")
 ERA=$(python -c "from $SCRIPT_FILE import era; print(era)")
+PILEUP=$(python -c "from $SCRIPT_FILE import pileup; print(pileup)")
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
 echo "Is MC? '$IS_MC'"
@@ -46,7 +47,7 @@ if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
 fi
 
 NANO_MODULES_DATA="absIso,tauIDLog_$ERA,jetSubstructureObservablesHTTv2,trigObjMatcher"
-NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,puWeight_$ERA,jetmetUncertainties$ERA"
+NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,puWeight_$ERA($PILEUP),jetmetUncertainties$ERA"
 if [ "$ERA" = "2016" ]; then
   NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_$ERA";
 elif [ "$ERA" == "2017" ]; then

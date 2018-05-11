@@ -56,13 +56,12 @@ process.analyze_3l = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
 
-    hadTauSelection = cms.string('Tight|dR03mvaMedium'),
+    hadTauSelection = cms.string('Tight|dR03mvaLoose'),
 
     chargeSumSelection = cms.string('OS'),
 
-    applyFakeRateWeights = cms.string("disabled"), # either "disabled", "3lepton", "4L" or "1tau"
+    applyFakeRateWeights = cms.string("disabled"), # either "disabled" or "3lepton"
     leptonFakeRateWeight = cms.PSet(
         inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2016_data.root"),
         histogramName_e = cms.string("FR_mva075_el_data_comb"),
@@ -78,6 +77,7 @@ process.analyze_3l = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(True),
+    apply_hlt_filter = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
 
@@ -100,6 +100,7 @@ process.analyze_3l = cms.PSet(
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
+        requireGenMatching = cms.bool(False),
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),

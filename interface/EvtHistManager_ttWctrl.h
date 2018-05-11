@@ -33,9 +33,6 @@ class EvtHistManager_ttWctrl
                  double mvaOutput_2lss_ttV,
                  double mvaOutput_2lss_ttbar,
                  double mvaDiscr_2lss,
-                 double mvaOutput_2lss_1tau_ttV,
-                 double mvaOutput_2lss_1tau_ttbar,
-                 int sumLeptonCharge,
                  double sumLeptonPt,
                  double evtWeight);
 
@@ -54,10 +51,6 @@ class EvtHistManager_ttWctrl
   TH1 * histogram_mvaOutput_2lss_ttbar_;
   TH1 * histogram_mvaDiscr_2lss_;
 
-  TH1 * histogram_mvaOutput_2lss_1tau_ttV_;
-  TH1 * histogram_mvaOutput_2lss_1tau_ttbar_;
-
-  TH1 * histogram_sumLeptonCharge_;
   TH1 * histogram_sumLeptonPt_;
 
   TH1 * histogram_EventCounter_;

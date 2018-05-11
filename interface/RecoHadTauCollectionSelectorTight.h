@@ -15,6 +15,8 @@ public:
                           bool set_selection_flags = true);
   ~RecoHadTauSelectorTight() {}
 
+  bool operator()(const RecoHadTau & hadTau) const;
+
   friend class RecoHadTauCollectionSelector<RecoHadTauSelectorTight>;
 
 protected:

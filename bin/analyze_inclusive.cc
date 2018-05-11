@@ -393,13 +393,7 @@ main(int argc,
     const double max_dr_jet = comp_max_dr_jet(selJets);
     const double mbb        = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[0]->p4()).mass() : -1.;
     const double mbb_loose  = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
-    const double btagWeight = std::accumulate(
-      selJets.begin(), selJets.end(), 1., [](double lhs,
-                                             const RecoJet * rhs) -> double
-      {
-        return lhs * rhs -> BtagWeight();
-      }
-    );
+    const double btagWeight = get_BtagWeight(selJets);
 
     snm->read(selJets);
     snm->read(avg_dr_jet, FloatVariableType::avg_dr_jet);
@@ -407,7 +401,7 @@ main(int argc,
     snm->read(btagWeight, FloatVariableType::bTagSF_weight);
     snm->read(mbb,        FloatVariableType::mbb);
     snm->read(mbb_loose,  FloatVariableType::mbb_loose);
-    snm->read(snm->placeholder_value, selBJets_medium.size(), selBJets_loose.size());
+    snm->read(false, selBJets_medium.size(), selBJets_loose.size());
 
 //--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();

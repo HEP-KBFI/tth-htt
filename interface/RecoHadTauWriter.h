@@ -97,7 +97,7 @@ protected:
   Float_t * hadTau_rawCombIso_dR05_;
   Int_t * hadTau_idAgainstElec_;
   Int_t * hadTau_idAgainstMu_;
-  Int_t * hadTau_filterBits_;
+  UInt_t * hadTau_filterBits_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoHadTauWriter_h

@@ -234,7 +234,7 @@ class ParticleWrapper(object):
     dr = math.sqrt(self.diff.eta ** 2 + self.diff.phi ** 2)
     return dr < self.dr_max
 
-  def print(self, branch_names_selection = []):
+  def printVars(self, branch_names_selection = []):
     '''Print a selection of variables and their differences in this collection
     :param branch_names_selection: list of strings, variables to be printed
     :return: None
@@ -1121,8 +1121,8 @@ for rle in rle_loop:
 #    continue
 
   print('RLE %s' % rle)
-#  evt.mu1.print(['pt', 'eta', 'phi', 'conept', 'leptonMVA', 'isfakeablesel', 'ismvasel'])
-  evt.mu1.print()
+#  evt.mu1.printVars(['pt', 'eta', 'phi', 'conept', 'leptonMVA', 'isfakeablesel', 'ismvasel'])
+  evt.mu1.printVars()
 #  evt.mu1.record()
   ##################################################################################################
 

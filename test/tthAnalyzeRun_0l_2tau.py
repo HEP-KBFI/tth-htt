@@ -5,9 +5,9 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
-# E.g.: ./tthAnalyzeRun_0l_2tau.py -v 2017Dec13 -mode VHbb -e 2017
+# E.g.: ./tthAnalyzeRun_0l_2tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'VHbb' ]
+mode_choices     = [ 'default' ]
 sys_choices      = [ 'central', 'full' ]
 systematics.full = systematics.an_common
 
@@ -15,6 +15,8 @@ parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_tau_id_wp("dR03mvaTight")
+parser.add_hlt_filter()
+parser.add_files_per_job()
 args = parser.parse_args()
 
 # Common arguments
@@ -33,6 +35,8 @@ sample_filter      = args.filter
 mode              = args.mode
 systematics_label = args.systematics
 tau_id_wp         = args.tau_id_wp
+hlt_filter        = args.hlt_filter
+files_per_job     = args.files_per_job
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -83,7 +87,7 @@ if __name__ == '__main__':
       hadTau_charge_selections              = [ "OS", "SS" ],
       applyFakeRateWeights                  = "2tau",
       central_or_shifts                     = central_or_shift,
-      max_files_per_job                     = 1,
+      max_files_per_job                     = files_per_job,
       era                                   = era,
       use_lumi                              = True,
       lumi                                  = lumi,
@@ -104,6 +108,7 @@ if __name__ == '__main__':
       verbose                               = idx_job_resubmission > 0,
       dry_run                               = dry_run,
       isDebug                               = debug,
+      hlt_filter                            = hlt_filter,
     )
 
     job_statistics = analysis.create()

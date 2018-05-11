@@ -56,7 +56,6 @@ process.analyze_4l = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
 
     chargeSumSelection = cms.string('OS'),
 
@@ -76,6 +75,7 @@ process.analyze_4l = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(True),
+    apply_hlt_filter = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
 
@@ -97,6 +97,7 @@ process.analyze_4l = cms.PSet(
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
+        requireGenMatching = cms.bool(False),
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),

@@ -5,21 +5,15 @@ from tthAnalysis.HiggsToTauTau.configs.prodNtupleConfig import prodNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
-#--------------------------------------------------------------------------------
-# NOTE: set mode flag to
-#   'all'                   : to produce the Ntuples from all samples
-#   'forBDTtraining_only'   : to produce the Ntuples only from the FastSim samples
-#   'forBDTtraining_except' : to produce the Ntuples from all but the FastSim samples
-#--------------------------------------------------------------------------------
-
 # E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
-mode_choices = [ 'all', 'forBDTtraining_only', 'forBDTtraining_except', 'sync' ]
+mode_choices = [ 'all', 'all_except_forBDTtraining' 'forBDTtraining', 'sync', 'leptonFR_sync' ]
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_nonnominal()
 parser.add_tau_id_wp()
+parser.add_files_per_job(20)
 parser.add_argument('-p', '--disable-preselection',
   dest = 'disable_preselection', action = 'store_false', default = True,
   help = 'R|Disable preselection (read this script for the list of cuts)',
@@ -41,9 +35,11 @@ sample_filter      = args.filter
 # Additional arguments
 mode           = args.mode
 use_nonnominal = args.original_central
+files_per_job  = args.files_per_job
 
 # Custom arguments
 preselection = args.disable_preselection
+pileup       = "/hdfs/local/karl/ttHPileupProduction/2017/2018May11_fullProduction/histograms"
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -53,6 +49,8 @@ version              = "%s_w%sPresel_%s_%s" % (
 
 if mode == 'sync':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017
+elif mode == 'leptonFR_sync':
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_leptonFR_sync import samples_2017
 else:
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017
 
@@ -64,28 +62,21 @@ else:
 for sample_key, sample_entry in samples.items():
   if mode == "all":
     sample_entry['use_it'] = True
-  elif mode in ["forBDTtraining_only", "forBDTtraining_except"]:
-    if sample_key in [
-      # list of FastSim samples
-    ]:
-      sample_entry["use_it"] = mode == "forBDTtraining_only"
-    else:
-      sample_entry["use_it"] = mode != "forBDTtraining_only"
-  elif mode == 'sync':
+  elif mode == 'forBDTtraining':
+    sample_entry['use_it'] = not sample_entry['use_it']
+  elif 'sync' in mode or mode == 'all_except_forBDTtraining':
     pass
   else:
     raise ValueError("Internal logic error")
 
-if mode in [ "all", "forBDTtraining_except", "sync" ]:
+if mode not in [ 'forBDTtraining' ]:
   leptonSelection   = 'Fakeable'
   hadTauSelection   = 'Fakeable'
-  hadTauWP          = 'dR03mvaLoose'
-  max_files_per_job = 1
+  hadTauWP          = 'dR03mvaVLoose'
 else:
   leptonSelection   = 'Loose'
   hadTauSelection   = 'Loose'
   hadTauWP          = 'dR03mvaVVLoose'
-  max_files_per_job = 1
 
 if preselection:
   preselection_cuts = {
@@ -132,7 +123,7 @@ if __name__ == '__main__':
       executable_prodNtuple = "produceNtuple",
       cfgFile_prodNtuple    = "produceNtuple_cfg.py",
       samples               = samples,
-      max_files_per_job     = 1,
+      max_files_per_job     = files_per_job,
       era                   = era,
       preselection_cuts     = preselection_cuts,
       leptonSelection       = leptonSelection,
@@ -141,6 +132,7 @@ if __name__ == '__main__':
       running_method        = "sbatch",
       version               = version,
       num_parallel_jobs     = 8,
+      pileup                = pileup,
       verbose               = resubmission_idx > 0,
       dry_run               = dry_run,
       isDebug               = debug,

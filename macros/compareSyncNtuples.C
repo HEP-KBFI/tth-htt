@@ -1,3 +1,4 @@
+
 /** \macro compareSyncNtuples.C
  *
  * Compare branches in synchronization Ntuples produced by different groups for ttH, H -> tautau analysis
@@ -7,8 +8,7 @@
  * \authors Thomas Strebler, LLR
  *          Christian Veelken, Tallinn
  *
- * (modified by Karl Ehatäht and Ram Krishna)
- * to execute the macro do =>  root -l ../macros/compareSyncNtuples.C++
+ * (modified by Karl Ehatäht)
  */
 
 #include <TFile.h>
@@ -74,61 +74,56 @@ struct
 NtupleMetaData
 {
   NtupleMetaData() = default;
-  NtupleMetaData(const std::string & inputFilePath_,
-                 const std::string & inputFileName_,
-                 const std::string & dirName_,
-                 const std::string & treeName_,
+  NtupleMetaData(const std::vector<std::string> & inputFileNames_,
                  const std::string & legendEntry_,
                  const std::string & selection_,
-                 const std::string & category_)
-  : inputFilePath(inputFilePath_)
-  , inputFileName(inputFileName_)
-  , dirName(dirName_)
-  , treeName(treeName_)
+                 const std::string & inputbase_dir_)
+  : inputFileNames(inputFileNames_)
   , legendEntry(legendEntry_)
   , selection(selection_)
-  , category(category_)
- {}
-  const std::string inputFilePath;
-  const std::string inputFileName;
-  const std::string dirName;
-  const std::string treeName;
+  , inputbase_dir(inputbase_dir_)
+  {
+    for(const std::string inputFileName: inputFileNames)
+    {
+      const std::string fullPathInputFile = inputbase_dir + "/" + inputFileName;
+      TFile * inputFile = TFile::Open(fullPathInputFile.c_str(), "read");
+      TList * fileKeys = inputFile->GetListOfKeys();
+      TIter it(fileKeys);
+      TKey * key = nullptr;
+      while((key = static_cast<TKey *>(it())))
+      {
+        const std::string className(key->GetClassName());
+        if(className == "TTree")
+        {
+          if(! treeNames.count(inputFileName))
+          {
+            treeNames[inputFileName] = {};
+          }
+          treeNames[inputFileName].push_back(key->GetName());
+        }
+      }
+      inputFile->Close();
+    }
+  }
+  const std::vector<std::string> inputFileNames;
+  std::map<std::string, std::vector<std::string>> treeNames;
   const std::string legendEntry;
   const std::string selection;
-  const std::string category;
+  const std::string inputbase_dir;
 };
 
 //-------------------------------------------------------------------------------
-/* NOTE: sync ntuples are constantly updated as new changes/bug fixes are implemented by the groups  */
-/*       see the link in the line below to get the latest files from all the groups:            */
-/*       https://gitlab.cern.ch/ttH_leptons/doc/blob/master/2017/synchronization_taus.md             */
 
+/* *************************** EDIT THIS ***************************************/
 
-const std::string base_dir      = "/home/" + _whoami() + "/sandbox/sync_2017/plots_Cornell_v4_vs_Tallinn_v14_vs_IHEP_v4/";
-const std::string inputbase_dir = "/home/" + _whoami() + "/sandbox/sync_2017/";
-
-
-
-// ------ UNCOMMENT THIS BLOCK FOR RUNNING ON INCLUSIVE CATEGORY (OBJECT SYNC) ------
-const std::string type = "object";
-const std::string channel_sel = "inclusive";
-const std::string tree_name = "syncTree";
-
-const std::map<std::string, std::map<std::string, NtupleMetaData>> ntupleMetadataMap = {
-  { "tth",
-    {
-//      { "LLR",     { inputbase_dir + "LLR/"     + type + "/", "syncNtuple_ttH_object_v5.root",     "", tree_name, "LLR",     "", channel_sel } },
-      { "Tallinn", { inputbase_dir + "Tallinn/" + type + "/", "sync_Tallinn_v14.root",             "", tree_name, "Tallinn", "", channel_sel } },
-      { "Cornell", { inputbase_dir + "Cornell/" + type + "/", "syncNtuple_object_cornell_v4.root", "", tree_name, "Cornell", "", channel_sel } },
-      { "IHEP",    { inputbase_dir + "Cornell/" + type + "/", "IHEP_ttHsyncV4.root",               "", tree_name, "IHEP",    "", channel_sel } },
-    }
-  }
+const std::string base_dir = "/home/" + _whoami() + "/sandbox/compare_syncNtuples/plots_Cornell_v9_vs_Tallinn_v22_vs_IHEP_v9_vs_LLR_v11/";
+const std::string inputbase_dir = "/home/" + _whoami() + "/sandbox/compare_syncNtuples/";
+const std::vector<NtupleMetaData> ntupleMetadataMap = {
+    { { "sync_LLR_object_v11.root",          "sync_LLR_event_v3.root"           }, "LLR",     "", inputbase_dir },
+    { { "sync_Tallinn_v22.root",             "sync_Tallinn_v22.root"            }, "Tallinn", "", inputbase_dir },
+    { { "syncNtuple_object_cornell_v9.root", "syncNtuple_event_cornell_v7.root" }, "Cornell", "", inputbase_dir },
+    { { "IHEP_ttHsyncV9.root",               "IHEP_EvtSync_V4.root"             }, "IHEP",    "", inputbase_dir },
 };
-// -----------------------------------
-
-
-
-
 
 //-------------------------------------------------------------------------------
 
@@ -145,21 +140,9 @@ TFile* openFile(const std::string& filePath, const std::string& fileName)
   return file;
 }
 
-TTree* loadTree(TFile* file, const std::string& treeName, const std::string & dirName = "")
+TTree* loadTree(TFile* file, const std::string& treeName)
 {
-  TTree* tree = nullptr;
-  if(dirName != "")
-  {
-    TDirectory * dir = dynamic_cast<TDirectory *>(file->Get(dirName.c_str()));
-    if(!dir)
-    {
-      std::cerr << "Failed to open subdirectory = " << dirName << " from file = " << file->GetName() << " --> aborting !!\n";
-      assert(0);
-    }
-    tree = dynamic_cast<TTree*>(dir->Get(treeName.data()));
-  }
-  else
-    tree = dynamic_cast<TTree*>(file->Get(treeName.data()));
+  TTree* tree = dynamic_cast<TTree*>(file->Get(treeName.data()));
 
   if ( !tree ) {
     std::cerr << "Failed to load tree = " << treeName << " from file = " << file->GetName() << " --> aborting !!" << std::endl;
@@ -267,16 +250,16 @@ TH1* compRatioHistogram(const std::string& ratioHistogramName, const TH1* numera
 }
 
 void showHistograms(double canvasSizeX, double canvasSizeY,
-		    TH1* histogram_ref, const std::string& legendEntry_ref,
-		    TH1* histogram2, const std::string& legendEntry2,
-		    TH1* histogram3, const std::string& legendEntry3,
-		    TH1* histogram4, const std::string& legendEntry4,
-		    TH1* histogram5, const std::string& legendEntry5,
-		    TH1* histogram6, const std::string& legendEntry6,
-		    const std::string& xAxisTitle, double xAxisOffset,
-		    bool useLogScale, double yMin, double yMax, const std::string& yAxisTitle, double yAxisOffset,
-		    double legendX0, double legendY0,
-		    const std::string& outputFilePath, const std::string& outputFileName)
+        TH1* histogram_ref, const std::string& legendEntry_ref,
+        TH1* histogram2, const std::string& legendEntry2,
+        TH1* histogram3, const std::string& legendEntry3,
+        TH1* histogram4, const std::string& legendEntry4,
+        TH1* histogram5, const std::string& legendEntry5,
+        TH1* histogram6, const std::string& legendEntry6,
+        const std::string& xAxisTitle, double xAxisOffset,
+        bool useLogScale, double yMin, double yMax, const std::string& yAxisTitle, double yAxisOffset,
+        double legendX0, double legendY0,
+        const std::string& outputFilePath, const std::string& outputFileName)
 {
   if(! histogram_ref) return;
 
@@ -523,26 +506,33 @@ void showHistograms(double canvasSizeX, double canvasSizeY,
 }
 //-------------------------------------------------------------------------------
 
-void compareSyncNtuples(const std::string & ref_str,
-                        const std::string & test_str,
-                        const std::string & sample_str)
+void compareSyncNtuples(const std::string & ref_name,
+                        const std::string & test_name,
+                        const std::string & ref_inputFileName,
+                        const std::string & test_inputFileName,
+                        const std::string & ref_selection,
+                        const std::string & test_selection,
+                        const std::string & treeName)
 {
   gROOT->SetBatch(true);
   gErrorIgnoreLevel = kWarning;
 
-  const NtupleMetaData & ref = ntupleMetadataMap.at(sample_str).at(ref_str);
-  const NtupleMetaData & test = ntupleMetadataMap.at(sample_str).at(test_str);
+  std::cout << "Plotting " << treeName << " between "
+            << ref_name << " (" << ref_inputFileName << ") and "
+            << test_name << " (" << test_inputFileName << ")\n"
+  ;
 
-  TFile* inputFile_ref = openFile(ref.inputFilePath, ref.inputFileName);
-  TTree* tree_ref = loadTree(inputFile_ref, ref.treeName, ref.dirName);
-  TFile* inputFile_test = openFile(test.inputFilePath, test.inputFileName);
-  TTree* tree_test = loadTree(inputFile_test, test.treeName, test.dirName);
+  TFile* inputFile_ref = openFile(inputbase_dir, ref_inputFileName);
+  TTree* tree_ref = loadTree(inputFile_ref, treeName);
+  TFile* inputFile_test = openFile(inputbase_dir, test_inputFileName);
+  TTree* tree_test = loadTree(inputFile_test, treeName);
 
-  const std::string outputFilePath = base_dir + "plots/" +
-                                     sample_str + "/" + ref.legendEntry + "_vs_" + test.legendEntry + "/" + test.category;
+  const std::string outputFilePath = base_dir + "/" + treeName + "/" + ref_name + "_vs_" + test_name;
   struct stat st = {0};
   if(stat(outputFilePath.c_str(), &st) == -1)
+  {
     _mkdir(outputFilePath.c_str());
+  }
 
   std::vector<branchEntryType*> branchesToCompare;
   branchesToCompare.push_back(new branchEntryType("n_presel_mu", "I", "", 20, -0.5, 19.5));
@@ -805,21 +795,21 @@ void compareSyncNtuples(const std::string & ref_str,
     std::cout << "plotting " << (*branch)->branchName_ << "..." << std::endl;
 
     branchEntryType* branch_ref = (*branch)->Clone("ref");
-    if(branch_ref->fillHistogram(tree_ref, ref.selection) < 0)
+    if(branch_ref->fillHistogram(tree_ref, ref_selection) < 0)
       branch_ref->histogram_ = nullptr;
     else
       normalizeHistogram(branch_ref->histogram_);
 
     branchEntryType* branch_test = (*branch)->Clone("test");
-    if(branch_test->fillHistogram(tree_test, test.selection) < 0)
+    if(branch_test->fillHistogram(tree_test, test_selection) < 0)
       branch_test->histogram_ = nullptr;
     else
       normalizeHistogram(branch_test->histogram_);
 
     std::string outputFileName = Form("compareSyncNtuples_%s.png", (*branch)->branchName_.data());
     showHistograms(800, 900,
-                   branch_ref->histogram_, ref.legendEntry,
-                   branch_test->histogram_, test.legendEntry,
+                   branch_ref->histogram_, ref_name,
+                   branch_test->histogram_, test_name,
                    NULL, "",
                    NULL, "",
                    NULL, "",
@@ -844,18 +834,34 @@ void compareSyncNtuples(const std::string & ref_str,
 
 void compareSyncNtuples()
 {
-  const std::string sample_str = "tth";
-  std::vector<std::string> keys;
-  for(const auto & kv: ntupleMetadataMap.at(sample_str))
+  for(std::size_t i = 0; i < ntupleMetadataMap.size(); ++i)
   {
-    keys.push_back(kv.first);
-  }
-  for(std::size_t i = 0; i < keys.size(); ++i)
-  {
-    for(std::size_t j = i + 1; j < keys.size(); ++j)
+    for(std::size_t j = i + 1; j < ntupleMetadataMap.size(); ++j)
     {
-      compareSyncNtuples(keys.at(i), keys.at(j), sample_str);
+      const NtupleMetaData & ref = ntupleMetadataMap[i];
+      const NtupleMetaData & test = ntupleMetadataMap[j];
+      assert(ref.inputFileNames.size() == test.inputFileNames.size());
+
+      for(std::size_t k = 0; k < ref.inputFileNames.size(); ++k)
+      {
+        const std::string ref_inputFileName = ref.inputFileNames[k];
+        const std::string test_inputFileName = test.inputFileNames[k];
+
+        for(const std::string & treeName: ref.treeNames.at(ref_inputFileName))
+        {
+          const std::vector<std::string> & test_treeNames = test.treeNames.at(test_inputFileName);
+          if(std::find(test_treeNames.cbegin(), test_treeNames.cend(), treeName) == test_treeNames.cend())
+          {
+            continue;
+          }
+          compareSyncNtuples(
+            ref.legendEntry, test.legendEntry,
+            ref_inputFileName, test_inputFileName,
+            ref.selection, test.selection,
+            treeName
+          );
+        }
+      }
     }
   }
 }
-

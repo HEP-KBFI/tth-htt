@@ -5,6 +5,15 @@ ALLOWED_CONDITION_KEYS = {
   'cat'  : 'sample_category',
 }
 
+def positive_int_type(value):
+  try:
+    value_int = int(value)
+  except ValueError:
+    raise argparse.ArgumentTypeError('Not an integer: %s' % value)
+  if value_int <= 0:
+    raise argparse.ArgumentTypeError('Must be a positive integer: %d' % value_int)
+  return value_int
+
 def condition_type(value):
   value_split = value.split(':')
   if len(value_split) != 2:
@@ -73,7 +82,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
              'R|Run addMEM without actually computing the MEM score',
     )
     self.add_argument('-r', '--resubmission-limit',
-      type = int, dest = 'resubmission_limit', metavar = 'number',
+      type = positive_int_type, dest = 'resubmission_limit', metavar = 'number',
       default = default_resubmission_limit, required = False,
       help = 'R|Maximum number of resubmissions',
     )
@@ -96,6 +105,12 @@ class tthAnalyzeParser(argparse.ArgumentParser):
     self.add_argument('-D', '--debug',
       dest = 'debug', action = 'store_true', default = False,
       help = 'R|Enable debugging flag in the analysis',
+    )
+
+  def add_files_per_job(self, files_per_job = 5):
+    self.add_argument('-j', '--files-per-job',
+      type = positive_int_type, dest = 'files_per_job', metavar = 'number', default = files_per_job,
+      help = 'R|Number of input files per job',
     )
 
   def add_modes(self, modes):
@@ -133,6 +148,12 @@ class tthAnalyzeParser(argparse.ArgumentParser):
     self.add_argument('-w', '--tau-id-wp',
       type = str, dest = 'tau_id_wp', metavar = 'WP', default = default_wp, required = False,
       help = 'R|Overwrite tau ID working point',
+    )
+
+  def add_hlt_filter(self):
+    self.add_argument('-H', '--hlt-filter',
+      dest = 'hlt_filter', action = 'store_true', default = False,
+      help = 'R|Apply HLT filter',
     )
 
   @staticmethod

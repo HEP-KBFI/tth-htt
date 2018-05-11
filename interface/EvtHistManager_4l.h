@@ -35,8 +35,6 @@ class EvtHistManager_4l
   getHistogram_EventCounter() const;
 
  private:
-  int era_;
-
   TH1 * histogram_numElectrons_;
   TH1 * histogram_numMuons_;
   TH1 * histogram_numJets_;

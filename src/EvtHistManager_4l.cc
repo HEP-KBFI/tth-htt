@@ -6,19 +6,7 @@
 
 EvtHistManager_4l::EvtHistManager_4l(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
-  , era_(-1)
-{
-  const std::string era_string = cfg.getParameter<std::string>("era");
-  if(era_string == "2017" )
-  {
-    era_ = kEra_2017;
-  }
-  else
-  {
-    throw cmsException(this)
-      << "Invalid Configuration parameter 'era' = " << era_string;
-  }
-}
+{}
 
 const TH1 *
 EvtHistManager_4l::getHistogram_EventCounter() const
