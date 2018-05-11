@@ -1527,9 +1527,9 @@ samples_2017["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017
   ("nof_files",                       21),
   ("nof_db_files",                    29),
   ("nof_events",                      0),
-  ("nof_tree_events",                 745004),
+  ("nof_tree_events",                 993804),
   ("nof_db_events",                   993804),
-  ("fsize_local",                     2641743883), # 2.64GB, avg file size 125.80MB
+  ("fsize_local",                     3522818144), # 3.52GB, avg file size 167.75MB
   ("fsize_db",                        77438656415), # 77.44GB, avg file size 2.67GB
   ("use_HIP_mitigation_bTag",         False),
   ("use_HIP_mitigation_mediumMuonId", False),
@@ -1543,7 +1543,7 @@ samples_2017["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Apr26/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/NanoProduction_v2_2018Apr26_TTTT_TuneCP5_13TeV-amcatnlo-pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/180426_013810"),
         ("selection", "*"),
-        ("blacklist", [1, 2, 3, 4, 5]),
+        ("blacklist", []),
       ]),
     ]
   ),
