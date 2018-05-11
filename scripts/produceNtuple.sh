@@ -15,7 +15,6 @@ test_exit_code () {
 SCRIPT="$1"
 SCRIPT_DIR=$(dirname "$SCRIPT")
 SCRIPT_BASE=$(basename "$SCRIPT")
-SCRIPT_FILE="${SCRIPT_BASE%.*}"
 SCRIPT_EXT="${SCRIPT_BASE##*.}"
 
 # Check if the file is indeed a Python script; file is unreliable, so let's check the extension
@@ -27,19 +26,16 @@ fi
 echo "Current working directory: `pwd`"
 
 # First we have to gather the full list of file names
-echo "Going to $SCRIPT_DIR"
-cd "$SCRIPT_DIR"
-echo "Parsing $SCRIPT_BASE"
-FILES=$(python -c "from $SCRIPT_FILE import inputFiles; print(' '.join(inputFiles))")
-EXECUTABLE=$(python -c "from $SCRIPT_FILE import executable; print(executable)")
-IS_MC=$(python -c "from $SCRIPT_FILE import isMC; print(isMC)")
-ERA=$(python -c "from $SCRIPT_FILE import era; print(era)")
-PILEUP=$(python -c "from $SCRIPT_FILE import pileup; print(pileup)")
+echo "Parsing $SCRIPT"
+FILES=$(python -c "execfile('$SCRIPT'); print(' '.join(inputFiles))")
+EXECUTABLE=$(python -c "execfile('$SCRIPT'); print(executable)")
+IS_MC=$(python -c "execfile('$SCRIPT'); print(isMC)")
+ERA=$(python -c "execfile('$SCRIPT'); print(era)")
+PILEUP=$(python -c "execfile('$SCRIPT'); print(pileup)")
+PROCESS_NAME=$(python -c "execfile('$SCRIPT'); print(process_name)")
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
 echo "Is MC? '$IS_MC'"
-echo "Going back to $OLDPWD"
-cd -
 
 if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   echo "Executable '$EXECUTABLE' not in \$PATH";
@@ -47,7 +43,7 @@ if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
 fi
 
 NANO_MODULES_DATA="absIso,tauIDLog_$ERA,jetSubstructureObservablesHTTv2,trigObjMatcher"
-NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,puWeight_$ERA($PILEUP),jetmetUncertainties$ERA"
+NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,puWeight_$ERA($PILEUP;$PROCESS_NAME),jetmetUncertainties$ERA"
 if [ "$ERA" = "2016" ]; then
   NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_$ERA";
 elif [ "$ERA" == "2017" ]; then
