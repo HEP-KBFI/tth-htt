@@ -40,7 +40,7 @@ files_per_job  = args.files_per_job
 # Custom arguments
 preselection = args.disable_preselection
 pileup       = os.path.join(
-  os.environ('CMSSW_BASE'), 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s.root' % era
+  os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s.root' % era
 )
 
 # Use the arguments
