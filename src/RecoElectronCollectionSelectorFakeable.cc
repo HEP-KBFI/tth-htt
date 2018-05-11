@@ -29,7 +29,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , binning_mvaTTH_({ 0.90 }) // F; Table 7 in AN2017_029_v5
   , min_jetPtRatio_({ 0.60, -1.e+3 }) // F; [*]
   , min_mvaIDraw_({ 0.50, -1.e+3 }) // F; [*]
-  , apply_conversionVeto_(false) // Table 7 in AN_2017_029_v5
+  , apply_conversionVeto_(true) // F (after Giovanni sync)
   , max_nLostHits_(0) // F
 {
   switch(era_)
