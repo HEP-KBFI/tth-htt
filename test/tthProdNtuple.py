@@ -39,7 +39,9 @@ files_per_job  = args.files_per_job
 
 # Custom arguments
 preselection = args.disable_preselection
-pileup       = "/hdfs/local/karl/ttHPileupProduction/2017/2018May11_fullProduction/histograms"
+pileup       = os.path.join(
+  os.environ('CMSSW_BASE'), 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s.root' % era
+)
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1

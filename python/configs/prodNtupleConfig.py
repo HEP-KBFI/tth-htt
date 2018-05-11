@@ -1,4 +1,4 @@
-import os, logging, uuid
+import os, logging, uuid, ROOT
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
@@ -9,6 +9,13 @@ DKEY_CFGS       = "cfgs"
 DKEY_NTUPLES    = "ntuples"
 DKEY_LOGS       = "logs"
 MAKEFILE_TARGET = "sbatch_prodNtuple"
+
+def get_pileup_histograms(pileup_filename):
+    pileup_file = ROOT.TFile.Open(pileup_filename, 'read')
+    keys = pileup_file.GetListOfKeys()
+    histogram_names = [ key.GetName() for key in keys if key.GetClassName().startswith('TH1') ]
+    pileup_file.Close()
+    return histogram_names
 
 class prodNtupleConfig:
     """Configuration metadata needed to run Ntuple production.
@@ -48,6 +55,10 @@ class prodNtupleConfig:
         self.pileup                = pileup
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
+
+        if not os.path.isfile(self.pileup):
+            raise ValueError('No such file: %s' % self.pileup)
+        self.pileup_histograms = get_pileup_histograms(self.pileup)
 
         self.executable = self.executable_nanoAOD
 
@@ -142,19 +153,13 @@ class prodNtupleConfig:
         if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
             raise ValueError("Not all input files have a unique base name: %s" % ', '.join(jobOptions['inputFiles']))
 
-        pileup_distribution = os.path.join(
-            self.pileup, jobOptions['process_name'], '%s.root' % jobOptions['process_name']
-        )
-        if not os.path.isfile(pileup_distribution) and jobOptions['is_mc']:
-            raise ValueError('Missing PU distribution file: %s' % pileup_distribution)
-
         lines.extend([
             "process.fwliteInput.fileNames                         = cms.vstring(%s)"  % inputFiles_prepended,
             "inputFiles = %s"   % jobOptions['inputFiles'],
             "executable = '%s'" % self.executable_prodNtuple,
             "isMC = %s" % str(jobOptions['is_mc']),
             "era = %s" % str(self.era),
-            "pileup = '%s'" % pileup_distribution if jobOptions['is_mc'] else '',
+            "pileup = '%s'" % self.pileup if jobOptions['is_mc'] else '',
             "process_name = '%s'" % jobOptions['process_name'],
         ])
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
@@ -238,6 +243,9 @@ class prodNtupleConfig:
 
             process_name = sample_info["process_name_specific"]
             is_mc = (sample_info["type"] == "mc")
+
+            if is_mc and process_name not in self.pileup_histograms:
+                raise ValueError("Missing PU distribution for %s in file %s" % (process_name, self.pileup))
 
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable, process_name))
 
