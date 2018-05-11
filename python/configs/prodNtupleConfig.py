@@ -145,7 +145,7 @@ class prodNtupleConfig:
         pileup_distribution = os.path.join(
             self.pileup, jobOptions['process_name'], '%s.root' % jobOptions['process_name']
         )
-        if not os.path.isfile(pileup_distribution):
+        if not os.path.isfile(pileup_distribution) and jobOptions['is_mc']:
             raise ValueError('Missing PU distribution file: %s' % pileup_distribution)
 
         lines.extend([
@@ -154,7 +154,7 @@ class prodNtupleConfig:
             "executable = '%s'" % self.executable_prodNtuple,
             "isMC = %s" % str(jobOptions['is_mc']),
             "era = %s" % str(self.era),
-            "pileup = '%s'" % pileup_distribution,
+            "pileup = '%s'" % pileup_distribution if jobOptions['is_mc'] else '',
         ])
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
