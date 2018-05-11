@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
-mode_choices = [ 'all', 'forBDTtraining', 'sync', 'leptonFR_sync' ]
+mode_choices = [ 'all', 'all_except_forBDTtraining' 'forBDTtraining', 'sync', 'leptonFR_sync' ]
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -62,15 +62,17 @@ else:
 for sample_key, sample_entry in samples.items():
   if mode == "all":
     sample_entry['use_it'] = True
-  elif 'sync' in mode:
+  elif mode == 'forBDTtraining':
+    sample_entry['use_it'] = not sample_entry['use_it']
+  elif 'sync' in mode or mode == 'all_except_forBDTtraining':
     pass
   else:
     raise ValueError("Internal logic error")
 
-if mode in [ "all", "sync", "leptonFR_sync" ]:
+if mode not in [ 'forBDTtraining' ]:
   leptonSelection   = 'Fakeable'
   hadTauSelection   = 'Fakeable'
-  hadTauWP          = 'dR03mvaLoose'
+  hadTauWP          = 'dR03mvaVLoose'
 else:
   leptonSelection   = 'Loose'
   hadTauSelection   = 'Loose'
