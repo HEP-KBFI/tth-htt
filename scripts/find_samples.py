@@ -585,7 +585,10 @@ if __name__ == '__main__':
       entry = das_query_results[dataset]
       entry['use_it'] = entry['dataset_access_type'] != 'INVALID'            and     \
                         entry['release_pass']                                and     \
-                        entry['specific_name'] != 'ttHJetTobb_M125_amcatnlo' and not \
+                        entry['specific_name'] not in [
+                            'ttHJetTobb_M125_amcatnlo',
+                            'ttHToNonbb_M125_powheg',
+                          ]                                                  and not \
         (
           entry['sample_category'] == 'TT' and entry['specific_name'].endswith('_PSweights')
         )
