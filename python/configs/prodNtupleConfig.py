@@ -277,7 +277,7 @@ class prodNtupleConfig:
                 self.logFiles_prodNtuple[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_LOGS], "produceNtuple_%s_%i.log" % (process_name, jobId)
                 )
-                drop_branches = sample_info["missing_from_superset"] if is_mc else []
+                drop_branches = sample_info["missing_from_superset"] if not is_mc else []
                 jobOptions = {
                     'inputFiles'                      : self.inputFiles[key_file],
                     'cfgFile_modified'                : self.cfgFiles_prodNtuple_modified[key_file],
