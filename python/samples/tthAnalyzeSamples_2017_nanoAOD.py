@@ -1481,7 +1481,7 @@ samples_2017["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-9
   ("fsize_db",                        465938496839), # 465.94GB, avg file size 2.13GB
   ("use_HIP_mitigation_bTag",         False),
   ("use_HIP_mitigation_mediumMuonId", False),
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        0.2118),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
