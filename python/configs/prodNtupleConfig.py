@@ -147,6 +147,7 @@ class prodNtupleConfig:
             "process.produceNtuple.branchName_genJets              = cms.string('GenJet')",
             "process.produceNtuple.isDEBUG                         = cms.bool(%s)"     % self.isDebug,
             "process.produceNtuple.useNonNominal                   = cms.bool(%s)"     % self.use_nonnominal,
+            "process.produceNtuple.drop_branches                   = cms.vstring(%s)"  % jobOptions['drop_branches'],
         ]
 
         inputFiles_prepended = map(lambda path: os.path.basename('%s_ii%s' % os.path.splitext(path)), jobOptions['inputFiles'])
@@ -276,6 +277,7 @@ class prodNtupleConfig:
                 self.logFiles_prodNtuple[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_LOGS], "produceNtuple_%s_%i.log" % (process_name, jobId)
                 )
+                drop_branches = sample_info["missing_from_superset"] if is_mc else []
                 jobOptions = {
                     'inputFiles'                      : self.inputFiles[key_file],
                     'cfgFile_modified'                : self.cfgFiles_prodNtuple_modified[key_file],
@@ -284,6 +286,7 @@ class prodNtupleConfig:
                     'is_mc'                           : is_mc,
                     'random_seed'                     : jobId,
                     'process_name'                    : process_name,
+                    'drop_branches'                   : drop_branches,
                 }
                 self.createCfg_prodNtuple(jobOptions)
 
