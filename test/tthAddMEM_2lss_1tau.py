@@ -24,6 +24,7 @@ parser.add_modes(mode_choices.keys())
 parser.add_sys(sys_choices)
 parser.add_nonnominal()
 parser.add_tau_id_wp()
+parser.add_use_home(False)
 parser.add_argument('-i', '--integration-points',
   type = str, dest = 'integration_points', metavar = 'choice',
   choices = integration_point_choices.keys(), default = None, required = False,
@@ -53,6 +54,7 @@ sample_filter      = args.filter
 mode              = args.mode
 systematics_label = args.systematics
 use_nonnominal    = args.original_central
+use_home          = args.use_home
 
 # Custom arguments
 integration_points   = args.integration_points
@@ -133,6 +135,7 @@ if __name__ == '__main__':
     central_or_shift         = central_or_shift,
     dry_run                  = dry_run,
     use_nonnominal           = use_nonnominal,
+    use_home                 = use_home,
   )
 
   goodToGo = addMEMProduction.create()

@@ -22,6 +22,7 @@ def createScript_sbatch(
     job_template_file = 'sbatch-node.sh.template',
     dry_run           = False,
     skipFileSizeCheck = False,
+    use_home          = True,
   ):
     """Creates the python script necessary to submit analysis and/or Ntuple production jobs to the batch system
     """
@@ -49,6 +50,7 @@ def createScript_sbatch(
         job_template_file       = job_template_file,
         dry_run                 = dry_run,
         skipFileSizeCheck       = skipFileSizeCheck,
+        use_home                = use_home,
     )
     createFile(sbatch_script_file_name, sbatch_analyze_lines)
     return num_jobs
@@ -69,13 +71,15 @@ def generate_sbatch_lines(
     job_template_file = 'sbatch-node.sh.template',
     dry_run           = False,
     skipFileSizeCheck = False,
+    use_home          = True,
   ):
     if not pool_id:
         raise ValueError('pool_id is empty')
     lines_sbatch = [
         "from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager",
         "",
-        "m = sbatchManager('%s', verbose = %s, dry_run = %s)" % (pool_id, verbose, dry_run),
+        "m = sbatchManager('%s', verbose = %s, dry_run = %s, use_home = %s)" % \
+          (pool_id, verbose, dry_run, use_home),
         "m.setWorkingDir('%s')"                 % working_dir,
         "m.setcmssw_base_dir('%s')"             % cmssw_base_dir,
         "m.log_completion = %s"                 % verbose,
@@ -207,14 +211,15 @@ def createScript_sbatch_hadd(
     input_file_names,
     output_file_name,
     script_file_name,
-    log_file_name = None,
-    working_dir   = None,
-    waitForJobs   = True,
-    auxDirName    = '',
-    pool_id       = '',
-    verbose       = False,
-    dry_run       = False,
+    log_file_name           = None,
+    working_dir             = None,
+    waitForJobs             = True,
+    auxDirName              = '',
+    pool_id                 = '',
+    verbose                 = False,
+    dry_run                 = False,
     max_input_files_per_job = 5,
+    use_home                = True,
   ):
     """Creates the python script necessary to submit 'hadd' jobs to the batch system
     """
@@ -223,17 +228,18 @@ def createScript_sbatch_hadd(
     if not pool_id:
         raise ValueError('pool_id is empty')
     sbatch_hadd_lines, num_jobs = generate_sbatch_lines_hadd(
-        input_file_names = input_file_names,
-        output_file_name = output_file_name,
-        script_file_name = script_file_name,
-        log_file_name    = log_file_name,
-        working_dir      = working_dir,
-        waitForJobs      = waitForJobs,
-        auxDirName       = auxDirName,
-        pool_id          = pool_id,
-        verbose          = verbose,
-        dry_run          = dry_run,
+        input_file_names        = input_file_names,
+        output_file_name        = output_file_name,
+        script_file_name        = script_file_name,
+        log_file_name           = log_file_name,
+        working_dir             = working_dir,
+        waitForJobs             = waitForJobs,
+        auxDirName              = auxDirName,
+        pool_id                 = pool_id,
+        verbose                 = verbose,
+        dry_run                 = dry_run,
         max_input_files_per_job = max_input_files_per_job,
+        use_home                = use_home,
     )
     createFile(sbatch_script_file_name, sbatch_hadd_lines)
     return num_jobs
@@ -244,12 +250,13 @@ def generate_sbatch_lines_hadd(
     script_file_name,
     log_file_name,
     working_dir,
-    waitForJobs = True,
-    auxDirName  = '',
-    pool_id     = '',
-    verbose     = False,
-    dry_run     = False,
+    waitForJobs             = True,
+    auxDirName              = '',
+    pool_id                 = '',
+    verbose                 = False,
+    dry_run                 = False,
     max_input_files_per_job = 5,
+    use_home                = True,
   ):
     template_vars = {
         'working_dir'             : working_dir,
@@ -263,6 +270,7 @@ def generate_sbatch_lines_hadd(
         'log_file_name'           : log_file_name,
         'verbose'                 : verbose,
         'dry_run'                 : dry_run,
+        'use_home'                : use_home,
     }
     if not pool_id:
         raise ValueError('pool_id is empty')
@@ -270,7 +278,7 @@ def generate_sbatch_lines_hadd(
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 from tthAnalysis.HiggsToTauTau.ClusterHistogramAggregator import ClusterHistogramAggregator
 
-m = sbatchManager('{{pool_id}}', verbose = {{verbose}}, dry_run = {{dry_run}})
+m = sbatchManager('{{pool_id}}', verbose = {{verbose}}, dry_run = {{dry_run}}, use_home = {{use_home}})
 m.setWorkingDir('{{working_dir}}')
 m.log_completion = {{verbose}}
 

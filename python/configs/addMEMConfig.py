@@ -31,7 +31,7 @@ class addMEMConfig:
     def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, check_input_files,
                  running_method, max_files_per_job, mem_integrations_per_job, max_mem_integrations,
                  num_parallel_jobs, leptonSelection, hadTauSelection, lowIntegrationPoints, dry_run,
-                 use_nonnominal, channel, pool_id = ''):
+                 use_nonnominal, use_home, channel, pool_id = ''):
 
         self.treeName = treeName
         self.outputDir = outputDir
@@ -69,6 +69,7 @@ class addMEMConfig:
         self.num_parallel_jobs = num_parallel_jobs
         self.dry_run = dry_run
         self.use_nonnominal = use_nonnominal
+        self.use_home = use_home
         self.pool_id = pool_id if pool_id else uuid.uuid4()
 
         self.workingDir = os.getcwd()
@@ -132,6 +133,7 @@ class addMEMConfig:
             max_num_jobs            = 100000000, # it's really silly to limit the number of jobs; use an enormous number as the ,,fix''
             cvmfs_error_log         = self.cvmfs_error_log,
             pool_id                 = self.pool_id,
+            use_home                = self.use_home,
         )
 
     def addToMakefile_addMEM(self, lines_makefile):
@@ -188,6 +190,7 @@ class addMEMConfig:
                 waitForJobs             = False,
                 auxDirName              = sbatch_hadd_dir,
                 pool_id                 = self.pool_id,
+                use_home                = self.use_home,
             )
 
             lines_makefile.append("%s: %s" % (hadd_out, " ".join(hadd_in_files)))

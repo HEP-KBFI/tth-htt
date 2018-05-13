@@ -34,7 +34,7 @@ class prodNtupleConfig:
                  cfgFile_prodNtuple, samples, max_files_per_job, era, preselection_cuts,
                  leptonSelection, hadTauSelection, check_input_files, running_method,
                  version, num_parallel_jobs, pileup, pool_id = '', verbose = False, dry_run = False,
-                 isDebug = False, use_nonnominal = False):
+                 isDebug = False, use_nonnominal = False, use_home = False):
 
         self.configDir             = configDir
         self.outputDir             = outputDir
@@ -52,6 +52,7 @@ class prodNtupleConfig:
         self.dry_run               = dry_run
         self.isDebug               = isDebug
         self.use_nonnominal        = use_nonnominal
+        self.use_home              = use_home
         self.pileup                = pileup
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
@@ -185,6 +186,7 @@ class prodNtupleConfig:
             verbose                 = self.verbose,
             job_template_file       = 'sbatch-node.produce.sh.template',
             dry_run                 = self.dry_run,
+            use_home                = self.use_home,
         )
         return num_jobs
 

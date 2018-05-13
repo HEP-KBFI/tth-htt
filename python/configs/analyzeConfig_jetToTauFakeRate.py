@@ -22,10 +22,11 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
                jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selection_denominator,
                hadTau_selections_numerator, absEtaBins, ptBins, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-               executable_comp_jetToTauFakeRate, verbose = False, dry_run = False, isDebug = False):
+               executable_comp_jetToTauFakeRate, verbose = False, dry_run = False, isDebug = False,
+               use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "jetToTauFakeRate", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      [], verbose = verbose, dry_run = dry_run, isDebug = isDebug)
+      [], verbose = verbose, dry_run = dry_run, isDebug = isDebug, use_home = use_home)
 
     self.samples = samples
 

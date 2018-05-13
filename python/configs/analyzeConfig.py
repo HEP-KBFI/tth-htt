@@ -67,6 +67,7 @@ class analyzeConfig:
                  do_sync = False,
                  verbose = False,
                  dry_run = False,
+                 use_home = True,
                  isDebug = False,
                  template_dir = None):
 
@@ -102,6 +103,7 @@ class analyzeConfig:
         self.executable_make_plots_mcClosure = executable_make_plots_mcClosure
         self.verbose = verbose
         self.dry_run = dry_run
+        self.use_home = use_home
         self.isDebug = isDebug
 
         self.workingDir = os.getcwd()
@@ -424,6 +426,7 @@ class analyzeConfig:
             verbose = self.verbose,
             dry_run = self.dry_run,
             skipFileSizeCheck = skipFileSizeCheck,
+            use_home = self.use_home,
         )
         return num_jobs
 
@@ -460,7 +463,7 @@ class analyzeConfig:
         sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], self.channel, hadd_stage_name) if self.dirs[DKEY_HADD_RT] else ''
         self.num_jobs['hadd'] += tools_createScript_sbatch_hadd(
             sbatch_hadd_file, inputFiles, outputFile, scriptFile, logFile, self.workingDir, auxDirName = sbatch_hadd_dir,
-            pool_id = uuid.uuid4(), verbose = self.verbose, dry_run = self.dry_run,
+            pool_id = uuid.uuid4(), verbose = self.verbose, dry_run = self.dry_run, use_home = self.use_home,
         )
         return sbatch_hadd_file
 

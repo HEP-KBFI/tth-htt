@@ -32,10 +32,11 @@ class syncNtupleConfig:
 
   def __init__(self, config_dir, output_dir, output_filename, version, era, channels, dry_run,
                resubmission_limit, disable_resubmission, check_input_files, isDebug, rle_select,
-               no_mem, use_nonnominal, tau_id_wp):
+               no_mem, use_nonnominal, tau_id_wp, use_home):
 
     self.dry_run           = dry_run
     self.check_input_files = check_input_files
+    self.use_home          = use_home
     project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau')
     executable_pattern = os.path.join(project_dir, 'test', 'tthAnalyzeRun_%s.py')
 
@@ -63,6 +64,8 @@ class syncNtupleConfig:
       additional_args += " -S '%s'" % rle_select
     if use_nonnominal:
       additional_args += " -O"
+    if use_home:
+      additional_args += " -y"
 
     inclusive_args = '-v %s -e %s' % (version, era)
     if no_mem:
@@ -116,6 +119,7 @@ class syncNtupleConfig:
       pool_id                 = uuid.uuid4(),
       verbose                 = False,
       dry_run                 = self.dry_run,
+      use_home                = self.use_home,
     )
     logging.info("Generated hadd config file: %s" % self.hadd_script_path)
 
