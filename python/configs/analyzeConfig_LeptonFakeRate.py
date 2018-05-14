@@ -125,12 +125,12 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgrounds_recursively, executable_addBackgrounds_LeptonFakeRate,
                executable_prep_dcard, executable_comp_LeptonFakeRate, select_rle_output = False,
-               verbose = False, dry_run = False, isDebug = False):
+               verbose = False, dry_run = False, isDebug = False, use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "LeptonFakeRate", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       [ numerator_histogram, denominator_histogram ],
       executable_prep_dcard = executable_prep_dcard,
-      verbose = verbose, dry_run = dry_run, isDebug = isDebug)
+      verbose = verbose, dry_run = dry_run, isDebug = isDebug, use_home = use_home)
 
     self.cmssw_base_dir_combine = cmssw_base_dir_combine
     if not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \

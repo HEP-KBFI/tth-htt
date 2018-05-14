@@ -42,6 +42,7 @@ process.produceNtuple = cms.PSet(
 
     selEventsFileName_input = cms.string(''),
 
+    drop_branches = cms.vstring(),
     copy_histograms = cms.vstring(
         "Count",
         "CountFullWeighted",

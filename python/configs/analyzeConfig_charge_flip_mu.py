@@ -13,10 +13,10 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
   def __init__(self, configDir, outputDir, executable_analyze, samples, lepton_selections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                histograms_to_fit = [], select_rle_output = False, executable_prep_dcard="prepareDatacard",
-               verbose = False, dry_run = False, isDebug = False):
+               verbose = False, dry_run = False, isDebug = False, use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "charge_flip", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      histograms_to_fit, verbose = verbose, dry_run = dry_run, isDebug = isDebug)
+      histograms_to_fit, verbose = verbose, dry_run = dry_run, isDebug = isDebug, use_home = use_home)
 
     self.samples = samples
 

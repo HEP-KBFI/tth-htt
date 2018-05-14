@@ -108,7 +108,7 @@ class sbatchManager:
          prio - ? (10min?) time limit, available immediately
     """
 
-    def __init__(self, pool_id = '', verbose = False, dry_run = False):
+    def __init__(self, pool_id = '', verbose = False, dry_run = False, use_home = True):
         self.max_pool_id_length = 256
         if not pool_id:
             raise ValueError("Parameter 'pool_id' not specified!")
@@ -133,6 +133,7 @@ class sbatchManager:
         self.datetime       = datetime.datetime.now().strftime('%m/%d/%y-%H:%M:%S')
         self.dry_run        = dry_run
         self.max_mem        = '1800M'
+        self.use_home       = use_home
 
         logging.basicConfig(
             stream = sys.stdout,
@@ -376,11 +377,13 @@ class sbatchManager:
             'log_exec' : executable_log_file,
         }
 
-    def get_job_dir(self, use_home = True):
-        if use_home:
+    def get_job_dir(self):
+        if self.use_home:
             prefix = os.path.join('/home', getpass.getuser(), 'jobs')
         else:
-            prefix = os.path.join('/scratch2', getpass.getuser())
+            prefix = os.path.join('/scratch', getpass.getuser())
+            if not os.path.isdir(prefix):
+                run_cmd('/scratch/mkscratch')
         job_dir = os.path.join(
             prefix, "%s_%s" % (self.analysisName, datetime.date.today().isoformat()),
         )

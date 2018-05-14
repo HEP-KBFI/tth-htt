@@ -34,7 +34,7 @@ class prodNtupleConfig:
                  cfgFile_prodNtuple, samples, max_files_per_job, era, preselection_cuts,
                  leptonSelection, hadTauSelection, check_input_files, running_method,
                  version, num_parallel_jobs, pileup, pool_id = '', verbose = False, dry_run = False,
-                 isDebug = False, use_nonnominal = False):
+                 isDebug = False, use_nonnominal = False, use_home = False):
 
         self.configDir             = configDir
         self.outputDir             = outputDir
@@ -52,6 +52,7 @@ class prodNtupleConfig:
         self.dry_run               = dry_run
         self.isDebug               = isDebug
         self.use_nonnominal        = use_nonnominal
+        self.use_home              = use_home
         self.pileup                = pileup
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
@@ -147,6 +148,7 @@ class prodNtupleConfig:
             "process.produceNtuple.branchName_genJets              = cms.string('GenJet')",
             "process.produceNtuple.isDEBUG                         = cms.bool(%s)"     % self.isDebug,
             "process.produceNtuple.useNonNominal                   = cms.bool(%s)"     % self.use_nonnominal,
+            "process.produceNtuple.drop_branches                   = cms.vstring(%s)"  % jobOptions['drop_branches'],
         ]
 
         inputFiles_prepended = map(lambda path: os.path.basename('%s_ii%s' % os.path.splitext(path)), jobOptions['inputFiles'])
@@ -184,6 +186,7 @@ class prodNtupleConfig:
             verbose                 = self.verbose,
             job_template_file       = 'sbatch-node.produce.sh.template',
             dry_run                 = self.dry_run,
+            use_home                = self.use_home,
         )
         return num_jobs
 
@@ -276,6 +279,7 @@ class prodNtupleConfig:
                 self.logFiles_prodNtuple[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_LOGS], "produceNtuple_%s_%i.log" % (process_name, jobId)
                 )
+                drop_branches = sample_info["missing_from_superset"] if not is_mc else []
                 jobOptions = {
                     'inputFiles'                      : self.inputFiles[key_file],
                     'cfgFile_modified'                : self.cfgFiles_prodNtuple_modified[key_file],
@@ -284,6 +288,7 @@ class prodNtupleConfig:
                     'is_mc'                           : is_mc,
                     'random_seed'                     : jobId,
                     'process_name'                    : process_name,
+                    'drop_branches'                   : drop_branches,
                 }
                 self.createCfg_prodNtuple(jobOptions)
 

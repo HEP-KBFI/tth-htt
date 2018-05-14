@@ -7,10 +7,10 @@ from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg
 class analyzeConfig_inclusive(analyzeConfig):
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, era,
                output_tree, check_input_files, running_method, verbose, dry_run, isDebug,
-               rle_select, hadTauSelection_tauIdWP, use_nonnominal = False):
+               rle_select, hadTauSelection_tauIdWP, use_nonnominal = False, use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "inclusive", [ ],
                            1, era, False, -1., False, running_method, 1, [], verbose = verbose,
-                           dry_run = dry_run, isDebug = isDebug, do_sync = True)
+                           dry_run = dry_run, isDebug = isDebug, do_sync = True, use_home = use_home)
     self.cfgFile_analyze = cfgFile_analyze
     self.samples = samples
     self.output_tree = output_tree
