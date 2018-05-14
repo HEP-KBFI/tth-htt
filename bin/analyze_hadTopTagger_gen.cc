@@ -223,6 +223,7 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 			 std::vector<const RecoLepton*> selLeptons,
 			 std::vector<const RecoElectron*> fakeableElectrons,
 			 std::vector<const RecoMuon*> fakeableMuons,
+			 std::vector<const RecoHadTau*> fakeableHadTaus,
 			 RecoJetSelectorHTTv2 jetSelectorHTTv2) {
 
   const GenParticle *genTopQuark = genParticle[kTLVGenTop];
@@ -435,7 +436,7 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 		      if (genMatchingTop[kGenMatchedWJet2]) kGenMatchingScore++;
 
 		      sPrint += Form("  combination: gen_b=subjet%i & gen_W1=subjet%i & gen_W2=subjet%i, \t dR: %f, %f, %f, tot %f, \t isGenMatched: %i, %i, %i (totalScore %i)\n",
-				     i1,i2,i3, dR_1,dR_2,dR_3, dR_tot,
+				     i1+1,i2+1,i3+1, dR_1,dR_2,dR_3, dR_tot,
 				     genMatchingTop[kGenMatchedBJet],genMatchingTop[kGenMatchedWJet1],genMatchingTop[kGenMatchedWJet2], 
 				     kGenMatchingScore);
 		      if ( (kGenMatchingScore > 0) &&
@@ -713,27 +714,27 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 			}
 		      }
 
-		      sPrint += Form("\t    fakeableHadTaus size %zu\n",fakeableMuons.size());
-		      bool isfakeableMuonMatched = false;
-		      for ( std::vector<const RecoMuon*>::const_iterator fakeableMuon = fakeableMuons.begin(); fakeableMuon != fakeableMuons.end(); ++fakeableMuon ) {
-			sPrint += Form("\t\tfakeableMuons:      pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g,",
-				       (*fakeableMuon)->pt(), (*fakeableMuon)->eta(), (*fakeableMuon)->phi(), (*fakeableMuon)->mass());
+		      sPrint += Form("\t    fakeableHadTaus size %zu\n",fakeableHadTaus.size());
+		      bool isfakeableHadTauMatched = false;
+		      for ( std::vector<const RecoHadTau*>::const_iterator fakeableHadTau = fakeableHadTaus.begin(); fakeableHadTau != fakeableHadTaus.end(); ++fakeableHadTau ) {
+			sPrint += Form("\t\tfakeableHadTaus:      pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g,",
+				       (*fakeableHadTau)->pt(), (*fakeableHadTau)->eta(), (*fakeableHadTau)->phi(), (*fakeableHadTau)->mass());
 
-			if (deltaR((*fakeableMuon)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.3) {
+			if (deltaR((*fakeableHadTau)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.3) {
 			  sPrint += Form("\t MATCHES with gen%s (dR<0.3)",sGen.Data());
-			  isfakeableMuonMatched = true;
+			  isfakeableHadTauMatched = true;
 			}
 			sPrint += "\n";
 		      }
 
-		      if ( isfakeableMuonMatched ) {
+		      if ( isfakeableHadTauMatched ) {
 			if ( !isGenJetMatched ) {
-			  cutFlowTable_2lss_1tau_HTTv2.update(Form("HTTv2: HTTv2 unmatched gen%s MATCHES fakeableMuon ",sGen.Data()));
+			  cutFlowTable_2lss_1tau_HTTv2.update(Form("HTTv2: HTTv2 unmatched gen%s MATCHES fakeableHadTau ",sGen.Data()));
 			}
 		      } else {
-			sPrint += "\t       UNMATCHED fakeableMuon \n";
+			sPrint += "\t       UNMATCHED fakeableHadTau \n";
 			if ( !isGenJetMatched ) {
-			  cutFlowTable_2lss_1tau_HTTv2.update(Form("HTTv2: HTTv2 unmatched gen%s UNMATCHED fakeableMuon",sGen.Data()));
+			  cutFlowTable_2lss_1tau_HTTv2.update(Form("HTTv2: HTTv2 unmatched gen%s UNMATCHED fakeableHadTau",sGen.Data()));
 			}
 		      }
 
@@ -1310,9 +1311,7 @@ int main(int argc, char* argv[])
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, preselHadTaus);
-    //std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selLeptons, fakeableElectrons, fakeableMuons);
-    //std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selLeptons);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, fakeableHadTaus);
     // selLeptons for BDT training is loose, and loose>fakeable
     // this has no effect on datacards making as there selLeptons are tight and tight<fakeable
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
@@ -2006,7 +2005,7 @@ int main(int argc, char* argv[])
     sPrint += Form("selLeptons.size:%zu\n",selLeptons.size());
     sPrint += Form("fakeableElectrons.size:%zu\n",fakeableElectrons.size());
     sPrint += Form("fakeableMuons.size:%zu\n",fakeableMuons.size());
-
+    sPrint += Form("fakeableHadTau.size:%zu\n",fakeableHadTaus.size());
 
     if (genBJetFromTop     && genWJetFromTop_lead     && genWJetFromTop_sublead && 0==1) {
       sPrint += "genTopInfo::\n";
@@ -2110,7 +2109,7 @@ int main(int argc, char* argv[])
       genParticle[kTLVGenWJet1] = genWJetFromTop_lead;
       genParticle[kTLVGenWJet2] = genWJetFromTop_sublead;
 
-      CheckGenHTTv2JetMatching(kGenTop, genParticle, jet_ptrsHTTv2, selJets, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons, jetSelectorHTTv2);
+      CheckGenHTTv2JetMatching(kGenTop, genParticle, jet_ptrsHTTv2, selJets, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons, fakeableHadTaus, jetSelectorHTTv2);
     }
     if (genBJetFromAntiTop     && genWJetFromAntiTop_lead     && genWJetFromAntiTop_sublead) {
       genParticle[kTLVGenTop]   = genAntiTopQuark;
@@ -2118,7 +2117,7 @@ int main(int argc, char* argv[])
       genParticle[kTLVGenWJet1] = genWJetFromAntiTop_lead;
       genParticle[kTLVGenWJet2] = genWJetFromAntiTop_sublead;
 
-      CheckGenHTTv2JetMatching(kGenAntiTop, genParticle, jet_ptrsHTTv2, selJets, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons, jetSelectorHTTv2);
+      CheckGenHTTv2JetMatching(kGenAntiTop, genParticle, jet_ptrsHTTv2, selJets, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons, fakeableHadTaus, jetSelectorHTTv2);
     }
 
     if (isCat1_Gen == 2) cutFlowTable_2lss_1tau_HTTv2.update("Both genTop and genAntiTop fall in CatI");
