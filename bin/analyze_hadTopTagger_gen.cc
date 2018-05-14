@@ -377,7 +377,6 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 		sPrint += Form("HTTv2_subjet3: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g, \t bCSV: %f\n",
 			       recSubJet[2]->pt(), recSubJet[2]->eta(), recSubJet[2]->phi(), recSubJet[2]->mass(), recSubJet[2]->BtagCSV());
 
-<<<<<<< HEAD
 		// it returns the gen-triplets organized in top/anti-top
 		std::map<int, Particle::LorentzVector> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenMode);
 		// using genWJets or genQuarkFromTop does not make any difference
@@ -396,8 +395,7 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 		*/
       
 		
-	       
-                for (int i1=0; i1 < 3; i1++) {
+		for (int i1=0; i1 < 3; i1++) {
 		  for (int i2=0; i2 < 3; i2++) {
 		    if (i2==i1) continue;
 		    for (int i3=0; i3 < 3; i3++) {
@@ -418,14 +416,15 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 		    selWJet2 = selTmp;
 		    }*/
 
-<<<<<<< HEAD
 
 		      std::map<int, bool> genMatchingTop     = isGenMatchedJetTriplet(
 				      selBJet, selWJet1, selWJet2,
 				      genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
 				      kGenMode, typeTop, unfittedHadTopP4,
 				      isAnalysisModeGenStudy);
-		      
+		      //std::map<int, bool> genMatchingTop     = isGenMatchedJetTriplet_Method2(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenMode, genTopPtProbeTop, typeTop, unfittedHadTopP4, sPrint);
+		      //std::map<int, bool> genMatchingTop     = isGenMatchedJetTriplet_Method3(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenMode, genTopPtProbeTop, typeTop, unfittedHadTopP4, sPrint);
+
 		      double dR_1 = deltaR(selBJet,  genBJetFromTop->p4());
 		      double dR_2 = deltaR(selWJet1, genWJetFromTop_lead->p4());
 		      double dR_3 = deltaR(selWJet2, genWJetFromTop_sublead->p4());
@@ -437,6 +436,28 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 
 		      sPrint += Form("  combination: gen_b=subjet%i & gen_W1=subjet%i & gen_W2=subjet%i, \t dR: %f, %f, %f, tot %f, \t isGenMatched: %i, %i, %i (totalScore %i)\n",
 				     i1,i2,i3, dR_1,dR_2,dR_3, dR_tot,
+				     genMatchingTop[kGenMatchedBJet],genMatchingTop[kGenMatchedWJet1],genMatchingTop[kGenMatchedWJet2], 
+				     kGenMatchingScore);
+		      if ( (kGenMatchingScore > 0) &&
+			   ( (kGenMatchingScore > kGenMatchingScoreMax) ||
+			     (kGenMatchingScore == kGenMatchingScoreMax && dR_tot < dR_tot_min) ) ) {
+			if (dR_tot < dR_tot_min) {
+			  dR_tot_min = dR_tot;
+			}
+			kGenMatchingScoreMax  = kGenMatchingScore;
+			b_isGenMatched        = genMatchingTop[kGenMatchedBJet];
+			Wlead_isGenMatched    = genMatchingTop[kGenMatchedWJet1];
+			Wsublead_isGenMatched = genMatchingTop[kGenMatchedWJet2];
+			isGenMatched          = genMatchingTop[kGenMatchedTriplet];
+
+			sPrint += Form(" *** MININUM ***\n");
+
+			if (isGenMatched) {
+			  recTop = (*jetHTTv2); // just to make sure jet and it's subjet are related
+			  // recTop is not the last one fulfilling dR(recTop and genTop) < 0.75 condition
+
+			  recBJetFromTop         = recSubJet[i1];
+			  recWJetFromTop_lead    = recSubJet[i2];
 			  recWJetFromTop_sublead = recSubJet[i3];
 			}
 		      }
