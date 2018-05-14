@@ -713,6 +713,30 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 			}
 		      }
 
+		      sPrint += Form("\t    fakeableHadTaus size %zu\n",fakeableMuons.size());
+		      bool isfakeableMuonMatched = false;
+		      for ( std::vector<const RecoMuon*>::const_iterator fakeableMuon = fakeableMuons.begin(); fakeableMuon != fakeableMuons.end(); ++fakeableMuon ) {
+			sPrint += Form("\t\tfakeableMuons:      pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g,",
+				       (*fakeableMuon)->pt(), (*fakeableMuon)->eta(), (*fakeableMuon)->phi(), (*fakeableMuon)->mass());
+
+			if (deltaR((*fakeableMuon)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.3) {
+			  sPrint += Form("\t MATCHES with gen%s (dR<0.3)",sGen.Data());
+			  isfakeableMuonMatched = true;
+			}
+			sPrint += "\n";
+		      }
+
+		      if ( isfakeableMuonMatched ) {
+			if ( !isGenJetMatched ) {
+			  cutFlowTable_2lss_1tau_HTTv2.update(Form("HTTv2: HTTv2 unmatched gen%s MATCHES fakeableMuon ",sGen.Data()));
+			}
+		      } else {
+			sPrint += "\t       UNMATCHED fakeableMuon \n";
+			if ( !isGenJetMatched ) {
+			  cutFlowTable_2lss_1tau_HTTv2.update(Form("HTTv2: HTTv2 unmatched gen%s UNMATCHED fakeableMuon",sGen.Data()));
+			}
+		      }
+
 		    }
 		  } else {
 		    sPrint += "\t No AK4 jet around genTop dR<2.0\n";
@@ -1286,7 +1310,7 @@ int main(int argc, char* argv[])
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, preselHadTaus);
     //std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selLeptons, fakeableElectrons, fakeableMuons);
     //std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selLeptons);
     // selLeptons for BDT training is loose, and loose>fakeable
