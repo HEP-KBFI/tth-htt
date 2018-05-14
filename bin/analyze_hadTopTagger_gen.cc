@@ -379,6 +379,7 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
    // it returns the gen-triplets organized in top/anti-top
    std::map<int, Particle::LorentzVector> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop); // genWJets -> genQuarkFromTop
    std::map<int, Particle::LorentzVector> genVarAnti = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop); // genWJets -> genQuarkFromTop
+   std::cout << "genVarAnti: genBJet pT = " << genVarAnti[kGenTopB].pt() << std::endl;
 		for (int i1=0; i1 < 3; i1++) {
 		  for (int i2=0; i2 < 3; i2++) {
 		    if (i2==i1) continue;
@@ -400,26 +401,62 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 		    selWJet2 = selTmp;
 		    }*/
 
-		      std::map<int, bool> genMatchingTop     = isGenMatchedJetTriplet(
-            selBJet, selWJet1, selWJet2,
-            genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
-            kGenTop, typeTop, unfittedHadTopP4
-          );
+		      std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
+			selBJet, selWJet1, selWJet2,
+			genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
+			kGenTop, typeTop, unfittedHadTopP4
+		      );
+		      
+		      // CV: where is the corresponding call for genMatchingAntiTop = isGenMatchedJetTriplet(...genVarAnti...) ?
+
+		      std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
+                        selBJet, selWJet1, selWJet2,
+			genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2],
+			kGenAntiTop, typeTop, unfittedHadTopP4
+		      );
+
 		      //std::map<int, bool> genMatchingTop     = isGenMatchedJetTriplet_Method2(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenMode, genTopPtProbeTop, typeTop, unfittedHadTopP4, sPrint);
 		      //std::map<int, bool> genMatchingTop     = isGenMatchedJetTriplet_Method3(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenMode, genTopPtProbeTop, typeTop, unfittedHadTopP4, sPrint);
 
-		      double dR_1 = deltaR(selBJet,  genBJetFromTop->p4());
-		      double dR_2 = deltaR(selWJet1, genWJetFromTop_lead->p4());
-		      double dR_3 = deltaR(selWJet2, genWJetFromTop_sublead->p4());
-		      double dR_tot = dR_1*dR_1 + dR_2*dR_2 + dR_3*dR_3;
-		      int    kGenMatchingScore = 0;
-		      if (genMatchingTop[kGenMatchedBJet])  kGenMatchingScore++;
-		      if (genMatchingTop[kGenMatchedWJet1]) kGenMatchingScore++;
-		      if (genMatchingTop[kGenMatchedWJet2]) kGenMatchingScore++;
-
-		      sPrint += Form(" combination: gen_b=subjet%i & gen_W1=subjet%i & gen_W2=subjet%i, \t dR: %f, %f, %f, tot %f, \t isGenMatched: %i, %i, %i (totalScore %i)\n",
+		      double dRTop_1 = deltaR(selBJet,  genBJetFromTop->p4());
+		      double dRTop_2 = deltaR(selWJet1, genWJetFromTop_lead->p4());
+		      double dRTop_3 = deltaR(selWJet2, genWJetFromTop_sublead->p4());		      
+		      int kGenMatchingScoreTop = 0;
+		      double dR2Top_tot = 0.;
+		      if ( genMatchingTop[kGenMatchedBJet]      ) { ++kGenMatchingScoreTop; dR2Top_tot += dRTop_1*dRTop_1; }
+		      if ( genMatchingTop[kGenMatchedWJet1]     ) { ++kGenMatchingScoreTop; dR2Top_tot += dRTop_2*dRTop_2; }
+		      if ( genMatchingTop[kGenMatchedWJet2]     ) { ++kGenMatchingScoreTop; dR2Top_tot += dRTop_3*dRTop_3; }
+		      double dRAntiTop_1 = deltaR(selBJet,  genBJetFromTop->p4());
+		      double dRAntiTop_2 = deltaR(selWJet1, genWJetFromTop_lead->p4());
+		      double dRAntiTop_3 = deltaR(selWJet2, genWJetFromTop_sublead->p4());
+		      int kGenMatchingScoreAntiTop = 0;
+		      double dR2AntiTop_tot = 0.;
+		      if ( genMatchingAntiTop[kGenMatchedBJet]  ) { ++kGenMatchingScoreAntiTop; dR2AntiTop_tot += dRAntiTop_1*dRAntiTop_1; }
+		      if ( genMatchingAntiTop[kGenMatchedWJet1] ) { ++kGenMatchingScoreAntiTop; dR2AntiTop_tot += dRAntiTop_2*dRAntiTop_2; }
+		      if ( genMatchingAntiTop[kGenMatchedWJet2] ) { ++kGenMatchingScoreAntiTop; dR2AntiTop_tot += dRAntiTop_3*dRAntiTop_3; }
+		      double dR_1 = -1.;
+		      double dR_2 = -1.;
+		      double dR_3 = -1.;
+		      double dR_tot = -1.;
+		      int kGenMatchingScore = 0;
+		      if ( kGenMatchingScoreTop > kGenMatchingScoreAntiTop || (kGenMatchingScoreTop == kGenMatchingScoreAntiTop && dR2Top_tot < dR2AntiTop_tot) ) {
+			dR_1 = dRTop_1;
+			dR_2 = dRTop_2;
+			dR_3 = dRTop_3;
+			dR_tot = TMath::Sqrt(dR2Top_tot);
+			kGenMatchingScore = kGenMatchingScoreTop;
+		      } else {
+			kGenMatchingScore = 
+			dR_1 = dRAntiTop_1;
+			dR_2 = dRAntiTop_2;
+			dR_3 = dRAntiTop_3;
+			dR_tot = TMath::Sqrt(dR2AntiTop_tot);
+			kGenMatchingScore = kGenMatchingScoreAntiTop;
+		      }
+		      sPrint += Form(" combination: gen_b=subjet%i & gen_W1=subjet%i & gen_W2=subjet%i, \t dR: %f, %f, %f, tot %f, \t isGenMatchedTop: %i, %i, %i, \t isGenMatchedAntiTop: %i, %i, %i (totalScore %i)\n",
 				     i1,i2,i3, dR_1,dR_2,dR_3, dR_tot,
 				     genMatchingTop[kGenMatchedBJet],genMatchingTop[kGenMatchedWJet1],genMatchingTop[kGenMatchedWJet2],
+				     genMatchingAntiTop[kGenMatchedBJet],genMatchingAntiTop[kGenMatchedWJet1],genMatchingAntiTop[kGenMatchedWJet2],
 				     kGenMatchingScore);
 		      if ( (kGenMatchingScore > 0) &&
 			   ( (kGenMatchingScore > kGenMatchingScoreMax) ||
@@ -428,10 +465,17 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 			  dR_tot_min = dR_tot;
 			}
 			kGenMatchingScoreMax  = kGenMatchingScore;
-			b_isGenMatched        = genMatchingTop[kGenMatchedBJet];
-			Wlead_isGenMatched    = genMatchingTop[kGenMatchedWJet1];
-			Wsublead_isGenMatched = genMatchingTop[kGenMatchedWJet2];
-			isGenMatched          = genMatchingTop[kGenMatchedTriplet];
+			if ( kGenMatchingScoreTop > kGenMatchingScoreAntiTop || (kGenMatchingScoreTop == kGenMatchingScoreAntiTop && dR2Top_tot < dR2AntiTop_tot) ) {
+			  b_isGenMatched        = genMatchingTop[kGenMatchedBJet];
+			  Wlead_isGenMatched    = genMatchingTop[kGenMatchedWJet1];
+			  Wsublead_isGenMatched = genMatchingTop[kGenMatchedWJet2];
+			  isGenMatched          = genMatchingTop[kGenMatchedTriplet];
+			} else {
+			  b_isGenMatched        = genMatchingAntiTop[kGenMatchedBJet];
+			  Wlead_isGenMatched    = genMatchingAntiTop[kGenMatchedWJet1];
+			  Wsublead_isGenMatched = genMatchingAntiTop[kGenMatchedWJet2];
+			  isGenMatched          = genMatchingAntiTop[kGenMatchedTriplet];
+			}
 
 			sPrint += Form(" *** MININUM ***\n");
 
