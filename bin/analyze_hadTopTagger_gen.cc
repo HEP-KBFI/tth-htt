@@ -177,6 +177,7 @@ std::vector<GenParticle> genTopQuarks;
 std::vector<GenParticle> genBJets;
 std::vector<GenParticle> genWBosons;
 std::vector<GenParticle> genWJets;
+std::vector<GenParticle> genQuarkFromTop;
 
 
 void dumpGenParticles(const std::string& label, const std::vector<GenParticle>& particles)
@@ -240,7 +241,7 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 		 genBJetFromTop->pt(),genBJetFromTop->eta(),genBJetFromTop->phi(),genBJetFromTop->mass(),
 		 genWJetFromTop_lead->pt(),genWJetFromTop_lead->eta(),genWJetFromTop_lead->phi(),genWJetFromTop_lead->mass(),
 		 genWJetFromTop_sublead->pt(),genWJetFromTop_sublead->eta(),genWJetFromTop_sublead->phi(),genWJetFromTop_sublead->mass()); */
-
+  
 
   if ( (genBJetFromTop     && genWJetFromTop_lead     && genWJetFromTop_sublead     && genTopP4.pt()     > 200.) ) {
     cutFlowTable_2lss_1tau_HTTv2.update("genTop passes pT > 200 GeV");
@@ -364,7 +365,7 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 		recSubJet[0] = (*jetHTTv2)->subJet1();
 		recSubJet[1] = (*jetHTTv2)->subJet2();
 		recSubJet[2] = (*jetHTTv2)->subJet3();
-		int perm [5] = { 0, 1, 2, 0, 1 }; // I do not care about the ordering of wj1/2 so no fancy permutation solution is required
+		//int perm [5] = { 0, 1, 2, 0, 1 }; // I do not care about the ordering of wj1/2 so no fancy permutation solution is required
 
 		sPrint += Form("\nHTTv2 jet #%i with dR(HTTv2, genTop) < 0.75\n",kHTTv2JetPassedConditions);
 		sPrint += Form("HTTv2_Top: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
@@ -376,9 +377,24 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 		sPrint += Form("HTTv2_subjet3: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g, \t bCSV: %f\n",
 			       recSubJet[2]->pt(), recSubJet[2]->eta(), recSubJet[2]->phi(), recSubJet[2]->mass(), recSubJet[2]->BtagCSV());
 
-   // it returns the gen-triplets organized in top/anti-top
-   std::map<int, Particle::LorentzVector> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop); // genWJets -> genQuarkFromTop
-   std::map<int, Particle::LorentzVector> genVarAnti = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop); // genWJets -> genQuarkFromTop
+		// it returns the gen-triplets organized in top/anti-top
+		std::map<int, Particle::LorentzVector> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenMode);
+		// using genWJets or genQuarkFromTop does not make any difference
+		bool isAnalysisModeGenStudy = true;
+
+		/*
+		sPrint += "\ngenTopInfo from isGenMatchedJetTripletVar()::\n";
+		sPrint += Form("gen_Top: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+			       genVar[kGenTopVar].pt(),genVar[kGenTopVar].eta(),genVar[kGenTopVar].phi(),genVar[kGenTopVar].mass());
+		sPrint += Form("gen_b:\t \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+			       genVar[kGenTopB].pt(),genVar[kGenTopB].eta(),genVar[kGenTopB].phi(),genVar[kGenTopB].mass());
+		sPrint += Form("gen_W1: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+			       genVar[kGenTopWj1].pt(),genVar[kGenTopWj1].eta(),genVar[kGenTopWj1].phi(),genVar[kGenTopWj1].mass());
+		sPrint += Form("gen_W2: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+			       genVar[kGenTopWj2].pt(),genVar[kGenTopWj2].eta(),genVar[kGenTopWj2].phi(),genVar[kGenTopWj2].mass());
+		*/
+      
+		
 		for (int i1=0; i1 < 3; i1++) {
 		  for (int i2=0; i2 < 3; i2++) {
 		    if (i2==i1) continue;
@@ -400,11 +416,12 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 		    selWJet2 = selTmp;
 		    }*/
 
+
 		      std::map<int, bool> genMatchingTop     = isGenMatchedJetTriplet(
-            selBJet, selWJet1, selWJet2,
-            genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
-            kGenTop, typeTop, unfittedHadTopP4
-          );
+				      selBJet, selWJet1, selWJet2,
+				      genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
+				      kGenMode, typeTop, unfittedHadTopP4,
+				      isAnalysisModeGenStudy);
 		      //std::map<int, bool> genMatchingTop     = isGenMatchedJetTriplet_Method2(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenMode, genTopPtProbeTop, typeTop, unfittedHadTopP4, sPrint);
 		      //std::map<int, bool> genMatchingTop     = isGenMatchedJetTriplet_Method3(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenMode, genTopPtProbeTop, typeTop, unfittedHadTopP4, sPrint);
 
@@ -417,9 +434,9 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 		      if (genMatchingTop[kGenMatchedWJet1]) kGenMatchingScore++;
 		      if (genMatchingTop[kGenMatchedWJet2]) kGenMatchingScore++;
 
-		      sPrint += Form(" combination: gen_b=subjet%i & gen_W1=subjet%i & gen_W2=subjet%i, \t dR: %f, %f, %f, tot %f, \t isGenMatched: %i, %i, %i (totalScore %i)\n",
+		      sPrint += Form("  combination: gen_b=subjet%i & gen_W1=subjet%i & gen_W2=subjet%i, \t dR: %f, %f, %f, tot %f, \t isGenMatched: %i, %i, %i (totalScore %i)\n",
 				     i1,i2,i3, dR_1,dR_2,dR_3, dR_tot,
-				     genMatchingTop[kGenMatchedBJet],genMatchingTop[kGenMatchedWJet1],genMatchingTop[kGenMatchedWJet2],
+				     genMatchingTop[kGenMatchedBJet],genMatchingTop[kGenMatchedWJet1],genMatchingTop[kGenMatchedWJet2], 
 				     kGenMatchingScore);
 		      if ( (kGenMatchingScore > 0) &&
 			   ( (kGenMatchingScore > kGenMatchingScoreMax) ||
@@ -580,8 +597,8 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 			sPrint += Form("\t\tAK4 jet:  pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g,",
 				       (*selJet)->pt(), (*selJet)->eta(), (*selJet)->phi(), (*selJet)->mass());
 
-			if (deltaR((*selJet)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.25) {
-			  sPrint += Form("\t MATCHES with gen%s (dR<0.25)",sGen.Data());
+			if (deltaR((*selJet)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.3) {
+			  sPrint += Form("\t MATCHES with gen%s (dR<0.3)",sGen.Data());
 			  isAK4JetMatched = true;
 			}
 			sPrint += "\n";
@@ -604,8 +621,8 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 			sPrint += Form("\t\tselHadTau jet:  pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g,",
 				       (*selHadTau)->pt(), (*selHadTau)->eta(), (*selHadTau)->phi(), (*selHadTau)->mass());
 
-			if (deltaR((*selHadTau)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.25) {
-			  sPrint += Form("\t MATCHES with gen%s (dR<0.25)",sGen.Data());
+			if (deltaR((*selHadTau)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.3) {
+			  sPrint += Form("\t MATCHES with gen%s (dR<0.3)",sGen.Data());
 			  isHadTauJetMatched = true;
 			}
 			sPrint += "\n";
@@ -628,8 +645,8 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 			sPrint += Form("\t\tselLepton:      pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g,",
 				       (*selLepton)->pt(), (*selLepton)->eta(), (*selLepton)->phi(), (*selLepton)->mass());
 
-			if (deltaR((*selLepton)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.25) {
-			  sPrint += Form("\t MATCHES with gen%s (dR<0.25)",sGen.Data());
+			if (deltaR((*selLepton)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.3) {
+			  sPrint += Form("\t MATCHES with gen%s (dR<0.3)",sGen.Data());
 			  isLeptonMatched = true;
 			}
 			sPrint += "\n";
@@ -653,8 +670,8 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 			sPrint += Form("\t\tfakeableElectrons:      pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g,",
 				       (*fakeableElectron)->pt(), (*fakeableElectron)->eta(), (*fakeableElectron)->phi(), (*fakeableElectron)->mass());
 
-			if (deltaR((*fakeableElectron)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.25) {
-			  sPrint += Form("\t MATCHES with gen%s (dR<0.25)",sGen.Data());
+			if (deltaR((*fakeableElectron)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.3) {
+			  sPrint += Form("\t MATCHES with gen%s (dR<0.3)",sGen.Data());
 			  isfakeableElectronMatched = true;
 			}
 			sPrint += "\n";
@@ -678,8 +695,8 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 			sPrint += Form("\t\tfakeableMuons:      pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g,",
 				       (*fakeableMuon)->pt(), (*fakeableMuon)->eta(), (*fakeableMuon)->phi(), (*fakeableMuon)->mass());
 
-			if (deltaR((*fakeableMuon)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.25) {
-			  sPrint += Form("\t MATCHES with gen%s (dR<0.25)",sGen.Data());
+			if (deltaR((*fakeableMuon)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.3) {
+			  sPrint += Form("\t MATCHES with gen%s (dR<0.3)",sGen.Data());
 			  isfakeableMuonMatched = true;
 			}
 			sPrint += "\n";
@@ -955,7 +972,8 @@ int main(int argc, char* argv[])
   std::string branchName_genBJets = cfg_analyze.getParameter<std::string>("branchName_genBJets");
   std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
   std::string branchName_genWJets = cfg_analyze.getParameter<std::string>("branchName_genWJets");
-
+  std::string branchName_genQuarkFromTop = cfg_analyze.getParameter<std::string>("branchName_genQuarkFromTop");
+ 
   bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
 
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
@@ -1090,12 +1108,14 @@ int main(int argc, char* argv[])
   GenParticleReader* genBJetReader = new GenParticleReader(branchName_genBJets);
   GenParticleReader* genWBosonReader = new GenParticleReader(branchName_genWBosons);
   GenParticleReader* genWJetReader = new GenParticleReader(branchName_genWJets);
-
+  GenParticleReader* genQuarkFromTopReader = new GenParticleReader(branchName_genQuarkFromTop);
+  
   if ( isMC ) {
     inputTree->registerReader(genTopQuarkReader);
     inputTree->registerReader(genBJetReader);
     inputTree->registerReader(genWBosonReader);
     inputTree->registerReader(genWJetReader);
+    inputTree->registerReader(genQuarkFromTopReader);
   }
 
   int analyzedEntries = 0;
@@ -1632,7 +1652,8 @@ int main(int argc, char* argv[])
     /*std::vector<GenParticle>*/ genBJets = genBJetReader->read();
     /*std::vector<GenParticle>*/ genWBosons = genWBosonReader->read();
     /*std::vector<GenParticle>*/ genWJets = genWJetReader->read();
-
+    /*std::vector<GenParticle>*/ genQuarkFromTop = genQuarkFromTopReader->read();
+    
     if ( isDEBUG ) {
       dumpGenParticles("genTopQuark", genTopQuarks);
       dumpGenParticles("genBJet", genBJets);
@@ -1768,7 +1789,11 @@ int main(int argc, char* argv[])
     double genWJetsFromAntiTop_mass = -1.;
     for ( std::vector<GenParticle>::const_iterator it1 = genWJets.begin(); it1 != genWJets.end(); ++it1 ) {
       for ( std::vector<GenParticle>::const_iterator it2 = it1 + 1;
-	    it2 != genWJets.end(); ++it2 ) {
+      it2 != genWJets.end(); ++it2 ) {
+    /*for ( std::vector<GenParticle>::const_iterator it1 = genQuarkFromTop.begin(); it1 != genQuarkFromTop.end(); ++it1 ) {
+      for ( std::vector<GenParticle>::const_iterator it2 = it1 + 1;
+      it2 != genQuarkFromTop.end(); ++it2 ) {*/
+	
 	double genDijetMass = (it1->p4() + it2->p4()).mass();
 	// CV: Matching the generator-level charge of the two quarks to the generator-level charge of the W boson is a bit cumbersome,
 	//     because charge of Particles is stored as integer in Ntuple,
@@ -1958,6 +1983,101 @@ int main(int argc, char* argv[])
     sPrint += Form("fakeableElectrons.size:%zu\n",fakeableElectrons.size());
     sPrint += Form("fakeableMuons.size:%zu\n",fakeableMuons.size());
 
+
+    if (genBJetFromTop     && genWJetFromTop_lead     && genWJetFromTop_sublead && 0==1) {
+      sPrint += "genTopInfo::\n";
+      sPrint += Form("gen_Top: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genTopP4.pt(),genTopP4.eta(),genTopP4.phi(),genTopP4.mass());
+      sPrint += Form("gen_b:\t \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genBJetFromTop->pt(),genBJetFromTop->eta(),genBJetFromTop->phi(),genBJetFromTop->mass());
+      sPrint += Form("gen_W1: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genWJetFromTop_lead->pt(),genWJetFromTop_lead->eta(),genWJetFromTop_lead->phi(),genWJetFromTop_lead->mass());
+      sPrint += Form("gen_W2: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genWJetFromTop_sublead->pt(),genWJetFromTop_sublead->eta(),genWJetFromTop_sublead->phi(),genWJetFromTop_sublead->mass());
+
+      
+      std::map<int, Particle::LorentzVector> genVarsFromTop = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop); // genWJets -> genQuarkFromTop
+
+      sPrint += "\n\ngenTopInfo from isGenMatchedJetTripletVar()::\n";
+      sPrint += Form("gen_Top: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromTop[kGenTopVar].pt(),genVarsFromTop[kGenTopVar].eta(),genVarsFromTop[kGenTopVar].phi(),genVarsFromTop[kGenTopVar].mass());
+      sPrint += Form("gen_b:\t \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromTop[kGenTopB].pt(),genVarsFromTop[kGenTopB].eta(),genVarsFromTop[kGenTopB].phi(),genVarsFromTop[kGenTopB].mass());
+      sPrint += Form("gen_W1: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromTop[kGenTopWj1].pt(),genVarsFromTop[kGenTopWj1].eta(),genVarsFromTop[kGenTopWj1].phi(),genVarsFromTop[kGenTopWj1].mass());
+      sPrint += Form("gen_W2: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromTop[kGenTopWj2].pt(),genVarsFromTop[kGenTopWj2].eta(),genVarsFromTop[kGenTopWj2].phi(),genVarsFromTop[kGenTopWj2].mass());
+
+      //if ((genVarsFromTop[kGenTopWj1]) != (genWJetFromTop_lead->p4())) sPrint += " ****** genWj1 different in two methos of fetching info *** \n";
+      //if (genVarsFromTop[kGenTopWj2] != (genWJetFromTop_sublead->p4())) sPrint += " ****** genWj2 different in two methos of fetching info *** \n";
+      
+
+
+      std::map<int, Particle::LorentzVector> genVarsFromTop_1 = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genQuarkFromTop, kGenTop); // genWJets -> genQuarkFromTop
+
+      sPrint += "\n\ngenTopInfo from isGenMatchedJetTripletVar_1()::\n";
+      sPrint += Form("gen_Top: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromTop_1[kGenTopVar].pt(),genVarsFromTop_1[kGenTopVar].eta(),genVarsFromTop_1[kGenTopVar].phi(),genVarsFromTop_1[kGenTopVar].mass());
+      sPrint += Form("gen_b:\t \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromTop_1[kGenTopB].pt(),genVarsFromTop_1[kGenTopB].eta(),genVarsFromTop_1[kGenTopB].phi(),genVarsFromTop_1[kGenTopB].mass());
+      sPrint += Form("gen_W1: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromTop_1[kGenTopWj1].pt(),genVarsFromTop_1[kGenTopWj1].eta(),genVarsFromTop_1[kGenTopWj1].phi(),genVarsFromTop_1[kGenTopWj1].mass());
+      sPrint += Form("gen_W2: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromTop_1[kGenTopWj2].pt(),genVarsFromTop_1[kGenTopWj2].eta(),genVarsFromTop_1[kGenTopWj2].phi(),genVarsFromTop_1[kGenTopWj2].mass());
+
+      //if ((genVarsFromTop_1[kGenTopWj1]) != (genWJetFromTop_lead->p4())) sPrint += " ****** genWj1_1 different in two methos of fetching info *** \n";
+      //if (genVarsFromTop_1[kGenTopWj2] != (genWJetFromTop_sublead->p4())) sPrint += " ****** genWj2_1 different in two methos of fetching info *** \n";
+
+     
+    }
+
+    if (genBJetFromAntiTop     && genWJetFromAntiTop_lead     && genWJetFromAntiTop_sublead && 0==1) {
+      sPrint += "\ngenAntiTopInfo::\n";
+      sPrint += Form("gen_Top: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genAntiTopP4.pt(),genAntiTopP4.eta(),genAntiTopP4.phi(),genAntiTopP4.mass());
+      sPrint += Form("gen_b:\t \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genBJetFromAntiTop->pt(),genBJetFromAntiTop->eta(),genBJetFromAntiTop->phi(),genBJetFromAntiTop->mass());
+      sPrint += Form("gen_W1: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genWJetFromAntiTop_lead->pt(),genWJetFromAntiTop_lead->eta(),genWJetFromAntiTop_lead->phi(),genWJetFromAntiTop_lead->mass());
+      sPrint += Form("gen_W2: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genWJetFromAntiTop_sublead->pt(),genWJetFromAntiTop_sublead->eta(),genWJetFromAntiTop_sublead->phi(),genWJetFromAntiTop_sublead->mass());
+      
+      std::map<int, Particle::LorentzVector> genVarsFromAntiTop = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop); // genWJets -> genQuarkFromTop
+    
+      sPrint += "\ngenAntiTopInfo from isGenMatchedJetTripletVar()::\n";
+      sPrint += Form("gen_Top: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromAntiTop[kGenTopVar].pt(),genVarsFromAntiTop[kGenTopVar].eta(),genVarsFromAntiTop[kGenTopVar].phi(),genVarsFromAntiTop[kGenTopVar].mass());
+      sPrint += Form("gen_b:\t \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromAntiTop[kGenTopB].pt(),genVarsFromAntiTop[kGenTopB].eta(),genVarsFromAntiTop[kGenTopB].phi(),genVarsFromAntiTop[kGenTopB].mass());
+      sPrint += Form("gen_W1: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromAntiTop[kGenTopWj1].pt(),genVarsFromAntiTop[kGenTopWj1].eta(),genVarsFromAntiTop[kGenTopWj1].phi(),genVarsFromAntiTop[kGenTopWj1].mass());
+      sPrint += Form("gen_W2: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromAntiTop[kGenTopWj2].pt(),genVarsFromAntiTop[kGenTopWj2].eta(),genVarsFromAntiTop[kGenTopWj2].phi(),genVarsFromAntiTop[kGenTopWj2].mass());
+
+      //if ((genVarsFromAntiTop[kGenTopWj1]) != (genWJetFromAntiTop_lead->p4())) sPrint += " ****** genWj1 (Anti) different in two methos of fetching info *** \n";
+      //if (genVarsFromAntiTop[kGenTopWj2] != (genWJetFromAntiTop_sublead->p4())) sPrint += " ****** genWj2 (Anti) different in two methos of fetching info *** \n";
+      
+
+       std::map<int, Particle::LorentzVector> genVarsFromAntiTop_1 = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genQuarkFromTop, kGenAntiTop); // genWJets -> genQuarkFromTop
+    
+      sPrint += "\ngenAntiTopInfo from isGenMatchedJetTripletVar_1()::\n";
+      sPrint += Form("gen_Top: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromAntiTop_1[kGenTopVar].pt(),genVarsFromAntiTop_1[kGenTopVar].eta(),genVarsFromAntiTop_1[kGenTopVar].phi(),genVarsFromAntiTop_1[kGenTopVar].mass());
+      sPrint += Form("gen_b:\t \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromAntiTop_1[kGenTopB].pt(),genVarsFromAntiTop_1[kGenTopB].eta(),genVarsFromAntiTop_1[kGenTopB].phi(),genVarsFromAntiTop_1[kGenTopB].mass());
+      sPrint += Form("gen_W1: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromAntiTop_1[kGenTopWj1].pt(),genVarsFromAntiTop_1[kGenTopWj1].eta(),genVarsFromAntiTop_1[kGenTopWj1].phi(),genVarsFromAntiTop_1[kGenTopWj1].mass());
+      sPrint += Form("gen_W2: \t pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g\n",
+		     genVarsFromAntiTop_1[kGenTopWj2].pt(),genVarsFromAntiTop_1[kGenTopWj2].eta(),genVarsFromAntiTop_1[kGenTopWj2].phi(),genVarsFromAntiTop_1[kGenTopWj2].mass());
+
+      //if ((genVarsFromAntiTop_1[kGenTopWj1]) != (genWJetFromAntiTop_lead->p4())) sPrint += " ****** genWj1 (Anti) different in two methos of fetching info *** \n";
+      //if (genVarsFromAntiTop_1[kGenTopWj2] != (genWJetFromAntiTop_sublead->p4())) sPrint += " ****** genWj2 (Anti) different in two methos of fetching info *** \n";     
+    }
+
+ 
+    
+   
+    
     //Particle::LorentzVector *genParticle = new Particle::LorentzVector[4];
     const GenParticle **genParticle = new const GenParticle*[4];
     if (genBJetFromTop     && genWJetFromTop_lead     && genWJetFromTop_sublead) {
