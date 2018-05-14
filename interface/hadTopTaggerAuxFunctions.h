@@ -31,7 +31,8 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
                        const Particle::LorentzVector  genWJetFromTop_sublead,
                        int mode,
                        int TypeTop = 3,
-                       const Particle::LorentzVector  recFatJet = Particle::LorentzVector(0., 0., 0., 0.));
+                       const Particle::LorentzVector  recFatJet = Particle::LorentzVector(0., 0., 0., 0.),
+		       bool isAnalysisModeGenStudy = false);
 
 std::map<int, bool>
 isGenMatchedJetTriplet_Method2(const Particle::LorentzVector & recBJet,
