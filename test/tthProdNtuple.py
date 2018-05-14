@@ -14,6 +14,7 @@ parser.add_modes(mode_choices)
 parser.add_nonnominal()
 parser.add_tau_id_wp()
 parser.add_files_per_job(20)
+parser.add_use_home(False)
 parser.add_argument('-p', '--disable-preselection',
   dest = 'disable_preselection', action = 'store_false', default = True,
   help = 'R|Disable preselection (read this script for the list of cuts)',
@@ -36,10 +37,13 @@ sample_filter      = args.filter
 mode           = args.mode
 use_nonnominal = args.original_central
 files_per_job  = args.files_per_job
+use_home       = args.use_home
 
 # Custom arguments
 preselection = args.disable_preselection
-pileup       = "/hdfs/local/karl/ttHPileupProduction/2017/2018May11_fullProduction/histograms"
+pileup       = os.path.join(
+  os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s.root' % era
+)
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -137,6 +141,7 @@ if __name__ == '__main__':
       dry_run               = dry_run,
       isDebug               = debug,
       use_nonnominal        = use_nonnominal,
+      use_home              = use_home,
     )
 
     num_jobs = ntupleProduction.create()

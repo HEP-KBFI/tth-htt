@@ -15,6 +15,7 @@ systematics.full = systematics.an_chargeFlip_e
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
 parser.add_files_per_job()
+parser.add_use_home()
 args = parser.parse_args()
 
 # Common arguments
@@ -32,6 +33,7 @@ sample_filter      = args.filter
 # Additional arguments
 systematics_label = args.systematics
 files_per_job     = args.files_per_job
+use_home          = args.use_home
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -106,6 +108,7 @@ if __name__ == '__main__':
       verbose            = idx_job_resubmission > 0,
       dry_run            = dry_run,
       isDebug            = debug,
+      use_home           = use_home,
     )
 
     job_statistics = analysis.create()

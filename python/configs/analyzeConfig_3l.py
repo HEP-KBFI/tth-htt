@@ -41,7 +41,7 @@ class analyzeConfig_3l(analyzeConfig):
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
                select_root_output = False, do_sync = False, verbose = False, dry_run = False, isDebug = False,
-               rle_select = '', use_nonnominal = False, hlt_filter = False):
+               rle_select = '', use_nonnominal = False, hlt_filter = False, use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "3l", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
@@ -51,6 +51,7 @@ class analyzeConfig_3l(analyzeConfig):
       verbose = verbose,
       dry_run = dry_run,
       isDebug = isDebug,
+      use_home = use_home,
     )
 
     self.samples = samples

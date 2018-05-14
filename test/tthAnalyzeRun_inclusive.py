@@ -10,6 +10,7 @@ parser = tthAnalyzeParser()
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_tau_id_wp('dR03mvaLoose')
+parser.add_use_home()
 parser.add_argument('-o', '--output-tree',
   type = str, dest = 'output_tree', metavar = 'name', default = 'syncTree', required = False,
   help = 'R|Output TTree name',
@@ -35,6 +36,7 @@ sample_filter      = args.filter
 rle_select     = os.path.expanduser(args.rle_select)
 use_nonnominal = args.original_central
 tau_id_wp      = args.tau_id_wp
+use_home       = args.use_home
 
 # Custom arguments
 output_tree = args.output_tree
@@ -89,6 +91,7 @@ if __name__ == '__main__':
       rle_select              = rle_select,
       hadTauSelection_tauIdWP = tau_id_wp,
       use_nonnominal          = use_nonnominal,
+      use_home                = use_home,
     )
 
     job_statistics = analysis.create()

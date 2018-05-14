@@ -232,8 +232,9 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
   Particle::LorentzVector genTopP4 = genTopQuark->p4();
   Particle::LorentzVector genWBosonFromTopP4 = genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4();
 
-
-  sPrint += Form("\nTop/AntiTop mode %i\n",kGenMode);
+  if      ( kGenMode == kGenTop     ) sPrint += Form("\nTop\n");
+  else if ( kGenMode == kGenAntiTop ) sPrint += Form("\nAntiTop\n");
+  else assert(0);
   /*sPrint += Form(" Top:     (%f, %f, %f, %f); \n b:       (%f, %f, %f, %f); \n W1:      (%f, %f, %f, %f); \n W2:      (%f, %f, %f, %f)\n",
 		 genTopP4.pt(),genTopP4.eta(),genTopP4.phi(),genTopP4.mass(),
 		 genBJetFromTop->pt(),genBJetFromTop->eta(),genBJetFromTop->phi(),genBJetFromTop->mass(),
@@ -416,7 +417,7 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 		      if (genMatchingTop[kGenMatchedWJet1]) kGenMatchingScore++;
 		      if (genMatchingTop[kGenMatchedWJet2]) kGenMatchingScore++;
 
-		      sPrint += Form(" subjet combination %i %i %i, \t dR: %f, %f, %f, tot %f, \t isGenMatched: %i, %i, %i (totalScore %i)\n",
+		      sPrint += Form(" combination: gen_b=subjet%i & gen_W1=subjet%i & gen_W2=subjet%i, \t dR: %f, %f, %f, tot %f, \t isGenMatched: %i, %i, %i (totalScore %i)\n",
 				     i1,i2,i3, dR_1,dR_2,dR_3, dR_tot,
 				     genMatchingTop[kGenMatchedBJet],genMatchingTop[kGenMatchedWJet1],genMatchingTop[kGenMatchedWJet2],
 				     kGenMatchingScore);
@@ -432,10 +433,7 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 			Wsublead_isGenMatched = genMatchingTop[kGenMatchedWJet2];
 			isGenMatched          = genMatchingTop[kGenMatchedTriplet];
 
-			sPrint += Form(" subjet combination %i %i %i, \t dR: %f, %f, %f, tot %f, \t isGenMatched: %i, %i, %i (totalScore %i) *** MININUM **\n",
-				       i1,i2,i3, dR_1,dR_2,dR_3, dR_tot,
-				       b_isGenMatched,Wlead_isGenMatched,Wsublead_isGenMatched,
-				       kGenMatchingScore);
+			sPrint += Form(" *** MININUM ***\n");
 
 			if (isGenMatched) {
 			  recTop = (*jetHTTv2); // just to make sure jet and it's subjet are related
@@ -1042,6 +1040,12 @@ int main(int argc, char* argv[])
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4);
   RecoJetCollectionSelector jetSelector(era);
+  //-----------------------------------------------------------------------------
+  // CV: only for testing
+  jetSelector.getSelector().set_min_pt(-1.);
+  jetSelector.getSelector().set_max_absEta(4.7);
+  jetSelector.getSelector().set_min_jetId(-1);
+  //-----------------------------------------------------------------------------
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 
@@ -1946,7 +1950,7 @@ int main(int argc, char* argv[])
     isCat1_Gen = 0;
 
     //TString sPrint = Form("\n\nEvent %lli:\n",inputTree -> getCurrentMaxEventIdx());
-    sPrint = Form("\n\n\nEvent %lli:\n",inputTree -> getCurrentMaxEventIdx());
+    sPrint = Form("\n\n\nEntry #%lli (run=%u,ls=%u,event=%lli):\n",inputTree -> getCurrentMaxEventIdx(),eventInfo.run,eventInfo.lumi,eventInfo.event);
 
     sPrint += Form("selJets.size:%zu\n",selJets.size());
     sPrint += Form("selHadTau.size:%zu\n",selHadTaus.size());

@@ -139,8 +139,7 @@ process.analyze_hadTopTagger_gen.apply_trigger_bits = cms.bool(True)
 
 
 #added by Siddhesh
-#inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Apr08_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
-inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Apr27_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
+inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018May09_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
 maxInputFiles = 50
 #zombie_files = [ "tree_110.root", ]
 #zombie_files = [ "tree_110.root", "tree_168.root"]

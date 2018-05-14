@@ -16,11 +16,11 @@ class analyzeConfig_WZctrl(analyzeConfig):
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacards",
-               verbose = False, dry_run = False, isDebug = False):
+               verbose = False, dry_run = False, isDebug = False, use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "WZctrl", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit, executable_prep_dcard = executable_prep_dcard, verbose = verbose,
-      dry_run = dry_run, isDebug = isDebug)
+      dry_run = dry_run, isDebug = isDebug, use_home = use_home)
 
     self.samples = samples
 

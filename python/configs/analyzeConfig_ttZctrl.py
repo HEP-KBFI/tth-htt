@@ -37,7 +37,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
-               verbose = False, dry_run = False, isDebug = False):
+               verbose = False, dry_run = False, isDebug = False, use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttZctrl", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
@@ -46,6 +46,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
       verbose = verbose,
       dry_run = dry_run,
       isDebug = isDebug,
+      use_home = use_home,
     )
 
     self.samples = samples
@@ -386,7 +387,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
     key_addFakes_job = getKey("fakes_data")
     key_hadd_stage1_5 = getKey(get_lepton_selection_and_frWeight("Fakeable", "enabled"))
-    category_sideband = "ttZctrl_Fakeable" 
+    category_sideband = "ttZctrl_Fakeable"
     self.jobOptions_addFakes[key_addFakes_job] = {
       'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
       'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_cfg.py" % self.channel),

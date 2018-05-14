@@ -8,7 +8,7 @@ meta_dictionary = OD()
 
 ### event sums
 
-sum_events = { 
+sum_events = {
   ("DYJetsToLL_M-50", "DYJetsToLL_M-50_ext1"),
   ("TTWJetsToLNu", "TTWJetsToLNu_PSweights"),
   ("ZZTo4L", "ZZTo4L_ext1"),
@@ -36,7 +36,7 @@ meta_dictionary["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAO
   ("nof_db_files",          219),
   ("fsize_db",              465938496839),
   ("xsection",              0.2118),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 465.94GB; nevents: 7.67M; release: 9_4_0_patch1; last modified: 2018-02-17 14:21:12"),
 ])
