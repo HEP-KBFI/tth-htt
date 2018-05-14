@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-05-14 10:17:52 with the following command:
+# file generated at 2018-05-14 15:17:17 with the following command:
 # create_dictionary.py -v -m python/samples/metaDict_2017.py -p /hdfs/local/karl/ttHNtupleProduction/2017/2018May11_fullProduction_v4_woPresel_nom_all_except_forBDTtraining/ntuples -Z zeroes.txt -z zombies.txt -N samples_2017 -E 2017 -g tthAnalyzeSamples_2017.py -o python/samples
 
 samples_2017 = OD()
@@ -1439,14 +1439,14 @@ samples_2017["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "WWTo2L2Nu_DoubleScattering"),
   ("nof_files",                       3),
   ("nof_db_files",                    23),
-  ("nof_events",                      0),
+  ("nof_events",                      999937),
   ("nof_tree_events",                 1000000),
   ("nof_db_events",                   1000000),
   ("fsize_local",                     885607864), # 885.61MB, avg file size 295.20MB
   ("fsize_db",                        42876536279), # 42.88GB, avg file size 1.86GB
   ("use_HIP_mitigation_bTag",         False),
   ("use_HIP_mitigation_mediumMuonId", False),
-  ("use_it",                          False), # Karl: explicitly disabled
+  ("use_it",                          True),
   ("xsection",                        0.1743),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
