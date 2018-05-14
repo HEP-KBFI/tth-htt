@@ -296,12 +296,13 @@ class analyzeConfig_2lss(analyzeConfig):
       hadTauVeto_selection = "|".join([ hadTauVeto_selection, self.hadTauVeto_selection_part2 ])
 
       if lepton_selection == "forBDTtraining":
-        lepton_selection = "Loose" # "Tight" ## "Fakeable" ## Xanda
+        lepton_selection = "Loose" # "Tight" ## "Fakeable" ## Xanda FIX that
 
+      if self.isBDTtraining : lepton_selection = "forBDTtraining" ## Xanda FIX that
       for lepton_frWeight in self.lepton_frWeights:
         if lepton_frWeight == "enabled" and not lepton_selection.startswith("Fakeable"):
           continue
-        if lepton_frWeight == "disabled" and not lepton_selection in [ "Tight", "forBDTtraining" ]:
+        if lepton_frWeight == "disabled" and not lepton_selection in [ "Tight", "forBDTtraining" ] :
           continue
         lepton_selection_and_frWeight = get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight)
 
