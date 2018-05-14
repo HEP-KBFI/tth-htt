@@ -84,6 +84,12 @@ process.analyze_2los_1tau = cms.PSet(
     branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genJets = cms.string('GenJet'),
+    branchName_jetsHTTv2 = cms.string('HTTV2'),
+    branchName_subjetsHTTv2 = cms.string('HTTV2Subjets'),
+    branchName_jetsAK12 = cms.string('FatJetAK12'),
+    branchName_subjetsAK12 = cms.string('SubJetAK12'),
+    branchName_jetsAK8 = cms.string('FatJet'),
+    branchName_subjetsAK8 = cms.string('SubJet'),
 
     branchName_genTopQuarks = cms.string('GenTop'),
     branchName_genBJets = cms.string('GenBQuarkFromTop'),

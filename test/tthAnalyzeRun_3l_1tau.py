@@ -23,6 +23,7 @@ parser.add_nonnominal()
 parser.add_tau_id_wp()
 parser.add_hlt_filter()
 parser.add_files_per_job()
+parser.add_use_home()
 args = parser.parse_args()
 
 # Common arguments
@@ -45,6 +46,7 @@ rle_select        = os.path.expanduser(args.rle_select)
 use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
 files_per_job     = args.files_per_job
+use_home          = args.use_home
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -175,6 +177,7 @@ if __name__ == '__main__':
       rle_select                            = rle_select,
       use_nonnominal                        = use_nonnominal,
       hlt_filter                            = hlt_filter,
+      use_home                              = use_home,
     )
 
     if mode.find("forBDTtraining") != -1:

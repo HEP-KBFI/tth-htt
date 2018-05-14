@@ -42,7 +42,8 @@ class analyzeConfig_2lss(analyzeConfig):
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit,
                select_rle_output = False, executable_prep_dcard = "prepareDatacards",
                executable_add_syst_dcard = "addSystDatacards", do_sync = False, verbose = False,
-               dry_run = False, isDebug = False, rle_select = '', use_nonnominal = False, hlt_filter = False):
+               dry_run = False, isDebug = False, rle_select = '', use_nonnominal = False, hlt_filter = False,
+               use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2lss", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
@@ -52,6 +53,7 @@ class analyzeConfig_2lss(analyzeConfig):
       verbose = verbose,
       dry_run = dry_run,
       isDebug = isDebug,
+      use_home = use_home,
     )
 
     self.samples = samples
@@ -296,12 +298,13 @@ class analyzeConfig_2lss(analyzeConfig):
       hadTauVeto_selection = "|".join([ hadTauVeto_selection, self.hadTauVeto_selection_part2 ])
 
       if lepton_selection == "forBDTtraining":
-        lepton_selection = "Loose" # "Tight" ## "Fakeable" ## Xanda
+        lepton_selection = "Loose" # "Tight" ## "Fakeable" ## Xanda FIX that
 
+      if self.isBDTtraining : lepton_selection = "forBDTtraining" ## Xanda FIX that
       for lepton_frWeight in self.lepton_frWeights:
         if lepton_frWeight == "enabled" and not lepton_selection.startswith("Fakeable"):
           continue
-        if lepton_frWeight == "disabled" and not lepton_selection in [ "Tight", "forBDTtraining" ]:
+        if lepton_frWeight == "disabled" and not lepton_selection in [ "Tight", "forBDTtraining" ] :
           continue
         lepton_selection_and_frWeight = get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight)
 

@@ -15,10 +15,10 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
                hadTau_selection, max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-               verbose = False, dry_run = False, isDebug = False):
+               verbose = False, dry_run = False, isDebug = False, use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "hadTopTagger", [ "central" ],
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      [], verbose = verbose, dry_run = dry_run, isDebug = isDebug)
+      [], verbose = verbose, dry_run = dry_run, isDebug = isDebug, use_home = use_home)
 
     self.samples = samples
 

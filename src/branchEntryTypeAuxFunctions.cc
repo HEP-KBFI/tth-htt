@@ -198,7 +198,7 @@ copyBranches_vectorType(TTree * inputTree,
       }
 
       const branchEntryBaseType * const branch_nElements = outputTree_branches[branchName_n];
-      const int max_nElements = branchName.find("LHE") != std::string::npos ? 102 : 48;
+      const int max_nElements = branchName.find("LHE") != std::string::npos ? 103 : 64;
 
       branchEntryBaseType * outputTree_branch = nullptr;
       if(branchType == "Float_t")

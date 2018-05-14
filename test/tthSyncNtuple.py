@@ -72,6 +72,7 @@ parser = tthAnalyzeParser()
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_tau_id_wp()
+parser.add_use_home()
 parser.add_argument('-c', '--channels',
   type = str, nargs = '+', dest = 'channels', metavar = 'channel', choices = channel_choices,
   default = channel_choices, required = False,
@@ -105,6 +106,7 @@ debug                = args.debug
 rle_select     = os.path.expanduser(args.rle_select)
 use_nonnominal = args.original_central
 tau_id_wp      = args.tau_id_wp
+use_home       = args.use_home
 
 # Custom arguments
 channels = args.channels
@@ -135,6 +137,7 @@ if __name__ == '__main__':
     no_mem               = no_mem,
     use_nonnominal       = use_nonnominal,
     tau_id_wp            = tau_id_wp,
+    use_home             = use_home,
   )
 
   job_statistics = analysis.create()

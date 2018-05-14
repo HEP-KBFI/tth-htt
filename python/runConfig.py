@@ -156,6 +156,18 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Apply HLT filter',
     )
 
+  def add_use_home(self, default = True):
+    if default:
+      self.add_argument('-y', '--use-scratch',
+        dest = 'use_home', action = 'store_false', default = True,
+        help = 'R|Use /scratch for SLURM jobs',
+      )
+    else:
+      self.add_argument('-y', '--use-home',
+        dest = 'use_home', action = 'store_true', default = False,
+        help = 'R|Use /home for SLURM jobs',
+      )
+
   @staticmethod
   def cat(choices):
     return ', '.join(map(lambda choice: "'%s'" % str(choice), choices))
