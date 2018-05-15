@@ -221,6 +221,7 @@ class analyzeConfig(object):
             'apply_genWeight',
             'apply_trigger_bits',
             'selEventsFileName_output',
+            'fillGenEvtHistograms',
         ]
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, jobOptions_keys))
@@ -243,8 +244,21 @@ class analyzeConfig(object):
                 jobOptions_expr = "cms.double(%s)"
             elif type(jobOptions_val) == str:
                 jobOptions_expr = "cms.string('%s')"
+            elif type(jobOptions_val) == list:
+                if all(map(lambda x: type(x) == float, jobOptions_val)):
+                    jobOptions_expr = "cms.vdouble(%s)"
+                elif all(map(lambda x: type(x) == str, jobOptions_val)):
+                    jobOptions_expr = "cms.vstring(%s)"
+                else:
+                    raise ValueError(
+                        "Cannot find correct cms vector type for value %s: %s" % \
+                        (jobOptions_key, str(jobOptions_val))
+                    )
             else:
-                raise ValueError("Cannot find correct cms type for value: %s" % str(jobOptions_val))
+                raise ValueError(
+                    "Cannot find correct cms type for value %s: %s" % \
+                    (jobOptions_key, str(jobOptions_val))
+                )
             assert(jobOptions_expr)
             jobOptions_val = jobOptions_expr % str(jobOptions_val)
             lines.append("{}.{:<{len}} = {}".format(process_string, jobOptions_key, jobOptions_val, len = max_option_len))
