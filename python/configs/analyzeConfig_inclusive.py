@@ -45,8 +45,6 @@ class analyzeConfig_inclusive(analyzeConfig):
   def createCfg_analyze(self, jobOptions, sample_info):
     additionalJobOptions = [
       'hadTauSelection_tauIdWP',
-      'selEventsFileName_input',
-      'useNonNominal',
     ]
 
     lines = super(analyzeConfig_inclusive, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)

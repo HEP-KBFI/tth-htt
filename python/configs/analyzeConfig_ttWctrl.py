@@ -113,11 +113,8 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     jobOptions['histogramDir'] = getHistogramDir(
       jobOptions['leptonSelection'], lepton_frWeight, jobOptions['leptonChargeSelection']
     )
-    additionalJobOptions = [
-      'useNonNominal',
-    ]
 
-    lines = super(analyzeConfig_ttWctrl, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
+    lines = super(analyzeConfig_ttWctrl, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addFlips(self, jobOptions):

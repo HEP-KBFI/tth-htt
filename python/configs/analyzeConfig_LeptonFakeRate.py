@@ -337,7 +337,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       apply_genWeight = sample_info["apply_genWeight"] if (is_mc and "apply_genWeight" in sample_info.keys()) else False
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
-      apply_trigger_bits = (is_mc and self.era == "2017" and sample_info["reHLT"]) or not is_mc
 
       for central_or_shift in self.central_or_shifts:
         inputFileList = inputFileLists[sample_name]
@@ -384,7 +383,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'absEtaBins_mu'            : self.absEtaBins_mu,
             'ptBins_mu'                : self.ptBins_mu,
             'central_or_shift'         : central_or_shift,
-            'apply_trigger_bits'       : apply_trigger_bits,
             'use_triggers_1e'          : '1e' in sample_info["triggers"],
             'use_triggers_1mu'         : '1mu' in sample_info["triggers"],
             'use_triggers_2e'          : '2e' in sample_info["triggers"],

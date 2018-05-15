@@ -216,6 +216,7 @@ class analyzeConfig(object):
             'isMC',
             'central_or_shift',
             'leptonSelection',
+            'chargeSumSelection',
             'histogramDir',
             'lumiScale',
             'leptonChargeSelection',
@@ -227,6 +228,10 @@ class analyzeConfig(object):
             'apply_trigger_bits',
             'selEventsFileName_output',
             'fillGenEvtHistograms',
+            'selectBDT',
+            'selEventsTFileName',
+            'useNonNominal',
+            'apply_hlt_filter',
         ]
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, jobOptions_keys))
@@ -284,6 +289,10 @@ class analyzeConfig(object):
                 "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.output',       jobOptions['syncOutput'], len = max_option_len),
                 "{}.{:<{len}} = cms.string('{}')".format(process_string, 'selEventsFileName_input', jobOptions['syncRLE'],    len = max_option_len),
             ])
+            if 'syncRequireGenMatching' in jobOptions:
+                lines.append(
+                    "{}.{:<{len}} = cms.bool({})".format(process_string, 'syncNtuple.requireGenMatching', jobOptions['syncRequireGenMatching'], len = max_option_len),
+                )
 
         return lines
 

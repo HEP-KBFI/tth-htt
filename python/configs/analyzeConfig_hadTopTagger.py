@@ -33,12 +33,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
     """
-
-    additionalJobOptions = [
-      'selectBDT',
-    ]
-
-    lines = super(analyzeConfig_hadTopTagger, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
+    lines = super(analyzeConfig_hadTopTagger, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):

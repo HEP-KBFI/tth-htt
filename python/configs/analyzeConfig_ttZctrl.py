@@ -103,11 +103,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     """
     lepton_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
     jobOptions['histogramDir'] = getHistogramDir(jobOptions['leptonSelection'], lepton_frWeight)
-    additionalJobOptions = [
-      'useNonNominal',
-    ]
-
-    lines = super(analyzeConfig_ttZctrl, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
+    lines = super(analyzeConfig_ttZctrl, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):
