@@ -54,8 +54,6 @@ process.analyze_hadTopTagger = cms.PSet(
 
     chargeSumSelection = cms.string('OS'),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     apply_lepton_and_hadTauCharge_cut = cms.bool(True),
 
     isMC = cms.bool(True),

@@ -155,8 +155,6 @@ process.analyze_LeptonFakeRate = cms.PSet(
     minConePt_global_mu = cms.double(10),
     minRecoPt_global_mu = cms.double(5),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),

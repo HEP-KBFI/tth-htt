@@ -133,7 +133,6 @@ main(int argc,
   
   const bool isMC                            = cfg_produceNtuple.getParameter<bool>("isMC");
   const bool isDEBUG                         = cfg_produceNtuple.getParameter<bool>("isDEBUG");
-  const bool use_HIP_mitigation_mediumMuonId = cfg_produceNtuple.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
   const bool useNonNominal                   = cfg_produceNtuple.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet            = useNonNominal || ! isMC;
 
@@ -177,7 +176,6 @@ main(int argc,
 
 //--- declare particle collections
   RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons);
-  muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   muonReader->setBranchAddresses(inputTree);
   const RecoMuonCollectionGenMatcher muonGenMatcher;
   const RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);

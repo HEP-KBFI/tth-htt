@@ -11,8 +11,7 @@ TREE_COUNT_KEY      = 'tree_count'
 FSIZE_KEY           = 'fsize'
 BRANCH_NAMES_KEY    = 'branch_names'
 
-LHE_REGEX            = re.compile('(n|)LHE(Scale|Pdf)Weight')
-HIP_MITIGATION_REGEX = re.compile(".*2016[BCDEF].*")
+LHE_REGEX = re.compile('(n|)LHE(Scale|Pdf)Weight')
 
 try:
     from urllib.parse import urlparse
@@ -198,8 +197,6 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("nof_db_events",                   {{ nof_db_events }}),
   ("fsize_local",                     {{ fsize_local }}), # {{ fsize_local_human }}, avg file size {{ avg_fsize_local_human }}
   ("fsize_db",                        {{ fsize_db }}), # {{ fsize_db_human }}, avg file size {{ avg_fsize_db_human }}
-  ("use_HIP_mitigation_bTag",         {{ use_HIP_mitigation_bTag }}),
-  ("use_HIP_mitigation_mediumMuonId", {{ use_HIP_mitigation_mediumMuonId }}),
   ("use_it",                          {{ use_it }}),{% if sample_type == "mc" %}
   ("xsection",                        {{ xsection }}),
   ("genWeight",                       {{ genWeight }}),{% endif %}
@@ -570,10 +567,6 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
   ))
 
   if not meta_dict[key]['located']:
-    meta_dict[key]['use_HIP_mitigation_bTag'] = bool(HIP_MITIGATION_REGEX.match(
-      meta_dict[key]['process_name_specific'])
-    ) and is_data
-    meta_dict[key]['use_HIP_mitigation_mediumMuonId'] = meta_dict[key]['use_HIP_mitigation_bTag']
     meta_dict[key]['triggers']                        = get_triggers(
       meta_dict[key]['process_name_specific'], is_data, era
     )
@@ -1007,8 +1000,6 @@ if __name__ == '__main__':
           fsize_local                     = meta_dict[key]['fsize_local'],
           fsize_local_human               = human_size(meta_dict[key]['fsize_local']),
           avg_fsize_local_human           = human_size(float(meta_dict[key]['fsize_local']) / meta_dict[key]['nof_files']),
-          use_HIP_mitigation_bTag         = meta_dict[key]['use_HIP_mitigation_bTag'],
-          use_HIP_mitigation_mediumMuonId = meta_dict[key]['use_HIP_mitigation_mediumMuonId'],
           use_it                          = meta_dict[key]['use_it'],
           xsection                        = round(meta_dict[key]['xsection'], 6) if is_mc else None,
           genWeight                       = meta_dict[key]['genWeight'],

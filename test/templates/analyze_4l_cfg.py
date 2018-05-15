@@ -68,8 +68,6 @@ process.analyze_4l = cms.PSet(
 
     minNumJets = cms.int32(2),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),

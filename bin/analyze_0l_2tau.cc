@@ -179,9 +179,6 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_0l_2tau") 
     << "Invalid Configuration parameter 'hadTauChargeSelection' = " << hadTauChargeSelection_string << " !!\n";
 
-  bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
-  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
-
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
   bool isMC_tH = ( process_string == "tH" ) ? true : false;
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
@@ -279,7 +276,6 @@ int main(int argc, char* argv[])
 //--- declare particle collections
   const bool readGenObjects = isMC && !redoGenMatching;
   RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons);
-  muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);

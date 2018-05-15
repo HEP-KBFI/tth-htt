@@ -296,9 +296,6 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_2lss_1tau")
     << "Invalid Configuration parameter 'chargeSumSelection' = " << chargeSumSelection_string << " !!\n";
 
-  bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
-  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
-
   bool apply_lepton_and_hadTauCharge_cut = cfg_analyze.getParameter<bool>("apply_lepton_and_hadTauCharge_cut");
   std::cout << "apply_lepton_and_hadTauCharge_cut = " << apply_lepton_and_hadTauCharge_cut << std::endl;
 
@@ -431,7 +428,6 @@ int main(int argc, char* argv[])
 //--- declare particle collections
   const bool readGenObjects = isMC && !redoGenMatching;
   RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
-  muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);

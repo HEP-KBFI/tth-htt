@@ -70,9 +70,6 @@ process.analyze_ttZctrl = cms.PSet(
 
     minNumJets = cms.int32(2),
 
-    use_HIP_mitigation_bTag = cms.bool(False),
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),

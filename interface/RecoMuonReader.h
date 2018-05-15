@@ -20,9 +20,6 @@ public:
                  bool readGenMatching = false);
   ~RecoMuonReader();
 
-  void
-  set_HIP_mitigation(bool use_HIP_mitigation);
-
   /**
    * @brief Call tree->SetBranchAddress for all lepton branches specific to RecoMuons
    */
@@ -44,7 +41,6 @@ protected:
   setBranchNames();
 
   int era_;
-  bool use_HIP_mitigation_;
   std::string branchName_num_;
   std::string branchName_obj_;
 

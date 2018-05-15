@@ -53,8 +53,6 @@ process.analyze_2lss = cms.PSet(
         histogramName_mu = cms.string("FR_mva075_mu_data_comb")
     ),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),

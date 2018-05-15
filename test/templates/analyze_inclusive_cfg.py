@@ -63,7 +63,6 @@ process.analyze_inclusive = cms.PSet(
     apply_offline_e_trigger_cuts_1e1tau = cms.bool(True),
 
     hadTauSelection_tauIdWP = cms.string('dR03mvaMedium'),
-    use_HIP_mitigation_mediumMuonId = cms.bool(False), # no effect in nanoAOD
 
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),

@@ -51,8 +51,6 @@ process.analyze_0l_2tau = cms.PSet(
 
     triggerSF_2tau = cms.PSet(),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),

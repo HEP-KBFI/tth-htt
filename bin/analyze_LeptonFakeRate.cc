@@ -426,9 +426,6 @@ main(int argc,
   const bool readGenObjects       = isMC && ! redoGenMatching;
   const bool isDEBUG              = cfg_analyze.getParameter<bool>("isDEBUG");
 
-  const bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
-  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << '\n';
-
   const bool use_triggers_1e  = cfg_analyze.getParameter<bool>("use_triggers_1e");
   const bool use_triggers_2e  = cfg_analyze.getParameter<bool>("use_triggers_2e");
   const bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
@@ -528,7 +525,6 @@ main(int argc,
 
 //--- declare particle collections
   RecoMuonReader * muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
-  muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);

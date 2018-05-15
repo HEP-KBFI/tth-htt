@@ -9,7 +9,7 @@ process.fwliteInput = cms.PSet(
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
- 
+
 process.fwliteOutput = cms.PSet(
     fileName = cms.string('analyze_2lss_1tau.root')
 )
@@ -66,8 +66,6 @@ process.analyze_2lss_1tau = cms.PSet(
             applyFitFunction = cms.bool(True)
         )
     ),
-
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
 
     apply_lepton_and_hadTauCharge_cut = cms.bool(True),
 
