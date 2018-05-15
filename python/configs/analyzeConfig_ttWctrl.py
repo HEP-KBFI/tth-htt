@@ -123,7 +123,6 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       lines.append("process.analyze_ttWctrl.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_ttWctrl.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_ttWctrl.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
-    lines.append("process.analyze_ttWctrl.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))
     lines.append("process.analyze_ttWctrl.leptonChargeSelection = cms.string('%s')" % jobOptions['lepton_charge_selection'])
     lines.append("process.analyze_ttWctrl.hadTauSelection = cms.string('%s')" % jobOptions['hadTauVeto_selection'])
     lines.append("process.analyze_ttWctrl.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
