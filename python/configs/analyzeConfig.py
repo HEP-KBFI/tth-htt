@@ -1,4 +1,4 @@
-import os, logging, uuid
+import os, logging, uuid, inspect
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile
@@ -23,7 +23,7 @@ executable_rm = 'rm'
 
 DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES, DKEY_ROOT, DKEY_HADD_RT, DKEY_SYNC ]
 
-class analyzeConfig:
+class analyzeConfig(object):
     """Configuration metadata needed to run analysis in a single go.
 
        Sets up a folder structure by defining full path names; no directory creation is delegated here.
@@ -59,7 +59,7 @@ class analyzeConfig:
 
     def __init__(self, configDir, outputDir, executable_analyze, channel, central_or_shifts,
                  max_files_per_job, era, use_lumi, lumi, check_input_files, running_method,
-                 num_parallel_jobs, histograms_to_fit,
+                 num_parallel_jobs, histograms_to_fit, triggers,
                  executable_prep_dcard = "prepareDatacards",
                  executable_add_syst_dcard = "addSystDatacards",
                  executable_make_plots = "makePlots",
@@ -105,6 +105,7 @@ class analyzeConfig:
         self.dry_run = dry_run
         self.use_home = use_home
         self.isDebug = isDebug
+        self.triggers = triggers
 
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)
@@ -265,9 +266,71 @@ class analyzeConfig:
             return central_or_shift
         return "central"
 
-    def createCfg_analyze(self, *args):
-        raise ValueError(
-            "Function 'createCfg_analyze' not implemented in derrived class !!")
+    def createCfg_analyze(self, jobOptions, additionalJobOptions):
+        process_string = 'process.analyze_%s' % self.channel
+        current_function_name = inspect.stack()[0][3]
+
+        jobOptions_local = [
+            'process',
+            'isMC',
+            'central_or_shift',
+            'leptonSelection',
+            'histogramDir',
+            'lumiScale',
+            'leptonChargeSelection',
+            'hadTauSelection_veto',
+            'apply_leptonGenMatching',
+            'applyFakeRateWeights',
+            'apply_genWeight',
+            'apply_trigger_bits',
+            'selEventsFileName_output',
+        ]
+        jobOptions_keys = jobOptions_local + additionalJobOptions
+        max_option_len = max(map(len, jobOptions_keys))
+
+        lines = [
+            "# Filled in %s" % current_function_name,
+            "process.fwliteInput.fileNames = cms.vstring(%s)"  % jobOptions['ntupleFiles'],
+            "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
+            "{}.{:<{len}} = cms.string('{}')".format(process_string, 'era',             self.era,     len = max_option_len),
+            "{}.{:<{len}} = cms.bool({})".format    (process_string, 'redoGenMatching', 'False',      len = max_option_len),
+            "{}.{:<{len}} = cms.bool({})".format    (process_string, 'isDEBUG',         self.isDebug, len = max_option_len),
+        ]
+        for jobOptions_key in jobOptions_keys:
+            jobOptions_val = jobOptions[jobOptions_key]
+            jobOptions_expr = ""
+            if type(jobOptions_val) == bool:
+                jobOptions_expr = "cms.bool(%s)"
+            elif type(jobOptions_val) == float:
+                jobOptions_expr = "cms.double(%s)"
+            elif type(jobOptions_val) == str:
+                jobOptions_expr = "cms.string('%s')"
+            else:
+                raise ValueError("Cannot find correct cms type for value: %s" % str(jobOptions_val))
+            assert(jobOptions_expr)
+            jobOptions_val = jobOptions_expr % str(jobOptions_val)
+            lines.append("{}.{:<{len}} = {}".format(process_string, jobOptions_key, jobOptions_val, len = max_option_len))
+
+        for trigger in self.triggers:
+            trigger_string = '%s.triggers_%s'         % (process_string, trigger)
+            trigger_use_string = '%s.use_triggers_%s' % (process_string, trigger)
+            available_triggers = self.whitelist_triggers(
+                getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific']
+            )
+            use_trigger = bool(trigger in jobOptions['triggers'])
+            lines.extend([
+                "{:<{len}} = cms.vstring({})".format(trigger_string,     available_triggers, len = max_option_len + len(process_string) + 1),
+                "{:<{len}} = cms.bool({})".format   (trigger_use_string, use_trigger,        len = max_option_len + len(process_string) + 1),
+            ])
+
+        if self.do_sync:
+            lines.extend([
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree',         jobOptions['syncTree'],   len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.output',       jobOptions['syncOutput'], len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'selEventsFileName_input', jobOptions['syncRLE'],    len = max_option_len),
+            ])
+
+        return lines
 
     def createCfg_addBackgrounds(self, jobOptions):
         """Create python configuration file for the addBackgrounds executable (sum either all "fake" or all "non-fake" contributions)
