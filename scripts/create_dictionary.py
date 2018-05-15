@@ -9,6 +9,10 @@ EVENTS_TREE             = 'Events'
 HISTOGRAM_COUNT_KEY = 'histogram_count'
 TREE_COUNT_KEY      = 'tree_count'
 FSIZE_KEY           = 'fsize'
+BRANCH_NAMES_KEY    = 'branch_names'
+
+LHE_REGEX            = re.compile('(n|)LHE(Scale|Pdf)Weight')
+HIP_MITIGATION_REGEX = re.compile(".*2016[BCDEF].*")
 
 try:
     from urllib.parse import urlparse
@@ -201,11 +205,15 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("genWeight",                       {{ genWeight }}),{% endif %}
   ("triggers",                        {{ triggers }}),
   ("reHLT",                           {{ reHLT }}),
+  ("has_LHE",                         {{ has_LHE }}),
   ("local_paths",
     [
 {{ paths }}
     ]
   ),
+  ("missing_from_superset",           [
+{{ missing_from_superset }}
+  ]),
 ])
 """
 
@@ -214,6 +222,15 @@ path_entry_str = """      OD([
         ("selection", "{{ selection }}"),
         ("blacklist", {{ blacklist }}),
       ]),
+"""
+
+missing_branches_str = """{%- if is_available -%}
+  {%- for missing_branch in missing_branches %}
+    "{{ missing_branch }}",
+  {%- endfor -%}
+{%- else %}
+    # not computed
+{%- endif -%}
 """
 
 sh_str = """#!/bin/bash
@@ -373,7 +390,23 @@ def process_paths(meta_dict, key):
   else:
     raise ValueError("Not enough paths to locate for %s" % key)
 
-def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
+def has_LHE(indices):
+  branch_names = set()
+  for index_entry in indices.values():
+    branch_names.update(index_entry[BRANCH_NAMES_KEY])
+  return any(map(lambda branch_name: bool(LHE_REGEX.match(branch_name)), branch_names))
+
+def get_missing_from_superset(indices):
+  branch_names_superset = set()
+  for index_entry in indices.values():
+    branch_names_superset.update(index_entry[BRANCH_NAMES_KEY])
+  missing_branches_superset = set()
+  for file_idx, index_entry in indices.items():
+    missing_branches = branch_names_superset - set(index_entry[BRANCH_NAMES_KEY])
+    missing_branches_superset.update(missing_branches)
+  return missing_branches_superset
+
+def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, missing_branches,
                     filetracker, file_idx, era):
   ''' Assume that the following subdirectories are of the form: 0000, 0001, 0002, ...
       In these directories we expect root files of the form: tree_1.root, tree_2.root, ...
@@ -383,6 +416,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
   :param path_obj:          Contains meta-information about a path (instance of hdfs.info)
   :param key:               Key to the meta-dictionary the entry of which will be updated
   :param check_every_event: Loop over all events for error checking purposes
+  :param missing_branches:  Find missing branches from the superset of branches in a sample
   :param filetracker:       An instance of FileTracker() for logging broken files
   :param file_idx:          Index of the corrupted file
   :return: None
@@ -417,6 +451,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
       HISTOGRAM_COUNT_KEY : -1,
       TREE_COUNT_KEY      : -1,
       FSIZE_KEY           : -1,
+      BRANCH_NAMES_KEY    : [],
     }
 
     subentries = hdfs_system.get_dir_entries(entry)
@@ -461,6 +496,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
           path = subentry_file.name_fuse,
         ))
       index_entry[TREE_COUNT_KEY] = tree.GetEntries()
+      index_entry[BRANCH_NAMES_KEY] = [ branch.GetName() for branch in tree.GetListOfBranches() ]
 
       if check_every_event:
         logging.info("Inspecting file {path} for corruption".format(path = subentry_file.name_fuse))
@@ -534,8 +570,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
   ))
 
   if not meta_dict[key]['located']:
-    hip_mitigation_regex = re.compile(".*2016[BCDEF].*")
-    meta_dict[key]['use_HIP_mitigation_bTag'] = bool(hip_mitigation_regex.match(
+    meta_dict[key]['use_HIP_mitigation_bTag'] = bool(HIP_MITIGATION_REGEX.match(
       meta_dict[key]['process_name_specific'])
     ) and is_data
     meta_dict[key]['use_HIP_mitigation_mediumMuonId'] = meta_dict[key]['use_HIP_mitigation_bTag']
@@ -546,13 +581,16 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
     meta_dict[key]['type']                            = 'data' if is_data else 'mc'
     meta_dict[key]['reHLT']                           = True
     meta_dict[key]['located']                         = True
+    meta_dict[key]['has_LHE']                         = False if is_data else has_LHE(indices)
+    meta_dict[key]['missing_from_superset']           = [] if not missing_branches else \
+                                                        get_missing_from_superset(indices)
   meta_dict[key]['paths'].append(
     PathEntry(path_obj.name_fuse, indices)
   )
 
   return
 
-def traverse_double(hdfs_system, meta_dict, path_obj, key, check_every_event,
+def traverse_double(hdfs_system, meta_dict, path_obj, key, check_every_event, missing_branches,
                     filetracker, file_idx, era):
   ''' Assume that the name of the following subdirectories are the CRAB job IDs
       The tree structure inside those directories should be the same as described in
@@ -563,6 +601,7 @@ def traverse_double(hdfs_system, meta_dict, path_obj, key, check_every_event,
   :param path_obj:          Contains meta-information about a path (instance of hdfs.info)
   :param key:               Key to the meta-dictionary the entry of which will be updated
   :param check_every_event: Loop over all events for error checking purposes
+  :param missing_branches:  Find missing branches from the superset of branches in a sample
   :param filetracker:       An instance of FileTracker() for logging broken files
   :param file_idx:          Index of the corrupted file
   :return: None
@@ -571,7 +610,8 @@ def traverse_double(hdfs_system, meta_dict, path_obj, key, check_every_event,
   entries = hdfs_system.get_dir_entries(path_obj)
   for entry in entries:
     traverse_single(
-      hdfs_system, meta_dict, entry, key, check_every_event, filetracker, file_idx, era
+      hdfs_system, meta_dict, entry, key, check_every_event, missing_branches,
+      filetracker, file_idx, era
     )
   return
 
@@ -665,6 +705,9 @@ if __name__ == '__main__':
   parser.add_argument('-E', '--era', dest = 'era', metavar = 'era', type = int, default = -1,
                       required = True, choices = (2017,),
                       help = 'R|Era of the samples')
+  parser.add_argument('-M', '--find-missing-branches', dest = 'missing_branches', action = 'store_true',
+                      default = False,
+                      help = 'R|Find missing branches from the superset of branches in a sample')
   parser.add_argument('-x', '--clean', dest = 'clean', action = 'store_true', default = False,
                       help = 'R|Clean the temporary SLURM directory specified by -J')
   parser.add_argument('-F', '--force', dest = 'force', action = 'store_true', default = False,
@@ -745,7 +788,7 @@ if __name__ == '__main__':
         else:
           traverse_single(
             hdfs_system, meta_dict, path, process_names[path.basename],
-            args.check_every_event, filetracker, args.file_idx, args.era
+            args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era
           )
     elif path.basename in crab_strings:
       expected_key = meta_dict[crab_strings[path.basename]]['process_name_specific']
@@ -758,7 +801,7 @@ if __name__ == '__main__':
         else:
           traverse_double(
             hdfs_system, meta_dict, path, crab_strings[path.basename],
-            args.check_every_event, filetracker, args.file_idx, args.era
+            args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era
           )
     else:
       entries = hdfs_system.get_dir_entries(path)
@@ -943,6 +986,10 @@ if __name__ == '__main__':
             blacklist = path_entry['blacklist'], #TODO: format properly
           ))
         is_mc = meta_dict[key]['type'] == 'mc'
+        missing_branches_template_filled = jinja2.Template(missing_branches_str).render(
+          is_available     = args.missing_branches,
+          missing_branches = meta_dict[key]['missing_from_superset'],
+        ).lstrip('\n')
         output += jinja2.Template(dictionary_entry_str).render(
           dict_name                       = args.output_dict_name,
           dbs_name                        = key,
@@ -967,6 +1014,8 @@ if __name__ == '__main__':
           genWeight                       = meta_dict[key]['genWeight'],
           triggers                        = meta_dict[key]['triggers'],
           reHLT                           = meta_dict[key]['reHLT'],
+          has_LHE                         = meta_dict[key]['has_LHE'],
+          missing_from_superset           = missing_branches_template_filled,
           paths                           = '\n'.join(path_entries_arr),
         ) + '\n\n'
       else:
