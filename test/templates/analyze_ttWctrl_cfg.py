@@ -73,6 +73,11 @@ process.analyze_ttWctrl = cms.PSet(
     selEventsFileName_output = cms.string(''),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
+
+    syncNtuple = cms.PSet(
+        tree = cms.string(''),
+        output = cms.string(''),
+    ),
 )
 
 
