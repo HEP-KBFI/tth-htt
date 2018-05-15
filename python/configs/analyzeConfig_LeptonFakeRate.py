@@ -384,6 +384,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'absEtaBins_mu'            : self.absEtaBins_mu,
             'ptBins_mu'                : self.ptBins_mu,
             'central_or_shift'         : central_or_shift,
+            'apply_trigger_bits'       : apply_trigger_bits,
             'use_triggers_1e'          : '1e' in sample_info["triggers"],
             'use_triggers_1mu'         : '1mu' in sample_info["triggers"],
             'use_triggers_2e'          : '2e' in sample_info["triggers"],
