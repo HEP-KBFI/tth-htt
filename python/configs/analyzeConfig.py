@@ -233,6 +233,7 @@ class analyzeConfig(object):
             "{}.{:<{len}} = cms.bool({})".format    (process_string, 'isDEBUG',         self.isDebug, len = max_option_len),
         ]
         for jobOptions_key in jobOptions_keys:
+            if jobOptions_key not in jobOptions: continue # temporary?
             jobOptions_val = jobOptions[jobOptions_key]
             jobOptions_expr = ""
             if type(jobOptions_val) == bool:
