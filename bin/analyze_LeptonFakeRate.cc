@@ -417,6 +417,7 @@ main(int argc,
   const int era = get_era(era_string);
   const bool isMC    = cfg_analyze.getParameter<bool>("isMC");
   const bool isMC_tH = process_string == "tH" ? true : false;
+  const bool hasLHE  = cfg_analyze.getParameter<bool>("hasLHE");
 
   const std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   const double lumiScale          = process_string != "data_obs" ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
@@ -595,7 +596,7 @@ main(int argc,
         inputTree->registerReader(genJetReader);
       }
     }
-    lheInfoReader = new LHEInfoReader();
+    lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree->registerReader(lheInfoReader);
   }
 

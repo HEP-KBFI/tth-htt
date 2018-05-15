@@ -101,4 +101,5 @@ process.analyze_2los_1tau = cms.PSet(
     selEventsFileName_output = cms.string(''),
     selectBDT = cms.bool(False),
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )

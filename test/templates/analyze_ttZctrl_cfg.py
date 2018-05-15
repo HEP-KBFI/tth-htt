@@ -93,4 +93,5 @@ process.analyze_ttZctrl = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
     ),
+    hasLHE = cms.bool(True),
 )

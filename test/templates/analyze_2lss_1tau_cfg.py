@@ -108,4 +108,5 @@ process.analyze_2lss_1tau = cms.PSet(
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )

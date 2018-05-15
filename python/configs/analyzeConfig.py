@@ -210,10 +210,13 @@ class analyzeConfig(object):
         if 'lumiScale' not in jobOptions:
           jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / sample_info["nof_events"] \
                                     if (self.use_lumi and is_mc) else 1.
+        if 'hasLHE' not in jobOptions:
+            jobOptions['hasLHE'] = sample_info['has_LHE']
 
         jobOptions_local = [
             'process',
             'isMC',
+            'hasLHE',
             'central_or_shift',
             'leptonSelection',
             'chargeSumSelection',

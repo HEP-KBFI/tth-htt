@@ -76,4 +76,5 @@ process.analyze_jetToTauFakeRate = cms.PSet(
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )

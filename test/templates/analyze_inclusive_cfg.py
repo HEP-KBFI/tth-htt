@@ -86,4 +86,5 @@ process.analyze_inclusive = cms.PSet(
         tree = cms.string('syncTree'),
         output = cms.string('inclusive.root'),
     ),
+    hasLHE = cms.bool(True),
 )

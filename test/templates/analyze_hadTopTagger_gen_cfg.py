@@ -86,6 +86,7 @@ process.analyze_hadTopTagger_gen = cms.PSet(
     selEventsFileName_output_semiboosted = cms.string('selEvents_hadTopTagger_gen_semiboosted.txt'),
     selEventsFileName_output_resolved = cms.string('selEvents_hadTopTagger_gen_resolved.txt'),
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )
 
 ## inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb28_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"

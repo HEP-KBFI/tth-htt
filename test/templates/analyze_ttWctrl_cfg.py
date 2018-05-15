@@ -75,6 +75,7 @@ process.analyze_ttWctrl = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
     ),
+    hasLHE = cms.bool(True),
 )
 
 

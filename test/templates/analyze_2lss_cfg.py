@@ -96,4 +96,5 @@ process.analyze_2lss = cms.PSet(
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )
