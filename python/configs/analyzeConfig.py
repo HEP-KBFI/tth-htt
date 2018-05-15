@@ -194,7 +194,7 @@ class analyzeConfig(object):
             return central_or_shift
         return "central"
 
-    def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions):
+    def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = []):
         process_string = 'process.analyze_%s' % self.channel
         current_function_name = inspect.stack()[0][3]
 
@@ -214,6 +214,7 @@ class analyzeConfig(object):
             'histogramDir',
             'lumiScale',
             'leptonChargeSelection',
+            'hadTauSelection',
             'hadTauSelection_veto',
             'apply_leptonGenMatching',
             'applyFakeRateWeights',

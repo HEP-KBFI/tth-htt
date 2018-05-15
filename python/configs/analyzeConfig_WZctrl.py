@@ -50,10 +50,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_WZctrl.cc
     """
-    additionalJobOptions = [
-      'hadTau_selection',
-    ]
-    lines = super(analyzeConfig_WZctrl, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
+    lines = super(analyzeConfig_WZctrl, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):
@@ -137,7 +134,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
             'logFile'                  : logFile_path,
             'selEventsFileName_output' : rleOutputFile_path,
             'sample_category'          : sample_category,
-            'hadTau_selection'         : self.hadTau_selection_part2,
+            'hadTauSelection'          : self.hadTau_selection_part2,
             'central_or_shift'         : central_or_shift,
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
