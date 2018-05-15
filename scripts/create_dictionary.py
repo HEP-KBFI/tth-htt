@@ -570,7 +570,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
 
   if not meta_dict[key]['located']:
     missing_from_superset = [] if not missing_branches else get_missing_from_superset(indices)
-    overlap_with_triggers = triggerTable.overlap(
+    overlap_with_triggers = triggerTable.get_overlap(
       missing_from_superset, meta_dict[key]['process_name_specific']
     )
     if overlap_with_triggers:
@@ -771,7 +771,7 @@ if __name__ == '__main__':
 
   # set up the regex object
   name_regex = re.compile(args.filter)
-  triggerTable = Triggers(args.era)
+  triggerTable = Triggers(str(args.era))
 
   # process the directory structure of each path
   paths_to_traverse = {}
