@@ -5,6 +5,7 @@ from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
+from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
 
 # dir for python configuration and batch script files for each analysis job
 DKEY_CFGS = "cfgs"
@@ -106,6 +107,7 @@ class analyzeConfig(object):
         self.use_home = use_home
         self.isDebug = isDebug
         self.triggers = triggers
+        self.triggerTable = Triggers(self.era)
 
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)
@@ -162,72 +164,7 @@ class analyzeConfig(object):
         if self.do_sync:
             self.inputFiles_sync['sync'] = []
 
-        if era == '2017':
-            self.triggers_3mu = [
-                'HLT_TripleMu_12_10_5',
-            ]
-            self.triggers_1e2mu = [
-#                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL', # prescale of 2
-                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ', # unprescaled
-            ]
-            self.triggers_2e1mu = [
-                'HLT_Mu8_DiEle12_CaloIdL_TrackIdL',
-            ]
-            self.triggers_3e = [
-                'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL', # has PU dependence
-            ]
-            self.triggers_2mu = [
-#                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL', # heavily prescaled throughout 2017 data-taking period
-                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # unprescaled in 2017B; heavily prescaled since 2017C
-                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # introduced in 2017C
-            ]
-            self.triggers_1e1mu = [
-                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # not present in 2017B
-                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
-                'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ',
-            ]
-            self.triggers_2e = [
-                'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # higher efficiency than non-DZ; not present in 2017B
-                'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
-            ]
-            self.triggers_1mu = [
-                'HLT_IsoMu24', # not enabled at high lumi
-                'HLT_IsoMu27',
-            ]
-            self.triggers_1e = [
-                'HLT_Ele32_WPTight_Gsf', # not present in 2017BC (or, equivalently, not enabled at high lumi)
-                'HLT_Ele35_WPTight_Gsf',
-            ]
-            # CV: tau trigger paths taken from slide 6 of presentation given by Hale Sert at HTT workshop in December 2017
-            #    (https://indico.cern.ch/event/684622/contributions/2807071/attachments/1575421/2487940/141217_triggerStatusPlans_hsert.pdf),
-            #     except that the 'HLT_IsoMu24_eta2p1_LooseChargedIsoPFTau20_SingleL1' path has been dropped,
-            #     as it was found to increase the trigger acceptance only marginally
-            #    (cf. slide 19 of https://indico.cern.ch/event/683144/contributions/2814995/attachments/1570846/2478034/Ruggles_TauTriggers_TauPOG_20171206_v7.pdf)
-            self.triggers_1mu1tau = [
-                'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1',
-            ]
-            self.triggers_1e1tau = [
-                'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
-            ]
-            self.triggers_2tau = [
-                'HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg',
-                'HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg',
-                'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg',
-                'HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg',
-            ]
-            self.triggers_missing_Run2017B = [
-                'HLT_Ele32_WPTight_Gsf', # 1e
-                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # 1e1mu
-                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # 2mu
-            ]
-            self.triggers_missing_Run2017C = [
-                'HLT_Ele32_WPTight_Gsf', # 1e
-            ]
-        else:
-            raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
-
         self.targets = []
-
         self.cvmfs_error_log = {}
 
         self.num_jobs = {}
@@ -241,15 +178,6 @@ class analyzeConfig(object):
             logging.error("Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times)))
             for time in times:
                 logging.error(str(time))
-
-    def whitelist_triggers(self, triggers, process_name_specific):
-        triggers_to_blacklist = set()
-        if 'Run2017B' in process_name_specific:
-            triggers_to_blacklist = set(self.triggers_missing_Run2017B)
-        elif 'Run2017C' in process_name_specific:
-            triggers_to_blacklist = set(self.triggers_missing_Run2017C)
-        triggers = list(set(triggers) - triggers_to_blacklist)
-        return triggers
 
     def get_addMEM_systematics(self, central_or_shift):
         if central_or_shift in [
@@ -320,12 +248,10 @@ class analyzeConfig(object):
             lines.append("{}.{:<{len}} = {}".format(process_string, jobOptions_key, jobOptions_val, len = max_option_len))
 
         for trigger in self.triggers:
-            trigger_string = '%s.triggers_%s'         % (process_string, trigger)
+            trigger_string     = '%s.triggers_%s'     % (process_string, trigger)
             trigger_use_string = '%s.use_triggers_%s' % (process_string, trigger)
-            available_triggers = self.whitelist_triggers(
-                getattr(self, 'triggers_%s' % trigger), sample_info['process_name_specific']
-            )
-            use_trigger = bool(trigger in sample_info['triggers'])
+            available_triggers = self.triggerTable.get(trigger, sample_info['process_name_specific'])
+            use_trigger        = bool(trigger in sample_info['triggers'])
             lines.extend([
                 "{:<{len}} = cms.vstring({})".format(trigger_string,     available_triggers, len = max_option_len + len(process_string) + 1),
                 "{:<{len}} = cms.bool({})".format   (trigger_use_string, use_trigger,        len = max_option_len + len(process_string) + 1),

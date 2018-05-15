@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy, itertools, time, shutil, datetime
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
+from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
 
 HISTOGRAM_COUNT         = 'Count'
 HISTOGRAM_COUNTWEIGHTED = 'CountWeighted'
@@ -404,7 +405,7 @@ def get_missing_from_superset(indices):
   return list(sorted(list(missing_branches_superset)))
 
 def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, missing_branches,
-                    filetracker, file_idx, era):
+                    filetracker, file_idx, era, triggerTable):
   ''' Assume that the following subdirectories are of the form: 0000, 0001, 0002, ...
       In these directories we expect root files of the form: tree_1.root, tree_2.root, ...
       If either of those assumptions doesn't hold, we bail out; no clever event count needed
@@ -416,6 +417,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
   :param missing_branches:  Find missing branches from the superset of branches in a sample
   :param filetracker:       An instance of FileTracker() for logging broken files
   :param file_idx:          Index of the corrupted file
+  :param triggerTable:      Trigger instance containing a list of required triggers for the era
   :return: None
   '''
   if 'paths' not in meta_dict[key]:
@@ -567,6 +569,15 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
   ))
 
   if not meta_dict[key]['located']:
+    missing_from_superset = [] if not missing_branches else get_missing_from_superset(indices)
+    overlap_with_triggers = triggerTable.overlap(
+      missing_from_superset, meta_dict[key]['process_name_specific']
+    )
+    if overlap_with_triggers:
+      raise ValueError(
+        "Found an overlap b/w the list of required triggers and the list of missing branches in "
+        "sample %s: %s" % (meta_dict[key]['process_name_specific'], ', '.join(overlap_with_triggers))
+       )
     meta_dict[key]['triggers']                        = get_triggers(
       meta_dict[key]['process_name_specific'], is_data, era
     )
@@ -575,8 +586,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
     meta_dict[key]['reHLT']                           = True
     meta_dict[key]['located']                         = True
     meta_dict[key]['has_LHE']                         = False if is_data else has_LHE(indices)
-    meta_dict[key]['missing_from_superset']           = [] if not missing_branches else \
-                                                        get_missing_from_superset(indices)
+    meta_dict[key]['missing_from_superset']           = missing_from_superset
   meta_dict[key]['paths'].append(
     PathEntry(path_obj.name_fuse, indices)
   )
@@ -584,7 +594,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
   return
 
 def traverse_double(hdfs_system, meta_dict, path_obj, key, check_every_event, missing_branches,
-                    filetracker, file_idx, era):
+                    filetracker, file_idx, era, triggerTable):
   ''' Assume that the name of the following subdirectories are the CRAB job IDs
       The tree structure inside those directories should be the same as described in
       traverse_single()
@@ -597,6 +607,7 @@ def traverse_double(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
   :param missing_branches:  Find missing branches from the superset of branches in a sample
   :param filetracker:       An instance of FileTracker() for logging broken files
   :param file_idx:          Index of the corrupted file
+  :param triggerTable:      Trigger instance containing a list of required triggers for the era
   :return: None
   '''
   logging.info("Double-traversing {path}".format(path = path_obj.name_fuse))
@@ -604,7 +615,7 @@ def traverse_double(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
   for entry in entries:
     traverse_single(
       hdfs_system, meta_dict, entry, key, check_every_event, missing_branches,
-      filetracker, file_idx, era
+      filetracker, file_idx, era, triggerTable
     )
   return
 
@@ -760,6 +771,7 @@ if __name__ == '__main__':
 
   # set up the regex object
   name_regex = re.compile(args.filter)
+  triggerTable = Triggers(args.era)
 
   # process the directory structure of each path
   paths_to_traverse = {}
@@ -781,7 +793,8 @@ if __name__ == '__main__':
         else:
           traverse_single(
             hdfs_system, meta_dict, path, process_names[path.basename],
-            args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era
+            args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
+            triggerTable
           )
     elif path.basename in crab_strings:
       expected_key = meta_dict[crab_strings[path.basename]]['process_name_specific']
@@ -794,7 +807,8 @@ if __name__ == '__main__':
         else:
           traverse_double(
             hdfs_system, meta_dict, path, crab_strings[path.basename],
-            args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era
+            args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
+            triggerTable
           )
     else:
       entries = hdfs_system.get_dir_entries(path)
