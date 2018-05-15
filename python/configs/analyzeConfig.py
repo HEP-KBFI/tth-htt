@@ -199,12 +199,17 @@ class analyzeConfig(object):
         current_function_name = inspect.stack()[0][3]
 
         is_mc = (sample_info["type"] == "mc")
-        jobOptions['process']            = sample_info["sample_category"]
-        jobOptions['isMC']               = is_mc
-        jobOptions['apply_genWeight']    = sample_info["genWeight"] if is_mc else False
-        jobOptions['apply_trigger_bits'] = (is_mc and sample_info["reHLT"]) or not is_mc
-        jobOptions['lumiScale']          = sample_info["xsection"] * self.lumi / sample_info["nof_events"] \
-                                           if (self.use_lumi and is_mc) else 1.
+        if 'process' not in jobOptions:
+          jobOptions['process'] = sample_info["sample_category"]
+        if 'isMC' not in jobOptions:
+          jobOptions['isMC'] = is_mc
+        if 'apply_genWeight' not in jobOptions:
+          jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
+        if 'apply_trigger_bits' not in jobOptions:
+          jobOptions['apply_trigger_bits'] = (is_mc and sample_info["reHLT"]) or not is_mc
+        if 'lumiScale' not in jobOptions:
+          jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / sample_info["nof_events"] \
+                                    if (self.use_lumi and is_mc) else 1.
 
         jobOptions_local = [
             'process',
