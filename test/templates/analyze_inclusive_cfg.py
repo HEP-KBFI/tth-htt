@@ -10,6 +10,10 @@ process.fwliteInput = cms.PSet(
     outputEvery = cms.uint32(1000)
 )
 
+process.fwliteOutput = cms.PSet(
+    fileName = cms.string('')
+)
+
 process.analyze_inclusive = cms.PSet(
     treeName = cms.string('Events'),
     process = cms.string('signal'),
