@@ -404,7 +404,7 @@ def get_missing_from_superset(indices):
   for file_idx, index_entry in indices.items():
     missing_branches = branch_names_superset - set(index_entry[BRANCH_NAMES_KEY])
     missing_branches_superset.update(missing_branches)
-  return missing_branches_superset
+  return list(sorted(list(missing_branches_superset)))
 
 def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, missing_branches,
                     filetracker, file_idx, era):
