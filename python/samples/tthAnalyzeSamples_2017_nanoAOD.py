@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-05-11 01:34:01 with the following command:
-# create_dictionary.py -v -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017.txt -Z zeroes.txt -z zombies.txt -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_nanoAOD.py
+# file generated at 2018-05-15 20:57:22 with the following command:
+# create_dictionary.py -v -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017.txt -Z zeroes.txt -z zombies.txt -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_nanoAOD.py -M
 
 samples_2017 = OD()
 samples_2017["/SingleElectron/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
@@ -15,11 +15,10 @@ samples_2017["/SingleElectron/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   60537490),
   ("fsize_local",                     36421699370), # 36.42GB, avg file size 31.67MB
   ("fsize_db",                        1839129571740), # 1.84TB, avg file size 2.90GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1e']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -29,7 +28,7 @@ samples_2017["/SingleElectron/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_HcalIsolatedbunch",
     "HLT_L1FatEvents",
   ]),
@@ -46,11 +45,10 @@ samples_2017["/SingleElectron/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   136637888),
   ("fsize_local",                     92652744376), # 92.65GB, avg file size 35.83MB
   ("fsize_db",                        4293152220674), # 4.29TB, avg file size 2.52GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1e']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -60,7 +58,7 @@ samples_2017["/SingleElectron/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_DiPFJetAve100_HFJEC",
     "HLT_DiPFJetAve140",
     "HLT_DiPFJetAve160_HFJEC",
@@ -160,11 +158,10 @@ samples_2017["/SingleElectron/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   51526710),
   ("fsize_local",                     36259618542), # 36.26GB, avg file size 35.51MB
   ("fsize_db",                        1584079997402), # 1.58TB, avg file size 2.29GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1e']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -174,7 +171,7 @@ samples_2017["/SingleElectron/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_TripleMu_5_3_3_Mass3p8to60_DZ",
   ]),
 ])
@@ -190,11 +187,10 @@ samples_2017["/SingleElectron/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   102121689),
   ("fsize_local",                     76242887443), # 76.24GB, avg file size 37.63MB
   ("fsize_db",                        3608372444378), # 3.61TB, avg file size 2.82GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1e']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -204,7 +200,8 @@ samples_2017["/SingleElectron/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
+
   ]),
 ])
 
@@ -219,11 +216,10 @@ samples_2017["/SingleElectron/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   128467223),
   ("fsize_local",                     100317379754), # 100.32GB, avg file size 39.31MB
   ("fsize_db",                        4628019555901), # 4.63TB, avg file size 2.92GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1e']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -233,7 +229,7 @@ samples_2017["/SingleElectron/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_AK8PFJet330_PFAK8BTagCSV_p1",
     "HLT_AK8PFJet330_PFAK8BTagCSV_p17",
     "HLT_Diphoton30_18_PVrealAND_R9Id_AND_IsoCaloId_AND_HE_R9Id_NoPixelVeto_Mass55",
@@ -302,11 +298,10 @@ samples_2017["/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   136300266),
   ("fsize_local",                     75582613196), # 75.58GB, avg file size 28.21MB
   ("fsize_db",                        3681903942053), # 3.68TB, avg file size 3.21GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -316,7 +311,7 @@ samples_2017["/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_HcalIsolatedbunch",
     "HLT_L1FatEvents",
   ]),
@@ -333,11 +328,10 @@ samples_2017["/SingleMuon/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   165652756),
   ("fsize_local",                     97849742049), # 97.85GB, avg file size 31.31MB
   ("fsize_db",                        4719988428330), # 4.72TB, avg file size 3.12GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -347,7 +341,7 @@ samples_2017["/SingleMuon/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_DiPFJetAve100_HFJEC",
     "HLT_DiPFJetAve140",
     "HLT_DiPFJetAve160_HFJEC",
@@ -447,11 +441,10 @@ samples_2017["/SingleMuon/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   70361660),
   ("fsize_local",                     43815901476), # 43.82GB, avg file size 31.34MB
   ("fsize_db",                        2004044655656), # 2.00TB, avg file size 2.44GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -461,7 +454,7 @@ samples_2017["/SingleMuon/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_TripleMu_5_3_3_Mass3p8to60_DZ",
   ]),
 ])
@@ -477,11 +470,10 @@ samples_2017["/SingleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   154630534),
   ("fsize_local",                     103041240461), # 103.04GB, avg file size 33.24MB
   ("fsize_db",                        5063603395030), # 5.06TB, avg file size 3.03GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -491,7 +483,8 @@ samples_2017["/SingleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
+
   ]),
 ])
 
@@ -506,11 +499,10 @@ samples_2017["/SingleMuon/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   242140980),
   ("fsize_local",                     167333079573), # 167.33GB, avg file size 34.06MB
   ("fsize_db",                        8025096282975), # 8.03TB, avg file size 2.93GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -520,7 +512,7 @@ samples_2017["/SingleMuon/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_AK8PFJet330_PFAK8BTagCSV_p1",
     "HLT_AK8PFJet330_PFAK8BTagCSV_p17",
     "HLT_Diphoton30_18_PVrealAND_R9Id_AND_IsoCaloId_AND_HE_R9Id_NoPixelVeto_Mass55",
@@ -589,11 +581,10 @@ samples_2017["/DoubleEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   58088760),
   ("fsize_local",                     42263853306), # 42.26GB, avg file size 38.49MB
   ("fsize_db",                        2000582502159), # 2.00TB, avg file size 2.64GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -603,7 +594,7 @@ samples_2017["/DoubleEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_HcalIsolatedbunch",
     "HLT_L1FatEvents",
   ]),
@@ -620,11 +611,10 @@ samples_2017["/DoubleEG/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   65181125),
   ("fsize_local",                     48601880964), # 48.60GB, avg file size 40.47MB
   ("fsize_db",                        2252815090346), # 2.25TB, avg file size 2.66GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -634,7 +624,7 @@ samples_2017["/DoubleEG/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_DiPFJetAve100_HFJEC",
     "HLT_DiPFJetAve140",
     "HLT_DiPFJetAve160_HFJEC",
@@ -734,11 +724,10 @@ samples_2017["/DoubleEG/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   25911432),
   ("fsize_local",                     20579874491), # 20.58GB, avg file size 40.59MB
   ("fsize_db",                        881576196022), # 881.58GB, avg file size 2.56GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -748,7 +737,7 @@ samples_2017["/DoubleEG/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_TripleMu_5_3_3_Mass3p8to60_DZ",
   ]),
 ])
@@ -764,11 +753,10 @@ samples_2017["/DoubleEG/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   56235775),
   ("fsize_local",                     47658132283), # 47.66GB, avg file size 43.48MB
   ("fsize_db",                        2140362591723), # 2.14TB, avg file size 3.35GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -778,7 +766,8 @@ samples_2017["/DoubleEG/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
+
   ]),
 ])
 
@@ -793,11 +782,10 @@ samples_2017["/DoubleEG/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   74344288),
   ("fsize_local",                     65458121724), # 65.46GB, avg file size 44.83MB
   ("fsize_db",                        2879805741948), # 2.88TB, avg file size 2.81GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -807,7 +795,7 @@ samples_2017["/DoubleEG/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_AK8PFJet330_PFAK8BTagCSV_p1",
     "HLT_AK8PFJet330_PFAK8BTagCSV_p17",
     "HLT_Diphoton30_18_PVrealAND_R9Id_AND_IsoCaloId_AND_HE_R9Id_NoPixelVeto_Mass55",
@@ -876,11 +864,10 @@ samples_2017["/DoubleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   14501767),
   ("fsize_local",                     9377250709), # 9.38GB, avg file size 35.25MB
   ("fsize_db",                        429564397133), # 429.56GB, avg file size 2.62GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -890,7 +877,7 @@ samples_2017["/DoubleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_HcalIsolatedbunch",
     "HLT_L1FatEvents",
   ]),
@@ -907,11 +894,10 @@ samples_2017["/DoubleMuon/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   49636525),
   ("fsize_local",                     35579400710), # 35.58GB, avg file size 38.88MB
   ("fsize_db",                        1506932771681), # 1.51TB, avg file size 3.23GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -921,7 +907,7 @@ samples_2017["/DoubleMuon/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_DiPFJetAve100_HFJEC",
     "HLT_DiPFJetAve140",
     "HLT_DiPFJetAve160_HFJEC",
@@ -1021,11 +1007,10 @@ samples_2017["/DoubleMuon/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   23075733),
   ("fsize_local",                     17532999507), # 17.53GB, avg file size 39.05MB
   ("fsize_db",                        700300808389), # 700.30GB, avg file size 2.89GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -1035,7 +1020,7 @@ samples_2017["/DoubleMuon/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_TripleMu_5_3_3_Mass3p8to60_DZ",
   ]),
 ])
@@ -1051,11 +1036,10 @@ samples_2017["/DoubleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   51589091),
   ("fsize_local",                     41824963942), # 41.82GB, avg file size 41.70MB
   ("fsize_db",                        1822288632364), # 1.82TB, avg file size 3.06GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -1065,7 +1049,8 @@ samples_2017["/DoubleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
+
   ]),
 ])
 
@@ -1080,11 +1065,10 @@ samples_2017["/DoubleMuon/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   79756560),
   ("fsize_local",                     64336647182), # 64.34GB, avg file size 42.72MB
   ("fsize_db",                        2792396630929), # 2.79TB, avg file size 3.19GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -1094,7 +1078,7 @@ samples_2017["/DoubleMuon/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_AK8PFJet330_PFAK8BTagCSV_p1",
     "HLT_AK8PFJet330_PFAK8BTagCSV_p17",
     "HLT_Diphoton30_18_PVrealAND_R9Id_AND_IsoCaloId_AND_HE_R9Id_NoPixelVeto_Mass55",
@@ -1163,11 +1147,10 @@ samples_2017["/MuonEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   4453465),
   ("fsize_local",                     3665798402), # 3.67GB, avg file size 45.26MB
   ("fsize_db",                        151955610304), # 151.96GB, avg file size 2.17GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -1177,7 +1160,7 @@ samples_2017["/MuonEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_HcalIsolatedbunch",
     "HLT_L1FatEvents",
   ]),
@@ -1194,11 +1177,10 @@ samples_2017["/MuonEG/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   15595214),
   ("fsize_local",                     14043158866), # 14.04GB, avg file size 49.27MB
   ("fsize_db",                        548775705076), # 548.78GB, avg file size 2.51GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -1208,7 +1190,7 @@ samples_2017["/MuonEG/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_DiPFJetAve100_HFJEC",
     "HLT_DiPFJetAve140",
     "HLT_DiPFJetAve160_HFJEC",
@@ -1308,11 +1290,10 @@ samples_2017["/MuonEG/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   9164365),
   ("fsize_local",                     8713270522), # 8.71GB, avg file size 48.95MB
   ("fsize_db",                        321530133689), # 321.53GB, avg file size 2.55GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -1322,7 +1303,7 @@ samples_2017["/MuonEG/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_TripleMu_5_3_3_Mass3p8to60_DZ",
   ]),
 ])
@@ -1338,11 +1319,10 @@ samples_2017["/MuonEG/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   19043421),
   ("fsize_local",                     18850203527), # 18.85GB, avg file size 51.08MB
   ("fsize_db",                        753395415338), # 753.40GB, avg file size 3.15GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -1352,7 +1332,8 @@ samples_2017["/MuonEG/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
+
   ]),
 ])
 
@@ -1367,11 +1348,10 @@ samples_2017["/MuonEG/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("nof_db_events",                   25776363),
   ("fsize_local",                     26064857734), # 26.06GB, avg file size 52.03MB
   ("fsize_db",                        1031887580033), # 1.03TB, avg file size 2.85GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -1381,7 +1361,7 @@ samples_2017["/MuonEG/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
-  ("missing_from_superset", [
+  ("missing_from_superset",           [
     "HLT_AK8PFJet330_PFAK8BTagCSV_p1",
     "HLT_AK8PFJet330_PFAK8BTagCSV_p17",
     "HLT_Diphoton30_18_PVrealAND_R9Id_AND_IsoCaloId_AND_HE_R9Id_NoPixelVeto_Mass55",
@@ -1450,13 +1430,12 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("nof_db_events",                   9650032),
   ("fsize_local",                     25720305081), # 25.72GB, avg file size 131.90MB
   ("fsize_db",                        603282930374), # 603.28GB, avg file size 2.13GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.2118),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1466,6 +1445,9 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1479,13 +1461,12 @@ samples_2017["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-9
   ("nof_db_events",                   7669336),
   ("fsize_local",                     20741906758), # 20.74GB, avg file size 133.82MB
   ("fsize_db",                        465938496839), # 465.94GB, avg file size 2.13GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          False),
   ("xsection",                        0.2118),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1495,6 +1476,9 @@ samples_2017["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-9
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1508,13 +1492,12 @@ samples_2017["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIF
   ("nof_db_events",                   9911561),
   ("fsize_local",                     26583424399), # 26.58GB, avg file size 132.92MB
   ("fsize_db",                        626042445493), # 626.04GB, avg file size 2.42GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          False),
   ("xsection",                        0.2953),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1524,6 +1507,9 @@ samples_2017["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIF
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1537,13 +1523,12 @@ samples_2017["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall1
   ("nof_db_events",                   934244),
   ("fsize_local",                     1345840068), # 1.35GB, avg file size 70.83MB
   ("fsize_db",                        42622664498), # 42.62GB, avg file size 906.87MB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.01212),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1553,6 +1538,9 @@ samples_2017["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall1
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1566,13 +1554,12 @@ samples_2017["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAO
   ("nof_db_events",                   7563490),
   ("fsize_local",                     18067482735), # 18.07GB, avg file size 118.09MB
   ("fsize_db",                        444833969271), # 444.83GB, avg file size 2.24GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.2529),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1582,6 +1569,9 @@ samples_2017["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAO
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1595,13 +1585,12 @@ samples_2017["/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD
   ("nof_db_events",                   250000),
   ("fsize_local",                     573189887), # 573.19MB, avg file size 95.53MB
   ("fsize_db",                        14727460148), # 14.73GB, avg file size 866.32MB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.0493),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1611,6 +1600,9 @@ samples_2017["/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] = OD([
@@ -1624,13 +1616,12 @@ samples_2017["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall
   ("nof_db_events",                   4925829),
   ("fsize_local",                     12004291899), # 12.00GB, avg file size 120.04MB
   ("fsize_db",                        292280765632), # 292.28GB, avg file size 2.68GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.2043),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1640,6 +1631,9 @@ samples_2017["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1653,13 +1647,12 @@ samples_2017["/TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8
   ("nof_db_events",                   4889942),
   ("fsize_local",                     11898223875), # 11.90GB, avg file size 120.18MB
   ("fsize_db",                        290787551975), # 290.79GB, avg file size 2.38GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.2043),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1669,6 +1662,9 @@ samples_2017["/TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10_ext1-v2/MINIAODSIM"] = OD([
@@ -1682,13 +1678,12 @@ samples_2017["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017
   ("nof_db_events",                   200000),
   ("fsize_local",                     545394676), # 545.39MB, avg file size 109.08MB
   ("fsize_db",                        13111885203), # 13.11GB, avg file size 1.19GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.007834),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1698,6 +1693,9 @@ samples_2017["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1711,13 +1709,12 @@ samples_2017["/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunII
   ("nof_db_events",                   9472619),
   ("fsize_local",                     13877180831), # 13.88GB, avg file size 72.28MB
   ("fsize_db",                        423862017407), # 423.86GB, avg file size 1.95GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        3.36),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1727,6 +1724,9 @@ samples_2017["/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunII
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/ST_t-channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspin-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1740,13 +1740,12 @@ samples_2017["/ST_t-channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-ma
   ("nof_db_events",                   3891190),
   ("fsize_local",                     5928072226), # 5.93GB, avg file size 75.04MB
   ("fsize_db",                        177784436788), # 177.78GB, avg file size 1.53GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        80.95),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1756,6 +1755,9 @@ samples_2017["/ST_t-channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-ma
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/ST_t-channel_top_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspin-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1769,13 +1771,12 @@ samples_2017["/ST_t-channel_top_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspi
   ("nof_db_events",                   5841455),
   ("fsize_local",                     8963984476), # 8.96GB, avg file size 68.95MB
   ("fsize_db",                        268058212482), # 268.06GB, avg file size 1.44GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        136.02),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1785,6 +1786,9 @@ samples_2017["/ST_t-channel_top_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspi
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1798,13 +1802,12 @@ samples_2017["/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/Run
   ("nof_db_events",                   7756300),
   ("fsize_local",                     13412794950), # 13.41GB, avg file size 85.43MB
   ("fsize_db",                        386122494678), # 386.12GB, avg file size 2.49GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        35.85),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1814,6 +1817,9 @@ samples_2017["/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/Run
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1827,13 +1833,12 @@ samples_2017["/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFa
   ("nof_db_events",                   7558006),
   ("fsize_local",                     13070339562), # 13.07GB, avg file size 85.43MB
   ("fsize_db",                        376466493438), # 376.47GB, avg file size 2.06GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        35.85),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1843,6 +1848,9 @@ samples_2017["/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFa
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] = OD([
@@ -1856,13 +1864,12 @@ samples_2017["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2
   ("nof_db_events",                   8705576),
   ("fsize_local",                     16194715196), # 16.19GB, avg file size 91.50MB
   ("fsize_db",                        451436194017), # 451.44GB, avg file size 2.75GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        88.29),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1872,6 +1879,9 @@ samples_2017["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1885,13 +1895,12 @@ samples_2017["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniA
   ("nof_db_events",                   69705626),
   ("fsize_local",                     129582511235), # 129.58GB, avg file size 91.84MB
   ("fsize_db",                        3608766343800), # 3.61TB, avg file size 2.93GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          False),
   ("xsection",                        88.29),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1901,6 +1910,9 @@ samples_2017["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniA
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1914,13 +1926,12 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-
   ("nof_db_events",                   41161951),
   ("fsize_local",                     79145829697), # 79.15GB, avg file size 95.24MB
   ("fsize_db",                        2166068169129), # 2.17TB, avg file size 2.92GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        365.34),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1930,6 +1941,9 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1943,13 +1957,12 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall
   ("nof_db_events",                   111381888),
   ("fsize_local",                     214190811519), # 214.19GB, avg file size 95.32MB
   ("fsize_db",                        5860979058540), # 5.86TB, avg file size 2.88GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          False),
   ("xsection",                        365.34),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1959,6 +1972,9 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1972,13 +1988,12 @@ samples_2017["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_
   ("nof_db_events",                   42678688),
   ("fsize_local",                     83077815921), # 83.08GB, avg file size 96.60MB
   ("fsize_db",                        2292321642457), # 2.29TB, avg file size 3.00GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        377.96),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -1988,6 +2003,9 @@ samples_2017["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -2001,13 +2019,12 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
   ("nof_db_events",                   129985840),
   ("fsize_local",                     253037895099), # 253.04GB, avg file size 96.65MB
   ("fsize_db",                        6970450887587), # 6.97TB, avg file size 2.79GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          False),
   ("xsection",                        377.96),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2017,6 +2034,9 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] = OD([
@@ -2030,13 +2050,12 @@ samples_2017["/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17
   ("nof_db_events",                   38832197),
   ("fsize_local",                     25124735447), # 25.12GB, avg file size 32.09MB
   ("fsize_db",                        1343136870100), # 1.34TB, avg file size 2.64GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        18610.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2046,6 +2065,9 @@ samples_2017["/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -2059,13 +2081,12 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
   ("nof_db_events",                   26923935),
   ("fsize_local",                     28709057318), # 28.71GB, avg file size 52.97MB
   ("fsize_db",                        1065736102325), # 1.07TB, avg file size 2.86GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        5765.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2075,6 +2096,9 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10_ext1-v1/MINIAODSIM"] = OD([
@@ -2088,13 +2112,12 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
   ("nof_db_events",                   185998625),
   ("fsize_local",                     198263559520), # 198.26GB, avg file size 52.84MB
   ("fsize_db",                        7376341087077), # 7.38TB, avg file size 2.68GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        5765.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2104,6 +2127,9 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -2117,13 +2143,12 @@ samples_2017["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-9
   ("nof_db_events",                   23240598),
   ("fsize_local",                     19087293127), # 19.09GB, avg file size 39.85MB
   ("fsize_db",                        882645881655), # 882.65GB, avg file size 2.31GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        61526.7),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2133,6 +2158,9 @@ samples_2017["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-9
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -2146,13 +2174,12 @@ samples_2017["/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
   ("nof_db_events",                   1818828),
   ("fsize_local",                     2206374126), # 2.21GB, avg file size 59.63MB
   ("fsize_db",                        75643188117), # 75.64GB, avg file size 1.51GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        12.178),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2162,6 +2189,9 @@ samples_2017["/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] = OD([
@@ -2175,13 +2205,12 @@ samples_2017["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAOD-94
   ("nof_db_events",                   10751052),
   ("fsize_local",                     13469758957), # 13.47GB, avg file size 62.07MB
   ("fsize_db",                        452807583489), # 452.81GB, avg file size 2.14GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        4.42965),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2191,6 +2220,9 @@ samples_2017["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAOD-94
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] = OD([
@@ -2204,13 +2236,12 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realist
   ("nof_db_events",                   6960289),
   ("fsize_local",                     8016169937), # 8.02GB, avg file size 56.45MB
   ("fsize_db",                        322020515003), # 322.02GB, avg file size 1.58GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        1.256),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2220,6 +2251,9 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realist
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10_ext1-v1/MINIAODSIM"] = OD([
@@ -2233,13 +2267,12 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realist
   ("nof_db_events",                   95716759),
   ("fsize_local",                     110095041935), # 110.10GB, avg file size 57.07MB
   ("fsize_db",                        3881682466950), # 3.88TB, avg file size 2.61GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        1.256),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2249,6 +2282,9 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realist
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -2262,13 +2298,12 @@ samples_2017["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17Min
   ("nof_db_events",                   4647278),
   ("fsize_local",                     10647577280), # 10.65GB, avg file size 113.27MB
   ("fsize_db",                        269969335093), # 269.97GB, avg file size 1.96GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        3.697),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2278,6 +2313,9 @@ samples_2017["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17Min
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] = OD([
@@ -2291,13 +2329,12 @@ samples_2017["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017
   ("nof_db_events",                   993804),
   ("fsize_local",                     3522818144), # 3.52GB, avg file size 167.75MB
   ("fsize_db",                        77438656415), # 77.44GB, avg file size 2.67GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.008213),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2307,6 +2344,9 @@ samples_2017["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/tZq_ll_4f_ckm_NLO_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -2320,13 +2360,12 @@ samples_2017["/tZq_ll_4f_ckm_NLO_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIF
   ("nof_db_events",                   13220024),
   ("fsize_local",                     29116153331), # 29.12GB, avg file size 109.05MB
   ("fsize_db",                        723683119488), # 723.68GB, avg file size 2.48GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.0758),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2336,6 +2375,9 @@ samples_2017["/tZq_ll_4f_ckm_NLO_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIF
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-94X_mc2017_realistic_v11-v1/MINIAODSIM"] = OD([
@@ -2349,13 +2391,12 @@ samples_2017["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-94X_
   ("nof_db_events",                   1000000),
   ("fsize_local",                     926014783), # 926.01MB, avg file size 44.10MB
   ("fsize_db",                        42876536279), # 42.88GB, avg file size 1.86GB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.1743),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         False),
   ("local_paths",
     [
       OD([
@@ -2365,6 +2406,9 @@ samples_2017["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-94X_
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v11-v1/MINIAODSIM"] = OD([
@@ -2378,13 +2422,12 @@ samples_2017["/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc20
   ("nof_db_events",                   240000),
   ("fsize_local",                     403952166), # 403.95MB, avg file size 80.79MB
   ("fsize_db",                        11711799646), # 11.71GB, avg file size 557.70MB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.2086),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2394,6 +2437,9 @@ samples_2017["/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc20
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v11-v1/MINIAODSIM"] = OD([
@@ -2407,13 +2453,12 @@ samples_2017["/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc20
   ("nof_db_events",                   250000),
   ("fsize_local",                     462598196), # 462.60MB, avg file size 77.10MB
   ("fsize_db",                        13268139304), # 13.27GB, avg file size 947.72MB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.1651),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2423,6 +2468,9 @@ samples_2017["/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc20
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v11-v1/MINIAODSIM"] = OD([
@@ -2436,13 +2484,12 @@ samples_2017["/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
   ("nof_db_events",                   250000),
   ("fsize_local",                     453244807), # 453.24MB, avg file size 75.54MB
   ("fsize_db",                        12226507693), # 12.23GB, avg file size 679.25MB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.05565),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2452,6 +2499,9 @@ samples_2017["/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
 samples_2017["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v11-v1/MINIAODSIM"] = OD([
@@ -2465,13 +2515,12 @@ samples_2017["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
   ("nof_db_events",                   250000),
   ("fsize_local",                     414329487), # 414.33MB, avg file size 69.05MB
   ("fsize_db",                        11782250391), # 11.78GB, avg file size 693.07MB
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("xsection",                        0.01398),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
+  ("has_LHE",                         True),
   ("local_paths",
     [
       OD([
@@ -2481,5 +2530,8 @@ samples_2017["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
       ]),
     ]
   ),
+  ("missing_from_superset",           [
+
+  ]),
 ])
 
