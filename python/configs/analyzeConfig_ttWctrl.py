@@ -98,7 +98,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     self.use_nonnominal = use_nonnominal
     self.rle_select = rle_select
 
-  def createCfg_analyze(self, jobOptions):
+  def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_ttWctrl executable (analysis code)
 
     Args:
@@ -117,7 +117,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       'useNonNominal',
     ]
 
-    lines = super(analyzeConfig_ttWctrl, self).createCfg_analyze(jobOptions, additionalJobOptions)
+    lines = super(analyzeConfig_ttWctrl, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addFlips(self, jobOptions):
@@ -279,7 +279,6 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                 histogramFile_path    = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s.root"           % key_analyze_job)
                 logFile_path          = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s.log"    % cfg_key)
                 rleOutputFile_path    = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s.txt"        % cfg_key) if self.select_rle_output else ""
-                lumi_scale = sample_info["xsection"] * self.lumi / sample_info["nof_events"] if (self.use_lumi and is_mc) else 1.
 
                 syncOutput = ''
                 syncTree = ''
@@ -300,25 +299,18 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   'histogramFile'            : histogramFile_path,
                   'logFile'                  : logFile_path,
                   'selEventsFileName_output' : rleOutputFile_path,
-                  'process'                  : sample_category,
-                  'triggers'                 : sample_info["triggers"],
                   'leptonSelection'          : lepton_selection,
                   'apply_leptonGenMatching'  : self.apply_leptonGenMatching and is_mc,
                   'leptonChargeSelection'    : lepton_charge_selection,
                   'hadTauSelection_veto'     : hadTauVeto_selection,
                   'applyFakeRateWeights'     : self.applyFakeRateWeights if not lepton_selection == "Tight" else "disabled",
-                  'isMC'                     : is_mc,
                   'central_or_shift'         : central_or_shift,
-                  'lumiScale'                : lumi_scale,
-                  'apply_genWeight'          : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
-                  'apply_trigger_bits'       : (is_mc and sample_info["reHLT"]) or not is_mc,
-                  'process_name_specific'    : sample_info['process_name_specific'],
                   'syncOutput'               : syncOutput,
                   'syncTree'                 : syncTree,
                   'syncRLE'                  : syncRLE,
                   'useNonNominal'            : self.use_nonnominal,
                 }
-                self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
+                self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
                 # initialize input and output file names for hadd_stage1
                 key_hadd_stage1 = getKey(process_name, lepton_selection_and_frWeight, lepton_charge_selection)

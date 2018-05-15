@@ -266,9 +266,17 @@ class analyzeConfig(object):
             return central_or_shift
         return "central"
 
-    def createCfg_analyze(self, jobOptions, additionalJobOptions):
+    def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions):
         process_string = 'process.analyze_%s' % self.channel
         current_function_name = inspect.stack()[0][3]
+
+        is_mc = (sample_info["type"] == "mc")
+        jobOptions['process']            = sample_info["sample_category"]
+        jobOptions['isMC']               = is_mc
+        jobOptions['apply_genWeight']    = sample_info["genWeight"] if is_mc else False
+        jobOptions['apply_trigger_bits'] = (is_mc and sample_info["reHLT"]) or not is_mc
+        jobOptions['lumiScale']          = sample_info["xsection"] * self.lumi / sample_info["nof_events"] \
+                                           if (self.use_lumi and is_mc) else 1.
 
         jobOptions_local = [
             'process',
@@ -315,9 +323,9 @@ class analyzeConfig(object):
             trigger_string = '%s.triggers_%s'         % (process_string, trigger)
             trigger_use_string = '%s.use_triggers_%s' % (process_string, trigger)
             available_triggers = self.whitelist_triggers(
-                getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific']
+                getattr(self, 'triggers_%s' % trigger), sample_info['process_name_specific']
             )
-            use_trigger = bool(trigger in jobOptions['triggers'])
+            use_trigger = bool(trigger in sample_info['triggers'])
             lines.extend([
                 "{:<{len}} = cms.vstring({})".format(trigger_string,     available_triggers, len = max_option_len + len(process_string) + 1),
                 "{:<{len}} = cms.bool({})".format   (trigger_use_string, use_trigger,        len = max_option_len + len(process_string) + 1),
