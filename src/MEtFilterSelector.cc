@@ -23,9 +23,8 @@ MEtFilterSelector::operator()(const MEtFilter & metFilter) const
     {
       if(verbose_)
       {
-        std::cout << "Failed MEt Filter " << static_cast<MEtFilterFlag>(flag) << '\n'
-                  << getMEtFilterFlagString(static_cast<MEtFilterFlag>(flag)) << '\n'
-        ;
+        // std::cout << "Failed MEt Filter " << static_cast<MEtFilterFlag>(flag) << '\n'
+        //          << getMEtFilterFlagString(static_cast<MEtFilterFlag>(flag)) << '\n';
       }
       return false;
     }
