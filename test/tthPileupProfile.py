@@ -12,6 +12,7 @@ mode_choices = [ 'all', 'sync' ]
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_files_per_job(100)
+parser.add_use_home()
 parser.add_argument('-V', '--validate',
   dest = 'validate', action = 'store_true', default = False,
   help = 'R|Validate the results',
@@ -33,6 +34,7 @@ sample_filter      = args.filter
 mode          = args.mode
 files_per_job = args.files_per_job
 validate      = args.validate
+use_home      = args.use_home
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -88,6 +90,7 @@ if __name__ == '__main__':
       num_parallel_jobs = 8,
       verbose           = idx_job_resubmission > 0,
       dry_run           = dry_run,
+      use_home          = use_home,
     )
 
     job_statistics = puHistogramProduction.create()

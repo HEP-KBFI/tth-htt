@@ -9,17 +9,22 @@
 std::map<std::string, int> LHEInfoReader::numInstances_;
 std::map<std::string, LHEInfoReader*> LHEInfoReader::instances_;
 
-LHEInfoReader::LHEInfoReader()
+LHEInfoReader::LHEInfoReader(bool has_LHE_weights)
   : max_scale_nWeights_(9)
   , branchName_scale_nWeights_("nLHEScaleWeight")
   , branchName_scale_weights_("LHEScaleWeight")
-  , max_pdf_nWeights_(102)
+  , max_pdf_nWeights_(103)
   , branchName_pdf_nWeights_("nLHEPdfWeight")
   , branchName_pdf_weights_("LHEPdfWeight")
+  , scale_nWeights_(0)
+  , scale_weights_(nullptr)
+  , pdf_nWeights_(0)
+  , pdf_weights_(nullptr)
   , weight_scale_xUp_(1.)
   , weight_scale_xDown_(1.)
   , weight_scale_yUp_(1.)
   , weight_scale_yDown_(1.)
+  , has_LHE_weights_(has_LHE_weights)
 {
   setBranchNames();
 }
@@ -46,7 +51,7 @@ LHEInfoReader::setBranchNames()
   {
     instances_[branchName_scale_weights_] = this;
   }
-  else
+  else if(has_LHE_weights_)
   {
     const LHEInfoReader * const gInstance = instances_[branchName_scale_weights_];
     if(branchName_scale_nWeights_ != gInstance->branchName_scale_nWeights_ ||
@@ -67,7 +72,7 @@ LHEInfoReader::setBranchNames()
 void
 LHEInfoReader::setBranchAddresses(TTree * tree)
 {
-  if(instances_[branchName_scale_weights_] == this)
+  if(instances_[branchName_scale_weights_] == this && has_LHE_weights_)
   {
     BranchAddressInitializer bai(tree);
     bai.setBranchAddress(scale_nWeights_, branchName_scale_nWeights_);
@@ -82,6 +87,10 @@ LHEInfoReader::read() const
 {
   const LHEInfoReader * const gInstance = instances_[branchName_scale_weights_];
   assert(gInstance);
+  if(! has_LHE_weights_)
+  {
+    return;
+  }
   if(gInstance->scale_nWeights_ > max_scale_nWeights_)
   {
     throw cmsException(this)
@@ -154,12 +163,16 @@ LHEInfoReader::getWeight_scale(int central_or_shift) const
 int
 LHEInfoReader::getNumWeights_pdf() const
 {
-  return pdf_nWeights_;
+  return has_LHE_weights_ ? pdf_nWeights_ : 1.;
 }
 
 double
 LHEInfoReader::getWeight_pdf(unsigned int idx) const
 {
+  if(! has_LHE_weights_)
+  {
+    return 1.;
+  }
   if(idx >= pdf_nWeights_)
   {
     throw cmsException(this)

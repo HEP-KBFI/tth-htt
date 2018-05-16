@@ -49,8 +49,6 @@ process.analyze_hadTopTagger_gen = cms.PSet(
 
     chargeSumSelection = cms.string('OS'),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     apply_lepton_and_hadTauCharge_cut = cms.bool(True),
 
     isMC = cms.bool(True),
@@ -78,6 +76,7 @@ process.analyze_hadTopTagger_gen = cms.PSet(
     branchName_genBJets = cms.string('GenBQuarkFromTop'),
     branchName_genWBosons = cms.string('GenVbosons'),
     branchName_genWJets = cms.string('GenWZQuark'),
+    branchName_genQuarkFromTop = cms.string('GenQuarkFromTop'),
 
     selEventsFileName_input = cms.string(''),
     ##selEventsFileName_input = cms.string('/home/veelken/CMSSW_9_4_4/src/tthAnalysis/HiggsToTauTau/test/selEvents_hadTopTagger_gen.txt'),
@@ -87,6 +86,7 @@ process.analyze_hadTopTagger_gen = cms.PSet(
     selEventsFileName_output_semiboosted = cms.string('selEvents_hadTopTagger_gen_semiboosted.txt'),
     selEventsFileName_output_resolved = cms.string('selEvents_hadTopTagger_gen_resolved.txt'),
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )
 
 ## inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb28_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
@@ -129,7 +129,6 @@ process.analyze_hadTopTagger_gen.leptonChargeSelection = cms.string('SS')
 process.analyze_hadTopTagger_gen.hadTauSelection = cms.string('Tight|dR03mvaMedium')
 process.analyze_hadTopTagger_gen.apply_hadTauGenMatching = cms.bool(True)
 process.analyze_hadTopTagger_gen.chargeSumSelection = cms.string('OS')
-process.analyze_hadTopTagger_gen.use_HIP_mitigation_mediumMuonId = cms.bool(True)
 process.analyze_hadTopTagger_gen.isMC = cms.bool(True)
 process.analyze_hadTopTagger_gen.central_or_shift = cms.string('central')
 process.analyze_hadTopTagger_gen.lumiScale = cms.double(0.002600)
@@ -139,8 +138,7 @@ process.analyze_hadTopTagger_gen.apply_trigger_bits = cms.bool(True)
 
 
 #added by Siddhesh
-#inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Apr08_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
-inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Apr27_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
+inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018May09_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
 maxInputFiles = 50
 #zombie_files = [ "tree_110.root", ]
 #zombie_files = [ "tree_110.root", "tree_168.root"]

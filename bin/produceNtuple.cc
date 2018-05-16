@@ -133,7 +133,6 @@ main(int argc,
   
   const bool isMC                            = cfg_produceNtuple.getParameter<bool>("isMC");
   const bool isDEBUG                         = cfg_produceNtuple.getParameter<bool>("isDEBUG");
-  const bool use_HIP_mitigation_mediumMuonId = cfg_produceNtuple.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
   const bool useNonNominal                   = cfg_produceNtuple.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet            = useNonNominal || ! isMC;
 
@@ -145,6 +144,7 @@ main(int argc,
   ;
 
   const vstring copy_histograms = cfg_produceNtuple.getParameter<vstring>("copy_histograms");
+  const vstring drop_branches = cfg_produceNtuple.getParameter<vstring>("drop_branches");
 
   const fwlite::InputSource inputFiles(cfg);
   const int maxEvents = inputFiles.maxEvents();
@@ -176,7 +176,6 @@ main(int argc,
 
 //--- declare particle collections
   RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons);
-  muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   muonReader->setBranchAddresses(inputTree);
   const RecoMuonCollectionGenMatcher muonGenMatcher;
   const RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
@@ -362,7 +361,7 @@ main(int argc,
   ;
   memPermutationWriter.setBranchNames(outputTree, era, true);
 
-  const std::vector<std::string> outputCommands_string = {
+  std::vector<std::string> outputCommands_string = {
     "keep *",
     Form("drop %s", eventInfoWriter.getBranchName_run().data()),
     Form("drop %s", eventInfoWriter.getBranchName_lumi().data()),
@@ -384,6 +383,10 @@ main(int argc,
     Form("drop %s_*", branchName_genJets.data()),
     Form("drop maxPermutations_*"),
   };
+  for(const std::string & drop_branch: drop_branches)
+  {
+    outputCommands_string.push_back(Form("drop %s", drop_branch.data()));
+  }
 
   std::vector<outputCommandEntry> outputCommands = getOutputCommands(outputCommands_string);
   std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree, outputCommands); // key = branchName

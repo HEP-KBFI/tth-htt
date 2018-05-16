@@ -24,15 +24,15 @@ std::map<int, bool>
 isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
                        const Particle::LorentzVector & recWJet1,
                        const Particle::LorentzVector & recWJet2,
-                       const std::vector<GenParticle> & genTopQuarks,
-                       const std::vector<GenParticle> & genBJets,
-                       const std::vector<GenParticle> & genWBosons,
-                       const std::vector<GenParticle> & genWJets,
+                       const Particle::LorentzVector  genTopQuarks,
+                       const Particle::LorentzVector  genBJetFromTop,
+                       const Particle::LorentzVector  genWBosons,
+                       const Particle::LorentzVector  genWJetFromTop_lead,
+                       const Particle::LorentzVector  genWJetFromTop_sublead,
                        int mode,
-                       double & genTopPt,
-                       double & genTopEta,
-		       int TypeTop = 3,
-		       const Particle::LorentzVector & recFatJet = Particle::LorentzVector(0., 0., 0., 0.));
+                       int TypeTop = 3,
+                       const Particle::LorentzVector  recFatJet = Particle::LorentzVector(0., 0., 0., 0.),
+		       bool isAnalysisModeGenStudy = false);
 
 std::map<int, bool>
 isGenMatchedJetTriplet_Method2(const Particle::LorentzVector & recBJet,
@@ -86,7 +86,5 @@ calRank(std::vector<double> & btag_discEnter);
 
 std::vector<double>
 getBdiscr(std::vector<const RecoJet*> selJetsIt);
-
-Particle::LorentzVector dumbIni;
 
 #endif

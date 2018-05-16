@@ -8,13 +8,16 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_LeptonFakeRate.py -v 2017Dec13 -e 2017
 
-cmssw_base_dir_combine     = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
-sys_choices                = [ 'central', 'full' ]
-systematics.full           = systematics.an_leptonFR
+cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
+mode_choices           = [ 'default', 'sync' ]
+sys_choices            = [ 'central', 'full' ]
+systematics.full       = systematics.an_leptonFR
 
 parser = tthAnalyzeParser()
+parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_files_per_job()
+parser.add_use_home()
 args = parser.parse_args()
 
 # Common arguments
@@ -30,15 +33,22 @@ debug              = args.debug
 sample_filter      = args.filter
 
 # Additional arguments
+mode              = args.mode
 systematics_label = args.systematics
 files_per_job     = args.files_per_job
+use_home          = args.use_home
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_test3 import samples_2017 as samples
+  if mode == 'default':
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  elif mode == 'sync':
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_test3 import samples_2017 as samples
+  else:
+    raise ValueError('Invalid mode: %s' % mode)
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
@@ -103,6 +113,7 @@ if __name__ == '__main__':
       verbose                                  = idx_job_resubmission > 0,
       dry_run                                  = dry_run,
       isDebug                                  = debug,
+      use_home                                 = use_home,
     )
 
     job_statistics = analysis.create()
@@ -126,6 +137,6 @@ if __name__ == '__main__':
       is_last_resubmission = True
 
   for idx_job_resubmission in job_statistics_summary.keys():
-    logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
+    logging.info("Job (re)submission #%i:" % (idx_job_resubmission + 1))
     for job_type, num_jobs in job_statistics_summary[idx_job_resubmission].items():
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))

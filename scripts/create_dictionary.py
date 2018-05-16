@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy, itertools, time, shutil, datetime
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
+from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
 
 HISTOGRAM_COUNT         = 'Count'
 HISTOGRAM_COUNTWEIGHTED = 'CountWeighted'
@@ -9,6 +10,9 @@ EVENTS_TREE             = 'Events'
 HISTOGRAM_COUNT_KEY = 'histogram_count'
 TREE_COUNT_KEY      = 'tree_count'
 FSIZE_KEY           = 'fsize'
+BRANCH_NAMES_KEY    = 'branch_names'
+
+LHE_REGEX = re.compile('(n|)LHE(Scale|Pdf)Weight')
 
 try:
     from urllib.parse import urlparse
@@ -194,18 +198,20 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("nof_db_events",                   {{ nof_db_events }}),
   ("fsize_local",                     {{ fsize_local }}), # {{ fsize_local_human }}, avg file size {{ avg_fsize_local_human }}
   ("fsize_db",                        {{ fsize_db }}), # {{ fsize_db_human }}, avg file size {{ avg_fsize_db_human }}
-  ("use_HIP_mitigation_bTag",         {{ use_HIP_mitigation_bTag }}),
-  ("use_HIP_mitigation_mediumMuonId", {{ use_HIP_mitigation_mediumMuonId }}),
   ("use_it",                          {{ use_it }}),{% if sample_type == "mc" %}
   ("xsection",                        {{ xsection }}),
   ("genWeight",                       {{ genWeight }}),{% endif %}
   ("triggers",                        {{ triggers }}),
   ("reHLT",                           {{ reHLT }}),
+  ("has_LHE",                         {{ has_LHE }}),
   ("local_paths",
     [
 {{ paths }}
     ]
   ),
+  ("missing_from_superset",           [
+{{ missing_from_superset }}
+  ]),
 ])
 """
 
@@ -214,6 +220,15 @@ path_entry_str = """      OD([
         ("selection", "{{ selection }}"),
         ("blacklist", {{ blacklist }}),
       ]),
+"""
+
+missing_branches_str = """{%- if is_available -%}
+  {%- for missing_branch in missing_branches %}
+    "{{ missing_branch }}",
+  {%- endfor -%}
+{%- else %}
+    # not computed
+{%- endif -%}
 """
 
 sh_str = """#!/bin/bash
@@ -373,8 +388,24 @@ def process_paths(meta_dict, key):
   else:
     raise ValueError("Not enough paths to locate for %s" % key)
 
-def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
-                    filetracker, file_idx, era):
+def has_LHE(indices):
+  branch_names = set()
+  for index_entry in indices.values():
+    branch_names.update(index_entry[BRANCH_NAMES_KEY])
+  return any(map(lambda branch_name: bool(LHE_REGEX.match(branch_name)), branch_names))
+
+def get_missing_from_superset(indices):
+  branch_names_superset = set()
+  for index_entry in indices.values():
+    branch_names_superset.update(index_entry[BRANCH_NAMES_KEY])
+  missing_branches_superset = set()
+  for file_idx, index_entry in indices.items():
+    missing_branches = branch_names_superset - set(index_entry[BRANCH_NAMES_KEY])
+    missing_branches_superset.update(missing_branches)
+  return list(sorted(list(missing_branches_superset)))
+
+def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, missing_branches,
+                    filetracker, file_idx, era, triggerTable):
   ''' Assume that the following subdirectories are of the form: 0000, 0001, 0002, ...
       In these directories we expect root files of the form: tree_1.root, tree_2.root, ...
       If either of those assumptions doesn't hold, we bail out; no clever event count needed
@@ -383,8 +414,10 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
   :param path_obj:          Contains meta-information about a path (instance of hdfs.info)
   :param key:               Key to the meta-dictionary the entry of which will be updated
   :param check_every_event: Loop over all events for error checking purposes
+  :param missing_branches:  Find missing branches from the superset of branches in a sample
   :param filetracker:       An instance of FileTracker() for logging broken files
   :param file_idx:          Index of the corrupted file
+  :param triggerTable:      Trigger instance containing a list of required triggers for the era
   :return: None
   '''
   if 'paths' not in meta_dict[key]:
@@ -417,6 +450,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
       HISTOGRAM_COUNT_KEY : -1,
       TREE_COUNT_KEY      : -1,
       FSIZE_KEY           : -1,
+      BRANCH_NAMES_KEY    : [],
     }
 
     subentries = hdfs_system.get_dir_entries(entry)
@@ -461,6 +495,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
           path = subentry_file.name_fuse,
         ))
       index_entry[TREE_COUNT_KEY] = tree.GetEntries()
+      index_entry[BRANCH_NAMES_KEY] = [ branch.GetName() for branch in tree.GetListOfBranches() ]
 
       if check_every_event:
         logging.info("Inspecting file {path} for corruption".format(path = subentry_file.name_fuse))
@@ -534,11 +569,15 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
   ))
 
   if not meta_dict[key]['located']:
-    hip_mitigation_regex = re.compile(".*2016[BCDEF].*")
-    meta_dict[key]['use_HIP_mitigation_bTag'] = bool(hip_mitigation_regex.match(
-      meta_dict[key]['process_name_specific'])
-    ) and is_data
-    meta_dict[key]['use_HIP_mitigation_mediumMuonId'] = meta_dict[key]['use_HIP_mitigation_bTag']
+    missing_from_superset = [] if not missing_branches else get_missing_from_superset(indices)
+    overlap_with_triggers = triggerTable.get_overlap(
+      missing_from_superset, meta_dict[key]['process_name_specific']
+    )
+    if overlap_with_triggers:
+      raise ValueError(
+        "Found an overlap b/w the list of required triggers and the list of missing branches in "
+        "sample %s: %s" % (meta_dict[key]['process_name_specific'], ', '.join(overlap_with_triggers))
+       )
     meta_dict[key]['triggers']                        = get_triggers(
       meta_dict[key]['process_name_specific'], is_data, era
     )
@@ -546,14 +585,16 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
     meta_dict[key]['type']                            = 'data' if is_data else 'mc'
     meta_dict[key]['reHLT']                           = True
     meta_dict[key]['located']                         = True
+    meta_dict[key]['has_LHE']                         = False if is_data else has_LHE(indices)
+    meta_dict[key]['missing_from_superset']           = missing_from_superset
   meta_dict[key]['paths'].append(
     PathEntry(path_obj.name_fuse, indices)
   )
 
   return
 
-def traverse_double(hdfs_system, meta_dict, path_obj, key, check_every_event,
-                    filetracker, file_idx, era):
+def traverse_double(hdfs_system, meta_dict, path_obj, key, check_every_event, missing_branches,
+                    filetracker, file_idx, era, triggerTable):
   ''' Assume that the name of the following subdirectories are the CRAB job IDs
       The tree structure inside those directories should be the same as described in
       traverse_single()
@@ -563,15 +604,18 @@ def traverse_double(hdfs_system, meta_dict, path_obj, key, check_every_event,
   :param path_obj:          Contains meta-information about a path (instance of hdfs.info)
   :param key:               Key to the meta-dictionary the entry of which will be updated
   :param check_every_event: Loop over all events for error checking purposes
+  :param missing_branches:  Find missing branches from the superset of branches in a sample
   :param filetracker:       An instance of FileTracker() for logging broken files
   :param file_idx:          Index of the corrupted file
+  :param triggerTable:      Trigger instance containing a list of required triggers for the era
   :return: None
   '''
   logging.info("Double-traversing {path}".format(path = path_obj.name_fuse))
   entries = hdfs_system.get_dir_entries(path_obj)
   for entry in entries:
     traverse_single(
-      hdfs_system, meta_dict, entry, key, check_every_event, filetracker, file_idx, era
+      hdfs_system, meta_dict, entry, key, check_every_event, missing_branches,
+      filetracker, file_idx, era, triggerTable
     )
   return
 
@@ -665,6 +709,9 @@ if __name__ == '__main__':
   parser.add_argument('-E', '--era', dest = 'era', metavar = 'era', type = int, default = -1,
                       required = True, choices = (2017,),
                       help = 'R|Era of the samples')
+  parser.add_argument('-M', '--find-missing-branches', dest = 'missing_branches', action = 'store_true',
+                      default = False,
+                      help = 'R|Find missing branches from the superset of branches in a sample')
   parser.add_argument('-x', '--clean', dest = 'clean', action = 'store_true', default = False,
                       help = 'R|Clean the temporary SLURM directory specified by -J')
   parser.add_argument('-F', '--force', dest = 'force', action = 'store_true', default = False,
@@ -724,6 +771,7 @@ if __name__ == '__main__':
 
   # set up the regex object
   name_regex = re.compile(args.filter)
+  triggerTable = Triggers(str(args.era))
 
   # process the directory structure of each path
   paths_to_traverse = {}
@@ -745,7 +793,8 @@ if __name__ == '__main__':
         else:
           traverse_single(
             hdfs_system, meta_dict, path, process_names[path.basename],
-            args.check_every_event, filetracker, args.file_idx, args.era
+            args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
+            triggerTable
           )
     elif path.basename in crab_strings:
       expected_key = meta_dict[crab_strings[path.basename]]['process_name_specific']
@@ -758,7 +807,8 @@ if __name__ == '__main__':
         else:
           traverse_double(
             hdfs_system, meta_dict, path, crab_strings[path.basename],
-            args.check_every_event, filetracker, args.file_idx, args.era
+            args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
+            triggerTable
           )
     else:
       entries = hdfs_system.get_dir_entries(path)
@@ -943,6 +993,10 @@ if __name__ == '__main__':
             blacklist = path_entry['blacklist'], #TODO: format properly
           ))
         is_mc = meta_dict[key]['type'] == 'mc'
+        missing_branches_template_filled = jinja2.Template(missing_branches_str).render(
+          is_available     = args.missing_branches,
+          missing_branches = meta_dict[key]['missing_from_superset'],
+        ).lstrip('\n')
         output += jinja2.Template(dictionary_entry_str).render(
           dict_name                       = args.output_dict_name,
           dbs_name                        = key,
@@ -960,13 +1014,13 @@ if __name__ == '__main__':
           fsize_local                     = meta_dict[key]['fsize_local'],
           fsize_local_human               = human_size(meta_dict[key]['fsize_local']),
           avg_fsize_local_human           = human_size(float(meta_dict[key]['fsize_local']) / meta_dict[key]['nof_files']),
-          use_HIP_mitigation_bTag         = meta_dict[key]['use_HIP_mitigation_bTag'],
-          use_HIP_mitigation_mediumMuonId = meta_dict[key]['use_HIP_mitigation_mediumMuonId'],
           use_it                          = meta_dict[key]['use_it'],
           xsection                        = round(meta_dict[key]['xsection'], 6) if is_mc else None,
           genWeight                       = meta_dict[key]['genWeight'],
           triggers                        = meta_dict[key]['triggers'],
           reHLT                           = meta_dict[key]['reHLT'],
+          has_LHE                         = meta_dict[key]['has_LHE'],
+          missing_from_superset           = missing_branches_template_filled,
           paths                           = '\n'.join(path_entries_arr),
         ) + '\n\n'
       else:

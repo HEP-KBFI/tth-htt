@@ -1,4 +1,4 @@
-import os, logging, uuid
+import os, logging, uuid, ROOT
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
@@ -9,6 +9,13 @@ DKEY_CFGS       = "cfgs"
 DKEY_NTUPLES    = "ntuples"
 DKEY_LOGS       = "logs"
 MAKEFILE_TARGET = "sbatch_prodNtuple"
+
+def get_pileup_histograms(pileup_filename):
+    pileup_file = ROOT.TFile.Open(pileup_filename, 'read')
+    keys = pileup_file.GetListOfKeys()
+    histogram_names = [ key.GetName() for key in keys if key.GetClassName().startswith('TH1') ]
+    pileup_file.Close()
+    return histogram_names
 
 class prodNtupleConfig:
     """Configuration metadata needed to run Ntuple production.
@@ -27,7 +34,7 @@ class prodNtupleConfig:
                  cfgFile_prodNtuple, samples, max_files_per_job, era, preselection_cuts,
                  leptonSelection, hadTauSelection, check_input_files, running_method,
                  version, num_parallel_jobs, pileup, pool_id = '', verbose = False, dry_run = False,
-                 isDebug = False, use_nonnominal = False):
+                 isDebug = False, use_nonnominal = False, use_home = False):
 
         self.configDir             = configDir
         self.outputDir             = outputDir
@@ -45,9 +52,14 @@ class prodNtupleConfig:
         self.dry_run               = dry_run
         self.isDebug               = isDebug
         self.use_nonnominal        = use_nonnominal
+        self.use_home              = use_home
         self.pileup                = pileup
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
+
+        if not os.path.isfile(self.pileup):
+            raise ValueError('No such file: %s' % self.pileup)
+        self.pileup_histograms = get_pileup_histograms(self.pileup)
 
         self.executable = self.executable_nanoAOD
 
@@ -113,40 +125,34 @@ class prodNtupleConfig:
           outputFile: output file of the job -- a ROOT file containing histogram
         """
         lines = [
-            "process.fwliteOutput.fileName                         = cms.string('%s')" % os.path.basename(jobOptions['outputFile']),
-            "process.produceNtuple.era                             = cms.string('%s')" % self.era,
-            "process.produceNtuple.use_HIP_mitigation_mediumMuonId = cms.bool(%s)"     % jobOptions['use_HIP_mitigation_mediumMuonId'],
-            "process.produceNtuple.minNumLeptons                   = cms.int32(%i)"    % self.preselection_cuts['minNumLeptons'],
-            "process.produceNtuple.minNumHadTaus                   = cms.int32(%i)"    % self.preselection_cuts['minNumHadTaus'],
-            "process.produceNtuple.minNumLeptons_and_HadTaus       = cms.int32(%i)"    % self.preselection_cuts['minNumLeptons_and_HadTaus'],
-            "process.produceNtuple.minNumJets                      = cms.int32(%i)"    % self.preselection_cuts['minNumJets'],
-            "process.produceNtuple.minNumBJets_loose               = cms.int32(%i)"    % self.preselection_cuts['minNumBJets_loose'],
-            "process.produceNtuple.minNumBJets_medium              = cms.int32(%i)"    % self.preselection_cuts['minNumBJets_medium'],
-            "process.produceNtuple.isMC                            = cms.bool(%s)"     % jobOptions['is_mc'],
-            "process.produceNtuple.leptonSelection                 = cms.string('%s')" % self.leptonSelection,
-            "process.produceNtuple.hadTauSelection                 = cms.string('%s')" % self.hadTauSelection,
-            "process.produceNtuple.random_seed                     = cms.uint32(%i)"   % jobOptions['random_seed'],
-            "process.produceNtuple.branchName_electrons            = cms.string('Electron')",
-            "process.produceNtuple.branchName_muons                = cms.string('Muon')",
-            "process.produceNtuple.branchName_hadTaus              = cms.string('Tau')",
-            "process.produceNtuple.branchName_jets                 = cms.string('Jet')",
-            "process.produceNtuple.branchName_met                  = cms.string('MET')",
-            "process.produceNtuple.branchName_genLeptons           = cms.string('GenLep')",
-            "process.produceNtuple.branchName_genHadTaus           = cms.string('GenVisTau')",
-            "process.produceNtuple.branchName_genJets              = cms.string('GenJet')",
-            "process.produceNtuple.isDEBUG                         = cms.bool(%s)"     % self.isDebug,
-            "process.produceNtuple.useNonNominal                   = cms.bool(%s)"     % self.use_nonnominal,
+            "process.fwliteOutput.fileName                   = cms.string('%s')" % os.path.basename(jobOptions['outputFile']),
+            "process.produceNtuple.era                       = cms.string('%s')" % self.era,
+            "process.produceNtuple.minNumLeptons             = cms.int32(%i)"    % self.preselection_cuts['minNumLeptons'],
+            "process.produceNtuple.minNumHadTaus             = cms.int32(%i)"    % self.preselection_cuts['minNumHadTaus'],
+            "process.produceNtuple.minNumLeptons_and_HadTaus = cms.int32(%i)"    % self.preselection_cuts['minNumLeptons_and_HadTaus'],
+            "process.produceNtuple.minNumJets                = cms.int32(%i)"    % self.preselection_cuts['minNumJets'],
+            "process.produceNtuple.minNumBJets_loose         = cms.int32(%i)"    % self.preselection_cuts['minNumBJets_loose'],
+            "process.produceNtuple.minNumBJets_medium        = cms.int32(%i)"    % self.preselection_cuts['minNumBJets_medium'],
+            "process.produceNtuple.isMC                      = cms.bool(%s)"     % jobOptions['is_mc'],
+            "process.produceNtuple.leptonSelection           = cms.string('%s')" % self.leptonSelection,
+            "process.produceNtuple.hadTauSelection           = cms.string('%s')" % self.hadTauSelection,
+            "process.produceNtuple.random_seed               = cms.uint32(%i)"   % jobOptions['random_seed'],
+            "process.produceNtuple.branchName_electrons      = cms.string('Electron')",
+            "process.produceNtuple.branchName_muons          = cms.string('Muon')",
+            "process.produceNtuple.branchName_hadTaus        = cms.string('Tau')",
+            "process.produceNtuple.branchName_jets           = cms.string('Jet')",
+            "process.produceNtuple.branchName_met            = cms.string('MET')",
+            "process.produceNtuple.branchName_genLeptons     = cms.string('GenLep')",
+            "process.produceNtuple.branchName_genHadTaus     = cms.string('GenVisTau')",
+            "process.produceNtuple.branchName_genJets        = cms.string('GenJet')",
+            "process.produceNtuple.isDEBUG                   = cms.bool(%s)"     % self.isDebug,
+            "process.produceNtuple.useNonNominal             = cms.bool(%s)"     % self.use_nonnominal,
+            "process.produceNtuple.drop_branches             = cms.vstring(%s)"  % jobOptions['drop_branches'],
         ]
 
         inputFiles_prepended = map(lambda path: os.path.basename('%s_ii%s' % os.path.splitext(path)), jobOptions['inputFiles'])
         if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
             raise ValueError("Not all input files have a unique base name: %s" % ', '.join(jobOptions['inputFiles']))
-
-        pileup_distribution = os.path.join(
-            self.pileup, jobOptions['process_name'], '%s.root' % jobOptions['process_name']
-        )
-        if not os.path.isfile(pileup_distribution):
-            raise ValueError('Missing PU distribution file: %s' % pileup_distribution)
 
         lines.extend([
             "process.fwliteInput.fileNames                         = cms.vstring(%s)"  % inputFiles_prepended,
@@ -154,7 +160,8 @@ class prodNtupleConfig:
             "executable = '%s'" % self.executable_prodNtuple,
             "isMC = %s" % str(jobOptions['is_mc']),
             "era = %s" % str(self.era),
-            "pileup = '%s'" % pileup_distribution,
+            "pileup = '%s'" % self.pileup,
+            "process_name = '%s'" % jobOptions['process_name'],
         ])
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
@@ -178,6 +185,7 @@ class prodNtupleConfig:
             verbose                 = self.verbose,
             job_template_file       = 'sbatch-node.produce.sh.template',
             dry_run                 = self.dry_run,
+            use_home                = self.use_home,
         )
         return num_jobs
 
@@ -238,6 +246,9 @@ class prodNtupleConfig:
             process_name = sample_info["process_name_specific"]
             is_mc = (sample_info["type"] == "mc")
 
+            if is_mc and process_name not in self.pileup_histograms:
+                raise ValueError("Missing PU distribution for %s in file %s" % (process_name, self.pileup))
+
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable, process_name))
 
             inputFileList = generateInputFileList(sample_info, self.max_files_per_job, self.check_input_files)
@@ -267,14 +278,15 @@ class prodNtupleConfig:
                 self.logFiles_prodNtuple[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_LOGS], "produceNtuple_%s_%i.log" % (process_name, jobId)
                 )
+                drop_branches = sample_info["missing_from_superset"] if not is_mc else []
                 jobOptions = {
-                    'inputFiles'                      : self.inputFiles[key_file],
-                    'cfgFile_modified'                : self.cfgFiles_prodNtuple_modified[key_file],
-                    'outputFile'                      : self.outputFiles[key_file],
-                    'use_HIP_mitigation_mediumMuonId' : True,
-                    'is_mc'                           : is_mc,
-                    'random_seed'                     : jobId,
-                    'process_name'                    : process_name,
+                    'inputFiles'       : self.inputFiles[key_file],
+                    'cfgFile_modified' : self.cfgFiles_prodNtuple_modified[key_file],
+                    'outputFile'       : self.outputFiles[key_file],
+                    'is_mc'            : is_mc,
+                    'random_seed'      : jobId,
+                    'process_name'     : process_name,
+                    'drop_branches'    : drop_branches,
                 }
                 self.createCfg_prodNtuple(jobOptions)
 

@@ -198,9 +198,6 @@ int main(int argc, char* argv[])
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
 
-  bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
-  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
-
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
   bool isMC_tH = ( process_string == "tH" ) ? true : false;
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
@@ -266,6 +263,7 @@ int main(int argc, char* argv[])
   std::string branchName_genBJets = cfg_analyze.getParameter<std::string>("branchName_genBJets");
   std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
   std::string branchName_genWJets = cfg_analyze.getParameter<std::string>("branchName_genWJets");
+  std::string branchName_genQuarkFromTop = cfg_analyze.getParameter<std::string>("branchName_genQuarkFromTop");
 
   bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
 
@@ -316,7 +314,6 @@ int main(int argc, char* argv[])
 //--- declare particle collections
   const bool readGenObjects = isMC && !redoGenMatching;
   RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
-  muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
@@ -393,18 +390,22 @@ int main(int argc, char* argv[])
   GenParticleReader* genBJetReader = new GenParticleReader(branchName_genBJets);
   GenParticleReader* genWBosonReader = new GenParticleReader(branchName_genWBosons);
   GenParticleReader* genWJetReader = new GenParticleReader(branchName_genWJets);
+  GenParticleReader* genQuarkFromTopReader = new GenParticleReader(branchName_genQuarkFromTop);
 
   if ( isMC ) {
 	  inputTree -> registerReader(genTopQuarkReader);
 	  inputTree -> registerReader(genBJetReader);
 	  inputTree -> registerReader(genWBosonReader);
 	  inputTree -> registerReader(genWJetReader);
+    inputTree -> registerReader(genQuarkFromTopReader);
   }
 
   double evtWeightSum=0; // to devbug
   //--- initialize hadronic top tagger BDT
   std::string mvaFileName_hadTopTaggerWithKinFit = "tthAnalysis/HiggsToTauTau/data/HadTopTagger_resolved_XGB_CSV_sort_withKinFit.xml";
-  HadTopTagger* hadTopTagger = new HadTopTagger(mvaFileName_hadTopTaggerWithKinFit);
+  std::string mvaFileName_hadTopTaggerWithKinFitNew = "tthAnalysis/HiggsToTauTau/data/ttH_HadTopTagger_wBoost_XGB_ntrees_1500_deph_3_lr_0o01_CSV_sort_nvar9.pkl";
+  std::string mvaFileName_hadTopTaggerNoKinFit = "tthAnalysis/HiggsToTauTau/data/ttH_HadTopTagger_wBoost_XGB_ntrees_1500_deph_3_lr_0o01_CSV_sort_nvar8.pkl";
+  HadTopTagger* hadTopTagger = new HadTopTagger(mvaFileName_hadTopTaggerWithKinFit, mvaFileName_hadTopTaggerWithKinFitNew, mvaFileName_hadTopTaggerNoKinFit);
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 2lss category of ttH multilepton analysis
@@ -655,10 +656,6 @@ int main(int argc, char* argv[])
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type int_type;
 
-  NtupleFillerBDT<float, int>* bdt_filler_gen = nullptr;
-  typedef std::remove_pointer<decltype(bdt_filler_gen)>::type::float_type float_type;
-  typedef std::remove_pointer<decltype(bdt_filler_gen)>::type::int_type   int_type;
-
   if ( selectBDT ) {
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
@@ -690,25 +687,6 @@ int main(int argc, char* argv[])
       "run","evt","lumi"
     );
     bdt_filler->bookTree(fs);
-    ///////////////////////////////////////
-    bdt_filler_gen = new std::remove_pointer<decltype(bdt_filler_gen)>::type(
-      makeHistManager_cfg(process_string, Form("%s/sel/evtntupleGen", histogramDir.data()), central_or_shift)
-    );
-    bdt_filler_gen -> register_variable<float_type>(
-      "genPtTop",  "genPtTopB",  "genPtTopW",  "genPtTopWj1",  "genPtTopWj2",
-      "genEtaTop",  "genEtaTopB",  "genEtaTopW",  "genEtaTopWj1",  "genEtaTopWj2",
-      "genPhiTopB",  "genPhiTopWj1",  "genPhiTopWj2",
-      "genMTopB",  "genMTopWj1",  "genMTopWj2",
-      "genPtAntiTop",  "genPtAntiTopB",  "genPtAntiTopW",  "genPtAntiTopWj1",  "genPtAntiTopWj2",
-      "genEtaAntiTop",  "genEtaAntiTopB",  "genEtaAntiTopW",  "genEtaAntiTopWj1",  "genEtaAntiTopWj2",
-      "genPhiAntiTopB",  "genPhiAntiTopWj1",  "genPhiAntiTopWj2",
-      "genMAntiTopB",  "genMAntiTopWj1",  "genMAntiTopWj2"
-    );
-    bdt_filler_gen -> register_variable<int_type>(
-      "gencount","gencountHad","passtrigger","run","evt","lumi"
-    );
-    bdt_filler_gen -> bookTree(fs);
-
   }
 
   int analyzedEntries = 0;
@@ -825,129 +803,13 @@ int main(int argc, char* argv[])
     std::vector<GenParticle> genBJets;
     std::vector<GenParticle> genWBosons;
     std::vector<GenParticle> genWJets;
-    int gencount = 0;
-    int gencountHad = 0;
-    double genPtTop = -1;
-    double genPtTopB = -1;
-    double genPtTopW = -1;
-    double genPtTopWj1 = -1;
-    double genPtTopWj2 = -1;
-    double genEtaTop = -100;
-    double genEtaTopB = -100;
-    double genEtaTopW = -100;
-    double genEtaTopWj1 = -100;
-    double genEtaTopWj2 = -100;
-    double genPhiTopB = -100;
-    double genPhiTopWj1 = -100;
-    double genPhiTopWj2 = -100;
-    double genMTopB = -100;
-    double genMTopWj1 = -100;
-    double genMTopWj2 = -100;
-
-    double genPtAntiTop = -1;
-    double genPtAntiTopB = -1;
-    double genPtAntiTopW = -1;
-    double genPtAntiTopWj1 = -1;
-    double genPtAntiTopWj2 = -1;
-    double genEtaAntiTop = -1;
-    double genEtaAntiTopB = -1;
-    double genEtaAntiTopW = -1;
-    double genEtaAntiTopWj1 = -1;
-    double genEtaAntiTopWj2 = -1;
-    double genPhiAntiTopB = -100;
-    double genPhiAntiTopWj1 = -100;
-    double genPhiAntiTopWj2 = -100;
-    double genMAntiTopB = -100;
-    double genMAntiTopWj1 = -100;
-    double genMAntiTopWj2 = -100;
-
+    std::vector<GenParticle> genQuarkFromTop;
     if ( isMC ) {
       genTopQuarks = genTopQuarkReader->read();
       genBJets = genBJetReader->read();
       genWBosons = genWBosonReader->read();
       genWJets = genWJetReader->read();
-      std::map<int, Particle::LorentzVector> genMatchingTopVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
-      std::map<int, Particle::LorentzVector> genMatchingAntiTopVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
-      genPtTop = genMatchingTopVar[kGenTop].pt();
-      genPtTopB = genMatchingTopVar[kGenTopB].pt();
-      genPtTopW = genMatchingTopVar[kGenTopW].pt();
-      genPtTopWj1 = genMatchingTopVar[kGenTopWj1].pt();
-      genPtTopWj2 = genMatchingTopVar[kGenTopWj2].pt();
-      genEtaTop = genMatchingTopVar[kGenTop].eta();
-      genEtaTopB = genMatchingTopVar[kGenTopB].eta();
-      genEtaTopW = genMatchingTopVar[kGenTopW].eta();
-      genEtaTopWj1 = genMatchingTopVar[kGenTopWj1].eta();
-      genEtaTopWj2 = genMatchingTopVar[kGenTopWj2].eta();
-      genPhiTopB = genMatchingTopVar[kGenTopB].phi();
-      genPhiTopWj1 = genMatchingTopVar[kGenTopWj1].phi();
-      genPhiTopWj2 = genMatchingTopVar[kGenTopWj2].phi();
-      genMTopB = genMatchingTopVar[kGenTopB].pt();
-      genMTopWj1 = genMatchingTopVar[kGenTopWj1].pt();
-      genMTopWj2 = genMatchingTopVar[kGenTopWj2].pt();
-
-      genPtAntiTop = genMatchingAntiTopVar[kGenTop].pt();
-      genPtAntiTopB = genMatchingAntiTopVar[kGenTopB].pt();
-      genPtAntiTopW = genMatchingAntiTopVar[kGenTopW].pt();
-      genPtAntiTopWj1 = genMatchingAntiTopVar[kGenTopWj1].pt();
-      genPtAntiTopWj2 = genMatchingAntiTopVar[kGenTopWj2].pt();
-      genEtaAntiTop = genMatchingAntiTopVar[kGenTop].eta();
-      genEtaAntiTopB = genMatchingAntiTopVar[kGenTopB].eta();
-      genEtaAntiTopW = genMatchingAntiTopVar[kGenTopW].eta();
-      genEtaAntiTopWj1 = genMatchingAntiTopVar[kGenTopWj1].eta();
-      genEtaAntiTopWj2 = genMatchingAntiTopVar[kGenTopWj2].eta();
-      genPhiAntiTopB = genMatchingAntiTopVar[kGenTopB].phi();
-      genPhiAntiTopWj1 = genMatchingAntiTopVar[kGenTopWj1].phi();
-      genPhiAntiTopWj2 = genMatchingAntiTopVar[kGenTopWj2].phi();
-      genMAntiTopB = genMatchingAntiTopVar[kGenTopB].pt();
-      genMAntiTopWj1 = genMatchingAntiTopVar[kGenTopWj1].pt();
-      genMAntiTopWj2 = genMatchingAntiTopVar[kGenTopWj2].pt();
-
-      if (genPtTop>0 && genPtAntiTop>0) gencount = 2;
-      else if (genPtTop>0 || genPtAntiTop>0) gencount = 1;
-      if (genMTopWj1>0 && genMAntiTopWj1>0) gencountHad = 2;
-      else if (genMTopWj1>0 || genMAntiTopWj1>0) gencountHad = 1;
-    }
-    if ( bdt_filler_gen ) {
-      bdt_filler_gen -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
-          ("genPtTop",        genPtTop)
-          ("genPtTopB",       genPtTopB)
-          ("genPtTopW",       genPtTopW)
-          ("genPtTopWj1",     genPtTopWj1)
-          ("genPtTopWj2",     genPtTopWj2)
-          ("genEtaTop",       genEtaTop)
-          ("genEtaTopB",      genEtaTopB)
-          ("genEtaTopW",      genEtaTopW)
-          ("genEtaTopWj1",    genEtaTopWj1)
-          ("genEtaTopWj2",    genEtaTopWj2)
-          ("genPhiTopB",      genPhiTopB)
-          ("genPhiTopWj1",    genPhiTopWj1)
-          ("genPhiTopWj2",    genPhiTopWj2)
-          ("genMTopB",        genMTopB)
-          ("genMTopWj1",      genMTopWj1)
-          ("genMTopWj2",      genMTopWj2)
-          ("genPtAntiTop",    genPtAntiTop)
-          ("genPtAntiTopB",   genPtAntiTopB)
-          ("genPtAntiTopW",   genPtAntiTopW)
-          ("genPtAntiTopWj1", genPtAntiTopWj1)
-          ("genPtAntiTopWj2", genPtAntiTopWj2)
-          ("genEtaAntiTop",   genEtaAntiTop)
-          ("genEtaAntiTopB",  genEtaAntiTopB)
-          ("genEtaAntiTopW",  genEtaAntiTopW)
-          ("genEtaAntiTopWj1", genEtaAntiTopWj1)
-          ("genEtaAntiTopWj2", genEtaAntiTopWj2)
-          ("genPhiAntiTopB",   genPhiAntiTopB)
-          ("genPhiAntiTopWj1", genPhiAntiTopWj1)
-          ("genPhiAntiTopWj2", genPhiAntiTopWj2)
-          ("genMAntiTopB",     genMAntiTopB)
-          ("genMAntiTopWj1",   genMAntiTopWj1)
-          ("genMAntiTopWj2",   genMAntiTopWj2)
-          ("gencount",         gencount)
-          ("gencountHad",      gencountHad)
-          ("passtrigger",      (selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu))
-          ("run", eventInfo.run)
-          ("lumi", eventInfo.lumi)
-          ("evt", eventInfo.event)
-        .fill();
+      genQuarkFromTop = genQuarkFromTopReader->read();
     }
 
     if ( !(selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu) ) {
@@ -1160,7 +1022,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
-    if ( !(selJets.size() >= 2) ) {
+    if ( !(selJets.size() >= 4) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection (1)." << std::endl;
 	printCollection("selJets", selJets);
@@ -1608,6 +1470,11 @@ int main(int argc, char* argv[])
     double positionJet3=-1;
 
     Particle::LorentzVector unfittedHadTopP4, fittedHadTopP4;
+
+    // it returns the gen-triplets organized in top/anti-top
+    std::map<int, Particle::LorentzVector> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genQuarkFromTop, kGenTop); // genWJets,
+    std::map<int, Particle::LorentzVector> genVarAnti = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genQuarkFromTop, kGenAntiTop); // genWJets,
+
     for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
           for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
            if ( &(*selWJet1) == &(*selBJet) ) continue;
@@ -1618,18 +1485,22 @@ int main(int argc, char* argv[])
         const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
     	  bool isGenMatched = false;
         if ( isMC && selectBDT ) {
-    	    if ( genWJets.size() >= 2 && genBJets.size() >= 1 && genTopQuarks.size() >= 1 && genWBosons.size() >= 1 ){
-	      double genTopPtProbeTop=-10;
-	      double genTopPtProbeAntiTop=-10;
-        double genTopEtaProbeTop=-10;
-	      double genTopEtaProbeAntiTop=-10;
-            std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet((*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(), genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop, genTopEtaProbeTop);
-            std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet((*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(), genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop, genTopEtaProbeAntiTop);
-	      if ( genMatchingTop[kGenMatchedTriplet]     ) genTopPt = genTopPtProbeTop;
-	      if ( genMatchingAntiTop[kGenMatchedTriplet] ) genTopPt = genTopPtProbeAntiTop;
+    	    //if ( genTopQuarks.size() >= 2 && genBJets.size() >= 1 && genTopQuarks.size() >= 1 && genWBosons.size() >= 1 ){
+        std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
+          (*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(),
+          genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
+          kGenTop
+        );
+        std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
+          (*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(),
+          genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2],
+          kGenAntiTop
+        );
+	      if ( genMatchingTop[kGenMatchedTriplet]     ) genTopPt = genVar[kGenTop].pt();
+	      if ( genMatchingAntiTop[kGenMatchedTriplet] ) genTopPt = genVarAnti[kGenTop].pt();
 	      isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
 	      if ( isGenMatched ) hadtruth = true;
-    	    }
+    	    //}
     	  }
         if ( bdtResult.at(kXGB_with_kinFit) > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
     	    max_truth_hadTopTaggerWithKinFit = isGenMatched;

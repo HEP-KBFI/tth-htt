@@ -108,3 +108,127 @@ class systematics(object):
   an_common   = central + JES + tauES + btag.full + FR_t.full + lhe.full
   # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only if you plan to run compShapeSyst 1!
   an_extended = an_common + FRe_shape.full + FRm_shape.full
+
+class Triggers(object):
+
+  def __init__(self, era):
+
+    if era == "2017":
+
+      self.triggers_analysis = {
+        '3mu' : {
+          'HLT_TripleMu_12_10_5',
+        },
+        '1e2mu' : {
+#          'HLT_DiMu9_Ele9_CaloIdL_TrackIdL',     # prescale of 2
+          'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ',  # unprescaled
+        },
+        '2e1mu' : {
+          'HLT_Mu8_DiEle12_CaloIdL_TrackIdL',
+        },
+        '3e' : {
+          'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL',  # has PU dependence
+        },
+        '2mu' : {
+#          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL',             # heavily prescaled throughout 2017 data-taking period
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ',          # unprescaled in 2017B; heavily prescaled since 2017C
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8',  # introduced in 2017C
+        },
+        '1e1mu' : {
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',  # not present in 2017B
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
+          'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ',
+        },
+        '2e' : {
+          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL',    # higher efficiency than non-DZ; not present in 2017B
+          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
+        },
+        '1mu' : {
+          'HLT_IsoMu24',  # not enabled at high lumi
+          'HLT_IsoMu27',
+        },
+        '1e' : {
+          'HLT_Ele32_WPTight_Gsf', # not present in 2017BC (or, equivalently, not enabled at high lumi)
+          'HLT_Ele35_WPTight_Gsf',
+        },
+        # CV: tau trigger paths taken from slide 6 of presentation given by Hale Sert at HTT workshop in December 2017
+        #    (https://indico.cern.ch/event/684622/contributions/2807071/attachments/1575421/2487940/141217_triggerStatusPlans_hsert.pdf),
+        #     except that the 'HLT_IsoMu24_eta2p1_LooseChargedIsoPFTau20_SingleL1' path has been dropped,
+        #     as it was found to increase the trigger acceptance only marginally
+        #    (cf. slide 19 of https://indico.cern.ch/event/683144/contributions/2814995/attachments/1570846/2478034/Ruggles_TauTriggers_TauPOG_20171206_v7.pdf)
+        '1mu1tau' : {
+          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1',
+        },
+        '1e1tau' : {
+          'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
+        },
+        '2tau' : {
+          'HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg',
+          'HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg',
+          'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg',
+          'HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg',
+        },
+      }
+
+      self.triggers_leptonFR = {
+        '1e' : {
+          'HLT_Ele8_CaloIdM_TrackIdM_PFJet30',
+          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30',
+        },
+        '1mu' : {
+          'HLT_Mu27',
+          'HLT_Mu20',
+          'HLT_Mu3_PFJet40',
+        },
+        '2mu' : {
+          'HLT_Mu17',
+          'HLT_Mu8',
+        }
+      }
+
+      self.blacklist = {
+        'Run2017B' : {
+           '1e'    : { 'HLT_Ele32_WPTight_Gsf' },
+           '1e1mu' : { 'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL' },
+           '2mu'   : { 'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8' },
+        },
+        'Run2017C' : {
+          '1e' : { 'HLT_Ele32_WPTight_Gsf' },
+        },
+      }
+
+      self.triggers_analysis_flat = { trigger for triggers in self.triggers_analysis for trigger in triggers }
+      self.triggers_leptonFR_flat = { trigger for triggers in self.triggers_leptonFR for trigger in triggers }
+      self.triggers_flat          = self.triggers_analysis_flat | self.triggers_leptonFR_flat
+      self.blacklist_flat         = {}
+      for blacklist_process in self.blacklist_flat:
+        self.blacklist_flat[blacklist_process] = set()
+        for trigger_name in self.blacklist_flat[blacklist_process]:
+          self.blacklist_flat[blacklist_process].update(self.blacklist_flat[blacklist_process][trigger_name])
+
+    else:
+      raise ValueError("Invalid era: %s" % era)
+
+
+  def get(self, trigger_name, process_name_specific):
+    if trigger_name not in self.triggers_analysis:
+      raise ValueError('Invalid trigger: %s' % trigger_name)
+    process_name_match = None
+    for blacklist_process in self.blacklist:
+      if blacklist_process in process_name_specific:
+        process_name_match = self.blacklist[blacklist_process]
+        break
+    excluded_triggers = set()
+    if process_name_match:
+      if trigger_name in process_name_match:
+        excluded_triggers = process_name_match[trigger_name]
+    return list(self.triggers_analysis[trigger_name] - excluded_triggers)
+
+  def get_overlap(self, triggers, process_name_specific):
+    required_triggers = self.triggers_flat
+    excluded_triggers = set()
+    for blacklist_process in self.blacklist_flat:
+      if blacklist_process in process_name_specific:
+        excluded_triggers = self.blacklist_flat[blacklist_process]
+        break
+    return (required_triggers - excluded_triggers) & set(triggers)

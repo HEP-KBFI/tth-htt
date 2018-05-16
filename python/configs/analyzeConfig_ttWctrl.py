@@ -36,17 +36,21 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                lepton_charge_selections, hadTauVeto_selection, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit,
+               triggers = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
                select_rle_output = False, executable_prep_dcard = "prepareDatacards",
                executable_add_syst_dcard = "addSystDatacards", verbose = False,
-               dry_run = False, isDebug = False):
+               dry_run = False, isDebug = False, use_home = True, do_sync = False,
+               use_nonnominal = False, rle_select = ''):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttWctrl", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      histograms_to_fit,
+      histograms_to_fit, triggers,
       executable_prep_dcard = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
       verbose = verbose,
       dry_run = dry_run,
       isDebug = isDebug,
+      use_home = use_home,
+      do_sync = do_sync,
     )
 
     self.samples = samples
@@ -91,8 +95,10 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_ttWctrl_cfg.py")
 
     self.select_rle_output = select_rle_output
+    self.use_nonnominal = use_nonnominal
+    self.rle_select = rle_select
 
-  def createCfg_analyze(self, jobOptions):
+  def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_ttWctrl executable (analysis code)
 
     Args:
@@ -103,38 +109,12 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_ttWctrl.cc
     """
-    lines = []
-    ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in jobOptions['ntupleFiles'] ])
-    lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'])
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']))
-    lines.append("process.analyze_ttWctrl.process = cms.string('%s')" % jobOptions['sample_category'])
-    lepton_frWeight = None
-    if jobOptions['applyFakeRateWeights'] == "disabled":
-      lepton_frWeight = "disabled"
-    else:
-      lepton_frWeight = "enabled"
-    histogramDir = getHistogramDir(jobOptions['lepton_selection'], lepton_frWeight, jobOptions['lepton_charge_selection'])
-    lines.append("process.analyze_ttWctrl.histogramDir = cms.string('%s')" % histogramDir)
-    lines.append("process.analyze_ttWctrl.era = cms.string('%s')" % self.era)
-    for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu' ]:
-      lines.append("process.analyze_ttWctrl.triggers_%s = cms.vstring(%s)" % \
-        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
-      lines.append("process.analyze_ttWctrl.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
-    lines.append("process.analyze_ttWctrl.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
-    lines.append("process.analyze_ttWctrl.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
-    lines.append("process.analyze_ttWctrl.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))
-    lines.append("process.analyze_ttWctrl.leptonChargeSelection = cms.string('%s')" % jobOptions['lepton_charge_selection'])
-    lines.append("process.analyze_ttWctrl.hadTauSelection = cms.string('%s')" % jobOptions['hadTauVeto_selection'])
-    lines.append("process.analyze_ttWctrl.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
-    lines.append("process.analyze_ttWctrl.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
-    lines.append("process.analyze_ttWctrl.isMC = cms.bool(%s)" % jobOptions['is_mc'])
-    lines.append("process.analyze_ttWctrl.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
-    lines.append("process.analyze_ttWctrl.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
-    lines.append("process.analyze_ttWctrl.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
-    lines.append("process.analyze_ttWctrl.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
-    lines.append("process.analyze_ttWctrl.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
-    lines.append("process.analyze_ttWctrl.redoGenMatching = cms.bool(False)")
-    lines.append("process.analyze_ttWctrl.isDEBUG = cms.bool(%s)" % self.isDebug)
+    lepton_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
+    jobOptions['histogramDir'] = getHistogramDir(
+      jobOptions['leptonSelection'], lepton_frWeight, jobOptions['leptonChargeSelection']
+    )
+
+    lines = super(analyzeConfig_ttWctrl, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addFlips(self, jobOptions):
@@ -291,34 +271,43 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
                   continue
 
+                cfg_key = getKey(self.channel, process_name, lepton_selection_and_frWeight, lepton_charge_selection, central_or_shift, jobId)
+                cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
+                histogramFile_path    = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s.root"           % key_analyze_job)
+                logFile_path          = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s.log"    % cfg_key)
+                rleOutputFile_path    = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s.txt"        % cfg_key) if self.select_rle_output else ""
+
+                syncOutput = ''
+                syncTree = ''
+                if self.do_sync:
+                  syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s.root' % self.channel)
+                  syncTree = 'syncTree_%s' % self.channel
+                  self.inputFiles_sync['sync'].append(syncOutput)
+
+                syncRLE = ''
+                if self.do_sync and self.rle_select:
+                  syncRLE = self.rle_select % syncTree
+                  if not os.path.isfile(syncRLE):
+                    raise ValueError('Input RLE file for the sync is missing: %s' % syncRLE)
+
                 self.jobOptions_analyze[key_analyze_job] = {
-                  'ntupleFiles' : ntupleFiles,
-                  'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%s_%i_cfg.py" % \
-                    (self.channel, process_name, lepton_selection_and_frWeight, lepton_charge_selection, central_or_shift, jobId)),
-                  'histogramFile' : os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%s_%i.root" % \
-                    (process_name, lepton_selection_and_frWeight, lepton_charge_selection, central_or_shift, jobId)),
-                  'logFile' : os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%s_%i.log" % \
-                    (self.channel, process_name, lepton_selection_and_frWeight, lepton_charge_selection, central_or_shift, jobId)),
-                  'rleOutputFile' : os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%s_%i.txt" % \
-                    (self.channel, process_name, lepton_selection_and_frWeight, lepton_charge_selection, central_or_shift, jobId)) \
-                      if self.select_rle_output else "",
-                  'sample_category' : sample_category,
-                  'triggers' : sample_info["triggers"],
-                  'lepton_selection' : lepton_selection,
-                  'apply_leptonGenMatching' : self.apply_leptonGenMatching,
-                  'lepton_charge_selection' : lepton_charge_selection,
-                  'hadTauVeto_selection' : hadTauVeto_selection,
-                  'applyFakeRateWeights' : self.applyFakeRateWeights if not lepton_selection == "Tight" else "disabled",
-                  ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
-                  'use_HIP_mitigation_mediumMuonId' : False,
-                  'is_mc' : is_mc,
-                  'central_or_shift' : central_or_shift,
-                  'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
-                  'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
-                  'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
-                  'process_name_specific' : sample_info['process_name_specific'],
+                  'ntupleFiles'              : ntupleFiles,
+                  'cfgFile_modified'         : cfgFile_modified_path,
+                  'histogramFile'            : histogramFile_path,
+                  'logFile'                  : logFile_path,
+                  'selEventsFileName_output' : rleOutputFile_path,
+                  'leptonSelection'          : lepton_selection,
+                  'apply_leptonGenMatching'  : self.apply_leptonGenMatching and is_mc,
+                  'leptonChargeSelection'    : lepton_charge_selection,
+                  'hadTauSelection_veto'     : hadTauVeto_selection,
+                  'applyFakeRateWeights'     : self.applyFakeRateWeights if not lepton_selection == "Tight" else "disabled",
+                  'central_or_shift'         : central_or_shift,
+                  'syncOutput'               : syncOutput,
+                  'syncTree'                 : syncTree,
+                  'syncRLE'                  : syncRLE,
+                  'useNonNominal'            : self.use_nonnominal,
                 }
-                self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
+                self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
                 # initialize input and output file names for hadd_stage1
                 key_hadd_stage1 = getKey(process_name, lepton_selection_and_frWeight, lepton_charge_selection)
@@ -327,6 +316,8 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                 self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
                 self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s_%s.root" % \
                    (self.channel, process_name, lepton_selection_and_frWeight, lepton_charge_selection))
+
+              if self.do_sync: continue
 
               if is_mc:
                 logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
@@ -414,6 +405,8 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
                 self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
+          if self.do_sync: continue
+
           # sum fake contributions for the total of all MC samples
           # input processes: TT1l1j,TT0l2j,...
           # output process: fakes_mc
@@ -448,6 +441,22 @@ class analyzeConfig_ttWctrl(analyzeConfig):
           self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
           self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s_%s.root" % \
               (self.channel, lepton_selection_and_frWeight, lepton_charge_selection))
+
+    if self.do_sync:
+      if self.is_sbatch:
+        logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
+        self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
+        self.createScript_sbatch_syncNtuple(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+      logging.info("Creating Makefile")
+      lines_makefile = []
+      self.addToMakefile_syncNtuple(lines_makefile)
+      outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
+      self.outputFile_sync['sync'] = outputFile_sync_path
+      self.targets.append(outputFile_sync_path)
+      self.addToMakefile_hadd_sync(lines_makefile)
+      self.createMakefile(lines_makefile)
+      logging.info("Done")
+      return self.num_jobs
 
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
     for lepton_charge_selection in self.lepton_charge_selections:

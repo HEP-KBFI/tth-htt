@@ -325,11 +325,9 @@ int main(int argc, char* argv[])
   if ( absEtaBins.size() < 2 ) throw cms::Exception("analyze_jetToTauFakeRate") 
     << "Invalid Configuration parameter 'absEtaBins' !!\n";
 
-  bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
-  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
-
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
   bool isMC_tH = ( process_string == "tH" ) ? true : false;
+  bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
@@ -388,7 +386,6 @@ int main(int argc, char* argv[])
   const bool readGenObjects = isMC && !redoGenMatching;
   RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
   inputTree->registerReader(muonReader);
-  muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
@@ -457,7 +454,7 @@ int main(int argc, char* argv[])
         inputTree->registerReader(genJetReader);
       }
     }
-    lheInfoReader = new LHEInfoReader();
+    lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree->registerReader(lheInfoReader);
   }
 

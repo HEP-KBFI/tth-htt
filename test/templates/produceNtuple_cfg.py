@@ -36,12 +36,11 @@ process.produceNtuple = cms.PSet(
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genJets    = cms.string('GenJet'),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     isMC = cms.bool(True),
 
     selEventsFileName_input = cms.string(''),
 
+    drop_branches = cms.vstring(),
     copy_histograms = cms.vstring(
         "Count",
         "CountFullWeighted",

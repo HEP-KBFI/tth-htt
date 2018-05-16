@@ -36,7 +36,7 @@ process.analyze_ttZctrl = cms.PSet(
     use_triggers_1e1mu = cms.bool(True),
     triggers_2mu = cms.vstring('HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v', 'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v'),
     use_triggers_2mu = cms.bool(True),
-    
+
     triggers_3e = cms.vstring(),
     use_triggers_3e = cms.bool(False),
     triggers_2e1mu = cms.vstring(),
@@ -58,8 +58,7 @@ process.analyze_ttZctrl = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
-    
+
     hadTauSelection = cms.string('Tight|dR03mvaLoose'),
 
     applyFakeRateWeights = cms.string("disabled"), # either "disabled" or "3lepton"
@@ -70,9 +69,6 @@ process.analyze_ttZctrl = cms.PSet(
     ),
 
     minNumJets = cms.int32(2),
-
-    use_HIP_mitigation_bTag = cms.bool(False),
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
 
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
@@ -92,4 +88,10 @@ process.analyze_ttZctrl = cms.PSet(
     selEventsFileName_output = cms.string(''),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
+
+    syncNtuple = cms.PSet(
+        tree = cms.string(''),
+        output = cms.string(''),
+    ),
+    hasLHE = cms.bool(True),
 )

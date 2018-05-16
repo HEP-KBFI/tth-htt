@@ -41,7 +41,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addFakes, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
-               verbose = False, dry_run = False, isDebug = False, hlt_filter = False):
+               verbose = False, dry_run = False, isDebug = False, hlt_filter = False, use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2los_1tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
@@ -50,6 +50,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       verbose = verbose,
       dry_run = dry_run,
       isDebug = isDebug,
+      use_home = use_home,
     )
 
     self.samples = samples

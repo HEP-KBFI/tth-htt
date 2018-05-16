@@ -73,7 +73,8 @@ class puHistogramConfig:
     """
     def __init__(self, configDir, outputDir, executable,
                  samples, max_files_per_job, era, check_input_files, running_method,
-                 version, num_parallel_jobs, pool_id = '', verbose = False, dry_run = False):
+                 version, num_parallel_jobs, pool_id = '', verbose = False, dry_run = False,
+                 use_home = True):
 
         self.configDir             = configDir
         self.outputDir             = outputDir
@@ -85,6 +86,7 @@ class puHistogramConfig:
         self.check_input_files     = check_input_files
         self.verbose               = verbose
         self.dry_run               = dry_run
+        self.use_home              = use_home
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
 
@@ -184,6 +186,7 @@ class puHistogramConfig:
             dry_run                 = self.dry_run,
             job_template_file       = 'sbatch-node.produce.sh.template',
             skipFileSizeCheck       = skipFileSizeCheck,
+            use_home                = self.use_home,
         )
         return num_jobs
 
@@ -206,6 +209,7 @@ class puHistogramConfig:
             pool_id                 = uuid.uuid4(),
             verbose                 = self.verbose,
             dry_run                 = self.dry_run,
+            use_home                = self.use_home,
             max_input_files_per_job = 10,
         )
         return sbatch_hadd_file

@@ -26,5 +26,7 @@ samples_2017["/SingleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
       ]),
     ]
   ),
+  ("missing_from_superset", [
+  ]),
 ])
 

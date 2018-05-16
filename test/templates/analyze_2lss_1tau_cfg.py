@@ -9,7 +9,7 @@ process.fwliteInput = cms.PSet(
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
- 
+
 process.fwliteOutput = cms.PSet(
     fileName = cms.string('analyze_2lss_1tau.root')
 )
@@ -67,8 +67,6 @@ process.analyze_2lss_1tau = cms.PSet(
         )
     ),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     apply_lepton_and_hadTauCharge_cut = cms.bool(True),
 
     isMC = cms.bool(True),
@@ -97,6 +95,7 @@ process.analyze_2lss_1tau = cms.PSet(
     branchName_genBJets = cms.string('GenBQuarkFromTop'),
     branchName_genWBosons = cms.string('GenVbosons'),
     branchName_genWJets = cms.string('GenWZQuark'),
+    branchName_genQuarkFromTop = cms.string('GenQuarkFromTop'),
 
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
@@ -109,4 +108,5 @@ process.analyze_2lss_1tau = cms.PSet(
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )

@@ -18,6 +18,7 @@ parser.add_preselect()
 parser.add_tau_id_wp("dR03mvaTight")
 parser.add_hlt_filter()
 parser.add_files_per_job()
+parser.add_use_home()
 args = parser.parse_args()
 
 # Common arguments
@@ -39,6 +40,7 @@ use_preselected   = args.use_preselected
 tau_id_wp         = args.tau_id_wp
 hlt_filter        = args.hlt_filter
 files_per_job     = args.files_per_job
+use_home          = args.use_home
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -118,6 +120,7 @@ if __name__ == '__main__':
       dry_run                               = dry_run,
       isDebug                               = debug,
       hlt_filter                            = hlt_filter,
+      use_home                              = use_home,
     )
 
     job_statistics = analysis.create()
@@ -141,6 +144,6 @@ if __name__ == '__main__':
       is_last_resubmission = True
 
   for idx_job_resubmission in job_statistics_summary.keys():
-    logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
+    logging.info("Job (re)submission #%i:" % (idx_job_resubmission + 1))
     for job_type, num_jobs in job_statistics_summary[idx_job_resubmission].items():
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))

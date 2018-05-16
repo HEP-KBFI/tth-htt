@@ -1,10 +1,11 @@
-import os, logging, uuid
+import os, logging, uuid, inspect
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
+from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
 
 # dir for python configuration and batch script files for each analysis job
 DKEY_CFGS = "cfgs"
@@ -23,7 +24,7 @@ executable_rm = 'rm'
 
 DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES, DKEY_ROOT, DKEY_HADD_RT, DKEY_SYNC ]
 
-class analyzeConfig:
+class analyzeConfig(object):
     """Configuration metadata needed to run analysis in a single go.
 
        Sets up a folder structure by defining full path names; no directory creation is delegated here.
@@ -59,7 +60,7 @@ class analyzeConfig:
 
     def __init__(self, configDir, outputDir, executable_analyze, channel, central_or_shifts,
                  max_files_per_job, era, use_lumi, lumi, check_input_files, running_method,
-                 num_parallel_jobs, histograms_to_fit,
+                 num_parallel_jobs, histograms_to_fit, triggers,
                  executable_prep_dcard = "prepareDatacards",
                  executable_add_syst_dcard = "addSystDatacards",
                  executable_make_plots = "makePlots",
@@ -67,6 +68,7 @@ class analyzeConfig:
                  do_sync = False,
                  verbose = False,
                  dry_run = False,
+                 use_home = True,
                  isDebug = False,
                  template_dir = None):
 
@@ -102,7 +104,10 @@ class analyzeConfig:
         self.executable_make_plots_mcClosure = executable_make_plots_mcClosure
         self.verbose = verbose
         self.dry_run = dry_run
+        self.use_home = use_home
         self.isDebug = isDebug
+        self.triggers = triggers
+        self.triggerTable = Triggers(self.era)
 
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)
@@ -159,72 +164,7 @@ class analyzeConfig:
         if self.do_sync:
             self.inputFiles_sync['sync'] = []
 
-        if era == '2017':
-            self.triggers_3mu = [
-                'HLT_TripleMu_12_10_5',
-            ]
-            self.triggers_1e2mu = [
-#                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL', # prescale of 2
-                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ', # unprescaled
-            ]
-            self.triggers_2e1mu = [
-                'HLT_Mu8_DiEle12_CaloIdL_TrackIdL',
-            ]
-            self.triggers_3e = [
-                'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL', # has PU dependence
-            ]
-            self.triggers_2mu = [
-#                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL', # heavily prescaled throughout 2017 data-taking period
-                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # unprescaled in 2017B; heavily prescaled since 2017C
-                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # introduced in 2017C
-            ]
-            self.triggers_1e1mu = [
-                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # not present in 2017B
-                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
-                'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ',
-            ]
-            self.triggers_2e = [
-                'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # higher efficiency than non-DZ; not present in 2017B
-                'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
-            ]
-            self.triggers_1mu = [
-                'HLT_IsoMu24', # not enabled at high lumi
-                'HLT_IsoMu27',
-            ]
-            self.triggers_1e = [
-                'HLT_Ele32_WPTight_Gsf', # not present in 2017BC (or, equivalently, not enabled at high lumi)
-                'HLT_Ele35_WPTight_Gsf',
-            ]
-            # CV: tau trigger paths taken from slide 6 of presentation given by Hale Sert at HTT workshop in December 2017
-            #    (https://indico.cern.ch/event/684622/contributions/2807071/attachments/1575421/2487940/141217_triggerStatusPlans_hsert.pdf),
-            #     except that the 'HLT_IsoMu24_eta2p1_LooseChargedIsoPFTau20_SingleL1' path has been dropped,
-            #     as it was found to increase the trigger acceptance only marginally
-            #    (cf. slide 19 of https://indico.cern.ch/event/683144/contributions/2814995/attachments/1570846/2478034/Ruggles_TauTriggers_TauPOG_20171206_v7.pdf)
-            self.triggers_1mu1tau = [
-                'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1',
-            ]
-            self.triggers_1e1tau = [
-                'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
-            ]
-            self.triggers_2tau = [
-                'HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg',
-                'HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg',
-                'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg',
-                'HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg',
-            ]
-            self.triggers_missing_Run2017B = [
-                'HLT_Ele32_WPTight_Gsf', # 1e
-                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # 1e1mu
-                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # 2mu
-            ]
-            self.triggers_missing_Run2017C = [
-                'HLT_Ele32_WPTight_Gsf', # 1e
-            ]
-        else:
-            raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
-
         self.targets = []
-
         self.cvmfs_error_log = {}
 
         self.num_jobs = {}
@@ -238,15 +178,6 @@ class analyzeConfig:
             logging.error("Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times)))
             for time in times:
                 logging.error(str(time))
-
-    def whitelist_triggers(self, triggers, process_name_specific):
-        triggers_to_blacklist = set()
-        if 'Run2017B' in process_name_specific:
-            triggers_to_blacklist = set(self.triggers_missing_Run2017B)
-        elif 'Run2017C' in process_name_specific:
-            triggers_to_blacklist = set(self.triggers_missing_Run2017C)
-        triggers = list(set(triggers) - triggers_to_blacklist)
-        return triggers
 
     def get_addMEM_systematics(self, central_or_shift):
         if central_or_shift in [
@@ -263,9 +194,110 @@ class analyzeConfig:
             return central_or_shift
         return "central"
 
-    def createCfg_analyze(self, *args):
-        raise ValueError(
-            "Function 'createCfg_analyze' not implemented in derrived class !!")
+    def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = []):
+        process_string = 'process.analyze_%s' % self.channel
+        current_function_name = inspect.stack()[0][3]
+
+        is_mc = (sample_info["type"] == "mc")
+        if 'process' not in jobOptions:
+          jobOptions['process'] = sample_info["sample_category"]
+        if 'isMC' not in jobOptions:
+          jobOptions['isMC'] = is_mc
+        if 'apply_genWeight' not in jobOptions:
+          jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
+        if 'apply_trigger_bits' not in jobOptions:
+          jobOptions['apply_trigger_bits'] = (is_mc and sample_info["reHLT"]) or not is_mc
+        if 'lumiScale' not in jobOptions:
+          jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / sample_info["nof_events"] \
+                                    if (self.use_lumi and is_mc) else 1.
+        if 'hasLHE' not in jobOptions:
+            jobOptions['hasLHE'] = sample_info['has_LHE']
+
+        jobOptions_local = [
+            'process',
+            'isMC',
+            'hasLHE',
+            'central_or_shift',
+            'leptonSelection',
+            'chargeSumSelection',
+            'histogramDir',
+            'lumiScale',
+            'leptonChargeSelection',
+            'hadTauSelection',
+            'hadTauSelection_veto',
+            'apply_leptonGenMatching',
+            'applyFakeRateWeights',
+            'apply_genWeight',
+            'apply_trigger_bits',
+            'selEventsFileName_output',
+            'fillGenEvtHistograms',
+            'selectBDT',
+            'selEventsTFileName',
+            'useNonNominal',
+            'apply_hlt_filter',
+        ]
+        jobOptions_keys = jobOptions_local + additionalJobOptions
+        max_option_len = max(map(len, jobOptions_keys))
+
+        lines = [
+            "# Filled in %s" % current_function_name,
+            "process.fwliteInput.fileNames = cms.vstring(%s)"  % jobOptions['ntupleFiles'],
+            "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
+            "{}.{:<{len}} = cms.string('{}')".format(process_string, 'era',             self.era,     len = max_option_len),
+            "{}.{:<{len}} = cms.bool({})".format    (process_string, 'redoGenMatching', 'False',      len = max_option_len),
+            "{}.{:<{len}} = cms.bool({})".format    (process_string, 'isDEBUG',         self.isDebug, len = max_option_len),
+        ]
+        for jobOptions_key in jobOptions_keys:
+            if jobOptions_key not in jobOptions: continue # temporary?
+            jobOptions_val = jobOptions[jobOptions_key]
+            jobOptions_expr = ""
+            if type(jobOptions_val) == bool:
+                jobOptions_expr = "cms.bool(%s)"
+            elif type(jobOptions_val) == float:
+                jobOptions_expr = "cms.double(%s)"
+            elif type(jobOptions_val) == str:
+                jobOptions_expr = "cms.string('%s')"
+            elif type(jobOptions_val) == list:
+                if all(map(lambda x: type(x) == float, jobOptions_val)):
+                    jobOptions_expr = "cms.vdouble(%s)"
+                elif all(map(lambda x: type(x) == str, jobOptions_val)):
+                    jobOptions_expr = "cms.vstring(%s)"
+                else:
+                    raise ValueError(
+                        "Cannot find correct cms vector type for value %s: %s" % \
+                        (jobOptions_key, str(jobOptions_val))
+                    )
+            else:
+                raise ValueError(
+                    "Cannot find correct cms type for value %s: %s" % \
+                    (jobOptions_key, str(jobOptions_val))
+                )
+            assert(jobOptions_expr)
+            jobOptions_val = jobOptions_expr % str(jobOptions_val)
+            lines.append("{}.{:<{len}} = {}".format(process_string, jobOptions_key, jobOptions_val, len = max_option_len))
+
+        for trigger in self.triggers:
+            trigger_string     = '%s.triggers_%s'     % (process_string, trigger)
+            trigger_use_string = '%s.use_triggers_%s' % (process_string, trigger)
+            available_triggers = self.triggerTable.get(trigger, sample_info['process_name_specific'])
+            use_trigger        = bool(trigger in sample_info['triggers'])
+            lines.extend([
+                "{:<{len}} = cms.vstring({})".format(trigger_string,     available_triggers, len = max_option_len + len(process_string) + 1),
+                "{:<{len}} = cms.bool({})".format   (trigger_use_string, use_trigger,        len = max_option_len + len(process_string) + 1),
+            ])
+
+        if self.do_sync:
+            lines.extend([
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree',         jobOptions['syncTree'],   len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.output',       jobOptions['syncOutput'], len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'selEventsFileName_input', jobOptions['syncRLE'],    len = max_option_len),
+            ])
+            if 'syncRequireGenMatching' in jobOptions:
+                lines.append(
+                    "{}.{:<{len}} = cms.bool({})".format(process_string, 'syncNtuple.requireGenMatching', jobOptions['syncRequireGenMatching'], len = max_option_len),
+                )
+
+        return lines
 
     def createCfg_addBackgrounds(self, jobOptions):
         """Create python configuration file for the addBackgrounds executable (sum either all "fake" or all "non-fake" contributions)
@@ -424,6 +456,7 @@ class analyzeConfig:
             verbose = self.verbose,
             dry_run = self.dry_run,
             skipFileSizeCheck = skipFileSizeCheck,
+            use_home = self.use_home,
         )
         return num_jobs
 
@@ -460,7 +493,7 @@ class analyzeConfig:
         sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], self.channel, hadd_stage_name) if self.dirs[DKEY_HADD_RT] else ''
         self.num_jobs['hadd'] += tools_createScript_sbatch_hadd(
             sbatch_hadd_file, inputFiles, outputFile, scriptFile, logFile, self.workingDir, auxDirName = sbatch_hadd_dir,
-            pool_id = uuid.uuid4(), verbose = self.verbose, dry_run = self.dry_run,
+            pool_id = uuid.uuid4(), verbose = self.verbose, dry_run = self.dry_run, use_home = self.use_home,
         )
         return sbatch_hadd_file
 

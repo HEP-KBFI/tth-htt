@@ -7,13 +7,14 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
-mode_choices = [ 'all', 'forBDTtraining', 'sync', 'leptonFR_sync' ]
+mode_choices = [ 'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync' ]
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_nonnominal()
 parser.add_tau_id_wp()
 parser.add_files_per_job(20)
+parser.add_use_home(False)
 parser.add_argument('-p', '--disable-preselection',
   dest = 'disable_preselection', action = 'store_false', default = True,
   help = 'R|Disable preselection (read this script for the list of cuts)',
@@ -36,10 +37,13 @@ sample_filter      = args.filter
 mode           = args.mode
 use_nonnominal = args.original_central
 files_per_job  = args.files_per_job
+use_home       = args.use_home
 
 # Custom arguments
 preselection = args.disable_preselection
-pileup       = "/hdfs/local/karl/ttHPileupProduction/2017/2018May11_fullProduction/histograms"
+pileup       = os.path.join(
+  os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s.root' % era
+)
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -62,15 +66,17 @@ else:
 for sample_key, sample_entry in samples.items():
   if mode == "all":
     sample_entry['use_it'] = True
-  elif 'sync' in mode:
+  elif mode == 'forBDTtraining':
+    sample_entry['use_it'] = not sample_entry['use_it']
+  elif 'sync' in mode or mode == 'all_except_forBDTtraining':
     pass
   else:
     raise ValueError("Internal logic error")
 
-if mode in [ "all", "sync", "leptonFR_sync" ]:
+if mode not in [ 'forBDTtraining' ]:
   leptonSelection   = 'Fakeable'
   hadTauSelection   = 'Fakeable'
-  hadTauWP          = 'dR03mvaLoose'
+  hadTauWP          = 'dR03mvaVLoose'
 else:
   leptonSelection   = 'Loose'
   hadTauSelection   = 'Loose'
@@ -135,6 +141,7 @@ if __name__ == '__main__':
       dry_run               = dry_run,
       isDebug               = debug,
       use_nonnominal        = use_nonnominal,
+      use_home              = use_home,
     )
 
     num_jobs = ntupleProduction.create()

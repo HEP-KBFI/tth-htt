@@ -54,8 +54,6 @@ process.analyze_hadTopTagger = cms.PSet(
 
     chargeSumSelection = cms.string('OS'),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     apply_lepton_and_hadTauCharge_cut = cms.bool(True),
 
     isMC = cms.bool(True),
@@ -86,6 +84,7 @@ process.analyze_hadTopTagger = cms.PSet(
     branchName_genBJets = cms.string('GenBQuarkFromTop'),
     branchName_genWBosons = cms.string('GenVbosons'),
     branchName_genWJets = cms.string('GenWZQuark'),
+    branchName_genQuarkFromTop = cms.string('GenQuarkFromTop'),
 
     selEventsFileName_input = cms.string(''),
     ##selEventsFileName_input = cms.string('/home/veelken/CMSSW_9_4_4/src/tthAnalysis/HiggsToTauTau/test/selEvents_hadTopTagger_gen.txt'),
@@ -94,4 +93,5 @@ process.analyze_hadTopTagger = cms.PSet(
 
     selectBDT = cms.bool(True),
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )

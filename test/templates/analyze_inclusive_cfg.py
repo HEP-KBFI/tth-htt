@@ -10,6 +10,10 @@ process.fwliteInput = cms.PSet(
     outputEvery = cms.uint32(1000)
 )
 
+process.fwliteOutput = cms.PSet(
+    fileName = cms.string('')
+)
+
 process.analyze_inclusive = cms.PSet(
     treeName = cms.string('Events'),
     process = cms.string('signal'),
@@ -63,7 +67,6 @@ process.analyze_inclusive = cms.PSet(
     apply_offline_e_trigger_cuts_1e1tau = cms.bool(True),
 
     hadTauSelection_tauIdWP = cms.string('dR03mvaMedium'),
-    use_HIP_mitigation_mediumMuonId = cms.bool(False), # no effect in nanoAOD
 
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
@@ -83,4 +86,5 @@ process.analyze_inclusive = cms.PSet(
         tree = cms.string('syncTree'),
         output = cms.string('inclusive.root'),
     ),
+    hasLHE = cms.bool(True),
 )

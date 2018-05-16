@@ -79,10 +79,7 @@ process.analyze_3l_1tau = cms.PSet(
         )
     ),
 
-    ##minNumJets = cms.int32(2),
     minNumJets = cms.int32(1),
-
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
 
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
@@ -118,4 +115,5 @@ process.analyze_3l_1tau = cms.PSet(
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )

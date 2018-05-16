@@ -169,12 +169,11 @@ process.analyze_LeptonFakeRate = cms.PSet(
     minConePt_global_mu = cms.double(10),
     minRecoPt_global_mu = cms.double(5),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
+    apply_trigger_bits = cms.bool(False), # ignored
     fillGenEvtHistograms = cms.bool(True),
 
     branchName_electrons = cms.string('Electron'),
@@ -193,14 +192,10 @@ process.analyze_LeptonFakeRate = cms.PSet(
     cfgMEtFilter = recommendedMEtFilters,
     isDEBUG = cms.bool(False),
     applyMETFilters = cms.bool(True),
-    applyRandomPrescaleWeight = cms.bool(True)
+    hasLHE = cms.bool(True),
 )
 
 
 
-process.fwliteInput.fileNames = cms.vstring('/hdfs/local/ram/ttHNtupleProduction/2017/2018May4_woPresel_nom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/tree_1.root')
-process.analyze_LeptonFakeRate.selEventsFileName_output = cms.string('selEvents3_%s_%s.txt')                                                                                                             
-                                                                 
-# process.analyze_LeptonFakeRate.selEventsFileName_input = cms.string('selEvents_CERN_select_Tallinn_reject.txt')
-# process.analyze_LeptonFakeRate.applyMETFilters = cms.bool(False)
-process.analyze_LeptonFakeRate.applyRandomPrescaleWeight = cms.bool(False)
+
+
