@@ -27,7 +27,7 @@ class hltPath_LeptonFakeRate
                          double minRecoPt = -1., // NEWLY ADDED AFTER GIOVANNI SYNC
                          double min_jetPt = -1.,
                          double prescale = 1.,
-                         double prescale_rand_mc = 1.);
+                         double prescale_rand_mc = 1.); 
   ~hltPath_LeptonFakeRate() {}
 
   std::string getPathName() const;
@@ -39,7 +39,8 @@ class hltPath_LeptonFakeRate
   bool is_trigger_2mu() const;
   bool is_trigger_1e() const;
   bool is_trigger_2e() const;
-
+  bool isTriggered() const; // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
+  void setIsTriggered(bool decision) const; // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
  private:
   std::string branchName_;
   Int_t value_;
@@ -53,6 +54,7 @@ class hltPath_LeptonFakeRate
   bool is_trigger_2mu_;
   bool is_trigger_1e_;
   bool is_trigger_2e_;
+  mutable bool isTriggered_; // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
 };
 
 void
@@ -69,5 +71,15 @@ hltPaths_LeptonFakeRate_delete(const std::vector<hltPath_LeptonFakeRate *> & hlt
 std::ostream &
 operator<<(std::ostream & stream,
            const hltPath_LeptonFakeRate & hltPath_iter);
+
+
+
+
+
+
+
+// bool hltPaths_LeptonFakeRate_isTriggered(const std::vector<hltPath_LeptonFakeRate *> & hltPaths, bool verbose); // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
+
+
 
 #endif // tthAnalysis_HiggsToTauTau_hltPath_LeptonFakeRate_h

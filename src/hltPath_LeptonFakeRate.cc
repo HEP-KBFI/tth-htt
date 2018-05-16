@@ -12,7 +12,7 @@ hltPath_LeptonFakeRate::hltPath_LeptonFakeRate(const std::string & branchName,
                                                double minRecoPt, // NEWLY ADDED AFTER GIOVANNI SYNC
                                                double min_jetPt,
                                                double prescale,
-                                               double prescale_rand_mc)
+                                               double prescale_rand_mc) 
   : hltPath(branchName, minPt, maxPt)
   , branchName_(branchName)
   , value_(-1)
@@ -26,6 +26,7 @@ hltPath_LeptonFakeRate::hltPath_LeptonFakeRate(const std::string & branchName,
   , is_trigger_2mu_(is_trigger_2mu)
   , is_trigger_1e_(is_trigger_1e)
   , is_trigger_2e_(is_trigger_2e)
+  , isTriggered_(false) // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
 {}
 
 std::string 
@@ -81,6 +82,40 @@ hltPath_LeptonFakeRate::is_trigger_2e() const
   return is_trigger_2e_;
 }
 
+bool
+hltPath_LeptonFakeRate::isTriggered() const
+{ // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
+  return isTriggered_;
+}
+
+void
+hltPath_LeptonFakeRate::setIsTriggered(bool decision) const
+{ // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
+  isTriggered_ = decision;
+}
+
+
+/*
+bool
+hltPath_LeptonFakeRate::hltPaths_LeptonFakeRate_isTriggered(const std::vector<hltPath_LeptonFakeRate *> & hltPaths, bool verbose)
+{ // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
+  return std::any_of(hltPaths.cbegin(), hltPaths.cend(),
+                     [verbose](hltPath * const & path) -> bool
+		     {
+		       const bool passes = path->isTriggered();
+		       if(verbose)
+			 {
+			   std::cout << "  " << path->getLabel() << ": " << *path;
+			 }
+		       return passes;
+		     }
+		     );
+}
+*/
+
+
+
+
 void
 hltPaths_LeptonFakeRate_setBranchAddresses(TTree * tree,
                                            const std::vector<hltPath_LeptonFakeRate *> & hltPaths)
@@ -97,6 +132,7 @@ create_hltPaths_LeptonFakeRate(const std::vector<std::string> & branchNames,
 {
   const double minPt = cfg.getParameter<double>("cone_minPt");
   const double maxPt = cfg.getParameter<double>("cone_maxPt");
+  const double minRecoPt = cfg.getParameter<double>("minRecoPt"); // NEWLY ADDED AFTER GIOVANNI SYNC
   const double jet_minPt = cfg.getParameter<double>("jet_minPt");
   const double prescale = cfg.getParameter<double>("average_prescale");
   const double prescale_rand_mc = cfg.getParameter<double>("prescale_rand_mc");
@@ -104,15 +140,13 @@ create_hltPaths_LeptonFakeRate(const std::vector<std::string> & branchNames,
   const bool is_trigger_2mu = cfg.getParameter<bool>("is_trigger_2mu");
   const bool is_trigger_1e = cfg.getParameter<bool>("is_trigger_1e");
   const bool is_trigger_2e = cfg.getParameter<bool>("is_trigger_2e");
-
+  // bool isTriggered = false;
   std::vector<hltPath_LeptonFakeRate *> hltPaths;
   for(const std::string & branchName: branchNames)
   {
     hltPaths.push_back(new hltPath_LeptonFakeRate(
-      branchName,
-      is_trigger_1mu, is_trigger_2mu, is_trigger_1e, is_trigger_2e,
-      minPt, maxPt, jet_minPt, prescale, prescale_rand_mc
-    ));
+      branchName,is_trigger_1mu, is_trigger_2mu, is_trigger_1e, is_trigger_2e,
+      minPt, maxPt, minRecoPt, jet_minPt, prescale, prescale_rand_mc));
   }
   return hltPaths;
 }
@@ -135,9 +169,10 @@ operator<<(std::ostream & stream,
             "value = " << hltPath_iter.getValue() << " ("
             "minPt = " << hltPath_iter.getMinPt() << ", "
             "maxPt = " << hltPath_iter.getMaxPt() << ", "
+            "minRecoPt = " << hltPath_iter.getMinRecoPt() << ", "
             "minJetPt = " << hltPath_iter.getMinJetPt() << ", "
             "prescale = " << hltPath_iter.getPrescale() << ", "
             "prescale_rand_mc = " << hltPath_iter.getPrescale_rand_mc()
-         << ")\n";
+	 << ")\n";
   return stream;
 }
