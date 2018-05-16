@@ -502,7 +502,7 @@ main(int argc,
   const std::string branchName_genJets    = cfg_analyze.getParameter<std::string>("branchName_genJets");
 
   const edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
-  const MEtFilterSelector metFilterSelector(cfgMEtFilter);
+  const MEtFilterSelector metFilterSelector(cfgMEtFilter, isMC);
 
   const std::string selEventsFileName_input = cfg_analyze.exists("selEventsFileName_input") ?
                                               cfg_analyze.getParameter<std::string>("selEventsFileName_input") : ""
