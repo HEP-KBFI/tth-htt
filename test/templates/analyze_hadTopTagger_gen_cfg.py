@@ -44,7 +44,7 @@ process.analyze_hadTopTagger_gen = cms.PSet(
     apply_leptonGenMatching = cms.bool(True),
     leptonChargeSelection = cms.string('SS'),
 
-    hadTauSelection = cms.string('Tight|dR03mvaMedium'),
+    hadTauSelection = cms.string('Tight|dR03mvaVLoose'),
     apply_hadTauGenMatching = cms.bool(True),
 
     chargeSumSelection = cms.string('OS'),
