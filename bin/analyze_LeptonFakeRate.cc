@@ -436,22 +436,25 @@ main(int argc,
 
   const edm::VParameterSet cfg_triggers_e = cfg_analyze.getParameter<edm::VParameterSet>("triggers_e");
   std::vector<hltPath_LeptonFakeRate *> triggers_e;
-  for(const edm::ParameterSet & cfg_trigger: cfg_triggers_e)
-  {
-    const vstring trigger_paths = cfg_trigger.getParameter<vstring>("path");
-    const std::vector<hltPath_LeptonFakeRate *> hltPaths = create_hltPaths_LeptonFakeRate(trigger_paths, cfg_trigger);
-    triggers_e.insert(triggers_e.end(), hltPaths.begin(), hltPaths.end());
+  if(use_triggers_1e || use_triggers_2e){
+    for(const edm::ParameterSet & cfg_trigger: cfg_triggers_e)
+      {
+	const vstring trigger_paths = cfg_trigger.getParameter<vstring>("path");
+	const std::vector<hltPath_LeptonFakeRate *> hltPaths = create_hltPaths_LeptonFakeRate(trigger_paths, cfg_trigger);
+	triggers_e.insert(triggers_e.end(), hltPaths.begin(), hltPaths.end());
+      }
   }
-
   const edm::VParameterSet cfg_triggers_mu = cfg_analyze.getParameter<edm::VParameterSet>("triggers_mu");
   std::vector<hltPath_LeptonFakeRate *> triggers_mu;
-  for(const edm::ParameterSet & cfg_trigger: cfg_triggers_mu)
-  {
-    const vstring trigger_paths = cfg_trigger.getParameter<vstring>("path");
-    const std::vector<hltPath_LeptonFakeRate *> hltPaths = create_hltPaths_LeptonFakeRate(trigger_paths, cfg_trigger);
-    triggers_mu.insert(triggers_mu.end(), hltPaths.begin(), hltPaths.end());
-  }
 
+  if(use_triggers_1mu || use_triggers_2mu){
+    for(const edm::ParameterSet & cfg_trigger: cfg_triggers_mu)
+      {
+	const vstring trigger_paths = cfg_trigger.getParameter<vstring>("path");
+	const std::vector<hltPath_LeptonFakeRate *> hltPaths = create_hltPaths_LeptonFakeRate(trigger_paths, cfg_trigger);
+	triggers_mu.insert(triggers_mu.end(), hltPaths.begin(), hltPaths.end());
+      }
+  }
   const vdouble etaBins_e  = cfg_analyze.getParameter<vdouble>("absEtaBins_e");
   const vdouble ptBins_e   = cfg_analyze.getParameter<vdouble>("ptBins_e");
   const vdouble etaBins_mu = cfg_analyze.getParameter<vdouble>("absEtaBins_mu");
