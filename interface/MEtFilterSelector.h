@@ -9,7 +9,8 @@ class MEtFilterSelector
 {
 public:
   explicit MEtFilterSelector(const edm::ParameterSet & cfg,
-                             bool verbose = true);
+                             bool isMC,
+                             bool verbose = false);
 
   virtual ~MEtFilterSelector() {}
 

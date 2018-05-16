@@ -129,7 +129,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "LeptonFakeRate", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       [ numerator_histogram, denominator_histogram ],
-      executable_prep_dcard = executable_prep_dcard, triggers = [],
+      executable_prep_dcard = executable_prep_dcard, triggers = [ '1e', '1mu', '2e', '2mu' ],
       verbose = verbose, dry_run = dry_run, isDebug = isDebug, use_home = use_home)
 
     self.cmssw_base_dir_combine = cmssw_base_dir_combine
@@ -186,16 +186,14 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_LeptonFakeRate.cc
     """
     additionalJobOptions = [
-      'use_triggers_1e',
-      'use_triggers_1mu',
-      'use_triggers_2e',
-      'use_triggers_2mu',
       'absEtaBins_e',
       'ptBins_e',
       'absEtaBins_mu',
       'ptBins_mu',
     ]
-    lines = super(analyzeConfig_LeptonFakeRate, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
+    lines = super(analyzeConfig_LeptonFakeRate, self).createCfg_analyze(
+      jobOptions, sample_info, additionalJobOptions, isLeptonFR = True
+    )
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addBackgrounds_LeptonFakeRate(self, jobOptions):
@@ -383,10 +381,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'absEtaBins_mu'            : self.absEtaBins_mu,
             'ptBins_mu'                : self.ptBins_mu,
             'central_or_shift'         : central_or_shift,
-            'use_triggers_1e'          : '1e' in sample_info["triggers"],
-            'use_triggers_1mu'         : '1mu' in sample_info["triggers"],
-            'use_triggers_2e'          : '2e' in sample_info["triggers"],
-            'use_triggers_2mu'         : '2mu' in sample_info["triggers"],
             'fillGenEvtHistograms'     : self.fillGenEvtHistograms,
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)

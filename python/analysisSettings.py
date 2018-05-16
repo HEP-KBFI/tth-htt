@@ -181,6 +181,7 @@ class Triggers(object):
           'HLT_Mu20',
           'HLT_Mu3_PFJet40',
         },
+        '2e' : set(),
         '2mu' : {
           'HLT_Mu17',
           'HLT_Mu8',
@@ -190,6 +191,7 @@ class Triggers(object):
       self.blacklist = {
         'Run2017B' : {
            '1e'    : { 'HLT_Ele32_WPTight_Gsf' },
+           '1mu'   : { 'HLT_Mu3_PFJet40' },
            '1e1mu' : { 'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL' },
            '2mu'   : { 'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8' },
         },
@@ -212,7 +214,13 @@ class Triggers(object):
 
 
   def get(self, trigger_name, process_name_specific):
-    if trigger_name not in self.triggers_analysis:
+    return self.get_wrapper(trigger_name, process_name_specific, self.triggers_analysis)
+
+  def get_leptonFR(self, trigger_name, process_name_specific):
+    return self.get_wrapper(trigger_name, process_name_specific, self.triggers_leptonFR)
+
+  def get_wrapper(self, trigger_name, process_name_specific, list_of_triggers):
+    if trigger_name not in list_of_triggers:
       raise ValueError('Invalid trigger: %s' % trigger_name)
     process_name_match = None
     for blacklist_process in self.blacklist:
@@ -223,7 +231,7 @@ class Triggers(object):
     if process_name_match:
       if trigger_name in process_name_match:
         excluded_triggers = process_name_match[trigger_name]
-    return list(self.triggers_analysis[trigger_name] - excluded_triggers)
+    return list(list_of_triggers[trigger_name] - excluded_triggers)
 
   def get_overlap(self, triggers, process_name_specific):
     required_triggers = self.triggers_flat

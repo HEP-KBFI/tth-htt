@@ -194,7 +194,7 @@ class analyzeConfig(object):
             return central_or_shift
         return "central"
 
-    def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = []):
+    def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False):
         process_string = 'process.analyze_%s' % self.channel
         current_function_name = inspect.stack()[0][3]
 
@@ -226,6 +226,7 @@ class analyzeConfig(object):
             'hadTauSelection',
             'hadTauSelection_veto',
             'apply_leptonGenMatching',
+            'apply_hadTauGenMatching',
             'applyFakeRateWeights',
             'apply_genWeight',
             'apply_trigger_bits',
@@ -279,8 +280,11 @@ class analyzeConfig(object):
         for trigger in self.triggers:
             trigger_string     = '%s.triggers_%s'     % (process_string, trigger)
             trigger_use_string = '%s.use_triggers_%s' % (process_string, trigger)
-            available_triggers = self.triggerTable.get(trigger, sample_info['process_name_specific'])
-            use_trigger        = bool(trigger in sample_info['triggers'])
+            if isLeptonFR:
+                available_triggers = self.triggerTable.get_leptonFR(trigger, sample_info['process_name_specific'])
+            else:
+                available_triggers = self.triggerTable.get(trigger, sample_info['process_name_specific'])
+            use_trigger = bool(trigger in sample_info['triggers'])
             lines.extend([
                 "{:<{len}} = cms.vstring({})".format(trigger_string,     available_triggers, len = max_option_len + len(process_string) + 1),
                 "{:<{len}} = cms.bool({})".format   (trigger_use_string, use_trigger,        len = max_option_len + len(process_string) + 1),
