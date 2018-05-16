@@ -163,7 +163,7 @@ LHEInfoReader::getWeight_scale(int central_or_shift) const
 int
 LHEInfoReader::getNumWeights_pdf() const
 {
-  return has_LHE_weights_ ? pdf_nWeights_ : 1.;
+  return has_LHE_weights_ ? pdf_nWeights_ : 1;
 }
 
 double
