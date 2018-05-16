@@ -58,9 +58,6 @@ for sample_name, sample_info in samples.items():
     sample_info["triggers"] = [ "1e", "1mu", "2e", "2mu" ]
   if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):
       sample_info["use_it"] = False
-  if sample_name.startswith('/SingleMuon/Run2017B'):
-      # HLT_Mu3_PFJet40 missing -> disable the sample
-      sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.basicConfig(

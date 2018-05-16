@@ -28,9 +28,25 @@ process.analyze_LeptonFakeRate = cms.PSet(
     use_triggers_1mu = cms.bool(True),
     use_triggers_2mu = cms.bool(True),
 
-    triggers_mu = cms.VPSet(
+    triggers_1e = cms.vstring([
+        'HLT_Ele8_CaloIdM_TrackIdM_PFJet30',
+        'HLT_Ele17_CaloIdM_TrackIdM_PFJet30',
+        'HLT_Ele23_CaloIdM_TrackIdM_PFJet30',
+    ]),
+    triggers_1mu = cms.vstring([
+        'HLT_Mu27',
+        'HLT_Mu20',
+        'HLT_Mu3_PFJet40',
+    ]),
+    triggers_2e = cms.vstring(),
+    triggers_2mu = cms.vstring([
+        'HLT_Mu17',
+        'HLT_Mu8',
+    ]),
+
+    triggers_mu_cfg = cms.VPSet(
         cms.PSet(
-            path = cms.vstring("HLT_Mu27"),
+            path = cms.string("HLT_Mu27"),
             cone_minPt = cms.double(45.),
             cone_maxPt = cms.double(100.),
             minRecoPt = cms.double(27.), # NEWLY ADDED AFTER GIOVANNI SYNC
@@ -44,7 +60,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
             is_trigger_2e = cms.bool(False)
         ),
         cms.PSet(
-            path = cms.vstring("HLT_Mu20"),
+            path = cms.string("HLT_Mu20"),
             cone_minPt = cms.double(32.),
             cone_maxPt = cms.double(100.),
             minRecoPt = cms.double(20.), # NEWLY ADDED AFTER GIOVANNI SYNC
@@ -58,7 +74,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
             is_trigger_2e = cms.bool(False)
         ),
         cms.PSet(
-            path = cms.vstring("HLT_Mu17"),
+            path = cms.string("HLT_Mu17"),
             cone_minPt = cms.double(32.),
             cone_maxPt = cms.double(100.),
             minRecoPt = cms.double(17.), # NEWLY ADDED AFTER GIOVANNI SYNC
@@ -72,7 +88,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
             is_trigger_2e = cms.bool(False)
          ),
         cms.PSet(
-            path = cms.vstring("HLT_Mu8"),
+            path = cms.string("HLT_Mu8"),
             cone_minPt = cms.double(15.),
             cone_maxPt = cms.double(45.),
             minRecoPt = cms.double(8.), # NEWLY ADDED AFTER GIOVANNI SYNC
@@ -86,7 +102,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
             is_trigger_2e = cms.bool(False)
         ),
         cms.PSet(
-            path = cms.vstring("HLT_Mu3_PFJet40"),
+            path = cms.string("HLT_Mu3_PFJet40"),
             cone_minPt = cms.double(10.),
             cone_maxPt = cms.double(32.),
             minRecoPt = cms.double(-1.), # NEWLY ADDED AFTER GIOVANNI SYNC
@@ -100,9 +116,9 @@ process.analyze_LeptonFakeRate = cms.PSet(
             is_trigger_2e = cms.bool(False)
          )
     ),
-    triggers_e = cms.VPSet(
+    triggers_e_cfg = cms.VPSet(
         cms.PSet(
-            path = cms.vstring("HLT_Ele8_CaloIdM_TrackIdM_PFJet30"),
+            path = cms.string("HLT_Ele8_CaloIdM_TrackIdM_PFJet30"),
             cone_minPt = cms.double(15.),
             cone_maxPt = cms.double(45.),
             minRecoPt = cms.double(8.), # NEWLY ADDED AFTER GIOVANNI SYNC
@@ -116,7 +132,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
             is_trigger_2e = cms.bool(False)
         ),
 #        cms.PSet(
-#            path = cms.vstring("HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30"), ## DOESN'T EXIST IN 2017 DATA
+#            path = cms.string("HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30"), ## DOESN'T EXIST IN 2017 DATA
 #            cone_minPt = cms.double(20.),
 #            cone_maxPt = cms.double(30.),
 #            minRecoPt = cms.double(12.), # NEWLY ADDED AFTER GIOVANNI SYNC
@@ -130,7 +146,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
 #            is_trigger_2e = cms.bool(False)
 #        ),
         cms.PSet(
-            path = cms.vstring("HLT_Ele17_CaloIdM_TrackIdM_PFJet30"),
+            path = cms.string("HLT_Ele17_CaloIdM_TrackIdM_PFJet30"),
             cone_minPt = cms.double(25.),
             cone_maxPt = cms.double(100.),
             minRecoPt = cms.double(17.), # NEWLY ADDED AFTER GIOVANNI SYNC
@@ -144,7 +160,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
             is_trigger_2e = cms.bool(False)
         ),
         cms.PSet(
-            path = cms.vstring("HLT_Ele23_CaloIdM_TrackIdM_PFJet30"),
+            path = cms.string("HLT_Ele23_CaloIdM_TrackIdM_PFJet30"),
             cone_minPt = cms.double(32.),
             cone_maxPt = cms.double(100.),
             minRecoPt = cms.double(23.), # NEWLY ADDED AFTER GIOVANNI SYNC
