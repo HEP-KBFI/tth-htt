@@ -1277,7 +1277,7 @@ main(int argc,
       if(preselMuon.isTight())
 	{
 	  // muon enters numerator
-	  std::cout << "numerator filled\n";
+	  if(isDEBUG){ std::cout << "numerator filled\n"; }
 	  histograms_incl_beforeCuts = histograms_mu_numerator_incl_beforeCuts;
 	  histograms_incl_afterCuts  = histograms_mu_numerator_incl_afterCuts;
 	  histograms_binned_beforeCuts = &histograms_mu_numerator_binned_beforeCuts;
@@ -1291,7 +1291,7 @@ main(int argc,
       if(preselMuon.isFakeable())         // Applying (isFakeable) condition
 	{
 	  // muon enters denominator (fakeable)
-	  std::cout << "denominator filled\n";
+	  if(isDEBUG){ std::cout << "denominator filled\n"; }
 	  histograms_incl_beforeCuts = histograms_mu_denominator_incl_beforeCuts;
 	  histograms_incl_afterCuts  = histograms_mu_denominator_incl_afterCuts;
 	  histograms_binned_beforeCuts = &histograms_mu_denominator_binned_beforeCuts;
@@ -1336,7 +1336,7 @@ main(int argc,
       
       if(preselElectron.isTight())
 	{
-	  std::cout << "numerator filled\n";
+	  if(isDEBUG){ std::cout << "numerator filled\n"; }
 	  // electron enters numerator
 	  histograms_incl_beforeCuts = histograms_e_numerator_incl_beforeCuts;
 	  histograms_incl_afterCuts  = histograms_e_numerator_incl_afterCuts;
@@ -1383,7 +1383,7 @@ main(int argc,
       // if(preselElectron.isFakeable() && !(preselElectron.isTight())) // Applying (isFakeable && !(isTight)) condition
       if(preselElectron.isFakeable())  // Applying (isFakeable) condition
 	{
-	  std::cout << "denominator filled\n";
+	  if(isDEBUG){ std::cout << "denominator filled\n";}
 	  // electron enters denominator (fakeable but not tight)
 	  histograms_incl_beforeCuts = histograms_e_denominator_incl_beforeCuts;
 	  histograms_incl_afterCuts  = histograms_e_denominator_incl_afterCuts;
