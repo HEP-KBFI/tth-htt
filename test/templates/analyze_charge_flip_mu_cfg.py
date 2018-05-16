@@ -57,10 +57,13 @@ process.analyze_charge_flip = cms.PSet(
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
-    branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
-    branchName_met = cms.string('MET'),
 
+    branchName_genLeptons = cms.string('GenLep'),
+    branchName_genHadTaus = cms.string('GenVisTau'),
+    branchName_genJets = cms.string('GenJet'),
+    redoGenMatching = cms.bool(True),
+    
     fillGenEvtHistograms = cms.bool(False),
 
     selEventsFileName_input = cms.string(''),

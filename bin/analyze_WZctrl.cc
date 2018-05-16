@@ -269,6 +269,12 @@ int main(int argc, char* argv[])
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
   std::string branchName_met = cfg_analyze.getParameter<std::string>("branchName_met");
 
+  std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
+  std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
+  std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
+
+  bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
+
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
   RunLumiEventSelector* run_lumi_eventSelector = 0;
@@ -305,17 +311,16 @@ int main(int argc, char* argv[])
       inputTree -> registerReader(hltPaths);
     }
 
-
-
 //--- declare particle collections
-  RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons);
+  const bool readGenObjects = isMC && !redoGenMatching;
+  RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
   inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
 
-  RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons);
+  RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.05);
@@ -323,7 +328,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus);
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
   hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
   inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
@@ -337,7 +342,7 @@ int main(int argc, char* argv[])
   hadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   hadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   
-  RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets);
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jetBtagSF_option);
   inputTree -> registerReader(jetReader);
@@ -356,17 +361,26 @@ int main(int argc, char* argv[])
   MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilters);
   inputTree -> registerReader(metFilterReader);
 
+//--- declare generator level information
   GenLeptonReader* genLeptonReader = 0;
   GenHadTauReader* genHadTauReader = 0;
   GenJetReader* genJetReader = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader("GenLep");
-    inputTree -> registerReader(genLeptonReader);
-    genHadTauReader = new GenHadTauReader("GenVisTau");
-    inputTree -> registerReader(genHadTauReader);
-    genJetReader = new GenJetReader("GenJet");
-    inputTree -> registerReader(genJetReader);
+    if ( !readGenObjects ) {
+      if ( branchName_genLeptons != "" ) {
+        genLeptonReader = new GenLeptonReader(branchName_genLeptons);
+        inputTree -> registerReader(genLeptonReader);
+      }
+      if ( branchName_genHadTaus != "" ) {
+        genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
+        inputTree -> registerReader(genHadTauReader);
+      }
+      if ( branchName_genJets != "" ) {
+        genJetReader = new GenJetReader(branchName_genJets);
+        inputTree -> registerReader(genJetReader);
+      }
+    }
     lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree -> registerReader(lheInfoReader);
   }
@@ -626,15 +640,21 @@ int main(int argc, char* argv[])
     std::vector<GenHadTau> genHadTaus;
     std::vector<GenJet> genJets;
     if ( isMC && fillGenEvtHistograms ) {
-      genLeptons = genLeptonReader->read();
-      for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-    	    genLepton != genLeptons.end(); ++genLepton ) {
-	int abs_pdgId = std::abs(genLepton->pdgId());
-	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
-	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+      if ( genLeptonReader ) {
+        genLeptons = genLeptonReader->read();
+        for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
+              genLepton != genLeptons.end(); ++genLepton ) {
+          int abs_pdgId = std::abs(genLepton->pdgId());
+          if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
+          else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+        }
       }
-      genHadTaus = genHadTauReader->read();
-      genJets = genJetReader->read();
+      if ( genHadTauReader ) {
+        genHadTaus = genHadTauReader->read();
+      }
+      if ( genJetReader ) {
+        genJets = genJetReader->read();
+      }
     }
 
     if ( isMC ) {
@@ -828,20 +848,26 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
   
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
-    if ( isMC && !fillGenEvtHistograms ) {
-      genLeptons = genLeptonReader->read();
-      for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-    	    genLepton != genLeptons.end(); ++genLepton ) {
-    	int abs_pdgId = std::abs(genLepton->pdgId());
-    	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
-    	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+    if ( isMC && redoGenMatching && !fillGenEvtHistograms ) {
+      if ( genLeptonReader ) {
+        genLeptons = genLeptonReader->read();
+        for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
+              genLepton != genLeptons.end(); ++genLepton ) {
+          int abs_pdgId = std::abs(genLepton->pdgId());
+          if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
+          else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+        }
       }
-      genHadTaus = genHadTauReader->read();
-      genJets = genJetReader->read();
+      if ( genHadTauReader ) {
+        genHadTaus = genHadTauReader->read();
+      }
+      if ( genJetReader ) {
+        genJets = genJetReader->read();
+      }
     }
-  
+
 //--- match reconstructed to generator level particles
-    if ( isMC ) {
+    if ( isMC && redoGenMatching ) {
       muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
       muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
       muonGenMatcher.addGenJetMatch(preselMuons, genJets, 0.2);

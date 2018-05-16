@@ -380,13 +380,13 @@ int main(int argc, char* argv[])
   std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
 
+  bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
+
   std::string branchName_genTopQuarks = cfg_analyze.getParameter<std::string>("branchName_genTopQuarks");
   std::string branchName_genBJets = cfg_analyze.getParameter<std::string>("branchName_genBJets");
   std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
   std::string branchName_genWJets = cfg_analyze.getParameter<std::string>("branchName_genWJets");
   std::string branchName_genQuarkFromTop = cfg_analyze.getParameter<std::string>("branchName_genQuarkFromTop");
-
-  bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
 
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
 
@@ -503,8 +503,6 @@ int main(int argc, char* argv[])
     memReader = new MEMOutputReader_2lss_1tau(Form("n%s", branchName_memOutput.data()), branchName_memOutput);
     inputTree -> registerReader(memReader);
   }
-
-  // declaring bin mappings
 
 //--- declare generator level information
   GenLeptonReader* genLeptonReader = 0;

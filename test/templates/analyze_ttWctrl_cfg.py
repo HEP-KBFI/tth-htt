@@ -70,6 +70,11 @@ process.analyze_ttWctrl = cms.PSet(
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
 
+    branchName_genLeptons = cms.string('GenLep'),
+    branchName_genHadTaus = cms.string('GenVisTau'),
+    branchName_genJets = cms.string('GenJet'),
+    redoGenMatching = cms.bool(True),
+
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
     useNonNominal = cms.bool(False),
