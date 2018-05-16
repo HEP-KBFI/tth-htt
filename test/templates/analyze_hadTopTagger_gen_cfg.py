@@ -49,8 +49,6 @@ process.analyze_hadTopTagger_gen = cms.PSet(
 
     chargeSumSelection = cms.string('OS'),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     apply_lepton_and_hadTauCharge_cut = cms.bool(True),
 
     isMC = cms.bool(True),
@@ -88,6 +86,7 @@ process.analyze_hadTopTagger_gen = cms.PSet(
     selEventsFileName_output_semiboosted = cms.string('selEvents_hadTopTagger_gen_semiboosted.txt'),
     selEventsFileName_output_resolved = cms.string('selEvents_hadTopTagger_gen_resolved.txt'),
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )
 
 ## inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb28_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
@@ -130,7 +129,6 @@ process.analyze_hadTopTagger_gen.leptonChargeSelection = cms.string('SS')
 process.analyze_hadTopTagger_gen.hadTauSelection = cms.string('Tight|dR03mvaMedium')
 process.analyze_hadTopTagger_gen.apply_hadTauGenMatching = cms.bool(True)
 process.analyze_hadTopTagger_gen.chargeSumSelection = cms.string('OS')
-process.analyze_hadTopTagger_gen.use_HIP_mitigation_mediumMuonId = cms.bool(True)
 process.analyze_hadTopTagger_gen.isMC = cms.bool(True)
 process.analyze_hadTopTagger_gen.central_or_shift = cms.string('central')
 process.analyze_hadTopTagger_gen.lumiScale = cms.double(0.002600)

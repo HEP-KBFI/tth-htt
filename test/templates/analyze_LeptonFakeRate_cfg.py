@@ -155,12 +155,13 @@ process.analyze_LeptonFakeRate = cms.PSet(
     minConePt_global_mu = cms.double(10),
     minRecoPt_global_mu = cms.double(5),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
+    apply_trigger_bits = cms.bool(False), # ignored
+    apply_met_filters = cms.bool(False),
+    cfgMEtFilter = recommendedMEtFilters,
     fillGenEvtHistograms = cms.bool(True),
 
     branchName_electrons = cms.string('Electron'),
@@ -176,6 +177,6 @@ process.analyze_LeptonFakeRate = cms.PSet(
 
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
-    cfgMEtFilter = recommendedMEtFilters,
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )

@@ -29,6 +29,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h" // RecoJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterReader.h" // MEtFilterReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
@@ -50,11 +51,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterSelector.h" // MEtFilterSelector
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MuonHistManager.h" // MuonHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/HadTauHistManager.h" // HadTauHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManager.h" // JetHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterHistManager.h" // MEtFilterHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_3l.h" // EvtHistManager_3l
 #include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager.h" // CutFlowTableHistManager
@@ -211,9 +214,6 @@ int main(int argc, char* argv[])
   int minNumJets = cfg_analyze.getParameter<int>("minNumJets");
   std::cout << "minNumJets = " << minNumJets << std::endl;
 
-  bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
-  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
-
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
   bool isMC_tH = ( process_string == "tH" ) ? true : false;
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
@@ -221,6 +221,9 @@ int main(int argc, char* argv[])
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
+  bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");  
+  edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
+  MEtFilterSelector metFilterSelector(cfgMEtFilter);
   const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
@@ -327,7 +330,6 @@ int main(int argc, char* argv[])
 //--- declare particle collections
   const bool readGenObjects = isMC && !redoGenMatching;
   RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
-  muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
@@ -375,6 +377,10 @@ int main(int argc, char* argv[])
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
   metReader->setMEt_central_or_shift(met_option);
   inputTree -> registerReader(metReader);
+
+  MEtFilter metFilters;
+  MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilters);
+  inputTree -> registerReader(metFilterReader);
 
   GenLeptonReader* genLeptonReader = 0;
   GenHadTauReader* genHadTauReader = 0;
@@ -441,6 +447,7 @@ int main(int argc, char* argv[])
     JetHistManager* BJets_loose_;
     JetHistManager* BJets_medium_;
     MEtHistManager* met_;
+    MEtFilterHistManager* metFilters_;
     EvtHistManager_3l* evt_;
   };
   std::map<int, preselHistManagerType*> preselHistManagers;
@@ -459,6 +466,7 @@ int main(int argc, char* argv[])
     JetHistManager* subleadBJet_loose_;
     JetHistManager* BJets_medium_;
     MEtHistManager* met_;
+    MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_3l_;
     EvtHistManager_3l* evt_;
     std::map<std::string, EvtHistManager_3l*> evt_in_categories_;
@@ -501,6 +509,9 @@ int main(int argc, char* argv[])
     preselHistManager->met_ = new MEtHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/presel/met", histogramDir.data()), central_or_shift));
     preselHistManager->met_->bookHistograms(fs);
+    preselHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_and_genMatch,
+      Form("%s/presel/metFilters", histogramDir.data()), central_or_shift));
+    preselHistManager->metFilters_->bookHistograms(fs);
     preselHistManager->evt_ = new EvtHistManager_3l(makeHistManager_cfg(process_and_genMatch,
       Form("%s/presel/evt", histogramDir.data()), era_string, central_or_shift));
     preselHistManager->evt_->bookHistograms(fs);
@@ -556,6 +567,9 @@ int main(int argc, char* argv[])
     selHistManager->met_ = new MEtHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/met", histogramDir.data()), central_or_shift));
     selHistManager->met_->bookHistograms(fs);
+    selHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_and_genMatch,
+      Form("%s/sel/metFilters", histogramDir.data()), central_or_shift));
+    selHistManager->metFilters_->bookHistograms(fs);
     selHistManager->mvaInputVariables_3l_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/mvaInputs_3l", histogramDir.data()), central_or_shift));
     selHistManager->mvaInputVariables_3l_->bookHistograms(fs, mvaInputVariables_3l);
@@ -665,7 +679,7 @@ int main(int argc, char* argv[])
     ">= 2 loose b-jets || 1 medium b-jet (1)",
     "3 sel leptons",
     "fakeable lepton trigger match",
-    "hlt filter",
+    "HLT filter matching",
     ">= 2 jets (2)",
     ">= 2 loose b-jets || 1 medium b-jet (2)",
     "sel tau veto",
@@ -673,7 +687,9 @@ int main(int argc, char* argv[])
     "lead lepton pT > 25 GeV && sublead lepton pT > 15 GeV && third lepton pT > 15 GeV",
     "sel lepton charge",
     "Z-boson mass veto",
+    "H->ZZ*->4l veto",
     "met LD",
+    "MEt filters",
     "signal region veto",
   };
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
@@ -1076,6 +1092,7 @@ int main(int argc, char* argv[])
     preselHistManager->BJets_loose_->fillHistograms(selBJets_loose, 1.);
     preselHistManager->BJets_medium_->fillHistograms(selBJets_medium, 1.);
     preselHistManager->met_->fillHistograms(met, mht_p4, met_LD, 1.);
+    preselHistManager->metFilters_->fillHistograms(metFilters, 1.);
     preselHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
@@ -1256,17 +1273,17 @@ int main(int argc, char* argv[])
         { hltPathsE::trigger_3e,    selTrigger_3e    },
         { hltPathsE::trigger_3mu,   selTrigger_3mu   },
       };
-      if(! hltFilter(trigger_bits, selLeptons, {}))
+      if(! hltFilter(trigger_bits, fakeableLeptons, {}))
       {
         if(run_lumi_eventSelector || isDEBUG)
         {
-          std::cout << "event FAILS HLT filter selection\n";
+          std::cout << "event FAILS HLT filter matching\n";
         }
         continue;
       }
     }
-    cutFlowTable.update("hlt filter", evtWeight);
-    cutFlowHistManager->fillHistograms("hlt filter", evtWeight);
+    cutFlowTable.update("HLT filter matching", evtWeight);
+    cutFlowHistManager->fillHistograms("HLT filter matching", evtWeight);
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
     if ( !((int)selJets.size() >= minNumJets) ) {
@@ -1389,6 +1406,36 @@ int main(int argc, char* argv[])
     cutFlowTable.update("Z-boson mass veto", evtWeight);
     cutFlowHistManager->fillHistograms("Z-boson mass veto", evtWeight);
 
+    bool failsHtoZZVeto = false;
+    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptons.begin();
+	  lepton1 != preselLeptons.end(); ++lepton1 ) {
+      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
+	    lepton2 != preselLeptons.end(); ++lepton2 ) {
+	if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // first pair of same flavor leptons of opposite charge
+	  for ( std::vector<const RecoLepton*>::const_iterator lepton3 = preselLeptons.begin();
+		lepton3 != preselLeptons.end(); ++lepton3 ) {
+	    if ( (*lepton3) == (*lepton1) || (*lepton3) == (*lepton2) ) continue;
+	    for ( std::vector<const RecoLepton*>::const_iterator lepton4 = lepton3 + 1;
+		  lepton4 != preselLeptons.end(); ++lepton4 ) {
+	      if ( (*lepton4) == (*lepton1) || (*lepton4) == (*lepton2) ) continue;
+	      if ( (*lepton3)->pdgId() == -(*lepton4)->pdgId() ) { // second pair of same flavor leptons of opposite charge
+		double mass = ((*lepton1)->p4() + (*lepton2)->p4() + (*lepton3)->p4() + (*lepton4)->p4()).mass();
+		if ( mass < 140. ) failsHtoZZVeto = true;
+	      }
+	    }
+	  }
+	}
+      }
+    }
+    if ( failsHtoZZVeto ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS H->ZZ*->4l veto." << std::endl;
+      }
+      continue;
+    }
+    cutFlowTable.update("H->ZZ*->4l veto", evtWeight);
+    cutFlowHistManager->fillHistograms("H->ZZ*->4l veto", evtWeight);
+
     double met_LD_cut = 0.;
     if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
     else if ( isSameFlavor_OS     ) met_LD_cut =  0.3;
@@ -1402,6 +1449,17 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("met LD", evtWeight);
     cutFlowHistManager->fillHistograms("met LD", evtWeight);
+
+    if ( apply_met_filters ) {
+      if ( !metFilterSelector(metFilters) ) {
+	if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS MEt filters." << std::endl;
+	}
+	continue;
+      }
+    }
+    cutFlowTable.update("MEt filters", evtWeight);
+    cutFlowHistManager->fillHistograms("MEt filters", evtWeight);
 
     if ( leptonSelection == kFakeable ) {
       if ( tightLeptons.size() >= 3 ) {
@@ -1479,6 +1537,7 @@ int main(int argc, char* argv[])
     selHistManager->subleadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
     selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
+    selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_3l_->fillHistograms(mvaInputs_3l, evtWeight);
     selHistManager->evt_->fillHistograms(
       selElectrons.size(), selMuons.size(), selHadTaus.size(),
@@ -1804,6 +1863,7 @@ int main(int argc, char* argv[])
   delete hadTauReader;
   delete jetReader;
   delete metReader;
+  delete metFilterReader;
   delete genLeptonReader;
   delete genHadTauReader;
   delete genJetReader;

@@ -18,7 +18,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
                verbose = False, dry_run = False, isDebug = False, use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "hadTopTagger", [ "central" ],
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      [], verbose = verbose, dry_run = dry_run, isDebug = isDebug, use_home = use_home)
+      [], trigger = [], verbose = verbose, dry_run = dry_run, isDebug = isDebug, use_home = use_home)
 
     self.samples = samples
 
@@ -26,28 +26,14 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
 
-  def createCfg_analyze(self, jobOptions):
+  def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_hadTopTagger executable (analysis code)
 
     Args:
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
     """
-    lines = []
-    ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in jobOptions['ntupleFiles'] ])
-    lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'])
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']))
-    lines.append("process.analyze_hadTopTagger.process = cms.string('%s')" % jobOptions['sample_category'])
-    lines.append("process.analyze_hadTopTagger.histogramDir = cms.string('analyze_hadTopTagger')")
-    lines.append("process.analyze_hadTopTagger.era = cms.string('%s')" % self.era)
-    lines.append("process.analyze_hadTopTagger.hadTauSelection = cms.string('%s')" % jobOptions['hadTau_selection'])
-    lines.append("process.analyze_hadTopTagger.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
-    lines.append("process.analyze_hadTopTagger.isMC = cms.bool(%s)" % jobOptions['is_mc'])
-    lines.append("process.analyze_hadTopTagger.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
-    lines.append("process.analyze_hadTopTagger.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
-    lines.append("process.analyze_hadTopTagger.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
-    lines.append("process.analyze_hadTopTagger.redoGenMatching = cms.bool(False)")
-    lines.append("process.analyze_hadTopTagger.isDEBUG = cms.bool(%s)" % self.isDebug)
+    lines = super(analyzeConfig_hadTopTagger, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):
@@ -108,23 +94,22 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
           print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_file, ntupleFiles)
           continue
 
+        cfg_key = getKey(self.channel, process_name, jobId)
+        cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
+        logFile_path = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%i.log" % cfg_key)
+        histogramFile_path = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s.root" % key_analyze_job)
+
         self.jobOptions_analyze[key_analyze_job] = {
-          'ntupleFiles' : ntupleFiles,
-          'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%i_cfg.py" % \
-             (self.channel, process_name, jobId)),
-          'histogramFile' : os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%i.root" % \
-             (process_name, jobId)),
-          'logFile' : os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%i.log" % \
-             (self.channel, process_name, jobId)),
-          'sample_category' : sample_category,
-          'hadTau_selection' : self.hadTau_selection,
-          'use_HIP_mitigation_mediumMuonId' : True,
-          'is_mc' : is_mc,
-          'lumi_scale' : 1., # if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
-          'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
-          'selectBDT' : True,
+          'ntupleFiles'      : ntupleFiles,
+          'cfgFile_modified' : cfgFile_modified_path,
+          'histogramFile'    : histogramFile_path,
+          'histogramDir'     : 'analyze_hadTopTagger',
+          'logFile'          : logFile_path,
+          'hadTauSelection'  : self.hadTau_selection,
+          'lumiScale'        : 1.,
+          'selectBDT'        : True,
         }
-        self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
+        self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
         # initialize input and output file names for hadd_stage1
         key_hadd_stage1 = getKey(process_name)

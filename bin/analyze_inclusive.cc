@@ -141,9 +141,6 @@ main(int argc,
 
   const std::string hadTauSelection_tauIdWP = cfg_analyze.getParameter<std::string>("hadTauSelection_tauIdWP");
 
-  const bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
-  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << '\n';
-
   const bool isMC               = cfg_analyze.getParameter<bool>("isMC");
   const bool isMC_tH            = process_string == "tH";
   const bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits");
@@ -212,7 +209,6 @@ main(int argc,
 
 //--- declare particle collections
   RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons, false);
-  muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   inputTree->registerReader(muonReader);
   const RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);

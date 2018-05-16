@@ -26,7 +26,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
                use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "jetToTauFakeRate", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      [], verbose = verbose, dry_run = dry_run, isDebug = isDebug, use_home = use_home)
+      histograms_to_fit = [], triggers = [ '1e', '1mu', '1e1mu' ], verbose = verbose,
+      dry_run = dry_run, isDebug = isDebug, use_home = use_home)
 
     self.samples = samples
 
@@ -51,7 +52,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_jetToTauFakeRate_cfg.py")
     self.cfgFile_make_plots_denominator = os.path.join(self.template_dir, "makePlots_jetToTauFakeRate_denominator_cfg.py")
 
-  def createCfg_analyze(self, jobOptions):
+  def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_jetToTauFakeRate executable (analysis code)
 
     Args:
@@ -62,34 +63,19 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_jetToTauFakeRate.cc
     """
-    lines = []
-    ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in inputFiles ])
-    lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'])
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']))
-    lines.append("process.analyze_jetToTauFakeRate.process = cms.string('%s')" % jobOptions['sample_category'])
-    lines.append("process.analyze_jetToTauFakeRate.era = cms.string('%s')" % self.era)
-    for trigger in [ '1e', '1mu', '1e1mu' ]:
-      lines.append("process.analyze_jetToTauFakeRate.triggers_%s = cms.vstring(%s)" % \
-        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
-      lines.append("process.analyze_jetToTauFakeRate.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
-    lines.append("process.analyze_jetToTauFakeRate.chargeSelection = cms.string('%s')" % jobOptions['charge_selection'])
-    lines.append("process.analyze_jetToTauFakeRate.jet_minPt = cms.double(%f)" % jobOptions['jet_minPt'])
-    lines.append("process.analyze_jetToTauFakeRate.jet_maxPt = cms.double(%f)" % jobOptions['jet_maxPt'])
-    lines.append("process.analyze_jetToTauFakeRate.jet_minAbsEta = cms.double(%f)" % jobOptions['jet_minAbsEta'])
-    lines.append("process.analyze_jetToTauFakeRate.jet_maxAbsEta = cms.double(%f)" % jobOptions['jet_maxAbsEta'])
-    lines.append("process.analyze_jetToTauFakeRate.hadTauSelection_denominator = cms.string('%s')" % jobOptions['hadTau_selection_denominator'])
-    lines.append("process.analyze_jetToTauFakeRate.hadTauSelections_numerator = cms.vstring(")
-    for hadTau_selection in jobOptions['hadTau_selections_numerator']:
-      lines.append("    '%s'," % hadTau_selection)
-    lines.append(")")
-    lines.append("process.analyze_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
-    lines.append("process.analyze_jetToTauFakeRate.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
-    lines.append("process.analyze_jetToTauFakeRate.isMC = cms.bool(%s)" % jobOptions['is_mc'])
-    lines.append("process.analyze_jetToTauFakeRate.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
-    lines.append("process.analyze_jetToTauFakeRate.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
-    lines.append("process.analyze_jetToTauFakeRate.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
-    lines.append("process.analyze_jetToTauFakeRate.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
-    lines.append("process.analyze_jetToTauFakeRate.isDEBUG = cms.bool(%s)" % self.isDebug)
+
+    additionalJobOptions = [
+      'chargeSelection',
+      'jet_minPt',
+      'jet_maxPt',
+      'jet_minAbsEta',
+      'jet_maxAbsEta',
+      'hadTauSelection_denominator',
+      'hadTauSelections_numerator',
+      'absEtaBins',
+    ]
+
+    lines = super(analyzeConfig_jetToTauFakeRate, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_comp_jetToTauFakeRate(self, jobOptions):
@@ -213,34 +199,28 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
             if len(ntupleFiles) == 0:
               print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_job, ntupleFiles)
               continue
+
+            cfg_key = getKey(self.channel, process_name, charge_selection, central_or_shift, jobId)
+            cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
+            logFile_path          = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s.log" % cfg_key)
+            histogramFile_path    = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s.root" % key_analyze_job)
+
             self.jobOptions_analyze[key_analyze_job] = {
-              'ntupleFiles' : ntupleFiles,
-              'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%i_cfg.py" % \
-                (self.channel, process_name, charge_selection, central_or_shift, jobId)),
-              'histogramFile' : os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%i.root" % \
-                (process_name, charge_selection, central_or_shift, jobId)),
-              'logFile' : os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%i.log" % \
-                (self.channel, process_name, charge_selection, central_or_shift, jobId)),
-              'sample_category' : sample_category,
-              'triggers' : sample_info["triggers"],
-              'charge_selection' : charge_selection,
-              'jet_minPt' : self.jet_minPt,
-              'jet_maxPt' : self.jet_maxPt,
-              'jet_minAbsEta' : self.jet_minAbsEta,
-              'jet_maxAbsEta' : self.jet_maxAbsEta,
-              'hadTau_selection_denominator' : self.hadTau_selection_denominator,
-              'hadTau_selections_numerator' : self.hadTau_selections_numerator,
-              'absEtaBins' : self.absEtaBins,
-              ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
-              'use_HIP_mitigation_mediumMuonId' : True,
-              'is_mc' : is_mc,
-              'central_or_shift' : central_or_shift,
-              'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
-              'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
-              'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
-              'process_name_specific': sample_info['process_name_specific'],
+              'ntupleFiles'                 : ntupleFiles,
+              'cfgFile_modified'            : cfgFile_modified_path,
+              'histogramFile'               : histogramFile_path,
+              'logFile'                     : logFile_path,
+              'chargeSelection'             : charge_selection,
+              'jet_minPt'                   : self.jet_minPt,
+              'jet_maxPt'                   : self.jet_maxPt,
+              'jet_minAbsEta'               : self.jet_minAbsEta,
+              'jet_maxAbsEta'               : self.jet_maxAbsEta,
+              'hadTauSelection_denominator' : self.hadTau_selection_denominator,
+              'hadTauSelections_numerator'  : self.hadTau_selections_numerator,
+              'absEtaBins'                  : self.absEtaBins,
+              'central_or_shift'            : central_or_shift,
             }
-            self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
+            self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
             # initialize input and output file names for hadd_stage1
             key_hadd_stage1 = getKey(process_name, charge_selection)

@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
-
 import os
+
+from tthAnalysis.HiggsToTauTau.recommendedMEtFilters_cfi import recommendedMEtFilters
 
 process = cms.PSet()
 
@@ -9,7 +10,7 @@ process.fwliteInput = cms.PSet(
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
- 
+
 process.fwliteOutput = cms.PSet(
     fileName = cms.string('analyze_2lss_1tau.root')
 )
@@ -67,8 +68,6 @@ process.analyze_2lss_1tau = cms.PSet(
         )
     ),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     apply_lepton_and_hadTauCharge_cut = cms.bool(True),
 
     isMC = cms.bool(True),
@@ -77,6 +76,8 @@ process.analyze_2lss_1tau = cms.PSet(
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False),
     apply_hlt_filter = cms.bool(False),
+    apply_met_filters = cms.bool(False),
+    cfgMEtFilter = recommendedMEtFilters,
     apply_hadTauFakeRateSF = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
@@ -110,4 +111,5 @@ process.analyze_2lss_1tau = cms.PSet(
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )

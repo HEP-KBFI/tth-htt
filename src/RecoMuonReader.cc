@@ -16,7 +16,6 @@ RecoMuonReader::RecoMuonReader(int era,
                                const std::string & branchName_obj,
                                bool readGenMatching)
   : era_(era)
-  , use_HIP_mitigation_(true)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , leptonReader_(new RecoLeptonReader(branchName_obj_, readGenMatching))
@@ -41,14 +40,6 @@ RecoMuonReader::~RecoMuonReader()
     delete[] gInstance->ptErr_;
     instances_[branchName_obj_] = nullptr;
   }
-}
-
-void
-RecoMuonReader::set_HIP_mitigation(bool use_HIP_mitigation)
-{
-  std::cout << "<RecoMuonReader::set_HIP_mitigation> = "
-            << std::boolalpha << use_HIP_mitigation << '\n';
-  use_HIP_mitigation_ = use_HIP_mitigation;
 }
 
 void

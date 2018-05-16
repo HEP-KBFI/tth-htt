@@ -29,6 +29,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h" // RecoJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterReader.h" // MEtFilterReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
@@ -48,11 +49,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterSelector.h" // MEtFilterSelector
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MuonHistManager.h" // MuonHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/HadTauHistManager.h" // HadTauHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManager.h" // JetHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterHistManager.h" // MEtFilterHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_WZctrl.h" // EvtHistManager_WZctrl
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
@@ -65,6 +68,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTH2, get_sf_from_TH2
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
+#include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
@@ -231,15 +235,18 @@ int main(int argc, char* argv[])
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
 
-  bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
-  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
-
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
+  bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
-  bool isDEBUG __attribute__((unused)) = cfg_analyze.getParameter<bool>("isDEBUG");
+  bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
+  edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
+  MEtFilterSelector metFilterSelector(cfgMEtFilter);
+
+  bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
+  if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
   const int jetPt_option     = getJet_option       (central_or_shift, isMC);
   const int lheScale_option  = getLHEscale_option  (central_or_shift, isMC);
@@ -301,7 +308,6 @@ int main(int argc, char* argv[])
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons);
-  muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
@@ -344,6 +350,10 @@ int main(int argc, char* argv[])
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
   metReader->setMEt_central_or_shift(met_option);
   inputTree -> registerReader(metReader);
+
+  MEtFilter metFilters;
+  MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilters);
+  inputTree -> registerReader(metFilterReader);
 
   GenLeptonReader* genLeptonReader = 0;
   GenHadTauReader* genHadTauReader = 0;
@@ -473,6 +483,9 @@ int main(int argc, char* argv[])
   MEtHistManager preselMEtHistManager(makeHistManager_cfg(process_string, 
     "WZctrl/presel/met", era_string, central_or_shift));
   preselMEtHistManager.bookHistograms(fs);
+  MEtFilterHistManager preselMEtFilterHistManager(makeHistManager_cfg(process_string, 
+    "WZctrl/presel/metFilters", era_string, central_or_shift));
+  preselMEtFilterHistManager.bookHistograms(fs);
   EvtHistManager_WZctrl preselEvtHistManager(makeHistManager_cfg(process_string, 
     "WZctrl/presel/evt", era_string, central_or_shift));
   preselEvtHistManager.bookHistograms(fs);
@@ -490,6 +503,7 @@ int main(int argc, char* argv[])
     JetHistManager* subleadBJet_loose_;
     JetHistManager* BJets_medium_;
     MEtHistManager* met_;
+    MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_2lss_;
     MVAInputVarHistManager* mvaInputVariables_2lss_1tau_;
     EvtHistManager_WZctrl* evt_;
@@ -539,6 +553,9 @@ int main(int argc, char* argv[])
     selHistManager->met_ = new MEtHistManager(makeHistManager_cfg(process_string, 
       Form("%s/sel/met", histogramDir.data()), central_or_shift));
     selHistManager->met_->bookHistograms(fs);
+    selHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_string, 
+      Form("%s/sel/metFilters", histogramDir.data()), central_or_shift));
+    selHistManager->metFilters_->bookHistograms(fs);
     selHistManager->mvaInputVariables_2lss_ = new MVAInputVarHistManager(makeHistManager_cfg(process_string, 
       Form("%s/sel/mvaInputs_2lss", histogramDir.data()), central_or_shift));
     selHistManager->mvaInputVariables_2lss_->bookHistograms(fs, mvaInputVariables_2lss);
@@ -903,6 +920,7 @@ int main(int argc, char* argv[])
     preselBJet_looseHistManager.fillHistograms(selBJets_loose, 1.);
     preselBJet_mediumHistManager.fillHistograms(selBJets_medium, 1.);
     preselMEtHistManager.fillHistograms(met, mht_p4, met_LD, 1.);
+    preselMEtFilterHistManager.fillHistograms(metFilters, 1.);
     preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       -1., -1., -1., -1., -1., -1., -1., -1.,
@@ -971,6 +989,27 @@ int main(int argc, char* argv[])
       continue;
     } 
     cutFlowTable.update("fakeable lepton trigger match", evtWeight_2lepton);
+
+//--- apply HLT filter
+    if(apply_hlt_filter)
+    {
+      const std::map<hltPathsE, bool> trigger_bits = {
+        { hltPathsE::trigger_1e,    selTrigger_1e    },
+        { hltPathsE::trigger_1mu,   selTrigger_1mu   },
+        { hltPathsE::trigger_2e,    selTrigger_2e    },
+        { hltPathsE::trigger_2mu,   selTrigger_2mu   },
+        { hltPathsE::trigger_1e1mu, selTrigger_1e1mu },
+      };
+      if(! hltFilter(trigger_bits, fakeableLeptons, {}))
+      {
+        if(run_lumi_eventSelector || isDEBUG)
+        {
+          std::cout << "event FAILS HLT filter matching\n";
+        }
+        continue;
+      }
+    }
+    cutFlowTable.update("HLT filter matching", evtWeight_2lepton);
       
     // apply requirement on jets (incl. b-tagged jets) on level of final event selection
     if ( !(selJets.size() >= 2) ) {
@@ -1065,6 +1104,16 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("met LD > 0.2", evtWeight_2lepton);
     
+    if ( apply_met_filters ) {
+      if ( !metFilterSelector(metFilters) ) {
+	if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS MEt filters." << std::endl;
+	}
+	continue;
+      }
+    }
+    cutFlowTable.update("MEt filters", evtWeight_2lepton);
+
     const RecoHadTau* selHadTau = ( selHadTaus.size() >= 1 )  ? selHadTaus[0] : 0;
 
     double mTauTauVis1 = -1.;
@@ -1203,6 +1252,7 @@ int main(int argc, char* argv[])
       selHistManager->subleadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
       selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
       selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
+      selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
       selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputs_2lss, evtWeight);
       selHistManager->mvaInputVariables_2lss_1tau_->fillHistograms(mvaInputs_2lss_1tau, evtWeight);
       selHistManager->evt_->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
@@ -1278,6 +1328,7 @@ int main(int argc, char* argv[])
   delete hadTauReader;
   delete jetReader;
   delete metReader;
+  delete metFilterReader;
   delete genLeptonReader;
   delete genHadTauReader;
   delete genJetReader;

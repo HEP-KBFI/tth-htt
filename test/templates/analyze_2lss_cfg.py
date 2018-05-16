@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
-
 import os
+
+from tthAnalysis.HiggsToTauTau.recommendedMEtFilters_cfi import recommendedMEtFilters
 
 process = cms.PSet()
 
@@ -53,15 +54,15 @@ process.analyze_2lss = cms.PSet(
         histogramName_mu = cms.string("FR_mva075_mu_data_comb")
     ),
 
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False),
     apply_hlt_filter = cms.bool(False),
-
+    apply_met_filters = cms.bool(False),
+    cfgMEtFilter = recommendedMEtFilters,
+    
     fillGenEvtHistograms = cms.bool(False),
 
     branchName_electrons = cms.string('Electron'),
@@ -98,4 +99,5 @@ process.analyze_2lss = cms.PSet(
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
+    hasLHE = cms.bool(True),
 )

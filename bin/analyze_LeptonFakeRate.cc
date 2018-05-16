@@ -417,6 +417,7 @@ main(int argc,
   const int era = get_era(era_string);
   const bool isMC    = cfg_analyze.getParameter<bool>("isMC");
   const bool isMC_tH = process_string == "tH" ? true : false;
+  const bool hasLHE  = cfg_analyze.getParameter<bool>("hasLHE");
 
   const std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   const double lumiScale          = process_string != "data_obs" ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
@@ -425,9 +426,6 @@ main(int argc,
   const bool redoGenMatching      = cfg_analyze.getParameter<bool>("redoGenMatching");
   const bool readGenObjects       = isMC && ! redoGenMatching;
   const bool isDEBUG              = cfg_analyze.getParameter<bool>("isDEBUG");
-
-  const bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
-  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << '\n';
 
   const bool use_triggers_1e  = cfg_analyze.getParameter<bool>("use_triggers_1e");
   const bool use_triggers_2e  = cfg_analyze.getParameter<bool>("use_triggers_2e");
@@ -528,7 +526,6 @@ main(int argc,
 
 //--- declare particle collections
   RecoMuonReader * muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
-  muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
@@ -599,7 +596,7 @@ main(int argc,
         inputTree->registerReader(genJetReader);
       }
     }
-    lheInfoReader = new LHEInfoReader();
+    lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree->registerReader(lheInfoReader);
   }
 

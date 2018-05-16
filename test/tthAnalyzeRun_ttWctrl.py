@@ -8,13 +8,16 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_ttWctrl.py -v 2017Dec13 -e 2017
 
+mode_choices     = [ 'default', 'sync', 'sync_noMEM' ]
 sys_choices      = [ 'central', 'full' ]
 systematics.full = systematics.an_ctrl
 
 parser = tthAnalyzeParser()
+parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
-parser.add_preselect()
-parser.add_tau_id_wp("dR03mvaLoose")
+parser.add_tau_id_wp("dR03mvaVLoose")
+parser.add_rle_select()
+parser.add_nonnominal()
 parser.add_files_per_job()
 parser.add_use_home()
 args = parser.parse_args()
@@ -32,19 +35,26 @@ debug              = args.debug
 sample_filter      = args.filter
 
 # Additional arguments
+mode              = args.mode
 systematics_label = args.systematics
-use_preselected   = args.use_preselected
 tau_id_wp         = args.tau_id_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
+rle_select        = os.path.expanduser(args.rle_select)
+use_nonnominal    = args.original_central
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
+do_sync              = mode.startswith('sync')
 
 if era == "2017":
-  #from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+  if mode == 'default':
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  elif mode == 'sync':
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
+  elif mode == 'sync_noMEM':
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
@@ -94,11 +104,14 @@ if __name__ == '__main__':
       executable_addFakes       = "addBackgroundLeptonFakes",
       executable_addFlips       = "addBackgroundLeptonFlips",
       histograms_to_fit         = [ "EventCounter", "numJets" ],
-      select_rle_output         = False,
+      select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
       dry_run                   = dry_run,
       isDebug                   = debug,
       use_home                  = use_home,
+      do_sync                   = do_sync,
+      use_nonnominal            = use_nonnominal,
+      rle_select                = rle_select,
     )
 
     job_statistics = analysis.create()

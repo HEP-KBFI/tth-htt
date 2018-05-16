@@ -8,9 +8,27 @@ class analyzeConfig_inclusive(analyzeConfig):
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, era,
                output_tree, check_input_files, running_method, verbose, dry_run, isDebug,
                rle_select, hadTauSelection_tauIdWP, use_nonnominal = False, use_home = True):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "inclusive", [ ],
-                           1, era, False, -1., False, running_method, 1, [], verbose = verbose,
-                           dry_run = dry_run, isDebug = isDebug, do_sync = True, use_home = use_home)
+    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze,
+      channel = "inclusive",
+      central_or_shifts = [ ],
+      max_files_per_job = 1,
+      era = era,
+      use_lumi = False,
+      lumi = -1.,
+      check_input_files = False,
+      running_method = running_method,
+      num_parallel_jobs = 1,
+      histograms_to_fit = [],
+      triggers = [
+        '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu',
+        '1e2mu', '2e1mu', '1e1tau', '1mu1tau', '2tau',
+      ],
+      verbose = verbose,
+      dry_run = dry_run,
+      isDebug = isDebug,
+      do_sync = True,
+      use_home = use_home,
+    )
     self.cfgFile_analyze = cfgFile_analyze
     self.samples = samples
     self.output_tree = output_tree
@@ -24,25 +42,12 @@ class analyzeConfig_inclusive(analyzeConfig):
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
 
-  def createCfg_analyze(self, jobOptions):
-    lines = [
-      "process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'],
-      "process.analyze_inclusive.era = cms.string('%s')" % self.era,
-      "process.analyze_inclusive.isMC = cms.bool(%s)" % jobOptions['is_mc'],
-      "process.analyze_inclusive.process = cms.string('%s')" % jobOptions['sample_category'],
-      "process.analyze_inclusive.hadTauSelection_tauIdWP = cms.string('%s')" % self.hadTauSelection_tauIdWP,
-      "process.analyze_inclusive.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'],
-      "process.analyze_inclusive.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']),
-      "process.analyze_inclusive.isDEBUG = cms.bool(%s)" % self.isDebug,
-      "process.analyze_inclusive.useNonNominal = cms.bool(%s)" % self.use_nonnominal,
+  def createCfg_analyze(self, jobOptions, sample_info):
+    additionalJobOptions = [
+      'hadTauSelection_tauIdWP',
     ]
-    if self.rle_select and '%s' not in self.rle_select:
-      lines.append("process.analyze_inclusive.selEventsFileName_input = cms.string('%s')" % self.rle_select)
 
-    for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '1e2mu', '2e1mu', '1e1tau', '1mu1tau', '2tau' ]:
-      lines.append("process.analyze_inclusive.triggers_%s = cms.vstring(%s)" % \
-        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
-      lines.append("process.analyze_inclusive.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
+    lines = super(analyzeConfig_inclusive, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):
@@ -100,20 +105,22 @@ class analyzeConfig_inclusive(analyzeConfig):
         syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s.root' % self.channel)
         self.inputFiles_sync['sync'].append(syncOutput)
 
+        cfg_key = getKey(self.channel, process_name, jobId)
+        cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
+        logFile_path = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s.log" % cfg_key)
+
         self.jobOptions_analyze[key_analyze_job] = {
-          'ntupleFiles' : ntupleFiles,
-          'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%i_cfg.py" % \
-            (self.channel, process_name, jobId)),
-          'logFile' : os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%i.log" % \
-                  (self.channel, process_name, jobId)),
-          'sample_category': sample_category,
-          'process_name_specific' : sample_info["process_name_specific"],
-          'triggers': sample_info["triggers"],
-          'is_mc': is_mc,
-          'syncTree' : self.output_tree,
-          'syncOutput' : syncOutput,
+          'ntupleFiles'             : ntupleFiles,
+          'cfgFile_modified'        : cfgFile_modified_path,
+          'histogramFile'           : '',
+          'logFile'                 : logFile_path,
+          'syncTree'                : self.output_tree,
+          'syncOutput'              : syncOutput,
+          'syncRLE'                 : self.rle_select if self.rle_select and '%s' not in self.rle_select else '',
+          'hadTauSelection_tauIdWP' : self.hadTauSelection_tauIdWP,
+          'useNonNominal'           : self.use_nonnominal,
         }
-        self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
+        self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
     logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
     self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)

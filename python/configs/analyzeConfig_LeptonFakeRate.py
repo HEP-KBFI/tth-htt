@@ -129,7 +129,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "LeptonFakeRate", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       [ numerator_histogram, denominator_histogram ],
-      executable_prep_dcard = executable_prep_dcard,
+      executable_prep_dcard = executable_prep_dcard, triggers = [],
       verbose = verbose, dry_run = dry_run, isDebug = isDebug, use_home = use_home)
 
     self.cmssw_base_dir_combine = cmssw_base_dir_combine
@@ -174,7 +174,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
     self.jobOptions_combine = {}
 
-  def createCfg_analyze(self, jobOptions):
+  def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_LeptonFakeRate executable (analysis code)
 
     Args:
@@ -185,28 +185,17 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_LeptonFakeRate.cc
     """
-    lines = []
-    ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in inputFiles ])
-    lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'])
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']))
-    lines.append("process.analyze_LeptonFakeRate.process = cms.string('%s')" % jobOptions['sample_category'])
-    lines.append("process.analyze_LeptonFakeRate.era = cms.string('%s')" % self.era)
-    lines.append("process.analyze_LeptonFakeRate.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
-    lines.append("process.analyze_LeptonFakeRate.use_triggers_2e = cms.bool(%s)" % ("2e" in jobOptions['triggers']))
-    lines.append("process.analyze_LeptonFakeRate.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
-    lines.append("process.analyze_LeptonFakeRate.use_triggers_2mu = cms.bool(%s)" % ("2mu" in jobOptions['triggers']))
-    lines.append("process.analyze_LeptonFakeRate.absEtaBins_e = cms.vdouble(%s)" % self.absEtaBins_e)
-    lines.append("process.analyze_LeptonFakeRate.ptBins_e = cms.vdouble(%s)" % self.ptBins_e)
-    lines.append("process.analyze_LeptonFakeRate.absEtaBins_mu = cms.vdouble(%s)" % self.absEtaBins_mu)
-    lines.append("process.analyze_LeptonFakeRate.ptBins_mu = cms.vdouble(%s)" % self.ptBins_mu)
-    lines.append("process.analyze_LeptonFakeRate.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
-    lines.append("process.analyze_LeptonFakeRate.isMC = cms.bool(%s)" % jobOptions['is_mc'])
-    lines.append("process.analyze_LeptonFakeRate.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
-    lines.append("process.analyze_LeptonFakeRate.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
-    lines.append("process.analyze_LeptonFakeRate.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
-    lines.append("process.analyze_LeptonFakeRate.fillGenEvtHistograms = cms.bool(%s)" % self.fillGenEvtHistograms)
-    lines.append("process.analyze_LeptonFakeRate.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
-    lines.append("process.analyze_LeptonFakeRate.isDEBUG = cms.bool(%s)" % self.isDebug)
+    additionalJobOptions = [
+      'use_triggers_1e',
+      'use_triggers_1mu',
+      'use_triggers_2e',
+      'use_triggers_2mu',
+      'absEtaBins_e',
+      'ptBins_e',
+      'absEtaBins_mu',
+      'ptBins_mu',
+    ]
+    lines = super(analyzeConfig_LeptonFakeRate, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addBackgrounds_LeptonFakeRate(self, jobOptions):
@@ -348,7 +337,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       apply_genWeight = sample_info["apply_genWeight"] if (is_mc and "apply_genWeight" in sample_info.keys()) else False
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
-      apply_trigger_bits = (is_mc and self.era == "2017" and sample_info["reHLT"]) or not is_mc
 
       for central_or_shift in self.central_or_shifts:
         inputFileList = inputFileLists[sample_name]
@@ -378,30 +366,30 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             jobId            = jobId,
           )) if self.select_rle_output else ""
 
+          cfg_key = getKey(self.channel, process_name, central_or_shift, jobId)
+          histo_key = getKey(process_name,  central_or_shift, jobId)
+          cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
+          logFile_path          = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s.log" % cfg_key)
+          histogramFile_path    = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s.root" % histo_key)
+
           self.jobOptions_analyze[key_analyze_job] = {
-            'ntupleFiles' : ntupleFiles,
-            'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%i_cfg.py" % \
-              (self.channel, process_name, central_or_shift, jobId)),
-            'histogramFile' : os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%i.root" % \
-              (process_name,  central_or_shift, jobId)),
-            'logFile' : os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%i.log" % \
-              (self.channel, process_name, central_or_shift, jobId)),
-            'sample_category' : sample_category,
-            'triggers' : sample_info["triggers"],
-            'absEtaBins_e' : self.absEtaBins_e,
-            'ptBins_e' : self.ptBins_e,
-            'absEtaBins_mu' : self.absEtaBins_mu,
-            'ptBins_mu' : self.ptBins_mu,
-            ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
-            'use_HIP_mitigation_mediumMuonId' : True,
-            'is_mc' : is_mc,
-            'central_or_shift' : central_or_shift,
-            'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
-            'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
-            'apply_trigger_bits' : apply_trigger_bits,
-            'rleOutputFile' : rleOutputFile,
+            'ntupleFiles'              : ntupleFiles,
+            'cfgFile_modified'         : cfgFile_modified_path,
+            'histogramFile'            : histogramFile_path,
+            'selEventsFileName_output' : rleOutputFile,
+            'logFile'                  : logFile_path,
+            'absEtaBins_e'             : self.absEtaBins_e,
+            'ptBins_e'                 : self.ptBins_e,
+            'absEtaBins_mu'            : self.absEtaBins_mu,
+            'ptBins_mu'                : self.ptBins_mu,
+            'central_or_shift'         : central_or_shift,
+            'use_triggers_1e'          : '1e' in sample_info["triggers"],
+            'use_triggers_1mu'         : '1mu' in sample_info["triggers"],
+            'use_triggers_2e'          : '2e' in sample_info["triggers"],
+            'use_triggers_2mu'         : '2mu' in sample_info["triggers"],
+            'fillGenEvtHistograms'     : self.fillGenEvtHistograms,
           }
-          self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
+          self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
           # initialize input and output file names for hadd_stage1
           key_hadd_stage1 = getKey(process_name)

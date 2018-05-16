@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
-
 import os
+
+from tthAnalysis.HiggsToTauTau.recommendedMEtFilters_cfi import recommendedMEtFilters
 
 process = cms.PSet()
 
@@ -33,7 +34,7 @@ process.analyze_ttWctrl = cms.PSet(
     use_triggers_2mu = cms.bool(True),
     triggers_1e1mu = cms.vstring('HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v', 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v'),
     use_triggers_1e1mu = cms.bool(True),
-    
+
     apply_offline_e_trigger_cuts_1e = cms.bool(True),
     apply_offline_e_trigger_cuts_2e = cms.bool(True),
     apply_offline_e_trigger_cuts_1mu = cms.bool(True),
@@ -42,7 +43,6 @@ process.analyze_ttWctrl = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
-    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
 
     hadTauSelection = cms.string('Tight|dR03mvaLoose'),
 
@@ -53,14 +53,14 @@ process.analyze_ttWctrl = cms.PSet(
         histogramName_mu = cms.string("FR_mva075_mu_data_comb")
     ),
 
-    use_HIP_mitigation_bTag = cms.bool(False),
-    use_HIP_mitigation_mediumMuonId = cms.bool(False),
-
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(True),
+    apply_hlt_filter = cms.bool(False),
+    apply_met_filters = cms.bool(False),
+    cfgMEtFilter = recommendedMEtFilters,
 
     fillGenEvtHistograms = cms.bool(False),
 
@@ -74,6 +74,12 @@ process.analyze_ttWctrl = cms.PSet(
     selEventsFileName_output = cms.string(''),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
+
+    syncNtuple = cms.PSet(
+        tree = cms.string(''),
+        output = cms.string(''),
+    ),
+    hasLHE = cms.bool(True),
 )
 
 

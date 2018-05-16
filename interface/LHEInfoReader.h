@@ -13,7 +13,7 @@ class LHEInfoReader
   : public ReaderBase
 {
 public:
-  LHEInfoReader();
+  LHEInfoReader(bool has_LHE_weights = true);
   ~LHEInfoReader();
 
   /**
@@ -62,6 +62,8 @@ protected:
   mutable double weight_scale_xDown_;
   mutable double weight_scale_yUp_;
   mutable double weight_scale_yDown_;
+
+  bool has_LHE_weights_;
 
   // CV: make sure that only one LHEInfoReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

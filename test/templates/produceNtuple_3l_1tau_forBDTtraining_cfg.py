@@ -1,9 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
 import os
-  
+
 process = cms.PSet()
-  
+
 process.fwliteInput = cms.PSet(
     fileNames = cms.vstring('/hdfs/local/lucia/VHBBHeppyV24bis/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V24bis_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160911_223711/0000/tree_1.root'),
     maxEvents = cms.int32(-1),
@@ -18,7 +18,7 @@ process.produceNtuple_3l_1tau = cms.PSet(
     treeName = cms.string('tree'),
 
     era = cms.string('2016'),
-    
+
     leptonSelection = cms.string('Loose'),
     minNumLeptons = cms.int32(2),
 
@@ -27,10 +27,9 @@ process.produceNtuple_3l_1tau = cms.PSet(
 
     minNumJets = cms.int32(1),
 
-    use_HIP_mitigation_bTag = cms.bool(False),
     minNumBJets_loose = cms.int32(0),
     minNumBJets_medium = cms.int32(0),
-    
+
     selEventsFileName_input = cms.string(''),
 
     selEventsFileName_addMEM = cms.string(''),
@@ -42,7 +41,7 @@ process.produceNtuple_3l_1tau = cms.PSet(
         ##"keep evt",
         "keep isData",
         "keep bx",
-        "keep *l1*",        
+        "keep *l1*",
         "keep HLT_BIT_HLT_*Ele*",
         "keep HLT_BIT_HLT_*Mu*",
         "keep HLT_BIT_HLT_*Tau*",
@@ -50,7 +49,7 @@ process.produceNtuple_3l_1tau = cms.PSet(
         "keep *trgObjects*Mu*",
         "keep *trgObjects*Tau*",
         "keep Flag_*",
-        ##"keep *selLeptons_*",        
+        ##"keep *selLeptons_*",
         ##"keep *TauGood_*",
         ##"keep *Jet_*",
         ##"keep *Jet_bTagWeight*Up",
@@ -66,7 +65,7 @@ process.produceNtuple_3l_1tau = cms.PSet(
         "keep rho*",
         "keep puWeight*",
         "keep genWeight*",
-        "keep btagWeight*",        
+        "keep btagWeight*",
         "keep *GenLep*",
         "keep *GenTaus*",
         "keep *GenTauHad*",
