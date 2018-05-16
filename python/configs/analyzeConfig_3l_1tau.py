@@ -343,7 +343,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   if lepton_and_hadTau_selection_and_frWeight == 'Tight' and chargeSumSelection == 'OS':
                     syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
                     syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
-                    syncRequireGenMatching = True
+                    syncRequireGenMatching = True and is_mc
                   elif lepton_and_hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and chargeSumSelection == 'OS':
                     syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')

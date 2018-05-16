@@ -263,7 +263,7 @@ class analyzeConfig_4l(analyzeConfig):
                   if lepton_selection_and_frWeight == 'Tight' and chargeSumSelection == 'OS':
                     syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
                     syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
-                    syncRequireGenMatching = True
+                    syncRequireGenMatching = True and is_mc
                   elif lepton_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and chargeSumSelection == 'OS':
                     syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
@@ -291,7 +291,7 @@ class analyzeConfig_4l(analyzeConfig):
                   'selEventsFileName_output' : rleOutputFile_path,
                   'selEventsTFileName'       : rootOutputFile,
                   'leptonSelection'          : lepton_selection,
-                  'apply_leptonGenMatching'  : self.apply_leptonGenMatching and is_mc,
+                  'apply_leptonGenMatching'  : self.apply_leptonGenMatching,
                   'chargeSumSelection'       : chargeSumSelection,
                   'applyFakeRateWeights'     : self.applyFakeRateWeights if not lepton_selection == "Tight" else "disabled",
                   'central_or_shift'         : central_or_shift,
