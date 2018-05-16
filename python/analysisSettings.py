@@ -174,6 +174,7 @@ class Triggers(object):
         '1e' : {
           'HLT_Ele8_CaloIdM_TrackIdM_PFJet30',
           'HLT_Ele17_CaloIdM_TrackIdM_PFJet30',
+          'HLT_Ele23_CaloIdM_TrackIdM_PFJet30',
         },
         '1mu' : {
           'HLT_Mu27',

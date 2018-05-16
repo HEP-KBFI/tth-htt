@@ -280,6 +280,8 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                 syncOutput = ''
                 syncTree = ''
                 if self.do_sync:
+                  if lepton_selection != 'Tight' or lepton_charge_selection != 'OS':
+                    continue
                   syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s.root' % self.channel)
                   syncTree = 'syncTree_%s' % self.channel
                   self.inputFiles_sync['sync'].append(syncOutput)

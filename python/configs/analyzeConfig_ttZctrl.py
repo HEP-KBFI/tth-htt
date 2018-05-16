@@ -213,6 +213,8 @@ class analyzeConfig_ttZctrl(analyzeConfig):
               syncOutput = ''
               syncTree = ''
               if self.do_sync:
+                if lepton_selection != 'Tight':
+                  continue
                 syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s.root' % self.channel)
                 syncTree = 'syncTree_%s' % self.channel
                 self.inputFiles_sync['sync'].append(syncOutput)

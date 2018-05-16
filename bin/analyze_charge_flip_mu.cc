@@ -146,6 +146,7 @@ int main(int argc, char* argv[])
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
   bool isMC_tH = ( process_string == "tH" ) ? true : false;
+  bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::string central_or_shift_label_st = central_or_shift == "central" ? "" : central_or_shift+"_";
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
@@ -257,7 +258,7 @@ int main(int argc, char* argv[])
     inputTree->registerReader(genHadTauReader);
     genJetReader = new GenJetReader("GenJet");
     inputTree->registerReader(genJetReader);
-    lheInfoReader = new LHEInfoReader();
+    lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree->registerReader(lheInfoReader);
   }
 
