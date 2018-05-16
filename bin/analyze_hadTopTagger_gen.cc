@@ -595,8 +595,8 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle, //Partic
 		      sPrint += Form("\t    AK4 size %zu\n",selJets.size());
 		      bool isAK4JetMatched = false;
 		      for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin(); selJet != selJets.end(); ++selJet ) {
-			sPrint += Form("\t\tAK4 jet:  pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g,",
-				       (*selJet)->pt(), (*selJet)->eta(), (*selJet)->phi(), (*selJet)->mass());
+			sPrint += Form("\t\tAK4 jet:  pt: %6.1f,  eta: %5.2f, phi: %5.2f, m: %g, bCSV: %5.2f,",
+				       (*selJet)->pt(), (*selJet)->eta(), (*selJet)->phi(), (*selJet)->mass(), (*selJet)->BtagCSV());
 
 			if (deltaR((*selJet)->p4(), genParticle[kTLVGenBJet+iGenJet]->p4()) < 0.3) {
 			  sPrint += Form("\t MATCHES with gen%s (dR<0.3)",sGen.Data());
