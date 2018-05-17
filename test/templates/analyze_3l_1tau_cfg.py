@@ -80,7 +80,7 @@ process.analyze_3l_1tau = cms.PSet(
         )
     ),
 
-    minNumJets = cms.int32(1),
+    minNumJets = cms.int32(2),
 
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
