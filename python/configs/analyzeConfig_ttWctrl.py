@@ -299,7 +299,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   'logFile'                  : logFile_path,
                   'selEventsFileName_output' : rleOutputFile_path,
                   'leptonSelection'          : lepton_selection,
-                  'apply_leptonGenMatching'  : self.apply_leptonGenMatching and is_mc,
+                  'apply_leptonGenMatching'  : self.apply_leptonGenMatching,
                   'leptonChargeSelection'    : lepton_charge_selection,
                   'hadTauSelection_veto'     : hadTauVeto_selection,
                   'applyFakeRateWeights'     : self.applyFakeRateWeights if not lepton_selection == "Tight" else "disabled",
