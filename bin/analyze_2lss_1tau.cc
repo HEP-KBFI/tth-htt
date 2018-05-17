@@ -1509,8 +1509,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowTable.update(">= 1 sel tau (2)", evtWeight);
     cutFlowHistManager->fillHistograms(">= 1 sel tau (2)", evtWeight);
 
-    // veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
-    if ( !(vetoHadTaus.size() <= 1) ) {
+    // veto events containing more than one tau passing the Medium WP, to avoid overlap with the 2l+2tau category
+    // apply tau veto only in the SR (== 2 selected leptons and a tau are both tight)
+    if ( !(vetoHadTaus.size() <= 1 && tightLeptons.size() <= 2 && tightHadTaus.size() <= 1) ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS vetoHadTaus selection." << std::endl;
         printCollection("vetoHadTaus", vetoHadTaus);
