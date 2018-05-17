@@ -15,7 +15,7 @@ systematics.full = systematics.an_ctrl
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp("dR03mvaVLoose")
+parser.add_tau_id_wp("dR03mvaLoose")
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_rle_select()
