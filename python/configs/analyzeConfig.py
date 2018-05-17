@@ -238,7 +238,7 @@ class analyzeConfig(object):
             'apply_hlt_filter',
         ]
         jobOptions_keys = jobOptions_local + additionalJobOptions
-        max_option_len = max(map(len, jobOptions_keys))
+        max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
 
         lines = [
             "# Filled in %s" % current_function_name,
