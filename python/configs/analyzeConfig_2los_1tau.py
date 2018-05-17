@@ -146,7 +146,6 @@ class analyzeConfig_2los_1tau(analyzeConfig):
          lumi_scale: event weight (= xsection * luminosity / number of events)
          central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_2los_1tau.cc
     """
-    lines = []
     lepton_and_hadTau_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
     jobOptions['histogramDir'] = getHistogramDir(jobOptions['leptonSelection'], jobOptions['hadTauSelection'], lepton_and_hadTau_frWeight)
     fitFunctionName = None
