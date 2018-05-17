@@ -1143,12 +1143,13 @@ int main(int argc, char* argv[])
     cutFlowTable.update("MEt filters", evtWeight);
 
     if ( leptonSelection == kFakeable ) {
-      if ( (tightMuons.size() + tightElectrons.size()) >= 2 ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS tightElectrons+tightMuons selection." << std::endl;
-	  std::cout << " (#tightElectrons = " << tightElectrons.size() << ", #tightMuons = " << tightMuons.size() << ")" << std::endl;
-	}
-	continue; // CV: avoid overlap with signal region
+      if ( tightLeptons.size() >= 2 ) {
+        if ( run_lumi_eventSelector ) {
+          std::cout << "event FAILS tightElectrons+tightMuons selection.\n"
+                       " (#tightLeptons = " << tightLeptons.size() << ")\n"
+          ;
+        }
+        continue; // CV: avoid overlap with signal region
       }
       cutFlowTable.update("signal region veto", evtWeight);
     }
