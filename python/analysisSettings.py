@@ -190,7 +190,7 @@ class Triggers(object):
 
       self.blacklist = {
         'Run2017B' : {
-           '1e'    : { 'HLT_Ele32_WPTight_Gsf', 'HLT_Ele8_CaloIdM_TrackIdM_PFJet30' },
+           '1e'    : { 'HLT_Ele32_WPTight_Gsf', 'HLT_Ele8_CaloIdM_TrackIdM_PFJet30', 'HLT_Ele17_CaloIdM_TrackIdM_PFJet30' },
            '1mu'   : { 'HLT_Mu3_PFJet40' },
            '1e1mu' : { 'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL' },
            '2mu'   : { 'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8' },
