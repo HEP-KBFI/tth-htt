@@ -447,8 +447,12 @@ main(int argc,
       {
         const std::string trigger_path = cfg_trigger.getParameter<std::string>("path");
         const bool is_trigger_1e = cfg_trigger.getParameter<bool>("is_trigger_1e");
-        const bool is_trigger_2e = cfg_trigger.getParameter<bool>("is_trigger_2e");
+        const bool is_trigger_2e = cfg_trigger.getParameter<bool>("is_trigger_2e");	
         assert(is_trigger_1e || is_trigger_2e);
+	if ( !((is_trigger_1e && use_triggers_1e) ||(is_trigger_2e && use_triggers_2e)) ) {
+	  std::cout << "Skipping electron HLT path = '" << trigger_path << "'\n";
+	  continue;
+	}
         if((is_trigger_1e && std::find(triggerNames_1e.begin(), triggerNames_1e.end(), trigger_path) == triggerNames_1e.end()) ||
            (is_trigger_2e && std::find(triggerNames_2e.begin(), triggerNames_2e.end(), trigger_path) == triggerNames_2e.end())  )
         {
@@ -471,6 +475,10 @@ main(int argc,
         const bool is_trigger_1mu = cfg_trigger.getParameter<bool>("is_trigger_1mu");
         const bool is_trigger_2mu = cfg_trigger.getParameter<bool>("is_trigger_2mu");
         assert(is_trigger_1mu || is_trigger_2mu);
+	if ( !((is_trigger_1mu && use_triggers_1mu) ||(is_trigger_2mu && use_triggers_2mu)) ) {
+	  std::cout << "Skipping muon HLT path = '" << trigger_path << "'\n";
+	  continue;
+	}
         if((is_trigger_1mu && std::find(triggerNames_1mu.begin(), triggerNames_1mu.end(), trigger_path) == triggerNames_1mu.end()) ||
            (is_trigger_2mu && std::find(triggerNames_2mu.begin(), triggerNames_2mu.end(), trigger_path) == triggerNames_2mu.end())  )
         {
