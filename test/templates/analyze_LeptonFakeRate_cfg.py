@@ -208,7 +208,6 @@ process.analyze_LeptonFakeRate = cms.PSet(
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
     isDEBUG = cms.bool(False),
-    applyMETFilters = cms.bool(True),
     hasLHE = cms.bool(True),
 )
 
