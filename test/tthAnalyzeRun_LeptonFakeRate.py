@@ -59,7 +59,7 @@ else:
 for sample_name, sample_info in samples.items():
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "1mu", "2e", "2mu" ]
-  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run', '/DoubleEG/Run')):
+  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run', '/DoubleEG/Run', '/SingleElectron/Run2017B')): # '/SingleElectron/Run2017B' added since no useful triggers present in that dataset
       sample_info["use_it"] = False
 
 if __name__ == '__main__':
