@@ -190,7 +190,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False), # ignored
-    apply_met_filters = cms.bool(False),
+    apply_met_filters = cms.bool(True),
     cfgMEtFilter = recommendedMEtFilters,
     fillGenEvtHistograms = cms.bool(True),
 

@@ -85,7 +85,7 @@ process.analyze_2l_2tau = cms.PSet(
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False),
     apply_hlt_filter = cms.bool(False),
-    apply_met_filters = cms.bool(False),
+    apply_met_filters = cms.bool(True),
     apply_hadTauFakeRateSF = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
