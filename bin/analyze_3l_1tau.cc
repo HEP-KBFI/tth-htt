@@ -1440,9 +1440,9 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
 
     double minPt_lead = -1.;
-    if ( era == kEra_2017 ) minPt_lead = 25.; // CV: increase minimum lepton pT cut to 25 GeV to keep-up with higher trigger thresholds in 2016 data
+    if ( era == kEra_2017 ) minPt_lead = 20.;
     else assert(0);
-    double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
+    double minPt_sublead = 10.;
     double minPt_third = 10.;
     if ( !(selLepton_lead->cone_pt() > minPt_lead && selLepton_sublead->cone_pt() > minPt_sublead && selLepton_third->cone_pt() > minPt_third) ) {
       if ( run_lumi_eventSelector ) {
