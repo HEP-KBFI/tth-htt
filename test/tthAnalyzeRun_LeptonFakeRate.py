@@ -8,7 +8,10 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_LeptonFakeRate.py -v 2017Dec13 -e 2017
 
-cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
+# cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
+cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_8_1_0_CombineHarvestor_KBFI_datacards') # immediate parent dir to src folder
+
+
 mode_choices           = [ 'default', 'sync' ]
 sys_choices            = [ 'central', 'full' ]
 systematics.full       = systematics.an_leptonFR
@@ -56,7 +59,7 @@ else:
 for sample_name, sample_info in samples.items():
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "1mu", "2e", "2mu" ]
-  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):
+  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run', '/DoubleEG/Run')):
       sample_info["use_it"] = False
 
 if __name__ == '__main__':
