@@ -22,8 +22,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
                jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selection_denominator,
                hadTau_selections_numerator, absEtaBins, ptBins, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-               executable_comp_jetToTauFakeRate, verbose = False, dry_run = False, isDebug = False,
-               use_home = True):
+               executable_comp_jetToTauFakeRate, verbose = False, hlt_filter = False, dry_run = False,
+               isDebug = False, use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "jetToTauFakeRate", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit = [], triggers = [ '1e', '1mu', '1e1mu' ], verbose = verbose,
@@ -32,6 +32,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.samples = samples
 
     self.charge_selections = charge_selections
+    self.hlt_filter = hlt_filter
 
     self.jet_minPt = jet_minPt
     self.jet_maxPt = jet_maxPt
@@ -219,6 +220,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               'hadTauSelections_numerator'  : self.hadTau_selections_numerator,
               'absEtaBins'                  : self.absEtaBins,
               'central_or_shift'            : central_or_shift,
+              'apply_hlt_filter'            : self.hlt_filter,
             }
             self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 

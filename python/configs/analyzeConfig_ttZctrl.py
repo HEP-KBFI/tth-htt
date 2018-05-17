@@ -37,8 +37,8 @@ class analyzeConfig_ttZctrl(analyzeConfig):
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
-               verbose = False, dry_run = False, isDebug = False, use_home = True, do_sync = False,
-               rle_select = '', use_nonnominal = False):
+               verbose = False, hlt_filter = False, dry_run = False, isDebug = False, use_home = True,
+               do_sync = False, rle_select = '', use_nonnominal = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttZctrl", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
@@ -89,6 +89,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     self.select_rle_output = select_rle_output
     self.rle_select = rle_select
     self.use_nonnominal = use_nonnominal
+    self.hlt_filter = hlt_filter
 
   def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_ttZctrl executable (analysis code)
@@ -240,6 +241,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
                 'syncTree'                 : syncTree,
                 'syncRLE'                  : syncRLE,
                 'useNonNominal'            : self.use_nonnominal,
+                'apply_hlt_filter'         : self.hlt_filter,
               }
               self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 

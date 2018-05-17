@@ -123,15 +123,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = False
       jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = False
 
-    additionalJobOptions = [
-      'hadTauChargeSelection',
-      'hadTauFakeRateWeight.inputFileName',
-      'hadTauFakeRateWeight.lead.fitFunctionName',
-      'hadTauFakeRateWeight.sublead.fitFunctionName',
-      'hadTauFakeRateWeight.applyFitFunction_lead',
-      'hadTauFakeRateWeight.applyFitFunction_sublead'
-    ]
-    lines = super(analyzeConfig_0l_2tau, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
+    lines = super(analyzeConfig_0l_2tau, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):

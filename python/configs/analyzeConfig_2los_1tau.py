@@ -171,18 +171,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       jobOptions['hadTauFakeRateWeight.lead.graphName'] = 'jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt' % self.hadTau_selection_part2
       jobOptions['hadTauFakeRateWeight.lead.fitFunctionName'] = 'jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt' % self.hadTau_selection_part2
 
-    additionalJobOptions = [
-      'hadTauFakeRateWeight.inputFileName',
-      'hadTauFakeRateWeight.lead.fitFunctionName',
-      'hadTauFakeRateWeight.applyFitFunction_lead',
-      'hadTauFakeRateWeight.applyFitFunction_sublead',
-      'hadTauFakeRateWeight.applyGraph_lead',
-      'hadTauFakeRateWeight.applyGraph_sublead',
-      'apply_hadTauFakeRateSF',
-      'hadTauFakeRateWeight.lead.graphName',
-    ]
-
-    lines = super(analyzeConfig_2los_1tau, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
+    lines = super(analyzeConfig_2los_1tau, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):

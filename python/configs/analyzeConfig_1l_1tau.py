@@ -145,12 +145,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     if jobOptions['hadTauSelection'].find("mcClosure") != -1:
       jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = False
 
-    additionalJobOptions = [
-      'hadTauFakeRateWeight.inputFileName',
-      'hadTauFakeRateWeight.lead.fitFunctionName',
-      'hadTauFakeRateWeight.applyFitFunction_lead',
-    ]
-    lines = super(analyzeConfig_1l_1tau, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
+    lines = super(analyzeConfig_1l_1tau, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):

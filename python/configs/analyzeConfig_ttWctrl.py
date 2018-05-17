@@ -38,7 +38,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit,
                triggers = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
                select_rle_output = False, executable_prep_dcard = "prepareDatacards",
-               executable_add_syst_dcard = "addSystDatacards", verbose = False,
+               executable_add_syst_dcard = "addSystDatacards", verbose = False, hlt_filter = False,
                dry_run = False, isDebug = False, use_home = True, do_sync = False,
                use_nonnominal = False, rle_select = ''):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttWctrl", central_or_shifts,
@@ -97,6 +97,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     self.select_rle_output = select_rle_output
     self.use_nonnominal = use_nonnominal
     self.rle_select = rle_select
+    self.hlt_filter = hlt_filter
 
   def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_ttWctrl executable (analysis code)
@@ -308,6 +309,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   'syncTree'                 : syncTree,
                   'syncRLE'                  : syncRLE,
                   'useNonNominal'            : self.use_nonnominal,
+                  'apply_hlt_filter'         : self.hlt_filter,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 

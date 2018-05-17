@@ -20,6 +20,7 @@ parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_files_per_job()
 parser.add_use_home()
+parser.add_hlt_filter()
 args = parser.parse_args()
 
 # Common arguments
@@ -42,6 +43,7 @@ files_per_job     = args.files_per_job
 use_home          = args.use_home
 rle_select        = os.path.expanduser(args.rle_select)
 use_nonnominal    = args.original_central
+hlt_filter        = args.hlt_filter
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -106,6 +108,7 @@ if __name__ == '__main__':
       histograms_to_fit         = [ "EventCounter", "numJets" ],
       select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
+      hlt_filter                = hlt_filter,
       dry_run                   = dry_run,
       isDebug                   = debug,
       use_home                  = use_home,
