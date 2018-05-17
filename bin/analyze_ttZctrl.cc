@@ -1418,6 +1418,10 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
+      const bool isGenMatched = isMC &&
+        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
+      ;
+
       const double dr_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
       const double mT_lep2        = comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
@@ -1435,7 +1439,7 @@ int main(int argc, char* argv[])
       snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu,
                   triggers_1e1mu, triggers_1e2mu, triggers_2e1mu,
                   triggers_3e, triggers_3mu });
-      snm->read(false, selBJets_medium.size(), selBJets_loose.size());
+      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size());
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
