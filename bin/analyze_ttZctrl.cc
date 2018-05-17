@@ -73,6 +73,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
+#include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
@@ -216,6 +217,11 @@ int main(int argc, char* argv[])
   MEtFilterSelector metFilterSelector(cfgMEtFilter, isMC);
   const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
+
+  const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
+  const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
+  const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
   
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
@@ -287,12 +293,25 @@ int main(int argc, char* argv[])
 
   std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
 
+//--- prepare sync Ntuple
+  SyncNtupleManager * snm = nullptr;
+  if(do_sync)
+  {
+    snm = new SyncNtupleManager(syncNtuple_output, syncNtuple_tree);
+    snm->initializeBranches();
+    snm->initializeHLTBranches({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu,
+                                 triggers_1e1mu, triggers_1e2mu, triggers_2e1mu,
+                                 triggers_3e, triggers_3mu });
+  }
+
 //--- declare event-level variables
   EventInfo eventInfo(isSignal, isMC, false);
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 
-  for(const std::vector<hltPath*> hltPaths: { triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu })
+  for(const std::vector<hltPath*> hltPaths: { triggers_1e, triggers_2e, triggers_1mu, triggers_2mu,
+                                              triggers_1e1mu, triggers_1e2mu, triggers_2e1mu,
+                                              triggers_3e, triggers_3mu })
   {
     inputTree -> registerReader(hltPaths);
   }
@@ -392,7 +411,6 @@ int main(int argc, char* argv[])
   TMVAInterface mva_2lss_ttbar(mvaFileName_2lss_ttbar, mvaInputVariables_2lss_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
   std::vector<std::string> mvaInputVariables_2lss = get_mvaInputVariables(mvaInputVariables_2lss_ttV, mvaInputVariables_2lss_ttbar);
-  std::map<std::string, double> mvaInputs_2lss;
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 3l category of ttH multilepton analysis
@@ -1228,15 +1246,32 @@ int main(int argc, char* argv[])
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss category of ttH multilepton analysis 
-    mvaInputs_2lss["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(selLepton_lead->eta()), std::fabs(selLepton_sublead->eta()));
-    mvaInputs_2lss["MT_met_lep1"]                = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
-    mvaInputs_2lss["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
-    mvaInputs_2lss["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-    mvaInputs_2lss["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
-    mvaInputs_2lss["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*selLepton_lead);
-    mvaInputs_2lss["LepGood_conePt[iF_Recl[1]]"] = comp_lep2_conePt(*selLepton_sublead);
-    mvaInputs_2lss["min(met_pt,400)"]            = std::min(met.pt(), (Double_t)400.);
-    mvaInputs_2lss["avg_dr_jet"]                 = comp_avg_dr_jet(selJets);
+    const int nJet25_Recl = comp_n_jet25_recl(selJets);
+
+    const double mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
+    const double mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
+    const double max_lep_eta    = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
+    const double mT_lep1        = comp_MT_met_lep1(*selLepton_lead,    met.pt(), met.phi());
+    const double MT_met_lep1    = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
+    const double avg_dr_jet     = comp_avg_dr_jet(selJets);
+    const double lep1_conePt    = comp_lep1_conePt(*selLepton_lead);
+    const double lep2_conePt    = comp_lep2_conePt(*selLepton_sublead);
+    const double lep3_conePt    = selLepton_third ? comp_lep3_conePt(*selLepton_third) : -1.;
+    const double minMET400      = std::min(met.pt(), 400.);
+
+//--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
+//    in 2lss_1tau category of ttH multilepton analysis
+    std::map<std::string, double> mvaInputs_2lss = {
+      { "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", max_lep_eta                   },
+      { "MT_met_lep1",                                                    mT_lep1                       },
+      { "nJet25_Recl",                                                    nJet25_Recl                   },
+      { "mindr_lep1_jet",                                                 std::min(10., mindr_lep1_jet) },
+      { "mindr_lep2_jet",                                                 std::min(10., mindr_lep2_jet) },
+      { "LepGood_conePt[iF_Recl[0]]",                                     lep1_conePt                   },
+      { "LepGood_conePt[iF_Recl[1]]",                                     lep2_conePt                   },
+      { "min(met_pt,400)",                                                minMET400                     },
+      { "avg_dr_jet",                                                     avg_dr_jet                    },
+    };
     
     check_mvaInputs(mvaInputs_2lss, eventInfo);
     
@@ -1260,17 +1295,19 @@ int main(int argc, char* argv[])
 //    in 3l category of ttH multilepton analysis 
     double mvaOutput_3l_ttV = -1.;
     double mvaOutput_3l_ttbar = -1.;
-    if ( selLepton_third ) {
-      mvaInputs_3l["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(selLepton_lead->eta()), std::fabs(selLepton_sublead->eta()));
-      mvaInputs_3l["MT_met_lep1"]                = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
-      mvaInputs_3l["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
-      mvaInputs_3l["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-      mvaInputs_3l["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
-      mvaInputs_3l["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*selLepton_lead);
-      mvaInputs_3l["LepGood_conePt[iF_Recl[2]]"] = comp_lep3_conePt(*selLepton_third);
-      mvaInputs_3l["avg_dr_jet"]                 = comp_avg_dr_jet(selJets);
-      mvaInputs_3l["mhtJet25_Recl"]              = mht_p4.pt();
-      
+    if(selLepton_third)
+    {
+      std::map<std::string, double> mvaInputs_3l = {
+        { "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", max_lep_eta    },
+        { "MT_met_lep1",                                                    MT_met_lep1    },
+        { "nJet25_Recl",                                                    nJet25_Recl    },
+        { "mindr_lep1_jet",                                                 mindr_lep1_jet },
+        { "mindr_lep2_jet",                                                 mindr_lep2_jet },
+        { "LepGood_conePt[iF_Recl[0]]",                                     lep1_conePt    },
+        { "LepGood_conePt[iF_Recl[2]]",                                     lep3_conePt    },
+        { "avg_dr_jet",                                                     avg_dr_jet     },
+        { "mhtJet25_Recl",                                                  mht_p4.pt()    },
+      };
       check_mvaInputs(mvaInputs_3l, eventInfo);
 
       mvaOutput_3l_ttV = mva_3l_ttV(mvaInputs_3l);
@@ -1330,9 +1367,131 @@ int main(int argc, char* argv[])
 
     (*selEventsFile) << eventInfo.run << ":" << eventInfo.lumi << ":" << eventInfo.event << std::endl;
 
+    if(snm)
+    {
+      const double dr_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
+      const double mT_lep2        = comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi());
+      const double max_dr_jet     = comp_max_dr_jet(selJets);
+      const double mbb            = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
+      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1000;
+      const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
+      const double mindr_lep3_jet = selLepton_third ? comp_mindr_lep3_jet(*selLepton_sublead, selJets) : -1.;
+      const double btagWeight     = get_BtagWeight(selJets);
+
+      snm->read(eventInfo);
+      snm->read(preselMuons,     fakeableMuons,     tightMuons);
+      snm->read(preselElectrons, fakeableElectrons, tightElectrons);
+      snm->read(selJets);
+
+      snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu,
+                  triggers_1e1mu, triggers_1e2mu, triggers_2e1mu,
+                  triggers_3e, triggers_3mu });
+      snm->read(false, selBJets_medium.size(), selBJets_loose.size());
+
+      snm->read(met.pt(),                               FloatVariableType::PFMET);
+      snm->read(met.phi(),                              FloatVariableType::PFMETphi);
+      snm->read(mht_p4.pt(),                            FloatVariableType::MHT);
+      snm->read(met_LD,                                 FloatVariableType::metLD);
+
+      snm->read(lep1_conePt,                            FloatVariableType::lep1_conept);
+      snm->read(lep2_conePt,                            FloatVariableType::lep2_conept);
+      snm->read(lep3_conePt,                            FloatVariableType::lep3_conept);
+      // lep4_conept not filled
+
+      snm->read(mindr_lep1_jet,                         FloatVariableType::mindr_lep1_jet);
+      snm->read(mindr_lep2_jet,                         FloatVariableType::mindr_lep2_jet);
+      snm->read(mindr_lep3_jet,                         FloatVariableType::mindr_lep3_jet);
+      // mindr_lep4_jet not filled
+
+      // mindr_tau1_jet not filled
+      // mindr_tau2_jet not filled
+
+      snm->read(avg_dr_jet,                             FloatVariableType::avg_dr_jet);
+      // avr_dr_lep_tau not filled
+      snm->read(max_dr_jet,                             FloatVariableType::max_dr_jet);
+      // max_dr_lep_tau not filled
+      // min_dr_tau_jet not filled
+      // min_dr_lep_tau not filled
+      snm->read(min_dr_lep_jet,                         FloatVariableType::min_dr_lep_jet);
+
+      snm->read(dr_leps,                                FloatVariableType::dr_leps);
+      // dr_taus not filled
+
+      // dr_lep_tau_ss not filled
+      // dr_lep1_tau1 not filled
+      // dr_lep1_tau2 not filled
+      // dr_lep2_tau1 not filled
+      // dr_lep3_tau1 not filled
+      // dr_lep2_tau2 not filled
+
+      snm->read(max_lep_eta,                            FloatVariableType::max_lep_eta);
+
+      snm->read(mT_lep1,                                FloatVariableType::mT_met_lep1);
+      snm->read(mT_lep2,                                FloatVariableType::mT_met_lep2);
+      // mT_met_lep3 not filled
+      // mT_met_lep4 not filled
+
+      // mTauTauVis not filled
+      // mvis_l1tau not filled
+      // mvis_l2tau not filled
+
+      snm->read(mbb,                                    FloatVariableType::mbb);
+      snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
+
+      // cosThetaS_hadTau not filled
+      // HTT not filled
+      // HadTop_pt not filled
+      // mvaOutput_Hj_tagger not filled
+
+      // mvaOutput_plainKin_ttV not filled
+      // mvaOutput_plainKin_tt not filled
+      // mvaOutput_plainKin_1B_VT not filled
+      // mvaOutput_HTT_SUM_VT not filled
+
+      // mvaOutput_plainKin_SUM_VT not filled
+
+      snm->read(mvaOutput_2lss_ttV,                     FloatVariableType::mvaOutput_2lss_ttV);
+      snm->read(mvaOutput_2lss_ttbar,                   FloatVariableType::mvaOutput_2lss_tt);
+      // mvaOutput_2lss_1tau_plainKin_tt not filled
+      // mvaOutput_2lss_1tau_plainKin_ttV not filled
+      // mvaOutput_2lss_1tau_plainKin_1B_M not filled
+      // mvaOutput_2lss_1tau_plainKin_SUM_M not filled
+      // mvaOutput_2lss_1tau_HTT_SUM_M not filled
+      // mvaOutput_2lss_1tau_HTTMEM_SUM_M not filled
+
+      snm->read(mvaOutput_3l_ttV,                       FloatVariableType::mvaOutput_3l_ttV);
+      snm->read(mvaOutput_3l_ttbar,                     FloatVariableType::mvaOutput_3l_ttbar);
+      // mvaOutput_plainKin_SUM_M not filled
+      // mvaOutput_plainKin_1B_M not filled
+
+      // weight_fakeRate not filled
+      // triggerWeight not filled
+      // leptonSF_weight not filled
+      // tauSF_weight not filled
+      snm->read(btagWeight,                             FloatVariableType::bTagSF_weight);
+      snm->read(eventInfo.pileupWeight,                 FloatVariableType::PU_weight);
+      snm->read(boost::math::sign(eventInfo.genWeight), FloatVariableType::MC_weight);
+
+      // memOutput_ttH not filled
+      // memOutput_ttZ not filled
+      // memOutput_ttZ_Zll not filled
+      // memOutput_tt not filled
+      // memOutput_type not filled
+      // memOutput_LR not filled
+
+      snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
+
+      snm->fill();
+    }
+
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
+  }
+
+  if(snm)
+  {
+    snm->write();
   }
 
   std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
