@@ -652,8 +652,9 @@ getRebinnedHistogram1d(const TH1 * histoOriginal,
                        unsigned numBins_rebinned, // unused
                        const TArrayD & binEdges_rebinned)
 {
-//  const std::string histoRebinnedName = std::string(histoOriginal->GetName()).append("_rebinned");
-  const std::string histoRebinnedName = std::string(histoOriginal->GetName());
+  static int idx = 0;
+  ++idx;
+  const std::string histoRebinnedName = Form("%s_rebinned%i", histoOriginal->GetName(), idx);
   TH1 * histoRebinned = new TH1D(
     histoRebinnedName.data(),
     histoOriginal->GetTitle(),
@@ -688,7 +689,9 @@ getRebinnedHistogram2d(const TH1 * histoOriginal,
                        unsigned numBinsY_rebinned, // unused
                        const TArrayD & binEdgesY_rebinned)
 {
-  const std::string histoRebinnedName = std::string(histoOriginal->GetName()).append("_rebinned");
+  static int idx = 0;
+  ++idx;
+  const std::string histoRebinnedName = Form("%s_rebinned%i", histoOriginal->GetName(), idx);
   TH2D * histoRebinned = new TH2D(
     histoRebinnedName.data(),
     histoOriginal->GetTitle(),
