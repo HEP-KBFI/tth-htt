@@ -2192,7 +2192,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       const double dr_lep1_tau1   = deltaR(selLepton_lead->p4(), selHadTau->p4());
       const double dr_lep2_tau1   = deltaR(selLepton_sublead->p4(), selHadTau->p4());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
-      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
+      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
       const double avr_dr_lep_tau = (dr_lep1_tau1 + dr_lep2_tau1) / 2;
       const double max_dr_lep_tau = std::max(dr_lep2_tau1, dr_lep1_tau1);
       const double min_dr_lep_tau = std::min(dr_lep2_tau1, dr_lep1_tau1);

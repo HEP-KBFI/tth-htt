@@ -1928,7 +1928,7 @@ int main(int argc, char* argv[])
       const double dr_lep3_tau1   = deltaR(selLepton_third->p4(), selHadTau->p4());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
       const double mT_lep3        = comp_MT_met_lep3(*selLepton_third, met.pt(), met.phi());
-      const double mbb            = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[0]->p4()).mass() : -1.;
+      const double mbb            = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
       const double avr_dr_lep_tau = (dr_lep1_tau1 + dr_lep2_tau1 + dr_lep3_tau1) / 3;
       const double max_dr_lep_tau = std::max({ dr_lep2_tau1, dr_lep1_tau1, dr_lep3_tau1 });
       const double min_dr_lep_tau = std::min({ dr_lep2_tau1, dr_lep1_tau1, dr_lep3_tau1 });

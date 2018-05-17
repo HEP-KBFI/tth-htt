@@ -1452,8 +1452,8 @@ int main(int argc, char* argv[])
       const double mT_lep3        = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
       const double mT_lep4        = comp_MT_met_lep4(selLepton_fourth->p4(), met.pt(), met.phi());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
-      const double mbb            = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[0]->p4()).mass() : -1.;
-      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
+      const double mbb            = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
+      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
       const double avg_dr_jet     = comp_avg_dr_jet(selJets);
       const double mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
       const double mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
