@@ -104,6 +104,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       lines.append("process.comp_jetToTauFakeRate.processMC = cms.string('TTj')")
       lines.append("process.comp_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
       lines.append("process.comp_jetToTauFakeRate.ptBins = cms.vdouble(%s)" % jobOptions['ptBins'])
+      lines.append("process.comp_jetToTauFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
       create_cfg(self.cfgFile_comp_jetToTauFakeRate, jobOptions['cfgFile_modified'], lines)
 
   def addToMakefile_comp_jetToTauFakeRate(self, lines_makefile):
@@ -254,7 +255,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         'looseRegion' : "jetToTauFakeRate_%s/denominator/" % charge_selection,
         'tightRegion' : "jetToTauFakeRate_%s/numerator/" % charge_selection,
         'absEtaBins' : self.absEtaBins,
-        'ptBins' : self.ptBins
+        'ptBins' : self.ptBins,
+        'plots_outputFileName' : os.path.join(self.dirs[DKEY_PLOT], "comp_jetToTauFakeRate.png")
       }
       self.createCfg_comp_jetToTauFakeRate(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job])
       self.targets.append(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job]['outputFile'])
