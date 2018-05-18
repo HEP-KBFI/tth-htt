@@ -318,10 +318,12 @@ class analyzeConfig_2lss(analyzeConfig):
                     if lepton_charge_selection == 'SS':
                       syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
                       syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '').replace('ss', 'SS')
-                      syncRequireGenMatching = True
                     elif lepton_charge_selection == 'OS':
                       syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Flip.root' % self.channel)
                       syncTree   = 'syncTree_%s_Flip' % self.channel.replace('_', '').replace('ss', 'SS')
+                    else:
+                      continue
+                    syncRequireGenMatching = True
                   elif lepton_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and lepton_charge_selection == 'SS':
                     syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '').replace('ss', 'SS')
