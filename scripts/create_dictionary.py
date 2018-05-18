@@ -212,6 +212,9 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("missing_from_superset",           [
 {{ missing_from_superset }}
   ]),
+  ("missing_hlt_paths",               [
+{{ missing_hlt_paths }}
+  ]),
 ])
 """
 
@@ -404,6 +407,14 @@ def get_missing_from_superset(indices):
     missing_branches_superset.update(missing_branches)
   return list(sorted(list(missing_branches_superset)))
 
+def get_missing_hlt_paths(required_triggers, indices, all_paths):
+  branch_names_intersection = set.intersection(*[
+    set(index_entry[BRANCH_NAMES_KEY]) for index_entry in indices.values()
+  ])
+  required_paths = set.union(*[ all_paths[trigger_name] for trigger_name in required_triggers ])
+  missing_paths = list(sorted(list(required_paths - branch_names_intersection)))
+  return missing_paths
+
 def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, missing_branches,
                     filetracker, file_idx, era, triggerTable):
   ''' Assume that the following subdirectories are of the form: 0000, 0001, 0002, ...
@@ -580,6 +591,9 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
        )
     meta_dict[key]['triggers']                        = get_triggers(
       meta_dict[key]['process_name_specific'], is_data, era
+    )
+    meta_dict[key]['missing_hlt_paths']               = get_missing_hlt_paths(
+      meta_dict[key]['triggers'], indices, triggerTable.triggers_all
     )
     meta_dict[key]['genWeight']                       = not is_data
     meta_dict[key]['type']                            = 'data' if is_data else 'mc'
@@ -994,8 +1008,12 @@ if __name__ == '__main__':
           ))
         is_mc = meta_dict[key]['type'] == 'mc'
         missing_branches_template_filled = jinja2.Template(missing_branches_str).render(
-          is_available     = args.missing_branches,
+          is_available     = args.missing_branches and not is_mc,
           missing_branches = meta_dict[key]['missing_from_superset'],
+        ).lstrip('\n')
+        missing_hlt_paths_filled = jinja2.Template(missing_branches_str).render(
+          is_available     = True,
+          missing_branches = meta_dict[key]['missing_hlt_paths'],
         ).lstrip('\n')
         output += jinja2.Template(dictionary_entry_str).render(
           dict_name                       = args.output_dict_name,
@@ -1021,6 +1039,7 @@ if __name__ == '__main__':
           reHLT                           = meta_dict[key]['reHLT'],
           has_LHE                         = meta_dict[key]['has_LHE'],
           missing_from_superset           = missing_branches_template_filled,
+          missing_hlt_paths               = missing_hlt_paths_filled,
           paths                           = '\n'.join(path_entries_arr),
         ) + '\n\n'
       else:

@@ -16,6 +16,7 @@ parser.add_sys(sys_choices)
 parser.add_tau_id_wp("dR03mvaVVLoose")
 parser.add_files_per_job()
 parser.add_use_home()
+parser.add_hlt_filter()
 args = parser.parse_args()
 
 # Common arguments
@@ -35,6 +36,7 @@ systematics_label = args.systematics
 tau_id_wp         = args.tau_id_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
+hlt_filter        = args.hlt_filter
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -107,6 +109,7 @@ if __name__ == '__main__':
       num_parallel_jobs                = 100,
       executable_comp_jetToTauFakeRate = "comp_jetToTauFakeRate",
       verbose                          = idx_job_resubmission > 0,
+      hlt_filter                       = hlt_filter,
       dry_run                          = dry_run,
       isDebug                          = debug,
       use_home                         = use_home,

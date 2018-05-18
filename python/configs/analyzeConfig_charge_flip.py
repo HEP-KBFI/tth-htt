@@ -185,6 +185,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
               'selEventsFileName_output' : rleOutputFile,
               'leptonSelection'          : lepton_selection,
               'applyFakeRateWeights'     : "disabled",
+              'central_or_shift'         : central_or_shift,
             }
 
             #applyFakeRateWeights = self.applyFakeRateWeights

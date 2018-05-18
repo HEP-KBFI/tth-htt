@@ -16,7 +16,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacards",
-               verbose = False, dry_run = False, isDebug = False, use_home = True):
+               verbose = False, hlt_filter = False, dry_run = False, isDebug = False, use_home = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "WZctrl", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit, executable_prep_dcard = executable_prep_dcard, verbose = verbose,
@@ -38,6 +38,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_WZctrl_cfg.py")
 
     self.select_rle_output = select_rle_output
+    self.hlt_filter = hlt_filter
 
   def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_WZctrl executable (analysis code)
@@ -136,6 +137,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
             'sample_category'          : sample_category,
             'hadTauSelection'          : self.hadTau_selection_part2,
             'central_or_shift'         : central_or_shift,
+            'apply_hlt_filter'         : self.hlt_filter,
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 

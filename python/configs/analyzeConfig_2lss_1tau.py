@@ -46,6 +46,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2lss_1tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
+      triggers = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
       executable_prep_dcard = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
       do_sync = do_sync,
@@ -148,7 +149,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.hadTauFakeRateWeight_inputFileName = hadTauFakeRateWeight_inputFileName
     self.isBDTtraining                      = True
 
-  def createCfg_analyze(self, jobOptions):
+  def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_2lss_1tau executable (analysis code)
 
        Args:
@@ -159,80 +160,37 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
          lumi_scale: event weight (= xsection * luminosity / number of events)
          central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_2lss_1tau.cc
     """
-    lines = []
-    ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in jobOptions['ntupleFiles'] ])
-    lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'])
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']))
-    lines.append("process.analyze_2lss_1tau.process = cms.string('%s')" % jobOptions['sample_category'])
-    lepton_and_hadTau_frWeight = None
-    if jobOptions['applyFakeRateWeights'] == "disabled":
-      lepton_and_hadTau_frWeight = "disabled"
-    else:
-      lepton_and_hadTau_frWeight = "enabled"
-    histogramDir = getHistogramDir(jobOptions['lepton_selection'], jobOptions['hadTau_selection'], lepton_and_hadTau_frWeight,
-      jobOptions['lepton_charge_selection'], jobOptions['chargeSumSelection'])
-    lines.append("process.analyze_2lss_1tau.histogramDir = cms.string('%s')" % histogramDir)
-    lines.append("process.analyze_2lss_1tau.era = cms.string('%s')" % self.era)
-    for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu' ]:
-      lines.append("process.analyze_2lss_1tau.triggers_%s = cms.vstring(%s)" % \
-        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
-      lines.append("process.analyze_2lss_1tau.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
-    lines.append("process.analyze_2lss_1tau.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
-    lines.append("process.analyze_2lss_1tau.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
-    lines.append("process.analyze_2lss_1tau.leptonChargeSelection = cms.string('%s')" % jobOptions['lepton_charge_selection'])
-    lines.append("process.analyze_2lss_1tau.hadTauSelection = cms.string('%s')" % jobOptions['hadTau_selection'])
-    lines.append("process.analyze_2lss_1tau.hadTauSelection_veto = cms.string('%s')" % jobOptions['hadTau_selection_veto'])
-    lines.append("process.analyze_2lss_1tau.apply_hadTauGenMatching = cms.bool(%s)" % (jobOptions['apply_hadTauGenMatching'] and jobOptions['is_mc']))
-    lines.append("process.analyze_2lss_1tau.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
+    lepton_and_hadTau_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
+    histogramDir = getHistogramDir(
+      jobOptions['leptonSelection'], jobOptions['hadTauSelection'], lepton_and_hadTau_frWeight,
+      jobOptions['leptonChargeSelection'], jobOptions['chargeSumSelection']
+    )
+    jobOptions['histogramDir'] = histogramDir
+
     fitFunctionName = None
     if self.era == "2017":
       # TODO: update the FR file for 2017 analysis
-      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root')")
+      jobOptions['hadTauFakeRateWeight.inputFileName'] = 'tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root'
       # CV: use data/MC corrections determined for dR03mvaLoose discriminator for 2016 data
       fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
     else:
       raise ValueError("Invalid parameter 'era' = %s !!" % self.era)
-    lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('%s')" % fitFunctionName)
-    if jobOptions['hadTau_selection'].find("mcClosure") != -1:
-      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
-      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
-    if jobOptions['hadTau_selection'].find("Tight") != -1 and self.applyFakeRateWeights not in [ "3L", "1tau" ] : # and not self.isBDTtraining: Xanda: we are using the same tau ID of analysis selections for BDT training as well
-      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyGraph_lead = cms.bool(False)")
-      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(True)")
-      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyGraph_sublead = cms.bool(False)")
-      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(True)")
-      lines.append("process.analyze_2lss_1tau.apply_hadTauFakeRateSF = cms.bool(True)")
+    jobOptions['hadTauFakeRateWeight.lead.fitFunctionName'] = fitFunctionName
+    if jobOptions['hadTauSelection'].find("mcClosure") != -1:
+      jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = False
+      jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = False
+    if jobOptions['hadTauSelection'].find("Tight") != -1 and self.applyFakeRateWeights not in [ "3L", "1tau" ] :
+      jobOptions['hadTauFakeRateWeight.applyGraph_lead'] = False
+      jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = True
+      jobOptions['hadTauFakeRateWeight.applyGraph_sublead'] = False
+      jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = True
+      jobOptions['apply_hadTauFakeRateSF'] = True
     elif self.isBDTtraining :
-      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.inputFileName = cms.string('%s')" % self.hadTauFakeRateWeight_inputFileName)
-      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.lead.graphName = cms.string('jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt')" % self.hadTau_selection_part2)
-      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt')" % self.hadTau_selection_part2)
-    lines.append("process.analyze_2lss_1tau.chargeSumSelection = cms.string('%s')" % jobOptions['chargeSumSelection'])
-    lines.append("process.analyze_2lss_1tau.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
-    lines.append("process.analyze_2lss_1tau.isMC = cms.bool(%s)" % jobOptions['is_mc'])
-    lines.append("process.analyze_2lss_1tau.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
-    lines.append("process.analyze_2lss_1tau.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
-    lines.append("process.analyze_2lss_1tau.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
-    lines.append("process.analyze_2lss_1tau.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
-    lines.append("process.analyze_2lss_1tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
-    lines.append("process.analyze_2lss_1tau.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
-    lines.append("process.analyze_2lss_1tau.redoGenMatching = cms.bool(False)")
-    lines.append("process.analyze_2lss_1tau.fillGenEvtHistograms = cms.bool(True)")
-    if jobOptions['MEMbranch']:
-      lines.append(
-        "process.analyze_2lss_1tau.branchName_memOutput = cms.string('%s_%s')" % (
-          jobOptions['MEMbranch'],
-          'central',
-#          self.get_addMEM_systematics(jobOptions['central_or_shift']),
-        )
-      )
-    if self.do_sync:
-      lines.append("process.analyze_2lss_1tau.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
-      lines.append("process.analyze_2lss_1tau.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
-      lines.append("process.analyze_2lss_1tau.syncNtuple.requireGenMatching = cms.bool(%s)" % jobOptions['syncRequireGenMatching'])
-      lines.append("process.analyze_2lss_1tau.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
-    lines.append("process.analyze_2lss_1tau.isDEBUG = cms.bool(%s)" % self.isDebug)
-    lines.append("process.analyze_2lss_1tau.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
-    lines.append("process.analyze_2lss_1tau.apply_hlt_filter = cms.bool(%s)" % self.hlt_filter)
+      jobOptions['hadTauFakeRateWeight.inputFileName'] = self.hadTauFakeRateWeight_inputFileName
+      jobOptions['hadTauFakeRateWeight.lead.graphName'] = 'jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt' % self.hadTau_selection_part2
+      jobOptions['hadTauFakeRateWeight.lead.fitFunctionName'] = 'jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt' % self.hadTau_selection_part2
+
+    lines = super(analyzeConfig_2lss_1tau, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addFlips(self, jobOptions):
@@ -416,7 +374,11 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
                   # build config files for executing analysis code
                   key_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
-                  key_analyze_job = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection, central_or_shift, jobId)
+                  key_analyze_job_tuple = (
+                    process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection,
+                    chargeSumSelection, central_or_shift, jobId
+                  )
+                  key_analyze_job = getKey(key_analyze_job_tuple)
                   ntupleFiles = inputFileList[jobId]
                   if len(ntupleFiles) == 0:
                     logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
@@ -432,10 +394,12 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                       if lepton_charge_selection == 'SS':
                         syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
                         syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '').replace('ss', 'SS')
-                        syncRequireGenMatching = True
                       elif lepton_charge_selection == 'OS':
                         syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Flip.root' % self.channel)
                         syncTree   = 'syncTree_%s_Flip' % self.channel.replace('_', '').replace('ss', 'SS')
+                      else:
+                        continue
+                      syncRequireGenMatching = True
                     elif lepton_and_hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and lepton_charge_selection == 'SS':
                       syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
                       syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '').replace('ss', 'SS')
@@ -449,43 +413,47 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     if not os.path.isfile(syncRLE):
                       raise ValueError('Input RLE file for the sync is missing: %s' % syncRLE)
 
+                  cfg_key = (
+                    self.channel, process_name, lepton_and_hadTau_selection_and_frWeight,
+                    lepton_charge_selection, chargeSumSelection, central_or_shift, jobId
+                  )
+                  cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % getKey(*cfg_key))
+                  logFile_path = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_lep%s_sum%s_%s_%i.log" % cfg_key)
+                  rleOutputFile_path = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_lep%s_sum%s_%s_%i.txt" % cfg_key) \
+                                       if self.select_rle_output else ""
+                  histogramFile_path = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_lep%s_sum%s_%s_%i.root" % key_analyze_job_tuple)
+                  applyFakeRateWeights = self.applyFakeRateWeights \
+                    if self.isBDTtraining or not  (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) \
+                    else "disabled"
+                  branchName_memOutput = '%s_%s' % (self.MEMbranch, self.get_addMEM_systematics(central_or_shift)) \
+                                         if self.MEMbranch else ''
+
                   self.jobOptions_analyze[key_analyze_job] = {
-                    'ntupleFiles' : ntupleFiles,
-                    'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_lep%s_sum%s_%s_%i_cfg.py" % \
-                      (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection, central_or_shift, jobId)),
-                    'histogramFile' : os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_lep%s_sum%s_%s_%i.root" % \
-                      (process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection, central_or_shift, jobId)),
-                    'logFile' : os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_lep%s_sum%s_%s_%i.log" % \
-                      (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection, central_or_shift, jobId)),
-                    'rleOutputFile' : os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_lep%s_sum%s_%s_%i.txt" % \
-                      (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection, central_or_shift, jobId)) \
-                        if self.select_rle_output else "",
-                    'sample_category' : sample_category,
-                    'triggers' : sample_info["triggers"],
-                    'lepton_selection' : lepton_selection,
-                    'apply_leptonGenMatching' : self.apply_leptonGenMatching,
-                    'lepton_charge_selection' : lepton_charge_selection,
-                    'hadTau_selection' : hadTau_selection,
-                    'hadTau_selection_veto' : self.hadTau_selection_veto,
-                    'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
-                    'chargeSumSelection' : chargeSumSelection,
-                    'applyFakeRateWeights' : self.applyFakeRateWeights if self.isBDTtraining or not  (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
-                    ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
-                    'use_HIP_mitigation_mediumMuonId' : False,
-                    'is_mc' : is_mc,
-                    'central_or_shift' : central_or_shift,
-                    'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
-                    'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
-                    'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
-                    'selectBDT' : self.isBDTtraining,
-                    'MEMbranch' : self.MEMbranch,
-                    'syncOutput': syncOutput,
-                    'syncTree'  : syncTree,
-                    'syncRLE': syncRLE,
-                    'syncRequireGenMatching': syncRequireGenMatching,
-                    'process_name_specific' : sample_info['process_name_specific'],
+                    'ntupleFiles'              : ntupleFiles,
+                    'cfgFile_modified'         : cfgFile_modified_path,
+                    'histogramFile'            : histogramFile_path,
+                    'logFile'                  : logFile_path,
+                    'selEventsFileName_output' : rleOutputFile_path,
+                    'leptonSelection'          : lepton_selection,
+                    'apply_leptonGenMatching'  : self.apply_leptonGenMatching,
+                    'leptonChargeSelection'    : lepton_charge_selection,
+                    'hadTauSelection'          : hadTau_selection,
+                    'hadTauSelection_veto'     : self.hadTau_selection_veto,
+                    'apply_hadTauGenMatching'  : self.apply_hadTauGenMatching,
+                    'chargeSumSelection'       : chargeSumSelection,
+                    'applyFakeRateWeights'     : applyFakeRateWeights,
+                    'central_or_shift'         : central_or_shift,
+                    'selectBDT'                : self.isBDTtraining,
+                    'branchName_memOutput'     : branchName_memOutput,
+                    'syncOutput'               : syncOutput,
+                    'syncTree'                 : syncTree,
+                    'syncRLE'                  : syncRLE,
+                    'syncRequireGenMatching'   : syncRequireGenMatching,
+                    'apply_hlt_filter'         : self.hlt_filter,
+                    'useNonNominal'            : self.use_nonnominal,
+                    'fillGenEvtHistograms'     : True,
                   }
-                  self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
+                  self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
                   # initialize input and output file names for hadd_stage1
                   key_hadd_stage1 = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)

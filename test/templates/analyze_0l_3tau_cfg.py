@@ -65,9 +65,9 @@ process.analyze_0l_3tau = cms.PSet(
     lumiScale = cms.double(1.),
     apply_trigger_bits = cms.bool(True),
     apply_hlt_filter = cms.bool(False),
-    apply_met_filters = cms.bool(False),
+    apply_met_filters = cms.bool(True),
     cfgMEtFilter = recommendedMEtFilters,
-    
+
     fillGenEvtHistograms = cms.bool(False),
 
     branchName_electrons = cms.string('Electron'),

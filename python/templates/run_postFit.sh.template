@@ -43,15 +43,15 @@ combineTool.py              \
   --parallel $PARALLEL_JOBS \
   &> "$OUTPUT_DIR_JOB/combine.log"
 
-echo "Running MaxLikelihood Fit on {{ l_array }}"
+echo "Running MaxLikelihood Fit/FitDiagnostics on {{ l_array }}"
 combineTool.py                            \
-  -M MaxLikelihoodFit                     \
+  -M FitDiagnostics                     \
   -m $SIGNAL_RESONANCE                    \
   --robustFit 1                           \
-  --minimizerAlgoForMinos $MINIMIZERALGOS \
+  --setRobustFitAlgo $MINIMIZERALGOS \
   -d "$DATACARD_PATH"       \
   --skipBOnlyFit                          \
-{% if l_range %}  --setPhysicsModelParameterRanges r={{ l_range }} {% endif %} \
+{% if l_range %}  --setParameterRanges r={{ l_range }} {% endif %} \
   --there                                 \
   -n {{ l_array }}                        \
   --parallel $PARALLEL_JOBS               \
@@ -60,7 +60,7 @@ combineTool.py                            \
 
 NAME='{{ l_array }}_mlfit_shapes.root'
 echo "Extracting PostFit shapes from the mlfit: $NAME"
-MLFIT_OUTPUT='mlfit{{ l_array }}.root'
+MLFIT_OUTPUT='fitDiagnostics_{{ l_array }}.root'
 PostFitShapesFromWorkspace               \
   -w $WSP_PATH                           \
   -d $DATACARD_PATH                      \
@@ -128,7 +128,7 @@ combineTool.py                            \
   -M Impacts                              \
   -d $WSP_PATH                            \
   -m $SIGNAL_RESONANCE                    \
-  --minimizerAlgoForMinos $MINIMIZERALGOS \
+  --setRobustFitAlgo $MINIMIZERALGOS      \
   -n {{ l_array }}                        \
   --robustFit 1                           \
   --doInitialFit                          \
@@ -140,7 +140,7 @@ combineTool.py                            \
   -M Impacts                              \
   -d $WSP_PATH                            \
   -m $SIGNAL_RESONANCE                    \
-  --minimizerAlgoForMinos $MINIMIZERALGOS \
+  --setRobustFitAlgo $MINIMIZERALGOS      \
   -n {{ l_array }}                        \
   --robustFit 1                           \
   --doFits                                \
@@ -154,7 +154,8 @@ combineTool.py                            \
   -M Impacts                              \
   -d $WSP_PATH                            \
   -m $SIGNAL_RESONANCE                    \
-  --minimizerAlgoForMinos $MINIMIZERALGOS \
+  --robustFit 1                           \
+  --setRobustFitAlgo $MINIMIZERALGOS      \
   -n {{ l_array }}                        \
   --parallel $PARALLEL_JOBS               \
   -o $JSON_PATH                           \

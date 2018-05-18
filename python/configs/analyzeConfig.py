@@ -223,6 +223,7 @@ class analyzeConfig(object):
             'histogramDir',
             'lumiScale',
             'leptonChargeSelection',
+            'hadTauChargeSelection',
             'hadTauSelection',
             'hadTauSelection_veto',
             'apply_leptonGenMatching',
@@ -236,9 +237,22 @@ class analyzeConfig(object):
             'selEventsTFileName',
             'useNonNominal',
             'apply_hlt_filter',
+            'branchName_memOutput',
+            'hadTauFakeRateWeight.inputFileName',
+            'hadTauFakeRateWeight.lead.fitFunctionName',
+            'hadTauFakeRateWeight.sublead.fitFunctionName',
+            'hadTauFakeRateWeight.third.fitFunctionName',
+            'hadTauFakeRateWeight.applyFitFunction_lead',
+            'hadTauFakeRateWeight.applyFitFunction_sublead',
+            'hadTauFakeRateWeight.applyFitFunction_third',
+            'hadTauFakeRateWeight.applyGraph_lead',
+            'hadTauFakeRateWeight.applyGraph_sublead',
+            'hadTauFakeRateWeight.lead.graphName',
+            'hadTauFakeRateWeight.sublead.graphName',
+            'apply_hadTauFakeRateSF',
         ]
         jobOptions_keys = jobOptions_local + additionalJobOptions
-        max_option_len = max(map(len, jobOptions_keys))
+        max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
 
         lines = [
             "# Filled in %s" % current_function_name,
@@ -294,9 +308,9 @@ class analyzeConfig(object):
 
         if self.do_sync:
             lines.extend([
-                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree',         jobOptions['syncTree'],   len = max_option_len),
-                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.output',       jobOptions['syncOutput'], len = max_option_len),
-                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'selEventsFileName_input', jobOptions['syncRLE'],    len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree', jobOptions['syncTree'], len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.output', os.path.basename(jobOptions['syncOutput']), len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'selEventsFileName_input', jobOptions['syncRLE'], len = max_option_len),
             ])
             if 'syncRequireGenMatching' in jobOptions:
                 lines.append(

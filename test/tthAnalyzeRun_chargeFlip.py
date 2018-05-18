@@ -13,7 +13,7 @@ sys_choices      = [ 'central', 'full' ]
 systematics.full = systematics.an_chargeFlip_e
 
 parser = tthAnalyzeParser()
-parser.add_sys(sys_choices)
+parser.add_sys(sys_choices, default_choice = 'full')
 parser.add_files_per_job()
 parser.add_use_home()
 args = parser.parse_args()
@@ -51,11 +51,11 @@ for sample_name, sample_info in samples.items():
     sample_info["triggers"] = [ "1e", "2e" ]
   if sample_info["process_name_specific"].startswith("DYJetsToLL"):
     sample_info["sample_category"] = "DY"
-  elif "TTJets" in sample_name:
+  elif sample_info["process_name_specific"].startswith("TTTo") and sample_info["sample_category"] == "TT":
     sample_info["sample_category"] = "TTbar"
   elif sample_info["process_name_specific"] == "WJetsToLNu":
     sample_info["sample_category"] = "WJets"
-  elif sample_info["process_name_specific"].startswith("ST_"):
+  elif sample_info["process_name_specific"].startswith("ST_") and sample_info["sample_category"] == "TT":
     sample_info["sample_category"] = "Singletop"
   elif sample_info["process_name_specific"] in ["WWTo2L2Nu", "WZTo3LNu", "ZZTo4L"]:
     sample_info["sample_category"] = "Diboson"

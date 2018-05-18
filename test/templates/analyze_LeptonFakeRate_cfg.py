@@ -6,8 +6,7 @@ from tthAnalysis.HiggsToTauTau.recommendedMEtFilters_cfi import recommendedMEtFi
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring(
-    ),
+    fileNames = cms.vstring('/hdfs/local/ram/ttHNtupleProduction/2017/2018May4_woPresel_nom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/tree_1.root'),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
@@ -190,7 +189,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False), # ignored
-    apply_met_filters = cms.bool(False),
+    apply_met_filters = cms.bool(True),
     cfgMEtFilter = recommendedMEtFilters,
     fillGenEvtHistograms = cms.bool(True),
 

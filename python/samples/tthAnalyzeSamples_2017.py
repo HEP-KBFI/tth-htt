@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-05-15 21:26:46 with the following command:
+# file generated at 2018-05-17 17:20:36 with the following command:
 # create_dictionary.py -v -m python/samples/metaDict_2017.py -p /hdfs/local/karl/ttHNtupleProduction/2017/2018May11_fullProduction_v4_woPresel_nom_all_except_forBDTtraining/ntuples -Z zeroes.txt -z zombies.txt -N samples_2017 -E 2017 -g tthAnalyzeSamples_2017.py -o python/samples -M
 
 samples_2017 = OD()
@@ -31,6 +31,12 @@ samples_2017["/SingleElectron/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("missing_from_superset",           [
     "HLT_HcalIsolatedbunch",
     "HLT_L1FatEvents",
+  ]),
+  ("missing_hlt_paths",               [
+    "HLT_Ele17_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Ele23_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Ele32_WPTight_Gsf",
+    "HLT_Ele8_CaloIdM_TrackIdM_PFJet30",
   ]),
 ])
 
@@ -91,6 +97,9 @@ samples_2017["/SingleElectron/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
     "HLT_ZeroBias_part8",
     "HLT_ZeroBias_part9",
   ]),
+  ("missing_hlt_paths",               [
+    "HLT_Ele32_WPTight_Gsf",
+  ]),
 ])
 
 samples_2017["/SingleElectron/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
@@ -120,6 +129,9 @@ samples_2017["/SingleElectron/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("missing_from_superset",           [
     "HLT_TripleMu_5_3_3_Mass3p8to60_DZ",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/SingleElectron/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
@@ -147,6 +159,9 @@ samples_2017["/SingleElectron/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
     ]
   ),
   ("missing_from_superset",           [
+
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -231,6 +246,9 @@ samples_2017["/SingleElectron/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
     "HLT_TripleMu_5_3_3_Mass3p8to60_DCA",
     "HLT_ZeroBias_Beamspot",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
@@ -260,6 +278,9 @@ samples_2017["/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("missing_from_superset",           [
     "HLT_HcalIsolatedbunch",
     "HLT_L1FatEvents",
+  ]),
+  ("missing_hlt_paths",               [
+    "HLT_Mu3_PFJet40",
   ]),
 ])
 
@@ -320,6 +341,9 @@ samples_2017["/SingleMuon/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
     "HLT_ZeroBias_part8",
     "HLT_ZeroBias_part9",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/SingleMuon/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
@@ -349,6 +373,9 @@ samples_2017["/SingleMuon/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("missing_from_superset",           [
     "HLT_TripleMu_5_3_3_Mass3p8to60_DZ",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/SingleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
@@ -376,6 +403,9 @@ samples_2017["/SingleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
     ]
   ),
   ("missing_from_superset",           [
+
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -460,6 +490,9 @@ samples_2017["/SingleMuon/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
     "HLT_TripleMu_5_3_3_Mass3p8to60_DCA",
     "HLT_ZeroBias_Beamspot",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/DoubleEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
@@ -489,6 +522,9 @@ samples_2017["/DoubleEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("missing_from_superset",           [
     "HLT_HcalIsolatedbunch",
     "HLT_L1FatEvents",
+  ]),
+  ("missing_hlt_paths",               [
+
   ]),
 ])
 
@@ -549,6 +585,9 @@ samples_2017["/DoubleEG/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
     "HLT_ZeroBias_part8",
     "HLT_ZeroBias_part9",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/DoubleEG/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
@@ -578,6 +617,9 @@ samples_2017["/DoubleEG/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("missing_from_superset",           [
     "HLT_TripleMu_5_3_3_Mass3p8to60_DZ",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/DoubleEG/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
@@ -605,6 +647,9 @@ samples_2017["/DoubleEG/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
     ]
   ),
   ("missing_from_superset",           [
+
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -689,6 +734,9 @@ samples_2017["/DoubleEG/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
     "HLT_TripleMu_5_3_3_Mass3p8to60_DCA",
     "HLT_ZeroBias_Beamspot",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/DoubleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
@@ -718,6 +766,9 @@ samples_2017["/DoubleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("missing_from_superset",           [
     "HLT_HcalIsolatedbunch",
     "HLT_L1FatEvents",
+  ]),
+  ("missing_hlt_paths",               [
+    "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8",
   ]),
 ])
 
@@ -778,6 +829,9 @@ samples_2017["/DoubleMuon/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
     "HLT_ZeroBias_part8",
     "HLT_ZeroBias_part9",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/DoubleMuon/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
@@ -807,6 +861,9 @@ samples_2017["/DoubleMuon/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("missing_from_superset",           [
     "HLT_TripleMu_5_3_3_Mass3p8to60_DZ",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/DoubleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
@@ -834,6 +891,9 @@ samples_2017["/DoubleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
     ]
   ),
   ("missing_from_superset",           [
+
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -918,6 +978,9 @@ samples_2017["/DoubleMuon/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
     "HLT_TripleMu_5_3_3_Mass3p8to60_DCA",
     "HLT_ZeroBias_Beamspot",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/MuonEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
@@ -947,6 +1010,9 @@ samples_2017["/MuonEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("missing_from_superset",           [
     "HLT_HcalIsolatedbunch",
     "HLT_L1FatEvents",
+  ]),
+  ("missing_hlt_paths",               [
+    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL",
   ]),
 ])
 
@@ -1005,6 +1071,9 @@ samples_2017["/MuonEG/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
     "HLT_ZeroBias_part6",
     "HLT_ZeroBias_part7",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/MuonEG/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
@@ -1034,6 +1103,9 @@ samples_2017["/MuonEG/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("missing_from_superset",           [
     "HLT_TripleMu_5_3_3_Mass3p8to60_DZ",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/MuonEG/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
@@ -1061,6 +1133,9 @@ samples_2017["/MuonEG/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
     ]
   ),
   ("missing_from_superset",           [
+
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1145,6 +1220,9 @@ samples_2017["/MuonEG/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
     "HLT_TripleMu_5_3_3_Mass3p8to60_DCA",
     "HLT_ZeroBias_Beamspot",
   ]),
+  ("missing_hlt_paths",               [
+
+  ]),
 ])
 
 samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
@@ -1174,6 +1252,9 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1205,6 +1286,9 @@ samples_2017["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall1
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1236,6 +1320,9 @@ samples_2017["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAO
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1267,6 +1354,9 @@ samples_2017["/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1298,6 +1388,9 @@ samples_2017["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1329,6 +1422,9 @@ samples_2017["/TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1360,6 +1456,9 @@ samples_2017["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1391,6 +1490,9 @@ samples_2017["/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunII
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1422,6 +1524,9 @@ samples_2017["/ST_t-channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-ma
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1453,6 +1558,9 @@ samples_2017["/ST_t-channel_top_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspi
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1484,6 +1592,9 @@ samples_2017["/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/Run
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1515,6 +1626,9 @@ samples_2017["/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFa
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1546,6 +1660,9 @@ samples_2017["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1577,6 +1694,9 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1608,6 +1728,9 @@ samples_2017["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1639,6 +1762,9 @@ samples_2017["/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1670,6 +1796,9 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1701,6 +1830,9 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1732,6 +1864,9 @@ samples_2017["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-9
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1763,6 +1898,9 @@ samples_2017["/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1794,6 +1932,9 @@ samples_2017["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAOD-94
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1825,6 +1966,9 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realist
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1856,6 +2000,9 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realist
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1887,6 +2034,9 @@ samples_2017["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17Min
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1918,6 +2068,9 @@ samples_2017["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1949,6 +2102,9 @@ samples_2017["/tZq_ll_4f_ckm_NLO_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIF
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -1980,6 +2136,9 @@ samples_2017["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-94X_
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -2011,6 +2170,9 @@ samples_2017["/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc20
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -2042,6 +2204,9 @@ samples_2017["/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc20
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -2073,6 +2238,9 @@ samples_2017["/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
@@ -2104,6 +2272,9 @@ samples_2017["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
     ]
   ),
   ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
 
   ]),
 ])
