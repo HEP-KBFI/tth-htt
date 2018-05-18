@@ -159,6 +159,14 @@ int main(int argc, char* argv[])
   bool apply_offline_e_trigger_cuts_2mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_2mu");
   bool apply_offline_e_trigger_cuts_1e1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e1mu");
 
+  enum { kOS, kSS };
+  std::string leptonChargeSelection_string = cfg_analyze.getParameter<std::string>("leptonChargeSelection");
+  int leptonChargeSelection = -1;
+  if      ( leptonChargeSelection_string == "OS" ) leptonChargeSelection = kOS;
+  else if ( leptonChargeSelection_string == "SS" ) leptonChargeSelection = kSS;
+  else throw cms::Exception("analyze_2lss")
+    << "Invalid Configuration parameter 'leptonChargeSelection' = " << leptonChargeSelection_string << " !!\n";
+
   enum { kLoose, kFakeable, kTight };
   std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection");
   int leptonSelection = -1;
@@ -203,6 +211,7 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  const bool sync_requireGenMatching = syncNtuple_cfg.getParameter<bool>("requireGenMatching");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
   
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
@@ -952,15 +961,6 @@ int main(int argc, char* argv[])
       std::cout << "evtWeight = " << evtWeight << std::endl;
     }
 
-    if ( !(tightLeptonsFull.size() <= 2) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS tightLeptons selection." << std::endl;
-  printCollection("tightLeptonsFull", tightLeptonsFull);
-      }
-      continue;
-    }
-    cutFlowTable.update("<= 2 tight leptons", evtWeight);
-
     // require that trigger paths match event category (with event category based on fakeableLeptons)
     if ( !((fakeableElectrons.size() >= 2 &&                              (selTrigger_2e    || selTrigger_1e                  )) ||
 	   (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
@@ -1021,15 +1021,6 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
 
-    if ( selHadTaus.size() > 0 ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selHadTaus veto." << std::endl;
-	printCollection("selHadTaus", selHadTaus);
-      }
-      continue;
-    }
-    cutFlowTable.update("sel tau veto", evtWeight);
-
     bool failsLowMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
     lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
@@ -1089,16 +1080,61 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("tight lepton charge", evtWeight);
 
-    if ( !(selLepton_lead->charge()*selLepton_sublead->charge() > 0) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS lepton charge selection." << std::endl;
-	std::cout << " (leading selLepton charge = " << selLepton_lead->charge() 
-		  << ", subleading selLepton charge = " << selLepton_sublead->charge() << ")" << std::endl;
+    const bool isLeptonCharge_SS = selLepton_lead->charge() * selLepton_sublead->charge() > 0;
+    const bool isLeptonCharge_OS = selLepton_lead->charge() * selLepton_sublead->charge() < 0;
+    if(leptonChargeSelection == kOS && isLeptonCharge_SS)
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event FAILS lepton charge selection.\n"
+                     " (leading selLepton charge = " << selLepton_lead->charge()
+                  << ", subleading selLepton charge = " << selLepton_sublead->charge()
+                  << ", leptonChargeSelection = OS)\n"
+        ;
       }
       continue;
     }
-    cutFlowTable.update("lepton-pair SS charge", evtWeight);
-    
+    if(leptonChargeSelection == kSS && isLeptonCharge_OS)
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event FAILS lepton charge selection.\n"
+                     " (leading selLepton charge = " << selLepton_lead->charge()
+                  << ", subleading selLepton charge = " << selLepton_sublead->charge()
+                  << ", leptonChargeSelection = SS)\n"
+        ;
+      }
+      continue;
+    }
+    if(leptonChargeSelection == kOS)
+    {
+      const double prob_chargeMisId_lead = prob_chargeMisId(
+        getLeptonType(selLepton_lead->pdgId()), selLepton_lead->pt(), selLepton_lead->eta()
+      );
+      const double prob_chargeMisId_sublead = prob_chargeMisId(
+        getLeptonType(selLepton_sublead->pdgId()), selLepton_sublead->pt(), selLepton_sublead->eta()
+      );
+      evtWeight *= (prob_chargeMisId_lead + prob_chargeMisId_sublead);
+
+      // Karl: reject the event, if the applied probability of charge misidentification is 0;
+      //       we assume that the event weight was not 0 before including the charge flip weights
+      //       Note that this can happen only if both selected leptons are muons (their misId prob is 0).
+      if(evtWeight == 0.)
+      {
+        if(run_lumi_eventSelector)
+        {
+          std::cout << "event FAILS charge flip selection\n"
+                       "(leading lepton charge (pdgId) = " << selLepton_lead->charge() << " (" << selLepton_lead->pdgId()
+                    << ") => misId prob = " << prob_chargeMisId_lead << "; "
+                       "subleading lepton charge (pdgId) = " << selLepton_sublead->charge() << " (" << selLepton_sublead->pdgId()
+                    << ") => misId prob = " << prob_chargeMisId_sublead << ")\n"
+          ;
+        }
+        continue;
+      }
+    }
+    cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
+
     bool failsZbosonMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
     lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
@@ -1351,7 +1387,14 @@ int main(int argc, char* argv[])
 
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
-      snm->fill();
+      if((sync_requireGenMatching && isGenMatched) || ! sync_requireGenMatching)
+      {
+        snm->fill();
+      }
+      else
+      {
+        snm->reset();
+      }
     }
 
     ++selectedEntries;

@@ -156,6 +156,8 @@ def generate_sbatch_line(
     skipFileSizeCheck = False,
   ):
     if output_file_name and os.path.exists(output_file_name):
+        if not output_file_name.lower().endswith('.root'):
+           return None
         if is_file_ok(output_file_name, min_file_size, skipFileSizeCheck):
           return None
 

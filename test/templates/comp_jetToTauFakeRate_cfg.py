@@ -35,8 +35,8 @@ process.comp_jetToTauFakeRate = cms.PSet(
     processMC = cms.string("TTj"),
     
     hadTauSelections = cms.vstring(
-        #"dR03mvaVLoose", # CV: Loose discriminator applied in denominator; cannot use looser discriminator in numerator
-        #"dR03mvaLoose", # CV: Loose discriminator applied in denominator, so cannot be used in numerator
+        #"dR03mvaVLoose", # CV: VLoose discriminator applied in denominator; so cannot be used in numerator
+        "dR03mvaLoose", # CV: Loose discriminator applied in denominator, so cannot be used in numerator
         "dR03mvaMedium",
         "dR03mvaTight",
         "dR03mvaVTight",
@@ -52,5 +52,7 @@ process.comp_jetToTauFakeRate = cms.PSet(
 
     fitFunction = cms.string("[0] + [1]*x"),
     xMin = cms.double(0.),
-    xMax = cms.double(200.)
+    xMax = cms.double(200.),
+
+    outputFileName = cms.string("plots/comp_jetToTauFakeRate.png")
 )

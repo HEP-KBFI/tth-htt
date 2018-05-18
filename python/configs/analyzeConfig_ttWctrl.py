@@ -280,11 +280,25 @@ class analyzeConfig_ttWctrl(analyzeConfig):
 
                 syncOutput = ''
                 syncTree = ''
+                syncRequireGenMatching = False
                 if self.do_sync:
-                  if lepton_selection != 'Tight' or lepton_charge_selection != 'OS':
+                  if lepton_selection_and_frWeight == 'Tight':
+                    if lepton_charge_selection == 'SS':
+                      syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
+                      syncTree = 'syncTree_%s_SR' % self.channel
+                      self.inputFiles_sync['sync'].append(syncOutput)
+                    elif lepton_charge_selection == 'OS':
+                      syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Flip.root' % self.channel)
+                      syncTree = 'syncTree_%s_Flip' % self.channel
+                      self.inputFiles_sync['sync'].append(syncOutput)
+                    else:
+                      continue
+                    syncRequireGenMatching = True
+                  elif lepton_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and lepton_charge_selection == 'SS':
+                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
+                    syncTree = 'syncTree_%s_Fake' % self.channel
+                  else:
                     continue
-                  syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s.root' % self.channel)
-                  syncTree = 'syncTree_%s' % self.channel
                   self.inputFiles_sync['sync'].append(syncOutput)
 
                 syncRLE = ''
@@ -308,6 +322,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   'syncOutput'               : syncOutput,
                   'syncTree'                 : syncTree,
                   'syncRLE'                  : syncRLE,
+                  'syncRequireGenMatching'   : syncRequireGenMatching,
                   'useNonNominal'            : self.use_nonnominal,
                   'apply_hlt_filter'         : self.hlt_filter,
                 }
