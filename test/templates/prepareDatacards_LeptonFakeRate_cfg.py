@@ -54,4 +54,10 @@ process.prepareDatacards = cms.PSet(
     ),
     apply_automatic_rebinning = cms.bool(True),
     minEvents_automatic_rebinning = cms.double(0.1),
+    quantile_rebinning_in_fakes = cms.bool(False), ## THIS IS NOT APPLICABLE TO LEPTON FR STUDIES
+    nbin_quantile_rebinning = cms.int32(0),
+    explicit_binning = cms.vdouble()
 )
+
+
+

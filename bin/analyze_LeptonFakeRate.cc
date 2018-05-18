@@ -1150,7 +1150,6 @@ main(int argc,
 
 
 // ----- ELECTRON BLOCK ----
-
     for(const hltPath_LeptonFakeRate * const hltPath_iter: triggers_e){ // loop over triggers_e (given in descendng order of thresholds in the config) 
       if(! (hltPath_iter->getValue() >= 1)){ 
         if(run_lumi_eventSelector){
@@ -1225,7 +1224,6 @@ main(int argc,
       
     } // loop over triggers_e ends
     
-
 // ------------------------
 
 
@@ -1305,10 +1303,20 @@ main(int argc,
       const double mT_fix = comp_mT_fix(preselMuon, met.pt(), met.phi());
       
       double evtWeight_LepJetPair = evtWeight; // copying evtWeight
-      numerator_and_denominatorHistManagers * histograms_incl_beforeCuts = nullptr;
-      numerator_and_denominatorHistManagers * histograms_incl_afterCuts  = nullptr;
-      std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_beforeCuts = nullptr;
-      std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_afterCuts  = nullptr;
+
+      // numerator histograms
+      numerator_and_denominatorHistManagers * histograms_incl_beforeCuts_num = nullptr;
+      numerator_and_denominatorHistManagers * histograms_incl_afterCuts_num  = nullptr;
+      std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_beforeCuts_num = nullptr;
+      std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_afterCuts_num  = nullptr;
+      // denominator histograms
+      numerator_and_denominatorHistManagers * histograms_incl_beforeCuts_den = nullptr;
+      numerator_and_denominatorHistManagers * histograms_incl_afterCuts_den  = nullptr;
+      std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_beforeCuts_den = nullptr;
+      std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_afterCuts_den  = nullptr;
+
+
+
       if(preselMuon.isTight())
       {
         // muon enters numerator
@@ -1316,45 +1324,62 @@ main(int argc,
         {
           std::cout << "numerator filled\n";
         }
-        histograms_incl_beforeCuts = histograms_mu_numerator_incl_beforeCuts;
-        histograms_incl_afterCuts  = histograms_mu_numerator_incl_afterCuts;
-        histograms_binned_beforeCuts = &histograms_mu_numerator_binned_beforeCuts;
-        histograms_binned_afterCuts  = &histograms_mu_numerator_binned_afterCuts;
+        histograms_incl_beforeCuts_num = histograms_mu_numerator_incl_beforeCuts;
+        histograms_incl_afterCuts_num  = histograms_mu_numerator_incl_afterCuts;
+        histograms_binned_beforeCuts_num = &histograms_mu_numerator_binned_beforeCuts;
+        histograms_binned_afterCuts_num  = &histograms_mu_numerator_binned_afterCuts;
         if(writeTo_selEventsFileOut)
         {
           *(outputFiles["mu"]["num"]) << eventInfo.str() << '\n' ;
         }
       }
-      // if(preselMuon.isFakeable() && !(preselMuon.isTight())) // Applying (isFakeable && !(isTight)) condition
-      if(preselMuon.isFakeable())         // Applying (isFakeable) condition
+
+      if(histograms_incl_beforeCuts_num != nullptr && histograms_incl_afterCuts_num != nullptr &&
+         histograms_binned_beforeCuts_num != nullptr && histograms_binned_afterCuts_num != nullptr)
+	{
+	  histograms_incl_beforeCuts_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
+	  fillHistograms(*histograms_binned_beforeCuts_num, preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_mu);
+	  
+	  if(mT_fix < 15.)
+	    {
+	      cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV", evtWeight_LepJetPair);
+	      histograms_incl_afterCuts_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
+	      fillHistograms(*histograms_binned_afterCuts_num, preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_mu);
+	    }
+	}
+
+      if(preselMuon.isFakeable() && !(preselMuon.isTight())) // Applying (isFakeable && !(isTight)) condition [TALLINN METHOD]
+      // if(preselMuon.isFakeable())         // Applying (isFakeable) condition [GIOVANNI'S METHOD]
       {
         // muon enters denominator (fakeable)
         if(isDEBUG || run_lumi_eventSelector)
         {
           std::cout << "denominator filled\n";
         }
-        histograms_incl_beforeCuts = histograms_mu_denominator_incl_beforeCuts;
-        histograms_incl_afterCuts  = histograms_mu_denominator_incl_afterCuts;
-        histograms_binned_beforeCuts = &histograms_mu_denominator_binned_beforeCuts;
-        histograms_binned_afterCuts  = &histograms_mu_denominator_binned_afterCuts;
+        histograms_incl_beforeCuts_den = histograms_mu_denominator_incl_beforeCuts;
+        histograms_incl_afterCuts_den  = histograms_mu_denominator_incl_afterCuts;
+        histograms_binned_beforeCuts_den = &histograms_mu_denominator_binned_beforeCuts;
+        histograms_binned_afterCuts_den  = &histograms_mu_denominator_binned_afterCuts;
         if(writeTo_selEventsFileOut)
         {
           *(outputFiles["mu"]["den"]) << eventInfo.str() << '\n';
         }
       }
-      if(histograms_incl_beforeCuts != nullptr && histograms_incl_afterCuts != nullptr &&
-         histograms_binned_beforeCuts != nullptr && histograms_binned_afterCuts != nullptr)
+
+      if(histograms_incl_beforeCuts_den != nullptr && histograms_incl_afterCuts_den != nullptr &&
+         histograms_binned_beforeCuts_den != nullptr && histograms_binned_afterCuts_den != nullptr)
       {
-        histograms_incl_beforeCuts->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
-        fillHistograms(*histograms_binned_beforeCuts, preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_mu);
+        histograms_incl_beforeCuts_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
+        fillHistograms(*histograms_binned_beforeCuts_den, preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_mu);
 
         if(mT_fix < 15.)
         {
           cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV", evtWeight_LepJetPair);
-          histograms_incl_afterCuts->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
-          fillHistograms(*histograms_binned_afterCuts, preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_mu);
+          histograms_incl_afterCuts_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
+          fillHistograms(*histograms_binned_afterCuts_den, preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_mu);
         }
       }
+
     } // loop over preselMuons ends
     
 
@@ -1369,10 +1394,15 @@ main(int argc,
       const double mT_fix = comp_mT_fix(preselElectron, met.pt(), met.phi());
       
       double evtWeight_LepJetPair = evtWeight; // copying evtWeight
-      numerator_and_denominatorHistManagers * histograms_incl_beforeCuts = nullptr;
-      numerator_and_denominatorHistManagers * histograms_incl_afterCuts  = nullptr;
-      std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_beforeCuts = nullptr;
-      std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_afterCuts  = nullptr;
+      numerator_and_denominatorHistManagers * histograms_incl_beforeCuts_num = nullptr;
+      numerator_and_denominatorHistManagers * histograms_incl_afterCuts_num  = nullptr;
+      std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_beforeCuts_num = nullptr;
+      std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_afterCuts_num  = nullptr;
+      numerator_and_denominatorHistManagers * histograms_incl_beforeCuts_den = nullptr;
+      numerator_and_denominatorHistManagers * histograms_incl_afterCuts_den  = nullptr;
+      std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_beforeCuts_den = nullptr;
+      std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_afterCuts_den  = nullptr;
+
 
       if(preselElectron.isTight())
       {
@@ -1381,10 +1411,10 @@ main(int argc,
           std::cout << "numerator filled\n";
         }
         // electron enters numerator
-        histograms_incl_beforeCuts = histograms_e_numerator_incl_beforeCuts;
-        histograms_incl_afterCuts  = histograms_e_numerator_incl_afterCuts;
-        histograms_binned_beforeCuts = &histograms_e_numerator_binned_beforeCuts;
-        histograms_binned_afterCuts  = &histograms_e_numerator_binned_afterCuts;
+        histograms_incl_beforeCuts_num = histograms_e_numerator_incl_beforeCuts;
+        histograms_incl_afterCuts_num  = histograms_e_numerator_incl_afterCuts;
+        histograms_binned_beforeCuts_num = &histograms_e_numerator_binned_beforeCuts;
+        histograms_binned_afterCuts_num  = &histograms_e_numerator_binned_afterCuts;
         if(writeTo_selEventsFileOut)
         {
           *(outputFiles["e"]["num"]) << eventInfo.str() <<  '\n';
@@ -1423,18 +1453,34 @@ main(int argc,
 
         }
       }
-      // if(preselElectron.isFakeable() && !(preselElectron.isTight())) // Applying (isFakeable && !(isTight)) condition
-      if(preselElectron.isFakeable())  // Applying (isFakeable) condition
+
+      if(histograms_incl_beforeCuts_num != nullptr && histograms_incl_afterCuts_num != nullptr &&
+         histograms_binned_beforeCuts_num != nullptr && histograms_binned_afterCuts_num != nullptr)
+      {
+        histograms_incl_beforeCuts_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
+        fillHistograms(*histograms_binned_beforeCuts_num, preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_e);
+
+        if(mT_fix < 15.)
+        {
+          cutFlowTable_e.update("mT_fix(electron, MET) < 15 GeV", evtWeight_LepJetPair);
+          histograms_incl_afterCuts_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
+          fillHistograms(*histograms_binned_afterCuts_num, preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_e);
+        }
+      }
+
+
+      if(preselElectron.isFakeable() && !(preselElectron.isTight())) // Applying (isFakeable && !(isTight)) condition [TALLINN METHOD]
+      // if(preselElectron.isFakeable())  // Applying (isFakeable) condition [GIOVANNI'S METHOD]
       {
         if(isDEBUG || run_lumi_eventSelector)
         {
           std::cout << "denominator filled\n";
         }
         // electron enters denominator (fakeable but not tight)
-        histograms_incl_beforeCuts = histograms_e_denominator_incl_beforeCuts;
-        histograms_incl_afterCuts  = histograms_e_denominator_incl_afterCuts;
-        histograms_binned_beforeCuts = &histograms_e_denominator_binned_beforeCuts;
-        histograms_binned_afterCuts  = &histograms_e_denominator_binned_afterCuts;
+        histograms_incl_beforeCuts_den = histograms_e_denominator_incl_beforeCuts;
+        histograms_incl_afterCuts_den  = histograms_e_denominator_incl_afterCuts;
+        histograms_binned_beforeCuts_den = &histograms_e_denominator_binned_beforeCuts;
+        histograms_binned_afterCuts_den  = &histograms_e_denominator_binned_afterCuts;
         if(writeTo_selEventsFileOut)
         {
           *(outputFiles["e"]["den"]) << eventInfo.str() << '\n';
@@ -1471,19 +1517,21 @@ main(int argc,
 
         }
       }
-      if(histograms_incl_beforeCuts != nullptr && histograms_incl_afterCuts != nullptr &&
-         histograms_binned_beforeCuts != nullptr && histograms_binned_afterCuts != nullptr)
+
+      if(histograms_incl_beforeCuts_den != nullptr && histograms_incl_afterCuts_den != nullptr &&
+         histograms_binned_beforeCuts_den != nullptr && histograms_binned_afterCuts_den != nullptr)
       {
-        histograms_incl_beforeCuts->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
-        fillHistograms(*histograms_binned_beforeCuts, preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_e);
+        histograms_incl_beforeCuts_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
+        fillHistograms(*histograms_binned_beforeCuts_den, preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_e);
 
         if(mT_fix < 15.)
         {
           cutFlowTable_e.update("mT_fix(electron, MET) < 15 GeV", evtWeight_LepJetPair);
-          histograms_incl_afterCuts->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
-          fillHistograms(*histograms_binned_afterCuts, preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_e);
+          histograms_incl_afterCuts_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
+          fillHistograms(*histograms_binned_afterCuts_den, preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_e);
         }
       }
+
     } // loop over preselElectrons ends
     
 // ----- CHRISTIAN'S NEW LOGIC ENDS -----
