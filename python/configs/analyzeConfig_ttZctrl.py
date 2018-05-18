@@ -37,8 +37,8 @@ class analyzeConfig_ttZctrl(analyzeConfig):
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
-               verbose = False, dry_run = False, isDebug = False, use_home = True, do_sync = False,
-               rle_select = '', use_nonnominal = False):
+               verbose = False, hlt_filter = False, dry_run = False, isDebug = False, use_home = True,
+               do_sync = False, rle_select = '', use_nonnominal = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttZctrl", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
@@ -89,6 +89,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     self.select_rle_output = select_rle_output
     self.rle_select = rle_select
     self.use_nonnominal = use_nonnominal
+    self.hlt_filter = hlt_filter
 
   def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_ttZctrl executable (analysis code)
@@ -213,11 +214,16 @@ class analyzeConfig_ttZctrl(analyzeConfig):
               syncOutput = ''
               syncTree = ''
               if self.do_sync:
-                if lepton_selection != 'Tight':
+                if lepton_selection_and_frWeight == 'Tight':
+                  syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
+                  syncTree = 'syncTree_%s_SR' % self.channel
+                  self.inputFiles_sync['sync'].append(syncOutput)
+                elif lepton_selection_and_frWeight == 'Fakeable_wFakeRateWeights':
+                  syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
+                  syncTree = 'syncTree_%s_Fake' % self.channel
+                  self.inputFiles_sync['sync'].append(syncOutput)
+                else:
                   continue
-                syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s.root' % self.channel)
-                syncTree = 'syncTree_%s' % self.channel
-                self.inputFiles_sync['sync'].append(syncOutput)
 
               syncRLE = ''
               if self.do_sync and self.rle_select:
@@ -240,6 +246,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
                 'syncTree'                 : syncTree,
                 'syncRLE'                  : syncRLE,
                 'useNonNominal'            : self.use_nonnominal,
+                'apply_hlt_filter'         : self.hlt_filter,
               }
               self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 

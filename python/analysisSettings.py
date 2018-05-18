@@ -188,6 +188,14 @@ class Triggers(object):
         }
       }
 
+      self.triggers_all = {}
+      for trigger_name in list(set(self.triggers_analysis.keys()) | set(self.triggers_leptonFR.keys())):
+        self.triggers_all[trigger_name] = set()
+        if trigger_name in self.triggers_analysis:
+          self.triggers_all[trigger_name].update(self.triggers_analysis[trigger_name])
+        if trigger_name in self.triggers_leptonFR:
+          self.triggers_all[trigger_name].update(self.triggers_leptonFR[trigger_name])
+
       self.blacklist = {
         'Run2017B' : {
            '1e'    : { 'HLT_Ele32_WPTight_Gsf', 'HLT_Ele8_CaloIdM_TrackIdM_PFJet30', 'HLT_Ele17_CaloIdM_TrackIdM_PFJet30' },

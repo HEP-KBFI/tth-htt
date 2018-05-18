@@ -1222,10 +1222,10 @@ int main(int argc, char* argv[])
 
     bool isSameFlavor_OS = false;
     double massSameFlavor_OS = -1.;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = fakeableLeptons.begin(); //TODO probably use preselected leptons OR use the full collection of fakeable leptons
-	  lepton1 != fakeableLeptons.end(); ++lepton1 ) {
+    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
+    lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-	    lepton2 != fakeableLeptons.end(); ++lepton2 ) {
+      lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
 	if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // pair of same flavor leptons of opposite charge
 	  isSameFlavor_OS = true;
 	  double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
@@ -1245,16 +1245,16 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("Z-boson mass veto", evtWeight);
 
     bool failsHtoZZVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptons.begin();
-	  lepton1 != preselLeptons.end(); ++lepton1 ) {
+    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
+    lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-	    lepton2 != preselLeptons.end(); ++lepton2 ) {
+      lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
 	if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // first pair of same flavor leptons of opposite charge
-	  for ( std::vector<const RecoLepton*>::const_iterator lepton3 = preselLeptons.begin();
-		lepton3 != preselLeptons.end(); ++lepton3 ) {
+    for ( std::vector<const RecoLepton*>::const_iterator lepton3 = preselLeptonsFull.begin();
+    lepton3 != preselLeptonsFull.end(); ++lepton3 ) {
 	    if ( (*lepton3) == (*lepton1) || (*lepton3) == (*lepton2) ) continue;
 	    for ( std::vector<const RecoLepton*>::const_iterator lepton4 = lepton3 + 1;
-		  lepton4 != preselLeptons.end(); ++lepton4 ) {
+      lepton4 != preselLeptonsFull.end(); ++lepton4 ) {
 	      if ( (*lepton4) == (*lepton1) || (*lepton4) == (*lepton2) ) continue;
 	      if ( (*lepton3)->pdgId() == -(*lepton4)->pdgId() ) { // second pair of same flavor leptons of opposite charge
 		double mass = ((*lepton1)->p4() + (*lepton2)->p4() + (*lepton3)->p4() + (*lepton4)->p4()).mass();
@@ -1452,8 +1452,8 @@ int main(int argc, char* argv[])
       const double mT_lep3        = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
       const double mT_lep4        = comp_MT_met_lep4(selLepton_fourth->p4(), met.pt(), met.phi());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
-      const double mbb            = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[0]->p4()).mass() : -1.;
-      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
+      const double mbb            = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
+      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
       const double avg_dr_jet     = comp_avg_dr_jet(selJets);
       const double mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
       const double mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);

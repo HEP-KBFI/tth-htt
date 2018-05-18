@@ -57,7 +57,7 @@ namespace
     std::string name_;
     std::string label_;
   };
-  std::vector<histogramEntryType*> GethistogramsBackground_clone(std::vector<histogramEntryType*>& histogramsBackground){
+  std::vector<histogramEntryType*> getHistogramsBackground_clone(std::vector<histogramEntryType*>& histogramsBackground){
     std::vector<histogramEntryType*> histogramsBackground_clone;
     for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground.begin();
           histogramBackground_entry != histogramsBackground.end(); ++histogramBackground_entry ) {
@@ -69,7 +69,7 @@ namespace
     return histogramsBackground_clone ;
   }
 
-  std::vector<histogramEntryType*> GethistogramsBackground_rebin(std::vector<histogramEntryType*>& histogramsBackground, int rebin){
+  std::vector<histogramEntryType*> getHistogramsBackground_rebin(std::vector<histogramEntryType*>& histogramsBackground, int rebin){
     std::vector<histogramEntryType*> histogramsBackground_rebin;
     for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground.begin();
           histogramBackground_entry != histogramsBackground.end(); ++histogramBackground_entry ) {
@@ -809,7 +809,7 @@ int main(int argc, char* argv[])
 	if   ( !histogramBackgroundSum ) histogramBackgroundSum = (TH1*)histogramBackground->Clone(Form("%s_BackgroundSum", (*category)->name_.data()));
 	else                             histogramBackgroundSum->Add(histogramBackground);
       }
-      
+
       TH1* histogramSignal = histogramManager.getHistogramPrefit(processSignal, true);
 
       std::vector<pdouble> keepBlinded =GetBlindedRanges(histogramData, histogramsBackground, histogramSignal);
@@ -829,27 +829,40 @@ int main(int argc, char* argv[])
 
       std::string histogramNameData_rebinned = Form("%s_rebinned", histogramData->GetName());
       TH1* histogramData_rebinned = (TH1*)histogramData->Clone(histogramNameData_rebinned.data());
-      std::vector<histogramEntryType*> histogramsBackground_rebinned = GethistogramsBackground_clone(histogramsBackground);
+      std::vector<histogramEntryType*> histogramsBackground_rebinned = getHistogramsBackground_clone(histogramsBackground);
       std::string histogramNameSignal_rebinned = Form("%s_rebinned_fixed", histogramSignal->GetName()); 
       TH1* histogramSignal_rebinned = (TH1*)histogramSignal->Clone(histogramNameSignal_rebinned.data());
       std::string histogramNameBackgroundSum_rebinned = Form("%s_rebinned",histogramBackgroundSum->GetName());
       TH1* histogramBackgroundSum_rebinned = (TH1*)histogramBackgroundSum->Clone(histogramNameBackgroundSum_rebinned.data());
       TH1* histogramData_blinded_rebinned = 0;
       TH1* histogramUncertainty_rebinned = 0;
-      if (applyRebinning){
-	if ( apply_fixed_rebinning > 1 ) {
+
+      if ( applyRebinning ) {
+	if ( apply_fixed_rebinning > 1 && !apply_automatic_rebinning) {
 	  TArrayD histogramBinning_output = getBinning(histogramData_rebinned);
 	  int numBins_output = histogramBinning_output.GetSize() - 1;
-	  if (numBins_output < 10)continue;
-	  if (numBins_output <= 20) apply_fixed_rebinning = 2;
-	  else if(numBins_output <= 40) apply_fixed_rebinning = 2;
-	  else apply_fixed_rebinning = 4;
+	  if ( numBins_output < 10 ) {
+	    continue;
+	  } else if ( numBins_output <= 20 ) {
+	    if ( (numBins_output % 2) == 0 ) apply_fixed_rebinning = 2;
+	    else continue;
+	  } else if ( numBins_output <= 40 ) {
+	    if ( (numBins_output % 3) == 0) apply_fixed_rebinning = 3;
+	    if ( (numBins_output % 2) == 0) apply_fixed_rebinning = 2;
+	    else continue;
+	  } else {
+	    if ( (numBins_output % 5) == 0) apply_fixed_rebinning = 5;
+	    if ( (numBins_output % 4) == 0) apply_fixed_rebinning = 4;
+	    if ( (numBins_output % 3) == 0) apply_fixed_rebinning = 3;
+	    if ( (numBins_output % 2) == 0) apply_fixed_rebinning = 2;
+	    else continue;
+	  }
 	  histogramData_rebinned->Rebin(apply_fixed_rebinning);
 	  histogramSignal_rebinned->Rebin(apply_fixed_rebinning);
-	  GethistogramsBackground_rebin(histogramsBackground_rebinned, apply_fixed_rebinning);
+	  getHistogramsBackground_rebin(histogramsBackground_rebinned, apply_fixed_rebinning);
 	  histogramBackgroundSum_rebinned->Rebin(apply_fixed_rebinning); 
 	}
-	
+
 	TH1* histogramData_tmp = 0;
 	std::vector<histogramEntryType*>histogramsBackground_tmp;
 	TH1* histogramSignal_tmp = 0;
@@ -857,7 +870,8 @@ int main(int argc, char* argv[])
 	  TArrayD histogramBinning = getRebinnedBinning(histogramBackgroundSum_rebinned, minEvents_automatic_rebinning);
 	  histogramData_tmp = getRebinnedHistogram1d(histogramData_rebinned, 4, histogramBinning);
 	  histogramSignal_tmp = getRebinnedHistogram1d(histogramSignal_rebinned, 4, histogramBinning);
-	  for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground_rebinned.begin(); histogramBackground_entry != histogramsBackground_rebinned.end(); ++histogramBackground_entry ) {
+	  for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground_rebinned.begin(); 
+		histogramBackground_entry != histogramsBackground_rebinned.end(); ++histogramBackground_entry ) {
 	    TH1* histogramBackground = (*histogramBackground_entry)->histogram_;
 	    const std::string& process = (*histogramBackground_entry)->process_;
 	    TH1* histogramBackground_tmp = getRebinnedHistogram1d(histogramBackground, 4, histogramBinning);
@@ -867,7 +881,7 @@ int main(int argc, char* argv[])
 	  histogramsBackground_rebinned = histogramsBackground_tmp;
 	  histogramSignal_rebinned = histogramSignal_tmp;
 	}
-	
+
 	std::vector<pdouble> keepBlinded =GetBlindedRanges(histogramData_rebinned, histogramsBackground_rebinned, histogramSignal_rebinned);
 	if ( processData != "" ) {
 	  if ( keepBlinded.size() >= 1 && applyAutoBlinding) histogramData_blinded_rebinned = blindHistogram(histogramData_rebinned, keepBlinded);
@@ -878,7 +892,7 @@ int main(int argc, char* argv[])
 	  histogramUncertainty_rebinned = histogramManager.getHistogramUncertainty();
 	}
       }
-   
+
       vstring extraLabels;
       if ( (*category)->label_ != "" ) extraLabels.push_back((*category)->label_);
       double extraLabelsSizeX = 0.12;

@@ -38,7 +38,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit,
                triggers = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
                select_rle_output = False, executable_prep_dcard = "prepareDatacards",
-               executable_add_syst_dcard = "addSystDatacards", verbose = False,
+               executable_add_syst_dcard = "addSystDatacards", verbose = False, hlt_filter = False,
                dry_run = False, isDebug = False, use_home = True, do_sync = False,
                use_nonnominal = False, rle_select = ''):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttWctrl", central_or_shifts,
@@ -97,6 +97,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     self.select_rle_output = select_rle_output
     self.use_nonnominal = use_nonnominal
     self.rle_select = rle_select
+    self.hlt_filter = hlt_filter
 
   def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_ttWctrl executable (analysis code)
@@ -280,11 +281,23 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                 syncOutput = ''
                 syncTree = ''
                 if self.do_sync:
-                  if lepton_selection != 'Tight' or lepton_charge_selection != 'OS':
+                  if lepton_selection_and_frWeight == 'Tight':
+                    if lepton_charge_selection == 'SS':
+                      syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
+                      syncTree = 'syncTree_%s_SR' % self.channel
+                      self.inputFiles_sync['sync'].append(syncOutput)
+                    elif lepton_charge_selection == 'OS':
+                      syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Flip.root' % self.channel)
+                      syncTree = 'syncTree_%s_Flip' % self.channel
+                      self.inputFiles_sync['sync'].append(syncOutput)
+                    else:
+                      continue
+                  elif lepton_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and lepton_charge_selection == 'SS':
+                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
+                    syncTree = 'syncTree_%s_Fake' % self.channel
+                    self.inputFiles_sync['sync'].append(syncOutput)
+                  else:
                     continue
-                  syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s.root' % self.channel)
-                  syncTree = 'syncTree_%s' % self.channel
-                  self.inputFiles_sync['sync'].append(syncOutput)
 
                 syncRLE = ''
                 if self.do_sync and self.rle_select:
@@ -308,6 +321,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   'syncTree'                 : syncTree,
                   'syncRLE'                  : syncRLE,
                   'useNonNominal'            : self.use_nonnominal,
+                  'apply_hlt_filter'         : self.hlt_filter,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 

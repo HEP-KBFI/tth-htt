@@ -426,7 +426,7 @@ main(int argc,
   const bool redoGenMatching      = cfg_analyze.getParameter<bool>("redoGenMatching");
   const bool readGenObjects       = isMC && ! redoGenMatching;
   const bool isDEBUG              = cfg_analyze.getParameter<bool>("isDEBUG");
-  const bool applyMEtFilters      = cfg_analyze.getParameter<bool>("applyMETFilters");
+  const bool apply_met_filters    = cfg_analyze.getParameter<bool>("apply_met_filters");
   
 
   const vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
@@ -809,7 +809,7 @@ main(int argc,
 
   cutFlowTableType cutFlowTable_e(isDEBUG);
   initializeCutFlowTable(cutFlowTable_e, ">= 1 presel/Loose electron");
-  if(applyMEtFilters){ initializeCutFlowTable(cutFlowTable_e, "MEt filter"); }
+  if(apply_met_filters){ initializeCutFlowTable(cutFlowTable_e, "MEt filter"); }
   initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger bit");
   initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger bit && prescale");
   initializeCutFlowTable(cutFlowTable_e, histograms_e_numerator_binned_beforeCuts);
@@ -820,7 +820,7 @@ main(int argc,
 
   cutFlowTableType cutFlowTable_mu(isDEBUG);
   initializeCutFlowTable(cutFlowTable_mu, ">= 1 presel/Loose muon");
-  if(applyMEtFilters){ initializeCutFlowTable(cutFlowTable_mu, "MEt filter"); }
+  if(apply_met_filters){ initializeCutFlowTable(cutFlowTable_mu, "MEt filter"); }
   initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger bit");
   initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger bit && prescale");
   initializeCutFlowTable(cutFlowTable_mu, histograms_mu_numerator_binned_beforeCuts);
@@ -1028,7 +1028,7 @@ main(int argc,
     if(preselElectrons.size() >= 1) cutFlowTable_e.update (">= 1 presel/Loose electron", evtWeight);
     if(preselMuons.size()     >= 1) cutFlowTable_mu.update(">= 1 presel/Loose muon",     evtWeight);
   
-    if(applyMEtFilters)
+    if(apply_met_filters)
       {
         metFilterHistManager->fillHistograms(metFilter, evtWeight);
         if(! metFilterSelector(metFilter))

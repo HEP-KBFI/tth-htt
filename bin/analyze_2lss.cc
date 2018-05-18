@@ -728,7 +728,7 @@ int main(int argc, char* argv[])
     "<= 2 tight leptons",
     "fakeable lepton trigger match",
     "HLT filter matching",
-    ">= 3 jets",
+    ">= 4 jets",
     ">= 2 loose b-jets || 1 medium b-jet (2)",
     "sel tau veto",
     "m(ll) > 12 GeV",
@@ -957,7 +957,7 @@ int main(int argc, char* argv[])
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableLeptons);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -1042,7 +1042,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
-    if ( !(selJets.size() >= 4) ) {
+    if ( !(selJets.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection (1)." << std::endl;
 	printCollection("selJets", selJets);
@@ -1248,15 +1248,15 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("HLT filter matching", evtWeight);
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
-    if ( !(selJets.size() >= 3) ) {
+    if ( !(selJets.size() >= 4) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection (2)." << std::endl;
 	printCollection("selJets", selJets);
       }
       continue;
     }
-    cutFlowTable.update(">= 3 jets", evtWeight);
-    cutFlowHistManager->fillHistograms(">= 3 jets", evtWeight);
+    cutFlowTable.update(">= 4 jets", evtWeight);
+    cutFlowHistManager->fillHistograms(">= 4 jets", evtWeight);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection (2)." << std::endl;
@@ -1386,10 +1386,10 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("sel lepton-pair OS/SS charge", evtWeight);
 
     bool failsZbosonMassVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = fakeableLeptons.begin(); //TODO probably use preselected leptons OR use the full collection of fakeable leptons
-          lepton1 != fakeableLeptons.end(); ++lepton1 ) {
+    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
+          lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-            lepton2 != fakeableLeptons.end(); ++lepton2 ) {
+            lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
         double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
         if ( (*lepton1)->is_electron() && (*lepton2)->is_electron() && std::fabs(mass - z_mass) < z_window ) {
           failsZbosonMassVeto = true;
@@ -1806,8 +1806,8 @@ int main(int argc, char* argv[])
       const double mT_lep1        = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
       const double mT_lep2        = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
-      const double mbb            = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[0]->p4()).mass() : -1.;
-      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
+      const double mbb            = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
+      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
       const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
       const double dr_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
       const double max_lep_eta    = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());

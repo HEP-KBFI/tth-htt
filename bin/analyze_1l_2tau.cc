@@ -2009,8 +2009,8 @@ int main(int argc, char* argv[])
       ;
 
       const double max_dr_jet      = comp_max_dr_jet(selJets);
-      const double mbb             = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[0]->p4()).mass() : -1.;
-      const double mbb_loose       = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
+      const double mbb             = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
+      const double mbb_loose       = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
       const double avr_dr_lep_tau  = (dr_lep_tau_lead + dr_lep_tau_sublead) / 2;
       const double max_dr_lep_tau  = std::max(dr_lep_tau_lead, dr_lep_tau_sublead);
       const double min_dr_tau_jet  = std::min(mindr_tau1_jet, mindr_tau2_jet);

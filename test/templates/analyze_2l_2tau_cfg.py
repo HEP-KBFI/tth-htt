@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
-
 import os
+
+from tthAnalysis.HiggsToTauTau.recommendedMEtFilters_cfi import recommendedMEtFilters
 
 process = cms.PSet()
 
@@ -85,7 +86,8 @@ process.analyze_2l_2tau = cms.PSet(
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False),
     apply_hlt_filter = cms.bool(False),
-    apply_met_filters = cms.bool(False),
+    apply_met_filters = cms.bool(True),
+    cfgMEtFilter = recommendedMEtFilters,
     apply_hadTauFakeRateSF = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),

@@ -1279,6 +1279,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     preselHistManager->BJets_loose_->fillHistograms(selBJets_loose, 1.);
     preselHistManager->BJets_medium_->fillHistograms(selBJets_medium, 1.);
     preselHistManager->met_->fillHistograms(met, mht_p4, met_LD, 1.);
+    preselHistManager->metFilters_->fillHistograms(metFilters, 1.);
     preselHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
@@ -1508,7 +1509,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowTable.update(">= 1 sel tau (2)", evtWeight);
     cutFlowHistManager->fillHistograms(">= 1 sel tau (2)", evtWeight);
 
-    // veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
+    // veto events containing more than one tau passing the Medium WP, to avoid overlap with the 2l+2tau category
+    // we want to keep all cuts consistent in SR and fake CR, to obtain a consistent estimate of the fake background
     if ( !(vetoHadTaus.size() <= 1) ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS vetoHadTaus selection." << std::endl;
@@ -1664,10 +1666,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
 
     bool failsZbosonMassVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = fakeableLeptons.begin(); //TODO probably use preselected leptons OR use the full collection of fakeable leptons
-          lepton1 != fakeableLeptons.end(); ++lepton1 ) {
+    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
+          lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-            lepton2 != fakeableLeptons.end(); ++lepton2 ) {
+            lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
         double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
         if ( (*lepton1)->is_electron() && (*lepton2)->is_electron() && std::fabs(mass - z_mass) < z_window ) {
           failsZbosonMassVeto = true;
@@ -2007,6 +2009,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     selHistManager->subleadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
     selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
+    selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputs_2lss, evtWeight);
     selHistManager->evt_->fillHistograms(
       selElectrons.size(),
@@ -2190,7 +2193,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       const double dr_lep1_tau1   = deltaR(selLepton_lead->p4(), selHadTau->p4());
       const double dr_lep2_tau1   = deltaR(selLepton_sublead->p4(), selHadTau->p4());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
-      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
+      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
       const double avr_dr_lep_tau = (dr_lep1_tau1 + dr_lep2_tau1) / 2;
       const double max_dr_lep_tau = std::max(dr_lep2_tau1, dr_lep1_tau1);
       const double min_dr_lep_tau = std::min(dr_lep2_tau1, dr_lep1_tau1);

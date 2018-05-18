@@ -295,7 +295,8 @@ HistogramManager::update()
       const std::string sysShiftUp   = Form("%sUp", sysShift.data());
       const std::string sysShiftDown = Form("%sDown", sysShift.data());
 
-      if(histograms_sysShifts_.at(process).count(sysShiftUp) &&
+      if(histograms_sysShifts_.find(process) != histograms_sysShifts_.end() &&
+	 histograms_sysShifts_.at(process).count(sysShiftUp) &&
          histograms_sysShifts_.at(process).count(sysShiftDown))
       {
         const double sysShift_value = shapeValues_and_Uncertainties_[sysShift].value_;

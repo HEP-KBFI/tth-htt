@@ -1096,10 +1096,10 @@ int main(int argc, char* argv[])
 
     double mLL = -1.;
     const RecoLepton* selLepton_extra = 0;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = selLeptons.begin();
-	  lepton1 != selLeptons.end(); ++lepton1 ) {
+    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptons.begin();
+    lepton1 != preselLeptons.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-	    lepton2 != selLeptons.end(); ++lepton2 ) {
+      lepton2 != preselLeptons.end(); ++lepton2 ) {
 	if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // lepton pair of same flavor and opposite charge
 	  double m12 = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
 	  if ( std::fabs(m12 - z_mass) < std::fabs(mLL - z_mass) ) {

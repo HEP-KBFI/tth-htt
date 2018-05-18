@@ -32,7 +32,7 @@ class syncNtupleConfig:
 
   def __init__(self, config_dir, output_dir, output_filename, version, era, channels, dry_run,
                resubmission_limit, disable_resubmission, check_input_files, isDebug, rle_select,
-               no_mem, use_nonnominal, tau_id_wp, use_home):
+               no_mem, use_nonnominal, hlt_filter, tau_id_wp, use_home):
 
     self.dry_run           = dry_run
     self.check_input_files = check_input_files
@@ -66,6 +66,8 @@ class syncNtupleConfig:
       additional_args += " -O"
     if use_home:
       additional_args += " -y"
+    if hlt_filter:
+      additional_args += " -H"
 
     inclusive_args = '-v %s -e %s' % (version, era)
     if no_mem:

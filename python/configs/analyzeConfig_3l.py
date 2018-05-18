@@ -123,11 +123,7 @@ class analyzeConfig_3l(analyzeConfig):
     """
     lepton_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
     jobOptions['histogramDir'] = getHistogramDir(jobOptions['leptonSelection'], lepton_frWeight, jobOptions['chargeSumSelection'])
-
-    additionalJobOptions = [
-      'branchName_memOutput',
-    ]
-    lines = super(analyzeConfig_3l, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
+    lines = super(analyzeConfig_3l, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):
