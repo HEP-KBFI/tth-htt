@@ -60,9 +60,9 @@ def PrintMuToText(mlf, tree_name):
      nev = tree.GetEntries()
      for iev in range(0,nev):
        tree.GetEntry(iev)
-       mu_value = tree.mu
-       mu_low_err = tree.muLoErr
-       mu_high_err = tree.muHiErr
+       mu_value = tree.r         ## in CMSSW_7_4_7 the branch name was tree.mu
+       mu_low_err = tree.rLoErr  ## in CMSSW_7_4_7 the branch name was tree.muLoErr
+       mu_high_err = tree.rHiErr ## in CMSSW_7_4_7 the branch name was tree.muHiErr
        print r'r: %.2f + %.2f - %.2f' % (mu_value, mu_high_err, mu_low_err)
 
 
