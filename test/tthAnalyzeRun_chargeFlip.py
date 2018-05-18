@@ -13,7 +13,7 @@ sys_choices      = [ 'central', 'full' ]
 systematics.full = systematics.an_chargeFlip_e
 
 parser = tthAnalyzeParser()
-parser.add_sys(sys_choices)
+parser.add_sys(sys_choices, default_choice = 'full')
 parser.add_files_per_job()
 parser.add_use_home()
 args = parser.parse_args()
