@@ -211,6 +211,7 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  const bool sync_requireGenMatching = syncNtuple_cfg.getParameter<bool>("requireGenMatching");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
   
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
@@ -1386,7 +1387,14 @@ int main(int argc, char* argv[])
 
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
-      snm->fill();
+      if((sync_requireGenMatching && isGenMatched) || ! sync_requireGenMatching)
+      {
+        snm->fill();
+      }
+      else
+      {
+        snm->reset();
+      }
     }
 
     ++selectedEntries;
