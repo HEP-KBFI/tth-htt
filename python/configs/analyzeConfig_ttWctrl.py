@@ -286,11 +286,9 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                     if lepton_charge_selection == 'SS':
                       syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
                       syncTree = 'syncTree_%s_SR' % self.channel
-                      self.inputFiles_sync['sync'].append(syncOutput)
                     elif lepton_charge_selection == 'OS':
                       syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Flip.root' % self.channel)
                       syncTree = 'syncTree_%s_Flip' % self.channel
-                      self.inputFiles_sync['sync'].append(syncOutput)
                     else:
                       continue
                     syncRequireGenMatching = True
