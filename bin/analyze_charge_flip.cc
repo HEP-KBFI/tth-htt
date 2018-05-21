@@ -802,7 +802,7 @@ int main(int argc, char* argv[])
 	  evtHistManager_DY_genCategory->fillHistograms(genElectron_sublead_p4, genElectron_lead_p4, m_ee, isCharge_SS, evtWeight);
 	}
 	evtHistManager_DY_recCategory->fillHistograms(selElectron_lead_p4, selElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
-
+ 
 	if ( central_or_shift == "central" ) {
 	  TH1* histogram_gen = 0;
 	  if      ( isCharge_SS ) histogram_gen = histogram_gen_SS;
@@ -831,6 +831,9 @@ int main(int argc, char* argv[])
 	  if      ( isCharge_SS ) histogram_idxBin_pT_and_eta_rec_vs_gen_SS->Fill(idxBin_sublead_gen, idxBin_sublead_rec, evtWeight);
 	  else if ( isCharge_OS ) histogram_idxBin_pT_and_eta_rec_vs_gen_OS->Fill(idxBin_sublead_gen, idxBin_sublead_rec, evtWeight);
 	}
+      } else {
+	// DY_fake
+	evtHistManager_DY_fake->fillHistograms(selElectron_lead_p4, selElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
       }
     }
 

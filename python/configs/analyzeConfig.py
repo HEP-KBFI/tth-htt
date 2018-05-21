@@ -308,9 +308,9 @@ class analyzeConfig(object):
 
         if self.do_sync:
             lines.extend([
-                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree',         jobOptions['syncTree'],   len = max_option_len),
-                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.output',       jobOptions['syncOutput'], len = max_option_len),
-                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'selEventsFileName_input', jobOptions['syncRLE'],    len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree', jobOptions['syncTree'], len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.output', os.path.basename(jobOptions['syncOutput']), len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'selEventsFileName_input', jobOptions['syncRLE'], len = max_option_len),
             ])
             if 'syncRequireGenMatching' in jobOptions:
                 lines.append(

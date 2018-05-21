@@ -128,13 +128,16 @@ struct fitFunction_and_legendEntry
   std::string legendEntry_;
 };
 
-void makeControlPlot(TGraphAsymmErrors* graph_data, const std::string& legendEntry_data,
-		     TGraphAsymmErrors* graph_mc, const std::string& legendEntry_mc,
-		     TGraphAsymmErrors* graph_data_div_mc, 
-		     double xMin, double xMax, const std::string& xAxisTitle, 
-		     bool useLogScale, double yMin, double yMax, 
-		     const std::string& outputFileName)
+void makeControlPlot_graphs(TGraphAsymmErrors* graph_data, const std::string& legendEntry_data,
+			    TGraphAsymmErrors* graph_mc, const std::string& legendEntry_mc,
+			    TGraphAsymmErrors* graph_data_div_mc, 
+			    double xMin, double xMax, const std::string& xAxisTitle, 
+			    bool useLogScale, double yMin, double yMax, 
+			    const std::string& outputFileName)
 {
+  std::cout << "<makeControlPlot_graphs>:" << std::endl;
+  std::cout << " outputFileName = " << outputFileName << std::endl;
+
   TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 900);
   canvas->SetFillColor(10);
   canvas->SetBorderSize(2);
@@ -231,10 +234,18 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, const std::string& legendEnt
   dummyHistogram_bottom->SetTitle("");
   dummyHistogram_bottom->SetStats(false);
   dummyHistogram_bottom->Draw();
-
-  graph_data_div_mc->SetMarkerStyle(20);
-  graph_data_div_mc->SetMarkerColor(1);
-  graph_data_div_mc->Draw("p");
+  
+  std::string graphName_data_div_mc_cloned = Form("%s_cloned", graph_data_div_mc->GetName());
+  TGraphAsymmErrors* graph_data_div_mc_cloned = (TGraphAsymmErrors*)graph_data_div_mc->Clone(graphName_data_div_mc_cloned.data());
+  int numPoints = graph_data_div_mc_cloned->GetN();
+  for ( int idxPoint = 0; idxPoint < numPoints; ++idxPoint ) {
+    double x, y;
+    graph_data_div_mc->GetPoint(idxPoint, x, y);
+    graph_data_div_mc_cloned->SetPoint(idxPoint, x, y - 1.);
+  }
+  graph_data_div_mc_cloned->SetMarkerStyle(20);
+  graph_data_div_mc_cloned->SetMarkerColor(1);
+  graph_data_div_mc_cloned->Draw("p");
   
   canvas->Update();
   size_t idx = outputFileName.find_last_of('.');
@@ -250,6 +261,7 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, const std::string& legendEnt
   delete dummyHistogram_top;
   delete topPad;
   delete dummyHistogram_bottom;
+  delete graph_data_div_mc_cloned;		   
   delete canvas;
 }
 
@@ -259,6 +271,9 @@ void makeControlPlot_fit(TGraphAsymmErrors* graph,
 			 bool useLogScale, double yMin, double yMax, 
 			 const std::string& outputFileName)
 {
+  std::cout << "<makeControlPlot_fit>:" << std::endl;
+  std::cout << " outputFileName = " << outputFileName << std::endl;
+
   if ( fitFunctions_sysShifts.size() > 6 )
     throw cms::Exception("makeControlPlot") 
       << "Fit functions with more than 3 parameters are not supported yet !!\n";
@@ -297,7 +312,7 @@ void makeControlPlot_fit(TGraphAsymmErrors* graph,
   xAxis_top->SetTitleColor(10);
 
   TAxis* yAxis_top = dummyHistogram_top->GetYaxis();
-  yAxis_top->SetTitle("#frac{f_{#tau}^{data} - f_{#tau}^{mc}}{f_{#tau}^{mc}}");
+  yAxis_top->SetTitle("#frac{f_{#tau}^{data}}{f_{#tau}^{mc}}");
   yAxis_top->SetTitleSize(0.050);
   yAxis_top->SetTitleOffset(1.15);
 
@@ -360,7 +375,7 @@ void makeControlPlot_fit(TGraphAsymmErrors* graph,
   xAxis_bottom->SetTickLength(0.055);
 
   TAxis* yAxis_bottom = dummyHistogram_bottom->GetYaxis();
-  yAxis_bottom->SetTitle("#frac{f_{#tau}^{data} - f_{#tau}^{mc}}{f_{#tau}^{mc}} - Fit");
+  yAxis_bottom->SetTitle("#frac{f_{#tau}^{data}}{f_{#tau}^{mc}} - Fit");
   yAxis_bottom->SetTitleOffset(0.75);
   yAxis_bottom->SetNdivisions(505);
   yAxis_bottom->CenterTitle();
@@ -699,6 +714,8 @@ int main(int argc, char* argv[])
   double xMax = cfg_comp.getParameter<double>("xMax");
   std::cout << "xMin = " << xMin << ", xMax = " << xMax << std::endl;
 
+  std::string outputFileName = cfg_comp.getParameter<std::string>("outputFileName"); // for control plots
+
   fwlite::InputSource inputFiles(cfg); 
   if ( !(inputFiles.files().size() == 1) )
     throw cms::Exception("comp_jetToTauFakeRate") 
@@ -787,13 +804,13 @@ int main(int argc, char* argv[])
 
 	graph_data_div_mc_jetToTauFakeRate->Write();
 
-	std::string controlPlotFileName_suffix = Form("_%s_%s_%s.png", hadTauSelection->data(), etaBin.data(), histogramToFit->data());
-	controlPlotFileName_suffix = TString(controlPlotFileName_suffix.data()).ReplaceAll("/", "_").Data();
-	std::string controlPlotFileName = TString(outputFile.file().data()).ReplaceAll(".root", controlPlotFileName_suffix.data()).Data();
-	makeControlPlot(graph_data_jetToTauFakeRate, "Data",
-			graph_mc_jetToTauFakeRate, "MC",
-			graph_data_div_mc_jetToTauFakeRate, 
-			xMin, xMax, "p_{T} [GeV]", true, 1.e-2, 1.e0, controlPlotFileName);
+	std::string outputFileName_graphs = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
+	outputFileName_graphs.append(TString(Form("_%s_%s_%s.png", hadTauSelection->data(), etaBin.data(), histogramToFit->data())).ReplaceAll("/", "_").Data());
+	makeControlPlot_graphs(
+          graph_data_jetToTauFakeRate, "Data",
+	  graph_mc_jetToTauFakeRate, "MC",
+	  graph_data_div_mc_jetToTauFakeRate, 
+	  xMin, xMax, "p_{T} [GeV]", true, 1.e-2, 4.9e0, outputFileName_graphs);
 
 	std::string fitFunctionName = Form("fitFunction_data_div_mc_%s", TString(histogramToFit->data()).ReplaceAll("/", "_").Data());
 	double x0 = 0.5*(histogram_data_loose->GetMean() + histogram_mc_loose->GetMean());
@@ -852,11 +869,12 @@ int main(int argc, char* argv[])
 	  fitFunction = new TF1(fitFunctionName.data(), "1.0", xMin, xMax);
 	  fitFunction->Write();
 	}
-	std::string controlPlotFileName_fit_suffix = Form("_%s_%s_%s_fit.png", hadTauSelection->data(), etaBin.data(), histogramToFit->data());
-	controlPlotFileName_fit_suffix = TString(controlPlotFileName_fit_suffix.data()).ReplaceAll("/", "_").Data();
-	std::string controlPlotFileName_fit = TString(outputFile.file().data()).ReplaceAll(".root", controlPlotFileName_fit_suffix.data()).Data();
-	makeControlPlot_fit(graph_data_div_mc_jetToTauFakeRate, 
-			    fitFunction, fitFunctions_sysShifts, xMin, xMax, "p_{T} [GeV]", false, -1.5, +1.5, controlPlotFileName_fit);
+
+	std::string outputFileName_fit = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
+	outputFileName_fit.append(TString(Form("_%s_%s_%s_fit.png", hadTauSelection->data(), etaBin.data(), histogramToFit->data())).ReplaceAll("/", "_").Data());
+	makeControlPlot_fit(
+          graph_data_div_mc_jetToTauFakeRate, 
+	  fitFunction, fitFunctions_sysShifts, xMin, xMax, "p_{T} [GeV]", false, 0., 2., outputFileName_fit);
       }
     }
   }

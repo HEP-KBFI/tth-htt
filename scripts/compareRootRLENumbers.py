@@ -275,6 +275,7 @@ for group_idx in range(len(file_handles)):
       rle_sets[group_idx] = collections.OrderedDict()
     rle_sets[group_idx][tree] = rles
 
+cross_rles = {}
 for group_idx, tree_rles in rle_sets.items():
   current_name = get_names(names, [ group_idx ])
   header = current_name + \
@@ -284,10 +285,16 @@ for group_idx, tree_rles in rle_sets.items():
     ))
   table = prettytable.PrettyTable(header)
   all_rows = [ header ]
-  for tree, rles_row in tree_rles.items():
-    row = [ tree.replace(tree_prefix, '') if tree_prefix else tree ]
-    for rles_col in tree_rles.values():
-      row.append(len(rles_row & rles_col))
+  if current_name[0] not in cross_rles:
+    cross_rles[current_name[0]] = {}
+  for tree_row, rles_row in tree_rles.items():
+    row = [ tree_row.replace(tree_prefix, '') if tree_prefix else tree_row ]
+    for tree_col, rles_col in tree_rles.items():
+      rles_row_col = rles_row & rles_col
+      tree_row_col = '_'.join(sorted([tree_row, tree_col]))
+      if tree_row_col not in cross_rles[current_name[0]]:
+        cross_rles[current_name[0]][tree_row_col] = rles_row_col
+      row.append(len(rles_row_col))
     table.add_row(row)
     all_rows.append(row)
 
@@ -296,6 +303,14 @@ for group_idx, tree_rles in rle_sets.items():
     table_fn_csv = os.path.join(output_dir, 'cross_%s.csv' % current_name[0])
     write_table_file(table, table_fn_txt, False)
     write_table_file(all_rows, table_fn_csv, True)
+
+for group_name, group_entry in cross_rles.items():
+  for cross_tree, cross_rle in group_entry.items():
+    cross_filename = os.path.join(output_dir, 'cross_rle_%s_%s.txt' % (group_name, cross_tree))
+    with open(cross_filename, 'w') as cross_file:
+      cross_file.write('\n'.join(cross_rle))
+      if cross_rle:
+        cross_file.write('\n')
 
 idx_pairs = get_idx_combinations(list(rle_sets.keys()), 2, 3)
 for idx_pair in idx_pairs:
