@@ -158,7 +158,7 @@ for basedir_idx, basedir in enumerate(basedirs):
         if weight.id not in weight_map:
           weight_map[weight.id] = []
         if weight.wgt < 0.:
-          logging.warning('Found a negative weight: %.6f' % weight.wgt)
+          logging.warning('Found a negative weight in %s: %.6f' % (weight.id, weight.wgt))
         weight_map[weight.id].append(weight.wgt)
 
   logging.info('Found %d LHE weights:' % len(weight_map))
