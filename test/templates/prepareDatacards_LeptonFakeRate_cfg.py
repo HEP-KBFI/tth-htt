@@ -52,7 +52,7 @@ process.prepareDatacards = cms.PSet(
       "CMS_ttHl_UnclusteredEnUp",
       "CMS_ttHl_UnclusteredEnDown",
     ),
-    apply_automatic_rebinning = cms.bool(True),
+    apply_automatic_rebinning = cms.bool(False),
     minEvents_automatic_rebinning = cms.double(0.1),
     quantile_rebinning_in_fakes = cms.bool(False), ## THIS IS NOT APPLICABLE TO LEPTON FR STUDIES
     nbin_quantile_rebinning = cms.int32(0),

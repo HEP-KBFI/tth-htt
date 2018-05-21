@@ -1058,7 +1058,8 @@ main(int argc,
     std::vector<const RecoJet *> selJets;
 
  // ----- MUON BLOCK ----
-    for(const hltPath_LeptonFakeRate * const hltPath_iter: triggers_mu){ // loop over triggers_mu (given in descendng order of thresholds in the config)    
+    for(const hltPath_LeptonFakeRate * const hltPath_iter: triggers_mu){ // loop over triggers_mu (given in descendng order of thresholds in the config)   
+      hltPath_iter->setIsTriggered(false); // resetting the bool to false 
       if(! (hltPath_iter->getValue() >= 1))
         {
           if(run_lumi_eventSelector)
@@ -1151,6 +1152,7 @@ main(int argc,
 
 // ----- ELECTRON BLOCK ----
     for(const hltPath_LeptonFakeRate * const hltPath_iter: triggers_e){ // loop over triggers_e (given in descendng order of thresholds in the config) 
+      hltPath_iter->setIsTriggered(false); // resetting the bool to false 
       if(! (hltPath_iter->getValue() >= 1)){ 
         if(run_lumi_eventSelector){
           std::cout << "event FAILS this e trigger" "\n"

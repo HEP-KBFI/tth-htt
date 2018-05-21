@@ -145,7 +145,8 @@ void readPrefit(TFile* inputFile, std::map<std::string, fitResultType*>& fitResu
     histogramName.append("/");
     histogramName.append(getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_));
     histogramName.append("/");
-    histogramName.append("fakes_mc");
+    histogramName.append("fakes_mc"); // old line in def code
+    // histogramName.append("fakes_data");
     histogramName.append("/");
     histogramName.append("EventCounter");
     std::cout << "loading histogram = '" << histogramName << "'" << std::endl;
