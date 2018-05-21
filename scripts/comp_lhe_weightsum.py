@@ -168,10 +168,10 @@ for basedir_idx, basedir in enumerate(basedirs):
 
   max_weight_id_len = max(map(len, list(weight_sums.keys())))
   for weight_id, weight_sum in weight_sums.items():
-    print('{:<{len}} {:10.6f}'.format(weight_id, weight_sum, len = max_weight_id_len))
+    print('{:<{len}} {:20.8f}'.format(weight_id, weight_sum, len = max_weight_id_len))
 
   if output_filenames:
     with open(output_filenames[basedir_idx], 'w') as f:
       for weight_id, weight_sum in weight_sums.items():
-        f.write('{:<{len}} {:10.6f}\n'.format(weight_id, weight_sum, len = max_weight_id_len))
+        f.write('{:<{len}} {:20.8f}\n'.format(weight_id, weight_sum, len = max_weight_id_len))
     logging.info('Wrote file %s' % output_filenames[basedir_idx])
