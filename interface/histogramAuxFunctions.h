@@ -109,14 +109,16 @@ getBinning(const TH1 * histogram,
 TH1 *
 getRebinnedHistogram1d(const TH1 * histoOriginal,
                        unsigned numBins_rebinned,
-                       const TArrayD & binEdges_rebinned);
+                       const TArrayD & binEdges_rebinned,
+		       bool add_uniqueId = false);
 
 TH2 *
 getRebinnedHistogram2d(const TH1 * histoOriginal,
                        unsigned numBinsX_rebinned,
                        const TArrayD & binEdgesX_rebinned,
                        unsigned numBinsY_rebinned,
-                       const TArrayD & binEdgesY_rebinned);
+                       const TArrayD & binEdgesY_rebinned,
+		       bool add_uniqueId = false);
 
 TArrayD getRebinnedBinning(TH1*, double);
 

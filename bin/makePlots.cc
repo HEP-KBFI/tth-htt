@@ -868,13 +868,13 @@ int main(int argc, char* argv[])
 	TH1* histogramSignal_tmp = 0;
 	if ( apply_automatic_rebinning ) {
 	  TArrayD histogramBinning = getRebinnedBinning(histogramBackgroundSum_rebinned, minEvents_automatic_rebinning);
-	  histogramData_tmp = getRebinnedHistogram1d(histogramData_rebinned, 4, histogramBinning);
-	  histogramSignal_tmp = getRebinnedHistogram1d(histogramSignal_rebinned, 4, histogramBinning);
+	  histogramData_tmp = getRebinnedHistogram1d(histogramData_rebinned, 4, histogramBinning, true);
+	  histogramSignal_tmp = getRebinnedHistogram1d(histogramSignal_rebinned, 4, histogramBinning, true);
 	  for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground_rebinned.begin(); 
 		histogramBackground_entry != histogramsBackground_rebinned.end(); ++histogramBackground_entry ) {
 	    TH1* histogramBackground = (*histogramBackground_entry)->histogram_;
 	    const std::string& process = (*histogramBackground_entry)->process_;
-	    TH1* histogramBackground_tmp = getRebinnedHistogram1d(histogramBackground, 4, histogramBinning);
+	    TH1* histogramBackground_tmp = getRebinnedHistogram1d(histogramBackground, 4, histogramBinning, true);
 	    histogramsBackground_tmp.push_back(new histogramEntryType(process, histogramBackground_tmp));
 	  }
 	  histogramData_rebinned = histogramData_tmp;

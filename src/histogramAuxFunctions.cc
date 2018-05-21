@@ -650,11 +650,17 @@ getBinning(const TH1 * histogram,
 TH1 *
 getRebinnedHistogram1d(const TH1 * histoOriginal,
                        unsigned numBins_rebinned, // unused
-                       const TArrayD & binEdges_rebinned)
+                       const TArrayD & binEdges_rebinned,
+		       bool add_uniqueId)
 {
   static int idx = 0;
-  ++idx;
-  const std::string histoRebinnedName = Form("%s_rebinned%i", histoOriginal->GetName(), idx);
+  std::string histoRebinnedName;
+  if ( add_uniqueId ) {
+    ++idx;
+    histoRebinnedName = Form("%s_rebinned%i", histoOriginal->GetName(), idx);
+  } else {
+    histoRebinnedName = Form("%s_rebinned", histoOriginal->GetName());
+  }
   TH1 * histoRebinned = new TH1D(
     histoRebinnedName.data(),
     histoOriginal->GetTitle(),
@@ -687,11 +693,17 @@ getRebinnedHistogram2d(const TH1 * histoOriginal,
                        unsigned numBinsX_rebinned, // unused
                        const TArrayD & binEdgesX_rebinned,
                        unsigned numBinsY_rebinned, // unused
-                       const TArrayD & binEdgesY_rebinned)
+                       const TArrayD & binEdgesY_rebinned,
+		       bool add_uniqueId)
 {
   static int idx = 0;
-  ++idx;
-  const std::string histoRebinnedName = Form("%s_rebinned%i", histoOriginal->GetName(), idx);
+  std::string histoRebinnedName;
+  if ( add_uniqueId ) {
+    ++idx;
+    histoRebinnedName = Form("%s_rebinned%i", histoOriginal->GetName(), idx);
+  } else {
+    histoRebinnedName = Form("%s_rebinned", histoOriginal->GetName());
+  }
   TH2D * histoRebinned = new TH2D(
     histoRebinnedName.data(),
     histoOriginal->GetTitle(),
