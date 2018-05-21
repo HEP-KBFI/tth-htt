@@ -143,12 +143,13 @@ for basedir_idx, basedir in enumerate(basedirs):
   weight_map = collections.OrderedDict()
   for filename in filenames:
     assert(exists(filename))
+    neg_weights = collections.OrderedDict()
     logging.debug('Processing %s ...' % filename)
     events = Events(filename)
     nof_events = events.size()
     logging.debug('Found %d events' % nof_events)
     lheinfo = Handle('LHEEventProduct')
-    for event in events:
+    for event_idx, event in enumerate(events):
       event.getByLabel('externalLHEProducer', lheinfo)
       LHEEventProducts = lheinfo.product()
       weights = LHEEventProducts.weights()
@@ -158,20 +159,32 @@ for basedir_idx, basedir in enumerate(basedirs):
         if weight.id not in weight_map:
           weight_map[weight.id] = []
         if weight.wgt < 0.:
-          logging.warning('Found a negative weight in %s: %.6f' % (weight.id, weight.wgt))
+          if weight.id not in neg_weights:
+            neg_weights[weight.id] = []
+          neg_weights[weight.id].append((event_idx, weight.wgt))
         weight_map[weight.id].append(weight.wgt)
+    if neg_weights:
+      for weight_id, neg_array in neg_weights.items():
+        logging.warning(
+          'Found %d negative %s weights in file %s in the following events: %s' % \
+          (len(neg_array), weight_id, filename, ', '.join(map(lambda x: '%d (%.6f)' % x, neg_array)))
+        )
 
   logging.info('Found %d LHE weights:' % len(weight_map))
   weight_sums = collections.OrderedDict()
   for weight_id, weight_array in weight_map.items():
-    weight_sums[weight_id] = math.fsum(weight_array)
+    weight_sums[weight_id] = (math.fsum(weight_array), math.fsum(filter(lambda x: x > 0., weight_array)))
 
   max_weight_id_len = max(map(len, list(weight_sums.keys())))
   for weight_id, weight_sum in weight_sums.items():
-    print('{:<{len}} {:20.8f}'.format(weight_id, weight_sum, len = max_weight_id_len))
+    print('{:<{len}} {:20.8f} {:20.8f}'.format(
+      weight_id, weight_sum[0], weight_sum[1], len = max_weight_id_len
+    ))
 
   if output_filenames:
     with open(output_filenames[basedir_idx], 'w') as f:
       for weight_id, weight_sum in weight_sums.items():
-        f.write('{:<{len}} {:20.8f}\n'.format(weight_id, weight_sum, len = max_weight_id_len))
+        f.write('{:<{len}} {:20.8f} {:20.8f}\n'.format(
+          weight_id, weight_sum[0], weight_sum[1], len = max_weight_id_len
+        ))
     logging.info('Wrote file %s' % output_filenames[basedir_idx])
