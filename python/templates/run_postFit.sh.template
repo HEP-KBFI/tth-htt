@@ -60,7 +60,7 @@ combineTool.py                            \
 
 NAME='{{ l_array }}_mlfit_shapes.root'
 echo "Extracting PostFit shapes from the mlfit: $NAME"
-MLFIT_OUTPUT='fitDiagnostics_{{ l_array }}.root'
+MLFIT_OUTPUT='fitDiagnostics{{ l_array }}.root'
 PostFitShapesFromWorkspace               \
   -w $WSP_PATH                           \
   -d $DATACARD_PATH                      \

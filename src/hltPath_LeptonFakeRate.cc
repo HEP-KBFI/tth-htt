@@ -11,8 +11,7 @@ hltPath_LeptonFakeRate::hltPath_LeptonFakeRate(const std::string & branchName,
                                                double maxPt,  
                                                double minRecoPt, // NEWLY ADDED AFTER GIOVANNI SYNC
                                                double min_jetPt,
-                                               double prescale,
-                                               double prescale_rand_mc) 
+                                               double prescale) 
   : hltPath(branchName, minPt, maxPt)
   , branchName_(branchName)
   , value_(-1)
@@ -21,7 +20,6 @@ hltPath_LeptonFakeRate::hltPath_LeptonFakeRate(const std::string & branchName,
   , minRecoPt_(minRecoPt) // NEWLY ADDED AFTER GIOVANNI SYNC
   , minJetPt_(min_jetPt)
   , prescale_(prescale)
-  , prescale_rand_mc_(prescale_rand_mc)
   , is_trigger_1mu_(is_trigger_1mu)
   , is_trigger_2mu_(is_trigger_2mu)
   , is_trigger_1e_(is_trigger_1e)
@@ -50,12 +48,6 @@ double
 hltPath_LeptonFakeRate::getPrescale() const
 {
   return prescale_;
-}
-
-double
-hltPath_LeptonFakeRate::getPrescale_rand_mc() const
-{
-  return prescale_rand_mc_;
 }
 
 bool
@@ -135,7 +127,6 @@ create_hltPaths_LeptonFakeRate(const std::vector<std::string> & branchNames,
   const double minRecoPt = cfg.getParameter<double>("minRecoPt"); // NEWLY ADDED AFTER GIOVANNI SYNC
   const double jet_minPt = cfg.getParameter<double>("jet_minPt");
   const double prescale = cfg.getParameter<double>("average_prescale");
-  const double prescale_rand_mc = cfg.getParameter<double>("prescale_rand_mc");
   const bool is_trigger_1mu = cfg.getParameter<bool>("is_trigger_1mu");
   const bool is_trigger_2mu = cfg.getParameter<bool>("is_trigger_2mu");
   const bool is_trigger_1e = cfg.getParameter<bool>("is_trigger_1e");
@@ -146,7 +137,7 @@ create_hltPaths_LeptonFakeRate(const std::vector<std::string> & branchNames,
   {
     hltPaths.push_back(new hltPath_LeptonFakeRate(
       branchName,is_trigger_1mu, is_trigger_2mu, is_trigger_1e, is_trigger_2e,
-      minPt, maxPt, minRecoPt, jet_minPt, prescale, prescale_rand_mc));
+      minPt, maxPt, minRecoPt, jet_minPt, prescale));
   }
   return hltPaths;
 }
@@ -171,8 +162,7 @@ operator<<(std::ostream & stream,
             "maxPt = " << hltPath_iter.getMaxPt() << ", "
             "minRecoPt = " << hltPath_iter.getMinRecoPt() << ", "
             "minJetPt = " << hltPath_iter.getMinJetPt() << ", "
-            "prescale = " << hltPath_iter.getPrescale() << ", "
-            "prescale_rand_mc = " << hltPath_iter.getPrescale_rand_mc()
-	 << ")\n";
+            "prescale = " << hltPath_iter.getPrescale() 
+            << ")\n";
   return stream;
 }

@@ -144,7 +144,8 @@ cb.cp().AddSyst(  ## CORREL ACROSS $CHANNEL, CORREL ACROSS $BIN
 for chn in channels:
     cb.cp().channel([chn]).ExtractShapes(
         '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn]),
-        '$BIN/rebinned/$PROCESS', '$BIN/rebinned/$PROCESS_$SYSTEMATIC'
+#        '$BIN/rebinned/$PROCESS', '$BIN/rebinned/$PROCESS_$SYSTEMATIC' ## OLD !
+        '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC'
     )
 
 ##########################################################################
