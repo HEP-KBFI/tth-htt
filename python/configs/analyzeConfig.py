@@ -184,15 +184,16 @@ class analyzeConfig(object):
                 logging.error(str(time))
 
     def set_BDT_training(self, hadTau_selection_relaxed):
-    """Run analysis with loose selection criteria for leptons and hadronic taus,
-       for the purpose of preparing event list files for BDT training.
-    """
-    if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
-        if self.era == "2017":
-            self.inputFile_hadTauFakeRateWeight = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
-        else:
-            raise ValueError("Invalid era: %s" % self.era)
-    self.isBDTtraining = True
+        """Run analysis with loose selection criteria for leptons and hadronic taus,
+           for the purpose of preparing event list files for BDT training.
+        """
+        self.hadTau_selection_relaxed = hadTau_selection_relaxe
+        if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
+            if self.era == "2017":
+                self.inputFile_hadTauFakeRateWeight = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
+            else:
+                raise ValueError("Invalid era: %s" % self.era)
+        self.isBDTtraining = True
 
     def get_addMEM_systematics(self, central_or_shift):
         if central_or_shift in [
