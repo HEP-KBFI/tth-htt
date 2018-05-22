@@ -230,7 +230,8 @@ class analyzeConfig_ttZctrl(analyzeConfig):
               if self.do_sync and self.rle_select:
                 syncRLE = self.rle_select % syncTree
                 if not os.path.isfile(syncRLE):
-                  raise ValueError('Input RLE file for the sync is missing: %s' % syncRLE)
+                  logging.warning("Input RLE file for the sync is missing: %s; skipping the job" % syncRLE)
+                  continue
 
               self.jobOptions_analyze[key_analyze_job] = {
                 'ntupleFiles'              : ntupleFiles,

@@ -361,7 +361,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                     if self.do_sync and self.rle_select:
                       syncRLE = self.rle_select % syncTree
                       if not os.path.isfile(syncRLE):
-                        raise ValueError('Input RLE file for the sync is missing: %s' % syncRLE)
+                        logging.warning("Input RLE file for the sync is missing: %s; skipping the job" % syncRLE)
+                        continue
 
                     cfg_key = getKey(
                        self.channel, process_name, lepton_charge_selection, hadTau_charge_selection,
