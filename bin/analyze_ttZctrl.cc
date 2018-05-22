@@ -1062,15 +1062,6 @@ int main(int argc, char* argv[])
       std::cout << "evtWeight = " << evtWeight << std::endl;
     }
 
-    // require exactly three leptons passing tight selection criteria, to avoid overlap with 4l channel
-    if ( !(tightLeptonsFull.size() <= 3) ) {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS tightLeptons selection.\n";
-        printCollection("tightLeptonsFull", tightLeptonsFull);
-      }
-      continue;
-    }
-
     // require that trigger paths match event category (with event category based on fakeableLeptons)
     if ( !((fakeableElectrons.size() >= 3 &&                              (selTrigger_3e    || selTrigger_2e  || selTrigger_1e                                      )) ||
 	   (fakeableElectrons.size() >= 2 && fakeableMuons.size() >= 1 && (selTrigger_2e1mu || selTrigger_2e  || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
@@ -1135,15 +1126,6 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
-
-    if ( selHadTaus.size() > 0 ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selHadTaus veto." << std::endl;
-	printCollection("selHadTaus", selHadTaus);
-      }
-      continue;
-    }
-    cutFlowTable.update("sel tau veto");
     
     bool failsLowMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
@@ -1225,35 +1207,6 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("Z-boson mass cut", evtWeight);
 
-    bool failsHtoZZVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
-          lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
-      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-            lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
-        if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // first pair of same flavor leptons of opposite charge
-          for ( std::vector<const RecoLepton*>::const_iterator lepton3 = preselLeptonsFull.begin();
-                lepton3 != preselLeptonsFull.end(); ++lepton3 ) {
-            if ( (*lepton3) == (*lepton1) || (*lepton3) == (*lepton2) ) continue;
-            for ( std::vector<const RecoLepton*>::const_iterator lepton4 = lepton3 + 1;
-                  lepton4 != preselLeptonsFull.end(); ++lepton4 ) {
-              if ( (*lepton4) == (*lepton1) || (*lepton4) == (*lepton2) ) continue;
-              if ( (*lepton3)->pdgId() == -(*lepton4)->pdgId() ) { // second pair of same flavor leptons of opposite charge
-                double mass = ((*lepton1)->p4() + (*lepton2)->p4() + (*lepton3)->p4() + (*lepton4)->p4()).mass();
-                if ( mass < 140. ) failsHtoZZVeto = true;
-              }
-            }
-          }
-        }
-      }
-    }
-    if ( failsHtoZZVeto ) {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS H->ZZ*->4l veto." << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("H->ZZ*->4l veto", evtWeight);
-    
     double met_LD_cut = 0.;
     if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
     else if ( isSFOS              ) met_LD_cut =  0.3;

@@ -34,8 +34,8 @@ public:
           isOverlap = true;
           if(debug_)
           {
-            std::cout << "Removed:\n"                    << *overlap
-                      << "because it overlapped with:\n" << *particle
+            std::cout << "Removed:\n"                    << *particle
+                      << "because it overlapped with:\n" << *overlap
                       << "within "                       << dRoverlap
                       << '\n'
             ;
