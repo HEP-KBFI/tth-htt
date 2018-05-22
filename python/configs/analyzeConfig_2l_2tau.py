@@ -355,7 +355,6 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                         syncTree = 'syncTree_%s_Fake' % self.channel.replace('_', '')
                       else:
                         continue
-                      self.inputFiles_sync['sync'].append(syncOutput)
 
                     syncRLE = ''
                     if self.do_sync and self.rle_select:
@@ -363,6 +362,9 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                       if not os.path.isfile(syncRLE):
                         logging.warning("Input RLE file for the sync is missing: %s; skipping the job" % syncRLE)
                         continue
+
+                    if syncOutput:
+                      self.inputFiles_sync['sync'].append(syncOutput)
 
                     cfg_key = getKey(
                        self.channel, process_name, lepton_charge_selection, hadTau_charge_selection,

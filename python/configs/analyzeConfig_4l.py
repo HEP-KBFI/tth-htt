@@ -269,7 +269,6 @@ class analyzeConfig_4l(analyzeConfig):
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
                   else:
                     continue
-                  self.inputFiles_sync['sync'].append(syncOutput)
 
                 syncRLE = ''
                 if self.do_sync and self.rle_select:
@@ -277,6 +276,9 @@ class analyzeConfig_4l(analyzeConfig):
                   if not os.path.isfile(syncRLE):
                     logging.warning("Input RLE file for the sync is missing: %s; skipping the job" % syncRLE)
                     continue
+
+                if syncOutput:
+                  self.inputFiles_sync['sync'].append(syncOutput)
 
                 cfg_key = getKey(self.channel, process_name, lepton_selection_and_frWeight, chargeSumSelection, central_or_shift, jobId)
                 cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
