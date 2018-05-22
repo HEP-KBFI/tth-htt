@@ -12,33 +12,6 @@
   <use   name="roottmva"/>
   <use   name="boost"/>
 </bin>
-<bin file="analyze_1l_1tau.cc" name="analyze_1l_1tau">
-  <use   name="FWCore/FWLite"/>
-  <use   name="FWCore/ParameterSet"/>
-  <use   name="FWCore/PythonParameterSet"/>
-  <use   name="FWCore/Utilities"/>
-  <use   name="DataFormats/FWLite"/>
-  <use   name="DataFormats/Math"/>
-  <use   name="PhysicsTools/FWLite"/>
-  <use   name="tthAnalysis/HiggsToTauTau"/>
-  <use   name="TauAnalysis/ClassicSVfit"/>
-  <use   name="root"/>
-  <use   name="roottmva"/>
-  <use   name="boost"/>
-</bin>
-<bin file="analyze_0l_3tau.cc" name="analyze_0l_3tau">
-  <use   name="FWCore/FWLite"/>
-  <use   name="FWCore/ParameterSet"/>
-  <use   name="FWCore/PythonParameterSet"/>
-  <use   name="FWCore/Utilities"/>
-  <use   name="DataFormats/FWLite"/>
-  <use   name="DataFormats/Math"/>
-  <use   name="PhysicsTools/FWLite"/>
-  <use   name="tthAnalysis/HiggsToTauTau"/>
-  <use   name="root"/>
-  <use   name="roottmva"/>
-  <use   name="boost"/>
-</bin>
 <bin file="analyze_1l_2tau.cc" name="analyze_1l_2tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
