@@ -113,7 +113,7 @@ class analyzeConfig_0l_3tau(analyzeConfig):
       fitFunctionName = None
       if self.era == "2017":
         # TODO: update the FR file for 2017 analysis
-        jobOptions['hadTauFakeRateWeight.inputFileName'] = 'tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root'
+        jobOptions['hadTauFakeRateWeight.inputFileName'] = 'tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root'
         # CV: use data/MC corrections determined for dR03mvaLoose discriminator for 2016 data
         fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
       else:

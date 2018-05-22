@@ -46,8 +46,6 @@ use_home          = args.use_home
 max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
 
-hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
-
 if mode == "default":
   if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
@@ -142,17 +140,7 @@ if __name__ == '__main__':
     )
 
     if mode.find("forBDTtraining") != -1:
-      if era == "2016":
-        if hadTau_selection_relaxed == "dR03mvaVVLoose":
-          hadTauFakeRateWeight_inputFileName = "FR_tau_2016_vvLoosePresel.root"
-        elif hadTau_selection_relaxed == "dR03mvaVLoose":
-          hadTauFakeRateWeight_inputFileName = "FR_tau_2016_vLoosePresel.root"
-        else:
-          hadTauFakeRateWeight_inputFileName = "FR_tau_2016.root"
-        hadTauFakeRateWeight_inputFile = os.path.join(
-          "tthAnalysis/HiggsToTauTau/data", hadTauFakeRateWeight_inputFileName
-        )
-      analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFile)
+      analysis.set_BDT_training(hadTau_selection_relaxed)
 
     job_statistics = analysis.create()
     for job_type, num_jobs in job_statistics.items():

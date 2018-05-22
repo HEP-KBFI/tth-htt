@@ -50,8 +50,7 @@ max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
 do_sync              = mode.startswith('sync')
 
-hadTau_charge_selections           = [ "OS", "SS" ]
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
+hadTau_charge_selections = [ "OS", "SS" ]
 
 if mode == "default":
   if use_preselected:
@@ -164,7 +163,7 @@ if __name__ == '__main__':
     )
 
     if mode == "forBDTtraining" :
-      analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
+      analysis.set_BDT_training(hadTau_selection_relaxed)
 
     job_statistics = analysis.create()
     for job_type, num_jobs in job_statistics.items():

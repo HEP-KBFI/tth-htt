@@ -109,14 +109,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       jobOptions['hadTauSelection'], hadTau_frWeight, jobOptions['hadTauChargeSelection']
     )
     if jobOptions['hadTauSelection'].find("Fakeable") != -1 and jobOptions['applyFakeRateWeights'] in [ "2tau" ]:
-      fitFunctionName = None
-      if self.era == "2017":
-        # TODO: update the FR file for 2017 analysis
-        jobOptions['hadTauFakeRateWeight.inputFileName'] = 'tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root'
-        # CV: use data/MC corrections determined for dR03mvaLoose discriminator for 2016 data
-        fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
-      else:
-        raise ValueError("Invalid parameter 'era' = %s !!" % self.era)
+      fitFunctionName = "jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt" % self.hadTau_selection_part2
       jobOptions['hadTauFakeRateWeight.lead.fitFunctionName'] = fitFunctionName
       jobOptions['hadTauFakeRateWeight.sublead.fitFunctionName'] = fitFunctionName
     if jobOptions['hadTauSelection'].find("mcClosure") != -1:
