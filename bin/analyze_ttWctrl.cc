@@ -1008,20 +1008,16 @@ int main(int argc, char* argv[])
       }
     }
     cutFlowTable.update("HLT filter matching", evtWeight);
-      
+
     // apply requirement on jets (incl. b-tagged jets) on level of final event selection
     if ( !(selJets.size() == 3) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selJets selection (2)." << std::endl;
-	std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
-	for ( size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet ) {
-	  std::cout << "selJet #" << idxSelJet << ":" << std::endl;
-	  std::cout << (*selJets[idxSelJet]);
-	}
+        std::cout << "event FAILS selJets selection (2)." << std::endl;
+        printCollection("selJets", selJets);
       }
       continue;
     }
-    cutFlowTable.update("= 3 jets", evtWeight);     
+    cutFlowTable.update("= 3 jets", evtWeight);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection (2)." << std::endl;	
