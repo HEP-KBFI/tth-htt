@@ -187,7 +187,7 @@ class analyzeConfig(object):
         """Run analysis with loose selection criteria for leptons and hadronic taus,
            for the purpose of preparing event list files for BDT training.
         """
-        self.hadTau_selection_relaxed = hadTau_selection_relaxe
+        self.hadTau_selection_relaxed = hadTau_selection_relaxed
         if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
             if self.era == "2017":
                 self.inputFile_hadTauFakeRateWeight = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
