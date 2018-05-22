@@ -221,7 +221,7 @@ void processHistogram(
 	std::cout << " Den. integral(" << processLeptonFakes << ") = " << histogramFakeBg_den->Integral() << std::endl;
       }
       makeBinContentsPositive(histogramFakeBg_den, verbosity);
-      //histogramFakeBg_den->Write();      
+      // histogramFakeBg_den->Write();      
       //--------
 
       //-------- compute fakes_data histogram for numerator 
@@ -253,6 +253,7 @@ void processHistogram(
       
       double sfPromptBg_num = 1.;
       if ( integralFakeBg_num < (0.10*integralData_num) ) {
+	std::cout<< " DATA - SUM(PROMPT BG.S) " << integralFakeBg_num << " < (0.10 * DATA) WHICH IS = " << (0.10*integralData_num) << std::endl; 
 	integralFakeBg_num = 0.10*integralData_num;
 	sfPromptBg_num = (integralData_num - integralFakeBg_num)/integralPromptBg_num;
       }
@@ -263,7 +264,7 @@ void processHistogram(
 	std::cout << " Num. integral(" << processLeptonFakes << ") after scaling = " << histogramFakeBg_num->Integral() << std::endl;
       }
       makeBinContentsPositive(histogramFakeBg_num, verbosity);
-      //histogramFakeBg_num->Write();
+      // histogramFakeBg_num->Write();
       //--------
 
       //-------- copy histograms for data_obs and prompt MC to output file
@@ -279,7 +280,7 @@ void processHistogram(
 	if ( verbosity ) { 
 	  std::cout << " Den. integral(" << processData << ") = " << histogramData_den_copied->Integral() << std::endl;
 	}
-	//histogramData_den_copied->Write();
+	// histogramData_den_copied->Write();
       }
 
       for ( std::vector<histogramEntryType*>::const_iterator histogram_and_processToSubtract_den = histograms_and_processesToSubtract_den.begin();
@@ -295,7 +296,7 @@ void processHistogram(
 	if ( verbosity ) { 
 	  std::cout << " Den. integral(" << (*histogram_and_processToSubtract_den)->process_ << ") = " << histogramPromptBg_den_copied->Integral() << std::endl;
 	}
-	//histogramPromptBg_den_copied->Write();
+	// histogramPromptBg_den_copied->Write();
       }
 
       if ( !histogramData_num_isSubstitute ) {
@@ -310,7 +311,7 @@ void processHistogram(
 	if ( verbosity ) { 
 	  std::cout << " Num. integral(" << processData << ") = " << histogramData_num_copied->Integral() << std::endl;
 	}
-	//histogramData_num_copied->Write();
+	// histogramData_num_copied->Write();
       }
 
       for ( std::vector<histogramEntryType*>::const_iterator histogram_and_processToSubtract_num = histograms_and_processesToSubtract_num.begin();
@@ -329,7 +330,7 @@ void processHistogram(
 	if ( verbosity ) { 
 	  std::cout << " Num. integral(" << (*histogram_and_processToSubtract_num)->process_ << ") = " << histogramPromptBg_num_copied->Integral() << std::endl;
 	}
-	//histogramPromptBg_num_copied->Write();
+	// histogramPromptBg_num_copied->Write();
       }
       //--------
 
