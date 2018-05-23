@@ -44,6 +44,10 @@ preselection = args.disable_preselection
 pileup       = os.path.join(
   os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s.root' % era
 )
+golden_json_2017  = os.path.join(
+  os.environ['CMSSW_BASE'], 'src/tthAnalysis/NanoAOD/data',
+  'Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt'
+)
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -60,6 +64,7 @@ else:
 
 if era == "2017":
   samples = samples_2017
+  golden_json = golden_json_2017
 else:
   raise ValueError("Invalid era: %s" % era)
 
@@ -132,6 +137,7 @@ if __name__ == '__main__':
       version               = version,
       num_parallel_jobs     = 8,
       pileup                = pileup,
+      golden_json           = golden_json,
       verbose               = resubmission_idx > 0,
       dry_run               = dry_run,
       isDebug               = debug,

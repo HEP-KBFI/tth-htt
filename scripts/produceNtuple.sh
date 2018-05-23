@@ -33,6 +33,7 @@ IS_MC=$(python -c "execfile('$SCRIPT'); print(isMC)")
 ERA=$(python -c "execfile('$SCRIPT'); print(era)")
 PILEUP=$(python -c "execfile('$SCRIPT'); print(pileup)")
 PROCESS_NAME=$(python -c "execfile('$SCRIPT'); print(process_name)")
+GOLDEN_JSON=$(python -c "execfile('$SCRIPT'); print(golden_json)")
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
 echo "Is MC? '$IS_MC'"
@@ -66,9 +67,16 @@ for F in $FILES; do
   nano_postproc.py -s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $NANO_MODULES . $F
   test_exit_code $?
   echo "Removing useless branches: $F_i -> $F_ii"
-  nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "countHistogramAll_$ERA" \
-                   -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt                   \
-                   . $F_i
+  if [ "$IS_MC" == "True" ]; then
+    nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "countHistogramAll_$ERA" \
+                     -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt                   \
+                     . $F_i
+  else
+    nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "countHistogramAll_$ERA" \
+                     -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt                   \
+                     -J $GOLDEN_JSON                                                                     \
+                     . $F_i
+  fi
   test_exit_code $?
 done
 echo "Finished nanoAOD pre-processing at `date`"
