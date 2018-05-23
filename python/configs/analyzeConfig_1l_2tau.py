@@ -109,18 +109,14 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.use_nonnominal = use_nonnominal
     self.hlt_filter = hlt_filter
 
-    self.isBDTtraining = False
-
-  def set_BDT_training(self, hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName):
+  def set_BDT_training(self, hadTau_selection_relaxed):
     """Run analysis with loose selection criteria for leptons and hadronic taus,
        for the purpose of preparing event list files for BDT training.
     """
-    self.lepton_and_hadTau_selections       = [ "forBDTtraining" ]
-    self.lepton_and_hadTau_frWeights        = [ "disabled" ]
-    self.hadTau_selection_relaxed           =  hadTau_selection_relaxed
-    self.hadTauFakeRateWeight_inputFileName = hadTauFakeRateWeight_inputFileName
-    self.isBDTtraining                      = True
-
+    self.lepton_and_hadTau_selections = [ "forBDTtraining" ]
+    self.lepton_and_hadTau_frWeights  = [ "disabled" ]
+    super(analyzeConfig_1l_2tau, self).set_BDT_training(hadTau_selection_relaxed)
+    
   def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_1l_2tau executable (analysis code)
 
@@ -135,19 +131,16 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines = []
     hadTau_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
     jobOptions['histogramDir'] = getHistogramDir(
-      jobOptions['hadTauSelection'], hadTau_frWeight, jobOptions['hadTauChargeSelection']
+      jobOptions['hadTauSelection'], hadTau_frWeight, jobOptions['hadTauChargeSelection']      
     )
-    if jobOptions['hadTauSelection'].find("Fakeable") != -1 and jobOptions['applyFakeRateWeights'] in [ "3L", "2tau" ]:
-      fitFunctionName = None
-      if self.era == "2017":
-        # TODO: update the FR file for 2017 analysis
-        jobOptions['hadTauFakeRateWeight.inputFileName'] = 'tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root'
-        # CV: use data/MC corrections determined for dR03mvaVLoose discriminator for 2016 data
-        fitFunctionName = "jetToTauFakeRate/dR03mvaVLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
-      else:
-        raise ValueError("Invalid parameter 'era' = %s !!" % self.era)
-      jobOptions['hadTauFakeRateWeight.lead.fitFunctionName'] = fitFunctionName
-      jobOptions['hadTauFakeRateWeight.sublead.fitFunctionName'] = fitFunctionName
+
+    jobOptions['hadTauFakeRateWeight.inputFileName'] = self.inputFile_hadTauFakeRateWeight
+    graphName = 'jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt' % self.hadTau_selection_part2
+    jobOptions['hadTauFakeRateWeight.lead.graphName'] = graphName
+    jobOptions['hadTauFakeRateWeight.sublead.graphName'] = graphName 
+    fitFunctionName = 'jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt' % self.hadTau_selection_part2
+    jobOptions['hadTauFakeRateWeight.lead.fitFunctionName'] = fitFunctionName
+    jobOptions['hadTauFakeRateWeight.sublead.fitFunctionName'] = fitFunctionName
     if jobOptions['hadTauSelection'].find("mcClosure") != -1:
       jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = False
       jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = False
@@ -157,12 +150,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       jobOptions['hadTauFakeRateWeight.applyGraph_sublead'] = False
       jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = True
       jobOptions['apply_hadTauFakeRateSF'] = True
-    if self.isBDTtraining:
-      jobOptions['hadTauFakeRateWeight.inputFileName'] = self.hadTauFakeRateWeight_inputFileName
-      jobOptions['hadTauFakeRateWeight.lead.graphName'] = 'jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt' % self.hadTau_selection_part2
-      jobOptions['hadTauFakeRateWeight.lead.fitFunctionName'] = 'jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt' % self.hadTau_selection_part2
-      jobOptions['hadTauFakeRateWeight.sublead.graphName'] = 'jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt' % self.hadTau_selection_part2
-      jobOptions['hadTauFakeRateWeight.sublead.fitFunctionName'] = 'jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt' % self.hadTau_selection_part2
 
     lines = super(analyzeConfig_1l_2tau, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
@@ -314,13 +301,16 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
                   else:
                     continue
-                  self.inputFiles_sync['sync'].append(syncOutput)
 
                 syncRLE = ''
                 if self.do_sync and self.rle_select:
                   syncRLE = self.rle_select % syncTree
                   if not os.path.isfile(syncRLE):
-                    raise ValueError('Input RLE file for the sync is missing: %s' % syncRLE)
+                    logging.warning("Input RLE file for the sync is missing: %s; skipping the job" % syncRLE)
+                    continue
+
+                if syncOutput:
+                  self.inputFiles_sync['sync'].append(syncOutput)
 
                 cfg_key = getKey(
                   self.channel, process_name, lepton_and_hadTau_selection_and_frWeight,

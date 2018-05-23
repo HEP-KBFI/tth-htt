@@ -55,7 +55,7 @@ do_sync              = mode.startswith('sync')
 
 MEMbranch                          = ''
 hadTau_selection_veto              = "dR03mvaMedium"
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v1.root"
 lepton_charge_selections           = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
 chargeSumSelections                = [ "OS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
 
@@ -193,6 +193,8 @@ if __name__ == '__main__':
     )
 
     if mode.find("forBDTtraining") != -1:
+      if hadTau_selection_relaxed == "dR03mvaVVLoose":
+        hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
       analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
 
     job_statistics = analysis.create()

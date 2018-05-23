@@ -153,6 +153,7 @@ for basedir_idx, basedir in enumerate(basedirs):
       event.getByLabel('externalLHEProducer', lheinfo)
       LHEEventProducts = lheinfo.product()
       weights = LHEEventProducts.weights()
+      nom_weight = LHEEventProducts.originalXWGTUP()
       for weight in weights:
         if not weight.id.startswith('rwgt_'):
           continue
@@ -162,7 +163,7 @@ for basedir_idx, basedir in enumerate(basedirs):
           if weight.id not in neg_weights:
             neg_weights[weight.id] = []
           neg_weights[weight.id].append((event_idx, weight.wgt))
-        weight_map[weight.id].append(weight.wgt)
+        weight_map[weight.id].append(weight.wgt / nom_weight)
     if neg_weights:
       for weight_id, neg_array in neg_weights.items():
         logging.warning(
