@@ -73,14 +73,9 @@ for sample_key, sample_entry in samples.items():
   else:
     raise ValueError("Internal logic error")
 
-if mode not in [ 'forBDTtraining' ]:
-  leptonSelection   = 'Fakeable'
-  hadTauSelection   = 'Fakeable'
-  hadTauWP          = 'dR03mvaVLoose'
-else:
-  leptonSelection   = 'Loose'
-  hadTauSelection   = 'Loose'
-  hadTauWP          = 'dR03mvaVVLoose'
+leptonSelection   = 'Loose'
+hadTauSelection   = 'Loose'
+hadTauWP          = 'dR03mvaVVLoose'
 
 if preselection:
   preselection_cuts = {
