@@ -8,8 +8,8 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_LeptonFakeRate.py -v 2017Dec13 -e 2017
 
-# cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
-cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_8_1_0_CombineHarvestor_KBFI_datacards') # immediate parent dir to src folder
+cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_8_1_0') # immediate parent dir to src folder
+
 
 
 mode_choices           = [ 'default', 'sync' ]
