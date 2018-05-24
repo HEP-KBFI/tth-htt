@@ -55,7 +55,6 @@ process.analyze_0l_2tau = cms.PSet(
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
-    apply_trigger_bits = cms.bool(True),
     apply_hlt_filter = cms.bool(False),
     apply_met_filters = cms.bool(True),
     cfgMEtFilter = recommendedMEtFilters,

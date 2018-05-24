@@ -70,7 +70,6 @@ process.analyze_inclusive = cms.PSet(
 
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
-    apply_trigger_bits = cms.bool(True),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
