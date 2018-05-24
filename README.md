@@ -8,19 +8,19 @@ At the time of writing, the instructions are:
 ```bash
 # open up a new shell session
 
-export SCRAM_ARCH=slc6_amd64_gcc491
-scram project CMSSW CMSSW_7_4_7
-cd CMSSW_7_4_7/src
+cmsrel CMSSW_8_1_0
+cd CMSSW_8_1_0/src
 cmsenv
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
 
 # IMPORTANT: Checkout the recommended tag on the link above
 cd $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit
 git fetch origin
-git checkout v6.3.1
-cd $CMSSW_BASE/src
+git checkout v7.0.7
+scramv1 b clean; scramv1 b
 
-git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
+cd $CMSSW_BASE/src
+git clone https://github.com/HEP-KBFI/CombineHarvester CombineHarvester
 scram b -j8
 ```
 

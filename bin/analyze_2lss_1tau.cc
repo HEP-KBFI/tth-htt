@@ -1451,7 +1451,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       {
         if(run_lumi_eventSelector || isDEBUG)
         {
-          std::cout << "event FAILS HLT filter matching\n";
+          std::cout << "event " << eventInfo.str() << " FAILS HLT filter matching\n";
         }
         continue;
       }
@@ -1680,7 +1680,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {
 	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS MEt filters." << std::endl;
+      std::cout << "event " << eventInfo.str() << " FAILS MEt filters." << std::endl;
 	}
 	continue;
       }
@@ -2061,7 +2061,11 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     double memOutput_ttZ=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ()     : -100.;
     double memOutput_ttZ_Zll=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ_Zll() : -100.;
 
-    if ( bdt_filler ) {
+    const bool isGenMatched = isMC &&
+      ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
+    ;
+
+    if ( bdt_filler && isGenMatched ) {
 
       std::map<std::string, double> mvaInputs_Hjj_tagger;
       double mvaOutput_Hjj_tagger = -1.;
@@ -2168,10 +2172,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
     if(snm)
     {
-      const bool isGenMatched = isMC &&
-        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
-      ;
-
       const double dr_lep1_tau1   = deltaR(selLepton_lead->p4(), selHadTau->p4());
       const double dr_lep2_tau1   = deltaR(selLepton_sublead->p4(), selHadTau->p4());
       const double max_dr_jet     = comp_max_dr_jet(selJets);

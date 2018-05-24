@@ -1,7 +1,23 @@
 #!/usr/bin/env python
-import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy, itertools, time, shutil, datetime
+
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
+
+import argparse
+import os.path
+import sys
+import logging
+import imp
+import jinja2
+import ROOT
+import re
+import ctypes
+import copy
+import itertools
+import time
+import shutil
+import datetime
+import math
 
 HISTOGRAM_COUNT         = 'Count'
 HISTOGRAM_COUNTWEIGHTED = 'CountWeighted'
@@ -202,7 +218,6 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("xsection",                        {{ xsection }}),
   ("genWeight",                       {{ genWeight }}),{% endif %}
   ("triggers",                        {{ triggers }}),
-  ("reHLT",                           {{ reHLT }}),
   ("has_LHE",                         {{ has_LHE }}),
   ("local_paths",
     [
@@ -243,9 +258,9 @@ class PathEntry:
   def __init__(self, path, indices):
     self.path            = path
     self.indices         = indices
-    self.nof_events      = sum(index_entry[HISTOGRAM_COUNT_KEY] for index_entry in self.indices.values())
-    self.nof_tree_events = sum(index_entry[TREE_COUNT_KEY]      for index_entry in self.indices.values())
-    self.fsize           = sum(index_entry[FSIZE_KEY]           for index_entry in self.indices.values())
+    self.nof_events      = math.fsum(index_entry[HISTOGRAM_COUNT_KEY] for index_entry in self.indices.values())
+    self.nof_tree_events =       sum(index_entry[TREE_COUNT_KEY]      for index_entry in self.indices.values())
+    self.fsize           =       sum(index_entry[FSIZE_KEY]           for index_entry in self.indices.values())
     self.nof_files       = max(self.indices.keys())
     self.blacklist       = []
     self.selection       = [] # if empty, select all
@@ -338,9 +353,9 @@ def process_paths(meta_dict, key):
 
   if len(local_paths_sorted) == 1:
     # let's compute the number of files, events and the list of blacklisted files
-    nof_events      = sum(index_entry[HISTOGRAM_COUNT_KEY] for index_entry in local_paths_sorted[0].indices.values())
-    nof_tree_events = sum(index_entry[TREE_COUNT_KEY]      for index_entry in local_paths_sorted[0].indices.values())
-    fsize           = sum(index_entry[FSIZE_KEY]           for index_entry in local_paths_sorted[0].indices.values())
+    nof_events      = math.fsum(index_entry[HISTOGRAM_COUNT_KEY] for index_entry in local_paths_sorted[0].indices.values())
+    nof_tree_events =       sum(index_entry[TREE_COUNT_KEY]      for index_entry in local_paths_sorted[0].indices.values())
+    fsize           =       sum(index_entry[FSIZE_KEY]           for index_entry in local_paths_sorted[0].indices.values())
 
     meta_dict[key]['nof_events']      = nof_events
     meta_dict[key]['nof_tree_events'] = nof_tree_events
@@ -362,7 +377,7 @@ def process_paths(meta_dict, key):
 
       # compute the nof events by summing the nof events in the primary storage and adding the nof events
       # in the selected files part of the secondary storage
-      sum_of_events = local_paths_sorted[0].nof_events + sum(
+      sum_of_events = local_paths_sorted[0].nof_events + math.fsum(
         local_paths_sorted[1].indices[sel_idx][HISTOGRAM_COUNT_KEY]
         for sel_idx in local_paths_sorted[1].selection
       )
@@ -572,8 +587,8 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
 
   logging.debug("Found total {nof_events} ({nof_tree_events} tree) events in {nof_files} files in "
                 "{path} for entry {key}".format(
-    nof_events      = sum([index_entry[HISTOGRAM_COUNT_KEY] for index_entry in indices.values()]),
-    nof_tree_events = sum([index_entry[TREE_COUNT_KEY] for index_entry in indices.values()]),
+    nof_events      = math.fsum([index_entry[HISTOGRAM_COUNT_KEY] for index_entry in indices.values()]),
+    nof_tree_events =       sum([index_entry[TREE_COUNT_KEY]      for index_entry in indices.values()]),
     nof_files       = len(indices.keys()),
     path            = path_obj.name_fuse,
     key             = key,
@@ -581,9 +596,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
 
   if not meta_dict[key]['located']:
     missing_from_superset = [] if not missing_branches else get_missing_from_superset(indices)
-    overlap_with_triggers = triggerTable.get_overlap(
-      missing_from_superset, meta_dict[key]['process_name_specific']
-    )
+    overlap_with_triggers = triggerTable.triggers_flat & set(missing_from_superset)
     if overlap_with_triggers:
       raise ValueError(
         "Found an overlap b/w the list of required triggers and the list of missing branches in "
@@ -1036,7 +1049,6 @@ if __name__ == '__main__':
           xsection                        = round(meta_dict[key]['xsection'], 6) if is_mc else None,
           genWeight                       = meta_dict[key]['genWeight'],
           triggers                        = meta_dict[key]['triggers'],
-          reHLT                           = meta_dict[key]['reHLT'],
           has_LHE                         = meta_dict[key]['has_LHE'],
           missing_from_superset           = missing_branches_template_filled,
           missing_hlt_paths               = missing_hlt_paths_filled,

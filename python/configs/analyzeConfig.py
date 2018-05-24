@@ -50,7 +50,8 @@ class analyzeConfig(object):
          dirs: list of subdirectories under `subdir` -- jobs, cfgs, histograms, logs, datacards
          makefile: full path to the Makefile
          histogram_files: the histogram files produced by 'analyze_1l_2tau' jobs
-         histogram_files_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_1l_2tau.py', so that 'analyze_1l_2tau' jobs do not have to be submitted again
+         histogram_files_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_1l_2tau.py',
+                                 so that 'analyze_1l_2tau' jobs do not have to be submitted again
          histogramFile_hadd_stage1: the histogram file obtained by hadding the output of all jobs
          histogramFile_hadd_stage2: the final histogram file with data-driven background estimates added
          datacardFile: the datacard -- final output file of this execution flow
@@ -190,7 +191,7 @@ class analyzeConfig(object):
         """Run analysis with loose selection criteria for leptons and hadronic taus,
            for the purpose of preparing event list files for BDT training.
         """
-        self.hadTau_selection_relaxed = hadTau_selection_relaxe
+        self.hadTau_selection_relaxed = hadTau_selection_relaxed
         if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
             if self.era == "2017":
                 self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
@@ -225,7 +226,7 @@ class analyzeConfig(object):
         if 'apply_genWeight' not in jobOptions:
           jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
         if 'apply_trigger_bits' not in jobOptions:
-          jobOptions['apply_trigger_bits'] = (is_mc and sample_info["reHLT"]) or not is_mc
+          jobOptions['apply_trigger_bits'] = True
         if 'lumiScale' not in jobOptions:
           jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / sample_info["nof_events"] \
                                     if (self.use_lumi and is_mc) else 1.
@@ -308,17 +309,18 @@ class analyzeConfig(object):
                 )
             assert(jobOptions_expr)
             if jobOptions_key.startswith('apply_') and jobOptions_key.endswith('GenMatching'):
-                jobOptions_val = jobOptions_val and is_mc
+                jobOptions_val = jobOptions_val and is_mc and not self.isBDTtraining
             jobOptions_val = jobOptions_expr % str(jobOptions_val)
             lines.append("{}.{:<{len}} = {}".format(process_string, jobOptions_key, jobOptions_val, len = max_option_len))
 
+        blacklist = set(sample_info["missing_hlt_paths"]) | set(sample_info["missing_from_superset"])
         for trigger in self.triggers:
             trigger_string     = '%s.triggers_%s'     % (process_string, trigger)
             trigger_use_string = '%s.use_triggers_%s' % (process_string, trigger)
             if isLeptonFR:
-                available_triggers = self.triggerTable.get_leptonFR(trigger, sample_info['process_name_specific'])
+                available_triggers = list(self.triggerTable.triggers_analysis[trigger] - blacklist)
             else:
-                available_triggers = self.triggerTable.get(trigger, sample_info['process_name_specific'])
+                available_triggers = list(self.triggerTable.triggers_leptonFR[trigger] - blacklist)
             use_trigger = bool(trigger in sample_info['triggers'])
             lines.extend([
                 "{:<{len}} = cms.vstring({})".format(trigger_string,     available_triggers, len = max_option_len + len(process_string) + 1),

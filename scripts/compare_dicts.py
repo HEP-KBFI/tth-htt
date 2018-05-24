@@ -74,7 +74,6 @@ if __name__ == '__main__':
     'selection'             : (lambda d: d['local_paths'][0]['selection']),
     'selection2'            : (lambda d: d['local_paths'][1]['selection'] if len(d['local_paths']) > 1 else True),
     'use_it'                : (lambda d: d['use_it']),
-    'reHLT'                 : (lambda d: d['reHLT'] if 'reHLT' in d else True),
     'xsection'              : (lambda d: d['xsection'] if 'xsection' in d else True),
     'triggers'              : (lambda d: list(sorted(d['triggers']))),
     'genWeight'             : (lambda d: d['genWeight'] if 'genWeight' in d else True),

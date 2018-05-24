@@ -677,7 +677,7 @@ int main(int argc, char* argv[])
 
     if ( !(selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu || selTrigger_1e2mu || selTrigger_2e1mu || selTrigger_3e || selTrigger_3mu) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection." << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
 	std::cout << " (selTrigger_1e = " << selTrigger_1e
 		  << ", selTrigger_1mu = " << selTrigger_1mu
 		  << ", selTrigger_2e = " << selTrigger_2e
@@ -702,7 +702,7 @@ int main(int argc, char* argv[])
 
       if ( selTrigger_1e && (isTriggered_1mu || isTriggered_2e || isTriggered_1e1mu || isTriggered_2mu || isTriggered_3e || isTriggered_2e1mu || isTriggered_1e2mu || isTriggered_3mu) ) {
         if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl;
+      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
 	  std::cout << " (selTrigger_1e = " << selTrigger_1e
                     << ", isTriggered_1mu = " << isTriggered_1mu
                     << ", isTriggered_2e = " << isTriggered_2e
@@ -717,7 +717,7 @@ int main(int argc, char* argv[])
       }
       if ( selTrigger_1mu && (isTriggered_2e || isTriggered_1e1mu || isTriggered_2mu || isTriggered_3e || isTriggered_2e1mu || isTriggered_1e2mu || isTriggered_3mu) ) {
         if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl;
+      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
 	  std::cout << " (selTrigger_1mu = " << selTrigger_1mu
                     << ", isTriggered_2e = " << isTriggered_2e
                     << ", isTriggered_1e1mu = " << isTriggered_1e1mu
@@ -731,7 +731,7 @@ int main(int argc, char* argv[])
       }
       if ( selTrigger_2e && (isTriggered_1e1mu || isTriggered_2mu || isTriggered_3e || isTriggered_2e1mu || isTriggered_1e2mu || isTriggered_3mu) ) {
         if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl;
+      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
 	  std::cout << " (selTrigger_2e = " << selTrigger_2e
                     << ", isTriggered_1e1mu = " << isTriggered_1e1mu
                     << ", isTriggered_2mu = " << isTriggered_2mu
@@ -744,7 +744,7 @@ int main(int argc, char* argv[])
       }
       if ( selTrigger_1e1mu && (isTriggered_2mu || isTriggered_3e || isTriggered_2e1mu || isTriggered_1e2mu || isTriggered_3mu) ) {
         if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl;
+      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
 	  std::cout << " (selTrigger_1e1mu = " << selTrigger_1e1mu
                     << ", isTriggered_2mu = " << isTriggered_2mu
                     << ", isTriggered_3e = " << isTriggered_3e
@@ -756,7 +756,7 @@ int main(int argc, char* argv[])
       }
       if ( selTrigger_2mu && (isTriggered_3e || isTriggered_2e1mu || isTriggered_1e2mu || isTriggered_3mu) ) {
         if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl;
+      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
 	  std::cout << " (selTrigger_2mu = " << selTrigger_2mu
                     << ", isTriggered_3e = " << isTriggered_3e
                     << ", isTriggered_2e1mu = " << isTriggered_2e1mu
@@ -767,7 +767,7 @@ int main(int argc, char* argv[])
       }
       if ( selTrigger_3e && (isTriggered_2e1mu || isTriggered_1e2mu || isTriggered_3mu) ) {
         if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl;
+      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
 	  std::cout << " (selTrigger_3e = " << selTrigger_3e
                     << ", isTriggered_2e1mu = " << isTriggered_2e1mu
                     << ", isTriggered_1e2mu = " << isTriggered_1e2mu
@@ -777,7 +777,7 @@ int main(int argc, char* argv[])
       }
       if ( selTrigger_2e1mu && (isTriggered_1e2mu || isTriggered_3mu) ) {
         if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl;
+      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
 	  std::cout << " (selTrigger_2e1mu = " << selTrigger_2e1mu
                     << ", isTriggered_1e2mu = " << isTriggered_1e2mu
                     << ", isTriggered_3mu = " << isTriggered_3mu << ")" << std::endl;
@@ -786,7 +786,7 @@ int main(int argc, char* argv[])
       }
       if ( selTrigger_1e2mu && isTriggered_3mu ) {
         if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl;
+      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
 	  std::cout << " (selTrigger_1e2mu = " << selTrigger_1e2mu
                     << ", isTriggered_3mu = " << isTriggered_3mu << ")" << std::endl;
         }
@@ -884,7 +884,7 @@ int main(int argc, char* argv[])
     // require two or more leptons passing loose preselection criteria 
     if ( !(preselLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS preselLeptons selection." << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS preselLeptons selection." << std::endl;
   printCollection("preselLeptons", preselLeptons);
       }
       continue;
@@ -896,7 +896,7 @@ int main(int argc, char* argv[])
 	   (preselElectrons.size() >= 1 && preselMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
 	   (                               preselMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
+    std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given preselLepton multiplicity." << std::endl;
 	std::cout << " (#preselElectrons = " << preselElectrons.size() 
 		  << ", #preselMuons = " << preselMuons.size() 
 		  << ", selTrigger_2mu = " << selTrigger_2mu 
@@ -912,7 +912,7 @@ int main(int argc, char* argv[])
     // apply requirement on jets (incl. b-tagged jets) on preselection level
     if ( !(selJets.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selJets selection " << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS selJets selection " << std::endl;
 	std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
       }
       continue;
@@ -920,7 +920,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 2 jets (1)");
     if ( !(selBJets_loose.size() == 0 && selBJets_medium.size() == 0) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selBJets selection (1)." << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS selBJets selection (1)." << std::endl;
 	std::cout << " (#selBJets_loose = " << selBJets_loose.size() << ", #selBJets_medium = " << selBJets_medium.size() << ")" << std::endl;
       }
       continue;
@@ -952,7 +952,7 @@ int main(int argc, char* argv[])
     // require two or more leptons passing tight selection criteria of final event selection 
     if ( !(selLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selLeptons selection." << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS selLeptons selection." << std::endl;
 	std::cout << " (#selLeptons = " << selLeptons.size() << ")" << std::endl;
 	for ( size_t idxSelLepton = 0; idxSelLepton < selLeptons.size(); ++idxSelLepton ) {
 	  std::cout << "selLepton #" << idxSelLepton << ":" << std::endl;
@@ -986,7 +986,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherPt);
     if ( !(tightLeptons.size() <= 3) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS tightLeptons selection." << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS tightLeptons selection." << std::endl;
   printCollection("tightLeptons", tightLeptons);
       }
       continue;
@@ -998,7 +998,7 @@ int main(int argc, char* argv[])
 	   (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
 	   (                                 fakeableMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given fakeableLepton multiplicity." << std::endl; 
+    std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given fakeableLepton multiplicity." << std::endl;
 	std::cout << " (#fakeableElectrons = " << fakeableElectrons.size() 
 		  << ", #fakeableMuons = " << fakeableMuons.size() 
 		  << ", selTrigger_2mu = " << selTrigger_2mu 
@@ -1025,7 +1025,7 @@ int main(int argc, char* argv[])
       {
         if(run_lumi_eventSelector || isDEBUG)
         {
-          std::cout << "event FAILS HLT filter matching\n";
+          std::cout << "event " << eventInfo.str() << " FAILS HLT filter matching\n";
         }
         continue;
       }
@@ -1035,7 +1035,7 @@ int main(int argc, char* argv[])
     // apply requirement on jets (incl. b-tagged jets) on level of final event selection
     if ( !(selJets.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selJets selection (2)." << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS selJets selection (2)." << std::endl;
 	std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
 	for ( size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet ) {
 	  std::cout << "selJet #" << idxSelJet << ":" << std::endl;
@@ -1047,7 +1047,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 2 jets (2)", evtWeight_2lepton);
     if ( !(selBJets_loose.size() <= 1 && selBJets_medium.size() == 0) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selBJets selection (2)." << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS selBJets selection (2)." << std::endl;
 	std::cout << " (#selBJets_loose = " << selBJets_loose.size() << ", #selBJets_medium = " << selBJets_medium.size() << ")" << std::endl;
       }
       continue;
@@ -1066,7 +1066,7 @@ int main(int argc, char* argv[])
     }
     if ( failsLowMassVeto ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS low mass lepton pair veto." << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS low mass lepton pair veto." << std::endl;
       }
       continue;
     }
@@ -1079,7 +1079,7 @@ int main(int argc, char* argv[])
     double minPt_third = selLepton_third ? 10. : -1.;
     if ( !(selLepton_lead->cone_pt() > minPt_lead && selLepton_sublead->cone_pt() > minPt_sublead && selLepton_third->cone_pt() > minPt_third) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS lepton pT selection." << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS lepton pT selection." << std::endl;
 	std::cout << " (leading selLepton pT = "       << selLepton_lead->pt()    << ", minPt_lead = "    << minPt_lead
                   << ", sub-leading selLepton pT = "   << selLepton_sublead->pt() << ", minPt_sublead = " << minPt_sublead
                   << ", third leading selLepton pT = " << selLepton_third->pt()   << ", minPt_third = " << minPt_third << ")" << std::endl;
@@ -1108,7 +1108,7 @@ int main(int argc, char* argv[])
     bool passesZbosonMassCut = std::fabs(mLL - z_mass) < z_window;
     if ( !passesZbosonMassCut ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS Z-boson cut." << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS Z-boson cut." << std::endl;
       }
       continue;
     }
@@ -1118,7 +1118,7 @@ int main(int argc, char* argv[])
 
     if ( met_LD < 0.2 ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS MET LD selection." << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
 	std::cout << " (LD = " << met_LD << ")" << std::endl;
       }
       continue;
@@ -1128,7 +1128,7 @@ int main(int argc, char* argv[])
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {
 	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS MEt filters." << std::endl;
+      std::cout << "event " << eventInfo.str() << " FAILS MEt filters." << std::endl;
 	}
 	continue;
       }

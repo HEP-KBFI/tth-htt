@@ -990,7 +990,7 @@ main(int argc,
     {
       if(run_lumi_eventSelector)
       {
-        std::cout << "event FAILS (presel.e + presel.mu != 1) cut\n";
+        std::cout << "event " << eventInfo.str() << " FAILS (presel.e + presel.mu != 1) cut\n";
       }
       continue;
     }
@@ -1035,7 +1035,7 @@ main(int argc,
           {
             if(run_lumi_eventSelector)
               {
-                std::cout << "event FAILS MEtFilter\n";
+                std::cout << "event " << eventInfo.str() << " FAILS MEtFilter\n";
               }
             continue;
           }
@@ -1064,7 +1064,7 @@ main(int argc,
         {
           if(run_lumi_eventSelector)
             {
-              std::cout << "event FAILS this mu trigger"            "\n"
+              std::cout << "event " << eventInfo.str() << " FAILS this mu trigger"            "\n"
                 "HLT Path name "     << *hltPath_iter            << "\n"
                 "Trigger bit value " << hltPath_iter->getValue() << '\n';
             }
@@ -1078,7 +1078,7 @@ main(int argc,
           {
             if(run_lumi_eventSelector)
               {
-                std::cout << "event FAILS global muon cone and reco pt cuts\n";
+                std::cout << "event " << eventInfo.str() << " FAILS global muon cone and reco pt cuts\n";
               }
             continue;
           }
@@ -1155,7 +1155,7 @@ main(int argc,
       hltPath_iter->setIsTriggered(false); // resetting the bool to false 
       if(! (hltPath_iter->getValue() >= 1)){ 
         if(run_lumi_eventSelector){
-          std::cout << "event FAILS this e trigger" "\n"
+          std::cout << "event " << eventInfo.str() << " FAILS this e trigger" "\n"
             "HLT Path name " << *hltPath_iter  << "\n"
             "Trigger bit value " << hltPath_iter->getValue() << '\n';
              }
@@ -1543,7 +1543,7 @@ main(int argc,
     {
       if(run_lumi_eventSelector)
       {
-        std::cout << "event FAILS as there is no presel.lepton+Jet pair in the event satisfying all requirements\n";
+        std::cout << "event " << eventInfo.str() << " FAILS as there is no presel.lepton+Jet pair in the event satisfying all requirements\n";
       }
       continue;
     }
