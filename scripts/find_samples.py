@@ -458,7 +458,7 @@ if __name__ == '__main__':
   )
   parser.add_argument('-P', '--private-path',
     type = str, dest = 'private_path', metavar = 'path', required = False,
-    help = 'R|Path to '
+    help = 'R|Path to private MINIAODs',
   )
   parser.add_argument('-V', '--verbose',
     dest = 'verbose', action = 'store_true', default = False, required = False,
