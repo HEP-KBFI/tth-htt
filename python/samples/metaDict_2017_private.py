@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-05-23 21:22:44 with the following command:
+# file generated at 2018-05-24 12:20:23 with the following command:
 # find_samples.py -i ../NanoAOD/test/datasets_private_2017.txt -m python/samples/metaDict_2017_private.py -c /hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018May23 -V -P /hdfs/cms/store/user/kaehatah/private
 
 meta_dictionary = OD()
@@ -26,7 +26,7 @@ meta_dictionary["/THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"
 ])
 
 meta_dictionary["/THW_5f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018May23_THW_5f_Hincl_13TeV_madgraph_pythia8_Fall17__private"),
   ("sample_category",       "tH"),
   ("process_name_specific", "THW"),
   ("nof_db_events",         50000),
