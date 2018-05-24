@@ -222,7 +222,7 @@ class analyzeConfig(object):
         if 'apply_genWeight' not in jobOptions:
           jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
         if 'apply_trigger_bits' not in jobOptions:
-          jobOptions['apply_trigger_bits'] = (is_mc and sample_info["reHLT"]) or not is_mc
+          jobOptions['apply_trigger_bits'] = True
         if 'lumiScale' not in jobOptions:
           jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / sample_info["nof_events"] \
                                     if (self.use_lumi and is_mc) else 1.

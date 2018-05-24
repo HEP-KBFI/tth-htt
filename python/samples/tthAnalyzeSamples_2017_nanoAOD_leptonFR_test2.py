@@ -16,7 +16,6 @@ samples_2017["/SingleElectron/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
   ("triggers",                        ['1e']),
-  ("reHLT",                           True),
   ("local_paths",
     [
       OD([

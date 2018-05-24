@@ -218,7 +218,6 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("xsection",                        {{ xsection }}),
   ("genWeight",                       {{ genWeight }}),{% endif %}
   ("triggers",                        {{ triggers }}),
-  ("reHLT",                           {{ reHLT }}),
   ("has_LHE",                         {{ has_LHE }}),
   ("local_paths",
     [
@@ -1052,7 +1051,6 @@ if __name__ == '__main__':
           xsection                        = round(meta_dict[key]['xsection'], 6) if is_mc else None,
           genWeight                       = meta_dict[key]['genWeight'],
           triggers                        = meta_dict[key]['triggers'],
-          reHLT                           = meta_dict[key]['reHLT'],
           has_LHE                         = meta_dict[key]['has_LHE'],
           missing_from_superset           = missing_branches_template_filled,
           missing_hlt_paths               = missing_hlt_paths_filled,
