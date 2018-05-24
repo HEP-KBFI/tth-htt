@@ -33,8 +33,8 @@ class prodNtupleConfig:
     def __init__(self, configDir, outputDir, executable_prodNtuple, executable_nanoAOD,
                  cfgFile_prodNtuple, samples, max_files_per_job, era, preselection_cuts,
                  leptonSelection, hadTauSelection, check_input_files, running_method,
-                 version, num_parallel_jobs, pileup, pool_id = '', verbose = False, dry_run = False,
-                 isDebug = False, use_nonnominal = False, use_home = False):
+                 version, num_parallel_jobs, pileup, golden_json, pool_id = '', verbose = False,
+                 dry_run = False, isDebug = False, use_nonnominal = False, use_home = False):
 
         self.configDir             = configDir
         self.outputDir             = outputDir
@@ -54,12 +54,16 @@ class prodNtupleConfig:
         self.use_nonnominal        = use_nonnominal
         self.use_home              = use_home
         self.pileup                = pileup
+        self.golden_json           = golden_json
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
 
         if not os.path.isfile(self.pileup):
             raise ValueError('No such file: %s' % self.pileup)
         self.pileup_histograms = get_pileup_histograms(self.pileup)
+
+        if not os.path.isfile(self.golden_json):
+            raise ValueError('No such file: %s' % self.golden_json)
 
         self.executable = self.executable_nanoAOD
 
@@ -161,6 +165,7 @@ class prodNtupleConfig:
             "isMC = %s" % str(jobOptions['is_mc']),
             "era = %s" % str(self.era),
             "pileup = '%s'" % self.pileup,
+            "golden_json = '%s'" % self.golden_json,
             "process_name = '%s'" % jobOptions['process_name'],
         ])
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
