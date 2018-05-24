@@ -418,7 +418,7 @@ if __name__ == '__main__':
     type = str, dest = 'golden_json', metavar = 'file', required = False,
     default = os.path.join(
       os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'NanoAOD', 'data',
-      'Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt'
+      'Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt'
     ),
     help = 'R|Path to the golden lumimask file in JSON format',
   )
@@ -458,7 +458,7 @@ if __name__ == '__main__':
   )
   parser.add_argument('-P', '--private-path',
     type = str, dest = 'private_path', metavar = 'path', required = False,
-    help = 'R|Path to '
+    help = 'R|Path to private MINIAODs',
   )
   parser.add_argument('-V', '--verbose',
     dest = 'verbose', action = 'store_true', default = False, required = False,
