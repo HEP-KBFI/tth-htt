@@ -324,28 +324,12 @@ namespace
   double
   sf_triggerEff_2017(int numElectrons, int numMuons,
                      int lepton1_type, double lepton1_pt, double lepton1_eta,
-                     int lepton2_type, double lepton2_pt, double lepton2_eta, // unused
+                     int lepton2_type, double lepton2_pt, double lepton2_eta, 
                      int lepton3_type, double lepton3_pt, double lepton3_eta, // unused
-		     int lepton4_type, double lepton4_pt, double lepton4_eta, // unused
-                     const std::vector<lutWrapperBase *> & effTrigger_1e_data,
-                     const std::vector<lutWrapperBase *> & effTrigger_1e_mc,
-                     const std::vector<lutWrapperBase *> & effTrigger_1m_data,
-                     const std::vector<lutWrapperBase *> & effTrigger_1m_mc)
+		     int lepton4_type, double lepton4_pt, double lepton4_eta) // unused
   {
     double sf = 1.;
-    if(numElectrons == 1 && numMuons == 0)
-    {
-      const double eff_data = get_from_lut(effTrigger_1e_data, lepton1_pt, lepton1_eta);
-      const double eff_mc   = get_from_lut(effTrigger_1e_mc,   lepton1_pt, lepton1_eta);
-      sf = aux::compSF(eff_data, eff_mc);
-    }
-    else if(numElectrons == 0 && numMuons == 1)
-    {
-      const double eff_data = get_from_lut(effTrigger_1m_data, lepton1_pt, lepton1_eta);
-      const double eff_mc   = get_from_lut(effTrigger_1m_mc,   lepton1_pt, lepton1_eta);
-      sf = aux::compSF(eff_data, eff_mc);
-    }
-    else if(numElectrons == 2 && numMuons == 0)
+    if(numElectrons == 2 && numMuons == 0)
     {
       double lepton_pt_lead = TMath::Max(lepton1_pt, lepton2_pt);
       if   ( lepton_pt_lead >= 30. ) sf = 0.991;
@@ -364,10 +348,10 @@ namespace
       if   ( lepton_pt_lead >= 35. ) sf = 0.994;
       else                           sf = 0.972;
     }
-    else
+    else if ((numElectrons + numMuons) >= 3)
     {
       sf = 1.;
-    }
+    } 
     return sf;
   }
 }
@@ -382,10 +366,7 @@ Data_to_MC_CorrectionInterface::getSF_leptonTriggerEff() const
       lepton_type_[0], lepton_pt_[0], lepton_eta_[0],
       lepton_type_[1], lepton_pt_[1], lepton_eta_[1],
       lepton_type_[2], lepton_pt_[2], lepton_eta_[2],
-      lepton_type_[3], lepton_pt_[3], lepton_eta_[3],
-      effTrigger_1e_data_, effTrigger_1e_mc_, 
-      effTrigger_1m_data_, effTrigger_1m_mc_
-    );
+      lepton_type_[3], lepton_pt_[3], lepton_eta_[3]);
   }
   else
   {
@@ -465,6 +446,9 @@ namespace
   double constexpr
   getSF_hadTauID_and_Iso_2017(int hadTauSelection)
   {
+    //std::cout << "<getSF_hadTauID_and_Iso_2017>:" << std::endl;
+    //std::cout << " hadTauSelection = " << hadTauSelection << std::endl;
+
     // CV: take data/MC (SF) measured for MVA-based tau ID with dR = 0.5 from
     //       https://indico.cern.ch/event/719250/contributions/2971854/attachments/1635435/2609013/tauid_recommendations2017.pdf 
     //     as the SF for MVA-based tau ID with dR = 0.3 have not been measured yet.
@@ -479,6 +463,8 @@ namespace
     else if ( hadTauSelection == 5 ) { sf = 0.87; sfErr = 0.05; } // dR03mvaTight
     else if ( hadTauSelection == 6 ) { sf = 0.85; sfErr = 0.05; } // dR03mvaVTight
     else if ( hadTauSelection == 7 ) { sf = 0.82; sfErr = 0.05; } // dR03mvaVVTight
+    //std::cout << " sf = " << sf << " +/- " << sfErr << std::endl;
+    assert(sfErr >= 0); // CV: used just to avoid compilation errors due to "variable 'sfErr' set but not used"
 
     return sf; 
   }

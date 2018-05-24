@@ -327,7 +327,7 @@ int main(int argc, char* argv[])
   vstring hadTauSelections_numerator = cfg_analyze.getParameter<vstring>("hadTauSelections_numerator");
   std::cout << "hadTauSelection:" << std::endl;
   std::cout << " denominator = " << hadTauSelection_denominator << std::endl;
-  std::cout << " numerator = " << format_vstring(hadTauSelection_numerator) << std::endl;
+  std::cout << " numerator = " << format_vstring(hadTauSelections_numerator) << std::endl;
 
   vdouble absEtaBins = cfg_analyze.getParameter<vdouble>("absEtaBins");
   if ( absEtaBins.size() < 2 ) throw cms::Exception("analyze_jetToTauFakeRate") 
@@ -339,7 +339,6 @@ int main(int argc, char* argv[])
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
-  bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
   edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
@@ -613,9 +612,9 @@ int main(int argc, char* argv[])
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e) || (isMC && !apply_trigger_bits);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu) || (isMC && !apply_trigger_bits);
-    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu) || (isMC && !apply_trigger_bits);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu);
+    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu);
 
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
@@ -778,11 +777,6 @@ int main(int argc, char* argv[])
       dataToMCcorrectionInterface->setLeptons(
         preselLepton_lead_type, preselLepton_lead->pt(), preselLepton_lead->eta(), 
 	preselLepton_sublead_type, preselLepton_sublead->pt(), preselLepton_sublead->eta());
-
-//--- apply trigger efficiency turn-on curves to Spring16 non-reHLT MC
-      if ( !apply_trigger_bits ) {
-	evtWeight *= dataToMCcorrectionInterface->getWeight_leptonTriggerEff();
-      }
 
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria      

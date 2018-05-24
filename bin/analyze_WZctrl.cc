@@ -90,7 +90,7 @@ const int hadTauSelection_antiMuon = -1; // not applied
 
 double getEvtWeight(double lumiScale, double genWeight, bool apply_genWeight, double pileupWeight,
 		    LHEInfoReader* lheInfoReader, int lheScale_option,
-		    Data_to_MC_CorrectionInterface* dataToMCcorrectionInterface, bool apply_trigger_bits,
+		    Data_to_MC_CorrectionInterface* dataToMCcorrectionInterface, 
 		    const RecoLepton* selLepton_lead, const RecoLepton* selLepton_sublead, const RecoLepton* selLepton_third, 
 		    const RecoHadTau* selHadTau,
 		    const std::vector<const RecoJet*>& selJets)
@@ -115,11 +115,6 @@ double getEvtWeight(double lumiScale, double genWeight, bool apply_genWeight, do
     dataToMCcorrectionInterface->setLeptons(
       getLeptonType(selLepton_lead->pdgId()), selLepton_lead->pt(), selLepton_lead->eta(), 
       getLeptonType(selLepton_sublead->pdgId()), selLepton_sublead->pt(), selLepton_sublead->eta());
-  }
-
-//--- apply trigger efficiency turn-on curves to Spring16 non-reHLT MC
-  if ( !apply_trigger_bits ) {
-    evtWeight *= dataToMCcorrectionInterface->getWeight_leptonTriggerEff();
   }
 
 //--- apply data/MC corrections for trigger efficiency,
@@ -241,7 +236,6 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
-  bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
   edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
   MEtFilterSelector metFilterSelector(cfgMEtFilter, isMC);
@@ -661,15 +655,15 @@ int main(int argc, char* argv[])
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e) || (isMC && !apply_trigger_bits);
-    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e) || (isMC && !apply_trigger_bits);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu) || (isMC && !apply_trigger_bits);
-    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu) || (isMC && !apply_trigger_bits);
-    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu) || (isMC && !apply_trigger_bits);
-    bool isTriggered_1e2mu = hltPaths_isTriggered(triggers_1e2mu) || (isMC && !apply_trigger_bits);
-    bool isTriggered_2e1mu = hltPaths_isTriggered(triggers_2e1mu) || (isMC && !apply_trigger_bits);
-    bool isTriggered_3mu = hltPaths_isTriggered(triggers_3mu) || (isMC && !apply_trigger_bits);
-    bool isTriggered_3e = hltPaths_isTriggered(triggers_3e) || (isMC && !apply_trigger_bits);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e);
+    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu);
+    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu);
+    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu);
+    bool isTriggered_1e2mu = hltPaths_isTriggered(triggers_1e2mu);
+    bool isTriggered_2e1mu = hltPaths_isTriggered(triggers_2e1mu);
+    bool isTriggered_3mu = hltPaths_isTriggered(triggers_3mu);
+    bool isTriggered_3e = hltPaths_isTriggered(triggers_3e);
 
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_2e = use_triggers_2e && isTriggered_2e;
@@ -985,7 +979,7 @@ int main(int argc, char* argv[])
       evtWeight_2lepton = getEvtWeight(
         lumiScale, eventInfo.genWeight, apply_genWeight, eventInfo.pileupWeight,
 	lheInfoReader, lheScale_option,
-        dataToMCcorrectionInterface, apply_trigger_bits,
+        dataToMCcorrectionInterface, 
 	selLepton_lead, selLepton_sublead, 0, 0, selJets);
     }
   
@@ -1252,7 +1246,7 @@ int main(int argc, char* argv[])
 	  evtWeight = getEvtWeight(
             lumiScale, eventInfo.genWeight, apply_genWeight, eventInfo.pileupWeight,
 	    lheInfoReader, lheScale_option,
-	    dataToMCcorrectionInterface, apply_trigger_bits,
+	    dataToMCcorrectionInterface, 
 	    selLepton_lead, selLepton_sublead, selLepton_third, 0, selJets);	
 	}
       } else if ( idxEvtSel == k2lepton_1tau ) {
@@ -1261,7 +1255,7 @@ int main(int argc, char* argv[])
 	  evtWeight = getEvtWeight(
             lumiScale, eventInfo.genWeight, apply_genWeight, eventInfo.pileupWeight,
 	    lheInfoReader, lheScale_option,
-	    dataToMCcorrectionInterface, apply_trigger_bits,
+	    dataToMCcorrectionInterface, 
 	    selLepton_lead, selLepton_sublead, 0, selHadTau, selJets);	
 	}
       } else assert(0);
