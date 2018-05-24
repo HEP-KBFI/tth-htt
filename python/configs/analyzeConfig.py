@@ -225,8 +225,6 @@ class analyzeConfig(object):
           jobOptions['isMC'] = is_mc
         if 'apply_genWeight' not in jobOptions:
           jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
-        if 'apply_trigger_bits' not in jobOptions:
-          jobOptions['apply_trigger_bits'] = True
         if 'lumiScale' not in jobOptions:
           jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / sample_info["nof_events"] \
                                     if (self.use_lumi and is_mc) else 1.
@@ -250,7 +248,6 @@ class analyzeConfig(object):
             'apply_hadTauGenMatching',
             'applyFakeRateWeights',
             'apply_genWeight',
-            'apply_trigger_bits',
             'selEventsFileName_output',
             'fillGenEvtHistograms',
             'selectBDT',
