@@ -50,7 +50,8 @@ class analyzeConfig(object):
          dirs: list of subdirectories under `subdir` -- jobs, cfgs, histograms, logs, datacards
          makefile: full path to the Makefile
          histogram_files: the histogram files produced by 'analyze_1l_2tau' jobs
-         histogram_files_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_1l_2tau.py', so that 'analyze_1l_2tau' jobs do not have to be submitted again
+         histogram_files_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_1l_2tau.py',
+                                 so that 'analyze_1l_2tau' jobs do not have to be submitted again
          histogramFile_hadd_stage1: the histogram file obtained by hadding the output of all jobs
          histogramFile_hadd_stage2: the final histogram file with data-driven background estimates added
          datacardFile: the datacard -- final output file of this execution flow
@@ -309,13 +310,14 @@ class analyzeConfig(object):
             jobOptions_val = jobOptions_expr % str(jobOptions_val)
             lines.append("{}.{:<{len}} = {}".format(process_string, jobOptions_key, jobOptions_val, len = max_option_len))
 
+        blacklist = set(sample_info["missing_hlt_paths"]) | set(sample_info["missing_from_superset"])
         for trigger in self.triggers:
             trigger_string     = '%s.triggers_%s'     % (process_string, trigger)
             trigger_use_string = '%s.use_triggers_%s' % (process_string, trigger)
             if isLeptonFR:
-                available_triggers = self.triggerTable.get_leptonFR(trigger, sample_info['process_name_specific'])
+                available_triggers = list(self.triggerTable.triggers_analysis[trigger] - blacklist)
             else:
-                available_triggers = self.triggerTable.get(trigger, sample_info['process_name_specific'])
+                available_triggers = list(self.triggerTable.triggers_leptonFR[trigger] - blacklist)
             use_trigger = bool(trigger in sample_info['triggers'])
             lines.extend([
                 "{:<{len}} = cms.vstring({})".format(trigger_string,     available_triggers, len = max_option_len + len(process_string) + 1),
