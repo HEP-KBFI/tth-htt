@@ -68,6 +68,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
+#include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // format_vstring
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
@@ -324,6 +325,9 @@ int main(int argc, char* argv[])
 
   std::string hadTauSelection_denominator = cfg_analyze.getParameter<std::string>("hadTauSelection_denominator");
   vstring hadTauSelections_numerator = cfg_analyze.getParameter<vstring>("hadTauSelections_numerator");
+  std::cout << "hadTauSelection:" << std::endl;
+  std::cout << " denominator = " << hadTauSelection_denominator << std::endl;
+  std::cout << " numerator = " << format_vstring(hadTauSelection_numerator) << std::endl;
 
   vdouble absEtaBins = cfg_analyze.getParameter<vdouble>("absEtaBins");
   if ( absEtaBins.size() < 2 ) throw cms::Exception("analyze_jetToTauFakeRate") 

@@ -108,13 +108,23 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     jobOptions['histogramDir'] = getHistogramDir(
       jobOptions['hadTauSelection'], hadTau_frWeight, jobOptions['hadTauChargeSelection']
     )
-    if jobOptions['hadTauSelection'].find("Fakeable") != -1 and jobOptions['applyFakeRateWeights'] in [ "2tau" ]:
-      fitFunctionName = "jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt" % self.hadTau_selection_part2
-      jobOptions['hadTauFakeRateWeight.lead.fitFunctionName'] = fitFunctionName
-      jobOptions['hadTauFakeRateWeight.sublead.fitFunctionName'] = fitFunctionName
+
+    jobOptions['hadTauFakeRateWeight.inputFileName'] = self.hadTauFakeRateWeight_inputFile
+    graphName = 'jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt' % self.hadTau_selection_part2
+    jobOptions['hadTauFakeRateWeight.lead.graphName'] = graphName
+    jobOptions['hadTauFakeRateWeight.sublead.graphName'] = graphName 
+    fitFunctionName = 'jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt' % self.hadTau_selection_part2
+    jobOptions['hadTauFakeRateWeight.lead.fitFunctionName'] = fitFunctionName
+    jobOptions['hadTauFakeRateWeight.sublead.fitFunctionName'] = fitFunctionName
     if jobOptions['hadTauSelection'].find("mcClosure") != -1:
       jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = False
       jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = False
+    if jobOptions['hadTauSelection'].find("Tight") != -1 and self.applyFakeRateWeights not in [ "2tau" ] and not self.isBDTtraining:
+      jobOptions['hadTauFakeRateWeight.applyGraph_lead'] = False
+      jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = True
+      jobOptions['hadTauFakeRateWeight.applyGraph_sublead'] = False
+      jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = True
+      jobOptions['apply_hadTauFakeRateSF'] = True
 
     lines = super(analyzeConfig_0l_2tau, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)

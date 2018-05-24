@@ -47,9 +47,9 @@ process.analyze_1l_2tau = cms.PSet(
 
     applyFakeRateWeights = cms.string("disabled"), # either "disabled", "3L" or "2tau"
     leptonFakeRateWeight = cms.PSet(
-        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2016_data.root"),
-        histogramName_e = cms.string("FR_mva075_el_data_comb"),
-        histogramName_mu = cms.string("FR_mva075_mu_data_comb"),
+        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2017_Tallinn_2018May22.root"),
+        histogramName_e = cms.string("FR_mva090_el_data_comb"),
+        histogramName_mu = cms.string("FR_mva090_mu_data_comb"),
     ),
     hadTauFakeRateWeight = cms.PSet(
         inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v1.root"),

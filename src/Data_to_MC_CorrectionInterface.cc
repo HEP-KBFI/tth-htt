@@ -15,15 +15,11 @@
 #include <cassert> // assert()
 
 //TODO:
-// - update the data/MC corrections for 2017 data & MC
+// - update all data/MC corrections for 2017 data & MC
 // - rename the functions where possible
 
 Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::ParameterSet & cfg)
-  : effTrigger_ee_(nullptr)
-  , effTrigger_em_(nullptr)
-  , effTrigger_mm_(nullptr)
-  , effTrigger_3l_(nullptr)
-  , hadTauSelection_(-1)
+  : hadTauSelection_(-1)
   , eToTauFakeRate_option_(FRet::central)
   , muToTauFakeRate_option_(FRmt::central)
   , numLeptons_(0)
@@ -122,14 +118,14 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
 
     sfElectronID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
       inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_3l.root",
+      "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_e_3l.root",
       "sf",
       lut::kXptYabsEta
     ));
 
     sfElectronID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
       inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_2lss.root",
+      "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_e_2lss.root",
       "sf",
       lut::kXptYabsEta
     ));
@@ -164,93 +160,17 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
 
     sfMuonID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
       inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_3l.root",
+      "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_m_3l.root",
       "sf",
       lut::kXptYabsEta
     ));
 
     sfMuonID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
       inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_2lss.root",
+      "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_m_2lss.root",
       "sf",
       lut::kXptYabsEta
     ));
-
-//-----------------------------------------------------------------------------
-
-    effTrigger_ee_ = new lutWrapperTH2Poly( // X=pt1, Y=pt2
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root",
-      "SSee2DPt__effic",
-      lut::kXptYpt
-    );
-
-    effTrigger_em_ = new lutWrapperTH2Poly( // X=pt1, Y=pt2
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root",
-      "SSeu2DPt_effic",
-      lut::kXptYpt
-    );
-
-    effTrigger_mm_ = new lutWrapperTH2Poly( // X=pt1, Y=pt2
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root",
-      "SSuu2DPt_effic",
-      lut::kXptYpt
-    );
-
-    effTrigger_3l_ = new lutWrapperTH2Poly( // X=pt1, Y=pt2
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root",
-      "__3l2DPt_effic",
-      lut::kXptYpt
-    );
-
-    const std::vector<double> etaBinEdges_1e = { -1., 1.48, 2.1 };
-    const int numEtaBins_1e = etaBinEdges_1e.size() - 1;
-
-    for(int idxEtaBin = 0; idxEtaBin < numEtaBins_1e; ++idxEtaBin)
-    {
-      const double etaMin = etaBinEdges_1e[idxEtaBin];
-      const double etaMax = etaBinEdges_1e[idxEtaBin + 1];
-      const char * etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax).data();
-
-      effTrigger_1e_data_.push_back(new lutWrapperTGraph(
-        inputFiles_,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele25WPTight_eff.root",
-        Form("ZMassEta%s_Data", etaBinLabel),
-        lut::kXptYabsEta, -1., -1., etaMin, etaMax
-      ));
-      effTrigger_1e_mc_.push_back(new lutWrapperTGraph(
-        inputFiles_,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele25WPTight_eff.root",
-        Form("ZMassEta%s_MC", etaBinLabel),
-        lut::kXptYabsEta, -1., -1., etaMin, etaMax
-      ));
-    }
-
-    const std::vector<double> etaBinEdges_1m = { -1., 0.9, 1.2, 2.1 };
-    const int numEtaBins_1m = etaBinEdges_1m.size() - 1;
-
-    for(int idxEtaBin = 0; idxEtaBin < numEtaBins_1m; ++idxEtaBin)
-    {
-      const double etaMin = etaBinEdges_1m[idxEtaBin];
-      const double etaMax = etaBinEdges_1m[idxEtaBin + 1];
-      const char * etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax).data();
-
-      effTrigger_1m_data_.push_back(new lutWrapperTGraph(
-        inputFiles_,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu22OR_eta2p1_eff.root",
-        Form("ZMassEta%s_Data", etaBinLabel),
-        lut::kXptYabsEta, -1., -1., etaMin, etaMax
-      ));
-      effTrigger_1m_mc_.push_back(new lutWrapperTGraph(
-        inputFiles_,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu22OR_eta2p1_eff.root",
-        Form("ZMassEta%s_MC", etaBinLabel),
-        lut::kXptYabsEta, -1., -1., etaMin, etaMax
-      ));
-    }
   } // era_
   else
   {
@@ -270,14 +190,6 @@ Data_to_MC_CorrectionInterface::~Data_to_MC_CorrectionInterface()
   {
     delete kv.second;
   }
-  delete effTrigger_ee_;
-  delete effTrigger_em_;
-  delete effTrigger_mm_;
-  delete effTrigger_3l_;
-  aux::clearCollection(effTrigger_1e_data_);
-  aux::clearCollection(effTrigger_1e_mc_);
-  aux::clearCollection(effTrigger_1m_data_);
-  aux::clearCollection(effTrigger_1m_mc_);
 }
 
 void
@@ -400,45 +312,6 @@ Data_to_MC_CorrectionInterface::setHadTaus(int hadTau1_genPdgId, double hadTau1_
 }
 
 //-----------------------------------------------------------------------------
-// trigger efficiency turn-on curves for Spring16 non-reHLT MC
-
-double
-Data_to_MC_CorrectionInterface::getWeight_leptonTriggerEff() const
-{
-  double weight = 1.;
-  if(era_ == kEra_2017)
-  {
-    if(numLeptons_ >= 2)
-    {
-      std::vector<double> lepton_pt_sorted;
-      for(int idxLepton = 0; idxLepton < numLeptons_; ++idxLepton)
-      {
-        lepton_pt_sorted.push_back(lepton_pt_[idxLepton]);
-      }
-      std::sort(lepton_pt_sorted.begin(), lepton_pt_sorted.end(), std::greater<int>());
-      const double pt1 = lepton_pt_sorted[0];
-      const double pt2 = lepton_pt_sorted[1];
-
-      if     (numElectrons_ == 2 && numMuons_ == 0) weight = effTrigger_ee_->getSF(pt1, pt2);
-      else if(numElectrons_ == 1 && numMuons_ == 1) weight = effTrigger_em_->getSF(pt1, pt2);
-      else if(numElectrons_ == 0 && numMuons_ == 2) weight = effTrigger_mm_->getSF(pt1, pt2);
-      else if(numLeptons_   >= 3                  ) weight = effTrigger_3l_->getSF(pt1, pt2);
-      else assert(0);
-    }
-    else if(numElectrons_ == 1 && numMuons_ == 0)
-    {
-      weight = get_from_lut(effTrigger_1e_mc_, electron_pt_[0], electron_eta_[0]);
-    }
-    else if(numElectrons_ == 0 && numMuons_ == 1)
-    {
-      weight = get_from_lut(effTrigger_1m_mc_, muon_pt_[0], muon_eta_[0]);
-    }
-  }
-  return weight;
-}
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
 // data/MC correction for electron and muon trigger efficiency
 
 namespace
@@ -474,15 +347,22 @@ namespace
     }
     else if(numElectrons == 2 && numMuons == 0)
     {
-      sf = 1.01;
+      double lepton_pt_lead = TMath::Max(lepton1_pt, lepton2_pt);
+      if   ( lepton_pt_lead >= 30. ) sf = 0.991;
+      else                           sf = 0.937;
     }
     else if(numElectrons == 1 && numMuons == 1)
     {
-      sf = 1.01;
+      double lepton_pt_lead = TMath::Max(lepton1_pt, lepton2_pt);
+      if      ( lepton_pt_lead >= 50. ) sf = 1.000;
+      else if ( lepton_pt_lead >= 50. ) sf = 0.983;
+      else                              sf = 0.952;
     }
     else if(numElectrons == 0 && numMuons == 2)
     {
-      sf = 1.;
+      double lepton_pt_lead = TMath::Max(lepton1_pt, lepton2_pt);
+      if   ( lepton_pt_lead >= 35. ) sf = 0.994;
+      else                           sf = 0.972;
     }
     else
     {
@@ -585,9 +465,21 @@ namespace
   double constexpr
   getSF_hadTauID_and_Iso_2017(int hadTauSelection)
   {
-    // CV: take data/MC correction to be equal to 0.95 for all WPs, following Tau POG recommendation for 2016 data,
-    //     cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
-    const double sf = 0.95;
+    // CV: take data/MC (SF) measured for MVA-based tau ID with dR = 0.5 from
+    //       https://indico.cern.ch/event/719250/contributions/2971854/attachments/1635435/2609013/tauid_recommendations2017.pdf 
+    //     as the SF for MVA-based tau ID with dR = 0.3 have not been measured yet.
+
+    double sf = 1.;
+    double sfErr = 0.;
+
+    if      ( hadTauSelection == 1 ) { sf = 0.85; sfErr = 0.05; } // take SF for dR03mvaVLoose, as SF for dR03mvaVVLoose has not been measured yet
+    else if ( hadTauSelection == 2 ) { sf = 0.85; sfErr = 0.05; } // dR03mvaVLoose
+    else if ( hadTauSelection == 3 ) { sf = 0.89; sfErr = 0.05; } // dR03mvaLoose
+    else if ( hadTauSelection == 4 ) { sf = 0.89; sfErr = 0.05; } // dR03mvaMedium
+    else if ( hadTauSelection == 5 ) { sf = 0.87; sfErr = 0.05; } // dR03mvaTight
+    else if ( hadTauSelection == 6 ) { sf = 0.85; sfErr = 0.05; } // dR03mvaVTight
+    else if ( hadTauSelection == 7 ) { sf = 0.82; sfErr = 0.05; } // dR03mvaVVTight
+
     return sf; 
   }
 }
@@ -620,9 +512,9 @@ Data_to_MC_CorrectionInterface::getSF_eToTauFakeRate() const
     {
       double pt = hadTau_pt_[idxHadTau];
       double absEta = std::fabs(hadTau_eta_[idxHadTau]);
-      // CV: e->tau misidentification rate has not yet been measured in 2016 data,
-      //     use data/MC corrections measured in 2015 data for both data-taking periods
-      sf *= sf_eToTauFakeRate_2017(pt, absEta, hadTauSelection_antiElectron_[idxHadTau], eToTauFakeRate_option_);
+      if ( era_ == kEra_2017 ) {
+	sf *= sf_eToTauFakeRate_2017(pt, absEta, hadTauSelection_antiElectron_[idxHadTau], eToTauFakeRate_option_);
+      } else assert(0);
     }
   }
   return sf;
@@ -638,9 +530,9 @@ Data_to_MC_CorrectionInterface::getSF_muToTauFakeRate() const
     {
       const double pt = hadTau_pt_[idxHadTau];
       const double absEta = std::fabs(hadTau_eta_[idxHadTau]);
-      // CV: no mu->tau misidentification rate measurement available for 2015 data,
-      //     use data/MC corrections measured in 2016 data for both data-taking periods
-      sf *= sf_muToTauFakeRate_2017(pt, absEta, hadTauSelection_antiMuon_[idxHadTau], muToTauFakeRate_option_);
+      if ( era_ == kEra_2017 ) {
+	sf *= sf_muToTauFakeRate_2017(pt, absEta, hadTauSelection_antiMuon_[idxHadTau], muToTauFakeRate_option_);
+      } else assert(0);
     }
   }
   return sf;

@@ -173,9 +173,12 @@ class analyzeConfig(object):
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
 
-        self.isBDTtraining = False
+        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2017_Tallinn_2018May24.root"
+        self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_data_comb"
+        self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_data_comb"
         self.hadTau_selection_relaxed = None
-        self.inputFile_hadTauFakeRateWeight = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v1.root"
+        self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v1.root"
+        self.isBDTtraining = False
 
     def __del__(self):
         for hostname, times in self.cvmfs_error_log.items():
@@ -190,7 +193,7 @@ class analyzeConfig(object):
         self.hadTau_selection_relaxed = hadTau_selection_relaxe
         if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
             if self.era == "2017":
-                self.inputFile_hadTauFakeRateWeight = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
             else:
                 raise ValueError("Invalid era: %s" % self.era)
         self.isBDTtraining = True

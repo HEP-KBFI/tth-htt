@@ -115,6 +115,10 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       jobOptions['leptonSelection'], lepton_frWeight, jobOptions['leptonChargeSelection']
     )
 
+    jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
+    jobOptions['leptonFakeRateWeight.histogramName_e'] = self.leptonFakeRateWeight_histogramName_e
+    jobOptions['leptonFakeRateWeight.histogramName_mu'] = self.leptonFakeRateWeight_histogramName_mu
+
     lines = super(analyzeConfig_ttWctrl, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 

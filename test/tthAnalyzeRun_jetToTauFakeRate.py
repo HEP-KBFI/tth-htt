@@ -13,7 +13,7 @@ systematics.full = systematics.an_jetToTauFR
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp("dR03mvaVVLoose")
+parser.add_tau_id_wp("dR03mvaVLoose")
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_hlt_filter()

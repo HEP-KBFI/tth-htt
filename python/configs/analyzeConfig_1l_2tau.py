@@ -134,7 +134,11 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       jobOptions['hadTauSelection'], hadTau_frWeight, jobOptions['hadTauChargeSelection']      
     )
 
-    jobOptions['hadTauFakeRateWeight.inputFileName'] = self.inputFile_hadTauFakeRateWeight
+    jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
+    jobOptions['leptonFakeRateWeight.histogramName_e'] = self.leptonFakeRateWeight_histogramName_e
+    jobOptions['leptonFakeRateWeight.histogramName_mu'] = self.leptonFakeRateWeight_histogramName_mu
+
+    jobOptions['hadTauFakeRateWeight.inputFileName'] = self.hadTauFakeRateWeight_inputFile
     graphName = 'jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt' % self.hadTau_selection_part2
     jobOptions['hadTauFakeRateWeight.lead.graphName'] = graphName
     jobOptions['hadTauFakeRateWeight.sublead.graphName'] = graphName 

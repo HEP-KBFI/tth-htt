@@ -1229,15 +1229,6 @@ int main(int argc, char* argv[])
 	selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->eta(),
         selLepton_third_type, selLepton_third->pt(), selLepton_third->eta());
 
-//--- apply trigger efficiency turn-on curves to Spring16 non-reHLT MC
-      if ( !apply_trigger_bits ) {
-	triggerWeight = dataToMCcorrectionInterface->getWeight_leptonTriggerEff();
-	if ( isDEBUG ) {
-	  std::cout << "triggerWeight = " << triggerWeight << std::endl;
-	}
-	evtWeight *= triggerWeight;
-      }
-
 //--- apply data/MC corrections for trigger efficiency
       double sf_triggerEff = dataToMCcorrectionInterface->getSF_leptonTriggerEff();
       if ( isDEBUG ) {

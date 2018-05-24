@@ -36,12 +36,6 @@ public:
   //-----------------------------------------------------------------------------
   
   //-----------------------------------------------------------------------------
-  // trigger efficiency turn-on curves for Spring16 non-reHLT MC
-  double
-  getWeight_leptonTriggerEff() const;
-  //-----------------------------------------------------------------------------
-
-  //-----------------------------------------------------------------------------
   // data/MC correction for electron and muon trigger efficiency
   double
   getSF_leptonTriggerEff() const;
@@ -94,19 +88,6 @@ public:
   std::vector<lutWrapperBase *> sfMuonID_and_Iso_tight_to_loose_woTightCharge_;
   // tight muon selection specific to 2lss_1tau channel (RecoMuonSelectorTight with tightCharge_cut enabled)
   std::vector<lutWrapperBase *> sfMuonID_and_Iso_tight_to_loose_wTightCharge_;
-  //-----------------------------------------------------------------------------
-
-  //-----------------------------------------------------------------------------
-  // data/MC corrections for trigger efficiencies in 2016 data
-  lutWrapperBase * effTrigger_ee_;
-  lutWrapperBase * effTrigger_em_;
-  lutWrapperBase * effTrigger_mm_;
-  lutWrapperBase * effTrigger_3l_;
-
-  std::vector<lutWrapperBase *> effTrigger_1e_data_;
-  std::vector<lutWrapperBase *> effTrigger_1e_mc_;
-  std::vector<lutWrapperBase *> effTrigger_1m_data_;
-  std::vector<lutWrapperBase *> effTrigger_1m_mc_;
   //-----------------------------------------------------------------------------
 
   std::map<std::string, TFile *> inputFiles_;
