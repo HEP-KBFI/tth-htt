@@ -306,7 +306,7 @@ class analyzeConfig(object):
                 )
             assert(jobOptions_expr)
             if jobOptions_key.startswith('apply_') and jobOptions_key.endswith('GenMatching'):
-                jobOptions_val = jobOptions_val and is_mc
+                jobOptions_val = jobOptions_val and is_mc and not self.isBDTtraining
             jobOptions_val = jobOptions_expr % str(jobOptions_val)
             lines.append("{}.{:<{len}} = {}".format(process_string, jobOptions_key, jobOptions_val, len = max_option_len))
 
