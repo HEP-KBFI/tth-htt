@@ -240,7 +240,6 @@ main(int argc,
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
   const RecoJetCollectionGenMatcher jetGenMatcher;
-  const RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
   const RecoJetSelector jetSelector(era);
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
@@ -476,10 +475,12 @@ main(int argc,
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet *> jet_ptrs = convert_to_ptrs(jets);
     // Karl: do not clean w.r.t the taus b/c their definition changes across the analyses
-    //       we are better off if we keep a bit more jets per event
-    const std::vector<const RecoJet *> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons);
+    //       we are better off if we keep a bit more jets per event;
+    //       we also decided to remove cleaning w.r.t fakeable leptons, b/c the jet cleaning
+    //       has now become channel-dependent (i.e. we clean w.r.t the *selected* fakeable
+    //       objects, not w.r.t the whole collection)
     std::vector<const RecoJet *> selJets;
-    for(const RecoJet * cleanedJet: cleanedJets)
+    for(const RecoJet * cleanedJet: jet_ptrs)
     {
       // Karl: there are no JEC uncertainties for non-nominal (i.e. MET-adjusted) jet pT
       const double cleanedJet_pt_max = useNonNominal_jetmet ? cleanedJet->pt() : cleanedJet->maxPt();
