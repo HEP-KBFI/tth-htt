@@ -418,7 +418,7 @@ if __name__ == '__main__':
     type = str, dest = 'golden_json', metavar = 'file', required = False,
     default = os.path.join(
       os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'NanoAOD', 'data',
-      'Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt'
+      'Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt'
     ),
     help = 'R|Path to the golden lumimask file in JSON format',
   )
