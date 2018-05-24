@@ -596,9 +596,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
 
   if not meta_dict[key]['located']:
     missing_from_superset = [] if not missing_branches else get_missing_from_superset(indices)
-    overlap_with_triggers = triggerTable.get_overlap(
-      missing_from_superset, meta_dict[key]['process_name_specific']
-    )
+    overlap_with_triggers = triggerTable.triggers_flat & set(missing_from_superset)
     if overlap_with_triggers:
       raise ValueError(
         "Found an overlap b/w the list of required triggers and the list of missing branches in "
