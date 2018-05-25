@@ -1,7 +1,22 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import DKEY_SCRIPTS, DKEY_LOGS, DKEY_SYNC
-from tthAnalysis.HiggsToTauTau.jobTools import get_log_version, run_cmd, create_if_not_exists
+from tthAnalysis.HiggsToTauTau.jobTools import get_log_version, run_cmd, create_if_not_exists, record_software_state
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd
-import os, jinja2, uuid, logging, sys
+
+import os
+import jinja2
+import uuid
+import logging
+import sys
+
+DEPENDENCIES = [
+    "",  # CMSSW_BASE/src
+    "tthAnalysis/HiggsToTauTau",
+    "tthAnalysis/TauTriggerSFs2017",
+    "TauAnalysis/ClassicSVfit",
+    "TauAnalysis/SVfitTF",
+    "ttH_Htautau_MEM_Analysis",
+    "tthAnalysis/tthMEM",
+]
 
 makeFileTemplate = '''
 .DEFAULT_GOAL := all
@@ -100,8 +115,10 @@ class syncNtupleConfig:
 
     self.stdout_file_path = os.path.join(config_dir, "stdout_sync.log")
     self.stderr_file_path = os.path.join(config_dir, "stderr_sync.log")
-    self.stdout_file_path, self.stderr_file_path = get_log_version((
-      self.stdout_file_path, self.stderr_file_path,
+    self.sw_ver_file_cfg  = os.path.join(config_dir, "VERSION_sync.log")
+    self.sw_ver_file_out  = os.path.join(output_dir, "VERSION_sync.log")
+    self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
+      self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
     ))
     self.makefile_path = os.path.join(config_dir, 'Makefile_sync')
 
@@ -136,6 +153,7 @@ class syncNtupleConfig:
     logging.info("Created the makefile: %s" % self.makefile_path)
 
   def run(self, clean):
+    record_software_state(self.sw_ver_file_cfg, self.sw_ver_file_out, DEPENDENCIES)
     target = 'all'
     if clean:
       if not os.path.isfile(self.makefile_path):
