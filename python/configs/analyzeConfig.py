@@ -331,9 +331,9 @@ class analyzeConfig(object):
             trigger_string     = '%s.triggers_%s'     % (process_string, trigger)
             trigger_use_string = '%s.use_triggers_%s' % (process_string, trigger)
             if isLeptonFR:
-                available_triggers = list(self.triggerTable.triggers_analysis[trigger] - blacklist)
-            else:
                 available_triggers = list(self.triggerTable.triggers_leptonFR[trigger] - blacklist)
+            else:
+                available_triggers = list(self.triggerTable.triggers_analysis[trigger] - blacklist)
             use_trigger = bool(trigger in sample_info['triggers'])
             lines.extend([
                 "{:<{len}} = cms.vstring({})".format(trigger_string,     available_triggers, len = max_option_len + len(process_string) + 1),
