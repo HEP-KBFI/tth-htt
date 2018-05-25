@@ -1,14 +1,25 @@
-import os, logging, uuid, ROOT
-
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
+
+import os
+import logging
+import uuid
+import ROOT
 
 DKEY_CFGS       = "cfgs"
 DKEY_NTUPLES    = "ntuples"
 DKEY_LOGS       = "logs"
 MAKEFILE_TARGET = "sbatch_prodNtuple"
+
+DEPENDENCIES = [
+    "", # CMSSW_BASE/src
+    "tthAnalysis/HiggsToTauTau",
+    "PhysicsTools/NanoAODTools",
+    "tthAnalysis/NanoAODTools",
+    "tthAnalysis/NanoAOD",
+]
 
 def get_pileup_histograms(pileup_filename):
     pileup_file = ROOT.TFile.Open(pileup_filename, 'read')
@@ -88,8 +99,10 @@ class prodNtupleConfig:
         create_if_not_exists(self.outputDir)
         self.stdout_file_path = os.path.join(self.configDir, "stdout_prodNtuple.log")
         self.stderr_file_path = os.path.join(self.configDir, "stderr_prodNtuple.log")
-        self.stdout_file_path, self.stderr_file_path = get_log_version((
-            self.stdout_file_path, self.stderr_file_path,
+        self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_prodNtuple.log")
+        self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_prodNtuple.log")
+        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
+            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
         ))
 
         self.cfgFile_prodNtuple_original = os.path.join(self.template_dir, cfgFile_prodNtuple)
@@ -312,6 +325,7 @@ class prodNtupleConfig:
     def run(self):
         """Runs all Ntuple production jobs -- either locally or on the batch system.
         """
+        record_software_state(self.sw_ver_file_cfg, self.sw_ver_file_out, DEPENDENCIES)
         run_cmd(
             "make -f %s -j %i 2>%s 1>%s" % \
             (self.makefile, self.num_parallel_jobs, self.stderr_file_path, self.stdout_file_path),

@@ -1,11 +1,22 @@
-import os, logging, uuid, ROOT
-
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, createFile, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import is_file_ok as tools_is_file_ok
+
+import os
+import logging
+import uuid
+import ROOT
+
+DEPENDENCIES = [
+    "", # CMSSW_BASE/src
+    "tthAnalysis/HiggsToTauTau",
+    "PhysicsTools/NanoAODTools",
+    "tthAnalysis/NanoAODTools",
+    "tthAnalysis/NanoAOD",
+]
 
 DKEY_SCRIPTS    = "scripts"
 DKEY_CFGS       = "cfgs"
@@ -111,8 +122,10 @@ class puHistogramConfig:
         create_if_not_exists(self.outputDir)
         self.stdout_file_path = os.path.join(self.configDir, "stdout_puProfile.log")
         self.stderr_file_path = os.path.join(self.configDir, "stderr_puProfile.log")
-        self.stdout_file_path, self.stderr_file_path = get_log_version((
-            self.stdout_file_path, self.stderr_file_path,
+        self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_puProfile.log")
+        self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_puProfile.log")
+        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
+            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
         ))
 
         self.sbatchFile_puProfile = os.path.join(self.configDir, "sbatch_puProfile.py")
@@ -210,7 +223,7 @@ class puHistogramConfig:
             verbose                 = self.verbose,
             dry_run                 = self.dry_run,
             use_home                = self.use_home,
-            max_input_files_per_job = 10,
+            max_input_files_per_job = 20,
         )
         return sbatch_hadd_file
 
@@ -260,43 +273,15 @@ class puHistogramConfig:
                 ),
             }
 
-        sbatchTarget = None
-        if self.is_sbatch:
-            sbatchTarget = "sbatch_hadd"
-            self.phoniesToAdd.append(sbatchTarget)
-
+        for key, cfg in self.outputFiles.items():
             lines_makefile.extend([
-                "%s: %s" % \
-                (
-                    sbatchTarget,
-                    " ".join([
-                        " ".join(self.outputFiles[key]['inputFiles']) for key in self.outputFiles
-                    ])
-                ),
-            ])
-            for key, cfg in self.outputFiles.items():
-                lines_makefile.append("\trm -f %s" % cfg['outputFile'])
-                lines_makefile.extend([
-                "\tpython %s" % scriptFiles[key] ,
+                "%s: %s" % (cfg['outputFile'], ' '.join(cfg['inputFiles'])),
+                "\trm -f %s" % cfg['outputFile'],
+                "\tpython %s" % scriptFiles[key],
                 "",
             ])
-
-        for key, cfg in self.outputFiles.items():
-            if self.is_sbatch:
-                lines_makefile.extend([
-                    "%s: %s" % (cfg['outputFile'], sbatchTarget),
-                    "\t:",
-                    ""
-                ])
-            else:
-                lines_makefile.extend([
-                    "%s: %s" % (cfg['outputFile'], ' '.join(cfg['inputFiles'])),
-                    "\trm -f %s" % cfg['outputFile'],
-                    "\tpython %s" % scriptFiles[key],
-                    "",
-                ])
             self.filesToClean.append(cfg['outputFile'])
-            self.targets.append(cfg['outputFile'])
+            # self.targets.append(cfg['outputFile'])
 
     def addToMakefile_plot(self, lines_makefile):
         phonie_target = "sbatch_plot"
@@ -335,36 +320,14 @@ class puHistogramConfig:
             self.filesToClean.extend(plot_files)
             self.targets.extend(plot_files)
 
-        if self.is_sbatch:
-            lines_makefile.append(
-                "%s: %s" % (
-                    phonie_target,
-                    " ".join(jobOptions[key]['inputFile'] for key in jobOptions),
-                ),
-            )
-            for cfg in jobOptions.values():
-                for plot_cfg in cfg['jobs'].values():
-                  lines_makefile.append(
-                      "\t%s &> %s" % (plot_cfg['cmd'], plot_cfg['logFile'])
-                  )
-            for cfg in jobOptions.values():
-                for plot_cfg in cfg['jobs'].values():
-                    lines_makefile.extend([
-                        "",
-                        "%s: %s" % (plot_cfg['outputFile'], phonie_target),
-                        "\t:",
-                        "",
-                    ])
-                    self.num_jobs['plot'] += 1
-            self.phoniesToAdd.append(phonie_target)
-        else:
-            for cfg in jobOptions:
-                for plot_cfg in cfg['jobs'].values():
-                    lines_makefile.extend([
-                        "%s: %s" % (plot_cfg['outputFile'], cfg['inputFile']),
-                        "\t%s &> %s" % (plot_cfg['cmd'], plot_cfg['logFile']),
-                        "",
-                    ])
+        for cfg in jobOptions.values():
+            for plot_cfg in cfg['jobs'].values():
+                lines_makefile.extend([
+                    "%s: %s" % (plot_cfg['outputFile'], cfg['inputFile']),
+                    "\t%s &> %s" % (plot_cfg['cmd'], plot_cfg['logFile']),
+                    "",
+                ])
+                self.num_jobs['plot'] += 1
 
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the PU profile production.
@@ -467,6 +430,7 @@ class puHistogramConfig:
     def run(self):
         """Runs all PU profile production jobs -- either locally or on the batch system.
         """
+        record_software_state(self.sw_ver_file_cfg, self.sw_ver_file_out, DEPENDENCIES)
         run_cmd(
             "make -f %s -j %i 2>%s 1>%s" % \
             (self.makefile, self.num_parallel_jobs, self.stderr_file_path, self.stdout_file_path),

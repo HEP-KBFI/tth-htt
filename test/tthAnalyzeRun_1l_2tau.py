@@ -145,10 +145,11 @@ if __name__ == '__main__':
       histograms_to_fit                     = {
         "EventCounter"             : {},
         "numJets"                  : {},
-        "mvaOutput_plainKin_ttV"   : { 'explicit_binning' : list(np.linspace(0., 1., 7 + 1)) }, # BDT2; 7 regular bin in range [0, 1]
+        "mvaOutput_plainKin_ttV"   : {},
         "mvaOutput_plainKin_tt"    : { 'explicit_binning' : list(np.linspace(0., 1., 6 + 1)) }, # BDT1; 6 regular bin in range [0, 1]
         "mvaOutput_plainKin_1B_VT" : {},
-        "mvaOutput_HTT_SUM_VT"     : {},
+        "mvaOutput_HTT_SUM_VT"     : { 'explicit_binning' : list(np.linspace(0., 1., 7 + 1)) }, # BDT2; 7 regular bin in range [0, 1]
+        "mvaOutput_HTT_SUM_VT_noRebin"     : {},
         "mTauTauVis"               : {},
       },
       select_rle_output                     = True,
