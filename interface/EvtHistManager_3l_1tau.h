@@ -83,6 +83,7 @@ class EvtHistManager_3l_1tau
   TH1 * histogram_mvaOutput_plainKin_tt_;
   TH1 * histogram_mvaOutput_plainKin_ttV_;
   TH1 * histogram_mvaOutput_plainKin_SUM_M_;
+  TH1 * histogram_mvaOutput_plainKin_SUM_M_noRebin_;
   TH1 * histogram_mvaOutput_plainKin_1B_M_;
 };
 
