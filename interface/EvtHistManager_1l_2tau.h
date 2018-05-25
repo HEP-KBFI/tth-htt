@@ -34,6 +34,7 @@ public:
                  double mvaOutput_plainKin_tt,
                  double mvaOutput_plainKin_1B_VT,
                  double mvaOutput_HTT_SUM_VT,
+                 double mvaOutput_noHTT_SUM_VT,
                  double mTauTauVis,
                  double evtWeight);
 
@@ -59,6 +60,8 @@ public:
   TH1 * histogram_mvaOutput_plainKin_1B_VT_;
   TH1 * histogram_mvaOutput_HTT_SUM_VT_;
   TH1 * histogram_mvaOutput_HTT_SUM_VT_noRebin_;
+  TH1 * histogram_mvaOutput_noHTT_SUM_VT_;
+  TH1 * histogram_mvaOutput_noHTT_SUM_VT_noRebin_;
 
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_EventCounter_;
