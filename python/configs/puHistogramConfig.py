@@ -1,11 +1,22 @@
-import os, logging, uuid, ROOT
-
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, createFile, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import is_file_ok as tools_is_file_ok
+
+import os
+import logging
+import uuid
+import ROOT
+
+DEPENDENCIES = [
+    "", # CMSSW_BASE/src
+    "tthAnalysis/HiggsToTauTau",
+    "PhysicsTools/NanoAODTools",
+    "tthAnalysis/NanoAODTools",
+    "tthAnalysis/NanoAOD",
+]
 
 DKEY_SCRIPTS    = "scripts"
 DKEY_CFGS       = "cfgs"
@@ -111,8 +122,10 @@ class puHistogramConfig:
         create_if_not_exists(self.outputDir)
         self.stdout_file_path = os.path.join(self.configDir, "stdout_puProfile.log")
         self.stderr_file_path = os.path.join(self.configDir, "stderr_puProfile.log")
-        self.stdout_file_path, self.stderr_file_path = get_log_version((
-            self.stdout_file_path, self.stderr_file_path,
+        self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_puProfile.log")
+        self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_puProfile.log")
+        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
+            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
         ))
 
         self.sbatchFile_puProfile = os.path.join(self.configDir, "sbatch_puProfile.py")
@@ -417,6 +430,7 @@ class puHistogramConfig:
     def run(self):
         """Runs all PU profile production jobs -- either locally or on the batch system.
         """
+        record_software_state(self.sw_ver_file_cfg, self.sw_ver_file_out, DEPENDENCIES)
         run_cmd(
             "make -f %s -j %i 2>%s 1>%s" % \
             (self.makefile, self.num_parallel_jobs, self.stderr_file_path, self.stdout_file_path),
