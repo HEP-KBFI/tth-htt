@@ -61,6 +61,7 @@ EvtHistManager_3l_1tau::bookHistograms(TFileDirectory & dir)
   histogram_mvaOutput_plainKin_tt_    = book1D(dir, "mvaOutput_plainKin_tt",    "mvaOutput_plainKin_tt",    100, 0., 1.);
   histogram_mvaOutput_plainKin_ttV_   = book1D(dir, "mvaOutput_plainKin_ttV",   "mvaOutput_plainKin_ttV",   100, 0., 1.);
   histogram_mvaOutput_plainKin_SUM_M_ = book1D(dir, "mvaOutput_plainKin_SUM_M", "mvaOutput_plainKin_SUM_M", 100, 0., 1.);
+  histogram_mvaOutput_plainKin_SUM_M_noRebin_ = book1D(dir, "mvaOutput_plainKin_SUM_M_noRebin", "mvaOutput_plainKin_SUM_M_noRebin", 100, 0., 1.);
   histogram_mvaOutput_plainKin_1B_M_  = book1D(dir, "mvaOutput_plainKin_1B_M",  "mvaOutput_plainKin_1B_M",  100, 0., 1.);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
@@ -139,6 +140,7 @@ EvtHistManager_3l_1tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mvaOutput_plainKin_tt_,    mvaOutput_plainKin_tt,    evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_plainKin_ttV_,   mvaOutput_plainKin_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_M_, mvaOutput_plainKin_SUM_M, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_M_noRebin_, mvaOutput_plainKin_SUM_M, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_plainKin_1B_M_,  mvaOutput_plainKin_1B_M,  evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);

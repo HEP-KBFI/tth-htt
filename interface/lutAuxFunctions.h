@@ -17,6 +17,7 @@ class TGraph;
 namespace lut
 {
   enum { kXpt, kXeta, kXabsEta, kXptYpt, kXptYeta, kXptYabsEta, kXetaYpt, kXabsEtaYpt };
+  enum { kLimit, kCut, kLimit_and_Cut };
 }
 
 // define auxiliary functions
@@ -65,16 +66,20 @@ public:
                  int lutType,
                  double xMin = -1.,
                  double xMax = -1.,
+		 int xAction = lut::kLimit,
                  double yMin = -1.,
-                 double yMax = -1.);
+                 double yMax = -1.,
+		 int yAction = lut::kLimit);
   lutWrapperBase(std::map<std::string, TFile *> & inputFiles,
                  const std::string & inputFileName,
                  const std::string & lutName,
                  int lutType,
                  double xMin = -1.,
                  double xMax = -1.,
+		 int xAction = lut::kLimit,
                  double yMin = -1.,
-                 double yMax = -1.);
+                 double yMax = -1.,
+		 int yAction = lut::kLimit);
   virtual ~lutWrapperBase() {}
 
   double
@@ -95,8 +100,10 @@ protected:
   int lutTypeY_;
   double xMin_;
   double xMax_;
+  int xAction_;
   double yMin_;
   double yMax_;
+  int yAction_;
 private:
   virtual double getSF_private(double x,
                                double y) = 0;
@@ -119,8 +126,10 @@ public:
                 int lutType,
                 double xMin = -1.,
                 double xMax = -1.,
+		int xAction = lut::kLimit,
                 double yMin = -1.,
-                double yMax = -1.);
+                double yMax = -1.,
+		int yAction = lut::kCut);
 private:
   double getSF_private(double x,
                        double y) override;
@@ -137,8 +146,10 @@ public:
                 int lutType,
                 double xMin = -1.,
                 double xMax = -1.,
+		int xAction = lut::kLimit,
                 double yMin = -1.,
-                double yMax = -1.);
+                double yMax = -1.,
+		int yAction = lut::kLimit);
 private:
   double getSF_private(double x,
                        double y) override;
@@ -155,8 +166,10 @@ public:
                     int lutType,
                     double xMin = -1.,
                     double xMax = -1.,
+		    int xAction = lut::kLimit,
                     double yMin = -1.,
-                    double yMax = -1.);
+                    double yMax = -1.,
+		    int yAction = lut::kLimit);
 private:
   double getSF_private(double x,
                        double y) override;
@@ -173,8 +186,10 @@ public:
                    int lutType,
                    double xMin = -1.,
                    double xMax = -1.,
+		   int xAction = lut::kLimit,
                    double yMin = -1.,
-                   double yMax = -1.);
+                   double yMax = -1.,
+		   int yAction = lut::kCut);
  private:
   double getSF_private(double x,
                        double y) override;
@@ -190,8 +205,10 @@ public:
                         int lutType,
                         double xMin = -1.,
                         double xMax = -1.,
+			int xAction = lut::kLimit,
                         double yMin = -1.,
-                        double yMax = -1.);
+                        double yMax = -1.,
+			int yAction = lut::kCut);
 private:
   double getSF_private(double x,
                        double y) override;

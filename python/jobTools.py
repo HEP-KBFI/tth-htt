@@ -1,4 +1,11 @@
-import logging, os, subprocess, sys, math, stat, errno
+import logging
+import os
+import subprocess
+import sys
+import math
+import stat
+import errno
+import shutil
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -166,3 +173,37 @@ def human_size(fsize, use_si = True, byte_suffix = 'B'):
     return '%.2f%s' % ((fsize_int / multiplier ** unit_idx), units[unit_idx])
   else:
     return '%d%s' % (fsize_int, units[unit_idx])
+
+def record_software_state(txtfile_cfg, txtfile_out, dependencies):
+  git_cmds = [
+    'log -n1 --format="%D"',
+    'log -n3 --format="%H | %cd | %cn | %s"',
+    'status --porcelain=v1 --branch',
+    'diff HEAD --no-ext-diff --unified=0 --exit-code -a --no-prefix --word-diff=plain --color=never',
+  ]
+  BOLD_LINE = "=" * 160
+  LIGHT_LINE = "." * 160
+  results = []
+  for dependency in dependencies:
+    dependency_fullpath = os.path.join(
+      os.environ['CMSSW_BASE'], 'src', dependency
+    )
+    results.extend([
+      BOLD_LINE,
+      "Inspecting dependency: %s" % dependency_fullpath
+    ])
+    for git_cmd in git_cmds:
+      git_cmd_full = 'git -C %s %s' % (dependency_fullpath, git_cmd)
+      results.extend([
+        LIGHT_LINE,
+        "Executing: %s" % git_cmd_full,
+        run_cmd(
+          git_cmd_full, do_not_log = True, stdout_file = None, stderr_file = None,
+          return_stderr = False
+        ),
+      ])
+  with open(txtfile_cfg, 'w') as txtfileptr:
+    txtfileptr.write('\n'.join(results))
+    txtfileptr.write('\n')
+  if txtfile_cfg != txtfile_out:
+    shutil.copy(txtfile_cfg, txtfile_out)

@@ -18,7 +18,7 @@ EventInfoWriter::EventInfoWriter(bool is_signal,
 
   branchName_genHiggsDecayMode_ = is_signal ? Form(pattern.data(), "genHiggsDecayMode") : "";
   branchName_genWeight_         = is_mc     ? Form(pattern.data(), "genWeight")         : "";
-  branchName_genWeight_tH_      = is_mc_th  ? Form(pattern.data(), "lheWeightSM")       : "";
+  branchName_genWeight_tH_      = is_mc_th  ? Form(pattern.data(), "LHEWeight_rwgt_12") : "";
   branchName_pileupWeight_      = is_mc     ? Form(pattern.data(), "puWeight")          : "";
 }
 

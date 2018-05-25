@@ -6,6 +6,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::
 
 #include <TString.h> // Form()
+#include <TMath.h> // TMath::Abs()
 
 #include <boost/algorithm/string/predicate.hpp> // boost::ends_with()
 
@@ -70,13 +71,13 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_Ele32orEle35_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., etaMin, etaMax
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1e_mc_.push_back(new lutWrapperTGraph(
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_Ele32orEle35_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., etaMin, etaMax
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
 
@@ -93,13 +94,13 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_EleTau_Ele24_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., etaMin, etaMax
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1e1tau_lepLeg_mc_.push_back(new lutWrapperTGraph(
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_EleTau_Ele24_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., etaMin, etaMax
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
 
@@ -116,13 +117,13 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_IsoMu24orIsoMu27_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., etaMin, etaMax
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1m_mc_.push_back(new lutWrapperTGraph(
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_IsoMu24orIsoMu27_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., etaMin, etaMax
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
 
@@ -139,13 +140,13 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_MuTau_IsoMu20_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., etaMin, etaMax
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1m1tau_lepLeg_mc_.push_back(new lutWrapperTGraph(
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_MuTau_IsoMu20_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., etaMin, etaMax
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   } // era_
@@ -256,11 +257,19 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
       eff_1l1tau_lepLeg_data = get_from_lut(effTrigger_1e1tau_lepLeg_data_, lepton_pt_, lepton_eta_, isDEBUG_);
       eff_1l1tau_lepLeg_mc   = get_from_lut(effTrigger_1e1tau_lepLeg_mc_,   lepton_pt_, lepton_eta_, isDEBUG_);
 
-      eff_1l1tau_tauLeg1_data = effTrigger_tauLeg_->getETauEfficiencyData(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_);
-      eff_1l1tau_tauLeg1_mc   = effTrigger_tauLeg_->getETauEfficiencyMC(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_); 
-
-      eff_1l1tau_tauLeg2_data = effTrigger_tauLeg_->getETauEfficiencyData(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_);
-      eff_1l1tau_tauLeg2_mc   = effTrigger_tauLeg_->getETauEfficiencyMC(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_); 
+      eff_1l1tau_tauLeg1_data = 0.;
+      eff_1l1tau_tauLeg1_mc = 0.;
+      if ( TMath::Abs(hadTau1_eta_) <= 2.1 ) {
+	eff_1l1tau_tauLeg1_data = effTrigger_tauLeg_->getETauEfficiencyData(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_);
+	eff_1l1tau_tauLeg1_mc   = effTrigger_tauLeg_->getETauEfficiencyMC(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_); 
+      }
+      
+      eff_1l1tau_tauLeg2_data = 0.;
+      eff_1l1tau_tauLeg2_mc = 0.;
+      if ( TMath::Abs(hadTau2_eta_) <= 2.1 ) {
+	eff_1l1tau_tauLeg2_data = effTrigger_tauLeg_->getETauEfficiencyData(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_);
+	eff_1l1tau_tauLeg2_mc   = effTrigger_tauLeg_->getETauEfficiencyMC(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_); 
+      }
 
       isTriggered_1l     = isTriggered_1e_;
       isTriggered_1l1tau = isTriggered_1e1tau_;
@@ -276,11 +285,19 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
       eff_1l1tau_lepLeg_data = get_from_lut(effTrigger_1m1tau_lepLeg_data_, lepton_pt_, lepton_eta_, isDEBUG_);
       eff_1l1tau_lepLeg_mc   = get_from_lut(effTrigger_1m1tau_lepLeg_mc_,   lepton_pt_, lepton_eta_, isDEBUG_);
 
-      eff_1l1tau_tauLeg1_data = effTrigger_tauLeg_->getMuTauEfficiencyData(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_);
-      eff_1l1tau_tauLeg1_mc   = effTrigger_tauLeg_->getMuTauEfficiencyMC(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_);
+      eff_1l1tau_tauLeg1_data = 0.;
+      eff_1l1tau_tauLeg1_mc = 0.;
+      if ( TMath::Abs(hadTau1_eta_) <= 2.1 ) {
+	eff_1l1tau_tauLeg1_data = effTrigger_tauLeg_->getMuTauEfficiencyData(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_);
+	eff_1l1tau_tauLeg1_mc = effTrigger_tauLeg_->getMuTauEfficiencyMC(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_);
+      }
       
-      eff_1l1tau_tauLeg2_data = effTrigger_tauLeg_->getMuTauEfficiencyData(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_);
-      eff_1l1tau_tauLeg2_mc   = effTrigger_tauLeg_->getMuTauEfficiencyMC(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_); 
+      eff_1l1tau_tauLeg2_data = 0.;
+      eff_1l1tau_tauLeg2_mc = 0.;
+      if ( TMath::Abs(hadTau2_eta_) <= 2.1 ) {
+	eff_1l1tau_tauLeg2_data = effTrigger_tauLeg_->getMuTauEfficiencyData(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_);
+	eff_1l1tau_tauLeg2_mc = effTrigger_tauLeg_->getMuTauEfficiencyMC(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_); 
+      }
 
       isTriggered_1l     = isTriggered_1m_;
       isTriggered_1l1tau = isTriggered_1m1tau_;

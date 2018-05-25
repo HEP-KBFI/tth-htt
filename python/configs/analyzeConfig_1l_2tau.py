@@ -92,7 +92,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH", "VH" ]
 
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
     ##self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
@@ -116,7 +116,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.lepton_and_hadTau_selections = [ "forBDTtraining" ]
     self.lepton_and_hadTau_frWeights  = [ "disabled" ]
     super(analyzeConfig_1l_2tau, self).set_BDT_training(hadTau_selection_relaxed)
-    
+
   def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_1l_2tau executable (analysis code)
 
@@ -131,7 +131,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines = []
     hadTau_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
     jobOptions['histogramDir'] = getHistogramDir(
-      jobOptions['hadTauSelection'], hadTau_frWeight, jobOptions['hadTauChargeSelection']      
+      jobOptions['hadTauSelection'], hadTau_frWeight, jobOptions['hadTauChargeSelection']
     )
 
     jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
@@ -141,7 +141,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     jobOptions['hadTauFakeRateWeight.inputFileName'] = self.hadTauFakeRateWeight_inputFile
     graphName = 'jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt' % self.hadTau_selection_part2
     jobOptions['hadTauFakeRateWeight.lead.graphName'] = graphName
-    jobOptions['hadTauFakeRateWeight.sublead.graphName'] = graphName 
+    jobOptions['hadTauFakeRateWeight.sublead.graphName'] = graphName
     fitFunctionName = 'jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt' % self.hadTau_selection_part2
     jobOptions['hadTauFakeRateWeight.lead.fitFunctionName'] = fitFunctionName
     jobOptions['hadTauFakeRateWeight.sublead.fitFunctionName'] = fitFunctionName
