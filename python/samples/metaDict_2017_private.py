@@ -80,5 +80,7 @@ meta_dictionary["/WpWpJJ_EWK_QCD_TuneCP5_13TeV_madgraph_pythia8_Fall17/private/M
 
 # event statistics by sample category:
 # tH:    174.50k
-# Rares: 237.41k
+# TT:    12.50k
+# VH:    200.16k
+# Rares: 24.75k
 
