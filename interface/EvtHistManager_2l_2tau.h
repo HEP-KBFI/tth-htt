@@ -62,6 +62,7 @@ private:
   TH1 * histogram_mvaOutput_plainKin_tt_;
   TH1 * histogram_mvaOutput_plainKin_ttV_;
   TH1 * histogram_mvaOutput_plainKin_SUM_VT_;
+  TH1 * histogram_mvaOutput_plainKin_SUM_VT_noRebin_;
   TH1 * histogram_mvaOutput_plainKin_1B_VT_;
 };
 
