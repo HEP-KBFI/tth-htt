@@ -129,7 +129,7 @@ public:
 		int xAction = lut::kLimit,
                 double yMin = -1.,
                 double yMax = -1.,
-		int yAction = lut::kLimit);
+		int yAction = lut::kCut);
 private:
   double getSF_private(double x,
                        double y) override;
@@ -189,7 +189,7 @@ public:
 		   int xAction = lut::kLimit,
                    double yMin = -1.,
                    double yMax = -1.,
-		   int yAction = lut::kLimit);
+		   int yAction = lut::kCut);
  private:
   double getSF_private(double x,
                        double y) override;
@@ -208,7 +208,7 @@ public:
 			int xAction = lut::kLimit,
                         double yMin = -1.,
                         double yMax = -1.,
-			int yAction = lut::kLimit);
+			int yAction = lut::kCut);
 private:
   double getSF_private(double x,
                        double y) override;

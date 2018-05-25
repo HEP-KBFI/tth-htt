@@ -117,26 +117,26 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
     sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
       inputFiles_,
       "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkEff_ptLt10.root",
-      "ratio_eff_pt_tk0_dr030e030_corr",
+      "ratio_eff_eta3_tk0_dr030e030_corr",
       lut::kXetaYpt, -2.4, +2.4, lut::kLimit, -1., 10., lut::kCut
     ));
     sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
       inputFiles_,
       "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkEff_ptGt10.root",
-      "ratio_eff_pt_dr030e030_corr",
+      "ratio_eff_eta3_dr030e030_corr",
       lut::kXetaYpt, -2.4, +2.4, lut::kLimit, 10., -1., lut::kCut
     ));
     
     sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
       inputFiles_,
       "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_ptLt30.root",
-      "NUM_MediumID_DEN_genTracks_pt_abseta",
+      "NUM_LooseID_DEN_genTracks_pt_abseta",
       lut::kXptYabsEta, -1., 30., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
     ));
     sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
       inputFiles_,
       "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_ptGt30.root",
-      "NUM_MediumID_DEN_genTracks_pt_abseta",
+      "NUM_LooseID_DEN_genTracks_pt_abseta",
       lut::kXptYabsEta, 30., -1., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
     ));
 
