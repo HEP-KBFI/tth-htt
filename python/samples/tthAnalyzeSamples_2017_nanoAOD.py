@@ -2728,7 +2728,7 @@ samples_2017["/THW_5f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] =
 
 samples_2017["/ST_tWll_5f_LO_TuneCP5_PSweights_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
+  ("sample_category",                 "TT"),
   ("process_name_specific",           "ST_tWll"),
   ("nof_files",                       1),
   ("nof_db_files",                    1),
@@ -2761,7 +2761,7 @@ samples_2017["/ST_tWll_5f_LO_TuneCP5_PSweights_13TeV_madgraph_pythia8_Fall17/pri
 
 samples_2017["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_Fall17/private/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
+  ("sample_category",                 "VH"),
   ("process_name_specific",           "VHToNonbb_M125"),
   ("nof_files",                       12),
   ("nof_db_files",                    12),
