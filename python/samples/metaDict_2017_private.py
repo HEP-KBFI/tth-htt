@@ -8,7 +8,7 @@ meta_dictionary = OD()
 
 ### event sums
 
-sum_events = { 
+sum_events = {
 }
 
 
@@ -40,7 +40,7 @@ meta_dictionary["/THW_5f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"
 
 meta_dictionary["/ST_tWll_5f_LO_TuneCP5_PSweights_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] =  OD([
   ("crab_string",           "NanoProduction_v2_2018May23_ST_tWll_5f_LO_TuneCP5_PSweights_13TeV_madgraph_pythia8_Fall17__private"),
-  ("sample_category",       "Rares"),
+  ("sample_category",       "TT"),
   ("process_name_specific", "ST_tWll"),
   ("nof_db_events",         12500),
   ("nof_db_files",          1),
@@ -53,7 +53,7 @@ meta_dictionary["/ST_tWll_5f_LO_TuneCP5_PSweights_13TeV_madgraph_pythia8_Fall17/
 
 meta_dictionary["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_Fall17/private/MINIAODSIM"] =  OD([
   ("crab_string",           "NanoProduction_v2_2018May23_VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_Fall17__private"),
-  ("sample_category",       "Rares"),
+  ("sample_category",       "VH"),
   ("process_name_specific", "VHToNonbb_M125"),
   ("nof_db_events",         200165),
   ("nof_db_files",          12),
@@ -80,5 +80,7 @@ meta_dictionary["/WpWpJJ_EWK_QCD_TuneCP5_13TeV_madgraph_pythia8_Fall17/private/M
 
 # event statistics by sample category:
 # tH:    174.50k
-# Rares: 237.41k
+# TT:    12.50k
+# VH:    200.16k
+# Rares: 24.75k
 

@@ -90,30 +90,15 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
   {
     sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
       inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root",
-      "GsfElectronToMVAVLooseFOIDEmuTightIP2D",
-      lut::kXptYabsEta
-    ));
-
-    sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root",
-      "MVAVLooseElectronToMini4",
-      lut::kXptYabsEta
-    ));
-
-    sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root",
-      "MVAVLooseElectronToConvVetoIHit1",
-      lut::kXptYabsEta
-    ));
-
-    sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/egammaEffi.txt_EGM2D.root",
+      "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_gsf_ptLt20.root",
       "EGamma_SF2D",
-      lut::kXetaYpt
+      lut::kXetaYpt, -2.5, +2.5, lut::kLimit, -1., 20., lut::kLimit_and_Cut
+    ));
+    sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
+      inputFiles_,
+      "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_gsf_ptGt20.root",
+      "EGamma_SF2D",
+      lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 20., -1., lut::kLimit_and_Cut
     ));
 
     sfElectronID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
@@ -122,7 +107,6 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
       "sf",
       lut::kXptYabsEta
     ));
-
     sfElectronID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
       inputFiles_,
       "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_e_2lss.root",
@@ -130,32 +114,30 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
       lut::kXptYabsEta
     ));
 
-    sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_LooseID_DENOM_generalTracks_VAR_map_pt_eta.root",
-      "SF",
-      lut::kXptYabsEta
-    ));
-
-    sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_MiniIsoLoose_DENOM_LooseID_VAR_map_pt_eta.root",
-      "SF",
-      lut::kXptYabsEta
-    ));
-
-    sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_TightIP2D_DENOM_MediumID_VAR_map_pt_eta.root",
-      "SF",
-      lut::kXptYabsEta
-    ));
-
     sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
       inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/ratios_HIP_trkEff.root",
-      "ratio_eta",
-      lut::kXeta
+      "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkEff_ptLt10.root",
+      "ratio_eff_eta3_tk0_dr030e030_corr",
+      lut::kXetaYpt, -2.4, +2.4, lut::kLimit, -1., 10., lut::kCut
+    ));
+    sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
+      inputFiles_,
+      "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkEff_ptGt10.root",
+      "ratio_eff_eta3_dr030e030_corr",
+      lut::kXetaYpt, -2.4, +2.4, lut::kLimit, 10., -1., lut::kCut
+    ));
+    
+    sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
+      inputFiles_,
+      "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_ptLt30.root",
+      "NUM_LooseID_DEN_genTracks_pt_abseta",
+      lut::kXptYabsEta, -1., 30., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
+    ));
+    sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
+      inputFiles_,
+      "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_ptGt30.root",
+      "NUM_LooseID_DEN_genTracks_pt_abseta",
+      lut::kXptYabsEta, 30., -1., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
     ));
 
     sfMuonID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
@@ -164,7 +146,6 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
       "sf",
       lut::kXptYabsEta
     ));
-
     sfMuonID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
       inputFiles_,
       "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_m_2lss.root",

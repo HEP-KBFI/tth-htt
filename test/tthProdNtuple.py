@@ -15,9 +15,9 @@ parser.add_nonnominal()
 parser.add_tau_id_wp()
 parser.add_files_per_job(20)
 parser.add_use_home(False)
-parser.add_argument('-p', '--disable-preselection',
-  dest = 'disable_preselection', action = 'store_false', default = True,
-  help = 'R|Disable preselection (read this script for the list of cuts)',
+parser.add_argument('-p', '--enable-preselection',
+  dest = 'enable_preselection', action = 'store_true', default = False,
+  help = 'R|Enable preselection (read this script for the list of cuts)',
 )
 args = parser.parse_args()
 
@@ -40,7 +40,7 @@ files_per_job  = args.files_per_job
 use_home       = args.use_home
 
 # Custom arguments
-preselection = args.disable_preselection
+preselection = args.enable_preselection
 pileup       = os.path.join(
   os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s.root' % era
 )
@@ -107,6 +107,8 @@ if __name__ == '__main__':
     level  = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s'
   )
+
+  logging.info("Preselection: %s" % ("enabled" if preselection else "disabled"))
 
   if args.tau_id_wp:
     logging.info("Changing tau ID WP: %s -> %s" % (hadTauWP, args.tau_id_wp))

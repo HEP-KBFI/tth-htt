@@ -117,7 +117,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH", "VH" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
@@ -140,7 +140,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.lepton_and_hadTau_selections = [ "forBDTtraining" ]
     self.lepton_and_hadTau_frWeights  = [ "disabled" ]
     super(analyzeConfig_3l_1tau, self).set_BDT_training(hadTau_selection_relaxed)
-    
+
   def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_3l_1tau executable (analysis code)
 

@@ -174,8 +174,11 @@ if __name__ == '__main__':
         "mvaOutput_2lss_1tau_plainKin_ttV"   : { 'quantile_rebin' : 15, 'quantile_in_fakes' : True }, # BDT1; quantile in fakes
         "mvaOutput_2lss_1tau_plainKin_1B_M"  : {},
         "mvaOutput_2lss_1tau_plainKin_SUM_M" : { 'quantile_rebin' : 11, 'quantile_in_fakes' : True }, # BDT3; quantile in fakes
+        "mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin" : {},
         "mvaOutput_2lss_1tau_HTT_SUM_M"      : { 'quantile_rebin' : 11, 'quantile_in_fakes' : True }, # BDT4; quantile in fakes
+        "mvaOutput_2lss_1tau_HTT_SUM_M_noRebin" : {},
         "mvaOutput_2lss_1tau_HTTMEM_SUM_M"   : { 'quantile_rebin' : 15, 'quantile_in_fakes' : True }, # BDT5; quantile in fakes
+        "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin"   : {}, 
         "mTauTauVis1"                        : {},
         "mTauTauVis2"                        : {},
         "mTauTauVis"                         : {},
