@@ -87,7 +87,7 @@ if __name__ == '__main__':
       check_input_files = check_input_files,
       running_method    = "sbatch",
       version           = version,
-      num_parallel_jobs = 8,
+      num_parallel_jobs = 40,
       verbose           = idx_job_resubmission > 0,
       dry_run           = dry_run,
       use_home          = use_home,

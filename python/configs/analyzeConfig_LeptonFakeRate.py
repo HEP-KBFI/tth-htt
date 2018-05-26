@@ -28,6 +28,74 @@ def getEtaBin(minAbsEta, maxAbsEta):
 def getPtBin(minPt, maxPt):
   return getBinName("Pt", minPt, maxPt)
 
+
+#### CERN BINNING SCHEME ####
+fit_param_range_map = {
+  'electron' : {
+    'tight' : {
+      'incl'                            : '0.01,10.0',
+      'absEtaLt1_5_Pt15_0to25_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt25_0to35_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt35_0to45_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt65_0to100_0'    : '0.01,10.0',   ## CERN RESTRICTED BINNING TO 100
+      'absEta1_5to2_5_Pt15_0to25_0'     : '0.01,10.0',
+      'absEta1_5to2_5_Pt25_0to35_0'     : '0.0,10.0',  ## CHANGED TO MAKE FIT CONVERGE
+      'absEta1_5to2_5_Pt35_0to45_0'     : '0.01,10.0',
+      'absEta1_5to2_5_Pt45_0to65_0'     : '0.01,10.0',
+      'absEta1_5to2_5_Pt65_0to100_0' : '0.01,10.0',   ## CERN RESTRICTED BINNING TO 100
+    },
+    'fakeable' : {
+      'incl'                            : '0.01,10.0',
+      'absEtaLt1_5_Pt15_0to25_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt25_0to35_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt35_0to45_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt65_0to100_0'    : '0.01,10.0',   ## CERN RESTRICTED BINNING TO 100
+      'absEta1_5to2_5_Pt15_0to25_0'     : '0.01,10.0',
+      'absEta1_5to2_5_Pt25_0to35_0'     : '0.01,10.0',
+      'absEta1_5to2_5_Pt35_0to45_0'     : '0.01,10.0',
+      'absEta1_5to2_5_Pt45_0to65_0'     : '0.01,10.0',
+      'absEta1_5to2_5_Pt65_0to100_0' : '0.01,10.0',  ## CERN RESTRICTED BINNING TO 100
+    },
+  },
+  'muon' : {
+    'tight' : {
+      'incl'                            : '0.01,10.0',
+      'absEtaLt1_2_Pt10_0to15_0'        : '0.01,10.0',
+      'absEtaLt1_2_Pt15_0to20_0'        : '0.01,10.0',
+      'absEtaLt1_2_Pt20_0to32_0'        : '0.01,10.0',
+      'absEtaLt1_2_Pt32_0to45_0'        : '0.01,10.0',
+      'absEtaLt1_2_Pt45_0to65_0'        : '0.01,10.0',
+      'absEtaLt1_2_Pt65_0to100_0'    : '0.01,10.0',
+      'absEta1_2to2_4_Pt10_0to15_0'     : '0.01,10.0',
+      'absEta1_2to2_4_Pt15_0to20_0'     : '0.01,10.0',
+      'absEta1_2to2_4_Pt20_0to32_0'     : '0.01,10.0',
+      'absEta1_2to2_4_Pt32_0to45_0'     : '0.01,10.0',
+      'absEta1_2to2_4_Pt45_0to65_0'     : '0.01,10.0',
+      'absEta1_2to2_4_Pt65_0to100_0' : '0.01,10.0',
+    },
+    'fakeable' : {
+      'incl'                            : '0.01,10.0',
+      'absEtaLt1_2_Pt10_0to15_0'        : '0.01,10.0',
+      'absEtaLt1_2_Pt15_0to20_0'        : '0.01,10.0',
+      'absEtaLt1_2_Pt20_0to32_0'        : '0.01,10.0',
+      'absEtaLt1_2_Pt32_0to45_0'        : '0.01,10.0',
+      'absEtaLt1_2_Pt45_0to65_0'        : '0.01,10.0',
+      'absEtaLt1_2_Pt65_0to100_0'    : '0.01,10.0',
+      'absEta1_2to2_4_Pt10_0to15_0'     : '0.01,10.0',
+      'absEta1_2to2_4_Pt15_0to20_0'     : '0.01,10.0',
+      'absEta1_2to2_4_Pt20_0to32_0'     : '0.01,10.0',
+      'absEta1_2to2_4_Pt32_0to45_0'     : '0.01,10.0',
+      'absEta1_2to2_4_Pt45_0to65_0'     : '0.01,10.0',
+      'absEta1_2to2_4_Pt65_0to100_0' : '0.01,10.0',
+    }
+  }
+}
+#######################
+
+'''
+### OLD BINNING SCHEME ####
 fit_param_range_map = {
   'electron' : {
     'tight' : {
@@ -90,7 +158,8 @@ fit_param_range_map = {
     }
   }
 }
-
+################################
+'''
 def construct_lepton_params(lepton, lepton_short, selection, absEtaPtBinString, error_msg):
   if absEtaPtBinString not in fit_param_range_map[lepton][selection]:
     raise ValueError(error_msg)
@@ -159,8 +228,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.cfgFile_comp_LeptonFakeRate = os.path.join(self.template_dir, "comp_LeptonFakeRate_cfg.py")
     self.jobOptions_comp_LeptonFakeRate = {}
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ]
-    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "signal", "TTWW", "tH", "ttH_hbb", "fakes_data" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH", "VH" ]
+    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "signal", "TTWW", "tH", "VH", "ttH_hbb", "fakes_data" ]
     self.histogramDir_prep_dcard = "LeptonFakeRate"
     self.prep_dcard = prep_dcard
 

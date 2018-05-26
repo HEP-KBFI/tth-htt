@@ -1,11 +1,24 @@
-import os, logging, uuid, inspect
-
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
+
+import os
+import logging
+import uuid
+import inspect
+
+DEPENDENCIES = [
+    "",  # CMSSW_BASE/src
+    "tthAnalysis/HiggsToTauTau",
+    "tthAnalysis/TauTriggerSFs2017",
+    "TauAnalysis/ClassicSVfit",
+    "TauAnalysis/SVfitTF",
+    "ttH_Htautau_MEM_Analysis",
+    "tthAnalysis/tthMEM",
+]
 
 # dir for python configuration and batch script files for each analysis job
 DKEY_CFGS = "cfgs"
@@ -20,9 +33,10 @@ DKEY_ROOT = "output_root" # dir for the selected events dumped into a root file
 DKEY_HADD_RT = "hadd_cfg_rt" # dir for hadd cfg files generated during the runtime
 DKEY_SYNC = 'sync_ntuple' # dir for storing sync Ntuples
 
-executable_rm = 'rm'
-
-DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES, DKEY_ROOT, DKEY_HADD_RT, DKEY_SYNC ]
+DIRLIST = [
+    DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES, DKEY_ROOT,
+    DKEY_HADD_RT, DKEY_SYNC
+]
 
 class analyzeConfig(object):
     """Configuration metadata needed to run analysis in a single go.
@@ -50,7 +64,8 @@ class analyzeConfig(object):
          dirs: list of subdirectories under `subdir` -- jobs, cfgs, histograms, logs, datacards
          makefile: full path to the Makefile
          histogram_files: the histogram files produced by 'analyze_1l_2tau' jobs
-         histogram_files_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_1l_2tau.py', so that 'analyze_1l_2tau' jobs do not have to be submitted again
+         histogram_files_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_1l_2tau.py',
+                                 so that 'analyze_1l_2tau' jobs do not have to be submitted again
          histogramFile_hadd_stage1: the histogram file obtained by hadding the output of all jobs
          histogramFile_hadd_stage2: the final histogram file with data-driven background estimates added
          datacardFile: the datacard -- final output file of this execution flow
@@ -124,8 +139,10 @@ class analyzeConfig(object):
 
         self.stdout_file_path = os.path.join(self.configDir, "stdout_%s.log" % self.channel)
         self.stderr_file_path = os.path.join(self.configDir, "stderr_%s.log" % self.channel)
-        self.stdout_file_path, self.stderr_file_path = get_log_version((
-            self.stdout_file_path, self.stderr_file_path,
+        self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_%s.log" % self.channel)
+        self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_%s.log" % self.channel)
+        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
+            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
         ))
 
         self.dirs = {}
@@ -173,9 +190,12 @@ class analyzeConfig(object):
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
 
-        self.isBDTtraining = False
+        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2017_Tallinn_2018May24.root"
+        self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_data_comb"
+        self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_data_comb"
         self.hadTau_selection_relaxed = None
-        self.inputFile_hadTauFakeRateWeight = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v1.root"
+        self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v1.root"
+        self.isBDTtraining = False
 
     def __del__(self):
         for hostname, times in self.cvmfs_error_log.items():
@@ -190,7 +210,7 @@ class analyzeConfig(object):
         self.hadTau_selection_relaxed = hadTau_selection_relaxed
         if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
             if self.era == "2017":
-                self.inputFile_hadTauFakeRateWeight = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
             else:
                 raise ValueError("Invalid era: %s" % self.era)
         self.isBDTtraining = True
@@ -221,8 +241,6 @@ class analyzeConfig(object):
           jobOptions['isMC'] = is_mc
         if 'apply_genWeight' not in jobOptions:
           jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
-        if 'apply_trigger_bits' not in jobOptions:
-          jobOptions['apply_trigger_bits'] = (is_mc and sample_info["reHLT"]) or not is_mc
         if 'lumiScale' not in jobOptions:
           jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / sample_info["nof_events"] \
                                     if (self.use_lumi and is_mc) else 1.
@@ -246,7 +264,6 @@ class analyzeConfig(object):
             'apply_hadTauGenMatching',
             'applyFakeRateWeights',
             'apply_genWeight',
-            'apply_trigger_bits',
             'selEventsFileName_output',
             'fillGenEvtHistograms',
             'selectBDT',
@@ -254,6 +271,9 @@ class analyzeConfig(object):
             'useNonNominal',
             'apply_hlt_filter',
             'branchName_memOutput',
+            'leptonFakeRateWeight.inputFileName',
+            'leptonFakeRateWeight.histogramName_e',
+            'leptonFakeRateWeight.histogramName_mu',
             'hadTauFakeRateWeight.inputFileName',
             'hadTauFakeRateWeight.lead.fitFunctionName',
             'hadTauFakeRateWeight.sublead.fitFunctionName',
@@ -305,18 +325,21 @@ class analyzeConfig(object):
                 )
             assert(jobOptions_expr)
             if jobOptions_key.startswith('apply_') and jobOptions_key.endswith('GenMatching'):
-                jobOptions_val = jobOptions_val and is_mc
+                jobOptions_val = jobOptions_val and is_mc and not self.isBDTtraining
             jobOptions_val = jobOptions_expr % str(jobOptions_val)
             lines.append("{}.{:<{len}} = {}".format(process_string, jobOptions_key, jobOptions_val, len = max_option_len))
 
+        blacklist = set(sample_info["missing_hlt_paths"]) | set(sample_info["missing_from_superset"])
         for trigger in self.triggers:
             trigger_string     = '%s.triggers_%s'     % (process_string, trigger)
             trigger_use_string = '%s.use_triggers_%s' % (process_string, trigger)
             if isLeptonFR:
-                available_triggers = self.triggerTable.get_leptonFR(trigger, sample_info['process_name_specific'])
+                available_triggers = list(self.triggerTable.triggers_leptonFR[trigger] - blacklist)
             else:
-                available_triggers = self.triggerTable.get(trigger, sample_info['process_name_specific'])
+                available_triggers = list(self.triggerTable.triggers_analysis[trigger] - blacklist)
             use_trigger = bool(trigger in sample_info['triggers'])
+            if not use_trigger:
+                available_triggers = []
             lines.extend([
                 "{:<{len}} = cms.vstring({})".format(trigger_string,     available_triggers, len = max_option_len + len(process_string) + 1),
                 "{:<{len}} = cms.bool({})".format   (trigger_use_string, use_trigger,        len = max_option_len + len(process_string) + 1),
@@ -749,6 +772,7 @@ class analyzeConfig(object):
     def run(self):
         """Runs the complete analysis workfow -- either locally or on the batch system.
         """
+        record_software_state(self.sw_ver_file_cfg, self.sw_ver_file_out, DEPENDENCIES)
         run_cmd(
             "make -f %s -j %i 2>%s 1>%s" % \
             (self.makefile, self.num_parallel_jobs, self.stderr_file_path, self.stdout_file_path),

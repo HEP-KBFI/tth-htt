@@ -233,7 +233,6 @@ int main(int argc, char* argv[])
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
-  bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
   edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
@@ -502,6 +501,15 @@ int main(int argc, char* argv[])
     "tau2_pt", "HTT", "HadTop_pt"
   };
   TMVAInterface mva_HTT_sum_VT(mvaFileName_HTT_sum_VT, mvaInputVariables_HTT_sumSort);
+
+  // SUM-BDT
+  std::string mvaFileName_noHTT_sum_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_noHTT_evtLevelSUM_TTH_16Var.xml";
+  std::vector<std::string> mvaInputVariables_noHTT_sumSort={
+    "avg_dr_jet", "dr_taus", "ptmiss", "lep_conePt", "mT_lep", "mTauTauVis", "mindr_lep_jet",
+    "mindr_tau1_jet", "mindr_tau2_jet", "nJet", "dr_lep_tau_ss", "dr_lep_tau_lead",
+    "costS_tau", "nBJetLoose", "tau1_pt", "tau2_pt"
+  };
+  TMVAInterface mva_noHTT_sum_VT(mvaFileName_noHTT_sum_VT, mvaInputVariables_noHTT_sumSort);
 
   //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -872,10 +880,10 @@ int main(int argc, char* argv[])
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG) || (isMC && !apply_trigger_bits);
-    bool isTriggered_1e1tau = hltPaths_isTriggered(triggers_1e1tau, isDEBUG) || (isMC && !apply_trigger_bits);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, isDEBUG) || (isMC && !apply_trigger_bits);
-    bool isTriggered_1mu1tau = hltPaths_isTriggered(triggers_1mu1tau, isDEBUG) || (isMC && !apply_trigger_bits);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
+    bool isTriggered_1e1tau = hltPaths_isTriggered(triggers_1e1tau, isDEBUG);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, isDEBUG);
+    bool isTriggered_1mu1tau = hltPaths_isTriggered(triggers_1mu1tau, isDEBUG);
 
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_1e1tau = use_triggers_1e1tau && isTriggered_1e1tau;
@@ -1144,7 +1152,7 @@ int main(int argc, char* argv[])
       selJets.size(),
       selBJets_loose.size(),
       selBJets_medium.size(),
-      -1., -1.,  -1.,  -1.,
+      -1., -1.,  -1.,  -1., -1.,
       mTauTauVis_presel,
       -1.
     );
@@ -1268,15 +1276,6 @@ int main(int argc, char* argv[])
         selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->phi());
       dataToMCcorrectionInterface_1l_2tau_trigger->setTriggerBits(isTriggered_1e, isTriggered_1e1tau, isTriggered_1mu, isTriggered_1mu1tau);
 
-//--- apply trigger efficiency turn-on curves to Spring16 non-reHLT MC
-      if ( !apply_trigger_bits ) {
-        triggerWeight = dataToMCcorrectionInterface_1l_2tau_trigger->getWeight_triggerEff();
-        if ( isDEBUG ) {
-          std::cout << "triggerWeight = " << triggerWeight << std::endl;
-        }
-        evtWeight *= triggerWeight;
-      }
-      //std::cout << "Applied trigger eff" << std::endl;
 //--- apply data/MC corrections for trigger efficiency
       double sf_triggerEff = dataToMCcorrectionInterface_1l_2tau_trigger->getSF_triggerEff();
       if ( isDEBUG ) {
@@ -1700,6 +1699,26 @@ int main(int argc, char* argv[])
     };
     const double mvaOutput_HTT_SUM_VT = mva_HTT_sum_VT(mvaInputsHTT_sum);
 
+    const std::map<std::string, double> mvaInputsnoHTT_sum = {
+      {"avg_dr_jet",      avg_dr_jet      },
+      {"dr_taus",         dr_taus         },
+      {"ptmiss",          ptmiss          },
+      {"lep_conePt",      lep_conePt      },
+      {"mT_lep",          mT_lep          },
+      {"mTauTauVis",      mTauTauVis      },
+      {"mindr_lep_jet",   mindr_lep_jet   },
+      {"mindr_tau1_jet",  mindr_tau1_jet  },
+      {"mindr_tau2_jet",  mindr_tau2_jet  },
+      {"nJet",           nJet             },
+      {"dr_lep_tau_ss",   dr_lep_tau_ss   },
+      {"dr_lep_tau_lead", dr_lep_tau_lead },
+      {"costS_tau",       costS_tau       },
+      {"nBJetLoose",      nBJetLoose      },
+      {"tau1_pt",         tau1_pt         },
+      {"tau2_pt",         tau2_pt         },
+    };
+    const double mvaOutput_noHTT_SUM_VT = mva_noHTT_sum_VT(mvaInputsnoHTT_sum);
+
 //--- fill histograms with events passing final selection
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
@@ -1728,6 +1747,7 @@ int main(int argc, char* argv[])
       mvaOutput_plainKin_tt,
       mvaOutput_plainKin_1B_VT,
       mvaOutput_HTT_SUM_VT,
+      mvaOutput_noHTT_SUM_VT,
       mTauTauVis,
       evtWeight);
     if( isSignal ) {
@@ -1744,6 +1764,7 @@ int main(int argc, char* argv[])
           mvaOutput_plainKin_tt,
           mvaOutput_plainKin_1B_VT,
           mvaOutput_HTT_SUM_VT,
+          mvaOutput_noHTT_SUM_VT,
           mTauTauVis,
           evtWeight
         );
@@ -1780,6 +1801,7 @@ int main(int argc, char* argv[])
       mvaOutput_plainKin_tt,
       mvaOutput_plainKin_1B_VT,
       mvaOutput_HTT_SUM_VT,
+      mvaOutput_noHTT_SUM_VT,
       mTauTauVis,
       evtWeight);
 
@@ -1939,6 +1961,7 @@ int main(int argc, char* argv[])
       snm->read(mvaOutput_plainKin_tt,                  FloatVariableType::mvaOutput_plainKin_tt);
       snm->read(mvaOutput_plainKin_1B_VT,               FloatVariableType::mvaOutput_plainKin_1B_VT);
       snm->read(mvaOutput_HTT_SUM_VT,                   FloatVariableType::mvaOutput_HTT_SUM_VT);
+      //snm->read(mvaOutput_noHTT_SUM_VT,                 FloatVariableType::mvaOutput_noHTT_SUM_VT);
 
       // mvaOutput_plainKin_SUM_VT not filled
 

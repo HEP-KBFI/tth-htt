@@ -188,14 +188,6 @@ class Triggers(object):
         }
       }
 
-      self.triggers_all = {}
-      for trigger_name in list(set(self.triggers_analysis.keys()) | set(self.triggers_leptonFR.keys())):
-        self.triggers_all[trigger_name] = set()
-        if trigger_name in self.triggers_analysis:
-          self.triggers_all[trigger_name].update(self.triggers_analysis[trigger_name])
-        if trigger_name in self.triggers_leptonFR:
-          self.triggers_all[trigger_name].update(self.triggers_leptonFR[trigger_name])
-
       self.blacklist = {
         'Run2017B' : {
            '1e'    : { 'HLT_Ele32_WPTight_Gsf', 'HLT_Ele8_CaloIdM_TrackIdM_PFJet30', 'HLT_Ele17_CaloIdM_TrackIdM_PFJet30' },
@@ -208,44 +200,23 @@ class Triggers(object):
         },
       }
 
-      self.triggers_analysis_flat = { trigger for triggers in self.triggers_analysis for trigger in triggers }
-      self.triggers_leptonFR_flat = { trigger for triggers in self.triggers_leptonFR for trigger in triggers }
-      self.triggers_flat          = self.triggers_analysis_flat | self.triggers_leptonFR_flat
-      self.blacklist_flat         = {}
-      for blacklist_process in self.blacklist_flat:
-        self.blacklist_flat[blacklist_process] = set()
-        for trigger_name in self.blacklist_flat[blacklist_process]:
-          self.blacklist_flat[blacklist_process].update(self.blacklist_flat[blacklist_process][trigger_name])
-
     else:
       raise ValueError("Invalid era: %s" % era)
 
+    self.triggers_all = {}
+    for trigger_name in list(set(self.triggers_analysis.keys()) | set(self.triggers_leptonFR.keys())):
+      self.triggers_all[trigger_name] = set()
+      if trigger_name in self.triggers_analysis:
+        self.triggers_all[trigger_name].update(self.triggers_analysis[trigger_name])
+      if trigger_name in self.triggers_leptonFR:
+        self.triggers_all[trigger_name].update(self.triggers_leptonFR[trigger_name])
 
-  def get(self, trigger_name, process_name_specific):
-    return self.get_wrapper(trigger_name, process_name_specific, self.triggers_analysis)
-
-  def get_leptonFR(self, trigger_name, process_name_specific):
-    return self.get_wrapper(trigger_name, process_name_specific, self.triggers_leptonFR)
-
-  def get_wrapper(self, trigger_name, process_name_specific, list_of_triggers):
-    if trigger_name not in list_of_triggers:
-      raise ValueError('Invalid trigger: %s' % trigger_name)
-    process_name_match = None
-    for blacklist_process in self.blacklist:
-      if blacklist_process in process_name_specific:
-        process_name_match = self.blacklist[blacklist_process]
-        break
-    excluded_triggers = set()
-    if process_name_match:
-      if trigger_name in process_name_match:
-        excluded_triggers = process_name_match[trigger_name]
-    return list(list_of_triggers[trigger_name] - excluded_triggers)
-
-  def get_overlap(self, triggers, process_name_specific):
-    required_triggers = self.triggers_flat
-    excluded_triggers = set()
+    self.triggers_analysis_flat = { trigger for triggers in self.triggers_analysis for trigger in triggers }
+    self.triggers_leptonFR_flat = { trigger for triggers in self.triggers_leptonFR for trigger in triggers }
+    self.triggers_flat          = self.triggers_analysis_flat | self.triggers_leptonFR_flat
+    self.blacklist_flat         = {}
     for blacklist_process in self.blacklist_flat:
-      if blacklist_process in process_name_specific:
-        excluded_triggers = self.blacklist_flat[blacklist_process]
-        break
-    return (required_triggers - excluded_triggers) & set(triggers)
+      self.blacklist_flat[blacklist_process] = set()
+      for trigger_name in self.blacklist_flat[blacklist_process]:
+        self.blacklist_flat[blacklist_process].update(self.blacklist_flat[blacklist_process][trigger_name])
+

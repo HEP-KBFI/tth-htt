@@ -54,7 +54,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
   def __init__(
     self,
     era_choices = ('2017',),
-    default_resubmission_limit = 4,
+    default_resubmission_limit = 1,
     max_help_position = 45,
     isAddMEM = False,
   ):

@@ -208,14 +208,18 @@ lutWrapperBase::lutWrapperBase(const std::string & lutName,
                                int lutType,
                                double xMin,
                                double xMax,
+			       int xAction,
                                double yMin,
-                               double yMax)
+                               double yMax,
+			       int yAction)
   : inputFile_(nullptr)
   , lutName_(lutName)
   , xMin_(xMin)
   , xMax_(xMax)
+  , xAction_(xAction)
   , yMin_(yMin)
   , yMax_(yMax)
+  , yAction_(yAction)
 {
   initialize(lutType);
 }
@@ -226,15 +230,19 @@ lutWrapperBase::lutWrapperBase(std::map<std::string, TFile *> & inputFiles,
                                int lutType,
                                double xMin,
                                double xMax,
+			       int xAction,
                                double yMin,
-                               double yMax)
+                               double yMax,
+			       int yAction)
   : inputFileName_(inputFileName)
   , inputFile_(nullptr)
   , lutName_(lutName)
   , xMin_(xMin)
   , xMax_(xMax)
+  , xAction_(xAction)
   , yMin_(yMin)
   , yMax_(yMax)
+  , yAction_(yAction)
 {
   if(inputFiles.count(inputFileName))
   {
@@ -289,6 +297,10 @@ lutWrapperBase::getSF(double pt,
     case kAbsEta: x = std::fabs(eta); break;
     default:                          break;
   }
+  if ( xAction_ == kCut || xAction_ == kLimit_and_Cut ) {
+    if ( xMin_ != -1. && x < xMin_ ) return 1.;
+    if ( xMax_ != -1. && x > xMax_ ) return 1.;
+  }
   double y = 0.;
   switch(lutTypeY_)
   {
@@ -296,6 +308,10 @@ lutWrapperBase::getSF(double pt,
     case kEta:    y = eta;            break;
     case kAbsEta: y = std::fabs(eta); break;
     default:                          break;
+  }
+  if ( yAction_ == kCut || yAction_ == kLimit_and_Cut ) {
+    if ( yMin_ != -1. && y < yMin_ ) return 1.;
+    if ( yMax_ != -1. && y > yMax_ ) return 1.;
   }
   return getSF_private(x, y);
 }
@@ -348,10 +364,15 @@ lutWrapperTH1::lutWrapperTH1(std::map<std::string, TFile *> & inputFiles,
                              int lutType,
                              double xMin,
                              double xMax,
+			     int xAction,
                              double yMin,
-                             double yMax)
-  : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, yMin, yMax)
+                             double yMax,
+			     int yAction)
+  : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, xAction, yMin, yMax, yAction)
 {
+  if ( yAction_ == kLimit || yAction_ == kLimit_and_Cut )
+    throw cmsException(__func__, __LINE__)
+      << " Configuration parameter 'yAction' = " << yAction << " not supported for objects of class lutWrapperTH1 !!\n";  
   lut_ = loadTH1(inputFile_, lutName_);
 }
 
@@ -378,9 +399,11 @@ lutWrapperTH2::lutWrapperTH2(std::map<std::string, TFile *> & inputFiles,
                              int lutType,
                              double xMin,
                              double xMax,
+			     int xAction,
                              double yMin,
-                             double yMax)
-  : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, yMin, yMax)
+                             double yMax,
+			     int yAction)
+  : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, xAction, yMin, yMax, yAction)
 {
   lut_ = loadTH2(inputFile_, lutName_);
 }
@@ -406,9 +429,11 @@ lutWrapperTH2Poly::lutWrapperTH2Poly(std::map<std::string, TFile *> & inputFiles
                                      int lutType,
                                      double xMin,
                                      double xMax,
+				     int xAction,
                                      double yMin,
-                                     double yMax)
-  : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, yMin, yMax)
+                                     double yMax,
+				     int yAction)
+  : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, xAction, yMin, yMax, yAction)
 {
   lut_ = loadTH2(inputFile_, lutName_);
 }
@@ -434,10 +459,15 @@ lutWrapperTGraph::lutWrapperTGraph(std::map<std::string, TFile *> & inputFiles,
                                    int lutType,
                                    double xMin,
                                    double xMax,
+				   int xAction,
                                    double yMin,
-                                   double yMax)
-  : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, yMin, yMax)
+                                   double yMax,
+				   int yAction)
+  : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, xAction, yMin, yMax, yAction)
 {
+  if ( yAction_ == kLimit || yAction_ == kLimit_and_Cut )
+    throw cmsException(__func__, __LINE__)
+      << " Configuration parameter 'yAction' = " << yAction << " not supported for objects of class lutWrapperTGraph !!\n";  
   lut_ = loadTGraph(inputFile_, lutName_);
 }
 
@@ -462,15 +492,21 @@ lutWrapperCrystalBall::lutWrapperCrystalBall(const std::string & lutName,
                                              int lutType,
                                              double xMin,
                                              double xMax,
+					     int xAction,
                                              double yMin,
-                                             double yMax)
-  : lutWrapperBase(lutName, lutType, xMin, xMax, yMin, yMax)
+                                             double yMax,
+					     int yAction)
+  : lutWrapperBase(lutName, lutType, xMin, xMax, xAction, yMin, yMax, yAction)
   , m0_   (cfg.getParameter<double>("m_{0}"))
   , sigma_(cfg.getParameter<double>("sigma"))
   , alpha_(cfg.getParameter<double>("alpha"))
   , n_    (cfg.getParameter<double>("n"))
   , norm_ (cfg.getParameter<double>("norm"))
-{}
+{
+  if ( yAction_ == kLimit || yAction_ == kLimit_and_Cut )
+    throw cmsException(__func__, __LINE__)
+      << " Configuration parameter 'yAction' = " << yAction << " not supported for objects of class lutWrapperCrystalBall !!\n";  
+}
 
 double
 lutWrapperCrystalBall::getSF_private(double x,

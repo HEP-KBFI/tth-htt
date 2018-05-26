@@ -29,9 +29,25 @@
 # ,,certified as good for physics analysis during stable beams'' and ,,the operational losses [..]
 # are accounted separately''.
 
+#TODO: add support for eos and XRD protocols
+#TODO: disentangle the computation of era-based integrated luminosity and DAS queries on data samples
+
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size, create_if_not_exists
 
-import re, datetime, collections, jinja2, argparse, os, sys, json, itertools, ast, getpass, multiprocessing, signal
+import re
+import datetime
+import collections
+import jinja2
+import argparse
+import os
+import sys
+import json
+import itertools
+import ast
+import getpass
+import multiprocessing
+import signal
+import ROOT
 
 class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
   def _split_lines(self, text, width):
@@ -320,6 +336,48 @@ def get_integrated_lumi(dataset_name, data_golden, brilcalc_path, normtag, units
 
   return dataset_name, results
 
+def get_nof_events(dataset_private_file):
+  if not dataset_private_file.lower().endswith('.root'):
+    return -1 # Not a ROOT file
+  dataset_private_file_ptr = ROOT.TFile.Open(dataset_private_file, 'read')
+  if not dataset_private_file_ptr:
+    return -2 # Not a valid ROOT file
+  dataset_private_tree_ptr = dataset_private_file_ptr.Get('Events')
+  if not dataset_private_tree_ptr:
+    return -3 # No TKey named Events
+  if not hasattr(dataset_private_tree_ptr, 'GetEntries'):
+    return -4 # Not a valid TTree object
+  nof_entries = dataset_private_tree_ptr.GetEntries()
+  dataset_private_file_ptr.Close()
+  del dataset_private_file_ptr
+  del dataset_private_tree_ptr
+  return nof_entries
+
+def scan_private(dataset_private_path):
+  fs_results = {
+    'size'                   : 0,
+    'nfiles'                 : 0,
+    'nevents'                : 0,
+    'last_modification_date' : 0,
+  }
+  for filename in os.listdir(dataset_private_path):
+    dataset_private_file = os.path.join(dataset_private_path, filename)
+    nof_events = get_nof_events(dataset_private_file)
+    if nof_events < 0:
+      # Not a valid ROOT file
+      continue
+    fs_results['size'] += os.path.getsize(dataset_private_file)
+    fs_results['nevents'] += nof_events
+    fs_results['nfiles'] += 1
+    current_mtime = int(os.stat(dataset_private_file).st_mtime)
+    if current_mtime > fs_results['last_modification_date']:
+      fs_results['last_modification_date'] = current_mtime
+  # Convert the results to strings
+  for fs_key in fs_results:
+    fs_results[fs_key] = str(fs_results[fs_key])
+  fs_results['last_modification_date'] = convert_date(fs_results['last_modification_date'])
+  return fs_results
+
 lumi_results = {}
 
 def update_lumi_results(results):
@@ -360,7 +418,7 @@ if __name__ == '__main__':
     type = str, dest = 'golden_json', metavar = 'file', required = False,
     default = os.path.join(
       os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'NanoAOD', 'data',
-      'Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt'
+      'Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt'
     ),
     help = 'R|Path to the golden lumimask file in JSON format',
   )
@@ -398,6 +456,10 @@ if __name__ == '__main__':
     dest = 'luminosity', action = 'store_true', default = False, required = False,
     help = 'R|Compute integrated luminosity for each selected PD',
   )
+  parser.add_argument('-P', '--private-path',
+    type = str, dest = 'private_path', metavar = 'path', required = False,
+    help = 'R|Path to private MINIAODs',
+  )
   parser.add_argument('-V', '--verbose',
     dest = 'verbose', action = 'store_true', default = False, required = False,
     help = 'R|Verbose output',
@@ -431,6 +493,7 @@ if __name__ == '__main__':
   required_cmssw_version = Version(required_cmssw_version_str)
   verbose = args.verbose
   crab_string = args.crab_string
+  private_path = args.private_path
 
   primary_datasets = args.primary_datasets
   DATA_GREP_STR = '\\|'.join(map(lambda sample: '^/%s/' % sample, primary_datasets))
@@ -522,30 +585,54 @@ if __name__ == '__main__':
         sys.stdout.write(
           "Querying sample (%d/%d): %s;" % (dataset_idx + 1, len(das_query_results), dataset)
         )
-      for das_key_idx, das_key in enumerate(das_keys):
-        if verbose:
-          sys.stdout.write(" %s%s" % (das_key, (',' if das_key_idx != len(das_keys) - 1 else '\n')))
-          sys.stdout.flush()
-        mc_query_str = DASGOCLIENT_QUERY_COMMON % (dataset, das_key) if das_key != 'release' \
-                       else DASGOCLIENT_QUERY_RELEASE % dataset
-        mc_query_out, mc_query_err = run_cmd(mc_query_str, do_not_log = True, return_stderr = True)
-        if not mc_query_out or mc_query_err:
-          # this may happen if a sample is in PRODUCTION stage and the dasgoclient script
-          # returns nonsense; let's try again with status=*
-          query_fail = False
-          if das_key != 'release':
-            mc_query_str = DASGOCLIENT_QUERY_ANY_STATUS % (dataset, das_key)
-            mc_query_out, mc_query_err = run_cmd(mc_query_str, do_not_log = True, return_stderr = True)
-            if not mc_query_out or mc_query_err:
-              query_fail = True
-          else:
-            query_fail = True
-          if query_fail:
-            raise ValueError("Query to DAS resulted in an empty output or an error:"
-                             "\nstdout = '%s'\nstderr = '%s'" % (mc_query_out, mc_query_err))
+      dataset_split = dataset.split('/')
+      if dataset_split[2] == 'private':
+        # The sample is privately produced and we would have to get the stats from the FS directly
+        # Fill the meta-dictionary with some basic values
+        sys.stdout.write("\n(It's a privately produced sample)\n")
+        if not private_path:
+          raise ValueError('No path to private samples provided!')
+        if not os.path.isdir(private_path):
+          raise ValueError('No such path: %s' % private_path)
+        dataset_private_path = os.path.join(private_path, dataset_split[1])
+        fs_results = scan_private(dataset_private_path)
 
-        das_parser = das_keys[das_key]['func']
-        das_query_results[dataset][das_key] = das_parser(mc_query_out.rstrip('\n')).strip()
+        das_query_results[dataset]['name'] = dataset
+        das_query_results[dataset]['dataset_access_type'] = 'VALID'
+        das_query_results[dataset]['acquisition_era_name'] = dataset_split[2]
+        das_query_results[dataset]['primary_ds_type'] = 'mc' # We only produce MC samples privately
+        das_query_results[dataset]['last_modification_date'] = fs_results['last_modification_date']
+        das_query_results[dataset]['size'] = fs_results['size']
+        das_query_results[dataset]['nfiles'] = fs_results['nfiles']
+        das_query_results[dataset]['nevents'] = fs_results['nevents']
+        das_query_results[dataset]['release'] = required_cmssw_version_str # [*]
+        # [*] Assume that the MINIAODSIM was produced with a CMSSW version that is at least as new
+        #     as the required CMSSW version
+      else:
+        for das_key_idx, das_key in enumerate(das_keys):
+          if verbose:
+            sys.stdout.write(" %s%s" % (das_key, (',' if das_key_idx != len(das_keys) - 1 else '\n')))
+            sys.stdout.flush()
+          mc_query_str = DASGOCLIENT_QUERY_COMMON % (dataset, das_key) if das_key != 'release' \
+                         else DASGOCLIENT_QUERY_RELEASE % dataset
+          mc_query_out, mc_query_err = run_cmd(mc_query_str, do_not_log = True, return_stderr = True)
+          if not mc_query_out or mc_query_err:
+            # this may happen if a sample is in PRODUCTION stage and the dasgoclient script
+            # returns nonsense; let's try again with status=*
+            query_fail = False
+            if das_key != 'release':
+              mc_query_str = DASGOCLIENT_QUERY_ANY_STATUS % (dataset, das_key)
+              mc_query_out, mc_query_err = run_cmd(mc_query_str, do_not_log = True, return_stderr = True)
+              if not mc_query_out or mc_query_err:
+                query_fail = True
+            else:
+              query_fail = True
+            if query_fail:
+              raise ValueError("Query to DAS resulted in an empty output or an error:"
+                               "\nstdout = '%s'\nstderr = '%s'" % (mc_query_out, mc_query_err))
+
+          das_parser = das_keys[das_key]['func']
+          das_query_results[dataset][das_key] = das_parser(mc_query_out.rstrip('\n')).strip()
 
     col_widths = {
       das_key:

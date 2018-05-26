@@ -17,7 +17,7 @@ EventInfoReader::EventInfoReader(EventInfo * info, bool read_genHiggsDecayMode, 
   , branchName_genHiggsDecayMode("genHiggsDecayMode")
   , branchName_genWeight("genWeight")
   , branchName_puWeight("puWeight")
-  , branchName_lheWeightSM("lheWeightSM")
+  , branchName_lheWeightSM("LHEWeight_rwgt_12")
 {}
 
 void
