@@ -428,7 +428,6 @@ main(int argc,
   const bool isDEBUG              = cfg_analyze.getParameter<bool>("isDEBUG");
   const bool apply_met_filters    = cfg_analyze.getParameter<bool>("apply_met_filters");
   
-
   const vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   const vstring triggerNames_2e = cfg_analyze.getParameter<vstring>("triggers_2e");
   const vstring triggerNames_1mu = cfg_analyze.getParameter<vstring>("triggers_1mu");

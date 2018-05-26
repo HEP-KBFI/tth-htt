@@ -143,8 +143,6 @@ main(int argc,
 
   const bool isMC               = cfg_analyze.getParameter<bool>("isMC");
   const bool isMC_tH            = process_string == "tH";
-  const bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits");
-  const bool isTriggered        = isMC && ! apply_trigger_bits;
   const bool useNonNominal      = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
@@ -291,17 +289,17 @@ main(int argc,
     snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
     snm->read(boost::math::sign(eventInfo.genWeight), FloatVariableType::MC_weight);
 
-    const bool isTriggered_1e      = hltPaths_isTriggered(triggers_1e)      || isTriggered;
-    const bool isTriggered_2e      = hltPaths_isTriggered(triggers_2e)      || isTriggered;
-    const bool isTriggered_1mu     = hltPaths_isTriggered(triggers_1mu)     || isTriggered;
-    const bool isTriggered_2mu     = hltPaths_isTriggered(triggers_2mu)     || isTriggered;
-    const bool isTriggered_1e1mu   = hltPaths_isTriggered(triggers_1e1mu)   || isTriggered;
-    const bool isTriggered_3e      = hltPaths_isTriggered(triggers_3e)      || isTriggered;
-    const bool isTriggered_2e1mu   = hltPaths_isTriggered(triggers_2e1mu)   || isTriggered;
-    const bool isTriggered_1e2mu   = hltPaths_isTriggered(triggers_1e2mu)   || isTriggered;
-    const bool isTriggered_3mu     = hltPaths_isTriggered(triggers_3mu)     || isTriggered;
-    const bool isTriggered_1mu1tau = hltPaths_isTriggered(triggers_1mu1tau) || isTriggered;
-    const bool isTriggered_1e1tau  = hltPaths_isTriggered(triggers_1e1tau)  || isTriggered;
+    const bool isTriggered_1e      = hltPaths_isTriggered(triggers_1e);
+    const bool isTriggered_2e      = hltPaths_isTriggered(triggers_2e);
+    const bool isTriggered_1mu     = hltPaths_isTriggered(triggers_1mu);
+    const bool isTriggered_2mu     = hltPaths_isTriggered(triggers_2mu);
+    const bool isTriggered_1e1mu   = hltPaths_isTriggered(triggers_1e1mu);
+    const bool isTriggered_3e      = hltPaths_isTriggered(triggers_3e);
+    const bool isTriggered_2e1mu   = hltPaths_isTriggered(triggers_2e1mu);
+    const bool isTriggered_1e2mu   = hltPaths_isTriggered(triggers_1e2mu);
+    const bool isTriggered_3mu     = hltPaths_isTriggered(triggers_3mu);
+    const bool isTriggered_1mu1tau = hltPaths_isTriggered(triggers_1mu1tau);
+    const bool isTriggered_1e1tau  = hltPaths_isTriggered(triggers_1e1tau);
 
     const bool selTrigger_1e      = use_triggers_1e      && isTriggered_1e;
     const bool selTrigger_2e      = use_triggers_2e      && isTriggered_2e;
