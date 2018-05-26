@@ -139,6 +139,10 @@ isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
   for(auto itW = genWBosonsFromTop.cbegin(); itW != genWBosonsFromTop.cend(); ++itW) // Edit Siddhesh
   {
     const GenParticle * genWBosonFromTop = (*itW);
+    if(! genBJetFromTop || ! genTop)
+    {
+      continue;
+    }
     if ( std::fabs((genWBosonFromTop->p4() + genBJetFromTop->p4()).mass() - genTop->p4().mass()) < mass_diff)
     {
       genWBosonFromTopFinal = genWBosonFromTop;
