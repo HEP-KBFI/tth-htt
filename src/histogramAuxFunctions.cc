@@ -197,6 +197,26 @@ checkCompatibleBinning(const TH1 * histogram1,
   }
 }
 
+bool
+checkIfLabeledHistograms(const std::vector<TH1 *> & histogramsToAdd)
+{
+  bool areAllLabelled = true;
+  for(const TH1 * histogramToAdd: histogramsToAdd)
+  {
+    const int nofBins = histogramToAdd->GetNbinsX() + 1;
+    for(int iBin = 1; iBin < nofBins; ++iBin)
+    {
+      const std::string binLabel = histogramToAdd->GetXaxis()->GetBinLabel(iBin);
+      if(binLabel.empty())
+      {
+        areAllLabelled = false;
+        break;
+      }
+    }
+  }
+  return areAllLabelled;
+}
+
 TH1 *
 addHistograms(const std::string & newHistogramName,
               const TH1 * histogram1,
@@ -253,8 +273,10 @@ addHistograms(const std::string & newHistogramName,
     newHistogram->Sumw2();
   }
 
-  const int numBins_plus2 = newHistogram->GetNbinsX() + 2;
-  for(int iBin = 0; iBin < numBins_plus2; ++iBin)
+  const bool isLabelled = checkIfLabeledHistograms(histogramsToAdd);
+  const int initBin = isLabelled ? 1 : 0;
+  const int endBin = newHistogram->GetNbinsX() + (isLabelled ? 1 : 2);
+  for(int iBin = initBin; iBin < endBin; ++iBin)
   {
     double sumBinContent = 0.;
     double sumBinError2  = 0.;
