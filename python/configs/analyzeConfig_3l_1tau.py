@@ -589,7 +589,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       key_hadd_stage1_5 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Fakeable", "enabled"), chargeSumSelection)
       category_sideband = None
       if self.applyFakeRateWeights == "3lepton":
-        category_sideband = "3l_1tau_%s_lepFakeable_tauTight" % chargeSumSelection
+        category_sideband = "3l_1tau_%s_lepFakeable_tauTight_wFakeRateWeights" % chargeSumSelection
       elif self.applyFakeRateWeights == "4L":
         category_sideband = "3l_1tau_%s_lepFakeable_tauFakeable_wFakeRateWeights" % chargeSumSelection
       elif self.applyFakeRateWeights == "1tau":
