@@ -447,7 +447,7 @@ class analyzeConfig(object):
                         lines.append("process.prepareDatacards.nbin_quantile_rebinning = cms.int32(%d)" % \
                                      histogramToFit_options['quantile_rebin'])
                         if 'quantile_in_fakes' in histogramToFit_options:
-                            lines.append("process.prepareDatacards.quantile_rebinning_in_fakes = cms.bool(%d)" % \
+                            lines.append("process.prepareDatacards.quantile_rebinning_in_fakes = cms.bool(%s)" % \
                                          histogramToFit_options['quantile_in_fakes'])
                     if 'explicit_binning' in histogramToFit_options:
                         explicit_binning = histogramToFit_options['explicit_binning']
