@@ -51,7 +51,8 @@ process.makePlots = cms.PSet(
             TTZ = cms.string("1.0 +/- 0.20"),
             EWK = cms.string("1.0 +/- 0.20"),
             Rares = cms.string("1.0 +/- 0.20"),
-            fakes_data = cms.string("1.0 +/- 0.20")
+            fakes_data = cms.string("1.0 +/- 0.20"),
+            VH = cms.string("1.0 +/- 0.20"),
         ),
         shape = cms.PSet(
             CMS_ttHl_btag_HF = cms.string("0.00 +/- 1.00"),
@@ -67,7 +68,7 @@ process.makePlots = cms.PSet(
     ),
     showUncertainty = cms.bool(False),
 
-    labelOnTop = cms.string("CMS Preliminary; ttH, H #rightarrow #tau#tau; %1.1f fb^{-1} at #sqrt{s} = 13 TeV"),    
+    labelOnTop = cms.string("CMS Preliminary; ttH, H #rightarrow #tau#tau; %1.1f fb^{-1} at #sqrt{s} = 13 TeV"),
     intLumiData = cms.double(35.9), # in units of fb^-1
 
     outputFileName = cms.string("plots/makePlots.png")
