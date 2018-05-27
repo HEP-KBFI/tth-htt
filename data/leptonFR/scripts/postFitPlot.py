@@ -14,7 +14,7 @@ CHANNELS = {
     'mu': 'Muon'
 }
 
-LAYOUTS = { 
+LAYOUTS = {
     "generic": [
         ('fakes_data', {
             'entries': ['fakes_data'],
@@ -272,7 +272,7 @@ pads[0].RedrawAxis()
 
 # CMS logo
 plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
-plot.DrawTitle(pads[0], '35.9 fb^{-1} (13 TeV)', 3)
+plot.DrawTitle(pads[0], '41.5 fb^{-1} (13 TeV)', 3) #TODO make it era-dependent
 
 # latex = ROOT.TLatex()
 # plot.Set(latex, NDC=None, TextFont=42, TextSize=0.08)
