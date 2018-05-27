@@ -24,13 +24,13 @@ process.makePlots.categories = cms.VPSet(
 
 process.makePlots.distributions.extend([
     cms.PSet(
-        histogramName = cms.string("sel/evt/$PROCESS/mvaDiscr_2lss"),
-        xAxisTitle = cms.string("MVA Discriminant"),
+        histogramName = cms.string("sel/evt/$PROCESS/mvaOutput_2lss_ttV"),
+        xAxisTitle = cms.string("MVA Discriminant (2lss ttV)"),
         yAxisTitle = cms.string("N")
     ),
     cms.PSet(
-        histogramName = cms.string("sel/evt/$PROCESS/mvaDiscr_2lss_1tau"),
-        xAxisTitle = cms.string("MVA Discriminant"),
+        histogramName = cms.string("sel/evt/$PROCESS/mvaOutput_2lss_tt"),
+        xAxisTitle = cms.string("MVA Discriminant (2lss tt)"),
         yAxisTitle = cms.string("N")
     ),
     cms.PSet(
