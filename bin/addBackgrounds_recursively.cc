@@ -136,6 +136,11 @@ namespace
 	  subdir != subdirs.end(); ++subdir ) {
       processSubdirectory_recursively(fs, *subdir, dirName + "/" + (*subdir)->GetName(), processes_input, process_output, histogramsToCopy, central_or_shifts);
     }
+    for(const TDirectory* subdir: subdirs)
+    {
+      delete subdir;
+      subdir = 0;
+    }
   }
 }
 
