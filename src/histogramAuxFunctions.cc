@@ -198,20 +198,32 @@ checkCompatibleBinning(const TH1 * histogram1,
 }
 
 bool
-checkIfLabeledHistograms(const std::vector<TH1 *> & histogramsToAdd)
+checkIfLabeledHistogram(const TH1 * histogram)
 {
   bool areAllLabelled = true;
-  for(const TH1 * histogramToAdd: histogramsToAdd)
+  const int nofBins = histogram->GetNbinsX() + 1;
+  for(int iBin = 1; iBin < nofBins; ++iBin)
   {
-    const int nofBins = histogramToAdd->GetNbinsX() + 1;
-    for(int iBin = 1; iBin < nofBins; ++iBin)
+    const std::string binLabel = histogram->GetXaxis()->GetBinLabel(iBin);
+    if(binLabel.empty())
     {
-      const std::string binLabel = histogramToAdd->GetXaxis()->GetBinLabel(iBin);
-      if(binLabel.empty())
-      {
-        areAllLabelled = false;
-        break;
-      }
+      areAllLabelled = false;
+      break;
+    }
+  }
+  return areAllLabelled;
+}
+
+bool
+checkIfLabeledHistograms(const std::vector<TH1 *> & histograms)
+{
+  bool areAllLabelled = true;
+  for(const TH1 * histogram: histograms)
+  {
+    areAllLabelled = checkIfLabeledHistogram(histogram);
+    if(! areAllLabelled)
+    {
+      break;
     }
   }
   return areAllLabelled;
@@ -325,8 +337,10 @@ subtractHistograms(const std::string & newHistogramName,
     newHistogram->Sumw2();
   }
 
-  const int numBins_plus2 = newHistogram->GetNbinsX() + 2;
-  for(int iBin = 0; iBin < numBins_plus2; ++iBin)
+  const bool isLabelled = checkIfLabeledHistogram(histogramMinuend) && checkIfLabeledHistogram(histogramSubtrahend);
+  const int initBin = isLabelled ? 1 : 0;
+  const int endBin = histogramMinuend->GetNbinsX() + (isLabelled ? 1 : 2);
+  for(int iBin = initBin; iBin < endBin; ++iBin)
   {
     if(verbosity)
     {
