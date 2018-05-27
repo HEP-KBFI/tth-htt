@@ -165,7 +165,7 @@ class analyzeConfig(object):
         self.histogramDir_prep_dcard = None
         self.cfgFile_add_syst_dcard = os.path.join(self.template_dir, "addSystDatacards_cfg.py")
         self.jobOptions_add_syst_dcard = {}
-        self.make_plots_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
+        self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
         self.make_plots_signal = "signal"
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
         self.jobOptions_make_plots = {}
