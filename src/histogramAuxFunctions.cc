@@ -429,8 +429,10 @@ makeBinContentsPositive(TH1 * histogram,
     std::cout << " integral_original = " << integral_original << '\n';
   }
 
-  const int numBins_plus2 = histogram->GetNbinsX() + 2;
-  for(int iBin = 0; iBin < numBins_plus2; ++iBin)
+  const bool isLabelled = checkIfLabeledHistogram(histogram);
+  const int initBin = isLabelled ? 1 : 0;
+  const int endBin = histogram->GetNbinsX() + (isLabelled ? 1 : 2);
+  for(int iBin = initBin; iBin < endBin; ++iBin)
   {
     const double binContent_original = histogram->GetBinContent(iBin);
     const double binError2_original = square(histogram->GetBinError(iBin));
@@ -472,7 +474,7 @@ makeBinContentsPositive(TH1 * histogram,
   }
   else
   {
-    for(int iBin = 0; iBin < numBins_plus2; ++iBin)
+    for(int iBin = initBin; iBin < endBin; ++iBin)
     {
       histogram->SetBinContent(iBin, 0.);
     }
