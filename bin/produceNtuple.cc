@@ -280,7 +280,7 @@ main(int argc,
     genHadTauReader->setBranchAddresses(inputTree);
     genPhotonReader = new GenPhotonReader(branchName_genPhotons);
     genPhotonReader->setBranchAddresses(inputTree);
-    genJetReader = new GenJetReader(branchName_genJets);
+    genJetReader = new GenJetReader(branchName_genJets, true);
     genJetReader->setBranchAddresses(inputTree);
   }
 
