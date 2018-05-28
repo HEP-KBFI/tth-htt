@@ -278,7 +278,7 @@ main(int argc,
     genLeptonReader->setBranchAddresses(inputTree);
     genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
     genHadTauReader->setBranchAddresses(inputTree);
-    genPhotonReader = new GenParticleReader(branchName_genPhotons);
+    genPhotonReader = new GenPhotonReader(branchName_genPhotons);
     genPhotonReader->setBranchAddresses(inputTree);
     genJetReader = new GenJetReader(branchName_genJets);
     genJetReader->setBranchAddresses(inputTree);
