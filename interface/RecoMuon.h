@@ -12,7 +12,9 @@ public:
            Bool_t passesLooseIdPOG,
            Bool_t passesMediumIdPOG,
            Float_t segmentCompatibility,
-           Float_t ptErr);
+           Float_t ptErr,
+           Float_t pt_corrected,
+           Float_t pt_sys_uncert);
 
   /**
    * @brief Funtions to access data-members
@@ -32,6 +34,12 @@ public:
 
   Float_t
   dpt_div_pt() const;
+
+  Float_t
+  pt_corrected() const;
+
+  Float_t
+  pt_sys_uncert() const;
 
   /**
    * @brief Checks whether a given lepton is an electron by its PDG id
@@ -58,6 +66,8 @@ public:
   Bool_t passesMediumIdPOG_;     ///< flag indicating if muon passes (true) or fails (false) medium PFMuon id
   Float_t segmentCompatibility_; ///< muon segment compatibility
   Float_t ptErr_;                ///< pT error of the muon track
+  Float_t pt_corrected_;         ///< Rochester-corrected muon momentum
+  Float_t pt_sys_uncert_;        ///< associated systematic uncertainty to Rochester correction
 };
 
 std::ostream &
