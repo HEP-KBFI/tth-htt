@@ -14,6 +14,7 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   , branchName_obj_(branchName_obj)
   , genLeptonWriter_(nullptr)
   , genHadTauWriter_(nullptr)
+  , genPhotonWriter_(nullptr)
   , genJetWriter_(nullptr)
   , pt_(nullptr)
   , eta_(nullptr)
@@ -38,6 +39,7 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()));
   genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()));
+  genPhotonWriter_ = new GenParticleWriter(Form("%s_genPhoton", branchName_obj_.data()));
   genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()));
   setBranchNames();
 }
@@ -46,6 +48,7 @@ RecoLeptonWriter::~RecoLeptonWriter()
 {
   delete genLeptonWriter_;
   delete genHadTauWriter_;
+  delete genPhotonWriter_;
   delete genJetWriter_;
   delete[] pt_;
   delete[] eta_;
@@ -97,6 +100,7 @@ void RecoLeptonWriter::setBranches(TTree * tree)
 {
   genLeptonWriter_->setBranches(tree);
   genHadTauWriter_->setBranches(tree);
+  genPhotonWriter_->setBranches(tree);
   genJetWriter_->setBranches(tree);
   BranchAddressInitializer bai(tree, max_nLeptons_, branchName_num_);
   bai.setBranch(nLeptons_, branchName_num_);
