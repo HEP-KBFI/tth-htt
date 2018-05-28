@@ -68,13 +68,12 @@ getHadTau_genPdgId(const RecoHadTau * hadTau)
 double
 get_BtagWeight(const std::vector<const RecoJet *> & jets)
 {
-  return std::accumulate(
-    jets.cbegin(), jets.cend(), 1.,
-    [](double btagWeight, const RecoJet * jet) -> double
-    {
-      return btagWeight * jet->BtagWeight();
-    }
-  );
+  double btag_weight = 1.;
+  for(const RecoJet * jet: jets)
+  {
+    btag_weight *= jet->BtagWeight();
+  }
+  return btag_weight;
 }
 
 Particle::LorentzVector
