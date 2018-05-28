@@ -7,8 +7,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 
-#define _READ_GENERATOR_LEVEL_PHOTONS 0
-
 class RecoLeptonReader
   : public ReaderBase
 {

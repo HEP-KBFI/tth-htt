@@ -3,6 +3,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 
+#define _READ_GENERATOR_LEVEL_PHOTONS 0
+
 class GenPhoton
   : public GenParticle
 {
