@@ -633,10 +633,8 @@ main(int argc,
       }
       if(! branchName_genPhotons.empty())
       {
-#if _READ_GENERATOR_LEVEL_PHOTONS
         genPhotonReader = new GenPhotonReader(branchName_genPhotons);
         inputTree->registerReader(genPhotonReader);
-#endif
       }
       if(! branchName_genJets.empty())
       {
