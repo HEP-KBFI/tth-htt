@@ -12,7 +12,7 @@ mode_choices = [ 'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', '
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_nonnominal()
-parser.add_tau_id_wp()
+parser.add_tau_id_wp('dR03mvaVVLoose')
 parser.add_files_per_job(20)
 parser.add_use_home(False)
 parser.add_argument('-p', '--enable-preselection',
@@ -78,9 +78,8 @@ for sample_key, sample_entry in samples.items():
   else:
     raise ValueError("Internal logic error")
 
-leptonSelection   = 'Loose'
-hadTauSelection   = 'Loose'
-hadTauWP          = 'dR03mvaVVLoose'
+leptonSelection = 'Loose'
+hadTauSelection = 'Loose'
 
 if preselection:
   preselection_cuts = {
