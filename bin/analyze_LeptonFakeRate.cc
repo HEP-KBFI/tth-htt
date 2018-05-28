@@ -4,6 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
@@ -506,6 +507,7 @@ main(int argc,
 
   const std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
   const std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
+  const std::string branchName_genPhotons = cfg_analyze.getParameter<std::string>("branchName_genPhotons");
   const std::string branchName_genJets    = cfg_analyze.getParameter<std::string>("branchName_genJets");
 
   const edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
@@ -613,6 +615,7 @@ main(int argc,
   GenLeptonReader * genLeptonReader = nullptr;
   GenHadTauReader * genHadTauReader = nullptr;
   GenJetReader * genJetReader       = nullptr;
+  GenPhotonReader * genPhotonReader = nullptr;
   LHEInfoReader * lheInfoReader     = nullptr;
   if(isMC)
   {
@@ -627,6 +630,13 @@ main(int argc,
       {
         genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
         inputTree->registerReader(genHadTauReader);
+      }
+      if(! branchName_genPhotons.empty())
+      {
+#if _READ_GENERATOR_LEVEL_PHOTONS
+        genPhotonReader = new GenPhotonReader(branchName_genPhotons);
+        inputTree->registerReader(genPhotonReader);
+#endif
       }
       if(! branchName_genJets.empty())
       {
@@ -866,6 +876,7 @@ main(int argc,
     std::vector<GenLepton> genElectrons;
     std::vector<GenLepton> genMuons;
     std::vector<GenHadTau> genHadTaus;
+    std::vector<GenPhoton> genPhotons;
     std::vector<GenJet> genJets;
     if(isMC && fillGenEvtHistograms)
     {
@@ -887,6 +898,10 @@ main(int argc,
       {
         genHadTaus = genHadTauReader->read();
       }
+      if(genPhotonReader)
+      {
+        genPhotons = genPhotonReader->read();
+      }
       if(genJetReader)
       {
         genJets = genJetReader->read();
@@ -896,7 +911,7 @@ main(int argc,
 //--- fill generator level histograms (before cuts)
     if(isMC)
     {
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
+      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
     }
 
 //--- build reco level collections of electrons, muons and hadronic taus;
@@ -948,6 +963,10 @@ main(int argc,
       {
         genHadTaus = genHadTauReader->read();
       }
+      if(genPhotonReader)
+      {
+        genPhotons = genPhotonReader->read();
+      }
       if(genJetReader)
       {
         genJets = genJetReader->read();
@@ -963,6 +982,7 @@ main(int argc,
 
       electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.2);
       electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.2);
+      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons, 0.2);
       electronGenMatcher.addGenJetMatch   (preselElectrons, genJets,    0.2);
 
       jetGenMatcher.addGenLeptonMatch(selJets_dR07, genLeptons, 0.2);
@@ -1554,7 +1574,7 @@ main(int argc,
 //--- fill generator level histograms (after cuts)
     if(isMC)
     {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
+      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
 
@@ -1579,6 +1599,7 @@ main(int argc,
   delete metReader;
   delete genLeptonReader;
   delete genHadTauReader;
+  delete genPhotonReader;
   delete genJetReader;
   delete lheInfoReader;
   delete metFilterReader;
