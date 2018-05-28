@@ -51,11 +51,15 @@ protected:
   std::string branchName_mediumIdPOG_;
   std::string branchName_segmentCompatibility_;
   std::string branchName_ptErr_;
+  std::string branchName_pt_corrected_;
+  std::string branchName_pt_sys_uncert_;
 
   Bool_t * looseIdPOG_;
   Bool_t * mediumIdPOG_;
   Float_t * segmentCompatibility_;
   Float_t * ptErr_;
+  Float_t * pt_corrected_;
+  Float_t * pt_sys_uncert_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonWriter_h
