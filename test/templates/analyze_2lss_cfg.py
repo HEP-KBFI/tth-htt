@@ -72,6 +72,7 @@ process.analyze_2lss = cms.PSet(
 
     branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),
+    branchName_genPhotons = cms.string('GenPhoton'),
     branchName_genJets = cms.string('GenJet'),
     branchName_jetsHTTv2 = cms.string('HTTV2'),
     branchName_subjetsHTTv2 = cms.string('HTTV2Subjets'),
