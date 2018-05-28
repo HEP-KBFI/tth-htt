@@ -6,6 +6,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // Reco*CollectionCleaner
@@ -122,6 +123,7 @@ main(int argc,
   const std::string branchName_met        = cfg_produceNtuple.getParameter<std::string>("branchName_met");
   const std::string branchName_genLeptons = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons");
   const std::string branchName_genHadTaus = cfg_produceNtuple.getParameter<std::string>("branchName_genHadTaus");
+  const std::string branchName_genPhotons = cfg_produceNtuple.getParameter<std::string>("branchName_genPhotons");
   const std::string branchName_genJets    = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
 
   const int minNumLeptons             = cfg_produceNtuple.getParameter<int>("minNumLeptons");
@@ -268,6 +270,7 @@ main(int argc,
 //--- declare generator level information
   GenLeptonReader * genLeptonReader = nullptr;
   GenHadTauReader * genHadTauReader = nullptr;
+  GenPhotonReader * genPhotonReader = nullptr;
   GenJetReader * genJetReader = nullptr;
   if(isMC)
   {
@@ -275,6 +278,8 @@ main(int argc,
     genLeptonReader->setBranchAddresses(inputTree);
     genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
     genHadTauReader->setBranchAddresses(inputTree);
+    genPhotonReader = new GenParticleReader(branchName_genPhotons);
+    genPhotonReader->setBranchAddresses(inputTree);
     genJetReader = new GenJetReader(branchName_genJets);
     genJetReader->setBranchAddresses(inputTree);
   }
@@ -329,6 +334,7 @@ main(int argc,
 
   GenParticleWriter * genLeptonWriter = nullptr;
   GenParticleWriter * genHadTauWriter = nullptr;
+  GenParticleWriter * genPhotonWriter = nullptr;
   GenParticleWriter * genJetWriter = nullptr;
   if(isMC)
   {
@@ -339,6 +345,10 @@ main(int argc,
     genHadTauWriter = new GenParticleWriter(branchName_genHadTaus);
     genHadTauWriter->setBranches(outputTree);
     std::cout << "writing GenHadTau objects to branch = '" << branchName_genHadTaus << "'\n";
+
+    genPhotonWriter = new GenParticleWriter(branchName_genPhotons);
+    genPhotonWriter->setBranches(outputTree);
+    std::cout << "writing GenPhoton objects to branch = '" << branchName_genPhotons << "'\n";
 
     genJetWriter = new GenParticleWriter(branchName_genJets);
     genJetWriter->setBranches(outputTree);
@@ -378,6 +388,8 @@ main(int argc,
     Form("drop %s_*", branchName_genLeptons.data()),
     Form("drop n%s", branchName_genHadTaus.data()),
     Form("drop %s_*", branchName_genHadTaus.data()),
+    Form("drop n%s", branchName_genPhotons.data()),
+    Form("drop %s_*", branchName_genPhotons.data()),
     Form("drop n%s", branchName_genJets.data()),
     Form("drop %s_*", branchName_genJets.data()),
     Form("drop maxPermutations_*"),
@@ -589,6 +601,7 @@ main(int argc,
     std::vector<GenLepton> genElectrons;
     std::vector<GenLepton> genMuons;
     std::vector<GenHadTau> genHadTaus;
+    std::vector<GenPhoton> genPhotons;
     std::vector<GenJet> genJets;
     if(isMC)
     {
@@ -605,6 +618,7 @@ main(int argc,
         }
       }
       genHadTaus = genHadTauReader->read();
+      genPhotons = genPhotonReader->read();
       genJets = genJetReader->read();
 
 //--- match reconstructed to generator level particles
@@ -640,6 +654,7 @@ main(int argc,
     {
       genLeptonWriter->write(convert_to_GenParticle(genLeptons));
       genHadTauWriter->write(convert_to_GenParticle(genHadTaus));
+      genPhotonWriter->write(convert_to_GenParticle(genPhotons));
       genJetWriter   ->write(convert_to_GenParticle(genJets));
     }
 
@@ -672,6 +687,11 @@ main(int argc,
   delete jetReader;
   delete metReader;
 
+  delete genLeptonReader;
+  delete genHadTauReader;
+  delete genPhotonReader;
+  delete genJetReader;
+
   delete muonWriter;
   delete electronWriter;
   delete hadTauWriter;
@@ -680,6 +700,7 @@ main(int argc,
 
   delete genLeptonWriter;
   delete genHadTauWriter;
+  delete genPhotonWriter;
   delete genJetWriter;
 
 //--- copy histograms keeping track of number of processed events from input files to output file
