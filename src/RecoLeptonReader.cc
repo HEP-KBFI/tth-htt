@@ -46,9 +46,7 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   {
     genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_obj_.data()));
     genHadTauReader_ = new GenHadTauReader(Form("%s_genTau",    branchName_obj_.data()));
-#if _READ_GENERATOR_LEVEL_PHOTONS
     genPhotonReader_ = new GenPhotonReader(Form("%s_genPhoton", branchName_obj_.data()));
-#endif
     genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_obj_.data()));
   }
   setBranchNames();
@@ -141,9 +139,7 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     {
       genLeptonReader_->setBranchAddresses(tree);
       genHadTauReader_->setBranchAddresses(tree);
-#if _READ_GENERATOR_LEVEL_PHOTONS
       genPhotonReader_->setBranchAddresses(tree);
-#endif
       genJetReader_->setBranchAddresses(tree);
     }
     BranchAddressInitializer bai(tree, max_nLeptons_);

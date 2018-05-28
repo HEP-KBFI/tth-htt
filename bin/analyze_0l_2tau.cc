@@ -383,10 +383,8 @@ int main(int argc, char* argv[])
         inputTree -> registerReader(genHadTauReader);
       }
       if ( branchName_genPhotons != "" ) {
-#if _READ_GENERATOR_LEVEL_PHOTONS
         genPhotonReader = new GenPhotonReader(branchName_genPhotons);
         inputTree -> registerReader(genPhotonReader);
-#endif
       }
       if ( branchName_genJets != "" ) {
         genJetReader = new GenJetReader(branchName_genJets);
@@ -736,9 +734,7 @@ int main(int argc, char* argv[])
         else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
       }
       genHadTaus = genHadTauReader->read();
-#if _READ_GENERATOR_LEVEL_PHOTONS
       genPhotons = genPhotonReader->read();
-#endif
       genJets = genJetReader->read();
     }
 
@@ -832,9 +828,7 @@ int main(int argc, char* argv[])
         else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
       }
       genHadTaus = genHadTauReader->read();
-#if _READ_GENERATOR_LEVEL_PHOTONS
       genPhotons = genPhotonReader->read();
-#endif
       genJets = genJetReader->read();
     }
 

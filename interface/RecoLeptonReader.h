@@ -48,21 +48,15 @@ protected:
   {
     if(readGenMatching_)
     {
-#if _READ_GENERATOR_LEVEL_PHOTONS
       assert(genLeptonReader_ && genHadTauReader_ && genPhotonReader_ && genJetReader_);
-#else
-      assert(genLeptonReader_ && genHadTauReader_ && genJetReader_);
-#endif
 
       const std::size_t nLeptons = leptons.size();
       std::vector<GenLepton> matched_genLeptons = genLeptonReader_->read();
       assert(matched_genLeptons.size() == nLeptons);
       std::vector<GenHadTau> matched_genHadTaus = genHadTauReader_->read();
       assert(matched_genHadTaus.size() == nLeptons);
-#if _READ_GENERATOR_LEVEL_PHOTONS
       std::vector<GenPhoton> matched_genPhotons = genPhotonReader_->read();
       assert(matched_genPhotons.size() == nLeptons);
-#endif
       std::vector<GenJet> matched_genJets = genJetReader_->read();
       assert(matched_genJets.size() == nLeptons);
 
@@ -76,10 +70,8 @@ protected:
         const GenHadTau & matched_genHadTau = matched_genHadTaus[idxLepton];
         if(matched_genHadTau.isValid()) lepton.set_genHadTau(new GenHadTau(matched_genHadTau));
 
-#if _READ_GENERATOR_LEVEL_PHOTONS
         const GenPhoton & matched_genPhoton = matched_genPhotons[idxLepton];
         if(matched_genPhoton.isValid()) lepton.set_genPhoton(new GenPhoton(matched_genPhoton));
-#endif
 
         const GenJet & matched_genJet = matched_genJets[idxLepton];
         if(matched_genJet.isValid()) lepton.set_genJet(new GenJet(matched_genJet));

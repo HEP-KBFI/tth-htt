@@ -470,10 +470,8 @@ int main(int argc, char* argv[])
         inputTree->registerReader(genHadTauReader);
       }
       if ( branchName_genPhotons != "" ) {
-#if _READ_GENERATOR_LEVEL_PHOTONS
         genPhotonReader = new GenPhotonReader(branchName_genPhotons);
         inputTree -> registerReader(genPhotonReader);
-#endif
       }
       if ( branchName_genJets != "" ) {
         genJetReader = new GenJetReader(branchName_genJets);
