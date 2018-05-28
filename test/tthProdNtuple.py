@@ -78,8 +78,9 @@ for sample_key, sample_entry in samples.items():
   else:
     raise ValueError("Internal logic error")
 
-leptonSelection = 'Loose'
-hadTauSelection = 'Loose'
+leptonSelection      = 'Loose'
+hadTauSelection      = 'Loose'
+hadTauSelectionAndWP = '%s|%s' % (hadTauSelection, args.tau_id_wp)
 
 if preselection:
   preselection_cuts = {
@@ -108,11 +109,6 @@ if __name__ == '__main__':
   )
 
   logging.info("Preselection: %s" % ("enabled" if preselection else "disabled"))
-
-  if args.tau_id_wp:
-    logging.info("Changing tau ID WP: %s -> %s" % (hadTauWP, args.tau_id_wp))
-    hadTauWP = args.tau_id_wp
-  hadTauSelectionAndWP = '%s|%s' % (hadTauSelection, hadTauWP)
 
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
