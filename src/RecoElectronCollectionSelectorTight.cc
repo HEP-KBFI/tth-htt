@@ -74,7 +74,7 @@ RecoElectronSelectorTight::disable_conversionVeto()
   apply_conversionVeto_ = false;
 }
 
-void RecoElectronSelectorTight::set_min_mvaTTH(bool min_mvaTTH)
+void RecoElectronSelectorTight::set_min_mvaTTH(double min_mvaTTH)
 {
   std::cout << "setting cut on prompt-lepton MVA to " << min_mvaTTH << " for tight electrons" << std::endl; 
   min_mvaTTH_ = min_mvaTTH;
