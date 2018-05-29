@@ -41,12 +41,12 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
-               hadTau_selection, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
+               lep_mva_wp, hadTau_selection, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit,
                select_rle_output = False, do_sync = False, verbose = False, dry_run = False, isDebug = False,
                rle_select = '', use_nonnominal = False, hlt_filter = False, use_home = True):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "1l_2tau", central_or_shifts,
+    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "1l_2tau", lep_mva_wp, central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
       triggers = [ '1e', '1e1tau', '1mu', '1mu1tau' ],
@@ -342,6 +342,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   'logFile'                  : logFile_path,
                   'selEventsFileName_output' : rleOutputFile_path,
                   'leptonSelection'          : lepton_selection,
+                  'lep_mva_cut'              : self.lep_mva_cut,
                   'apply_leptonGenMatching'  : self.apply_leptonGenMatching,
                   'hadTauSelection'          : hadTau_selection,
                   'apply_hadTauGenMatching'  : self.apply_hadTauGenMatching,

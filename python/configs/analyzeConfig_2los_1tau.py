@@ -325,6 +325,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                 'logFile'                  : logFile_path,
                 'selEventsFileName_output' : rleOutputFile_path,
                 'leptonSelection'          : lepton_selection,
+                'lep_mva_cut'              : self.lep_mva_cut,
                 'apply_leptonGenMatching'  : self.apply_leptonGenMatching,
                 'hadTauSelection'          :  hadTau_selection,
                 'apply_hadTauGenMatching'  : self.apply_hadTauGenMatching,

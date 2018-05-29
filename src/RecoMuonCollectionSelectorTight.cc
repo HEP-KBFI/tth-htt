@@ -131,6 +131,16 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   return true;
 }
 
+void RecoMuonSelectorTight::set_min_mvaTTH(bool min_mvaTTH)
+{
+  min_mvaTTH_ = min_mvaTTH;
+}
+ 
+double RecoMuonSelectorTight::get_min_mvaTTH() const
+{
+  return min_mvaTTH_;
+}
+
 void
 RecoMuonSelectorTight::set_selection_flags(bool selection_flags)
 {

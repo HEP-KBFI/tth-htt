@@ -389,6 +389,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                       'selEventsFileName_output' : rleOutputFile_path,
                       'leptonChargeSelection'    : lepton_charge_selection,
                       'leptonSelection'          : lepton_selection,
+                      'lep_mva_cut'              : self.lep_mva_cut,
                       'apply_leptonGenMatching'  : self.apply_leptonGenMatching,
                       'hadTauChargeSelection'    : hadTau_charge_selection,
                       'hadTauSelection'          : hadTau_selection,
