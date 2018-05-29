@@ -73,9 +73,10 @@ class analyzeConfig(object):
          histogramDir_prep_dcard: directory in final histogram file that is used for building datacard
     """
 
-    def __init__(self, configDir, outputDir, executable_analyze, channel, lep_mva_wp, central_or_shifts,
+    def __init__(self, configDir, outputDir, executable_analyze, channel, central_or_shifts,
                  max_files_per_job, era, use_lumi, lumi, check_input_files, running_method,
                  num_parallel_jobs, histograms_to_fit, triggers,
+                 lep_mva_wp = "090",
                  executable_prep_dcard = "prepareDatacards",
                  executable_add_syst_dcard = "addSystDatacards",
                  executable_make_plots = "makePlots",
