@@ -26,12 +26,13 @@ era                = args.era
 version            = args.version
 dry_run            = args.dry_run
 resubmission_limit = args.resubmission_limit
-resubmit           = not args.disable_resubmission
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
 sample_filter      = args.filter
+num_parallel_jobs  = args.num_parallel_jobs
+running_method     = args.running_method
 
 # Additional arguments
 mode           = args.mode
@@ -50,7 +51,6 @@ golden_json_2017  = os.path.join(
 )
 
 # Use the arguments
-max_job_resubmission = resubmission_limit if resubmit else 1
 version              = "%s_w%sPresel_%s_%s" % (
   version, ("" if preselection else "o"), "nonNom" if use_nonnominal else "nom", mode
 )
@@ -130,9 +130,9 @@ if __name__ == '__main__':
       leptonSelection       = leptonSelection,
       hadTauSelection       = hadTauSelectionAndWP,
       check_input_files     = check_input_files,
-      running_method        = "sbatch",
+      running_method        = running_method,
       version               = version,
-      num_parallel_jobs     = 8,
+      num_parallel_jobs     = num_parallel_jobs,
       pileup                = pileup,
       golden_json           = golden_json,
       verbose               = resubmission_idx > 0,
