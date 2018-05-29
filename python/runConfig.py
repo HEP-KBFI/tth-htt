@@ -153,7 +153,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
 
   def add_tau_id_wp(self, default_wp = ''):
     self.add_argument('-w', '--tau-id-wp',
-      type = str, dest = 'tau_id_wp', metavar = 'WP', default = default_wp, required = False,
+      type = str, dest = 'tau_id_wp', metavar = 'tau ID WP', default = default_wp, required = False,
       help = 'R|Overwrite tau ID working point',
     )
 
@@ -177,7 +177,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
 
   def add_lep_mva_wp(self, default_wp = '090'):
     self.add_argument('-L', '--lepton-mva-wp',
-      type = str, dest = 'lep_mva_wp', metavar = 'WP', default = default_wp, required = False,
+      type = str, dest = 'lep_mva_wp', metavar = 'lepton MVA WP', default = default_wp, required = False,
       choices = [ '075', '090' ],
       help = 'R|Lepton MVA WP',
     )
