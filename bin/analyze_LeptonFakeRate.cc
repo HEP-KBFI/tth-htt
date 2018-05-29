@@ -981,6 +981,7 @@ main(int argc,
       printCollection("preselElectrons", preselElectrons);
       printCollection("preselMuons", preselMuons);
       // printCollection("selJets_dR04", selJets_dR04);
+      printCollection("uncleaned jets", jet_ptrs);
       printCollection("selJets_dR07", selJets_dR07);
     }
   
