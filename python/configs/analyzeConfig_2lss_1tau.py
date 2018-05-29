@@ -437,6 +437,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     'logFile'                  : logFile_path,
                     'selEventsFileName_output' : rleOutputFile_path,
                     'leptonSelection'          : lepton_selection,
+                    'lep_mva_cut'              : self.lep_mva_cut,
                     'apply_leptonGenMatching'  : self.apply_leptonGenMatching,
                     'leptonChargeSelection'    : lepton_charge_selection,
                     'hadTauSelection'          : hadTau_selection,

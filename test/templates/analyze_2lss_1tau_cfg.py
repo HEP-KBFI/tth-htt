@@ -42,6 +42,7 @@ process.analyze_2lss_1tau = cms.PSet(
     apply_offline_e_trigger_cuts_1e1mu = cms.bool(True),
 
     leptonSelection = cms.string('Tight'),
+    lep_mva_cut = cms.double(0.75), # CV: used for tight lepton selection only
     apply_leptonGenMatching = cms.bool(True),
     leptonChargeSelection = cms.string('SS'),
 
