@@ -37,13 +37,13 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, MEMbranch,
-               lepton_charge_selections, hadTau_selection, hadTau_selection_veto, applyFakeRateWeights, chargeSumSelections, central_or_shifts,
+               lep_mva_wp, lepton_charge_selections, hadTau_selection, hadTau_selection_veto, applyFakeRateWeights, chargeSumSelections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
                do_sync = False, verbose = False, dry_run = False, isDebug = False, rle_select = '',
                use_nonnominal = False, hlt_filter = False, use_home = True):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2lss_1tau", central_or_shifts,
+    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2lss_1tau", lep_mva_wp, central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
       triggers = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
