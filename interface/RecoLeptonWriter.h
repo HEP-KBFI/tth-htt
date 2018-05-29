@@ -4,6 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenPhoton.h" // GenPhoton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
 #include <string> // std::string
@@ -71,25 +72,31 @@ public:
   {
     std::vector<GenParticle> matched_genLeptons;
     std::vector<GenParticle> matched_genHadTaus;
+    std::vector<GenParticle> matched_genPhotons;
     std::vector<GenParticle> matched_genJets;
     assert(nLeptons_ == leptons.size());
     for(const T * lepton: leptons)
     {
       assert(lepton);
-      const GenLepton* matched_genLepton = lepton->genLepton();
+      const GenLepton * matched_genLepton = lepton->genLepton();
       if(matched_genLepton) matched_genLeptons.push_back(static_cast<GenParticle>(*matched_genLepton));
       else                  matched_genLeptons.push_back(dummyGenParticle_);
 
-      const GenHadTau* matched_genHadTau = lepton->genHadTau();
+      const GenHadTau * matched_genHadTau = lepton->genHadTau();
       if(matched_genHadTau) matched_genHadTaus.push_back(static_cast<GenParticle>(*matched_genHadTau));
       else                  matched_genHadTaus.push_back(dummyGenParticle_);
 
-      const GenJet* matched_genJet = lepton->genJet();
+      const GenPhoton * matched_genPhoton = lepton->genPhoton();
+      if(matched_genPhoton) matched_genPhotons.push_back(static_cast<GenParticle>(*matched_genPhoton));
+      else                  matched_genPhotons.push_back(dummyGenParticle_);
+
+      const GenJet * matched_genJet = lepton->genJet();
       if(matched_genJet) matched_genJets.push_back(static_cast<GenParticle>(*matched_genJet));
       else               matched_genJets.push_back(dummyGenParticle_);
     }
     genLeptonWriter_->write(matched_genLeptons);
     genHadTauWriter_->write(matched_genHadTaus);
+    genPhotonWriter_->write(matched_genPhotons);
     genJetWriter_->write(matched_genJets);
   }
 
@@ -109,6 +116,7 @@ protected:
 
   GenParticleWriter * genLeptonWriter_;
   GenParticleWriter * genHadTauWriter_;
+  GenParticleWriter * genPhotonWriter_;
   GenParticleWriter * genJetWriter_;
   GenParticle dummyGenParticle_;
 

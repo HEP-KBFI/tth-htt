@@ -1,5 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton, GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenPhoton.h" // GenPhoton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
 RecoLepton::RecoLepton(const GenLepton & lepton,
@@ -75,6 +76,12 @@ void
 RecoLepton::set_genHadTau(const GenHadTau * genHadTau)
 {
   genHadTau_.reset(genHadTau);
+}
+
+void
+RecoLepton::set_genPhoton(const GenPhoton * genPhoton)
+{
+  genPhoton_.reset(genPhoton);
 }
 
 void
@@ -245,6 +252,12 @@ RecoLepton::genHadTau() const
   return genHadTau_.get();
 }
 
+const GenPhoton *
+RecoLepton::genPhoton() const
+{
+  return genPhoton_.get();
+}
+
 const GenJet *
 RecoLepton::genJet() const
 {
@@ -310,6 +323,11 @@ operator<<(std::ostream & stream,
   if(lepton.genHadTau())
   {
     stream << ": " << *(lepton.genHadTau());
+  }
+  stream << ",\n  photon = " << lepton.genPhoton();
+  if(lepton.genPhoton())
+  {
+    stream << ": " << *(lepton.genPhoton());
   }
   stream << ",\n  jet    = " << lepton.genJet();
   if(lepton.genJet())
