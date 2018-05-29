@@ -152,8 +152,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     """
     lepton_and_hadTau_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
     histogramDir = getHistogramDir(
-      jobOptions['leptonSelection'], jobOptions['hadTauSelection'], lepton_and_hadTau_frWeight,
-      jobOptions['leptonChargeSelection'], jobOptions['chargeSumSelection']
+      jobOptions['leptonSelection'], jobOptions['hadTauSelection'], lepton_and_hadTau_frWeight
     )
     jobOptions['histogramDir'] = histogramDir
 
