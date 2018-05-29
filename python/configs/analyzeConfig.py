@@ -585,6 +585,8 @@ class analyzeConfig(object):
             if self.is_makefile:
                 lines_makefile.append("%s:" % jobOptions['syncOutput'])
                 lines_makefile.append("\t%s %s &> %s" % (self.executable_analyze, jobOptions['cfgFile_modified'], jobOptions['logFile']))
+                lines_makefile.append("\tmv %s %s" % (os.path.basename(jobOptions['syncOutput']), jobOptions['syncOutput']))
+                lines_makefile.append("\tsleep 5")  # sleep 5 seconds for hadoop to catch up
                 lines_makefile.append("")
             elif self.is_sbatch:
                 lines_makefile.append("%s: %s" % (jobOptions['syncOutput'], "sbatch_analyze"))
@@ -618,6 +620,13 @@ class analyzeConfig(object):
             if self.is_sbatch and self.run_hadd_master_on_batch:
                 lines_makefile.append("%s: %s" % (outputFiles[key], sbatchTarget))
                 lines_makefile.append("\t%s" % ":") # CV: null command
+                lines_makefile.append("")
+            elif self.do_sync and self.is_makefile:
+                lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))
+                lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
+                lines_makefile.append("\thadd -f %s %s" % (os.path.basename(outputFiles[key]), " ".join(inputFiles[key])))
+                lines_makefile.append("\tmv %s %s" % (os.path.basename(outputFiles[key]), outputFiles[key]))
+                lines_makefile.append("\tsleep 15")  # sleep 15 seconds for hadoop to catch up
                 lines_makefile.append("")
             else:
                 lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))

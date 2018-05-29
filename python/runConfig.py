@@ -55,6 +55,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
     self,
     era_choices = ('2017',),
     default_resubmission_limit = 1,
+    default_num_parallel_jobs = 100,
     max_help_position = 45,
     isAddMEM = False,
   ):
@@ -86,9 +87,15 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       default = default_resubmission_limit, required = False,
       help = 'R|Maximum number of resubmissions',
     )
-    self.add_argument('-R', '--disable-resubmission',
-      dest = 'disable_resubmission', action = 'store_true', default = False,
-      help = 'R|Disable resubmission (overwrites option -r/--resubmission-limit)',
+    self.add_argument('-R', '--running-method',
+      type = str, dest = 'running_method', metavar = 'method', default = 'sbatch', required = False,
+      choices = [ 'sbatch', 'makefile' ],
+      help = 'R|Running method',
+    )
+    self.add_argument('-J', '--num-parallel-jobs',
+      type = positive_int_type, dest = 'num_parallel_jobs', metavar = 'number', required = False,
+      default = default_num_parallel_jobs,
+      help = 'R|Number of parallel makefile targets',
     )
     run_parser.add_argument('-E', '--no-exec',
       dest = 'no_exec', action = 'store_true', default = False,
