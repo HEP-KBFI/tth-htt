@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_1l_2tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'sync_noMEM' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'sync_wMEM' ]
 sys_choices      = [ 'central', 'full' ]
 systematics.full = systematics.an_common
 
@@ -79,9 +79,9 @@ elif mode == "forBDTtraining":
   applyFakeRateWeights     = "3L"
   hadTau_charge_selections = [ "OS" ]
 elif mode.startswith("sync"):
-  if mode == "sync":
+  if mode == "sync_wMEM":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
-  elif mode == "sync_noMEM":
+  elif mode == "sync":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
   else:
     raise ValueError("Internal logic error")
