@@ -13,12 +13,45 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
   for documentation of further Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
-               hadTau_selection, max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-               verbose = False, dry_run = False, isDebug = False, use_home = True):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "hadTopTagger", [ "central" ],
-      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      [], trigger = [], verbose = verbose, dry_run = dry_run, isDebug = isDebug, use_home = use_home)
+  def __init__(self,
+        configDir,
+        outputDir,
+        executable_analyze,
+        cfgFile_analyze,
+        samples,
+        hadTau_selection,
+        max_files_per_job,
+        era,
+        use_lumi,
+        lumi,
+        check_input_files,
+        running_method,
+        num_parallel_jobs,
+        verbose  = False,
+        dry_run  = False,
+        isDebug  = False,
+        use_home = True,
+      ):
+    analyzeConfig.__init__(self,
+      configDir          = configDir,
+      outputDir          = outputDir,
+      executable_analyze = executable_analyze,
+      channel            = "hadTopTagger",
+      central_or_shifts  = [ "central" ],
+      max_files_per_job  = max_files_per_job,
+      era                = era,
+      use_lumi           = use_lumi,
+      lumi               = lumi,
+      check_input_files  = check_input_files,
+      running_method     = running_method,
+      num_parallel_jobs  = num_parallel_jobs,
+      histograms_to_fit  = [],
+      trigger            = [],
+      verbose            = verbose,
+      dry_run            = dry_run,
+      isDebug            = isDebug,
+      use_home           = use_home,
+    )
 
     self.samples = samples
 

@@ -39,24 +39,64 @@ class analyzeConfig_3l_1tau(analyzeConfig):
   for documentation of further Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
-               MEMbranch, lep_mva_wp, hadTau_selection, applyFakeRateWeights, chargeSumSelections, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-               executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
-               executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
-               select_root_output = False, do_sync = False, verbose = False, dry_run = False, isDebug = False,
-               rle_select = '', use_nonnominal = False, hlt_filter = False, use_home = True):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "3l_1tau", lep_mva_wp, central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      histograms_to_fit,
-      triggers = [ '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '1e2mu', '2e1mu' ],
-      executable_prep_dcard = executable_prep_dcard,
+  def __init__(self,
+        configDir,
+        outputDir,
+        executable_analyze,
+        cfgFile_analyze,
+        samples,
+        MEMbranch,
+        lep_mva_wp,
+        hadTau_selection,
+        applyFakeRateWeights,
+        chargeSumSelections,
+        central_or_shifts,
+        max_files_per_job,
+        era,
+        use_lumi,
+        lumi,
+        check_input_files,
+        running_method,
+        num_parallel_jobs,
+        executable_addBackgrounds,
+        executable_addBackgroundJetToTauFakes,
+        histograms_to_fit,
+        select_rle_output         = False,
+        executable_prep_dcard     = "prepareDatacards",
+        executable_add_syst_dcard = "addSystDatacards",
+        select_root_output        = False,
+        do_sync                   = False,
+        verbose                   = False,
+        dry_run                   = False,
+        isDebug                   = False,
+        rle_select                = '',
+        use_nonnominal            = False,
+        hlt_filter                = False,
+        use_home                  = True,
+      ):
+    analyzeConfig.__init__(self,
+      configDir                 = configDir,
+      outputDir                 = outputDir,
+      executable_analyze        = executable_analyze,
+      channel                   = "3l_1tau",
+      lep_mva_wp                = lep_mva_wp,
+      central_or_shifts         = central_or_shifts,
+      max_files_per_job         = max_files_per_job,
+      era                       = era,
+      use_lumi                  = use_lumi,
+      lumi                      = lumi,
+      check_input_files         = check_input_files,
+      running_method            = running_method,
+      num_parallel_jobs         = num_parallel_jobs,
+      histograms_to_fit         = histograms_to_fit,
+      triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '1e2mu', '2e1mu' ],
+      executable_prep_dcard     = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
-      do_sync = do_sync,
-      verbose = verbose,
-      dry_run = dry_run,
-      isDebug = isDebug,
-      use_home = use_home,
+      do_sync                   = do_sync,
+      verbose                   = verbose,
+      dry_run                   = dry_run,
+      isDebug                   = isDebug,
+      use_home                  = use_home,
     )
 
     self.samples = samples
@@ -103,7 +143,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
             else:
               self.lepton_and_hadTau_genMatches_faketau.append(lepton_and_hadTau_genMatch)
           elif lepton_genMatch.endswith("0j"):
-            self.lepton_and_hadTau_genMatches_conversions.append(lepton_and_hadTau_genMatch)            
+            self.lepton_and_hadTau_genMatches_conversions.append(lepton_and_hadTau_genMatch)
           else:
             self.lepton_and_hadTau_genMatches_fakes.append(lepton_and_hadTau_genMatch)
     elif applyFakeRateWeights == "1tau":
