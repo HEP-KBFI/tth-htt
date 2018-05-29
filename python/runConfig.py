@@ -175,6 +175,13 @@ class tthAnalyzeParser(argparse.ArgumentParser):
         help = 'R|Use /home for SLURM jobs',
       )
 
+  def add_lep_mva_wp(self, default_wp = '090'):
+    self.add_argument('-L', '--lepton-mva-wp',
+      type = str, dest = 'lep_mva_wp', metavar = 'WP', default = default_wp, required = False,
+      choices = [ '075', '090' ],
+      help = 'R|Lepton MVA WP',
+    )
+
   @staticmethod
   def cat(choices):
     return ', '.join(map(lambda choice: "'%s'" % str(choice), choices))
