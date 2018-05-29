@@ -171,7 +171,7 @@ namespace
     {
       ++numGenMatchedLeptons;
     }
-    if(lepton->is_electron() && lepton->genPhoton() && lepton->genPhoton()->pt() > (0.50*lepton->pt()))
+    else if(lepton->is_electron() && lepton->genPhoton() && lepton->genPhoton()->pt() > (0.50*lepton->pt()))
     {
       ++numGenMatchedPhotons;
     }
