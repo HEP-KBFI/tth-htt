@@ -513,13 +513,13 @@ int main(int argc, char* argv[])
   TMVAInterface mva_HTT_sum_VT(mvaFileName_HTT_sum_VT, mvaInputVariables_HTT_sumSort);
 
   // SUM-BDT
-  std::string mvaFileName_noHTT_sum_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_noHTT_evtLevelSUM_TTH_16Var.xml";
-  std::vector<std::string> mvaInputVariables_noHTT_sumSort={
+  std::string mvaFileName_plainKin_sum_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_plainKin_evtLevelSUM_TTH_16Var.xml";
+  std::vector<std::string> mvaInputVariables_plainKin_sumSort={
     "avg_dr_jet", "dr_taus", "ptmiss", "lep_conePt", "mT_lep", "mTauTauVis", "mindr_lep_jet",
     "mindr_tau1_jet", "mindr_tau2_jet", "nJet", "dr_lep_tau_ss", "dr_lep_tau_lead",
     "costS_tau", "nBJetLoose", "tau1_pt", "tau2_pt"
   };
-  TMVAInterface mva_noHTT_sum_VT(mvaFileName_noHTT_sum_VT, mvaInputVariables_noHTT_sumSort);
+  TMVAInterface mva_plainKin_sum_VT(mvaFileName_plainKin_sum_VT, mvaInputVariables_plainKin_sumSort);
 
   //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1721,7 +1721,7 @@ int main(int argc, char* argv[])
     };
     const double mvaOutput_HTT_SUM_VT = mva_HTT_sum_VT(mvaInputsHTT_sum);
 
-    const std::map<std::string, double> mvaInputsnoHTT_sum = {
+    const std::map<std::string, double> mvaInputsplainKin_sum = {
       {"avg_dr_jet",      avg_dr_jet      },
       {"dr_taus",         dr_taus         },
       {"ptmiss",          ptmiss          },
@@ -1739,7 +1739,17 @@ int main(int argc, char* argv[])
       {"tau1_pt",         tau1_pt         },
       {"tau2_pt",         tau2_pt         },
     };
-    const double mvaOutput_noHTT_SUM_VT = mva_noHTT_sum_VT(mvaInputsnoHTT_sum);
+    const double mvaOutput_plainKin_SUM_VT = mva_plainKin_sum_VT(mvaInputsplainKin_sum);
+    //const double mvaOutput_plainKin_SUM_VT = mva_plainKin_sum_VT(mvaInputsplainKin_sum);
+    std::cout <<  "     mvaOutput_plainKin_SUM_VT       " << mvaOutput_plainKin_SUM_VT  << "\n";
+    if (mvaOutput_plainKin_SUM_VT <= 0) {
+      std::cout <<  "     mvaOutput_plainKin_SUM_VT       " << mvaOutput_plainKin_SUM_VT  << "\n";
+      for( auto it = mvaInputsplainKin_sum.begin();
+    it != mvaInputsplainKin_sum.end(); ++it)
+        {
+            std::cout << it->first << " " << it->second  << "\n";
+        }
+    }
 
 //--- fill histograms with events passing final selection
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
@@ -1770,7 +1780,7 @@ int main(int argc, char* argv[])
       mvaOutput_plainKin_tt,
       mvaOutput_plainKin_1B_VT,
       mvaOutput_HTT_SUM_VT,
-      mvaOutput_noHTT_SUM_VT,
+      mvaOutput_plainKin_SUM_VT,
       mTauTauVis,
       evtWeight);
     if( isSignal ) {
@@ -1787,7 +1797,7 @@ int main(int argc, char* argv[])
           mvaOutput_plainKin_tt,
           mvaOutput_plainKin_1B_VT,
           mvaOutput_HTT_SUM_VT,
-          mvaOutput_noHTT_SUM_VT,
+          mvaOutput_plainKin_SUM_VT,
           mTauTauVis,
           evtWeight
         );
@@ -1824,7 +1834,7 @@ int main(int argc, char* argv[])
       mvaOutput_plainKin_tt,
       mvaOutput_plainKin_1B_VT,
       mvaOutput_HTT_SUM_VT,
-      mvaOutput_noHTT_SUM_VT,
+      mvaOutput_plainKin_SUM_VT,
       mTauTauVis,
       evtWeight);
 
@@ -1984,7 +1994,7 @@ int main(int argc, char* argv[])
       snm->read(mvaOutput_plainKin_tt,                  FloatVariableType::mvaOutput_plainKin_tt);
       snm->read(mvaOutput_plainKin_1B_VT,               FloatVariableType::mvaOutput_plainKin_1B_VT);
       snm->read(mvaOutput_HTT_SUM_VT,                   FloatVariableType::mvaOutput_HTT_SUM_VT);
-      //snm->read(mvaOutput_noHTT_SUM_VT,                 FloatVariableType::mvaOutput_noHTT_SUM_VT);
+      //snm->read(mvaOutput_plainKin_SUM_VT,                 FloatVariableType::mvaOutput_plainKin_SUM_VT);
 
       // mvaOutput_plainKin_SUM_VT not filled
 
