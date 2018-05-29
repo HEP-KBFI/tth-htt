@@ -123,7 +123,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
     self.histogramDir_prep_dcard = "3l_1tau_OS_lepTight_tauTight"
     self.histogramDir_prep_dcard_SS = "3l_1tau_SS_lepTight_tauTight"
-    self.make_plots_backgrounds = [ "TTW", "TTZ", "EWK", "Rares", "fakes_data" ]
+    self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_3l_1tau_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_3l_1tau_cfg.py")
 
@@ -589,7 +589,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       key_hadd_stage1_5 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Fakeable", "enabled"), chargeSumSelection)
       category_sideband = None
       if self.applyFakeRateWeights == "3lepton":
-        category_sideband = "3l_1tau_%s_lepFakeable_tauTight" % chargeSumSelection
+        category_sideband = "3l_1tau_%s_lepFakeable_tauTight_wFakeRateWeights" % chargeSumSelection
       elif self.applyFakeRateWeights == "4L":
         category_sideband = "3l_1tau_%s_lepFakeable_tauFakeable_wFakeRateWeights" % chargeSumSelection
       elif self.applyFakeRateWeights == "1tau":

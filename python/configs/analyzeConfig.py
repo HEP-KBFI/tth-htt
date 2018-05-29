@@ -165,7 +165,7 @@ class analyzeConfig(object):
         self.histogramDir_prep_dcard = None
         self.cfgFile_add_syst_dcard = os.path.join(self.template_dir, "addSystDatacards_cfg.py")
         self.jobOptions_add_syst_dcard = {}
-        self.make_plots_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
+        self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
         self.make_plots_signal = "signal"
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
         self.jobOptions_make_plots = {}
@@ -271,6 +271,9 @@ class analyzeConfig(object):
             'useNonNominal',
             'apply_hlt_filter',
             'branchName_memOutput',
+            'leptonFakeRateWeight.inputFileName',
+            'leptonFakeRateWeight.histogramName_e',
+            'leptonFakeRateWeight.histogramName_mu',
             'hadTauFakeRateWeight.inputFileName',
             'hadTauFakeRateWeight.lead.fitFunctionName',
             'hadTauFakeRateWeight.sublead.fitFunctionName',
@@ -444,7 +447,7 @@ class analyzeConfig(object):
                         lines.append("process.prepareDatacards.nbin_quantile_rebinning = cms.int32(%d)" % \
                                      histogramToFit_options['quantile_rebin'])
                         if 'quantile_in_fakes' in histogramToFit_options:
-                            lines.append("process.prepareDatacards.quantile_rebinning_in_fakes = cms.bool(%d)" % \
+                            lines.append("process.prepareDatacards.quantile_rebinning_in_fakes = cms.bool(%s)" % \
                                          histogramToFit_options['quantile_in_fakes'])
                     if 'explicit_binning' in histogramToFit_options:
                         explicit_binning = histogramToFit_options['explicit_binning']

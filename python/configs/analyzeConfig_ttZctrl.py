@@ -83,7 +83,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
     self.histogramDir_prep_dcard = "ttZctrl_Tight"
-    self.make_plots_backgrounds = [ "TTW", "TTZ", "EWK", "Rares", "fakes_data" ]
+    self.make_plots_backgrounds = [ "TTW", "TTWW", "TTZ", "EWK", "Rares", "fakes_data" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_ttZctrl_cfg.py")
 
     self.select_rle_output = select_rle_output

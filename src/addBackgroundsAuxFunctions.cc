@@ -20,6 +20,10 @@ getSubdirectories(const TDirectory * dir)
     {
       subdirectories.push_back(subdirectory);
     }
+    else
+    {
+      delete object;
+    }
   }
   return subdirectories;
 }

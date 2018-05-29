@@ -5,6 +5,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h"
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h"
+#include "tthAnalysis/HiggsToTauTau/interface/GenPhoton.h"
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h"
 
 template <typename Trec>
@@ -36,6 +37,15 @@ public:
                     double minPtRel = 0.25) const
   {
     return addGenMatch<GenHadTau, GenHadTauLinker>(recParticles, genHadTaus, dRmax, minPtRel, genHadTauLinker_);
+  }
+
+  void
+  addGenPhotonMatch(const std::vector<const Trec *> & recParticles,
+                    const std::vector<GenPhoton> & genPhotons,
+                    double dRmax,
+                    double minPtRel = 0.25) const
+  {
+    return addGenMatch<GenPhoton, GenPhotonLinker>(recParticles, genPhotons, dRmax, minPtRel, genPhotonLinker_);
   }
 
   /**
@@ -116,6 +126,16 @@ protected:
     }
   };
   GenHadTauLinker genHadTauLinker_;
+
+  struct GenPhotonLinker
+  {
+    void operator()(Trec & recParticle,
+                    const GenPhoton * genPhoton) const
+    {
+      recParticle.set_genPhoton(new GenPhoton(*genPhoton));
+    }
+  };
+  GenPhotonLinker genPhotonLinker_;
 
   struct GenJetLinker
   {

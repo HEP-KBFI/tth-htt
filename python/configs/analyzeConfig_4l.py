@@ -88,7 +88,7 @@ class analyzeConfig_4l(analyzeConfig):
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
     self.histogramDir_prep_dcard = "4l_OS_Tight"
     self.histogramDir_prep_dcard_SS = "4l_SS_Tight"
-    self.make_plots_backgrounds = [ "TTW", "TTZ", "EWK", "Rares", "fakes_data" ]
+    self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_4l_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_4l_cfg.py")
 
