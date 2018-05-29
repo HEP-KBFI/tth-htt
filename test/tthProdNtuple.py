@@ -12,7 +12,7 @@ mode_choices = [ 'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', '
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_nonnominal()
-parser.add_tau_id_wp()
+parser.add_tau_id_wp('dR03mvaVVLoose')
 parser.add_files_per_job(20)
 parser.add_use_home(False)
 parser.add_argument('-p', '--enable-preselection',
@@ -78,9 +78,9 @@ for sample_key, sample_entry in samples.items():
   else:
     raise ValueError("Internal logic error")
 
-leptonSelection   = 'Loose'
-hadTauSelection   = 'Loose'
-hadTauWP          = 'dR03mvaVVLoose'
+leptonSelection      = 'Loose'
+hadTauSelection      = 'Loose'
+hadTauSelectionAndWP = '%s|%s' % (hadTauSelection, args.tau_id_wp)
 
 if preselection:
   preselection_cuts = {
@@ -109,11 +109,6 @@ if __name__ == '__main__':
   )
 
   logging.info("Preselection: %s" % ("enabled" if preselection else "disabled"))
-
-  if args.tau_id_wp:
-    logging.info("Changing tau ID WP: %s -> %s" % (hadTauWP, args.tau_id_wp))
-    hadTauWP = args.tau_id_wp
-  hadTauSelectionAndWP = '%s|%s' % (hadTauSelection, hadTauWP)
 
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
