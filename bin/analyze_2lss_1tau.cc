@@ -627,13 +627,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   TMVAInterface mva_2lss_1tau_plainKin_SUM_M(mvaFileName_plainKin_SUM_M, mvaInputVariables_plainKin_SUMSort);
   mva_2lss_1tau_plainKin_SUM_M.enableBDTTransform();
 
-  std::string mvaFileName_HTT_SUM_M ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2lss_1tau_XGB_HTT_evtLevelSUM_TTH_M_19Var.xml";
+  std::string mvaFileName_HTT_SUM_M ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2lss_1tau_XGB_HTT_evtLevelSUM_TTH_M_18Var.xml";
   std::vector<std::string> mvaInputVariables_HTT_SUMSort = {
     "avg_dr_jet", "dr_lep1_tau", "dr_lep2_tau", "dr_leps", "lep2_conePt",
     "mT_lep1", "mT_lep2", "mTauTauVis2", "max_lep_eta",
     "mbb", "mindr_lep1_jet", "mindr_lep2_jet", "mindr_tau_jet",
     "nJet", "ptmiss", "tau_pt",
-    "HTT", "Hj_tagger", "HadTop_pt"
+    "HTT", "HadTop_pt"
   };
   TMVAInterface mva_2lss_1tau_HTT_SUM_M(mvaFileName_HTT_SUM_M, mvaInputVariables_HTT_SUMSort);
   mva_2lss_1tau_HTT_SUM_M.enableBDTTransform();
