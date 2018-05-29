@@ -182,6 +182,7 @@ if __name__ == '__main__':
         "mvaOutput_2lss_1tau_HTT_SUM_M_noRebin" : {},
         "mvaOutput_2lss_1tau_HTTMEM_SUM_M"   : { 'quantile_rebin' : 15, 'quantile_in_fakes' : True }, # BDT5; quantile in fakes
         "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin"   : {},
+        "mvaOutput_2lss_1tau_HTT_SUM_M_11bins_quantiles" : {},
         "mTauTauVis1"                        : {},
         "mTauTauVis2"                        : {},
         "mTauTauVis"                         : {},
