@@ -28,12 +28,13 @@ era                = args.era
 version            = args.version
 dry_run            = args.dry_run
 resubmission_limit = args.resubmission_limit
-resubmit           = not args.disable_resubmission
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
 sample_filter      = args.filter
+num_parallel_jobs  = args.num_parallel_jobs
+running_method     = args.running_method
 
 # Additional arguments
 mode              = args.mode
@@ -46,9 +47,8 @@ files_per_job     = args.files_per_job
 use_home          = args.use_home
 
 # Use the arguments
-max_job_resubmission = resubmission_limit if resubmit else 1
-central_or_shift     = getattr(systematics, systematics_label)
-do_sync              = mode.startswith('sync')
+central_or_shift = getattr(systematics, systematics_label)
+do_sync          = mode.startswith('sync')
 
 lepton_charge_selections = [ "OS", "SS" ]
 
@@ -102,7 +102,7 @@ if __name__ == '__main__':
   run_analysis           = False
   is_last_resubmission   = False
 
-  for idx_job_resubmission in range(max_job_resubmission):
+  for idx_job_resubmission in range(resubmission_limit):
     if is_last_resubmission:
       continue
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
@@ -123,8 +123,8 @@ if __name__ == '__main__':
       use_lumi                  = True,
       lumi                      = lumi,
       check_input_files         = check_input_files,
-      running_method            = "sbatch",
-      num_parallel_jobs         = 100, # KE: run up to 100 'hadd' jobs in parallel on batch system
+      running_method            = running_method,
+      num_parallel_jobs         = num_parallel_jobs,
       executable_addBackgrounds = "addBackgrounds",
       executable_addFakes       = "addBackgroundLeptonFakes",
       executable_addFlips       = "addBackgroundLeptonFlips",
