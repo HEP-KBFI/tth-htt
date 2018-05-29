@@ -146,15 +146,16 @@ namespace
 		double labelPosX, double labelPosY, double labelSizeX, double labelSizeY,
 	        double xMin, double xMax, const std::string& xAxisTitle, double xAxisOffset,
 		bool useLogScale, double yMin, double yMax, const std::string& yAxisTitle, double yAxisOffset,
-		const std::string& outputFileName, bool isRebinned, bool DivideByBinwidth)
+		const std::string& outputFileName, bool isRebinned, bool divideByBinWidth)
   {
     std::cout << "<makePlot>:" << std::endl;
     std::cout << " outputFileName = " << outputFileName << std::endl;
 
     TH1* histogramData_density = 0;
     if ( histogramData ) {
-      if (DivideByBinwidth)histogramData_density = divideHistogramByBinWidth(histogramData);      
-      else {
+      if  ( divideByBinWidth ) {
+	histogramData_density = divideHistogramByBinWidth(histogramData);      
+      } else {
 	std::string histogramNameData_density = Form("%s_NotDivided", histogramData->GetName());	
 	histogramData_density = (TH1*)histogramData->Clone(histogramNameData_density.data());
       }
@@ -163,8 +164,9 @@ namespace
     TH1* histogramData_blinded_density = 0;
     if ( histogramData_blinded ) {
       if ( histogramData ) checkCompatibleBinning(histogramData_blinded, histogramData);
-      if (DivideByBinwidth)histogramData_blinded_density = divideHistogramByBinWidth(histogramData_blinded);
-      else {
+      if ( divideByBinWidth ) {
+	histogramData_blinded_density = divideHistogramByBinWidth(histogramData_blinded);
+      } else {
 	std::string histogramNameData_blinded_density = Form("%s_NotDivide", histogramData_blinded->GetName());
 	histogramData_blinded_density = (TH1*)histogramData_blinded->Clone(histogramNameData_blinded_density.data());
       }
@@ -189,6 +191,8 @@ namespace
     TH1* histogramEWK_density = 0;
     TH1* histogramRares = 0;
     TH1* histogramRares_density = 0;
+    TH1* histogramConversions = 0;
+    TH1* histogramConversions_density = 0;
     TH1* histogramFakes = 0;
     TH1* histogramFakes_density = 0;
     TH1* histogramFlips = 0;
@@ -202,8 +206,9 @@ namespace
       //printHistogram(histogramBackground);
       checkCompatibleBinning(histogramBackground, histogramData);
       TH1* histogramBackground_density ;
-      if(DivideByBinwidth) histogramBackground_density = divideHistogramByBinWidth(histogramBackground); 
-      else {
+      if ( divideByBinWidth ) {
+	histogramBackground_density = divideHistogramByBinWidth(histogramBackground); 
+      } else {
 	std::string histogramNameBackground_density = Form("%s_NotDivided", histogramBackground->GetName());
 	histogramBackground_density = (TH1*)histogramBackground->Clone(histogramNameBackground_density.data());
       }
@@ -234,6 +239,9 @@ namespace
       } else if ( process.find("Rares") != std::string::npos ) {
 	histogramRares = histogramBackground;
 	histogramRares_density = histogramBackground_density;
+      } else if ( process.find("Conversions") != std::string::npos || process.find("conversions") != std::string::npos ) {
+	histogramConversions = histogramBackground;
+	histogramConversions_density = histogramBackground_density;
       } else if ( process.find("Fakes") != std::string::npos || process.find("fakes") != std::string::npos ) {
 	histogramFakes = histogramBackground;
 	histogramFakes_density = histogramBackground_density;
@@ -250,8 +258,9 @@ namespace
     TH1* histogramSignal_density = 0;
     if ( histogramSignal ) {
       if ( histogramSignal ) checkCompatibleBinning(histogramSignal, histogramData);
-      if(DivideByBinwidth)histogramSignal_density = divideHistogramByBinWidth(histogramSignal); 
-      else {
+      if ( divideByBinWidth ) {
+	histogramSignal_density = divideHistogramByBinWidth(histogramSignal); 
+      } else {
 	std::string histogramNameSignal_density = Form("%s_NotDivided",histogramSignal->GetName());
 	histogramSignal_density = (TH1*)histogramSignal->Clone(histogramNameSignal_density.data());
       }
@@ -270,8 +279,9 @@ namespace
     TH1* histogramUncertainty_density = 0;
     if ( histogramUncertainty ) {
       if ( histogramData ) checkCompatibleBinning(histogramUncertainty, histogramData);
-      if(DivideByBinwidth)histogramUncertainty_density = divideHistogramByBinWidth(histogramUncertainty);
-      else {
+      if ( divideByBinWidth ) {
+	histogramUncertainty_density = divideHistogramByBinWidth(histogramUncertainty);
+      } else {
 	std::string histogramNameUncertainty_density = Form("%s_NotDivided",histogramUncertainty->GetName());
 	histogramUncertainty_density = (TH1*)histogramUncertainty->Clone(histogramNameUncertainty_density.data());
       }
@@ -365,31 +375,33 @@ namespace
       histogramData_blinded_density->Draw("ep");
     }
 
-    const int color_ttW     = 823; // dark green
-    const int color_ttZ     = 822; // dark green
-    const int color_ttH     = 628; // red
-    const int color_ttjets  =  16; // gray
-    const int color_EWK     = 610; // purple
-    const int color_Diboson = 634; // dark red
-    const int color_WZ      = 634; // dark red
-    const int color_Rares   = 851; // light blue
-    const int color_Fakes   =   1; // black
-    const int color_Flips   =   1; // black
+    const int color_ttW         = 823; // dark green
+    const int color_ttZ         = 822; // dark green
+    const int color_ttH         = 628; // red
+    const int color_ttjets      =  16; // gray
+    const int color_EWK         = 610; // purple
+    const int color_Diboson     = 634; // dark red
+    const int color_WZ          = 634; // dark red
+    const int color_Rares       = 851; // light blue
+    const int color_Conversions = 796; // yellow/orange
+    const int color_Fakes       =   1; // black
+    const int color_Flips       =   1; // black
     
     //---------------------------------------------------------------------------
     // CV: sum ttW and ttWW backgrounds
-    const std::string legendEntry_ttW     = "t#bar{t}W + t#bar{t}WW";
+    const std::string legendEntry_ttW         = "t#bar{t}W + t#bar{t}WW";
     //---------------------------------------------------------------------------
     //const std::string legendEntry_ttW     = "t#bar{t}W";
-    const std::string legendEntry_ttZ     = "t#bar{t}Z";
-    const std::string legendEntry_ttH     = "t#bar{t}H";
-    const std::string legendEntry_ttjets  = "t#bar{t}+jets";
-    const std::string legendEntry_EWK     = "EWK";
-    const std::string legendEntry_Diboson = "Diboson";
-    const std::string legendEntry_WZ      = "WZ";
-    const std::string legendEntry_Rares   = "Rares";
-    const std::string legendEntry_Fakes   = "Fakes";
-    const std::string legendEntry_Flips   = "Flips";
+    const std::string legendEntry_ttZ         = "t#bar{t}Z";
+    const std::string legendEntry_ttH         = "t#bar{t}H";
+    const std::string legendEntry_ttjets      = "t#bar{t}+jets";
+    const std::string legendEntry_EWK         = "EWK";
+    const std::string legendEntry_Diboson     = "Diboson";
+    const std::string legendEntry_WZ          = "WZ";
+    const std::string legendEntry_Rares       = "Rares";
+    const std::string legendEntry_Conversions = "Conversions";
+    const std::string legendEntry_Fakes       = "Fakes";
+    const std::string legendEntry_Flips       = "Flips";
    
     std::vector<TH1*> histogramsForStack_density;
     if ( histogramSignal_density ) {
@@ -452,6 +464,11 @@ namespace
       histogramsForStack_density.push_back(histogramRares_density);
       legend->AddEntry(histogramRares_density, legendEntry_Rares.data(), "f");
     }
+    if ( histogramConversions_density ) {
+      histogramConversions_density->SetFillColor(color_Conversions);
+      histogramsForStack_density.push_back(histogramConversions_density);
+      legend->AddEntry(histogramConversions_density, legendEntry_Conversions.data(), "f");
+    }
     if ( histogramFakes_density ) {
       histogramFakes_density->SetFillColor(color_Fakes);
       histogramFakes_density->SetFillStyle(3005); // stripes extending from top left to bottom right
@@ -480,18 +497,19 @@ namespace
     int numBins_top = histogramBkg_bins->GetNbinsX();
     for ( int iBin = 1; iBin <= numBins_top; ++iBin ) {
       double sumBinContents = 0.;
-      if      ( histogramSignal_density  ) sumBinContents += histogramSignal_density->GetBinContent(iBin);
-      if      ( histogramTTW_density     ) sumBinContents += histogramTTW_density->GetBinContent(iBin);
-      if      ( histogramTTZ_density     ) sumBinContents += histogramTTZ_density->GetBinContent(iBin);
-      if      ( histogramTTH_density     ) sumBinContents += histogramTTH_density->GetBinContent(iBin);
-      if      ( histogramTT_density      ) sumBinContents += histogramTT_density->GetBinContent(iBin);
-      if      ( histogramEWK_density     ) sumBinContents += histogramEWK_density->GetBinContent(iBin);
-      if      ( histogramDiboson_density ) sumBinContents += histogramDiboson_density->GetBinContent(iBin);
-      else if ( histogramWZ_density      ) sumBinContents += histogramWZ_density->GetBinContent(iBin);
-      if      ( histogramRares_density   ) sumBinContents += histogramRares_density->GetBinContent(iBin);
-      if      ( histogramFakes_density   ) sumBinContents += histogramFakes_density->GetBinContent(iBin);
-      if      ( histogramFlips_density   ) sumBinContents += histogramFlips_density->GetBinContent(iBin);
-      if ( histogramUncertainty_density )histogramUncertainty_density->SetBinContent(iBin, sumBinContents);
+      if      ( histogramSignal_density      ) sumBinContents += histogramSignal_density->GetBinContent(iBin);
+      if      ( histogramTTW_density         ) sumBinContents += histogramTTW_density->GetBinContent(iBin);
+      if      ( histogramTTZ_density         ) sumBinContents += histogramTTZ_density->GetBinContent(iBin);
+      if      ( histogramTTH_density         ) sumBinContents += histogramTTH_density->GetBinContent(iBin);
+      if      ( histogramTT_density          ) sumBinContents += histogramTT_density->GetBinContent(iBin);
+      if      ( histogramEWK_density         ) sumBinContents += histogramEWK_density->GetBinContent(iBin);
+      if      ( histogramDiboson_density     ) sumBinContents += histogramDiboson_density->GetBinContent(iBin);
+      else if ( histogramWZ_density          ) sumBinContents += histogramWZ_density->GetBinContent(iBin);
+      if      ( histogramRares_density       ) sumBinContents += histogramRares_density->GetBinContent(iBin);
+      if      ( histogramConversions_density ) sumBinContents += histogramConversions_density->GetBinContent(iBin);
+      if      ( histogramFakes_density       ) sumBinContents += histogramFakes_density->GetBinContent(iBin);
+      if      ( histogramFlips_density       ) sumBinContents += histogramFlips_density->GetBinContent(iBin);
+      if ( histogramUncertainty_density ) histogramUncertainty_density->SetBinContent(iBin, sumBinContents);
       histogramBkg_bins->SetBinContent(iBin, sumBinContents);
     }
     if ( histogramUncertainty_density ) {
@@ -509,10 +527,9 @@ namespace
       for ( int iBin = 1; iBin <= numBins; ++iBin ) {
         double iData = histogramData_blinded_density->GetBinContent(iBin);
 	double iBkg = histogramBkg_bins->GetBinContent(iBin);
-        if(iData==-10){
+        if ( iData == -10 ){
 	  histogramData_blinded_bins->SetBinContent(iBin, (iBkg+0.2*iBkg));
-        }
-	else{
+        } else{
 	  histogramData_blinded_bins->SetBinContent(iBin, yMin);
 	}
       }
@@ -579,17 +596,18 @@ namespace
       histogramSum = (TH1*)histogramData->Clone("histogramSum");
       histogramSum->Reset();
       if ( !histogramSum->GetSumw2N() ) histogramSum->Sumw2();
-      if      ( histogramSignal  ) histogramSum->Add(histogramSignal);
-      if      ( histogramTTW     ) histogramSum->Add(histogramTTW);
-      if      ( histogramTTZ     ) histogramSum->Add(histogramTTZ);
-      if      ( histogramTTH     ) histogramSum->Add(histogramTTH);
-      if      ( histogramTT      ) histogramSum->Add(histogramTT);
-      if      ( histogramEWK     ) histogramSum->Add(histogramEWK);
-      else if ( histogramDiboson ) histogramSum->Add(histogramDiboson);
-      else if ( histogramWZ      ) histogramSum->Add(histogramWZ);
-      if      ( histogramRares   ) histogramSum->Add(histogramRares);
-      if      ( histogramFakes   ) histogramSum->Add(histogramFakes);
-      if      ( histogramFlips   ) histogramSum->Add(histogramFlips);
+      if      ( histogramSignal      ) histogramSum->Add(histogramSignal);
+      if      ( histogramTTW         ) histogramSum->Add(histogramTTW);
+      if      ( histogramTTZ         ) histogramSum->Add(histogramTTZ);
+      if      ( histogramTTH         ) histogramSum->Add(histogramTTH);
+      if      ( histogramTT          ) histogramSum->Add(histogramTT);
+      if      ( histogramEWK         ) histogramSum->Add(histogramEWK);
+      else if ( histogramDiboson     ) histogramSum->Add(histogramDiboson);
+      else if ( histogramWZ          ) histogramSum->Add(histogramWZ);
+      if      ( histogramRares       ) histogramSum->Add(histogramRares);
+      if      ( histogramConversions ) histogramSum->Add(histogramConversions);
+      if      ( histogramFakes       ) histogramSum->Add(histogramFakes);
+      if      ( histogramFlips       ) histogramSum->Add(histogramFlips);
       histogramRatio = (TH1*)histogramData->Clone("histogramRatio");
       histogramRatio->Reset();
       if ( !histogramRatio->GetSumw2N() ) histogramRatio->Sumw2();
@@ -694,6 +712,8 @@ namespace
     delete histogramEWK_density;
     delete histogramRares;
     delete histogramRares_density;
+    delete histogramConversions;
+    delete histogramConversions_density;
     delete histogramFakes;
     delete histogramFakes_density;
     delete histogramFlips;
@@ -762,7 +782,7 @@ int main(int argc, char* argv[])
   bool apply_automatic_rebinning = cfgMakePlots.getParameter<bool>("apply_automatic_rebinning");
   double minEvents_automatic_rebinning = cfgMakePlots.getParameter<double>("minEvents_automatic_rebinning");
   bool applyAutoBlinding  = cfgMakePlots.getParameter<bool>("applyAutoBlinding");
-  bool DivideByBinwidth  = cfgMakePlots.getParameter<bool>("DivideByBinwidth");
+  bool divideByBinWidth  = cfgMakePlots.getParameter<bool>("divideByBinWidth");
 
   edm::ParameterSet cfgNuisanceParameters = cfgMakePlots.getParameter<edm::ParameterSet>("nuisanceParameters");
   HistogramManager histogramManager(processesBackground, processSignal, categoryNames, cfgNuisanceParameters);
@@ -902,13 +922,13 @@ int main(int argc, char* argv[])
       outputFileName_plot.append(Form("_%s", (*distribution)->outputFileName_.data()));
       if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName, idx));
 	  
-      makePlot(800, 900, histogramData, histogramData_blinded, histogramsBackground, histogramSignal, histogramUncertainty, (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, labelOnTop,  extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, true, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, outputFileName_plot, false, DivideByBinwidth);
+      makePlot(800, 900, histogramData, histogramData_blinded, histogramsBackground, histogramSignal, histogramUncertainty, (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, labelOnTop,  extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, true, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, outputFileName_plot, false, divideByBinWidth);
 
-      makePlot(800, 900, histogramData, histogramData_blinded, histogramsBackground, histogramSignal, histogramUncertainty, (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, labelOnTop, extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, false, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, outputFileName_plot, false, DivideByBinwidth);
+      makePlot(800, 900, histogramData, histogramData_blinded, histogramsBackground, histogramSignal, histogramUncertainty, (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, labelOnTop, extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, false, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, outputFileName_plot, false, divideByBinWidth);
 
       if (applyRebinning){
-	makePlot(800, 900, histogramData_rebinned, histogramData_blinded_rebinned, histogramsBackground_rebinned, histogramSignal_rebinned, histogramUncertainty_rebinned, (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, labelOnTop,	extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, true, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, outputFileName_plot, true, DivideByBinwidth);
-	makePlot(800, 900, histogramData_rebinned, histogramData_blinded_rebinned, histogramsBackground_rebinned, histogramSignal_rebinned, histogramUncertainty_rebinned, (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, labelOnTop, extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, false, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, outputFileName_plot, true, DivideByBinwidth);
+	makePlot(800, 900, histogramData_rebinned, histogramData_blinded_rebinned, histogramsBackground_rebinned, histogramSignal_rebinned, histogramUncertainty_rebinned, (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, labelOnTop,	extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, true, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, outputFileName_plot, true, divideByBinWidth);
+	makePlot(800, 900, histogramData_rebinned, histogramData_blinded_rebinned, histogramsBackground_rebinned, histogramSignal_rebinned, histogramUncertainty_rebinned, (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, labelOnTop, extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, false, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, outputFileName_plot, true, divideByBinWidth);
       }
       delete histogramData;
       delete histogramSignal;

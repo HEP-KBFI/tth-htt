@@ -16,7 +16,10 @@ process.makePlots = cms.PSet(
         "TTZ",
         "signal",
         "EWK",
-        "Rares"
+        "Rares",
+        "conversions",
+        "fakes_data",
+        "flips_data"
     ),
     processSignal = cms.string("TTW"),
 
