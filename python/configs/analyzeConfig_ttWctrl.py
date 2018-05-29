@@ -32,25 +32,60 @@ class analyzeConfig_ttWctrl(analyzeConfig):
   for documentation of Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
-               lepton_charge_selections, hadTauVeto_selection, applyFakeRateWeights, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-               executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit,
-               triggers = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
-               select_rle_output = False, executable_prep_dcard = "prepareDatacards",
-               executable_add_syst_dcard = "addSystDatacards", verbose = False, hlt_filter = False,
-               dry_run = False, isDebug = False, use_home = True, do_sync = False,
-               use_nonnominal = False, rle_select = ''):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttWctrl", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      histograms_to_fit, triggers,
-      executable_prep_dcard = executable_prep_dcard,
+  def __init__(self,
+        configDir,
+        outputDir,
+        executable_analyze,
+        cfgFile_analyze, samples,
+        lepton_charge_selections,
+        hadTauVeto_selection,
+        applyFakeRateWeights,
+        central_or_shifts,
+        max_files_per_job,
+        era,
+        use_lumi,
+        lumi,
+        check_input_files,
+        running_method,
+        num_parallel_jobs,
+        executable_addBackgrounds,
+        executable_addFakes,
+        executable_addFlips,
+        histograms_to_fit,
+        select_rle_output         = False,
+        executable_prep_dcard     = "prepareDatacards",
+        executable_add_syst_dcard = "addSystDatacards",
+        verbose                   = False,
+        hlt_filter                = False,
+        dry_run                   = False,
+        isDebug                   = False,
+        use_home                  = True,
+        do_sync                   = False,
+        use_nonnominal            = False,
+        rle_select                = '',
+      ):
+    analyzeConfig.__init__(self,
+      configDir                 = configDir,
+      outputDir                 = outputDir,
+      executable_analyze        = executable_analyze,
+      channel                   = "ttWctrl",
+      central_or_shifts         = central_or_shifts,
+      max_files_per_job         = max_files_per_job,
+      era                       = era,
+      use_lumi                  = use_lumi,
+      lumi                      = lumi,
+      check_input_files         = check_input_files,
+      running_method            = running_method,
+      num_parallel_jobs         = num_parallel_jobs,
+      histograms_to_fit         = histograms_to_fit,
+      triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
+      executable_prep_dcard     = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
-      verbose = verbose,
-      dry_run = dry_run,
-      isDebug = isDebug,
-      use_home = use_home,
-      do_sync = do_sync,
+      verbose                   = verbose,
+      dry_run                   = dry_run,
+      isDebug                   = isDebug,
+      use_home                  = use_home,
+      do_sync                   = do_sync,
     )
 
     self.samples = samples
@@ -63,7 +98,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     self.applyFakeRateWeights = applyFakeRateWeights
 
     self.lepton_genMatches = [ "2l0g0j", "1l1g0j", "1l0g1j", "0l2g0j", "0l1g1j", "0l0g2j" ]
-    
+
     self.apply_leptonGenMatching = None
     self.lepton_genMatches_nonfakes = []
     self.lepton_genMatches_conversions = []
@@ -74,7 +109,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
         if lepton_genMatch.endswith("0g0j"):
           self.lepton_genMatches_nonfakes.append(lepton_genMatch)
         elif lepton_genMatch.endswith("0j"):
-          self.lepton_genMatches_conversions.append(lepton_genMatch)  
+          self.lepton_genMatches_conversions.append(lepton_genMatch)
         else:
           self.lepton_genMatches_fakes.append(lepton_genMatch)
     else:
@@ -88,7 +123,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
 
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "conversions", "fakes_data", "fakes_mc", "flips_data" ]
     self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ] + [ "conversions", "fakes_data", "flips_data" ]
-    
+
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.inputFiles_hadd_stage1_6 = []
     self.outputFile_hadd_stage1_6 = None

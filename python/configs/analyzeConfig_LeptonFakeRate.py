@@ -28,7 +28,6 @@ def getEtaBin(minAbsEta, maxAbsEta):
 def getPtBin(minPt, maxPt):
   return getBinName("Pt", minPt, maxPt)
 
-
 #### CERN BINNING SCHEME ####
 fit_param_range_map = {
   'electron' : {
@@ -38,12 +37,12 @@ fit_param_range_map = {
       'absEtaLt1_5_Pt25_0to35_0'        : '0.01,10.0',
       'absEtaLt1_5_Pt35_0to45_0'        : '0.01,10.0',
       'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt65_0to100_0'    : '0.01,10.0',   ## CERN RESTRICTED BINNING TO 100
+      'absEtaLt1_5_Pt65_0to100_0'       : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
       'absEta1_5to2_5_Pt15_0to25_0'     : '0.01,10.0',
       'absEta1_5to2_5_Pt25_0to35_0'     : '0.0,10.0',  ## CHANGED TO MAKE FIT CONVERGE
       'absEta1_5to2_5_Pt35_0to45_0'     : '0.01,10.0',
       'absEta1_5to2_5_Pt45_0to65_0'     : '0.01,10.0',
-      'absEta1_5to2_5_Pt65_0to100_0' : '0.01,10.0',   ## CERN RESTRICTED BINNING TO 100
+      'absEta1_5to2_5_Pt65_0to100_0'    : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
     },
     'fakeable' : {
       'incl'                            : '0.01,10.0',
@@ -51,12 +50,12 @@ fit_param_range_map = {
       'absEtaLt1_5_Pt25_0to35_0'        : '0.01,10.0',
       'absEtaLt1_5_Pt35_0to45_0'        : '0.01,10.0',
       'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt65_0to100_0'    : '0.01,10.0',   ## CERN RESTRICTED BINNING TO 100
+      'absEtaLt1_5_Pt65_0to100_0'       : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
       'absEta1_5to2_5_Pt15_0to25_0'     : '0.01,10.0',
       'absEta1_5to2_5_Pt25_0to35_0'     : '0.01,10.0',
       'absEta1_5to2_5_Pt35_0to45_0'     : '0.01,10.0',
       'absEta1_5to2_5_Pt45_0to65_0'     : '0.01,10.0',
-      'absEta1_5to2_5_Pt65_0to100_0' : '0.01,10.0',  ## CERN RESTRICTED BINNING TO 100
+      'absEta1_5to2_5_Pt65_0to100_0'    : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
     },
   },
   'muon' : {
@@ -67,13 +66,13 @@ fit_param_range_map = {
       'absEtaLt1_2_Pt20_0to32_0'        : '0.01,10.0',
       'absEtaLt1_2_Pt32_0to45_0'        : '0.01,10.0',
       'absEtaLt1_2_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_2_Pt65_0to100_0'    : '0.01,10.0',
+      'absEtaLt1_2_Pt65_0to100_0'       : '0.01,10.0',
       'absEta1_2to2_4_Pt10_0to15_0'     : '0.01,10.0',
       'absEta1_2to2_4_Pt15_0to20_0'     : '0.01,10.0',
       'absEta1_2to2_4_Pt20_0to32_0'     : '0.01,10.0',
       'absEta1_2to2_4_Pt32_0to45_0'     : '0.01,10.0',
       'absEta1_2to2_4_Pt45_0to65_0'     : '0.01,10.0',
-      'absEta1_2to2_4_Pt65_0to100_0' : '0.01,10.0',
+      'absEta1_2to2_4_Pt65_0to100_0'    : '0.01,10.0',
     },
     'fakeable' : {
       'incl'                            : '0.01,10.0',
@@ -82,84 +81,17 @@ fit_param_range_map = {
       'absEtaLt1_2_Pt20_0to32_0'        : '0.01,10.0',
       'absEtaLt1_2_Pt32_0to45_0'        : '0.01,10.0',
       'absEtaLt1_2_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_2_Pt65_0to100_0'    : '0.01,10.0',
+      'absEtaLt1_2_Pt65_0to100_0'       : '0.01,10.0',
       'absEta1_2to2_4_Pt10_0to15_0'     : '0.01,10.0',
       'absEta1_2to2_4_Pt15_0to20_0'     : '0.01,10.0',
       'absEta1_2to2_4_Pt20_0to32_0'     : '0.01,10.0',
       'absEta1_2to2_4_Pt32_0to45_0'     : '0.01,10.0',
       'absEta1_2to2_4_Pt45_0to65_0'     : '0.01,10.0',
-      'absEta1_2to2_4_Pt65_0to100_0' : '0.01,10.0',
+      'absEta1_2to2_4_Pt65_0to100_0'    : '0.01,10.0',
     }
   }
 }
-#######################
 
-'''
-### OLD BINNING SCHEME ####
-fit_param_range_map = {
-  'electron' : {
-    'tight' : {
-      'incl'                            : '0.01,10.0',
-      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0',
-      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '0.0,10.0',  ## CHANGED TO MAKE FIT CONVERGE
-      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0',
-    },
-    'fakeable' : {
-      'incl'                            : '0.01,10.0',
-      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0',
-      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0',
-    },
-  },
-  'muon' : {
-    'tight' : {
-      'incl'                            : '0.01,10.0',
-      'absEtaLt1_5_Pt10_0to15_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0',
-      'absEta1_5to9_9_Pt10_0to15_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0',
-    },
-    'fakeable' : {
-      'incl'                            : '0.01,10.0',
-      'absEtaLt1_5_Pt10_0to15_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0',
-      'absEta1_5to9_9_Pt10_0to15_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0',
-    }
-  }
-}
-################################
-'''
 def construct_lepton_params(lepton, lepton_short, selection, absEtaPtBinString, error_msg):
   if absEtaPtBinString not in fit_param_range_map[lepton][selection]:
     raise ValueError(error_msg)
@@ -188,18 +120,60 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
   for documentation of further Args.
 
   """
-  def __init__(self, configDir, outputDir, cmssw_base_dir_combine, executable_analyze, samples,
-               absEtaBins_e, absEtaBins_mu, ptBins_e, ptBins_mu, fillGenEvtHistograms, central_or_shifts,
-               numerator_histogram, denominator_histogram, prep_dcard,
-               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-               executable_addBackgrounds, executable_addBackgrounds_recursively, executable_addBackgrounds_LeptonFakeRate,
-               executable_prep_dcard, executable_comp_LeptonFakeRate, select_rle_output = False,
-               verbose = False, dry_run = False, isDebug = False, use_home = True):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "LeptonFakeRate", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      [ numerator_histogram, denominator_histogram ],
-      executable_prep_dcard = executable_prep_dcard, triggers = [ '1e', '1mu', '2e', '2mu' ],
-      verbose = verbose, dry_run = dry_run, isDebug = isDebug, use_home = use_home)
+  def __init__(self,
+        configDir,
+        outputDir,
+        cmssw_base_dir_combine,
+        executable_analyze,
+        samples,
+        absEtaBins_e,
+        absEtaBins_mu,
+        ptBins_e,
+        ptBins_mu,
+        fillGenEvtHistograms,
+        central_or_shifts,
+        numerator_histogram,
+        denominator_histogram,
+        prep_dcard,
+        max_files_per_job,
+        era,
+        use_lumi,
+        lumi,
+        check_input_files,
+        running_method,
+        num_parallel_jobs,
+        executable_addBackgrounds,
+        executable_addBackgrounds_recursively,
+        executable_addBackgrounds_LeptonFakeRate,
+        executable_prep_dcard,
+        executable_comp_LeptonFakeRate,
+        select_rle_output = False,
+        verbose           = False,
+        dry_run           = False,
+        isDebug           = False,
+        use_home          = True,
+      ):
+    analyzeConfig.__init__(self,
+      configDir             = configDir,
+      outputDir             = outputDir,
+      executable_analyze    = executable_analyze,
+      channel               = "LeptonFakeRate",
+      central_or_shifts     = central_or_shifts,
+      max_files_per_job     = max_files_per_job,
+      era                   = era,
+      use_lumi              = use_lumi,
+      lumi                  = lumi,
+      check_input_files     = check_input_files,
+      running_method        = running_method,
+      num_parallel_jobs     = num_parallel_jobs,
+      histograms_to_fit     = [ numerator_histogram, denominator_histogram ],
+      executable_prep_dcard = executable_prep_dcard,
+      triggers              = [ '1e', '1mu', '2e', '2mu' ],
+      verbose               = verbose,
+      dry_run               = dry_run,
+      isDebug               = isDebug,
+      use_home              = use_home,
+    )
 
     self.cmssw_base_dir_combine = cmssw_base_dir_combine
     if not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \
