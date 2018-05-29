@@ -652,7 +652,10 @@ int main(int argc, char* argv[])
       }
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/weights", histogramDir.data()), central_or_shift));
-      selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "triggerWeight", "data_to_MC_correction", "fakeRate" });
+      selHistManager->weights_->bookHistograms(fs, { 
+        "genWeight", "lheWeight", "pileupWeight",
+	"triggerWeight", "btagWeight", "leptonEff", "hadTauEff", "data_to_MC_correction",
+        "fakeRate" });
       selHistManagers[idxLepton][idxHadTau] = selHistManager;
     }
   }
@@ -1205,20 +1208,25 @@ int main(int argc, char* argv[])
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
     double evtWeight = 1.;
+    double lheWeight = 1.;
     double btagWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
       if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
       if ( isMC_tH ) evtWeight *= eventInfo.genWeight_tH;
       evtWeight *= eventInfo.pileupWeight;
-      evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
+      lheWeight = lheInfoReader->getWeight_scale(lheScale_option);
+      evtWeight *= lheWeight;
       btagWeight = get_BtagWeight(selJets);
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
 	std::cout << "lumiScale = " << lumiScale << std::endl;
-  if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
-  std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
+	if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
+	if ( isMC_tH ) std::cout << "genWeight_tH = " << eventInfo.genWeight_tH << std::endl;
+	std::cout << "lheWeight = " << lheWeight << std::endl;
+	std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
 	std::cout << "btagWeight = " << btagWeight << std::endl;
+	std::cout << "evtWeight(1) = " << evtWeight << std::endl;
       }
     }
 
@@ -1242,6 +1250,9 @@ int main(int argc, char* argv[])
 
 //--- apply data/MC corrections for efficiencies for lepton to pass loose identification and isolation criteria
       leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
+      if ( isDEBUG ) {
+	std::cout << "leptonSF_weight(1) = " << leptonSF_weight << std::endl;
+      }
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
@@ -1249,6 +1260,9 @@ int main(int argc, char* argv[])
         leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
       } else if ( leptonSelection == kTight ) {
         leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge();
+      }
+      if ( isDEBUG ) {
+	std::cout << "leptonSF_weight(2) = " << leptonSF_weight << std::endl;
       }
       weight_data_to_MC_correction *= leptonSF_weight;
 
@@ -1259,12 +1273,18 @@ int main(int argc, char* argv[])
       tauSF_weight *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
       tauSF_weight *= dataToMCcorrectionInterface->getSF_eToTauFakeRate();
       tauSF_weight *= dataToMCcorrectionInterface->getSF_muToTauFakeRate();
+      if ( isDEBUG ) {
+	std::cout << "tauSF_weight = " << tauSF_weight << std::endl;
+      }
       weight_data_to_MC_correction *= tauSF_weight;
       if ( isDEBUG ) {
 	std::cout << "weight_data_to_MC_correction = " << weight_data_to_MC_correction << std::endl;
       }
 
       evtWeight *= weight_data_to_MC_correction;
+    }
+    if ( isDEBUG ) {
+      std::cout << "evtWeight(2) = " << evtWeight << std::endl;
     }
 
     bool passesTight_hadTau = isMatched(*selHadTau, tightHadTausFull);
@@ -1292,35 +1312,35 @@ int main(int argc, char* argv[])
     if(jetToTauFakeRateInterface) prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
 
     if ( applyFakeRateWeights == kFR_4L ) {
-        weight_fakeRate = getWeight_4L(
-          prob_fake_lepton_lead, passesTight_lepton_lead,
-          prob_fake_lepton_sublead, passesTight_lepton_sublead,
-          prob_fake_lepton_third, passesTight_lepton_third,
-          prob_fake_hadTau, passesTight_hadTau);
-      } else if ( applyFakeRateWeights == kFR_3lepton ) {
-        weight_fakeRate = getWeight_3L(
-          prob_fake_lepton_lead, passesTight_lepton_lead,
-          prob_fake_lepton_sublead, passesTight_lepton_sublead,
-          prob_fake_lepton_third, passesTight_lepton_third);
-      } else if ( applyFakeRateWeights == kFR_1tau) {
-        weight_fakeRate = prob_fake_hadTau;
-      }
-      if ( !selectBDT ) {
-        //std::cout << "evtWeight = " << evtWeight<< " weight_fakeRate "<<weight_fakeRate << std::endl;
-        evtWeight *= weight_fakeRate;
-      }
+      weight_fakeRate = getWeight_4L(
+        prob_fake_lepton_lead, passesTight_lepton_lead,
+	prob_fake_lepton_sublead, passesTight_lepton_sublead,
+	prob_fake_lepton_third, passesTight_lepton_third,
+	prob_fake_hadTau, passesTight_hadTau);
+    } else if ( applyFakeRateWeights == kFR_3lepton ) {
+      weight_fakeRate = getWeight_3L(
+        prob_fake_lepton_lead, passesTight_lepton_lead,
+	prob_fake_lepton_sublead, passesTight_lepton_sublead,
+	prob_fake_lepton_third, passesTight_lepton_third);
+    } else if ( applyFakeRateWeights == kFR_1tau) {
+      weight_fakeRate = prob_fake_hadTau;
+    }
+    if ( !selectBDT ) {
+      evtWeight *= weight_fakeRate;
+    }
 
-      // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
-      if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()) ) {
-	double weight_data_to_MC_correction_tau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
-	if ( isDEBUG ) {
-	  std::cout << "weight_data_to_MC_correction_tau = " << weight_data_to_MC_correction_tau << std::endl;
-	}
-	evtWeight *= weight_data_to_MC_correction_tau;
+    // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
+    if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()) ) {
+      double weight_data_to_MC_correction_tau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
+      if ( isDEBUG ) {
+	std::cout << "weight_data_to_MC_correction_tau = " << weight_data_to_MC_correction_tau << std::endl;
       }
+      evtWeight *= weight_data_to_MC_correction_tau;
+    }
 
     if ( isDEBUG ) {
-      std::cout << "evtWeight = " << evtWeight << std::endl;
+      std::cout << "evtWeight(3) = " << evtWeight << std::endl;
+      if ( std::fabs(evtWeight) < (1.e-1*lumiScale) ) std::cout << " --> CHECK !!" << std::endl;
     }
 
     // require exactly three leptons passing tight selection criteria, to avoid overlap with 4l channel
@@ -1796,8 +1816,12 @@ int main(int argc, char* argv[])
       }
     }
     selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
+    selHistManager->weights_->fillHistograms("lheWeight", lheWeight);
     selHistManager->weights_->fillHistograms("pileupWeight", eventInfo.pileupWeight);
     selHistManager->weights_->fillHistograms("triggerWeight", triggerWeight);
+    selHistManager->weights_->fillHistograms("btagWeight", btagWeight);
+    selHistManager->weights_->fillHistograms("leptonEff", leptonSF_weight);
+    selHistManager->weights_->fillHistograms("hadTauEff", tauSF_weight);
     selHistManager->weights_->fillHistograms("data_to_MC_correction", weight_data_to_MC_correction);
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
 
