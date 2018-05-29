@@ -162,6 +162,8 @@ int main(int argc, char* argv[])
   std::vector<hltPath*> triggers_2tau = create_hltPaths(triggerNames_2tau);
   bool use_triggers_2tau = cfg_analyze.getParameter<bool>("use_triggers_2tau");
 
+  double lep_mva_cut = cfg_analyze.getParameter<double>("lep_mva_cut"); // CV: used for tight lepton selection only
+
   TString hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection").data();
   TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
   assert(hadTauSelection_parts->GetEntries() >= 1);
@@ -302,6 +304,7 @@ int main(int argc, char* argv[])
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
+  tightMuonSelector.getSelector().set_min_mvaTTH(lep_mva_cut);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons);
   inputTree -> registerReader(electronReader);
@@ -312,6 +315,7 @@ int main(int argc, char* argv[])
   fakeableElectronSelector.disable_offline_e_trigger_cuts();
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
   tightElectronSelector.disable_offline_e_trigger_cuts();
+  tightElectronSelector.getSelector().set_min_mvaTTH(lep_mva_cut);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus);
   hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);

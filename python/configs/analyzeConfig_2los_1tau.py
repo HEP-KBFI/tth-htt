@@ -37,12 +37,12 @@ class analyzeConfig_2los_1tau(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
-               hadTau_selection, applyFakeRateWeights, central_or_shifts,
+               lep_mva_wp, hadTau_selection, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addFakes, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
                verbose = False, dry_run = False, isDebug = False, hlt_filter = False, use_home = True):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2los_1tau", central_or_shifts,
+    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2los_1tau", lep_mva_wp, central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
       triggers = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
