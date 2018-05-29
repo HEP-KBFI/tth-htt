@@ -1741,15 +1741,15 @@ int main(int argc, char* argv[])
     };
     const double mvaOutput_plainKin_SUM_VT = mva_plainKin_sum_VT(mvaInputsplainKin_sum);
     //const double mvaOutput_plainKin_SUM_VT = mva_plainKin_sum_VT(mvaInputsplainKin_sum);
-    std::cout <<  "     mvaOutput_plainKin_SUM_VT       " << mvaOutput_plainKin_SUM_VT  << "\n";
-    if (mvaOutput_plainKin_SUM_VT <= 0) {
-      std::cout <<  "     mvaOutput_plainKin_SUM_VT       " << mvaOutput_plainKin_SUM_VT  << "\n";
-      for( auto it = mvaInputsplainKin_sum.begin();
-    it != mvaInputsplainKin_sum.end(); ++it)
-        {
-            std::cout << it->first << " " << it->second  << "\n";
-        }
-    }
+    //std::cout <<  "     mvaOutput_plainKin_SUM_VT       " << mvaOutput_plainKin_SUM_VT  << "\n";
+    //if (mvaOutput_plainKin_SUM_VT <= 0) {
+    //  std::cout <<  "     mvaOutput_plainKin_SUM_VT       " << mvaOutput_plainKin_SUM_VT  << "\n";
+    //  for( auto it = mvaInputsplainKin_sum.begin();
+    //it != mvaInputsplainKin_sum.end(); ++it)
+    //    {
+    //        std::cout << it->first << " " << it->second  << "\n";
+    //    }
+    //}
 
 //--- fill histograms with events passing final selection
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
