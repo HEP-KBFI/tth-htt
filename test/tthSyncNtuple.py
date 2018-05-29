@@ -93,15 +93,15 @@ parser.add_argument('-N', '--no-mem',
 args = parser.parse_args()
 
 # Common arguments
-era                  = args.era
-version              = args.version
-dry_run              = args.dry_run
-resubmission_limit   = args.resubmission_limit
-disable_resubmission = args.disable_resubmission
-no_exec              = args.no_exec
-auto_exec            = args.auto_exec
-check_input_files    = args.check_input_files
-debug                = args.debug
+era                = args.era
+version            = args.version
+dry_run            = args.dry_run
+resubmission_limit = args.resubmission_limit
+no_exec            = args.no_exec
+auto_exec          = args.auto_exec
+check_input_files  = args.check_input_files
+debug              = args.debug
+running_method     = args.running_method
 
 # Additional arguments
 rle_select     = os.path.expanduser(args.rle_select)
@@ -132,8 +132,8 @@ if __name__ == '__main__':
     channels             = channels,
     dry_run              = dry_run,
     resubmission_limit   = resubmission_limit,
-    disable_resubmission = disable_resubmission,
     check_input_files    = check_input_files,
+    running_method       = running_method,
     isDebug              = debug,
     rle_select           = rle_select,
     no_mem               = no_mem,

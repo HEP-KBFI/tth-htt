@@ -29,12 +29,13 @@ era                = args.era
 version            = args.version
 dry_run            = args.dry_run
 resubmission_limit = args.resubmission_limit
-resubmit           = not args.disable_resubmission
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
 sample_filter      = args.filter
+num_parallel_jobs  = args.num_parallel_jobs
+running_method     = args.running_method
 
 # Additional arguments
 mode              = args.mode
@@ -47,9 +48,8 @@ integration_points   = args.integration_points
 max_mem_integrations = args.max_mem_integrations
 
 # Use the arguments
-max_job_resubmission = resubmission_limit if resubmit else 1
-central_or_shift     = getattr(systematics, systematics_label)
-version              = "%s_%s_%s" % (version, mode, 'nonNom' if use_nonnominal else 'nom')
+central_or_shift = getattr(systematics, systematics_label)
+version          = "%s_%s_%s" % (version, mode, 'nonNom' if use_nonnominal else 'nom')
 
 if mode == 'default':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples import samples_2017
@@ -100,11 +100,11 @@ if __name__ == '__main__':
     samples                  = samples,
     era                      = era,
     check_input_files        = check_input_files,
-    running_method           = "sbatch",
+    running_method           = running_method,
     max_files_per_job        = 1, # so that we'd have 1-1 correspondence b/w input and output files
     mem_integrations_per_job = 50,
     max_mem_integrations     = max_mem_integrations, # use -1 if you don't want to limit the nof MEM integrations
-    num_parallel_jobs        = 16,
+    num_parallel_jobs        = num_parallel_jobs,
     leptonSelection          = leptonSelection,
     hadTauSelection          = hadTauSelectionAndWP,
     lowIntegrationPoints     = False, # has no effect in 3l1tau MEM, the nof integration points fixed
@@ -125,6 +125,6 @@ if __name__ == '__main__':
     else:
       run_addMEMProduction = query_yes_no("Start jobs ?")
     if run_addMEMProduction:
-      for resubmission_idx in range(max_job_resubmission):
+      for resubmission_idx in range(resubmission_limit):
         logging.info("Submission attempt #%i" % (resubmission_idx + 1))
         addMEMProduction.run()

@@ -9,7 +9,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 mode_choices = [ 'all', 'sync' ]
 
-parser = tthAnalyzeParser()
+parser = tthAnalyzeParser(default_num_parallel_jobs = 40)
 parser.add_modes(mode_choices)
 parser.add_files_per_job(100)
 parser.add_use_home()
@@ -24,11 +24,12 @@ era                = args.era
 version            = args.version
 dry_run            = args.dry_run
 resubmission_limit = args.resubmission_limit
-resubmit           = not args.disable_resubmission
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 sample_filter      = args.filter
+num_parallel_jobs  = args.num_parallel_jobs
+running_method     = args.running_method
 
 # Additional arguments
 mode          = args.mode
@@ -37,7 +38,6 @@ validate      = args.validate
 use_home      = args.use_home
 
 # Use the arguments
-max_job_resubmission = resubmission_limit if resubmit else 1
 
 if mode == 'sync':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017
@@ -72,7 +72,7 @@ if __name__ == '__main__':
   run_puHistogramProduction = False
   is_last_resubmission      = False
 
-  for idx_job_resubmission in range(max_job_resubmission):
+  for idx_job_resubmission in range(resubmission_limit):
     if is_last_resubmission:
       continue
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
@@ -85,9 +85,9 @@ if __name__ == '__main__':
       max_files_per_job = files_per_job,
       era               = era,
       check_input_files = check_input_files,
-      running_method    = "sbatch",
+      running_method    = running_method,
       version           = version,
-      num_parallel_jobs = 40,
+      num_parallel_jobs = num_parallel_jobs,
       verbose           = idx_job_resubmission > 0,
       dry_run           = dry_run,
       use_home          = use_home,
