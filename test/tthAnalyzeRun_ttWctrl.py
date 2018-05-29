@@ -8,7 +8,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_ttWctrl.py -v 2017Dec13 -e 2017
 
-mode_choices     = [ 'default', 'sync', 'sync_noMEM' ]
+mode_choices     = [ 'default', 'sync', 'sync_wMEM' ]
 sys_choices      = [ 'central', 'full' ]
 systematics.full = systematics.an_ctrl
 
@@ -53,9 +53,9 @@ do_sync          = mode.startswith('sync')
 if era == "2017":
   if mode == 'default':
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  elif mode == 'sync':
+  elif mode == 'sync_wMEM':
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
-  elif mode == 'sync_noMEM':
+  elif mode == 'sync':
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
 else:
