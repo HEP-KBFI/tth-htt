@@ -4,16 +4,12 @@ RecoMuon::RecoMuon(const RecoLepton & lepton,
                    Bool_t passesLooseIdPOG,
                    Bool_t passesMediumIdPOG,
                    Float_t segmentCompatibility,
-                   Float_t ptErr,
-                   Float_t pt_corrected,
-                   Float_t pt_sys_uncert)
+                   Float_t ptErr)
   : RecoLepton(lepton)
   , passesLooseIdPOG_(passesLooseIdPOG)
   , passesMediumIdPOG_(passesMediumIdPOG)
   , segmentCompatibility_(segmentCompatibility)
   , ptErr_(ptErr)
-  , pt_corrected_(pt_corrected)
-  , pt_sys_uncert_(pt_sys_uncert)
 {}
 
 Bool_t
@@ -44,18 +40,6 @@ Float_t
 RecoMuon::dpt_div_pt() const
 {
   return ptErr() >= 0. ? ptErr() / pt() : -1.;
-}
-
-Float_t
-RecoMuon::pt_corrected() const
-{
-  return pt_corrected_;
-}
-
-Float_t
-RecoMuon::pt_sys_uncert() const
-{
-  return pt_sys_uncert_;
 }
 
 bool
@@ -90,9 +74,7 @@ operator<<(std::ostream & stream,
             "passesLooseIdPOG = "     << muon.passesLooseIdPOG()  << ", "
             "passesMediumIdPOG = "    << muon.passesMediumIdPOG() << ", "
             "segmentCompatibility = " << muon.segmentCompatibility() << ", "
-            "ptErr = "                << muon.ptErr() << ", "
-            "corr pt (sys unc) = "    << muon.pt_corrected() << " ("
-                                      << muon.pt_sys_uncert() << ")\n"
+            "ptErr = "                << muon.ptErr() << '\n'
   ;
   return stream;
 }

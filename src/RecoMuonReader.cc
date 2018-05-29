@@ -22,8 +22,6 @@ RecoMuonReader::RecoMuonReader(int era,
   , mediumIdPOG_(nullptr)
   , segmentCompatibility_(nullptr)
   , ptErr_(nullptr)
-  , pt_corrected_(nullptr)
-  , pt_sys_uncert_(nullptr)
 {
   setBranchNames();
 }
@@ -40,8 +38,6 @@ RecoMuonReader::~RecoMuonReader()
     delete[] gInstance->mediumIdPOG_;
     delete[] gInstance->segmentCompatibility_;
     delete[] gInstance->ptErr_;
-    delete[] gInstance->pt_corrected_;
-    delete[] gInstance->pt_sys_uncert_;
     instances_[branchName_obj_] = nullptr;
   }
 }
@@ -55,8 +51,6 @@ RecoMuonReader::setBranchNames()
     branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumId");
     branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentComp");
     branchName_ptErr_ = Form("%s_%s", branchName_obj_.data(), "ptErr");
-    branchName_pt_corrected_ = Form("%s_%s", branchName_obj_.data(), "pt_corrected");
-    branchName_pt_sys_uncert_ = Form("%s_%s", branchName_obj_.data(), "pt_sys_uncert");
     instances_[branchName_obj_] = this;
   }
   else
@@ -85,8 +79,6 @@ RecoMuonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(mediumIdPOG_, branchName_mediumIdPOG_);
     bai.setBranchAddress(segmentCompatibility_, branchName_segmentCompatibility_);
     bai.setBranchAddress(ptErr_, branchName_ptErr_, -1.);
-    bai.setBranchAddress(pt_corrected_, branchName_pt_corrected_);
-    bai.setBranchAddress(pt_sys_uncert_, branchName_pt_sys_uncert_);
   }
 }
 
@@ -145,9 +137,7 @@ RecoMuonReader::read() const
           true, // Karl: all muon objects pass Muon POG's loose definition at the nanoAOD prodction level
           gMuonReader->mediumIdPOG_[idxLepton],
           gMuonReader->segmentCompatibility_[idxLepton],
-          gMuonReader->ptErr_[idxLepton],
-          gMuonReader->pt_corrected_[idxLepton],
-          gMuonReader->pt_sys_uncert_[idxLepton],
+          gMuonReader->ptErr_[idxLepton]
         }));
       }
     }
