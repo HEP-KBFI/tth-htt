@@ -197,6 +197,38 @@ checkCompatibleBinning(const TH1 * histogram1,
   }
 }
 
+bool
+checkIfLabeledHistogram(const TH1 * histogram)
+{
+  bool areAllLabelled = true;
+  const int nofBins = histogram->GetNbinsX() + 1;
+  for(int iBin = 1; iBin < nofBins; ++iBin)
+  {
+    const std::string binLabel = histogram->GetXaxis()->GetBinLabel(iBin);
+    if(binLabel.empty())
+    {
+      areAllLabelled = false;
+      break;
+    }
+  }
+  return areAllLabelled;
+}
+
+bool
+checkIfLabeledHistograms(const std::vector<TH1 *> & histograms)
+{
+  bool areAllLabelled = true;
+  for(const TH1 * histogram: histograms)
+  {
+    areAllLabelled = checkIfLabeledHistogram(histogram);
+    if(! areAllLabelled)
+    {
+      break;
+    }
+  }
+  return areAllLabelled;
+}
+
 TH1 *
 addHistograms(const std::string & newHistogramName,
               const TH1 * histogram1,
@@ -253,8 +285,10 @@ addHistograms(const std::string & newHistogramName,
     newHistogram->Sumw2();
   }
 
-  const int numBins_plus2 = newHistogram->GetNbinsX() + 2;
-  for(int iBin = 0; iBin < numBins_plus2; ++iBin)
+  const bool isLabelled = checkIfLabeledHistograms(histogramsToAdd);
+  const int initBin = isLabelled ? 1 : 0;
+  const int endBin = newHistogram->GetNbinsX() + (isLabelled ? 1 : 2);
+  for(int iBin = initBin; iBin < endBin; ++iBin)
   {
     double sumBinContent = 0.;
     double sumBinError2  = 0.;
@@ -303,8 +337,10 @@ subtractHistograms(const std::string & newHistogramName,
     newHistogram->Sumw2();
   }
 
-  const int numBins_plus2 = newHistogram->GetNbinsX() + 2;
-  for(int iBin = 0; iBin < numBins_plus2; ++iBin)
+  const bool isLabelled = checkIfLabeledHistogram(histogramMinuend) && checkIfLabeledHistogram(histogramSubtrahend);
+  const int initBin = isLabelled ? 1 : 0;
+  const int endBin = histogramMinuend->GetNbinsX() + (isLabelled ? 1 : 2);
+  for(int iBin = initBin; iBin < endBin; ++iBin)
   {
     if(verbosity)
     {
@@ -393,8 +429,10 @@ makeBinContentsPositive(TH1 * histogram,
     std::cout << " integral_original = " << integral_original << '\n';
   }
 
-  const int numBins_plus2 = histogram->GetNbinsX() + 2;
-  for(int iBin = 0; iBin < numBins_plus2; ++iBin)
+  const bool isLabelled = checkIfLabeledHistogram(histogram);
+  const int initBin = isLabelled ? 1 : 0;
+  const int endBin = histogram->GetNbinsX() + (isLabelled ? 1 : 2);
+  for(int iBin = initBin; iBin < endBin; ++iBin)
   {
     const double binContent_original = histogram->GetBinContent(iBin);
     const double binError2_original = square(histogram->GetBinError(iBin));
@@ -436,7 +474,7 @@ makeBinContentsPositive(TH1 * histogram,
   }
   else
   {
-    for(int iBin = 0; iBin < numBins_plus2; ++iBin)
+    for(int iBin = initBin; iBin < endBin; ++iBin)
     {
       histogram->SetBinContent(iBin, 0.);
     }

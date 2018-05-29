@@ -12,8 +12,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
-#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenPhoton.h" // GenPhoton
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
 class GenEvtHistManager
   : public HistManagerBase
@@ -30,6 +31,7 @@ public:
   fillHistograms(const std::vector<GenLepton> & genElectrons,
                  const std::vector<GenLepton> & genMuons,
                  const std::vector<GenHadTau> & genHadTaus,
+                 const std::vector<GenPhoton> & genPhotons,
                  const std::vector<GenJet> & genJets,
                  double evtWeight = 1.);
 
@@ -40,12 +42,16 @@ private:
   double maxGenMuonAbsEta_;
   double minGenHadTauPt_;
   double maxGenHadTauAbsEta_;
+  double minGenPhotonPt_;
+  double maxGenPhotonAbsEta_;
   double minGenJetPt_;
   double maxGenJetAbsEta_;
 
   TH1 * histogram_numGenElectrons_withinAcc_;
   TH1 * histogram_numGenMuons_withinAcc_;
   TH1 * histogram_numGenLeptons_withinAcc_;
+  TH1 * histogram_numGenPhotons_withinAcc_;
+  TH1 * histogram_numGenElectronsAndPhotons_withinAcc_;
   TH1 * histogram_numGenHadTaus_withinAcc_;
   TH1 * histogram_numGenLeptonsAndHadTaus_withinAcc_;
   TH1 * histogram_numGenJets_withinAcc_;

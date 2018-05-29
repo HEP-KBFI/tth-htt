@@ -39,6 +39,12 @@ void
 checkCompatibleBinning(const TH1 * histogram1,
                        const TH1 * histogram2);
 
+bool
+checkIfLabeledHistogram(const TH1 * histogram);
+
+bool
+checkIfLabeledHistograms(const std::vector<TH1 *> & histograms);
+
 TH1 *
 addHistograms(const std::string & newHistogramName,
               const TH1* histogram1,
