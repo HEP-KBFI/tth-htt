@@ -13,7 +13,7 @@ public:
                         bool debug = false,
                         bool set_selection_flags = true);
 
-  void set_min_mvaTTH(bool min_mvaTTH);
+  void set_min_mvaTTH(double min_mvaTTH);
   double get_min_mvaTTH() const;
 
   void
