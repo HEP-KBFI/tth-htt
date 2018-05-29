@@ -10,6 +10,7 @@ process.makePlots.processesBackground = cms.vstring(
     "TTZ",
     "EWK",
     "Rares",
+    "conversions",
     "fakes_data"
 )
 process.makePlots.processSignal = cms.string("signal")

@@ -190,9 +190,20 @@ class analyzeConfig(object):
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
 
-        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2017_Tallinn_2018May24.root"
-        self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_data_comb"
+        #--------------------------------------------------------------------------------------------
+        # CV: to be used when cut MVA > 0.90 is applied in tight lepton selection
+        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva090_2017_CERN_2018May29.root"
+        self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_data_comb_NC"
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_data_comb"
+        #--------------------------------------------------------------------------------------------
+
+        #--------------------------------------------------------------------------------------------
+        # CV: to be used when cut MVA > 0.75 is applied in tight lepton selection
+        #self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva075_2017_CERN_2018May29.root"
+        #self.leptonFakeRateWeight_histogramName_e = "FR_mva075_el_data_comb_NC"
+        #self.leptonFakeRateWeight_histogramName_mu = "FR_mva075_mu_data_comb"
+        #--------------------------------------------------------------------------------------------
+        
         self.hadTau_selection_relaxed = None
         self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v1.root"
         self.isBDTtraining = False
@@ -393,7 +404,10 @@ class analyzeConfig(object):
         lines.append("        sideband = cms.string('%s')" % jobOptions['category_sideband'])
         lines.append("    )")
         lines.append(")")
-        lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % self.nonfake_backgrounds)
+        processesToSubtract = []
+        processesToSubtract.extend(self.nonfake_backgrounds)
+        processesToSubtract.append("conversions")
+        lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
 

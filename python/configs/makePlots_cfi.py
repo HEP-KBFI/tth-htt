@@ -13,7 +13,7 @@ process.makePlots = cms.PSet(
     apply_automatic_rebinning = cms.bool(True),
     minEvents_automatic_rebinning = cms.double(0.5),
     applyAutoBlinding = cms.bool(True),
-    DivideByBinwidth = cms.bool(False),
+    divideByBinWidth = cms.bool(False),
     processData = cms.string("data_obs"),
     processesBackground = cms.vstring(
         ##"TT",
@@ -22,6 +22,7 @@ process.makePlots = cms.PSet(
         "TTZ",
         "EWK",
         "Rares",
+        "conversions",
         "fakes_data"
     ),
     processSignal = cms.string("signal"),
@@ -51,6 +52,7 @@ process.makePlots = cms.PSet(
             TTZ = cms.string("1.0 +/- 0.20"),
             EWK = cms.string("1.0 +/- 0.20"),
             Rares = cms.string("1.0 +/- 0.20"),
+            conversions = cms.string("1.0 +/- 0.20"),
             fakes_data = cms.string("1.0 +/- 0.20"),
             VH = cms.string("1.0 +/- 0.20"),
         ),

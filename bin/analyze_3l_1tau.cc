@@ -1209,7 +1209,7 @@ int main(int argc, char* argv[])
     assert(idxSelLepton_genMatch != kGen_LeptonUndefined3);
     if ( isDEBUG ) {
       std::cout << "selLepton_genMatch = " << getLeptonGenMatch_string(leptonGenMatch_definitions, idxSelLepton_genMatch) << std::endl;
-      if ( idxSelLepton_genMatch != kGen_3l0j ) {
+      if ( idxSelLepton_genMatch != kGen_3l0g0j ) {
 	std::cout << "--> CHECK!" << std::endl;
   printCollection("selLeptons", selLeptons);
       }
