@@ -560,10 +560,19 @@ main(int argc,
     }
   }
 
+  checkOptionValidity(central_or_shift, isMC);
   const int jetPt_option     = getJet_option       (central_or_shift, isMC);
-  const int lheScale_option  = getLHEscale_option  (central_or_shift, isMC);
-  const int jetBtagSF_option = getBTagWeight_option(central_or_shift, isMC);
+  const int lheScale_option  = getLHEscale_option  (central_or_shift);
+  const int jetBtagSF_option = getBTagWeight_option(central_or_shift);
   const int met_option       = getMET_option       (central_or_shift, isMC);
+
+  std::cout
+    << "central_or_shift = "               << central_or_shift           << "\n"
+       " -> lheScale_option            = " << lheScale_option            << "\n"
+       " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
+       " -> met_option                 = " << met_option                 << "\n"
+       " -> jetPt_option               = " << jetPt_option               << '\n'
+  ;
 
   fwlite::InputSource inputFiles(cfg);
   const int maxEvents        = inputFiles.maxEvents();
