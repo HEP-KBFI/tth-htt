@@ -1989,7 +1989,7 @@ int main(int argc, char* argv[])
       snm->read(mvaOutput_plainKin_tt,                  FloatVariableType::mvaOutput_plainKin_tt);
       snm->read(mvaOutput_plainKin_1B_VT,               FloatVariableType::mvaOutput_plainKin_1B_VT);
       snm->read(mvaOutput_HTT_SUM_VT,                   FloatVariableType::mvaOutput_HTT_SUM_VT);
-      //snm->read(mvaOutput_plainKin_SUM_VT,                 FloatVariableType::mvaOutput_plainKin_SUM_VT);
+      snm->read(mvaOutput_plainKin_SUM_VT,              FloatVariableType::mvaOutput_plainKin_SUM_VT);
 
       // mvaOutput_plainKin_SUM_VT not filled
 
