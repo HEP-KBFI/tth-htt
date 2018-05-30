@@ -105,16 +105,19 @@ struct numerator_and_denominatorHistManagers
     , electronHistManager_genLepton_(nullptr)
     , electronHistManager_genHadTauOrLepton_(nullptr)
     , electronHistManager_genJet_(nullptr)
+    , electronHistManager_genPhoton_(nullptr)   // GEN PHOTON MATCH
     , muonHistManager_(nullptr)
     , muonHistManager_genHadTau_(nullptr)
     , muonHistManager_genLepton_(nullptr)
     , muonHistManager_genHadTauOrLepton_(nullptr)
     , muonHistManager_genJet_(nullptr)
+    , muonHistManager_genPhoton_(nullptr)     // GEN PHOTON MATCH
     , evtHistManager_LeptonFakeRate_(nullptr)
     , evtHistManager_LeptonFakeRate_genHadTau_(nullptr)
     , evtHistManager_LeptonFakeRate_genLepton_(nullptr)
     , evtHistManager_LeptonFakeRate_genHadTauOrLepton_(nullptr)
     , evtHistManager_LeptonFakeRate_genJet_(nullptr)
+    , evtHistManager_LeptonFakeRate_genPhoton_(nullptr)  // GEN PHOTON MATCH
   {
     if(isInclusive_)
     {
@@ -152,18 +155,20 @@ struct numerator_and_denominatorHistManagers
     delete electronHistManager_genLepton_;
     delete electronHistManager_genHadTauOrLepton_;
     delete electronHistManager_genJet_;
+    delete electronHistManager_genPhoton_;           // GEN PHOTON MATCH
     delete muonHistManager_;
     delete muonHistManager_genHadTau_;
     delete muonHistManager_genLepton_;
     delete muonHistManager_genHadTauOrLepton_;
     delete muonHistManager_genJet_;
+    delete muonHistManager_genPhoton_;               // GEN PHOTON MATCH
     delete evtHistManager_LeptonFakeRate_;
     delete evtHistManager_LeptonFakeRate_genHadTau_;
     delete evtHistManager_LeptonFakeRate_genLepton_;
     delete evtHistManager_LeptonFakeRate_genHadTauOrLepton_;
     delete evtHistManager_LeptonFakeRate_genJet_;
+    delete evtHistManager_LeptonFakeRate_genPhoton_; // GEN PHOTON MATCH
   }
-
   std::string
   getLabel() const
   {
@@ -177,6 +182,7 @@ struct numerator_and_denominatorHistManagers
     const std::string process_and_genMatchedLepton         = process_ + "l";
     const std::string process_and_genMatchedHadTauOrLepton = process_ + "l_plus_t";
     const std::string process_and_genMatchedJet            = process_ + "j";
+    const std::string process_and_genMatchedPhoton         = process_ + "g";    // GEN PHOTON MATCH
 
     const auto mkCfg = [this](const std::string & process) -> edm::ParameterSet
     {
@@ -200,6 +206,9 @@ struct numerator_and_denominatorHistManagers
 
         electronHistManager_genJet_ = new ElectronHistManager(mkCfg(process_and_genMatchedJet));
         electronHistManager_genJet_->bookHistograms(dir);
+
+        electronHistManager_genPhoton_ = new ElectronHistManager(mkCfg(process_and_genMatchedPhoton));  // GEN PHOTON MATCH
+        electronHistManager_genPhoton_->bookHistograms(dir);                                            // GEN PHOTON MATCH
       }
     }
     else if(lepton_type_ == kMuon)
@@ -219,6 +228,9 @@ struct numerator_and_denominatorHistManagers
 
         muonHistManager_genJet_ = new MuonHistManager(mkCfg(process_and_genMatchedJet));
         muonHistManager_genJet_->bookHistograms(dir);
+
+        muonHistManager_genPhoton_ = new MuonHistManager(mkCfg(process_and_genMatchedPhoton));  // GEN PHOTON MATCH
+        muonHistManager_genPhoton_->bookHistograms(dir);                                        // GEN PHOTON MATCH
       }
     }
     else
@@ -242,9 +254,11 @@ struct numerator_and_denominatorHistManagers
 
       evtHistManager_LeptonFakeRate_genJet_ = new EvtHistManager_LeptonFakeRate(mkCfg(process_and_genMatchedJet));
       evtHistManager_LeptonFakeRate_genJet_->bookHistograms(dir);
+
+      evtHistManager_LeptonFakeRate_genPhoton_ = new EvtHistManager_LeptonFakeRate(mkCfg(process_and_genMatchedPhoton));  // GEN PHOTON MATCH
+      evtHistManager_LeptonFakeRate_genPhoton_->bookHistograms(dir);                                                      // GEN PHOTON MATCH
     }
   }
-
   void
   fillHistograms(const RecoLepton & lepton,
                  double met,
@@ -271,6 +285,7 @@ struct numerator_and_denominatorHistManagers
         {
           if(electron.genHadTau())                         electronHistManager_genHadTau_->fillHistograms(electron, evtWeight);
           if(                        electron.genLepton()) electronHistManager_genLepton_->fillHistograms(electron, evtWeight);
+          if(electron.genPhoton() && !electron.genLepton() && (electron.genPhoton()->pt() > (0.5*electron.pt())) ) electronHistManager_genPhoton_->fillHistograms(electron, evtWeight);        // GEN PHOTON MATCH
           if(electron.genHadTau() || electron.genLepton()) electronHistManager_genHadTauOrLepton_->fillHistograms(electron, evtWeight);
           else                                             electronHistManager_genJet_->fillHistograms(electron, evtWeight);
         }
@@ -286,6 +301,7 @@ struct numerator_and_denominatorHistManagers
         {
           if(muon.genHadTau()                    ) muonHistManager_genHadTau_->fillHistograms(muon, evtWeight);
           if(                    muon.genLepton()) muonHistManager_genLepton_->fillHistograms(muon, evtWeight);
+          if(muon.genPhoton() && !muon.genLepton() && (muon.genPhoton()->pt() > (0.5*muon.pt())) ) muonHistManager_genPhoton_->fillHistograms(muon, evtWeight);                        // GEN PHOTON MATCH  
           if(muon.genHadTau() || muon.genLepton()) muonHistManager_genHadTauOrLepton_->fillHistograms(muon, evtWeight);
           else                                     muonHistManager_genJet_->fillHistograms(muon, evtWeight);
         }
@@ -300,6 +316,7 @@ struct numerator_and_denominatorHistManagers
       {
         if(lepton.genHadTau())                       evtHistManager_LeptonFakeRate_genHadTau_->fillHistograms(met, mT, mT_fix, evtWeight);
         if(                      lepton.genLepton()) evtHistManager_LeptonFakeRate_genLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
+        if(                      lepton.genPhoton()) evtHistManager_LeptonFakeRate_genPhoton_->fillHistograms(met, mT, mT_fix, evtWeight);   // GEN PHOTON MATCH
         if(lepton.genHadTau() || lepton.genLepton()) evtHistManager_LeptonFakeRate_genHadTauOrLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
         else                                         evtHistManager_LeptonFakeRate_genJet_->fillHistograms(met, mT, mT_fix, evtWeight);
       }
@@ -331,18 +348,21 @@ private:
   ElectronHistManager * electronHistManager_genLepton_;
   ElectronHistManager * electronHistManager_genHadTauOrLepton_;
   ElectronHistManager * electronHistManager_genJet_;
+  ElectronHistManager * electronHistManager_genPhoton_; // GEN PHOTON MATCH
 
   MuonHistManager * muonHistManager_;
   MuonHistManager * muonHistManager_genHadTau_;
   MuonHistManager * muonHistManager_genLepton_;
   MuonHistManager * muonHistManager_genHadTauOrLepton_;
   MuonHistManager * muonHistManager_genJet_;
+  MuonHistManager * muonHistManager_genPhoton_; // GEN PHOTON MATCH
 
   EvtHistManager_LeptonFakeRate * evtHistManager_LeptonFakeRate_;
   EvtHistManager_LeptonFakeRate * evtHistManager_LeptonFakeRate_genHadTau_;
   EvtHistManager_LeptonFakeRate * evtHistManager_LeptonFakeRate_genLepton_;
   EvtHistManager_LeptonFakeRate * evtHistManager_LeptonFakeRate_genHadTauOrLepton_;
   EvtHistManager_LeptonFakeRate * evtHistManager_LeptonFakeRate_genJet_;
+  EvtHistManager_LeptonFakeRate * evtHistManager_LeptonFakeRate_genPhoton_; // GEN PHOTON MATCH
 };
 
 void
