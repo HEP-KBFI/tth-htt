@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-05-30 18:56:11 with the following command:
+# file generated at 2018-05-30 21:09:00 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017_post.txt -Z zeroes.txt -z zombies.txt -N samples_2017 -E 2017 -g tthAnalyzeSamples_2017.py -o python/samples -M
 
 samples_2017 = OD()
@@ -1316,10 +1316,10 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-
   ("process_name_specific",           "TTToSemiLeptonic"),
   ("nof_files",                       42),
   ("nof_db_files",                    743),
-  ("nof_events",                      35904710),
-  ("nof_tree_events",                 36205343),
+  ("nof_events",                      40826968),
+  ("nof_tree_events",                 41161951),
   ("nof_db_events",                   41161951),
-  ("fsize_local",                     86683147879), # 86.68GB, avg file size 2.06GB
+  ("fsize_local",                     98536482380), # 98.54GB, avg file size 2.35GB
   ("fsize_db",                        2166068169129), # 2.17TB, avg file size 2.92GB
   ("use_it",                          True),
   ("xsection",                        365.34),
@@ -1331,7 +1331,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018May29_woPresel_nom_all/ntuples/TTToSemiLeptonic"),
         ("selection", "*"),
-        ("blacklist", [1, 2, 14, 19, 21]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -1349,10 +1349,10 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall
   ("process_name_specific",           "TTToSemiLeptonic_PSweights"),
   ("nof_files",                       113),
   ("nof_db_files",                    2032),
-  ("nof_events",                      107534812),
-  ("nof_tree_events",                 108401896),
+  ("nof_events",                      110483903),
+  ("nof_tree_events",                 111381888),
   ("nof_db_events",                   111381888),
-  ("fsize_local",                     259485918718), # 259.49GB, avg file size 2.30GB
+  ("fsize_local",                     267061245112), # 267.06GB, avg file size 2.36GB
   ("fsize_db",                        5860979058540), # 5.86TB, avg file size 2.88GB
   ("use_it",                          False),
   ("xsection",                        365.34),
@@ -1364,7 +1364,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018May29_woPresel_nom_all/ntuples/TTToSemiLeptonic_PSweights"),
         ("selection", "*"),
-        ("blacklist", [84, 87, 88]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -1415,10 +1415,10 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
   ("process_name_specific",           "TTToHadronic_PSweights"),
   ("nof_files",                       131),
   ("nof_db_files",                    2498),
-  ("nof_events",                      125014368),
-  ("nof_tree_events",                 126013652),
+  ("nof_events",                      128928313),
+  ("nof_tree_events",                 129985840),
   ("nof_db_events",                   129985840),
-  ("fsize_local",                     286098393954), # 286.10GB, avg file size 2.18GB
+  ("fsize_local",                     295094925668), # 295.09GB, avg file size 2.25GB
   ("fsize_db",                        6970450887587), # 6.97TB, avg file size 2.79GB
   ("use_it",                          False),
   ("xsection",                        377.96),
@@ -1430,7 +1430,7 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018May29_woPresel_nom_all/ntuples/TTToHadronic_PSweights"),
         ("selection", "*"),
-        ("blacklist", [25, 28, 29, 34]),
+        ("blacklist", []),
       ]),
     ]
   ),
