@@ -18,6 +18,7 @@ import time
 import shutil
 import datetime
 import math
+import errno
 
 HISTOGRAM_COUNT         = 'Count'
 HISTOGRAM_COUNTWEIGHTED = 'CountWeighted'
@@ -87,9 +88,16 @@ class nohdfs:
   def get_dir_entries(self, path_obj):
     if not os.path.isdir(path_obj.name_fuse):
       raise hdfsException("No such path: %s" % path_obj.name_fuse)
-    entries = [
-      nohdfs.info(os.path.join(path_obj.name_fuse, entry)) for entry in os.listdir(path_obj.name_fuse)
-    ]
+    try:
+      entries = [
+        nohdfs.info(os.path.join(path_obj.name_fuse, entry)) for entry in os.listdir(path_obj.name_fuse)
+      ]
+    except OSError as err:
+      if err.errno == errno.EAGAIN:
+        logging.warning('Could not access path %s because: %s' % (path_obj.name_fuse, err))
+        entries = []
+    except Exception as err:
+      raise ValueError('Could not access path %s because: %s' % (path_obj.name_fuse, err))
     return entries
 
 class hdfs:
