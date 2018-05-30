@@ -41,7 +41,8 @@ struct InputFileEntry
   InputFileEntry() = default;
   InputFileEntry(const std::string & inputFilePath,
                  const std::string & inputFileName,
-                 const std::string & legendEntry)
+                 const std::string & legendEntry,
+                 double sf)		
     : inputFilePath_(inputFilePath)
     , inputFileName_(inputFileName)
     , inputFileFullPath_(
@@ -58,12 +59,14 @@ struct InputFileEntry
                                   .ReplaceAll("<", "_")
                                   .ReplaceAll(">", "_")
                                   .ReplaceAll("&", "and"))
+    , sf_(sf)
   {}
   const std::string inputFilePath_;
   const std::string inputFileName_;
   const std::string inputFileFullPath_;
   const std::string legendEntry_;
   const std::string legendEntry_noSpecialChars_;
+  double sf_;
 
   TFile * file_;
 
@@ -77,7 +80,8 @@ struct ComparisonEntries
                     const InputFileEntry & test2,
                     const std::string & outputFilePath,
                     const std::string & xAxisTitle,
-                    const std::string & unit)
+                    const std::string & unit
+		    )
     : ref_(ref)
     , test_(test)
     , test2_(test2)
@@ -102,7 +106,8 @@ struct HistogramEntry
   HistogramEntry() = default;
   HistogramEntry(TH1 * histogram,
                  const std::string & legendEntry,
-                 double integral)
+                 double integral
+                 )		
     : histogram_(histogram)
     , legendEntry_(legendEntry)
     , integral_(integral)
@@ -424,6 +429,8 @@ void makePlot(const ComparisonEntries & entries,
 
   TFile* inputFile_ref = new TFile(entries.ref_.inputFileFullPath_.c_str());
   TH1* histogram_ref = loadHistogram(inputFile_ref, histogramName);
+  if ( !histogram_ref ) return;
+  histogram_ref->Scale(entries.ref_.sf_);
   const double integral_ref = compIntegral(histogram_ref);
   divideByBinWidth(histogram_ref);
 
@@ -432,6 +439,8 @@ void makePlot(const ComparisonEntries & entries,
     inputFile_ref
   ;
   TH1* histogram_test = loadHistogram(inputFile_test, histogramName);
+  if ( !histogram_test ) return;
+  histogram_test->Scale(entries.test_.sf_);
   const double integral_test = compIntegral(histogram_test);
   divideByBinWidth(histogram_test);
 
@@ -453,6 +462,8 @@ void makePlot(const ComparisonEntries & entries,
       return new TFile(entries.test2_.inputFileFullPath_.c_str());
     }();
     histogram_test2 = loadHistogram(inputFile_test2, histogramName);
+    if ( !histogram_test2 ) return;
+    histogram_test2->Scale(entries.test2_.sf_);
     integral_test2  = compIntegral(histogram_test2);
     divideByBinWidth(histogram_test2);
   }
@@ -722,7 +733,7 @@ void compareDatacards_run(const ComparisonEntries & entry,
     "signal",
     "fakes_mc",
     "fakes_data",
-    "flips_data"
+//    "flips_data"
   };
 
   const std::vector<std::string> sysShifts_common = {
@@ -746,7 +757,7 @@ void compareDatacards_run(const ComparisonEntries & entry,
      "CMS_ttHl_JESDown",
      "CMS_ttHl_tauESUp",
      "CMS_ttHl_tauESDown",
-     "CMS_ttHl_FRjt_normUp",
+/*     "CMS_ttHl_FRjt_normUp",
      "CMS_ttHl_FRjt_normDown",
      "CMS_ttHl_FRjt_shapeUp",
      "CMS_ttHl_FRjt_shapeDown",
@@ -765,21 +776,21 @@ void compareDatacards_run(const ComparisonEntries & entry,
      "CMS_ttHl_thu_shape_ttZ_x1Up",
      "CMS_ttHl_thu_shape_ttZ_x1Down",
      "CMS_ttHl_thu_shape_ttZ_y1Up",
-     "CMS_ttHl_thu_shape_ttZ_y1Down",
+     "CMS_ttHl_thu_shape_ttZ_y1Down",*/
      ""
   };
 
   const std::vector<std::string> sysShifts_CMS_ttHl_FR_shape = {
-    "CMS_ttHl_FRe_shape_ptUp",
-    "CMS_ttHl_FRe_shape_ptDown",
-    "CMS_ttHl_FRe_shape_etaUp",
-    "CMS_ttHl_FRe_shape_etaDown",
-    "CMS_ttHl_FRe_shape_eta_barrelUp",
-    "CMS_ttHl_FRe_shape_eta_barrelDown",
-    "CMS_ttHl_FRm_shape_ptUp",
-    "CMS_ttHl_FRm_shape_ptDown",
-    "CMS_ttHl_FRm_shape_etaUp",
-    "CMS_ttHl_FRm_shape_etaDown",
+//    "CMS_ttHl_FRe_shape_ptUp",
+//    "CMS_ttHl_FRe_shape_ptDown",
+//    "CMS_ttHl_FRe_shape_etaUp",
+//    "CMS_ttHl_FRe_shape_etaDown",
+//    "CMS_ttHl_FRe_shape_eta_barrelUp",
+//    "CMS_ttHl_FRe_shape_eta_barrelDown",
+//    "CMS_ttHl_FRm_shape_ptUp",
+//    "CMS_ttHl_FRm_shape_ptDown",
+//    "CMS_ttHl_FRm_shape_etaUp",
+//    "CMS_ttHl_FRm_shape_etaDown",
   };
 
   std::vector<std::string> sysShifts = sysShifts_common;
@@ -798,11 +809,13 @@ void compareDatacards_run(const ComparisonEntries & entry,
   for(const std::string & process: processes)
   {
     const std::string outputFilePath_process = Form("%s/%s/%s", entry.outputFilePath_.data(), ref_vs_tests.c_str(), process.c_str());
-    const std::string histogramName_central = Form("x_%s",    process.data());
+    //const std::string histogramName_central = Form("x_%s",    process.data());
+    const std::string histogramName_central = Form("%s",    process.data());
     for(const std::string & central_or_shift: sysShifts)
     {
       std::cout << "processing: process = " << process << ", central_or_shift = " << central_or_shift << '\n';
-      const std::string histogramName_shifted = Form("x_%s_%s", process.data(), central_or_shift.data());
+     // const std::string histogramName_shifted = Form("x_%s_%s", process.data(), central_or_shift.data());
+     const std::string histogramName_shifted = Form("%s_%s", process.data(), central_or_shift.data());
       const bool is_central = central_or_shift == "" || central_or_shift == "central";
 
       const std::string histogramName = is_central ? histogramName_central : histogramName_shifted;
@@ -854,7 +867,7 @@ void compareDatacards()
 
     TH1::AddDirectory(false);
 
-    const std::vector<std::array<std::string, 4>> discriminatingVariables_1l_2tau = {
+   /* const std::vector<std::array<std::string, 4>> discriminatingVariables_1l_2tau = {
       { "1l_2tau_EventCounter",               "Events",                        ""    },
       { "1l_2tau_SS_EventCounter",            "Events (SS)",                   ""    },
       { "1l_2tau_SS_mTauTauVis",              "m_{#tau#tau} (SS)",             "GeV" },
@@ -879,15 +892,26 @@ void compareDatacards()
       { "2lss_1tau_sumSS_mvaDiscr_2lss_1tau_wMEM", "MVA discr 2lss1#tau wMEM (sumSS)", ""    },
       { "2lss_1tau_sumOS_numJets",                 "#Jets (sumOS)",                    ""    },
       { "2lss_1tau_sumSS_numJets",                 "#Jets (sumSS)",                    ""    }
-    };
+    };*/
+
+   const std::vector<std::array<std::string, 4>> discriminatingVariables_2l_2tau ={
+      {"2l_2tau_mTauTauVis",		"m_{#tau#tau} (sumOS)",		""}
+   };
     std::vector<ComparisonEntries> entries;
-    const std::string ref_path  = "/home/karl/ttHAnalysis/2016/2017Oct11/datacards/2lss_1tau/";
-    const std::string test_path = "/home/karl/ttHAnalysis/2016/2017Oct11/datacards/2lss_1tau/";
-    for(const std::array<std::string, 4> & var: discriminatingVariables_2lss_1tau)
+//    const std::string ref_path  = "/home/karl/ttHAnalysis/2016/2017Oct11/datacards/2lss_1tau/";
+    const std::string ref_path = "/home/karmakar/ttHAnalysis/2016/2018Feb23_VTight/datacards/2l_2tau";
+//    const std::string test_path = "/home/karl/ttHAnalysis/2016/2017Oct11/datacards/2lss_1tau/";
+    const std::string test_path = "/home/karmakar/ttHAnalysis/2017/2018May28_Medium/datacards/2l_2tau";
+
+    for(const std::array<std::string, 4> & var: discriminatingVariables_2l_2tau)
     {
-      const InputFileEntry ref  = {ref_path,  Form("prepareDatacards_%s.root", var.at(0).c_str()), "Tallinn Oct11"};
-      const InputFileEntry test = {test_path, Form("prepareDatacards_%s.root", var.at(0).c_str()), "Tallinn Oct11"};
-      const std::string outputFilePath = Form("/home/karl/sandbox/plots_sys_2017Oct14/plots_%s", var.at(0).c_str());
+      double sf_ref = 1.;
+      const InputFileEntry ref  = {ref_path,  Form("prepareDatacards_%s.root", var.at(0).c_str()), "Tallinn 2016", sf_ref};
+      
+      double sf_test = 35.9/41.5;
+      const InputFileEntry test = {test_path, Form("prepareDatacards_%s.root", var.at(0).c_str()), "Tallinn 2017", sf_test};
+      
+      const std::string outputFilePath = Form("/home/karmakar/ttHAnalysis/plots_sys_2018May28_v2/plots_%s", var.at(0).c_str());
       entries.push_back({ref, test, {}, outputFilePath, var.at(1), var.at(2)});
     }
 
