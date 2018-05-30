@@ -1744,6 +1744,7 @@ int main(int argc, char* argv[])
       {"tau1_pt",         tau1_pt         },
       {"tau2_pt",         tau2_pt         },
     };
+    const double mvaOutput_plainKin_SUM_VT = mva_plainKin_sum_VT(mvaInputsplainKin_sum);
 
 //--- fill histograms with events passing final selection
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
