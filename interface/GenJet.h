@@ -13,6 +13,12 @@ public:
          Double_t phi,
          Double_t mass);
 
+  GenJet(Double_t pt,
+         Double_t eta,
+         Double_t phi,
+         Double_t mass,
+         Int_t pdgId);
+
   virtual ~GenJet() {}
 };
 

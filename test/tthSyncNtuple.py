@@ -87,21 +87,21 @@ parser.add_argument('-o', '--output',
 parser.add_argument('-X', '--clean',
   dest = 'clean', action = 'store_true', default = False, help = 'R|Remove all output files',
 )
-parser.add_argument('-N', '--no-mem',
-  dest = 'no_mem', action = 'store_true', default = False, help = 'R|Use Ntuple w/o MEM included',
+parser.add_argument('-M', '--with-mem',
+  dest = 'with_mem', action = 'store_true', default = False, help = 'R|Use Ntuple w/ MEM included',
 )
 args = parser.parse_args()
 
 # Common arguments
-era                  = args.era
-version              = args.version
-dry_run              = args.dry_run
-resubmission_limit   = args.resubmission_limit
-disable_resubmission = args.disable_resubmission
-no_exec              = args.no_exec
-auto_exec            = args.auto_exec
-check_input_files    = args.check_input_files
-debug                = args.debug
+era                = args.era
+version            = args.version
+dry_run            = args.dry_run
+resubmission_limit = args.resubmission_limit
+no_exec            = args.no_exec
+auto_exec          = args.auto_exec
+check_input_files  = args.check_input_files
+debug              = args.debug
+running_method     = args.running_method
 
 # Additional arguments
 rle_select     = os.path.expanduser(args.rle_select)
@@ -114,7 +114,7 @@ hlt_filter     = args.hlt_filter
 channels = args.channels
 output   = args.output
 clean    = args.clean
-no_mem   = args.no_mem
+with_mem = args.with_mem
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -132,11 +132,11 @@ if __name__ == '__main__':
     channels             = channels,
     dry_run              = dry_run,
     resubmission_limit   = resubmission_limit,
-    disable_resubmission = disable_resubmission,
     check_input_files    = check_input_files,
+    running_method       = running_method,
     isDebug              = debug,
     rle_select           = rle_select,
-    no_mem               = no_mem,
+    with_mem             = with_mem,
     use_nonnominal       = use_nonnominal,
     hlt_filter           = hlt_filter,
     tau_id_wp            = tau_id_wp,

@@ -32,25 +32,60 @@ class analyzeConfig_ttWctrl(analyzeConfig):
   for documentation of Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
-               lepton_charge_selections, hadTauVeto_selection, applyFakeRateWeights, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-               executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit,
-               triggers = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
-               select_rle_output = False, executable_prep_dcard = "prepareDatacards",
-               executable_add_syst_dcard = "addSystDatacards", verbose = False, hlt_filter = False,
-               dry_run = False, isDebug = False, use_home = True, do_sync = False,
-               use_nonnominal = False, rle_select = ''):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttWctrl", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      histograms_to_fit, triggers,
-      executable_prep_dcard = executable_prep_dcard,
+  def __init__(self,
+        configDir,
+        outputDir,
+        executable_analyze,
+        cfgFile_analyze, samples,
+        lepton_charge_selections,
+        hadTauVeto_selection,
+        applyFakeRateWeights,
+        central_or_shifts,
+        max_files_per_job,
+        era,
+        use_lumi,
+        lumi,
+        check_input_files,
+        running_method,
+        num_parallel_jobs,
+        executable_addBackgrounds,
+        executable_addFakes,
+        executable_addFlips,
+        histograms_to_fit,
+        select_rle_output         = False,
+        executable_prep_dcard     = "prepareDatacards",
+        executable_add_syst_dcard = "addSystDatacards",
+        verbose                   = False,
+        hlt_filter                = False,
+        dry_run                   = False,
+        isDebug                   = False,
+        use_home                  = True,
+        do_sync                   = False,
+        use_nonnominal            = False,
+        rle_select                = '',
+      ):
+    analyzeConfig.__init__(self,
+      configDir                 = configDir,
+      outputDir                 = outputDir,
+      executable_analyze        = executable_analyze,
+      channel                   = "ttWctrl",
+      central_or_shifts         = central_or_shifts,
+      max_files_per_job         = max_files_per_job,
+      era                       = era,
+      use_lumi                  = use_lumi,
+      lumi                      = lumi,
+      check_input_files         = check_input_files,
+      running_method            = running_method,
+      num_parallel_jobs         = num_parallel_jobs,
+      histograms_to_fit         = histograms_to_fit,
+      triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
+      executable_prep_dcard     = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
-      verbose = verbose,
-      dry_run = dry_run,
-      isDebug = isDebug,
-      use_home = use_home,
-      do_sync = do_sync,
+      verbose                   = verbose,
+      dry_run                   = dry_run,
+      isDebug                   = isDebug,
+      use_home                  = use_home,
+      do_sync                   = do_sync,
     )
 
     self.samples = samples
@@ -62,18 +97,21 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     self.hadTauVeto_selection_part2 = hadTauVeto_selection
     self.applyFakeRateWeights = applyFakeRateWeights
 
-    self.lepton_genMatches = [ "2l0j", "1l1j", "0l2j" ]
+    self.lepton_genMatches = [ "2l0g0j", "1l1g0j", "1l0g1j", "0l2g0j", "0l1g1j", "0l0g2j" ]
 
     self.apply_leptonGenMatching = None
     self.lepton_genMatches_nonfakes = []
+    self.lepton_genMatches_conversions = []
     self.lepton_genMatches_fakes = []
     if applyFakeRateWeights == "2lepton":
       self.apply_leptonGenMatching = True
       for lepton_genMatch in self.lepton_genMatches:
-          if lepton_genMatch.endswith("0j"):
-            self.lepton_genMatches_nonfakes.append(lepton_genMatch)
-          else:
-            self.lepton_genMatches_fakes.append(lepton_genMatch)
+        if lepton_genMatch.endswith("0g0j"):
+          self.lepton_genMatches_nonfakes.append(lepton_genMatch)
+        elif lepton_genMatch.endswith("0j"):
+          self.lepton_genMatches_conversions.append(lepton_genMatch)
+        else:
+          self.lepton_genMatches_fakes.append(lepton_genMatch)
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
 
@@ -83,8 +121,8 @@ class analyzeConfig_ttWctrl(analyzeConfig):
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares", "tH", "VH" ]
 
-    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH", "VH", "fakes_data", "fakes_mc", "flips_data" ]
-    self.make_plots_backgrounds = [ "TTW", "TTWW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data" ]
+    self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "conversions", "fakes_data", "fakes_mc", "flips_data" ]
+    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ] + [ "conversions", "fakes_data", "flips_data" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.inputFiles_hadd_stage1_6 = []
@@ -140,6 +178,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     lines.append(")")
     processesToSubtract = [ "fakes_data" ]
     processesToSubtract.extend(self.nonfake_backgrounds)
+    processesToSubtract.append("conversions")
     lines.append("process.addBackgroundLeptonFlips.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
     lines.append("process.addBackgroundLeptonFlips.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
     create_cfg(self.cfgFile_addFlips, jobOptions['cfgFile_modified'], lines)
@@ -351,7 +390,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   sample_categories = [ "signal", "ttH", "ttH_htt", "ttH_hww", "ttH_hzz" ]
                 for sample_category in sample_categories:
                   # sum non-fake and fake contributions for each MC sample separately
-                  genMatch_categories = [ "nonfake", "fake" ]
+                  genMatch_categories = [ "nonfake", "conversions", "fake" ]
                   for genMatch_category in genMatch_categories:
                     key_hadd_stage1 = getKey(process_name, lepton_selection_and_frWeight, lepton_charge_selection)
                     key_addBackgrounds_job = None
@@ -361,18 +400,22 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                     outputFile = None
                     if genMatch_category == "nonfake":
                       # sum non-fake contributions for each MC sample separately
-                      # input processes: TT2l,...
+                      # input processes: TT2l0g0j; ...
                       # output processes: TT; ...
                       if sample_category in [ "signal" ]:
                         lepton_genMatches = []
                         lepton_genMatches.extend(self.lepton_genMatches_nonfakes)
+                        lepton_genMatches.extend(self.lepton_genMatches_conversions)
                         lepton_genMatches.extend(self.lepton_genMatches_fakes)
                         processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in lepton_genMatches ]
                       elif sample_category in [ "ttH" ]:
+                        lepton_genMatches = []
+                        lepton_genMatches.extend(self.lepton_genMatches_nonfakes)
+                        lepton_genMatches.extend(self.lepton_genMatches_conversions)
                         processes_input = []
-                        processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.lepton_genMatches_nonfakes ])
-                        processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.lepton_genMatches_nonfakes ])
-                        processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.lepton_genMatches_nonfakes ])
+                        processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in lepton_genMatches ])
+                        processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in lepton_genMatches ])
+                        processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in lepton_genMatches ])
                       else:
                         processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_nonfakes ]
                       process_output = sample_category
@@ -381,9 +424,28 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                         (self.channel, process_name, sample_category, lepton_selection_and_frWeight, lepton_charge_selection))
                       outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_%s_%s_%s_%s.root" % \
                         (self.channel, process_name, sample_category, lepton_selection_and_frWeight, lepton_charge_selection))
+                    elif genMatch_category == "conversions":
+                      # sum conversion background  contributions for each MC sample separately
+                      # input processes: TT1l1g0j, TT0l2g0j; ...
+                      # output processes: TT_conversion; ...
+                      if sample_category in [ "signal" ]:
+                        processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_conversions ]
+                      elif sample_category in [ "ttH" ]:
+                        processes_input = []
+                        processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.lepton_genMatches_conversions ])
+                        processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.lepton_genMatches_conversions ])
+                        processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.lepton_genMatches_conversions ])
+                      else:
+                        processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_conversions ]
+                      process_output = "%s_conversion" % sample_category
+                      key_addBackgrounds_job = getKey(process_name, "%s_conversion" % sample_category, lepton_selection_and_frWeight, lepton_charge_selection)
+                      cfgFile_modified = os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_conversions_%s_%s_%s_%s_cfg.py" % \
+                        (self.channel, process_name, sample_category, lepton_selection_and_frWeight, lepton_charge_selection))
+                      outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_conversions_%s_%s_%s_%s.root" % \
+                        (self.channel, process_name, sample_category, lepton_selection_and_frWeight, lepton_charge_selection))
                     elif genMatch_category == "fake":
                       # sum fake contributions for each MC sample separately
-                      # input processes: TT1l1j,TT0l2j,...
+                      # input processes: TT1l0g1j, TT0l1g1j, TT0l0g2j; ...
                       # output processes: TT_fake; ...
                       if sample_category in [ "signal" ]:
                         processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_fakes ]
@@ -431,17 +493,17 @@ class analyzeConfig_ttWctrl(analyzeConfig):
 
           if self.do_sync: continue
 
-          # sum fake contributions for the total of all MC samples
-          # input processes: TT1l1j,TT0l2j,...
+          # sum fake background contributions for the total of all MC samples
+          # input processes: TT1l0g1j, TT0l1g1j, TT0l0g2j; ...
           # output process: fakes_mc
-          key_addBackgrounds_job = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
+          key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])
           processes_input = []
           for sample_category in sample_categories:
             processes_input.append("%s_fake" % sample_category)
-          self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job] = {
+          self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
             'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_fakes_mc_%s_%s_cfg.py" % \
               (self.channel, lepton_selection_and_frWeight, lepton_charge_selection)),
@@ -453,14 +515,39 @@ class analyzeConfig_ttWctrl(analyzeConfig):
             'processes_input' : processes_input,
             'process_output' : "fakes_mc"
           }
-          self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job])
+          self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes])
+
+          # sum conversion background contributions for the total of all MC samples
+          # input processes: TT1l1g0j, TT0l2g0j; ...
+          # output process: conversions
+          key_addBackgrounds_job_conversions = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
+          sample_categories = []
+          sample_categories.extend(self.nonfake_backgrounds)
+          sample_categories.extend([ "signal" ])
+          processes_input = []
+          for sample_category in sample_categories:
+            processes_input.append("%s_conversion" % sample_category)
+          self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_conversions] = {
+            'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
+            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_conversions_%s_%s_cfg.py" % \
+              (self.channel, lepton_selection_and_frWeight, lepton_charge_selection)),
+            'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_conversions_%s_%s.root" % \
+              (self.channel, lepton_selection_and_frWeight, lepton_charge_selection)),
+            'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s_conversions_%s_%s.log" % \
+              (self.channel, lepton_selection_and_frWeight, lepton_charge_selection)),
+            'categories' : [ getHistogramDir(lepton_selection, lepton_frWeight, lepton_charge_selection) ],
+            'processes_input' : processes_input,
+            'process_output' : "conversions"
+          }
+          self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_conversions])
 
           # initialize input and output file names for hadd_stage2
           key_hadd_stage2 = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
           if not key_hadd_stage2 in self.inputFiles_hadd_stage2:
             self.inputFiles_hadd_stage2[key_hadd_stage2] = []
           if lepton_selection == "Tight":
-            self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job]['outputFile'])
+            self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes]['outputFile'])
+            self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_conversions]['outputFile'])
           key_hadd_stage1_5 = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
           self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
           self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s_%s.root" % \

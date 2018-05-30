@@ -25,6 +25,9 @@ public:
   void enable_conversionVeto();
   void disable_conversionVeto();
 
+  void set_min_mvaTTH(double min_mvaTTH);
+  double get_min_mvaTTH() const;
+
   void set_selection_flags(bool selection_flag);
 
   /**

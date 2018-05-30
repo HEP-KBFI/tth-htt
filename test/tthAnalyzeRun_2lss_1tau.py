@@ -8,7 +8,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 # E.g. to run: ./tthAnalyzeRun_2lss_1tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices         = [
-  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_noMEM'
+  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
 ]
 sys_choices          = [ 'central', 'full', 'extended' ]
 systematics.full     = systematics.an_common
@@ -24,6 +24,7 @@ parser.add_tau_id_wp()
 parser.add_hlt_filter()
 parser.add_files_per_job()
 parser.add_use_home()
+parser.add_lep_mva_wp()
 args = parser.parse_args()
 
 # Common arguments
@@ -31,12 +32,13 @@ era                = args.era
 version            = args.version
 dry_run            = args.dry_run
 resubmission_limit = args.resubmission_limit
-resubmit           = not args.disable_resubmission
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
 sample_filter      = args.filter
+num_parallel_jobs  = args.num_parallel_jobs
+running_method     = args.running_method
 
 # Additional arguments
 mode              = args.mode
@@ -47,11 +49,11 @@ use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
 files_per_job     = args.files_per_job
 use_home          = args.use_home
+lep_mva_wp        = args.lep_mva_wp
 
 # Use the arguments
-max_job_resubmission = resubmission_limit if resubmit else 1
-central_or_shift     = getattr(systematics, systematics_label)
-do_sync              = mode.startswith('sync')
+central_or_shift = getattr(systematics, systematics_label)
+do_sync          = mode.startswith('sync')
 
 MEMbranch                          = ''
 hadTau_selection_veto              = "dR03mvaMedium"
@@ -86,10 +88,10 @@ elif mode == "forBDTtraining_afterAddMEM":
   hadTau_selection_relaxed = "dR03mvaLoose"
   applyFakeRateWeights     = "2lepton"
 elif mode.startswith("sync"):
-  if mode == "sync":
+  if mode == "sync_wMEM":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
     MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaLoose'
-  elif mode == "sync_noMEM":
+  elif mode == "sync":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
   else:
     raise ValueError("Internal logic error")
@@ -134,7 +136,7 @@ if __name__ == '__main__':
   run_analysis           = False
   is_last_resubmission   = False
 
-  for idx_job_resubmission in range(max_job_resubmission):
+  for idx_job_resubmission in range(resubmission_limit):
     if is_last_resubmission:
       continue
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
@@ -147,6 +149,7 @@ if __name__ == '__main__':
       samples                   = samples,
       MEMbranch                 = MEMbranch,
       lepton_charge_selections  = lepton_charge_selections,
+      lep_mva_wp                = lep_mva_wp,
       hadTau_selection          = hadTau_selection,
       hadTau_selection_veto     = hadTau_selection_veto,
       # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
@@ -159,8 +162,8 @@ if __name__ == '__main__':
       use_lumi                  = True,
       lumi                      = lumi,
       check_input_files         = check_input_files,
-      running_method            = "sbatch",
-      num_parallel_jobs         = 100, # KE: run up to 100 'hadd' jobs in parallel on batch system
+      running_method            = running_method,
+      num_parallel_jobs         = num_parallel_jobs,
       executable_addBackgrounds = "addBackgrounds",
       # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
       executable_addFakes       = "addBackgroundLeptonFakes",
@@ -178,7 +181,8 @@ if __name__ == '__main__':
         "mvaOutput_2lss_1tau_HTT_SUM_M"      : { 'quantile_rebin' : 11, 'quantile_in_fakes' : True }, # BDT4; quantile in fakes
         "mvaOutput_2lss_1tau_HTT_SUM_M_noRebin" : {},
         "mvaOutput_2lss_1tau_HTTMEM_SUM_M"   : { 'quantile_rebin' : 15, 'quantile_in_fakes' : True }, # BDT5; quantile in fakes
-        "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin"   : {}, 
+        "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin"   : {},
+        "mvaOutput_2lss_1tau_HTT_SUM_M_11bins_quantiles" : {},
         "mTauTauVis1"                        : {},
         "mTauTauVis2"                        : {},
         "mTauTauVis"                         : {},

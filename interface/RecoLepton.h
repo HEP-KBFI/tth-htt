@@ -5,6 +5,7 @@
 
 // forward declarations
 class GenHadTau;
+class GenPhoton;
 class GenJet;
 
 #include <memory> // std::shared_ptr<>
@@ -45,6 +46,7 @@ public:
    */
   void set_genLepton(const GenLepton * genLepton);
   void set_genHadTau(const GenHadTau * genHadTau);
+  void set_genPhoton(const GenPhoton * genPhoton);
   void set_genJet(const GenJet * genJet);
 
   /**
@@ -134,6 +136,7 @@ public:
 
   const GenLepton * genLepton() const;
   const GenHadTau * genHadTau() const;
+  const GenPhoton * genPhoton() const;
   const GenJet * genJet() const;
 
   bool isGenMatched() const;
@@ -167,6 +170,7 @@ protected:
 //--- matching to generator level particles
   std::shared_ptr<const GenLepton> genLepton_;
   std::shared_ptr<const GenHadTau> genHadTau_;
+  std::shared_ptr<const GenPhoton> genPhoton_;
   std::shared_ptr<const GenJet> genJet_;
 
 //--- flags indicating whether or not lepton passes loose, fakeable and/or tight selection criteria

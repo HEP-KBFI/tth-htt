@@ -82,10 +82,22 @@ class puHistogramConfig:
                                (does not limit number of PU profile production jobs running in parallel on batch system)
 
     """
-    def __init__(self, configDir, outputDir, executable,
-                 samples, max_files_per_job, era, check_input_files, running_method,
-                 version, num_parallel_jobs, pool_id = '', verbose = False, dry_run = False,
-                 use_home = True):
+    def __init__(self,
+            configDir,
+            outputDir,
+            executable,
+            samples,
+            max_files_per_job,
+            era,
+            check_input_files,
+            running_method,
+            version,
+            num_parallel_jobs,
+            pool_id  = '',
+            verbose  = False,
+            dry_run  = False,
+            use_home = True,
+          ):
 
         self.configDir             = configDir
         self.outputDir             = outputDir

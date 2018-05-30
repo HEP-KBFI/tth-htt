@@ -13,15 +13,18 @@ public:
                         bool debug = false,
                         bool set_selection_flags = true);
 
+  void set_min_mvaTTH(double min_mvaTTH);
+  double get_min_mvaTTH() const;
+
+  void
+  set_selection_flags(bool selection_flags);
+
   /**
    * @brief Check if muon given as function argument passes "tight" muon selection, defined in Table 12 of AN-2015/321
    * @return True if muon passes selection; false otherwise
    */
   bool
   operator()(const RecoMuon & muon) const;
-
-  void
-  set_selection_flags(bool selection_flags);
 
 protected:
   int era_;

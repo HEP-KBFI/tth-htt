@@ -28,12 +28,13 @@ era                = args.era
 version            = args.version
 dry_run            = args.dry_run
 resubmission_limit = args.resubmission_limit
-resubmit           = not args.disable_resubmission
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
 sample_filter      = args.filter
+num_parallel_jobs  = args.num_parallel_jobs
+running_method     = args.running_method
 
 # Additional arguments
 mode              = args.mode
@@ -42,8 +43,7 @@ files_per_job     = args.files_per_job
 use_home          = args.use_home
 
 # Use the arguments
-max_job_resubmission = resubmission_limit if resubmit else 1
-central_or_shift     = getattr(systematics, systematics_label)
+central_or_shift = getattr(systematics, systematics_label)
 
 if era == "2017":
   if mode == 'default':
@@ -81,7 +81,7 @@ if __name__ == '__main__':
   run_analysis           = False
   is_last_resubmission   = False
 
-  for idx_job_resubmission in range(max_job_resubmission):
+  for idx_job_resubmission in range(resubmission_limit):
     if is_last_resubmission:
       continue
 
@@ -91,10 +91,10 @@ if __name__ == '__main__':
       cmssw_base_dir_combine                   = cmssw_base_dir_combine,
       executable_analyze                       = "analyze_LeptonFakeRate",
       samples                                  = samples,
-      absEtaBins_e                             = [ 0., 1.479, 9.9 ],
-      absEtaBins_mu                            = [ 0., 1.479, 9.9 ],
-      ptBins_e                                 = [ 15., 20., 30., 45., 65., 100000. ],
-      ptBins_mu                                = [ 10., 15., 20., 30., 45., 65., 100000. ],
+      absEtaBins_e                             = [ 0., 1.479, 2.5 ],                     ## CERN binning scheme
+      absEtaBins_mu                            = [ 0., 1.2, 2.4 ],                       ## CERN binning scheme
+      ptBins_e                                 = [ 15., 25., 35., 45., 65., 100. ],      ## CERN binning scheme
+      ptBins_mu                                = [ 10., 15., 20., 32., 45., 65., 100. ], ## CERN binning scheme
       fillGenEvtHistograms                     = False,
       central_or_shifts                        = central_or_shift,
       numerator_histogram                      = ("mT_fix_L",     "m_{T}^{fix}"), # or ("pt", "p_{T}"),
@@ -105,13 +105,13 @@ if __name__ == '__main__':
       use_lumi                                 = True,
       lumi                                     = lumi,
       check_input_files                        = check_input_files,
-      running_method                           = "sbatch",
+      running_method                           = running_method,
       executable_addBackgrounds                = "addBackgrounds",
       executable_addBackgrounds_recursively    = "addBackgrounds_recursively",
       executable_addBackgrounds_LeptonFakeRate = "addBackground_LeptonFakeRate",
       executable_prep_dcard                    = "prepareDatacards",
       executable_comp_LeptonFakeRate           = "comp_LeptonFakeRate",
-      num_parallel_jobs                        = 100,
+      num_parallel_jobs                        = num_parallel_jobs,
       select_rle_output                        = True,
       verbose                                  = idx_job_resubmission > 0,
       dry_run                                  = dry_run,
