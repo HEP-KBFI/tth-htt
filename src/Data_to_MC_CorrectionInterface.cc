@@ -83,8 +83,8 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
 
   const std::string central_or_shift = cfg.getParameter<std::string>("central_or_shift");
 
-  eToTauFakeRate_option_ = getEToTauFR_option(central_or_shift, true);
-  muToTauFakeRate_option_ = getMuToTauFR_option(central_or_shift, true);
+  eToTauFakeRate_option_ = getEToTauFR_option(central_or_shift);
+  muToTauFakeRate_option_ = getMuToTauFR_option(central_or_shift);
 
   if(era_ == kEra_2017)
   {
