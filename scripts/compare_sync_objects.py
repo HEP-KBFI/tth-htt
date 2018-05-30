@@ -214,7 +214,7 @@ class ParticleWrapper(object):
           # Increment the counter only if the object is actually a valid one -- in case
           # the isfakeablesel and ismvasel branches are filled incorrectly, we might overestimate
           # the number of fakeable and tight objects
-          self.counter[record_type][branch_name] += min(is_valid, passes_selection)
+          self.counter[record_type][branch_name] += max(min(is_valid, passes_selection), 0)
 
         passes_selection_ref  = getattr(self.ref,  branch_name)
         passes_selection_test = getattr(self.test, branch_name)
