@@ -496,7 +496,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
           # sum fake background contributions for the total of all MC samples
           # input processes: TT1l0g1j, TT0l1g1j, TT0l0g2j; ...
           # output process: fakes_mc
-          key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
+          key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, lepton_charge_selection, "fakes")
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])
@@ -520,7 +520,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
           # sum conversion background contributions for the total of all MC samples
           # input processes: TT1l1g0j, TT0l2g0j; ...
           # output process: conversions
-          key_addBackgrounds_job_conversions = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
+          key_addBackgrounds_job_conversions = getKey(lepton_selection_and_frWeight, lepton_charge_selection, "conversions")
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])

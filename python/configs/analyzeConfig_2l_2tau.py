@@ -639,7 +639,7 @@ lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
               # sum fake background contributions for the total of all MC sample
               # input processes: TT1l0g1j,TT0l1g1j,TT0l0g2j; ...
               # output process: fakes_mc
-              key_addBackgrounds_job_fakes = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+              key_addBackgrounds_job_fakes = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, "fakes")
               sample_categories = []
               sample_categories.extend(self.nonfake_backgrounds)
               sample_categories.extend([ "signal" ])
@@ -664,7 +664,7 @@ lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
               # sum conversion background contributions for the total of all MC sample
               # input processes: TT1l1g0j, TT0l2g0j; ...
               # output process: conversions
-              key_addBackgrounds_job_conversions = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+              key_addBackgrounds_job_conversions = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, "conversions")
               sample_categories = []
               sample_categories.extend(self.nonfake_backgrounds)
               sample_categories.extend([ "signal" ])
