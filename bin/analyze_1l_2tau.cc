@@ -488,6 +488,7 @@ int main(int argc, char* argv[])
     "dr_lep_tau_ss", "dr_lep_tau_sublead", "costS_tau", "tau1_pt", "tau2_pt"
   };
   TMVAInterface mva_plainKin_ttV(mvaFileName_plainKin_ttV, mvaInputVariables_plainKin_ttVSort);
+  mva_plainKin_ttV.enableBDTTransform();
 
   std::string mvaFileName_plainKin_tt ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_plainKin_evtLevelTT_TTH_13Var.xml";
   std::vector<std::string> mvaInputVariables_plainKin_ttSort={
@@ -496,11 +497,13 @@ int main(int argc, char* argv[])
     "dr_lep_tau_lead", "nBJetLoose", "tau1_pt", "tau2_pt"
   };
   TMVAInterface mva_plainKin_tt(mvaFileName_plainKin_tt, mvaInputVariables_plainKin_ttSort);
+  mva_plainKin_tt.enableBDTTransform();
 
   // Joint 1B
   std::vector<std::string> mvaInputVariables_1BSort = {"BDTtt", "BDTttV"};
   std::string mvaFileName_plainKin_1B_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_JointBDT_plainKin_1B_VT.xml";
   TMVAInterface mva_2lss_plainKin_1B_VT(mvaFileName_plainKin_1B_VT, mvaInputVariables_1BSort);
+  mva_2lss_plainKin_1B_VT.enableBDTTransform();
 
   // SUM-BDT
   std::string mvaFileName_HTT_sum_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_HTT_evtLevelSUM_TTH_VT_17Var.xml";
@@ -511,6 +514,7 @@ int main(int argc, char* argv[])
     "tau2_pt", "HTT", "HadTop_pt"
   };
   TMVAInterface mva_HTT_sum_VT(mvaFileName_HTT_sum_VT, mvaInputVariables_HTT_sumSort);
+  mva_HTT_sum_VT.enableBDTTransform();
 
   // SUM-BDT
   std::string mvaFileName_plainKin_sum_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_plainKin_evtLevelSUM_TTH_16Var.xml";
@@ -520,6 +524,7 @@ int main(int argc, char* argv[])
     "costS_tau", "nBJetLoose", "tau1_pt", "tau2_pt"
   };
   TMVAInterface mva_plainKin_sum_VT(mvaFileName_plainKin_sum_VT, mvaInputVariables_plainKin_sumSort);
+  mva_plainKin_sum_VT.enableBDTTransform();
 
   //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1739,17 +1744,6 @@ int main(int argc, char* argv[])
       {"tau1_pt",         tau1_pt         },
       {"tau2_pt",         tau2_pt         },
     };
-    const double mvaOutput_plainKin_SUM_VT = mva_plainKin_sum_VT(mvaInputsplainKin_sum);
-    //const double mvaOutput_plainKin_SUM_VT = mva_plainKin_sum_VT(mvaInputsplainKin_sum);
-    //std::cout <<  "     mvaOutput_plainKin_SUM_VT       " << mvaOutput_plainKin_SUM_VT  << "\n";
-    //if (mvaOutput_plainKin_SUM_VT <= 0) {
-    //  std::cout <<  "     mvaOutput_plainKin_SUM_VT       " << mvaOutput_plainKin_SUM_VT  << "\n";
-    //  for( auto it = mvaInputsplainKin_sum.begin();
-    //it != mvaInputsplainKin_sum.end(); ++it)
-    //    {
-    //        std::cout << it->first << " " << it->second  << "\n";
-    //    }
-    //}
 
 //--- fill histograms with events passing final selection
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
