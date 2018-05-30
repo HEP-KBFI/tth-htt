@@ -482,7 +482,7 @@ class analyzeConfig_4l(analyzeConfig):
           # sum fake background contributions for the total of all MC sample
           # input processes: TT3l0g1j, TT2l1g1j, TT1l2g1j, TT0l3g1j, TT0l2g2j,...
           # output process: fakes_mc
-          key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, chargeSumSelection)
+          key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, chargeSumSelection, "fakes")
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])
@@ -506,7 +506,7 @@ class analyzeConfig_4l(analyzeConfig):
           # sum conversion background contributions for the total of all MC sample
           # input processes: TT3l1g0j, TT2l2g0j, TT1l3g0j, TT0l4g0j; ...
           # output process: conversions
-          key_addBackgrounds_job_conversions = getKey(lepton_selection_and_frWeight, chargeSumSelection)
+          key_addBackgrounds_job_conversions = getKey(lepton_selection_and_frWeight, chargeSumSelection, "conversions")
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])

@@ -699,7 +699,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             # sum conversion background contributions for the total of all MC sample
             # input processes: TT1l1g0j, TT0l2g0j; ...
             # output process: conversions
-            key_addBackgrounds_job_conversions = getKey(lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, "conversions")
+            key_addBackgrounds_job_conversions = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection, "conversions")
             sample_categories = []
             sample_categories.extend(self.nonfake_backgrounds)
             sample_categories.extend([ "signal" ])
