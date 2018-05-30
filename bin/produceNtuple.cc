@@ -280,7 +280,7 @@ main(int argc,
     genHadTauReader->setBranchAddresses(inputTree);
     genPhotonReader = new GenPhotonReader(branchName_genPhotons);
     genPhotonReader->setBranchAddresses(inputTree);
-    genJetReader = new GenJetReader(branchName_genJets);
+    genJetReader = new GenJetReader(branchName_genJets, true);
     genJetReader->setBranchAddresses(inputTree);
   }
 
@@ -628,6 +628,7 @@ main(int argc,
 
       electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.2);
       electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.2);
+      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons, 0.2);
       electronGenMatcher.addGenJetMatch   (preselElectrons, genJets,    0.2);
 
       hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons, 0.2);

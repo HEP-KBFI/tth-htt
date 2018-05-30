@@ -8,7 +8,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_ttZctrl.py -v 2017Dec13 -e 2017
 
-mode_choices     = [ 'default', 'sync', 'sync_noMEM' ]
+mode_choices     = [ 'default', 'sync', 'sync_wMEM' ]
 sys_choices      = [ 'central', 'full' ]
 systematics.full = systematics.an_ctrl
 
@@ -28,12 +28,13 @@ era                = args.era
 version            = args.version
 dry_run            = args.dry_run
 resubmission_limit = args.resubmission_limit
-resubmit           = not args.disable_resubmission
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
 sample_filter      = args.filter
+num_parallel_jobs  = args.num_parallel_jobs
+running_method     = args.running_method
 
 # Additional arguments
 mode              = args.mode
@@ -46,16 +47,15 @@ use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
 
 # Use the arguments
-max_job_resubmission = resubmission_limit if resubmit else 1
-central_or_shift     = getattr(systematics, systematics_label)
-do_sync              = mode.startswith('sync')
+central_or_shift = getattr(systematics, systematics_label)
+do_sync          = mode.startswith('sync')
 
 if era == "2017":
   if mode == 'default':
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  elif mode == 'sync':
+  elif mode == 'sync_wMEM':
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
-  elif mode == 'sync_noMEM':
+  elif mode == 'sync':
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
 else:
@@ -80,7 +80,7 @@ if __name__ == '__main__':
   run_analysis           = False
   is_last_resubmission   = False
 
-  for idx_job_resubmission in range(max_job_resubmission):
+  for idx_job_resubmission in range(resubmission_limit):
     if is_last_resubmission:
       continue
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
@@ -99,8 +99,8 @@ if __name__ == '__main__':
       use_lumi                              = True,
       lumi                                  = lumi,
       check_input_files                     = check_input_files,
-      running_method                        = "sbatch",
-      num_parallel_jobs                     = 100, # KE: run up to 100 'hadd' jobs in parallel on batch system
+      running_method                        = running_method,
+      num_parallel_jobs                     = num_parallel_jobs,
       executable_addBackgrounds             = "addBackgrounds",
       executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
       histograms_to_fit                     = [

@@ -5,13 +5,51 @@ from tthAnalysis.HiggsToTauTau.analysisTools import create_cfg
 
 class addMEMConfig_2lss_1tau(addMEMConfig):
 
-  def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, leptonSelection, hadTauSelection,
-               running_method, max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-               lowIntegrationPoints, isDebug, central_or_shift, dry_run, use_nonnominal, use_home, pool_id = ''):
-    addMEMConfig.__init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, running_method,
-                          max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-                          leptonSelection, hadTauSelection, lowIntegrationPoints, dry_run, use_nonnominal, use_home,
-                          "2lss_1tau", pool_id)
+  def __init__(self,
+        treeName,
+        outputDir,
+        cfgDir,
+        executable_addMEM,
+        samples,
+        era,
+        debug,
+        leptonSelection,
+        hadTauSelection,
+        running_method,
+        max_files_per_job,
+        mem_integrations_per_job,
+        max_mem_integrations,
+        num_parallel_jobs,
+        lowIntegrationPoints,
+        isDebug,
+        central_or_shift,
+        dry_run,
+        use_nonnominal,
+        use_home,
+        pool_id = '',
+      ):
+    addMEMConfig.__init__(self,
+      treeName                 = treeName,
+      outputDir                = outputDir,
+      cfgDir                   = cfgDir,
+      executable_addMEM        = executable_addMEM,
+      samples                  = samples,
+      era                      = era,
+      debug                    = debug,
+      running_method           = running_method,
+      max_files_per_job        = max_files_per_job,
+      mem_integrations_per_job = mem_integrations_per_job,
+      max_mem_integrations     = max_mem_integrations,
+      num_parallel_jobs        = num_parallel_jobs,
+      leptonSelection          = leptonSelection,
+      hadTauSelection          = hadTauSelection,
+      lowIntegrationPoints     = lowIntegrationPoints,
+      dry_run                  = dry_run,
+      use_nonnominal           = use_nonnominal,
+      use_home                 = use_home,
+      channel                  = "2lss_1tau",
+      pool_id                  = pool_id,
+    )
 
     self.cfgFile_addMEM_original = os.path.join(self.template_dir, "addMEM_2lss_1tau_cfg.py")
     self.isDebug = isDebug

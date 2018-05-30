@@ -10,6 +10,7 @@ process.makePlots.processesBackground = cms.vstring(
     "TTZ",
     "EWK",
     "Rares",
+    "conversions",
     "fakes_data"
 )
 process.makePlots.processSignal = cms.string("signal")
@@ -47,19 +48,14 @@ process.makePlots.distributions.extend([
         yAxisTitle = cms.string('dN/d#eta')
     ),
     cms.PSet(
-        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_1l_2tau_ttbar'),
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_HTT_SUM_VT'),
         xAxisTitle = cms.string('MVA'),
         yAxisTitle = cms.string('dN/dMVA')
     ),
     cms.PSet(
-        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_1l_2tau_ttV'),
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_noHTT_SUM_VT'),
         xAxisTitle = cms.string('MVA'),
         yAxisTitle = cms.string('dN/dMVA')
-    ),
-    cms.PSet(
-        histogramName = cms.string('sel/evt/$PROCESS/mvaDiscr_1l_2tau'),
-        xAxisTitle = cms.string("MVA Discriminant"),
-        yAxisTitle = cms.string("N")
     ),
     cms.PSet(
         histogramName = cms.string('sel/evt/$PROCESS/mTauTauVis'),

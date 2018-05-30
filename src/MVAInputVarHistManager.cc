@@ -77,6 +77,11 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["nBJetMedium"]                = new binningOptionType("nBJetMedium",                10, -0.5,  +9.5);
   binningOptions_["ntags_loose"]                = new binningOptionType("ntags_loose",                10, -0.5,  +9.5);
   binningOptions_["ptmiss"]                     = new binningOptionType("ptmiss",                     40,  0.,  200.);
+  binningOptions_["lep_conePt"]                 = new binningOptionType("lep_conePt",                 40,  0.,  200.);
+  binningOptions_["dr_lep_tau_lead"]            = new binningOptionType("dr_lep_tau_lead",            50,  0.,    5.);
+  binningOptions_["costS_tau"]                  = new binningOptionType("costS_tau",                  50, 0.,   +1.);
+  binningOptions_["HTT"]                        = new binningOptionType("HTT",                        50, 0.,   +1.);
+  binningOptions_["HadTop_pt"]                  = new binningOptionType("HadTop_pt",                  50,  0.,  500.);
   binningOptions_["TMath::Min(ptmiss,500)"]     = new binningOptionType("ptmiss",                     40,  0.,  200.);
   binningOptions_["tau_abs_eta"]                = new binningOptionType("tau_abs_eta",                50, -2.5,  +2.5);
   binningOptions_["tau_pt"]                     = new binningOptionType("tau_pt",                     40,  0.,  200.);

@@ -39,6 +39,7 @@ process.analyze_1l_2tau = cms.PSet(
     apply_offline_e_trigger_cuts_1mu1tau = cms.bool(True),
 
     leptonSelection = cms.string('Tight'),
+    lep_mva_cut = cms.double(0.75), # CV: used for tight lepton selection only
     apply_leptonGenMatching = cms.bool(False),
 
     hadTauSelection = cms.string('Tight|dR03mvaTight'),
@@ -95,6 +96,7 @@ process.analyze_1l_2tau = cms.PSet(
 
     branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),
+    branchName_genPhotons = cms.string('GenPhoton'),
     branchName_genJets = cms.string('GenJet'),
     redoGenMatching = cms.bool(True),
 

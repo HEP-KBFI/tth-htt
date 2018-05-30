@@ -4,6 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 
 class RecoLeptonReader
@@ -47,13 +48,15 @@ protected:
   {
     if(readGenMatching_)
     {
-      assert(genLeptonReader_ && genHadTauReader_ && genJetReader_);
+      assert(genLeptonReader_ && genHadTauReader_ && genPhotonReader_ && genJetReader_);
 
       const std::size_t nLeptons = leptons.size();
       std::vector<GenLepton> matched_genLeptons = genLeptonReader_->read();
       assert(matched_genLeptons.size() == nLeptons);
       std::vector<GenHadTau> matched_genHadTaus = genHadTauReader_->read();
       assert(matched_genHadTaus.size() == nLeptons);
+      std::vector<GenPhoton> matched_genPhotons = genPhotonReader_->read();
+      assert(matched_genPhotons.size() == nLeptons);
       std::vector<GenJet> matched_genJets = genJetReader_->read();
       assert(matched_genJets.size() == nLeptons);
 
@@ -67,6 +70,9 @@ protected:
         const GenHadTau & matched_genHadTau = matched_genHadTaus[idxLepton];
         if(matched_genHadTau.isValid()) lepton.set_genHadTau(new GenHadTau(matched_genHadTau));
 
+        const GenPhoton & matched_genPhoton = matched_genPhotons[idxLepton];
+        if(matched_genPhoton.isValid()) lepton.set_genPhoton(new GenPhoton(matched_genPhoton));
+
         const GenJet & matched_genJet = matched_genJets[idxLepton];
         if(matched_genJet.isValid()) lepton.set_genJet(new GenJet(matched_genJet));
       }
@@ -75,6 +81,7 @@ protected:
 
   GenLeptonReader * genLeptonReader_;
   GenHadTauReader * genHadTauReader_;
+  GenPhotonReader * genPhotonReader_;
   GenJetReader * genJetReader_;
   bool readGenMatching_;
 

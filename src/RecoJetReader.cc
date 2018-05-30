@@ -158,6 +158,7 @@ RecoJetReader::setBranchNames()
     branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("btag%s", branchName_btag_.data()));
     branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
     branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central, RecoJet::useDeepCSV);
+    std::cout << "setting branch addresses for BtagWeights: " << branchName_BtagWeight_ << std::endl;
     for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
     {
       branchNames_BtagWeight_systematics_[idxShift] = getBranchName_bTagWeight(

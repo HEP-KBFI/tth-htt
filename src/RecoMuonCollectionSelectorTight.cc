@@ -131,6 +131,17 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   return true;
 }
 
+void RecoMuonSelectorTight::set_min_mvaTTH(double min_mvaTTH)
+{
+  std::cout << "setting cut on prompt-lepton MVA for tight muons: " << min_mvaTTH << std::endl; 
+  min_mvaTTH_ = min_mvaTTH;
+}
+ 
+double RecoMuonSelectorTight::get_min_mvaTTH() const
+{
+  return min_mvaTTH_;
+}
+
 void
 RecoMuonSelectorTight::set_selection_flags(bool selection_flags)
 {

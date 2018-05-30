@@ -73,24 +73,39 @@ class analyzeConfig(object):
          histogramDir_prep_dcard: directory in final histogram file that is used for building datacard
     """
 
-    def __init__(self, configDir, outputDir, executable_analyze, channel, central_or_shifts,
-                 max_files_per_job, era, use_lumi, lumi, check_input_files, running_method,
-                 num_parallel_jobs, histograms_to_fit, triggers,
-                 executable_prep_dcard = "prepareDatacards",
-                 executable_add_syst_dcard = "addSystDatacards",
-                 executable_make_plots = "makePlots",
-                 executable_make_plots_mcClosure = "makePlots_mcClosure",
-                 do_sync = False,
-                 verbose = False,
-                 dry_run = False,
-                 use_home = True,
-                 isDebug = False,
-                 template_dir = None):
+    def __init__(self,
+          configDir,
+          outputDir,
+          executable_analyze,
+          channel,
+          central_or_shifts,
+          max_files_per_job,
+          era,
+          use_lumi,
+          lumi,
+          check_input_files,
+          running_method,
+          num_parallel_jobs,
+          histograms_to_fit,
+          triggers,
+          lep_mva_wp                      = "090",
+          executable_prep_dcard           = "prepareDatacards",
+          executable_add_syst_dcard       = "addSystDatacards",
+          executable_make_plots           = "makePlots",
+          executable_make_plots_mcClosure = "makePlots_mcClosure",
+          do_sync                         = False,
+          verbose                         = False,
+          dry_run                         = False,
+          use_home                        = True,
+          isDebug                         = False,
+          template_dir                    = None,
+      ):
 
         self.configDir = configDir
         self.outputDir = outputDir
         self.executable_analyze = executable_analyze
         self.channel = channel
+        self.lep_mva_wp = lep_mva_wp
         self.central_or_shifts = central_or_shifts
         self.max_files_per_job = max_files_per_job
         self.max_num_jobs = 100000
@@ -190,9 +205,25 @@ class analyzeConfig(object):
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
 
-        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2017_Tallinn_2018May24.root"
-        self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_data_comb"
-        self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_data_comb"
+        self.leptonFakeRateWeight_inputFile = None
+        self.leptonFakeRateWeight_histogramName_e = None
+        self.leptonFakeRateWeight_histogramName_mu = None
+        self.lep_mva_cut = None
+        if self.lep_mva_wp == "090" or self.lep_mva_wp == "0.90":
+            # CV: to be used when cut MVA > 0.90 is applied in tight lepton selection
+            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva090_2017_CERN_2018May29.root"
+            self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_data_comb_NC"
+            self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_data_comb"
+            self.lep_mva_cut = 0.90
+        elif self.lep_mva_wp == "075" or self.lep_mva_wp == "0.75":
+            # CV: to be used when cut MVA > 0.75 is applied in tight lepton selection
+            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva075_2017_CERN_2018May29.root"
+            self.leptonFakeRateWeight_histogramName_e = "FR_mva075_el_data_comb_NC"
+            self.leptonFakeRateWeight_histogramName_mu = "FR_mva075_mu_data_comb"
+            self.lep_mva_cut = 0.75
+        else:
+            raise ValueError("Invalid Configuration parameter 'lep_mva_wp' = %s !!" % self.lep_mva_wp)
+
         self.hadTau_selection_relaxed = None
         self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v1.root"
         self.isBDTtraining = False
@@ -253,6 +284,7 @@ class analyzeConfig(object):
             'hasLHE',
             'central_or_shift',
             'leptonSelection',
+            'lep_mva_cut',
             'chargeSumSelection',
             'histogramDir',
             'lumiScale',
@@ -393,7 +425,10 @@ class analyzeConfig(object):
         lines.append("        sideband = cms.string('%s')" % jobOptions['category_sideband'])
         lines.append("    )")
         lines.append(")")
-        lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % self.nonfake_backgrounds)
+        processesToSubtract = []
+        processesToSubtract.extend(self.nonfake_backgrounds)
+        processesToSubtract.append("conversions")
+        lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
 
@@ -585,6 +620,8 @@ class analyzeConfig(object):
             if self.is_makefile:
                 lines_makefile.append("%s:" % jobOptions['syncOutput'])
                 lines_makefile.append("\t%s %s &> %s" % (self.executable_analyze, jobOptions['cfgFile_modified'], jobOptions['logFile']))
+                lines_makefile.append("\tmv %s %s" % (os.path.basename(jobOptions['syncOutput']), jobOptions['syncOutput']))
+                lines_makefile.append("\tsleep 60")  # sleep 60 seconds for hadoop to catch up
                 lines_makefile.append("")
             elif self.is_sbatch:
                 lines_makefile.append("%s: %s" % (jobOptions['syncOutput'], "sbatch_analyze"))
@@ -618,6 +655,13 @@ class analyzeConfig(object):
             if self.is_sbatch and self.run_hadd_master_on_batch:
                 lines_makefile.append("%s: %s" % (outputFiles[key], sbatchTarget))
                 lines_makefile.append("\t%s" % ":") # CV: null command
+                lines_makefile.append("")
+            elif self.do_sync and self.is_makefile:
+                lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))
+                lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
+                lines_makefile.append("\thadd -f %s %s" % (os.path.basename(outputFiles[key]), " ".join(inputFiles[key])))
+                lines_makefile.append("\tmv %s %s" % (os.path.basename(outputFiles[key]), outputFiles[key]))
+                lines_makefile.append("\tsleep 60")  # sleep 60 seconds for hadoop to catch up
                 lines_makefile.append("")
             else:
                 lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))

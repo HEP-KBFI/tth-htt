@@ -15,8 +15,8 @@ parser.add_argument('-o', '--output-tree',
   type = str, dest = 'output_tree', metavar = 'name', default = 'syncTree', required = False,
   help = 'R|Output TTree name',
 )
-parser.add_argument('-N', '--no-mem',
-  dest = 'no_mem', action = 'store_true', default = False, help = 'R|Use Ntuple w/o MEM included',
+parser.add_argument('-M', '--with-mem',
+  dest = 'with_mem', action = 'store_true', default = False, help = 'R|Use Ntuple w/ MEM included',
 )
 args = parser.parse_args()
 
@@ -25,12 +25,12 @@ era                = args.era
 version            = args.version
 dry_run            = args.dry_run
 resubmission_limit = args.resubmission_limit
-resubmit           = not args.disable_resubmission
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
 sample_filter      = args.filter
+running_method     = args.running_method
 
 # Additional arguments
 rle_select     = os.path.expanduser(args.rle_select)
@@ -40,16 +40,13 @@ use_home       = args.use_home
 
 # Custom arguments
 output_tree = args.output_tree
-no_mem      = args.no_mem
-
-# Use the arguments
-max_job_resubmission = resubmission_limit if resubmit else 1
+with_mem    = args.with_mem
 
 if era == "2017":
-  if no_mem:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
-  else:
+  if with_mem:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
+  else:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
 else:
   raise ValueError("Invalid era: %s" % era)
 
@@ -70,7 +67,7 @@ if __name__ == '__main__':
   run_analysis           = False
   is_last_resubmission   = False
 
-  for idx_job_resubmission in range(max_job_resubmission):
+  for idx_job_resubmission in range(resubmission_limit):
     if is_last_resubmission:
       continue
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
@@ -84,7 +81,7 @@ if __name__ == '__main__':
       era                     = era,
       output_tree             = output_tree,
       check_input_files       = check_input_files,
-      running_method          = "sbatch",
+      running_method          = running_method,
       verbose                 = idx_job_resubmission > 0,
       dry_run                 = dry_run,
       isDebug                 = debug,
