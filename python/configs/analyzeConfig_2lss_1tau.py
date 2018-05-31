@@ -575,11 +575,11 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                       else:
                         processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_conversions ]
                       process_output = "%s_conversion" % sample_category
-                      key_addBackgrounds_job = getKey(process_name, "%s_conversion" % sample_category, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                      cfgFile_modified = os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_conversions_%s_%s_%s_%s_cfg.py" % \
-                        (self.channel, process_name, sample_category, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
-                      outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_conversions_%s_%s_%s_%s.root" % \
-                        (self.channel, process_name, sample_category, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
+                      key_addBackgrounds_job = getKey(process_name, "%s_conversion" % sample_category, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
+                      cfgFile_modified = os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_conversions_%s_%s_%s_lep%s_sum%s_cfg.py" % \
+                        (self.channel, process_name, sample_category, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection))
+                      outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_conversions_%s_%s_%s_lep%s_sum%s.root" % \
+                        (self.channel, process_name, sample_category, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection))
                     elif genMatch_category == "fake":
                       # sum fake background contributions for each MC sample separately
                       # input processes: TT1l0g1j, TT0l1g1j, TT0l0g2j; ...
