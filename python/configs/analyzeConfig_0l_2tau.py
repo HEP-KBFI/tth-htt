@@ -291,7 +291,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_file, ntupleFiles)
                   continue
 
-                cfg_key = (
+                cfg_key = getKey(
                   self.channel, process_name, hadTau_selection_and_frWeight, hadTau_charge_selection,
                   central_or_shift, jobId
                 )
