@@ -114,7 +114,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Enable debugging flag in the analysis',
     )
 
-  def add_files_per_job(self, files_per_job = 5):
+  def add_files_per_job(self, files_per_job = 10):
     self.add_argument('-j', '--files-per-job',
       type = positive_int_type, dest = 'files_per_job', metavar = 'number', default = files_per_job,
       help = 'R|Number of input files per job',
