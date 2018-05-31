@@ -121,7 +121,7 @@ class sbatchManager:
         self.workingDir     = None
         self.logFileDir     = None
         queue_environ = os.environ.get('SBATCH_PRIORITY')
-        self.queue          = queue_environ if queue_environ else "small"
+        self.queue          = queue_environ if queue_environ else "main"
         self.poll_interval  = 30
         self.jobIds         = {}
         self.analysisName   = "tthAnalysis"
