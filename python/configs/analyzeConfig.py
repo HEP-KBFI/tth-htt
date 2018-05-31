@@ -427,7 +427,7 @@ class analyzeConfig(object):
         lines.append(")")
         processesToSubtract = []
         processesToSubtract.extend(self.nonfake_backgrounds)
-        processesToSubtract.append("conversions")
+        processesToSubtract.extend([ "%s_conversion" % nonfake_background for nonfake_background in self.nonfake_backgrounds])
         lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)

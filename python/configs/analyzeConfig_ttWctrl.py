@@ -178,7 +178,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     lines.append(")")
     processesToSubtract = [ "fakes_data" ]
     processesToSubtract.extend(self.nonfake_backgrounds)
-    processesToSubtract.append("conversions")
+    processesToSubtract.extend([ "%s_conversion" % nonfake_background for nonfake_background in self.nonfake_backgrounds])
     lines.append("process.addBackgroundLeptonFlips.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
     lines.append("process.addBackgroundLeptonFlips.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
     create_cfg(self.cfgFile_addFlips, jobOptions['cfgFile_modified'], lines)
