@@ -36,6 +36,7 @@ plotEntryType::plotEntryType(const edm::ParameterSet & cfg)
   , yMax_(cfg.exists("yMax") ? cfg.getParameter<double>("yMax") : -1.)
   , yAxisTitle_(cfg.getParameter<std::string>("yAxisTitle"))
   , yAxisOffset_( cfg.exists("yAxisOffset") ? cfg.getParameter<double>("yAxisOffset") : 1.15)
+  , explicitBinning_( cfg.exists("explicitBinning") ? cfg.getParameter<std::vector<double>>("explicitBinning") : std::vector<double>() )
   , legendTextSize_(0.050)
   , legendPosX_(0.700)
   , legendPosY_(0.510)
@@ -58,6 +59,12 @@ plotEntryType::plotEntryType(const edm::ParameterSet & cfg)
       delete subStrings;
     }
   }
+}
+
+bool
+plotEntryType::hasExplicitBinning() const
+{
+  return ! explicitBinning_.empty();
 }
 
 //-----------------------------------------------------------------------------
