@@ -61,7 +61,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.hadTau_charge_selections = hadTau_charge_selections
     self.applyFakeRateWeights = applyFakeRateWeights
 
-    self.lepton_genMatches = [ "1l0j", "0l1g0j", "0l0g1j" ]
+    self.lepton_genMatches = [ "1l0g0j", "0l1g0j", "0l0g1j" ]
     self.hadTau_genMatches = [ "2t0e0m0j", "1t1e0m0j", "1t0e1m0j", "1t0e0m1j", "0t2e0m0j", "0t1e1m0j", "0t1e0m1j", "0t0e2m0j", "0t0e1m1j", "0t0e0m2j" ]
 
     self.apply_leptonGenMatching = None
