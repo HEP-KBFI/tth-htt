@@ -167,7 +167,7 @@ if __name__ == '__main__':
         "mTauTauVis"               : {},
         "mvaOutput_plainKin_tt"    : { 'quantile_rebin' : 6, 'quantile_in_fakes' : False }, # BDT2; quantile in all bkg
         "mvaOutput_plainKin_ttV"   : { 'quantile_rebin' : 6, 'quantile_in_fakes' : False }, # BDT1; quantile in all bkg
-        "mvaOutput_plainKin_SUM_M" : { 'quantile_rebin' : 6, 'quantile_in_fakes' : False }, # BDT3; quantile in all bkg
+        "mvaOutput_plainKin_SUM_M" : { 'explicit_binning' : [0.0, 0.28, 0.35, 0.40, 0.47, 0.53, 1.0] }, # BDT3; quantile in all bkg
         "mvaOutput_plainKin_SUM_M_noRebin" : {},
         "mvaOutput_plainKin_SUM_M_6bins_quantiles" : {},
         "mvaOutput_plainKin_1B_M"  : {},

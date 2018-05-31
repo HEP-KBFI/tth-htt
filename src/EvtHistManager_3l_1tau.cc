@@ -144,6 +144,7 @@ EvtHistManager_3l_1tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mvaOutput_plainKin_ttV_,   mvaOutput_plainKin_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_M_, mvaOutput_plainKin_SUM_M, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_M_noRebin_, mvaOutput_plainKin_SUM_M, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_M_6bins_quantiles_, mvaOutput_plainKin_SUM_M, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_plainKin_1B_M_,  mvaOutput_plainKin_1B_M,  evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
