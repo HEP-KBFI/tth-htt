@@ -31,11 +31,15 @@ struct plotEntryType
   std::string yAxisTitle_;
   double yAxisOffset_;
   std::vector<std::pair<double, double>> keepBlinded_;
+  std::vector<double> explicitBinning_;
   double legendTextSize_;
   double legendPosX_;
   double legendPosY_;
   double legendSizeX_;
   double legendSizeY_; 
+
+  bool
+  hasExplicitBinning() const;
 };
 
 //-----------------------------------------------------------------------------
