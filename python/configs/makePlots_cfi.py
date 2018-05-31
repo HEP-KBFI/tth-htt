@@ -39,7 +39,27 @@ process.makePlots = cms.PSet(
             histogramName = cms.string("sel/evt/$PROCESS/numJets"),
             xAxisTitle = cms.string("jet Multiplicity"),
             yAxisTitle = cms.string("Events")
-            ),
+        ),
+        cms.PSet(
+            histogramName = cms.string("sel/evt/$PROCESS/numBJets_loose"),
+            xAxisTitle = cms.string("loose b-jet Multiplicity"),
+            yAxisTitle = cms.string("Events")
+        ),
+        cms.PSet(
+            histogramName = cms.string("sel/evt/$PROCESS/numBJets_medium"),
+            xAxisTitle = cms.string("medium b-jet Multiplicity"),
+            yAxisTitle = cms.string("Events")
+        ),
+        cms.PSet(
+            histogramName = cms.string("sel/evt/$PROCESS/numElectrons"),
+            xAxisTitle = cms.string("electron Multiplicity"),
+            yAxisTitle = cms.string("Events")
+        ),
+        cms.PSet(
+            histogramName = cms.string("sel/evt/$PROCESS/numMuons"),
+            xAxisTitle = cms.string("muon Multiplicity"),
+            yAxisTitle = cms.string("Events")
+        ),
     ),
 
     nuisanceParameters = cms.PSet(

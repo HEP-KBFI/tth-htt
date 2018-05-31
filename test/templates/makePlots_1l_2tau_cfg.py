@@ -48,12 +48,37 @@ process.makePlots.distributions.extend([
         yAxisTitle = cms.string('dN/d#eta')
     ),
     cms.PSet(
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_plainKin_ttV'),
+        xAxisTitle = cms.string('MVA'),
+        yAxisTitle = cms.string('dN/dMVA')
+    ),
+    cms.PSet(
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_plainKin_tt'),
+        xAxisTitle = cms.string('MVA'),
+        yAxisTitle = cms.string('dN/dMVA')
+    ),
+    cms.PSet(
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_plainKin_1B_VT'),
+        xAxisTitle = cms.string('MVA'),
+        yAxisTitle = cms.string('dN/dMVA')
+    ),
+    cms.PSet(
         histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_HTT_SUM_VT'),
         xAxisTitle = cms.string('MVA'),
         yAxisTitle = cms.string('dN/dMVA')
     ),
     cms.PSet(
-        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_noHTT_SUM_VT'),
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_HTT_SUM_VT_noRebin'),
+        xAxisTitle = cms.string('MVA'),
+        yAxisTitle = cms.string('dN/dMVA')
+    ),
+    cms.PSet(
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_plainKin_SUM_VT'),
+        xAxisTitle = cms.string('MVA'),
+        yAxisTitle = cms.string('dN/dMVA')
+    ),
+    cms.PSet(
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_plainKin_SUM_VT_noRebin'),
         xAxisTitle = cms.string('MVA'),
         yAxisTitle = cms.string('dN/dMVA')
     ),
