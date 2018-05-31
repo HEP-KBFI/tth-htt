@@ -51,6 +51,9 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory & dir)
   histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_   = book1D(dir, "mvaOutput_2lss_1tau_HTTMEM_SUM_M",   "mvaOutput_2lss_1tau_HTTMEM_SUM_M",   100, -1., +1.);
   histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin_   = book1D(dir, "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin",   "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin",   100, -1., +1.);
 
+  Float_t binsx[12]  = {0.0, 0.14, 0.18, 0.22, 0.28, 0.32, 0.35, 0.38, 0.43, 0.47, 0.53, 1.0};
+  histogram_mvaOutput_2lss_1tau_HTT_SUM_M_6bins_quantiles_  = book1D(dir, "mvaOutput_2lss_1tau_HTT_SUM_M_11bins_quantiles",  "mvaOutput_2lss_1tau_HTT_SUM_M_11bins_quantiles",  11, binsx);
+
   histogram_mTauTauVis_   = book1D(dir, "mTauTauVis",   "mTauTauVis",    20, 0., 200.);
   histogram_mTauTauVis1_  = book1D(dir, "mTauTauVis1",  "mTauTauVis1",   20, 0., 200.);
   histogram_mTauTauVis2_  = book1D(dir, "mTauTauVis2",  "mTauTauVis2",   20, 0., 200.);
@@ -104,6 +107,7 @@ EvtHistManager_2lss_1tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin_, mvaOutput_2lss_1tau_plainKin_SUM_M, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2lss_1tau_HTT_SUM_M_noRebin_,      mvaOutput_2lss_1tau_HTT_SUM_M,      evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin_,   mvaOutput_2lss_1tau_HTTMEM_SUM_M,   evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_HTT_SUM_M_6bins_quantiles_,   mvaOutput_2lss_1tau_HTTMEM_SUM_M,   evtWeight, evtWeightErr);
 
 
   fillWithOverFlow(histogram_mTauTauVis_,   mTauTauVis1,  evtWeight, evtWeightErr);

@@ -41,11 +41,31 @@ class prodNtupleConfig:
                                (does not limit number of Ntuple production jobs running in parallel on batch system)
 
     """
-    def __init__(self, configDir, outputDir, executable_prodNtuple, executable_nanoAOD,
-                 cfgFile_prodNtuple, samples, max_files_per_job, era, preselection_cuts,
-                 leptonSelection, hadTauSelection, check_input_files, running_method,
-                 version, num_parallel_jobs, pileup, golden_json, pool_id = '', verbose = False,
-                 dry_run = False, isDebug = False, use_nonnominal = False, use_home = False):
+    def __init__(self,
+             configDir,
+             outputDir,
+             executable_prodNtuple,
+             executable_nanoAOD,
+             cfgFile_prodNtuple,
+             samples,
+             max_files_per_job,
+             era,
+             preselection_cuts,
+             leptonSelection,
+             hadTauSelection,
+             check_input_files,
+             running_method,
+             version,
+             num_parallel_jobs,
+             pileup,
+             golden_json,
+             pool_id        = '',
+             verbose        = False,
+             dry_run        = False,
+             isDebug        = False,
+             use_nonnominal = False,
+             use_home       = False,
+          ):
 
         self.configDir             = configDir
         self.outputDir             = outputDir

@@ -445,8 +445,9 @@ int main(int argc,
             const RecoLepton * selLepton_third = selLeptons[selLepton_third_idx];
             for(const std::string central_or_shift: central_or_shifts)
             {
+              checkOptionValidity(central_or_shift, isMC);
               const int jetPt_option    = getJet_option     (central_or_shift, isMC);
-              const int hadTauPt_option = getHadTauPt_option(central_or_shift, isMC);
+              const int hadTauPt_option = getHadTauPt_option(central_or_shift);
               const int met_option      = getMET_option     (central_or_shift, isMC);
 
               if(jetPt_option    == kJet_central      &&

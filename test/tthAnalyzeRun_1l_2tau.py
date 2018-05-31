@@ -153,8 +153,8 @@ if __name__ == '__main__':
         "mvaOutput_plainKin_1B_VT" : {},
         "mvaOutput_HTT_SUM_VT"     : { 'explicit_binning' : list(np.linspace(0., 1., 7 + 1)) }, # BDT2; 7 regular bin in range [0, 1]
         "mvaOutput_HTT_SUM_VT_noRebin"     : {},
-        "mvaOutput_noHTT_SUM_VT"     : { 'explicit_binning' : list(np.linspace(0., 1., 5 + 1)) }, # BDT3; 5 regular bin in range [0, 1]
-        "mvaOutput_noHTT_SUM_VT_noRebin"     : {},
+        "mvaOutput_plainKin_SUM_VT"     : { 'explicit_binning' : list(np.linspace(0., 1., 5 + 1)) }, # BDT3; 5 regular bin in range [0, 1]
+        "mvaOutput_plainKin_SUM_VT_noRebin"     : {},
         "mTauTauVis"               : {},
       },
       select_rle_output                     = True,

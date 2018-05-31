@@ -87,8 +87,8 @@ parser.add_argument('-o', '--output',
 parser.add_argument('-X', '--clean',
   dest = 'clean', action = 'store_true', default = False, help = 'R|Remove all output files',
 )
-parser.add_argument('-N', '--no-mem',
-  dest = 'no_mem', action = 'store_true', default = False, help = 'R|Use Ntuple w/o MEM included',
+parser.add_argument('-M', '--with-mem',
+  dest = 'with_mem', action = 'store_true', default = False, help = 'R|Use Ntuple w/ MEM included',
 )
 args = parser.parse_args()
 
@@ -114,7 +114,7 @@ hlt_filter     = args.hlt_filter
 channels = args.channels
 output   = args.output
 clean    = args.clean
-no_mem   = args.no_mem
+with_mem = args.with_mem
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     running_method       = running_method,
     isDebug              = debug,
     rle_select           = rle_select,
-    no_mem               = no_mem,
+    with_mem             = with_mem,
     use_nonnominal       = use_nonnominal,
     hlt_filter           = hlt_filter,
     tau_id_wp            = tau_id_wp,

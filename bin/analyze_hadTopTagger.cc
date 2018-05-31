@@ -205,8 +205,17 @@ int main(int argc, char* argv[])
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
+  checkOptionValidity(central_or_shift, isMC);
   const int jetPt_option     = getJet_option       (central_or_shift, isMC);
-  const int jetBtagSF_option = getBTagWeight_option(central_or_shift, isMC);
+  const int jetBtagSF_option = getBTagWeight_option(central_or_shift);
+  const int hadTauPt_option  = getHadTauPt_option  (central_or_shift);
+
+  std::cout
+    << "central_or_shift = "               << central_or_shift           << "\n"
+       " -> hadTauPt_option            = " << hadTauPt_option            << "\n"
+       " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
+       " -> jetPt_option               = " << jetPt_option               << '\n'
+  ;
 
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
   std::string branchName_jetsHTTv2 = cfg_analyze.getParameter<std::string>("branchName_jetsHTTv2");
@@ -257,7 +266,6 @@ int main(int argc, char* argv[])
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
   const bool useNonNominal = false;//cfg_analyze.getParameter<bool>("useNonNominal");
-  const int hadTauPt_option            = getHadTauPt_option     (central_or_shift, isMC);
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);

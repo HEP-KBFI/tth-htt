@@ -7,10 +7,8 @@
 #include <boost/algorithm/string/predicate.hpp> // boost::algorithm::starts_with(), boost::algorithm::ends_with()
 
 int
-getBTagWeight_option(const std::string & central_or_shift,
-                     bool isMC)
+getBTagWeight_option(const std::string & central_or_shift)
 {
-  checkOptionValidity(central_or_shift, isMC);
   int central_or_shift_int = kBtag_central;
   if     (central_or_shift == "CMS_ttHl_btag_HFUp"        ) central_or_shift_int = kBtag_hfUp;
   else if(central_or_shift == "CMS_ttHl_btag_HFDown"      ) central_or_shift_int = kBtag_hfDown;
@@ -37,7 +35,6 @@ int
 getJet_option(const std::string & central_or_shift,
               bool isMC)
 {
-  checkOptionValidity(central_or_shift, isMC);
   int central_or_shift_int = isMC ? kJet_central : kJet_central_nonNominal;
   if     (central_or_shift == "CMS_ttHl_JESUp"  ) central_or_shift_int = kJet_jesUp;
   else if(central_or_shift == "CMS_ttHl_JESDown") central_or_shift_int = kJet_jesDown;
@@ -50,7 +47,6 @@ int
 getMET_option(const std::string & central_or_shift,
               bool isMC)
 {
-  checkOptionValidity(central_or_shift, isMC);
   int central_or_shift_int = isMC ? kMEt_central : kMEt_central_nonNominal;
   if     (central_or_shift == "CMS_ttHl_JESUp"            ) central_or_shift_int = kMEt_shifted_JetEnUp;
   else if(central_or_shift == "CMS_ttHl_JESDown"          ) central_or_shift_int = kMEt_shifted_JetEnDown;
@@ -62,10 +58,8 @@ getMET_option(const std::string & central_or_shift,
 }
 
 int
-getHadTauPt_option(const std::string & central_or_shift,
-                   bool isMC)
+getHadTauPt_option(const std::string & central_or_shift)
 {
-  checkOptionValidity(central_or_shift, isMC);
   int central_or_shift_int = kHadTauPt_central;
   if     (central_or_shift == "CMS_ttHl_tauESUp"  ) central_or_shift_int = kHadTauPt_shiftUp;
   else if(central_or_shift == "CMS_ttHl_tauESDown") central_or_shift_int = kHadTauPt_shiftDown;
@@ -73,10 +67,8 @@ getHadTauPt_option(const std::string & central_or_shift,
 }
 
 int
-getJetToTauFR_option(const std::string & central_or_shift,
-                     bool isMC)
+getJetToTauFR_option(const std::string & central_or_shift)
 {
-  checkOptionValidity(central_or_shift, isMC);
   int central_or_shift_int = kFRjt_central;
   if     (central_or_shift == "CMS_ttHl_FRjt_normUp"   ) central_or_shift_int = kFRjt_normUp;
   else if(central_or_shift == "CMS_ttHl_FRjt_normDown" ) central_or_shift_int = kFRjt_normDown;
@@ -86,10 +78,8 @@ getJetToTauFR_option(const std::string & central_or_shift,
 }
 
 FRet
-getEToTauFR_option(const std::string & central_or_shift,
-                   bool isMC)
+getEToTauFR_option(const std::string & central_or_shift)
 {
-  checkOptionValidity(central_or_shift, isMC);
   FRet central_or_shift_int = FRet::central;
   if     (central_or_shift == "CMS_ttHl_FRet_shiftUp"  ) central_or_shift_int = FRet::shiftUp;
   else if(central_or_shift == "CMS_ttHl_FRet_shiftDown") central_or_shift_int = FRet::shiftDown;
@@ -97,10 +87,8 @@ getEToTauFR_option(const std::string & central_or_shift,
 }
 
 FRmt
-getMuToTauFR_option(const std::string & central_or_shift,
-                    bool isMC)
+getMuToTauFR_option(const std::string & central_or_shift)
 {
-  checkOptionValidity(central_or_shift, isMC);
   FRmt central_or_shift_int = FRmt::central;
   if     (central_or_shift == "CMS_ttHl_FRmt_shiftUp"  ) central_or_shift_int = FRmt::shiftUp;
   else if(central_or_shift == "CMS_ttHl_FRmt_shiftDown") central_or_shift_int = FRmt::shiftDown;
@@ -108,10 +96,8 @@ getMuToTauFR_option(const std::string & central_or_shift,
 }
 
 int
-getLHEscale_option(const std::string & central_or_shift,
-                     bool isMC)
+getLHEscale_option(const std::string & central_or_shift)
 {
-  checkOptionValidity(central_or_shift, isMC);
   int central_or_shift_int = kLHE_scale_central;
   if(boost::starts_with(central_or_shift, "CMS_ttHl_thu_shape"))
   {
@@ -126,10 +112,8 @@ getLHEscale_option(const std::string & central_or_shift,
 }
 
 int
-getElectronPt_option(const std::string & central_or_shift,
-                     bool isMC)
+getElectronPt_option(const std::string & central_or_shift)
 {
-  checkOptionValidity(central_or_shift, isMC);
   int central_or_shift_int = kElectronPt_central;
   if     (central_or_shift == "CMS_ttHl_electronESBarrelUp"  ) central_or_shift_int = kElectronPt_scaleUp_barrel;
   else if(central_or_shift == "CMS_ttHl_electronESBarrelDown") central_or_shift_int = kElectronPt_scaleDown_barrel;
@@ -141,10 +125,8 @@ getElectronPt_option(const std::string & central_or_shift,
 }
 
 int
-getMuon_option(const std::string & central_or_shift,
-               bool isMC)
+getMuon_option(const std::string & central_or_shift)
 {
-  checkOptionValidity(central_or_shift, isMC);
   int central_or_shift_int = kMuon_central;
   if     (central_or_shift == "CMS_ttHl_muonERUp"         ) central_or_shift_int = kMuon_ERUp;
   else if(central_or_shift == "CMS_ttHl_muonERDown"       ) central_or_shift_int = kMuon_ERDown;
@@ -160,10 +142,8 @@ getMuon_option(const std::string & central_or_shift,
 }
 
 int
-getJetToLeptonFR_option(const std::string & central_or_shift,
-                        bool isMC)
+getJetToLeptonFR_option(const std::string & central_or_shift)
 {
-  checkOptionValidity(central_or_shift, isMC);
   int central_or_shift_int = kFRl_central;
   if     (central_or_shift == "CMS_ttHl_FRe_shape_ptUp"          ) central_or_shift_int = kFRe_shape_ptUp;
   else if(central_or_shift == "CMS_ttHl_FRe_shape_ptDown"        ) central_or_shift_int = kFRe_shape_ptDown;
@@ -184,7 +164,7 @@ checkOptionValidity(const std::string & central_or_shift,
 {
   if(! (central_or_shift.empty() || central_or_shift == "central"))
   {
-    if(! isMC)
+    if(! isMC && getJetToLeptonFR_option(central_or_shift) != kFRl_central && getJetToTauFR_option(central_or_shift) != kFRjt_central)
     {
       throw cmsException(__func__, __LINE__) << "Non-empty or non-central systematics option passed to data";
     }

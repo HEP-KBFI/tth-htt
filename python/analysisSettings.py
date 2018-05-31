@@ -1,5 +1,7 @@
 # Integrated luminosity
-lumi_2017 = 41.298e+3 # 1/pb
+# Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/4564463eed45251a4fd274ed754b1a37bae8e98e/test/datasets_data_2017_v2.txt#L33
+# Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/761/1.html
+lumi_2017 = 41.529e+3 # 1/pb (uncertaintiy: 2.3%)
 
 # Systematic uncertainties
 

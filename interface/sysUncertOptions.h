@@ -107,8 +107,7 @@ enum
  *       in order to correct for data/MC differences in b-tagging efficiency and mistag rates
  */
 int
-getBTagWeight_option(const std::string & central_or_shift,
-                     bool isMC);
+getBTagWeight_option(const std::string & central_or_shift);
 
 int
 getJet_option(const std::string & central_or_shift,
@@ -119,36 +118,28 @@ getMET_option(const std::string & central_or_shift,
               bool isMC);
 
 int
-getHadTauPt_option(const std::string & central_or_shift,
-                   bool isMC);
+getHadTauPt_option(const std::string & central_or_shift);
 
 int
-getJetToTauFR_option(const std::string & central_or_shift,
-                     bool isMC);
+getJetToTauFR_option(const std::string & central_or_shift);
 
 FRet
-getEToTauFR_option(const std::string & central_or_shift,
-                   bool isMC);
+getEToTauFR_option(const std::string & central_or_shift);
 
 FRmt
-getMuToTauFR_option(const std::string & central_or_shift,
-                   bool isMC);
+getMuToTauFR_option(const std::string & central_or_shift);
 
 int
-getLHEscale_option(const std::string & central_or_shift,
-                     bool isMC);
+getLHEscale_option(const std::string & central_or_shift);
 
 int
-getElectronPt_option(const std::string & central_or_shift,
-                     bool isMC);
+getElectronPt_option(const std::string & central_or_shift);
 
 int
-getMuon_option(const std::string & central_or_shift,
-               bool isMC);
+getMuon_option(const std::string & central_or_shift);
 
 int
-getJetToLeptonFR_option(const std::string & central_or_shift,
-                        bool isMC);
+getJetToLeptonFR_option(const std::string & central_or_shift);
 
 void
 checkOptionValidity(const std::string & central_or_shift,

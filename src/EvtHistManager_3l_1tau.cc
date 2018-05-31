@@ -64,6 +64,9 @@ EvtHistManager_3l_1tau::bookHistograms(TFileDirectory & dir)
   histogram_mvaOutput_plainKin_SUM_M_noRebin_ = book1D(dir, "mvaOutput_plainKin_SUM_M_noRebin", "mvaOutput_plainKin_SUM_M_noRebin", 100, 0., 1.);
   histogram_mvaOutput_plainKin_1B_M_  = book1D(dir, "mvaOutput_plainKin_1B_M",  "mvaOutput_plainKin_1B_M",  100, 0., 1.);
 
+  Float_t binsx[7]  = {0.0, 0.28, 0.35, 0.40, 0.47, 0.53, 1.0};
+  histogram_mvaOutput_plainKin_SUM_M_6bins_quantiles_  = book1D(dir, "mvaOutput_plainKin_SUM_M_6bins_quantiles",  "mvaOutput_plainKin_SUM_M_6bins_quantiles",  6, binsx);
+
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 

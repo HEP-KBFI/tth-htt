@@ -252,14 +252,26 @@ int main(int argc, char* argv[])
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
-  const int jetToLeptonFakeRate_option = getJetToLeptonFR_option(central_or_shift, isMC);
-  const int hadTauPt_option            = getHadTauPt_option     (central_or_shift, isMC);
-  const int jetToTauFakeRate_option    = getJetToTauFR_option   (central_or_shift, isMC);
-  const int lheScale_option            = getLHEscale_option     (central_or_shift, isMC);
-  const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift, isMC);
+  checkOptionValidity(central_or_shift, isMC);
+  const int jetToLeptonFakeRate_option = getJetToLeptonFR_option(central_or_shift);
+  const int hadTauPt_option            = getHadTauPt_option     (central_or_shift);
+  const int jetToTauFakeRate_option    = getJetToTauFR_option   (central_or_shift);
+  const int lheScale_option            = getLHEscale_option     (central_or_shift);
+  const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift);
 
   const int met_option   = useNonNominal_jetmet ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
   const int jetPt_option = useNonNominal_jetmet ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
+
+  std::cout
+    << "central_or_shift = "               << central_or_shift           << "\n"
+       " -> jetToLeptonFakeRate_option = " << jetToLeptonFakeRate_option << "\n"
+       " -> hadTauPt_option            = " << hadTauPt_option            << "\n"
+       " -> jetToTauFakeRate_option    = " << jetToTauFakeRate_option    << "\n"
+       " -> lheScale_option            = " << lheScale_option            << "\n"
+       " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
+       " -> met_option                 = " << met_option                 << "\n"
+       " -> jetPt_option               = " << jetPt_option               << '\n'
+  ;
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
@@ -488,6 +500,7 @@ int main(int argc, char* argv[])
     "dr_lep_tau_ss", "dr_lep_tau_sublead", "costS_tau", "tau1_pt", "tau2_pt"
   };
   TMVAInterface mva_plainKin_ttV(mvaFileName_plainKin_ttV, mvaInputVariables_plainKin_ttVSort);
+  mva_plainKin_ttV.enableBDTTransform();
 
   std::string mvaFileName_plainKin_tt ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_plainKin_evtLevelTT_TTH_13Var.xml";
   std::vector<std::string> mvaInputVariables_plainKin_ttSort={
@@ -496,11 +509,13 @@ int main(int argc, char* argv[])
     "dr_lep_tau_lead", "nBJetLoose", "tau1_pt", "tau2_pt"
   };
   TMVAInterface mva_plainKin_tt(mvaFileName_plainKin_tt, mvaInputVariables_plainKin_ttSort);
+  mva_plainKin_tt.enableBDTTransform();
 
   // Joint 1B
   std::vector<std::string> mvaInputVariables_1BSort = {"BDTtt", "BDTttV"};
   std::string mvaFileName_plainKin_1B_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_JointBDT_plainKin_1B_VT.xml";
   TMVAInterface mva_2lss_plainKin_1B_VT(mvaFileName_plainKin_1B_VT, mvaInputVariables_1BSort);
+  mva_2lss_plainKin_1B_VT.enableBDTTransform();
 
   // SUM-BDT
   std::string mvaFileName_HTT_sum_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_HTT_evtLevelSUM_TTH_VT_17Var.xml";
@@ -511,15 +526,17 @@ int main(int argc, char* argv[])
     "tau2_pt", "HTT", "HadTop_pt"
   };
   TMVAInterface mva_HTT_sum_VT(mvaFileName_HTT_sum_VT, mvaInputVariables_HTT_sumSort);
+  mva_HTT_sum_VT.enableBDTTransform();
 
   // SUM-BDT
-  std::string mvaFileName_noHTT_sum_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_noHTT_evtLevelSUM_TTH_16Var.xml";
-  std::vector<std::string> mvaInputVariables_noHTT_sumSort={
+  std::string mvaFileName_plainKin_sum_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_plainKin_evtLevelSUM_TTH_16Var.xml";
+  std::vector<std::string> mvaInputVariables_plainKin_sumSort={
     "avg_dr_jet", "dr_taus", "ptmiss", "lep_conePt", "mT_lep", "mTauTauVis", "mindr_lep_jet",
     "mindr_tau1_jet", "mindr_tau2_jet", "nJet", "dr_lep_tau_ss", "dr_lep_tau_lead",
     "costS_tau", "nBJetLoose", "tau1_pt", "tau2_pt"
   };
-  TMVAInterface mva_noHTT_sum_VT(mvaFileName_noHTT_sum_VT, mvaInputVariables_noHTT_sumSort);
+  TMVAInterface mva_plainKin_sum_VT(mvaFileName_plainKin_sum_VT, mvaInputVariables_plainKin_sumSort);
+  mva_plainKin_sum_VT.enableBDTTransform();
 
   //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1721,7 +1738,7 @@ int main(int argc, char* argv[])
     };
     const double mvaOutput_HTT_SUM_VT = mva_HTT_sum_VT(mvaInputsHTT_sum);
 
-    const std::map<std::string, double> mvaInputsnoHTT_sum = {
+    const std::map<std::string, double> mvaInputsplainKin_sum = {
       {"avg_dr_jet",      avg_dr_jet      },
       {"dr_taus",         dr_taus         },
       {"ptmiss",          ptmiss          },
@@ -1739,7 +1756,7 @@ int main(int argc, char* argv[])
       {"tau1_pt",         tau1_pt         },
       {"tau2_pt",         tau2_pt         },
     };
-    const double mvaOutput_noHTT_SUM_VT = mva_noHTT_sum_VT(mvaInputsnoHTT_sum);
+    const double mvaOutput_plainKin_SUM_VT = mva_plainKin_sum_VT(mvaInputsplainKin_sum);
 
 //--- fill histograms with events passing final selection
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
@@ -1770,7 +1787,7 @@ int main(int argc, char* argv[])
       mvaOutput_plainKin_tt,
       mvaOutput_plainKin_1B_VT,
       mvaOutput_HTT_SUM_VT,
-      mvaOutput_noHTT_SUM_VT,
+      mvaOutput_plainKin_SUM_VT,
       mTauTauVis,
       evtWeight);
     if( isSignal ) {
@@ -1787,7 +1804,7 @@ int main(int argc, char* argv[])
           mvaOutput_plainKin_tt,
           mvaOutput_plainKin_1B_VT,
           mvaOutput_HTT_SUM_VT,
-          mvaOutput_noHTT_SUM_VT,
+          mvaOutput_plainKin_SUM_VT,
           mTauTauVis,
           evtWeight
         );
@@ -1824,7 +1841,7 @@ int main(int argc, char* argv[])
       mvaOutput_plainKin_tt,
       mvaOutput_plainKin_1B_VT,
       mvaOutput_HTT_SUM_VT,
-      mvaOutput_noHTT_SUM_VT,
+      mvaOutput_plainKin_SUM_VT,
       mTauTauVis,
       evtWeight);
 
@@ -1984,7 +2001,7 @@ int main(int argc, char* argv[])
       snm->read(mvaOutput_plainKin_tt,                  FloatVariableType::mvaOutput_plainKin_tt);
       snm->read(mvaOutput_plainKin_1B_VT,               FloatVariableType::mvaOutput_plainKin_1B_VT);
       snm->read(mvaOutput_HTT_SUM_VT,                   FloatVariableType::mvaOutput_HTT_SUM_VT);
-      //snm->read(mvaOutput_noHTT_SUM_VT,                 FloatVariableType::mvaOutput_noHTT_SUM_VT);
+      snm->read(mvaOutput_plainKin_SUM_VT,              FloatVariableType::mvaOutput_plainKin_SUM_VT);
 
       // mvaOutput_plainKin_SUM_VT not filled
 

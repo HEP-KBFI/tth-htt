@@ -39,10 +39,28 @@ class addMEMConfig:
                            (does not limit number of MEM jobs running in parallel on batch system)
 
     """
-    def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, check_input_files,
-                 running_method, max_files_per_job, mem_integrations_per_job, max_mem_integrations,
-                 num_parallel_jobs, leptonSelection, hadTauSelection, lowIntegrationPoints, dry_run,
-                 use_nonnominal, use_home, channel, pool_id = ''):
+    def __init__(self,
+            treeName,
+            outputDir,
+            cfgDir,
+            executable_addMEM,
+            samples,
+            era,
+            check_input_files,
+            running_method,
+            max_files_per_job,
+            mem_integrations_per_job,
+            max_mem_integrations,
+            num_parallel_jobs,
+            leptonSelection,
+            hadTauSelection,
+            lowIntegrationPoints,
+            dry_run,
+            use_nonnominal,
+            use_home,
+            channel,
+            pool_id = ''
+          ):
 
         self.treeName = treeName
         self.outputDir = outputDir
