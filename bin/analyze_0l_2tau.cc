@@ -204,11 +204,21 @@ int main(int argc, char* argv[])
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
+  checkOptionValidity(central_or_shift, isMC);
   const int jetPt_option            = getJet_option       (central_or_shift, isMC);
-  const int hadTauPt_option         = getHadTauPt_option  (central_or_shift, isMC);
-  const int jetToTauFakeRate_option = getJetToTauFR_option(central_or_shift, isMC);
-  const int lheScale_option         = getLHEscale_option  (central_or_shift, isMC);
-  const int jetBtagSF_option        = getBTagWeight_option(central_or_shift, isMC);
+  const int hadTauPt_option         = getHadTauPt_option  (central_or_shift);
+  const int jetToTauFakeRate_option = getJetToTauFR_option(central_or_shift);
+  const int lheScale_option         = getLHEscale_option  (central_or_shift);
+  const int jetBtagSF_option        = getBTagWeight_option(central_or_shift);
+
+  std::cout
+    << "central_or_shift = "               << central_or_shift           << "\n"
+       " -> hadTauPt_option            = " << hadTauPt_option            << "\n"
+       " -> jetToTauFakeRate_option    = " << jetToTauFakeRate_option    << "\n"
+       " -> lheScale_option            = " << lheScale_option            << "\n"
+       " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
+       " -> jetPt_option               = " << jetPt_option               << '\n'
+  ;
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;  
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);

@@ -46,9 +46,25 @@ clean:
 
 class syncNtupleConfig:
 
-  def __init__(self, config_dir, output_dir, output_filename, version, era, channels, dry_run,
-               resubmission_limit, check_input_files, running_method, isDebug, rle_select,
-               no_mem, use_nonnominal, hlt_filter, tau_id_wp, use_home):
+  def __init__(self,
+        config_dir,
+        output_dir,
+        output_filename,
+        version,
+        era,
+        channels,
+        dry_run,
+        resubmission_limit,
+        check_input_files,
+        running_method,
+        isDebug,
+        rle_select,
+        with_mem,
+        use_nonnominal,
+        hlt_filter,
+        tau_id_wp,
+        use_home
+      ):
 
     self.running_method    = running_method
     self.dry_run           = dry_run
@@ -67,7 +83,7 @@ class syncNtupleConfig:
     self.final_output_file = os.path.join(final_output_dir, output_filename)
 
     common_args = "-m %s -v %s -e %s -r %d -J 5" % \
-      ('sync_noMEM' if no_mem else 'sync',  version, era, resubmission_limit)
+      ('sync_wMEM' if with_mem else 'sync',  version, era, resubmission_limit)
     additional_args = " -A"
     if self.dry_run:
       additional_args += " -d"
@@ -87,8 +103,8 @@ class syncNtupleConfig:
       additional_args += " -R %s" % self.running_method
 
     inclusive_args = '-v %s -e %s' % (version, era)
-    if no_mem:
-      inclusive_args += ' -N'
+    if with_mem:
+      inclusive_args += ' -M'
 
     inclusive_args += additional_args
     common_args    += additional_args
@@ -128,9 +144,10 @@ class syncNtupleConfig:
     self.makefile_path = os.path.join(config_dir, 'Makefile_sync')
 
   def create(self):
+    create_if_not_exists(self.hadd_log_dir_path)
+
     if self.running_method == 'sbatch':
       create_if_not_exists(self.hadd_script_dir_path)
-      create_if_not_exists(self.hadd_log_dir_path)
 
       createScript_sbatch_hadd(
         sbatch_script_file_name = self.hadd_script_path,

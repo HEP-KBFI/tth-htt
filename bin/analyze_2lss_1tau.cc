@@ -327,14 +327,37 @@ int main(int argc, char* argv[])
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
-  const int jetToLeptonFakeRate_option = getJetToLeptonFR_option(central_or_shift, isMC);
-  const int hadTauPt_option            = getHadTauPt_option     (central_or_shift, isMC);
-  const int jetToTauFakeRate_option    = getJetToTauFR_option   (central_or_shift, isMC);
-  const int lheScale_option            = getLHEscale_option     (central_or_shift, isMC);
-  const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift, isMC);
+  checkOptionValidity(central_or_shift, isMC);
+  const int jetToLeptonFakeRate_option = getJetToLeptonFR_option(central_or_shift);
+  const int hadTauPt_option            = getHadTauPt_option     (central_or_shift);
+  const int jetToTauFakeRate_option    = getJetToTauFR_option   (central_or_shift);
+  const int lheScale_option            = getLHEscale_option     (central_or_shift);
+  const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift);
 
   const int met_option   = useNonNominal_jetmet ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
   const int jetPt_option = useNonNominal_jetmet ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
+
+  std::cout
+    << "central_or_shift = "               << central_or_shift           << "\n"
+       " -> jetToLeptonFakeRate_option = " << jetToLeptonFakeRate_option << "\n"
+       " -> hadTauPt_option            = " << hadTauPt_option            << "\n"
+       " -> jetToTauFakeRate_option    = " << jetToTauFakeRate_option    << "\n"
+       " -> lheScale_option            = " << lheScale_option            << "\n"
+       " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
+       " -> met_option                 = " << met_option                 << "\n"
+       " -> jetPt_option               = " << jetPt_option               << '\n'
+  ;
+
+  std::cout
+    << "central_or_shift = "               << central_or_shift           << "\n"
+       " -> jetToLeptonFakeRate_option = " << jetToLeptonFakeRate_option << "\n"
+       " -> hadTauPt_option            = " << hadTauPt_option            << "\n"
+       " -> jetToTauFakeRate_option    = " << jetToTauFakeRate_option    << "\n"
+       " -> lheScale_option            = " << lheScale_option            << "\n"
+       " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
+       " -> met_option                 = " << met_option                 << "\n"
+       " -> jetPt_option               = " << jetPt_option               << '\n'
+  ;
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
@@ -627,13 +650,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   TMVAInterface mva_2lss_1tau_plainKin_SUM_M(mvaFileName_plainKin_SUM_M, mvaInputVariables_plainKin_SUMSort);
   mva_2lss_1tau_plainKin_SUM_M.enableBDTTransform();
 
-  std::string mvaFileName_HTT_SUM_M ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2lss_1tau_XGB_HTT_evtLevelSUM_TTH_M_19Var.xml";
+  std::string mvaFileName_HTT_SUM_M ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2lss_1tau_XGB_HTT_evtLevelSUM_TTH_M_18Var.xml";
   std::vector<std::string> mvaInputVariables_HTT_SUMSort = {
     "avg_dr_jet", "dr_lep1_tau", "dr_lep2_tau", "dr_leps", "lep2_conePt",
     "mT_lep1", "mT_lep2", "mTauTauVis2", "max_lep_eta",
     "mbb", "mindr_lep1_jet", "mindr_lep2_jet", "mindr_tau_jet",
     "nJet", "ptmiss", "tau_pt",
-    "HTT", "Hj_tagger", "HadTop_pt"
+    "HTT", "HadTop_pt"
   };
   TMVAInterface mva_2lss_1tau_HTT_SUM_M(mvaFileName_HTT_SUM_M, mvaInputVariables_HTT_SUMSort);
   mva_2lss_1tau_HTT_SUM_M.enableBDTTransform();

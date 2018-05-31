@@ -36,22 +36,57 @@ class analyzeConfig_2los_1tau(analyzeConfig):
      for documentation of further Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
-               lep_mva_wp, hadTau_selection, applyFakeRateWeights, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-               executable_addBackgrounds, executable_addFakes, histograms_to_fit, select_rle_output = False,
-               executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
-               verbose = False, dry_run = False, isDebug = False, hlt_filter = False, use_home = True):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2los_1tau", lep_mva_wp, central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      histograms_to_fit,
-      triggers = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
-      executable_prep_dcard = executable_prep_dcard,
+  def __init__(self,
+        configDir,
+        outputDir,
+        executable_analyze,
+        cfgFile_analyze,
+        samples,
+        lep_mva_wp,
+        hadTau_selection,
+        applyFakeRateWeights,
+        central_or_shifts,
+        max_files_per_job,
+        era,
+        use_lumi,
+        lumi,
+        check_input_files,
+        running_method,
+        num_parallel_jobs,
+        executable_addBackgrounds,
+        executable_addFakes,
+        histograms_to_fit,
+        select_rle_output         = False,
+        executable_prep_dcard     = "prepareDatacards",
+        executable_add_syst_dcard = "addSystDatacards",
+        verbose                   = False,
+        dry_run                   = False,
+        isDebug                   = False,
+        hlt_filter                = False,
+        use_home                  = True,
+      ):
+    analyzeConfig.__init__(self,
+      configDir                 = configDir,
+      outputDir                 = outputDir,
+      executable_analyze        = executable_analyze,
+      channel                   = "2los_1tau",
+      lep_mva_wp                = lep_mva_wp,
+      central_or_shifts         = central_or_shifts,
+      max_files_per_job         = max_files_per_job,
+      era                       = era,
+      use_lumi                  = use_lumi,
+      lumi                      = lumi,
+      check_input_files         = check_input_files,
+      running_method            = running_method,
+      num_parallel_jobs         = num_parallel_jobs,
+      histograms_to_fit         = histograms_to_fit,
+      triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
+      executable_prep_dcard     = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
-      verbose = verbose,
-      dry_run = dry_run,
-      isDebug = isDebug,
-      use_home = use_home,
+      verbose                   = verbose,
+      dry_run                   = dry_run,
+      isDebug                   = isDebug,
+      use_home                  = use_home,
     )
 
     self.samples = samples
@@ -80,7 +115,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
           if lepton_genMatch.endswith("0g0j") and hadTau_genMatch.endswith("0j"):
             self.lepton_and_hadTau_genMatches_nonfakes.append(lepton_and_hadTau_genMatch)
           elif lepton_genMatch.endswith("0j") and hadTau_genMatch.endswith("0j"):
-            self.lepton_and_hadTau_genMatches_conversions.append(lepton_and_hadTau_genMatch)  
+            self.lepton_and_hadTau_genMatches_conversions.append(lepton_and_hadTau_genMatch)
           else:
             self.lepton_and_hadTau_genMatches_fakes.append(lepton_and_hadTau_genMatch)
     elif applyFakeRateWeights == "2lepton":
@@ -96,7 +131,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
             else:
               self.lepton_and_hadTau_genMatches_faketau.append(lepton_and_hadTau_genMatch)
           elif lepton_genMatch.endswith("0j"):
-            self.lepton_and_hadTau_genMatches_conversions.append(lepton_and_hadTau_genMatch) 
+            self.lepton_and_hadTau_genMatches_conversions.append(lepton_and_hadTau_genMatch)
           else:
             self.lepton_and_hadTau_genMatches_fakes.append(lepton_and_hadTau_genMatch)
     elif applyFakeRateWeights == "1tau":

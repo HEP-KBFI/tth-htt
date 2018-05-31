@@ -36,25 +36,62 @@ class analyzeConfig_2lss(analyzeConfig):
      for documentation of further Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
-               MEMbranch, lepton_charge_selections, hadTauVeto_selection, applyFakeRateWeights, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-               executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit,
-               select_rle_output = False, executable_prep_dcard = "prepareDatacards",
-               executable_add_syst_dcard = "addSystDatacards", do_sync = False, verbose = False,
-               dry_run = False, isDebug = False, rle_select = '', use_nonnominal = False, hlt_filter = False,
-               use_home = True):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2lss", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      histograms_to_fit,
-      triggers = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
-      executable_prep_dcard = executable_prep_dcard,
+  def __init__(self,
+        configDir,
+        outputDir,
+        executable_analyze,
+        cfgFile_analyze,
+        samples,
+        MEMbranch,
+        lepton_charge_selections,
+        hadTauVeto_selection,
+        applyFakeRateWeights,
+        central_or_shifts,
+        max_files_per_job,
+        era,
+        use_lumi,
+        lumi,
+        check_input_files,
+        running_method,
+        num_parallel_jobs,
+        executable_addBackgrounds,
+        executable_addFakes,
+        executable_addFlips,
+        histograms_to_fit,
+        select_rle_output         = False,
+        executable_prep_dcard     = "prepareDatacards",
+        executable_add_syst_dcard = "addSystDatacards",
+        do_sync                   = False,
+        verbose                   = False,
+        dry_run                   = False,
+        isDebug                   = False,
+        rle_select                = '',
+        use_nonnominal            = False,
+        hlt_filter                = False,
+        use_home                  = True,
+      ):
+    analyzeConfig.__init__(self,
+      configDir                 = configDir,
+      outputDir                 = outputDir,
+      executable_analyze        = executable_analyze,
+      channel                   = "2lss",
+      central_or_shifts         = central_or_shifts,
+      max_files_per_job         = max_files_per_job,
+      era                       = era,
+      use_lumi                  = use_lumi,
+      lumi                      = lumi,
+      check_input_files         = check_input_files,
+      running_method            = running_method,
+      num_parallel_jobs         = num_parallel_jobs,
+      histograms_to_fit         = histograms_to_fit,
+      triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
+      executable_prep_dcard     = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
-      do_sync = do_sync,
-      verbose = verbose,
-      dry_run = dry_run,
-      isDebug = isDebug,
-      use_home = use_home,
+      do_sync                   = do_sync,
+      verbose                   = verbose,
+      dry_run                   = dry_run,
+      isDebug                   = isDebug,
+      use_home                  = use_home,
     )
 
     self.samples = samples
@@ -79,7 +116,7 @@ class analyzeConfig_2lss(analyzeConfig):
         if lepton_genMatch.endswith("0g0j"):
           self.lepton_genMatches_nonfakes.append(lepton_genMatch)
         elif lepton_genMatch.endswith("0j"):
-          self.lepton_genMatches_conversions.append(lepton_genMatch)  
+          self.lepton_genMatches_conversions.append(lepton_genMatch)
         else:
           self.lepton_genMatches_fakes.append(lepton_genMatch)
     else:
@@ -511,7 +548,7 @@ class analyzeConfig_2lss(analyzeConfig):
           # sum fake background contributions for the total of all MC samples
           # input processes: TT1l0g1j, TT0l1g1j, TT0l0g2j; ...
           # output process: fakes_mc
-          key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
+          key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, lepton_charge_selection, "fakes")
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])
@@ -535,7 +572,7 @@ class analyzeConfig_2lss(analyzeConfig):
           # sum conversion background contributions for the total of all MC samples
           # input processes: TT1l1g0j, TT0l2g0j; ...
           # output process: conversions
-          key_addBackgrounds_job_conversions = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
+          key_addBackgrounds_job_conversions = getKey(lepton_selection_and_frWeight, lepton_charge_selection, "conversions")
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])
@@ -555,7 +592,7 @@ class analyzeConfig_2lss(analyzeConfig):
             'process_output' : "conversions"
           }
           self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_conversions])
-          
+
           # initialize input and output file names for hadd_stage2
           key_hadd_stage2 = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
           if not key_hadd_stage2 in self.inputFiles_hadd_stage2:

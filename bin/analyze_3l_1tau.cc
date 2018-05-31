@@ -254,14 +254,26 @@ int main(int argc, char* argv[])
   const bool sync_requireGenMatching = syncNtuple_cfg.getParameter<bool>("requireGenMatching");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
-  const int jetToLeptonFakeRate_option = getJetToLeptonFR_option(central_or_shift, isMC);
-  const int hadTauPt_option            = getHadTauPt_option     (central_or_shift, isMC);
-  const int jetToTauFakeRate_option    = getJetToTauFR_option   (central_or_shift, isMC);
-  const int lheScale_option            = getLHEscale_option     (central_or_shift, isMC);
-  const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift, isMC);
+  checkOptionValidity(central_or_shift, isMC);
+  const int jetToLeptonFakeRate_option = getJetToLeptonFR_option(central_or_shift);
+  const int hadTauPt_option            = getHadTauPt_option     (central_or_shift);
+  const int jetToTauFakeRate_option    = getJetToTauFR_option   (central_or_shift);
+  const int lheScale_option            = getLHEscale_option     (central_or_shift);
+  const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift);
 
   const int met_option   = useNonNominal_jetmet ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
   const int jetPt_option = useNonNominal_jetmet ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
+
+  std::cout
+    << "central_or_shift = "               << central_or_shift           << "\n"
+       " -> jetToLeptonFakeRate_option = " << jetToLeptonFakeRate_option << "\n"
+       " -> hadTauPt_option            = " << hadTauPt_option            << "\n"
+       " -> jetToTauFakeRate_option    = " << jetToTauFakeRate_option    << "\n"
+       " -> lheScale_option            = " << lheScale_option            << "\n"
+       " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
+       " -> met_option                 = " << met_option                 << "\n"
+       " -> jetPt_option               = " << jetPt_option               << '\n'
+  ;
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);

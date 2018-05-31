@@ -73,19 +73,33 @@ class analyzeConfig(object):
          histogramDir_prep_dcard: directory in final histogram file that is used for building datacard
     """
 
-    def __init__(self, configDir, outputDir, executable_analyze, channel, lep_mva_wp, central_or_shifts,
-                 max_files_per_job, era, use_lumi, lumi, check_input_files, running_method,
-                 num_parallel_jobs, histograms_to_fit, triggers,
-                 executable_prep_dcard = "prepareDatacards",
-                 executable_add_syst_dcard = "addSystDatacards",
-                 executable_make_plots = "makePlots",
-                 executable_make_plots_mcClosure = "makePlots_mcClosure",
-                 do_sync = False,
-                 verbose = False,
-                 dry_run = False,
-                 use_home = True,
-                 isDebug = False,
-                 template_dir = None):
+    def __init__(self,
+          configDir,
+          outputDir,
+          executable_analyze,
+          channel,
+          central_or_shifts,
+          max_files_per_job,
+          era,
+          use_lumi,
+          lumi,
+          check_input_files,
+          running_method,
+          num_parallel_jobs,
+          histograms_to_fit,
+          triggers,
+          lep_mva_wp                      = "090",
+          executable_prep_dcard           = "prepareDatacards",
+          executable_add_syst_dcard       = "addSystDatacards",
+          executable_make_plots           = "makePlots",
+          executable_make_plots_mcClosure = "makePlots_mcClosure",
+          do_sync                         = False,
+          verbose                         = False,
+          dry_run                         = False,
+          use_home                        = True,
+          isDebug                         = False,
+          template_dir                    = None,
+      ):
 
         self.configDir = configDir
         self.outputDir = outputDir
@@ -201,7 +215,7 @@ class analyzeConfig(object):
             self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_data_comb_NC"
             self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_data_comb"
             self.lep_mva_cut = 0.90
-        elif self.lep_mva_wp == "075" or self.lep_mva_wp == "0.75": 
+        elif self.lep_mva_wp == "075" or self.lep_mva_wp == "0.75":
             # CV: to be used when cut MVA > 0.75 is applied in tight lepton selection
             self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva075_2017_CERN_2018May29.root"
             self.leptonFakeRateWeight_histogramName_e = "FR_mva075_el_data_comb_NC"
@@ -209,7 +223,7 @@ class analyzeConfig(object):
             self.lep_mva_cut = 0.75
         else:
             raise ValueError("Invalid Configuration parameter 'lep_mva_wp' = %s !!" % self.lep_mva_wp)
-                    
+
         self.hadTau_selection_relaxed = None
         self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v1.root"
         self.isBDTtraining = False
@@ -607,7 +621,7 @@ class analyzeConfig(object):
                 lines_makefile.append("%s:" % jobOptions['syncOutput'])
                 lines_makefile.append("\t%s %s &> %s" % (self.executable_analyze, jobOptions['cfgFile_modified'], jobOptions['logFile']))
                 lines_makefile.append("\tmv %s %s" % (os.path.basename(jobOptions['syncOutput']), jobOptions['syncOutput']))
-                lines_makefile.append("\tsleep 5")  # sleep 5 seconds for hadoop to catch up
+                lines_makefile.append("\tsleep 60")  # sleep 60 seconds for hadoop to catch up
                 lines_makefile.append("")
             elif self.is_sbatch:
                 lines_makefile.append("%s: %s" % (jobOptions['syncOutput'], "sbatch_analyze"))
@@ -647,7 +661,7 @@ class analyzeConfig(object):
                 lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
                 lines_makefile.append("\thadd -f %s %s" % (os.path.basename(outputFiles[key]), " ".join(inputFiles[key])))
                 lines_makefile.append("\tmv %s %s" % (os.path.basename(outputFiles[key]), outputFiles[key]))
-                lines_makefile.append("\tsleep 15")  # sleep 15 seconds for hadoop to catch up
+                lines_makefile.append("\tsleep 60")  # sleep 60 seconds for hadoop to catch up
                 lines_makefile.append("")
             else:
                 lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))

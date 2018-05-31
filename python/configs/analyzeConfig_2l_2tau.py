@@ -41,24 +41,64 @@ class analyzeConfig_2l_2tau(analyzeConfig):
   for documentation of further Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
-               lep_mva_wp, lepton_charge_selections, hadTau_selection, hadTau_charge_selections, applyFakeRateWeights,
-               chargeSumSelections, central_or_shifts, max_files_per_job, era, use_lumi, lumi, check_input_files,
-               running_method, num_parallel_jobs, executable_addBackgrounds, executable_addBackgroundJetToTauFakes,
-               histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacards",
-               executable_add_syst_dcard = "addSystDatacards", verbose = False, dry_run = False, do_sync = False,
-               isDebug = False, rle_select = '', use_nonnominal = False, hlt_filter = False, use_home = True):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2l_2tau", lep_mva_wp, central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
-      histograms_to_fit,
-      triggers = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
-      executable_prep_dcard = executable_prep_dcard,
+  def __init__(self,
+        configDir,
+        outputDir,
+        executable_analyze,
+        cfgFile_analyze,
+        samples,
+        lep_mva_wp,
+        lepton_charge_selections,
+        hadTau_selection,
+        hadTau_charge_selections,
+        applyFakeRateWeights,
+        chargeSumSelections,
+        central_or_shifts,
+        max_files_per_job,
+        era,
+        use_lumi,
+        lumi,
+        check_input_files,
+        running_method,
+        num_parallel_jobs,
+        executable_addBackgrounds,
+        executable_addBackgroundJetToTauFakes,
+        histograms_to_fit,
+        select_rle_output         = False,
+        executable_prep_dcard     = "prepareDatacards",
+        executable_add_syst_dcard = "addSystDatacards",
+        verbose                   = False,
+        dry_run                   = False,
+        do_sync                   = False,
+        isDebug                   = False,
+        rle_select                = '',
+        use_nonnominal            = False,
+        hlt_filter                = False,
+        use_home                  = True,
+      ):
+    analyzeConfig.__init__(self,
+      configDir                 = configDir,
+      outputDir                 = outputDir,
+      executable_analyze        = executable_analyze,
+      channel                   = "2l_2tau",
+      lep_mva_wp                = lep_mva_wp,
+      central_or_shifts         = central_or_shifts,
+      max_files_per_job         = max_files_per_job,
+      era                       = era,
+      use_lumi                  = use_lumi,
+      lumi                      = lumi,
+      check_input_files         = check_input_files,
+      running_method            = running_method,
+      num_parallel_jobs         = num_parallel_jobs,
+      histograms_to_fit         = histograms_to_fit,
+      triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
+      executable_prep_dcard     = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
-      verbose = verbose,
-      dry_run = dry_run,
-      do_sync = do_sync,
-      isDebug = isDebug,
-      use_home = use_home,
+      verbose                   = verbose,
+      dry_run                   = dry_run,
+      do_sync                   = do_sync,
+      isDebug                   = isDebug,
+      use_home                  = use_home,
     )
 
     self.samples = samples
@@ -106,7 +146,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
             else:
               self.lepton_and_hadTau_genMatches_faketau.append(lepton_and_hadTau_genMatch)
           elif lepton_genMatch.endswith("0j"):
-            self.lepton_and_hadTau_genMatches_conversions.append(lepton_and_hadTau_genMatch)            
+            self.lepton_and_hadTau_genMatches_conversions.append(lepton_and_hadTau_genMatch)
           else:
             self.lepton_and_hadTau_genMatches_fakes.append(lepton_and_hadTau_genMatch)
     elif applyFakeRateWeights == "2tau":
@@ -129,7 +169,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH", "VH" ]
-    
+
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "conversions", "fakes_data", "fakes_mc" ]
     self.histogramDir_prep_dcard = "2l_2tau_sumOS_Tight"
@@ -599,7 +639,7 @@ lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
               # sum fake background contributions for the total of all MC sample
               # input processes: TT1l0g1j,TT0l1g1j,TT0l0g2j; ...
               # output process: fakes_mc
-              key_addBackgrounds_job_fakes = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+              key_addBackgrounds_job_fakes = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, "fakes")
               sample_categories = []
               sample_categories.extend(self.nonfake_backgrounds)
               sample_categories.extend([ "signal" ])
@@ -624,7 +664,7 @@ lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
               # sum conversion background contributions for the total of all MC sample
               # input processes: TT1l1g0j, TT0l2g0j; ...
               # output process: conversions
-              key_addBackgrounds_job_conversions = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+              key_addBackgrounds_job_conversions = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, "conversions")
               sample_categories = []
               sample_categories.extend(self.nonfake_backgrounds)
               sample_categories.extend([ "signal" ])

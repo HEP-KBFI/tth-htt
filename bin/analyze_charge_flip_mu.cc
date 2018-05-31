@@ -139,10 +139,18 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
 
+  checkOptionValidity(central_or_shift, isMC);
   const int jetPt_option     = getJet_option       (central_or_shift, isMC);
-  const int lheScale_option  = getLHEscale_option  (central_or_shift, isMC);
-  const int jetBtagSF_option = getBTagWeight_option(central_or_shift, isMC);
-  const int muon_option      = getMuon_option      (central_or_shift, isMC);
+  const int lheScale_option  = getLHEscale_option  (central_or_shift);
+  const int jetBtagSF_option = getBTagWeight_option(central_or_shift);
+  const int muon_option      = getMuon_option      (central_or_shift);
+
+  std::cout
+    << "central_or_shift = "               << central_or_shift           << "\n"
+       " -> lheScale_option            = " << lheScale_option            << "\n"
+       " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
+       " -> jetPt_option               = " << jetPt_option               << '\n'
+  ;
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
