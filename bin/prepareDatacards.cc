@@ -16,7 +16,7 @@ cfg_prepareDatacards
 #include "DataFormats/FWLite/interface/InputSource.h"
 #include "DataFormats/FWLite/interface/OutputFiles.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // compIntegral()
+#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // compIntegral(), getTArraDfromVector()
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
@@ -185,17 +185,6 @@ namespace
       delete matches;
     }
     return isMatched;
-  }
-
-  TArrayD
-  getTArraDfromVector(const std::vector<double> & histogramBinning)
-  {
-    TArrayD binning_tarray(histogramBinning.size());
-    for(std::size_t idxBin = 0; idxBin < histogramBinning.size(); ++idxBin)
-    {
-      binning_tarray[idxBin] = histogramBinning[idxBin];
-    }
-    return binning_tarray;
   }
 
 }

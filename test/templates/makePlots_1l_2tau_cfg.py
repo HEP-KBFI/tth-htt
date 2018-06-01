@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+import numpy as np
+
 import os
 
 from tthAnalysis.HiggsToTauTau.configs.makePlots_cfi import process
@@ -55,7 +57,8 @@ process.makePlots.distributions.extend([
     cms.PSet(
         histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_plainKin_tt'),
         xAxisTitle = cms.string('MVA'),
-        yAxisTitle = cms.string('dN/dMVA')
+        yAxisTitle = cms.string('dN/dMVA'),
+        explicitBinning = cms.vdouble(list(np.linspace(0., 1., 6 + 1))),
     ),
     cms.PSet(
         histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_plainKin_1B_VT'),
@@ -65,7 +68,8 @@ process.makePlots.distributions.extend([
     cms.PSet(
         histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_HTT_SUM_VT'),
         xAxisTitle = cms.string('MVA'),
-        yAxisTitle = cms.string('dN/dMVA')
+        yAxisTitle = cms.string('dN/dMVA'),
+        explicitBinning = cms.vdouble(list(np.linspace(0., 1., 7 + 1))),
     ),
     cms.PSet(
         histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_HTT_SUM_VT_noRebin'),
@@ -75,7 +79,8 @@ process.makePlots.distributions.extend([
     cms.PSet(
         histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_plainKin_SUM_VT'),
         xAxisTitle = cms.string('MVA'),
-        yAxisTitle = cms.string('dN/dMVA')
+        yAxisTitle = cms.string('dN/dMVA'),
+        explicitBinning = cms.vdouble(list(np.linspace(0., 1., 5 + 1))),
     ),
     cms.PSet(
         histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_plainKin_SUM_VT_noRebin'),
