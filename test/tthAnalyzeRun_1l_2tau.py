@@ -61,14 +61,6 @@ if mode == "default":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "3L"
-
-  for sample_name, sample_info in samples_2017.items():
-    if sample_info["type"] == "mc":
-      sample_info["triggers"] = ["1e", "1mu"]
-    if sample_name in [
-        #TODO list of samples collected with tau, 2e, 2mu and e-mu cross-triggers
-      ]:
-      sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_preselected import samples_2017
