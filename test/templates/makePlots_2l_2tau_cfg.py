@@ -51,7 +51,8 @@ process.makePlots.distributions.extend([
     cms.PSet(
         histogramName = cms.string("sel/evt/$PROCESS/mvaOutput_plainKin_SUM_VT"),
         xAxisTitle = cms.string("MVA Discriminant"),
-        yAxisTitle = cms.string("dN/dMVA")
+        yAxisTitle = cms.string("dN/dMVA"),
+        explicitBinning = cms.vdouble([0.0, 0.35, 0.41, 0.47, 1.0]),
     ),
     cms.PSet(
         histogramName = cms.string("sel/evt/$PROCESS/mvaOutput_plainKin_1B_VT"),
