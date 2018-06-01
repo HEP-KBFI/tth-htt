@@ -1217,13 +1217,14 @@ int main(int argc, char* argv[])
     if ( isMC ) {
       evtWeight *= lumiScale;
       if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
+      if ( isMC_tH ) evtWeight *= eventInfo.genWeight_tH;
       evtWeight *= eventInfo.pileupWeight;
       evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
       btagWeight = get_BtagWeight(selJets);
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
         std::cout << "lumiScale = " << lumiScale << std::endl;
-  if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
+	if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
 	std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
         std::cout << "btagWeight = " << btagWeight << std::endl;
       }
