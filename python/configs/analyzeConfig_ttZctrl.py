@@ -498,7 +498,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
     key_addFakes_job = getKey("fakes_data")
     key_hadd_stage1_5 = getKey(get_lepton_selection_and_frWeight("Fakeable", "enabled"))
-    category_sideband = "ttZctrl_Fakeable"
+    category_sideband = "ttZctrl_Fakeable_wFakeRateWeights"
     self.jobOptions_addFakes[key_addFakes_job] = {
       'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
       'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_cfg.py" % self.channel),
