@@ -611,7 +611,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     "avg_dr_jet", "MT_met_lep1"};
   TMVAInterface mva_2lss_tt(mvaFileName_2lss_tt, mvaInputVariables_2lss_tt,
     { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
-  std::vector<std::string> mvaInputVariables_2lss = get_mvaInputVariables(mvaInputVariables_2lss_ttV, mvaInputVariables_2lss_tt);
 
   // trained with XGB (March 2018)
   std::string mvaFileName_plainKin_tt = "tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2lss_1tau_XGB_plainKin_evtLevelTT_TTH_16Var.xml";
@@ -660,6 +659,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   };
   TMVAInterface mva_2lss_1tau_HTT_SUM_M(mvaFileName_HTT_SUM_M, mvaInputVariables_HTT_SUMSort);
   mva_2lss_1tau_HTT_SUM_M.enableBDTTransform();
+  std::vector<std::string> mvaInputVariables_2lss = get_mvaInputVariables(mvaInputVariables_HTT_SUMSort, mvaInputVariables_plainKin_SUMSort);
 
   std::string mvaFileName_HTTMEM_SUM_M ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2lss_1tau_XGB_HTTMEM_evtLevelSUM_TTH_M_20Var.xml";
   std::vector<std::string> mvaInputVariables_HTTMEM_SUMSort = {
@@ -1993,7 +1993,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       { "ptmiss",         ptmiss              },
       { "tau_pt",         tau_pt              },
       { "HTT",            HTT                 },
-      { "Hj_tagger",      mvaOutput_Hj_tagger },
+      //{ "Hj_tagger",      mvaOutput_Hj_tagger },
       { "HadTop_pt",      HadTop_pt           },
     };
     const double mvaOutput_2lss_1tau_HTT_SUM_M = mva_2lss_1tau_HTT_SUM_M(mvaInputVariables_HTT_SUM);
@@ -2037,7 +2037,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
-    selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputs_2lss, evtWeight);
+    selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputVariables_HTT_SUM, evtWeight);
     selHistManager->evt_->fillHistograms(
       selElectrons.size(),
       selMuons.size(),

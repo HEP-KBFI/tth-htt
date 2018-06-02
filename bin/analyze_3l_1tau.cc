@@ -491,8 +491,6 @@ int main(int argc, char* argv[])
     "nJet25_Recl", "mhtJet25_Recl", "avg_dr_jet", "mindr_lep1_jet", "mindr_lep2_jet"};
   TMVAInterface mva_3l_ttbar(mvaFileName_3l_ttbar, mvaInputVariables_3l_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
-  std::vector<std::string> mvaInputVariables_3l = get_mvaInputVariables(mvaInputVariables_3l_ttV, mvaInputVariables_3l_ttbar);
-
   //    trained in XGB to 3l_1tau category
   std::string mvaFileName_plainKin_tt = "tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/3l_1tau_XGB_plainKin_evtLevelTT_TTH_15Var.xml";
   std::vector<std::string> mvaInputVariables_plainKin_ttSort = {
@@ -519,6 +517,8 @@ int main(int argc, char* argv[])
   };
   TMVAInterface mva_plainKin_SUM_M(mvaFileName_plainKin_SUM_M, mvaInputVariables_plainKin_SUMSort);
   mva_plainKin_SUM_M.enableBDTTransform();
+
+  std::vector<std::string> mvaInputVariables_3l = get_mvaInputVariables(mvaInputVariables_plainKin_SUMSort, mvaInputVariables_plainKin_ttVSort);
 
   std::vector<std::string> mvaInputVariables_1BSort = {"BDTtt", "BDTttV"};
   std::string mvaFileName_plainKin_1B_M ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/3l_1tau_XGB_JointBDT_plainKin_1B_M.xml";
@@ -674,7 +674,7 @@ int main(int argc, char* argv[])
       }
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/weights", histogramDir.data()), central_or_shift));
-      selHistManager->weights_->bookHistograms(fs, { 
+      selHistManager->weights_->bookHistograms(fs, {
         "genWeight", "lheWeight", "pileupWeight",
 	"triggerWeight", "btagWeight", "leptonEff", "hadTauEff", "data_to_MC_correction",
         "fakeRate" });
@@ -1803,7 +1803,7 @@ int main(int argc, char* argv[])
     selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
-    selHistManager->mvaInputVariables_3l_->fillHistograms(mvaInputs_3l, evtWeight);
+    selHistManager->mvaInputVariables_3l_->fillHistograms(mvaInputVariables_plainKin_SUM, evtWeight);
     selHistManager->evt_->fillHistograms(
       selElectrons.size(), selMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),

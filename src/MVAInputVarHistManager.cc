@@ -6,7 +6,10 @@
 MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
 {
-  binningOptions_["avg_dr_jet"]                 = new binningOptionType("avg_dr_jet",                 50,  0.,    5.);
+  binningOptions_["avg_dr_jet"]                 = new binningOptionType("avg_dr_jet",                 30,  0.,    5.);
+  binningOptions_["avr_dr_lep_tau"]             = new binningOptionType("avr_dr_lep_tau",             30,  0.,    5.);
+  binningOptions_["max_dr_lep_tau"]             = new binningOptionType("max_dr_lep_tau",             30,  0.,    5.);
+  binningOptions_["is_OS"]                      = new binningOptionType("is_OS",                      2,  0.,    2.);
   binningOptions_["dr_lep_tau_os"]              = new binningOptionType("dr_lep_tau_os",              50,  0.,    5.);
   binningOptions_["dr_lep_tau_ss"]              = new binningOptionType("dr_lep_tau_ss",              50,  0.,    5.);
   binningOptions_["dr_lep1_tau"]                = new binningOptionType("dr_lep1_tau",                50,  0.,    5.);
@@ -45,6 +48,7 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["LepGood_conePt[iF_Recl[2]]"] = new binningOptionType("LepGood_conePt[iF_Recl[2]]", 40,  0.,  200.);
   binningOptions_["leptonPairCharge"]           = new binningOptionType("leptonPairCharge",            5, -2.5,  +2.5);
   binningOptions_["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = new binningOptionType("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", 50, -2.5, +2.5);
+  binningOptions_["tau2_eta"]                   = new binningOptionType("tau2_eta",                   50, -2.5, +2.5);
   binningOptions_["max_lep_eta"]                = new binningOptionType("max_lep_eta",                50, -2.5,  +2.5);
   binningOptions_["memOutput_LR"]               = new binningOptionType("memOutput_LR",               20,  0.,    1.);
   binningOptions_["memOutput_ttZ_LR"]           = new binningOptionType("memOutput_ttZ_LR",           20,  0.,    1.);
@@ -66,10 +70,12 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["MT_met_lep2"]                = new binningOptionType("MT_met_lep2",                40,  0.,  200.);
   binningOptions_["mT_tau1"]                    = new binningOptionType("mT_tau1",                    40,  0.,  200.);
   binningOptions_["mT_tau2"]                    = new binningOptionType("mT_tau2",                    40,  0.,  200.);
-  binningOptions_["mTauTau"]                    = new binningOptionType("mTauTau",                    40,  0.,  200.);
-  binningOptions_["mTauTauVis"]                 = new binningOptionType("mTauTauVis",                 40,  0.,  200.);
-  binningOptions_["mTauTauVis1"]                = new binningOptionType("mTauTauVis1",                40,  0.,  200.);
-  binningOptions_["mTauTauVis2"]                = new binningOptionType("mTauTauVis2",                40,  0.,  200.);
+  binningOptions_["mbb_loose"]                  = new binningOptionType("mbb_loose",                  20,  0.,  200.);
+  binningOptions_["mbb"]                  = new binningOptionType("mbb_loose",                  20,  0.,  200.);
+  binningOptions_["mTauTau"]                    = new binningOptionType("mTauTau",                    20,  0.,  200.);
+  binningOptions_["mTauTauVis"]                 = new binningOptionType("mTauTauVis",                 20,  0.,  200.);
+  binningOptions_["mTauTauVis1"]                = new binningOptionType("mTauTauVis1",                20,  0.,  200.);
+  binningOptions_["mTauTauVis2"]                = new binningOptionType("mTauTauVis2",                20,  0.,  200.);
   binningOptions_["nJet"]                       = new binningOptionType("nJet",                       20, -0.5, +19.5);
   binningOptions_["nJet25_Recl"]                = new binningOptionType("nJet25_Recl",                20, -0.5, +19.5);
   binningOptions_["njets_inclusive"]            = new binningOptionType("njets_inclusive",            20, -0.5, +19.5);
@@ -79,10 +85,11 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["ptmiss"]                     = new binningOptionType("ptmiss",                     40,  0.,  200.);
   binningOptions_["lep_conePt"]                 = new binningOptionType("lep_conePt",                 40,  0.,  200.);
   binningOptions_["dr_lep_tau_lead"]            = new binningOptionType("dr_lep_tau_lead",            50,  0.,    5.);
-  binningOptions_["costS_tau"]                  = new binningOptionType("costS_tau",                  50, 0.,   +1.);
+  binningOptions_["costS_tau"]                  = new binningOptionType("costS_tau",                  30, 0.,   +1.);
+  binningOptions_["cosThetaS_hadTau"]           = new binningOptionType("cosThetaS_hadTau",           30, 0.,   +1.);
   binningOptions_["HTT"]                        = new binningOptionType("HTT",                        50, 0.,   +1.);
-  binningOptions_["HadTop_pt"]                  = new binningOptionType("HadTop_pt",                  50,  0.,  500.);
-  binningOptions_["TMath::Min(ptmiss,500)"]     = new binningOptionType("ptmiss",                     40,  0.,  200.);
+  binningOptions_["HadTop_pt"]                  = new binningOptionType("HadTop_pt",                  30,  0.,  500.);
+  binningOptions_["TMath::Min(ptmiss,500)"]     = new binningOptionType("ptmiss",                     20,  0.,  200.);
   binningOptions_["tau_abs_eta"]                = new binningOptionType("tau_abs_eta",                50, -2.5,  +2.5);
   binningOptions_["tau_pt"]                     = new binningOptionType("tau_pt",                     40,  0.,  200.);
   binningOptions_["tau1_pt"]                    = new binningOptionType("tau1_pt",                    40,  0.,  200.);

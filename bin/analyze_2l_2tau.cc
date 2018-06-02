@@ -481,6 +481,24 @@ int main(int argc, char* argv[])
 
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
 
+  std::string mvaFileName_plainKin_tt = "tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2l_2tau_XGB_plainKin_evtLevelTT_TTH_11Var.xml";
+  std::vector<std::string> mvaInputVariables_plainKin_ttSort = {
+    "mTauTauVis", "cosThetaS_hadTau", "tau1_pt", "tau2_pt", "tau2_eta",
+    "mindr_lep1_jet", "mT_lep1", "mindr_tau_jet", "max_dr_lep_tau", "is_OS", "nBJetLoose"
+  };
+  TMVAInterface mva_plainKin_tt(mvaFileName_plainKin_tt, mvaInputVariables_plainKin_ttSort);
+  mva_plainKin_tt.enableBDTTransform();
+  
+  std::string mvaFileName_plainKin_SUM_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2l_2tau_XGB_plainKin_evtLevelSUM_TTH_VT_13Var.xml";
+  std::vector<std::string> mvaInputVariables_plainKin_SUMSort = {
+    "mTauTauVis", "cosThetaS_hadTau", "tau1_pt", "tau2_pt",
+    "lep2_conePt", "mindr_lep1_jet", "mT_lep1", "mindr_tau_jet",
+    "avg_dr_jet", "avr_dr_lep_tau", "dr_taus", "is_OS", "nBJetLoose"
+  };
+  TMVAInterface mva_plainKin_SUM_VT(mvaFileName_plainKin_SUM_VT, mvaInputVariables_plainKin_SUMSort);
+  mva_plainKin_SUM_VT.enableBDTTransform();
+  std::vector<std::string> mvaInputVariables_2l2tau = get_mvaInputVariables(mvaInputVariables_plainKin_SUMSort, mvaInputVariables_plainKin_ttSort);
+
 //--- declare histograms
   struct preselHistManagerType
   {
@@ -492,6 +510,7 @@ int main(int argc, char* argv[])
     JetHistManager* BJets_medium_;
     MEtHistManager* met_;
     MEtFilterHistManager* metFilters_;
+    MVAInputVarHistManager* mvaInputVariables_2l_2tau_;
     EvtHistManager_2l_2tau* evt_;
   };
   typedef std::map<int, preselHistManagerType*> int_to_preselHistManagerMap;
@@ -626,6 +645,9 @@ int main(int argc, char* argv[])
       selHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/metFilters", histogramDir.data()), central_or_shift));
       selHistManager->metFilters_->bookHistograms(fs);
+      selHistManager->mvaInputVariables_2l_2tau_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
+        Form("%s/sel/mvaInputs_2lss", histogramDir.data()), central_or_shift));
+      selHistManager->mvaInputVariables_2l_2tau_->bookHistograms(fs, mvaInputVariables_2l2tau);
       selHistManager->evt_ = new EvtHistManager_2l_2tau(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
       selHistManager->evt_->bookHistograms(fs);
@@ -676,13 +698,6 @@ int main(int argc, char* argv[])
 
   //--- initialize BDTs used to discriminate ttH vs. ttV and ttbar
   //    trained in XGB to 2l_2tau category
-  std::string mvaFileName_plainKin_tt = "tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2l_2tau_XGB_plainKin_evtLevelTT_TTH_11Var.xml";
-  std::vector<std::string> mvaInputVariables_plainKin_ttSort = {
-    "mTauTauVis", "cosThetaS_hadTau", "tau1_pt", "tau2_pt", "tau2_eta",
-    "mindr_lep1_jet", "mT_lep1", "mindr_tau_jet", "max_dr_lep_tau", "is_OS", "nBJetLoose"
-  };
-  TMVAInterface mva_plainKin_tt(mvaFileName_plainKin_tt, mvaInputVariables_plainKin_ttSort);
-  mva_plainKin_tt.enableBDTTransform();
 
   std::string mvaFileName_plainKin_ttV ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2l_2tau_XGB_plainKin_evtLevelTTV_TTH_14Var.xml";
   std::vector<std::string> mvaInputVariables_plainKin_ttVSort = {
@@ -692,15 +707,6 @@ int main(int argc, char* argv[])
   };
   TMVAInterface mva_plainKin_ttV(mvaFileName_plainKin_ttV, mvaInputVariables_plainKin_ttVSort);
   mva_plainKin_ttV.enableBDTTransform();
-
-  std::string mvaFileName_plainKin_SUM_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2l_2tau_XGB_plainKin_evtLevelSUM_TTH_VT_13Var.xml";
-  std::vector<std::string> mvaInputVariables_plainKin_SUMSort = {
-    "mTauTauVis", "cosThetaS_hadTau", "tau1_pt", "tau2_pt",
-    "lep2_conePt", "mindr_lep1_jet", "mT_lep1", "mindr_tau_jet",
-    "avg_dr_jet", "avr_dr_lep_tau", "dr_taus", "is_OS", "nBJetLoose"
-  };
-  TMVAInterface mva_plainKin_SUM_VT(mvaFileName_plainKin_SUM_VT, mvaInputVariables_plainKin_SUMSort);
-  mva_plainKin_SUM_VT.enableBDTTransform();
 
   std::string mvaFileName_plainKin_1B_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2l_2tau_XGB_JointBDT_plainKin_1B_VT.xml";
   std::vector<std::string> mvaInputVariables_plainKin_1BSort = {"BDTtt", "BDTttV"};
@@ -1637,6 +1643,7 @@ int main(int argc, char* argv[])
     selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
+    selHistManager->mvaInputVariables_2l_2tau_->fillHistograms(mvaInputVariables_plainKin_SUM, evtWeight);
     selHistManager->evt_->fillHistograms(
       selElectrons.size(), selMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
