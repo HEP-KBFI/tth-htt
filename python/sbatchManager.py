@@ -108,7 +108,13 @@ class sbatchManager:
          prio - ? (10min?) time limit, available immediately
     """
 
-    def __init__(self, pool_id = '', verbose = False, dry_run = False, use_home = True):
+    def __init__(self,
+            pool_id = '',
+            verbose = False,
+            dry_run = False,
+            use_home = True,
+            max_resubmissions = 2,
+          ):
         self.max_pool_id_length = 256
         if not pool_id:
             raise ValueError("Parameter 'pool_id' not specified!")
@@ -121,19 +127,20 @@ class sbatchManager:
         self.workingDir     = None
         self.logFileDir     = None
         queue_environ = os.environ.get('SBATCH_PRIORITY')
-        self.queue          = queue_environ if queue_environ else "small"
-        self.poll_interval  = 30
-        self.jobIds         = {}
-        self.analysisName   = "tthAnalysis"
-        self.user           = getpass.getuser()
-        self.pool_id        = pool_id
-        self.log_completion = False
-        self.max_nof_greps  = 1000
-        self.sbatchArgs     = ''
-        self.datetime       = datetime.datetime.now().strftime('%m/%d/%y-%H:%M:%S')
-        self.dry_run        = dry_run
-        self.max_mem        = '1800M'
-        self.use_home       = use_home
+        self.queue             = queue_environ if queue_environ else "small"
+        self.poll_interval     = 30
+        self.jobIds            = {}
+        self.analysisName      = "tthAnalysis"
+        self.user              = getpass.getuser()
+        self.pool_id           = pool_id
+        self.log_completion    = False
+        self.max_nof_greps     = 1000
+        self.sbatchArgs        = ''
+        self.datetime          = datetime.datetime.now().strftime('%m/%d/%y-%H:%M:%S')
+        self.dry_run           = dry_run
+        self.max_mem           = '1800M'
+        self.use_home          = use_home
+        self.max_resubmissions = max_resubmissions
 
         logging.basicConfig(
             stream = sys.stdout,
@@ -291,7 +298,8 @@ class sbatchManager:
         return job_id
 
     def submitJob(self, inputFiles, executable, command_line_parameter, outputFilePath, outputFiles,
-                  scriptFile, logFile = None, skipIfOutputFileExists = False, job_template_file = 'sbatch-node.sh.template'):
+                  scriptFile, logFile = None, skipIfOutputFileExists = False,
+                  job_template_file = 'sbatch-node.sh.template', nof_submissions = 0):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
         """
 
@@ -371,10 +379,16 @@ class sbatchManager:
         if self.dry_run:
             return
 
+        nof_submissions += 1
         self.jobIds[self.submit(sbatch_command)] = {
-            'status'   : Status.submitted,
-            'log_wrap' : wrapper_log_file,
-            'log_exec' : executable_log_file,
+            'status'          : Status.submitted,
+            'log_wrap'        : wrapper_log_file,
+            'log_exec'        : executable_log_file,
+            'args'            : (
+                inputFiles, executable, command_line_parameter, outputFilePath, outputFiles,
+                scriptFile, logFile, skipIfOutputFileExists, job_template_file, nof_submissions,
+            ),
+            'nof_submissions' : nof_submissions,
         }
 
     def get_job_dir(self):
@@ -502,8 +516,20 @@ class sbatchManager:
                                   )
                                 )
 
-                        # Raise the first error at hand
-                        raise Status.raiseError(errors[0])
+                            if self.jobIds[failed_job]['nof_submissions'] > self.max_resubmissions:
+                                # We've exceeded the maximum number of resubmissions -> fail the workflow
+                                raise Status.raiseError(completion[failed_job].status)
+                            else:
+                                # The job is eligible for resubmission
+                                # The old ID must be deleted, b/c otherwise it would be used to compare against
+                                # squeue output and we would resubmit the failed job ad infinitum
+                                logging.warning(
+                                    "Job w/ ID {} and arguments {} FAILED -> resubmission attempt #{}".format(
+                                        failed_job, self.jobIds[failed_job]['args'], self.jobIds[failed_job]['nof_submissions'],
+                                    )
+                                )
+                                self.submitJob(*self.jobIds[failed_job]['args'])
+                                del self.jobIds[failed_job]
                     else:
                         logging.debug("Job(s) w/ ID(s) {completedIds} finished successfully {runningInfo}".format(
                           completedIds = ','.join(completed_jobs),
