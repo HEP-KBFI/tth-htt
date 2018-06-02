@@ -453,7 +453,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
         processes_input = []
         for sample_category in sample_categories:
           processes_input.append("%s_conversion" % sample_category)
-        self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
+        self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_conversions] = {
           'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_conversions_%s_cfg.py" % \
             (self.channel, lepton_selection_and_frWeight)),
