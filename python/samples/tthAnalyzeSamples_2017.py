@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-05-30 21:09:00 with the following command:
+# file generated at 2018-06-03 20:03:44 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017_post.txt -Z zeroes.txt -z zombies.txt -N samples_2017 -E 2017 -g tthAnalyzeSamples_2017.py -o python/samples -M
 
 samples_2017 = OD()
@@ -35,6 +35,9 @@ samples_2017["/SingleElectron/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
     "HLT_Ele23_CaloIdM_TrackIdM_PFJet30",
     "HLT_Ele32_WPTight_Gsf",
     "HLT_Ele8_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8",
+    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL",
+    "HLT_Mu3_PFJet40",
   ]),
 ])
 
@@ -189,6 +192,12 @@ samples_2017["/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_hlt_paths",               [
+    "HLT_Ele17_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Ele23_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Ele32_WPTight_Gsf",
+    "HLT_Ele8_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8",
+    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL",
     "HLT_Mu3_PFJet40",
   ]),
 ])
@@ -220,7 +229,7 @@ samples_2017["/SingleMuon/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_hlt_paths",               [
-
+    "HLT_Ele32_WPTight_Gsf",
   ]),
 ])
 
@@ -344,7 +353,13 @@ samples_2017["/DoubleEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_hlt_paths",               [
-
+    "HLT_Ele17_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Ele23_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Ele32_WPTight_Gsf",
+    "HLT_Ele8_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8",
+    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL",
+    "HLT_Mu3_PFJet40",
   ]),
 ])
 
@@ -375,7 +390,7 @@ samples_2017["/DoubleEG/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_hlt_paths",               [
-
+    "HLT_Ele32_WPTight_Gsf",
   ]),
 ])
 
@@ -499,7 +514,13 @@ samples_2017["/DoubleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_hlt_paths",               [
+    "HLT_Ele17_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Ele23_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Ele32_WPTight_Gsf",
+    "HLT_Ele8_CaloIdM_TrackIdM_PFJet30",
     "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8",
+    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL",
+    "HLT_Mu3_PFJet40",
   ]),
 ])
 
@@ -530,7 +551,7 @@ samples_2017["/DoubleMuon/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_hlt_paths",               [
-
+    "HLT_Ele32_WPTight_Gsf",
   ]),
 ])
 
@@ -654,7 +675,13 @@ samples_2017["/MuonEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_hlt_paths",               [
+    "HLT_Ele17_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Ele23_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Ele32_WPTight_Gsf",
+    "HLT_Ele8_CaloIdM_TrackIdM_PFJet30",
+    "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8",
     "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL",
+    "HLT_Mu3_PFJet40",
   ]),
 ])
 
@@ -685,7 +712,7 @@ samples_2017["/MuonEG/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_hlt_paths",               [
-
+    "HLT_Ele32_WPTight_Gsf",
   ]),
 ])
 
