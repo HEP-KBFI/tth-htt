@@ -13,7 +13,7 @@ parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_nonnominal()
 parser.add_tau_id_wp('dR03mvaVVLoose')
-parser.add_files_per_job(20)
+parser.add_files_per_job(10)
 parser.add_use_home(False)
 parser.add_argument('-p', '--enable-preselection',
   dest = 'enable_preselection', action = 'store_true', default = False,
