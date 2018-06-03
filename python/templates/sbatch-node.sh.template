@@ -12,7 +12,7 @@ echo 'Running script {{ script_file }} (created from template {{ job_template_fi
 
 
 RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
-
+export JOB_DIR="{{ job_dir }}/$SLURM_JOBID"
 
 # Runs executable, wrapped into failure wrapper
 
@@ -59,7 +59,6 @@ cleanup() {
 # Creates scratch dir on cluster node or a directory under $HOME and runs the executable
 
 run_wrapped_executable() {
-    export JOB_DIR="{{ job_dir }}/$SLURM_JOBID"
     EXECUTABLE_LOG_FILE="{{ executable_log_file }}"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
     RANDOM_SLEEP={{ random_sleep }}
@@ -166,8 +165,6 @@ run_wrapped_executable() {
         EXIT_CODE=1;
       fi
     done
-
-    echo "Time is: `date`"
 
     cleanup "$JOB_DIR"
 
