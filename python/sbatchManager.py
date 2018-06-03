@@ -156,7 +156,7 @@ class sbatchManager:
             verbose = False,
             dry_run = False,
             use_home = True,
-            max_resubmissions = 4,
+            max_resubmissions = 6,
           ):
         self.max_pool_id_length = 256
         if not pool_id:
