@@ -115,6 +115,11 @@ def generate_sbatch_lines(
     return lines_sbatch, num_jobs
 
 def is_file_ok(output_file_name, min_file_size = 20000, skipFileSizeCheck = False):
+  if not (output_file_name and os.path.exists(output_file_name)):
+    return False
+  if not output_file_name.lower().endswith('.root'):
+    return True
+
   command = "%s %s" % (executable_rm, output_file_name)
   output_file_size = os.stat(output_file_name).st_size
   logging.info("output file %s already exists, size = %i" % (output_file_name, output_file_size))
@@ -155,32 +160,28 @@ def generate_sbatch_line(
     job_template_file = 'sbatch-node.sh.template',
     skipFileSizeCheck = False,
   ):
-    if output_file_name and os.path.exists(output_file_name):
-        if not output_file_name.lower().endswith('.root'):
-           return None
-        if is_file_ok(output_file_name, min_file_size, skipFileSizeCheck):
-          return None
+    if is_file_ok(output_file_name, min_file_size, skipFileSizeCheck):
+      return None
 
-        if log_file_name and os.path.exists(log_file_name):
-            log_file = open(log_file_name)
-            time           = None
-            hostname       = None
-            is_cvmfs_error = False
-            for line in log_file:
-                if line.find("Time") != -1:
-                    time = line.split(':')[1].strip()
-                if line.find("Hostname") != -1:
-                    hostname = line.split(':')[1].strip()
-                if line.find("Transport endpoint is not connected") != -1:
-                    is_cvmfs_error = True
-            log_file.close()
-            if is_cvmfs_error:
-                logging.error("Problem with cvmfs access reported in log file = '%s':" % log_file_name)
-                logging.error(" host = '%s': time = %s" % (hostname, time))
-                if cvmfs_error_log:
-                    if not hostname in cvmfs_error_log.keys():
-                        cvmfs_error_log[hostname] = []
-                    cvmfs_error_log[hostname].append(time)
+    if log_file_name and os.path.exists(log_file_name):
+        time           = None
+        hostname       = None
+        is_cvmfs_error = False
+        with open(log_file_name, 'r') as log_file:
+          for line in log_file:
+              if line.find("Time") != -1:
+                  time = line.split(':')[1].strip()
+              if line.find("Hostname") != -1:
+                  hostname = line.split(':')[1].strip()
+              if line.find("Transport endpoint is not connected") != -1:
+                  is_cvmfs_error = True
+        if is_cvmfs_error:
+            logging.error("Problem with cvmfs access reported in log file = '%s':" % log_file_name)
+            logging.error(" host = '%s': time = %s" % (hostname, time))
+            if cvmfs_error_log:
+                if not hostname in cvmfs_error_log.keys():
+                    cvmfs_error_log[hostname] = []
+                cvmfs_error_log[hostname].append(time)
 
     if type(input_file_names) is str:
         input_file_names = [ input_file_names ]
