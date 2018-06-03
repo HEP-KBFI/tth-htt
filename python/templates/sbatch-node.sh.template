@@ -49,6 +49,12 @@ run_failure_wrapped_executable() {
     return $EXIT_CODE
 }
 
+cleanup() {
+    if [ ! -z "$1" ]; then
+        echo "Deleting directory: rm -r $1"
+        rm -r "$1";
+    fi
+}
 
 # Creates scratch dir on cluster node or a directory under $HOME and runs the executable
 
@@ -90,6 +96,23 @@ run_wrapped_executable() {
     {{ exec_name }} {{ command_line_parameter }} &> $EXECUTABLE_LOG_FILE
     EXIT_CODE=$?
     echo "Command {{ exec_name }} exited with code $EXIT_CODE"
+
+    IO_GREP=$(grep "SysError in <TFile::ReadBuffer>" $EXECUTABLE_LOG_FILE | grep "(Input/output error)" | wc -l)
+    MISSING_FILE_GREP=$(grep "Error in <TFile::TFile>" $EXECUTABLE_LOG_FILE | grep "does not exist" | wc -l)
+    if [[ $IO_GREP -ne 0 ]]; then
+      echo "Encountered I/O error; setting the exit code accordingly";
+      EXIT_CODE=3;
+    fi
+    if [[ $MISSING_FILE_GREP -ne 0 ]]; then
+      echo "Encountered missing file error; setting the exit code accordingly";
+      EXIT_CODE=4;
+    fi
+
+    # Fail early
+    if [[ $EXIT_CODE -ne 0 ]]; then
+        cleanup "$JOB_DIR";
+        return $EXIT_CODE;
+    fi
 
     echo "Time is: `date`"
 
@@ -134,20 +157,19 @@ run_wrapped_executable() {
         done
 
         if [ ! $COPIED ]; then
-          EXIT_CODE=1;
+          EXIT_CODE=5;
         fi
 
       else
         echo "$OUTPUT_FILE is broken, will exit with code 1."
-        rm $OUTPUT_FILE
-        EXIT_CODE=1
+        rm $OUTPUT_FILE;
+        EXIT_CODE=1;
       fi
     done
 
     echo "Time is: `date`"
 
-    echo "Delete job directory: rm -r $JOB_DIR"
-    rm -r $JOB_DIR
+    cleanup "$JOB_DIR"
 
     echo "End time is: `date`"
 

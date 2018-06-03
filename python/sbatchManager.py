@@ -25,6 +25,15 @@ class sbatchManagerSyntaxError(sbatchManagerError):
 class sbatchManagerRuntimeError(sbatchManagerError):
     pass
 
+class sbatchManagerIOError(sbatchManagerError):
+    pass
+
+class sbatchManagerMissingFileError(sbatchManagerError):
+    pass
+
+class sbatchManagerCopyError(sbatchManagerError):
+    pass
+
 # Define Status
 
 class Status:
@@ -37,6 +46,9 @@ class Status:
   syntax_error    = 13
   runtime_error   = 14
   other_error     = 15
+  io_error        = 16
+  missing_file    = 17
+  cp_error        = 18
 
   @staticmethod
   def classify_error(ExitCode, DerivedExitCode, State):
@@ -55,6 +67,14 @@ class Status:
           return Status.syntax_error
       if (ExitCode == '1:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
           return Status.runtime_error
+      if (ExitCode == '2:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
+          return Status.runtime_error
+      if (ExitCode == '3:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
+          return Status.io_error
+      if (ExitCode == '4:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
+          return Status.missing_file
+      if (ExitCode == '5:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
+          return Status.cp_error
       return Status.other_error
 
   @staticmethod
@@ -71,6 +91,12 @@ class Status:
           return 'syntax_error'
       if status_type == Status.runtime_error:
           return 'runtime_error'
+      if status_type == Status.io_error:
+          return 'io_error'
+      if status_type == Status.missing_file:
+          return 'missing_file'
+      if status_type == Status.cp_error:
+          return 'cp_error'
       if status_type == Status.other_error:
           return 'other_error'
       return 'unknown_error'
@@ -85,6 +111,12 @@ class Status:
           return sbatchManagerSyntaxError
       if status_type == Status.runtime_error:
           return sbatchManagerRuntimeError
+      if status_type == Status.io_error:
+          return sbatchManagerRuntimeError
+      if status_type == Status.missing_file:
+          return sbatchManagerMissingFileError
+      if status_type == Status.cp_error:
+          return sbatchManagerCopyError
       return sbatchManagerError
 
 # Define JobCompletion class to hold information about finished jobs
@@ -516,20 +548,26 @@ class sbatchManager:
                                   )
                                 )
 
-                            if self.jobIds[failed_job]['nof_submissions'] > self.max_resubmissions:
-                                # We've exceeded the maximum number of resubmissions -> fail the workflow
-                                raise Status.raiseError(completion[failed_job].status)
-                            else:
-                                # The job is eligible for resubmission
-                                # The old ID must be deleted, b/c otherwise it would be used to compare against
-                                # squeue output and we would resubmit the failed job ad infinitum
+                            if self.jobIds[failed_job]['nof_submissions'] < self.max_resubmissions and \
+                               completion[failed_job].status == Status.io_error:
+                                # The job is eligible for resubmission if the job hasn't been resubmitted more
+                                # than a preset limit of resubmissions AND if the job failed due to I/O errors
                                 logging.warning(
-                                    "Job w/ ID {} and arguments {} FAILED -> resubmission attempt #{}".format(
-                                        failed_job, self.jobIds[failed_job]['args'], self.jobIds[failed_job]['nof_submissions'],
+                                    "Job w/ ID {id} and arguments {args} FAILED because: {reason} "
+                                    "-> resubmission attempt #{attempt}".format(
+                                        id      = failed_job,
+                                        args    = self.jobIds[failed_job]['args'],
+                                        reason  = Status.toString(completion[failed_job].status),
+                                        attempt = self.jobIds[failed_job]['nof_submissions'],
                                     )
                                 )
                                 self.submitJob(*self.jobIds[failed_job]['args'])
+                                # The old ID must be deleted, b/c otherwise it would be used to compare against
+                                # squeue output and we would resubmit the failed job ad infinitum
                                 del self.jobIds[failed_job]
+                            else:
+                                # We've exceeded the maximum number of resubmissions -> fail the workflow
+                                raise Status.raiseError(completion[failed_job].status)
                     else:
                         logging.debug("Job(s) w/ ID(s) {completedIds} finished successfully {runningInfo}".format(
                           completedIds = ','.join(completed_jobs),
