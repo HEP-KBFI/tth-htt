@@ -34,6 +34,9 @@ class sbatchManagerMissingFileError(sbatchManagerError):
 class sbatchManagerCopyError(sbatchManagerError):
     pass
 
+class sbatchManagerValidationError(sbatchManagerError):
+    pass
+
 # Define Status
 
 class Status:
@@ -41,14 +44,15 @@ class Status:
   completed   = 2
   running     = 3
 
-  memory_exceeded = 11
-  timeout         = 12
-  syntax_error    = 13
-  runtime_error   = 14
-  other_error     = 15
-  io_error        = 16
-  missing_file    = 17
-  cp_error        = 18
+  memory_exceeded  = 11
+  timeout          = 12
+  syntax_error     = 13
+  runtime_error    = 14
+  other_error      = 15
+  io_error         = 16
+  missing_file     = 17
+  cp_error         = 18
+  validation_error = 19
 
   @staticmethod
   def classify_error(ExitCode, DerivedExitCode, State):
@@ -75,6 +79,8 @@ class Status:
           return Status.missing_file
       if (ExitCode == '5:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
           return Status.cp_error
+      if (ExitCode == '6:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
+          return Status.validation_error
       return Status.other_error
 
   @staticmethod
@@ -97,6 +103,8 @@ class Status:
           return 'missing_file'
       if status_type == Status.cp_error:
           return 'cp_error'
+      if status_type == Status.validation_error:
+          return 'validation_error'
       if status_type == Status.other_error:
           return 'other_error'
       return 'unknown_error'
@@ -117,6 +125,8 @@ class Status:
           return sbatchManagerMissingFileError
       if status_type == Status.cp_error:
           return sbatchManagerCopyError
+      if status_type == Status.validation_error:
+          return sbatchManagerValidationError
       return sbatchManagerError
 
 # Define JobCompletion class to hold information about finished jobs
@@ -504,6 +514,8 @@ class sbatchManager:
                     for id_, details in completion.iteritems():
                       if details.status == Status.completed:
                         completed_jobs.append(id_)
+                        #TODO check if the output file exists; if it does, check if it's a healthy file;
+                        #     if not, resubmit the job
                       elif details.status == Status.running:
                         running_jobs.append(id_)
                       else:
