@@ -1,6 +1,7 @@
 import codecs, getpass, jinja2, logging, os, time, datetime, sys, random, uuid
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
+from tthAnalysis.HiggsToTauTau.sbatchManagerTools import is_file_ok
 
 # Template for wrapper that is ran on cluster node
 
@@ -357,9 +358,9 @@ class sbatchManager:
             logFile = os.path.join(self.logFileDir, os.path.basename(scriptFile).replace(".sh", ".log"))
 
         # skip only if none of the output files are missing in the file system
+        outputFiles_fullpath = map(lambda outputFile: os.path.join(outputFilePath, outputFile), outputFiles)
         if skipIfOutputFileExists:
-            outputFiles_fullpath = map(lambda outputFile: os.path.join(outputFilePath, outputFile), outputFiles)
-            outputFiles_missing = [ outputFile for outputFile in outputFiles_fullpath if not os.path.exists(outputFile) ]
+            outputFiles_missing = [ outputFile for outputFile in outputFiles_fullpath if not is_file_ok(outputFile) ]
             if not outputFiles_missing:
                 logging.debug(
                   "output file(s) = %s exist(s) --> skipping !!" % \
@@ -431,6 +432,7 @@ class sbatchManager:
                 scriptFile, logFile, skipIfOutputFileExists, job_template_file, nof_submissions,
             ),
             'nof_submissions' : nof_submissions,
+            'outputFiles'     : outputFiles_fullpath,
         }
 
     def get_job_dir(self):
@@ -514,8 +516,6 @@ class sbatchManager:
                     for id_, details in completion.iteritems():
                       if details.status == Status.completed:
                         completed_jobs.append(id_)
-                        #TODO check if the output file exists; if it does, check if it's a healthy file;
-                        #     if not, resubmit the job
                       elif details.status == Status.running:
                         running_jobs.append(id_)
                       else:
@@ -588,7 +588,29 @@ class sbatchManager:
                     # Mark successfully finished jobs as completed so that won't request their status code again
                     # Otherwise they will be still at ,,submitted'' state
                     for id_ in completed_jobs:
-                        self.jobIds[id_]['status'] = Status.completed
+                        if not all(map(lambda outputFile: is_file_ok(outputFile), self.jobIds[id_]['outputFiles'])):
+                            if self.jobIds[id_]['nof_submissions'] < self.max_resubmissions:
+                                logging.warning(
+                                    "Job w/ ID {id} and arguments {args} FAILED to produce a valid output file "
+                                    "-> resubmission attempt #{attempt}".format(
+                                        id      = id_,
+                                        args    = self.jobIds[failed_job]['args'],
+                                        attempt = self.jobIds[failed_job]['nof_submissions'],
+                                    )
+                                )
+                                self.submitJob(*self.jobIds[id_]['args'])
+                                del self.jobIds[id_]
+                            else:
+                                raise ValueError(
+                                    "Job w/ ID {id} FAILED because it repeatedly produces bogus output "
+                                    "file {output} yet the job still exits w/o any errors".format(
+                                        id     = id_,
+                                        output = ', '.join(self.jobIds[id_]['outputFiles']),
+                                    )
+                                )
+                        else:
+                            # Job completed just fine
+                            self.jobIds[id_]['status'] = Status.completed
 
             jobIds_set = set([ id_ for id_ in self.jobIds if self.jobIds[id_]['status'] == Status.submitted])
             nofJobs_left = len(jobIds_set)
