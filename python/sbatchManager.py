@@ -594,8 +594,8 @@ class sbatchManager:
                                     "Job w/ ID {id} and arguments {args} FAILED to produce a valid output file "
                                     "-> resubmission attempt #{attempt}".format(
                                         id      = id_,
-                                        args    = self.jobIds[failed_job]['args'],
-                                        attempt = self.jobIds[failed_job]['nof_submissions'],
+                                        args    = self.jobIds[id_]['args'],
+                                        attempt = self.jobIds[id_]['nof_submissions'],
                                     )
                                 )
                                 self.submitJob(*self.jobIds[id_]['args'])
