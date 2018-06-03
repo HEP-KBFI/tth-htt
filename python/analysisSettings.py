@@ -190,18 +190,6 @@ class Triggers(object):
         }
       }
 
-      self.blacklist = {
-        'Run2017B' : {
-           '1e'    : { 'HLT_Ele32_WPTight_Gsf', 'HLT_Ele8_CaloIdM_TrackIdM_PFJet30', 'HLT_Ele17_CaloIdM_TrackIdM_PFJet30' },
-           '1mu'   : { 'HLT_Mu3_PFJet40' },
-           '1e1mu' : { 'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL' },
-           '2mu'   : { 'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8' },
-        },
-        'Run2017C' : {
-          '1e' : { 'HLT_Ele32_WPTight_Gsf' },
-        },
-      }
-
     else:
       raise ValueError("Invalid era: %s" % era)
 
@@ -216,9 +204,3 @@ class Triggers(object):
     self.triggers_analysis_flat = { trigger for triggers in self.triggers_analysis for trigger in triggers }
     self.triggers_leptonFR_flat = { trigger for triggers in self.triggers_leptonFR for trigger in triggers }
     self.triggers_flat          = self.triggers_analysis_flat | self.triggers_leptonFR_flat
-    self.blacklist_flat         = {}
-    for blacklist_process in self.blacklist_flat:
-      self.blacklist_flat[blacklist_process] = set()
-      for trigger_name in self.blacklist_flat[blacklist_process]:
-        self.blacklist_flat[blacklist_process].update(self.blacklist_flat[blacklist_process][trigger_name])
-

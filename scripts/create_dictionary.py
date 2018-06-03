@@ -614,7 +614,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
       meta_dict[key]['process_name_specific'], is_data, era
     )
     meta_dict[key]['missing_hlt_paths']               = get_missing_hlt_paths(
-      meta_dict[key]['triggers'], indices, triggerTable.triggers_all
+      get_triggers('', False, era), indices, triggerTable.triggers_all
     )
     meta_dict[key]['genWeight']                       = not is_data
     meta_dict[key]['type']                            = 'data' if is_data else 'mc'

@@ -369,9 +369,7 @@ class analyzeConfig(object):
                 available_triggers = list(self.triggerTable.triggers_leptonFR[trigger] - blacklist)
             else:
                 available_triggers = list(self.triggerTable.triggers_analysis[trigger] - blacklist)
-            use_trigger = bool(trigger in sample_info['triggers'])
-            if not use_trigger:
-                available_triggers = []
+            use_trigger = bool(trigger in sample_info['triggers'])g
             lines.extend([
                 "{:<{len}} = cms.vstring({})".format(trigger_string,     available_triggers, len = max_option_len + len(process_string) + 1),
                 "{:<{len}} = cms.bool({})".format   (trigger_use_string, use_trigger,        len = max_option_len + len(process_string) + 1),
