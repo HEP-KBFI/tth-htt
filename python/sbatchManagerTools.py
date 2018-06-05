@@ -3,8 +3,6 @@ import os, jinja2, ROOT, logging
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import createFile
 
-executable_rm = 'rm'
-
 def createScript_sbatch(
     sbatch_script_file_name,
     executable,
@@ -21,7 +19,7 @@ def createScript_sbatch(
     verbose           = False,
     job_template_file = 'sbatch-node.sh.template',
     dry_run           = False,
-    skipFileSizeCheck = False,
+    validate_outputs  = True,
     min_file_size     = 20000,
     use_home          = True,
   ):
@@ -50,7 +48,7 @@ def createScript_sbatch(
         verbose                 = verbose,
         job_template_file       = job_template_file,
         dry_run                 = dry_run,
-        skipFileSizeCheck       = skipFileSizeCheck,
+        validate_outputs        = validate_outputs,
         min_file_size           = min_file_size,
         use_home                = use_home,
     )
@@ -72,7 +70,7 @@ def generate_sbatch_lines(
     verbose           = False,
     job_template_file = 'sbatch-node.sh.template',
     dry_run           = False,
-    skipFileSizeCheck = False,
+    validate_outputs  = True,
     min_file_size     = 20000,
     use_home          = True,
   ):
@@ -103,7 +101,7 @@ def generate_sbatch_lines(
                 log_file_name          = log_file_name,
                 cvmfs_error_log        = cvmfs_error_log,
                 job_template_file      = job_template_file,
-                skipFileSizeCheck      = skipFileSizeCheck,
+                validate_outputs       = validate_outputs,
                 min_file_size          = min_file_size,
             )
             if sbatch_line:
@@ -118,39 +116,48 @@ def generate_sbatch_lines(
     lines_sbatch.append("m.waitForJobs()")
     return lines_sbatch, num_jobs
 
-def is_file_ok(output_file_name, min_file_size = 20000, skipFileSizeCheck = False):
+def is_file_ok(output_file_name, validate_outputs = True, min_file_size = 20000):
   if not (output_file_name and os.path.exists(output_file_name)):
     return False
+
+  logging.info("Output file %s already exists" % output_file_name)
+
   if not output_file_name.lower().endswith('.root'):
     return True
 
-  command = "%s %s" % (executable_rm, output_file_name)
-  output_file_size = os.stat(output_file_name).st_size
-  logging.info("output file %s already exists, size = %i" % (output_file_name, output_file_size))
-  if output_file_size > min_file_size or skipFileSizeCheck:
-    root_tfile = ROOT.TFile(output_file_name, "read")
-    if root_tfile.IsZombie():
-      logging.info("--> output file is corrupted, deleting file and resubmitting job")
-      run_cmd(command)
+  command = "rm %s" % output_file_name
+  ret_value = False
+  if min_file_size > 0:
+    output_file_size = os.stat(output_file_name).st_size
+    if output_file_size > min_file_size:
+      if not validate_outputs:
+        ret_value = True
     else:
-      # Let's open the file via bash as well to see if ROOT tries to recover the file
-      open_cmd = "root -b -l -q %s 2>&1 > /dev/null | grep 'trying to recover' | wc -l" % output_file_name
-      open_out = run_cmd(open_cmd)
-      if open_out.rstrip('\n') != '0':
-        logging.info("--> output file is probably corrupted, deleting file and resubmitting job")
-        command = "%s %s" % (executable_rm, output_file_name)
-        run_cmd(command)
+      logging.info(
+        "Deleting output file and resubmitting job because it has size smaller than %d bytes" % min_file_size
+      )
+
+  if validate_outputs:
+    root_tfile = ROOT.TFile(output_file_name, "read")
+    if not root_tfile:
+      logging.info("Not a valid ROOT file, deleting it")
+    else:
+      if root_tfile.IsZombie():
+        logging.info("Output file is corrupted, deleting file and resubmitting job")
       else:
-        root_tfile.Close()
-        logging.info("--> skipping job because it has size greater than 20000")
-        return True
-    root_tfile.Close()
-  else:
-    logging.info(
-      "--> deleting output file and resubmitting job because it has size smaller %i" % min_file_size
-    )
+        # Let's open the file via bash as well to see if ROOT tries to recover the file
+        open_cmd = "root -b -l -q %s 2>&1 > /dev/null | grep 'trying to recover' | wc -l" % output_file_name
+        open_out = run_cmd(open_cmd)
+        if open_out.rstrip('\n') != '0':
+          logging.info("Output file is probably corrupted, deleting file and resubmitting job")
+        else:
+          ret_value = True
+      root_tfile.Close()
+
+  if not ret_value:
     run_cmd(command)
-  return False
+
+  return ret_value
 
 def generate_sbatch_line(
     executable,
@@ -162,9 +169,9 @@ def generate_sbatch_line(
     cvmfs_error_log   = None,
     min_file_size     = 20000,
     job_template_file = 'sbatch-node.sh.template',
-    skipFileSizeCheck = False,
+    validate_outputs  = True,
   ):
-    if is_file_ok(output_file_name, min_file_size, skipFileSizeCheck):
+    if is_file_ok(output_file_name, validate_outputs, min_file_size):
       return None
 
     if log_file_name and os.path.exists(log_file_name):
@@ -227,6 +234,7 @@ def createScript_sbatch_hadd(
     dry_run                 = False,
     max_input_files_per_job = 5,
     use_home                = True,
+    min_file_size           = 20000,
   ):
     """Creates the python script necessary to submit 'hadd' jobs to the batch system
     """
@@ -247,6 +255,7 @@ def createScript_sbatch_hadd(
         dry_run                 = dry_run,
         max_input_files_per_job = max_input_files_per_job,
         use_home                = use_home,
+        min_file_size           = min_file_size,
     )
     createFile(sbatch_script_file_name, sbatch_hadd_lines)
     return num_jobs
@@ -264,6 +273,7 @@ def generate_sbatch_lines_hadd(
     dry_run                 = False,
     max_input_files_per_job = 5,
     use_home                = True,
+    min_file_size           = 20000,
   ):
     template_vars = {
         'working_dir'             : working_dir,
@@ -278,6 +288,7 @@ def generate_sbatch_lines_hadd(
         'verbose'                 : verbose,
         'dry_run'                 : dry_run,
         'use_home'                : use_home,
+        'min_file_size'           : min_file_size,
     }
     if not pool_id:
         raise ValueError('pool_id is empty')
@@ -285,7 +296,13 @@ def generate_sbatch_lines_hadd(
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 from tthAnalysis.HiggsToTauTau.ClusterHistogramAggregator import ClusterHistogramAggregator
 
-m = sbatchManager('{{pool_id}}', verbose = {{verbose}}, dry_run = {{dry_run}}, use_home = {{use_home}})
+m = sbatchManager(
+  '{{pool_id}}', 
+  verbose       = {{verbose}}, 
+  dry_run       = {{dry_run}}, 
+  use_home      = {{use_home}}, 
+  min_file_size = {{min_file_size}}
+)
 m.setWorkingDir('{{working_dir}}')
 m.log_completion = {{verbose}}
 

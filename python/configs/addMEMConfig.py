@@ -46,7 +46,7 @@ class addMEMConfig:
             executable_addMEM,
             samples,
             era,
-            check_input_files,
+            check_output_files,
             running_method,
             max_files_per_job,
             mem_integrations_per_job,
@@ -71,7 +71,7 @@ class addMEMConfig:
         self.max_mem_integrations = max_mem_integrations
         self.samples = samples
         self.era = era
-        self.check_input_files = check_input_files
+        self.check_output_files = check_output_files
         self.channel = channel
         self.leptonSelection = leptonSelection
         self.hadTauSelection = hadTauSelection
@@ -165,6 +165,7 @@ class addMEMConfig:
             cvmfs_error_log         = self.cvmfs_error_log,
             pool_id                 = self.pool_id,
             use_home                = self.use_home,
+            validate_outputs        = self.check_output_files,
         )
 
     def addToMakefile_addMEM(self, lines_makefile):
@@ -385,7 +386,7 @@ class addMEMConfig:
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_addMEM, process_name))
             is_mc = (sample_info["type"] == "mc")
 
-            inputFileList = generateInputFileList(sample_info, self.max_files_per_job, self.check_input_files)
+            inputFileList = generateInputFileList(sample_info, self.max_files_per_job)
             # typically, the analysis ends here and starts looping b/c the smallest unit of work processes
             # at least one file; we need, however, to split the file into event ranges in such a way that
             # each job performs mem_integrations_per_job MEM integrations

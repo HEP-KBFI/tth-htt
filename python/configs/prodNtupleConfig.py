@@ -53,7 +53,7 @@ class prodNtupleConfig:
              preselection_cuts,
              leptonSelection,
              hadTauSelection,
-             check_input_files,
+             check_output_files,
              running_method,
              version,
              num_parallel_jobs,
@@ -78,7 +78,7 @@ class prodNtupleConfig:
         self.preselection_cuts     = preselection_cuts
         self.leptonSelection       = leptonSelection
         self.hadTauSelection       = hadTauSelection
-        self.check_input_files     = check_input_files
+        self.check_output_files    = check_output_files
         self.verbose               = verbose
         self.dry_run               = dry_run
         self.isDebug               = isDebug
@@ -224,6 +224,7 @@ class prodNtupleConfig:
             job_template_file       = 'sbatch-node.produce.sh.template',
             dry_run                 = self.dry_run,
             use_home                = self.use_home,
+            validate_outputs        = self.check_output_files,
         )
         return num_jobs
 
@@ -289,7 +290,7 @@ class prodNtupleConfig:
 
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable, process_name))
 
-            inputFileList = generateInputFileList(sample_info, self.max_files_per_job, self.check_input_files)
+            inputFileList = generateInputFileList(sample_info, self.max_files_per_job)
             key_dir = getKey(sample_name)
             subDirs = list(map(
                 lambda y: os.path.join(self.dirs[key_dir][DKEY_NTUPLES], '%04d' % y),

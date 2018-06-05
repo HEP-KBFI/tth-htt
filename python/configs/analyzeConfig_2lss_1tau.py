@@ -54,7 +54,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         era,
         use_lumi,
         lumi,
-        check_input_files,
+        check_output_files,
         running_method,
         num_parallel_jobs,
         executable_addBackgrounds,
@@ -84,7 +84,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       era                       = era,
       use_lumi                  = use_lumi,
       lumi                      = lumi,
-      check_input_files         = check_input_files,
+      check_output_files        = check_output_files,
       running_method            = running_method,
       num_parallel_jobs         = num_parallel_jobs,
       histograms_to_fit         = histograms_to_fit,
@@ -353,7 +353,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
-      inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job, self.check_input_files)
+      inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job)
 
     for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
       lepton_selection = lepton_and_hadTau_selection

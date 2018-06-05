@@ -13,7 +13,7 @@ class analyzeConfig_inclusive(analyzeConfig):
         samples,
         era,
         output_tree,
-        check_input_files,
+        check_output_files,
         running_method,
         verbose,
         dry_run,
@@ -33,7 +33,7 @@ class analyzeConfig_inclusive(analyzeConfig):
       era                = era,
       use_lumi           = False,
       lumi               = -1.,
-      check_input_files  = False,
+      check_output_files = False,
       running_method     = running_method,
       num_parallel_jobs  = 1,
       histograms_to_fit  = [],
@@ -51,7 +51,7 @@ class analyzeConfig_inclusive(analyzeConfig):
     self.cfgFile_analyze = cfgFile_analyze
     self.samples = samples
     self.output_tree = output_tree
-    self.check_input_files = check_input_files
+    self.check_output_files = check_output_files
     self.rle_select = rle_select
     self.hadTauSelection_tauIdWP = hadTauSelection_tauIdWP
     self.use_nonnominal = use_nonnominal
@@ -100,7 +100,7 @@ class analyzeConfig_inclusive(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
-      inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job, self.check_input_files)
+      inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job)
 
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:

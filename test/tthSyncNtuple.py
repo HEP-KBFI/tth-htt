@@ -98,7 +98,7 @@ version            = args.version
 dry_run            = args.dry_run
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
-check_input_files  = args.check_input_files
+check_output_files = not args.not_check_input_files
 debug              = args.debug
 running_method     = args.running_method
 
@@ -125,20 +125,20 @@ if __name__ == '__main__':
   analysis = syncNtupleConfig(
     config_dir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", args.era, args.version),
     output_dir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", args.era, args.version),
-    output_filename      = output,
-    version              = version,
-    era                  = era,
-    channels             = channels,
-    dry_run              = dry_run,
-    check_input_files    = check_input_files,
-    running_method       = running_method,
-    isDebug              = debug,
-    rle_select           = rle_select,
-    with_mem             = with_mem,
-    use_nonnominal       = use_nonnominal,
-    hlt_filter           = hlt_filter,
-    tau_id_wp            = tau_id_wp,
-    use_home             = use_home,
+    output_filename    = output,
+    version            = version,
+    era                = era,
+    channels           = channels,
+    dry_run            = dry_run,
+    check_output_files = check_output_files,
+    running_method     = running_method,
+    isDebug            = debug,
+    rle_select         = rle_select,
+    with_mem           = with_mem,
+    use_nonnominal     = use_nonnominal,
+    hlt_filter         = hlt_filter,
+    tau_id_wp          = tau_id_wp,
+    use_home           = use_home,
   )
 
   job_statistics = analysis.create()

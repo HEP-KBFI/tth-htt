@@ -83,7 +83,7 @@ class analyzeConfig(object):
           era,
           use_lumi,
           lumi,
-          check_input_files,
+          check_output_files,
           running_method,
           num_parallel_jobs,
           histograms_to_fit,
@@ -112,7 +112,7 @@ class analyzeConfig(object):
         self.era = era
         self.use_lumi = use_lumi
         self.lumi = lumi
-        self.check_input_files = check_input_files
+        self.check_output_files = check_output_files
         assert(running_method.lower() in [ "sbatch", "makefile" ]), "Invalid running method: %s" % running_method
         self.running_method = running_method
         self.is_sbatch = False
@@ -530,7 +530,7 @@ class analyzeConfig(object):
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
                             key_cfg_file = 'cfgFile_modified', key_input_file = 'inputFile',
                             key_output_file = 'outputFile', key_log_file = 'logFile',
-                            skipFileSizeCheck = False):
+                            min_file_size = 20000):
         """Creates the python script necessary to submit 'generic' (addBackgrounds, addBackgroundFakes/addBackgroundFlips) jobs to the batch system
         """
         num_jobs = tools_createScript_sbatch(
@@ -547,8 +547,9 @@ class analyzeConfig(object):
             pool_id = uuid.uuid4(),
             verbose = self.verbose,
             dry_run = self.dry_run,
-            skipFileSizeCheck = skipFileSizeCheck,
+            validate_outputs = self.check_output_files,
             use_home = self.use_home,
+            min_file_size = min_file_size,
         )
         return num_jobs
 
@@ -557,7 +558,7 @@ class analyzeConfig(object):
         """
         self.num_jobs['analyze'] += self.createScript_sbatch(
             executable, sbatchFile, jobOptions, 'cfgFile_modified', 'ntupleFiles', 'syncOutput',
-            'logFile', skipFileSizeCheck = True,
+            'logFile', min_file_size = -1,
         )
 
 
@@ -584,8 +585,17 @@ class analyzeConfig(object):
         logFile = os.path.join(self.dirs[DKEY_LOGS], os.path.basename(sbatch_hadd_file).replace(".py", ".log"))
         sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], self.channel, hadd_stage_name) if self.dirs[DKEY_HADD_RT] else ''
         self.num_jobs['hadd'] += tools_createScript_sbatch_hadd(
-            sbatch_hadd_file, inputFiles, outputFile, scriptFile, logFile, self.workingDir, auxDirName = sbatch_hadd_dir,
-            pool_id = uuid.uuid4(), verbose = self.verbose, dry_run = self.dry_run, use_home = self.use_home,
+            sbatch_script_file_name = sbatch_hadd_file,
+            input_file_names        = inputFiles,
+            output_file_name        = outputFile,
+            script_file_name        = scriptFile,
+            log_file_name           = logFile,
+            working_dir             = self.workingDir,
+            auxDirName              = sbatch_hadd_dir,
+            pool_id                 = uuid.uuid4(),
+            verbose                 = self.verbose,
+            dry_run                 = self.dry_run,
+            use_home                = self.use_home,
         )
         return sbatch_hadd_file
 

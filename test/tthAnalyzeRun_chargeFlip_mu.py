@@ -23,7 +23,7 @@ version            = args.version
 dry_run            = args.dry_run
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
-check_input_files  = args.check_input_files
+check_output_files = not args.not_check_input_files
 debug              = args.debug
 sample_filter      = args.filter
 num_parallel_jobs  = args.num_parallel_jobs
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     era                = era,
     use_lumi           = True,
     lumi               = lumi,
-    check_input_files  = check_input_files,
+    check_output_files = check_output_files,
     running_method     = running_method,
     num_parallel_jobs  = num_parallel_jobs,
     histograms_to_fit  = [ "mass_ll" ],

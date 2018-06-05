@@ -25,7 +25,7 @@ version            = args.version
 dry_run            = args.dry_run
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
-check_input_files  = args.check_input_files
+check_output_files = not args.not_check_input_files
 sample_filter      = args.filter
 num_parallel_jobs  = args.num_parallel_jobs
 running_method     = args.running_method
@@ -68,18 +68,18 @@ if __name__ == '__main__':
     sys.exit(validation_result)
 
   puHistogramProduction = puHistogramConfig(
-    configDir         = configDir,
-    outputDir         = outputDir,
-    executable        = "puHistogramProducer.sh",
-    samples           = samples,
-    max_files_per_job = files_per_job,
-    era               = era,
-    check_input_files = check_input_files,
-    running_method    = running_method,
-    version           = version,
-    num_parallel_jobs = num_parallel_jobs,
-    dry_run           = dry_run,
-    use_home          = use_home,
+    configDir          = configDir,
+    outputDir          = outputDir,
+    executable         = "puHistogramProducer.sh",
+    samples            = samples,
+    max_files_per_job  = files_per_job,
+    era                = era,
+    check_output_files = check_output_files,
+    running_method     = running_method,
+    version            = version,
+    num_parallel_jobs  = num_parallel_jobs,
+    dry_run            = dry_run,
+    use_home           = use_home,
   )
 
   job_statistics = puHistogramProduction.create()

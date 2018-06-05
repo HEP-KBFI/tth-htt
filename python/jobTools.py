@@ -81,7 +81,7 @@ def generate_file_ids(nof_files, max_files_per_job, blacklist = []):
     assert(0)
   return job_ids
 
-def generate_input_list(job_ids, secondary_files, primary_store, secondary_store, debug = False):
+def generate_input_list(job_ids, secondary_files, primary_store, secondary_store):
   """Generates input file list for each job
 
     Since CRAB was unable to resubmit failed jobs, we had to run the jobs 2nd time. Thus, the full sample
@@ -105,10 +105,7 @@ def generate_input_list(job_ids, secondary_files, primary_store, secondary_store
       input_file = os.path.join(actual_storedir, "tree_" + str(job) + ".root")
     #print "checking existence of input_file = '%s'" % input_file
     if not os.path.exists(input_file):
-      if debug:
-        logging.error("File %s doesn't exists!" % input_file)
-        sys.exit(2)
-      continue
+      raise RuntimeError("File %s doesn't exists!" % input_file)
     input_list.append(input_file)
   return input_list
 
