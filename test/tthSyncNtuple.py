@@ -96,7 +96,6 @@ args = parser.parse_args()
 era                = args.era
 version            = args.version
 dry_run            = args.dry_run
-resubmission_limit = args.resubmission_limit
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
@@ -131,7 +130,6 @@ if __name__ == '__main__':
     era                  = era,
     channels             = channels,
     dry_run              = dry_run,
-    resubmission_limit   = resubmission_limit,
     check_input_files    = check_input_files,
     running_method       = running_method,
     isDebug              = debug,

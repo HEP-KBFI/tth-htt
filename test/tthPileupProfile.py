@@ -23,7 +23,6 @@ args = parser.parse_args()
 era                = args.era
 version            = args.version
 dry_run            = args.dry_run
-resubmission_limit = args.resubmission_limit
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
@@ -68,53 +67,32 @@ if __name__ == '__main__':
     validation_result = validate_pu(outputDir, samples)
     sys.exit(validation_result)
 
-  job_statistics_summary    = {}
-  run_puHistogramProduction = False
-  is_last_resubmission      = False
+  puHistogramProduction = puHistogramConfig(
+    configDir         = configDir,
+    outputDir         = outputDir,
+    executable        = "puHistogramProducer.sh",
+    samples           = samples,
+    max_files_per_job = files_per_job,
+    era               = era,
+    check_input_files = check_input_files,
+    running_method    = running_method,
+    version           = version,
+    num_parallel_jobs = num_parallel_jobs,
+    dry_run           = dry_run,
+    use_home          = use_home,
+  )
 
-  for idx_job_resubmission in range(resubmission_limit):
-    if is_last_resubmission:
-      continue
-    logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
+  job_statistics = puHistogramProduction.create()
+  for job_type, num_jobs in job_statistics.items():
+    logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
 
-    puHistogramProduction = puHistogramConfig(
-      configDir         = configDir,
-      outputDir         = outputDir,
-      executable        = "puHistogramProducer.sh",
-      samples           = samples,
-      max_files_per_job = files_per_job,
-      era               = era,
-      check_input_files = check_input_files,
-      running_method    = running_method,
-      version           = version,
-      num_parallel_jobs = num_parallel_jobs,
-      verbose           = idx_job_resubmission > 0,
-      dry_run           = dry_run,
-      use_home          = use_home,
-    )
-
-    job_statistics = puHistogramProduction.create()
-    for job_type, num_jobs in job_statistics.items():
-      logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
-    job_statistics_summary[idx_job_resubmission] = job_statistics
-
-    if job_statistics['plot'] == 0:
-      is_last_resubmission = True
-      break
-
-    if idx_job_resubmission == 0:
-      if auto_exec:
-        run_puHistogramProduction = True
-      elif no_exec:
-        run_puHistogramProduction = False
-      else:
-        run_puHistogramProduction = query_yes_no("Start jobs ?")
-    if run_puHistogramProduction:
-      puHistogramProduction.run()
-    else:
-      break
-
-  for idx_job_resubmission in job_statistics_summary.keys():
-    logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
-    for job_type, num_jobs in job_statistics_summary[idx_job_resubmission].items():
-      logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
+  if auto_exec:
+    run_puHistogramProduction = True
+  elif no_exec:
+    run_puHistogramProduction = False
+  else:
+    run_puHistogramProduction = query_yes_no("Start jobs ?")
+  if run_puHistogramProduction:
+    puHistogramProduction.run()
+  else:
+    sys.exit(0)

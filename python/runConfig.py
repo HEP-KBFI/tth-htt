@@ -54,7 +54,6 @@ class tthAnalyzeParser(argparse.ArgumentParser):
   def __init__(
     self,
     era_choices = ('2017',),
-    default_resubmission_limit = 1,
     default_num_parallel_jobs = 100,
     max_help_position = 45,
     isAddMEM = False,
@@ -81,11 +80,6 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       dest = 'dry_run', action = 'store_true', default = False,
       help = 'R|Do not submit the jobs, just generate the necessary shell scripts' if isAddMEM else \
              'R|Run addMEM without actually computing the MEM score',
-    )
-    self.add_argument('-r', '--resubmission-limit',
-      type = positive_int_type, dest = 'resubmission_limit', metavar = 'number',
-      default = default_resubmission_limit, required = False,
-      help = 'R|Maximum number of resubmissions',
     )
     self.add_argument('-R', '--running-method',
       type = str, dest = 'running_method', metavar = 'method', default = 'sbatch', required = False,
