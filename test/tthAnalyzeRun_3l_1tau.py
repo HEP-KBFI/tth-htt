@@ -31,7 +31,6 @@ args = parser.parse_args()
 era                = args.era
 version            = args.version
 dry_run            = args.dry_run
-resubmission_limit = args.resubmission_limit
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
@@ -127,87 +126,67 @@ if __name__ == '__main__':
     logging.info("Changing tau ID working point: %s -> %s" % (hadTau_selection, args.tau_id_wp))
     hadTau_selection = args.tau_id_wp
 
-  job_statistics_summary = {}
-  run_analysis           = False
-  is_last_resubmission   = False
+  analysis = analyzeConfig_3l_1tau(
+    configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
+    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
+    executable_analyze                    = "analyze_3l_1tau",
+    cfgFile_analyze                       = "analyze_3l_1tau_cfg.py",
+    samples                               = samples,
+    MEMbranch                             = MEMbranch,
+    lep_mva_wp                            = lep_mva_wp,
+    hadTau_selection                      = hadTau_selection,
+    # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
+    #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
+    applyFakeRateWeights                  = applyFakeRateWeights,
+    chargeSumSelections                   = chargeSumSelections,
+    central_or_shifts                     = central_or_shift,
+    max_files_per_job                     = files_per_job,
+    era                                   = era,
+    use_lumi                              = True,
+    lumi                                  = lumi,
+    check_input_files                     = check_input_files,
+    running_method                        = running_method,
+    num_parallel_jobs                     = num_parallel_jobs,
+    executable_addBackgrounds             = "addBackgrounds",
+    # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
+    executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
+    histograms_to_fit                     = {
+      "EventCounter"             : {},
+      "numJets"                  : {},
+      "mvaDiscr_3l"              : {},
+      "mTauTauVis"               : {},
+      "mvaOutput_plainKin_tt"    : { 'quantile_rebin' : 6, 'quantile_in_fakes' : False }, # BDT2; quantile in all bkg
+      "mvaOutput_plainKin_ttV"   : { 'quantile_rebin' : 6, 'quantile_in_fakes' : False }, # BDT1; quantile in all bkg
+      "mvaOutput_plainKin_SUM_M" : { 'explicit_binning' : [0.0, 0.28, 0.35, 0.40, 0.47, 0.53, 1.0] }, # BDT3; quantile in all bkg
+      "mvaOutput_plainKin_SUM_M_noRebin" : {},
+      "mvaOutput_plainKin_SUM_M_6bins_quantiles" : {},
+      "mvaOutput_plainKin_1B_M"  : {},
+    },
+    select_rle_output                     = True,
+    select_root_output                    = False,
+    dry_run                               = dry_run,
+    do_sync                               = do_sync,
+    isDebug                               = debug,
+    rle_select                            = rle_select,
+    use_nonnominal                        = use_nonnominal,
+    hlt_filter                            = hlt_filter,
+    use_home                              = use_home,
+  )
 
-  for idx_job_resubmission in range(resubmission_limit):
-    if is_last_resubmission:
-      continue
-    logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
+  if mode.find("forBDTtraining") != -1:
+    analysis.set_BDT_training(hadTau_selection_relaxed)
 
-    analysis = analyzeConfig_3l_1tau(
-      configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
-      outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
-      executable_analyze                    = "analyze_3l_1tau",
-      cfgFile_analyze                       = "analyze_3l_1tau_cfg.py",
-      samples                               = samples,
-      MEMbranch                             = MEMbranch,
-      lep_mva_wp                            = lep_mva_wp,
-      hadTau_selection                      = hadTau_selection,
-      # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
-      #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
-      applyFakeRateWeights                  = applyFakeRateWeights,
-      chargeSumSelections                   = chargeSumSelections,
-      central_or_shifts                     = central_or_shift,
-      max_files_per_job                     = files_per_job,
-      era                                   = era,
-      use_lumi                              = True,
-      lumi                                  = lumi,
-      check_input_files                     = check_input_files,
-      running_method                        = running_method,
-      num_parallel_jobs                     = num_parallel_jobs,
-      executable_addBackgrounds             = "addBackgrounds",
-      # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
-      executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
-      histograms_to_fit                     = {
-        "EventCounter"             : {},
-        "numJets"                  : {},
-        "mvaDiscr_3l"              : {},
-        "mTauTauVis"               : {},
-        "mvaOutput_plainKin_tt"    : { 'quantile_rebin' : 6, 'quantile_in_fakes' : False }, # BDT2; quantile in all bkg
-        "mvaOutput_plainKin_ttV"   : { 'quantile_rebin' : 6, 'quantile_in_fakes' : False }, # BDT1; quantile in all bkg
-        "mvaOutput_plainKin_SUM_M" : { 'explicit_binning' : [0.0, 0.28, 0.35, 0.40, 0.47, 0.53, 1.0] }, # BDT3; quantile in all bkg
-        "mvaOutput_plainKin_SUM_M_noRebin" : {},
-        "mvaOutput_plainKin_SUM_M_6bins_quantiles" : {},
-        "mvaOutput_plainKin_1B_M"  : {},
-      },
-      select_rle_output                     = True,
-      select_root_output                    = False,
-      verbose                               = idx_job_resubmission > 0,
-      dry_run                               = dry_run,
-      do_sync                               = do_sync,
-      isDebug                               = debug,
-      rle_select                            = rle_select,
-      use_nonnominal                        = use_nonnominal,
-      hlt_filter                            = hlt_filter,
-      use_home                              = use_home,
-    )
+  job_statistics = analysis.create()
+  for job_type, num_jobs in job_statistics.items():
+    logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
 
-    if mode.find("forBDTtraining") != -1:
-      analysis.set_BDT_training(hadTau_selection_relaxed)
-
-    job_statistics = analysis.create()
-    for job_type, num_jobs in job_statistics.items():
-      logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
-    job_statistics_summary[idx_job_resubmission] = job_statistics
-
-    if idx_job_resubmission == 0:
-      if auto_exec:
-        run_analysis = True
-      elif no_exec:
-        run_analysis = False
-      else:
-        run_analysis = query_yes_no("Start jobs ?")
-    if run_analysis:
-      analysis.run()
-    else:
-      sys.exit(0)
-
-    if job_statistics['analyze'] == 0:
-      is_last_resubmission = True
-
-  for idx_job_resubmission in job_statistics_summary.keys():
-    logging.info("Job (re)submission #%i:" % (idx_job_resubmission + 1))
-    for job_type, num_jobs in job_statistics_summary[idx_job_resubmission].items():
-      logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
+  if auto_exec:
+    run_analysis = True
+  elif no_exec:
+    run_analysis = False
+  else:
+    run_analysis = query_yes_no("Start jobs ?")
+  if run_analysis:
+    analysis.run()
+  else:
+    sys.exit(0)

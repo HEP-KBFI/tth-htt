@@ -25,7 +25,6 @@ args = parser.parse_args()
 era                = args.era
 version            = args.version
 dry_run            = args.dry_run
-resubmission_limit = args.resubmission_limit
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
@@ -113,49 +112,42 @@ if __name__ == '__main__':
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
 
-  run_ntupleProduction = False
+  ntupleProduction = prodNtupleConfig(
+    configDir = os.path.join("/home",       getpass.getuser(), "ttHNtupleProduction", era, version),
+    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHNtupleProduction", era, version),
+    executable_nanoAOD    = "produceNtuple.sh",
+    executable_prodNtuple = "produceNtuple",
+    cfgFile_prodNtuple    = "produceNtuple_cfg.py",
+    samples               = samples,
+    max_files_per_job     = files_per_job,
+    era                   = era,
+    preselection_cuts     = preselection_cuts,
+    leptonSelection       = leptonSelection,
+    hadTauSelection       = hadTauSelectionAndWP,
+    check_input_files     = check_input_files,
+    running_method        = running_method,
+    version               = version,
+    num_parallel_jobs     = num_parallel_jobs,
+    pileup                = pileup,
+    golden_json           = golden_json,
+    dry_run               = dry_run,
+    isDebug               = debug,
+    use_nonnominal        = use_nonnominal,
+    use_home              = use_home,
+  )
 
-  for resubmission_idx in range(resubmission_limit):
-    logging.info("Submission attempt #%i" % (resubmission_idx + 1))
-    ntupleProduction = prodNtupleConfig(
-      configDir = os.path.join("/home",       getpass.getuser(), "ttHNtupleProduction", era, version),
-      outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHNtupleProduction", era, version),
-      executable_nanoAOD    = "produceNtuple.sh",
-      executable_prodNtuple = "produceNtuple",
-      cfgFile_prodNtuple    = "produceNtuple_cfg.py",
-      samples               = samples,
-      max_files_per_job     = files_per_job,
-      era                   = era,
-      preselection_cuts     = preselection_cuts,
-      leptonSelection       = leptonSelection,
-      hadTauSelection       = hadTauSelectionAndWP,
-      check_input_files     = check_input_files,
-      running_method        = running_method,
-      version               = version,
-      num_parallel_jobs     = num_parallel_jobs,
-      pileup                = pileup,
-      golden_json           = golden_json,
-      verbose               = resubmission_idx > 0,
-      dry_run               = dry_run,
-      isDebug               = debug,
-      use_nonnominal        = use_nonnominal,
-      use_home              = use_home,
-    )
+  num_jobs = ntupleProduction.create()
 
-    num_jobs = ntupleProduction.create()
-
-    if num_jobs > 0:
-      if resubmission_idx == 0:
-        if auto_exec:
-          run_ntupleProduction = True
-        elif no_exec:
-          run_ntupleProduction = False
-        else:
-          run_ntupleProduction = query_yes_no("Start jobs ?")
-      if run_ntupleProduction:
-        ntupleProduction.run()
-      else:
-        sys.exit(0)
+  if num_jobs > 0:
+    if auto_exec:
+      run_ntupleProduction = True
+    elif no_exec:
+      run_ntupleProduction = False
     else:
-      logging.info("All jobs done")
-      break
+      run_ntupleProduction = query_yes_no("Start jobs ?")
+    if run_ntupleProduction:
+      ntupleProduction.run()
+    else:
+      sys.exit(0)
+  else:
+    logging.info("All jobs done")
