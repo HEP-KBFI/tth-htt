@@ -44,7 +44,7 @@ version            = args.version
 dry_run            = args.dry_run
 no_exec            = args.no_exec
 auto_exec          = args.auto_exec
-check_input_files  = args.check_input_files
+check_output_files = not args.not_check_input_files
 debug              = args.debug
 sample_filter      = args.filter
 num_parallel_jobs  = args.num_parallel_jobs
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     executable_addMEM        = "addMEM_2lss_1tau",
     samples                  = samples,
     era                      = era,
-    check_input_files        = check_input_files,
+    check_output_files       = check_output_files,
     running_method           = running_method,
     max_files_per_job        = 1, # so that we'd have 1-1 correspondence b/w input and output files
     mem_integrations_per_job = 50,

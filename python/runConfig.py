@@ -99,9 +99,9 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       dest = 'auto_exec', action = 'store_true', default = False,
       help = 'R|Automatically submit the jobs (ignore prompt)',
     )
-    self.add_argument('-C', '--check-input-files',
-      dest = 'check_input_files', action = 'store_true', default = False,
-      help = 'R|Check each input file before generating the config files',
+    self.add_argument('-C', '--not-check-output-files',
+      dest = 'not_check_input_files', action = 'store_true', default = False,
+      help = 'R|Do not check each output file while generating the config files',
     )
     self.add_argument('-D', '--debug',
       dest = 'debug', action = 'store_true', default = False,

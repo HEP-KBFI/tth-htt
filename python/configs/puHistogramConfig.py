@@ -76,7 +76,7 @@ class puHistogramConfig:
         configDir:             The root config dir -- all configuration files are stored in its subdirectories
         outputDir:             The root output dir -- all log and output files are stored in its subdirectories
         executable:            Name of the executable that runs the PU profile production
-        check_input_files:     if True, checks each input root file (Ntuple) before creating the python configuration files
+        check_output_files:     if True, checks each input root file (Ntuple) before creating the python configuration files
         running_method:        either `sbatch` (uses SLURM) or `Makefile`
         num_parallel_jobs:     number of jobs that can be run in parallel on local machine
                                (does not limit number of PU profile production jobs running in parallel on batch system)
@@ -89,7 +89,7 @@ class puHistogramConfig:
             samples,
             max_files_per_job,
             era,
-            check_input_files,
+            check_output_files,
             running_method,
             version,
             num_parallel_jobs,
@@ -106,7 +106,7 @@ class puHistogramConfig:
         self.samples               = samples
         self.max_files_per_job     = max_files_per_job
         self.era                   = era
-        self.check_input_files     = check_input_files
+        self.check_output_files    = check_output_files
         self.verbose               = verbose
         self.dry_run               = dry_run
         self.use_home              = use_home
@@ -193,8 +193,7 @@ class puHistogramConfig:
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
                             key_cfg_file = 'cfgFile_path', key_input_file = 'inputFiles',
                             key_output_file = 'outputFile', key_log_file = 'logFile',
-                            key_script_file = 'scriptFile',
-                            skipFileSizeCheck = True):
+                            key_script_file = 'scriptFile'):
         num_jobs = tools_createScript_sbatch(
             sbatch_script_file_name = sbatchFile,
             executable              = executable,
@@ -210,7 +209,7 @@ class puHistogramConfig:
             verbose                 = self.verbose,
             dry_run                 = self.dry_run,
             job_template_file       = 'sbatch-node.produce.sh.template',
-            skipFileSizeCheck       = skipFileSizeCheck,
+            validate_outputs        = self.check_output_files,
             min_file_size           = -1,
             use_home                = self.use_home,
         )
@@ -237,6 +236,7 @@ class puHistogramConfig:
             dry_run                 = self.dry_run,
             use_home                = self.use_home,
             max_input_files_per_job = 20,
+            min_file_size           = -1,
         )
         return sbatch_hadd_file
 
@@ -376,7 +376,7 @@ class puHistogramConfig:
 
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable, process_name))
 
-            inputFileList = generateInputFileList(sample_info, self.max_files_per_job, self.check_input_files)
+            inputFileList = generateInputFileList(sample_info, self.max_files_per_job)
             key_dir = getKey(sample_name)
 
             outputFile = os.path.join(

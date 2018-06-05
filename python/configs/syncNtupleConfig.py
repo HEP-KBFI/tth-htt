@@ -54,7 +54,7 @@ class syncNtupleConfig:
         era,
         channels,
         dry_run,
-        check_input_files,
+        check_output_files,
         running_method,
         isDebug,
         rle_select,
@@ -65,10 +65,10 @@ class syncNtupleConfig:
         use_home
       ):
 
-    self.running_method    = running_method
-    self.dry_run           = dry_run
-    self.check_input_files = check_input_files
-    self.use_home          = use_home
+    self.running_method     = running_method
+    self.dry_run            = dry_run
+    self.check_output_files = check_output_files
+    self.use_home           = use_home
     project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau')
     executable_pattern = os.path.join(project_dir, 'test', 'tthAnalyzeRun_%s.py')
 
@@ -86,7 +86,7 @@ class syncNtupleConfig:
     additional_args = " -A"
     if self.dry_run:
       additional_args += " -d"
-    if check_input_files:
+    if check_output_files:
       additional_args += " -C"
     if isDebug:
       additional_args += " -D"
@@ -161,6 +161,7 @@ class syncNtupleConfig:
         verbose                 = False,
         dry_run                 = self.dry_run,
         use_home                = self.use_home,
+        min_file_size           = -1,
       )
 
       logging.info("Generated hadd config file: %s" % self.hadd_script_path)

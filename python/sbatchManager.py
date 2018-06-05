@@ -362,7 +362,10 @@ class sbatchManager:
         # skip only if none of the output files are missing in the file system
         outputFiles_fullpath = map(lambda outputFile: os.path.join(outputFilePath, outputFile), outputFiles)
         if skipIfOutputFileExists:
-            outputFiles_missing = [ outputFile for outputFile in outputFiles_fullpath if not is_file_ok(outputFile, False, self.min_file_size) ]
+            outputFiles_missing = [
+                outputFile for outputFile in outputFiles_fullpath \
+                if not is_file_ok(outputFile, validate_outputs = False, min_file_size = self.min_file_size)
+            ]
             if not outputFiles_missing:
                 logging.debug(
                   "output file(s) = %s exist(s) --> skipping !!" % \
@@ -590,7 +593,12 @@ class sbatchManager:
                     # Mark successfully finished jobs as completed so that won't request their status code again
                     # Otherwise they will be still at ,,submitted'' state
                     for id_ in completed_jobs:
-                        if not all(map(lambda outputFile: is_file_ok(outputFile, False, self.min_file_size), self.jobIds[id_]['outputFiles'])):
+                        if not all(map(
+                            lambda outputFile: is_file_ok(
+                                outputFile, validate_outputs = False, min_file_size = self.min_file_size
+                            ),
+                            self.jobIds[id_]['outputFiles']
+                          )):
                             if self.jobIds[id_]['nof_submissions'] < self.max_resubmissions:
                                 logging.warning(
                                     "Job w/ ID {id} and arguments {args} FAILED to produce a valid output file "
