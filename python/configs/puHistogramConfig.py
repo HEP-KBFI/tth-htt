@@ -211,6 +211,7 @@ class puHistogramConfig:
             dry_run                 = self.dry_run,
             job_template_file       = 'sbatch-node.produce.sh.template',
             skipFileSizeCheck       = skipFileSizeCheck,
+            min_file_size           = -1,
             use_home                = self.use_home,
         )
         return num_jobs

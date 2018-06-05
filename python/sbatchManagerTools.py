@@ -22,6 +22,7 @@ def createScript_sbatch(
     job_template_file = 'sbatch-node.sh.template',
     dry_run           = False,
     skipFileSizeCheck = False,
+    min_file_size     = 20000,
     use_home          = True,
   ):
     """Creates the python script necessary to submit analysis and/or Ntuple production jobs to the batch system
@@ -50,6 +51,7 @@ def createScript_sbatch(
         job_template_file       = job_template_file,
         dry_run                 = dry_run,
         skipFileSizeCheck       = skipFileSizeCheck,
+        min_file_size           = min_file_size,
         use_home                = use_home,
     )
     createFile(sbatch_script_file_name, sbatch_analyze_lines)
@@ -71,6 +73,7 @@ def generate_sbatch_lines(
     job_template_file = 'sbatch-node.sh.template',
     dry_run           = False,
     skipFileSizeCheck = False,
+    min_file_size     = 20000,
     use_home          = True,
   ):
     if not pool_id:
@@ -78,11 +81,11 @@ def generate_sbatch_lines(
     lines_sbatch = [
         "from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager",
         "",
-        "m = sbatchManager('%s', verbose = %s, dry_run = %s, use_home = %s)" % \
-          (pool_id, verbose, dry_run, use_home),
-        "m.setWorkingDir('%s')"                 % working_dir,
-        "m.setcmssw_base_dir('%s')"             % cmssw_base_dir,
-        "m.log_completion = %s"                 % verbose,
+        "m = sbatchManager('%s', verbose = %s, dry_run = %s, use_home = %s, min_file_size = %d)" % \
+          (pool_id, verbose, dry_run, use_home, min_file_size),
+        "m.setWorkingDir('%s')"     % working_dir,
+        "m.setcmssw_base_dir('%s')" % cmssw_base_dir,
+        "m.log_completion = %s"     % verbose,
     ]
 
     num_jobs = 0
@@ -101,6 +104,7 @@ def generate_sbatch_lines(
                 cvmfs_error_log        = cvmfs_error_log,
                 job_template_file      = job_template_file,
                 skipFileSizeCheck      = skipFileSizeCheck,
+                min_file_size          = min_file_size,
             )
             if sbatch_line:
                 lines_sbatch.append(sbatch_line)
