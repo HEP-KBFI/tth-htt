@@ -48,7 +48,7 @@ if era == "2017":
   if mode == 'default':
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
   elif mode == 'sync':
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_test3 import samples_2017 as samples
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_sync import samples_2017 as samples
   else:
     raise ValueError('Invalid mode: %s' % mode)
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
