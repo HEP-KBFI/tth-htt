@@ -133,10 +133,10 @@ main(int argc,
   const int minNumBJets_loose         = cfg_produceNtuple.getParameter<int>("minNumBJets_loose");
   const int minNumBJets_medium        = cfg_produceNtuple.getParameter<int>("minNumBJets_medium");
   
-  const bool isMC                            = cfg_produceNtuple.getParameter<bool>("isMC");
-  const bool isDEBUG                         = cfg_produceNtuple.getParameter<bool>("isDEBUG");
-  const bool useNonNominal                   = cfg_produceNtuple.getParameter<bool>("useNonNominal");
-  const bool useNonNominal_jetmet            = useNonNominal || ! isMC;
+  const bool isMC                 = cfg_produceNtuple.getParameter<bool>("isMC");
+  const bool isDEBUG              = cfg_produceNtuple.getParameter<bool>("isDEBUG");
+  const bool useNonNominal        = cfg_produceNtuple.getParameter<bool>("useNonNominal");
+  const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
   const std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << '\n';

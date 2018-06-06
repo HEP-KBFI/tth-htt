@@ -77,19 +77,17 @@ for sample_key, sample_entry in samples.items():
   else:
     raise ValueError("Internal logic error")
 
-leptonSelection      = 'Loose'
-hadTauSelection      = 'Loose'
-hadTauSelectionAndWP = '%s|%s' % (hadTauSelection, args.tau_id_wp)
-
 if preselection:
   preselection_cuts = {
     'minNumLeptons'              : 1,
     'minNumHadTaus'              : 1,
-    'minNumLeptons_and_HadTaus'  : 2,
-    'minNumJets'                 : 1,
+    'minNumLeptons_and_HadTaus'  : 3,
+    'minNumJets'                 : -1,
     'minNumBJets_loose'          : 2,
     'minNumBJets_medium'         : 1,
   }
+  leptonSelection = 'Fakeable'
+  hadTauSelection = 'Fakeable'
 else:
   preselection_cuts = {
     'minNumLeptons'             : -1,
@@ -99,6 +97,10 @@ else:
     'minNumBJets_loose'         : -1,
     'minNumBJets_medium'        : -1,
   }
+  leptonSelection = 'Loose'
+  hadTauSelection = 'Loose'
+
+hadTauSelectionAndWP = '%s|%s' % (hadTauSelection, args.tau_id_wp)
 
 if __name__ == '__main__':
   logging.basicConfig(
