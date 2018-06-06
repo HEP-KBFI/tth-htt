@@ -54,16 +54,9 @@ if mode == "default":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
   hadTau_selection     = "dR03mvaLoose"
   applyFakeRateWeights = "3L"
-
-  for sample_name, sample_info in samples_2017.items():
-    if sample_name in [
-        #TODO list of samples collected with tau triggers?
-      ]:
-      sample_info["use_it"] = False
-
 elif mode == "forBDTtraining":
   if use_preselected:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_preselected import samples_2017
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
   hadTau_selection         = "dR03mvaTight"

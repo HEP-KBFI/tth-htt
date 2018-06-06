@@ -62,7 +62,7 @@ if mode == "default":
   applyFakeRateWeights = "3L"
 elif mode == "forBDTtraining":
   if use_preselected:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_preselected import samples_2017
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
   hadTau_selection         = "dR03mvaLoose"
@@ -71,9 +71,15 @@ elif mode == "forBDTtraining":
   hadTau_charge_selections = [ "OS" ]
 elif mode.startswith("sync"):
   if mode == "sync_wMEM":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
+    if use_preselected:
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_preselected_sync import samples_2017
+    else:
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
   elif mode == "sync":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+    if use_preselected:
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected_sync import samples_2017
+    else:
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
   else:
     raise ValueError("Internal logic error")
   hadTau_selection     = "dR03mvaMedium"
