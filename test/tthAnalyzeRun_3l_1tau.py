@@ -64,36 +64,42 @@ if mode == "default":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
   hadTau_selection     = "dR03mvaLoose"
   applyFakeRateWeights = "3lepton"
-
-  for sample_name, sample_info in samples_2017.items():
-    if sample_name in [
-        #TODO list of samples collected with tau triggers?
-      ]:
-      sample_info["use_it"] = False
 elif mode == "addMEM":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_3l1tau import samples_2017
+  if use_preselected:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_preselected_3l1tau import samples_2017
+  else:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_3l1tau import samples_2017
   hadTau_selection     = "dR03mvaLoose"
   applyFakeRateWeights = "3lepton"
   MEMbranch            = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaLoose'
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_preselected import samples_2017
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
   applyFakeRateWeights     = "4L"
   hadTau_selection         = "dR03mvaTight"
   hadTau_selection_relaxed = "dR03mvaVVLoose"
 elif mode == "forBDTtraining_afterAddMEM":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_addMEM_3l1tau import samples_2017
+  if use_preselected:
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
+  else:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_addMEM_3l1tau import samples_2017
   applyFakeRateWeights     = "4L"
   hadTau_selection         = "dR03mvaTight"
   hadTau_selection_relaxed = "dR03mvaVVLoose"
   MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVVLoose'
 elif mode.startswith("sync"):
   if mode == "sync_wMEM":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
+    if use_preselected:
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_preselected_sync import samples_2017
+    else:
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
   elif mode == "sync":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+    if use_preselected:
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected_sync import samples_2017
+    else:
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
   else:
     raise ValueError("Internal logic error")
   hadTau_selection     = "dR03mvaLoose"
