@@ -10,7 +10,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 mode_choices         = [
   'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
 ]
-sys_choices          = [ 'central', 'full', 'extended' ]
+sys_choices          = [ 'full', 'extended' ] + systematics.an_extended_opts
 systematics.full     = systematics.an_common
 systematics.extended = systematics.an_extended
 

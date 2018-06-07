@@ -63,7 +63,9 @@ import os, logging, sys, getpass
 from tthAnalysis.HiggsToTauTau.configs.syncNtupleConfig import syncNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
+sys_choices     = systematics.an_sync_opts
 channel_choices = [
   '1l_2tau', '2lss', '2lss_1tau', '2l_2tau', '3l', '3l_1tau', '4l', 'inclusive', 'ttWctrl', 'ttZctrl',
 ]
@@ -74,6 +76,7 @@ parser.add_nonnominal()
 parser.add_hlt_filter()
 parser.add_tau_id_wp()
 parser.add_use_home()
+parser.add_sys(sys_choices)
 parser.add_argument('-c', '--channels',
   type = str, nargs = '+', dest = 'channels', metavar = 'channel', choices = channel_choices,
   default = channel_choices, required = False,
@@ -103,17 +106,20 @@ debug              = args.debug
 running_method     = args.running_method
 
 # Additional arguments
-rle_select     = os.path.expanduser(args.rle_select)
-use_nonnominal = args.original_central
-tau_id_wp      = args.tau_id_wp
-use_home       = args.use_home
-hlt_filter     = args.hlt_filter
+rle_select        = os.path.expanduser(args.rle_select)
+use_nonnominal    = args.original_central
+tau_id_wp         = args.tau_id_wp
+use_home          = args.use_home
+hlt_filter        = args.hlt_filter
+systematics_label = args.systematics
 
 # Custom arguments
 channels = args.channels
 output   = args.output
 clean    = args.clean
 with_mem = args.with_mem
+
+assert(hasattr(systematics, systematics_label))
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -139,6 +145,7 @@ if __name__ == '__main__':
     hlt_filter         = hlt_filter,
     tau_id_wp          = tau_id_wp,
     use_home           = use_home,
+    systematics_label  = systematics_label,
   )
 
   job_statistics = analysis.create()

@@ -9,7 +9,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 # E.g.: ./tthAnalyzeRun_chargeFlip.py -v 2017Dec13 -e 2017
 
 era_choices      = ['2017']
-sys_choices      = [ 'central', 'full' ]
+sys_choices      = [ 'full' ] + systematics.an_chargeFlip_e_opts
 systematics.full = systematics.an_chargeFlip_e
 
 parser = tthAnalyzeParser()
