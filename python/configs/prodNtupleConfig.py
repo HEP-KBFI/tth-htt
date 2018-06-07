@@ -34,7 +34,6 @@ class prodNtupleConfig:
     Args:
         configDir:             The root config dir -- all configuration files are stored in its subdirectories
         outputDir:             The root output dir -- all log and output files are stored in its subdirectories
-        executable_prodNtuple: Name of the executable that runs the Ntuple production
         debug:                 if True, checks each input root file (Ntuple) before creating the python configuration files
         running_method:        either `sbatch` (uses SLURM) or `Makefile`
         num_parallel_jobs:     number of jobs that can be run in parallel on local machine
@@ -44,8 +43,6 @@ class prodNtupleConfig:
     def __init__(self,
              configDir,
              outputDir,
-             executable_prodNtuple,
-             executable_nanoAOD,
              cfgFile_prodNtuple,
              samples,
              max_files_per_job,
@@ -59,18 +56,17 @@ class prodNtupleConfig:
              num_parallel_jobs,
              pileup,
              golden_json,
+             dry_run,
+             isDebug,
+             use_nonnominal,
+             use_home,
+             skip_tools_step,
+             verbose = False,
              pool_id        = '',
-             verbose        = False,
-             dry_run        = False,
-             isDebug        = False,
-             use_nonnominal = False,
-             use_home       = False,
           ):
 
         self.configDir             = configDir
         self.outputDir             = outputDir
-        self.executable_prodNtuple = executable_prodNtuple
-        self.executable_nanoAOD    = executable_nanoAOD
         self.max_num_jobs          = 200000
         self.samples               = samples
         self.max_files_per_job     = max_files_per_job
@@ -96,13 +92,12 @@ class prodNtupleConfig:
         if not os.path.isfile(self.golden_json):
             raise ValueError('No such file: %s' % self.golden_json)
 
-        self.executable = self.executable_nanoAOD
-
         self.running_method    = running_method
         self.is_sbatch         = self.running_method.lower() == "sbatch"
         self.is_makefile       = not self.is_sbatch
         self.makefile          = os.path.join(self.configDir, "Makefile_prodNtuple")
         self.num_parallel_jobs = num_parallel_jobs
+        self.skip_tools_step   = skip_tools_step
         self.pool_id           = pool_id if pool_id else uuid.uuid4()
 
         self.workingDir = os.getcwd()
@@ -153,6 +148,7 @@ class prodNtupleConfig:
                 self.dirs[dir_type] = os.path.join(self.outputDir, dir_type)
 
         self.cvmfs_error_log = {}
+        self.executable = "produceNtuple.sh"
 
     def createCfg_prodNtuple(self, jobOptions):
         """Create python configuration file for the prodNtuple executable (Ntuple production code)
@@ -161,6 +157,13 @@ class prodNtupleConfig:
           inputFiles: list of input files (Ntuples)
           outputFile: output file of the job -- a ROOT file containing histogram
         """
+        if self.skip_tools_step:
+            inputFiles_prepended = jobOptions['inputFiles']
+        else:
+            inputFiles_prepended = map(lambda path: os.path.basename('%s_ii%s' % os.path.splitext(path)), jobOptions['inputFiles'])
+        if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
+            raise ValueError("Not all input files have a unique base name: %s" % ', '.join(jobOptions['inputFiles']))
+
         lines = [
             "process.fwliteOutput.fileName                   = cms.string('%s')" % os.path.basename(jobOptions['outputFile']),
             "process.produceNtuple.era                       = cms.string('%s')" % self.era,
@@ -171,6 +174,7 @@ class prodNtupleConfig:
             "process.produceNtuple.minNumBJets_loose         = cms.int32(%i)"    % self.preselection_cuts['minNumBJets_loose'],
             "process.produceNtuple.minNumBJets_medium        = cms.int32(%i)"    % self.preselection_cuts['minNumBJets_medium'],
             "process.produceNtuple.isMC                      = cms.bool(%s)"     % jobOptions['is_mc'],
+            "process.produceNtuple.redoGenMatching           = cms.bool(%s)"     % (not self.skip_tools_step),
             "process.produceNtuple.leptonSelection           = cms.string('%s')" % self.leptonSelection,
             "process.produceNtuple.hadTauSelection           = cms.string('%s')" % self.hadTauSelection,
             "process.produceNtuple.random_seed               = cms.uint32(%i)"   % jobOptions['random_seed'],
@@ -185,22 +189,16 @@ class prodNtupleConfig:
             "process.produceNtuple.isDEBUG                   = cms.bool(%s)"     % self.isDebug,
             "process.produceNtuple.useNonNominal             = cms.bool(%s)"     % self.use_nonnominal,
             "process.produceNtuple.drop_branches             = cms.vstring(%s)"  % jobOptions['drop_branches'],
+            "process.fwliteInput.fileNames                   = cms.vstring(%s)"  % inputFiles_prepended,
+            "executable      = 'produceNtuple'",
+            "inputFiles      = %s" % jobOptions['inputFiles'],
+            "isMC            = %s" % str(jobOptions['is_mc']),
+            "era             = %s" % str(self.era),
+            "pileup          = '%s'" % self.pileup,
+            "golden_json     = '%s'" % self.golden_json,
+            "process_name    = '%s'" % jobOptions['process_name'],
+            "skip_tools_step = %s" % self.skip_tools_step,
         ]
-
-        inputFiles_prepended = map(lambda path: os.path.basename('%s_ii%s' % os.path.splitext(path)), jobOptions['inputFiles'])
-        if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
-            raise ValueError("Not all input files have a unique base name: %s" % ', '.join(jobOptions['inputFiles']))
-
-        lines.extend([
-            "process.fwliteInput.fileNames                         = cms.vstring(%s)"  % inputFiles_prepended,
-            "inputFiles = %s"   % jobOptions['inputFiles'],
-            "executable = '%s'" % self.executable_prodNtuple,
-            "isMC = %s" % str(jobOptions['is_mc']),
-            "era = %s" % str(self.era),
-            "pileup = '%s'" % self.pileup,
-            "golden_json = '%s'" % self.golden_json,
-            "process_name = '%s'" % jobOptions['process_name'],
-        ])
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self):

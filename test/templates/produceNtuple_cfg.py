@@ -38,6 +38,7 @@ process.produceNtuple = cms.PSet(
     branchName_genJets    = cms.string('GenJet'),
 
     isMC = cms.bool(True),
+    readGenMatching = cms.bool(False),
 
     selEventsFileName_input = cms.string(''),
 

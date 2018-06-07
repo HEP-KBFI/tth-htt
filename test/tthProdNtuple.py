@@ -55,11 +55,20 @@ version              = "%s_w%sPresel_%s_%s" % (
 )
 
 if mode == 'sync':
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017
+  if preselection:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+  else:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017
 elif mode == 'leptonFR_sync':
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_leptonFR_sync import samples_2017
+  if preselection:
+    raise ValueError("Does not make sense to apply preselection to Ntuples used in lepton FR sync")
+  else:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_leptonFR_sync import samples_2017
 else:
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017
+  if preselection:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
+  else:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017
 
 if era == "2017":
   samples = samples_2017
@@ -117,8 +126,6 @@ if __name__ == '__main__':
   ntupleProduction = prodNtupleConfig(
     configDir = os.path.join("/home",       getpass.getuser(), "ttHNtupleProduction", era, version),
     outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHNtupleProduction", era, version),
-    executable_nanoAOD    = "produceNtuple.sh",
-    executable_prodNtuple = "produceNtuple",
     cfgFile_prodNtuple    = "produceNtuple_cfg.py",
     samples               = samples,
     max_files_per_job     = files_per_job,
@@ -136,6 +143,7 @@ if __name__ == '__main__':
     isDebug               = debug,
     use_nonnominal        = use_nonnominal,
     use_home              = use_home,
+    skip_tools_step       = preselection,
   )
 
   num_jobs = ntupleProduction.create()
