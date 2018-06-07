@@ -8,7 +8,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_jetToTauFakeRate.py -v 2017Dec13 -e 2017
 
-sys_choices      = [ 'central', 'full' ]
+sys_choices      = [ 'full' ] + systematics.an_jetToTauFR_opts
 systematics.full = systematics.an_jetToTauFR
 
 parser = tthAnalyzeParser()
@@ -39,7 +39,7 @@ use_home          = args.use_home
 hlt_filter        = args.hlt_filter
 
 # Use the arguments
-central_or_shift     = getattr(systematics, systematics_label)
+central_or_shift = getattr(systematics, systematics_label)
 
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples

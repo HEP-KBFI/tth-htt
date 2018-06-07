@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
-sys_choices          = [ 'central', 'full' ]
+sys_choices          = [ 'full' ] + systematics.an_addMEM_opts
 mode_choices         = [ 'default', 'bdt' ]
 max_mem_integrations = 20000
 systematics.full     = systematics.an_addMEM

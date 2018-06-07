@@ -13,7 +13,7 @@ cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_8_1_0') # immediate parent 
 
 
 mode_choices           = [ 'default', 'sync' ]
-sys_choices            = [ 'central', 'full' ]
+sys_choices            = [ 'full' ] + systematics.an_leptonFR_opts
 systematics.full       = systematics.an_leptonFR
 
 parser = tthAnalyzeParser()

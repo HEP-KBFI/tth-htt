@@ -88,28 +88,39 @@ class systematics(object):
 
     full = ER + ESBarrel1 + ESBarrel2 + ESEndcap1 + ESEndcap2
 
-  lhe        = LHE()
-  btag       = Btag()
-  FRe_shape  = FakeRate_e_shape()
-  FRm_shape  = FakeRate_m_shape()
-  FR_t       = FakeRate_t()
-  electron_E = Electron_energy()
-  muon_E     = Muon_energy()
+  lhe        = LHE().full
+  btag       = Btag().full
+  FRe_shape  = FakeRate_e_shape().full
+  FRm_shape  = FakeRate_m_shape().full
+  FR_t       = FakeRate_t().full
+  electron_E = Electron_energy().full
+  muon_E     = Muon_energy().full
 
   # Analysis-specific definitions
 
-  an_leptonFR   = central + JES + JER         + UnclusteredEn
-  an_jetToTauFR = central + JES       + tauES
-  an_addMEM     = central + JES + JER + tauES + UnclusteredEn
+  an_leptonFR        =    central +  JES +  JER           + UnclusteredEn
+  an_leptonFR_opts   = [ "central", "JES", "JER",          "UnclusteredEn" ]
+  an_jetToTauFR      =    central +  JES         + tauES
+  an_jetToTauFR_opts = [ "central", "JES", "JER",          "UnclusteredEn" ]
+  an_addMEM          =    central +  JES +  JER +  tauES +  UnclusteredEn
+  an_addMEM_opts     = [ "central", "JES", "JER", "tauES", "UnclusteredEn" ]
 
-  an_chargeFlip_e  = central + electron_E.full
-  an_chargeFlip_mu = central + muon_E.full
+  an_chargeFlip_e       =    central +  electron_E
+  an_chargeFlip_e_opts  = [ "central", "electron_E" ]
+  an_chargeFlip_mu      =    central +  muon_E
+  an_chargeFlip_mu_opts = [ "central", "muon_E" ]
 
-  an_ctrl = central + JES + lhe.full
+  an_ctrl      =    central +  JES +  lhe
+  an_ctrl_opts = [ "central", "JES", "lhe" ]
 
-  an_common   = central + JES + tauES + btag.full + FR_t.full + lhe.full
+  an_common      =    central +  JES +  tauES +  btag +  FR_t +  lhe
+  an_common_opts = [ "central", "JES", "tauES", "btag", "FR_t", "lhe" ]
   # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only if you plan to run compShapeSyst 1!
-  an_extended = an_common + FRe_shape.full + FRm_shape.full
+  an_extended      = an_common      +    FRe_shape +  FRm_shape
+  an_extended_opts = an_common_opts + [ "FRe_shape", "FRm_shape" ]
+
+  an_sync      =    central +  JES
+  an_sync_opts = [ "central", "JES" ]
 
 class Triggers(object):
 

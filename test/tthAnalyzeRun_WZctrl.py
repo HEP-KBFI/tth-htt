@@ -8,8 +8,8 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_WZctrl.py -v 2017Dec13 -e 2017
 
-sys_choices      = [ 'central', 'full' ]
-systematics.full = systematics.an_ctrl
+sys_choices      = [ 'full' ]
+systematics.full = systematics.an_ctrl + systematics.an_ctrl_opts
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
