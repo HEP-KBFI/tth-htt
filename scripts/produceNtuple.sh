@@ -34,9 +34,11 @@ ERA=$(python -c "execfile('$SCRIPT'); print(era)")
 PILEUP=$(python -c "execfile('$SCRIPT'); print(pileup)")
 PROCESS_NAME=$(python -c "execfile('$SCRIPT'); print(process_name)")
 GOLDEN_JSON=$(python -c "execfile('$SCRIPT'); print(golden_json)")
+SKIP_TOOLS_STEP=$(python -c "execfile('$SCRIPT'); print(skip_tools_step)")
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
 echo "Is MC? '$IS_MC'"
+echo "Skip tools step? '$SKIP_TOOLS_STEP'"
 
 if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   echo "Executable '$EXECUTABLE' not in \$PATH";
@@ -57,32 +59,36 @@ else
   NANO_MODULES=$NANO_MODULES_DATA;
 fi
 
-# Pre-processing files one-by-one:
-echo "Starting nanoAOD pre-processing in `pwd` at `date`"
-for F in $FILES; do
-  #NB! The various input files cannot have the same basename!
-  F_i=$(basename "${F%.*}_i.${F##*.}")
-  F_ii=$(basename "${F%.*}_ii.${F##*.}")
-  echo "Adding new branches: $F -> $F_i"
-  nano_postproc.py -s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $NANO_MODULES . $F
-  test_exit_code $?
-  echo "Removing useless branches: $F_i -> $F_ii"
-  if [ "$IS_MC" == "True" ]; then
-    nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "countHistogramAll_$ERA" \
-                     -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt                   \
-                     . $F_i
-  else
-    nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "countHistogramAll_$ERA" \
-                     -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt                   \
-                     -J $GOLDEN_JSON                                                                     \
-                     . $F_i
-  fi
-  test_exit_code $?
-done
-echo "Finished nanoAOD pre-processing at `date`"
+if [ "$SKIP_TOOLS_STEP" == "False" ]; then
+  # Pre-processing files one-by-one:
+  echo "Starting nanoAOD pre-processing in `pwd` at `date`"
+  for F in $FILES; do
+    #NB! The various input files cannot have the same basename!
+    F_i=$(basename "${F%.*}_i.${F##*.}")
+    F_ii=$(basename "${F%.*}_ii.${F##*.}")
+    echo "Adding new branches: $F -> $F_i"
+    nano_postproc.py -s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $NANO_MODULES . $F
+    test_exit_code $?
+    echo "Removing useless branches: $F_i -> $F_ii"
+    if [ "$IS_MC" == "True" ]; then
+      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "countHistogramAll_$ERA" \
+                       -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt                   \
+                       . $F_i
+    else
+      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "countHistogramAll_$ERA" \
+                       -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt                   \
+                       -J $GOLDEN_JSON                                                                     \
+                       . $F_i
+    fi
+    test_exit_code $?
+  done
+  echo "Finished nanoAOD pre-processing at `date`"
+else
+  echo "Skipping the nanoAOD pre-processing step"
+fi
 
 # Run the Ntuple production
-echo "Starting Ntuple production"
+echo "Starting Ntuple production (`date`)"
 $EXECUTABLE $SCRIPT
 test_exit_code $?
-echo "Finished Ntuple production"
+echo "Finished Ntuple production (`date`)"
