@@ -39,7 +39,11 @@ use_home          = args.use_home
 hlt_filter        = args.hlt_filter
 
 # Use the arguments
-central_or_shift = getattr(systematics, systematics_label)
+central_or_shifts = []
+for systematic_label in systematics_label:
+  for central_or_shift in getattr(systematics, systematic_label):
+    if central_or_shift not in central_or_shifts:
+      central_or_shifts.append(central_or_shift)
 
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
@@ -60,7 +64,7 @@ if __name__ == '__main__':
 
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
-    ', '.join(central_or_shift)
+    ', '.join(central_or_shifts)
   )
 
   if sample_filter:
@@ -73,7 +77,7 @@ if __name__ == '__main__':
     cfgFile_analyze    = "analyze_WZctrl_cfg.py",
     samples            = samples,
     hadTau_selection   = tau_id_wp,
-    central_or_shifts  = central_or_shift,
+    central_or_shifts  = central_or_shifts,
     max_files_per_job  = files_per_job,
     era                = era,
     use_lumi           = True,

@@ -46,8 +46,12 @@ use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
 
 # Use the arguments
-central_or_shift = getattr(systematics, systematics_label)
-do_sync          = mode.startswith('sync')
+central_or_shifts = []
+for systematic_label in systematics_label:
+  for central_or_shift in getattr(systematics, systematic_label):
+    if central_or_shift not in central_or_shifts:
+      central_or_shifts.append(central_or_shift)
+do_sync = mode.startswith('sync')
 
 if era == "2017":
   if mode == 'default':
@@ -69,7 +73,7 @@ if __name__ == '__main__':
 
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
-    ', '.join(central_or_shift)
+    ', '.join(central_or_shifts)
   )
 
   if sample_filter:
@@ -84,7 +88,7 @@ if __name__ == '__main__':
     lepton_charge_selections  = [ "OS", "SS" ],
     hadTauVeto_selection      = tau_id_wp,
     applyFakeRateWeights      = "2lepton",
-    central_or_shifts         = central_or_shift,
+    central_or_shifts         = central_or_shifts,
     max_files_per_job         = files_per_job,
     era                       = era,
     use_lumi                  = True,
