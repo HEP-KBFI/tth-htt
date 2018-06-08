@@ -348,17 +348,6 @@ int main(int argc, char* argv[])
        " -> jetPt_option               = " << jetPt_option               << '\n'
   ;
 
-  std::cout
-    << "central_or_shift = "               << central_or_shift           << "\n"
-       " -> jetToLeptonFakeRate_option = " << jetToLeptonFakeRate_option << "\n"
-       " -> hadTauPt_option            = " << hadTauPt_option            << "\n"
-       " -> jetToTauFakeRate_option    = " << jetToTauFakeRate_option    << "\n"
-       " -> lheScale_option            = " << lheScale_option            << "\n"
-       " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
-       " -> met_option                 = " << met_option                 << "\n"
-       " -> jetPt_option               = " << jetPt_option               << '\n'
-  ;
-
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
