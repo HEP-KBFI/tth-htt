@@ -44,8 +44,12 @@ files_per_job     = args.files_per_job
 use_home          = args.use_home
 
 # Use the arguments
-central_or_shift = getattr(systematics, systematics_label)
-do_sync          = mode.startswith('sync')
+central_or_shifts = []
+for systematic_label in systematics_label:
+  for central_or_shift in getattr(systematics, systematic_label):
+    if central_or_shift not in central_or_shifts:
+      central_or_shifts.append(central_or_shift)
+do_sync = mode.startswith('sync')
 
 chargeSumSelections = [ "OS", "SS" ]
 
@@ -80,7 +84,7 @@ if __name__ == '__main__':
 
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
-    ', '.join(central_or_shift)
+    ', '.join(central_or_shifts)
   )
 
   if sample_filter:
@@ -96,7 +100,7 @@ if __name__ == '__main__':
     hadTauVeto_selection                  = "dR03mvaLoose", # veto events containing taus that pass tau ID WP applied in 3l+1tau channel,
     applyFakeRateWeights                  = "3lepton",
     chargeSumSelections                   = chargeSumSelections,
-    central_or_shifts                     = central_or_shift,
+    central_or_shifts                     = central_or_shifts,
     max_files_per_job                     = files_per_job,
     era                                   = era,
     use_lumi                              = True,

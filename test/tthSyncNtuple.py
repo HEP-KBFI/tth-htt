@@ -119,7 +119,7 @@ output   = args.output
 clean    = args.clean
 with_mem = args.with_mem
 
-assert(hasattr(systematics, systematics_label))
+assert(all(map(lambda systematic_label: hasattr(systematics, systematic_label), systematics_label)))
 
 if __name__ == '__main__':
   logging.basicConfig(

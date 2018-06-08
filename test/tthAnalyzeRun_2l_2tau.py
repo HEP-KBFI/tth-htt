@@ -48,8 +48,12 @@ use_home          = args.use_home
 lep_mva_wp        = args.lep_mva_wp
 
 # Use the arguments
-central_or_shift = getattr(systematics, systematics_label)
-do_sync          = mode.startswith('sync')
+central_or_shifts = []
+for systematic_label in systematics_label:
+  for central_or_shift in getattr(systematics, systematic_label):
+    if central_or_shift not in central_or_shifts:
+      central_or_shifts.append(central_or_shift)
+do_sync = mode.startswith('sync')
 
 chargeSumSelections      = [ "OS", "SS" ]
 hadTau_selection_relaxed = ""
@@ -103,7 +107,7 @@ if __name__ == '__main__':
 
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
-    ', '.join(central_or_shift)
+    ', '.join(central_or_shifts)
   )
 
   if sample_filter:
@@ -125,7 +129,7 @@ if __name__ == '__main__':
     hadTau_charge_selections              = [ "disabled" ],
     applyFakeRateWeights                  = applyFakeRateWeights,
     chargeSumSelections                   = chargeSumSelections,
-    central_or_shifts                     = central_or_shift,
+    central_or_shifts                     = central_or_shifts,
     max_files_per_job                     = files_per_job,
     era                                   = era,
     use_lumi                              = True,
