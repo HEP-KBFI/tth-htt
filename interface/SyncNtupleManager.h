@@ -262,6 +262,7 @@ private:
   }
 
   TFile * outputFile;
+  TDirectory * outputDir;
   TTree * outputTree;
 
   const Int_t nof_mus;

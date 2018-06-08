@@ -61,7 +61,11 @@ integration_points   = args.integration_points
 max_mem_integrations = args.max_mem_integrations
 
 # Use the arguments
-central_or_shift   = getattr(systematics, systematics_label)
+central_or_shifts = []
+for systematic_label in systematics_label:
+  for central_or_shift in getattr(systematics, systematic_label):
+    if central_or_shift not in central_or_shifts:
+      central_or_shifts.append(central_or_shift)
 integration_choice = integration_point_choices[integration_points] if integration_points \
                        else integration_point_choices[mode_choices[mode]]
 version            = "%s_%s_%s_%s" % (
@@ -103,7 +107,7 @@ if __name__ == '__main__':
 
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
-    ', '.join(central_or_shift)
+    ', '.join(central_or_shifts)
   )
 
   if sample_filter:
@@ -131,7 +135,7 @@ if __name__ == '__main__':
     hadTauSelection          = hadTauSelectionAndWP,
     lowIntegrationPoints     = integration_choice, # if False, use full integration points
     isDebug                  = debug,
-    central_or_shift         = central_or_shift,
+    central_or_shift         = central_or_shifts,
     dry_run                  = dry_run,
     use_nonnominal           = use_nonnominal,
     use_home                 = use_home,

@@ -140,11 +140,19 @@ main(int argc,
   const bool apply_offline_e_trigger_cuts_1e1tau  = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e1tau");
 
   const std::string hadTauSelection_tauIdWP = cfg_analyze.getParameter<std::string>("hadTauSelection_tauIdWP");
+  const std::string central_or_shift        = cfg_analyze.getParameter<std::string>("central_or_shift");
 
   const bool isMC               = cfg_analyze.getParameter<bool>("isMC");
   const bool isMC_tH            = process_string == "tH";
   const bool useNonNominal      = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
+
+  checkOptionValidity(central_or_shift, isMC);
+  const int hadTauPt_option            = getHadTauPt_option     (central_or_shift);
+  const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift);
+
+  const int met_option   = useNonNominal_jetmet ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
+  const int jetPt_option = useNonNominal_jetmet ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
 
   const bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
 
@@ -221,7 +229,7 @@ main(int argc,
   const RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
 
   RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, false);
-  hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_central);
+  hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
   inputTree->registerReader(hadTauReader);
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
@@ -242,8 +250,8 @@ main(int argc,
   fakeableHadTauSelector.set_min_antiMuon(-1);
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, false);
-  jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
-  jetReader->setBranchName_BtagWeight(kBtag_central);
+  jetReader->setPtMass_central_or_shift(jetPt_option);
+  jetReader->setBranchName_BtagWeight(jetBtagSF_option);
   inputTree->registerReader(jetReader);
   const RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
   const RecoJetCollectionSelector jetSelector(era, -1, isDEBUG);
@@ -252,7 +260,7 @@ main(int argc,
 
 //--- declare missing transverse energy
   RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
-  metReader->setMEt_central_or_shift(useNonNominal_jetmet ? kMEt_central_nonNominal : kMEt_central);
+  metReader->setMEt_central_or_shift(met_option);
   inputTree->registerReader(metReader);
 
   int analyzedEntries = 0;
