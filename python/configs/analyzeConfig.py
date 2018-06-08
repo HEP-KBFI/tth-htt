@@ -3,7 +3,7 @@ from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
-from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
+from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
 
 import os
 import logging
@@ -247,17 +247,7 @@ class analyzeConfig(object):
         self.isBDTtraining = True
 
     def get_addMEM_systematics(self, central_or_shift):
-        if central_or_shift in [
-            "central",
-            "CMS_ttHl_JESUp",
-            "CMS_ttHl_JESDown",
-            "CMS_ttHl_tauESUp",
-            "CMS_ttHl_tauESDown",
-            "CMS_ttHl_JERUp",
-            "CMS_ttHl_JERDown",
-            "CMS_ttHl_UnclusteredEnUp",
-            "CMS_ttHl_UnclusteredEnDown",
-        ]:
+        if central_or_shift in systematics.an_addMEM:
             return central_or_shift
         return "central"
 
@@ -405,6 +395,8 @@ class analyzeConfig(object):
             lines.append("process.addBackgrounds.histogramsToCopy = cms.vstring(%s)" % jobOptions['histogramsToCopy'])
         if 'sysShifts' in jobOptions.keys():
             lines.append("process.addBackgrounds.sysShifts = cms.vstring(%s)" % jobOptions['sysShifts'])
+        else:
+            lines.append("process.addBackgrounds.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addBackgrounds, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_addFakes(self, jobOptions):
@@ -453,6 +445,7 @@ class analyzeConfig(object):
         lines.append("    )")
         lines.append(")")
         lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % histogramToFit)
+        lines.append("process.prepareDatacards.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
 
         # If the user has specified the binning options for a particular histogram, we expect to see
         # a dictionary instead of a list of histogram names that's been passed to this class as histograms_to_fit
