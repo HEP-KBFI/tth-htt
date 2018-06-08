@@ -119,6 +119,9 @@ class systematics(object):
   an_extended      = an_common      +    FRe_shape +  FRm_shape
   an_extended_opts = an_common_opts + [ "FRe_shape", "FRm_shape" ]
 
+  an_inclusive      =    central +  JES +  JER +  UnclusteredEn +  tauES +  btag
+  an_inclusive_opts = [ "central", "JES", "JER", "UnclusteredEn", "tauES", "btag" ]
+
   an_sync      =    central +  JES
   an_sync_opts = [ "central", "JES" ]
 
