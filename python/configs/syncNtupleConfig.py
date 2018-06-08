@@ -83,7 +83,7 @@ class syncNtupleConfig:
     self.final_output_file = os.path.join(final_output_dir, output_filename)
 
     common_args = "-m %s -v %s -e %s -J 5 -s %s" % \
-      ('sync_wMEM' if with_mem else 'sync',  version, era, systematics_label)
+      ('sync_wMEM' if with_mem else 'sync',  version, era, ' '.join(systematics_label))
     additional_args = " -A"
     if self.dry_run:
       additional_args += " -d"
