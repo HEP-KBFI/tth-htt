@@ -138,16 +138,17 @@ if __name__ == '__main__':
     # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
     histograms_to_fit                     = {
-      "EventCounter"             : {},
-      "numJets"                  : {},
-      "mvaOutput_plainKin_ttV"   : {},
-      "mvaOutput_plainKin_tt"    : { 'explicit_binning' : list(np.linspace(0., 1., 6 + 1)) }, # BDT1; 6 regular bin in range [0, 1]
-      "mvaOutput_plainKin_1B_VT" : {},
-      "mvaOutput_HTT_SUM_VT"     : { 'explicit_binning' : list(np.linspace(0., 1., 7 + 1)) }, # BDT2; 7 regular bin in range [0, 1]
-      "mvaOutput_HTT_SUM_VT_noRebin"     : {},
-      "mvaOutput_plainKin_SUM_VT"     : { 'explicit_binning' : list(np.linspace(0., 1., 5 + 1)) }, # BDT3; 5 regular bin in range [0, 1]
-      "mvaOutput_plainKin_SUM_VT_noRebin"     : {},
-      "mTauTauVis"               : {},
+      "EventCounter"                      : {},
+      "numJets"                           : {},
+      "mvaOutput_plainKin_ttV"            : {},
+      "mvaOutput_plainKin_tt"             : { 'explicit_binning' : list(np.linspace(0., 1., 6 + 1)) }, # BDT1; 6 regular bin in range [0, 1]
+      "mvaOutput_plainKin_1B_VT"          : {},
+      "mvaOutput_HTT_SUM_VT"              : { 'explicit_binning' : list(np.linspace(0., 1., 7 + 1)) }, # BDT2; 7 regular bin in range [0, 1]
+      "mvaOutput_HTT_SUM_VT_noRebin"      : {},
+      "mvaOutput_plainKin_SUM_VT"         : { 'explicit_binning' : list(np.linspace(0., 1., 5 + 1)) }, # BDT3; 5 regular bin in range [0, 1]
+      "mvaOutput_plainKin_SUM_VT_noRebin" : {},
+      "mTauTauVis"                        : {},
+      "mvaOutput_final"                   : {},
     },
     select_rle_output                     = True,
     dry_run                               = dry_run,
