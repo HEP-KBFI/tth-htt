@@ -76,7 +76,7 @@ class EvtHistManager_2lss_1tau
   TH1 * histogram_mvaOutput_2lss_1tau_HTT_SUM_M_noRebin_;
   TH1 * histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_;
   TH1 * histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin_;
-  TH1 * histogram_mvaOutput_2lss_1tau_HTT_SUM_M_6bins_quantiles_;
+  TH1 * histogram_final_;
 
   TH1 * histogram_mTauTauVis1_;
   TH1 * histogram_mTauTauVis_;
