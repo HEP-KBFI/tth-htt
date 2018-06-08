@@ -141,15 +141,15 @@ if __name__ == '__main__':
     # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
     histograms_to_fit                     = {
-      "EventCounter"              : {},
-      "numJets"                   : {},
-      "mTauTauVis"                : {},
-      "mvaOutput_plainKin_tt"     : { 'quantile_rebin' : 4, 'quantile_in_fakes' : True }, # BDT2; quantiles in fakes
-      "mvaOutput_plainKin_ttV"    : { 'quantile_rebin' : 4, 'quantile_in_fakes' : True }, # BDT1; quantiles in fakes
-      "mvaOutput_plainKin_SUM_VT" : { 'explicit_binning' : [0.0, 0.35, 0.41, 0.47, 1.0] }, # BDT3; quantiles in fakes
+      "EventCounter"                      : {},
+      "numJets"                           : {},
+      "mTauTauVis"                        : {},
+      "mvaOutput_plainKin_tt"             : { 'quantile_rebin' : 4, 'quantile_in_fakes' : True }, # BDT2; quantiles in fakes
+      "mvaOutput_plainKin_ttV"            : { 'quantile_rebin' : 4, 'quantile_in_fakes' : True }, # BDT1; quantiles in fakes
+      "mvaOutput_plainKin_SUM_VT"         : { 'explicit_binning' : [ 0.0, 0.35, 0.41, 0.47, 1.0 ] }, # BDT3; quantiles in fakes
       "mvaOutput_plainKin_SUM_VT_noRebin" : {},
-      "mvaOutput_plainKin_1B_VT_4bins_quantiles" : {},
-      "mvaOutput_plainKin_1B_VT"  : {},
+      "mvaOutput_plainKin_1B_VT"          : {},
+      "mvaOutput_final"                   : {},
     },
     select_rle_output                     = True,
     dry_run                               = dry_run,
