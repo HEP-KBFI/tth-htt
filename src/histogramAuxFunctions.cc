@@ -408,6 +408,23 @@ compIntegral(const TH1 * histogram,
   return sumBinContent;
 }
 
+double
+compIntegralErr(const TH1 * histogram,
+		bool includeUnderflowBin,
+		bool includeOverflowBin)
+{
+  const int numBins  = histogram->GetNbinsX();
+  const int firstBin = includeUnderflowBin ? 0           : 1;
+  const int lastBin  = includeOverflowBin  ? numBins + 1 : numBins;
+
+  double sumBinErr2 = 0.;
+  for(int iBin = firstBin; iBin <= lastBin; ++iBin)
+  {
+    sumBinErr2 += square(histogram->GetBinError(iBin));
+  }
+  return std::sqrt(sumBinErr2);
+}
+
 void
 makeBinContentsPositive(TH1 * histogram,
                         int verbosity)
