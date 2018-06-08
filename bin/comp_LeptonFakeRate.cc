@@ -71,6 +71,8 @@ struct fitResultType
   fitResultType(const std::string& line)
     : norm_prefit_(-1.)
     , normErr_prefit_(-1.)
+    , Conv_corr_e_(1.)     // NEWLY ADDED FOR ELECTRONS
+    , Err_Conv_corr_e_(0.) // NEWLY ADDED FOR ELECTRONS
   {
     TString line_tstring(line.data());
     bool parseError = false;
@@ -105,7 +107,7 @@ struct fitResultType
   ~fitResultType() {}
   enum { kElectron, kMuon };
   int lepton_type_;
-  enum { kPass, kFail };
+  enum { kPass, kFail }; // kPass (numerator) => Tight; kFail (denominator) => (Fakeable - Tight) in Tallinn definiton of numerator and denomintor histograms 
   int pass_or_fail_;
   double minAbsEta_;
   double maxAbsEta_;
@@ -116,7 +118,170 @@ struct fitResultType
   double normErr_prefit_;
   double norm_postfit_;
   double normErr_postfit_;
+  double Conv_corr_e_;        // NEWLY ADDED FOR ELECTRONS
+  double Err_Conv_corr_e_;    // NEWLY ADDED FOR ELECTRONS
+
+  void SetConv_corr(double corr, double corr_err){ // NEWLY ADDED FOR ELECTRONS
+    double default_Conv_corr_e_ = Conv_corr_e_; // set to 1.
+    double default_Err_Conv_corr_e_ = Err_Conv_corr_e_; // set to 0.
+    if(lepton_type_ == kElectron){
+      Conv_corr_e_ = corr;
+      Err_Conv_corr_e_ = corr_err; 
+    }else if(lepton_type_ == kMuon){
+      Conv_corr_e_ = default_Conv_corr_e_;
+      Err_Conv_corr_e_ = default_Err_Conv_corr_e_; 
+    }
+  }
+
+  void ApplyConv_corr(){  // NEWLY ADDED FOR ELECTRONS
+    double uncorr_norm_prefit = norm_prefit_;
+    double uncorr_norm_postfit = norm_postfit_;
+    double uncorr_err_prefit = normErr_prefit_;
+    double uncorr_err_postfit = normErr_postfit_;
+    if(lepton_type_ == kElectron){
+      norm_prefit_ *= Conv_corr_e_;
+      normErr_prefit_ = (uncorr_err_prefit * Conv_corr_e_) + (uncorr_norm_prefit * Err_Conv_corr_e_);
+      norm_postfit_ *= Conv_corr_e_;
+      normErr_postfit_ = (uncorr_err_postfit * Conv_corr_e_) + (uncorr_norm_postfit * Err_Conv_corr_e_);
+    }else if(lepton_type_ == kMuon){
+      norm_prefit_ = uncorr_norm_prefit;
+      norm_postfit_ = uncorr_norm_postfit;
+      normErr_prefit_ = uncorr_err_prefit ;
+      normErr_postfit_ = uncorr_err_postfit ;
+    }
+  }
+
 };
+
+
+void readConversionCorr(TFile* inputFile, std::map<std::string, fitResultType*>& fitResults, const std::string& process, const std::string& variable, const double& conv_unc ){
+
+  std::string histogramName_QCD_num_e = "LeptonFakeRate/numerator/electrons/tight";    
+  std::string histogramName_QCD_den_e = "LeptonFakeRate/numerator/electrons/fakeable"; // QCD (fakeable - tight)
+
+  for ( std::map<std::string, fitResultType*>::iterator fitResult = fitResults.begin();
+        fitResult != fitResults.end(); ++fitResult ) {
+        std::cout << "pT: min = " << fitResult->second->minPt_ << ", max = " << fitResult->second->maxPt_ << std::endl;
+        std::cout << "abs(eta): min = " << fitResult->second->minAbsEta_ << ", max = " << fitResult->second->maxAbsEta_ << std::endl;
+
+
+	if ( fitResult->second->lepton_type_ == fitResultType::kMuon     ) continue; // SINCE VALID ONLY FOR ELECTRONS                                                                                                               
+	
+
+	std::string histogramName_QCD_num_el = Form("LeptonFakeRate/numerator/electrons/tight/%s/%s/%s/%s", (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
+						   (getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_)).data(), process.data(), variable.data()); // QCD tight
+
+	std::string histogramName_QCD_den_el = Form("LeptonFakeRate/numerator/electrons/fakeable/%s/%s/%s/%s", (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
+						   (getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_)).data(), process.data(), variable.data()); // QCD (fakeable - tight)
+
+	std::string histogramName_QCD_num_g_el = Form("LeptonFakeRate/numerator/electrons/tight/%s/%s/%s%s/%s", (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
+						   (getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_)).data(), process.data(), "g", variable.data()); // QCD tight (gen photon matched)
+
+	std::string histogramName_QCD_den_g_el = Form("LeptonFakeRate/numerator/electrons/fakeable/%s/%s/%s%s/%s", (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
+						   (getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_)).data(), process.data(), "g", variable.data()); // QCD (fakeable - tight) (gen photon matched)
+
+
+	TH1* histogram_QCD_num_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_num_el.data()));
+	TH1* histogram_QCD_den_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_den_el.data()));
+	TH1* histogram_QCD_num_g_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_num_g_el.data()));
+	TH1* histogram_QCD_den_g_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_den_g_el.data()));
+
+        
+        double FakeRate_QCD_NC_num = ( histogram_QCD_num_el->Integral() - histogram_QCD_num_g_el->Integral() );     // = pass (QCD Conv. Rejected)
+        double FakeRate_QCD_NC_den = ( histogram_QCD_num_el->Integral() + histogram_QCD_den_el->Integral()) 
+	                               - (histogram_QCD_num_g_el->Integral() + histogram_QCD_den_g_el->Integral()) 
+	                               + (histogram_QCD_num_el->Integral() - histogram_QCD_num_g_el->Integral()); // = pass + fail (QCD Conv. Rejected)
+        double FakeRate_QCD_NC = 0.; 
+        if(FakeRate_QCD_NC_den != 0.){ 
+	  FakeRate_QCD_NC = FakeRate_QCD_NC_num/FakeRate_QCD_NC_den;
+	}else{
+          FakeRate_QCD_NC = 1.0;
+	}  
+
+	double FakeRate_QCD_num = histogram_QCD_num_el->Integral(); // pass (QCD all)  
+	double FakeRate_QCD_den = histogram_QCD_den_el->Integral() + (2 * histogram_QCD_num_el->Integral()); // pass + fail (QCD all)
+        double FakeRate_QCD     = 0.; 
+	if(FakeRate_QCD_den != 0.){ 
+	  FakeRate_QCD = FakeRate_QCD_num/FakeRate_QCD_den;
+	}else{
+          FakeRate_QCD = 1.0;
+	}  
+
+        double FR_Conv_Corr = 1.;
+        if(FakeRate_QCD != 0.){
+	  FR_Conv_Corr = FakeRate_QCD_NC/FakeRate_QCD; // central value computed here
+	}
+
+        // ERROR PROP. ON FAKE RATE CORR.
+        assert( histogram_QCD_num_el->Integral() == 0. || histogram_QCD_den_el->Integral() == 0.);
+
+        double alpha_pass = histogram_QCD_num_g_el->Integral()/histogram_QCD_num_el->Integral();
+        double alpha_fail = histogram_QCD_den_g_el->Integral()/histogram_QCD_den_el->Integral();
+        double del_A = (conv_unc*((2*histogram_QCD_num_el->Integral()) + histogram_QCD_den_el->Integral()) ) + ((1. - alpha_pass) * ((2*compIntegralErr(histogram_QCD_num_el, true,true)) + compIntegralErr(histogram_QCD_den_el, true,true)));
+        double B = (2*histogram_QCD_num_el->Integral()*(1. - alpha_pass)) + (histogram_QCD_den_el->Integral()*(1.- alpha_fail));
+        double del_B = ((2*compIntegralErr(histogram_QCD_num_el, true,true)*(1. - alpha_pass)) + ((2*histogram_QCD_num_el->Integral())*conv_unc)) 
+	               + ( (compIntegralErr(histogram_QCD_den_el, true,true)*(1. - alpha_fail)) + (histogram_QCD_den_el->Integral()*conv_unc));
+	double Err_FR_Conv_Corr = 0.;
+        if(B != 0.) Err_FR_Conv_Corr = (del_A + (FR_Conv_Corr * del_B))/B;
+
+        fitResult->second->SetConv_corr(FR_Conv_Corr, Err_FR_Conv_Corr); 
+	// fitResult->second->ApplyConv_corr(); // NOT NEEDED
+
+
+	/*
+	// WORK NEEDED HERE !!
+	std::string histogramName = "LeptonFakeRate";
+	histogramName.append("/");
+	if      ( fitResult->second->pass_or_fail_ == fitResultType::kPass ) histogramName.append("numerator");
+	else if ( fitResult->second->pass_or_fail_ == fitResultType::kFail ) histogramName.append("denominator");
+	else assert(0);
+	histogramName.append("/");
+	if      ( fitResult->second->lepton_type_ == fitResultType::kElectron ) histogramName.append("electrons");
+	else if ( fitResult->second->lepton_type_ == fitResultType::kMuon     ) continue; // SINCE VALID ONLY FOR ELECTRONS
+	else assert(0);
+	histogramName.append("_");
+	if      ( fitResult->second->pass_or_fail_ == fitResultType::kPass ) histogramName.append("tight");
+	else if ( fitResult->second->pass_or_fail_ == fitResultType::kFail ) histogramName.append("fakeable");
+	else assert(0);
+	histogramName.append("/");
+	histogramName.append(getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_));
+	histogramName.append("/");
+	histogramName.append(getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_));
+	histogramName.append("/");
+	histogramName.append(process); // process name (given via config)           
+	std::string dir_name = process + "g";     // conversions sub-dir name
+        histogramName.append("/"); 
+        std::string histogramName_Conv = histogramName;
+	histogramName.append(variable);            // variable name (given via config)           
+	
+	histogramName_Conv.append(dir_name);       // conversions sub-dir variable name (given via config)           
+	std::cout << "loading histogram = '" << histogramName << "'" << std::endl;
+	TH1* histogram = dynamic_cast<TH1*>(inputFile->Get(histogramName.data()));
+	if ( !histogram ) throw cms::Exception("fillHistogram")
+			    << "Failed to load histogram = '" << histogramName << "' from file = '" << inputFile->GetName() << "' !!\n";
+	std::cout << "loading histogram = '" << histogramName_Conv << "'" << std::endl;
+	TH1* histogram_Conv = dynamic_cast<TH1*>(inputFile->Get(histogramName_Conv.data()));
+	if ( !histogram_Conv ) throw cms::Exception("fillHistogram")
+			    << "Failed to load histogram = '" << histogramName_Conv << "' from file = '" << inputFile->GetName() << "' !!\n";
+
+        double conv_corr  = 1.;
+        double conv_err = 0.; 
+        if(histogram->Integral() > 0.){
+           conv_corr = (histogram->Integral() - histogram_Conv->Integral())/histogram->Integral(); 
+           conv_err = ;
+
+	}else{
+          conv_corr  = 1.;
+          conv_err = 0.;
+	} 
+
+	// SetConv_corr(double corr, double corr_err)
+	//  ApplyConv_corr()
+	*/
+  }
+}
+
+
 
 void readPrefit(TFile* inputFile, std::map<std::string, fitResultType*>& fitResults)
 {
@@ -175,6 +340,7 @@ TH2* bookHistogram(fwlite::TFileService& fs, const std::string& histogramName, c
   TH2* histogram = fs.make<TH2D>(histogramName.data(), histogramName.data(), numBinsX, ptBins.GetArray(), numBinsY, absEtaBins.GetArray());
   return histogram;
 }   
+
 void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& fitResults_pass, const std::map<std::string, fitResultType*>& fitResults_fail, int prefit_or_postfit)
 {
   const TAxis* xAxis = histogram->GetXaxis();
@@ -191,7 +357,7 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
       std::map<std::string, fitResultType*>::const_iterator fitResult_fail = fitResults_fail.find(key);
       if ( fitResult_pass != fitResults_pass.end() && fitResult_fail != fitResults_fail.end() ) {
 	double nPass, nPassErr, nFail, nFailErr;
-	if ( prefit_or_postfit == kPrefit ) {
+	if ( prefit_or_postfit == kPrefit ) { // APPLY CONV.CORR FOR ELECTRONS CASE TO BOTH PRE AND POSTFIT
 	  nPass = fitResult_pass->second->norm_prefit_;
 	  nPassErr = fitResult_pass->second->normErr_prefit_;
 	  nFail = fitResult_fail->second->norm_prefit_;
@@ -205,10 +371,20 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
 	double avFakeRate, avFakeRateErrUp, avFakeRateErrDown;
 	bool errorFlag;
 	compFakeRate(nPass, nPassErr, nFail, nFailErr, avFakeRate, avFakeRateErrUp, avFakeRateErrDown, errorFlag);
+
+        if(fitResult_pass->second->lepton_type_ == fitResultType::kElectron ){
+          avFakeRate *= fitResult_pass->second->Conv_corr_e_ ; // apply the correction 
+          double def_avFakeRateErrUp = avFakeRateErrUp;  
+	  double def_avFakeRateErrDown = avFakeRateErrDown;   
+          avFakeRateErrUp = TMath::Sqrt(TMath::Power(def_avFakeRateErrUp, 2.0) + TMath::Power((fitResult_pass->second->Err_Conv_corr_e_), 2.0));
+          avFakeRateErrDown = TMath::Sqrt(TMath::Power(def_avFakeRateErrDown, 2.0) + TMath::Power((fitResult_pass->second->Err_Conv_corr_e_), 2.0));
+	}
+        
+
 	if ( !errorFlag ) {
 	  double avFakeRateErr = TMath::Sqrt(0.5*(avFakeRateErrUp*avFakeRateErrUp + avFakeRateErrDown*avFakeRateErrDown));
-	  histogram->SetBinContent(idxBinX, idxBinY, avFakeRate);
-	  histogram->SetBinError(idxBinX, idxBinY, avFakeRateErr);
+	  histogram->SetBinContent(idxBinX, idxBinY, avFakeRate);  // 2D HISTOGRAM FILED HERE
+	  histogram->SetBinError(idxBinX, idxBinY, avFakeRateErr); // 2D HISTOGRAM FILED HERE
 	} else {
 	  throw cms::Exception("fillHistogram") 
 	    << "Failed to compute fake rate for " << minPt << " < pT < " << maxPt << " && " << minAbsEta << " < abs(eta) < " << maxAbsEta 
@@ -418,6 +594,13 @@ int main(int argc, char* argv[])
   
   std::string outputFileName = cfg_comp.getParameter<std::string>("outputFileName"); // for control plots
 
+
+  std::string process = cfg_comp.getParameter<std::string>("processName"); // ADDED FOR CONV. CORR.S
+  std::string variable = cfg_comp.getParameter<std::string>("HistogramName");   // ADDED FOR CONV. CORR.S
+  double conv_unc = cfg_comp.getParameter<double>("Conversion_uncert");    // ADDED FOR CONV. CORR.S
+
+  // process, variable, conv_unc
+
   fwlite::InputSource inputFiles(cfg); 
   if ( !(inputFiles.files().size() == 2) )
     throw cms::Exception("comp_LeptonFakeRate") 
@@ -472,6 +655,9 @@ int main(int argc, char* argv[])
   readPrefit(inputFile_mc, fitResults_e_fail);
   readPrefit(inputFile_mc, fitResults_mu_pass);
   readPrefit(inputFile_mc, fitResults_mu_fail);
+
+  readConversionCorr(inputFile_mc, fitResults_e_pass, process, variable, conv_unc); // ADDED FOR ELECTRON CONV. CORRECTIONS
+
   std::cout << "closing inputFile = '" << inputFileName_mc << "'" << std::endl;
   delete inputFile_mc;
   

@@ -21,20 +21,13 @@ process.addBackground_LeptonFakeRate = cms.PSet(
             denominator = cms.string("LeptonFakeRate/denominator/electrons_fakeable/"),
             lepton = cms.string("electron")
         ),
-        cms.PSet(
-            numerator = cms.string("LeptonFakeRate/numerator/muons_tight/"),
-            denominator = cms.string("LeptonFakeRate/denominator/muons_fakeable/"),
-            lepton = cms.string("muon")
-        )
-#,
 #        cms.PSet(
-#            numerator = cms.string("LeptonFakeRate/numerator/"),
-#            denominator = cms.string("LeptonFakeRate/denominator/"),
-#            lepton = cms.string("")
-#        )       
-     ),
-
-    processData = cms.string("ttH"),
+#            numerator = cms.string("LeptonFakeRate/numerator/muons_tight/"),
+#            denominator = cms.string("LeptonFakeRate/denominator/muons_fakeable/"),
+#            lepton = cms.string("muon")
+#        ),
+        ),
+    processData = cms.string("ttH"), ## TO BE CHANGED TO QCD IN THE FINAL VERSION
     processLeptonFakes = cms.string("ttH_NC"),
     processesToSubtract = cms.vstring(
         "ttHg",
