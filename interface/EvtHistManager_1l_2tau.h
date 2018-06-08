@@ -62,6 +62,7 @@ public:
   TH1 * histogram_mvaOutput_HTT_SUM_VT_noRebin_;
   TH1 * histogram_mvaOutput_plainKin_SUM_VT_;
   TH1 * histogram_mvaOutput_plainKin_SUM_VT_noRebin_;
+  TH1 * histogram_final_;
 
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_EventCounter_;
