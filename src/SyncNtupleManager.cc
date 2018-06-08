@@ -18,12 +18,38 @@ const Int_t SyncNtupleManager::placeholder_value = -9999;
 SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
                                      const std::string & outputTreeName)
   : outputFile(new TFile(outputFileName.c_str(), "recreate"))
-  , outputTree(new TTree(outputTreeName.c_str(), outputTreeName.c_str()))
+  , outputDir(nullptr)
+  , outputTree(nullptr)
   , nof_mus(2)
   , nof_eles(2)
   , nof_taus(2)
   , nof_jets(4)
 {
+  std::string outputDirName_;
+  std::string outputTreeName_ = outputTreeName;
+  const auto nofSlashes = std::count(outputTreeName.cbegin(), outputTreeName.cend(), '/');
+  if(nofSlashes == 1)
+  {
+    const std::size_t slashPos = outputTreeName.find('/');
+    outputDirName_ = outputTreeName.substr(0, slashPos);
+    outputTreeName_ = outputTreeName.substr(slashPos + 1);
+  }
+  else if(nofSlashes > 1)
+  {
+    throw cmsException(this) << "Invalid name for TTree = " << outputTreeName;
+  }
+
+  if(! outputDirName_.empty())
+  {
+    outputDir = outputFile->mkdir(outputDirName_.c_str());
+    outputDir -> cd();
+  }
+
+  outputTree = new TTree(outputTreeName_.c_str(), outputTreeName_.c_str());
+  if(outputDir)
+  {
+    outputTree->SetDirectory(outputDir);
+  }
   for(int var = as_integer(FloatVariableType::PFMET); var <= as_integer(FloatVariableType::genWeight); ++var)
   {
     floatMap[static_cast<FloatVariableType>(var)] = placeholder_value;
@@ -35,6 +61,7 @@ SyncNtupleManager::~SyncNtupleManager()
   outputFile -> Close();
   delete outputFile;
   outputTree = nullptr;
+  outputDir = nullptr;
   outputFile = nullptr;
 }
 
@@ -662,6 +689,14 @@ SyncNtupleManager::reset()
 void
 SyncNtupleManager::fill()
 {
+  if(outputDir)
+  {
+    outputDir -> cd();
+  }
+  else
+  {
+    outputFile -> cd();
+  }
   outputTree -> Fill();
   reset();
 }
@@ -669,6 +704,13 @@ SyncNtupleManager::fill()
 void
 SyncNtupleManager::write()
 {
-  outputFile -> cd();
+  if(outputDir)
+  {
+    outputDir -> cd();
+  }
+  else
+  {
+    outputFile -> cd();
+  }
   outputTree -> Write();
 }

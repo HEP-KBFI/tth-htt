@@ -1,4 +1,5 @@
 import logging
+import os.path
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
@@ -15,11 +16,11 @@ class analyzeConfig_inclusive(analyzeConfig):
         output_tree,
         check_output_files,
         running_method,
-        verbose,
         dry_run,
         isDebug,
         rle_select,
         hadTauSelection_tauIdWP,
+        central_or_shifts,
         use_nonnominal = False,
         use_home       = True,
       ):
@@ -28,7 +29,7 @@ class analyzeConfig_inclusive(analyzeConfig):
       outputDir          = outputDir,
       executable_analyze = executable_analyze,
       channel            = "inclusive",
-      central_or_shifts  = [ ],
+      central_or_shifts  = central_or_shifts,
       max_files_per_job  = 1,
       era                = era,
       use_lumi           = False,
@@ -41,7 +42,7 @@ class analyzeConfig_inclusive(analyzeConfig):
         '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu',
         '1e2mu', '2e1mu', '1e1tau', '1mu1tau', '2tau',
       ],
-      verbose            = verbose,
+      verbose            = False,
       dry_run            = dry_run,
       isDebug            = isDebug,
       do_sync            = True,
@@ -106,40 +107,42 @@ class analyzeConfig_inclusive(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       process_name = sample_info["process_name_specific"]
-      logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
-
-      sample_category = sample_info["sample_category"]
-      is_mc = (sample_info["type"] == "mc")
+      logging.info(
+        "Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name)
+      )
       inputFileList = inputFileLists[sample_name]
 
       for jobId in inputFileList.keys():
+        for central_or_shift in self.central_or_shifts:
+          logging.info(" ... for systematic uncertainty %s" % central_or_shift)
 
-        key_dir = getKey(process_name)
-        key_analyze_job = getKey(process_name, jobId)
-        ntupleFiles = inputFileList[jobId]
-        if len(ntupleFiles) == 0:
-          print("Warning: no ntupleFiles --> skipping job !!")
-          continue
+          key_dir = getKey(process_name)
+          key_analyze_job = getKey(process_name, central_or_shift, jobId)
+          ntupleFiles = inputFileList[jobId]
+          if len(ntupleFiles) == 0:
+            print("Warning: no ntupleFiles --> skipping job !!")
+            continue
 
-        syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s.root' % self.channel)
-        self.inputFiles_sync['sync'].append(syncOutput)
+          syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s.root' % (self.channel, central_or_shift))
+          syncOutputTree = self.output_tree if central_or_shift == "central" else os.path.join(central_or_shift, self.output_tree)
+          self.inputFiles_sync['sync'].append(syncOutput)
 
-        cfg_key = getKey(self.channel, process_name, jobId)
-        cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
-        logFile_path = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s.log" % cfg_key)
+          cfg_key = getKey(self.channel, process_name, central_or_shift, jobId)
+          cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
+          logFile_path = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s.log" % cfg_key)
 
-        self.jobOptions_analyze[key_analyze_job] = {
-          'ntupleFiles'             : ntupleFiles,
-          'cfgFile_modified'        : cfgFile_modified_path,
-          'histogramFile'           : '',
-          'logFile'                 : logFile_path,
-          'syncTree'                : self.output_tree,
-          'syncOutput'              : syncOutput,
-          'syncRLE'                 : self.rle_select if self.rle_select and '%s' not in self.rle_select else '',
-          'hadTauSelection_tauIdWP' : self.hadTauSelection_tauIdWP,
-          'useNonNominal'           : self.use_nonnominal,
-        }
-        self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
+          self.jobOptions_analyze[key_analyze_job] = {
+            'ntupleFiles'             : ntupleFiles,
+            'cfgFile_modified'        : cfgFile_modified_path,
+            'histogramFile'           : '',
+            'logFile'                 : logFile_path,
+            'syncTree'                : syncOutputTree,
+            'syncOutput'              : syncOutput,
+            'syncRLE'                 : self.rle_select if self.rle_select and '%s' not in self.rle_select else '',
+            'hadTauSelection_tauIdWP' : self.hadTauSelection_tauIdWP,
+            'useNonNominal'           : self.use_nonnominal,
+          }
+          self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
     logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
     self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)

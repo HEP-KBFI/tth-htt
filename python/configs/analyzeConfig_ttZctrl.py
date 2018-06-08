@@ -259,14 +259,17 @@ class analyzeConfig_ttZctrl(analyzeConfig):
               syncRequireGenMatching = False
               if self.do_sync:
                 if lepton_selection_and_frWeight == 'Tight':
-                  syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
+                  syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift))
                   syncTree = 'syncTree_%s_SR' % self.channel
                   syncRequireGenMatching = True
                 elif lepton_selection_and_frWeight == 'Fakeable_wFakeRateWeights':
-                  syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
+                  syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
                   syncTree = 'syncTree_%s_Fake' % self.channel
                 else:
                   continue
+
+              if syncTree and central_or_shift != "central":
+                syncTree = os.path.join(central_or_shift, syncTree)
 
               syncRLE = ''
               if self.do_sync and self.rle_select:
