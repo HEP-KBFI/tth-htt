@@ -48,7 +48,11 @@ output_tree = args.output_tree
 with_mem    = args.with_mem
 
 # Use the arguments
-central_or_shift = getattr(systematics, systematics_label)
+central_or_shifts = []
+for systematic_label in systematics_label:
+  for central_or_shift in getattr(systematics, systematic_label):
+    if central_or_shift not in central_or_shifts:
+      central_or_shifts.append(central_or_shift)
 
 if era == "2017":
   if with_mem:
@@ -68,6 +72,11 @@ if __name__ == '__main__':
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
 
+  logging.info(
+    "Running the jobs with the following systematic uncertainties enabled: %s" % \
+    ', '.join(central_or_shifts)
+  )
+
   configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version)
   outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version)
 
@@ -85,7 +94,7 @@ if __name__ == '__main__':
     isDebug                 = debug,
     rle_select              = rle_select,
     hadTauSelection_tauIdWP = tau_id_wp,
-    central_or_shifts       = central_or_shift,
+    central_or_shifts       = central_or_shifts,
     use_nonnominal          = use_nonnominal,
     use_home                = use_home,
   )
