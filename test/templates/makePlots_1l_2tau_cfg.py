@@ -88,6 +88,11 @@ process.makePlots.distributions.extend([
         yAxisTitle = cms.string('dN/dMVA')
     ),
     cms.PSet(
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_final'),
+        xAxisTitle = cms.string('MVA'),
+        yAxisTitle = cms.string('dN/dMVA')
+    ),
+    cms.PSet(
         histogramName = cms.string('sel/evt/$PROCESS/mTauTauVis'),
         xAxisTitle = cms.string('m_{#tau#tau}^{vis} [GeV]'),
         yAxisTitle = cms.string('dN/dm_{#tau#tau}^{vis} [1/GeV]')
