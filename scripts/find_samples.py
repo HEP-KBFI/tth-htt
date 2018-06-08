@@ -564,13 +564,14 @@ if __name__ == '__main__':
           # probably a comment or an empty line
           continue
         fields = field_str.split()
-        if len(fields) != 4:
+        if len(fields) != 5:
           raise ValueError("Unparseable line in file %s: %s" % (line_stripped, mc_input))
 
         das_name        = fields[0]
-        sample_category = fields[1]
-        specific_name   = fields[2]
-        xs              = float(fields[3]) # let it fail
+        use_it          = bool(fields[1])
+        sample_category = fields[2]
+        specific_name   = fields[3]
+        xs              = float(fields[4]) # let it fail
 
         if not MC_REGEX.match(das_name):
           raise ValueError("Error: line '%s' does not correspond to proper DBS name" % das_name)
@@ -578,6 +579,7 @@ if __name__ == '__main__':
           'sample_category' : sample_category,
           'specific_name'   : specific_name,
           'xs'              : xs,
+          'use_it'          : use_it,
         }
 
     for dataset_idx, dataset in enumerate(das_query_results):
@@ -670,15 +672,8 @@ if __name__ == '__main__':
     meta_dictionary_entries = []
     for dataset in das_query_results:
       entry = das_query_results[dataset]
-      entry['use_it'] = entry['dataset_access_type'] != 'INVALID'            and     \
-                        entry['release_pass']                                and     \
-                        entry['specific_name'] not in [
-                            'ttHJetTobb_M125_amcatnlo',
-                            'ttHToNonbb_M125_powheg',
-                          ]                                                  and not \
-        (
-          entry['sample_category'] == 'TT' and entry['specific_name'].endswith('_PSweights')
-        )
+      entry['use_it'] = entry['dataset_access_type'] != 'INVALID' and entry['release_pass'] and \
+                        entry['use_it']
       meta_dictionary_entries.append(jinja2.Template(METADICT_TEMPLATE_MC).render(
         dataset_name    = entry['name'],
         nof_db_events   = entry['nevents'],
