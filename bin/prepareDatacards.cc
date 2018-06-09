@@ -245,6 +245,7 @@ int main(int argc, char* argv[])
   std::string histogramToFit = cfg_prepareDatacards.getParameter<std::string>("histogramToFit");
   double histogramToFit_xMin = ( cfg_prepareDatacards.exists("histogramToFit_xMin") ) ? cfg_prepareDatacards.getParameter<double>("histogramToFit_xMin") : -1.;
   double histogramToFit_xMax = ( cfg_prepareDatacards.exists("histogramToFit_xMax") ) ? cfg_prepareDatacards.getParameter<double>("histogramToFit_xMax") : -1.;
+  bool histogramToFit_makeBinContentsPositive = cfg_prepareDatacards.getParameter<bool>("histogramToFit_makeBinContentsPositive");
   vstring central_or_shifts = cfg_prepareDatacards.getParameter<vstring>("sysShifts");
   // CV: check if central value needs to be added
   bool containsCentralValue = false;
@@ -312,8 +313,8 @@ int main(int argc, char* argv[])
       bool isSignal = false;
       for ( std::vector<TPRegexp*>::iterator signal = signals.begin();
 	    signal != signals.end(); ++signal ) {
-  bool isMatched_signal = compMatch(subdir->GetName(), *signal);
-  if ( isMatched_signal ) {
+	bool isMatched_signal = compMatch(subdir->GetName(), *signal);
+	if ( isMatched_signal ) {
 	  std::cout << " matches signal = " << (*signal)->GetPattern() << std::endl;
 	  isSignal = true;
 	} else {
@@ -321,11 +322,11 @@ int main(int argc, char* argv[])
 	}
       }
       if ( isToCopy || isSignal ) {
-  for(const std::string & central_or_shift: central_or_shifts)
-  {
-    std::cout << "histogramToFit = " << histogramToFit << ", central_or_shift = " << central_or_shift << '\n';
-    const bool is_central = central_or_shift.empty()  || central_or_shift == "central";
-	  
+	for(const std::string & central_or_shift: central_or_shifts)
+	{
+	  std::cout << "histogramToFit = " << histogramToFit << ", central_or_shift = " << central_or_shift << '\n';
+	  const bool is_central = central_or_shift.empty()  || central_or_shift == "central";
+	    
 	  TFileDirectory* subdir_output = &fs;
 	  subdir_output->cd();
 	  //Make subdirectory if given
@@ -337,13 +338,13 @@ int main(int argc, char* argv[])
 	  double sf = ( isSignal ) ? sf_signal : 1.;
 	  TH1* histogram = copyHistogram(
 	    subdir, subdir->GetName(), histogramToFit, "", 
-      sf, histogramToFit_xMin, histogramToFit_xMax, histogramToFit_rebin, central_or_shift, is_central);
+            sf, histogramToFit_xMin, histogramToFit_xMax, histogramToFit_rebin, central_or_shift, is_central);
 	  if ( !histogram ) continue;
 	  bool isData = compMatch(subdir->GetName(), data);
-    bool isFakes = compMatch(subdir->GetName(), fakes);
+	  bool isFakes = compMatch(subdir->GetName(), fakes);
 	  //	  if ( !(isData || isSignal) ) {
-    if(! (isData || isSignal) && is_central && ((quantile_rebinning_in_fakes && isFakes) || ! quantile_rebinning_in_fakes))
-    {
+          if(! (isData || isSignal) && is_central && ((quantile_rebinning_in_fakes && isFakes) || ! quantile_rebinning_in_fakes))
+          {
 	    std::cout << "adding background = '" << subdir->GetName() << "'" << std::endl;
 	    if   ( !histogramBackgroundSum ) histogramBackgroundSum = (TH1*)histogram->Clone(Form("%s_BackgroundSum", category->input_.data()));
 	    else                             histogramBackgroundSum->Add(histogram);  	    
@@ -359,9 +360,9 @@ int main(int argc, char* argv[])
       subsubdir_output->cd();
       // rebin histograms as the user requested
       TArrayD histogramBinning = getTArraDfromVector(explicitBinning);
-      for(TH1 * histogram: histogramsToRebin)
-      {
-        getRebinnedHistogram1d(histogram, 4, histogramBinning);
+      for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
+	    histogram != histogramsToRebin.end(); ++histogram ) {
+        getRebinnedHistogram1d(*histogram, 4, histogramBinning);
       }
     }
     if ( apply_automatic_rebinning &&(!apply_quantile_rebinning) && explicitBinning.empty()) {
@@ -384,7 +385,7 @@ int main(int argc, char* argv[])
       Double_t yq[nq];  // array to contain the quantiles
       for (Int_t i=0;i<nq;i++) xq[i] = Float_t(i+1)/nq;
       histogramBackgroundSum->GetQuantiles(nq,yq,xq);
-      std::cout<<"............ quantile binning ............"<<std::endl;
+      std::cout << "............ quantile binning ............" << std::endl;
       for (Int_t i=0;i<nq;i++)std::cout<<yq[i]<<std::endl;
       TArrayD histogramBinning(nq+1);
       histogramBinning[0] = 0;
@@ -392,6 +393,12 @@ int main(int argc, char* argv[])
       for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
 	getRebinnedHistogram1d(*histogram, 4, histogramBinning);
+      }
+    }
+    if ( histogramToFit_makeBinContentsPositive ) {
+      for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
+	    histogram != histogramsToRebin.end(); ++histogram ) {
+	makeBinContentsPositive(*histogram, true);
       }
     }
     delete histogramBackgroundSum;
