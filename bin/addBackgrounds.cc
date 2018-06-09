@@ -174,7 +174,17 @@ int main(int argc, char* argv[])
           }
 	}
       }
+      for(auto & subdir_level2: subdirs_level2)
+      {
+        delete subdir_level2;
+      }
+      subdirs_level2.clear();
     }
+    for(auto & subdir_level1: subdirs_level1)
+    {
+      delete subdir_level1;
+    }
+    subdirs_level1.clear();
   }
 
   //---------------------------------------------------------------------------------------------------
