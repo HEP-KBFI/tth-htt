@@ -554,7 +554,6 @@ class analyzeConfig(object):
             'logFile', min_file_size = -1,
         )
 
-
     def createScript_sbatch_analyze(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
@@ -564,7 +563,7 @@ class analyzeConfig(object):
     def createScript_sbatch_addBackgrounds(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
-        self.num_jobs['addBackgrounds'] += self.createScript_sbatch(executable, sbatchFile, jobOptions)
+        self.num_jobs['addBackgrounds'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 5000)
 
     def createScript_sbatch_addFakes(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the analysis jobs to the batch system
