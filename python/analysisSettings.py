@@ -110,9 +110,6 @@ class systematics(object):
   an_chargeFlip_mu      =    central +  muon_E
   an_chargeFlip_mu_opts = [ "central", "muon_E" ]
 
-  an_ctrl      =    central +  JES +  lhe
-  an_ctrl_opts = [ "central", "JES", "lhe" ]
-
   an_common      =    central +  JES +  tauES +  btag +  FR_t +  lhe
   an_common_opts = [ "central", "JES", "tauES", "btag", "FR_t", "lhe" ]
   # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only if you plan to run compShapeSyst 1!
@@ -122,8 +119,8 @@ class systematics(object):
   an_inclusive      =    central +  JES +  JER +  UnclusteredEn +  tauES +  btag
   an_inclusive_opts = [ "central", "JES", "JER", "UnclusteredEn", "tauES", "btag" ]
 
-  an_sync      =    central +  JES
-  an_sync_opts = [ "central", "JES" ]
+  an_sync      =    central +  JES  +  JER  +  tauES  +  btag
+  an_sync_opts = [ "central", "JES" + "JER" + "tauES" + "btag" ]
 
 class Triggers(object):
 
