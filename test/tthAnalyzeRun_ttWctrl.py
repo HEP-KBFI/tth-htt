@@ -38,6 +38,8 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+if type(systematics_label) is str:
+  systematics_label = [ systematics_label ]
 tau_id_wp         = args.tau_id_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
@@ -99,7 +101,7 @@ if __name__ == '__main__':
     executable_addBackgrounds = "addBackgrounds",
     executable_addFakes       = "addBackgroundLeptonFakes",
     executable_addFlips       = "addBackgroundLeptonFlips",
-    histograms_to_fit         = [ "EventCounter", "numJets" ],
+    histograms_to_fit         = [ "EventCounter", "numJets", "mvaDiscr_2lss" ],
     select_rle_output         = True,
     hlt_filter                = hlt_filter,
     dry_run                   = dry_run,

@@ -4,8 +4,11 @@ import os
 
 from tthAnalysis.HiggsToTauTau.configs.makePlots_cfi import process
 
+process.makePlots.applyRebinning = cms.bool(False)
+process.makePlots.apply_automatic_rebinning = cms.bool(False)
+process.makePlots.applyAutoBlinding = cms.bool(False)
+
 process.makePlots.processesBackground = cms.vstring(
-    "TT",
     "TTW",
     "signal",
     "EWK",
@@ -77,6 +80,6 @@ process.makePlots.distributions.extend([
         histogramName = cms.string("sel/evt/$PROCESS/mT"),
         xAxisTitle = cms.string("m_{T} [GeV]"),
         yAxisTitle = cms.string("dN/dm_{T} [1/GeV]"),
-    ),
+    )
 ])
 

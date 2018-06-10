@@ -170,7 +170,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
             'logFile'                  : logFile_path,
             'selEventsFileName_output' : rleOutputFile_path,
             'sample_category'          : sample_category,
-            'hadTauSelection'          : self.hadTau_selection_part2,
+            'hadTauSelection'          : "Tight|%s" % self.hadTau_selection_part2,
             'central_or_shift'         : central_or_shift,
             'apply_hlt_filter'         : self.hlt_filter,
           }
@@ -229,9 +229,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
       self.createScript_sbatch_analyze(
         executable      = self.executable_analyze,
         sbatchFile      = self.sbatchFile_analyze,
-        jobOptions      = self.jobOptions_analyze,
-        key_input_file  = 'ntupleFiles',
-        key_output_file = 'histogramFile',
+        jobOptions      = self.jobOptions_analyze
       )
 
     logging.info("Creating Makefile")

@@ -9,11 +9,11 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 # E.g.: ./tthAnalyzeRun_WZctrl.py -v 2017Dec13 -e 2017
 
 sys_choices      = [ 'full' ]
-systematics.full = systematics.an_ctrl + systematics.an_ctrl_opts
+systematics.full = systematics.an_common
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp("dR03mvaVLoose")
+parser.add_tau_id_wp("dR03mvaLoose")
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_hlt_filter()
@@ -33,6 +33,8 @@ running_method     = args.running_method
 
 # Additional arguments
 systematics_label = args.systematics
+if type(systematics_label) is str:
+  systematics_label = [ systematics_label ]
 tau_id_wp         = args.tau_id_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
