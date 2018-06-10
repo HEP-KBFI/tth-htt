@@ -9,8 +9,8 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 # E.g.: ./tthAnalyzeRun_ttWctrl.py -v 2017Dec13 -e 2017
 
 mode_choices     = [ 'default', 'sync', 'sync_wMEM' ]
-sys_choices      = [ 'full' ] + systematics.an_ctrl_opts
-systematics.full = systematics.an_ctrl
+sys_choices      = [ 'full' ] + systematics.an_common_opts
+systematics.full = systematics.an_common
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
