@@ -887,15 +887,15 @@ int main(int argc, char* argv[])
 	std::vector<histogramEntryType*>histogramsBackground_tmp;
 	TH1* histogramSignal_tmp = 0;
 	if ( apply_automatic_rebinning ) {
-    TArrayD histogramBinning;
-    if((*distribution)->hasExplicitBinning())
-    {
-      histogramBinning = getTArraDfromVector((*distribution)->explicitBinning_);
-    }
-    else
-    {
-      histogramBinning = getRebinnedBinning(histogramBackgroundSum_rebinned, minEvents_automatic_rebinning);
-    }
+	  TArrayD histogramBinning;
+	  if((*distribution)->hasExplicitBinning())
+	  {
+	    histogramBinning = getTArraDfromVector((*distribution)->explicitBinning_);
+	  }
+	  else
+	  {
+	    histogramBinning = getRebinnedBinning(histogramBackgroundSum_rebinned, minEvents_automatic_rebinning);
+	  }
 	  histogramData_tmp = getRebinnedHistogram1d(histogramData_rebinned, 4, histogramBinning, true);
 	  histogramSignal_tmp = getRebinnedHistogram1d(histogramSignal_rebinned, 4, histogramBinning, true);
 	  for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground_rebinned.begin(); 
