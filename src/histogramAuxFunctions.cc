@@ -835,7 +835,7 @@ getRebinnedBinning(TH1 * histogram,
   std::cout << "binning = { ";
   for(std::size_t binIdx = 0; binIdx < histogramBinning.size(); ++binIdx)
   {
-    if(binIdx != histogramBinning.size() - 1)
+    if(binIdx < (histogramBinning.size() - 1))
     {
       std::cout << ", ";
     }
