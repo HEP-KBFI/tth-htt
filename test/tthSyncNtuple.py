@@ -65,7 +65,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
-sys_choices     = systematics.an_sync_opts
+sys_choices     = systematics.an_inclusive_opts
 channel_choices = [
   '1l_2tau', '2lss', '2lss_1tau', '2l_2tau', '3l', '3l_1tau', '4l', 'inclusive', 'ttWctrl', 'ttZctrl',
 ]
