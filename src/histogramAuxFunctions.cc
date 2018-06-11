@@ -470,17 +470,17 @@ makeBinContentsPositive(TH1 * histogram,
     }
   }
 
-  double integral_modified = compIntegral(histogram, true, true);
-  if(integral_modified < 0.)
+  double integral_modified = compIntegral(histogram, false, false);
+  if(integral_modified < 1.e-3)
   {
-    integral_modified = 0.;
+    integral_modified = 1.e-3;
   }
   if(verbosity)
   {
     std::cout << " integral_modified = " << integral_modified << '\n';
   }
 
-  if(integral_modified > 0.)
+  if(integral_original > 0. && integral_modified > 0.)
   {
     const double sf = integral_original / integral_modified;
     if(verbosity)
@@ -493,7 +493,7 @@ makeBinContentsPositive(TH1 * histogram,
   {
     for(int iBin = initBin; iBin < endBin; ++iBin)
     {
-      histogram->SetBinContent(iBin, 0.);
+      histogram->SetBinContent(iBin, 1.e-3/((endBin - 1) - initBin));
     }
   }
 
