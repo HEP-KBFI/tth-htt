@@ -38,8 +38,6 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
-if type(systematics_label) is str:
-  systematics_label = [ systematics_label ]
 tau_id_wp         = args.tau_id_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home

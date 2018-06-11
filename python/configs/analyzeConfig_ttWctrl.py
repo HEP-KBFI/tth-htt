@@ -386,7 +386,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
               if self.do_sync: continue
 
               if is_mc:
-                logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
+                logging.info("Creating configuration files to run 'addBackgrounds' for sample %s and sys unc %s" % (process_name, central_or_shift))
 
                 sample_categories = [ sample_category ]
                 if is_signal:
