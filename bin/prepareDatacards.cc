@@ -294,6 +294,7 @@ int main(int argc, char* argv[])
     TKey* key = 0;
     TH1* histogramBackgroundSum = 0;
     std::vector<TH1*> histogramsToRebin;
+    std::vector<TH1*> histogramsRebinned;
     while ( (key = dynamic_cast<TKey*>(next())) ) {
       TObject* object = key->ReadObj();
       TDirectory* subdir = dynamic_cast<TDirectory*>(object);
@@ -362,7 +363,8 @@ int main(int argc, char* argv[])
       TArrayD histogramBinning = getTArraDfromVector(explicitBinning);
       for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
-        getRebinnedHistogram1d(*histogram, 4, histogramBinning);
+        //getRebinnedHistogram1d(*histogram, 4, histogramBinning);
+	histogramsRebinned.push_back(getRebinnedHistogram1d(*histogram, 4, histogramBinning));
       }
     }
     if ( apply_automatic_rebinning &&(!apply_quantile_rebinning) && explicitBinning.empty()) {
@@ -373,7 +375,8 @@ int main(int argc, char* argv[])
       TArrayD histogramBinning = getRebinnedBinning(histogramBackgroundSum, minEvents_automatic_rebinning);
       for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
-	getRebinnedHistogram1d(*histogram, 4, histogramBinning);
+	//getRebinnedHistogram1d(*histogram, 4, histogramBinning);
+	histogramsRebinned.push_back(getRebinnedHistogram1d(*histogram, 4, histogramBinning));
       }
     }
     if ( apply_quantile_rebinning && (!apply_automatic_rebinning) && explicitBinning.empty()) {
@@ -392,7 +395,8 @@ int main(int argc, char* argv[])
       for (Int_t i=0;i<nq;i++) histogramBinning[i+1] = yq[i];
       for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
-	getRebinnedHistogram1d(*histogram, 4, histogramBinning);
+	//getRebinnedHistogram1d(*histogram, 4, histogramBinning);
+	histogramsRebinned.push_back(getRebinnedHistogram1d(*histogram, 4, histogramBinning));
       }
     }
     if ( histogramToFit_makeBinContentsPositive ) {
@@ -400,7 +404,12 @@ int main(int argc, char* argv[])
 	    histogram != histogramsToRebin.end(); ++histogram ) {
 	makeBinContentsPositive(*histogram, true);
       }
+      for ( std::vector<TH1*>::iterator histogram = histogramsRebinned.begin();
+	    histogram != histogramsRebinned.end(); ++histogram ) {
+	makeBinContentsPositive(*histogram, true);
+      }
     }
+    
     delete histogramBackgroundSum;
   }
   
