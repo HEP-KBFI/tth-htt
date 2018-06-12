@@ -283,6 +283,7 @@ int main(int argc, char* argv[])
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
   //cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", isDEBUG);
   cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", false);
+  //cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", true);
   Data_to_MC_CorrectionInterface* dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface(cfg_dataToMCcorrectionInterface);
   Data_to_MC_CorrectionInterface_1l_2tau_trigger* dataToMCcorrectionInterface_1l_2tau_trigger = new Data_to_MC_CorrectionInterface_1l_2tau_trigger(cfg_dataToMCcorrectionInterface);
 
@@ -916,9 +917,13 @@ int main(int argc, char* argv[])
     }
 
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
+    //std::cout << "isTriggered_1e = " << isTriggered_1e << std::endl;
     bool isTriggered_1e1tau = hltPaths_isTriggered(triggers_1e1tau, isDEBUG);
+    //std::cout << "isTriggered_1e1tau = " << isTriggered_1e1tau << std::endl;
     bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, isDEBUG);
+    //std::cout << "isTriggered_1mu = " << isTriggered_1mu << std::endl;
     bool isTriggered_1mu1tau = hltPaths_isTriggered(triggers_1mu1tau, isDEBUG);
+    //std::cout << "isTriggered_1mu1tau = " << isTriggered_1mu1tau << std::endl;
 
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_1e1tau = use_triggers_1e1tau && isTriggered_1e1tau;

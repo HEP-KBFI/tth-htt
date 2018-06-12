@@ -9,7 +9,7 @@ EvtHistManager_WZctrl::EvtHistManager_WZctrl(const edm::ParameterSet & cfg)
   , era_(-1)
 {
   const std::string era_string = cfg.getParameter<std::string>("era");
-  if(era_string == "2017")
+  if(era_string == "2017" )
   {
     era_ = kEra_2017;
   }
@@ -50,26 +50,27 @@ EvtHistManager_WZctrl::bookHistograms(TFileDirectory & dir)
   histogram_mLL_             = book1D(dir, "mLL",             "mLL",             30, 60., 120.);
   histogram_mT_              = book1D(dir, "mT",              "mT",              40,  0., 200.);
   histogram_sumLeptonCharge_ = book1D(dir, "sumLeptonCharge", "sumLeptonCharge",  7, -3.,  +3.);
+  
   histogram_EventCounter_    = book1D(dir, "EventCounter",    "EventCounter",     1, -0.5, +0.5);
 }
 
 void
 EvtHistManager_WZctrl::fillHistograms(int numElectrons,
-                                      int numMuons,
-                                      int numHadTaus,
-                                      int numJets,
-                                      int numBJets_loose,
-                                      int numBJets_medium,
-                                      double mvaOutput_2lss_ttV,
-                                      double mvaOutput_2lss_ttbar,
-                                      double mvaDiscr_2lss,
-                                      double mvaOutput_3l_ttV,
-                                      double mvaOutput_3l_ttbar,
-                                      double mvaDiscr_3l,
-                                      double mLL,
-                                      double mT,
-                                      int sumLeptonCharge,
-                                      double evtWeight)
+				      int numMuons,
+				      int numHadTaus,
+				      int numJets,
+				      int numBJets_loose,
+				      int numBJets_medium,
+				      double mvaOutput_2lss_ttV,
+				      double mvaOutput_2lss_ttbar,
+				      double mvaDiscr_2lss,
+				      double mvaOutput_3l_ttV,
+				      double mvaOutput_3l_ttbar,
+				      double mvaDiscr_3l,
+				      double mLL,
+				      double mT,
+				      int sumLeptonCharge,
+				      double evtWeight)
 {
   const double evtWeightErr = 0.;
 
@@ -92,5 +93,6 @@ EvtHistManager_WZctrl::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mLL_,             mLL,             evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mT_,              mT,              evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_sumLeptonCharge_, sumLeptonCharge, evtWeight, evtWeightErr);
+ 
   fillWithOverFlow(histogram_EventCounter_,    0.,              evtWeight, evtWeightErr);
 }

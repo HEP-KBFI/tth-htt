@@ -23,22 +23,23 @@ public:
   void
   bookHistograms(TFileDirectory & dir) override;
 
-  void fillHistograms(int numElectrons,
-                      int numMuons,
-                      int numHadTaus,
-                      int numJets,
-                      int numBJets_loose,
-                      int numBJets_medium,
-                      double mvaOutput_2lss_ttV,
-                      double mvaOutput_2lss_ttbar,
-                      double mvaDiscr_2lss,
-                      double mvaOutput_3l_ttV,
-                      double mvaOutput_3l_ttbar,
-                      double mvaDiscr_3l,
-                      double mLL,
-                      double mT,
-                      int sumLeptonCharge,
-                      double evtWeight);
+  void
+  fillHistograms(int numElectrons,
+                 int numMuons,
+                 int numHadTaus,
+                 int numJets,
+                 int numBJets_loose,
+                 int numBJets_medium,
+                 double mvaOutput_2lss_ttV,
+                 double mvaOutput_2lss_ttbar,
+                 double mvaDiscr_2lss,
+                 double mvaOutput_3l_ttV,
+                 double mvaOutput_3l_ttbar,
+                 double mvaDiscr_3l,
+                 double mLL,
+                 double mT,
+                 int sumLeptonCharge,
+                 double evtWeight);
 
 private:
   int era_;
@@ -60,9 +61,7 @@ private:
   TH1 * histogram_mvaDiscr_3l_;
 
   TH1 * histogram_mLL_;
-
   TH1 * histogram_mT_;
-
   TH1 * histogram_sumLeptonCharge_;
 
   TH1 * histogram_EventCounter_;

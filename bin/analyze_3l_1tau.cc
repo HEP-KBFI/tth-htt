@@ -750,7 +750,7 @@ int main(int argc, char* argv[])
     ">= 2 loose b-jets || 1 medium b-jet (2)",
     ">= 1 sel tau (2)",
     "m(ll) > 12 GeV",
-    "lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV && third lepton pT > 10 GeV",
+    "lead lepton pT > 20 GeV && sublead lepton pT > 10 GeV && third lepton pT > 10 GeV",
     "sel lepton charge",
     "sel lepton+tau charge",
     "Z-boson mass veto",
@@ -1497,8 +1497,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV && third lepton pT > 10 GeV", evtWeight);
-    cutFlowHistManager->fillHistograms("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV && third lepton pT > 10 GeV", evtWeight);
+    cutFlowTable.update("lead lepton pT > 20 GeV && sublead lepton pT > 10 GeV && third lepton pT > 10 GeV", evtWeight);
+    cutFlowHistManager->fillHistograms("lead lepton pT > 20 GeV && sublead lepton pT > 10 GeV && third lepton pT > 10 GeV", evtWeight);
 
     int sumLeptonCharge = selLepton_lead->charge() + selLepton_sublead->charge() + selLepton_third->charge();
     if ( std::abs(sumLeptonCharge) != 1 ) {
@@ -1554,8 +1554,8 @@ int main(int argc, char* argv[])
 
     double met_LD_cut = 0.;
     if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
-    else if ( isSameFlavor_OS     ) met_LD_cut =  0.3;
-    else                            met_LD_cut =  0.2;
+    else if ( isSameFlavor_OS     ) met_LD_cut = 45.;
+    else                            met_LD_cut = 30.;
     if ( met_LD_cut > 0 && met_LD < met_LD_cut ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
