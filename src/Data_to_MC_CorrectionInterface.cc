@@ -327,7 +327,7 @@ namespace
     {
       double lepton_pt_lead = TMath::Max(lepton1_pt, lepton2_pt);
       if      ( lepton_pt_lead >= 50. ) sf = 1.000;
-      else if ( lepton_pt_lead >= 50. ) sf = 0.983;
+      else if ( lepton_pt_lead >= 35. ) sf = 0.983;
       else                              sf = 0.952;
     }
     else if(numElectrons == 0 && numMuons == 2)
