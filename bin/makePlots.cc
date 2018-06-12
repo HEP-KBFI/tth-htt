@@ -383,7 +383,7 @@ namespace
     const int color_Diboson     = 634; // dark red
     const int color_WZ          = 634; // dark red
     const int color_Rares       = 851; // light blue
-    const int color_Conversions = 796; // yellow/orange
+    const int color_Conversions = 800; // yellow/orange
     const int color_Fakes       =   1; // black
     const int color_Flips       =   1; // black
     

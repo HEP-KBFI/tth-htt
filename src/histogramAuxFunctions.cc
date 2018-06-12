@@ -436,7 +436,7 @@ makeBinContentsPositive(TH1 * histogram,
                               << histogram->Integral() << '\n';
   }
 
-  double integral_original = compIntegral(histogram, true, true);
+  double integral_original = compIntegral(histogram, false, false);
   if(integral_original < 0.)
   {
     integral_original = 0.;
@@ -471,9 +471,9 @@ makeBinContentsPositive(TH1 * histogram,
   }
 
   double integral_modified = compIntegral(histogram, false, false);
-  if(integral_modified < 1.e-3)
+  if(integral_modified < 0.)
   {
-    integral_modified = 1.e-3;
+    integral_modified = 0.;
   }
   if(verbosity)
   {

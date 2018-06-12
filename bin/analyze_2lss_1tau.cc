@@ -928,7 +928,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     "sel lepton-pair OS/SS charge",
     "sel lepton+tau charge",
     "Z-boson mass veto",
-    "met LD > 0.2",
+    "met LD > 30 GeV",
     "MEt filters",
     "signal region veto",
   };
@@ -1700,7 +1700,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
     cutFlowTable.update("Z-boson mass veto", evtWeight);
     cutFlowHistManager->fillHistograms("Z-boson mass veto", evtWeight);
-    if ( !(selLepton_lead->is_muon() || selLepton_sublead->is_muon() || met_LD >= 0.2) ) {
+    if ( !(selLepton_lead->is_muon() || selLepton_sublead->is_muon() || met_LD >= 30.) ) {
       if ( run_lumi_eventSelector ) {
           std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
           std::cout << " (LD = " << met_LD << ")\n"
@@ -1708,8 +1708,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update("met LD > 0.2", evtWeight);
-    cutFlowHistManager->fillHistograms("met LD > 0.2", evtWeight);
+    cutFlowTable.update("met LD > 30 GeV", evtWeight);
+    cutFlowHistManager->fillHistograms("met LD > 30 GeV", evtWeight);
 
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {

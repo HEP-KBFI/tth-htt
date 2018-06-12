@@ -902,11 +902,11 @@ int main(int argc, char* argv[])
     cutFlowTable.update(Form("lepton-pair %s charge", chargeSelection_string.data()), evtWeight);
 
     if ( selLepton_lead->is_electron() && selLepton_sublead->is_electron() ) {
-      if ( met_LD < 0.2 ) {
+      if ( met_LD < 30. ) {
 	continue;
       }
     }
-    cutFlowTable.update("met LD > 0.2", evtWeight);
+    cutFlowTable.update("met LD > 30 GeV", evtWeight);
 
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {

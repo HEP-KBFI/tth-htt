@@ -8,14 +8,18 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_WZctrl.py -v 2017Dec13 -e 2017
 
+mode_choices     = [ 'default' ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts
 systematics.full = systematics.an_common
 
 parser = tthAnalyzeParser()
+parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_tau_id_wp("dR03mvaLoose")
 parser.add_files_per_job()
 parser.add_use_home()
+parser.add_rle_select()
+parser.add_nonnominal()
 parser.add_hlt_filter()
 args = parser.parse_args()
 
@@ -32,12 +36,13 @@ num_parallel_jobs  = args.num_parallel_jobs
 running_method     = args.running_method
 
 # Additional arguments
+mode              = args.mode
 systematics_label = args.systematics
-if type(systematics_label) is str:
-  systematics_label = [ systematics_label ]
 tau_id_wp         = args.tau_id_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
+rle_select        = os.path.expanduser(args.rle_select)
+use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
 
 # Use the arguments
@@ -48,7 +53,8 @@ for systematic_label in systematics_label:
       central_or_shifts.append(central_or_shift)
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  if mode == 'default':
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
@@ -75,29 +81,35 @@ if __name__ == '__main__':
   analysis = analyzeConfig_WZctrl(
     configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
     outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
-    executable_analyze = "analyze_WZctrl",
-    cfgFile_analyze    = "analyze_WZctrl_cfg.py",
-    samples            = samples,
-    hadTau_selection   = tau_id_wp,
-    central_or_shifts  = central_or_shifts,
-    max_files_per_job  = files_per_job,
-    era                = era,
-    use_lumi           = True,
-    lumi               = lumi,
-    check_output_files = check_output_files,
-    running_method     = running_method,
-    num_parallel_jobs  = num_parallel_jobs,
-    histograms_to_fit  = [
+    executable_analyze                    = "analyze_WZctrl",
+    cfgFile_analyze                       = "analyze_WZctrl_cfg.py",
+    samples                               = samples,
+    hadTauVeto_selection                  = tau_id_wp,
+    applyFakeRateWeights                  = "3lepton",
+    central_or_shifts                     = central_or_shifts,
+    max_files_per_job                     = files_per_job,
+    era                                   = era,
+    use_lumi                              = True,
+    lumi                                  = lumi,
+    check_output_files                    = check_output_files,
+    running_method                        = running_method,
+    num_parallel_jobs                     = num_parallel_jobs,
+    executable_addBackgrounds             = "addBackgrounds",
+    executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
+    histograms_to_fit                     = [
       "EventCounter",
       "numJets",
       "mLL",
       "mT",
+      "mvaDiscr_3l"
     ],
     select_rle_output  = True,
     hlt_filter         = hlt_filter,
     dry_run            = dry_run,
     isDebug            = debug,
     use_home           = use_home,
+    use_nonnominal     = use_nonnominal,
+    rle_select         = rle_select,
   )
 
   job_statistics = analysis.create()

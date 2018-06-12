@@ -22,8 +22,8 @@ class RecoElectron;
 //--- declare constants
 const double z_mass   = 91.1876;
 const double z_window = 10.;
-const double met_coef =  0.00397;
-const double mht_coef =  0.00265;
+const double met_coef =  0.6;
+const double mht_coef =  0.4;
 
 //--- declare data-taking periods
 enum

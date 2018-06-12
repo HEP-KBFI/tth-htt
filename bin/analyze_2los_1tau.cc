@@ -816,7 +816,7 @@ int main(int argc, char* argv[])
     "tight lepton charge",
     "sel lepton-pair OS charge",
     "Z-boson mass veto",
-    "met LD > 0.2",
+    "met LD > 30 GeV",
     "signal region veto",
   };
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
@@ -1465,7 +1465,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("Z-boson mass veto", evtWeight);
 
     if ( ((selLepton_lead->is_electron() && selLepton_sublead->is_electron()) ||
-          (selLepton_lead->is_muon()     && selLepton_sublead->is_muon())      ) && met_LD < 0.2 ) {
+          (selLepton_lead->is_muon()     && selLepton_sublead->is_muon())      ) && met_LD < 30. ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS MET LD selection.\n"
                      " (LD = " << met_LD << ")\n"
@@ -1473,8 +1473,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("met LD > 0.2", evtWeight);
-    cutFlowHistManager->fillHistograms("met LD > 0.2", evtWeight);
+    cutFlowTable.update("met LD > 30 GeV", evtWeight);
+    cutFlowHistManager->fillHistograms("met LD > 30 GeV", evtWeight);
 
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {

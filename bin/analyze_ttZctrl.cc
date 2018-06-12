@@ -1225,8 +1225,8 @@ int main(int argc, char* argv[])
 
     double met_LD_cut = 0.;
     if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
-    else if ( isSFOS              ) met_LD_cut =  0.3;
-    else                            met_LD_cut =  0.2;
+    else if ( isSFOS              ) met_LD_cut = 45.;
+    else                            met_LD_cut = 30.;
     if ( met_LD_cut > 0 && met_LD < met_LD_cut ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
