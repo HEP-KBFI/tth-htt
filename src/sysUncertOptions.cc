@@ -99,7 +99,7 @@ TriggerSFsys
 getTriggerSF_option(const std::string & central_or_shift)
 {
   TriggerSFsys central_or_shift_int = TriggerSFsys::central;
-  if     (central_or_shift == "CMS_ttHl_triggerUp")   central_or_shift_int = TriggerSFsys::shiftUp;
+  if     (central_or_shift == "CMS_ttHl_triggerUp"  ) central_or_shift_int = TriggerSFsys::shiftUp;
   else if(central_or_shift == "CMS_ttHl_triggerDown") central_or_shift_int = TriggerSFsys::shiftDown;
   return central_or_shift_int;
 }
