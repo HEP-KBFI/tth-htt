@@ -101,7 +101,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.samples = samples
     self.MEMbranch = MEMbranch
 
-    ##self.lepton_and_hadTau_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ]
+    ##self.lepton_and_hadTau_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure_all", "Fakeable_mcClosure_e", "Fakeable_mcClosure_mu", "Fakeable_mcClosure_tau" ]
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]
     self.lepton_and_hadTau_frWeights = [ "enabled", "disabled" ]
     self.lepton_charge_selections = lepton_charge_selections
