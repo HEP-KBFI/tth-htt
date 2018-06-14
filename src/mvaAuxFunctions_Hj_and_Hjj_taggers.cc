@@ -9,6 +9,12 @@ double comp_mvaOutput_Hj_tagger(const RecoJet* jet,
                                 TMVAInterface& mva_Hj_tagger,
                                 const EventInfo & eventInfo)
 {
+  //-----------------------------------------------------------------------------
+  // CV: updated version of Hj-tagger for analysis of 2017 data,
+  //     as presented by Francesco Romeo in ttH multilepton+tau working meeting on June 3rd 2018
+  //    (https://indico.cern.ch/event/718592/contributions/3038714/attachments/1666644/2672104/Hj_tagger_03_05_017_BLFR-1.pdf)
+  //-----------------------------------------------------------------------------
+
   double dRmin_lepton = -1.;
   double dRmax_lepton = -1.;
   for ( std::vector<const RecoLepton*>::const_iterator lepton = leptons.begin();
