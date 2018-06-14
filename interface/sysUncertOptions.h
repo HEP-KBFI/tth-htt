@@ -67,6 +67,12 @@ enum class FRmt
   shiftUp, shiftDown,
 };
 
+enum class TriggerSFsys
+{
+  central,
+  shiftUp, shiftDown,
+};
+
 enum
 {
   kLHE_scale_central,
@@ -128,6 +134,9 @@ getEToTauFR_option(const std::string & central_or_shift);
 
 FRmt
 getMuToTauFR_option(const std::string & central_or_shift);
+
+TriggerSFsys
+getTriggerSF_option(const std::string & central_or_shift);
 
 int
 getLHEscale_option(const std::string & central_or_shift);
