@@ -18,11 +18,11 @@ double comp_mvaOutput_Hj_tagger(const RecoJet* jet,
     if ( dRmax_lepton == -1. || dR > dRmax_lepton ) dRmax_lepton = dR;
   }
 
-  mvaInputs_Hj_tagger["Jet_lepdrmin"] = dRmin_lepton;
-  mvaInputs_Hj_tagger["max(Jet_pfCombinedInclusiveSecondaryVertexV2BJetTags,0.)"] = std::max(0., jet->BtagCSV());
-  mvaInputs_Hj_tagger["max(Jet_qg,0.)"] = std::max(0., jet->QGDiscr());
-  mvaInputs_Hj_tagger["Jet_lepdrmax"] = dRmax_lepton;
-  mvaInputs_Hj_tagger["Jet_pt"] = jet->pt();
+  mvaInputs_Hj_tagger["Jet25_lepdrmin"] = dRmin_lepton;
+  mvaInputs_Hj_tagger["max(Jet25_bDiscriminator,0.)"] = std::max(0., jet->BtagCSV());
+  mvaInputs_Hj_tagger["max(Jet25_qg,0.)"] = std::max(0., jet->QGDiscr());
+  mvaInputs_Hj_tagger["Jet25_lepdrmax"] = dRmax_lepton;
+  mvaInputs_Hj_tagger["Jet25_pt"] = jet->pt();
 
   check_mvaInputs(mvaInputs_Hj_tagger, eventInfo);
 
