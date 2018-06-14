@@ -1300,6 +1300,14 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->eta(),
         selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->eta());
 
+//--- apply data/MC corrections for trigger efficiency
+      double sf_triggerEff = dataToMCcorrectionInterface->getSF_leptonTriggerEff();
+      if ( isDEBUG ) {
+        std::cout << "sf_triggerEff = " << sf_triggerEff << std::endl;
+      }
+      triggerWeight *= sf_triggerEff;
+      weight_data_to_MC_correction *= sf_triggerEff;
+
 //--- apply data/MC corrections for efficiencies for lepton to pass loose identification and isolation criteria
       leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
 
