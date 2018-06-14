@@ -465,13 +465,10 @@ int main(int argc, char* argv[])
   std::vector<std::string> mvaInputVariables_2lss = get_mvaInputVariables(mvaInputVariables_2lss_ttV, mvaInputVariables_2lss_ttbar);
   std::map<std::string, double> mvaInputs_2lss;
 
-  std::string mvaFileName_Hj_tagger = "tthAnalysis/HiggsToTauTau/data/Hj_csv_BDTG.weights.xml";
-  std::vector<std::string> mvaInputVariables_Hj_tagger;
-  mvaInputVariables_Hj_tagger.push_back("Jet_lepdrmin");
-  mvaInputVariables_Hj_tagger.push_back("max(Jet_pfCombinedInclusiveSecondaryVertexV2BJetTags,0.)");
-  mvaInputVariables_Hj_tagger.push_back("max(Jet_qg,0.)");
-  mvaInputVariables_Hj_tagger.push_back("Jet_lepdrmax");
-  mvaInputVariables_Hj_tagger.push_back("Jet_pt");
+  std::string mvaFileName_Hj_tagger = "tthAnalysis/HiggsToTauTau/data/Hj_deepcsv_BDTG_2017.weights.xml";
+  std::vector<std::string> mvaInputVariables_Hj_tagger = {
+    "Jet25_lepdrmin", "max(Jet25_bDiscriminator,0.)",
+    "max(Jet25_qg,0.)", "Jet25_lepdrmax", "Jet25_pt" };
   TMVAInterface mva_Hj_tagger(mvaFileName_Hj_tagger, mvaInputVariables_Hj_tagger);
 
   std::string mvaFileName_Hjj_tagger = "tthAnalysis/HiggsToTauTau/data/Hjj_csv_BDTG.weights.xml";
