@@ -72,7 +72,8 @@ class systematics(object):
     et_shift = [ "CMS_ttHl_FRet_shiftUp", "CMS_ttHl_FRet_shiftDown" ]
     mt_shift = [ "CMS_ttHl_FRmt_shiftUp", "CMS_ttHl_FRmt_shiftDown" ]
 
-    full = jt_norm + jt_shape + et_shift + mt_shift
+    jt   = jt_norm + jt_shape
+    full = jt + et_shift + mt_shift
 
   class Electron_energy(object):
     ER       = [ "CMS_ttHl_electronERUp",       "CMS_ttHl_electronERDown"       ]
