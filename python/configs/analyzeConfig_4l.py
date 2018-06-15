@@ -162,6 +162,7 @@ class analyzeConfig_4l(analyzeConfig):
     lepton_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
     jobOptions['histogramDir'] = getHistogramDir(jobOptions['leptonSelection'], lepton_frWeight, jobOptions['chargeSumSelection'])
 
+    self.set_leptonFakeRateWeightHistogramNames(jobOptions['central_or_shift'])
     jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
     jobOptions['leptonFakeRateWeight.histogramName_e'] = self.leptonFakeRateWeight_histogramName_e
     jobOptions['leptonFakeRateWeight.histogramName_mu'] = self.leptonFakeRateWeight_histogramName_mu
@@ -263,26 +264,19 @@ class analyzeConfig_4l(analyzeConfig):
               inputFileList = inputFileLists[sample_name]
               for jobId in inputFileList.keys():
                 if central_or_shift != "central":
-                  isFR_shape_shift = False
-                  for FR_shape_shift in [
-                    "CMS_ttHl_FRe_shape",
-                    "CMS_ttHl_FRm_shape",
-                    "CMS_ttHl_FRjt_norm",
-                    "CMS_ttHl_FRjt_shape" ]:
-                    if central_or_shift.find(FR_shape_shift) != -1:
-                      isFR_shape_shift = True
+                  isFR_shape_shift = (central_or_shift in systematics.FR_all)
                   if not ((lepton_selection == "Fakeable" and chargeSumSelection == "OS" and isFR_shape_shift) or
                           (lepton_selection == "Tight"    and chargeSumSelection == "OS")):
                     continue
                   if not is_mc and not isFR_shape_shift:
                     continue
-                if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
+
+                if central_or_shift in systematics.LHE().ttH and sample_category != "signal":
                   continue
-                if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
+                if central_or_shift in systematics.LHE().ttW and sample_category != "TTW":
                   continue
-                if central_or_shift.startswith("CMS_ttHl_thu_shape_ttZ") and sample_category != "TTZ":
+                if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
                   continue
-                ##print "processing sample %s: jobId = %i, central_or_shift = '%s'" % (process_name, jobId, central_or_shift)
 
                 # build config files for executing analysis code
                 key_dir = getKey(process_name, lepton_selection_and_frWeight, chargeSumSelection)

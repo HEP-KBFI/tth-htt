@@ -102,10 +102,11 @@ enum
 {
   kFRl_central,
   kFRe_shape_ptUp,         kFRe_shape_ptDown,
-  kFRe_shape_etaUp,        kFRe_shape_etaDown,
+  kFRe_shape_normUp,       kFRe_shape_normDown,
   kFRe_shape_eta_barrelUp, kFRe_shape_eta_barrelDown,
   kFRm_shape_ptUp,         kFRm_shape_ptDown,
-  kFRm_shape_etaUp,        kFRm_shape_etaDown,
+  kFRm_shape_normUp,       kFRm_shape_normDown,
+  kFRm_shape_eta_barrelUp, kFRm_shape_eta_barrelDown,
 };
 
 /**
