@@ -54,16 +54,17 @@ class systematics(object):
 
   class FakeRate_e_shape(object):
     pt         = [ "CMS_ttHl_FRe_shape_ptUp",         "CMS_ttHl_FRe_shape_ptDown"         ]
-    eta        = [ "CMS_ttHl_FRe_shape_etaUp",        "CMS_ttHl_FRe_shape_etaDown"        ]
+    norm       = [ "CMS_ttHl_FRe_shape_normUp",       "CMS_ttHl_FRe_shape_normDown"       ]
     eta_barrel = [ "CMS_ttHl_FRe_shape_eta_barrelUp", "CMS_ttHl_FRe_shape_eta_barrelDown" ]
 
-    full = pt + eta + eta_barrel
+    full = pt + norm + eta_barrel
 
   class FakeRate_m_shape(object):
-    pt  = [ "CMS_ttHl_FRm_shape_ptUp",  "CMS_ttHl_FRm_shape_ptDown"  ]
-    eta = [ "CMS_ttHl_FRm_shape_etaUp", "CMS_ttHl_FRm_shape_etaDown" ]
+    pt         = [ "CMS_ttHl_FRm_shape_ptUp",         "CMS_ttHl_FRm_shape_ptDown"         ]
+    norm       = [ "CMS_ttHl_FRm_shape_normUp",       "CMS_ttHl_FRm_shape_normDown"       ]
+    eta_barrel = [ "CMS_ttHl_FRm_shape_eta_barrelUp", "CMS_ttHl_FRm_shape_eta_barrelDown" ]
 
-    full = pt + eta
+    full = pt + norm + eta_barrel
 
   class FakeRate_t(object):
     jt_norm  = [ "CMS_ttHl_FRjt_normUp",  "CMS_ttHl_FRjt_normDown"  ]
@@ -96,6 +97,7 @@ class systematics(object):
   FR_t       = FakeRate_t().full
   electron_E = Electron_energy().full
   muon_E     = Muon_energy().full
+  FR_all     = FRe_shape + FRm_shape + FR_t
 
   # Analysis-specific definitions
 
