@@ -4,6 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // TriggerSFsys, getTriggerSF_option()
 
 #include <TString.h> // Form()
 #include <TMath.h> // TMath::Abs()
@@ -16,6 +17,7 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
   : effTrigger_tauLeg_(nullptr)
   , hadTauSelection_(cfg.getParameter<std::string>("hadTauSelection"))
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
+  , triggerSF_option_(TauTriggerSFs2017::kCentral)
   , lepton_type_(-1)
   , lepton_pt_(0.)
   , lepton_eta_(0.)
@@ -37,23 +39,14 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
   }
 
   const std::string central_or_shift = cfg.getParameter<std::string>("central_or_shift");
-  if(central_or_shift != "central" )
+  const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift);
+  switch(triggerSF_option)
   {
-    std::string shiftUp_or_Down;
-    if(boost::ends_with(central_or_shift, "Up"))
-    {
-      shiftUp_or_Down = "Up";
-    }
-    else if(boost::ends_with(central_or_shift, "Down"))
-    {
-      shiftUp_or_Down = "Down";
-    }
-    else
-    {
-      throw cmsException(this)
-              << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift;
-    }
-    // CV: no systematic uncertainties on data/MC corrections for trigger efficiency in 1l_2tau category defined yet
+    // applies to only e+tau and mu+tau legs
+    case TriggerSFsys::central:   triggerSF_option_ = TauTriggerSFs2017::kCentral;  break;
+    case TriggerSFsys::shiftUp:   triggerSF_option_ = TauTriggerSFs2017::kStatUp;   break;
+    case TriggerSFsys::shiftDown: triggerSF_option_ = TauTriggerSFs2017::kStatDown; break;
+    default: throw cmsException(this) << "Invalid triggerSF option = " << static_cast<int>(triggerSF_option);
   }
 
   if(era_ == kEra_2017)
@@ -260,15 +253,15 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
       eff_1l1tau_tauLeg1_data = 0.;
       eff_1l1tau_tauLeg1_mc = 0.;
       if ( TMath::Abs(hadTau1_eta_) <= 2.1 ) {
-	eff_1l1tau_tauLeg1_data = effTrigger_tauLeg_->getETauEfficiencyData(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_);
-	eff_1l1tau_tauLeg1_mc   = effTrigger_tauLeg_->getETauEfficiencyMC(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_); 
+        eff_1l1tau_tauLeg1_data = effTrigger_tauLeg_->getETauEfficiencyData(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, triggerSF_option_);
+        eff_1l1tau_tauLeg1_mc   = effTrigger_tauLeg_->getETauEfficiencyMC(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, triggerSF_option_);
       }
       
       eff_1l1tau_tauLeg2_data = 0.;
       eff_1l1tau_tauLeg2_mc = 0.;
       if ( TMath::Abs(hadTau2_eta_) <= 2.1 ) {
-	eff_1l1tau_tauLeg2_data = effTrigger_tauLeg_->getETauEfficiencyData(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_);
-	eff_1l1tau_tauLeg2_mc   = effTrigger_tauLeg_->getETauEfficiencyMC(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_); 
+        eff_1l1tau_tauLeg2_data = effTrigger_tauLeg_->getETauEfficiencyData(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, triggerSF_option_);
+        eff_1l1tau_tauLeg2_mc   = effTrigger_tauLeg_->getETauEfficiencyMC(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, triggerSF_option_);
       }
 
       isTriggered_1l     = isTriggered_1e_;
@@ -288,15 +281,15 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
       eff_1l1tau_tauLeg1_data = 0.;
       eff_1l1tau_tauLeg1_mc = 0.;
       if ( TMath::Abs(hadTau1_eta_) <= 2.1 ) {
-	eff_1l1tau_tauLeg1_data = effTrigger_tauLeg_->getMuTauEfficiencyData(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_);
-	eff_1l1tau_tauLeg1_mc = effTrigger_tauLeg_->getMuTauEfficiencyMC(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_);
+        eff_1l1tau_tauLeg1_data = effTrigger_tauLeg_->getMuTauEfficiencyData(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, triggerSF_option_);
+        eff_1l1tau_tauLeg1_mc = effTrigger_tauLeg_->getMuTauEfficiencyMC(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, triggerSF_option_);
       }
       
       eff_1l1tau_tauLeg2_data = 0.;
       eff_1l1tau_tauLeg2_mc = 0.;
       if ( TMath::Abs(hadTau2_eta_) <= 2.1 ) {
-	eff_1l1tau_tauLeg2_data = effTrigger_tauLeg_->getMuTauEfficiencyData(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_);
-	eff_1l1tau_tauLeg2_mc = effTrigger_tauLeg_->getMuTauEfficiencyMC(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_); 
+        eff_1l1tau_tauLeg2_data = effTrigger_tauLeg_->getMuTauEfficiencyData(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, triggerSF_option_);
+        eff_1l1tau_tauLeg2_mc = effTrigger_tauLeg_->getMuTauEfficiencyMC(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, triggerSF_option_);
       }
 
       isTriggered_1l     = isTriggered_1m_;
