@@ -225,11 +225,12 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           for jobId in inputFileList.keys():
             if central_or_shift != "central" and not is_mc:
               continue
-            if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
+
+            if central_or_shift in systematics.LHE().ttH and sample_category != "signal":
               continue
-            if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
+            if central_or_shift in systematics.LHE().ttW and sample_category != "TTW":
               continue
-            if central_or_shift.startswith("CMS_ttHl_thu_shape_ttZ") and sample_category != "TTZ":
+            if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
               continue
 
             # build config files for executing analysis code

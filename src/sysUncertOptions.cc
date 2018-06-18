@@ -95,6 +95,15 @@ getMuToTauFR_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+TriggerSFsys
+getTriggerSF_option(const std::string & central_or_shift)
+{
+  TriggerSFsys central_or_shift_int = TriggerSFsys::central;
+  if     (central_or_shift == "CMS_ttHl_triggerUp"  ) central_or_shift_int = TriggerSFsys::shiftUp;
+  else if(central_or_shift == "CMS_ttHl_triggerDown") central_or_shift_int = TriggerSFsys::shiftDown;
+  return central_or_shift_int;
+}
+
 int
 getLHEscale_option(const std::string & central_or_shift)
 {
@@ -147,14 +156,16 @@ getJetToLeptonFR_option(const std::string & central_or_shift)
   int central_or_shift_int = kFRl_central;
   if     (central_or_shift == "CMS_ttHl_FRe_shape_ptUp"          ) central_or_shift_int = kFRe_shape_ptUp;
   else if(central_or_shift == "CMS_ttHl_FRe_shape_ptDown"        ) central_or_shift_int = kFRe_shape_ptDown;
-  else if(central_or_shift == "CMS_ttHl_FRe_shape_etaUp"         ) central_or_shift_int = kFRe_shape_etaUp;
-  else if(central_or_shift == "CMS_ttHl_FRe_shape_etaDown"       ) central_or_shift_int = kFRe_shape_etaDown;
+  else if(central_or_shift == "CMS_ttHl_FRe_shape_normUp"        ) central_or_shift_int = kFRe_shape_normUp;
+  else if(central_or_shift == "CMS_ttHl_FRe_shape_normDown"      ) central_or_shift_int = kFRe_shape_normDown;
   else if(central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelUp"  ) central_or_shift_int = kFRe_shape_eta_barrelUp;
   else if(central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelDown") central_or_shift_int = kFRe_shape_eta_barrelDown;
   else if(central_or_shift == "CMS_ttHl_FRm_shape_ptUp"          ) central_or_shift_int = kFRm_shape_ptUp;
   else if(central_or_shift == "CMS_ttHl_FRm_shape_ptDown"        ) central_or_shift_int = kFRm_shape_ptDown;
-  else if(central_or_shift == "CMS_ttHl_FRm_shape_etaUp"         ) central_or_shift_int = kFRm_shape_etaUp;
-  else if(central_or_shift == "CMS_ttHl_FRm_shape_etaDown"       ) central_or_shift_int = kFRm_shape_etaDown;
+  else if(central_or_shift == "CMS_ttHl_FRm_shape_normUp"        ) central_or_shift_int = kFRm_shape_normUp;
+  else if(central_or_shift == "CMS_ttHl_FRm_shape_normDown"      ) central_or_shift_int = kFRm_shape_normDown;
+  else if(central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelUp"  ) central_or_shift_int = kFRm_shape_eta_barrelUp;
+  else if(central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelDown") central_or_shift_int = kFRm_shape_eta_barrelDown;
   return central_or_shift_int;
 }
 

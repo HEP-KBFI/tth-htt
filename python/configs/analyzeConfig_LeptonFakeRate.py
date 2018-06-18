@@ -321,9 +321,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_LeptonFakeRate", self.sbatchFile_addBackgrounds_LeptonFakeRate, self.jobOptions_addBackgrounds_LeptonFakeRate)
     self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_Convs_LeptonFakeRate", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)  ## ADDING CONV. BG
 
-  def addToMakefile_backgrounds_from_MC(self, lines_makefile):   
+  def addToMakefile_backgrounds_from_MC(self, lines_makefile):
     self.addToMakefile_hadd_stage1_5(lines_makefile)
-    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_Convs_LeptonFakeRate", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)  
+    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_Convs_LeptonFakeRate", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
 
 
   def addToMakefile_combine(self, lines_makefile):
@@ -406,12 +406,14 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         for jobId in inputFileList.keys():
           if central_or_shift != "central" and not is_mc:
             continue
-          if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
+
+          if central_or_shift in systematics.LHE().ttH and sample_category != "signal":
             continue
-          if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
+          if central_or_shift in systematics.LHE().ttW and sample_category != "TTW":
             continue
-          if central_or_shift.startswith("CMS_ttHl_thu_shape_ttZ") and sample_category != "TTZ":
+          if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
             continue
+
           key_dir = getKey(process_name)
           key_analyze_job = getKey(process_name, central_or_shift, jobId)
 

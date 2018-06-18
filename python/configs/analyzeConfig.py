@@ -209,20 +209,21 @@ class analyzeConfig(object):
         self.leptonFakeRateWeight_histogramName_e = None
         self.leptonFakeRateWeight_histogramName_mu = None
         self.lep_mva_cut = None
-        if self.lep_mva_wp == "090" or self.lep_mva_wp == "0.90":
-            # CV: to be used when cut MVA > 0.90 is applied in tight lepton selection
-            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva090_2017_CERN_2018May29.root"
-            self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_data_comb_NC"
-            self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_data_comb"
+        if self.lep_mva_wp == "0.90":
+            self.lep_mva_wp = "090"
+        elif self.lep_mva_wp == "0.75":
+            self.lep_mva_wp = "075"
+
+        if self.lep_mva_wp == "090":
             self.lep_mva_cut = 0.90
-        elif self.lep_mva_wp == "075" or self.lep_mva_wp == "0.75":
-            # CV: to be used when cut MVA > 0.75 is applied in tight lepton selection
-            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva075_2017_CERN_2018May29.root"
-            self.leptonFakeRateWeight_histogramName_e = "FR_mva075_el_data_comb_NC"
-            self.leptonFakeRateWeight_histogramName_mu = "FR_mva075_mu_data_comb"
+        elif self.lep_mva_wp == "075":
             self.lep_mva_cut = 0.75
         else:
             raise ValueError("Invalid Configuration parameter 'lep_mva_wp' = %s !!" % self.lep_mva_wp)
+
+        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva%s_2017_CERN_2018May29.root" % self.lep_mva_wp
+        if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
+            raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
         self.hadTau_selection_relaxed = None
         self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v1.root"
@@ -233,6 +234,40 @@ class analyzeConfig(object):
             logging.error("Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times)))
             for time in times:
                 logging.error(str(time))
+
+    def set_leptonFakeRateWeightHistogramNames(self, central_or_shift):
+        self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_data_comb_NC" % self.lep_mva_wp
+        self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_data_comb" % self.lep_mva_wp
+
+        leptonFakeRateWeight_histogramName_e_suffix = ''
+        leptonFakeRateWeight_histogramName_mu_suffix = ''
+        if central_or_shift == "CMS_ttHl_FRe_shape_ptUp":
+            leptonFakeRateWeight_histogramName_e_suffix = '_pt1'
+        elif central_or_shift == "CMS_ttHl_FRe_shape_ptDown":
+            leptonFakeRateWeight_histogramName_e_suffix = '_pt2'
+        elif central_or_shift == "CMS_ttHl_FRe_shape_normUp":
+            leptonFakeRateWeight_histogramName_e_suffix = '_up'
+        elif central_or_shift == "CMS_ttHl_FRe_shape_normDown":
+            leptonFakeRateWeight_histogramName_e_suffix = '_down'
+        elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelUp":
+            leptonFakeRateWeight_histogramName_e_suffix = '_be1'
+        elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelDown":
+            leptonFakeRateWeight_histogramName_e_suffix = '_be2'
+        elif central_or_shift == "CMS_ttHl_FRm_shape_ptUp":
+            leptonFakeRateWeight_histogramName_mu_suffix = '_pt1'
+        elif central_or_shift == "CMS_ttHl_FRm_shape_ptDown":
+            leptonFakeRateWeight_histogramName_mu_suffix = '_pt2'
+        elif central_or_shift == "CMS_ttHl_FRm_shape_normUp":
+            leptonFakeRateWeight_histogramName_mu_suffix = '_up'
+        elif central_or_shift == "CMS_ttHl_FRm_shape_normDown":
+            leptonFakeRateWeight_histogramName_mu_suffix = '_down'
+        elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelUp":
+            leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
+        elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelDown":
+            leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
+
+        self.leptonFakeRateWeight_histogramName_e  += leptonFakeRateWeight_histogramName_e_suffix
+        self.leptonFakeRateWeight_histogramName_mu += leptonFakeRateWeight_histogramName_mu_suffix
 
     def set_BDT_training(self, hadTau_selection_relaxed):
         """Run analysis with loose selection criteria for leptons and hadronic taus,

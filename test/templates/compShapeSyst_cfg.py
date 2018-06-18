@@ -29,10 +29,10 @@ process.compShapeSyst = cms.PSet(
             shifts = cms.vstring(
                 "CMS_ttHl_FRe_shape_ptUp",
                 "CMS_ttHl_FRe_shape_ptDown",
-                "CMS_ttHl_FRe_shape_etaUp",
-                "CMS_ttHl_FRe_shape_etaDown",
+                "CMS_ttHl_FRe_shape_normUp",
+                "CMS_ttHl_FRe_shape_normDown",
                 "CMS_ttHl_FRe_shape_eta_barrelUp",
-                "CMS_ttHl_FRe_shape_eta_barrelDown"
+                "CMS_ttHl_FRe_shape_eta_barrelDown",
             ),
             histogramDir = cms.string("2lss_1tau_SS_Tight/sel/evt"),
             histogramsToFit = cms.vstring("mvaDiscr_2lss"),
@@ -45,8 +45,10 @@ process.compShapeSyst = cms.PSet(
             shifts = cms.vstring(
                 "CMS_ttHl_FRm_shape_ptUp",
                 "CMS_ttHl_FRm_shape_ptDown",
-                "CMS_ttHl_FRm_shape_etaUp",
-                "CMS_ttHl_FRm_shape_etaDown"
+                "CMS_ttHl_FRm_shape_normUp",
+                "CMS_ttHl_FRm_shape_normDown",
+                "CMS_ttHl_FRm_shape_eta_barrelUp",
+                "CMS_ttHl_FRm_shape_eta_barrelDown",
             ),
             histogramDir = cms.string("2lss_1tau_SS_Tight/sel/evt"),
             histogramsToFit = cms.vstring("mvaDiscr_2lss"),
@@ -59,10 +61,10 @@ process.compShapeSyst = cms.PSet(
             shifts = cms.vstring(
                 "CMS_ttHl_FRe_shape_ptUp",
                 "CMS_ttHl_FRe_shape_ptDown",
-                "CMS_ttHl_FRe_shape_etaUp",
-                "CMS_ttHl_FRe_shape_etaDown",
+                "CMS_ttHl_FRe_shape_normUp",
+                "CMS_ttHl_FRe_shape_normDown",
                 "CMS_ttHl_FRe_shape_eta_barrelUp",
-                "CMS_ttHl_FRe_shape_eta_barrelDown"
+                "CMS_ttHl_FRe_shape_eta_barrelDown",
             ),
             histogramDir = cms.string("3l_1tau_OS_lepTight_tauTight/sel/evt"),
             histogramsToFit = cms.vstring("mvaDiscr_3l"),
@@ -75,8 +77,10 @@ process.compShapeSyst = cms.PSet(
             shifts = cms.vstring(
                 "CMS_ttHl_FRm_shape_ptUp",
                 "CMS_ttHl_FRm_shape_ptDown",
-                "CMS_ttHl_FRm_shape_etaUp",
-                "CMS_ttHl_FRm_shape_etaDown"
+                "CMS_ttHl_FRm_shape_normUp",
+                "CMS_ttHl_FRm_shape_normDown",
+                "CMS_ttHl_FRm_shape_eta_barrelUp",
+                "CMS_ttHl_FRm_shape_eta_barrelDown",
             ),
             histogramDir = cms.string("3l_1tau_OS_lepTight_tauTight/sel/evt"),
             histogramsToFit = cms.vstring("mvaDiscr_3l"),
