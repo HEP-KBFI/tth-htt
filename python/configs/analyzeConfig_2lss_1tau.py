@@ -847,20 +847,34 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
         # add shape templates for the following systematic uncertainties:
-        #  - 'CMS_ttHl_Clos_e'
-        #  - 'CMS_ttHl_Clos_m'
-        #  - 'CMS_ttHl_FRe_shape_2lss_anticorr1', 'CMS_ttHl_FRe_shape_2lss_corr1'
-        #  - 'CMS_ttHl_FRm_shape_2lss_anticorr1', 'CMS_ttHl_FRm_shape_2lss_corr1'
-        if chargeSumSelection == "OS" and histogramToFit in [ "mvaDiscr_2lss" ]:
-          key_add_syst_dcard_job = getKey(histogramToFit)
-          self.jobOptions_add_syst_dcard[key_add_syst_dcard_job] = {
-            'inputFile' : self.jobOptions_prep_dcard[key_prep_dcard_job]['datacardFile'],
+        #  - 'CMS_ttHl_Clos_norm_e'
+        #  - 'CMS_ttHl_Clos_shape_e'
+        #  - 'CMS_ttHl_Clos_norm_m'
+        #  - 'CMS_ttHl_Clos_shape_m'
+        #  - 'CMS_ttHl_Clos_norm_t'
+        #  - 'CMS_ttHl_Clos_shape_t'
+        if chargeSumSelection == "OS":
+          key_add_syst_fakerate_job = getKey(histogramToFit)
+          self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job] = {
+            'inputFile' : self.jobOptions_prep_dcard[key_prep_fakerate_job]['datacardFile'],
             'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addSystDatacards_%s_sum%s_%s_cfg.py" % (self.channel, chargeSumSelection, histogramToFit)),
             'outputFile' : os.path.join(self.dirs[DKEY_DCRD], "addSystDatacards_%s_sum%s_%s.root" % (self.channel, chargeSumSelection, histogramToFit)),
             'category' : self.channel,
-            'histogramToFit' : histogramToFit
+            'histogramToFit' : histogramToFit,
+            'add_Clos_e' : 
+            'inputFile_nominal_e' :
+            'histogramName_nominal_e' :
+            'inputFile_mcClosure_e' :
+            'histogramName_mcClosure_e' :            
+            'add_Clos_m' : 
+            'inputFile_nominal_m' :
+            'inputFile_mcClosure_m' :
+            'add_Clos_t' : 
+            'inputFile_nominal_t' :
+            'inputFile_mcClosure_t' :
+            'plots_outputFileName' : os.path.join(self.dirs[DKEY_PLOT], "addSystFakeRates.png")
           }
-          self.createCfg_add_syst_dcard(self.jobOptions_add_syst_dcard[key_add_syst_dcard_job])
+          self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_dcard[key_add_syst_dcard_job])
 
       logging.info("Creating configuration files to run 'makePlots'")
       for chargeSumSelection in self.chargeSumSelections:
@@ -928,7 +942,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
-    self.addToMakefile_add_syst_dcard(lines_makefile)
+    self.addToMakefile_add_syst_fakerate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
 
