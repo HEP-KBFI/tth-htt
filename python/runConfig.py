@@ -122,7 +122,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
 
   def add_sys(self, sys_choices, default_choice = 'central'):
     self.add_argument('-s', '--systematics',
-      type = str, nargs = '+', dest = 'systematics', metavar = 'mode', choices = sys_choices, default = default_choice,
+      type = str, nargs = '+', dest = 'systematics', metavar = 'mode', choices = sys_choices, default = [ default_choice ],
       required = False,
       help = 'R|Systematic uncertainties (choices: %s)' % tthAnalyzeParser.cat(sys_choices),
     )
