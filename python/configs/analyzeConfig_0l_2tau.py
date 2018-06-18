@@ -264,24 +264,20 @@ class analyzeConfig_0l_2tau(analyzeConfig):
               inputFileList = inputFileLists[sample_name]
               for jobId in inputFileList.keys():
                 if central_or_shift != "central":
-                  isFR_shape_shift = False
-                  for FR_shape_shift in [
-                    "CMS_ttHl_FRjt_norm",
-                    "CMS_ttHl_FRjt_shape" ]:
-                    if central_or_shift.find(FR_shape_shift) != -1:
-                      isFR_shape_shift = True
+                  isFR_shape_shift = (central_or_shift in systematics.FakeRate_t().jt)
+
                   if not ((hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
                           (hadTau_selection == "Tight"    and hadTau_charge_selection == "OS")):
                     continue
                   if not is_mc and not isFR_shape_shift:
                     continue
-                if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
+
+                if central_or_shift in systematics.LHE().ttH and sample_category != "signal":
                   continue
-                if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
+                if central_or_shift in systematics.LHE().ttW and sample_category != "TTW":
                   continue
-                if central_or_shift.startswith("CMS_ttHl_thu_shape_ttZ") and sample_category != "TTZ":
+                if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
                   continue
-                ##print "processing sample %s: jobId = %i, central_or_shift = '%s'" % (process_name, jobId, central_or_shift)
 
                 # build config files for executing analysis code
                 key_dir = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)

@@ -14,7 +14,7 @@ getWeight_2L(double prob_fake_lead,    bool passesTight_lead,
 {
   const double p1 = prob_fake_lead   / (1. - prob_fake_lead);
   const double p2 = prob_fake_sublead/ (1. - prob_fake_sublead);
-  double weight = 0.;
+  double weight = 1.;
   if     (! passesTight_lead &&   passesTight_sublead) weight =  p1;
   else if(  passesTight_lead && ! passesTight_sublead) weight =  p2;
   else if(! passesTight_lead && ! passesTight_sublead) weight = -p1 * p2;
@@ -29,7 +29,7 @@ getWeight_3L(double prob_fake_lead,    bool passesTight_lead,
   const double p1 = prob_fake_lead    / (1. - prob_fake_lead);
   const double p2 = prob_fake_sublead / (1. - prob_fake_sublead);
   const double p3 = prob_fake_third   / (1. - prob_fake_third);
-  double weight = 0.;
+  double weight = 1.;
   if     (! passesTight_lead &&   passesTight_sublead &&   passesTight_third) weight =  p1;
   else if(  passesTight_lead && ! passesTight_sublead &&   passesTight_third) weight =  p2;
   else if(  passesTight_lead &&   passesTight_sublead && ! passesTight_third) weight =  p3;
@@ -50,7 +50,7 @@ getWeight_4L(double prob_fake_lead,    bool passesTight_lead,
   const double p2 = prob_fake_sublead / (1. - prob_fake_sublead);
   const double p3 = prob_fake_third   / (1. - prob_fake_third);
   const double p4 = prob_fake_fourth  / (1. - prob_fake_fourth);
-  double weight = 0.;
+  double weight = 1.;
   if     (! passesTight_lead &&   passesTight_sublead &&   passesTight_third &&   passesTight_fourth) weight =  p1;
   else if(  passesTight_lead && ! passesTight_sublead &&   passesTight_third &&   passesTight_fourth) weight =  p2;
   else if(  passesTight_lead &&   passesTight_sublead && ! passesTight_third &&   passesTight_fourth) weight =  p3;

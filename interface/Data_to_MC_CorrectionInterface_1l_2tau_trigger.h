@@ -49,7 +49,7 @@ public:
 private:
 
   //-----------------------------------------------------------------------------
-  // data/MC corrections for trigger efficiencies in 2016 ReReco data and Summer16 MC
+  // data/MC corrections for trigger efficiencies in 2017 ReReco data and Summer17 MC
 
   vLutWrapperBase effTrigger_1e_data_;
   vLutWrapperBase effTrigger_1e_mc_;
@@ -69,6 +69,7 @@ private:
   int era_;
   std::string hadTauSelection_;
   bool isDEBUG_;
+  int triggerSF_option_;
 
   bool isTriggered_1e_;
   bool isTriggered_1e1tau_;
