@@ -91,7 +91,7 @@ class analyzeConfig(object):
           lep_mva_wp                      = "090",
           executable_prep_dcard           = "prepareDatacards",
           executable_add_syst_dcard       = "addSystDatacards",
-          executable_add_syst_fakerate    = "addSystFakeRates",       
+          executable_add_syst_fakerate    = "addSystFakeRates",
           executable_make_plots           = "makePlots",
           executable_make_plots_mcClosure = "makePlots_mcClosure",
           do_sync                         = False,
@@ -131,6 +131,7 @@ class analyzeConfig(object):
         self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
         self.prep_dcard_signals = [ "signal", "ttH", "ttH_hww", "ttH_hzz", "ttH_htt", "ttH_fake" ]
         self.executable_add_syst_dcard = executable_add_syst_dcard
+        self.executable_add_syst_fakerate = executable_add_syst_fakerate
         self.executable_make_plots = executable_make_plots
         self.executable_make_plots_mcClosure = executable_make_plots_mcClosure
         self.verbose = verbose
@@ -558,10 +559,10 @@ class analyzeConfig(object):
         lines.append("process.addSystFakeRates.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
         xAxisTitle = None
         yAxisTitle = None
-        if histogramToFit.find("mva") != -1:
+        if jobOptions['histogramToFit'].find("mva") != -1:
             xAxisTitle = "MVA Discriminant"
             yAxisTitle = "dN/dMVA"
-        elif histogramToFit.find("mTauTauVis") != -1:
+        elif jobOptions['histogramToFit'].find("mTauTauVis") != -1:
             xAxisTitle = "m_{#tau#tau}^{vis} [GeV]"
             yAxisTitle = "dN/dm_{#tau#tau}^{vis} [1/GeV]"
         else:
@@ -571,7 +572,7 @@ class analyzeConfig(object):
         lines.append("process.addSystFakeRates.yAxisTitle = cms.string('%s')" % yAxisTitle)
         lines.append("process.addSystFakeRates.addSyst = cms.VPSet(")
         for lepton_and_hadTau_type in [ 'e', 'm', 't' ]:
-            if jobOptions['add_Clos_%s' % lepton_and_hadTau_type]:
+            if ('add_Clos_%s' % lepton_and_hadTau_type) in jobOptions:
                 lines.append("    cms.PSet(")
                 lines.append("        name = cms.string('CMS_ttHl_Clos_%s')," % lepton_and_hadTau_type)
                 lines.append("        nominal = cms.PSet(")
@@ -585,7 +586,7 @@ class analyzeConfig(object):
                 lines.append("    ),")
         lines.append(")")
         lines.append("process.addSystFakeRates.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
-        create_cfg(self.cfgFile_add_syst_fakerate, jobOptions['cfgFile_modified'], lines)    
+        create_cfg(self.cfgFile_add_syst_fakerate, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_makePlots(self, jobOptions):
         """Fills the template of python configuration file for making control plots
