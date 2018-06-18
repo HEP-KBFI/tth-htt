@@ -896,25 +896,26 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         #  - 'CMS_ttHl_Clos_shape_t'
         if chargeSumSelection == "OS":
           key_add_syst_fakerate_job = getKey(histogramToFit)
+          key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS", chargeSumSelection)
           self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job] = {
             'inputFile' : self.jobOptions_prep_dcard[key_prep_fakerate_job]['datacardFile'],
-            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addSystDatacards_%s_sum%s_%s_cfg.py" % (self.channel, chargeSumSelection, histogramToFit)),
-            'outputFile' : os.path.join(self.dirs[DKEY_DCRD], "addSystDatacards_%s_sum%s_%s.root" % (self.channel, chargeSumSelection, histogramToFit)),
+            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addSystFakeRates_%s_sum%s_%s_cfg.py" % (self.channel, chargeSumSelection, histogramToFit)),
+            'outputFile' : os.path.join(self.dirs[DKEY_DCRD], "addSystFakeRates_%s_sum%s_%s.root" % (self.channel, chargeSumSelection, histogramToFit)),
             'category' : self.channel,
             'histogramToFit' : histogramToFit,
-            'add_Clos_e' : 
-            'inputFile_nominal_e' :
-            'histogramName_nominal_e' :
-            'inputFile_mcClosure_e' :
-            'histogramName_mcClosure_e' :            
-            'add_Clos_m' : 
-            'inputFile_nominal_m' :
-            'inputFile_mcClosure_m' :
-            'add_Clos_t' : 
-            'inputFile_nominal_t' :
-            'inputFile_mcClosure_t' :
             'plots_outputFileName' : os.path.join(self.dirs[DKEY_PLOT], "addSystFakeRates.png")
           }
+          for lepton_and_hadTau_type in [ 'e', 'm', 't' ]:
+            lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight("Fakeable_mcClosure_%s" % lepton_and_hadTau_type, "enabled")
+            key_addBackgrounds_job_fakes = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection, "fakes")
+            self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job].update({
+              'add_Clos_%s' % lepton_and_hadTau_type : "Fakeable_mcClosure_%s" % lepton_and_hadTau_type in self.lepton_and_hadTau_selections,
+              'inputFile_nominal_%s' % lepton_and_hadTau_type : self.outputFile_hadd_stage2[key_hadd_stage2],
+              'histogramName_nominal_%s' % lepton_and_hadTau_type : "2lss_1tau_lepSS_sumOS_Tight/sel/evt/fakes_mc/%s" % histogramToFit,
+              'inputFile_mcClosure_%s' % lepton_and_hadTau_type : self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes]['output_file'],
+              'histogramName_mcClosure_%s' % lepton_and_hadTau_type : "2lss_1tau_lepSS_sumOS_Fakeable_mcClosure_%s_wFakeRateWeights/sel/evt/fakes_mc/%s" % \
+                (lepton_and_hadTau_type, histogramToFit),
+            })
           self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_dcard[key_add_syst_dcard_job])
 
       logging.info("Creating configuration files to run 'makePlots'")
