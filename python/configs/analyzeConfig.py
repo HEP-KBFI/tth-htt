@@ -824,11 +824,21 @@ class analyzeConfig(object):
             lines_makefile.append("")
 
     def addToMakefile_add_syst_dcard(self, lines_makefile):
-        """Adds the commands to Makefile that are necessary for building the datacards.
+        """Adds the commands to Makefile that are necessary for including additional systematic uncertainties into the datacards.
         """
         for jobOptions in self.jobOptions_add_syst_dcard.values():
             lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
             lines_makefile.append("\t%s %s" % (self.executable_add_syst_dcard, jobOptions['cfgFile_modified']))
+            self.filesToClean.append(jobOptions['outputFile'])
+            lines_makefile.append("")
+
+    def addToMakefile_add_syst_fakerate(self, lines_makefile):
+        """Adds the commands to Makefile that are necessary for including additional systematic uncertainties,
+           related to the non-closure of the fake-rates for electrons, muons, and taus, into the datacards.
+        """
+        for jobOptions in self.jobOptions_add_syst_fakerate.values():
+            lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
+            lines_makefile.append("\t%s %s" % (self.executable_add_syst_fakerate, jobOptions['cfgFile_modified']))
             self.filesToClean.append(jobOptions['outputFile'])
             lines_makefile.append("")
 
