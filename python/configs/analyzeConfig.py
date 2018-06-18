@@ -91,6 +91,7 @@ class analyzeConfig(object):
           lep_mva_wp                      = "090",
           executable_prep_dcard           = "prepareDatacards",
           executable_add_syst_dcard       = "addSystDatacards",
+          executable_add_syst_fakerate    = "addSystFakeRates",       
           executable_make_plots           = "makePlots",
           executable_make_plots_mcClosure = "makePlots_mcClosure",
           do_sync                         = False,
@@ -180,6 +181,8 @@ class analyzeConfig(object):
         self.histogramDir_prep_dcard = None
         self.cfgFile_add_syst_dcard = os.path.join(self.template_dir, "addSystDatacards_cfg.py")
         self.jobOptions_add_syst_dcard = {}
+        self.cfgFile_add_syst_fakerate = os.path.join(self.template_dir, "addSystFakeRates_cfg.py")
+        self.jobOptions_add_syst_fakerate = {}
         self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
         self.make_plots_signal = "signal"
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
@@ -532,6 +535,54 @@ class analyzeConfig(object):
         lines.append("process.addSystDatacards.category = cms.string('%s')" % jobOptions['category'])
         lines.append("process.addSystDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
         create_cfg(self.cfgFile_add_syst_dcard, jobOptions['cfgFile_modified'], lines)
+
+    def createCfg_add_syst_fakerate(self, jobOptions):
+        """Fills the template of python configuration file for adding the following shape systematics to the datacard:
+            - 'CMS_ttHl_Clos_norm_e'
+            - 'CMS_ttHl_Clos_shape_e'
+            - 'CMS_ttHl_Clos_norm_m'
+            - 'CMS_ttHl_Clos_shape_m'
+            - 'CMS_ttHl_Clos_norm_t'
+            - 'CMS_ttHl_Clos_shape_t'
+
+           Args:
+             histogramToFit: name of the histogram used for signal extraction
+        """
+        lines = []
+        lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
+        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['outputFile'])
+        lines.append("process.addSystFakeRates.category = cms.string('%s')" % jobOptions['category'])
+        lines.append("process.addSystFakeRates.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
+        xAxisTitle = None
+        yAxisTitle = None
+        if histogramToFit.find("mva") != -1:
+            xAxisTitle = "MVA Discriminant"
+            yAxisTitle = "dN/dMVA"
+        elif histogramToFit.find("mTauTauVis") != -1:
+            xAxisTitle = "m_{#tau#tau}^{vis} [GeV]"
+            yAxisTitle = "dN/dm_{#tau#tau}^{vis} [1/GeV]"
+        else:
+            xAxisTitle = ""
+            yAxisTitle = ""
+        lines.append("process.addSystFakeRates.xAxisTitle = cms.string('%s')" % xAxisTitle)
+        lines.append("process.addSystFakeRates.yAxisTitle = cms.string('%s')" % yAxisTitle)
+        lines.append("process.addSystFakeRates.addSyst = cms.VPSet(")
+        for lepton_and_hadTau_type in [ 'e', 'm', 't' ]:
+            if jobOptions['add_Clos_%s' % lepton_and_hadTau_type]:
+                lines.append("    cms.PSet(")
+                lines.append("        name = cms.string('CMS_ttHl_Clos_%s')," % lepton_and_hadTau_type)
+                lines.append("        nominal = cms.PSet(")
+                lines.append("            inputFileName = cms.string('%s')," % jobOptions['inputFile_nominal_%s' % lepton_and_hadTau_type])
+                lines.append("            histogramName = cms.string('%s')," % jobOptions['histogramName_nominal_%s' % lepton_and_hadTau_type])
+                lines.append("        ),")
+                lines.append("        mcClosure = cms.PSet(")
+                lines.append("            inputFileName = cms.string('%s')," % jobOptions['inputFile_mcClosure_%s' % lepton_and_hadTau_type])
+                lines.append("            histogramName = cms.string('%s')," % jobOptions['histogramName_mcClosure_%s' % lepton_and_hadTau_type])
+                lines.append("        ),")
+                lines.append("    ),")
+        lines.append(")")
+        lines.append("process.addSystFakeRates.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
+        create_cfg(self.cfgFile_add_syst_fakerate, jobOptions['cfgFile_modified'], lines)    
 
     def createCfg_makePlots(self, jobOptions):
         """Fills the template of python configuration file for making control plots
