@@ -1,4 +1,5 @@
 import logging
+import re
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
@@ -107,7 +108,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.hadTau_selection_part2 = hadTau_selection
     self.hadTau_selection_veto = hadTau_selection_veto
     self.applyFakeRateWeights = applyFakeRateWeights
-    run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1
+    run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
     if run_mcClosure:
       # Run MC closure jobs only if the analysis is run w/ (at least some) systematic uncertainties
       #self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_all" ]) #TODO
@@ -373,6 +374,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
       inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job)
 
+    mcClosure_regex = re.compile('Fakeable_mcClosure_(?P<type>mu|e|tau)_wFakeRateWeights')
     for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
       lepton_selection = lepton_and_hadTau_selection
       hadTau_selection = lepton_and_hadTau_selection
@@ -448,6 +450,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                   if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
                     continue
 
+                  logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (lepton_and_hadTau_selection_and_frWeight, central_or_shift))
+
                   # build config files for executing analysis code
                   key_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
                   key_analyze_job_tuple = (
@@ -466,6 +470,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                   if self.do_sync:
                     if chargeSumSelection != 'OS':
                       continue
+                    mcClosure_match = mcClosure_regex.match(lepton_and_hadTau_selection_and_frWeight)
                     if lepton_and_hadTau_selection_and_frWeight == 'Tight':
                       if lepton_charge_selection == 'SS':
                         syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift))
@@ -479,6 +484,10 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     elif lepton_and_hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and lepton_charge_selection == 'SS':
                       syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
                       syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '').replace('ss', 'SS')
+                    elif mcClosure_match:
+                      mcClosure_type = mcClosure_match.group('type')
+                      syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_mcClosure_%s.root' % (self.channel, central_or_shift, mcClosure_type))
+                      syncTree = 'syncTree_%s_mcClosure_%s' % (self.channel.replace('_', '').replace('ss', 'SS'), mcClosure_type)
                     else:
                       continue
 
