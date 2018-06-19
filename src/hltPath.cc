@@ -20,7 +20,18 @@ hltPath::hltPath(const std::string & branchName,
 void
 hltPath::setBranchAddress(TTree * tree)
 {
-  tree->SetBranchAddress(branchName_.data(), &value_);
+  if(available_branches_.empty())
+  {
+    this->set_available_branches(tree);
+  }
+  if(std::find(available_branches_.cbegin(), available_branches_.cend(), branchName_) != available_branches_.cend())
+  {
+    tree->SetBranchAddress(branchName_.data(), &value_);
+  }
+  else
+  {
+    std::cout << "Branch '" << branchName_ << "' not available, defaulting to false\n";
+  }
 }
 
 void
@@ -38,7 +49,6 @@ hltPath::getBranchName() const
 Int_t
 hltPath::getValue() const
 {
-  assert(value_ == 0 || value_ == 1);
   return value_;
 }
 
@@ -58,6 +68,19 @@ const std::string &
 hltPath::getLabel() const
 {
   return label_;
+}
+
+void
+hltPath::set_available_branches(TTree * tree)
+{
+  TObjArray * arr = tree->GetListOfBranches();
+  TIter it(arr);
+  TObject * obj = nullptr;
+  while((obj = it.Next()))
+  {
+    available_branches_.push_back(obj->GetName());
+  }
+  delete obj;
 }
 
 std::vector<hltPath *>
@@ -90,7 +113,7 @@ hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths,
     hltPaths.cbegin(), hltPaths.cend(),
     [verbose](hltPath * const & path) -> bool
     {
-      const bool passes = path->getValue() >= 1;
+      const bool passes = path->getValue();
       if(verbose)
       {
         std::cout << "  " << path->getLabel() << ": " << *path;
