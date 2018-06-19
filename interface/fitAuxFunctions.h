@@ -38,7 +38,7 @@ void makeControlPlot_graphs(
        TGraphAsymmErrors* graph_mc, const std::string& legendEntry_mc,
        TGraphAsymmErrors* graph_data_div_mc, 
        double xMin, double xMax, const std::string& xAxisTitle, 
-       bool useLogScale, double yMin, double yMax, const std::string& yAxisTitle, const std::string& yAxisTitle_ratio, 
+       bool useLogScale, double yMin, double yMax, const std::string& yAxisTitle, double yMin_ratio, double yMax_ratio, const std::string& yAxisTitle_ratio, 
        const std::string& outputFileName);
 void makeControlPlot_fit(
        TGraphAsymmErrors* graph, 

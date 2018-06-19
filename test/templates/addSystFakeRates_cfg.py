@@ -24,7 +24,7 @@ process.addSystFakeRates = cms.PSet(
     addSyst = cms.VPSet(
         cms.PSet(
             name = cms.string("CMS_ttHl_Clos_e"),
-            nominal = cms.PSet(
+            fakes_mc = cms.PSet(
                 inputFileName = cms.string("/hdfs/local/karl/ttHAnalysis/2017/2018Jun08_2lss1tau/histograms/2lss_1tau/histograms_harvested_stage2_2lss_1tau_Tight_lepSS_sumOS.root"),
                 histogramName = cms.string("2lss_1tau_lepSS_sumOS_Tight/sel/evt/fakes_mc/mvaOutput_final"),
             ),
@@ -35,7 +35,7 @@ process.addSystFakeRates = cms.PSet(
         ),
         cms.PSet(
             name = cms.string("CMS_ttHl_Clos_m"),
-            nominal = cms.PSet(
+            fakes_mc = cms.PSet(
                 inputFileName = cms.string("/hdfs/local/karl/ttHAnalysis/2017/2018Jun08_2lss1tau/histograms/2lss_1tau/histograms_harvested_stage2_2lss_1tau_Tight_lepSS_sumOS.root"),
                 histogramName = cms.string("2lss_1tau_lepSS_sumOS_Tight/sel/evt/fakes_mc/mvaOutput_final"),
             ),
@@ -46,7 +46,7 @@ process.addSystFakeRates = cms.PSet(
         ),
         cms.PSet(
             name = cms.string("CMS_ttHl_Clos_t"),
-            nominal = cms.PSet(
+            fakes_mc = cms.PSet(
                 inputFileName = cms.string("/hdfs/local/karl/ttHAnalysis/2017/2018Jun08_2lss1tau/histograms/2lss_1tau/histograms_harvested_stage2_2lss_1tau_Tight_lepSS_sumOS.root"),
                 histogramName = cms.string("2lss_1tau_lepSS_sumOS_Tight/sel/evt/fakes_mc/mvaOutput_final"),
             ),

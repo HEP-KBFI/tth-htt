@@ -54,7 +54,7 @@ void makeControlPlot_graphs(TGraphAsymmErrors* graph_data, const std::string& le
 			    TGraphAsymmErrors* graph_mc, const std::string& legendEntry_mc,
 			    TGraphAsymmErrors* graph_data_div_mc, 
 			    double xMin, double xMax, const std::string& xAxisTitle, 
-			    bool useLogScale, double yMin, double yMax, const std::string& yAxisTitle, const std::string& yAxisTitle_ratio, 
+			    bool useLogScale, double yMin, double yMax, const std::string& yAxisTitle, double yMin_ratio, double yMax_ratio, const std::string& yAxisTitle_ratio, 
 			    const std::string& outputFileName)
 {
   std::cout << "<makeControlPlot_graphs>:" << std::endl;
@@ -131,8 +131,8 @@ void makeControlPlot_graphs(TGraphAsymmErrors* graph_data, const std::string& le
 
   TH1* dummyHistogram_bottom = new TH1D("dummyHistogram_bottom", "dummyHistogram_bottom", 10, xMin, xMax);
   
-  dummyHistogram_bottom->SetMinimum(-1.50);
-  dummyHistogram_bottom->SetMaximum(+1.50);
+  dummyHistogram_bottom->SetMinimum(yMin_ratio);
+  dummyHistogram_bottom->SetMaximum(yMax_ratio);
 
   TAxis* xAxis_bottom = dummyHistogram_bottom->GetXaxis();
   xAxis_bottom->SetTitle(xAxisTitle.data());
