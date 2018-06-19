@@ -20,6 +20,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/compFakeRateAuxFunctions.h" // compFakeRate
+#include "tthAnalysis/HiggsToTauTau/interface/graphAuxFunctions.h" // compRatioGraph
 #include "tthAnalysis/HiggsToTauTau/interface/fitAuxFunctions.h" // EigenVector_and_Value, compEigenVectors_and_Values, fitFunction_and_legendEntry, makeControlPlot_fit
 
 #include <TFile.h>
@@ -188,82 +189,6 @@ TGraphAsymmErrors* getGraph_jetToTauFakeRate(TH1* histogram_loose, TH1* histogra
   return graph_jetToTauFakeRate;
 }
   
-TGraphAsymmErrors* compRatioGraph(const std::string& ratioGraphName, const TGraph* numerator, const TGraph* denominator)
-{
-  assert(numerator->GetN() == denominator->GetN());
-  int nPoints = numerator->GetN();
-
-  TGraphAsymmErrors* graphRatio = new TGraphAsymmErrors(nPoints);
-  graphRatio->SetName(ratioGraphName.data());
-
-  for ( int iPoint = 0; iPoint < nPoints; ++iPoint ){
-    double x_numerator, y_numerator;
-    numerator->GetPoint(iPoint, x_numerator, y_numerator);
-    double xErrUp_numerator = 0.;
-    double xErrDown_numerator = 0.;
-    double yErrUp_numerator = 0.;
-    double yErrDown_numerator = 0.;
-    if ( dynamic_cast<const TGraphAsymmErrors*>(numerator) ) {
-      const TGraphAsymmErrors* numerator_asymmerrors = dynamic_cast<const TGraphAsymmErrors*>(numerator);
-      xErrUp_numerator = numerator_asymmerrors->GetErrorXhigh(iPoint);
-      xErrDown_numerator = numerator_asymmerrors->GetErrorXlow(iPoint);
-      yErrUp_numerator = numerator_asymmerrors->GetErrorYhigh(iPoint);
-      yErrDown_numerator = numerator_asymmerrors->GetErrorYlow(iPoint);
-    } else if ( dynamic_cast<const TGraphErrors*>(numerator) ) {
-      const TGraphErrors* numerator_errors = dynamic_cast<const TGraphErrors*>(numerator);
-      xErrUp_numerator = numerator_errors->GetErrorX(iPoint);
-      xErrDown_numerator = xErrUp_numerator;
-      yErrUp_numerator = numerator_errors->GetErrorY(iPoint);
-      yErrDown_numerator = yErrUp_numerator;
-    }
-
-    double x_denominator, y_denominator;
-    denominator->GetPoint(iPoint, x_denominator, y_denominator);
-    assert(x_denominator == x_numerator);
-    double xErrUp_denominator = 0.;
-    double xErrDown_denominator = 0.;
-    double yErrUp_denominator = 0.;
-    double yErrDown_denominator = 0.;
-    if ( dynamic_cast<const TGraphAsymmErrors*>(denominator) ) {
-      const TGraphAsymmErrors* denominator_asymmerrors = dynamic_cast<const TGraphAsymmErrors*>(denominator);
-      xErrUp_denominator = denominator_asymmerrors->GetErrorXhigh(iPoint);
-      xErrDown_denominator = denominator_asymmerrors->GetErrorXlow(iPoint);
-      yErrUp_denominator = denominator_asymmerrors->GetErrorYhigh(iPoint);
-      yErrDown_denominator = denominator_asymmerrors->GetErrorYlow(iPoint);
-    } else if ( dynamic_cast<const TGraphErrors*>(denominator) ) {
-      const TGraphErrors* denominator_errors = dynamic_cast<const TGraphErrors*>(denominator);
-      xErrUp_denominator = denominator_errors->GetErrorX(iPoint);
-      xErrDown_denominator = xErrUp_denominator;
-      yErrUp_denominator = denominator_errors->GetErrorY(iPoint);
-      yErrDown_denominator = yErrUp_denominator;
-    }
-
-    double x_ratio = x_numerator;
-    double y_ratio = ( y_denominator > 0. ) ? (y_numerator/y_denominator) : 0.;
-    double xErrUp_ratio = TMath::Max(xErrUp_numerator, xErrUp_denominator);
-    double xErrDown_ratio = TMath::Max(xErrDown_numerator, xErrDown_denominator);
-    double yErr2Up_ratio = 0.;
-    if ( y_numerator   ) yErr2Up_ratio += square(yErrUp_numerator/y_numerator);
-    if ( y_denominator ) yErr2Up_ratio += square(yErrDown_denominator/y_numerator);
-    double yErrUp_ratio = TMath::Sqrt(yErr2Up_ratio)*y_ratio;
-    double yErr2Down_ratio = 0.;
-    if ( y_numerator   ) yErr2Down_ratio += square(yErrDown_numerator/y_numerator);
-    if ( y_denominator ) yErr2Down_ratio += square(yErrUp_denominator/y_numerator);
-    double yErrDown_ratio = TMath::Sqrt(yErr2Down_ratio)*y_ratio;
-
-    graphRatio->SetPoint(iPoint, x_ratio, y_ratio);
-    graphRatio->SetPointError(iPoint, xErrDown_ratio, xErrUp_ratio, yErrDown_ratio, yErrUp_ratio);
-  }
-  
-  graphRatio->SetLineColor(numerator->GetLineColor());
-  graphRatio->SetLineWidth(numerator->GetLineWidth());
-  graphRatio->SetMarkerColor(numerator->GetMarkerColor());
-  graphRatio->SetMarkerStyle(numerator->GetMarkerStyle());
-  graphRatio->SetMarkerSize(numerator->GetMarkerSize());
-
-  return graphRatio;
-}
-
 int main(int argc, char* argv[]) 
 {
 //--- throw an exception in case ROOT encounters an error
@@ -420,7 +345,8 @@ int main(int argc, char* argv[])
           graph_data_jetToTauFakeRate, "Data",
 	  graph_mc_jetToTauFakeRate, "MC",
 	  graph_data_div_mc_jetToTauFakeRate, 
-	  xMin, xMax, "p_{T} [GeV]", true, 1.e-2, 4.9e0, "f_{#tau}", "#frac{f_{#tau}^{data} - f_{#tau}^{mc}}{f_{#tau}^{mc}}", outputFileName_graphs);
+	  xMin, xMax, "p_{T} [GeV]", true, 1.e-2, 4.9e0, "f_{#tau}", -1.50, +1.50, "#frac{f_{#tau}^{data} - f_{#tau}^{mc}}{f_{#tau}^{mc}}", 
+	  outputFileName_graphs);
 
 	std::string fitFunctionName = Form("fitFunction_data_div_mc_%s", TString(histogramToFit->data()).ReplaceAll("/", "_").Data());
 	double x0 = 0.5*(histogram_data_loose->GetMean() + histogram_mc_loose->GetMean());
@@ -484,7 +410,8 @@ int main(int argc, char* argv[])
 	outputFileName_fit.append(TString(Form("_%s_%s_%s_fit.png", hadTauSelection->data(), etaBin.data(), histogramToFit->data())).ReplaceAll("/", "_").Data());
 	makeControlPlot_fit(
           graph_data_div_mc_jetToTauFakeRate, 
-	  fitFunction, fitFunctions_sysShifts, xMin, xMax, "p_{T} [GeV]", false, 0., 2., "#frac{f_{#tau}^{data}}{f_{#tau}^{mc}}", outputFileName_fit);
+	  fitFunction, fitFunctions_sysShifts, xMin, xMax, "p_{T} [GeV]", false, 0., 2., "#frac{f_{#tau}^{data}}{f_{#tau}^{mc}}", 
+	  outputFileName_fit);
       }
     }
   }

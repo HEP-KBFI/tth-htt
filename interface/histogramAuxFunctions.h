@@ -135,4 +135,6 @@ TArrayD getRebinnedBinning(TH1*, double);
 TArrayD
 getTArraDfromVector(const std::vector<double> & histogramBinning);
 
+TH1* compRatioHistogram(const std::string& ratioHistogramName, const TH1* numerator, const TH1* denominator);
+
 #endif // tthAnalysis_HiggsToTauTau_histogramAuxFunctions_h

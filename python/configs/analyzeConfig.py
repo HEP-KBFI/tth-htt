@@ -575,7 +575,7 @@ class analyzeConfig(object):
             if ('add_Clos_%s' % lepton_and_hadTau_type) in jobOptions:
                 lines.append("    cms.PSet(")
                 lines.append("        name = cms.string('CMS_ttHl_Clos_%s')," % lepton_and_hadTau_type)
-                lines.append("        nominal = cms.PSet(")
+                lines.append("        fakes_mc = cms.PSet(")
                 lines.append("            inputFileName = cms.string('%s')," % jobOptions['inputFile_nominal_%s' % lepton_and_hadTau_type])
                 lines.append("            histogramName = cms.string('%s')," % jobOptions['histogramName_nominal_%s' % lepton_and_hadTau_type])
                 lines.append("        ),")
