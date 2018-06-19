@@ -125,14 +125,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
       lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
       lines.append("process.prepareDatacards.apply_automatic_rebinning = cms.bool(True)")
       lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(1.0)")
-      lines.append("""process.prepareDatacards.sysShifts = cms.vstring(
-          "CMS_ttHl_electronESBarrelUp",
-      	"CMS_ttHl_electronESBarrelDown",
-      	"CMS_ttHl_electronESEndcapUp",
-        "CMS_ttHl_electronESEndcapDown",
-        "CMS_ttHl_electronERUp",
-        "CMS_ttHl_electronERDown") """
-      )
+      lines.append("process.prepareDatacards.sysShifts = cms.vstring(%s)" % systematics.electron_E)
       create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
 

@@ -15,6 +15,7 @@ class systematics(object):
   JER           = [ "CMS_ttHl_JERUp",           "CMS_ttHl_JERDown"           ]
   UnclusteredEn = [ "CMS_ttHl_UnclusteredEnUp", "CMS_ttHl_UnclusteredEnDown" ]
   tauES         = [ "CMS_ttHl_tauESUp",         "CMS_ttHl_tauESDown"         ]
+  triggerSF     = [ "CMS_ttHl_triggerUp",       "CMS_ttHl_triggerDown"       ]
 
   class LHE(object):
 
@@ -53,16 +54,17 @@ class systematics(object):
 
   class FakeRate_e_shape(object):
     pt         = [ "CMS_ttHl_FRe_shape_ptUp",         "CMS_ttHl_FRe_shape_ptDown"         ]
-    eta        = [ "CMS_ttHl_FRe_shape_etaUp",        "CMS_ttHl_FRe_shape_etaDown"        ]
+    norm       = [ "CMS_ttHl_FRe_shape_normUp",       "CMS_ttHl_FRe_shape_normDown"       ]
     eta_barrel = [ "CMS_ttHl_FRe_shape_eta_barrelUp", "CMS_ttHl_FRe_shape_eta_barrelDown" ]
 
-    full = pt + eta + eta_barrel
+    full = pt + norm + eta_barrel
 
   class FakeRate_m_shape(object):
-    pt  = [ "CMS_ttHl_FRm_shape_ptUp",  "CMS_ttHl_FRm_shape_ptDown"  ]
-    eta = [ "CMS_ttHl_FRm_shape_etaUp", "CMS_ttHl_FRm_shape_etaDown" ]
+    pt         = [ "CMS_ttHl_FRm_shape_ptUp",         "CMS_ttHl_FRm_shape_ptDown"         ]
+    norm       = [ "CMS_ttHl_FRm_shape_normUp",       "CMS_ttHl_FRm_shape_normDown"       ]
+    eta_barrel = [ "CMS_ttHl_FRm_shape_eta_barrelUp", "CMS_ttHl_FRm_shape_eta_barrelDown" ]
 
-    full = pt + eta
+    full = pt + norm + eta_barrel
 
   class FakeRate_t(object):
     jt_norm  = [ "CMS_ttHl_FRjt_normUp",  "CMS_ttHl_FRjt_normDown"  ]
@@ -70,7 +72,8 @@ class systematics(object):
     et_shift = [ "CMS_ttHl_FRet_shiftUp", "CMS_ttHl_FRet_shiftDown" ]
     mt_shift = [ "CMS_ttHl_FRmt_shiftUp", "CMS_ttHl_FRmt_shiftDown" ]
 
-    full = jt_norm + jt_shape + et_shift + mt_shift
+    jt   = jt_norm + jt_shape
+    full = jt + et_shift + mt_shift
 
   class Electron_energy(object):
     ER       = [ "CMS_ttHl_electronERUp",       "CMS_ttHl_electronERDown"       ]
@@ -95,6 +98,7 @@ class systematics(object):
   FR_t       = FakeRate_t().full
   electron_E = Electron_energy().full
   muon_E     = Muon_energy().full
+  FR_all     = FRe_shape + FRm_shape + FR_t
 
   # Analysis-specific definitions
 
@@ -110,8 +114,8 @@ class systematics(object):
   an_chargeFlip_mu      =    central +  muon_E
   an_chargeFlip_mu_opts = [ "central", "muon_E" ]
 
-  an_common      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag +  FR_t +  lhe
-  an_common_opts = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag", "FR_t", "lhe" ]
+  an_common      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag +  FR_t +  lhe +  triggerSF
+  an_common_opts = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag", "FR_t", "lhe", "triggerSF" ]
   # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only if you plan to run compShapeSyst 1!
   an_extended      = an_common      +    FRe_shape +  FRm_shape
   an_extended_opts = an_common_opts + [ "FRe_shape", "FRm_shape" ]

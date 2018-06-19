@@ -22,6 +22,7 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
   : hadTauSelection_(-1)
   , eToTauFakeRate_option_(FRet::central)
   , muToTauFakeRate_option_(FRmt::central)
+  , triggerSF_option_(TriggerSFsys::central)
   , numLeptons_(0)
   , lepton_type_(4)
   , lepton_pt_(4)
@@ -85,6 +86,7 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
 
   eToTauFakeRate_option_ = getEToTauFR_option(central_or_shift);
   muToTauFakeRate_option_ = getMuToTauFR_option(central_or_shift);
+  triggerSF_option_ = getTriggerSF_option(central_or_shift);
 
   if(era_ == kEra_2017)
   {
@@ -310,37 +312,48 @@ namespace
    * @return data/MC scale-factor, to be applied as event weight to simulated events
    */
   double
-  sf_triggerEff_2017(int numElectrons, int numMuons,
-                     int lepton1_type, double lepton1_pt, double lepton1_eta,
-                     int lepton2_type, double lepton2_pt, double lepton2_eta, 
+  sf_triggerEff_2017(TriggerSFsys central_or_shift,
+                     int numElectrons, int numMuons,
+                     int lepton1_type, double lepton1_pt, double lepton1_eta, // unused
+                     int lepton2_type, double lepton2_pt, double lepton2_eta, // unused
                      int lepton3_type, double lepton3_pt, double lepton3_eta, // unused
-		     int lepton4_type, double lepton4_pt, double lepton4_eta) // unused
+                     int lepton4_type, double lepton4_pt, double lepton4_eta) // unused
   {
     double sf = 1.;
+    double sfErr = 0.;
     if(numElectrons == 2 && numMuons == 0)
     {
-      double lepton_pt_lead = TMath::Max(lepton1_pt, lepton2_pt);
-      if   ( lepton_pt_lead >= 30. ) sf = 0.991;
-      else                           sf = 0.937;
+      const double lepton_pt_lead = TMath::Max(lepton1_pt, lepton2_pt);
+      if   ( lepton_pt_lead >= 30. ) { sf = 0.991; sfErr = 0.002; }
+      else                           { sf = 0.937; sfErr = 0.027; }
     }
     else if(numElectrons == 1 && numMuons == 1)
     {
-      double lepton_pt_lead = TMath::Max(lepton1_pt, lepton2_pt);
-      if      ( lepton_pt_lead >= 50. ) sf = 1.000;
-      else if ( lepton_pt_lead >= 35. ) sf = 0.983;
-      else                              sf = 0.952;
+      const double lepton_pt_lead = TMath::Max(lepton1_pt, lepton2_pt);
+      if      ( lepton_pt_lead >= 50. ) { sf = 1.000; sfErr = 0.001; }
+      else if ( lepton_pt_lead >= 35. ) { sf = 0.983; sfErr = 0.003; }
+      else                              { sf = 0.952; sfErr = 0.008; }
     }
     else if(numElectrons == 0 && numMuons == 2)
     {
-      double lepton_pt_lead = TMath::Max(lepton1_pt, lepton2_pt);
-      if   ( lepton_pt_lead >= 35. ) sf = 0.994;
-      else                           sf = 0.972;
+      const double lepton_pt_lead = TMath::Max(lepton1_pt, lepton2_pt);
+      if   ( lepton_pt_lead >= 35. ) { sf = 0.994; sfErr = 0.001; }
+      else                           { sf = 0.972; sfErr = 0.006; }
     }
     else if ((numElectrons + numMuons) >= 3)
     {
       sf = 1.;
-    } 
-    return sf;
+      sfErr = 0.050;
+    }
+
+    switch(central_or_shift)
+    {
+      case TriggerSFsys::central:   return sf;
+      case TriggerSFsys::shiftUp:   return sf + sfErr;
+      case TriggerSFsys::shiftDown: return sf - sfErr;
+      default: throw cmsException(__func__, __LINE__)
+                       << "Invalid option: " << static_cast<int>(central_or_shift);
+    }
   }
 }
 
@@ -350,6 +363,7 @@ Data_to_MC_CorrectionInterface::getSF_leptonTriggerEff() const
   double sf = 1.;
   if ( era_ == kEra_2017 ) {
     sf = sf_triggerEff_2017(
+      triggerSF_option_,
       numElectrons_, numMuons_,
       lepton_type_[0], lepton_pt_[0], lepton_eta_[0],
       lepton_type_[1], lepton_pt_[1], lepton_eta_[1],
