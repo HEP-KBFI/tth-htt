@@ -374,6 +374,8 @@ main(int argc,
     const std::vector<const RecoLepton *> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherConePt);
     const std::vector<const RecoLepton *> selLeptons      = mergeLeptonCollections(selElectrons,      selMuons,      isHigherConePt);
 
+    snm->read(selLeptons);
+
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau *> hadTau_ptrs = convert_to_ptrs(hadTaus);
     const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselLeptons);
@@ -418,7 +420,6 @@ main(int argc,
     if(selLeptons.size() > 0)
     {
       const RecoLepton * selLepton_lead = selLeptons[0];
-      const double lep1_conePt    = comp_lep1_conePt(*selLepton_lead);
       const double mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
       const double mT_met_lep1    = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
       double mTauTauVis1_sel      = selHadTaus.size() > 0      ?
@@ -426,7 +427,6 @@ main(int argc,
         snm->placeholder_value
       ;
 
-      snm->read(lep1_conePt,     FloatVariableType::lep1_conept);
       snm->read(mindr_lep1_jet,  FloatVariableType::mindr_lep1_jet);
       snm->read(mT_met_lep1,     FloatVariableType::mT_met_lep1);
       snm->read(mTauTauVis1_sel, FloatVariableType::mvis_l1tau);
@@ -436,7 +436,6 @@ main(int argc,
     {
       const RecoLepton * selLepton_lead    = selLeptons[0];
       const RecoLepton * selLepton_sublead = selLeptons[1];
-      const double lep2_conePt    = comp_lep2_conePt(*selLepton_sublead);
       const double mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
       const double mT_met_lep2    = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
       const double dR_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
@@ -445,7 +444,6 @@ main(int argc,
         snm->placeholder_value
       ;
 
-      snm->read(lep2_conePt,     FloatVariableType::lep2_conept);
       snm->read(mindr_lep2_jet,  FloatVariableType::mindr_lep2_jet);
       snm->read(mT_met_lep2,     FloatVariableType::mT_met_lep2);
       snm->read(dR_leps,         FloatVariableType::dr_leps);
@@ -456,10 +454,8 @@ main(int argc,
     {
       const RecoLepton * selLepton_third = selLeptons[2];
       const double mT_met_lep3    = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
-      const double lep3_conePt    = comp_lep3_conePt(*selLepton_third);
       const double mindr_lep3_jet = comp_mindr_lep3_jet(*selLepton_third, selJets);
 
-      snm->read(lep3_conePt,    FloatVariableType::lep3_conept);
       snm->read(mT_met_lep3,    FloatVariableType::mT_met_lep3);
       snm->read(mindr_lep3_jet, FloatVariableType::mindr_lep3_jet);
     }
@@ -468,10 +464,8 @@ main(int argc,
     {
       const RecoLepton * selLepton_fourth = selLeptons[3];
       const double mT_met_lep4    = comp_MT_met_lep3(selLepton_fourth->p4(), met.pt(), met.phi());
-      const double lep4_conePt    = comp_lep4_conePt(*selLepton_fourth);
       const double mindr_lep4_jet = comp_mindr_lep4_jet(*selLepton_fourth, selJets);
 
-      snm->read(lep4_conePt,    FloatVariableType::lep4_conept);
       snm->read(mT_met_lep4,    FloatVariableType::mT_met_lep4);
       snm->read(mindr_lep4_jet, FloatVariableType::mindr_lep4_jet);
     }

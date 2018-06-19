@@ -15,6 +15,7 @@ class RecoMuon;
 class RecoElectron;
 class RecoHadTau;
 class RecoJet;
+class RecoLepton;
 class hltPath;
 
 enum class FloatVariableType
@@ -26,11 +27,6 @@ enum class FloatVariableType
   metLD,                    ///< linear discriminator based on MET
 
 //--- Additional event-level MVA input variables
-  lep1_conept,              ///< cone pT of leading lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
-  lep2_conept,              ///< cone pT of subleading lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
-  lep3_conept,              ///< cone pT of third lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
-  lep4_conept,              ///< cone pT of fourth lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
-
   mindr_lep1_jet,           ///< min dR between leading lepton and preselected jets
   mindr_lep2_jet,           ///< min dR between subleading lepton and preselected jets
   mindr_lep3_jet,           ///< min dR between third lepton and preselected jets
@@ -130,6 +126,7 @@ public:
   void initializeBranches();
   void initializeHLTBranches(const std::vector<std::vector<hltPath *>> & hltPaths);
   void read(const EventInfo & eventInfo);
+  void read(const std::vector<const RecoLepton *> & leptons);
   void read(const std::vector<const RecoMuon *> & muons,
             const std::vector<const RecoMuon *> & fakeable_muons,
             const std::vector<const RecoMuon *> & tight_muons);
@@ -265,6 +262,7 @@ private:
   TDirectory * outputDir;
   TTree * outputTree;
 
+  const Int_t nof_leps;
   const Int_t nof_mus;
   const Int_t nof_eles;
   const Int_t nof_taus;
@@ -274,6 +272,7 @@ private:
   Int_t ls;
   Int_t run;
 
+  Int_t n_sel_lep;
   Int_t n_presel_mu;
   Int_t n_fakeablesel_mu;
   Int_t n_mvasel_mu;
@@ -286,6 +285,14 @@ private:
   Bool_t isGenMatched; ///< flag to indicate whether lepton(s) + tau(s) are all gen matched
   Int_t ntags;         ///< number of medium b-tagged jets
   Int_t ntags_loose;   ///< number of loose b-tagged jets
+
+  Float_t * lep_pt;
+  Float_t * lep_conePt;
+  Float_t * lep_eta;
+  Float_t * lep_phi;
+  Int_t * lep_pdgId;
+  Bool_t * lep_isfakeablesel;
+  Bool_t * lep_ismvasel;
 
   Float_t * mu_pt;
   Float_t * mu_conept;

@@ -20,6 +20,7 @@ SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
   : outputFile(new TFile(outputFileName.c_str(), "recreate"))
   , outputDir(nullptr)
   , outputTree(nullptr)
+  , nof_leps(4)
   , nof_mus(2)
   , nof_eles(2)
   , nof_taus(2)
@@ -68,11 +69,13 @@ SyncNtupleManager::~SyncNtupleManager()
 void
 SyncNtupleManager::initializeBranches()
 {
+  const char * lstr = "lep";
   const char * mstr = "mu";
   const char * estr = "ele";
   const char * tstr = "tau";
   const char * jstr = "jet";
 
+  const std::string n_sel_lep_str         = Form("n_%s",             lstr);
   const std::string n_presel_mu_str       = Form("n_presel_%s",      mstr);
   const std::string n_fakeablesel_mu_str  = Form("n_fakeablesel_%s", mstr);
   const std::string n_mvasel_mu_str       = Form("n_mvasel_%s",      mstr);
@@ -86,6 +89,7 @@ SyncNtupleManager::initializeBranches()
     nEvent,            "nEvent",
     ls,                "ls",
     run,               "run",
+    n_sel_lep,         n_sel_lep_str,
     n_presel_mu,       n_presel_mu_str,
     n_fakeablesel_mu,  n_fakeablesel_mu_str,
     n_mvasel_mu,       n_mvasel_mu_str,
@@ -103,11 +107,6 @@ SyncNtupleManager::initializeBranches()
 
 //--- Additional event-level MVA input variables
     isGenMatched,                                          "isGenMatched",
-
-    floatMap[FloatVariableType::lep1_conept],              "lep1_conePt",
-    floatMap[FloatVariableType::lep2_conept],              "lep2_conePt",
-    floatMap[FloatVariableType::lep3_conept],              "lep3_conePt",
-    floatMap[FloatVariableType::lep4_conept],              "lep4_conePt",
 
     floatMap[FloatVariableType::mindr_lep1_jet],           "mindr_lep1_jet",
     floatMap[FloatVariableType::mindr_lep2_jet],           "mindr_lep2_jet",
@@ -199,6 +198,17 @@ SyncNtupleManager::initializeBranches()
 
 //--- custom additional branches (not necessary in sync)
     floatMap[FloatVariableType::genWeight],                "genWeight"
+  );
+
+  setBranches(
+    lstr, nof_leps,
+    lep_pt,            "pt",
+    lep_conePt,        "conePt",
+    lep_eta,           "eta",
+    lep_phi,           "phi",
+    lep_pdgId,         "pdgId",
+    lep_isfakeablesel, "isfakeablesel",
+    lep_ismvasel,      "ismvasel"
   );
 
   setBranches(
@@ -331,6 +341,24 @@ SyncNtupleManager::read(const EventInfo & eventInfo)
   run = eventInfo.run;
   ls = eventInfo.lumi;
   nEvent = eventInfo.event;
+}
+
+void
+SyncNtupleManager::read(const std::vector<const RecoLepton *> & leptons)
+{
+  n_sel_lep = leptons.size();
+  const Int_t nof_iterations = std::min(n_sel_lep, nof_leps);
+  for(Int_t i = 0; i < nof_iterations; ++i)
+  {
+    const RecoLepton * lepton = leptons[i];
+    lep_pt[i] = lepton->pt();
+    lep_conePt[i] = lepton->cone_pt();
+    lep_eta[i] = lepton->eta();
+    lep_phi[i] = lepton->phi();
+    lep_pdgId[i] = lepton->pdgId();
+    lep_isfakeablesel[i] = lepton->isFakeable();
+    lep_ismvasel[i] = lepton->isTight();
+  }
 }
 
 void
@@ -574,6 +602,16 @@ SyncNtupleManager::reset()
   {
     kv.second = placeholder_value;
   }
+
+  reset(
+    nof_leps,
+    lep_pt,
+    lep_eta,
+    lep_phi,
+    lep_pdgId,
+    lep_isfakeablesel,
+    lep_ismvasel
+  );
 
   reset(
     nof_mus,
