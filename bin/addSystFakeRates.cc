@@ -54,7 +54,7 @@ struct addSystType
     edm::ParameterSet cfg_nominal = cfg.getParameter<edm::ParameterSet>("nominal");
     inputFileName_nominal_ = cfg_nominal.getParameter<std::string>("inputFileName");
     histogramName_nominal_ = cfg_nominal.getParameter<std::string>("histogramName");
-    edm::ParameterSet cfg_mcClosure = cfg.getParameter<edm::ParameterSet>("nominal");
+    edm::ParameterSet cfg_mcClosure = cfg.getParameter<edm::ParameterSet>("mcClosure");
     inputFileName_mcClosure_ = cfg_mcClosure.getParameter<std::string>("inputFileName");
     histogramName_mcClosure_ = cfg_mcClosure.getParameter<std::string>("histogramName");
   }
@@ -209,12 +209,18 @@ int main(int argc, char* argv[])
   // add histograms for "closure" uncertainties of electron, muon, and tau_h fake-rates
   for ( std::vector<addSystType*>::iterator addSystConfig = addSystConfigs.begin();
 	addSystConfig != addSystConfigs.end(); ++addSystConfig ) {
+    std::cout << "processing addSystConfig = '" << (*addSystConfig)->name_ << "'" << std::endl;
+
     TFile* inputFile_nominal = openInputFile((*addSystConfig)->inputFileName_nominal_, inputFiles_syst);
     TH1* histogram_nominal = loadHistogram(inputFile_nominal, (*addSystConfig)->histogramName_nominal_);
+    std::cout << "histogram_nominal:" << std::endl;
+    dumpHistogram(histogram_nominal);
     TGraphAsymmErrors* graph_nominal = convert_to_TGraph(histogram_nominal);
     
     TFile* inputFile_mcClosure = openInputFile((*addSystConfig)->inputFileName_mcClosure_, inputFiles_syst);
     TH1* histogram_mcClosure = loadHistogram(inputFile_mcClosure, (*addSystConfig)->histogramName_mcClosure_);
+    std::cout << "histogram_mcClosure:" << std::endl;
+    dumpHistogram(histogram_mcClosure);
     TGraphAsymmErrors* graph_mcClosure = convert_to_TGraph(histogram_mcClosure);
 
     std::string histogramName_ratio = Form("%s_div_%s", histogram_nominal->GetName(), histogram_mcClosure->GetName());
@@ -225,8 +231,10 @@ int main(int argc, char* argv[])
     double xMin = histogram_nominal->GetXaxis()->GetXmin();
     double xMax = histogram_nominal->GetXaxis()->GetXmax();
 
-    double yMax = 1.e+1*TMath::Max(histogram_nominal->GetMaximum(), histogram_mcClosure->GetMaximum());
-    double yMin = 1.e-4*yMax;
+    double yMax = 1.4*TMath::Max(histogram_nominal->GetMaximum(), histogram_mcClosure->GetMaximum());
+    double yMin = TMath::Min(histogram_nominal->GetMinimum(), histogram_mcClosure->GetMinimum());
+    if ( yMin < 0. ) yMin *= 1.1;
+    else yMin = 0.;
     std::string outputFileName_graphs = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
     outputFileName_graphs.append(Form("_%s_%s.png", histogramToFit.data(), (*addSystConfig)->name_.data()));
     makeControlPlot_graphs(
@@ -234,7 +242,7 @@ int main(int argc, char* argv[])
       graph_mcClosure, "mcClosure",
       graph_ratio, 
       xMin, xMax, xAxisTitle.data(), 
-      true, yMin, yMax, yAxisTitle.data(), "#frac{nominal - mcClosure}{mcClosure}", 
+      false, yMin, yMax, yAxisTitle.data(), "#frac{nominal - mcClosure}{mcClosure}", 
       outputFileName_graphs);
 
     std::string fitFunctionName = Form("%s_fit", histogramName_ratio.data());
@@ -279,7 +287,7 @@ int main(int argc, char* argv[])
       }    
     } else {
       throw cms::Exception("addSystFakeRates") 
-	<< "Fit failed to converge !!\n";
+	<< "Fit for observable = '" << (*addSystConfig)->name_ << "' failed to converge !!\n";
     }
     
     std::string outputFileName_fit = std::string(outputFileName, 0, outputFileName.find_last_of('.'));

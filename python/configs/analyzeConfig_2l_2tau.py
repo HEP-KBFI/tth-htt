@@ -525,10 +525,10 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                         process_output = "%s_conversion" % sample_category
                         key_addBackgrounds_job = getKey(process_name, "%s_conversion" % sample_category, lepton_charge_selection, hadTau_charge_selection,
                           lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                        cfgFile_modified = os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_conversions_%s_%s_%s_%s_%s_%s_cfg.py" % \
+                        cfgFile_modified = os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_%s_conversions_%s_%s_%s_%s_%s_cfg.py" % \
                           (self.channel, process_name, sample_category, lepton_charge_selection, hadTau_charge_selection,
                            lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
-                        outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_conversions_%s_%s_%s_%s_%s_%s.root" % \
+                        outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_%s_conversions_%s_%s_%s_%s_%s.root" % \
                           (self.channel, process_name, sample_category, lepton_charge_selection, hadTau_charge_selection,
                            lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
                       elif genMatch_category == "fake":
@@ -547,10 +547,10 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                         process_output = "%s_fake" % sample_category
                         key_addBackgrounds_job = getKey(process_name, "%s_fake" % sample_category, lepton_charge_selection, hadTau_charge_selection,
                           lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                        cfgFile_modified = os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_fakes_%s_%s_%s_%s_%s_%s_cfg.py" % \
+                        cfgFile_modified = os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_%s_fakes_%s_%s_%s_%s_%s_cfg.py" % \
                           (self.channel, process_name, sample_category, lepton_charge_selection, hadTau_charge_selection,
                            lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
-                        outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_fakes_%s_%s_%s_%s_%s_%s.root" % \
+                        outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_%s_fakes_%s_%s_%s_%s_%s.root" % \
                           (self.channel, process_name, sample_category, lepton_charge_selection, hadTau_charge_selection,
                            lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
                       elif genMatch_category == "gentau":
@@ -569,10 +569,10 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                         process_output = "%s_gentau" % sample_category
                         key_addBackgrounds_job = getKey(process_name, "%s_gentau" % sample_category, lepton_charge_selection, hadTau_charge_selection,
                           lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                        cfgFile_modified = os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_gentau_%s_%s_%s_%s_%s_%s_cfg.py" % \
+                        cfgFile_modified = os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_%s_gentau_%s_%s_%s_%s_%s_cfg.py" % \
                           (self.channel, process_name, sample_category, lepton_charge_selection, hadTau_charge_selection,
                            lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
-                        outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_gentau_%s_%s_%s_%s_%s_%s.root" % \
+                        outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_%s_gentau_%s_%s_%s_%s_%s.root" % \
                           (self.channel, process_name, sample_category, lepton_charge_selection, hadTau_charge_selection,
 lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
                       elif genMatch_category == "faketau":
@@ -591,10 +591,10 @@ lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
                         process_output = "%s_faketau" % sample_category
                         key_addBackgrounds_job = getKey(process_name, "%s_faketau" % sample_category, lepton_charge_selection, hadTau_charge_selection,
                           lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                        cfgFile_modified = os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_faketau_%s_%s_%s_%s_%s_%s_cfg.py" % \
+                        cfgFile_modified = os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_%s_faketau_%s_%s_%s_%s_%s_cfg.py" % \
                           (self.channel, process_name, sample_category, lepton_charge_selection, hadTau_charge_selection,
                            lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
-                        outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_faketau_%s_%s_%s_%s_%s_%s.root" % \
+                        outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_%s_faketau_%s_%s_%s_%s_%s.root" % \
                           (self.channel, process_name, sample_category, lepton_charge_selection, hadTau_charge_selection,
                            lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
                       if processes_input:
