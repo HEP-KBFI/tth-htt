@@ -11,7 +11,7 @@ hltPath::hltPath(const std::string & branchName,
                  double maxPt,
                  const std::string & label)
   : branchName_(branchName)
-  , value_(-1)
+  , value_(false)
   , minPt_(minPt)
   , maxPt_(maxPt)
   , label_(label)
