@@ -1944,6 +1944,7 @@ int main(int argc, char* argv[])
       const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton->p4()).mass();
 
       snm->read(eventInfo);
+      snm->read(selLeptons);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
       snm->read(preselHadTausFull);
@@ -1956,11 +1957,6 @@ int main(int argc, char* argv[])
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
       snm->read(mht_p4.pt(),                            FloatVariableType::MHT);
       snm->read(met_LD,                                 FloatVariableType::metLD);
-
-      snm->read(lep_conePt,                             FloatVariableType::lep1_conept);
-      // lep2_conept not filled
-      // lep3_conePt not filled
-      // lep4_conept not filled
 
       snm->read(mindr_lep_jet,                          FloatVariableType::mindr_lep1_jet);
       // mindr_lep2_jet not filled

@@ -1983,6 +1983,7 @@ int main(int argc, char* argv[])
       const double min_dr_lep_jet = std::min({ mindr_lep1_jet, mindr_lep2_jet, mindr_lep3_jet });
 
       snm->read(eventInfo);
+      snm->read(selLeptons);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
       snm->read(preselHadTaus);
@@ -1998,11 +1999,6 @@ int main(int argc, char* argv[])
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
       snm->read(mht_p4.pt(),                            FloatVariableType::MHT);
       snm->read(met_LD,                                 FloatVariableType::metLD);
-
-      snm->read(lep1_conePt,                            FloatVariableType::lep1_conept);
-      snm->read(lep2_conePt,                            FloatVariableType::lep2_conept);
-      snm->read(lep3_conePt,                            FloatVariableType::lep3_conept);
-      // lep4_conept not filled
 
       snm->read(mindr_lep1_jet,                         FloatVariableType::mindr_lep1_jet);
       snm->read(mindr_lep2_jet,                         FloatVariableType::mindr_lep2_jet);

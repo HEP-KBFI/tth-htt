@@ -2170,6 +2170,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
 
       snm->read(eventInfo);
+      snm->read(selLeptons);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
       snm->read(preselHadTaus);
@@ -2182,11 +2183,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
       snm->read(mht_p4.pt(),                            FloatVariableType::MHT);
       snm->read(met_LD,                                 FloatVariableType::metLD);
-
-      snm->read(lep1_conePt,                            FloatVariableType::lep1_conept);
-      snm->read(lep2_conePt,                            FloatVariableType::lep2_conept);
-      // lep3_conePt not filled
-      // lep4_conept not filled
 
       snm->read(mindr_lep1_jet,                         FloatVariableType::mindr_lep1_jet);
       snm->read(mindr_lep2_jet,                         FloatVariableType::mindr_lep2_jet);
