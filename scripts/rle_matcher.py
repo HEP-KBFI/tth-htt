@@ -226,7 +226,7 @@ if __name__ == '__main__':
           ))
 
           # open the file
-          ch_root = ROOT.TChain("tree")
+          ch_root = ROOT.TChain("Events")
           ch_root.AddFile(rootfile)
 
           run_a  = array.array('I', [0])
@@ -234,8 +234,8 @@ if __name__ == '__main__':
           evt_a  = array.array('L', [0])
 
           ch_root.SetBranchAddress("run",  run_a)
-          ch_root.SetBranchAddress("lumi", lumi_a)
-          ch_root.SetBranchAddress("evt",  evt_a)
+          ch_root.SetBranchAddress("luminosityBlock", lumi_a)
+          ch_root.SetBranchAddress("event",  evt_a)
 
           nof_entries = ch_root.GetEntries()
           for i in range(nof_entries):
