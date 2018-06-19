@@ -1277,7 +1277,7 @@ samples_2017["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2
   ("process_name_specific",           "TTTo2L2Nu"),
   ("nof_files",                       1),
   ("nof_db_files",                    164),
-  ("nof_events",                      8634690),
+  ("nof_events",                      77772824),
   ("nof_tree_events",                 303381),
   ("nof_db_events",                   8705576),
   ("fsize_local",                     760023823), # 760.02MB, avg file size 760.02MB
@@ -1310,12 +1310,12 @@ samples_2017["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniA
   ("process_name_specific",           "TTTo2L2Nu_PSweights"),
   ("nof_files",                       2),
   ("nof_db_files",                    1230),
-  ("nof_events",                      69138134),
+  ("nof_events",                      77772824),
   ("nof_tree_events",                 2428111),
   ("nof_db_events",                   69705626),
   ("fsize_local",                     6070006627), # 6.07GB, avg file size 3.04GB
   ("fsize_db",                        3608766343800), # 3.61TB, avg file size 2.93GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        88.29),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -1343,7 +1343,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-
   ("process_name_specific",           "TTToSemiLeptonic"),
   ("nof_files",                       1),
   ("nof_db_files",                    743),
-  ("nof_events",                      40826964),
+  ("nof_events",                      151310872),
   ("nof_tree_events",                 305372),
   ("nof_db_events",                   41161951),
   ("fsize_local",                     783500219), # 783.50MB, avg file size 783.50MB
@@ -1376,12 +1376,12 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall
   ("process_name_specific",           "TTToSemiLeptonic_PSweights"),
   ("nof_files",                       3),
   ("nof_db_files",                    2032),
-  ("nof_events",                      110483908),
+  ("nof_events",                      151310872),
   ("nof_tree_events",                 826900),
   ("nof_db_events",                   111381888),
   ("fsize_local",                     2121664595), # 2.12GB, avg file size 707.22MB
   ("fsize_db",                        5860979058540), # 5.86TB, avg file size 2.88GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        365.34),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -1409,7 +1409,7 @@ samples_2017["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "TTToHadronic"),
   ("nof_files",                       1),
   ("nof_db_files",                    765),
-  ("nof_events",                      42676684),
+  ("nof_events",                      171604996),
   ("nof_tree_events",                 2288),
   ("nof_db_events",                   42678688),
   ("fsize_local",                     6343702), # 6.34MB, avg file size 6.34MB
@@ -1442,12 +1442,12 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
   ("process_name_specific",           "TTToHadronic_PSweights"),
   ("nof_files",                       3),
   ("nof_db_files",                    2498),
-  ("nof_events",                      128928312),
+  ("nof_events",                      171604996),
   ("nof_tree_events",                 7068),
   ("nof_db_events",                   129985840),
   ("fsize_local",                     19595541), # 19.60MB, avg file size 6.53MB
   ("fsize_db",                        6970450887587), # 6.97TB, avg file size 2.79GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        377.96),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
