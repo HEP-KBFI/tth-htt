@@ -109,18 +109,7 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
         lines.append("    ),")
     lines.append(")")
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
-    lines.append("""process.prepareDatacards.sysShifts = cms.vstring(
-     "CMS_ttHl_muonERUp",
-     "CMS_ttHl_muonERDown",
-     "CMS_ttHl_muonESBarrel1Up",
-     "CMS_ttHl_muonESBarrel1Down",
-     "CMS_ttHl_muonESBarrel2Up",
-     "CMS_ttHl_muonESBarrel2Down",
-     "CMS_ttHl_muonESEndcap1Down",
-     "CMS_ttHl_muonESEndcap1Up",
-     "CMS_ttHl_muonESEndcap2Down",
-     "CMS_ttHl_muonESEndcap2Up"
-    )""")
+    lines.append("process.prepareDatacards.sysShifts = cms.vstring(%s)" % systematics.muon_E)
     create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
 

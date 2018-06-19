@@ -98,6 +98,7 @@ public:
   int hadTauSelection_antiMuon_[3];
   FRet eToTauFakeRate_option_;
   FRmt muToTauFakeRate_option_;
+  TriggerSFsys triggerSF_option_;
 
   int numLeptons_;
   std::vector<int> lepton_type_;
