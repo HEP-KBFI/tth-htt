@@ -1205,9 +1205,9 @@ int main(int argc, char* argv[])
     // require exactly three leptons passing tight selection criteria of final event selection
     if ( !(selLeptons.size() >= 3) ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selLeptons selection." << std::endl;
-  printCollection("selLeptons", selLeptons);
-  //printCollection("preselLeptons", preselLeptons);
+	std::cout << "event " << eventInfo.str() << " FAILS selLeptons selection." << std::endl;
+	printCollection("selLeptons", selLeptons);
+	//printCollection("preselLeptons", preselLeptons);
       }
       continue;
     }
@@ -1226,7 +1226,7 @@ int main(int argc, char* argv[])
       std::cout << "selLepton_genMatch = " << getLeptonGenMatch_string(leptonGenMatch_definitions, idxSelLepton_genMatch) << std::endl;
       if ( idxSelLepton_genMatch != kGen_3l0g0j ) {
 	std::cout << "--> CHECK!" << std::endl;
-  printCollection("selLeptons", selLeptons);
+	printCollection("selLeptons", selLeptons);
       }
     }
 
@@ -1580,9 +1580,12 @@ int main(int argc, char* argv[])
     if ( leptonSelection == kFakeable || hadTauSelection == kFakeable ) {
       if ( tightLeptons.size() >= 3 && tightHadTaus.size() >= 1 ) {
         if ( run_lumi_eventSelector ) {
-          std::cout << "event " << eventInfo.str() << " FAILS tightElectrons+tightMuons selection.\n"
-                       " (#tightLeptons = " << tightLeptons.size() << ", #tightHadTaus = " << tightHadTaus.size() << ")\n"
+	  std::cout << "event " << eventInfo.str() << "  FAILS overlap w/ the SR: "
+	               "# tight leptons = " << tightLeptons.size() << " >= 1 and "
+  	               "# tight taus = " << tightHadTaus.size() << " >= 1\n"
           ;
+	  printCollection("tightLeptons", tightLeptons);
+	  printCollection("tightHadTaus", tightHadTaus);	  
         }
         continue; // CV: avoid overlap with signal region
       }

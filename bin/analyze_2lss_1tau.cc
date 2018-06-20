@@ -1343,16 +1343,17 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     double prob_fake_lepton_lead = 1.;
     double prob_fake_lepton_sublead = 1.;
     double prob_fake_hadTau = 1.;
-    if(leptonFakeRateInterface) {
-    if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-    else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-    else assert(0);
-    if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-    else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-    else assert(0);
-
+    if ( leptonFakeRateInterface ) {
+      if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+      else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+      else assert(0);
+      if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+      else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+      else assert(0);
     }
-    if (jetToTauFakeRateInterface) prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
+    if ( jetToTauFakeRateInterface ) {
+      prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
+    }
 
     if ( !selectBDT ) {
       if ( applyFakeRateWeights == kFR_3L ) {
@@ -1364,7 +1365,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 	weight_fakeRate = getWeight_2L(
           prob_fake_lepton_lead, passesTight_lepton_lead,
 	  prob_fake_lepton_sublead, passesTight_lepton_sublead);
-      } else if ( applyFakeRateWeights == kFR_1tau) weight_fakeRate = prob_fake_hadTau;
+      } else if ( applyFakeRateWeights == kFR_1tau ){
+	weight_fakeRate = prob_fake_hadTau;
+      }
       evtWeight *= weight_fakeRate;
       // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
       if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton())) {
@@ -1659,9 +1662,12 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     if ( leptonSelection == kFakeable || hadTauSelection == kFakeable ) {
       if ( tightLeptons.size() >= 2 && tightHadTaus.size() >= 1 ) {
         if ( run_lumi_eventSelector ) {
-          std::cout << "event " << eventInfo.str() << " FAILS tightElectrons+tightMuons selection.\n"
-                       " (#tightLeptons = " << tightLeptons.size() << ", #tightHadTaus = " << tightHadTaus.size() << ")\n"
+          std::cout << "event " << eventInfo.str() << "  FAILS overlap w/ the SR: "
+	               "# tight leptons = " << tightLeptons.size() << " >= 1 and "
+  	               "# tight taus = " << tightHadTaus.size() << " >= 1\n"
           ;
+	  printCollection("tightLeptons", tightLeptons);
+	  printCollection("tightHadTaus", tightHadTaus);
         }
         continue; // CV: avoid overlap with signal region
       }
@@ -2020,7 +2026,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
 
     if ( selEventsFile ) {
-      (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
+      //(*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
+      (*selEventsFile) << "(" << eventInfo.run << ", " << eventInfo.lumi << ", " << eventInfo.event << "L, " << weight_fakeRate 
+		       << ", " << prob_fake_lepton_lead << ", " << passesTight_lepton_lead << ", " << prob_fake_lepton_sublead << ", " << passesTight_lepton_sublead 
+		       << ")" << '\n';
     }
 
     double memOutput_type=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.type() : -100.;
