@@ -31,6 +31,7 @@ hltPath::setBranchAddress(TTree * tree)
   else
   {
     std::cout << "Branch '" << branchName_ << "' not available, defaulting to false\n";
+    value_ = false;
   }
 }
 
