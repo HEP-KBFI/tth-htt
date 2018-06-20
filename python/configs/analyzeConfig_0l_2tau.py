@@ -478,7 +478,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
 
     logging.info("Creating configuration files to run 'prepareDatacards'")
     for histogramToFit in self.histograms_to_fit:
-      key_prep_dcard_job = getKey(histogramToFit)
+      key_prep_dcard_job = getKey(histogramToFit, "OS")
       key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
       self.jobOptions_prep_dcard[key_prep_dcard_job] = {
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
@@ -489,6 +489,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         'label' : None
       }
       self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
+      
       if "SS" in self.hadTau_charge_selections:
         key_prep_dcard_job = getKey(histogramToFit, "SS")
         key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")
@@ -501,6 +502,44 @@ class analyzeConfig_0l_2tau(analyzeConfig):
           'label' : 'SS'
         }
         self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
+        
+      # add shape templates for the following systematic uncertainties:
+      #  - 'CMS_ttHl_Clos_norm_t'
+      #  - 'CMS_ttHl_Clos_shape_t'
+      for hadTau_charge_selection in self.hadTau_charge_selections:
+        key_prep_dcard_job = getKey(histogramToFit, hadTau_charge_selection)
+        key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), hadTau_charge_selection)
+        key_add_syst_fakerate_job = getKey(histogramToFit, hadTau_charge_selection)
+        self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job] = {
+          'inputFile' : self.jobOptions_prep_dcard[key_prep_dcard_job]['datacardFile'],
+          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addSystFakeRates_%s_%s_%s_cfg.py" % (self.channel, hadTau_charge_selection, histogramToFit)),
+          'outputFile' : os.path.join(self.dirs[DKEY_DCRD], "addSystFakeRates_%s_%s_%s.root" % (self.channel, hadTau_charge_selection, histogramToFit)),
+          'category' : self.channel,
+          'histogramToFit' : histogramToFit,
+          'plots_outputFileName' : os.path.join(self.dirs[DKEY_PLOT], "addSystFakeRates.png")
+        }
+        histogramDir_nominal = None
+        if hadTau_charge_selection == "OS":
+          histogramDir_nominal = self.histogramDir_prep_dcard
+        elif hadTau_charge_selection == "SS":
+          histogramDir_nominal = self.histogramDir_prep_dcard_SS
+        else:
+          raise ValueError("Invalid parameter 'hadTau_charge_selection' = %s !!" % hadTau_charge_selection)
+        for hadTau_type in [ 't', ]:
+          hadTau_mcClosure = "Fakeable_mcClosure_%s" % hadTau_type
+          if hadTau_mcClosure not in self.hadTau_selections:
+            continue
+          hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_mcClosure, "enabled")
+          key_addBackgrounds_job_fakes = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection, "fakes")
+          histogramDir_mcClosure = histogramDir_nominal.replace("_Tight", "_Fakeable_mcClosure_%s_wFakeRateWeights" % hadTau_type)
+          self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job].update({
+            'add_Clos_%s' % hadTau_type : ("Fakeable_mcClosure_%s" % hadTau_type) in self.hadTau_selections,
+            'inputFile_nominal_%s' % hadTau_type : self.outputFile_hadd_stage2[key_hadd_stage2],
+            'histogramName_nominal_%s' % hadTau_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_nominal, histogramToFit),
+            'inputFile_mcClosure_%s' % hadTau_type : self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes]['outputFile'],
+            'histogramName_mcClosure_%s' % hadTau_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_mcClosure, histogramToFit)
+          })
+        self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job])
 
     logging.info("Creating configuration files to run 'makePlots'")
     key_makePlots_job = getKey("OS")
@@ -559,6 +598,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
+    self.addToMakefile_add_syst_fakerate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
 
