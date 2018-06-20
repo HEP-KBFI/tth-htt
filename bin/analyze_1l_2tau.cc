@@ -1582,6 +1582,8 @@ int main(int argc, char* argv[])
                      "# tight leptons = " << tightLeptons.size() << " >= 1 and "
                      "# tight taus = " << tightHadTaus.size() << " >= 1\n"
         ;
+	printCollection("tightLeptons", tightLeptons);
+	printCollection("tightHadTaus", tightHadTaus);
         continue; // CV: avoid overlap with signal region
       }
       cutFlowTable.update("signal region veto", evtWeight);

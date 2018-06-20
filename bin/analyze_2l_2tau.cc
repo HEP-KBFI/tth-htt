@@ -1526,8 +1526,12 @@ int main(int argc, char* argv[])
     if ( leptonSelection == kFakeable || hadTauSelection == kFakeable ) {
       if ( tightLeptons.size() >= 2 && tightHadTaus.size() >= 2 ) {
         if ( run_lumi_eventSelector ) {
-          std::cout << "event " << eventInfo.str() << " FAILS tightElectrons+tightMuons selection." << std::endl;
-          std::cout << " (#tightLeptons = " << tightLeptons.size() << ", #tightHadTaus = " << tightHadTaus.size() << ")\n";
+	  std::cout << "event " << eventInfo.str() << "  FAILS overlap w/ the SR: "
+	               "# tight leptons = " << tightLeptons.size() << " >= 1 and "
+  	               "# tight taus = " << tightHadTaus.size() << " >= 1\n"
+          ;
+	  printCollection("tightLeptons", tightLeptons);
+	  printCollection("tightHadTaus", tightHadTaus);
         }
         continue; // CV: avoid overlap with signal region
       }
