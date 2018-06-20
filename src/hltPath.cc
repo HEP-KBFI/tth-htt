@@ -79,6 +79,7 @@ hltPath::set_available_branches(TTree * tree)
   TObject * obj = nullptr;
   while((obj = it.Next()))
   {
+    std::cout << "adding branch = '" << obj->GetName() << "'" << std::endl;
     available_branches_.push_back(obj->GetName());
   }
   delete obj;

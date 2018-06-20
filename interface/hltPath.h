@@ -14,10 +14,10 @@ class hltPath
   : public ReaderBase
 {
  public:
- hltPath(const std::string & branchName,
-         double minPt = -1.,
-         double maxPt = -1.,
-         const std::string & label = "");
+  hltPath(const std::string & branchName,
+	  double minPt = -1.,
+	  double maxPt = -1.,
+	  const std::string & label = "");
   ~hltPath() {}
 
   void
