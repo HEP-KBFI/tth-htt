@@ -36,6 +36,7 @@ NB! The input file you provide can work only for a single MC sample or multiple 
 
 import logging, argparse, os, sys, re, ROOT, array, subprocess
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+##from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017 as samples
 
 def is_dict_full(d):
   '''Checks whether all values in a given dictionary are present
@@ -248,7 +249,7 @@ if __name__ == '__main__':
                   first_file = rles[rle_i],
                   second_file = rootfile,
                 ))
-                sys.exit(1)
+                ##sys.exit(1)
               rles[rle_i] = rootfile
               logging.debug("Got a match '{rle_number}'".format(
                 rle_number = rle_i
