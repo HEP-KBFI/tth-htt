@@ -42,11 +42,16 @@ class hltPath
   getLabel() const;
 
  private:
+  void
+  set_available_branches(TTree * tree);
+
   std::string branchName_;
   Bool_t value_;
   double minPt_;
   double maxPt_;
   std::string label_;
+
+  std::vector<std::string> available_branches_;
 };
 
 std::vector<hltPath *>
