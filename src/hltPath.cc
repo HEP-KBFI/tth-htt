@@ -20,10 +20,7 @@ hltPath::hltPath(const std::string & branchName,
 void
 hltPath::setBranchAddress(TTree * tree)
 {
-  if(available_branches_.empty())
-  {
-    this->set_available_branches(tree);
-  }
+  this->set_available_branches(tree);
   if(std::find(available_branches_.cbegin(), available_branches_.cend(), branchName_) != available_branches_.cend())
   {
     tree->SetBranchAddress(branchName_.data(), &value_);
@@ -77,6 +74,7 @@ hltPath::set_available_branches(TTree * tree)
   TObjArray * arr = tree->GetListOfBranches();
   TIter it(arr);
   TObject * obj = nullptr;
+  available_branches_.clear();
   while((obj = it.Next()))
   {
     available_branches_.push_back(obj->GetName());
