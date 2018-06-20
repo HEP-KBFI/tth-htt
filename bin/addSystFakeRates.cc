@@ -642,6 +642,8 @@ int main(int argc, char* argv[])
       //if ( norm > 1. ) dy_closureNorm = (norm + normErr) - 1.;
       //else dy_closureNorm = 1. - (norm - normErr);      
       double dy_closureNorm = TMath::Abs(norm - 1.);
+      if ( dy_closureNorm < -1. ) dy_closureNorm = -1.; // CV: keep integral of histogram_closureNormUp positive
+      if ( dy_closureNorm > +1. ) dy_closureNorm = +1.; // CV: keep integral of histogram_closureNormDown positive
       histogram_closureNormUp->SetBinContent(idxBin, binContent_fakes_data*(1. + dy_closureNorm));
       histogram_closureNormUp->SetBinError(idxBin, binError_fakes_data);
       histogram_closureNormDown->SetBinContent(idxBin, binContent_fakes_data*(1. - dy_closureNorm));
@@ -652,6 +654,8 @@ int main(int argc, char* argv[])
       //if ( slope > 0. ) dy_closureShape = (x - x0)*(slope + slopeErr);
       //else dy_closureShape = (x - x0)*(slope - slopeErr);
       double dy_closureShape = (x - x0)*slope;
+      if ( dy_closureShape < -1. ) dy_closureShape = -1.; // CV: keep all bins of histogram_closureShapeUp positive (unless bin is negative in histogram_fakes_data also)
+      if ( dy_closureShape > +1. ) dy_closureShape = +1.; // CV: keep all bins of histogram_closureShapeDown positive (unless bin is negative in histogram_fakes_data also)
       histogram_closureShapeUp->SetBinContent(idxBin, binContent_fakes_data*(1. + dy_closureShape));
       histogram_closureShapeUp->SetBinError(idxBin, binError_fakes_data);
       histogram_closureShapeDown->SetBinContent(idxBin, binContent_fakes_data*(1. - dy_closureShape));
