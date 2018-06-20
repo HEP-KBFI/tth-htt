@@ -1674,9 +1674,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowTable.update("MEt filters", evtWeight);
     cutFlowHistManager->fillHistograms("MEt filters", evtWeight);
 
-    const bool skipSRveto_ee = electronSelection != muonSelection && muonSelection     == kFakeable && selLepton_lead->is_electron() && selLepton_sublead->is_electron();
-    const bool skipSRveto_mm = electronSelection != muonSelection && electronSelection == kFakeable && selLepton_lead->is_muon()     && selLepton_sublead->is_muon();
-    if (( electronSelection == kFakeable || muonSelection == kFakeable || hadTauSelection == kFakeable ) && ! skipSRveto_ee && ! skipSRveto_mm ) {
+    const bool skipSRveto_2e = electronSelection != muonSelection && muonSelection     == kFakeable && all_same_flavor(selLeptons, true);
+    const bool skipSRveto_2m = electronSelection != muonSelection && electronSelection == kFakeable && all_same_flavor(selLeptons, false);
+    if (( electronSelection == kFakeable || muonSelection == kFakeable || hadTauSelection == kFakeable ) && ! skipSRveto_2e && ! skipSRveto_2m ) {
       if ( tightLeptons.size() >= 2 && tightHadTaus.size() >= 1 ) {
         if ( run_lumi_eventSelector ) {
           std::cout << "event " << eventInfo.str() << " FAILS tightElectrons+tightMuons selection.\n"
