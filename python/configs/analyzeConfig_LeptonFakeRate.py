@@ -206,8 +206,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.cfgFile_comp_LeptonFakeRate = os.path.join(self.template_dir, "comp_LeptonFakeRate_cfg.py")
     self.jobOptions_comp_LeptonFakeRate = {}
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH", "VH" ]
-    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "signal", "TTWW", "tH", "VH", "ttH_hbb", "fakes_data" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "VH" ]
+    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "signal", "TTWW", "tHq", "tHW", "VH", "ttH_hbb", "fakes_data" ]
     self.histogramDir_prep_dcard = "LeptonFakeRate"
     self.prep_dcard = prep_dcard
 
