@@ -35,7 +35,8 @@ NB! The input file you provide can work only for a single MC sample or multiple 
 '''
 
 import logging, argparse, os, sys, re, ROOT, array, subprocess
-from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2016 as samples
+##from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017 as samples
 
 def is_dict_full(d):
   '''Checks whether all values in a given dictionary are present
@@ -135,7 +136,7 @@ if __name__ == '__main__':
         ))
         sys.exit(1)
 
-      rles[line] = ''
+      rles[line] = []
 
   # here we try to grep RLE numbers instead of looping over ROOT files
   rle_matched_files = []
@@ -211,8 +212,7 @@ if __name__ == '__main__':
           grep_result = os.path.join(
             sample_path, '000%d' % (file_idx / 1000), 'tree_{i}.root'.format(i = file_idx)
           )
-          rles[rle] = grep_result
-          if is_dict_full(rles): break
+          rles[rle].append(grep_result)
     else:
       # instead of forming a list of files let's loop over the subfolders and the files therein instead
       logging.debug('Looping over the files in {sample_path}'.format(sample_path = sample_path))
@@ -226,36 +226,24 @@ if __name__ == '__main__':
           ))
 
           # open the file
-          ch_root = ROOT.TChain("tree")
+          ch_root = ROOT.TChain("Events")
           ch_root.AddFile(rootfile)
 
           run_a  = array.array('I', [0])
           lumi_a = array.array('I', [0])
           evt_a  = array.array('L', [0])
 
-          ch_root.SetBranchAddress("run",  run_a)
-          ch_root.SetBranchAddress("lumi", lumi_a)
-          ch_root.SetBranchAddress("evt",  evt_a)
+          ch_root.SetBranchAddress("run",             run_a)
+          ch_root.SetBranchAddress("luminosityBlock", lumi_a)
+          ch_root.SetBranchAddress("event",           evt_a)
 
           nof_entries = ch_root.GetEntries()
           for i in range(nof_entries):
             ch_root.GetEntry(i)
             rle_i = ':'.join(map(str, [run_a[0], lumi_a[0], evt_a[0]]))
             if rle_i in rles:
-              if rles[rle_i]:
-                logging.error("Something's wrong: files {first_file} and {second_file} contain "
-                              "the same RLE number".format(
-                  first_file = rles[rle_i],
-                  second_file = rootfile,
-                ))
-                sys.exit(1)
-              rles[rle_i] = rootfile
-              logging.debug("Got a match '{rle_number}'".format(
-                rle_number = rle_i
-              ))
-              if is_dict_full(rles): break
-          if is_dict_full(rles): break
-        if is_dict_full(rles): break
+              rles[rle_i].append(rootfile)
+              logging.debug("Got a match '{rle_number}'".format(rle_number = rle_i))
 
   xor = lambda lhs, rhs: bool(lhs) ^ bool(rhs)
   if not xor(grep_directory, grep_individually):
@@ -269,7 +257,11 @@ if __name__ == '__main__':
         rle_list = "\n".join(missing_rles),
       ))
     # let's make the list of matched ROOT files unique
-    rle_matched_files = list(set(filter(lambda x: x != '', rles.values())))
+    rle_matched_files = []
+    for rle_arr in rles.values():
+      for rle_v in rle_arr:
+        if rle_v not in rle_matched_files:
+          rle_matched_files.append(rle_v)
     logging.debug('Found {nof_matches} matches'.format(nof_matches = len(rle_matched_files)))
 
   logging.debug("Got matches for the following files:")

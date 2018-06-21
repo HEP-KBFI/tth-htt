@@ -14,10 +14,10 @@ class hltPath
   : public ReaderBase
 {
  public:
- hltPath(const std::string & branchName,
-         double minPt = -1.,
-         double maxPt = -1.,
-         const std::string & label = "");
+  hltPath(const std::string & branchName,
+	  double minPt = -1.,
+	  double maxPt = -1.,
+	  const std::string & label = "");
   ~hltPath() {}
 
   void
@@ -42,6 +42,9 @@ class hltPath
   getLabel() const;
 
  private:
+  std::vector<std::string>
+  get_available_branches(TTree * tree) const;
+
   std::string branchName_;
   Bool_t value_;
   double minPt_;

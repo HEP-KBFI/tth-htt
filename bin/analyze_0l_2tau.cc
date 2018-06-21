@@ -61,6 +61,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterHistManager.h" // MEtFilterHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_0l_2tau.h" // EvtHistManager_0l_2tau
+#include "tthAnalysis/HiggsToTauTau/interface/EvtYieldHistManager.h" // EvtYieldHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager.h" // CutFlowTableHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/WeightHistManager.h" // WeightHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
@@ -243,6 +244,7 @@ int main(int argc, char* argv[])
   }
   
   bool fillGenEvtHistograms = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
+  edm::ParameterSet cfg_EvtYieldHistManager = cfg_analyze.getParameter<edm::ParameterSet>("cfgEvtYieldHistManager");
 
   std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
   std::string branchName_muons = cfg_analyze.getParameter<std::string>("branchName_muons");
@@ -452,6 +454,7 @@ int main(int argc, char* argv[])
     MEtHistManager* met_;
     MEtFilterHistManager* metFilters_;
     EvtHistManager_0l_2tau* evt_;
+    EvtYieldHistManager* evtYield_;
   };
   std::map<int, preselHistManagerType*> preselHistManagers;
   struct selHistManagerType
@@ -475,9 +478,10 @@ int main(int argc, char* argv[])
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_ttbar_;
     //MVAInputVarHistManager* mvaInputVariables_ttV_;
-    EvtHistManager_0l_2tau* evt_;
+    EvtHistManager_0l_2tau* evt_;    
     std::map<std::string, EvtHistManager_0l_2tau*> evt_in_decayModes_;
     std::map<std::string, EvtHistManager_0l_2tau*> evt_in_categories_;
+    EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
   std::map<int, selHistManagerType*> selHistManagers;
@@ -523,6 +527,11 @@ int main(int argc, char* argv[])
     preselHistManager->evt_ = new EvtHistManager_0l_2tau(makeHistManager_cfg(process_and_genMatch, 
       Form("%s/presel/evt", histogramDir.data()), central_or_shift));
     preselHistManager->evt_->bookHistograms(fs);
+    edm::ParameterSet cfg_EvtYieldHistManager_presel = makeHistManager_cfg(process_and_genMatch, 
+      Form("%s/presel/evtYield", histogramDir.data()), central_or_shift);
+    cfg_EvtYieldHistManager_presel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
+    preselHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_presel);
+    preselHistManager->evtYield_->bookHistograms(fs);   
     preselHistManagers[idxHadTau] = preselHistManager;
 
     selHistManagerType* selHistManager = new selHistManagerType();
@@ -593,7 +602,7 @@ int main(int argc, char* argv[])
     //selHistManager->mvaInputVariables_ttV_->bookHistograms(fs, mvaInputVariables_0l_2tau_ttV);
     selHistManager->evt_ = new EvtHistManager_0l_2tau(makeHistManager_cfg(process_and_genMatch, 
       Form("%s/sel/evt", histogramDir.data()), central_or_shift));
-    selHistManager->evt_->bookHistograms(fs);      
+    selHistManager->evt_->bookHistograms(fs);         
     const vstring decayModes_evt = eventInfo.getDecayModes();
     if ( isSignal ) {
       for ( vstring::const_iterator decayMode = decayModes_evt.begin();
@@ -618,6 +627,11 @@ int main(int argc, char* argv[])
         Form("%s/sel/evt", histogramDir_category.Data()), central_or_shift));
       selHistManager->evt_in_categories_[*category]->bookHistograms(fs);
     }      
+    edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch, 
+      Form("%s/sel/evtYield", histogramDir.data()), central_or_shift);
+    cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
+    selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_sel);
+    selHistManager->evtYield_->bookHistograms(fs);   
     selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("%s/sel/weights", histogramDir.data()), central_or_shift));
     selHistManager->weights_->bookHistograms(fs, 
@@ -906,6 +920,7 @@ int main(int argc, char* argv[])
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       -1., 
       mTauTauVis_presel, -1., 1.);
+    preselHistManager->evtYield_->fillHistograms(eventInfo, 1.);
 
 //--- apply final event selection 
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
@@ -1311,6 +1326,7 @@ int main(int argc, char* argv[])
         );
       }
     }
+    selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
     selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
     selHistManager->weights_->fillHistograms("pileupWeight", eventInfo.pileupWeight);
     selHistManager->weights_->fillHistograms("data_to_MC_correction", weight_data_to_MC_correction);
