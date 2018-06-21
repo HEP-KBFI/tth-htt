@@ -61,6 +61,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterHistManager.h" // MEtFilterHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_3l.h" // EvtHistManager_3l
+#include "tthAnalysis/HiggsToTauTau/interface/EvtYieldHistManager.h" // EvtYieldHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager.h" // CutFlowTableHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/WeightHistManager.h" // WeightHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
@@ -278,6 +279,7 @@ int main(int argc, char* argv[])
   }
 
   bool fillGenEvtHistograms = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
+  edm::ParameterSet cfg_EvtYieldHistManager = cfg_analyze.getParameter<edm::ParameterSet>("cfgEvtYieldHistManager");
 
   std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
   std::string branchName_muons = cfg_analyze.getParameter<std::string>("branchName_muons");
@@ -467,6 +469,7 @@ int main(int argc, char* argv[])
     MEtHistManager* met_;
     MEtFilterHistManager* metFilters_;
     EvtHistManager_3l* evt_;
+    EvtYieldHistManager* evtYield_;
   };
   std::map<int, preselHistManagerType*> preselHistManagers;
   struct selHistManagerType
@@ -490,6 +493,7 @@ int main(int argc, char* argv[])
     std::map<std::string, EvtHistManager_3l*> evt_in_categories_;
     std::map<std::string, EvtHistManager_3l*> evt_in_decayModes_;
     std::map<std::string, std::map<std::string, EvtHistManager_3l*>> evt_in_categories_and_decayModes_; // key = category, decayMode
+    EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
   std::map<int, selHistManagerType*> selHistManagers;
@@ -533,6 +537,11 @@ int main(int argc, char* argv[])
     preselHistManager->evt_ = new EvtHistManager_3l(makeHistManager_cfg(process_and_genMatch,
       Form("%s/presel/evt", histogramDir.data()), era_string, central_or_shift));
     preselHistManager->evt_->bookHistograms(fs);
+    edm::ParameterSet cfg_EvtYieldHistManager_presel = makeHistManager_cfg(process_and_genMatch, 
+      Form("%s/presel/evtYield", histogramDir.data()), central_or_shift);
+    cfg_EvtYieldHistManager_presel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
+    preselHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_presel);
+    preselHistManager->evtYield_->bookHistograms(fs);
     preselHistManagers[idxLepton] = preselHistManager;
 
     selHistManagerType* selHistManager = new selHistManagerType();
@@ -632,6 +641,11 @@ int main(int argc, char* argv[])
 	}
       }
     }
+    edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch, 
+      Form("%s/sel/evtYield", histogramDir.data()), central_or_shift);
+    cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
+    selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_sel);
+    selHistManager->evtYield_->bookHistograms(fs);
     selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/weights", histogramDir.data()), central_or_shift));
     selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "triggerWeight", "data_to_MC_correction", "fakeRate" });
@@ -1125,6 +1139,7 @@ int main(int argc, char* argv[])
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       -1., -1., -1., 
       1.);
+    preselHistManager->evtYield_->fillHistograms(eventInfo, 1.);
 
 //--- apply final event selection
     // require exactly three leptons passing tight selection criteria of final event selection
@@ -1604,6 +1619,7 @@ int main(int argc, char* argv[])
 	}					      
       }
     }
+    selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
     selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
     selHistManager->weights_->fillHistograms("pileupWeight", eventInfo.pileupWeight);
     selHistManager->weights_->fillHistograms("triggerWeight", triggerWeight);

@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
-
 import os
+
+from tthAnalysis.HiggsToTauTau.recommendedMEtFilters_cfi import recommendedMEtFilters
+from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_2017_cfi import EvtYieldHistManager_2017
 
 process = cms.PSet()
 
@@ -69,10 +71,13 @@ process.analyze_2los_1tau = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_hlt_filter = cms.bool(False),
+    apply_met_filters = cms.bool(True),
+    cfgMEtFilter = recommendedMEtFilters,
     apply_hadTauFakeRateSF = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
-
+    cfgEvtYieldHistManager = EvtYieldHistManager_2017,
+    
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
     branchName_hadTaus = cms.string('Tau'),

@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 import os
 
 from tthAnalysis.HiggsToTauTau.recommendedMEtFilters_cfi import recommendedMEtFilters
+from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_2017_cfi import EvtYieldHistManager_2017
 
 process = cms.PSet()
 
@@ -80,6 +81,7 @@ process.analyze_WZctrl = cms.PSet(
     cfgMEtFilter = recommendedMEtFilters,
 
     fillGenEvtHistograms = cms.bool(False),
+    cfgEvtYieldHistManager = EvtYieldHistManager_2017,
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
