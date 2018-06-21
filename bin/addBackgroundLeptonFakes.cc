@@ -156,8 +156,7 @@ int main(int argc, char* argv[])
 	  for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
 		central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
 
-	    //int verbosity = ( histogram->find("EventCounter") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
-	    int verbosity = ( histogram->find("mvaOutput_1l_2tau_ttbar_Matthias") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
+	    int verbosity = ( histogram->find("EventCounter") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
 	    //int verbosity = ( histogram->find("EventCounter") != std::string::npos ) ? 1 : 0;
 
 	    TH1* histogramData = getHistogram(*subdir_sideband_level2, processData, *histogram, *central_or_shift, false);

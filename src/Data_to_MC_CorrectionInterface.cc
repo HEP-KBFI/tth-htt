@@ -103,6 +103,13 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
       lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 20., -1., lut::kLimit_and_Cut
     ));
 
+    sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
+      inputFiles_,
+      "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_trkVtxCut_and_isoEff.root",
+      "EGamma_SF2D",
+      lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 10., 500., lut::kLimit 
+    ));
+
     sfElectronID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
       inputFiles_,
       "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_e_3l.root",
