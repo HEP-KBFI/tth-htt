@@ -1500,10 +1500,6 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
-      const double lep1_conePt    = comp_lep1_conePt(*selLepton_lead);
-      const double lep2_conePt    = comp_lep2_conePt(*selLepton_sublead);
-      const double lep3_conePt    = comp_lep3_conePt(*selLepton_third);
-      const double lep4_conePt    = comp_lep4_conePt(*selLepton_fourth);
       const double mT_lep1        = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
       const double mT_lep2        = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
       const double mT_lep3        = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
