@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 sys_choices          = [ 'full' ] + systematics.an_addMEM_opts
-mode_choices         = [ 'default', 'bdt' ]
+mode_choices         = [ 'default', 'bdt', 'sync' ]
 max_mem_integrations = 20000
 systematics.full     = systematics.an_addMEM
 
@@ -66,6 +66,15 @@ elif mode == 'bdt':
   leptonSelection = "Loose"
   hadTauSelection = "Tight"
   hadTauWP        = "dR03mvaVVLoose"
+elif mode == 'sync':
+  if use_nonnominal:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+  else:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017
+
+  leptonSelection = "Fakeable"
+  hadTauSelection = "Tight"
+  hadTauWP = "dR03mvaLoose"
 else:
   raise ValueError("Internal logic error")
 
