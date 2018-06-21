@@ -118,7 +118,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         else:
           self.hadTau_genMatches_fakes.append(hadTau_genMatch)
       if run_mcClosure:
-        self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_t" ])
+        self.hadTau_selections.extend([ "Fakeable_mcClosure_t" ])
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
 

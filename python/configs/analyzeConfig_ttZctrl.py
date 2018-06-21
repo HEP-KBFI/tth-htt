@@ -116,7 +116,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
         else:
           self.lepton_genMatches_fakes.append(lepton_genMatch)
       if run_mcClosure:
-        self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_e", "Fakeable_mcClosure_m" ])
+        self.lepton_selections.extend([ "Fakeable_mcClosure_e", "Fakeable_mcClosure_m" ])
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
 
