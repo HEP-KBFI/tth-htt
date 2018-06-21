@@ -580,6 +580,7 @@ class analyzeConfig_2lss(analyzeConfig):
           # input processes: TT1l0g1j, TT0l1g1j, TT0l0g2j; ...
           # output process: fakes_mc
           key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, lepton_charge_selection, "fakes")
+          key_hadd_stage1_5 = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])
@@ -669,7 +670,7 @@ class analyzeConfig_2lss(analyzeConfig):
       if self.applyFakeRateWeights == "2lepton":
         category_sideband = "2lss_%s_Fakeable_wFakeRateWeights" % lepton_charge_selection
       else:
-        raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
+        raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % self.applyFakeRateWeights)
       self.jobOptions_addFakes[key_addFakes_job] = {
         'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_%s_cfg.py" % \
@@ -746,7 +747,7 @@ class analyzeConfig_2lss(analyzeConfig):
         if lepton_mcClosure not in self.lepton_selections:
           continue
         lepton_selection_and_frWeight = get_lepton_selection_and_frWeight(lepton_mcClosure, "enabled")
-        key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, lepton_charge_selection, "fakes")
+        key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, 'SS', "fakes")
         histogramDir_mcClosure = histogramDir_nominal.replace("_Tight", "_Fakeable_mcClosure_%s_wFakeRateWeights" % lepton_type)
         self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job].update({
           'add_Clos_%s' % lepton_type : ("Fakeable_mcClosure_%s" % lepton_type) in self.lepton_selections,

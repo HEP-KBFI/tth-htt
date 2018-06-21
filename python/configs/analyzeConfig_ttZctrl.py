@@ -332,7 +332,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
           if self.do_sync: continue
 
           if is_mc:
-            logging.info("Creating configuration files to run 'addBackgrounds' for sample %s and sys unc %s" % (process_name, central_or_shift))
+            logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
 
             sample_categories = [ sample_category ]
             if is_signal:
@@ -449,6 +449,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
         # input processes: TT2l0g1j, TT1l1g1j, TT1l0g2j, TT0l3j, TT0l3j, TT0l3j, TT0l3j; ...
         # output process: fakes_mc
         key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, "fakes")
+        key_hadd_stage1_5 = getKey(lepton_selection_and_frWeight)
         sample_categories = []
         sample_categories.extend(self.nonfake_backgrounds)
         sample_categories.extend([ "signal" ])

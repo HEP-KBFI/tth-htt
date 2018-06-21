@@ -271,7 +271,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
                 (self.channel, process_name, lepton_selection_and_frWeight))
 
           if is_mc:
-            logging.info("Creating configuration files to run 'addBackgrounds' for sample %s and sys unc %s" % (process_name, central_or_shift))
+            logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
 
             sample_categories = [ sample_category ]
             if is_signal:
