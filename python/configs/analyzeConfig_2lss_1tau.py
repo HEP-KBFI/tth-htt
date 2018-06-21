@@ -417,7 +417,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         for lepton_charge_selection in self.lepton_charge_selections:
           for chargeSumSelection in self.chargeSumSelections:
 
-            if 'mcClosure' in lepton_and_hadTau_selection and not (lepton_charge_selection == 'SS' and chargeSumSelection == 'OS'):
+            if 'mcClosure' in lepton_and_hadTau_selection and lepton_charge_selection != 'SS':
               # Run MC closure only for the region that complements the SR
               continue
 
@@ -729,6 +729,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             # input processes: TT1l0g1j, TT0l1g1j, TT0l0g2j; ...
             # output process: fakes_mc
             key_addBackgrounds_job_fakes = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection, "fakes")
+            key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
             sample_categories = []
             sample_categories.extend(self.nonfake_backgrounds)
             sample_categories.extend([ "signal" ])
@@ -823,7 +824,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         elif self.applyFakeRateWeights == "1tau":
           category_sideband = "2lss_1tau_lep%s_sum%s_Fakeable_wFakeRateWeights" % (lepton_charge_selection, chargeSumSelection)
         else:
-          raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
+          raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % self.applyFakeRateWeights)
         self.jobOptions_addFakes[key_addFakes_job] = {
           'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_lep%s_sum%s_cfg.py" % \

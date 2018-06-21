@@ -348,10 +348,6 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
         for chargeSumSelection in self.chargeSumSelections:
 
-          if 'mcClosure' in lepton_and_hadTau_selection and chargeSumSelection != 'OS':
-            # Run MC closure only for the region that complements the SR
-            continue
-
           for sample_name, sample_info in self.samples.items():
             if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
               continue
@@ -652,6 +648,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
           # input processes: TT2l0g1j, TT1l1g1j, TT1l0g2j, TT0l2g1j, TT0l1g2j, TT0l0g3j; ...
           # output process: fakes_mc
           key_addBackgrounds_job_fakes = getKey(lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, "fakes")
+          key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])
@@ -745,7 +742,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       elif self.applyFakeRateWeights == "1tau":
         category_sideband = "3l_1tau_%s_lepTight_tauFakeable_wFakeRateWeights" % chargeSumSelection
       else:
-        raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
+        raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % self.applyFakeRateWeights)
       self.jobOptions_addFakes[key_addFakes_job] = {
         'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_%s_cfg.py" % \

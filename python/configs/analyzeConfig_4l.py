@@ -268,10 +268,6 @@ class analyzeConfig_4l(analyzeConfig):
 
         for chargeSumSelection in self.chargeSumSelections:
 
-          if 'mcClosure' in lepton_selection and chargeSumSelection != 'OS':
-            # Run MC closure only for the region that complements the SR
-            continue
-
           for sample_name, sample_info in self.samples.items():
             if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
               continue
@@ -516,6 +512,7 @@ class analyzeConfig_4l(analyzeConfig):
           # input processes: TT3l0g1j, TT2l1g1j, TT1l2g1j, TT0l3g1j, TT0l2g2j,...
           # output process: fakes_mc
           key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, chargeSumSelection, "fakes")
+          key_hadd_stage1_5 = getKey(lepton_selection_and_frWeight, chargeSumSelection)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])

@@ -124,7 +124,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
         key_analyze_job = getKey(process_name, jobId)
         ntupleFiles = inputFileList[jobId]
         if len(ntupleFiles) == 0:
-          print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_file, ntupleFiles)
+          logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
           continue
 
         cfg_key = getKey(self.channel, process_name, jobId)

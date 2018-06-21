@@ -585,6 +585,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
         # input processes: TT1l0g1j, TT0l1g1j, TT0l0g2j; ...
         # output process: fakes_mc
         key_addBackgrounds_job_fakes = getKey(lepton_and_hadTau_selection_and_frWeight, "fakes")
+        key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight)
         sample_categories = []
         sample_categories.extend(self.nonfake_backgrounds)
         sample_categories.extend([ "signal" ])
@@ -665,7 +666,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     elif self.applyFakeRateWeights == "1tau":
       category_sideband = "2los_1tau_Fakeable_wFakeRateWeights"
     else:
-      raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
+      raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % self.applyFakeRateWeights)
     self.jobOptions_addFakes[key_addFakes_job] = {
       'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
       'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_cfg.py" % self.channel),
@@ -730,8 +731,8 @@ class analyzeConfig_2los_1tau(analyzeConfig):
         if lepton_and_hadTau_mcClosure not in self.lepton_and_hadTau_selections:
           continue
         lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_mcClosure, "enabled")
-        key_addBackgrounds_job_fakes = getKey(lepton_and_hadTau_selection_and_frWeight, 'SS', chargeSumSelection, "fakes")
-        histogramDir_mcClosure = histogramDir_nominal.replace("_Tight", "_Fakeable_mcClosure_%s_wFakeRateWeights" % lepton_type)
+        key_addBackgrounds_job_fakes = getKey(lepton_and_hadTau_selection_and_frWeight, "fakes")
+        histogramDir_mcClosure = histogramDir_nominal.replace("_Tight", "_Fakeable_mcClosure_%s_wFakeRateWeights" % lepton_and_hadTau_type)
         self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job].update({
           'add_Clos_%s' % lepton_and_hadTau_type : ("Fakeable_mcClosure_%s" % lepton_and_hadTau_type) in self.lepton_and_hadTau_selections,
           'inputFile_nominal_%s' % lepton_and_hadTau_type : self.outputFile_hadd_stage2[key_hadd_stage2],
