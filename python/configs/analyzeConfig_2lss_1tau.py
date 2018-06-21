@@ -234,18 +234,18 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     jobOptions['hadTauFakeRateWeight.lead.fitFunctionName'] = 'jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt' % self.hadTau_selection_part2
     if 'mcClosure' in lepton_and_hadTau_selection:
       jobOptions['hadTauFakeRateWeight.applyGraph_lead'] = True
-      jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = False
       jobOptions['hadTauFakeRateWeight.applyGraph_sublead'] = True
+      jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = False
       jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = False
       if self.applyFakeRateWeights not in [ "3L", "1tau" ] and not self.isBDTtraining:
-        # We want to preserve the same logic when running in SR and applying the FF method to only leptons [*]
+        # We want to preserve the same logic as running in SR and applying the FF method only to leptons [*]
         jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = True
         jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = True
     if jobOptions['hadTauSelection'].find("Tight") != -1 and self.applyFakeRateWeights not in [ "3L", "1tau" ] and not self.isBDTtraining:
-      # [*] SR and applying the FF method to only leptons
+      # [*] SR and applying the FF method only to leptons
       jobOptions['hadTauFakeRateWeight.applyGraph_lead'] = False # FR in MC for the leading tau
-      jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = True # data-to-MC SF for the leading tau
       jobOptions['hadTauFakeRateWeight.applyGraph_sublead'] = False
+      jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = True # data-to-MC SF for the leading tau
       jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = True
       jobOptions['apply_hadTauFakeRateSF'] = True
 
@@ -402,7 +402,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         hadTau_selection = "Tight"
         hadTau_selection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
       elif lepton_and_hadTau_selection == "Fakeable_mcClosure_t":
-        electron_selection = "Fakeable"
+        electron_selection = "Tight"
         muon_selection = "Tight"
         hadTau_selection = "Fakeable"
         hadTau_selection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])

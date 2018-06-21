@@ -98,6 +98,11 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.hadTau_selection_part2 = hadTau_selection
     self.hadTau_charge_selections = hadTau_charge_selections
     self.applyFakeRateWeights = applyFakeRateWeights
+    run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
+    if run_mcClosure:
+      # Run MC closure jobs only if the analysis is run w/ (at least some) systematic uncertainties
+      #self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_all" ]) #TODO
+      pass
 
     self.hadTau_genMatches = [ "2t0e0m0j", "1t1e0m0j", "1t0e1m0j", "1t0e0m1j", "0t2e0m0j", "0t1e1m0j", "0t1e0m1j", "0t0e2m0j", "0t0e1m1j", "0t0e0m2j" ]
 
@@ -112,6 +117,8 @@ class analyzeConfig_0l_2tau(analyzeConfig):
           self.hadTau_genMatches_nonfakes.append(hadTau_genMatch)
         else:
           self.hadTau_genMatches_fakes.append(hadTau_genMatch)
+      if run_mcClosure:
+        self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_t" ])
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
 
@@ -132,7 +139,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.select_rle_output = select_rle_output
     self.hlt_filter = hlt_filter
 
-  def createCfg_analyze(self, jobOptions, sample_info):
+  def createCfg_analyze(self, jobOptions, sample_info, hadTau_selection):
     """Create python configuration file for the analyze_0l_2tau executable (analysis code)
 
     Args:
@@ -145,7 +152,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     """
     hadTau_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
     jobOptions['histogramDir'] = getHistogramDir(
-      jobOptions['hadTauSelection'], hadTau_frWeight, jobOptions['hadTauChargeSelection']
+      hadTau_selection, hadTau_frWeight, jobOptions['hadTauChargeSelection']
     )
 
     jobOptions['hadTauFakeRateWeight.inputFileName'] = self.hadTauFakeRateWeight_inputFile
@@ -155,20 +162,27 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     fitFunctionName = 'jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt' % self.hadTau_selection_part2
     jobOptions['hadTauFakeRateWeight.lead.fitFunctionName'] = fitFunctionName
     jobOptions['hadTauFakeRateWeight.sublead.fitFunctionName'] = fitFunctionName
-    if jobOptions['hadTauSelection'].find("mcClosure") != -1:
+    if "mcClosure" in hadTau_selection:
+      jobOptions['hadTauFakeRateWeight.applyGraph_lead'] = True
+      jobOptions['hadTauFakeRateWeight.applyGraph_sublead'] = True
       jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = False
       jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = False
+      if self.applyFakeRateWeights not in [ "2tau" ] and not self.isBDTtraining:
+        # We want to preserve the same logic as running in SR [*]
+        jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = True
+        jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = True
     if jobOptions['hadTauSelection'].find("Tight") != -1 and self.applyFakeRateWeights not in [ "2tau" ] and not self.isBDTtraining:
-      jobOptions['hadTauFakeRateWeight.applyGraph_lead'] = False
-      jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = True
+      # [*] SR and applying the FF method to both taus
+      jobOptions['hadTauFakeRateWeight.applyGraph_lead'] = False # FR in MC for the leading tau
       jobOptions['hadTauFakeRateWeight.applyGraph_sublead'] = False
+      jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = True # data-to-MC SF for the leading tau
       jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = True
       jobOptions['apply_hadTauFakeRateSF'] = True
 
     lines = super(analyzeConfig_0l_2tau, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
-  def createCfg_makePlots_mcClosure(self, jobOptions):
+  def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
     """Fills the template of python configuration file for making control plots
 
     Args:
@@ -223,7 +237,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
-    ##print "self.dirs = ", self.dirs
 
     for key in self.dirs.keys():
       if type(self.dirs[key]) == dict:
@@ -284,7 +297,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                 key_analyze_job = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift, jobId)
                 ntupleFiles = inputFileList[jobId]
                 if len(ntupleFiles) == 0:
-                  print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_file, ntupleFiles)
+                  logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
                   continue
 
                 cfg_key = getKey(
@@ -313,7 +326,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'central_or_shift'         : central_or_shift,
                   'apply_hlt_filter'         : self.hlt_filter,
                 }
-                self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
+                self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, hadTau_selection)
 
                 # initialize input and output file names for hadd_stage1
                 key_hadd_stage1 = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
@@ -489,7 +502,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         'label' : None
       }
       self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
-      
+
       if "SS" in self.hadTau_charge_selections:
         key_prep_dcard_job = getKey(histogramToFit, "SS")
         key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")
@@ -502,7 +515,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
           'label' : 'SS'
         }
         self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
-        
+
       # add shape templates for the following systematic uncertainties:
       #  - 'CMS_ttHl_Clos_norm_t'
       #  - 'CMS_ttHl_Clos_shape_t'
@@ -567,7 +580,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         'make_plots_backgrounds' : self.make_plots_backgrounds
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
-    if "Fakeable_mcClosure" in self.hadTau_selections:
+    if "Fakeable_mcClosure" in self.hadTau_selections: #TODO
       key_makePlots_job = getKey("OS")
       key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
       self.jobOptions_make_plots[key_makePlots_job] = {
