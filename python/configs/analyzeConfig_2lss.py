@@ -1,4 +1,5 @@
 import logging
+import re
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
@@ -97,12 +98,16 @@ class analyzeConfig_2lss(analyzeConfig):
     self.samples = samples
     self.MEMbranch = MEMbranch
 
-    ##self.lepton_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ]
     self.lepton_selections = [ "Tight", "Fakeable" ]
     self.lepton_frWeights = [ "enabled", "disabled" ]
     self.lepton_charge_selections = lepton_charge_selections
     self.hadTauVeto_selection_part2 = hadTauVeto_selection
     self.applyFakeRateWeights = applyFakeRateWeights
+    run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
+    if run_mcClosure:
+      # Run MC closure jobs only if the analysis is run w/ (at least some) systematic uncertainties
+      # self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_all" ]) #TODO
+      pass
 
     self.lepton_genMatches = [ "2l0g0j", "1l1g0j", "1l0g1j", "0l2g0j", "0l1g1j", "0l0g2j" ]
 
@@ -119,6 +124,8 @@ class analyzeConfig_2lss(analyzeConfig):
           self.lepton_genMatches_conversions.append(lepton_genMatch)
         else:
           self.lepton_genMatches_fakes.append(lepton_genMatch)
+      if run_mcClosure:
+        self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_e", "Fakeable_mcClosure_m" ])
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
 
@@ -139,7 +146,7 @@ class analyzeConfig_2lss(analyzeConfig):
     self.histogramDir_prep_dcard = "2lss_SS_Tight"
     self.histogramDir_prep_dcard_OS = "2lss_OS_Tight"
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_2lss_cfg.py")
-    self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_2lss_cfg.py")
+    self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_2lss_cfg.py") #TODO
 
     self.select_rle_output = select_rle_output
     self.rle_select = rle_select
@@ -156,7 +163,7 @@ class analyzeConfig_2lss(analyzeConfig):
     self.lepton_frWeights  = [ "disabled" ]
     self.isBDTtraining     = True
 
-  def createCfg_analyze(self, jobOptions, sample_info):
+  def createCfg_analyze(self, jobOptions, sample_info, lepton_selection):
     """Create python configuration file for the analyze_2lss executable (analysis code)
 
        Args:
@@ -168,9 +175,9 @@ class analyzeConfig_2lss(analyzeConfig):
          central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_2lss.cc
     """
     lepton_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
-    jobOptions['histogramDir'] = getHistogramDir(jobOptions['leptonSelection'], lepton_frWeight, jobOptions['leptonChargeSelection'])
+    jobOptions['histogramDir'] = getHistogramDir(lepton_selection, lepton_frWeight, jobOptions['leptonChargeSelection'])
 
-    self.set_leptonFakeRateWeightHistogramNames(jobOptions['central_or_shift'])
+    self.set_leptonFakeRateWeightHistogramNames(jobOptions['central_or_shift'], lepton_selection)
     jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
     jobOptions['leptonFakeRateWeight.histogramName_e'] = self.leptonFakeRateWeight_histogramName_e
     jobOptions['leptonFakeRateWeight.histogramName_mu'] = self.leptonFakeRateWeight_histogramName_mu
@@ -201,7 +208,7 @@ class analyzeConfig_2lss(analyzeConfig):
     lines.append("process.addBackgroundLeptonFlips.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
     create_cfg(self.cfgFile_addFlips, jobOptions['cfgFile_modified'], lines)
 
-  def createCfg_makePlots_mcClosure(self, jobOptions):
+  def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
     """Fills the template of python configuration file for making control plots
 
        Args:
@@ -296,12 +303,23 @@ class analyzeConfig_2lss(analyzeConfig):
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
       inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job)
 
+    mcClosure_regex = re.compile('Fakeable_mcClosure_(?P<type>m|e)_wFakeRateWeights')
     for lepton_selection in self.lepton_selections:
+      electron_selection = lepton_selection
+      muon_selection = lepton_selection
+
       hadTauVeto_selection = "Tight"
       hadTauVeto_selection = "|".join([ hadTauVeto_selection, self.hadTauVeto_selection_part2 ])
 
       if lepton_selection == "forBDTtraining":
-        lepton_selection = "Loose" # "Tight" ## "Fakeable" ## Xanda FIX that
+        electron_selection = "Loose"
+        muon_selection = "Loose"
+      elif lepton_selection == "Fakeable_mcClosure_e":
+        electron_selection = "Fakeable"
+        muon_selection = "Tight"
+      elif lepton_selection == "Fakeable_mcClosure_m":
+        electron_selection = "Tight"
+        muon_selection = "Fakeable"
 
       if self.isBDTtraining : lepton_selection = "forBDTtraining" ## Xanda FIX that
       for lepton_frWeight in self.lepton_frWeights:
@@ -312,6 +330,10 @@ class analyzeConfig_2lss(analyzeConfig):
         lepton_selection_and_frWeight = get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight)
 
         for lepton_charge_selection in self.lepton_charge_selections:
+
+          if 'mcClosure' in lepton_selection and lepton_charge_selection != 'SS':
+            # Run MC closure only for the region that complements the SR
+            continue
 
           for sample_name, sample_info in self.samples.items():
             if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
@@ -342,6 +364,8 @@ class analyzeConfig_2lss(analyzeConfig):
                 if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
                   continue
 
+                logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (lepton_selection_and_frWeight, central_or_shift))
+
                 # build config files for executing analysis code
                 key_dir = getKey(process_name, lepton_selection_and_frWeight, lepton_charge_selection)
                 key_analyze_job = getKey(process_name, lepton_selection_and_frWeight, lepton_charge_selection, central_or_shift, jobId)
@@ -354,6 +378,7 @@ class analyzeConfig_2lss(analyzeConfig):
                 syncTree = ''
                 syncRequireGenMatching = False
                 if self.do_sync:
+                  mcClosure_match = mcClosure_regex.match(lepton_selection_and_frWeight)
                   if lepton_selection_and_frWeight == 'Tight':
                     if lepton_charge_selection == 'SS':
                       syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift))
@@ -367,6 +392,10 @@ class analyzeConfig_2lss(analyzeConfig):
                   elif lepton_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and lepton_charge_selection == 'SS':
                     syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '').replace('ss', 'SS')
+                  elif mcClosure_match and lepton_charge_selection == 'SS':
+                    mcClosure_type = mcClosure_match.group('type')
+                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_mcClosure_%s.root' % (self.channel, central_or_shift, mcClosure_type))
+                    syncTree = 'syncTree_%s_mcClosure_%s' % (self.channel.replace('_', '').replace('ss', 'SS'), mcClosure_type)
                   else:
                     continue
 
@@ -399,7 +428,8 @@ class analyzeConfig_2lss(analyzeConfig):
                   'histogramFile'            : histogramFile_path,
                   'logFile'                  : logFile_path,
                   'selEventsFileName_output' : rleOutputFile_path,
-                  'leptonSelection'          : lepton_selection,
+                  'electronSelection'        : electron_selection,
+                  'muonSelection'            : muon_selection,
                   'apply_leptonGenMatching'  : self.apply_leptonGenMatching,
                   'leptonChargeSelection'    : lepton_charge_selection,
                   'hadTauSelection'          : hadTauVeto_selection,
@@ -415,7 +445,7 @@ class analyzeConfig_2lss(analyzeConfig):
                   'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,
                 }
-                self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
+                self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)
 
                 # initialize input and output file names for hadd_stage1
                 key_hadd_stage1 = getKey(process_name, lepton_selection_and_frWeight, lepton_charge_selection)
@@ -753,7 +783,7 @@ class analyzeConfig_2lss(analyzeConfig):
           'make_plots_backgrounds' : make_plots_backgrounds
         }
         self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
-      if "Fakeable_mcClosure" in self.lepton_selections:
+      if "Fakeable_mcClosure" in self.lepton_selections: #TODO
         key_makePlots_job = getKey("SS")
         key_hadd_stage2 = getKey(get_lepton_selection_and_frWeight("Tight", "disabled"), "SS")
         self.jobOptions_make_plots[key_makePlots_job] = {
