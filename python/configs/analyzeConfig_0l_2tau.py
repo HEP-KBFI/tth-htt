@@ -83,7 +83,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       running_method     = running_method,
       num_parallel_jobs  = num_parallel_jobs,
       histograms_to_fit  = histograms_to_fit,
-      triggers           = [ '2tau' ],
+      triggers           = [ '2tau', ],
       verbose            = verbose,
       dry_run            = dry_run,
       isDebug            = isDebug,
@@ -121,7 +121,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
     ##self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
-    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "fakes_data" ]
+    self.make_plots_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "fakes_data" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.histogramDir_prep_dcard = "0l_2tau_OS_Tight"
@@ -131,6 +131,14 @@ class analyzeConfig_0l_2tau(analyzeConfig):
 
     self.select_rle_output = select_rle_output
     self.hlt_filter = hlt_filter
+
+  def set_BDT_training(self, hadTau_selection_relaxed):
+    """Run analysis with loose selection criteria for hadronic taus,
+       for the purpose of preparing event list files for BDT training.
+    """
+    self.hadTau_selections = [ "forBDTtraining" ]
+    self.hadTau_frWeights  = [ "disabled" ]
+    super(analyzeConfig_0l_2tau, self).set_BDT_training(hadTau_selection_relaxed)
 
   def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_0l_2tau executable (analysis code)
@@ -187,12 +195,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     lines.append("  )")
     lines.append(")")
     create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
-
-  def addToMakefile_backgrounds_from_data(self, lines_makefile):
-    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds", self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
-    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_sum", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
-    self.addToMakefile_hadd_stage1_5(lines_makefile)
-    self.addToMakefile_addFakes(lines_makefile)
 
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
@@ -265,7 +267,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
               for jobId in inputFileList.keys():
                 if central_or_shift != "central":
                   isFR_shape_shift = (central_or_shift in systematics.FakeRate_t().jt)
-
                   if not ((hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
                           (hadTau_selection == "Tight"    and hadTau_charge_selection == "OS")):
                     continue
@@ -288,16 +289,21 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   continue
 
                 cfg_key = getKey(
-                  self.channel, process_name, hadTau_selection_and_frWeight, hadTau_charge_selection,
-                  central_or_shift, jobId
+                  self.channel, process_name, hadTau_selection_and_frWeight,
+                  hadTau_charge_selection, central_or_shift, jobId
                 )
                 cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
                 logFile_path = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s.log" % cfg_key)
                 rleOutputFile_path = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s.txt" % cfg_key) \
                                      if self.select_rle_output else ""
                 histogramFile_path = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s.root" % key_analyze_job)
-                applyFakeRateWeights = "disabled" if hadTau_selection.find("Tight") != -1 else self.applyFakeRateWeights
-                hadTauSelection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
+                applyFakeRateWeights = self.applyFakeRateWeights \
+                  if self.isBDTtraining or hadTau_selection.find("Tight") == -1 \
+                  else "disabled"
+                if hadTau_selection == "forBDTtraining":
+                  hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
+                else:
+                  hadTauSelection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
 
                 self.jobOptions_analyze[key_analyze_job] = {
                   'ntupleFiles'              : ntupleFiles,
@@ -311,7 +317,9 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'hadTauChargeSelection'    : hadTau_charge_selection,
                   'applyFakeRateWeights'     : applyFakeRateWeights,
                   'central_or_shift'         : central_or_shift,
+                  'selectBDT'                : self.isBDTtraining,
                   'apply_hlt_filter'         : self.hlt_filter,
+                  'fillGenEvtHistograms'     : True,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
@@ -322,6 +330,9 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                 self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
                 self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s_%s.root" % \
                     (self.channel, process_name, hadTau_selection_and_frWeight, hadTau_charge_selection))
+
+            if self.isBDTtraining or self.do_sync:
+              continue
 
             if is_mc:
               logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
@@ -409,6 +420,9 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5_%s_%s_%s.root" % \
                     (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection))
 
+            if self.isBDTtraining or self.do_sync:
+              continue
+
             # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
             if not is_mc:
               key_hadd_stage1 = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
@@ -451,6 +465,23 @@ class analyzeConfig_0l_2tau(analyzeConfig):
           self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
           self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s_%s.root" % \
             (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection))
+
+    if self.isBDTtraining:
+      if self.is_sbatch:
+        logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
+        self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
+        if self.isBDTtraining:
+          self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+      logging.info("Creating Makefile")
+      lines_makefile = []
+      if self.isBDTtraining:
+        self.addToMakefile_analyze(lines_makefile)
+        self.addToMakefile_hadd_stage1(lines_makefile)
+      else:
+        raise ValueError("Internal logic error")
+      self.createMakefile(lines_makefile)
+      logging.info("Done")
+      return self.num_jobs
 
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
     for hadTau_charge_selection in self.hadTau_charge_selections:
