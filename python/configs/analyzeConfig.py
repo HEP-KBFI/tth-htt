@@ -129,7 +129,7 @@ class analyzeConfig(object):
         self.histograms_to_fit = histograms_to_fit
         self.executable_prep_dcard = executable_prep_dcard
         self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
-        self.prep_dcard_signals = [ "signal", "ttH", "ttH_hZg", "ttH_hmm", "ttH_hww", "ttH_hzz", "ttH_htt", "ttH_fake" ]
+        self.prep_dcard_signals = [ "signal", "ttH", "ttH_hzg", "ttH_hmm", "ttH_hww", "ttH_hzz", "ttH_htt", "ttH_fake" ]
         self.executable_add_syst_dcard = executable_add_syst_dcard
         self.executable_add_syst_fakerate = executable_add_syst_fakerate
         self.executable_make_plots = executable_make_plots
