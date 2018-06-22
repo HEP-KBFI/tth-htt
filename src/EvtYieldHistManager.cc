@@ -154,7 +154,7 @@ EvtYieldHistManager::EvtYieldHistManager(const edm::ParameterSet & cfg)
   , histogram_luminosity_(nullptr)
   , histogram_rnd_(nullptr)
 {
-  const edm::ParameterSet cfg_runPeriods = cfg.getParameterSet("runPeriods");
+  const edm::ParameterSet cfg_runPeriods = cfg.getParameter<edm::ParameterSet>("runPeriods");
   const std::vector<std::string> runPeriodNames = cfg_runPeriods.getParameterNames();
   for(const std::string & runPeriodName: runPeriodNames)
   {
