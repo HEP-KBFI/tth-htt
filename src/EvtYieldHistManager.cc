@@ -80,6 +80,9 @@ namespace evtYieldHistManager
 
 EvtYieldHistManager::EvtYieldHistManager(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
+  , isMC_(cfg.getParameter<bool>("isMC"))
+  , histogram_evtYield_(nullptr)
+  , histogram_luminosity_(nullptr)
 {
   const edm::ParameterSet cfg_runPeriods = cfg.getParameterSet("runPeriods");
   const std::vector<std::string> runPeriodNames = cfg_runPeriods.getParameterNames();
@@ -93,7 +96,6 @@ EvtYieldHistManager::EvtYieldHistManager(const edm::ParameterSet & cfg)
   {
     throw cmsException(this) << "Invalid Configuration parameter 'runPeriods' !!\n";
   }
-  isMC_ = cfg.getParameter<bool>("isMC");
 }
 
 void
@@ -126,13 +128,16 @@ EvtYieldHistManager:: fillHistograms(const EventInfo & eventInfo,
                                      double evtWeight)
 {
   int idxBin_run = -1;
-  if ( isMC_ ) {
-    while ( !(idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX()) ) {
-      double run_mc = histogram_luminosity_->GetRandom();
-      //std::cout << "run_mc = " << run_mc << std::endl;
+  if(isMC_)
+  {
+    while(! (idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX()))
+    {
+      const double run_mc = histogram_luminosity_->GetRandom();
       idxBin_run = histogram_luminosity_->FindBin(run_mc);
     }
-  } else {
+  }
+  else
+  {
     idxBin_run = histogram_luminosity_->FindBin(eventInfo.run);
     if(! (idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX()))
     {
@@ -140,8 +145,7 @@ EvtYieldHistManager:: fillHistograms(const EventInfo & eventInfo,
     }
   }
   assert(idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX());
-  //std::cout << "runPeriod = " << histogram_luminosity_->GetXaxis()->GetBinLabel(idxBin_run) << std::endl;
-  double luminosity = histogram_luminosity_->GetBinContent(idxBin_run);
+  const double luminosity = histogram_luminosity_->GetBinContent(idxBin_run);
   assert(luminosity > 0.);
-  histogram_evtYield_->Fill(eventInfo.run, evtWeight/luminosity);
+  histogram_evtYield_->Fill(eventInfo.run, evtWeight / luminosity);
 }
