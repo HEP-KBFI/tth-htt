@@ -155,6 +155,16 @@ printCollection<RecoLepton>(const std::string & collection_name,
   }
 }
 
+bool
+all_same_flavor(const std::vector<const RecoLepton *> & leptons,
+                bool is_electron)
+{
+  return std::all_of(leptons.cbegin(), leptons.cend(), [is_electron](const RecoLepton * lepton) -> bool
+  {
+    return is_electron ? lepton->is_electron() : lepton->is_muon();
+  });
+}
+
 int
 nCombinationsK(int n,
                int k)

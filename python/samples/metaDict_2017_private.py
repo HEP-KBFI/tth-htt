@@ -14,7 +14,7 @@ sum_events = {
 
 meta_dictionary["/THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] =  OD([
   ("crab_string",           "NanoProduction_v2_2018May23_THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17__private"),
-  ("sample_category",       "tH"),
+  ("sample_category",       "tHq"),
   ("process_name_specific", "THQ"),
   ("nof_db_events",         124500),
   ("nof_db_files",          9),
@@ -27,7 +27,7 @@ meta_dictionary["/THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"
 
 meta_dictionary["/THW_5f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] =  OD([
   ("crab_string",           "NanoProduction_v2_2018May23_THW_5f_Hincl_13TeV_madgraph_pythia8_Fall17__private"),
-  ("sample_category",       "tH"),
+  ("sample_category",       "tHW"),
   ("process_name_specific", "THW"),
   ("nof_db_events",         50000),
   ("nof_db_files",          4),

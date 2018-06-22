@@ -187,8 +187,12 @@ RunLumiEventSelector::operator()(ULong_t run,
                  "run# = " << run << ", ls# " << ls << ", event# " << event << '\n';
 
     ++matchedRunLumiSectionEventNumbers_[run][ls][event];
-    ++numEventsSelected_;
-    return true;
+    if ( matchedRunLumiSectionEventNumbers_[run][ls][event] == 1 ) { // CV: select only first match
+      ++numEventsSelected_;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   return false;

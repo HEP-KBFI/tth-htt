@@ -80,6 +80,7 @@ process.analyze_3l = cms.PSet(
     cfgMEtFilter = recommendedMEtFilters,
 
     fillGenEvtHistograms = cms.bool(False),
+    cfgEvtYieldHistManager = EvtYieldHistManager_2017,
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),

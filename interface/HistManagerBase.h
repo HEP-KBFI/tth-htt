@@ -42,6 +42,13 @@ protected:
          int numBins,
          float * binning);
 
+  TH1 *
+  book1D(TFileDirectory & dir,
+         const std::string & distribution,
+         const std::string & title,
+         int numBins,
+         double * binning);
+
   TH2 *
   book2D(TFileDirectory & dir,
          const std::string & distribution,
@@ -61,6 +68,15 @@ protected:
          float * binningX,
          int numBinsY,
          float * binningY);
+
+  TH2 *
+  book2D(TFileDirectory & dir,
+         const std::string & distribution,
+         const std::string & title,
+         int numBinsX,
+         double * binningX,
+         int numBinsY,
+         double * binningY);
 
   TDirectory *
   createHistogramSubdirectory(TFileDirectory & dir);

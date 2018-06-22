@@ -1999,7 +1999,7 @@ samples_2017["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
 
 samples_2017["/THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "tH"),
+  ("sample_category",                 "tHq"),
   ("process_name_specific",           "THQ"),
   ("nof_files",                       1),
   ("nof_db_files",                    9),
@@ -2032,7 +2032,7 @@ samples_2017["/THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] =
 
 samples_2017["/THW_5f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "tH"),
+  ("sample_category",                 "tHW"),
   ("process_name_specific",           "THW"),
   ("nof_files",                       1),
   ("nof_db_files",                    4),

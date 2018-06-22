@@ -106,7 +106,10 @@ elif mode.startswith("sync"):
     if use_preselected:
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected_sync import samples_2017
     else:
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+      if use_nonnominal:
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+      else:
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017
   else:
     raise ValueError("Internal logic error")
   hadTau_selection     = "dR03mvaLoose"
