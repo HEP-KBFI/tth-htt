@@ -30,6 +30,7 @@ process.prepareDatacards = cms.PSet(
         "ttH_hzz",
         "ttH_htt",
         "ttH_hZg",
+        "ttH_hmm",
     ),
 
     categories = cms.VPSet(
