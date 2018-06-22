@@ -334,5 +334,6 @@ operator<<(std::ostream & stream,
   {
     stream << ": " << *(lepton.genJet());
   }
+  stream << '\n';
   return stream;
 }

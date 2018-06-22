@@ -59,6 +59,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterHistManager.h" // MEtFilterHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_jetToTauFakeRate.h" // EvtHistManager_jetToTauFakeRate
+#include "tthAnalysis/HiggsToTauTau/interface/EvtYieldHistManager.h" // EvtYieldHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin
@@ -335,7 +336,7 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'absEtaBins' !!\n";
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
-  bool isMC_tH = ( process_string == "tH" ) ? true : false;
+  bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
@@ -570,6 +571,9 @@ int main(int argc, char* argv[])
   EvtHistManager_jetToTauFakeRate selEvtHistManager(makeHistManager_cfg(process_string, 
     Form("jetToTauFakeRate_%s/evt", chargeSelection_string.data()), central_or_shift));
   selEvtHistManager.bookHistograms(fs);
+  EvtYieldHistManager selEvtYieldHistManager(makeHistManager_cfg(process_string, 
+    Form("jetToTauFakeRate_%s/evtYield", chargeSelection_string.data()), central_or_shift));
+  selEvtYieldHistManager.bookHistograms(fs);
 
   GenEvtHistManager* genEvtHistManager_beforeCuts = 0;
   GenEvtHistManager* genEvtHistManager_afterCuts = 0;
@@ -942,6 +946,7 @@ int main(int argc, char* argv[])
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
       mLL, mT_e, mT_mu, 
       evtWeight);
+    selEvtYieldHistManager.fillHistograms(eventInfo, evtWeight);
 
 //--- iterate over jets
     for ( std::vector<const RecoJet*>::const_iterator cleanedJet = cleanedJets.begin();

@@ -143,7 +143,7 @@ main(int argc,
   const std::string central_or_shift        = cfg_analyze.getParameter<std::string>("central_or_shift");
 
   const bool isMC               = cfg_analyze.getParameter<bool>("isMC");
-  const bool isMC_tH            = process_string == "tH";
+  const bool isMC_tH            = process_string == "tHq" || process_string == "tHW";
   const bool useNonNominal      = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 

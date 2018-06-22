@@ -12,8 +12,8 @@ double
 getWeight_2L(double prob_fake_lead,    bool passesTight_lead,
              double prob_fake_sublead, bool passesTight_sublead)
 {
-  const double p1 = prob_fake_lead   / (1. - prob_fake_lead);
-  const double p2 = prob_fake_sublead/ (1. - prob_fake_sublead);
+  const double p1 = prob_fake_lead    / (1. - prob_fake_lead);
+  const double p2 = prob_fake_sublead / (1. - prob_fake_sublead);
   double weight = 1.;
   if     (! passesTight_lead &&   passesTight_sublead) weight =  p1;
   else if(  passesTight_lead && ! passesTight_sublead) weight =  p2;
