@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
           if ( the_process_input.find("ttH_htt") != std::string::npos ||
                the_process_input.find("ttH_hww") != std::string::npos ||
                the_process_input.find("ttH_hzz") != std::string::npos ||
-               the_process_input.find("ttH_hZg") != std::string::npos ||
+               the_process_input.find("ttH_hzg") != std::string::npos ||
                the_process_input.find("ttH_hmm") != std::string::npos  ) {
             continue;
           } 

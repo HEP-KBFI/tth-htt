@@ -153,7 +153,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     Args:
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
-      process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, 'ttH_hZg', 'ttH_hmm', `ttH_hzz` or `ttH_htt`
+      process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, 'ttH_hzg', 'ttH_hmm', `ttH_hzz` or `ttH_htt`
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_0l_2tau.cc
@@ -352,7 +352,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
 
               sample_categories = [ sample_category ]
               if is_signal:
-                sample_categories = [ "signal", "ttH", "ttH_htt", "ttH_hww", "ttH_hzz", "ttH_hmm", "ttH_hZg" ]
+                sample_categories = [ "signal", "ttH", "ttH_htt", "ttH_hww", "ttH_hzz", "ttH_hmm", "ttH_hzg" ]
               for sample_category in sample_categories:
                 # sum non-fake contributions for each MC sample separately
                 # input processes: TT2t0e0m0j, TT1t1e0m0j, TT1t0e1m0j", TT0t2e0m0j, TT0t1e1m0j, TT0t0e2m0j; TTW2t0e0m0j,...
@@ -370,7 +370,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
                   processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
                   processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
-                  processes_input.extend([ "%s%s" % ("ttH_hZg", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
+                  processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
                   processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
                 else:
                   processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_nonfakes ]
@@ -410,7 +410,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
                   processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
                   processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
-                  processes_input.extend([ "%s%s" % ("ttH_hZg", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
+                  processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
                   processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
                 else:
                   processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_fakes ]

@@ -29,7 +29,7 @@ process.prepareDatacards = cms.PSet(
         "ttH_hww",
         "ttH_hzz",
         "ttH_htt",
-        "ttH_hZg",
+        "ttH_hzg",
         "ttH_hmm",
     ),
 
