@@ -5,7 +5,7 @@
  *
  * Book and fill histograms for event yield per unit of luminosity
  *
- * \author Christian Veelken, Tallin
+ * \author Christian Veelken, Tallinn
  *
  */
 
@@ -29,7 +29,7 @@ namespace evtYieldHistManager
 
   private:
     std::string name_;
-    Long64_t firstRun_; // use return value of TString::Atoll() function for firstRun and lastRun data-members 
+    Long64_t firstRun_;
     Long64_t lastRun_;
     double luminosity_;
   };
@@ -54,6 +54,7 @@ class EvtYieldHistManager
 
  private:
   std::vector<evtYieldHistManager::RunPeriod> runPeriods_;
+  bool isMC_;
 
   TH1 * histogram_evtYield_;
   TH1 * histogram_luminosity_;
