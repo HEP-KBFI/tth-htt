@@ -440,10 +440,10 @@ int main(int argc, char* argv[])
   GenParticleReader* genQuarkFromTopReader = new GenParticleReader(branchName_genQuarkFromTop);
 
   if ( isMC ) {
-	  inputTree -> registerReader(genTopQuarkReader);
-	  inputTree -> registerReader(genBJetReader);
-	  inputTree -> registerReader(genWBosonReader);
-	  inputTree -> registerReader(genWJetReader);
+    inputTree -> registerReader(genTopQuarkReader);
+    inputTree -> registerReader(genBJetReader);
+    inputTree -> registerReader(genWBosonReader);
+    inputTree -> registerReader(genWJetReader);
     inputTree -> registerReader(genQuarkFromTopReader);
   }
 
@@ -821,7 +821,7 @@ int main(int argc, char* argv[])
     );
     bdt_filler -> bookTree(fs);
   }
-  std::cout << "register variable" << std::endl;
+  
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
@@ -925,6 +925,19 @@ int main(int argc, char* argv[])
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
     }
 
+    std::vector<GenParticle> genTopQuarks;
+    std::vector<GenParticle> genBJets;
+    std::vector<GenParticle> genWBosons;
+    std::vector<GenParticle> genWJets;
+    std::vector<GenParticle> genQuarkFromTop;
+    if ( isMC ) {
+      genTopQuarks = genTopQuarkReader->read();
+      genBJets = genBJetReader->read();
+      genWBosons = genWBosonReader->read();
+      genWJets = genWJetReader->read();
+      genQuarkFromTop = genQuarkFromTopReader->read();
+    }
+
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
     //std::cout << "isTriggered_1e = " << isTriggered_1e << std::endl;
     bool isTriggered_1e1tau = hltPaths_isTriggered(triggers_1e1tau, isDEBUG);
@@ -938,22 +951,6 @@ int main(int argc, char* argv[])
     bool selTrigger_1e1tau = use_triggers_1e1tau && isTriggered_1e1tau;
     bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
     bool selTrigger_1mu1tau = use_triggers_1mu1tau && isTriggered_1mu1tau;
-
-    //--- build collections of generator level particles
-    //std::cout << "built gen variable" << std::endl;
-    std::vector<GenParticle> genTopQuarks;
-    std::vector<GenParticle> genBJets;
-    std::vector<GenParticle> genWBosons;
-    std::vector<GenParticle> genWJets;
-    std::vector<GenParticle> genQuarkFromTop;
-
-    if ( isMC ) {
-      genTopQuarks = genTopQuarkReader->read();
-      genBJets = genBJetReader->read();
-      genWBosons = genWBosonReader->read();
-      genWJets = genWJetReader->read();
-      genQuarkFromTop = genQuarkFromTopReader->read();
-    }
 
     if ( !(selTrigger_1e || selTrigger_1e1tau || selTrigger_1mu|| selTrigger_1mu1tau) ) {
       if ( run_lumi_eventSelector ) {
@@ -1601,7 +1598,7 @@ int main(int argc, char* argv[])
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {
 	if ( run_lumi_eventSelector ) {
-      std::cout << "event " << eventInfo.str() << " FAILS MEt filters." << std::endl;
+	  std::cout << "event " << eventInfo.str() << " FAILS MEt filters." << std::endl;
 	}
 	continue;
       }
@@ -1614,12 +1611,14 @@ int main(int argc, char* argv[])
     if (( electronSelection == kFakeable || muonSelection == kFakeable || hadTauSelection == kFakeable ) && ! skipSRveto_1e && ! skipSRveto_1m ) {
       if ( tightLeptons.size() >= 1 && tightHadTaus.size() >= 2 )
       {
-        std::cout << "event " << eventInfo.str() << " FAILS overlap w/ the SR: "
-                     "# tight leptons = " << tightLeptons.size() << " >= 1 and "
-                     "# tight taus = " << tightHadTaus.size() << " >= 1\n"
-        ;
-	printCollection("tightLeptons", tightLeptons);
-	printCollection("tightHadTaus", tightHadTaus);
+	if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS overlap w/ the SR: "
+                       "# tight leptons = " << tightLeptons.size() << " >= 1 and "
+                       "# tight taus = " << tightHadTaus.size() << " >= 1\n"
+          ;
+	  printCollection("tightLeptons", tightLeptons);
+  	  printCollection("tightHadTaus", tightHadTaus);
+	}
         continue; // CV: avoid overlap with signal region
       }
       cutFlowTable.update("signal region veto", evtWeight);
