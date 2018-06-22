@@ -67,7 +67,7 @@ process.analyze_1l_2tau = cms.PSet(
             applyGraph = cms.bool(True),
             fitFunctionName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/fitFunction_data_div_mc_hadTaus_pt"),
             applyFitFunction = cms.bool(True),
-        ),
+        )
     ),
 
     isMC = cms.bool(False),
