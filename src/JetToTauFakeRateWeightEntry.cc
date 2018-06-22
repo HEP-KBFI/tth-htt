@@ -123,6 +123,7 @@ JetToTauFakeRateWeightEntry::getWeight(double pt) const
   {
     weight *= fitFunction_->Eval(pt);
   }
+  if ( weight < 0. ) weight = 0.;
   return weight;
 }
 
@@ -134,5 +135,6 @@ JetToTauFakeRateWeightEntry::getSF(double pt) const
   {
     sf *= fitFunction_->Eval(pt);
   }
+  if ( sf < 0. ) sf = 0.;
   return sf;
 }
