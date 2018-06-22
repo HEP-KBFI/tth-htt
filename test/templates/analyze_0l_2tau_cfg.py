@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-from tthAnalysis.HiggsToTauTau.recommendedMEtFilters_cfi import recommendedMEtFilters
+from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import recommendedMEtFilters
 from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_2017_cfi import EvtYieldHistManager_2017
 
 process = cms.PSet()
@@ -52,13 +52,13 @@ process.analyze_0l_2tau = cms.PSet(
     ),
 
     isMC = cms.bool(False),
-    central_or_shift = cms.string('central'),    
+    central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_hlt_filter = cms.bool(False),
     apply_met_filters = cms.bool(True),
     cfgMEtFilter = recommendedMEtFilters,
-    
+
     fillGenEvtHistograms = cms.bool(False),
     cfgEvtYieldHistManager = EvtYieldHistManager_2017,
 
@@ -87,7 +87,7 @@ process.analyze_0l_2tau = cms.PSet(
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
     selectBDT = cms.bool(False),
-    
+
     isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
 )

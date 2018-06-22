@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-from tthAnalysis.HiggsToTauTau.recommendedMEtFilters_cfi import recommendedMEtFilters
+from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import recommendedMEtFilters
 
 process = cms.PSet()
 
