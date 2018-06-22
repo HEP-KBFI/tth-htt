@@ -50,21 +50,24 @@ process.analyze_0l_2tau = cms.PSet(
         )
     ),
 
-    triggerSF_2tau = cms.PSet(),
-
     isMC = cms.bool(False),
-    central_or_shift = cms.string('central'),
+    central_or_shift = cms.string('central'),    
     lumiScale = cms.double(1.),
+    apply_genWeight = cms.bool(True),
     apply_hlt_filter = cms.bool(False),
     apply_met_filters = cms.bool(True),
     cfgMEtFilter = recommendedMEtFilters,
-
+    
     fillGenEvtHistograms = cms.bool(False),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
     branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
+    branchName_jetsHTTv2 = cms.string('HTTV2'),
+    branchName_subjetsHTTv2 = cms.string('HTTV2Subjets'),
+    branchName_jetsAK12 = cms.string('FatJetAK12'),
+    branchName_subjetsAK12 = cms.string('SubJetAK12'),
     branchName_met = cms.string('MET'),
 
     branchName_genLeptons = cms.string('GenLep'),
@@ -82,26 +85,7 @@ process.analyze_0l_2tau = cms.PSet(
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
     selectBDT = cms.bool(False),
+    
     isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
 )
-
-#--------------------------------------------------------------------------------
-# CV: add data/MC corrections for efficiency of DoubleTau trigger
-jsonFileName = os.path.expandvars("$CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/triggerSF/2016/trigger_sf_tt.json")
-jsonFile = open(jsonFileName)
-import json
-jsonData = json.load(jsonFile)
-##print "jsonData:"
-##print jsonData
-for fit, parameters in jsonData.items():
-    ##print "fit = %s:" % fit
-    pset = cms.PSet()
-    for parameterName, parameterValue in parameters.items():
-        ##print " %s = %1.2f" % (parameterName, parameterValue)
-        setattr(pset, parameterName, cms.double(parameterValue))
-    setattr(process.analyze_0l_2tau.triggerSF_2tau, fit, pset)
-#--------------------------------------------------------------------------------
-
-##processDumpFile = open('analyze_0l_2tau.dump', 'w')
-##print >> processDumpFile, process.dumpPython()
