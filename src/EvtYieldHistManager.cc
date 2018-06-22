@@ -93,6 +93,7 @@ EvtYieldHistManager::EvtYieldHistManager(const edm::ParameterSet & cfg)
   {
     throw cmsException(this) << "Invalid Configuration parameter 'runPeriods' !!\n";
   }
+  isMC_ = cfg.getParameter<bool>("isMC");
 }
 
 void
@@ -124,12 +125,23 @@ void
 EvtYieldHistManager:: fillHistograms(const EventInfo & eventInfo,
                                      double evtWeight)
 {
-  const int idxBin_run = histogram_luminosity_->FindBin(eventInfo.run);
-  if(! (idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX()))
-  {
-    throw cmsException(this, __func__, __LINE__) << "No luminosity defined for run = " << eventInfo.run << " !!\n";
+  int idxBin_run = -1;
+  if ( isMC_ ) {
+    while ( !(idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX()) ) {
+      double run_mc = histogram_luminosity_->GetRandom();
+      //std::cout << "run_mc = " << run_mc << std::endl;
+      idxBin_run = histogram_luminosity_->FindBin(run_mc);
+    }
+  } else {
+    idxBin_run = histogram_luminosity_->FindBin(eventInfo.run);
+    if(! (idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX()))
+    {
+      throw cmsException(this, __func__, __LINE__) << "No luminosity defined for run = " << eventInfo.run << " !!\n";
+    }
   }
-  const double luminosity = histogram_luminosity_->GetBinContent(idxBin_run);
+  assert(idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX());
+  //std::cout << "runPeriod = " << histogram_luminosity_->GetXaxis()->GetBinLabel(idxBin_run) << std::endl;
+  double luminosity = histogram_luminosity_->GetBinContent(idxBin_run);
   assert(luminosity > 0.);
   histogram_evtYield_->Fill(eventInfo.run, evtWeight/luminosity);
 }
