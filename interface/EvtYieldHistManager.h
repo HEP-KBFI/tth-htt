@@ -54,6 +54,7 @@ class EvtYieldHistManager
 
  private:
   std::vector<evtYieldHistManager::RunPeriod> runPeriods_;
+  bool isMC_;
 
   TH1 * histogram_evtYield_;
   TH1 * histogram_luminosity_;
