@@ -65,14 +65,16 @@ TGraphAsymmErrors* compRatioGraph(const std::string& ratioGraphName, const TGrap
     double y_ratio = ( y_denominator > 0. ) ? (y_numerator/y_denominator) : 0.;
     double xErrUp_ratio = TMath::Max(xErrUp_numerator, xErrUp_denominator);
     double xErrDown_ratio = TMath::Max(xErrDown_numerator, xErrDown_denominator);
-    double yErr2Up_ratio = 0.;
-    if ( y_numerator   ) yErr2Up_ratio += square(yErrUp_numerator/y_numerator);
-    if ( y_denominator ) yErr2Up_ratio += square(yErrDown_denominator/y_numerator);
-    double yErrUp_ratio = TMath::Sqrt(yErr2Up_ratio)*TMath::Abs(y_ratio);
-    double yErr2Down_ratio = 0.;
-    if ( y_numerator   ) yErr2Down_ratio += square(yErrDown_numerator/y_numerator);
-    if ( y_denominator ) yErr2Down_ratio += square(yErrUp_denominator/y_numerator);
-    double yErrDown_ratio = TMath::Sqrt(yErr2Down_ratio)*TMath::Abs(y_ratio);
+    double yErr2Up_ratio =
+      square(yErrUp_numerator     / (y_numerator   != 0. ? y_numerator   : 1.)) +
+      square(yErrDown_denominator / (y_denominator != 0. ? y_denominator : 1.))
+    ;
+    double yErrUp_ratio = TMath::Sqrt(yErr2Up_ratio) * (y_ratio != 0. ? TMath::Abs(y_ratio) : 1.);
+    double yErr2Down_ratio =
+      square(yErrDown_numerator / (y_numerator   != 0. ? y_numerator   : 1.)) +
+      square(yErrUp_denominator / (y_denominator != 0. ? y_denominator : 1.))
+    ;
+    double yErrDown_ratio = TMath::Sqrt(yErr2Down_ratio) * (y_ratio != 0. ? TMath::Abs(y_ratio) : 1.);
 
     graphRatio->SetPoint(idxPoint, x_ratio, y_ratio);
     graphRatio->SetPointError(idxPoint, xErrDown_ratio, xErrUp_ratio, yErrDown_ratio, yErrUp_ratio);
