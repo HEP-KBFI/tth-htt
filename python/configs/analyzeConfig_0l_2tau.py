@@ -147,7 +147,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.hadTau_frWeights  = [ "disabled" ]
     super(analyzeConfig_0l_2tau, self).set_BDT_training(hadTau_selection_relaxed)
 
-  def createCfg_analyze(self, jobOptions, sample_info):
+  def createCfg_analyze(self, jobOptions, sample_info, hadTau_selection):
     """Create python configuration file for the analyze_0l_2tau executable (analysis code)
 
     Args:
@@ -162,6 +162,8 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     jobOptions['histogramDir'] = getHistogramDir(
       hadTau_selection, hadTau_frWeight, jobOptions['hadTauChargeSelection']
     )
+    if 'mcClosure' in hadTau_selection:
+      self.mcClosure_dir['%s_%s' % (hadTau_selection, jobOptions['hadTauChargeSelection'])] = jobOptions['histogramDir']
 
     jobOptions['hadTauFakeRateWeight.inputFileName'] = self.hadTauFakeRateWeight_inputFile
     graphName = 'jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt' % self.hadTau_selection_part2
@@ -334,7 +336,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'apply_hlt_filter'         : self.hlt_filter,
                   'fillGenEvtHistograms'     : True,
                 }
-                self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
+                self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, hadTau_selection)
 
                 # initialize input and output file names for hadd_stage1
                 key_hadd_stage1 = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
@@ -579,7 +581,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
             continue
           hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_mcClosure, "enabled")
           key_addBackgrounds_job_fakes = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
-          histogramDir_mcClosure = histogramDir_nominal.replace("_Tight", "_Fakeable_mcClosure_%s_wFakeRateWeights" % hadTau_type)
+          histogramDir_mcClosure = self.mcClosure_dir['%s_%s' % (hadTau_mcClosure, hadTau_charge_selection)]
           self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job].update({
             'add_Clos_%s' % hadTau_type : ("Fakeable_mcClosure_%s" % hadTau_type) in self.hadTau_selections,
             'inputFile_nominal_%s' % hadTau_type : self.outputFile_hadd_stage2[key_hadd_stage2],

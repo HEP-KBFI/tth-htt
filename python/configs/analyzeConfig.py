@@ -232,6 +232,7 @@ class analyzeConfig(object):
         self.hadTau_selection_relaxed = None
         self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
         self.isBDTtraining = False
+        self.mcClosure_dir = {}
 
     def __del__(self):
         for hostname, times in self.cvmfs_error_log.items():
