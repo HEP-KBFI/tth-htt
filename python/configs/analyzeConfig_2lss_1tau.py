@@ -223,6 +223,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       jobOptions['leptonChargeSelection'], jobOptions['chargeSumSelection']
     )
     jobOptions['histogramDir'] = histogramDir
+    if 'mcClosure' in lepton_and_hadTau_selection:
+      self.mcClosure_dir['%s_%s_%s' % (lepton_and_hadTau_selection, jobOptions['leptonChargeSelection'], jobOptions['chargeSumSelection'] )] = histogramDir
 
     self.set_leptonFakeRateWeightHistogramNames(jobOptions['central_or_shift'], lepton_and_hadTau_selection)
     jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
@@ -931,13 +933,13 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             continue
           lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_mcClosure, "enabled")
           key_addBackgrounds_job_fakes = getKey(lepton_and_hadTau_selection_and_frWeight, 'SS', chargeSumSelection, "fakes")
+          histogramDir_mcClosure = self.mcClosure_dir['%s_%s_%s' % (lepton_and_hadTau_mcClosure, 'SS', chargeSumSelection)]
           self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job].update({
             'add_Clos_%s' % lepton_and_hadTau_type : ("Fakeable_mcClosure_%s" % lepton_and_hadTau_type) in self.lepton_and_hadTau_selections,
             'inputFile_nominal_%s' % lepton_and_hadTau_type : self.outputFile_hadd_stage2[key_hadd_stage2],
-            'histogramName_nominal_%s' % lepton_and_hadTau_type : "2lss_1tau_lepSS_sumOS_Tight/sel/evt/fakes_mc/%s" % histogramToFit,
+            'histogramName_nominal_%s' % lepton_and_hadTau_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_mcClosure, histogramToFit),
             'inputFile_mcClosure_%s' % lepton_and_hadTau_type : self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes]['outputFile'],
-            'histogramName_mcClosure_%s' % lepton_and_hadTau_type : "2lss_1tau_lepSS_sumOS_Fakeable_mcClosure_%s_wFakeRateWeights/sel/evt/fakes_mc/%s" % \
-              (lepton_and_hadTau_type, histogramToFit),
+            'histogramName_mcClosure_%s' % lepton_and_hadTau_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_mcClosure, histogramToFit),
           })
         self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job])
 

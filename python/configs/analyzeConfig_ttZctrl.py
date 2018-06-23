@@ -149,6 +149,8 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     """
     lepton_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
     jobOptions['histogramDir'] = getHistogramDir(lepton_selection, lepton_frWeight)
+    if 'mcClosure' in lepton_selection:
+      self.mcClosure_dir[lepton_selection] = jobOptions['histogramDir']
 
     self.set_leptonFakeRateWeightHistogramNames(jobOptions['central_or_shift'], lepton_selection)
     jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
@@ -578,7 +580,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
           continue
         lepton_selection_and_frWeight = get_lepton_selection_and_frWeight(lepton_mcClosure, "enabled")
         key_addBackgrounds_job_fakes = getKey(lepton_selection_and_frWeight, "fakes")
-        histogramDir_mcClosure = histogramDir_nominal.replace("_Tight", "_Fakeable_mcClosure_%s_wFakeRateWeights" % lepton_type)
+        histogramDir_mcClosure = self.mcClosure_dir[lepton_mcClosure]
         self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job].update({
           'add_Clos_%s' % lepton_type : ("Fakeable_mcClosure_%s" % lepton_type) in self.lepton_selections,
           'inputFile_nominal_%s' % lepton_type : self.outputFile_hadd_stage2[key_hadd_stage2],
