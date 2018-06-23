@@ -70,7 +70,8 @@ process.makePlots = cms.PSet(
     nuisanceParameters = cms.PSet(
         normalization = cms.PSet(
             signal = cms.string("1.0 +/- 0.20"),
-            tH = cms.string("1.0 +/- 0.20"),
+            tHq = cms.string("1.0 +/- 0.20"),
+            tHW = cms.string("1.0 +/- 0.20"),
             TT = cms.string("1.0 +/- 0.20"),
             TTW = cms.string("1.0 +/- 0.20"),
             TTWW = cms.string("1.0 +/- 0.20"),
@@ -90,7 +91,7 @@ process.makePlots = cms.PSet(
             CMS_ttHl_btag_LFStats2 = cms.string("0.00 +/- 1.00"),
             CMS_ttHl_btag_cErr1 = cms.string("0.00 +/- 1.00"),
             CMS_ttHl_btag_cErr2 = cms.string("0.00 +/- 1.00"),
-            CMS_ttHl_JES = cms.string("0.00 +/- 1.00")
+            CMS_ttHl_JES = cms.string("0.00 +/- 1.00"),
         )
     ),
     showUncertainty = cms.bool(False),
