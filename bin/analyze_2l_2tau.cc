@@ -679,7 +679,7 @@ int main(int argc, char* argv[])
         Form("%s/sel/evtYield", histogramDir.data()), central_or_shift);
       cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
       cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);
-      selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_presel);
+      selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_sel);
       selHistManager->evtYield_->bookHistograms(fs);  
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/weights", histogramDir.data()), central_or_shift));
