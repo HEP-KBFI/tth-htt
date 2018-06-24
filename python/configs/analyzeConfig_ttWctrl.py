@@ -518,13 +518,13 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                     self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5_%s_%s_%s.root" % \
                       (self.channel, lepton_selection_and_frWeight, lepton_charge_selection))
 
-              # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
-              if not is_mc:
-                key_hadd_stage1 = getKey(process_name, lepton_selection_and_frWeight, lepton_charge_selection)
-                key_hadd_stage1_5 = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
-                if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
-                  self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
-                self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
+            # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
+            if not is_mc:
+              key_hadd_stage1 = getKey(process_name, lepton_selection_and_frWeight, lepton_charge_selection)
+              key_hadd_stage1_5 = getKey(lepton_selection_and_frWeight, lepton_charge_selection)
+              if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
+                self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
+              self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
           if self.do_sync: continue
 
