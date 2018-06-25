@@ -286,9 +286,12 @@ printCollection(const std::string & collection_name,
   }
 }
 
-bool
-all_same_flavor(const std::vector<const RecoLepton *> & leptons,
-                bool is_electron);
+int 
+countElectrons(const std::vector<const RecoLepton *> & leptons);
+
+int 
+countMuons(const std::vector<const RecoLepton *> & leptons);
+
 
 /**
  * @brief Computes the number of k combinations out of n

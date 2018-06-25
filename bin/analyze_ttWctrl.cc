@@ -1236,8 +1236,8 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("MEt filters", evtWeight);
 
-    const bool skipSRveto_2e = electronSelection != muonSelection && muonSelection     == kFakeable && all_same_flavor(selLeptons, true);
-    const bool skipSRveto_2m = electronSelection != muonSelection && electronSelection == kFakeable && all_same_flavor(selLeptons, false);
+    const bool skipSRveto_2e = electronSelection != muonSelection && muonSelection     == kFakeable && countMuons(selLeptons)     == 0;
+    const bool skipSRveto_2m = electronSelection != muonSelection && electronSelection == kFakeable && countElectrons(selLeptons) == 0;
     if (( electronSelection == kFakeable || muonSelection == kFakeable ) && ! skipSRveto_2e && ! skipSRveto_2m ) {
       if ( tightLeptons.size() >= 2 ) {
         if ( run_lumi_eventSelector ) {
