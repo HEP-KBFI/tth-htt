@@ -1674,7 +1674,6 @@ int main(int argc, char* argv[])
       }
     }
 
-
 //--- Declare the variables used as an input to the MVA/BDT in one place
 //    so that there won't be any mismatches b/w the variables in the BDT Ntuple and
 //    the variables used to evaluate the MVA/BDT scores.
@@ -1806,8 +1805,8 @@ int main(int argc, char* argv[])
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_HTT_sum_->fillHistograms(mvaInputsHTT_sum, evtWeight);
     selHistManager->evt_->fillHistograms(
-      preselElectrons.size(),
-      preselMuons.size(),
+      selElectrons.size(),
+      selMuons.size(),
       selHadTaus.size(),
       selJets.size(),
       selBJets_loose.size(),
@@ -1823,8 +1822,8 @@ int main(int argc, char* argv[])
       const std::string decayModeStr = eventInfo.getDecayModeString();
       if ( !decayModeStr.empty() ) {
         selHistManager->evt_in_decayModes_[decayModeStr]->fillHistograms(
-          preselElectrons.size(),
-          preselMuons.size(),
+          selElectrons.size(),
+          selMuons.size(),
           selHadTaus.size(),
           selJets.size(),
           selBJets_loose.size(),
