@@ -31,7 +31,7 @@ EvtHistManager_2l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_mvaOutput_plainKin_SUM_VT_         = book1D(dir, "mvaOutput_plainKin_SUM_VT",         "mvaOutput_plainKin_SUM_VT",         100, 0.0, 1.0);
   histogram_mvaOutput_plainKin_SUM_VT_noRebin_ = book1D(dir, "mvaOutput_plainKin_SUM_VT_noRebin", "mvaOutput_plainKin_SUM_VT_noRebin", 100, 0.0, 1.0);
 
-  Float_t binsx[5]  = { 0.0, 0.35, 0.41, 0.47, 1.0 };
+  Float_t binsx[5]  = { 0.0, 0.25, 0.50, 0.75, 1.0 };
   histogram_final_  = book1D(dir, "mvaOutput_final",  "mvaOutput_final",  4, binsx);
 
 }

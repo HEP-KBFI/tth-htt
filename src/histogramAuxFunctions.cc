@@ -856,3 +856,27 @@ getTArraDfromVector(const std::vector<double> & histogramBinning)
   return binning_tarray;
 }
 
+TH1* compRatioHistogram(const std::string& ratioHistogramName, const TH1* numerator, const TH1* denominator)
+{
+  TH1* histogramRatio = 0;
+  
+  if ( numerator->GetDimension() == denominator->GetDimension() &&
+       numerator->GetNbinsX() == denominator->GetNbinsX() ) {
+    histogramRatio = (TH1*)numerator->Clone(ratioHistogramName.data());
+    histogramRatio->Divide(denominator);
+    
+    int nBins = histogramRatio->GetNbinsX();
+    for ( int iBin = 1; iBin <= nBins; ++iBin ){
+      double binContent = histogramRatio->GetBinContent(iBin);
+      histogramRatio->SetBinContent(iBin, binContent - 1.);
+    }
+    
+    histogramRatio->SetLineColor(numerator->GetLineColor());
+    histogramRatio->SetLineWidth(numerator->GetLineWidth());
+    histogramRatio->SetMarkerColor(numerator->GetMarkerColor());
+    histogramRatio->SetMarkerStyle(numerator->GetMarkerStyle());
+    histogramRatio->SetMarkerSize(numerator->GetMarkerSize());
+  }
+
+  return histogramRatio;
+}

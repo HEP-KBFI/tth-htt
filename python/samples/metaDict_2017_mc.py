@@ -12,6 +12,9 @@ sum_events = {
   ("DYJetsToLL_M-50", "DYJetsToLL_M-50_ext1"),
   ("TTWJetsToLNu", "TTWJetsToLNu_PSweights"),
   ("ZZTo4L", "ZZTo4L_ext1"),
+  ("TTTo2L2Nu", "TTTo2L2Nu_PSweights"),
+  ("TTToSemiLeptonic", "TTToSemiLeptonic_PSweights"),
+  ("TTToHadronic", "TTToHadronic_PSweights"),
 }
 
 
@@ -218,7 +221,7 @@ meta_dictionary["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
   ("nof_db_files",          1230),
   ("fsize_db",              3608766343800),
   ("xsection",              88.29),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 3.61TB; nevents: 69.71M; release: 9_4_0_patch1; last modified: 2018-01-11 15:10:21"),
 ])
@@ -244,7 +247,7 @@ meta_dictionary["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIF
   ("nof_db_files",          2032),
   ("fsize_db",              5860979058540),
   ("xsection",              365.34),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 5.86TB; nevents: 111.38M; release: 9_4_0_patch1; last modified: 2018-01-11 00:38:22"),
 ])
@@ -270,7 +273,7 @@ meta_dictionary["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall1
   ("nof_db_files",          2498),
   ("fsize_db",              6970450887587),
   ("xsection",              377.96),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 6.97TB; nevents: 129.99M; release: 9_4_0_patch1; last modified: 2018-01-24 23:15:56"),
 ])

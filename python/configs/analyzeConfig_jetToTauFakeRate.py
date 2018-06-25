@@ -239,7 +239,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
             ntupleFiles = inputFileList[jobId]
             if len(ntupleFiles) == 0:
-              print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_job, ntupleFiles)
+              logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
               continue
 
             cfg_key = getKey(self.channel, process_name, charge_selection, central_or_shift, jobId)
