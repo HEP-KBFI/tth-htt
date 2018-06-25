@@ -149,38 +149,28 @@ getLeptonGenMatch_int(const std::vector<leptonGenMatchEntry> & leptonGenMatch_de
   return leptonGenMatch->idx_;
 }
 
+void
+countLeptonGenMatches(const RecoLepton * lepton,
+		      int & numGenMatchedLeptons,
+		      int & numGenMatchedPhotons,
+		      int & numGenMatchedJets)
+{
+  if(lepton->genLepton() || lepton->genHadTau())
+  {
+    ++numGenMatchedLeptons;
+  }
+  else if(lepton->is_electron() && lepton->genPhoton() && lepton->genPhoton()->pt() > (0.50*lepton->pt()))
+  {
+    ++numGenMatchedPhotons;
+  }
+  else
+  {
+    ++numGenMatchedJets;
+  }
+}
+
 namespace
 {
-  void
-  resetLeptonGenMatches(int & numGenMatchedLeptons,
-			int & numGenMatchedPhotons,
-                        int & numGenMatchedJets)
-  {
-    numGenMatchedLeptons = 0;
-    numGenMatchedPhotons = 0;
-    numGenMatchedJets = 0;
-  }
-
-  void
-  countLeptonGenMatches(const RecoLepton * lepton,
-                        int & numGenMatchedLeptons,
-			int & numGenMatchedPhotons,
-                        int & numGenMatchedJets)
-  {
-    if(lepton->genLepton() || lepton->genHadTau())
-    {
-      ++numGenMatchedLeptons;
-    }
-    else if(lepton->is_electron() && lepton->genPhoton() && lepton->genPhoton()->pt() > (0.50*lepton->pt()))
-    {
-      ++numGenMatchedPhotons;
-    }
-    else
-    {
-      ++numGenMatchedJets;
-    }
-  }
-
   bool
   matches(int nSel,
           int nMatches)
@@ -221,10 +211,11 @@ getLeptonGenMatch(const std::vector<leptonGenMatchEntry> & leptonGenMatch_defini
                   const RecoLepton * lepton_third,
                   const RecoLepton * lepton_fourth)
 {
-  int numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedJets;
-  resetLeptonGenMatches(numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedJets);
-  assert(lepton_lead);
+  int numGenMatchedLeptons = 0;
+  int numGenMatchedPhotons = 0;
+  int numGenMatchedJets = 0;
 
+  assert(lepton_lead);
   countLeptonGenMatches(lepton_lead, numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedJets);
   if(lepton_sublead)
   {

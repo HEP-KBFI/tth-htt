@@ -138,21 +138,21 @@ getHadTauGenMatch_int(const std::vector<hadTauGenMatchEntry> & hadTauGenMatch_de
   return hadTauGenMatch->idx_;
 }
 
+void
+countHadTauGenMatches(const RecoHadTau * hadTau,
+		      int & numGenMatchedHadTaus,
+		      int & numGenMatchedElectrons,
+		      int & numGenMatchedMuons,
+		      int & numGenMatchedJets)
+{
+  if     (hadTau->genHadTau()                                                ) ++numGenMatchedHadTaus;
+  else if(hadTau->genLepton() && std::abs(hadTau->genLepton()->pdgId()) == 11) ++numGenMatchedElectrons;
+  else if(hadTau->genLepton() && std::abs(hadTau->genLepton()->pdgId()) == 13) ++numGenMatchedMuons;
+  else                                                                         ++numGenMatchedJets;
+}
+
 namespace
 {
-  void
-  countHadTauGenMatches(const RecoHadTau * hadTau,
-                        int & numGenMatchedHadTaus,
-                        int & numGenMatchedElectrons,
-                        int & numGenMatchedMuons,
-                        int & numGenMatchedJets)
-  {
-    if     (hadTau->genHadTau()                                                ) ++numGenMatchedHadTaus;
-    else if(hadTau->genLepton() && std::abs(hadTau->genLepton()->pdgId()) == 11) ++numGenMatchedElectrons;
-    else if(hadTau->genLepton() && std::abs(hadTau->genLepton()->pdgId()) == 13) ++numGenMatchedMuons;
-    else                                                                         ++numGenMatchedJets;
-  }
-
   bool constexpr
   matches(int nSel,
           int nMatches)
