@@ -155,14 +155,26 @@ printCollection<RecoLepton>(const std::string & collection_name,
   }
 }
 
-bool
-all_same_flavor(const std::vector<const RecoLepton *> & leptons,
-                bool is_electron)
+int
+countElectrons(const std::vector<const RecoLepton *> & leptons)
 {
-  return std::all_of(leptons.cbegin(), leptons.cend(), [is_electron](const RecoLepton * lepton) -> bool
-  {
-    return is_electron ? lepton->is_electron() : lepton->is_muon();
-  });
+  int numElectrons = 0;
+  for ( std::vector<const RecoLepton *>::const_iterator lepton = leptons.begin();
+	lepton != leptons.end(); ++ lepton ) {
+    if ( (*lepton)->is_electron() ) ++numElectrons;
+  }
+  return numElectrons;
+}
+
+int 
+countMuons(const std::vector<const RecoLepton *> & leptons)
+{
+  int numMuons = 0;
+  for ( std::vector<const RecoLepton *>::const_iterator lepton = leptons.begin();
+	lepton != leptons.end(); ++ lepton ) {
+    if ( (*lepton)->is_muon() ) ++numMuons;
+  }
+  return numMuons;
 }
 
 int
