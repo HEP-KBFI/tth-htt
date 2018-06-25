@@ -437,7 +437,7 @@ main(int argc,
   const std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
   const bool isMC    = cfg_analyze.getParameter<bool>("isMC");
-  const bool isMC_tH = process_string == "tH" ? true : false;
+  const bool isMC_tH = process_string == "tHq" || process_string == "tHW" ? true : false;
   const bool hasLHE  = cfg_analyze.getParameter<bool>("hasLHE");
 
   const std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");

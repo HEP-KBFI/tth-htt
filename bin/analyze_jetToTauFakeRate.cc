@@ -336,7 +336,7 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'absEtaBins' !!\n";
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
-  bool isMC_tH = ( process_string == "tH" ) ? true : false;
+  bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
@@ -374,6 +374,7 @@ int main(int argc, char* argv[])
   Data_to_MC_CorrectionInterface* dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface(cfg_dataToMCcorrectionInterface);
 
   bool fillGenEvtHistograms = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
+  edm::ParameterSet cfg_EvtYieldHistManager = cfg_analyze.getParameter<edm::ParameterSet>("cfgEvtYieldHistManager");
 
   std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
   std::string branchName_muons = cfg_analyze.getParameter<std::string>("branchName_muons");
@@ -571,8 +572,11 @@ int main(int argc, char* argv[])
   EvtHistManager_jetToTauFakeRate selEvtHistManager(makeHistManager_cfg(process_string, 
     Form("jetToTauFakeRate_%s/evt", chargeSelection_string.data()), central_or_shift));
   selEvtHistManager.bookHistograms(fs);
-  EvtYieldHistManager selEvtYieldHistManager(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/evtYield", chargeSelection_string.data()), central_or_shift));
+  edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_string, 
+    Form("jetToTauFakeRate_%s/evtYield", chargeSelection_string.data()), central_or_shift);
+  cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
+  cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);
+  EvtYieldHistManager selEvtYieldHistManager(cfg_EvtYieldHistManager_sel);
   selEvtYieldHistManager.bookHistograms(fs);
 
   GenEvtHistManager* genEvtHistManager_beforeCuts = 0;

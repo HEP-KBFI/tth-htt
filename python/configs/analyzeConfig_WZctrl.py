@@ -114,12 +114,12 @@ class analyzeConfig_WZctrl(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "WZ", "EWK", "Rares", "tH", "VH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "WZ", "EWK", "Rares", "tHq", "tHW", "VH" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "conversions", "fakes_data", "fakes_mc" ]
     self.histogramDir_prep_dcard = "WZctrl_Tight"
-    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "WZ", "EWK", "Rares", "tH" ] + [ "conversions", "fakes_data" ]
+    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "WZ", "EWK", "Rares", "tHq", "tHW" ] + [ "conversions", "fakes_data" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_WZctrl_cfg.py")
 
     self.select_rle_output = select_rle_output
@@ -133,7 +133,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
     Args:
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
-      process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
+      process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, 'ttH_hzg', 'ttH_hmm', `ttH_hzz` or `ttH_htt`
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_WZctrl.cc
@@ -271,11 +271,11 @@ class analyzeConfig_WZctrl(analyzeConfig):
                 (self.channel, process_name, lepton_selection_and_frWeight))
 
           if is_mc:
-            logging.info("Creating configuration files to run 'addBackgrounds' for sample %s and sys unc %s" % (process_name, central_or_shift))
+            logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
 
             sample_categories = [ sample_category ]
             if is_signal:
-              sample_categories = [ "signal", "ttH", "ttH_htt", "ttH_hww", "ttH_hzz" ]
+              sample_categories = [ "signal", "ttH", "ttH_htt", "ttH_hww", "ttH_hzz", "ttH_hmm", "ttH_hzg" ]
             for sample_category in sample_categories:
               # sum non-fake and fake contributions for each MC sample separately
               genMatch_categories = [ "nonfake", "conversions", "fake" ]
@@ -304,6 +304,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
                     processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in lepton_genMatches ])
                     processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in lepton_genMatches ])
                     processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in lepton_genMatches ])
+                    processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in lepton_genMatches ])
+                    processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in lepton_genMatches ])
                   else:
                     processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_nonfakes ]
                   process_output = sample_category
@@ -323,6 +325,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
                     processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.lepton_genMatches_conversions ])
                     processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.lepton_genMatches_conversions ])
                     processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.lepton_genMatches_conversions ])
+                    processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in self.lepton_genMatches_conversions ])
+                    processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in self.lepton_genMatches_conversions ])
                   else:
                     processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_conversions ]
                   process_output = "%s_conversion" % sample_category
@@ -342,6 +346,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
                     processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.lepton_genMatches_fakes ])
                     processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.lepton_genMatches_fakes ])
                     processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.lepton_genMatches_fakes ])
+                    processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in self.lepton_genMatches_fakes ])
+                    processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in self.lepton_genMatches_fakes ])
                   else:
                     processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_fakes ]
                   process_output = "%s_fake" % sample_category

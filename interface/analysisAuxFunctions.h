@@ -286,6 +286,10 @@ printCollection(const std::string & collection_name,
   }
 }
 
+bool
+all_same_flavor(const std::vector<const RecoLepton *> & leptons,
+                bool is_electron);
+
 /**
  * @brief Computes the number of k combinations out of n
  * @param n Number of instances to choose from

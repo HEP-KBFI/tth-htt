@@ -1978,7 +1978,7 @@ samples_2017["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniA
   ("nof_db_events",                   69705626),
   ("fsize_local",                     129582511235), # 129.58GB, avg file size 91.84MB
   ("fsize_db",                        3608766343800), # 3.61TB, avg file size 2.93GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        88.29),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -2044,7 +2044,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall
   ("nof_db_events",                   111381888),
   ("fsize_local",                     214190811519), # 214.19GB, avg file size 95.32MB
   ("fsize_db",                        5860979058540), # 5.86TB, avg file size 2.88GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        365.34),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -2110,7 +2110,7 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
   ("nof_db_events",                   129985840),
   ("fsize_local",                     253037895099), # 253.04GB, avg file size 96.65MB
   ("fsize_db",                        6970450887587), # 6.97TB, avg file size 2.79GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        377.96),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -2662,7 +2662,7 @@ samples_2017["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
 
 samples_2017["/THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "tH"),
+  ("sample_category",                 "tHq"),
   ("process_name_specific",           "THQ"),
   ("nof_files",                       9),
   ("nof_db_files",                    9),
@@ -2695,7 +2695,7 @@ samples_2017["/THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] =
 
 samples_2017["/THW_5f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "tH"),
+  ("sample_category",                 "tHW"),
   ("process_name_specific",           "THW"),
   ("nof_files",                       4),
   ("nof_db_files",                    4),

@@ -116,7 +116,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
       lines.append("process.prepareDatacards.makeSubDir = cms.bool(True)")
       lines.append("process.prepareDatacards.categories = cms.VPSet(")
       for charge in ["OS", "SS"]:
-        for ptEtaBin in ["BB_LL", "BB_ML", "BB_MM", "BB_HL", "BB_HM", "BB_HH", "EE_LL", "EE_ML", "EE_MM", "EE_HL", "EE_HM", "EE_HH", "BE_LL", "BE_ML", "EB_ML","BE_MM",  "BE_HL", "EB_HL", "BE_HM", "EB_HM", "BE_HH", "total"]:
+        for ptEtaBin in ["BB_LL", "BB_ML", "BB_MM", "BB_HL", "BB_HM", "BB_HH", "EE_LL", "EE_ML", "EE_MM", "EE_HL", "EE_HM",
+                         "EE_HH", "BE_LL", "BE_ML", "EB_ML","BE_MM",  "BE_HL", "EB_HL", "BE_HM", "EB_HM", "BE_HH", "total"]:
           lines.append("    cms.PSet(")
           lines.append("        input = cms.string('%s/%s')," % (charge, ptEtaBin))
           lines.append("        output = cms.string('ttH_%s_%s_%s')" % (self.channel, charge, ptEtaBin))
@@ -183,8 +184,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
         inputFileList = inputFileLists[sample_name]
         for central_or_shift in self.central_or_shifts:
           for jobId in inputFileList.keys():
-            #if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and lepton_charge_selection == "SS"):
-            #  continue
             if central_or_shift != "central" and not is_mc:
               continue
 
@@ -193,7 +192,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
             key_analyze_job = getKey(process_name, lepton_selection, central_or_shift, jobId)
             ntupleFiles = inputFileList[jobId]
             if len(ntupleFiles) == 0:
-              print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_job, ntupleFiles)
+              logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
               continue
 
             cfg_key = getKey(self.channel, process_name, lepton_selection, central_or_shift, jobId)
@@ -212,10 +211,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
               'applyFakeRateWeights'     : "disabled",
               'central_or_shift'         : central_or_shift,
             }
-
-            #applyFakeRateWeights = self.applyFakeRateWeights
-            #if lepton_and_hadTau_frWeight == "disabled":
-            #  applyFakeRateWeights = "disabled"
             self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
             # initialize input and output file names for hadd_stage1
@@ -226,24 +221,14 @@ class analyzeConfig_charge_flip(analyzeConfig):
             self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s.root" % \
               (self.channel, process_name, lepton_selection))
 
-        key_addBackgrounds_job = getKey(lepton_selection)
-        sample_categories = []
-        sample_categories.extend([ "signal" ])
-        processes_input = []
-
         # initialize input and output file names for hadd_stage2
         key_hadd_stage2 = getKey(lepton_selection)
+        key_hadd_stage1 = getKey(process_name, lepton_selection)
         if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
           self.inputFiles_hadd_stage2[key_hadd_stage2] = []
-        #if lepton_selection == "Tight":
-        #  self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
-        #key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight)
         self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
         self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \
           (self.channel, lepton_selection))
-
-    key_hadd_stage2 = getKey(lepton_selection)
-    #self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addFlips[key_addFlips_job]['outputFile'])
 
     logging.info("Creating configuration files to run 'prepareDatacards'")
     processesToCopy = []
@@ -256,7 +241,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
     self.prep_dcard_signals = processesToCopy
     for histogramToFit in self.histograms_to_fit:
       key_prep_dcard_job = getKey(histogramToFit)
-      key_hadd_stage2 = getKey(lepton_selection)
+      key_hadd_stage2 = getKey('Tight')
       self.jobOptions_prep_dcard[key_prep_dcard_job] = {
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit)),
@@ -276,11 +261,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    #self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
-    #self.addToMakefile_add_syst_dcard(lines_makefile)
-    #self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
 
     logging.info("Done")

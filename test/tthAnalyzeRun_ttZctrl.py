@@ -59,7 +59,10 @@ if era == "2017":
   elif mode == 'sync_wMEM':
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
   elif mode == 'sync':
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+    if use_nonnominal:
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+    else:
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)

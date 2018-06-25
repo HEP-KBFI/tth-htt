@@ -173,14 +173,13 @@ int main(int argc, char* argv[])
   bool apply_offline_e_trigger_cuts_1e2mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e2mu");
   bool apply_offline_e_trigger_cuts_3mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_3mu");
 
-  enum { kLoose, kFakeable, kTight };
-  std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection");
-  int leptonSelection = -1;
-  if      ( leptonSelection_string == "Loose"                                                      ) leptonSelection = kLoose;
-  else if ( leptonSelection_string == "Fakeable" || leptonSelection_string == "Fakeable_mcClosure" ) leptonSelection = kFakeable;
-  else if ( leptonSelection_string == "Tight"                                                      ) leptonSelection = kTight;
-  else throw cms::Exception("analyze_4l")
-    << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
+  const std::string electronSelection_string = cfg_analyze.getParameter<std::string>("electronSelection");
+  const std::string muonSelection_string     = cfg_analyze.getParameter<std::string>("muonSelection");
+  std::cout << "electronSelection_string = " << electronSelection_string << "\n"
+               "muonSelection_string     = " << muonSelection_string     << '\n'
+  ;
+  const int electronSelection = get_selection(electronSelection_string);
+  const int muonSelection     = get_selection(muonSelection_string);
 
   bool apply_leptonGenMatching = cfg_analyze.getParameter<bool>("apply_leptonGenMatching");
   std::vector<leptonGenMatchEntry> leptonGenMatch_definitions = getLeptonGenMatch_definitions_4lepton(apply_leptonGenMatching);
@@ -199,7 +198,7 @@ int main(int argc, char* argv[])
   std::cout << "minNumJets = " << minNumJets << std::endl;
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
-  bool isMC_tH = ( process_string == "tH" ) ? true : false;
+  bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
@@ -836,10 +835,29 @@ int main(int argc, char* argv[])
     std::vector<const RecoLepton*> preselLeptons = pickFirstNobjects(preselLeptonsFull, 4);
     std::vector<const RecoLepton*> fakeableLeptons = pickFirstNobjects(fakeableLeptonsFull, 4);
     std::vector<const RecoLepton*> tightLeptons = getIntersection(fakeableLeptons, tightLeptonsFull, isHigherConePt);
-    std::vector<const RecoLepton*> selLeptons = selectObjects(leptonSelection, preselLeptons, fakeableLeptons, tightLeptons);
 
-    std::vector<const RecoMuon *> selMuons = getIntersection(preselMuons, selLeptons, isHigherConePt);
-    std::vector<const RecoElectron *> selElectrons = getIntersection(preselElectrons, selLeptons, isHigherConePt);
+    std::vector<const RecoLepton*> selLeptons;
+    std::vector<const RecoMuon*> selMuons;
+    std::vector<const RecoElectron*> selElectrons;
+    if(electronSelection == muonSelection)
+    {
+      // for SR, flip region and fake CR
+      // doesn't matter if we supply electronSelection or muonSelection here
+      selLeptons = selectObjects(muonSelection, preselLeptons, fakeableLeptons, tightLeptons);
+      selMuons = getIntersection(preselMuons, selLeptons, isHigherConePt);
+      selElectrons = getIntersection(preselElectrons, selLeptons, isHigherConePt);
+    }
+    else
+    {
+      // for MC closure
+      // make sure that neither electron nor muon selections are loose
+      assert(electronSelection != kLoose && muonSelection != kLoose);
+      selMuons = selectObjects(muonSelection, preselMuons, fakeableMuons, tightMuons);
+      selElectrons = selectObjects(electronSelection, preselElectrons, fakeableElectrons, tightElectrons);
+      std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
+      selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
+    }
+
     if(isDEBUG || run_lumi_eventSelector)
     {
       printCollection("selMuons", selMuons);
@@ -1063,9 +1081,14 @@ int main(int argc, char* argv[])
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
-      if ( leptonSelection == kFakeable ) {
+      if ( electronSelection == kFakeable && muonSelection == kFakeable ) {
         leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
-      } else if ( leptonSelection == kTight ) {
+      } else if ( electronSelection >= kFakeable && muonSelection >= kFakeable ) {
+        // apply loose-to-tight lepton ID SFs if either of the following is true:
+        // 1) both electron and muon selections are tight -> corresponds to SR
+        // 2) electron selection is relaxed to fakeable and muon selection is kept as tight -> corresponds to MC closure w/ relaxed e selection
+        // 3) muon selection is relaxed to fakeable and electron selection is kept as tight -> corresponds to MC closure w/ relaxed mu selection
+        // we allow (2) and (3) so that the MC closure regions would more compatible w/ the SR (1) in comparison
         leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge();
       }
       weight_data_to_MC_correction *= leptonSF_weight;
@@ -1332,7 +1355,9 @@ int main(int argc, char* argv[])
     cutFlowTable.update("MEt filters", evtWeight);
     cutFlowHistManager->fillHistograms("MEt filters", evtWeight);
 
-    if ( leptonSelection == kFakeable ) {
+    const bool skipSRveto_4e = electronSelection != muonSelection && muonSelection     == kFakeable && all_same_flavor(selLeptons, true);
+    const bool skipSRveto_4m = electronSelection != muonSelection && electronSelection == kFakeable && all_same_flavor(selLeptons, false);
+    if (( electronSelection == kFakeable || muonSelection == kFakeable ) && ! skipSRveto_4e && ! skipSRveto_4m ) {
       if ( tightLeptons.size() >= 4 ) {
         if ( run_lumi_eventSelector ) {
           std::cout << "event " << eventInfo.str() << " FAILS tightElectrons+tightMuons selection.\n"
@@ -1477,10 +1502,6 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
-      const double lep1_conePt    = comp_lep1_conePt(*selLepton_lead);
-      const double lep2_conePt    = comp_lep2_conePt(*selLepton_sublead);
-      const double lep3_conePt    = comp_lep3_conePt(*selLepton_third);
-      const double lep4_conePt    = comp_lep4_conePt(*selLepton_fourth);
       const double mT_lep1        = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
       const double mT_lep2        = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
       const double mT_lep3        = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
@@ -1500,6 +1521,7 @@ int main(int argc, char* argv[])
       });
 
       snm->read(eventInfo);
+      snm->read(selLeptons);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
       snm->read(selJets);
@@ -1514,11 +1536,6 @@ int main(int argc, char* argv[])
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
       snm->read(mht_p4.pt(),                            FloatVariableType::MHT);
       snm->read(met_LD,                                 FloatVariableType::metLD);
-
-      snm->read(lep1_conePt,                            FloatVariableType::lep1_conept);
-      snm->read(lep2_conePt,                            FloatVariableType::lep2_conept);
-      snm->read(lep3_conePt,                            FloatVariableType::lep3_conept);
-      snm->read(lep4_conePt,                            FloatVariableType::lep4_conept);
 
       snm->read(mindr_lep1_jet,                         FloatVariableType::mindr_lep1_jet);
       snm->read(mindr_lep2_jet,                         FloatVariableType::mindr_lep2_jet);

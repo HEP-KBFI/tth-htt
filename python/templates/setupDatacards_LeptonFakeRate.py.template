@@ -19,7 +19,7 @@ SUFFIX_GEN_MATCH = "l_plus_t"
 
 sig_procs     = ['fakes_data']
 
-# bkg_procs_arr = ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal']
+# bkg_procs_arr = ['EWK', 'TT', 'TTW','TTZ','Rares','tHq', 'tHW', 'TTWW', 'ttH_hbb', 'signal']
 bkg_procs_arr = ['EWK', 'TT', 'Rares']
 
 
@@ -103,7 +103,7 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
 ## --------- new unc.s applied to Rare backgrounds --------
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
     cb, 'Rares_unc1', 'lnN', ch.SystMap('channel', 'process')
-        (channels, ['Rares%s' % SUFFIX_GEN_MATCH], 1.1)   
+        (channels, ['Rares%s' % SUFFIX_GEN_MATCH], 1.1)
 )
 
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN

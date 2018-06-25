@@ -91,6 +91,7 @@ class analyzeConfig(object):
           lep_mva_wp                      = "090",
           executable_prep_dcard           = "prepareDatacards",
           executable_add_syst_dcard       = "addSystDatacards",
+          executable_add_syst_fakerate    = "addSystFakeRates",
           executable_make_plots           = "makePlots",
           executable_make_plots_mcClosure = "makePlots_mcClosure",
           do_sync                         = False,
@@ -128,8 +129,9 @@ class analyzeConfig(object):
         self.histograms_to_fit = histograms_to_fit
         self.executable_prep_dcard = executable_prep_dcard
         self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
-        self.prep_dcard_signals = [ "signal", "ttH", "ttH_hww", "ttH_hzz", "ttH_htt", "ttH_fake" ]
+        self.prep_dcard_signals = [ "signal", "ttH", "ttH_hzg", "ttH_hmm", "ttH_hww", "ttH_hzz", "ttH_htt", "ttH_fake" ]
         self.executable_add_syst_dcard = executable_add_syst_dcard
+        self.executable_add_syst_fakerate = executable_add_syst_fakerate
         self.executable_make_plots = executable_make_plots
         self.executable_make_plots_mcClosure = executable_make_plots_mcClosure
         self.verbose = verbose
@@ -180,6 +182,8 @@ class analyzeConfig(object):
         self.histogramDir_prep_dcard = None
         self.cfgFile_add_syst_dcard = os.path.join(self.template_dir, "addSystDatacards_cfg.py")
         self.jobOptions_add_syst_dcard = {}
+        self.cfgFile_add_syst_fakerate = os.path.join(self.template_dir, "addSystFakeRates_cfg.py")
+        self.jobOptions_add_syst_fakerate = {}
         self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
         self.make_plots_signal = "signal"
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
@@ -228,6 +232,7 @@ class analyzeConfig(object):
         self.hadTau_selection_relaxed = None
         self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
         self.isBDTtraining = False
+        self.mcClosure_dir = {}
 
     def __del__(self):
         for hostname, times in self.cvmfs_error_log.items():
@@ -235,9 +240,10 @@ class analyzeConfig(object):
             for time in times:
                 logging.error(str(time))
 
-    def set_leptonFakeRateWeightHistogramNames(self, central_or_shift):
-        self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_data_comb_NC" % self.lep_mva_wp
-        self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_data_comb" % self.lep_mva_wp
+    def set_leptonFakeRateWeightHistogramNames(self, central_or_shift, lepton_and_hadTau_selection):
+        suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection else 'data_comb'
+        self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (self.lep_mva_wp, suffix)
+        self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (self.lep_mva_wp, suffix)
 
         leptonFakeRateWeight_histogramName_e_suffix = ''
         leptonFakeRateWeight_histogramName_mu_suffix = ''
@@ -309,6 +315,8 @@ class analyzeConfig(object):
             'hasLHE',
             'central_or_shift',
             'leptonSelection',
+            'electronSelection',
+            'muonSelection',
             'lep_mva_cut',
             'chargeSumSelection',
             'histogramDir',
@@ -532,6 +540,54 @@ class analyzeConfig(object):
         lines.append("process.addSystDatacards.category = cms.string('%s')" % jobOptions['category'])
         lines.append("process.addSystDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
         create_cfg(self.cfgFile_add_syst_dcard, jobOptions['cfgFile_modified'], lines)
+
+    def createCfg_add_syst_fakerate(self, jobOptions):
+        """Fills the template of python configuration file for adding the following shape systematics to the datacard:
+            - 'CMS_ttHl_Clos_norm_e'
+            - 'CMS_ttHl_Clos_shape_e'
+            - 'CMS_ttHl_Clos_norm_m'
+            - 'CMS_ttHl_Clos_shape_m'
+            - 'CMS_ttHl_Clos_norm_t'
+            - 'CMS_ttHl_Clos_shape_t'
+
+           Args:
+             histogramToFit: name of the histogram used for signal extraction
+        """
+        lines = []
+        lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
+        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['outputFile'])
+        lines.append("process.addSystFakeRates.category = cms.string('%s')" % jobOptions['category'])
+        lines.append("process.addSystFakeRates.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
+        xAxisTitle = None
+        yAxisTitle = None
+        if jobOptions['histogramToFit'].find("mva") != -1:
+            xAxisTitle = "MVA Discriminant"
+            yAxisTitle = "dN/dMVA"
+        elif jobOptions['histogramToFit'].find("mTauTauVis") != -1:
+            xAxisTitle = "m_{#tau#tau}^{vis} [GeV]"
+            yAxisTitle = "dN/dm_{#tau#tau}^{vis} [1/GeV]"
+        else:
+            xAxisTitle = ""
+            yAxisTitle = ""
+        lines.append("process.addSystFakeRates.xAxisTitle = cms.string('%s')" % xAxisTitle)
+        lines.append("process.addSystFakeRates.yAxisTitle = cms.string('%s')" % yAxisTitle)
+        lines.append("process.addSystFakeRates.addSyst = cms.VPSet(")
+        for lepton_and_hadTau_type in [ 'e', 'm', 't' ]:
+            if ('add_Clos_%s' % lepton_and_hadTau_type) in jobOptions:
+                lines.append("    cms.PSet(")
+                lines.append("        name = cms.string('CMS_ttHl_Clos_%s')," % lepton_and_hadTau_type)
+                lines.append("        fakes_mc = cms.PSet(")
+                lines.append("            inputFileName = cms.string('%s')," % jobOptions['inputFile_nominal_%s' % lepton_and_hadTau_type])
+                lines.append("            histogramName = cms.string('%s')," % jobOptions['histogramName_nominal_%s' % lepton_and_hadTau_type])
+                lines.append("        ),")
+                lines.append("        mcClosure = cms.PSet(")
+                lines.append("            inputFileName = cms.string('%s')," % jobOptions['inputFile_mcClosure_%s' % lepton_and_hadTau_type])
+                lines.append("            histogramName = cms.string('%s')," % jobOptions['histogramName_mcClosure_%s' % lepton_and_hadTau_type])
+                lines.append("        ),")
+                lines.append("    ),")
+        lines.append(")")
+        lines.append("process.addSystFakeRates.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
+        create_cfg(self.cfgFile_add_syst_fakerate, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_makePlots(self, jobOptions):
         """Fills the template of python configuration file for making control plots
@@ -770,11 +826,21 @@ class analyzeConfig(object):
             lines_makefile.append("")
 
     def addToMakefile_add_syst_dcard(self, lines_makefile):
-        """Adds the commands to Makefile that are necessary for building the datacards.
+        """Adds the commands to Makefile that are necessary for including additional systematic uncertainties into the datacards.
         """
         for jobOptions in self.jobOptions_add_syst_dcard.values():
             lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
             lines_makefile.append("\t%s %s" % (self.executable_add_syst_dcard, jobOptions['cfgFile_modified']))
+            self.filesToClean.append(jobOptions['outputFile'])
+            lines_makefile.append("")
+
+    def addToMakefile_add_syst_fakerate(self, lines_makefile):
+        """Adds the commands to Makefile that are necessary for including additional systematic uncertainties,
+           related to the non-closure of the fake-rates for electrons, muons, and taus, into the datacards.
+        """
+        for jobOptions in self.jobOptions_add_syst_fakerate.values():
+            lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
+            lines_makefile.append("\t%s %s" % (self.executable_add_syst_fakerate, jobOptions['cfgFile_modified']))
             self.filesToClean.append(jobOptions['outputFile'])
             lines_makefile.append("")
 
@@ -805,6 +871,7 @@ class analyzeConfig(object):
         """
         self.targets.extend([ jobOptions['datacardFile'] for jobOptions in self.jobOptions_prep_dcard.values() ])
         self.targets.extend([ jobOptions['outputFile'] for jobOptions in self.jobOptions_add_syst_dcard.values() ])
+        self.targets.extend([ jobOptions['outputFile'] for jobOptions in self.jobOptions_add_syst_fakerate.values() ])
         if self.rootOutputAux:
             self.targets.append("selEventTree_hadd")
         for idxJob, jobOptions in enumerate(self.jobOptions_make_plots.values()):
