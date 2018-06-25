@@ -5,6 +5,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // countLeptonGenMatches
+#include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // countHadTauGenMatches
 
 #include <numeric> // std::accumulate()
 
@@ -175,6 +177,50 @@ countMuons(const std::vector<const RecoLepton *> & leptons)
     if ( (*lepton)->is_muon() ) ++numMuons;
   }
   return numMuons;
+}
+
+int
+countFakeElectrons(const std::vector<const RecoLepton *> & leptons)
+{
+  int numGenMatchedLeptons = 0;
+  int numGenMatchedPhotons = 0;
+  int numGenMatchedJets = 0;
+  for ( std::vector<const RecoLepton *>::const_iterator lepton = leptons.begin();
+	lepton != leptons.end(); ++ lepton ) {
+    if ( (*lepton)->is_electron() ) {
+      countLeptonGenMatches(*lepton, numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedJets);
+    }
+  }
+  return numGenMatchedJets;
+}
+
+int 
+countFakeMuons(const std::vector<const RecoLepton *> & leptons)
+{
+  int numGenMatchedLeptons = 0;
+  int numGenMatchedPhotons = 0;
+  int numGenMatchedJets = 0;
+  for ( std::vector<const RecoLepton *>::const_iterator lepton = leptons.begin();
+	lepton != leptons.end(); ++lepton ) {
+    if ( (*lepton)->is_muon() ) {
+      countLeptonGenMatches(*lepton, numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedJets);
+    }
+  }
+  return numGenMatchedJets;
+}
+
+int 
+countFakeHadTaus(const std::vector<const RecoHadTau *> & hadTaus)
+{
+  int numGenMatchedHadTaus = 0;
+  int numGenMatchedElectrons = 0;
+  int numGenMatchedMuons = 0;
+  int numGenMatchedJets = 0;
+  for ( std::vector<const RecoHadTau *>::const_iterator hadTau = hadTaus.begin();
+	hadTau != hadTaus.end(); ++hadTau ) {
+    countHadTauGenMatches(*hadTau, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons, numGenMatchedJets);
+  }
+  return numGenMatchedJets;
 }
 
 int

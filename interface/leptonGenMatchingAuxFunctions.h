@@ -65,6 +65,12 @@ int
 getLeptonGenMatch_int(const std::vector<leptonGenMatchEntry> & leptonGenMatch_definitions,
                       const std::string & leptonGenMatch_string);
 
+void
+countLeptonGenMatches(const RecoLepton * lepton,
+		      int & numGenMatchedLeptons,
+		      int & numGenMatchedPhotons,
+		      int & numGenMatchedJets);
+
 const leptonGenMatchEntry &
 getLeptonGenMatch(const std::vector<leptonGenMatchEntry> & leptonGenMatch_definitions,
                   const RecoLepton * lepton_lead,

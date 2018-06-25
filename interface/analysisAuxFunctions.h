@@ -286,12 +286,23 @@ printCollection(const std::string & collection_name,
   }
 }
 
+/**
+ * @brief Count number of electrons and muons contained in given collection of reconstructed leptons
+ */
 int 
 countElectrons(const std::vector<const RecoLepton *> & leptons);
-
 int 
 countMuons(const std::vector<const RecoLepton *> & leptons);
 
+/**
+ * @brief Count number of reconstructed electrons, muons, and hadronic taus that are due to misidentified quark or gluon jets
+ */
+int
+countFakeElectrons(const std::vector<const RecoLepton *> & leptons);
+int 
+countFakeMuons(const std::vector<const RecoLepton *> & leptons);
+int 
+countFakeHadTaus(const std::vector<const RecoHadTau *> & hadTaus);
 
 /**
  * @brief Computes the number of k combinations out of n
