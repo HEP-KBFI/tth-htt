@@ -153,7 +153,6 @@ int main(int argc, char* argv[])
 	
 	for ( std::set<std::string>::const_iterator histogram = histograms.begin();
 	      histogram != histograms.end(); ++histogram ) {
-	  std::cout << "histogram = " << (*histogram) << std::endl;
 	  for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
 		central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
 

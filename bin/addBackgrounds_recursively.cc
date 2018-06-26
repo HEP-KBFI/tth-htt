@@ -51,7 +51,7 @@ namespace
     // check if directory given as function argument contains subdirectories for input processes
     bool allProcessesExist = true;
     for ( vstring::const_iterator process_input = processes_input.begin();
-	  process_input != processes_input.end(); ++process_input ) {
+          process_input != processes_input.end(); ++process_input ) {
       const TDirectory* subdir_input = dynamic_cast<TDirectory*>((const_cast<TDirectory*>(dir))->Get(process_input->data()));
       if ( !subdir_input ) allProcessesExist = false;
     }
@@ -70,70 +70,67 @@ namespace
       TIter next(list);
       TKey* key = 0;
       while ( (key = dynamic_cast<TKey*>(next())) ) {
-	TObject* object = key->ReadObj();
-	TH1* histogram = dynamic_cast<TH1*>(object);
-	if ( !histogram ) continue;
-	TString histogramName = TString(histogram->GetName()).ReplaceAll(Form("%s_", the_process_input.data()), "");
-	for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
-	      central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
-	  if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) {
-	    histogramName = histogramName.ReplaceAll(Form("%s_", central_or_shift->data()), "");
-	  }
-	}
-	if ( histogramName.Contains("CMS_") ) continue;
-	bool isHistogramToCopy = false;
-	if ( histogramsToCopy.size() > 0 ) {
-	  for ( vstring::const_iterator histogramToCopy = histogramsToCopy.begin();
-		histogramToCopy != histogramsToCopy.end(); ++histogramToCopy ) {
-	    if ( (*histogramToCopy) == histogramName.Data() ) isHistogramToCopy = true;
-	  }
-	} else {
-	  isHistogramToCopy = true;
-	}
-	if ( !isHistogramToCopy ) continue;
-	if ( histograms.find(histogramName.Data()) == histograms.end() ) {
-	  std::cout << "adding histogram = " << histogramName.Data() << std::endl;
-	  histograms.insert(histogramName.Data());
-	}
+        TObject* object = key->ReadObj();
+        TH1* histogram = dynamic_cast<TH1*>(object);
+        if ( !histogram ) continue;
+        TString histogramName = TString(histogram->GetName()).ReplaceAll(Form("%s_", the_process_input.data()), "");
+        for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
+              central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
+          if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) {
+            histogramName = histogramName.ReplaceAll(Form("%s_", central_or_shift->data()), "");
+          }
+        }
+        if ( histogramName.Contains("CMS_") ) continue;
+        bool isHistogramToCopy = false;
+        if ( histogramsToCopy.size() > 0 ) {
+          for ( vstring::const_iterator histogramToCopy = histogramsToCopy.begin();
+                histogramToCopy != histogramsToCopy.end(); ++histogramToCopy ) {
+            if ( (*histogramToCopy) == histogramName.Data() ) isHistogramToCopy = true;
+          }
+        } else {
+          isHistogramToCopy = true;
+        }
+        if ( !isHistogramToCopy ) continue;
+        if ( histograms.find(histogramName.Data()) == histograms.end() ) {
+          std::cout << "adding histogram = " << histogramName.Data() << std::endl;
+          histograms.insert(histogramName.Data());
+        }
       }
       
       // add histograms
       for ( std::set<std::string>::const_iterator histogram = histograms.begin();
-	    histogram != histograms.end(); ++histogram ) {
-	std::cout << "histogram = " << (*histogram) << std::endl;
-	for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
-	      central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
-	  
-	  int verbosity = ( histogram->find("EventCounter") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
-	  
-	  std::vector<TH1*> histograms_input;
-	  for ( vstring::const_iterator process_input = processes_input.begin();
-		process_input != processes_input.end(); ++process_input ) {
-	    bool enableException = ( (*central_or_shift) == "" || (*central_or_shift) == "central" ) ? true : false;
-	    TH1* histogram_input = getHistogram(dir, *process_input, *histogram, *central_or_shift, enableException);
-	    if ( !histogram_input ) histogram_input = getHistogram(dir, *process_input, *histogram, "", true);
-	    histograms_input.push_back(histogram_input);
-	  }
+            histogram != histograms.end(); ++histogram ) {
+        for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
+              central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
 
-	  std::string subdirName_output = Form("%s/%s", dirName.data(), process_output.data());
-	  std::cout << "creating subdirectory = '" << subdirName_output << "'" << std::endl;
-	  TDirectory* subdir_output = createSubdirectory_recursively(fs, subdirName_output);
-	  subdir_output->cd();
-	  	  
-	  std::string histogramName_output;
-	  if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramName_output.append(*central_or_shift);
-	  if ( histogramName_output.length() > 0 ) histogramName_output.append("_");
-	  histogramName_output.append(*histogram);
-	  std::cout << "histogram = " << (*histogram) << ", central_or_shift = " << (*central_or_shift) << ": histogramName_output = " << histogramName_output << std::endl;
-	  addHistograms(histogramName_output, histograms_input, verbosity);
-	}
+
+          std::vector<TH1*> histograms_input;
+          for ( vstring::const_iterator process_input = processes_input.begin();
+                process_input != processes_input.end(); ++process_input ) {
+            bool enableException = ( (*central_or_shift) == "" || (*central_or_shift) == "central" ) ? true : false;
+            TH1* histogram_input = getHistogram(dir, *process_input, *histogram, *central_or_shift, enableException);
+            if ( !histogram_input ) histogram_input = getHistogram(dir, *process_input, *histogram, "", true);
+            histograms_input.push_back(histogram_input);
+          }
+
+          std::string subdirName_output = Form("%s/%s", dirName.data(), process_output.data());
+          std::cout << "creating subdirectory = '" << subdirName_output << "'" << std::endl;
+          TDirectory* subdir_output = createSubdirectory_recursively(fs, subdirName_output);
+          subdir_output->cd();
+
+          std::string histogramName_output;
+          if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramName_output.append(*central_or_shift);
+          if ( histogramName_output.length() > 0 ) histogramName_output.append("_");
+          histogramName_output.append(*histogram);
+          addHistograms(histogramName_output, histograms_input);
+        }
       }
     }
 
     // recursively process all subdirectories
     std::vector<const TDirectory*> subdirs = getSubdirectories(dir);
     for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
-	  subdir != subdirs.end(); ++subdir ) {
+          subdir != subdirs.end(); ++subdir ) {
       processSubdirectory_recursively(fs, *subdir, dirName + "/" + (*subdir)->GetName(), processes_input, process_output, histogramsToCopy, central_or_shifts);
     }
     for(const TDirectory* subdir: subdirs)
@@ -198,13 +195,13 @@ int main(int argc, char* argv[])
   if ( categories.size() == 0 ) categories = getSubdirectoryNames(inputFile);
 
   for ( vstring::const_iterator category = categories.begin();
-	category != categories.end(); ++category ) {
+        category != categories.end(); ++category ) {
     
     TDirectory* dir = getDirectory(inputFile, *category, true);
     assert(dir);
 
     std::cout << "processing category = " << (*category) << std::endl;
-	
+
     processSubdirectory_recursively(fs, dir, *category, processes_input, process_output, histogramsToCopy, central_or_shifts);
   }
 

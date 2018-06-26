@@ -576,7 +576,8 @@ getHistogram(const TDirectory * dir,
              const std::string & process,
              const std::string & histogramName,
              const std::string & central_or_shift,
-             bool enableException)
+             bool enableException,
+             bool verbose)
 {
   std::string histogramName_full = Form("%s/", process.data());
   if(! central_or_shift.empty() && central_or_shift != "central")
@@ -591,7 +592,10 @@ getHistogram(const TDirectory * dir,
   TH1 * histogram = dynamic_cast<TH1 *>((const_cast<TDirectory *>(dir))->Get(histogramName_full.data()));
   if(histogram)
   {
-    std::cout << "--> returning histogram = " << histogram << ": name = '" << histogram->GetName() << "'\n";
+    if(verbose)
+    {
+      std::cout << "--> returning histogram = " << histogram << ": name = '" << histogram->GetName() << "'\n";
+    }
   }
   else if(enableException)
   {

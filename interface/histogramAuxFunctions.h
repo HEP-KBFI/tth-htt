@@ -99,17 +99,18 @@ getHistogram(const TDirectory * dir,
              const std::string & process,
              const std::string & histogramName,
              const std::string & central_or_shift,
-             bool enableException);
+             bool enableException,
+             bool verbose = false);
 
 TDirectory *
 createSubdirectory(TDirectory * dir,
                    const std::string & subdirName,
-                   bool verbose = true);
+                   bool verbose = false);
 
 TDirectory *
 createSubdirectory_recursively(TFileDirectory & dir,
                                const std::string & fullSubdirName,
-                               bool verbose = true);
+                               bool verbose = false);
 
 TArrayD
 getBinning(const TH1 * histogram,
