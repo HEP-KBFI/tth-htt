@@ -104,7 +104,7 @@ getHistogram_wrapper(const TDirectory * dir,
 
   const std::string subdirName = std::string(histogramName_full, 0, idx);
   const std::string histogramName_wrt_subdir = std::string(histogramName_full, idx + 1);
-  TH1 * histogram = getHistogram(dir, subdirName, histogramName_wrt_subdir, central_or_shift, enableException);
+  TH1 * histogram = getHistogram(dir, subdirName, histogramName_wrt_subdir, central_or_shift, enableException, true);
   return histogram;
 }
 

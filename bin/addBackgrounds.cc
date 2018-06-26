@@ -148,12 +148,8 @@ int main(int argc, char* argv[])
 
         for ( std::set<std::string>::const_iterator histogram = histograms.begin();
               histogram != histograms.end(); ++histogram ) {
-          std::cout << "histogram = " << (*histogram) << std::endl;
           for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
                 central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
-
-            int verbosity = ( histogram->find("EventCounter") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
-
             std::vector<TH1*> histograms_input;
             for ( vstring::const_iterator process_input = processes_input.begin();
                   process_input != processes_input.end(); ++process_input ) {
@@ -171,8 +167,7 @@ int main(int argc, char* argv[])
             if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramName_output.append(*central_or_shift);
             if ( histogramName_output.length() > 0 ) histogramName_output.append("_");
             histogramName_output.append(*histogram);
-            std::cout << "histogram = " << (*histogram) << ", central_or_shift = " << (*central_or_shift) << ": histogramName_output = " << histogramName_output << std::endl;
-            TH1 * tmp = addHistograms(histogramName_output, histograms_input, verbosity);
+            TH1 * tmp = addHistograms(histogramName_output, histograms_input);
             tmp->Write();
 
             for(auto & histogram_input: histograms_input)
