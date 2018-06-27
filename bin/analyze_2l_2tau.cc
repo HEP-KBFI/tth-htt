@@ -74,7 +74,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // getLeptonGenMatch_definitions_3lepton, getLeptonGenMatch_string, getLeptonGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_3tau, getHadTauGenMatch_string, getHadTauGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h"
-#include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
+#include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_isTriggered, hltPaths_delete
+#include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface.h
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTH2, get_sf_from_TH2
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
@@ -373,16 +374,8 @@ int main(int argc, char* argv[])
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree->registerReader(&eventInfoReader);
 
-  std::vector<hltPath*> hltPaths;
-  hltPaths.insert(hltPaths.end(), triggers_1e.begin(), triggers_1e.end());
-  hltPaths.insert(hltPaths.end(), triggers_2e.begin(), triggers_2e.end());
-  hltPaths.insert(hltPaths.end(), triggers_1mu.begin(), triggers_1mu.end());
-  hltPaths.insert(hltPaths.end(), triggers_2mu.begin(), triggers_2mu.end());
-  hltPaths.insert(hltPaths.end(), triggers_1e1mu.begin(), triggers_1e1mu.end());
-  for ( std::vector<hltPath*>::iterator hltPath = hltPaths.begin();
-	hltPath != hltPaths.end(); ++hltPath ) {
-    inputTree->registerReader(*hltPath);
-  }
+  hltPathReader hltPathReader_instance({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
+  inputTree -> registerReader(&hltPathReader_instance);
 
 //--- declare particle collections
   const bool readGenObjects = isMC && !redoGenMatching;

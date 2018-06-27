@@ -13,10 +13,6 @@ hltPath_LeptonFakeRate::hltPath_LeptonFakeRate(const std::string & branchName,
                                                double min_jetPt,
                                                double prescale) 
   : hltPath(branchName, minPt, maxPt)
-  , branchName_(branchName)
-  , value_(-1)
-  , minPt_(minPt)
-  , maxPt_(maxPt)
   , minRecoPt_(minRecoPt) // NEWLY ADDED AFTER GIOVANNI SYNC
   , minJetPt_(min_jetPt)
   , prescale_(prescale)
@@ -104,19 +100,6 @@ hltPath_LeptonFakeRate::hltPaths_LeptonFakeRate_isTriggered(const std::vector<hl
 		     );
 }
 */
-
-
-
-
-void
-hltPaths_LeptonFakeRate_setBranchAddresses(TTree * tree,
-                                           const std::vector<hltPath_LeptonFakeRate *> & hltPaths)
-{
-  for(hltPath_LeptonFakeRate * const & path: hltPaths)
-  {
-    path->setBranchAddress(tree);
-  }
-}
 
 std::vector<hltPath_LeptonFakeRate *>
 create_hltPaths_LeptonFakeRate(const std::vector<std::string> & branchNames,

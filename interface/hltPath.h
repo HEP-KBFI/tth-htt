@@ -11,7 +11,6 @@
  * @brief Auxiliary data structure for handling trigger information
  */
 class hltPath
-  : public ReaderBase
 {
  public:
   hltPath(const std::string & branchName,
@@ -19,12 +18,6 @@ class hltPath
 	  double maxPt = -1.,
 	  const std::string & label = "");
   ~hltPath() {}
-
-  void
-  setBranchAddress(TTree * tree);
-
-  void
-  setBranchAddresses(TTree * tree) override;
 
   const std::string &
   getBranchName() const;
@@ -41,7 +34,9 @@ class hltPath
   const std::string &
   getLabel() const;
 
- private:
+  friend class hltPathReader;
+
+ protected:
   std::vector<std::string>
   get_available_branches(TTree * tree) const;
 
@@ -55,10 +50,6 @@ class hltPath
 std::vector<hltPath *>
 create_hltPaths(const std::vector<std::string> & branchNames,
                 const std::string & label = "");
-
-void
-hltPaths_setBranchAddresses(TTree * tree,
-                            const std::vector<hltPath *> & hltPaths);
 
 bool
 hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths,
