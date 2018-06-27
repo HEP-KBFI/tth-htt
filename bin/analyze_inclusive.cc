@@ -23,6 +23,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherConePt(), mergeLeptonCollections()
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // k*_central
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths(), hltPaths_isTriggered()
+#include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 
@@ -204,14 +205,12 @@ main(int argc,
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree->registerReader(&eventInfoReader);
 
-  for(const std::vector<hltPath*> hltPaths: {
-       triggers_1e, triggers_1mu, triggers_2e, triggers_1e1mu, triggers_2mu,
-       triggers_3e, triggers_2e1mu, triggers_1e2mu, triggers_3mu,
-       triggers_1mu1tau, triggers_1e1tau, triggers_2tau
-     })
-  {
-    inputTree->registerReader(hltPaths);
-  }
+  hltPathReader hltPathReader_instance({
+    triggers_1e, triggers_1mu, triggers_2e, triggers_1e1mu, triggers_2mu,
+    triggers_3e, triggers_2e1mu, triggers_1e2mu, triggers_3mu,
+    triggers_1mu1tau, triggers_1e1tau, triggers_2tau
+  });
+  inputTree -> registerReader(&hltPathReader_instance);
 
 //--- declare particle collections
   RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons, false);
