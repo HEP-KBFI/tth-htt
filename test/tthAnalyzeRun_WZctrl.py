@@ -8,7 +8,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_WZctrl.py -v 2017Dec13 -e 2017
 
-mode_choices     = [ 'default' ]
+mode_choices     = [ 'default', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts
 systematics.full = systematics.an_common
 
@@ -51,10 +51,16 @@ for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
+do_sync = mode.startswith('sync')
 
 if era == "2017":
   if mode == 'default':
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  elif mode == 'sync':
+    if use_nonnominal:
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+    else:
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
@@ -108,6 +114,7 @@ if __name__ == '__main__':
     dry_run            = dry_run,
     isDebug            = debug,
     use_home           = use_home,
+    do_sync            = do_sync,
     use_nonnominal     = use_nonnominal,
     rle_select         = rle_select,
   )

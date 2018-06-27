@@ -60,6 +60,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
         dry_run                   = False,
         isDebug                   = False,
         use_home                  = True,
+        do_sync                   = False,
         rle_select                = '',
         use_nonnominal            = False,
       ):
@@ -83,7 +84,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
       verbose                   = verbose,
       dry_run                   = dry_run,
       isDebug                   = isDebug,
-      use_home                  = use_home
+      use_home                  = use_home,
+      do_sync                   = do_sync,
     )
 
     self.samples = samples
@@ -326,6 +328,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
               self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s.root" % \
                 (self.channel, process_name, lepton_selection_and_frWeight))
 
+          if self.do_sync: continue
+
           if is_mc:
             logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
 
@@ -441,6 +445,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
               self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
             self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
+        if self.do_sync: continue
+
         # sum fake background contributions for the total of all MC sample
         # input processes: TT2l0g1j, TT1l1g1j, TT1l0g2j, TT0l3j, TT0l3j, TT0l3j, TT0l3j; ...
         # output process: fakes_mc
@@ -500,6 +506,22 @@ class analyzeConfig_WZctrl(analyzeConfig):
         self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
         self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \
           (self.channel, lepton_selection_and_frWeight))
+
+    if self.do_sync:
+      if self.is_sbatch:
+        logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
+        self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
+        self.createScript_sbatch_syncNtuple(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+      logging.info("Creating Makefile")
+      lines_makefile = []
+      self.addToMakefile_syncNtuple(lines_makefile)
+      outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
+      self.outputFile_sync['sync'] = outputFile_sync_path
+      self.targets.append(outputFile_sync_path)
+      self.addToMakefile_hadd_sync(lines_makefile)
+      self.createMakefile(lines_makefile)
+      logging.info("Done")
+      return self.num_jobs
 
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
     key_addFakes_job = getKey("fakes_data")
