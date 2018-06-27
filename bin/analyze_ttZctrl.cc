@@ -132,6 +132,8 @@ int main(int argc, char* argv[])
   bool isSignal = ( process_string == "signal" ) ? true : false;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
+  bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
+  bool isMCClosure_m = histogramDir.find("mcClosure_m") != std::string::npos;
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;
@@ -1284,19 +1286,23 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("MEt filters", evtWeight);
 
-    const bool skipSRveto_3e = electronSelection != muonSelection && muonSelection     == kFakeable && countMuons(selLeptons)     == 0;
-    const bool skipSRveto_3m = electronSelection != muonSelection && electronSelection == kFakeable && countElectrons(selLeptons) == 0;
-    if (( electronSelection == kFakeable || muonSelection == kFakeable ) && ! skipSRveto_3e && ! skipSRveto_3m ) {
-      if ( tightLeptons.size() >= 3 ) {
-        if ( run_lumi_eventSelector ) {
-          std::cout << "event " << eventInfo.str() << " FAILS tightElectrons+tightMuons selection.\n"
-                       " (#tightLeptons = " << tightLeptons.size() << ")\n"
-          ;
-        }
-        continue; // CV: avoid overlap with signal region
-      }
-      cutFlowTable.update("signal region veto", evtWeight);
+    bool failsSignalRegionVeto = false;
+    if ( isMCClosure_e || isMCClosure_m ) {
+      bool applySignalRegionVeto = (isMCClosure_e && countFakeElectrons(selLeptons) >= 1) || (isMCClosure_m && countFakeMuons(selLeptons) >= 1);
+      if ( applySignalRegionVeto && tightLeptons.size() >= 3 ) failsSignalRegionVeto = true;
+    } else if ( electronSelection == kFakeable || muonSelection == kFakeable ) {
+      if ( tightLeptons.size() >= 3 ) failsSignalRegionVeto = true;
     }
+    if ( failsSignalRegionVeto ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event " << eventInfo.str() << " FAILS overlap w/ the SR: "
+	             "# tight leptons = " << tightLeptons.size() << " >= 3\n"
+        ;
+	printCollection("tightLeptons", tightLeptons);
+      }
+      continue; // CV: avoid overlap with signal region
+    }
+    cutFlowTable.update("signal region veto", evtWeight);
 
     double mT = ( selLepton_extra ) ? comp_MT_met_lep1(*selLepton_extra, met.pt(), met.phi()) : -1.;
 
