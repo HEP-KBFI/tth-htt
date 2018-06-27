@@ -7,10 +7,9 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_2los_1tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices         = [ 'default', 'forBDTtraining' ]
-sys_choices          = [ 'full', 'extended' ] + systematics.an_extended_opts
-systematics.full     = systematics.an_common
-systematics.extended = systematics.an_extended
+mode_choices     = [ 'default', 'forBDTtraining' ]
+sys_choices      = [ 'full' ] + systematics.an_extended_opts
+systematics.full = systematics.an_extended
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -86,6 +85,8 @@ if __name__ == '__main__':
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
     ', '.join(central_or_shifts)
   )
+  if not use_preselected:
+    logging.warning('Running the analysis on fully inclusive samples!')
 
   if sample_filter:
     samples = filter_samples(samples, sample_filter)

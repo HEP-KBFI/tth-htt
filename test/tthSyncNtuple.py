@@ -67,7 +67,7 @@ from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
 sys_choices     = systematics.an_inclusive_opts
 channel_choices = [
-  '1l_2tau', '2lss', '2lss_1tau', '2l_2tau', '3l', '3l_1tau', '4l', 'inclusive', 'ttWctrl', 'ttZctrl',
+  '1l_2tau', '2lss', '2lss_1tau', '2l_2tau', '3l', '3l_1tau', '4l', 'inclusive', 'ttWctrl', 'ttZctrl', 'WZctrl'
 ]
 
 parser = tthAnalyzeParser()
@@ -119,7 +119,10 @@ output   = args.output
 clean    = args.clean
 with_mem = args.with_mem
 
-assert(all(map(lambda systematic_label: hasattr(systematics, systematic_label), systematics_label)))
+for systematic_label in systematics_label:
+  if systematics_label != 'full':
+    if not hasattr(systematics, systematic_label):
+      raise ValueError('Invalid option for systematic uncertainty: %s' % systematic_label)
 
 if __name__ == '__main__':
   logging.basicConfig(

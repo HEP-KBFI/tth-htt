@@ -39,7 +39,8 @@ process.analyze_1l_2tau = cms.PSet(
     apply_offline_e_trigger_cuts_1mu = cms.bool(True),
     apply_offline_e_trigger_cuts_1mu1tau = cms.bool(True),
 
-    leptonSelection = cms.string('Tight'),
+    electronSelection = cms.string('Tight'),
+    muonSelection = cms.string('Tight'),
     lep_mva_cut = cms.double(0.75), # CV: used for tight lepton selection only
     apply_leptonGenMatching = cms.bool(False),
 
