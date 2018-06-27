@@ -150,6 +150,9 @@ int main(int argc, char* argv[])
   bool isSignal = ( process_string == "signal" ) ? true : false;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
+  bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
+  bool isMCClosure_m = histogramDir.find("mcClosure_m") != std::string::npos;
+  bool isMCClosure_t = histogramDir.find("mcClosure_t") != std::string::npos;
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;
@@ -1694,23 +1697,28 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowTable.update("MEt filters", evtWeight);
     cutFlowHistManager->fillHistograms("MEt filters", evtWeight);
 
-    const bool skipSRveto_2e = electronSelection != muonSelection && muonSelection     == kFakeable && countMuons(selLeptons)     == 0;
-    const bool skipSRveto_2m = electronSelection != muonSelection && electronSelection == kFakeable && countElectrons(selLeptons) == 0;
-    if (( electronSelection == kFakeable || muonSelection == kFakeable || hadTauSelection == kFakeable ) && ! skipSRveto_2e && ! skipSRveto_2m ) {
-      if ( tightLeptons.size() >= 2 && tightHadTaus.size() >= 1 ) {
-        if ( run_lumi_eventSelector ) {
-          std::cout << "event " << eventInfo.str() << "  FAILS overlap w/ the SR: "
-	               "# tight leptons = " << tightLeptons.size() << " >= 1 and "
-  	               "# tight taus = " << tightHadTaus.size() << " >= 1\n"
-          ;
-	  printCollection("tightLeptons", tightLeptons);
-	  printCollection("tightHadTaus", tightHadTaus);
-        }
-        continue; // CV: avoid overlap with signal region
-      }
-      cutFlowTable.update("signal region veto", evtWeight);
-      cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
+    bool failsSignalRegionVeto = false;
+    if ( isMCClosure_e || isMCClosure_m || isMCClosure_t ) {
+      bool applySignalRegionVeto_lepton = (isMCClosure_e && countFakeElectrons(selLeptons) >= 1) || (isMCClosure_m && countFakeMuons(selLeptons) >= 1);
+      bool applySignalRegionVeto_hadTau = isMCClosure_t && countFakeHadTaus(selHadTaus) >= 1;
+      if ( applySignalRegionVeto_lepton && tightLeptons.size() >= 2 ) failsSignalRegionVeto = true;
+      if ( applySignalRegionVeto_hadTau && tightHadTaus.size() >= 1 ) failsSignalRegionVeto = true;
+    } else if ( electronSelection == kFakeable || muonSelection == kFakeable || hadTauSelection == kFakeable ) {
+      if ( tightLeptons.size() >= 2 && tightHadTaus.size() >= 1 ) failsSignalRegionVeto = true;
     }
+    if ( failsSignalRegionVeto ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event " << eventInfo.str() << " FAILS overlap w/ the SR: "
+	             "# tight leptons = " << tightLeptons.size() << " >= 2 and "
+                     "# tight taus = " << tightHadTaus.size() << " >= 1\n"
+        ;
+	printCollection("tightLeptons", tightLeptons);
+	printCollection("tightHadTaus", tightHadTaus);
+      }
+      continue; // CV: avoid overlap with signal region
+    }
+    cutFlowTable.update("signal region veto", evtWeight);
+    cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
 
     MEMOutput_2lss_1tau memOutput_2lss_1tau_matched;
     if ( memReader ) {

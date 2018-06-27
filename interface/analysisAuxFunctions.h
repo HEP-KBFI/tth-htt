@@ -287,14 +287,6 @@ printCollection(const std::string & collection_name,
 }
 
 /**
- * @brief Count number of electrons and muons contained in given collection of reconstructed leptons
- */
-int 
-countElectrons(const std::vector<const RecoLepton *> & leptons);
-int 
-countMuons(const std::vector<const RecoLepton *> & leptons);
-
-/**
  * @brief Count number of reconstructed electrons, muons, and hadronic taus that are due to misidentified quark or gluon jets
  */
 int

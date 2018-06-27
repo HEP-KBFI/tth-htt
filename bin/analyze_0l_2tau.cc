@@ -152,6 +152,7 @@ int main(int argc, char* argv[])
   bool isSignal = ( process_string == "signal" ) ? true : false;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
+  bool isMCClosure_t = histogramDir.find("mcClosure_t") != std::string::npos;
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;
@@ -1146,22 +1147,24 @@ int main(int argc, char* argv[])
     cutFlowTable.update("MEt filters", evtWeight);
     cutFlowHistManager->fillHistograms("MEt filters", evtWeight);
     
-    if ( hadTauSelection == kFakeable ) {
-      if ( tightHadTaus.size() >= 2 ) 
-      {
-        if ( run_lumi_eventSelector ) {
-          std::cout << "event " << eventInfo.str() << " FAILS overlap w/ the SR: "
-                       "# tight leptons = " << tightLeptons.size() << " >= 1 and "
-                       "# tight taus = " << tightHadTaus.size() << " >= 1\n"
-          ;
-	  printCollection("tightLeptons", tightLeptons);
-  	  printCollection("tightHadTaus", tightHadTaus);
-	}
-        continue; // CV: avoid overlap with signal region
-      }
-      cutFlowTable.update("signal region veto", evtWeight);
-      cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
+    bool failsSignalRegionVeto = false;
+    if ( isMCClosure_t ) {
+      bool applySignalRegionVeto = isMCClosure_t && countFakeHadTaus(selHadTaus) >= 1;
+      if ( applySignalRegionVeto && tightHadTaus.size() >= 2 ) failsSignalRegionVeto = true;
+    } else if ( hadTauSelection == kFakeable ) {
+      if ( tightHadTaus.size() >= 2 ) failsSignalRegionVeto = true;
     }
+    if ( failsSignalRegionVeto ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event " << eventInfo.str() << " FAILS overlap w/ the SR: "
+                     "# tight taus = " << tightHadTaus.size() << " >= 2\n"
+        ;
+	printCollection("tightHadTaus", tightHadTaus);
+      }
+      continue; // CV: avoid overlap with signal region
+    }
+    cutFlowTable.update("signal region veto", evtWeight);
+    cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
     
     //--- compute output of hadronic top tagger BDT
     //double max_mvaOutput_hadTopTagger = -1.;

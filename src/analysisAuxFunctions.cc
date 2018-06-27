@@ -158,28 +158,6 @@ printCollection<RecoLepton>(const std::string & collection_name,
 }
 
 int
-countElectrons(const std::vector<const RecoLepton *> & leptons)
-{
-  int numElectrons = 0;
-  for ( std::vector<const RecoLepton *>::const_iterator lepton = leptons.begin();
-	lepton != leptons.end(); ++ lepton ) {
-    if ( (*lepton)->is_electron() ) ++numElectrons;
-  }
-  return numElectrons;
-}
-
-int 
-countMuons(const std::vector<const RecoLepton *> & leptons)
-{
-  int numMuons = 0;
-  for ( std::vector<const RecoLepton *>::const_iterator lepton = leptons.begin();
-	lepton != leptons.end(); ++ lepton ) {
-    if ( (*lepton)->is_muon() ) ++numMuons;
-  }
-  return numMuons;
-}
-
-int
 countFakeElectrons(const std::vector<const RecoLepton *> & leptons)
 {
   int numGenMatchedLeptons = 0;
