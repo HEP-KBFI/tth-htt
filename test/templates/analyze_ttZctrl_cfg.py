@@ -58,7 +58,8 @@ process.analyze_ttZctrl = cms.PSet(
     apply_offline_e_trigger_cuts_1e2mu = cms.bool(True),
     apply_offline_e_trigger_cuts_3mu = cms.bool(True),
 
-    leptonSelection = cms.string('Tight'),
+    electronSelection = cms.string('Tight'),
+    muonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
 
     hadTauSelection = cms.string('Tight|dR03mvaLoose'),

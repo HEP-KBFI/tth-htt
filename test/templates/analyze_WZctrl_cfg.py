@@ -7,9 +7,7 @@ from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_2017_cfi import EvtYi
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring('/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V25tthtautau_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170207_122849/0000/tree_1.root'),
-    #fileNames = cms.vstring('/afs/cern.ch/user/v/veelken/scratch0/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/latest_Loop/tree.root'),
-    ##fileNames = cms.vstring('/afs/cern.ch/user/k/kaehatah/public/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V12_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__fall15MAv2-pu25ns15v1_76r2as_v12-v1/160330_172426/0000/tree_1.root'),
+    fileNames = cms.vstring('tree_1.root'),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
@@ -58,7 +56,8 @@ process.analyze_WZctrl = cms.PSet(
     apply_offline_e_trigger_cuts_1e2mu = cms.bool(True),
     apply_offline_e_trigger_cuts_3mu = cms.bool(True),
 
-    leptonSelection = cms.string('Tight'),
+    electronSelection = cms.string('Tight'),
+    muonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
 
     hadTauSelection = cms.string('Tight|dR03mvaLoose'),
@@ -100,5 +99,10 @@ process.analyze_WZctrl = cms.PSet(
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
 
+    syncNtuple = cms.PSet(
+        tree = cms.string(''),
+        output = cms.string(''),
+        requireGenMatching = cms.bool(False),
+    ),
     hasLHE = cms.bool(True),
 )
