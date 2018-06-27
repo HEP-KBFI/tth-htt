@@ -609,6 +609,7 @@ class analyzeConfig(object):
         lines.append("    label = cms.string('%s')" % category_label)
         lines.append("  )")
         lines.append(")")
+        lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,

@@ -5,6 +5,7 @@ VERBOSITY_LEVEL=3
 PARALLEL_JOBS=1
 SIGNAL_RESONANCE=125
 MINIMIZERALGOS="Minuit2,Migrad"
+LUMI="{{ int_lumi_data }}"
 
 # Let's record the paths to the scripts which we're about to run
 POSTFITPLOT="{{ postfit_plot_script }}"
@@ -86,7 +87,7 @@ then
         {% for pre_or_post in [ 'prefit', 'postfit' ] %}
           {% for log_or_linear in [ 'log', 'linear' ] %}
         python $POSTFITPLOT -i $MLFIT_FILE:"{{ l_sub_dir }}_shapes_{{ pre_or_post }}" \
-          -c e --x-title "$PLOT_LABEL"                                                \
+          -c e --x-title "$PLOT_LABEL" -l "$LUMI"                                     \
           {% if log_or_linear == 'log' %}--logy {% endif %}                           \
           -o "{{ l_array }}_num_{{ pre_or_post }}_{{ log_or_linear }}"                \
           &> "$OUTPUT_DIR_JOB/plot_shapes_{{ pre_or_post }}_{{ log_or_linear }}.log"
