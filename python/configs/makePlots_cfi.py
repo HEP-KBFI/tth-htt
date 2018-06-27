@@ -97,7 +97,7 @@ process.makePlots = cms.PSet(
     showUncertainty = cms.bool(False),
 
     labelOnTop = cms.string("CMS Preliminary; ttH, H #rightarrow #tau#tau; %1.1f fb^{-1} at #sqrt{s} = 13 TeV"),
-    intLumiData = cms.double(41.5), # in units of fb^-1 #TODO make it era-dependent
+    intLumiData = cms.double(41.5), # in units of fb^-1
 
     outputFileName = cms.string("plots/makePlots.png")
 )

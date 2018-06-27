@@ -670,6 +670,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
               new_cmssw_base         = self.cmssw_base_dir_combine,
               setup_dcards_script    = setup_dcards_script_path,
               postfit_plot_script    = postfit_plot_script_path,
+              int_lumi_data          = self.lumi,
               yieldtable_script      = yieldtable_script_path,
               output_dir             = combine_output_dir,
               numerator_plotLabel    = self.numerator_plotLabel,
