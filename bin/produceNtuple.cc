@@ -130,7 +130,7 @@ main(int argc,
   const std::string branchName_genJets    = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
 
   const vstring branchNames_triggers = cfg_produceNtuple.getParameter<vstring>("branchNames_triggers");
-  std::vector<hltPath*> triggers = create_hltPaths(branchNames_triggers, "triggers");
+  const std::vector<hltPath *> triggers = create_hltPaths(branchNames_triggers, "triggers");
 
   const int minNumLeptons             = cfg_produceNtuple.getParameter<int>("minNumLeptons");
   const int minNumHadTaus             = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
@@ -446,12 +446,12 @@ main(int argc,
       copyBranches_singleType(inputTree -> getCurrentTree(), outputTree, isBranchToKeep, branchesToKeep);
       copyBranches_vectorType(inputTree -> getCurrentTree(), outputTree, isBranchToKeep, branchesToKeep);
       if ( isDEBUG ) {
-	std::cout << "keeping branches:\n";
-	for ( const auto & branchEntry: branchesToKeep ) {
-	  std::cout << ' ' << branchEntry.second->outputBranchName_ << " (type ="
-	               " " << branchEntry.second->outputBranchType_string_ << ")\n"
-	  ;
-	}
+        std::cout << "keeping branches:\n";
+        for ( const auto & branchEntry: branchesToKeep ) {
+          std::cout << ' ' << branchEntry.second->outputBranchName_ << " (type ="
+                       " " << branchEntry.second->outputBranchType_string_ << ")\n"
+          ;
+        }
       }
       branchesToKeep_isInitialized = true;
     }
@@ -460,8 +460,8 @@ main(int argc,
     // in case new input file has been opened
     if ( inputTree->getProcessedFileCount() != currentFile ) {
       for ( std::map<std::string, branchEntryBaseType *>::iterator branch = branchesToKeep.begin();
-	    branch != branchesToKeep.end(); ++branch ) {
-	branch->second->setInputTree(inputTree -> getCurrentTree());
+            branch != branchesToKeep.end(); ++branch ) {
+        branch->second->setInputTree(inputTree -> getCurrentTree());
       }
       currentFile = inputTree->getProcessedFileCount();
     }
