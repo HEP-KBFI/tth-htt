@@ -113,9 +113,16 @@ TH1* copyHistogram(const TH1* histogram_input, const std::string& histogramName_
 
 TH1* cloneHistogram(const TH1* histogram, const std::string& histogramName_clone)
 {
-  TH1* histogram_clone = (TH1*)histogram->Clone(histogramName_clone.data());
-  histogram_clone->Reset();
+  TArrayD histogramBinning = getBinning(histogram);
+  int numBins = histogramBinning.GetSize() - 1;
+  TH1* histogram_clone = new TH1F(histogramName_clone.data(), histogramName_clone.data(), numBins, histogramBinning.GetArray());
   if ( !histogram_clone->GetSumw2N() ) histogram_clone->Sumw2();
+  for ( int idxBin = 0; idxBin <= (numBins + 1); ++idxBin ) { // CV: include underflow and overflow bins
+    double binContent = histogram->GetBinContent(idxBin);
+    double binError = histogram->GetBinError(idxBin);
+    histogram_clone->SetBinContent(idxBin, binContent);
+    histogram_clone->SetBinError(idxBin, binError);
+  }
   return histogram_clone;
 }
 
@@ -543,8 +550,7 @@ int main(int argc, char* argv[])
 
       if ( histogram_fakes_mc->GetNbinsX() >= 3 ) {
 	std::string histogramName_mcClosure_scaled = Form("%s_scaled", histogram_mcClosure->GetName());
-	TH1* histogram_mcClosure_scaled = (TH1*)histogram_mcClosure->Clone(histogramName_mcClosure_scaled.data());
-	if ( !histogram_mcClosure_scaled->GetSumw2N() ) histogram_mcClosure_scaled->Sumw2();
+	TH1* histogram_mcClosure_scaled = cloneHistogram(histogram_mcClosure, histogramName_mcClosure_scaled);
 	histogram_mcClosure_scaled->Scale(integral_fakes_mc/integral_mcClosure);
 	TGraphAsymmErrors* graph_mcClosure_scaled = convert_to_TGraph(histogram_mcClosure_scaled);
 

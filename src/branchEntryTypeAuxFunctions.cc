@@ -58,12 +58,12 @@ getOutputCommands(const std::vector<std::string> & outputCommands_string)
 }
 
 std::map<std::string, bool>
-getBranchesToKeep(TTree * inputTree,
+getBranchesToKeep(const TTree * inputTree,
                   std::vector<outputCommandEntry> & outputCommands)
 {
   std::map<std::string, bool> isBranchToKeep; // key = branchName
 
-  const TObjArray * const branches = inputTree->GetListOfBranches();
+  const TObjArray * const branches = (const_cast<TTree *>(inputTree))->GetListOfBranches();
   const int numBranches = branches->GetEntries();
 
   for(int idxBranch = 0; idxBranch < numBranches; ++idxBranch)

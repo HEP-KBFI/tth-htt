@@ -8,6 +8,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
+#include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // Reco*CollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // Reco*CollectionGenMatcher
@@ -30,15 +31,17 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
 #include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoWriter.h" // EventInfoWriter
+#include "tthAnalysis/HiggsToTauTau/interface/hltPathWriter.h" // hltPathWriter
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017, kLoose, kFakeable, kTight
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // k*_central
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType(), kElectron, kMuon
-#include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h"
-#include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h"
+#include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h" // branchEntryBaseType
+#include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h" // copyBranches_singleType, copyBranches_vectorType
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h"
+#include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 #include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
@@ -126,6 +129,9 @@ main(int argc,
   const std::string branchName_genPhotons = cfg_produceNtuple.getParameter<std::string>("branchName_genPhotons");
   const std::string branchName_genJets    = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
 
+  const vstring branchNames_triggers = cfg_produceNtuple.getParameter<vstring>("branchNames_triggers");
+  std::vector<hltPath*> triggers = create_hltPaths(branchNames_triggers, "triggers");
+
   const int minNumLeptons             = cfg_produceNtuple.getParameter<int>("minNumLeptons");
   const int minNumHadTaus             = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
   const int minNumLeptons_and_HadTaus = cfg_produceNtuple.getParameter<int>("minNumLeptons_and_HadTaus");
@@ -158,29 +164,21 @@ main(int argc,
   const fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
-  TChain * const inputTree = new TChain(treeName.data());
-  for(const std::string & inputFileName: inputFiles.files())
-  {
-    std::cout << "input Tree: adding file = " << inputFileName << '\n';
-    inputTree->AddFile(inputFileName.data());
-  }
+  TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
 
-  if(inputTree->GetListOfFiles()->GetEntries() < 1)
-  {
-    throw cmsException("produceNtuple", __LINE__) << "Failed to identify input Tree";
-  }
-
-  std::cout << "input Tree contains " << inputTree->GetEntries() << " entries in "
-            << inputTree->GetListOfFiles()->GetEntries() << " files\n";
+  std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
   
 //--- declare event-level variables
   EventInfo eventInfo(false, false, false);
   EventInfoReader eventInfoReader(&eventInfo);
-  eventInfoReader.setBranchAddresses(inputTree);
+  inputTree -> registerReader(&eventInfoReader);
+
+  hltPathReader hltPathReader_instance(triggers);
+  inputTree -> registerReader(&hltPathReader_instance);
 
 //--- declare particle collections
   RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
-  muonReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(muonReader);
   const RecoMuonCollectionGenMatcher muonGenMatcher;
   const RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
@@ -188,7 +186,7 @@ main(int argc,
   
   RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
   electronReader->readUncorrected(useNonNominal);
-  electronReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(electronReader);
   const RecoElectronCollectionGenMatcher electronGenMatcher;
   const RecoElectronCollectionCleaner electronCleaner(0.05, isDEBUG);
   const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
@@ -204,7 +202,7 @@ main(int argc,
   }
 
   RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
-  hadTauReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(hadTauReader);
   const RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
@@ -242,7 +240,7 @@ main(int argc,
   jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
   jetReader->read_ptMass_systematics(isMC);
   jetReader->read_BtagWeight_systematics(isMC);
-  jetReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(jetReader);
   const RecoJetCollectionGenMatcher jetGenMatcher;
   const RecoJetSelector jetSelector(era);
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
@@ -267,7 +265,7 @@ main(int argc,
   RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
   metReader->setMEt_central_or_shift(useNonNominal_jetmet ? kMEt_central_nonNominal : kMEt_central);
   metReader->read_ptPhi_systematics(isMC);
-  metReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(metReader);
 
 //--- declare generator level information
   GenLeptonReader * genLeptonReader = nullptr;
@@ -277,13 +275,13 @@ main(int argc,
   if(isMC && ! readGenObjects)
   {
     genLeptonReader = new GenLeptonReader(branchName_genLeptons);
-    genLeptonReader->setBranchAddresses(inputTree);
+    inputTree -> registerReader(genLeptonReader);
     genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
-    genHadTauReader->setBranchAddresses(inputTree);
+    inputTree -> registerReader(genHadTauReader);
     genPhotonReader = new GenPhotonReader(branchName_genPhotons);
-    genPhotonReader->setBranchAddresses(inputTree);
+    inputTree -> registerReader(genPhotonReader);
     genJetReader = new GenJetReader(branchName_genJets, true);
-    genJetReader->setBranchAddresses(inputTree);
+    inputTree -> registerReader(genJetReader);
   }
 
   std::string outputTreeName = treeName;
@@ -307,6 +305,9 @@ main(int argc,
 
   EventInfoWriter eventInfoWriter(false, false, false);
   eventInfoWriter.setBranches(outputTree);
+
+  hltPathWriter hltPathWriter_instance(branchNames_triggers);
+  hltPathWriter_instance.setBranches(outputTree);
 
   RecoMuonWriter * const muonWriter = new RecoMuonWriter(era, branchName_muons);
   muonWriter->setBranches(outputTree);
@@ -394,6 +395,12 @@ main(int argc,
   {
     outputCommands_string.push_back(Form("drop %s", drop_branch.data()));
   }
+
+  for(const std::string & branchName: branchNames_triggers)
+  {
+    outputCommands_string.push_back(Form("drop %s", branchName.data()));
+  }
+
   if(isMC && ! readGenObjects)
   {
     const std::vector<std::string> outputCommands_genParticles_string = {
@@ -413,39 +420,52 @@ main(int argc,
   }
 
   std::vector<outputCommandEntry> outputCommands = getOutputCommands(outputCommands_string);
-  std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree, outputCommands); // key = branchName
   std::map<std::string, branchEntryBaseType *> branchesToKeep; // key = branchName
-  copyBranches_singleType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
-  copyBranches_vectorType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
+  bool branchesToKeep_isInitialized = false;
 
-  if(isDEBUG)
-  {
-    std::cout << "keeping branches:\n";
-    for(const auto & branchEntry: branchesToKeep)
-    {
-      std::cout << ' ' << branchEntry.second->outputBranchName_ << " (type ="
-                   " " << branchEntry.second->outputBranchType_string_ << ")\n"
-      ;
-    }
-  }
-
-  const int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
   cutFlowTableType cutFlowTable;
+  int currentFile = -1;
 
-  for(int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry)
+  while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
-    inputTree->GetEntry(idxEntry);
-
-    if(idxEntry > 0 && (idxEntry % reportEvery) == 0)
+    if(inputTree -> canReport(reportEvery))
     {
-      std::cout << "processing Entry " << idxEntry << ':' << eventInfo
-                << " (" << selectedEntries << " Entries selected)\n"
-      ;
+      std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
+                << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
+                << (inputTree -> getProcessedFileCount() - 1)
+                << " (" << eventInfo
+                << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
-    
+
+    // mark branches for copying (only done once per produceNtuple job, when processing first event)
+    if ( !branchesToKeep_isInitialized ) {
+      std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree -> getCurrentTree(), outputCommands); // key = branchName
+      copyBranches_singleType(inputTree -> getCurrentTree(), outputTree, isBranchToKeep, branchesToKeep);
+      copyBranches_vectorType(inputTree -> getCurrentTree(), outputTree, isBranchToKeep, branchesToKeep);
+      if ( isDEBUG ) {
+	std::cout << "keeping branches:\n";
+	for ( const auto & branchEntry: branchesToKeep ) {
+	  std::cout << ' ' << branchEntry.second->outputBranchName_ << " (type ="
+	               " " << branchEntry.second->outputBranchType_string_ << ")\n"
+	  ;
+	}
+      }
+      branchesToKeep_isInitialized = true;
+    }
+
+    // reinitialize addresses of all branches that are copied directly from input to output file 
+    // in case new input file has been opened
+    if ( inputTree->getProcessedFileCount() != currentFile ) {
+      for ( std::map<std::string, branchEntryBaseType *>::iterator branch = branchesToKeep.begin();
+	    branch != branchesToKeep.end(); ++branch ) {
+	branch->second->setInputTree(inputTree -> getCurrentTree());
+      }
+      currentFile = inputTree->getProcessedFileCount();
+    }
+  
     cutFlowTable.update("read from file");
 
     if(run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
@@ -454,12 +474,16 @@ main(int argc,
     }
     cutFlowTable.update("run:ls:event selection");
 
-    if(run_lumi_eventSelector || isDEBUG)
+    if ( isDEBUG ) {
+      std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
+    }
+
+    if(run_lumi_eventSelector)
     {
-      std::cout << "processing Entry " << idxEntry << ':' << eventInfo << '\n';
-      if(inputTree->GetFile())
+      std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx() << ": " << eventInfo << '\n';
+      if(inputTree -> isOpen())
       {
-        std::cout << "input File = " << inputTree->GetFile()->GetName() << '\n';
+        std::cout << "input File = " << inputTree -> getCurrentFileName() << '\n';
       }
     }
 
@@ -658,6 +682,7 @@ main(int argc,
     );
 
     eventInfoWriter.write(eventInfo);
+    hltPathWriter_instance.write(triggers);
     muonWriter->write(preselMuons);
     electronWriter->write(preselElectrons);
     hadTauWriter->write(preselHadTaus);
@@ -681,11 +706,15 @@ main(int argc,
     ++selectedEntries;
   }
 
-  std::cout << "num. Entries = "  << numEntries      << "\n"
-               " analyzed = "     << analyzedEntries << "\n"
-               " selected = "     << selectedEntries << "\n"
-               "cut-flow table\n" << cutFlowTable    << '\n'
-  ;
+  std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
+            << " (limited by " << maxEvents << ") processed in "
+            << inputTree -> getProcessedFileCount() << " file(s) (out of "
+            << inputTree -> getFileCount() << ")\n"
+            << " analyzed = " << analyzedEntries << '\n'
+            << " selected = " << selectedEntries << "\n\n"
+            << "cut-flow table" << std::endl;
+  cutFlowTable.print(std::cout);
+  std::cout << std::endl;
 
   if(isDEBUG)
   {
