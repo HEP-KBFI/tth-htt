@@ -1459,6 +1459,7 @@ int main(int argc, char* argv[])
               << " lead = " << weight_data_to_MC_correction_hadTau_lead << ","
               << " sublead = " << weight_data_to_MC_correction_hadTau_sublead << std::endl;
         }
+        weight_hadTauEff *= weight_data_to_MC_correction_hadTau_lead * weight_data_to_MC_correction_hadTau_sublead;
         evtWeight *= (weight_data_to_MC_correction_hadTau_lead*weight_data_to_MC_correction_hadTau_sublead);
       }
     }

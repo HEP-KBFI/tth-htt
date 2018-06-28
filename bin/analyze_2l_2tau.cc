@@ -1373,24 +1373,25 @@ int main(int argc, char* argv[])
       );
     }
 
-	// CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
-	double weight_data_to_MC_correction_hadTau_lead = 1.;
-	double weight_data_to_MC_correction_hadTau_sublead = 1.;
-	if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight ) {
-	if ( !(selHadTau_lead->genHadTau() || selHadTau_lead->genLepton()) && jetToTauFakeRateInterface ) {
-	  weight_data_to_MC_correction_hadTau_lead = jetToTauFakeRateInterface->getSF_lead(selHadTau_lead->pt(), selHadTau_lead->absEta());
-	}
-	if ( !(selHadTau_sublead->genHadTau() || selHadTau_sublead->genLepton()) && jetToTauFakeRateInterface ) {
-	  weight_data_to_MC_correction_hadTau_sublead = jetToTauFakeRateInterface->getSF_sublead(selHadTau_sublead->pt(), selHadTau_sublead->absEta());
-	}
-	if ( isDEBUG ) {
-	  std::cout << "weight_data_to_MC_correction_hadTau:"
-		    << " lead = " << weight_data_to_MC_correction_hadTau_lead << ","
-		    << " sublead = " << weight_data_to_MC_correction_hadTau_sublead << std::endl;
-	}
-      evtWeight *= (weight_data_to_MC_correction_hadTau_lead*weight_data_to_MC_correction_hadTau_sublead);
+    // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
+    double weight_data_to_MC_correction_hadTau_lead = 1.;
+    double weight_data_to_MC_correction_hadTau_sublead = 1.;
+    if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight ) {
+      if ( !(selHadTau_lead->genHadTau() || selHadTau_lead->genLepton()) && jetToTauFakeRateInterface ) {
+        weight_data_to_MC_correction_hadTau_lead = jetToTauFakeRateInterface->getSF_lead(selHadTau_lead->pt(), selHadTau_lead->absEta());
       }
-	if ( !selectBDT ) evtWeight *= weight_fakeRate;
+      if ( !(selHadTau_sublead->genHadTau() || selHadTau_sublead->genLepton()) && jetToTauFakeRateInterface ) {
+        weight_data_to_MC_correction_hadTau_sublead = jetToTauFakeRateInterface->getSF_sublead(selHadTau_sublead->pt(), selHadTau_sublead->absEta());
+      }
+      if ( isDEBUG ) {
+        std::cout << "weight_data_to_MC_correction_hadTau:"
+                  << " lead = " << weight_data_to_MC_correction_hadTau_lead << ","
+                  << " sublead = " << weight_data_to_MC_correction_hadTau_sublead << std::endl;
+      }
+      tauSF_weight *= weight_data_to_MC_correction_hadTau_lead * weight_data_to_MC_correction_hadTau_sublead;
+      evtWeight *= (weight_data_to_MC_correction_hadTau_lead * weight_data_to_MC_correction_hadTau_sublead);
+    }
+    if ( !selectBDT ) evtWeight *= weight_fakeRate;
 
     if ( isDEBUG ) {
       std::cout << "evtWeight = " << evtWeight << std::endl;
@@ -1400,7 +1401,7 @@ int main(int argc, char* argv[])
     if ( !((int)selJets.size() >= minNumJets) ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS selJets selection." << std::endl;
-	printCollection("selJets", selJets);
+        printCollection("selJets", selJets);
       }
       continue;
     }
