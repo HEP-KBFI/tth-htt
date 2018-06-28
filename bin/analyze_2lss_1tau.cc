@@ -1395,25 +1395,26 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
     if ( !selectBDT ) {
       if ( applyFakeRateWeights == kFR_3L ) {
-	weight_fakeRate = getWeight_3L(
+        weight_fakeRate = getWeight_3L(
           prob_fake_lepton_lead, passesTight_lepton_lead,
-	  prob_fake_lepton_sublead, passesTight_lepton_sublead,
-	  prob_fake_hadTau, passesTight_hadTau);
+          prob_fake_lepton_sublead, passesTight_lepton_sublead,
+          prob_fake_hadTau, passesTight_hadTau);
       } else if ( applyFakeRateWeights == kFR_2lepton) {
-	weight_fakeRate = getWeight_2L(
+        weight_fakeRate = getWeight_2L(
           prob_fake_lepton_lead, passesTight_lepton_lead,
-	  prob_fake_lepton_sublead, passesTight_lepton_sublead);
+          prob_fake_lepton_sublead, passesTight_lepton_sublead);
       } else if ( applyFakeRateWeights == kFR_1tau ){
-	weight_fakeRate = prob_fake_hadTau;
+        weight_fakeRate = prob_fake_hadTau;
       }
       evtWeight *= weight_fakeRate;
       // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
       if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton())) {
-	double weight_data_to_MC_correction_hadTau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
-	if ( isDEBUG ) {
-	  std::cout << "weight_data_to_MC_correction_hadTau = " << weight_data_to_MC_correction_hadTau << std::endl;
-	}
-	evtWeight *= weight_data_to_MC_correction_hadTau;
+        double weight_data_to_MC_correction_hadTau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
+        if ( isDEBUG ) {
+          std::cout << "weight_data_to_MC_correction_hadTau = " << weight_data_to_MC_correction_hadTau << std::endl;
+        }
+        tauSF_weight *= weight_data_to_MC_correction_hadTau;
+        evtWeight *= weight_data_to_MC_correction_hadTau;
       }
     } // end if !selectBDT
 

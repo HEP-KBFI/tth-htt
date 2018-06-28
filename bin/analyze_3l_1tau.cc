@@ -1401,8 +1401,9 @@ int main(int argc, char* argv[])
     if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()) ) {
       double weight_data_to_MC_correction_tau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
       if ( isDEBUG ) {
-	std::cout << "weight_data_to_MC_correction_tau = " << weight_data_to_MC_correction_tau << std::endl;
+        std::cout << "weight_data_to_MC_correction_tau = " << weight_data_to_MC_correction_tau << std::endl;
       }
+      tauSF_weight *= weight_data_to_MC_correction_tau;
       evtWeight *= weight_data_to_MC_correction_tau;
     }
 
