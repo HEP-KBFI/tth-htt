@@ -185,17 +185,16 @@ DASGOCLIENT_QUERY_RUNLUMI    = "dasgoclient -query='run,lumi dataset=%s' -unique
 MC_REGEX      = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
 DATASET_REGEX = re.compile("^/(.*)/(.*)/[0-9A-Za-z]+$")
 
-def get_crab_string(dataset_name, path):
-  if not path:
-    return ''
-  version = os.path.basename(path)
-  dataset_match = DATASET_REGEX.match(dataset_name)
-  requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
-  primary_name = dataset_name.split('/')[1]
-  full_path = os.path.join(path, primary_name, requestName)
-  if not os.path.isdir(full_path):
-    requestName = ''
-  return requestName
+def get_crab_string(dataset_name, paths):
+  for path in paths:
+    version = os.path.basename(path)
+    dataset_match = DATASET_REGEX.match(dataset_name)
+    requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
+    primary_name = dataset_name.split('/')[1]
+    full_path = os.path.join(path, primary_name, requestName)
+    if os.path.isdir(full_path):
+      return requestName
+  return ''
 
 def convert_date(date):
   return datetime.datetime.fromtimestamp(int(date)).strftime('%Y-%m-%d %H:%M:%S')
@@ -401,7 +400,7 @@ if __name__ == '__main__':
     help = 'R|Output path of the dataset list (valid if -i/--input not provided)',
   )
   parser.add_argument('-c', '--crab-string',
-    type = str, dest = 'crab_string', metavar = 'path', default = '', required = False,
+    type = str, nargs = '+', dest = 'crab_string', metavar = 'path', default = [], required = False,
     help = 'R|Fill CRAB string',
   )
   parser.add_argument('-r', '--run',
@@ -568,7 +567,7 @@ if __name__ == '__main__':
           raise ValueError("Unparseable line in file %s: %s" % (line_stripped, mc_input))
 
         das_name        = fields[0]
-        use_it          = bool(fields[1])
+        use_it          = bool(int(fields[1]))
         sample_category = fields[2]
         specific_name   = fields[3]
         xs              = float(fields[4]) # let it fail
@@ -710,6 +709,7 @@ if __name__ == '__main__':
       [ specific_name_ref] + specific_name_tests \
       for specific_name_ref, specific_name_tests in sum_events.items()
     ]
+    sum_events_flattened = list(sorted(sum_events_flattened, key = lambda x: x[0].lower()))
 
     # Let's get the total event counts in each sample category; we want to maintain the original
     # order of sample categories they were declared
