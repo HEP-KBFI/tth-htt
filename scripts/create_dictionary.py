@@ -281,9 +281,9 @@ class PathEntry:
 
 def get_triggers(process_name_specific, is_data, era):
   if 'SingleElec' in process_name_specific:
-    return ['1e']
+    return ['1e', '1e1tau'] if era > 2016 else ['1e']
   if 'SingleMuon' in process_name_specific:
-    return ['1mu']
+    return ['1mu', '1mu1tau'] if era > 2016 else ['1mu']
   if 'DoubleEG' in process_name_specific:
     return ['2e', '3e'] if era > 2015 else ['2e']
   if 'DoubleMuon' in process_name_specific:
@@ -626,7 +626,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
     meta_dict[key]['missing_hlt_paths']               = get_missing_hlt_paths(
       get_triggers('', False, era), indices, triggerTable.triggers_all
     )
-    meta_dict[key]['hlt_paths']                       = get_hlt_paths(indices)
+    meta_dict[key]['hlt_paths']                       = get_hlt_paths(indices) if is_data else []
     meta_dict[key]['genWeight']                       = not is_data
     meta_dict[key]['type']                            = 'data' if is_data else 'mc'
     meta_dict[key]['reHLT']                           = True
@@ -1048,7 +1048,7 @@ if __name__ == '__main__':
           missing_branches = meta_dict[key]['missing_hlt_paths'],
         ).lstrip('\n')
         hlt_paths_filled = jinja2.Template(missing_branches_str).render(
-          is_available = True,
+          is_available = not is_mc,
           missing_branches = meta_dict[key]['hlt_paths'],
         ).lstrip('\n')
         output += jinja2.Template(dictionary_entry_str).render(
