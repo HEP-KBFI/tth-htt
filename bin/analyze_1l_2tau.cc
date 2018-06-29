@@ -1338,6 +1338,7 @@ int main(int argc, char* argv[])
     double triggerWeight = 1.;
     double weight_leptonEff = 1.;
     double weight_hadTauEff = 1.;
+    double tauSF_weight = 1.;
     if ( isMC ) {
       int selHadTau_lead_genPdgId = getHadTau_genPdgId(selHadTau_lead);
       int selHadTau_sublead_genPdgId = getHadTau_genPdgId(selHadTau_sublead);
@@ -1393,6 +1394,7 @@ int main(int argc, char* argv[])
         std::cout << "sf_hadTauEff = " << sf_hadTauEff << std::endl;
       }
       weight_hadTauEff *= sf_hadTauEff;
+      tauSF_weight *= weight_hadTauEff;
       weight_data_to_MC_correction *= sf_hadTauEff;
       if ( isDEBUG ) {
         std::cout << "weight_data_to_MC_correction = " << weight_data_to_MC_correction << std::endl;
@@ -1460,7 +1462,9 @@ int main(int argc, char* argv[])
               << " lead = " << weight_data_to_MC_correction_hadTau_lead << ","
               << " sublead = " << weight_data_to_MC_correction_hadTau_sublead << std::endl;
         }
-        evtWeight *= (weight_data_to_MC_correction_hadTau_lead*weight_data_to_MC_correction_hadTau_sublead);
+        double weight_data_to_MC_correction_hadTau = weight_data_to_MC_correction_hadTau_lead * weight_data_to_MC_correction_hadTau_sublead;
+        tauSF_weight *= weight_data_to_MC_correction_hadTau;
+        evtWeight *= weight_data_to_MC_correction_hadTau;
       }
     }
     if ( isDEBUG ) {
@@ -2075,7 +2079,7 @@ int main(int argc, char* argv[])
       snm->read(weight_fakeRate,                        FloatVariableType::FR_weight);
       snm->read(triggerWeight,                          FloatVariableType::triggerSF_weight);
       snm->read(weight_leptonEff,                       FloatVariableType::leptonSF_weight);
-      snm->read(weight_hadTauEff,                       FloatVariableType::tauSF_weight);
+      snm->read(tauSF_weight,                           FloatVariableType::tauSF_weight);
       snm->read(btagWeight,                             FloatVariableType::bTagSF_weight);
       snm->read(eventInfo.pileupWeight,                 FloatVariableType::PU_weight);
       snm->read(boost::math::sign(eventInfo.genWeight), FloatVariableType::MC_weight);
