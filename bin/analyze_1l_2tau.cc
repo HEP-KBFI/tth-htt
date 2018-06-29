@@ -956,7 +956,7 @@ int main(int argc, char* argv[])
     bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
     bool selTrigger_1mu1tau = use_triggers_1mu1tau && isTriggered_1mu1tau;
 
-    if ( !(selTrigger_1e || selTrigger_1e1tau || selTrigger_1mu|| selTrigger_1mu1tau) ) {
+    if ( !(selTrigger_1e || selTrigger_1e1tau || selTrigger_1mu || selTrigger_1mu1tau) ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
         std::cout << " (selTrigger_1e = " << selTrigger_1e
@@ -968,17 +968,17 @@ int main(int argc, char* argv[])
     }
 
 //--- Rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
-//    the ranking of the triggers is as follows: 1mu, 1e
+//    the ranking of the triggers is as follows: 1mu || 1mu1tau, 1e || 1e1tau
 // CV: This logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets.
-//     The mu+tau and e+tau need to have the lowest priority, as not all e+tau trigger paths exists in the VHbb Ntuples of the SingleElectron and SingleMuon datasets!!
+//     The mu+tau (e+tau) cross trigger is stored in the same primary dataset as the single muon (single electron) trigger during the 2017 data-taking period!!
     if ( !isMC && !isDEBUG ) {
-      bool isTriggered_SingleElectron = isTriggered_1e;
-      bool isTriggered_SingleMuon = isTriggered_1mu;
+      //bool isTriggered_SingleElectron = isTriggered_1e || isTriggered_1e1tau;
+      bool isTriggered_SingleMuon = isTriggered_1mu || isTriggered_1mu1tau;
       //bool isTriggered_Tau = isTriggered_1e1tau || isTriggered_1mu1tau;
 
-      bool selTrigger_SingleElectron = selTrigger_1e;
-      //bool selTrigger_SingleMuon = selTrigger_1mu;
-      bool selTrigger_Tau = selTrigger_1e1tau || selTrigger_1mu1tau;
+      bool selTrigger_SingleElectron = selTrigger_1e || selTrigger_1e1tau;
+      //bool selTrigger_SingleMuon = selTrigger_1mu || selTrigger_1mu1tau;
+      //bool selTrigger_Tau = selTrigger_1e1tau || selTrigger_1mu1tau;
 
       if ( selTrigger_SingleElectron && isTriggered_SingleMuon ) {
         if ( run_lumi_eventSelector ) {
@@ -988,15 +988,17 @@ int main(int argc, char* argv[])
         }
         continue;
       }
-      if ( selTrigger_Tau && (isTriggered_SingleMuon || isTriggered_SingleElectron) ) {
-        if ( run_lumi_eventSelector ) {
-          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
-          std::cout << " (selTrigger_Tau = " << selTrigger_Tau
-                    << ", isTriggered_SingleMuon = " << isTriggered_SingleMuon
-                    << ", isTriggered_SingleElectron = " << isTriggered_SingleElectron << ")" << std::endl;
-        }
-        continue;
-      }
+      // CV: commented-out for 2017 data-taking period, 
+      //     as mu+tau (e+tau) cross trigger is stored in the same primary dataset as the single muon (single electron) trigger
+      //if ( selTrigger_Tau && (isTriggered_SingleMuon || isTriggered_SingleElectron) ) {
+      //  if ( run_lumi_eventSelector ) {
+      //    std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+      //    std::cout << " (selTrigger_Tau = " << selTrigger_Tau
+      //              << ", isTriggered_SingleMuon = " << isTriggered_SingleMuon
+      //              << ", isTriggered_SingleElectron = " << isTriggered_SingleElectron << ")" << std::endl;
+      //  }
+      //  continue;
+      //}
     }
     cutFlowTable.update("trigger");
     cutFlowHistManager->fillHistograms("trigger", lumiScale);
