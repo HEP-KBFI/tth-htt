@@ -42,6 +42,8 @@ if mode == 'sync':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017
 elif mode == 'all':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017
+  for sample_key, sample_entry in samples_2017.items():
+    sample_entry['use_it'] = True
 else:
   raise ValueError('Unexpected mode: %s' % mode)
 
@@ -76,7 +78,6 @@ if __name__ == '__main__':
     era                = era,
     check_output_files = check_output_files,
     running_method     = running_method,
-    version            = version,
     num_parallel_jobs  = num_parallel_jobs,
     dry_run            = dry_run,
     use_home           = use_home,
