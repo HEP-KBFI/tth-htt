@@ -20,9 +20,16 @@ import datetime
 import math
 import errno
 
-HISTOGRAM_COUNT         = 'Count'
-HISTOGRAM_COUNTWEIGHTED = 'CountWeighted'
-EVENTS_TREE             = 'Events'
+HISTOGRAM_COUNT                           = 'Count'
+HISTOGRAM_COUNTWEIGHTED                   = 'CountWeighted'
+HISTOGRAM_COUNTWEIGHTED_NOPU              = 'CountWeightedNoPU'
+HISTOGRAM_COUNTFULLWEIGHTED               = 'CountFullWeighted'
+HISTOGRAM_COUNTFULLWEIGHTED_NOPU          = 'CountFullWeightedNoPU'
+HISTOGRAM_COUNTWEIGHTED_LHESCALE          = 'CountWeightedLHEWeightScale'
+HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU     = 'CountWeightedLHEWeightScaleNoPU'
+HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE      = 'CountFullWeightedLHEWeightScale'
+HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU = 'CountFullWeightedLHEWeightScaleNoPU'
+EVENTS_TREE                               = 'Events'
 
 HISTOGRAM_COUNT_KEY = 'histogram_count'
 TREE_COUNT_KEY      = 'tree_count'
@@ -217,7 +224,10 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("process_name_specific",           "{{ process_name_specific }}"),
   ("nof_files",                       {{ nof_files }}),
   ("nof_db_files",                    {{ nof_db_files }}),
-  ("nof_events",                      {{ nof_events }}),
+  ("nof_events",                      { {% for histogram_name, event_counts in nof_events.items() %}
+    {{ "%-40s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
+  {%- endfor %}
+  }),
   ("nof_tree_events",                 {{ nof_tree_events }}),
   ("nof_db_events",                   {{ nof_db_events }}),
   ("fsize_local",                     {{ fsize_local }}), # {{ fsize_local_human }}, avg file size {{ avg_fsize_local_human }}
@@ -266,12 +276,25 @@ sh_str = """#!/bin/bash
 """
 
 class PathEntry:
-  def __init__(self, path, indices):
+  def __init__(self, path, indices, histogram_names):
     self.path            = path
     self.indices         = indices
-    self.nof_events      = math.fsum(index_entry[HISTOGRAM_COUNT_KEY] for index_entry in self.indices.values())
-    self.nof_tree_events =       sum(index_entry[TREE_COUNT_KEY]      for index_entry in self.indices.values())
-    self.fsize           =       sum(index_entry[FSIZE_KEY]           for index_entry in self.indices.values())
+
+    nof_events_transposed = {
+      histogram_name : [ [] for _ in range(nBins) ] \
+      for histogram_name, nBins in histogram_names.items() if nBins > 0
+    }
+    for index_entry in self.indices.values():
+      for histogram_name in index_entry[HISTOGRAM_COUNT_KEY]:
+        for idxBin, nof_events in enumerate(index_entry[HISTOGRAM_COUNT_KEY][histogram_name]):
+          nof_events_transposed[histogram_name][idxBin].append(nof_events)
+    self.nof_events = {
+      histogram_name : [ math.fsum(entry[idxBin]) for idxBin in range(len(entry)) ] \
+      for histogram_name, entry in nof_events_transposed.items()
+    }
+
+    self.nof_tree_events = sum(index_entry[TREE_COUNT_KEY]      for index_entry in self.indices.values())
+    self.fsize           = sum(index_entry[FSIZE_KEY]           for index_entry in self.indices.values())
     self.nof_files       = max(self.indices.keys())
     self.blacklist       = []
     self.selection       = [] # if empty, select all
@@ -364,9 +387,20 @@ def process_paths(meta_dict, key):
 
   if len(local_paths_sorted) == 1:
     # let's compute the number of files, events and the list of blacklisted files
-    nof_events      = math.fsum(index_entry[HISTOGRAM_COUNT_KEY] for index_entry in local_paths_sorted[0].indices.values())
-    nof_tree_events =       sum(index_entry[TREE_COUNT_KEY]      for index_entry in local_paths_sorted[0].indices.values())
-    fsize           =       sum(index_entry[FSIZE_KEY]           for index_entry in local_paths_sorted[0].indices.values())
+    nof_events = {}
+    histogram_names = meta_dict[key]['histogram_names']
+    for histogram_name, nBins in histogram_names.items():
+      if nBins < 0:
+        continue
+      nof_events[histogram_name] = []
+      for idxBin in range(nBins):
+        nof_events_sum = math.fsum(
+          index_entry[HISTOGRAM_COUNT_KEY][histogram_name][idxBin] for index_entry in local_paths_sorted[0].indices.values()
+        )
+        nof_events[histogram_name].append(int(round(nof_events_sum)))
+
+    nof_tree_events = sum(index_entry[TREE_COUNT_KEY] for index_entry in local_paths_sorted[0].indices.values())
+    fsize           = sum(index_entry[FSIZE_KEY]      for index_entry in local_paths_sorted[0].indices.values())
 
     meta_dict[key]['nof_events']      = nof_events
     meta_dict[key]['nof_tree_events'] = nof_tree_events
@@ -388,10 +422,18 @@ def process_paths(meta_dict, key):
 
       # compute the nof events by summing the nof events in the primary storage and adding the nof events
       # in the selected files part of the secondary storage
-      sum_of_events = local_paths_sorted[0].nof_events + math.fsum(
-        local_paths_sorted[1].indices[sel_idx][HISTOGRAM_COUNT_KEY]
-        for sel_idx in local_paths_sorted[1].selection
-      )
+      sum_of_events = {}
+      histogram_names = meta_dict[key]['histogram_names']
+      for histogram_name, nBins in histogram_names.items():
+        if nBins < 0:
+          continue
+        sum_of_events[histogram_name] = []
+        for idxBin in range(nBins):
+          nof_events_sum = math.fsum(
+            local_paths_sorted[1].indices[sel_idx][HISTOGRAM_COUNT_KEY][histogram_name][idxBin]
+            for sel_idx in local_paths_sorted[1].selection
+          ) + local_paths_sorted[0].nof_events[histogram_name][idxBin]
+          sum_of_events[histogram_name].append(int(round(nof_events_sum)))
       sum_of_tree_events = local_paths_sorted[0].nof_tree_events + sum(
         local_paths_sorted[1].indices[sel_idx][TREE_COUNT_KEY]
         for sel_idx in local_paths_sorted[1].selection
@@ -486,12 +528,23 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
 
   digit_regex = re.compile(r"tree_(?P<i>\d+)\.root")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
-  histogram_name = HISTOGRAM_COUNTWEIGHTED if not is_data else HISTOGRAM_COUNT
+  histogram_names = { HISTOGRAM_COUNT : -1 }
+  if not is_data:
+    histogram_names.update({
+      HISTOGRAM_COUNTWEIGHTED                   : -1,
+      HISTOGRAM_COUNTWEIGHTED_NOPU              : -1,
+      HISTOGRAM_COUNTFULLWEIGHTED               : -1,
+      HISTOGRAM_COUNTFULLWEIGHTED_NOPU          : -1,
+      HISTOGRAM_COUNTWEIGHTED_LHESCALE          : -1,
+      HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU     : -1,
+      HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE      : -1,
+      HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU : -1,
+    })
 
   indices = {}
   for entry in entries_valid:
     index_entry = {
-      HISTOGRAM_COUNT_KEY : -1,
+      HISTOGRAM_COUNT_KEY : {},
       TREE_COUNT_KEY      : -1,
       FSIZE_KEY           : -1,
       BRANCH_NAMES_KEY    : [],
@@ -561,35 +614,42 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
           del root_file
           continue
 
-      if histogram_name not in root_file.GetListOfKeys():
-        logging.warning("Histogram of the name {histogram_name} is not in file {path}".format(
-          histogram_name = histogram_name,
-          path           = subentry_file.name_fuse,
-        ))
-        # Using a fallback solution
-        if is_data:
-          # It is safe to use the nnumber of TTree events
-          index_entry[HISTOGRAM_COUNT_KEY] = index_entry[TREE_COUNT_KEY]
-        else:
-          # We have no option but set it to 0 since the PU weight branches are not available
-          # In practice this figure doesn't matter at all since the number of events is not used
-          # anywhere in nanoAOD post-processing step nor by produceNtuple code
-          index_entry[HISTOGRAM_COUNT_KEY] = 0
-      else:
-        histogram = root_file.Get(histogram_name)
-        if not histogram:
-          raise ValueError("Could not find histogram of the name {histogram_name} in file {path}".format(
+      for histogram_name in histogram_names:
+        if histogram_name not in root_file.GetListOfKeys():
+          logging.warning("Histogram of the name {histogram_name} is not in file {path}".format(
             histogram_name = histogram_name,
             path           = subentry_file.name_fuse,
           ))
-        index_entry[HISTOGRAM_COUNT_KEY] = histogram.Integral()
-        del histogram
+        else:
+          histogram = root_file.Get(histogram_name)
+          if not histogram:
+            raise ValueError("Could not find histogram of the name {histogram_name} in file {path}".format(
+              histogram_name = histogram_name,
+              path           = subentry_file.name_fuse,
+            ))
+          nBins = histogram.GetNbinsX()
+          index_entry[HISTOGRAM_COUNT_KEY][histogram_name] = [
+            histogram.GetBinContent(idxBin) for idxBin in range(1, nBins + 1)
+          ]
+          if histogram_names[histogram_name] < 0:
+            histogram_names[histogram_name] = nBins
+          else:
+            if histogram_names[histogram_name] != nBins:
+              raise RuntimeError(
+                "Expected to find {nBins_expected} bins in histogram {histogram_name} from file {path} "
+                "but got {nBins_actual} bins instead".format(
+                  nBins_expected = histogram_names[histogram_name],
+                  histogram_name = histogram_name,
+                  path           = subentry_file.name_fuse,
+                  nBins_actual   = nBins,
+                )
+              )
+          del histogram
 
       # this was probably a success: record the results
       indices[matched_idx] = copy.deepcopy(index_entry)
       logging.debug(
-        "Found {nof_events} ({nof_tree_events} tree) events in file {filename}".format(
-          nof_events      = index_entry[HISTOGRAM_COUNT_KEY],
+        "Found {nof_tree_events} tree events in file {filename}".format(
           nof_tree_events = index_entry[TREE_COUNT_KEY],
           filename        = subentry_file,
         )
@@ -603,10 +663,9 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
     logging.debug("Path {path} contains no ROOT files".format(path = path_obj.name_fuse))
     return
 
-  logging.debug("Found total {nof_events} ({nof_tree_events} tree) events in {nof_files} files in "
+  logging.debug("Found total {nof_tree_events} tree events in {nof_files} files in "
                 "{path} for entry {key}".format(
-    nof_events      = math.fsum([index_entry[HISTOGRAM_COUNT_KEY] for index_entry in indices.values()]),
-    nof_tree_events =       sum([index_entry[TREE_COUNT_KEY]      for index_entry in indices.values()]),
+    nof_tree_events = sum([index_entry[TREE_COUNT_KEY]      for index_entry in indices.values()]),
     nof_files       = len(indices.keys()),
     path            = path_obj.name_fuse,
     key             = key,
@@ -633,8 +692,9 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
     meta_dict[key]['located']                         = True
     meta_dict[key]['has_LHE']                         = False if is_data else has_LHE(indices)
     meta_dict[key]['missing_from_superset']           = missing_from_superset
+    meta_dict[key]['histogram_names']                 = histogram_names
   meta_dict[key]['paths'].append(
-    PathEntry(path_obj.name_fuse, indices)
+    PathEntry(path_obj.name_fuse, indices, histogram_names)
   )
 
   return
@@ -1011,14 +1071,29 @@ if __name__ == '__main__':
       if entry['located']:
         process_paths(meta_dict, key)
     for key_arr in sum_events:
-      event_sum = 0
+      event_sum = {}
       missing_keys = []
       for meta_key, meta_entry in meta_dict.items():
         if meta_entry['process_name_specific'] in key_arr:
           if not meta_entry['located']:
             missing_keys.append(meta_entry['process_name_specific'])
           else:
-            event_sum += meta_entry['nof_events']
+            for histogram_name, values in meta_entry['nof_events'].items():
+              if histogram_name in event_sum:
+                if len(event_sum[histogram_name]) != len(values):
+                  raise RuntimeError(
+                    "Expected {nBins_expected} bins from histogram {histogram_name} in sample "
+                    "{sample_name}, but got {nBins_actual} bins".format(
+                      nBins_expected = len(event_sum[histogram_name]),
+                      histogram_name = histogram_name,
+                      sample_name    = meta_entry['process_name_specific'],
+                      nBins_actual   = len(values),
+                    )
+                  )
+                for idxBin, value in enumerate(values):
+                  event_sum[histogram_name][idxBin] += value
+              else:
+                event_sum[histogram_name] = values
       if 0 < len(missing_keys) < len(key_arr):
         logging.warning(
           "Could not find all samples to compute the number of events: %s" % ', '.join(missing_keys)
@@ -1058,7 +1133,7 @@ if __name__ == '__main__':
           sample_category                 = meta_dict[key]['sample_category'],
           process_name_specific           = meta_dict[key]['process_name_specific'],
           nof_files                       = meta_dict[key]['nof_files'],
-          nof_events                      = int(meta_dict[key]['nof_events']),
+          nof_events                      = meta_dict[key]['nof_events'],
           nof_tree_events                 = meta_dict[key]['nof_tree_events'],
           nof_db_events                   = meta_dict[key]['nof_db_events'],
           nof_db_files                    = meta_dict[key]['nof_db_files'],
