@@ -348,7 +348,10 @@ class puHistogramConfig:
                 self.num_jobs['plot'] += 1
 
     def addToMakefile_finalHadd(self, lines_makefile):
-        outputFiles     = [ cfg['outputFile'] for cfg in self.outputFiles.values() ]
+        outputFiles     = [
+            self.outputFiles[key]['outputFile'] for key in \
+            sorted(self.outputFiles.keys(), key = lambda k: k.lower())
+        ]
         outputFiles_cat = ' '.join(outputFiles)
         if self.is_sbatch:
             scriptFile = self.create_hadd_python_file(
