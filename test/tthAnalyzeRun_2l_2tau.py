@@ -8,9 +8,8 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 # E.g.: ./tthAnalyzeRun_2l_2tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'sync_wMEM' ]
-sys_choices      = [ 'full', 'extended' ] + systematics.an_extended_opts
-systematics.full = systematics.an_common
-systematics.extended = systematics.an_extended
+sys_choices      = [ 'full' ] + systematics.an_extended_opts
+systematics.full = systematics.an_extended
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -85,7 +84,10 @@ elif mode.startswith("sync"):
     if use_preselected:
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected_sync import samples_2017
     else:
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+      if use_nonnominal:
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+      else:
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017
   else:
     raise ValueError("Internal logic error")
   hadTau_selection     = "dR03mvaMedium"
@@ -110,6 +112,8 @@ if __name__ == '__main__':
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
     ', '.join(central_or_shifts)
   )
+  if not use_preselected:
+    logging.warning('Running the analysis on fully inclusive samples!')
 
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
@@ -147,7 +151,7 @@ if __name__ == '__main__':
       "mTauTauVis"                        : {},
       "mvaOutput_plainKin_tt"             : { 'quantile_rebin' : 4, 'quantile_in_fakes' : True }, # BDT2; quantiles in fakes
       "mvaOutput_plainKin_ttV"            : { 'quantile_rebin' : 4, 'quantile_in_fakes' : True }, # BDT1; quantiles in fakes
-      "mvaOutput_plainKin_SUM_VT"         : { 'explicit_binning' : [ 0.0, 0.35, 0.41, 0.47, 1.0 ] }, # BDT3; quantiles in fakes
+      "mvaOutput_plainKin_SUM_VT"         : { 'explicit_binning' : [ 0.0, 0.25, 0.50, 0.75, 1.0 ] }, # BDT3; quantiles in fakes
       "mvaOutput_plainKin_SUM_VT_noRebin" : {},
       "mvaOutput_plainKin_1B_VT"          : {},
       "mvaOutput_final"                   : {},

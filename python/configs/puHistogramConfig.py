@@ -91,7 +91,6 @@ class puHistogramConfig:
             era,
             check_output_files,
             running_method,
-            version,
             num_parallel_jobs,
             pool_id  = '',
             verbose  = False,
@@ -126,9 +125,6 @@ class puHistogramConfig:
             os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'test', 'templates'
         )
         logging.info("Templates directory is: %s" % self.template_dir)
-
-        self.version = version
-        self.samples = samples
 
         create_if_not_exists(self.configDir)
         create_if_not_exists(self.outputDir)
@@ -186,7 +182,8 @@ class puHistogramConfig:
           inputFiles: list of input files (Ntuples)
           outputFile: output file of the job -- a ROOT file containing histogram
         """
-        lines = jobOptions['inputFiles'] + [ '', jobOptions['outputFile'] ]
+        lines = jobOptions['inputFiles'] + \
+                [ '', '%s %s %s' % (self.era, jobOptions['histName'], jobOptions['outputFile']) ]
         assert(len(lines) >= 3)
         createFile(jobOptions['cfgFile_path'], lines, nofNewLines = 1)
 
@@ -299,7 +296,7 @@ class puHistogramConfig:
     def addToMakefile_plot(self, lines_makefile):
         phonie_target = "sbatch_plot"
 
-        cmd_string = "plot_from_histogram.py -i %s -j autoPU -o %s -x '# PU interactions' " \
+        cmd_string = "plot_from_histogram.py -i %s -j %s -o %s -x '# PU interactions' " \
                      "-y '# events' -t '%s' -g"
         cmd_log_string = cmd_string + " -l"
 
@@ -317,12 +314,12 @@ class puHistogramConfig:
                 'jobs' : {
                     'linear' : {
                         'outputFile' : plot_linear,
-                        'cmd'        : cmd_string % (cfg['outputFile'], plot_linear, key),
+                        'cmd'        : cmd_string % (cfg['outputFile'], key, plot_linear, key),
                         'logFile'    : logFile_linear,
                     },
                     'log' : {
                         'outputFile' : plot_log,
-                        'cmd'        : cmd_log_string % (cfg['outputFile'], plot_log, key),
+                        'cmd'        : cmd_log_string % (cfg['outputFile'], key, plot_log, key),
                         'logFile'    : logFile_log,
                     }
                 }
@@ -368,6 +365,9 @@ class puHistogramConfig:
 
         self.inputFileIds = {}
         for sample_name, sample_info in self.samples.items():
+            if not sample_info['use_it']:
+                continue
+
             process_name = sample_info["process_name_specific"]
             is_mc = (sample_info["type"] == "mc")
 
@@ -415,6 +415,7 @@ class puHistogramConfig:
                     self.dirs[key_dir][DKEY_CFGS], "puProfile_%s_%i_cfg.sh" % (process_name, jobId)
                 )
                 self.jobOptions_sbatch[key_file] = {
+                    'histName'     : process_name,
                     'inputFiles'   : self.inputFiles[key_file],
                     'cfgFile_path' : self.cfgFiles_puProfile[key_file],
                     'outputFile'   : self.outputFiles_tmp[key_file],

@@ -171,6 +171,7 @@ class sbatchManager:
         self.workingDir     = None
         self.logFileDir     = None
         queue_environ = os.environ.get('SBATCH_PRIORITY')
+        verbose_environ = os.environ.get('SBATCH_VERBOSE')
         self.queue             = queue_environ if queue_environ else "small"
         self.poll_interval     = 30
         self.jobIds            = {}
@@ -187,6 +188,7 @@ class sbatchManager:
         self.max_resubmissions = max_resubmissions
         self.min_file_size     = min_file_size
 
+        verbose = bool(verbose_environ) if verbose_environ else verbose
         logging.basicConfig(
             stream = sys.stdout,
             level  = logging.DEBUG if verbose else logging.INFO,
@@ -364,7 +366,7 @@ class sbatchManager:
         if skipIfOutputFileExists:
             outputFiles_missing = [
                 outputFile for outputFile in outputFiles_fullpath \
-                if not is_file_ok(outputFile, validate_outputs = False, min_file_size = self.min_file_size)
+                if not is_file_ok(outputFile, validate_outputs = True, min_file_size = self.min_file_size)
             ]
             if not outputFiles_missing:
                 logging.debug(
@@ -595,7 +597,7 @@ class sbatchManager:
                     for id_ in completed_jobs:
                         if not all(map(
                             lambda outputFile: is_file_ok(
-                                outputFile, validate_outputs = False, min_file_size = self.min_file_size
+                                outputFile, validate_outputs = True, min_file_size = self.min_file_size
                             ),
                             self.jobIds[id_]['outputFiles']
                           )):

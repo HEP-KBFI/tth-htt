@@ -69,7 +69,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // getLeptonGenMatch_definitions_3lepton, getLeptonGenMatch_string, getLeptonGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_3L
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
-#include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
+#include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_isTriggered, hltPaths_delete
+#include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTH2, get_sf_from_TH2
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
@@ -132,6 +133,8 @@ int main(int argc, char* argv[])
   bool isSignal = ( process_string == "signal" ) ? true : false;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
+  bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
+  bool isMCClosure_m = histogramDir.find("mcClosure_m") != std::string::npos;
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;
@@ -180,14 +183,13 @@ int main(int argc, char* argv[])
   bool apply_offline_e_trigger_cuts_1e2mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e2mu");
   bool apply_offline_e_trigger_cuts_3mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_3mu");
 
-  enum { kLoose, kFakeable, kTight };
-  std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection");
-  int leptonSelection = -1;
-  if      ( leptonSelection_string == "Loose"                                                      ) leptonSelection = kLoose;
-  else if ( leptonSelection_string == "Fakeable" || leptonSelection_string == "Fakeable_mcClosure" ) leptonSelection = kFakeable;
-  else if ( leptonSelection_string == "Tight"                                                      ) leptonSelection = kTight;
-  else throw cms::Exception("analyze_ttZctrl")
-    << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
+  const std::string electronSelection_string = cfg_analyze.getParameter<std::string>("electronSelection");
+  const std::string muonSelection_string     = cfg_analyze.getParameter<std::string>("muonSelection");
+  std::cout << "electronSelection_string = " << electronSelection_string << "\n"
+               "muonSelection_string     = " << muonSelection_string     << '\n'
+  ;
+  const int electronSelection = get_selection(electronSelection_string);
+  const int muonSelection     = get_selection(muonSelection_string);
 
   bool apply_leptonGenMatching = cfg_analyze.getParameter<bool>("apply_leptonGenMatching");
   std::vector<leptonGenMatchEntry> leptonGenMatch_definitions = getLeptonGenMatch_definitions_3lepton(apply_leptonGenMatching);
@@ -197,7 +199,6 @@ int main(int argc, char* argv[])
   TString hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection").data();
   TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
   assert(hadTauSelection_parts->GetEntries() >= 1);
-  std::string hadTauSelection_part1 = (dynamic_cast<TObjString*>(hadTauSelection_parts->At(0)))->GetString().Data();
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
 
@@ -205,7 +206,7 @@ int main(int argc, char* argv[])
   std::cout << "minNumJets = " << minNumJets << std::endl;
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
-  bool isMC_tH = ( process_string == "tH" ) ? true : false;
+  bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
@@ -322,12 +323,8 @@ int main(int argc, char* argv[])
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 
-  for(const std::vector<hltPath*> hltPaths: { triggers_1e, triggers_2e, triggers_1mu, triggers_2mu,
-                                              triggers_1e1mu, triggers_1e2mu, triggers_2e1mu,
-                                              triggers_3e, triggers_3mu })
-  {
-    inputTree -> registerReader(hltPaths);
-  }
+  hltPathReader hltPathReader_instance({ triggers_1e, triggers_1mu, triggers_2e, triggers_1e1mu, triggers_2mu, triggers_3e, triggers_2e1mu, triggers_1e2mu, triggers_3mu });
+  inputTree -> registerReader(&hltPathReader_instance);
 
 //--- declare particle collections
   const bool readGenObjects = isMC && !redoGenMatching;
@@ -537,6 +534,7 @@ int main(int argc, char* argv[])
     edm::ParameterSet cfg_EvtYieldHistManager_presel = makeHistManager_cfg(process_and_genMatch, 
       Form("%s/presel/evtYield", histogramDir.data()), central_or_shift);
     cfg_EvtYieldHistManager_presel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
+    cfg_EvtYieldHistManager_presel.addParameter<bool>("isMC", isMC);
     preselHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_presel);
     preselHistManager->evtYield_->bookHistograms(fs);
     preselHistManagers[idxLepton] = preselHistManager;
@@ -601,6 +599,7 @@ int main(int argc, char* argv[])
     edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch, 
       Form("%s/sel/evtYield", histogramDir.data()), central_or_shift);
     cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
+    cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);
     selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_sel);
     selHistManager->evtYield_->bookHistograms(fs);
     selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
@@ -840,16 +839,34 @@ int main(int argc, char* argv[])
     std::vector<const RecoLepton*> preselLeptons = pickFirstNobjects(preselLeptonsFull, 3);
     std::vector<const RecoLepton*> fakeableLeptons = pickFirstNobjects(fakeableLeptonsFull, 3);
     std::vector<const RecoLepton*> tightLeptons = getIntersection(fakeableLeptons, tightLeptonsFull, isHigherConePt);
-    std::vector<const RecoLepton*> selLeptons = selectObjects(leptonSelection, preselLeptons, fakeableLeptons, tightLeptons);
+
+    std::vector<const RecoLepton*> selLeptons;
+    std::vector<const RecoMuon*> selMuons;
+    std::vector<const RecoElectron*> selElectrons;
+    if(electronSelection == muonSelection)
+    {
+      // for SR, flip region and fake CR
+      // doesn't matter if we supply electronSelection or muonSelection here
+      selLeptons = selectObjects(muonSelection, preselLeptons, fakeableLeptons, tightLeptons);
+      selMuons = getIntersection(preselMuons, selLeptons, isHigherConePt);
+      selElectrons = getIntersection(preselElectrons, selLeptons, isHigherConePt);
+    }
+    else
+    {
+      // for MC closure
+      // make sure that neither electron nor muon selections are loose
+      assert(electronSelection != kLoose && muonSelection != kLoose);
+      selMuons = selectObjects(muonSelection, preselMuons, fakeableMuons, tightMuons);
+      selElectrons = selectObjects(electronSelection, preselElectrons, fakeableElectrons, tightElectrons);
+      std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
+      selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
+    }
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
     std::vector<const RecoHadTau*> selHadTaus = hadTauSelector(cleanedHadTaus);
 
-    std::vector<const RecoMuon *> selMuons = getIntersection(preselMuons, selLeptons, isHigherConePt);
-    std::vector<const RecoElectron *> selElectrons = getIntersection(preselElectrons, selLeptons, isHigherConePt);
-    
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
@@ -1053,9 +1070,14 @@ int main(int argc, char* argv[])
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
-      if ( leptonSelection == kFakeable ) {
+      if ( electronSelection == kFakeable && muonSelection == kFakeable ) {
         leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
-      } else if ( leptonSelection == kTight ) {
+      } else if ( electronSelection >= kFakeable && muonSelection >= kFakeable ) {
+        // apply loose-to-tight lepton ID SFs if either of the following is true:
+        // 1) both electron and muon selections are tight -> corresponds to SR
+        // 2) electron selection is relaxed to fakeable and muon selection is kept as tight -> corresponds to MC closure w/ relaxed e selection
+        // 3) muon selection is relaxed to fakeable and electron selection is kept as tight -> corresponds to MC closure w/ relaxed mu selection
+        // we allow (2) and (3) so that the MC closure regions would more compatible w/ the SR (1) in comparison
         leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge();
       }
       weight_data_to_MC_correction *= leptonSF_weight;
@@ -1261,17 +1283,23 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("MEt filters", evtWeight);
 
-    if ( leptonSelection == kFakeable ) {
-      if ( tightLeptons.size() >= 3 ) {
-        if ( run_lumi_eventSelector ) {
-          std::cout << "event " << eventInfo.str() << " FAILS tightElectrons+tightMuons selection.\n"
-                       " (#tightLeptons = " << tightLeptons.size() << ")\n"
-          ;
-        }
-        continue; // CV: avoid overlap with signal region
-      }
-      cutFlowTable.update("signal region veto", evtWeight);
+    bool failsSignalRegionVeto = false;
+    if ( isMCClosure_e || isMCClosure_m ) {
+      bool applySignalRegionVeto = (isMCClosure_e && countFakeElectrons(selLeptons) >= 1) || (isMCClosure_m && countFakeMuons(selLeptons) >= 1);
+      if ( applySignalRegionVeto && tightLeptons.size() >= 3 ) failsSignalRegionVeto = true;
+    } else if ( electronSelection == kFakeable || muonSelection == kFakeable ) {
+      if ( tightLeptons.size() >= 3 ) failsSignalRegionVeto = true;
     }
+    if ( failsSignalRegionVeto ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event " << eventInfo.str() << " FAILS overlap w/ the SR: "
+	             "# tight leptons = " << tightLeptons.size() << " >= 3\n"
+        ;
+	printCollection("tightLeptons", tightLeptons);
+      }
+      continue; // CV: avoid overlap with signal region
+    }
+    cutFlowTable.update("signal region veto", evtWeight);
 
     double mT = ( selLepton_extra ) ? comp_MT_met_lep1(*selLepton_extra, met.pt(), met.phi()) : -1.;
 
@@ -1420,6 +1448,7 @@ int main(int argc, char* argv[])
       const double btagWeight     = get_BtagWeight(selJets);
 
       snm->read(eventInfo);
+      snm->read(selLeptons);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
       snm->read(selJets);
@@ -1433,11 +1462,6 @@ int main(int argc, char* argv[])
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
       snm->read(mht_p4.pt(),                            FloatVariableType::MHT);
       snm->read(met_LD,                                 FloatVariableType::metLD);
-
-      snm->read(lep1_conePt,                            FloatVariableType::lep1_conept);
-      snm->read(lep2_conePt,                            FloatVariableType::lep2_conept);
-      snm->read(lep3_conePt,                            FloatVariableType::lep3_conept);
-      // lep4_conept not filled
 
       snm->read(mindr_lep1_jet,                         FloatVariableType::mindr_lep1_jet);
       snm->read(mindr_lep2_jet,                         FloatVariableType::mindr_lep2_jet);

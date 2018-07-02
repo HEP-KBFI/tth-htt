@@ -8,9 +8,8 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 # E.g.: ./tthAnalyzeRun_1l_2tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'sync_wMEM' ]
-sys_choices      = [ 'full', 'extended' ] + systematics.an_extended_opts
-systematics.full = systematics.an_common
-systematics.extended = systematics.an_extended
+sys_choices      = [ 'full' ] + systematics.an_extended_opts
+systematics.full = systematics.an_extended
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -84,7 +83,10 @@ elif mode.startswith("sync"):
     if use_preselected:
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected_sync import samples_2017
     else:
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+      if use_nonnominal:
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+      else:
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017
   else:
     raise ValueError("Internal logic error")
   hadTau_selection     = "dR03mvaMedium"
@@ -109,6 +111,8 @@ if __name__ == '__main__':
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
     ', '.join(central_or_shifts)
   )
+  if not use_preselected:
+    logging.warning('Running the analysis on fully inclusive samples!')
 
   if sample_filter:
     samples = filter_samples(samples, sample_filter)

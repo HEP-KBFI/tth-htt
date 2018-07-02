@@ -70,7 +70,8 @@ process.makePlots = cms.PSet(
     nuisanceParameters = cms.PSet(
         normalization = cms.PSet(
             signal = cms.string("1.0 +/- 0.20"),
-            tH = cms.string("1.0 +/- 0.20"),
+            tHq = cms.string("1.0 +/- 0.20"),
+            tHW = cms.string("1.0 +/- 0.20"),
             TT = cms.string("1.0 +/- 0.20"),
             TTW = cms.string("1.0 +/- 0.20"),
             TTWW = cms.string("1.0 +/- 0.20"),
@@ -90,13 +91,13 @@ process.makePlots = cms.PSet(
             CMS_ttHl_btag_LFStats2 = cms.string("0.00 +/- 1.00"),
             CMS_ttHl_btag_cErr1 = cms.string("0.00 +/- 1.00"),
             CMS_ttHl_btag_cErr2 = cms.string("0.00 +/- 1.00"),
-            CMS_ttHl_JES = cms.string("0.00 +/- 1.00")
+            CMS_ttHl_JES = cms.string("0.00 +/- 1.00"),
         )
     ),
     showUncertainty = cms.bool(False),
 
     labelOnTop = cms.string("CMS Preliminary; ttH, H #rightarrow #tau#tau; %1.1f fb^{-1} at #sqrt{s} = 13 TeV"),
-    intLumiData = cms.double(41.5), # in units of fb^-1 #TODO make it era-dependent
+    intLumiData = cms.double(41.5), # in units of fb^-1
 
     outputFileName = cms.string("plots/makePlots.png")
 )
