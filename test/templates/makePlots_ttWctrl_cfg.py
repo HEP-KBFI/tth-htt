@@ -218,47 +218,47 @@ process.makePlots.distributions.extend([
         xAxisTitle = cms.string("MVA"),
         yAxisTitle = cms.string("dN/dMVA"),
     ),
-    cms.PSet(            
+    cms.PSet(
         histogramName = cms.string("sel/mvaInputs_2lss/$PROCESS/LepGood_conePt[iF_Recl[0]]"),
         xAxisTitle = cms.string("leading lepton p_{T} [GeV]"),
         yAxisTitle = cms.string("dN/dp_{T} [1/GeV]")
     ),
-    cms.PSet(            
+    cms.PSet(
         histogramName = cms.string("sel/mvaInputs_2lss/$PROCESS/LepGood_conePt[iF_Recl[1]]"),
         xAxisTitle = cms.string("subleading lepton p_{T} [GeV]"),
         yAxisTitle = cms.string("dN/dp_{T} [1/GeV]")
     ),
-    cms.PSet(            
+    cms.PSet(
         histogramName = cms.string("sel/mvaInputs_2lss/$PROCESS/max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"),
         xAxisTitle = cms.string("max. lepton #eta"),
         yAxisTitle = cms.string("dN/d#eta")
     ),
-    cms.PSet(            
+    cms.PSet(
         histogramName = cms.string("sel/mvaInputs_2lss/$PROCESS/mindr_lep1_jet"),
         xAxisTitle = cms.string("min. #Delta R(leading lepton, jets)"),
         yAxisTitle = cms.string("dN/d#Delta R")
     ),
-    cms.PSet(            
+    cms.PSet(
         histogramName = cms.string("sel/mvaInputs_2lss/$PROCESS/mindr_lep2_jet"),
         xAxisTitle = cms.string("min. #Delta R(subleading lepton, jets)"),
         yAxisTitle = cms.string("dN/d#Delta R")
     ),
-    cms.PSet(            
+    cms.PSet(
         histogramName = cms.string("sel/mvaInputs_2lss/$PROCESS/avg_dr_jet"),
         xAxisTitle = cms.string("average #Delta R(jets)"),
         yAxisTitle = cms.string("dN/d#Delta R")
     ),
-    cms.PSet(            
+    cms.PSet(
         histogramName = cms.string("sel/mvaInputs_2lss/$PROCESS/min(met_pt,400)"),
         xAxisTitle = cms.string("E_{T}^{miss} [GeV]"),
         yAxisTitle = cms.string("dN/dE_{T}^{miss} [1/GeV]")
     ),
-    cms.PSet(            
+    cms.PSet(
         histogramName = cms.string("sel/mvaInputs_2lss/$PROCESS/MT_met_lep1"),
         xAxisTitle = cms.string("m_{T}(leading lepton, E_{T}^{miss}) [GeV]"),
         yAxisTitle = cms.string("dN/dm_{T} [1/GeV]")
     ),
-    cms.PSet(            
+    cms.PSet(
         histogramName = cms.string("sel/mvaInputs_2lss/$PROCESS/nJet25_Recl"),
         xAxisTitle = cms.string("jet Multiplicity"),
         yAxisTitle = cms.string("N")
@@ -268,7 +268,8 @@ process.makePlots.distributions.extend([
 process.makePlots.nuisanceParameters.normalization = cms.PSet(
     signal = cms.string("1.0 +/- 0.20"),
     TT = cms.string("1.0 +/- 0.20"),
-    tH = cms.string("1.0 +/- 0.20"),
+    tHq = cms.string("1.0 +/- 0.20"),
+    tHW = cms.string("1.0 +/- 0.20"),
     TTW = cms.string("1.0 +/- 0.20"),
     TTWW = cms.string("1.0 +/- 0.20"),
     TTZ = cms.string("1.0 +/- 0.20"),

@@ -238,6 +238,9 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("missing_hlt_paths",               [
 {{ missing_hlt_paths }}
   ]),
+  ("hlt_paths",               [
+{{ hlt_paths }}
+  ]),
 ])
 """
 
@@ -278,9 +281,9 @@ class PathEntry:
 
 def get_triggers(process_name_specific, is_data, era):
   if 'SingleElec' in process_name_specific:
-    return ['1e']
+    return ['1e', '1e1tau'] if era > 2016 else ['1e']
   if 'SingleMuon' in process_name_specific:
-    return ['1mu']
+    return ['1mu', '1mu1tau'] if era > 2016 else ['1mu']
   if 'DoubleEG' in process_name_specific:
     return ['2e', '3e'] if era > 2015 else ['2e']
   if 'DoubleMuon' in process_name_specific:
@@ -429,6 +432,13 @@ def get_missing_from_superset(indices):
     missing_branches = branch_names_superset - set(index_entry[BRANCH_NAMES_KEY])
     missing_branches_superset.update(missing_branches)
   return list(sorted(list(missing_branches_superset)))
+
+def get_hlt_paths(indices):
+  branch_names_union = set.union(*[
+    set(index_entry[BRANCH_NAMES_KEY]) for index_entry in indices.values()
+  ])
+  hlt_union = [ branch_name for branch_name in branch_names_union if branch_name.startswith('HLT_') ]
+  return hlt_union
 
 def get_missing_hlt_paths(required_triggers, indices, all_paths):
   branch_names_intersection = set.intersection(*[
@@ -616,6 +626,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event, mi
     meta_dict[key]['missing_hlt_paths']               = get_missing_hlt_paths(
       get_triggers('', False, era), indices, triggerTable.triggers_all
     )
+    meta_dict[key]['hlt_paths']                       = get_hlt_paths(indices) if is_data else []
     meta_dict[key]['genWeight']                       = not is_data
     meta_dict[key]['type']                            = 'data' if is_data else 'mc'
     meta_dict[key]['reHLT']                           = True
@@ -1036,6 +1047,10 @@ if __name__ == '__main__':
           is_available     = True,
           missing_branches = meta_dict[key]['missing_hlt_paths'],
         ).lstrip('\n')
+        hlt_paths_filled = jinja2.Template(missing_branches_str).render(
+          is_available = not is_mc,
+          missing_branches = meta_dict[key]['hlt_paths'],
+        ).lstrip('\n')
         output += jinja2.Template(dictionary_entry_str).render(
           dict_name                       = args.output_dict_name,
           dbs_name                        = key,
@@ -1060,6 +1075,7 @@ if __name__ == '__main__':
           has_LHE                         = meta_dict[key]['has_LHE'],
           missing_from_superset           = missing_branches_template_filled,
           missing_hlt_paths               = missing_hlt_paths_filled,
+          hlt_paths                       = hlt_paths_filled,
           paths                           = '\n'.join(path_entries_arr),
         ) + '\n\n'
       else:

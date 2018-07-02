@@ -37,6 +37,12 @@ process.produceNtuple = cms.PSet(
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genJets    = cms.string('GenJet'),
 
+    # Define trigger branches that are always written to the output file, even if they do not exist in the input file.
+    # This logic simplifies the configuration of analysis jobs to handle the case
+    # that some triggers appear/disappear in the middle of a data-taking period, e.g. 2017RunB
+    # (in this case the trigger decision is set to false for all events in each input file where the trigger branch is missing)
+    branchNames_triggers = cms.vstring(),
+
     isMC = cms.bool(True),
     readGenMatching = cms.bool(False),
 

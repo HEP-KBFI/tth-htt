@@ -206,8 +206,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.cfgFile_comp_LeptonFakeRate = os.path.join(self.template_dir, "comp_LeptonFakeRate_cfg.py")
     self.jobOptions_comp_LeptonFakeRate = {}
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH", "VH" ]
-    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "signal", "TTWW", "tH", "VH", "ttH_hbb", "fakes_data" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "VH" ]
+    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "signal", "TTWW", "tHq", "tHW", "VH", "ttH_hbb", "fakes_data" ]
     self.histogramDir_prep_dcard = "LeptonFakeRate"
     self.prep_dcard = prep_dcard
 
@@ -419,7 +419,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
           ntupleFiles = inputFileList[jobId]
           if len(ntupleFiles) == 0:
-            logging.warning("ntupleFiles['%s'] = %s --> skipping job !!" % (key_job, ntupleFiles))
+            logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
             continue
 
           rleOutputFile = os.path.join(
@@ -621,7 +621,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         datacard = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit))
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-          ##'inputFile' : self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'],
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % (histogramToFit)),
           'datacardFile' : datacard,
           'histogramDir' : (self.histogramDir_prep_dcard),
@@ -671,6 +670,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
               new_cmssw_base         = self.cmssw_base_dir_combine,
               setup_dcards_script    = setup_dcards_script_path,
               postfit_plot_script    = postfit_plot_script_path,
+              int_lumi_data          = self.lumi,
               yieldtable_script      = yieldtable_script_path,
               output_dir             = combine_output_dir,
               numerator_plotLabel    = self.numerator_plotLabel,
@@ -735,7 +735,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       leptonFR_final_output = os.path.join(combine_output_dir, 'leptonFakeRates.root')
       self.jobOptions_comp_LeptonFakeRate[key_comp_LeptonFakeRate] = {
         'inputFile'            : [ fit_value_file, self.outputFile_hadd_stage2[key_hadd_stage2] ],
-        ##'inputFile'            : [ fit_value_file, self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'] ],
         'outputFile'           : leptonFR_final_output,
         'absEtaBins_e'         : self.absEtaBins_e,
         'ptBins_e'             : self.ptBins_e,

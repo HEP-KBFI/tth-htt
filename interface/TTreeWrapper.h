@@ -194,6 +194,11 @@ public:
   bool
   hasNextEvent();
 
+  /**
+   * @brief Returns pointer to TTree object in currently processed file
+   */
+  TTree* getCurrentTree() const { return currentTreePtr_; }
+
 private:
   unsigned currentFileIdx_;             ///< Index of currently open file
   long long currentEventIdx_;           ///< Index of currently read event (per single file)

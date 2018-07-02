@@ -5,7 +5,7 @@
  *
  * Book and fill histograms for event yield per unit of luminosity
  *
- * \author Christian Veelken, Tallin
+ * \author Christian Veelken, Tallinn
  *
  */
 
@@ -29,13 +29,32 @@ namespace evtYieldHistManager
 
   private:
     std::string name_;
-    Long64_t firstRun_; // use return value of TString::Atoll() function for firstRun and lastRun data-members 
+    Long64_t firstRun_;
     Long64_t lastRun_;
     double luminosity_;
   };
 
   bool isLaterRunPeriod(const RunPeriod & runPeriod1,
                         const RunPeriod & runPeriod2);
+
+  class TRandomTH1
+  {
+  public:
+    TRandomTH1();
+    TRandomTH1(TH1 * histogram);
+
+    /**
+     * Baseline: https://github.com/root-project/root/blob/771fdc1b25efc44fc8a00c32aaee2535dc78144f/hist/hist/src/TH1.cxx#L4741
+     */
+    Double_t
+    GetRandom(ULong64_t seed) const;
+
+  private:
+    TH1 * histogram_;
+    Double_t integral_;
+    Double_t * integral_array_;
+    Int_t nbinsx_;
+  };
 }
 
 class EvtYieldHistManager
@@ -54,9 +73,11 @@ class EvtYieldHistManager
 
  private:
   std::vector<evtYieldHistManager::RunPeriod> runPeriods_;
+  bool isMC_;
 
   TH1 * histogram_evtYield_;
   TH1 * histogram_luminosity_;
+  evtYieldHistManager::TRandomTH1 * histogram_rnd_;
 };
 
 #endif

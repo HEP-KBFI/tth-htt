@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-from tthAnalysis.HiggsToTauTau.recommendedMEtFilters_cfi import recommendedMEtFilters
+from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import recommendedMEtFilters
 from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_2017_cfi import EvtYieldHistManager_2017
 
 process = cms.PSet()
@@ -39,7 +39,8 @@ process.analyze_1l_2tau = cms.PSet(
     apply_offline_e_trigger_cuts_1mu = cms.bool(True),
     apply_offline_e_trigger_cuts_1mu1tau = cms.bool(True),
 
-    leptonSelection = cms.string('Tight'),
+    electronSelection = cms.string('Tight'),
+    muonSelection = cms.string('Tight'),
     lep_mva_cut = cms.double(0.75), # CV: used for tight lepton selection only
     apply_leptonGenMatching = cms.bool(False),
 
@@ -54,7 +55,7 @@ process.analyze_1l_2tau = cms.PSet(
         histogramName_mu = cms.string("FR_mva090_mu_data_comb"),
     ),
     hadTauFakeRateWeight = cms.PSet(
-        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v1.root"),
+        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"),
         lead = cms.PSet(
             absEtaBins = cms.vdouble(-1., 1.479, 9.9),
             graphName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"),
@@ -68,7 +69,7 @@ process.analyze_1l_2tau = cms.PSet(
             applyGraph = cms.bool(True),
             fitFunctionName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/fitFunction_data_div_mc_hadTaus_pt"),
             applyFitFunction = cms.bool(True),
-        ),
+        )
     ),
 
     isMC = cms.bool(False),

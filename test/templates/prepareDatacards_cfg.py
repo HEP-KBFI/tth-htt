@@ -28,7 +28,9 @@ process.prepareDatacards = cms.PSet(
     signals = cms.vstring(
         "ttH_hww",
         "ttH_hzz",
-        "ttH_htt"
+        "ttH_htt",
+        "ttH_hzg",
+        "ttH_hmm",
     ),
 
     categories = cms.VPSet(

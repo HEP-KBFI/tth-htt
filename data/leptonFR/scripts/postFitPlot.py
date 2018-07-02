@@ -166,11 +166,11 @@ parser.add_argument('--x-title', default='mT^{fix}_{L}', help='x-axis variable, 
 parser.add_argument('--logy', action='store_true')
 parser.add_argument('--y-min', type=float, default=1)
 parser.add_argument('--x-min', type=float, default=1)
-
-
+parser.add_argument('--lumi', '-l', type=float, default=0.)
 
 args = parser.parse_args()
 
+intLumiData = args.lumi
 
 filename, folder = args.input.split(':')
 file = ROOT.TFile(filename)
@@ -272,7 +272,7 @@ pads[0].RedrawAxis()
 
 # CMS logo
 plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
-plot.DrawTitle(pads[0], '41.5 fb^{-1} (13 TeV)', 3) #TODO make it era-dependent
+plot.DrawTitle(pads[0], '%.1f fb^{-1} (13 TeV)' % intLumiData, 3)
 
 # latex = ROOT.TLatex()
 # plot.Set(latex, NDC=None, TextFont=42, TextSize=0.08)

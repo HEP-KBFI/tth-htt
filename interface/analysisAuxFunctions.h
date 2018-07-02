@@ -287,6 +287,16 @@ printCollection(const std::string & collection_name,
 }
 
 /**
+ * @brief Count number of reconstructed electrons, muons, and hadronic taus that are due to misidentified quark or gluon jets
+ */
+int
+countFakeElectrons(const std::vector<const RecoLepton *> & leptons);
+int 
+countFakeMuons(const std::vector<const RecoLepton *> & leptons);
+int 
+countFakeHadTaus(const std::vector<const RecoHadTau *> & hadTaus);
+
+/**
  * @brief Computes the number of k combinations out of n
  * @param n Number of instances to choose from
  * @param k Length of a single combination

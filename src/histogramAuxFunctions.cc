@@ -576,7 +576,8 @@ getHistogram(const TDirectory * dir,
              const std::string & process,
              const std::string & histogramName,
              const std::string & central_or_shift,
-             bool enableException)
+             bool enableException,
+             bool verbose)
 {
   std::string histogramName_full = Form("%s/", process.data());
   if(! central_or_shift.empty() && central_or_shift != "central")
@@ -591,7 +592,10 @@ getHistogram(const TDirectory * dir,
   TH1 * histogram = dynamic_cast<TH1 *>((const_cast<TDirectory *>(dir))->Get(histogramName_full.data()));
   if(histogram)
   {
-    std::cout << "--> returning histogram = " << histogram << ": name = '" << histogram->GetName() << "'\n";
+    if(verbose)
+    {
+      std::cout << "--> returning histogram = " << histogram << ": name = '" << histogram->GetName() << "'\n";
+    }
   }
   else if(enableException)
   {
@@ -856,3 +860,27 @@ getTArraDfromVector(const std::vector<double> & histogramBinning)
   return binning_tarray;
 }
 
+TH1* compRatioHistogram(const std::string& ratioHistogramName, const TH1* numerator, const TH1* denominator)
+{
+  TH1* histogramRatio = 0;
+  
+  if ( numerator->GetDimension() == denominator->GetDimension() &&
+       numerator->GetNbinsX() == denominator->GetNbinsX() ) {
+    histogramRatio = (TH1*)numerator->Clone(ratioHistogramName.data());
+    histogramRatio->Divide(denominator);
+    
+    int nBins = histogramRatio->GetNbinsX();
+    for ( int iBin = 1; iBin <= nBins; ++iBin ){
+      double binContent = histogramRatio->GetBinContent(iBin);
+      histogramRatio->SetBinContent(iBin, binContent - 1.);
+    }
+    
+    histogramRatio->SetLineColor(numerator->GetLineColor());
+    histogramRatio->SetLineWidth(numerator->GetLineWidth());
+    histogramRatio->SetMarkerColor(numerator->GetMarkerColor());
+    histogramRatio->SetMarkerStyle(numerator->GetMarkerStyle());
+    histogramRatio->SetMarkerSize(numerator->GetMarkerSize());
+  }
+
+  return histogramRatio;
+}

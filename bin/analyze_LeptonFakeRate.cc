@@ -40,6 +40,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // get*_option()
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverflow
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath_LeptonFakeRate.h" // hltPath_LeptonFakeRate, create_hltPaths_LeptonFakeRate(), hltPaths_LeptonFakeRate_delete()
+#include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
 
@@ -449,7 +450,7 @@ main(int argc,
   const std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
   const bool isMC    = cfg_analyze.getParameter<bool>("isMC");
-  const bool isMC_tH = process_string == "tH" ? true : false;
+  const bool isMC_tH = process_string == "tHq" || process_string == "tHW" ? true : false;
   const bool hasLHE  = cfg_analyze.getParameter<bool>("hasLHE");
 
   const std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
@@ -601,10 +602,11 @@ main(int argc,
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree->registerReader(&eventInfoReader);
 
-  for(const std::vector<hltPath_LeptonFakeRate *> hltPaths: { triggers_e, triggers_mu })
-  {
-    inputTree->registerReader(hltPaths);
-  }
+  std::vector<hltPath*> triggers;
+  triggers.insert(triggers.end(), triggers_e.begin(), triggers_e.end());
+  triggers.insert(triggers.end(), triggers_mu.begin(), triggers_mu.end());
+  hltPathReader hltPathReader_instance(triggers);
+  inputTree -> registerReader(&hltPathReader_instance);
 
 //--- declare particle collections
   RecoMuonReader * muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);

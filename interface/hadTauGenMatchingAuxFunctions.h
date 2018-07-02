@@ -68,6 +68,13 @@ int
 getHadTauGenMatch_int(const std::vector<hadTauGenMatchEntry> & hadTauGenMatch_definitions,
                       const std::string& hadTauGenMatch_string);
 
+void
+countHadTauGenMatches(const RecoHadTau * hadTau,
+		      int & numGenMatchedHadTaus,
+		      int & numGenMatchedElectrons,
+		      int & numGenMatchedMuons,
+		      int & numGenMatchedJets);
+
 const hadTauGenMatchEntry &
 getHadTauGenMatch(const std::vector<hadTauGenMatchEntry> & hadTauGenMatch_definitions,
                   const RecoHadTau * hadTau_lead,

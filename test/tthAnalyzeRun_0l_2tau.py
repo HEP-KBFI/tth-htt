@@ -7,14 +7,14 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_0l_2tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default' ]
+mode_choices     = [ 'default', 'forBDTtraining' ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts
 systematics.full = systematics.an_common
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp("dR03mvaTight")
+parser.add_tau_id_wp()
 parser.add_hlt_filter()
 parser.add_files_per_job()
 parser.add_use_home()
@@ -36,7 +36,7 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
-tau_id_wp         = args.tau_id_wp
+rle_select        = os.path.expanduser(args.rle_select)
 hlt_filter        = args.hlt_filter
 files_per_job     = args.files_per_job
 use_home          = args.use_home
@@ -49,9 +49,21 @@ for systematic_label in systematics_label:
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
 
+hadTau_charge_selections = [ "OS", "SS" ]
+
+if mode == "default":
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
+  hadTau_selection         = "dR03mvaMedium"
+elif mode == "forBDTtraining":
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
+  hadTau_selection         = "dR03mvaLoose"
+  hadTau_selection_relaxed = "dR03mvaVLoose"
+  hadTau_charge_selections = [ "OS" ]
+else:
+  raise ValueError("Internal logic error")
+
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
 else:
   raise ValueError("Invalid era: %s" % era)
 
@@ -76,6 +88,10 @@ if __name__ == '__main__':
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
 
+  if args.tau_id_wp:
+    logging.info("Changing tau ID working point: %s -> %s" % (hadTau_selection, args.tau_id_wp))
+    hadTau_selection = args.tau_id_wp
+
   analysis = analyzeConfig_0l_2tau(
     configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
     outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
@@ -83,8 +99,8 @@ if __name__ == '__main__':
     cfgFile_analyze                       = "analyze_0l_2tau_cfg.py",
     samples                               = samples,
     lep_mva_wp                            = lep_mva_wp,
-    hadTau_selection                      = tau_id_wp,
-    hadTau_charge_selections              = [ "OS", "SS" ],
+    hadTau_selection                      = hadTau_selection,
+    hadTau_charge_selections              = hadTau_charge_selections,
     applyFakeRateWeights                  = "2tau",
     central_or_shifts                     = central_or_shifts,
     max_files_per_job                     = files_per_job,
@@ -107,9 +123,13 @@ if __name__ == '__main__':
     select_rle_output                     = True,
     dry_run                               = dry_run,
     isDebug                               = debug,
+    rle_select                            = rle_select,
     hlt_filter                            = hlt_filter,
     use_home                              = use_home,
   )
+
+  if mode == "forBDTtraining" :
+    analysis.set_BDT_training(hadTau_selection_relaxed)
 
   job_statistics = analysis.create()
   for job_type, num_jobs in job_statistics.items():

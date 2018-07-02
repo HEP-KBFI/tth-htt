@@ -39,11 +39,10 @@ class hltPath_LeptonFakeRate
   bool is_trigger_2e() const;
   bool isTriggered() const; // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
   void setIsTriggered(bool decision) const; // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
+
+  friend class hltPathReader;
+
  private:
-  std::string branchName_;
-  Int_t value_;
-  double minPt_;
-  double maxPt_;
   double minRecoPt_;   // NEWLY ADDED AFTER GIOVANNI SYNC 
   double minJetPt_;
   double prescale_;
@@ -53,10 +52,6 @@ class hltPath_LeptonFakeRate
   bool is_trigger_2e_;
   mutable bool isTriggered_; // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
 };
-
-void
-hltPaths_LeptonFakeRate_setBranchAddresses(TTree * tree,
-                                           const std::vector<hltPath_LeptonFakeRate *> & hltPaths);
 
 std::vector<hltPath_LeptonFakeRate *>
 create_hltPaths_LeptonFakeRate(const std::vector<std::string> & branchNames,

@@ -7,10 +7,9 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_3l.py -v 2017Dec13 -m default -e 2017
 
-mode_choices         = [ 'default', 'forBDTtraining', 'sync', 'sync_wMEM' ]
-sys_choices          = [ 'full', 'extended' ] + systematics.an_extended_opts
-systematics.full     = systematics.an_common
-systematics.extended = systematics.an_extended
+mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'sync_wMEM' ]
+sys_choices      = [ 'full' ] + systematics.an_extended_opts
+systematics.full = systematics.an_extended
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -61,7 +60,10 @@ elif mode == "forBDTtraining":
 elif mode == "sync_wMEM":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
 elif mode == "sync":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+  if use_nonnominal:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+  else:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017
 else:
   raise ValueError("Internal logic error")
 
