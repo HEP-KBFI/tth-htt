@@ -35,10 +35,24 @@ if [ ! -f "$INPUT_FILE" ]; then
   exit 2;
 fi
 
-OUTPUT_FILE=`tail -n1 "$INPUT_FILE"`
+LAST_LINE=`tail -n1 "$INPUT_FILE"`
+ERA=$(echo "$LAST_LINE" | awk '{print $1}')
+HISTOGRAM_NAME=$(echo "$LAST_LINE" | awk '{print $2}')
+OUTPUT_FILE=$(echo "$LAST_LINE" | awk '{print $3}')
+
+if [ -z ${OUTPUT_FILE+x} ]; then
+  echo "No era provided";
+  exit 3;
+fi
+
+if [ -z ${OUTPUT_FILE+x} ]; then
+  echo "No histogram name provided";
+  exit 4;
+fi
+
 if [ -z ${OUTPUT_FILE+x} ]; then
   echo "Input file empty";
-  exit 3;
+  exit 5;
 fi
 
 INPUT_FILES=()
@@ -50,12 +64,12 @@ while read LINE; do
 
   if [ ! -f "$LINE" ]; then
     echo "Input file $LINE does not exist";
-    exit 4;
+    exit 6;
   fi
 
   if [ "$LINE" == "$OUTPUT_FILE" ]; then
     echo "Input and output files cannot coincide: $LINE";
-    exit 5;
+    exit 7;
   fi
 
   # Input file should be OK
@@ -66,7 +80,7 @@ NOF_INPUT_FILES="${#INPUT_FILES[@]}"
 if [ "$NOF_INPUT_FILES" == "0" ]; then
   # This shouldn't happen, but who knows..
   echo "Zero input files provided";
-  exit 6;
+  exit 8;
 fi
 
 # Assume that when running this script in a distributed environment,
@@ -80,7 +94,7 @@ HADD_FILES="$OUTPUT_FILE_BASENAME"
 for INDEX in ${!INPUT_FILES[@]}; do
   INDEX_INCR=$((INDEX+1));
   TMP_OUTPUT_FILENAME="${OUTPUT_FILE_FILENAME}_${INDEX_INCR}.${OUTPUT_FILE_EXTENSION}";
-  nano_postproc.py -I tthAnalysis.NanoAODTools.postprocessing.tthModules "puHist2017($TMP_OUTPUT_FILENAME)" --noout . "${INPUT_FILES[INDEX]}";
+  nano_postproc.py -I tthAnalysis.NanoAODTools.postprocessing.tthModules "puHist$ERA($TMP_OUTPUT_FILENAME;$HISTOGRAM_NAME)" --noout . "${INPUT_FILES[INDEX]}";
   test_exit_code $?;
   HADD_FILES+=" $TMP_OUTPUT_FILENAME";
 done

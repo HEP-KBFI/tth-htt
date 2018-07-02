@@ -51,6 +51,9 @@ if [ "$ERA" = "2016" ]; then
   NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_$ERA";
 elif [ "$ERA" == "2017" ]; then
   NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_deep_$ERA";
+else
+  echo "Invalid era = '$ERA'";
+  exit 3;
 fi
 
 if [ "$IS_MC" == "True" ]; then
