@@ -296,7 +296,7 @@ class puHistogramConfig:
     def addToMakefile_plot(self, lines_makefile):
         phonie_target = "sbatch_plot"
 
-        cmd_string = "plot_from_histogram.py -i %s -j autoPU -o %s -x '# PU interactions' " \
+        cmd_string = "plot_from_histogram.py -i %s -j %s -o %s -x '# PU interactions' " \
                      "-y '# events' -t '%s' -g"
         cmd_log_string = cmd_string + " -l"
 
@@ -314,12 +314,12 @@ class puHistogramConfig:
                 'jobs' : {
                     'linear' : {
                         'outputFile' : plot_linear,
-                        'cmd'        : cmd_string % (cfg['outputFile'], plot_linear, key),
+                        'cmd'        : cmd_string % (cfg['outputFile'], key, plot_linear, key),
                         'logFile'    : logFile_linear,
                     },
                     'log' : {
                         'outputFile' : plot_log,
-                        'cmd'        : cmd_log_string % (cfg['outputFile'], plot_log, key),
+                        'cmd'        : cmd_log_string % (cfg['outputFile'], key, plot_log, key),
                         'logFile'    : logFile_log,
                     }
                 }
