@@ -1041,15 +1041,15 @@ if __name__ == '__main__':
         is_mc = meta_dict[key]['type'] == 'mc'
         missing_branches_template_filled = jinja2.Template(missing_branches_str).render(
           is_available     = args.missing_branches and not is_mc,
-          missing_branches = meta_dict[key]['missing_from_superset'],
+          missing_branches = sorted(meta_dict[key]['missing_from_superset'], key = lambda s: s.lower()),
         ).lstrip('\n')
         missing_hlt_paths_filled = jinja2.Template(missing_branches_str).render(
           is_available     = True,
-          missing_branches = meta_dict[key]['missing_hlt_paths'],
+          missing_branches = sorted(meta_dict[key]['missing_hlt_paths'], key = lambda s: s.lower()),
         ).lstrip('\n')
         hlt_paths_filled = jinja2.Template(missing_branches_str).render(
           is_available = not is_mc,
-          missing_branches = meta_dict[key]['hlt_paths'],
+          missing_branches = sorted(meta_dict[key]['hlt_paths'], key = lambda  s: s.lower()),
         ).lstrip('\n')
         output += jinja2.Template(dictionary_entry_str).render(
           dict_name                       = args.output_dict_name,
