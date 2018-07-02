@@ -16,6 +16,7 @@ class systematics(object):
   UnclusteredEn = [ "CMS_ttHl_UnclusteredEnUp", "CMS_ttHl_UnclusteredEnDown" ]
   tauES         = [ "CMS_ttHl_tauESUp",         "CMS_ttHl_tauESDown"         ]
   triggerSF     = [ "CMS_ttHl_triggerUp",       "CMS_ttHl_triggerDown"       ]
+  PU            = [ "CMS_ttHl_pileupUp",        "CMS_ttHl_pileupDown"        ]
 
   class LHE(object):
 
@@ -114,8 +115,8 @@ class systematics(object):
   an_chargeFlip_mu      =    central +  muon_E
   an_chargeFlip_mu_opts = [ "central", "muon_E" ]
 
-  an_common      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag +  FR_t +  lhe +  triggerSF
-  an_common_opts = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag", "FR_t", "lhe", "triggerSF" ]
+  an_common      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag +  FR_t +  lhe +  triggerSF +  PU
+  an_common_opts = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag", "FR_t", "lhe", "triggerSF", "PU" ]
   # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only if you plan to run compShapeSyst 1!
   an_extended      = an_common      +    FRe_shape +  FRm_shape
   an_extended_opts = an_common_opts + [ "FRe_shape", "FRm_shape" ]
