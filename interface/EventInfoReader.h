@@ -2,6 +2,7 @@
 #define EventInfoReader_H
 
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // PUsys
 
 // forward declarations
 class TTree;
@@ -11,8 +12,13 @@ class EventInfoReader
   : public ReaderBase
 {
 public:
-  EventInfoReader(bool read_genHiggsDecayMode = true, bool read_puWeight = true);
-  EventInfoReader(EventInfo * info, bool read_genHiggsDecayMode = true, bool read_puWeight = true);
+  explicit EventInfoReader(PUsys puSys_option = PUsys::central,
+                           bool read_genHiggsDecayMode = true,
+                           bool read_puWeight = true);
+  explicit EventInfoReader(EventInfo * info,
+                           PUsys puSys_option = PUsys::central,
+                           bool read_genHiggsDecayMode = true,
+                           bool read_puWeight = true);
   ~EventInfoReader() {}
 
   void

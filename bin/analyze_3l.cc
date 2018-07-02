@@ -244,6 +244,7 @@ int main(int argc, char* argv[])
   const int hadTauPt_option            = getHadTauPt_option     (central_or_shift);
   const int lheScale_option            = getLHEscale_option     (central_or_shift);
   const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift);
+  const PUsys puSys_option             = getPUsys_option        (central_or_shift);
 
   const int met_option   = useNonNominal_jetmet ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
   const int jetPt_option = useNonNominal_jetmet ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
@@ -333,7 +334,7 @@ int main(int argc, char* argv[])
 
 //--- declare event-level variables
   EventInfo eventInfo(isSignal, isMC, isMC_tH);
-  EventInfoReader eventInfoReader(&eventInfo);
+  EventInfoReader eventInfoReader(&eventInfo, puSys_option);
   inputTree -> registerReader(&eventInfoReader);
 
   hltPathReader hltPathReader_instance({ triggers_1e, triggers_1mu, triggers_2e, triggers_1e1mu, triggers_2mu, triggers_3e, triggers_2e1mu, triggers_1e2mu, triggers_3mu });
