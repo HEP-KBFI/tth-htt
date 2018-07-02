@@ -85,6 +85,7 @@ class puHistogramConfig:
     def __init__(self,
             configDir,
             outputDir,
+            output_file,
             executable,
             samples,
             max_files_per_job,
@@ -128,6 +129,7 @@ class puHistogramConfig:
 
         create_if_not_exists(self.configDir)
         create_if_not_exists(self.outputDir)
+        self.output_file      = os.path.join(self.outputDir, output_file)
         self.stdout_file_path = os.path.join(self.configDir, "stdout_puProfile.log")
         self.stderr_file_path = os.path.join(self.configDir, "stderr_puProfile.log")
         self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_puProfile.log")
@@ -155,11 +157,15 @@ class puHistogramConfig:
         cfg_dirs = [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS, DKEY_HADD_RT ]
 
         for sample_name, sample_info in self.samples.items():
+            if not sample_info['use_it']:
+                continue
             process_name = sample_info["process_name_specific"]
-            key_dir = getKey(sample_name)
+            key_dir = getKey(process_name)
             for dir_type in all_dirs:
+                if dir_type == DKEY_PLOTS:
+                    continue
                 initDict(self.dirs, [ key_dir, dir_type ])
-                if dir_type in cfg_dirs and dir_type != DKEY_PLOTS:
+                if dir_type in cfg_dirs:
                     self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, process_name)
                 else:
                     self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, process_name)
@@ -212,14 +218,18 @@ class puHistogramConfig:
         )
         return num_jobs
 
-    def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
+    def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name, process_name = ''):
         sbatch_hadd_file = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s.py" % hadd_stage_name)
         sbatch_hadd_file = sbatch_hadd_file.replace(".root", "")
 
-        scriptFile = os.path.join(self.dirs[DKEY_SCRIPTS], os.path.basename(sbatch_hadd_file).replace(".py", ".sh"))
-        logFile    = os.path.join(self.dirs[DKEY_LOGS],    os.path.basename(sbatch_hadd_file).replace(".py", ".log"))
+        scriptsDir = self.dirs[process_name][DKEY_SCRIPTS] if process_name else self.dirs[DKEY_SCRIPTS]
+        logDir     = self.dirs[process_name][DKEY_LOGS]    if process_name else self.dirs[DKEY_LOGS]
+        haddRtDir  = self.dirs[process_name][DKEY_HADD_RT] if process_name else self.dirs[DKEY_HADD_RT]
 
-        sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], hadd_stage_name) if self.dirs[DKEY_HADD_RT] else ''
+        scriptFile      = os.path.join(scriptsDir, os.path.basename(sbatch_hadd_file).replace(".py", ".sh"))
+        logFile         = os.path.join(logDir,     os.path.basename(sbatch_hadd_file).replace(".py", ".log"))
+        sbatch_hadd_dir = os.path.join(haddRtDir,  hadd_stage_name)
+
         self.num_jobs['hadd'] += tools_createScript_sbatch_hadd(
             sbatch_script_file_name = sbatch_hadd_file,
             input_file_names        = inputFiles,
@@ -272,6 +282,7 @@ class puHistogramConfig:
                 inputFiles      = cfg['inputFiles'],
                 outputFile      = cfg['outputFile'],
                 hadd_stage_name = "_".join([ key, "ClusterHistogramAggregator" ]),
+                process_name    = key,
             )
             jobOptions[key] = {
                 'inputFiles'   : cfg['inputFiles'],
@@ -291,11 +302,8 @@ class puHistogramConfig:
                 "",
             ])
             self.filesToClean.append(cfg['outputFile'])
-            # self.targets.append(cfg['outputFile'])
 
     def addToMakefile_plot(self, lines_makefile):
-        phonie_target = "sbatch_plot"
-
         cmd_string = "plot_from_histogram.py -i %s -j %s -o %s -x '# PU interactions' " \
                      "-y '# events' -t '%s' -g"
         cmd_log_string = cmd_string + " -l"
@@ -339,6 +347,31 @@ class puHistogramConfig:
                 ])
                 self.num_jobs['plot'] += 1
 
+    def addToMakefile_finalHadd(self, lines_makefile):
+        outputFiles     = [ cfg['outputFile'] for cfg in self.outputFiles.values() ]
+        outputFiles_cat = ' '.join(outputFiles)
+        if self.is_sbatch:
+            scriptFile = self.create_hadd_python_file(
+                inputFiles      = outputFiles,
+                outputFile      = self.output_file,
+                hadd_stage_name = "_".join([ 'final', "ClusterHistogramAggregator" ]),
+            )
+            lines_makefile.extend([
+                "%s: %s"      % (self.output_file, outputFiles_cat),
+                "\trm -f %s"  % self.output_file,
+                "\tpython %s" % scriptFile,
+            ])
+        else:
+            lines_makefile.extend([
+                "%s: %s"       % (self.output_file, outputFiles_cat),
+                "\trm -f %s"   % self.output_file,
+                "\thadd %s %s" % (self.output_file, outputFiles_cat),
+                "",
+            ])
+            self.num_jobs['hadd'] += 1
+        self.filesToClean.append(self.output_file)
+        self.targets.append(self.output_file)
+
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the PU profile production.
         """
@@ -377,7 +410,7 @@ class puHistogramConfig:
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable, process_name))
 
             inputFileList = generateInputFileList(sample_info, self.max_files_per_job)
-            key_dir = getKey(sample_name)
+            key_dir = getKey(process_name)
 
             outputFile = os.path.join(
                 self.dirs[key_dir][DKEY_HISTO], "%s.root" % process_name
@@ -436,6 +469,7 @@ class puHistogramConfig:
         self.addToMakefile_puProfile(lines_makefile)
         self.addToMakefile_hadd(lines_makefile)
         self.addToMakefile_plot(lines_makefile)
+        self.addToMakefile_finalHadd(lines_makefile)
         self.createMakefile(lines_makefile)
         logging.info("Done")
 
