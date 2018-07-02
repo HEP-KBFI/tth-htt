@@ -76,7 +76,7 @@ if __name__ == '__main__':
   outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHPileupProduction", era, version)
 
   if validate:
-    validation_result = validate_pu(outputDir, samples)
+    validation_result = validate_pu(os.path.join(outputDir, output_file), samples)
     sys.exit(validation_result)
 
   puHistogramProduction = puHistogramConfig(

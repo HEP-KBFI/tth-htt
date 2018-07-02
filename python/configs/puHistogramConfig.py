@@ -27,21 +27,15 @@ DKEY_LOGS       = "logs"
 DKEY_HADD_RT    = "hadd_cfg_rt"
 MAKEFILE_TARGET = "sbatch_puProfile"
 
-def get_histogram_entries(path, histogram_name = 'autoPU'):
-    histogram_file = ROOT.TFile.Open(path, 'read')
-    if not histogram_file:
-        logging.error('Not a valid ROOT file: {}'.format(path))
-        return -1
-    histogram = histogram_file.Get('autoPU')
-    if not histogram:
-        logging.error("Could not find histogram '{}' in file {}".format(path, histogram_name))
-        return -2
-    nof_entries = int(histogram.GetEntries())
-    histogram_file.Close()
-    return nof_entries
-
-def validate_pu(outputDir, samples, histogram_name = 'autoPU'):
+def validate_pu(output_file, samples):
     error_code = 0
+    if not os.path.isfile(output_file):
+        logging.error('File {} does not exist'.format(output_file))
+        return 1
+    histogram_file = ROOT.TFile.Open(output_file, 'read')
+    if not histogram_file:
+        logging.error('Not a valid ROOT file: {}'.format(output_file))
+        return 2
     for sample_name, sample_info in samples.items():
         is_mc = (sample_info["type"] == "mc")
         if not is_mc:
@@ -49,24 +43,26 @@ def validate_pu(outputDir, samples, histogram_name = 'autoPU'):
         process_name = sample_info["process_name_specific"]
         expected_nof_events = sample_info["nof_tree_events"]
         logging.info('Validating {} (expecting {} events)'.format(process_name, expected_nof_events))
-        histogram_path = os.path.join(outputDir, DKEY_HISTO, process_name, '%s.root' % process_name)
-        if not os.path.isfile(histogram_path):
-            logging.error(
-                'Histogram file corresponding to sample {} in path {} does not exist: {}'.format(
-                    process_name, outputDir, histogram_path,
-                )
-            )
-            return 1
-        nof_events = get_histogram_entries(histogram_path, histogram_name)
+        histogram = histogram_file.Get(process_name)
+        if not histogram:
+            logging.error("Could not find histogram '{}' in file {}".format(process_name, output_file))
+            error_code = 3
+            continue
+        nof_events = int(histogram.GetEntries())
         if nof_events != expected_nof_events:
             logging.error(
-                'Histogram {} corresponding to sample {} has {} events, but expected {}'.format(
-                    histogram_path, process_name, nof_events, expected_nof_events,
+                'Histogram {} in file {} has {} events, but expected {} events'.format(
+                    process_name, output_file, nof_events, expected_nof_events,
                 )
             )
-            error_code += 1
+            error_code = 4
         else:
             logging.info('Validation successful for sample {}'.format(process_name))
+    histogram_file.Close()
+    if error_code == 0:
+        logging.info("Validation successful!")
+    else:
+        logging.error("Validation failed!")
     return error_code
 
 class puHistogramConfig:
