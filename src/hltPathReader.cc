@@ -34,7 +34,7 @@ hltPathReader::setBranchAddresses(TTree * tree)
     }
     else
     {
-      std::cout << "Branch '" << hltPath_->branchName_ << "' not available, defaulting to false";
+      std::cout << "Branch '" << hltPath_->branchName_ << "' not available, defaulting to false\n";
       hltPath_->value_ = false;
     }
   }
