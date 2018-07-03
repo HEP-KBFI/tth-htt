@@ -16,25 +16,66 @@ class systematics(object):
   UnclusteredEn = [ "CMS_ttHl_UnclusteredEnUp", "CMS_ttHl_UnclusteredEnDown" ]
   tauES         = [ "CMS_ttHl_tauESUp",         "CMS_ttHl_tauESDown"         ]
   triggerSF     = [ "CMS_ttHl_triggerUp",       "CMS_ttHl_triggerDown"       ]
-  PU            = [ "CMS_ttHl_pileupUp",        "CMS_ttHl_pileupDown"        ]
+
+  class PU_(object):
+    up   = "CMS_ttHl_pileupUp"
+    down = "CMS_ttHl_pileupDown"
+    full = [ up, down ]
+
+  PU = PU_().full
 
   class LHE(object):
 
     class TTH(object):
-      x1 = [ "CMS_ttHl_thu_shape_ttH_x1Up", "CMS_ttHl_thu_shape_ttH_x1Down" ]
-      y1 = [ "CMS_ttHl_thu_shape_ttH_y1Up", "CMS_ttHl_thu_shape_ttH_y1Down" ]
+
+      class x1_(object):
+        up   = "CMS_ttHl_thu_shape_ttH_x1Up"
+        down = "CMS_ttHl_thu_shape_ttH_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_ttH_y1Up"
+        down = "CMS_ttHl_thu_shape_ttH_y1Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full
 
     class TTW(object):
-      x1 = [ "CMS_ttHl_thu_shape_ttW_x1Up", "CMS_ttHl_thu_shape_ttW_x1Down" ]
-      y1 = [ "CMS_ttHl_thu_shape_ttW_y1Up", "CMS_ttHl_thu_shape_ttW_y1Down" ]
+
+      class x1_(object):
+        up   = "CMS_ttHl_thu_shape_ttW_x1Up"
+        down = "CMS_ttHl_thu_shape_ttW_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_ttW_y1Up"
+        down = "CMS_ttHl_thu_shape_ttW_y1Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full
 
     class TTZ(object):
-      x1 = [ "CMS_ttHl_thu_shape_ttZ_x1Up", "CMS_ttHl_thu_shape_ttZ_x1Down" ]
-      y1 = [ "CMS_ttHl_thu_shape_ttZ_y1Up", "CMS_ttHl_thu_shape_ttZ_y1Down" ]
 
-    ttH = TTH().x1 + TTH.y1
-    ttW = TTW().x1 + TTW.y1
-    ttZ = TTZ().x1 + TTZ.y1
+      class x1_(object):
+        up   = "CMS_ttHl_thu_shape_ttZ_x1Up"
+        down = "CMS_ttHl_thu_shape_ttZ_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_ttZ_y1Up"
+        down = "CMS_ttHl_thu_shape_ttZ_y1Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full
+
+    ttH = TTH().full
+    ttW = TTW().full
+    ttZ = TTZ().full
+
+    x1_up   = [ TTH().x1_().up,   TTW().x1_().up,   TTZ().x1_().up   ]
+    y1_up   = [ TTH().y1_().up,   TTW().y1_().up,   TTZ().y1_().up   ]
+    x1_down = [ TTH().x1_().down, TTW().x1_().down, TTZ().x1_().down ]
+    y1_down = [ TTH().y1_().down, TTW().y1_().down, TTZ().y1_().down ]
 
     full = ttH + ttW + ttZ
 
