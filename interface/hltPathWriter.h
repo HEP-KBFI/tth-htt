@@ -3,29 +3,25 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath
 
-// forward declarations
-class TTree;
-
-#include <vector>
-#include <string>
-#include <map>
+#include <vector> // std::vector<>
+#include <map> // std::map<,>
 
 class hltPathWriter
 {
- public:
-  hltPathWriter(const std::vector<std::string>& hltPath_branchNames);
+public:
+  hltPathWriter(const std::vector<std::string> & hltPath_branchNames);
 
   void
   setBranches(TTree * tree);
 
   void
-  write(const std::vector<hltPath*> & hltPaths);
+  write(const std::vector<hltPath *> & hltPaths);
 
- protected:
+protected:
   struct branchEntryType
   {
     std::string branchName_;
-    Int_t value_;
+    Bool_t value_;
     bool value_isInitialized_;
   };
   std::map<std::string, branchEntryType> branches_; // key = branchName
