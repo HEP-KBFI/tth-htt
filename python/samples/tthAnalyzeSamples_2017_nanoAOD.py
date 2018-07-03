@@ -10,7 +10,7 @@ samples_2017["/SingleElectron/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleElectron_Run2017B_17Nov2017_v1"),
   ("nof_files",                       1150),
   ("nof_db_files",                    634),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 56501676),
   ("nof_db_events",                   60537490),
@@ -320,7 +320,7 @@ samples_2017["/SingleElectron/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleElectron_Run2017C_17Nov2017_v1"),
   ("nof_files",                       2586),
   ("nof_db_files",                    1705),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 127361546),
   ("nof_db_events",                   136637888),
@@ -973,7 +973,7 @@ samples_2017["/SingleElectron/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleElectron_Run2017D_17Nov2017_v1"),
   ("nof_files",                       1021),
   ("nof_db_files",                    693),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 50610320),
   ("nof_db_events",                   51526710),
@@ -1533,7 +1533,7 @@ samples_2017["/SingleElectron/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleElectron_Run2017E_17Nov2017_v1"),
   ("nof_files",                       2026),
   ("nof_db_files",                    1280),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 100205122),
   ("nof_db_events",                   102121689),
@@ -2093,7 +2093,7 @@ samples_2017["/SingleElectron/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleElectron_Run2017F_17Nov2017_v1"),
   ("nof_files",                       2552),
   ("nof_db_files",                    1583),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 126061224),
   ("nof_db_events",                   128467223),
@@ -2760,7 +2760,7 @@ samples_2017["/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleMuon_Run2017B_17Nov2017_v1"),
   ("nof_files",                       2679),
   ("nof_db_files",                    1146),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 128496874),
   ("nof_db_events",                   136300266),
@@ -3070,7 +3070,7 @@ samples_2017["/SingleMuon/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleMuon_Run2017C_17Nov2017_v1"),
   ("nof_files",                       3125),
   ("nof_db_files",                    1511),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 154633551),
   ("nof_db_events",                   165652756),
@@ -3723,7 +3723,7 @@ samples_2017["/SingleMuon/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleMuon_Run2017D_17Nov2017_v1"),
   ("nof_files",                       1398),
   ("nof_db_files",                    823),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 69031074),
   ("nof_db_events",                   70361660),
@@ -4283,7 +4283,7 @@ samples_2017["/SingleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleMuon_Run2017E_17Nov2017_v1"),
   ("nof_files",                       3100),
   ("nof_db_files",                    1669),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 151713898),
   ("nof_db_events",                   154630534),
@@ -4843,7 +4843,7 @@ samples_2017["/SingleMuon/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleMuon_Run2017F_17Nov2017_v1"),
   ("nof_files",                       4913),
   ("nof_db_files",                    2737),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 235945383),
   ("nof_db_events",                   242140980),
@@ -5510,7 +5510,7 @@ samples_2017["/DoubleEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleEG_Run2017B_17Nov2017_v1"),
   ("nof_files",                       1098),
   ("nof_db_files",                    759),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 54125900),
   ("nof_db_events",                   58088760),
@@ -5820,7 +5820,7 @@ samples_2017["/DoubleEG/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleEG_Run2017C_17Nov2017_v1"),
   ("nof_files",                       1201),
   ("nof_db_files",                    847),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 60063430),
   ("nof_db_events",                   65181125),
@@ -6473,7 +6473,7 @@ samples_2017["/DoubleEG/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleEG_Run2017D_17Nov2017_v1"),
   ("nof_files",                       507),
   ("nof_db_files",                    344),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 25209987),
   ("nof_db_events",                   25911432),
@@ -7033,7 +7033,7 @@ samples_2017["/DoubleEG/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleEG_Run2017E_17Nov2017_v1"),
   ("nof_files",                       1096),
   ("nof_db_files",                    639),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 54624312),
   ("nof_db_events",                   56235775),
@@ -7593,7 +7593,7 @@ samples_2017["/DoubleEG/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleEG_Run2017F_17Nov2017_v1"),
   ("nof_files",                       1460),
   ("nof_db_files",                    1024),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 72431395),
   ("nof_db_events",                   74344288),
@@ -8260,7 +8260,7 @@ samples_2017["/DoubleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleMuon_Run2017B_17Nov2017_v1"),
   ("nof_files",                       266),
   ("nof_db_files",                    164),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 13572040),
   ("nof_db_events",                   14501767),
@@ -8570,7 +8570,7 @@ samples_2017["/DoubleMuon/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleMuon_Run2017C_17Nov2017_v1"),
   ("nof_files",                       915),
   ("nof_db_files",                    466),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 46273101),
   ("nof_db_events",                   49636525),
@@ -9223,7 +9223,7 @@ samples_2017["/DoubleMuon/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleMuon_Run2017D_17Nov2017_v1"),
   ("nof_files",                       449),
   ("nof_db_files",                    242),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 22646081),
   ("nof_db_events",                   23075733),
@@ -9783,7 +9783,7 @@ samples_2017["/DoubleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleMuon_Run2017E_17Nov2017_v1"),
   ("nof_files",                       1003),
   ("nof_db_files",                    596),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 50596536),
   ("nof_db_events",                   51589091),
@@ -10343,7 +10343,7 @@ samples_2017["/DoubleMuon/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleMuon_Run2017F_17Nov2017_v1"),
   ("nof_files",                       1506),
   ("nof_db_files",                    875),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 75301738),
   ("nof_db_events",                   79756560),
@@ -11010,7 +11010,7 @@ samples_2017["/MuonEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "MuonEG_Run2017B_17Nov2017_v1"),
   ("nof_files",                       81),
   ("nof_db_files",                    70),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 4153318),
   ("nof_db_events",                   4453465),
@@ -11320,7 +11320,7 @@ samples_2017["/MuonEG/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "MuonEG_Run2017C_17Nov2017_v1"),
   ("nof_files",                       285),
   ("nof_db_files",                    219),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 14579589),
   ("nof_db_events",                   15595214),
@@ -11973,7 +11973,7 @@ samples_2017["/MuonEG/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "MuonEG_Run2017D_17Nov2017_v1"),
   ("nof_files",                       178),
   ("nof_db_files",                    126),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9012928),
   ("nof_db_events",                   9164365),
@@ -12533,7 +12533,7 @@ samples_2017["/MuonEG/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "MuonEG_Run2017E_17Nov2017_v1"),
   ("nof_files",                       369),
   ("nof_db_files",                    239),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 18703362),
   ("nof_db_events",                   19043421),
@@ -13093,7 +13093,7 @@ samples_2017["/MuonEG/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "MuonEG_Run2017F_17Nov2017_v1"),
   ("nof_files",                       501),
   ("nof_db_files",                    362),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 25342514),
   ("nof_db_events",                   25776363),
@@ -13760,7 +13760,7 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("process_name_specific",           "ttHJetToNonbb_M125_amcatnlo"),
   ("nof_files",                       195),
   ("nof_db_files",                    283),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9650032),
   ("nof_db_events",                   9650032),
@@ -13797,7 +13797,7 @@ samples_2017["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIF
   ("process_name_specific",           "ttHJetTobb_M125_amcatnlo"),
   ("nof_files",                       200),
   ("nof_db_files",                    259),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9911561),
   ("nof_db_events",                   9911561),
@@ -13834,7 +13834,7 @@ samples_2017["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-9
   ("process_name_specific",           "ttHToNonbb_M125_powheg"),
   ("nof_files",                       155),
   ("nof_db_files",                    219),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 7669336),
   ("nof_db_events",                   7669336),
@@ -13871,7 +13871,7 @@ samples_2017["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall1
   ("process_name_specific",           "GluGluHToZZTo4L"),
   ("nof_files",                       19),
   ("nof_db_files",                    47),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 934244),
   ("nof_db_events",                   934244),
@@ -13908,7 +13908,7 @@ samples_2017["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall1
   ("process_name_specific",           "GluGluHToZZTo4L_ext1"),
   ("nof_files",                       21),
   ("nof_db_files",                    42),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 976214),
   ("nof_db_events",                   976214),
@@ -13945,7 +13945,7 @@ samples_2017["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAO
   ("process_name_specific",           "TTZToLL_M10"),
   ("nof_files",                       153),
   ("nof_db_files",                    199),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 7563490),
   ("nof_db_events",                   7563490),
@@ -13982,7 +13982,7 @@ samples_2017["/TTZToLLNuNu_M-10_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFa
   ("process_name_specific",           "TTZToLL_M10_PSweights"),
   ("nof_files",                       78),
   ("nof_db_files",                    87),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 3208840),
   ("nof_db_events",                   3208840),
@@ -14019,7 +14019,7 @@ samples_2017["/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "TTZToLL_M-1to10"),
   ("nof_files",                       6),
   ("nof_db_files",                    17),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 250000),
   ("nof_db_events",                   250000),
@@ -14056,7 +14056,7 @@ samples_2017["/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "TTZJets_LO"),
   ("nof_files",                       183),
   ("nof_db_files",                    241),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9054309),
   ("nof_db_events",                   9054309),
@@ -14093,7 +14093,7 @@ samples_2017["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall
   ("process_name_specific",           "TTWJetsToLNu"),
   ("nof_files",                       100),
   ("nof_db_files",                    109),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 4925829),
   ("nof_db_events",                   4925829),
@@ -14130,7 +14130,7 @@ samples_2017["/TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8
   ("process_name_specific",           "TTWJetsToLNu_PSweights"),
   ("nof_files",                       99),
   ("nof_db_files",                    122),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 4889942),
   ("nof_db_events",                   4889942),
@@ -14167,7 +14167,7 @@ samples_2017["/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "TTWJets_LO"),
   ("nof_files",                       106),
   ("nof_db_files",                    153),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 5216384),
   ("nof_db_events",                   5216384),
@@ -14204,7 +14204,7 @@ samples_2017["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017
   ("process_name_specific",           "TTWW"),
   ("nof_files",                       5),
   ("nof_db_files",                    11),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 200000),
   ("nof_db_events",                   200000),
@@ -14241,7 +14241,7 @@ samples_2017["/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunII
   ("process_name_specific",           "ST_s-channel_4f_leptonDecays"),
   ("nof_files",                       192),
   ("nof_db_files",                    217),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9472619),
   ("nof_db_events",                   9472619),
@@ -14278,7 +14278,7 @@ samples_2017["/ST_s-channel_4f_leptonDecays_TuneCP5_PSweights_13TeV-amcatnlo-pyt
   ("process_name_specific",           "ST_s-channel_4f_leptonDecays_PSweights"),
   ("nof_files",                       198),
   ("nof_db_files",                    194),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9787680),
   ("nof_db_events",                   9787680),
@@ -14315,7 +14315,7 @@ samples_2017["/ST_t-channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-ma
   ("process_name_specific",           "ST_t-channel_antitop_4f_inclusiveDecays"),
   ("nof_files",                       79),
   ("nof_db_files",                    116),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 3891190),
   ("nof_db_events",                   3891190),
@@ -14352,7 +14352,7 @@ samples_2017["/ST_t-channel_top_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspi
   ("process_name_specific",           "ST_t-channel_top_4f_inclusiveDecays"),
   ("nof_files",                       130),
   ("nof_db_files",                    186),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 5841455),
   ("nof_db_events",                   5841455),
@@ -14389,7 +14389,7 @@ samples_2017["/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/Run
   ("process_name_specific",           "ST_tW_antitop_5f_inclusiveDecays"),
   ("nof_files",                       157),
   ("nof_db_files",                    155),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 7756300),
   ("nof_db_events",                   7756300),
@@ -14426,7 +14426,7 @@ samples_2017["/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFa
   ("process_name_specific",           "ST_tW_top_5f_inclusiveDecays"),
   ("nof_files",                       153),
   ("nof_db_files",                    183),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 7558006),
   ("nof_db_events",                   7558006),
@@ -14463,7 +14463,7 @@ samples_2017["/ST_tW_top_5f_inclusiveDecays_TuneCP5_PSweights_13TeV-powheg-pythi
   ("process_name_specific",           "ST_tW_top_5f_inclusiveDecays_PSweights"),
   ("nof_files",                       154),
   ("nof_db_files",                    167),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 7636171),
   ("nof_db_events",                   7636171),
@@ -14500,7 +14500,7 @@ samples_2017["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2
   ("process_name_specific",           "TTTo2L2Nu"),
   ("nof_files",                       177),
   ("nof_db_files",                    164),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 8705576),
   ("nof_db_events",                   8705576),
@@ -14537,7 +14537,7 @@ samples_2017["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniA
   ("process_name_specific",           "TTTo2L2Nu_PSweights"),
   ("nof_files",                       1411),
   ("nof_db_files",                    1230),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 69705626),
   ("nof_db_events",                   69705626),
@@ -14574,7 +14574,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-
   ("process_name_specific",           "TTToSemiLeptonic"),
   ("nof_files",                       831),
   ("nof_db_files",                    743),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 41161951),
   ("nof_db_events",                   41161951),
@@ -14611,7 +14611,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall
   ("process_name_specific",           "TTToSemiLeptonic_PSweights"),
   ("nof_files",                       2247),
   ("nof_db_files",                    2032),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 111381888),
   ("nof_db_events",                   111381888),
@@ -14648,7 +14648,7 @@ samples_2017["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "TTToHadronic"),
   ("nof_files",                       860),
   ("nof_db_files",                    765),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 42678688),
   ("nof_db_events",                   42678688),
@@ -14685,7 +14685,7 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
   ("process_name_specific",           "TTToHadronic_PSweights"),
   ("nof_files",                       2618),
   ("nof_db_files",                    2498),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 129985840),
   ("nof_db_events",                   129985840),
@@ -14722,7 +14722,7 @@ samples_2017["/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17
   ("process_name_specific",           "DYJetsToLL_M-10to50"),
   ("nof_files",                       783),
   ("nof_db_files",                    508),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 38832197),
   ("nof_db_events",                   38832197),
@@ -14759,7 +14759,7 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
   ("process_name_specific",           "DYJetsToLL_M-50"),
   ("nof_files",                       542),
   ("nof_db_files",                    372),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 26923935),
   ("nof_db_events",                   26923935),
@@ -14796,7 +14796,7 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
   ("process_name_specific",           "DYJetsToLL_M-50_ext1"),
   ("nof_files",                       3752),
   ("nof_db_files",                    2752),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 185998625),
   ("nof_db_events",                   185998625),
@@ -14833,7 +14833,7 @@ samples_2017["/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY1JetsToLL_M-50"),
   ("nof_files",                       657),
   ("nof_db_files",                    489),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 32553254),
   ("nof_db_events",                   32553254),
@@ -14870,7 +14870,7 @@ samples_2017["/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY1JetsToLL_M-50_ext1"),
   ("nof_files",                       695),
   ("nof_db_files",                    510),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 34376824),
   ("nof_db_events",                   34376824),
@@ -14907,7 +14907,7 @@ samples_2017["/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY2JetsToLL_M-50"),
   ("nof_files",                       235),
   ("nof_db_files",                    209),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 11623646),
   ("nof_db_events",                   11623646),
@@ -14944,7 +14944,7 @@ samples_2017["/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY2JetsToLL_M-50_ext1"),
   ("nof_files",                       197),
   ("nof_db_files",                    204),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9701595),
   ("nof_db_events",                   9701595),
@@ -14981,7 +14981,7 @@ samples_2017["/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY3JetsToLL_M-50"),
   ("nof_files",                       96),
   ("nof_db_files",                    132),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 4779068),
   ("nof_db_events",                   4779068),
@@ -15018,7 +15018,7 @@ samples_2017["/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY3JetsToLL_M-50_ext1"),
   ("nof_files",                       24),
   ("nof_db_files",                    48),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 1149467),
   ("nof_db_events",                   1149467),
@@ -15055,7 +15055,7 @@ samples_2017["/DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY4JetsToLL_M-50"),
   ("nof_files",                       89),
   ("nof_db_files",                    163),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 4337967),
   ("nof_db_events",                   4337967),
@@ -15092,7 +15092,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia8/R
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-70to100"),
   ("nof_files",                       182),
   ("nof_db_files",                    183),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 8995670),
   ("nof_db_events",                   8995670),
@@ -15129,7 +15129,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia8/R
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-70to100_ext1"),
   ("nof_files",                       179),
   ("nof_db_files",                    192),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 8859396),
   ("nof_db_events",                   8859396),
@@ -15166,7 +15166,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-100to200"),
   ("nof_files",                       177),
   ("nof_db_files",                    246),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 8796005),
   ("nof_db_events",                   8796005),
@@ -15203,7 +15203,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-100to200_ext1"),
   ("nof_files",                       21),
   ("nof_db_files",                    37),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 1026278),
   ("nof_db_events",                   1026278),
@@ -15240,7 +15240,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-200to400"),
   ("nof_files",                       37),
   ("nof_db_files",                    62),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 1816239),
   ("nof_db_events",                   1816239),
@@ -15277,7 +15277,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-200to400_ext1"),
   ("nof_files",                       21),
   ("nof_db_files",                    39),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 998174),
   ("nof_db_events",                   998174),
@@ -15314,7 +15314,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-400to600"),
   ("nof_files",                       38),
   ("nof_db_files",                    58),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 1843245),
   ("nof_db_events",                   1843245),
@@ -15351,7 +15351,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-400to600_ext1"),
   ("nof_files",                       20),
   ("nof_db_files",                    41),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 989624),
   ("nof_db_events",                   989624),
@@ -15388,7 +15388,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-600toInf_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-600toInf"),
   ("nof_files",                       36),
   ("nof_db_files",                    89),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 1771556),
   ("nof_db_events",                   1771556),
@@ -15425,7 +15425,7 @@ samples_2017["/DYJetsToLL_M-50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT100to200"),
   ("nof_files",                       203),
   ("nof_db_files",                    197),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 10031487),
   ("nof_db_events",                   10031487),
@@ -15462,7 +15462,7 @@ samples_2017["/DYJetsToLL_M-50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT100to200_ext1"),
   ("nof_files",                       79),
   ("nof_db_files",                    101),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 3910157),
   ("nof_db_events",                   3910157),
@@ -15499,7 +15499,7 @@ samples_2017["/DYJetsToLL_M-50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT200to400"),
   ("nof_files",                       200),
   ("nof_db_files",                    249),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9917255),
   ("nof_db_events",                   9917255),
@@ -15536,7 +15536,7 @@ samples_2017["/DYJetsToLL_M-50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT200to400_ext1"),
   ("nof_files",                       25),
   ("nof_db_files",                    42),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 1200124),
   ("nof_db_events",                   1200124),
@@ -15573,7 +15573,7 @@ samples_2017["/DYJetsToLL_M-50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT400to600"),
   ("nof_files",                       189),
   ("nof_db_files",                    223),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9348901),
   ("nof_db_events",                   9348901),
@@ -15610,7 +15610,7 @@ samples_2017["/DYJetsToLL_M-50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT400to600_ext1"),
   ("nof_files",                       23),
   ("nof_db_files",                    36),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 1124294),
   ("nof_db_events",                   1124294),
@@ -15647,7 +15647,7 @@ samples_2017["/DYJetsToLL_M-50_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT600to800"),
   ("nof_files",                       162),
   ("nof_db_files",                    195),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 8003554),
   ("nof_db_events",                   8003554),
@@ -15684,7 +15684,7 @@ samples_2017["/DYJetsToLL_M-50_HT-800to1200_TuneCP5_13TeV-madgraphMLM-pythia8/Ru
   ("process_name_specific",           "DYJetsToLL_M50_HT800to1200"),
   ("nof_files",                       62),
   ("nof_db_files",                    105),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 3065315),
   ("nof_db_events",                   3065315),
@@ -15721,7 +15721,7 @@ samples_2017["/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_13TeV-madgraphMLM-pythia8/R
   ("process_name_specific",           "DYJetsToLL_M50_HT1200to2500"),
   ("nof_files",                       13),
   ("nof_db_files",                    34),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 625517),
   ("nof_db_events",                   625517),
@@ -15758,7 +15758,7 @@ samples_2017["/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8/Ru
   ("process_name_specific",           "DYJetsToLL_M50_HT2500toInf"),
   ("nof_files",                       9),
   ("nof_db_files",                    25),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 388323),
   ("nof_db_events",                   388323),
@@ -15795,7 +15795,7 @@ samples_2017["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-9
   ("process_name_specific",           "WJetsToLNu"),
   ("nof_files",                       479),
   ("nof_db_files",                    382),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 23240598),
   ("nof_db_events",                   23240598),
@@ -15832,7 +15832,7 @@ samples_2017["/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   ("process_name_specific",           "W1JetsToLNu"),
   ("nof_files",                       622),
   ("nof_db_files",                    484),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 30003848),
   ("nof_db_events",                   30003848),
@@ -15869,7 +15869,7 @@ samples_2017["/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   ("process_name_specific",           "W2JetsToLNu"),
   ("nof_files",                       418),
   ("nof_db_files",                    312),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 19944844),
   ("nof_db_events",                   19944844),
@@ -15906,7 +15906,7 @@ samples_2017["/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   ("process_name_specific",           "W3JetsToLNu"),
   ("nof_files",                       396),
   ("nof_db_files",                    305),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 19644745),
   ("nof_db_events",                   19644745),
@@ -15943,7 +15943,7 @@ samples_2017["/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   ("process_name_specific",           "W4JetsToLNu"),
   ("nof_files",                       226),
   ("nof_db_files",                    255),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 11285729),
   ("nof_db_events",                   11285729),
@@ -15980,7 +15980,7 @@ samples_2017["/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "WWTo2L2Nu"),
   ("nof_files",                       37),
   ("nof_db_files",                    50),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 1818828),
   ("nof_db_events",                   1818828),
@@ -16017,7 +16017,7 @@ samples_2017["/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "WWToLNuQQ"),
   ("nof_files",                       172),
   ("nof_db_files",                    183),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 8516920),
   ("nof_db_events",                   8516920),
@@ -16054,7 +16054,7 @@ samples_2017["/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "WWToLNuQQ_ext1"),
   ("nof_files",                       202),
   ("nof_db_files",                    194),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9967337),
   ("nof_db_events",                   9967337),
@@ -16091,7 +16091,7 @@ samples_2017["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAOD-94
   ("process_name_specific",           "WZTo3LNu"),
   ("nof_files",                       217),
   ("nof_db_files",                    212),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 10751052),
   ("nof_db_events",                   10751052),
@@ -16128,7 +16128,7 @@ samples_2017["/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "WZTo1L1Nu2Q"),
   ("nof_files",                       383),
   ("nof_db_files",                    359),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 18998465),
   ("nof_db_events",                   18998465),
@@ -16165,7 +16165,7 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realist
   ("process_name_specific",           "ZZTo4L"),
   ("nof_files",                       142),
   ("nof_db_files",                    204),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 6960289),
   ("nof_db_events",                   6960289),
@@ -16202,7 +16202,7 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realist
   ("process_name_specific",           "ZZTo4L_ext1"),
   ("nof_files",                       1929),
   ("nof_db_files",                    1490),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 95716759),
   ("nof_db_events",                   95716759),
@@ -16239,7 +16239,7 @@ samples_2017["/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_real
   ("process_name_specific",           "ZZTo2L2Nu"),
   ("nof_files",                       168),
   ("nof_db_files",                    219),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 8289873),
   ("nof_db_events",                   8289873),
@@ -16276,7 +16276,7 @@ samples_2017["/QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "QCD_Pt15to20_bcToE"),
   ("nof_files",                       43),
   ("nof_db_files",                    122),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 2145233),
   ("nof_db_events",                   2145233),
@@ -16313,7 +16313,7 @@ samples_2017["/QCD_Pt_20to30_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "QCD_Pt20to30_bcToE"),
   ("nof_files",                       206),
   ("nof_db_files",                    238),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 10266970),
   ("nof_db_events",                   10266970),
@@ -16350,7 +16350,7 @@ samples_2017["/QCD_Pt_30to80_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "QCD_Pt30to80_bcToE"),
   ("nof_files",                       323),
   ("nof_db_files",                    282),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 16030011),
   ("nof_db_events",                   16030011),
@@ -16387,7 +16387,7 @@ samples_2017["/QCD_Pt_80to170_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94X
   ("process_name_specific",           "QCD_Pt80to170_bcToE"),
   ("nof_files",                       324),
   ("nof_db_files",                    282),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 15972037),
   ("nof_db_events",                   15972037),
@@ -16424,7 +16424,7 @@ samples_2017["/QCD_Pt_170to250_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94
   ("process_name_specific",           "QCD_Pt170to250_bcToE"),
   ("nof_files",                       199),
   ("nof_db_files",                    227),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9831904),
   ("nof_db_events",                   9831904),
@@ -16461,7 +16461,7 @@ samples_2017["/QCD_Pt_250toInf_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94
   ("process_name_specific",           "QCD_Pt250toInf_bcToE"),
   ("nof_files",                       201),
   ("nof_db_files",                    228),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9921358),
   ("nof_db_events",                   9921358),
@@ -16498,7 +16498,7 @@ samples_2017["/QCD_Pt-15to20_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "QCD_Pt15to20_EMEnriched"),
   ("nof_files",                       222),
   ("nof_db_files",                    193),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 10995821),
   ("nof_db_events",                   10995821),
@@ -16535,7 +16535,7 @@ samples_2017["/QCD_Pt-20to30_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "QCD_Pt20to30_EMEnriched"),
   ("nof_files",                       235),
   ("nof_db_files",                    151),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 11545386),
   ("nof_db_events",                   11545386),
@@ -16572,7 +16572,7 @@ samples_2017["/QCD_Pt-30to50_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "QCD_Pt30to50_EMEnriched"),
   ("nof_files",                       296),
   ("nof_db_files",                    260),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 14619987),
   ("nof_db_events",                   14619987),
@@ -16609,7 +16609,7 @@ samples_2017["/QCD_Pt-50to80_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "QCD_Pt50to80_EMEnriched"),
   ("nof_files",                       216),
   ("nof_db_files",                    157),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 10665765),
   ("nof_db_events",                   10665765),
@@ -16646,7 +16646,7 @@ samples_2017["/QCD_Pt-80to120_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniAO
   ("process_name_specific",           "QCD_Pt80to120_EMEnriched"),
   ("nof_files",                       170),
   ("nof_db_files",                    170),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 8414260),
   ("nof_db_events",                   8414260),
@@ -16683,7 +16683,7 @@ samples_2017["/QCD_Pt-120to170_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniA
   ("process_name_specific",           "QCD_Pt120to170_EMEnriched"),
   ("nof_files",                       177),
   ("nof_db_files",                    152),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 8757439),
   ("nof_db_events",                   8757439),
@@ -16720,7 +16720,7 @@ samples_2017["/QCD_Pt-170to300_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniA
   ("process_name_specific",           "QCD_Pt170to300_EMEnriched"),
   ("nof_files",                       72),
   ("nof_db_files",                    66),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 3521215),
   ("nof_db_events",                   3521215),
@@ -16757,7 +16757,7 @@ samples_2017["/QCD_Pt-300toInf_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniA
   ("process_name_specific",           "QCD_Pt300toInf_EMEnriched"),
   ("nof_files",                       59),
   ("nof_db_files",                    68),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 2898084),
   ("nof_db_events",                   2898084),
@@ -16794,7 +16794,7 @@ samples_2017["/QCD_Pt-20toInf_MuEnrichedPt15_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("process_name_specific",           "QCD_Mu15"),
   ("nof_files",                       336),
   ("nof_db_files",                    261),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 16404691),
   ("nof_db_events",                   16404691),
@@ -16831,7 +16831,7 @@ samples_2017["/QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mini
   ("process_name_specific",           "QCD_Pt15to20_Mu5"),
   ("nof_files",                       117),
   ("nof_db_files",                    120),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 5748990),
   ("nof_db_events",                   5748990),
@@ -16868,7 +16868,7 @@ samples_2017["/QCD_Pt-20to30_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mini
   ("process_name_specific",           "QCD_Pt20to30_Mu5"),
   ("nof_files",                       565),
   ("nof_db_files",                    414),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 28006402),
   ("nof_db_events",                   28006402),
@@ -16905,7 +16905,7 @@ samples_2017["/QCD_Pt-30to50_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mini
   ("process_name_specific",           "QCD_Pt30to50_Mu5"),
   ("nof_files",                       579),
   ("nof_db_files",                    488),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 28667918),
   ("nof_db_events",                   28667918),
@@ -16942,7 +16942,7 @@ samples_2017["/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mini
   ("process_name_specific",           "QCD_Pt50to80_Mu5"),
   ("nof_files",                       484),
   ("nof_db_files",                    323),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 23955198),
   ("nof_db_events",                   23955198),
@@ -16958,7 +16958,7 @@ samples_2017["/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mini
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Jun08/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/NanoProduction_v2_2018Jun08_QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180608_201802"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [38]), # EXPLICIT BLACKLIST: entries 41214 to 44619 (both included) are corrupt
       ]),
     ]
   ),
@@ -16979,7 +16979,7 @@ samples_2017["/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Min
   ("process_name_specific",           "QCD_Pt80to120_Mu5"),
   ("nof_files",                       467),
   ("nof_db_files",                    351),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 23098427),
   ("nof_db_events",                   23098427),
@@ -17016,7 +17016,7 @@ samples_2017["/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("process_name_specific",           "QCD_Pt120to170_Mu5"),
   ("nof_files",                       420),
   ("nof_db_files",                    377),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 20821535),
   ("nof_db_events",                   20821535),
@@ -17053,7 +17053,7 @@ samples_2017["/QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("process_name_specific",           "QCD_Pt170to300_Mu5"),
   ("nof_files",                       936),
   ("nof_db_files",                    796),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 46438676),
   ("nof_db_events",                   46438676),
@@ -17090,7 +17090,7 @@ samples_2017["/QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("process_name_specific",           "QCD_Pt300to470_Mu5"),
   ("nof_files",                       357),
   ("nof_db_files",                    309),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 17620456),
   ("nof_db_events",                   17620456),
@@ -17127,7 +17127,7 @@ samples_2017["/QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("process_name_specific",           "QCD_Pt470to600_Mu5"),
   ("nof_files",                       490),
   ("nof_db_files",                    614),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 24230220),
   ("nof_db_events",                   24230220),
@@ -17164,7 +17164,7 @@ samples_2017["/QCD_Pt-600to800_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("process_name_specific",           "QCD_Pt600to800_Mu5"),
   ("nof_files",                       331),
   ("nof_db_files",                    314),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 16392140),
   ("nof_db_events",                   16392140),
@@ -17201,7 +17201,7 @@ samples_2017["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17M
   ("process_name_specific",           "QCD_Pt800to1000_Mu5"),
   ("nof_files",                       317),
   ("nof_db_files",                    361),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 15694987),
   ("nof_db_events",                   15694987),
@@ -17238,7 +17238,7 @@ samples_2017["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17M
   ("process_name_specific",           "QCD_Pt1000toInf_Mu5"),
   ("nof_files",                       231),
   ("nof_db_files",                    268),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 11464778),
   ("nof_db_events",                   11464778),
@@ -17275,7 +17275,7 @@ samples_2017["/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc20
   ("process_name_specific",           "WWW_4F"),
   ("nof_files",                       5),
   ("nof_db_files",                    21),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 240000),
   ("nof_db_events",                   240000),
@@ -17312,7 +17312,7 @@ samples_2017["/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc20
   ("process_name_specific",           "WWZ_4F"),
   ("nof_files",                       6),
   ("nof_db_files",                    14),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 250000),
   ("nof_db_events",                   250000),
@@ -17349,7 +17349,7 @@ samples_2017["/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
   ("process_name_specific",           "WZZ"),
   ("nof_files",                       6),
   ("nof_db_files",                    18),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 250000),
   ("nof_db_events",                   250000),
@@ -17386,7 +17386,7 @@ samples_2017["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
   ("process_name_specific",           "ZZZ"),
   ("nof_files",                       6),
   ("nof_db_files",                    17),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 250000),
   ("nof_db_events",                   250000),
@@ -17423,7 +17423,7 @@ samples_2017["/WZG_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
   ("process_name_specific",           "WZG"),
   ("nof_files",                       21),
   ("nof_db_files",                    43),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 995620),
   ("nof_db_events",                   995620),
@@ -17460,7 +17460,7 @@ samples_2017["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17Min
   ("process_name_specific",           "TTGJets"),
   ("nof_files",                       94),
   ("nof_db_files",                    138),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 4647278),
   ("nof_db_events",                   4647278),
@@ -17497,7 +17497,7 @@ samples_2017["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17Min
   ("process_name_specific",           "TTGJets_ext1"),
   ("nof_files",                       191),
   ("nof_db_files",                    214),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 9402928),
   ("nof_db_events",                   9402928),
@@ -17534,7 +17534,7 @@ samples_2017["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017
   ("process_name_specific",           "TTTT"),
   ("nof_files",                       21),
   ("nof_db_files",                    29),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 993804),
   ("nof_db_events",                   993804),
@@ -17571,7 +17571,7 @@ samples_2017["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017
   ("process_name_specific",           "TTWH"),
   ("nof_files",                       5),
   ("nof_db_files",                    17),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 200000),
   ("nof_db_events",                   200000),
@@ -17608,7 +17608,7 @@ samples_2017["/TTTW_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017
   ("process_name_specific",           "TTTW"),
   ("nof_files",                       5),
   ("nof_db_files",                    15),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 200000),
   ("nof_db_events",                   200000),
@@ -17645,7 +17645,7 @@ samples_2017["/tZq_ll_4f_ckm_NLO_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIF
   ("process_name_specific",           "tZq_ll_4f"),
   ("nof_files",                       267),
   ("nof_db_files",                    292),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 13220024),
   ("nof_db_events",                   13220024),
@@ -17682,7 +17682,7 @@ samples_2017["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "WWTo2L2Nu_DoubleScattering"),
   ("nof_files",                       21),
   ("nof_db_files",                    23),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 1000000),
   ("nof_db_events",                   1000000),
@@ -17719,7 +17719,7 @@ samples_2017["/THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] =
   ("process_name_specific",           "THQ"),
   ("nof_files",                       9),
   ("nof_db_files",                    9),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 124500),
   ("nof_db_events",                   124500),
@@ -17756,7 +17756,7 @@ samples_2017["/THW_5f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] =
   ("process_name_specific",           "THW"),
   ("nof_files",                       4),
   ("nof_db_files",                    4),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 50000),
   ("nof_db_events",                   50000),
@@ -17793,7 +17793,7 @@ samples_2017["/ST_tWll_5f_LO_TuneCP5_PSweights_13TeV_madgraph_pythia8_Fall17/pri
   ("process_name_specific",           "ST_tWll"),
   ("nof_files",                       1),
   ("nof_db_files",                    1),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 12500),
   ("nof_db_events",                   12500),
@@ -17830,7 +17830,7 @@ samples_2017["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_Fall17/private/
   ("process_name_specific",           "VHToNonbb_M125"),
   ("nof_files",                       12),
   ("nof_db_files",                    12),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 200165),
   ("nof_db_events",                   200165),
@@ -17867,7 +17867,7 @@ samples_2017["/WpWpJJ_EWK_QCD_TuneCP5_13TeV_madgraph_pythia8_Fall17/private/MINI
   ("process_name_specific",           "WpWpJJ_EWK_QCD"),
   ("nof_files",                       2),
   ("nof_db_files",                    2),
-  ("nof_events",                      { 
+  ("nof_events",                      {
   }),
   ("nof_tree_events",                 24750),
   ("nof_db_events",                   24750),
