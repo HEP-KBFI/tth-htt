@@ -39,8 +39,6 @@ RecoElectronReader::RecoElectronReader(int era,
 
 RecoElectronReader::~RecoElectronReader()
 {
-  delete leptonReader_;
-  leptonReader_ = 0;
   --numInstances_[branchName_obj_];
   assert(numInstances_[branchName_obj_] >= 0);
 
@@ -48,6 +46,7 @@ RecoElectronReader::~RecoElectronReader()
   {
     RecoElectronReader * const gInstance = instances_[branchName_obj_];
     assert(gInstance);
+    delete gInstance->leptonReader_;
     delete[] gInstance->eCorr_;
     delete[] gInstance->mvaRaw_POG_;
     delete[] gInstance->mvaID_POG_;

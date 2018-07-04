@@ -426,7 +426,7 @@ main(int argc,
   int analyzedEntries = 0;
   int selectedEntries = 0;
   cutFlowTableType cutFlowTable;
-  int currentFile = -1;
+  std::string currentFile;
 
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
@@ -441,13 +441,16 @@ main(int argc,
     ++analyzedEntries;
 
     // mark branches for copying (only done once per produceNtuple job, when processing first event)
-    if ( !branchesToKeep_isInitialized ) {
-      std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree -> getCurrentTree(), outputCommands); // key = branchName
+    if(! branchesToKeep_isInitialized)
+    {
+      const std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree -> getCurrentTree(), outputCommands); // key = branchName
       copyBranches_singleType(inputTree -> getCurrentTree(), outputTree, isBranchToKeep, branchesToKeep);
       copyBranches_vectorType(inputTree -> getCurrentTree(), outputTree, isBranchToKeep, branchesToKeep);
-      if ( isDEBUG ) {
+      if(isDEBUG)
+      {
         std::cout << "keeping branches:\n";
-        for ( const auto & branchEntry: branchesToKeep ) {
+        for( const auto & branchEntry: branchesToKeep)
+        {
           std::cout << ' ' << branchEntry.second->outputBranchName_ << " (type ="
                        " " << branchEntry.second->outputBranchType_string_ << ")\n"
           ;
@@ -458,12 +461,13 @@ main(int argc,
 
     // reinitialize addresses of all branches that are copied directly from input to output file 
     // in case new input file has been opened
-    if ( inputTree->getProcessedFileCount() != currentFile ) {
-      for ( std::map<std::string, branchEntryBaseType *>::iterator branch = branchesToKeep.begin();
-            branch != branchesToKeep.end(); ++branch ) {
-        branch->second->setInputTree(inputTree -> getCurrentTree());
+    if(inputTree->getCurrentFileName() != currentFile)
+    {
+      for(auto & branch: branchesToKeep)
+      {
+        branch.second->setInputTree(inputTree -> getCurrentTree());
       }
-      currentFile = inputTree->getProcessedFileCount();
+      currentFile = inputTree->getCurrentFileName();
     }
   
     cutFlowTable.update("read from file");
@@ -474,7 +478,8 @@ main(int argc,
     }
     cutFlowTable.update("run:ls:event selection");
 
-    if ( isDEBUG ) {
+    if(isDEBUG)
+    {
       std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
     }
 
@@ -745,6 +750,16 @@ main(int argc,
   delete genHadTauWriter;
   delete genPhotonWriter;
   delete genJetWriter;
+
+  for(hltPath * trigger: triggers)
+  {
+    delete trigger;
+  }
+
+  for(auto & branches: branchesToKeep)
+  {
+    delete branches.second;
+  }
 
 //--- copy histograms keeping track of number of processed events from input files to output file
   std::cout << "copying histograms:\n";
