@@ -28,6 +28,7 @@ TTreeWrapper::TTreeWrapper(const std::string & treeName,
   , fileCount_(fileNames_.size())
   , cumulativeMaxEventCount_(0)
   , eventCount_(-1)
+  , basketSize_(-1)
 {
   if(! treeName_.empty())
   {
@@ -157,6 +158,11 @@ TTreeWrapper::hasNextEvent()
         << treeName_;
     }
 
+    // set the basket size different than what the default is only if the user has requested so
+    if(basketSize_ > 0)
+    {
+      currentTreePtr_->SetBasketSize("*", basketSize_);
+    }
     // set the branch addresses
     for(ReaderBase * reader: readers_)
     {
@@ -186,6 +192,18 @@ TTreeWrapper::hasNextEvent()
   }
 
   return true;
+}
+
+TTree *
+TTreeWrapper::getCurrentTree() const
+{
+  return currentTreePtr_;
+}
+
+void
+TTreeWrapper::setBasketSize(int basketSize)
+{
+  basketSize_ = basketSize;
 }
 
 void

@@ -197,7 +197,15 @@ public:
   /**
    * @brief Returns pointer to TTree object in currently processed file
    */
-  TTree* getCurrentTree() const { return currentTreePtr_; }
+  TTree *
+  getCurrentTree() const;
+
+  /**
+   * @brief Set the basket size of all branches
+   * @param basketSize Basket size in bytes (default = 16000)
+   */
+  void
+  setBasketSize(int basketSize);
 
 private:
   unsigned currentFileIdx_;             ///< Index of currently open file
@@ -213,6 +221,7 @@ private:
   unsigned fileCount_;                  ///< Total number of input files
   long long cumulativeMaxEventCount_;   ///< Sum of total nof events across all processed files
   mutable long long eventCount_;        ///< Total number of events across all files
+  int basketSize_;                      ///< Basket size of all branches
 
   /**
    * @brief Closes a currently open file, if there is any
