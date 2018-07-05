@@ -10,6 +10,8 @@ process.fwliteInput = cms.PSet(
 
 process.makePlots = cms.PSet(
 
+    pluginType = cms.string("Plotter_ttH"),
+
     processData = cms.string("data_obs"),
     processesBackground = cms.vstring(
         ##"TT",

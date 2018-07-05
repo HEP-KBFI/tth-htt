@@ -8,7 +8,9 @@ process.fwliteInput = cms.PSet(
     fileNames = cms.vstring(),
 )
 
-process.makePlots_mcClosure = cms.PSet(
+process.makePlots = cms.PSet(
+
+    pluginType = cms.string("Plotter_mcClosure"),
 
     process_signal = cms.string("fakes_mc"),
     process_sideband = cms.string("fakes_mc"),

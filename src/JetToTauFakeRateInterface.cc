@@ -47,7 +47,8 @@ JetToTauFakeRateInterface::JetToTauFakeRateInterface(const edm::ParameterSet & c
   : inputFile_(nullptr),
     isInitialized_lead_(false),
     isInitialized_sublead_(false),
-    isInitialized_third_(false)
+    isInitialized_third_(false),
+    isInitialized_fourth_(false)
 {
   const std::string inputFileName = cfg.getParameter<std::string>("inputFileName");
   inputFile_ = openFile(LocalFileInPath(inputFileName));
@@ -78,6 +79,11 @@ JetToTauFakeRateInterface::JetToTauFakeRateInterface(const edm::ParameterSet & c
     const edm::ParameterSet cfg_third = cfg.getParameter<edm::ParameterSet>("third");
     initializeJetToTauFRWeights(cfg_third, jetToTauFakeRateWeights_third_, isInitialized_third_);
   }
+  if(cfg.exists("fourth"))
+  {
+    const edm::ParameterSet cfg_fourth = cfg.getParameter<edm::ParameterSet>("fourth");
+    initializeJetToTauFRWeights(cfg_fourth, jetToTauFakeRateWeights_fourth_, isInitialized_fourth_);
+  }
 }
 
 JetToTauFakeRateInterface::~JetToTauFakeRateInterface()
@@ -91,6 +97,10 @@ JetToTauFakeRateInterface::~JetToTauFakeRateInterface()
     delete it;
   }
   for(JetToTauFakeRateWeightEntry * & it: jetToTauFakeRateWeights_third_)
+  {
+    delete it;
+  }
+  for(JetToTauFakeRateWeightEntry * & it: jetToTauFakeRateWeights_fourth_)
   {
     delete it;
   }
@@ -119,6 +129,13 @@ JetToTauFakeRateInterface::getWeight_third(double hadTauPt_third,
 }
 
 double
+JetToTauFakeRateInterface::getWeight_fourth(double hadTauPt_fourth,
+					    double hadTauAbsEta_fourth) const
+{
+  return getWeight_or_SF(hadTauPt_fourth, hadTauAbsEta_fourth, kWeight, 3);
+}
+
+double
 JetToTauFakeRateInterface::getSF_lead(double hadTauPt_lead,
                                       double hadTauAbsEta_lead) const
 {
@@ -140,6 +157,13 @@ JetToTauFakeRateInterface::getSF_third(double hadTauPt_third,
 }
 
 double
+JetToTauFakeRateInterface::getSF_fourth(double hadTauPt_fourth,
+					double hadTauAbsEta_fourth) const
+{
+  return getWeight_or_SF(hadTauPt_fourth, hadTauAbsEta_fourth, kSF, 3);
+}
+
+double
 JetToTauFakeRateInterface::getWeight_or_SF(double hadTauPt,
                                            double hadTauAbsEta,
                                            int mode,
@@ -153,6 +177,7 @@ JetToTauFakeRateInterface::getWeight_or_SF(double hadTauPt,
     case 0: name = "leading";    isInitialized = isInitialized_lead_;    j2tFRweights = jetToTauFakeRateWeights_lead_;    break;
     case 1: name = "subleading"; isInitialized = isInitialized_sublead_; j2tFRweights = jetToTauFakeRateWeights_sublead_; break;
     case 2: name = "third";      isInitialized = isInitialized_third_;   j2tFRweights = jetToTauFakeRateWeights_third_;   break;
+    case 3: name = "fourth";     isInitialized = isInitialized_fourth_;  j2tFRweights = jetToTauFakeRateWeights_fourth_;  break;  
     default: assert(0);
   }
 

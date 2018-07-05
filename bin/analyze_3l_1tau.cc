@@ -200,7 +200,10 @@ int main(int argc, char* argv[])
   const int electronSelection = get_selection(electronSelection_string);
   const int muonSelection     = get_selection(muonSelection_string);
   double lep_mva_cut = cfg_analyze.getParameter<double>("lep_mva_cut"); // CV: used for tight lepton selection only
-
+  double lep_minPt_lead = cfg_analyze.getParameter<double>("lep_minPt_lead"); 
+  double lep_minPt_sublead = cfg_analyze.getParameter<double>("lep_minPt_sublead"); 
+  double lep_minPt_third = cfg_analyze.getParameter<double>("lep_minPt_third"); 
+  
   bool apply_leptonGenMatching = cfg_analyze.getParameter<bool>("apply_leptonGenMatching");
   std::vector<leptonGenMatchEntry> leptonGenMatch_definitions = getLeptonGenMatch_definitions_3lepton(apply_leptonGenMatching);
   std::cout << "leptonGenMatch_definitions:" << std::endl;
@@ -760,7 +763,7 @@ int main(int argc, char* argv[])
     ">= 2 loose b-jets || 1 medium b-jet (2)",
     ">= 1 sel tau (2)",
     "m(ll) > 12 GeV",
-    "lead lepton pT > 20 GeV && sublead lepton pT > 10 GeV && third lepton pT > 10 GeV",
+    Form("lead lepton pT > %.1f GeV && sublead lepton pT > %.1f GeV && third lepton pT > %.1f GeV", lep_minPt_lead, lep_minPt_sublead, lep_minPt_third),
     "sel lepton charge",
     "sel lepton+tau charge",
     "Z-boson mass veto",
@@ -1517,23 +1520,18 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
     cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
-
-    double minPt_lead = -1.;
-    if ( era == kEra_2017 ) minPt_lead = 20.;
-    else assert(0);
-    double minPt_sublead = 10.;
-    double minPt_third = 10.;
-    if ( !(selLepton_lead->cone_pt() > minPt_lead && selLepton_sublead->cone_pt() > minPt_sublead && selLepton_third->cone_pt() > minPt_third) ) {
+    
+    if ( !(selLepton_lead->cone_pt() > lep_minPt_lead && selLepton_sublead->cone_pt() > lep_minPt_sublead && selLepton_third->cone_pt() > lep_minPt_third) ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS lepton pT selection." << std::endl;
-	std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead
-		  << ", subleading selLepton pT = " << selLepton_sublead->pt() << ", minPt_sublead = " << minPt_sublead
-		  << ", third selLepton pT = " << selLepton_third->pt() << ", minPt_third = " << minPt_third << ")" << std::endl;
+	std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << lep_minPt_lead
+		  << ", subleading selLepton pT = " << selLepton_sublead->pt() << ", minPt_sublead = " << lep_minPt_sublead
+		  << ", third selLepton pT = " << selLepton_third->pt() << ", minPt_third = " << lep_minPt_third << ")" << std::endl;
       }
       continue;
     }
-    cutFlowTable.update("lead lepton pT > 20 GeV && sublead lepton pT > 10 GeV && third lepton pT > 10 GeV", evtWeight);
-    cutFlowHistManager->fillHistograms("lead lepton pT > 20 GeV && sublead lepton pT > 10 GeV && third lepton pT > 10 GeV", evtWeight);
+    cutFlowTable.update(Form("lead lepton pT > %.1f GeV && sublead lepton pT > %.1f GeV && third lepton pT > %.1f GeV", lep_minPt_lead, lep_minPt_sublead, lep_minPt_third), evtWeight);
+    cutFlowHistManager->fillHistograms(Form("lead lepton pT > %.1f GeV && sublead lepton pT > %.1f GeV && third lepton pT > %.1f GeV", lep_minPt_lead, lep_minPt_sublead, lep_minPt_third), evtWeight);
 
     int sumLeptonCharge = selLepton_lead->charge() + selLepton_sublead->charge() + selLepton_third->charge();
     if ( std::abs(sumLeptonCharge) != 1 ) {

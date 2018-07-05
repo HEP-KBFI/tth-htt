@@ -34,9 +34,9 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
   , muon_pt_(4)
   , muon_eta_(4)
   , numHadTaus_(0)
-  , hadTau_genPdgId_(3)
-  , hadTau_pt_(3)
-  , hadTau_eta_(3)
+  , hadTau_genPdgId_(4)
+  , hadTau_pt_(4)
+  , hadTau_eta_(4)
 {
   const std::string era_string = cfg.getParameter<std::string>("era");
   if(era_string == "2017")
@@ -51,7 +51,7 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
   const std::string hadTauSelection_string = cfg.getParameter<std::string>("hadTauSelection");
   setHadTauSelection(hadTauSelection_string);
 
-  for(int idxHadTau = 0; idxHadTau < 3; ++idxHadTau)
+  for(int idxHadTau = 0; idxHadTau < 4; ++idxHadTau)
   {
     hadTauSelection_antiElectron_[idxHadTau] = -1;
     if(cfg.exists("hadTauSelection_antiElectron"))
@@ -282,7 +282,8 @@ Data_to_MC_CorrectionInterface::setLeptons(int lepton1_type, double lepton1_pt, 
 void
 Data_to_MC_CorrectionInterface::setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta,
                                            int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta,
-                                           int hadTau3_genPdgId, double hadTau3_pt, double hadTau3_eta)
+                                           int hadTau3_genPdgId, double hadTau3_pt, double hadTau3_eta,
+                                           int hadTau4_genPdgId, double hadTau4_pt, double hadTau4_eta)
 {
   numHadTaus_ = 0;
   if(hadTau1_pt > 0.)
@@ -304,6 +305,13 @@ Data_to_MC_CorrectionInterface::setHadTaus(int hadTau1_genPdgId, double hadTau1_
     hadTau_genPdgId_[numHadTaus_] = hadTau3_genPdgId;
     hadTau_pt_[numHadTaus_] = hadTau3_pt;
     hadTau_eta_[numHadTaus_] = hadTau3_eta;
+    ++numHadTaus_;
+  }
+  if(hadTau4_pt > 0.)
+  {
+    hadTau_genPdgId_[numHadTaus_] = hadTau4_genPdgId;
+    hadTau_pt_[numHadTaus_] = hadTau4_pt;
+    hadTau_eta_[numHadTaus_] = hadTau4_eta;
     ++numHadTaus_;
   }
 }
@@ -459,19 +467,19 @@ namespace
     //std::cout << " hadTauSelection = " << hadTauSelection << std::endl;
 
     // CV: take data/MC (SF) measured for MVA-based tau ID with dR = 0.5 from
-    //       https://indico.cern.ch/event/719250/contributions/2971854/attachments/1635435/2609013/tauid_recommendations2017.pdf 
+    //       https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events ("Measured SF 2017")
     //     as the SF for MVA-based tau ID with dR = 0.3 have not been measured yet.
 
     double sf = 1.;
     double sfErr = 0.;
 
-    if      ( hadTauSelection == 1 ) { sf = 0.85; sfErr = 0.05; } // take SF for dR03mvaVLoose, as SF for dR03mvaVVLoose has not been measured yet
-    else if ( hadTauSelection == 2 ) { sf = 0.85; sfErr = 0.05; } // dR03mvaVLoose
-    else if ( hadTauSelection == 3 ) { sf = 0.89; sfErr = 0.05; } // dR03mvaLoose
-    else if ( hadTauSelection == 4 ) { sf = 0.89; sfErr = 0.05; } // dR03mvaMedium
-    else if ( hadTauSelection == 5 ) { sf = 0.87; sfErr = 0.05; } // dR03mvaTight
-    else if ( hadTauSelection == 6 ) { sf = 0.85; sfErr = 0.05; } // dR03mvaVTight
-    else if ( hadTauSelection == 7 ) { sf = 0.82; sfErr = 0.05; } // dR03mvaVVTight
+    if      ( hadTauSelection == 1 ) { sf = 0.88; sfErr = 0.03; } // take SF for dR03mvaVLoose, as SF for dR03mvaVVLoose has not been measured yet
+    else if ( hadTauSelection == 2 ) { sf = 0.88; sfErr = 0.03; } // dR03mvaVLoose
+    else if ( hadTauSelection == 3 ) { sf = 0.89; sfErr = 0.03; } // dR03mvaLoose
+    else if ( hadTauSelection == 4 ) { sf = 0.89; sfErr = 0.03; } // dR03mvaMedium
+    else if ( hadTauSelection == 5 ) { sf = 0.89; sfErr = 0.03; } // dR03mvaTight
+    else if ( hadTauSelection == 6 ) { sf = 0.86; sfErr = 0.03; } // dR03mvaVTight
+    else if ( hadTauSelection == 7 ) { sf = 0.84; sfErr = 0.03; } // dR03mvaVVTight
     //std::cout << " sf = " << sf << " +/- " << sfErr << std::endl;
     assert(sfErr >= 0); // CV: used just to avoid compilation errors due to "variable 'sfErr' set but not used"
 

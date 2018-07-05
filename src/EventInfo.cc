@@ -29,6 +29,7 @@ EventInfo::EventInfo(bool is_signal,
   , lumi(0)
   , event(0)
   , genHiggsDecayMode(-1)
+  , genDiHiggsDecayMode(-1)
   , genWeight(1.)
   , genWeight_tH(1.)
   , pileupWeight(1.)
@@ -49,6 +50,7 @@ EventInfo::operator=(const EventInfo & eventInfo)
   lumi              = eventInfo.lumi;
   event             = eventInfo.event;
   genHiggsDecayMode = eventInfo.genHiggsDecayMode;
+  genDiHiggsDecayMode = eventInfo.genDiHiggsDecayMode;
   genWeight         = eventInfo.genWeight;
   genWeight_tH      = eventInfo.genWeight_tH;
 

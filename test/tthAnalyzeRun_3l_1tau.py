@@ -24,6 +24,9 @@ parser.add_hlt_filter()
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_lep_mva_wp()
+#parser.add_lep_minPt_lead()
+#parser.add_lep_minPt_sublead()
+#parser.add_lep_minPt_third()
 args = parser.parse_args()
 
 # Common arguments
@@ -48,6 +51,15 @@ hlt_filter        = args.hlt_filter
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 lep_mva_wp        = args.lep_mva_wp
+#lep_minPt_lead    = args.lep_minPt_lead
+#lep_minPt_sublead = args.lep_minPt_sublead
+#lep_minPt_third   = args.lep_minPt_third
+lep_minPt_lead    = 20. # current default values of 3l+1tau channel
+lep_minPt_sublead = 10.
+lep_minPt_third   = 10.
+#lep_minPt_lead    = 25. # current default values of 3l channel
+#lep_minPt_sublead = 15.
+#lep_minPt_third   = 10.
 
 # Use the arguments
 central_or_shifts = []
@@ -148,6 +160,9 @@ if __name__ == '__main__':
     samples                               = samples,
     MEMbranch                             = MEMbranch,
     lep_mva_wp                            = lep_mva_wp,
+    lep_minPt_lead                        = lep_minPt_lead,
+    lep_minPt_sublead                     = lep_minPt_sublead,
+    lep_minPt_third                       = lep_minPt_third,
     hadTau_selection                      = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf

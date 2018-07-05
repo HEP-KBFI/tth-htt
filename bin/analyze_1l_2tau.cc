@@ -2141,8 +2141,8 @@ int main(int argc, char* argv[])
 
   std::cout << "countFat " << countFatTop << " " << countFatTopEntries << " " << countFatTopTruth << std::endl;
 
-
   delete dataToMCcorrectionInterface;
+  delete dataToMCcorrectionInterface_1l_2tau_trigger;
 
   delete leptonFakeRateInterface;
   delete jetToTauFakeRateInterface;

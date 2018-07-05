@@ -4,6 +4,7 @@ import os
 
 from tthAnalysis.HiggsToTauTau.configs.makePlots_cfi import process
 
+process.makePlots.pluginType = cms.string("Plotter_ttH")
 process.makePlots.applyRebinning = cms.bool(False)
 process.makePlots.apply_automatic_rebinning = cms.bool(False)
 process.makePlots.applyAutoBlinding = cms.bool(False)

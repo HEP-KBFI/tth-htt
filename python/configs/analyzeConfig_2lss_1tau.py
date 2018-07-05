@@ -45,6 +45,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         samples,
         MEMbranch,
         lep_mva_wp,
+        lep_mLL_veto,
+        e_dR_cleaning,
         lepton_charge_selections,
         hadTau_selection,
         hadTau_selection_veto,
@@ -98,6 +100,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       isDebug                   = isDebug,
       use_home                  = use_home,
     )
+
+    self.lep_mLL_veto = lep_mLL_veto
+    self.e_dR_cleaning = e_dR_cleaning
 
     self.samples = samples
     self.MEMbranch = MEMbranch
@@ -226,6 +231,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     if 'mcClosure' in lepton_and_hadTau_selection:
       self.mcClosure_dir['%s_%s_%s' % (lepton_and_hadTau_selection, jobOptions['leptonChargeSelection'], jobOptions['chargeSumSelection'] )] = histogramDir
 
+    jobOptions['lep_mLL_veto'] = self.lep_mLL_veto
+    jobOptions['e_dR_cleaning'] = self.e_dR_cleaning
+    
     self.set_leptonFakeRateWeightHistogramNames(jobOptions['central_or_shift'], lepton_and_hadTau_selection)
     jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
     jobOptions['leptonFakeRateWeight.histogramName_e'] = self.leptonFakeRateWeight_histogramName_e
@@ -285,10 +293,10 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     """
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-    lines.append("process.makePlots_mcClosure.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
-    lines.append("process.makePlots_mcClosure.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
-    lines.append("process.makePlots_mcClosure.processSignal = cms.string('%s')" % self.make_plots_signal)
-    lines.append("process.makePlots_mcClosure.categories = cms.VPSet(")
+    lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
+    lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
+    lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+    lines.append("process.makePlots.categories = cms.VPSet(")
     lines.append("  cms.PSet(")
     lines.append("    signal = cms.string('%s')," % jobOptions['histogramDir_signal'])
     lines.append("    sideband = cms.string('%s')," % jobOptions['histogramDir_sideband'])
