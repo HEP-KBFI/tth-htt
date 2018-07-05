@@ -952,7 +952,7 @@ main(int argc,
 //--- fill generator level histograms (before cuts)
     if(isMC)
     {
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
+      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, lumiScale);
     }
 
 //--- build reco level collections of electrons, muons and hadronic taus;
@@ -1616,7 +1616,7 @@ main(int argc,
 //--- fill generator level histograms (after cuts)
     if(isMC)
     {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
+      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, lumiScale);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
 
