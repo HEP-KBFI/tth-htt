@@ -199,6 +199,15 @@ int main(int argc, char* argv[])
   const int electronSelection = get_selection(electronSelection_string);
   const int muonSelection     = get_selection(muonSelection_string);
   double lep_mva_cut = cfg_analyze.getParameter<double>("lep_mva_cut"); // CV: used for tight lepton selection only
+  enum { kSFOS, kSF, kALL };
+  std::string lep_mLL_veto_string = cfg_analyze.getParameter<std::string>("lep_mLL_veto");
+  int lep_mLL_veto = -1;
+  if      ( lep_mLL_veto_string == "SFOS" ) lep_mLL_veto = kSFOS;
+  else if ( lep_mLL_veto_string == "SF"   ) lep_mLL_veto = kSF;
+  else if ( lep_mLL_veto_string == "ALL"  ) lep_mLL_veto = kALL;
+  else throw cms::Exception("analyze_2lss_1tau")
+    << "Invalid Configuration parameter 'lep_mLL_veto' = " << lep_mLL_veto_string << " !!\n";
+  double e_dR_cleaning = cfg_analyze.getParameter<double>("e_dR_cleaning");
 
   bool apply_leptonGenMatching = cfg_analyze.getParameter<bool>("apply_leptonGenMatching");
   std::vector<leptonGenMatchEntry> leptonGenMatch_definitions = getLeptonGenMatch_definitions_2lepton(apply_leptonGenMatching);
@@ -385,7 +394,7 @@ int main(int argc, char* argv[])
   electronReader->readUncorrected(useNonNominal);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
-  RecoElectronCollectionCleaner electronCleaner(0.05, isDEBUG);
+  RecoElectronCollectionCleaner electronCleaner(e_dR_cleaning, isDEBUG);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
@@ -1517,7 +1526,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
             lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
-        double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
+	if ( lep_mLL_veto == kSFOS || lep_mLL_veto == kSF ) {
+	  if ( !(((*lepton1)->is_electron() && (*lepton2)->is_electron()) || ((*lepton1)->is_muon() && (*lepton2)->is_muon())) ) continue;
+	}
+	if ( lep_mLL_veto == kSFOS ) {
+	  if ( !(((*lepton1)->charge()*(*lepton2)->charge()) < 0.) ) continue;
+	}
+	double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
         if ( mass < 12. ) {
           failsLowMassVeto = true;
         }

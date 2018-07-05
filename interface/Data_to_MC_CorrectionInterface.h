@@ -32,7 +32,8 @@ public:
   void
   setHadTaus(int hadTau1_genPdgId,      double hadTau1_pt,      double hadTau1_eta,
              int hadTau2_genPdgId = -1, double hadTau2_pt = 0., double hadTau2_eta = 0.,
-             int hadTau3_genPdgId = -1, double hadTau3_pt = 0., double hadTau3_eta = 0.);
+             int hadTau3_genPdgId = -1, double hadTau3_pt = 0., double hadTau3_eta = 0.,
+             int hadTau4_genPdgId = -1, double hadTau4_pt = 0., double hadTau4_eta = 0.);
   //-----------------------------------------------------------------------------
   
   //-----------------------------------------------------------------------------
@@ -94,8 +95,8 @@ public:
 
   int era_;
   int hadTauSelection_; // 1: VVLoose, 2: VLoose, 3: Loose, 4: Medium, 5: Tight, 6: VTight
-  int hadTauSelection_antiElectron_[3];
-  int hadTauSelection_antiMuon_[3];
+  int hadTauSelection_antiElectron_[4];
+  int hadTauSelection_antiMuon_[4];
   FRet eToTauFakeRate_option_;
   FRmt muToTauFakeRate_option_;
   TriggerSFsys triggerSF_option_;

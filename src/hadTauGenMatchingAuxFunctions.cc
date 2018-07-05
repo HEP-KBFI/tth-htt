@@ -100,6 +100,57 @@ getHadTauGenMatch_definitions_3tau(bool apply_hadTauGenMatching)
   return hadTauGenMatch_definitions;
 }
 
+std::vector<hadTauGenMatchEntry>
+getHadTauGenMatch_definitions_4tau(bool apply_hadTauGenMatching)
+{
+  std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions;
+  if(apply_hadTauGenMatching)
+  {
+    hadTauGenMatch_definitions = {
+      { "4t0e0m0j", kGen_4t0e0m0j, 4, 0, 0, 0 },
+      { "3t1e0m0j", kGen_3t1e0m0j, 3, 1, 0, 0 },
+      { "3t0e1m0j", kGen_3t0e1m0j, 3, 0, 1, 0 },
+      { "3t0e0m1j", kGen_3t0e0m1j, 3, 0, 0, 1 },
+      { "2t2e0m0j", kGen_2t2e0m0j, 2, 2, 0, 0 },
+      { "2t1e1m0j", kGen_2t1e1m0j, 2, 1, 1, 0 },
+      { "2t1e0m1j", kGen_2t1e0m1j, 2, 1, 0, 1 },
+      { "2t0e2m0j", kGen_2t0e2m0j, 2, 0, 2, 0 },
+      { "2t0e1m1j", kGen_2t0e1m1j, 2, 0, 1, 1 },
+      { "2t0e0m2j", kGen_2t0e0m2j, 2, 0, 0, 2 },
+      { "1t3e0m0j", kGen_1t3e0m0j, 1, 3, 0, 0 },
+      { "1t2e1m0j", kGen_1t2e1m0j, 1, 2, 1, 0 },
+      { "1t2e0m1j", kGen_1t2e0m1j, 1, 2, 0, 1 },
+      { "1t1e2m0j", kGen_1t1e2m0j, 1, 1, 2, 0 },
+      { "1t1e1m1j", kGen_1t1e1m1j, 1, 1, 1, 1 },
+      { "1t1e0m2j", kGen_1t1e0m2j, 1, 1, 0, 2 },
+      { "1t0e3m0j", kGen_1t0e3m0j, 1, 0, 3, 0 },
+      { "1t0e2m1j", kGen_1t0e2m1j, 1, 0, 2, 1 },
+      { "1t0e1m2j", kGen_1t0e1m2j, 1, 0, 1, 2 },
+      { "1t0e0m3j", kGen_1t0e0m3j, 1, 0, 0, 3 },
+      { "0t4e0m0j", kGen_0t4e0m0j, 0, 4, 0, 0 },
+      { "0t3e1m0j", kGen_0t3e1m0j, 0, 3, 1, 0 }, 
+      { "0t2e2m0j", kGen_0t2e2m0j, 0, 2, 2, 0 }, 
+      { "0t1e3m0j", kGen_0t1e3m0j, 0, 1, 3, 0 }, 
+      { "0t0e4m0j", kGen_0t0e4m0j, 0, 0, 4, 0 }, 
+      { "0t3e0m1j", kGen_0t3e0m1j, 0, 3, 0, 1 },
+      { "0t2e1m1j", kGen_0t2e1m1j, 0, 2, 1, 1 }, 
+      { "0t1e2m1j", kGen_0t1e2m1j, 0, 1, 2, 1 }, 
+      { "0t0e3m1j", kGen_0t0e3m1j, 0, 0, 3, 1 }, 
+      { "0t2e0m2j", kGen_0t2e0m2j, 0, 2, 0, 2 }, 
+      { "0t1e1m2j", kGen_0t1e1m2j, 0, 1, 1, 2 }, 
+      { "0t0e2m2j", kGen_0t0e2m2j, 0, 0, 2, 2 }, 
+      { "0t1e0m3j", kGen_0t1e0m3j, 0, 1, 0, 3 }, 
+      { "0t0e1m3j", kGen_0t0e1m3j, 0, 0, 1, 3 }, 
+      { "0t0e0m4j", kGen_0t0e0m4j, 0, 0, 0, 4 },
+    };
+  }
+  else
+  {
+    hadTauGenMatch_definitions = { { "all", kGen_HadTauAll4, -1, -1, -1, -1 } };
+  }
+  return hadTauGenMatch_definitions;
+}
+
 std::string
 getHadTauGenMatch_string(const std::vector<hadTauGenMatchEntry> & hadTauGenMatch_definitions,
                          int hadTauGenMatch_int)
@@ -196,7 +247,8 @@ const hadTauGenMatchEntry &
 getHadTauGenMatch(const std::vector<hadTauGenMatchEntry> & hadTauGenMatch_definitions,
                   const RecoHadTau * hadTau_lead,
                   const RecoHadTau * hadTau_sublead,
-                  const RecoHadTau * hadTau_third)
+                  const RecoHadTau * hadTau_third,
+		  const RecoHadTau * hadTau_fourth)
 {
   int numGenMatchedHadTaus = 0;
   int numGenMatchedElectrons = 0;
@@ -219,6 +271,10 @@ getHadTauGenMatch(const std::vector<hadTauGenMatchEntry> & hadTauGenMatch_defini
   if(hadTau_third)
   {
     countHadTauGenMatches_local(hadTau_third);
+  }
+  if(hadTau_fourth)
+  {
+    countHadTauGenMatches_local(hadTau_fourth);
   }
 
   return getHadTauGenMatch(

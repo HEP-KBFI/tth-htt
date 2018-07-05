@@ -218,10 +218,10 @@ class analyzeConfig_2lss(analyzeConfig):
     """
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-    lines.append("process.makePlots_mcClosure.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
-    lines.append("process.makePlots_mcClosure.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
-    lines.append("process.makePlots_mcClosure.processSignal = cms.string('%s')" % self.make_plots_signal)
-    lines.append("process.makePlots_mcClosure.categories = cms.VPSet(")
+    lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
+    lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
+    lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+    lines.append("process.makePlots.categories = cms.VPSet(")
     lines.append("  cms.PSet(")
     lines.append("    signal = cms.string('%s')," % jobOptions['histogramDir_signal'])
     lines.append("    sideband = cms.string('%s')," % jobOptions['histogramDir_sideband'])

@@ -59,6 +59,9 @@ process.analyze_3l_1tau = cms.PSet(
     electronSelection = cms.string('Tight'),
     muonSelection = cms.string('Tight'),
     lep_mva_cut = cms.double(0.75), # CV: used for tight lepton selection only
+    lep_minPt_lead = cms.double(20.),
+    lep_minPt_sublead = cms.double(10.),
+    lep_minPt_third = cms.double(10.),
     apply_leptonGenMatching = cms.bool(True),
 
     hadTauSelection = cms.string('Tight|dR03mvaMedium'),

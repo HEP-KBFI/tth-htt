@@ -47,6 +47,9 @@ class analyzeConfig_3l_1tau(analyzeConfig):
         samples,
         MEMbranch,
         lep_mva_wp,
+        lep_minPt_lead,
+        lep_minPt_sublead,
+        lep_minPt_third,              
         hadTau_selection,
         applyFakeRateWeights,
         chargeSumSelections,
@@ -98,6 +101,10 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       isDebug                   = isDebug,
       use_home                  = use_home,
     )
+
+    self.lep_minPt_lead = lep_minPt_lead
+    self.lep_minPt_sublead = lep_minPt_sublead
+    self.lep_minPt_third = lep_minPt_third  
 
     self.samples = samples
     self.MEMbranch = MEMbranch
@@ -218,6 +225,10 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     if 'mcClosure' in lepton_and_hadTau_selection:
       self.mcClosure_dir['%s_%s' % (lepton_and_hadTau_selection, jobOptions['chargeSumSelection'])] = jobOptions['histogramDir']
 
+    jobOptions['lep_minPt_lead'] = self.lep_minPt_lead
+    jobOptions['lep_minPt_sublead'] = self.lep_minPt_sublead
+    jobOptions['lep_minPt_third'] = self.lep_minPt_third
+
     self.set_leptonFakeRateWeightHistogramNames(jobOptions['central_or_shift'], lepton_and_hadTau_selection)
     jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
     jobOptions['leptonFakeRateWeight.histogramName_e'] = self.leptonFakeRateWeight_histogramName_e
@@ -249,10 +260,10 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     """
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-    lines.append("process.makePlots_mcClosure.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
-    lines.append("process.makePlots_mcClosure.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
-    lines.append("process.makePlots_mcClosure.processSignal = cms.string('%s')" % self.make_plots_signal)
-    lines.append("process.makePlots_mcClosure.categories = cms.VPSet(")
+    lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
+    lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
+    lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+    lines.append("process.makePlots.categories = cms.VPSet(")
     lines.append("  cms.PSet(")
     lines.append("    signal = cms.string('%s')," % self.histogramDir_prep_dcard)
     lines.append("    sideband = cms.string('%s')," % self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights"))

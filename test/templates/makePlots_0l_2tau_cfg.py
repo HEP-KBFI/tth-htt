@@ -4,6 +4,8 @@ import os
 
 from tthAnalysis.HiggsToTauTau.configs.makePlots_cfi import process
 
+process.makePlots.pluginType = cms.string("Plotter_ttH")
+
 process.makePlots.processesBackground = cms.vstring(
     ##"TT",
     "TTW",

@@ -26,6 +26,10 @@ public:
   getWeight_third(double hadTauPt_third,
                   double hadTauAbsEta_third) const;
   
+  double
+  getWeight_fourth(double hadTauPt_fourth,
+		   double hadTauAbsEta_fourth) const;
+
   // jet->tau fake-rate scale factors (ratio of jet->tau fake-rates in data and MC simulation);
   // to be applied to simulated events in case data-driven "fake" background estimation is applied to leptons only
   double
@@ -40,6 +44,9 @@ public:
   getSF_third(double hadTauPt_third,
               double hadTauAbsEta_third) const;
 
+  double
+  getSF_fourth(double hadTauPt_fourth,
+	       double hadTauAbsEta_fourth) const;
 protected:
   enum { kWeight, kSF };
 
@@ -57,6 +64,8 @@ private:
   bool isInitialized_sublead_;
   std::vector<JetToTauFakeRateWeightEntry*> jetToTauFakeRateWeights_third_;
   bool isInitialized_third_;
+  std::vector<JetToTauFakeRateWeightEntry*> jetToTauFakeRateWeights_fourth_;
+  bool isInitialized_fourth_;
 };
 
 #endif

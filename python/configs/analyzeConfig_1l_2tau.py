@@ -184,9 +184,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_1l_2tau.cc
     """
-    hadTau_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
+    lepton_and_hadTau_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
     jobOptions['histogramDir'] = getHistogramDir(
-      lepton_and_hadTau_selection, hadTau_frWeight, jobOptions['hadTauChargeSelection']
+      lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, jobOptions['hadTauChargeSelection']
     )
     if 'mcClosure' in lepton_and_hadTau_selection:
       self.mcClosure_dir['%s_%s' % (lepton_and_hadTau_selection, jobOptions['hadTauChargeSelection'])] = jobOptions['histogramDir']
@@ -231,10 +231,10 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     """
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-    lines.append("process.makePlots_mcClosure.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
-    lines.append("process.makePlots_mcClosure.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
-    lines.append("process.makePlots_mcClosure.processSignal = cms.string('%s')" % self.make_plots_signal)
-    lines.append("process.makePlots_mcClosure.categories = cms.VPSet(")
+    lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
+    lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
+    lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+    lines.append("process.makePlots.categories = cms.VPSet(")
     lines.append("  cms.PSet(")
     lines.append("    signal = cms.string('%s')," % self.histogramDir_prep_dcard)
     lines.append("    sideband = cms.string('%s')," % self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights"))

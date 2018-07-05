@@ -2161,4 +2161,3 @@ samples_2017["/WpWpJJ_EWK_QCD_TuneCP5_13TeV_madgraph_pythia8_Fall17/private/MINI
 
   ]),
 ])
-

@@ -297,6 +297,21 @@ int
 countFakeHadTaus(const std::vector<const RecoHadTau *> & hadTaus);
 
 /**
+ * @brief Count number of reconstructed electrons, muons, hadronic taus, or jets that pass given pT cut
+ */
+template <typename T>
+int
+countHighPtObjects(const std::vector<T*>& objects, double pTmin)
+{
+  int numHighPtObjects = 0;
+  for ( typename std::vector<T*>::const_iterator object = objects.begin();
+	object != objects.end(); ++object ) {
+    if ( (*object)->pt() > pTmin ) ++numHighPtObjects;
+  }
+  return numHighPtObjects;
+}
+
+/**
  * @brief Computes the number of k combinations out of n
  * @param n Number of instances to choose from
  * @param k Length of a single combination

@@ -170,13 +170,13 @@ class Triggers(object):
         #     except that the 'HLT_IsoMu24_eta2p1_LooseChargedIsoPFTau20_SingleL1' path has been dropped,
         #     as it was found to increase the trigger acceptance only marginally
         #    (cf. slide 19 of https://indico.cern.ch/event/683144/contributions/2814995/attachments/1570846/2478034/Ruggles_TauTriggers_TauPOG_20171206_v7.pdf)
-        '1mu1tau' : {
+        '1mu1tau' : { # stored in SingleMuon dataset
           'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1',
         },
-        '1e1tau' : {
+        '1e1tau' : { # stored in SingleElectron dataset
           'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
         },
-        '2tau' : {
+        '2tau' : { # stored in Tau dataset 
           'HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg',
           'HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg',
           'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg',

@@ -1,62 +1,66 @@
+#include "tthAnalysis/HiggsToTauTau/plugins/Plotter_mcClosure.h"
 
-/** \executable makePlots_mcClosure
- *
- * Make control plots demonstrating MC closure of procedure for jet->tau fake background estimation.
- *
- * \author Christian Veelken, Tallinn
- *
- */
-
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
-
-#include "FWCore/Utilities/interface/Exception.h"
-
-#include "PhysicsTools/FWLite/interface/TFileService.h"
-#include "DataFormats/FWLite/interface/InputSource.h"
-#include "DataFormats/FWLite/interface/OutputFiles.h"
-
-#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
-#include "tthAnalysis/HiggsToTauTau/interface/plottingAuxFunctions.h"
-
-#include <TFile.h>
 #include <TH1.h>
 #include <THStack.h>
-#include <TBenchmark.h>
 #include <TMath.h>
-#include <TString.h>
+#include <TString.h> // Form
 #include <TCanvas.h>
 #include <TPad.h>
 #include <TLegend.h>
 #include <TPaveText.h>
 #include <TF1.h>
 #include <TStyle.h>
-#include <TROOT.h>
-#include <TError.h> // gErrorAbortLevel, kError
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <assert.h>
+Plotter_mcClosure::Plotter_mcClosure(const TFile* inputFile, const edm::ParameterSet& cfg)
+  : PlotterPluginBase(inputFile, cfg)
+  , histogramManager_(nullptr)
+{
+  edm::VParameterSet cfgCategories = cfg.getParameter<edm::VParameterSet>("categories");
+  for ( edm::VParameterSet::const_iterator cfgCategory = cfgCategories.begin();
+	cfgCategory != cfgCategories.end(); ++cfgCategory ) {
+    categoryEntryType* category = new categoryEntryType(*cfgCategory);
+    categories_.push_back(category);
+    categoryNames_sideband_.push_back(category->sideband_);
+  }
 
-typedef std::vector<std::string> vstring;
+  process_signal_   = cfg.getParameter<std::string>("process_signal");
+  process_sideband_ = cfg.getParameter<std::string>("process_sideband");
+
+  edm::VParameterSet cfgDistributions = cfg.getParameter<edm::VParameterSet>("distributions");
+  std::vector<plotEntryType*> distributions = readDistributions(cfgDistributions);
+  for ( std::vector<plotEntryType*>::iterator distribution = distributions.begin();
+	distribution != distributions.end(); ++distribution ) {
+    (*distribution)->legendSizeY_ = 0.17;
+  }
+
+  edm::ParameterSet cfgNuisanceParameters = cfg.getParameter<edm::ParameterSet>("nuisanceParameters");
+  histogramManager_ = new HistogramManager({}, process_sideband_, categoryNames_sideband_, cfgNuisanceParameters);
+  showUncertainty_ = cfg.getParameter<bool>("showUncertainty");
+
+  std::string labelOnTop_string = cfg.getParameter<std::string>("labelOnTop");
+  double intLumiData = cfg.getParameter<double>("intLumiData");
+  labelOnTop_ = Form(labelOnTop_string.data(), intLumiData);
+  
+  std::string outputFileName = cfg.getParameter<std::string>("outputFileName");
+}
+
+Plotter_mcClosure::~Plotter_mcClosure()
+{
+  for ( std::vector<categoryEntryType*>::iterator it = categories_.begin();
+	it != categories_.end(); ++it ) {
+    delete (*it);
+  }
+
+  for ( std::vector<plotEntryType*>::iterator it = distributions_.begin();
+	it != distributions_.end(); ++it ) {
+    delete (*it);
+  }
+
+  delete histogramManager_;
+}
 
 namespace
 {
-  struct categoryEntryType
-  {
-    categoryEntryType(const edm::ParameterSet& cfg)
-    {
-      signal_ = cfg.getParameter<std::string>("signal");
-      sideband_ = cfg.getParameter<std::string>("sideband");
-      label_ = cfg.getParameter<std::string>("label");
-    }
-    ~categoryEntryType() {}
-    std::string signal_;
-    std::string sideband_;
-    std::string label_;
-  };
-
   TH1* normalizeHistogram(TH1* histogram, bool includeUnderflowBin = false, bool includeOverflowBin = false)
   {
     std::string histogramName_normalized = Form("%s_normalized", histogram->GetName());
@@ -352,104 +356,42 @@ namespace
   }
 }
 
-int main(int argc, char* argv[]) 
+void Plotter_mcClosure::makePlots()
 {
-//--- throw an exception in case ROOT encounters an error
-  gErrorAbortLevel = kError;
-
-//--- parse command-line arguments
-  if ( argc < 2 ) {
-    std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  std::cout << "<makePlots_mcClosure>:" << std::endl;
-
-  gROOT->SetBatch(true);
-
-//--- keep track of time it takes the macro to execute
-  TBenchmark clock;
-  clock.Start("makePlots_mcClosure");
-
-//--- read python configuration parameters
-  if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") ) 
-    throw cms::Exception("makePlots_mcClosure") 
-      << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
-
-  edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
-
-  edm::ParameterSet cfgMakePlots = cfg.getParameter<edm::ParameterSet>("makePlots_mcClosure");
-
-  std::vector<categoryEntryType*> categories;
-  vstring categoryNames_sideband;
-  edm::VParameterSet cfgCategories = cfgMakePlots.getParameter<edm::VParameterSet>("categories");
-  for ( edm::VParameterSet::const_iterator cfgCategory = cfgCategories.begin();
-	cfgCategory != cfgCategories.end(); ++cfgCategory ) {
-    categoryEntryType* category = new categoryEntryType(*cfgCategory);
-    categories.push_back(category);
-    categoryNames_sideband.push_back(category->sideband_);
-  }
-
-  std::string process_signal  = cfgMakePlots.getParameter<std::string>("process_signal");
-  std::string process_sideband = cfgMakePlots.getParameter<std::string>("process_sideband");
-
-  edm::VParameterSet cfgDistributions = cfgMakePlots.getParameter<edm::VParameterSet>("distributions");
-  std::vector<plotEntryType*> distributions = readDistributions(cfgDistributions);
-  for ( std::vector<plotEntryType*>::iterator distribution = distributions.begin();
-	distribution != distributions.end(); ++distribution ) {
-    (*distribution)->legendSizeY_ = 0.17;
-  }
-
-  edm::ParameterSet cfgNuisanceParameters = cfgMakePlots.getParameter<edm::ParameterSet>("nuisanceParameters");
-  HistogramManager histogramManager({}, process_sideband, categoryNames_sideband, cfgNuisanceParameters);
-  bool showUncertainty = cfgMakePlots.getParameter<bool>("showUncertainty");
-
-  std::string labelOnTop_string = cfgMakePlots.getParameter<std::string>("labelOnTop");
-  double intLumiData = cfgMakePlots.getParameter<double>("intLumiData");
-  std::string labelOnTop = Form(labelOnTop_string.data(), intLumiData);
-  
-  std::string outputFileName = cfgMakePlots.getParameter<std::string>("outputFileName");
-
-  fwlite::InputSource inputFiles(cfg); 
-  if ( !(inputFiles.files().size() == 1) )
-    throw cms::Exception("makePlots") 
-      << "Exactly one input file expected !!\n";
-  TFile* inputFile = new TFile(inputFiles.files().front().data());
-  
-  for ( std::vector<categoryEntryType*>::iterator category = categories.begin();
-	category != categories.end(); ++category ) {
+  for ( std::vector<categoryEntryType*>::iterator category = categories_.begin();
+	category != categories_.end(); ++category ) {
     std::cout << "processing category: signal = " << (*category)->signal_ << ", sideband = " << (*category)->sideband_ << std::endl;
 
-    TDirectory* dir_signal = getDirectory(inputFile, (*category)->signal_, true);
+    TDirectory* dir_signal = getDirectory(inputFile_, (*category)->signal_, true);
     assert(dir_signal);
-    TDirectory* dir_sideband = getDirectory(inputFile, (*category)->sideband_, true);
+    TDirectory* dir_sideband = getDirectory(inputFile_, (*category)->sideband_, true);
     assert(dir_sideband);
 
-    for ( std::vector<plotEntryType*>::iterator distribution = distributions.begin();
-	  distribution != distributions.end(); ++distribution ) {
+    for ( std::vector<plotEntryType*>::iterator distribution = distributions_.begin();
+	  distribution != distributions_.end(); ++distribution ) {
 
-      TH1* histogramSignal = getHistogram_wrapper(dir_signal, process_signal, (*distribution)->histogramName_, "central", true);
+      TH1* histogramSignal = getHistogram_wrapper(dir_signal, process_signal_, (*distribution)->histogramName_, "central", true);
 
-      histogramManager.setDirectory(dir_sideband);
-      histogramManager.setCategory((*category)->sideband_);
-      histogramManager.setHistogram((*distribution)->histogramName_);
-      histogramManager.update();
+      histogramManager_->setDirectory(dir_sideband);
+      histogramManager_->setCategory((*category)->sideband_);
+      histogramManager_->setHistogram((*distribution)->histogramName_);
+      histogramManager_->update();
       
-      TH1* histogramSideband = histogramManager.getHistogramPrefit(process_sideband, true);
+      TH1* histogramSideband = histogramManager_->getHistogramPrefit(process_sideband_, true);
       
       TH1* histogramUncertainty = 0;
-      if ( showUncertainty ) {
-	histogramUncertainty = histogramManager.getHistogramUncertainty();
+      if ( showUncertainty_ ) {
+	histogramUncertainty = histogramManager_->getHistogramUncertainty();
       }
             
-      vstring extraLabels;
+      std::vector<std::string> extraLabels;
       if ( (*category)->label_ != "" ) extraLabels.push_back((*category)->label_);
       double extraLabelsSizeX = 0.12;
 
-      size_t idx = outputFileName.find(".");
-      std::string outputFileName_plot(outputFileName, 0, idx);
+      size_t idx = outputFileName_.find(".");
+      std::string outputFileName_plot(outputFileName_, 0, idx);
       outputFileName_plot.append(Form("_%s", (*distribution)->outputFileName_.data()));
-      if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName, idx));
+      if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName_, idx));
 	  
       makePlot_mcClosure(
 	800, 900,
@@ -457,7 +399,7 @@ int main(int argc, char* argv[])
 	histogramSideband,
 	histogramUncertainty,
 	(*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
-	labelOnTop,
+	labelOnTop_,
 	extraLabels, 0.055, 0.185, 0.815 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
 	(*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
 	true, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, 
@@ -468,7 +410,7 @@ int main(int argc, char* argv[])
 	histogramSideband,
 	histogramUncertainty,
 	(*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
-	labelOnTop,
+	labelOnTop_,
 	extraLabels, 0.055, 0.185, 0.815 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
 	(*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
 	false, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, 
@@ -487,7 +429,7 @@ int main(int argc, char* argv[])
 	histogramSideband_normalized,
 	histogramUncertainty_normalized,
 	(*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
-	labelOnTop,
+	labelOnTop_,
 	extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
 	(*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
 	true, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, 
@@ -498,7 +440,7 @@ int main(int argc, char* argv[])
 	histogramSideband_normalized,
 	histogramUncertainty_normalized,
 	(*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
-	labelOnTop,
+	labelOnTop_,
 	extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
 	(*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
 	false, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, 
@@ -509,20 +451,8 @@ int main(int argc, char* argv[])
       delete histogramUncertainty_normalized;
     }
   }
-
-  delete inputFile;
-  
-  for ( std::vector<categoryEntryType*>::iterator it = categories.begin();
-	it != categories.end(); ++it ) {
-    delete (*it);
-  }
-  for ( std::vector<plotEntryType*>::iterator it = distributions.begin();
-	it != distributions.end(); ++it ) {
-    delete (*it);
-  }
-
-  clock.Show("makePlots_mcClosure");
-
-  return 0;
 }
 
+#include "FWCore/Framework/interface/MakerMacros.h"
+
+DEFINE_EDM_PLUGIN(PlotterPluginFactory, Plotter_mcClosure, "Plotter_mcClosure");

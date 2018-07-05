@@ -1,0 +1,7 @@
+<library   file="*.cc" name="tthAnalysisHiggsToTauTauPlugins">
+   <flags   EDM_PLUGIN="1"/>
+   <use   name="FWCore/ParameterSet"/>
+   <use   name="FWCore/PluginManager"/>
+   <use   name="tthAnalysis/HiggsToTauTau"/>
+   <use   name="root"/>
+</library>

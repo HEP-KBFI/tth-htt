@@ -200,10 +200,10 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     """
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-    lines.append("process.makePlots_mcClosure.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
-    lines.append("process.makePlots_mcClosure.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
-    lines.append("process.makePlots_mcClosure.processSignal = cms.string('%s')" % self.make_plots_signal)
-    lines.append("process.makePlots_mcClosure.categories = cms.VPSet(")
+    lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
+    lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
+    lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+    lines.append("process.makePlots.categories = cms.VPSet(")
     lines.append("  cms.PSet(")
     lines.append("    signal = cms.string('%s')," % self.histogramDir_prep_dcard)
     lines.append("    sideband = cms.string('%s')," % self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights"))
@@ -315,8 +315,9 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                 applyFakeRateWeights = self.applyFakeRateWeights \
                   if self.isBDTtraining or hadTau_selection.find("Tight") == -1 \
                   else "disabled"
+                hadTauSelection = None
                 if hadTau_selection == "forBDTtraining":
-                  hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
+                  hadTauSelection = "Tight|%s" % self.hadTau_selection_relaxed
                 else:
                   hadTauSelection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
 
