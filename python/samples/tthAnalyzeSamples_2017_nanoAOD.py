@@ -15098,7 +15098,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia8/R
   ("nof_db_events",                   8995670),
   ("fsize_local",                     11317133351), # 11.32GB, avg file size 62.18MB
   ("fsize_db",                        405068200207), # 405.07GB, avg file size 2.21GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        145.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -15135,7 +15135,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia8/R
   ("nof_db_events",                   8859396),
   ("fsize_local",                     11169849146), # 11.17GB, avg file size 62.40MB
   ("fsize_db",                        401795378611), # 401.80GB, avg file size 2.09GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        145.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -15172,7 +15172,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_events",                   8796005),
   ("fsize_local",                     10147403870), # 10.15GB, avg file size 57.33MB
   ("fsize_db",                        379888624037), # 379.89GB, avg file size 1.54GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        202.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -15209,7 +15209,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_events",                   1026278),
   ("fsize_local",                     1184713236), # 1.18GB, avg file size 56.41MB
   ("fsize_db",                        43976270871), # 43.98GB, avg file size 1.19GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        202.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),

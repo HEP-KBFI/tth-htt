@@ -8,7 +8,7 @@ meta_dictionary = OD()
 
 ### event sums
 
-sum_events = { 
+sum_events = {
   ("DY1JetsToLL_M-50", "DY1JetsToLL_M-50_ext1"),
   ("DY2JetsToLL_M-50", "DY2JetsToLL_M-50_ext1"),
   ("DY3JetsToLL_M-50", "DY3JetsToLL_M-50_ext1"),
@@ -510,7 +510,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia
   ("nof_db_files",          183),
   ("fsize_db",              405068200207),
   ("xsection",              145.4),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 405.07GB; nevents: 9.00M; release: 9_4_0_patch1; last modified: 2018-01-17 05:07:35"),
 ])
@@ -523,7 +523,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia
   ("nof_db_files",          192),
   ("fsize_db",              401795378611),
   ("xsection",              145.4),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 401.80GB; nevents: 8.86M; release: 9_4_0_patch1; last modified: 2018-03-03 17:55:29"),
 ])
@@ -536,7 +536,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythi
   ("nof_db_files",          246),
   ("fsize_db",              379888624037),
   ("xsection",              202.8),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 379.89GB; nevents: 8.80M; release: 9_4_0_patch1; last modified: 2018-01-17 05:05:38"),
 ])
@@ -549,7 +549,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythi
   ("nof_db_files",          37),
   ("fsize_db",              43976270871),
   ("xsection",              202.8),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 43.98GB; nevents: 1.03M; release: 9_4_0_patch1; last modified: 2018-03-03 17:55:10"),
 ])
