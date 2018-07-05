@@ -224,7 +224,7 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("process_name_specific",           "{{ process_name_specific }}"),
   ("nof_files",                       {{ nof_files }}),
   ("nof_db_files",                    {{ nof_db_files }}),
-  ("nof_events",                      { {% for histogram_name, event_counts in nof_events.items() %}
+  ("nof_events",                      { {%- for histogram_name, event_counts in nof_events.items() %}
     {{ "%-40s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
   {%- endfor %}
   }),
