@@ -1,1 +1,2 @@
+/hdfs/local/karl/ttHNtupleProduction/2017/2018Jul03_woPresel_nom_all/ntuples
 /hdfs/local/karl/ttHNtupleProduction/2017/2018Jul02_woPresel_nom_all/ntuples
