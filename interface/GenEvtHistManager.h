@@ -33,6 +33,7 @@ public:
                  const std::vector<GenHadTau> & genHadTaus,
                  const std::vector<GenPhoton> & genPhotons,
                  const std::vector<GenJet> & genJets,
+                 double lumiScale,
                  double evtWeight = 1.);
 
 private:
@@ -57,6 +58,7 @@ private:
   TH1 * histogram_numGenJets_withinAcc_;
   TH1 * histogram_numGenLeptonsAndHadTausAndJets_withinAcc_;
 
+  TH1 * histogram_lumiScale_;
   TH1 * histogram_EventCounter_;
 
   std::vector<TH1 *> histograms_;
