@@ -13,8 +13,9 @@ class GenHadTauReader
   : public ReaderBase
 {
 public:
-  GenHadTauReader();
-  GenHadTauReader(const std::string & branchName_obj);
+  GenHadTauReader(unsigned int max_nHadTaus = 32);
+  GenHadTauReader(const std::string & branchName_obj,
+                  unsigned int max_nHadTaus = 32);
   ~GenHadTauReader();
 
   /**

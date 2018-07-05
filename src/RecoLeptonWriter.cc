@@ -9,7 +9,7 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_obj)
 
 RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
                                    const std::string & branchName_obj)
-  : max_nLeptons_(32)
+  : max_nLeptons_(64)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , genLeptonWriter_(nullptr)
@@ -37,10 +37,10 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   , charge_(nullptr)
   , filterBits_(nullptr)
 {
-  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()));
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()));
-  genPhotonWriter_ = new GenParticleWriter(Form("%s_genPhoton", branchName_obj_.data()));
-  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()));
+  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nLeptons_);
+  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()), max_nLeptons_);
+  genPhotonWriter_ = new GenParticleWriter(Form("%s_genPhoton", branchName_obj_.data()), max_nLeptons_);
+  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()), max_nLeptons_);
   setBranchNames();
 }
 

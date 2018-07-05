@@ -14,7 +14,7 @@ class GenJetReader
 {
 public:
   explicit GenJetReader(const std::string & branchName_obj,
-                        bool read_partonFlavour = false);
+                        unsigned int max_nJets = 32);
   ~GenJetReader();
 
   /**
@@ -29,6 +29,9 @@ public:
    */
   std::vector<GenJet>
   read() const;
+
+  void
+  read_partonFlavour();
 
 protected:
  /**

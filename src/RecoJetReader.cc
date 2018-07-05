@@ -48,9 +48,9 @@ RecoJetReader::RecoJetReader(int era,
 {
   if(readGenMatching_)
   {
-    genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_obj_.data()));
-    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau",    branchName_obj_.data()));
-    genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_obj_.data()));
+    genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_obj_.data()), max_nJets_);
+    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau",    branchName_obj_.data()), max_nJets_);
+    genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_obj_.data()), max_nJets_);
   }
   setBranchNames();
 }
