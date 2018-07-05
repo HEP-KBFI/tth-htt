@@ -109,6 +109,12 @@ enum
   kFRm_shape_eta_barrelUp, kFRm_shape_eta_barrelDown,
 };
 
+enum class PUsys
+{
+  central,
+  up, down,
+};
+
 /**
  * @brief Return branchName to read weights that need to be applied, per jet, to MC events
  *       in order to correct for data/MC differences in b-tagging efficiency and mistag rates
@@ -151,6 +157,9 @@ getMuon_option(const std::string & central_or_shift);
 int
 getJetToLeptonFR_option(const std::string & central_or_shift);
 
+PUsys
+getPUsys_option(const std::string & central_or_shift);
+
 void
 checkOptionValidity(const std::string & central_or_shift,
                     bool isMC);
@@ -182,5 +191,11 @@ getBranchName_MEt(const std::string & default_branchName,
                   int era,
                   int central_or_shift,
                   bool isPt);
+
+/**
+ * @brief Return branch name to read PU weights
+ */
+std::string
+getBranchName_pileup(PUsys puSys_option);
 
 #endif // SYSUNCEROPTIONS_H

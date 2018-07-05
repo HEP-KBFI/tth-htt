@@ -304,8 +304,32 @@ class analyzeConfig(object):
         if 'apply_genWeight' not in jobOptions:
           jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
         if 'lumiScale' not in jobOptions:
-          jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / sample_info["nof_events"] \
-                                    if (self.use_lumi and is_mc) else 1.
+          nof_events = -1
+          #TODO: once all Ntuples have been migrated to the latest convention, keep only the else part
+          if type(sample_info["nof_events"]) != dict:
+            nof_events = sample_info["nof_events"]
+          else:
+            if is_mc:
+              # Convention: CountWeighted includes the sign of genWeight, CountFullWeighted includes the full genWeight
+              central_or_shift = jobOptions['central_or_shift']
+              if central_or_shift == systematics.PU_().up:
+                nof_events = sample_info["nof_events"]['CountWeighted'][1] # PU weight up
+              elif central_or_shift == systematics.PU_().down:
+                nof_events = sample_info["nof_events"]['CountWeighted'][2] # PU weight down
+              elif central_or_shift in systematics.LHE().x1_up:
+                nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][5] # muR=1   muF=2
+              elif central_or_shift in systematics.LHE().y1_up:
+                nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][7] # muR=2   muF=1
+              elif central_or_shift in systematics.LHE().x1_down:
+                nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][3] # muR=1   muF=0.5
+              elif central_or_shift in systematics.LHE().y1_down:
+                nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][1] # muR=0.5 muF=1
+              else:
+                nof_events = sample_info["nof_events"]['CountWeighted'][0] # PU weight central
+            else:
+              nof_events = sample_info["nof_events"]['Count'][0]
+          assert(nof_events > 0)
+          jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / nof_events if (self.use_lumi and is_mc) else 1.
         if 'hasLHE' not in jobOptions:
             jobOptions['hasLHE'] = sample_info['has_LHE']
 

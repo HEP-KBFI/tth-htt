@@ -169,6 +169,15 @@ getJetToLeptonFR_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+PUsys
+getPUsys_option(const std::string & central_or_shift)
+{
+  PUsys central_or_shift_int = PUsys::central;
+  if     (central_or_shift == "CMS_ttHl_pileupUp"  ) central_or_shift_int = PUsys::up;
+  else if(central_or_shift == "CMS_ttHl_pileupDown") central_or_shift_int = PUsys::down;
+  return central_or_shift_int;
+}
+
 void
 checkOptionValidity(const std::string & central_or_shift,
                     bool isMC)
@@ -277,4 +286,16 @@ getBranchName_MEt(const std::string & default_branchName,
   }
   assert(branchNames_sys.count(central_or_shift));
   return branchNames_sys.at(central_or_shift);
+}
+
+std::string
+getBranchName_pileup(PUsys puSys_option)
+{
+  switch(puSys_option)
+  {
+    case PUsys::central: return "puWeight";
+    case PUsys::up:      return "puWeightUp";
+    case PUsys::down:    return "puWeightDown";
+    default: throw cmsException(__func__, __LINE__) << "Invalid option = " << static_cast<int>(puSys_option);
+  }
 }

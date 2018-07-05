@@ -130,7 +130,7 @@ main(int argc,
   const std::string branchName_genJets    = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
 
   const vstring branchNames_triggers = cfg_produceNtuple.getParameter<vstring>("branchNames_triggers");
-  std::vector<hltPath*> triggers = create_hltPaths(branchNames_triggers, "triggers");
+  const std::vector<hltPath *> triggers = create_hltPaths(branchNames_triggers, "triggers");
 
   const int minNumLeptons             = cfg_produceNtuple.getParameter<int>("minNumLeptons");
   const int minNumHadTaus             = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
@@ -165,6 +165,10 @@ main(int argc,
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
   TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
+
+//--- set the basket size to 32kb (instead of the default basket size of 16kb)
+//    this will decrease the memory footprint 8 times at the cost of increasing runtime by 30%
+  inputTree->setBasketSize(32000);
 
   std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
   
@@ -426,7 +430,7 @@ main(int argc,
   int analyzedEntries = 0;
   int selectedEntries = 0;
   cutFlowTableType cutFlowTable;
-  int currentFile = -1;
+  std::string currentFile;
 
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
@@ -441,29 +445,33 @@ main(int argc,
     ++analyzedEntries;
 
     // mark branches for copying (only done once per produceNtuple job, when processing first event)
-    if ( !branchesToKeep_isInitialized ) {
-      std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree -> getCurrentTree(), outputCommands); // key = branchName
+    if(! branchesToKeep_isInitialized)
+    {
+      const std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree -> getCurrentTree(), outputCommands); // key = branchName
       copyBranches_singleType(inputTree -> getCurrentTree(), outputTree, isBranchToKeep, branchesToKeep);
       copyBranches_vectorType(inputTree -> getCurrentTree(), outputTree, isBranchToKeep, branchesToKeep);
-      if ( isDEBUG ) {
-	std::cout << "keeping branches:\n";
-	for ( const auto & branchEntry: branchesToKeep ) {
-	  std::cout << ' ' << branchEntry.second->outputBranchName_ << " (type ="
-	               " " << branchEntry.second->outputBranchType_string_ << ")\n"
-	  ;
-	}
+      if(isDEBUG)
+      {
+        std::cout << "keeping branches:\n";
+        for( const auto & branchEntry: branchesToKeep)
+        {
+          std::cout << ' ' << branchEntry.second->outputBranchName_ << " (type ="
+                       " " << branchEntry.second->outputBranchType_string_ << ")\n"
+          ;
+        }
       }
       branchesToKeep_isInitialized = true;
     }
 
     // reinitialize addresses of all branches that are copied directly from input to output file 
     // in case new input file has been opened
-    if ( inputTree->getProcessedFileCount() != currentFile ) {
-      for ( std::map<std::string, branchEntryBaseType *>::iterator branch = branchesToKeep.begin();
-	    branch != branchesToKeep.end(); ++branch ) {
-	branch->second->setInputTree(inputTree -> getCurrentTree());
+    if(inputTree->getCurrentFileName() != currentFile)
+    {
+      for(auto & branch: branchesToKeep)
+      {
+        branch.second->setInputTree(inputTree -> getCurrentTree());
       }
-      currentFile = inputTree->getProcessedFileCount();
+      currentFile = inputTree->getCurrentFileName();
     }
   
     cutFlowTable.update("read from file");
@@ -474,7 +482,8 @@ main(int argc,
     }
     cutFlowTable.update("run:ls:event selection");
 
-    if ( isDEBUG ) {
+    if(isDEBUG)
+    {
       std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
     }
 
@@ -745,6 +754,16 @@ main(int argc,
   delete genHadTauWriter;
   delete genPhotonWriter;
   delete genJetWriter;
+
+  for(hltPath * trigger: triggers)
+  {
+    delete trigger;
+  }
+
+  for(auto & branches: branchesToKeep)
+  {
+    delete branches.second;
+  }
 
 //--- copy histograms keeping track of number of processed events from input files to output file
   std::cout << "copying histograms:\n";

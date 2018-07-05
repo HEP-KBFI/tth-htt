@@ -27,21 +27,15 @@ DKEY_LOGS       = "logs"
 DKEY_HADD_RT    = "hadd_cfg_rt"
 MAKEFILE_TARGET = "sbatch_puProfile"
 
-def get_histogram_entries(path, histogram_name = 'autoPU'):
-    histogram_file = ROOT.TFile.Open(path, 'read')
-    if not histogram_file:
-        logging.error('Not a valid ROOT file: {}'.format(path))
-        return -1
-    histogram = histogram_file.Get('autoPU')
-    if not histogram:
-        logging.error("Could not find histogram '{}' in file {}".format(path, histogram_name))
-        return -2
-    nof_entries = int(histogram.GetEntries())
-    histogram_file.Close()
-    return nof_entries
-
-def validate_pu(outputDir, samples, histogram_name = 'autoPU'):
+def validate_pu(output_file, samples):
     error_code = 0
+    if not os.path.isfile(output_file):
+        logging.error('File {} does not exist'.format(output_file))
+        return 1
+    histogram_file = ROOT.TFile.Open(output_file, 'read')
+    if not histogram_file:
+        logging.error('Not a valid ROOT file: {}'.format(output_file))
+        return 2
     for sample_name, sample_info in samples.items():
         is_mc = (sample_info["type"] == "mc")
         if not is_mc:
@@ -49,24 +43,26 @@ def validate_pu(outputDir, samples, histogram_name = 'autoPU'):
         process_name = sample_info["process_name_specific"]
         expected_nof_events = sample_info["nof_tree_events"]
         logging.info('Validating {} (expecting {} events)'.format(process_name, expected_nof_events))
-        histogram_path = os.path.join(outputDir, DKEY_HISTO, process_name, '%s.root' % process_name)
-        if not os.path.isfile(histogram_path):
-            logging.error(
-                'Histogram file corresponding to sample {} in path {} does not exist: {}'.format(
-                    process_name, outputDir, histogram_path,
-                )
-            )
-            return 1
-        nof_events = get_histogram_entries(histogram_path, histogram_name)
+        histogram = histogram_file.Get(process_name)
+        if not histogram:
+            logging.error("Could not find histogram '{}' in file {}".format(process_name, output_file))
+            error_code = 3
+            continue
+        nof_events = int(histogram.GetEntries())
         if nof_events != expected_nof_events:
             logging.error(
-                'Histogram {} corresponding to sample {} has {} events, but expected {}'.format(
-                    histogram_path, process_name, nof_events, expected_nof_events,
+                'Histogram {} in file {} has {} events, but expected {} events'.format(
+                    process_name, output_file, nof_events, expected_nof_events,
                 )
             )
-            error_code += 1
+            error_code = 4
         else:
             logging.info('Validation successful for sample {}'.format(process_name))
+    histogram_file.Close()
+    if error_code == 0:
+        logging.info("Validation successful!")
+    else:
+        logging.error("Validation failed!")
     return error_code
 
 class puHistogramConfig:
@@ -85,13 +81,13 @@ class puHistogramConfig:
     def __init__(self,
             configDir,
             outputDir,
+            output_file,
             executable,
             samples,
             max_files_per_job,
             era,
             check_output_files,
             running_method,
-            version,
             num_parallel_jobs,
             pool_id  = '',
             verbose  = False,
@@ -127,11 +123,9 @@ class puHistogramConfig:
         )
         logging.info("Templates directory is: %s" % self.template_dir)
 
-        self.version = version
-        self.samples = samples
-
         create_if_not_exists(self.configDir)
         create_if_not_exists(self.outputDir)
+        self.output_file      = os.path.join(self.outputDir, output_file)
         self.stdout_file_path = os.path.join(self.configDir, "stdout_puProfile.log")
         self.stderr_file_path = os.path.join(self.configDir, "stderr_puProfile.log")
         self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_puProfile.log")
@@ -159,11 +153,15 @@ class puHistogramConfig:
         cfg_dirs = [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS, DKEY_HADD_RT ]
 
         for sample_name, sample_info in self.samples.items():
+            if not sample_info['use_it']:
+                continue
             process_name = sample_info["process_name_specific"]
-            key_dir = getKey(sample_name)
+            key_dir = getKey(process_name)
             for dir_type in all_dirs:
+                if dir_type == DKEY_PLOTS:
+                    continue
                 initDict(self.dirs, [ key_dir, dir_type ])
-                if dir_type in cfg_dirs and dir_type != DKEY_PLOTS:
+                if dir_type in cfg_dirs:
                     self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, process_name)
                 else:
                     self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, process_name)
@@ -186,7 +184,8 @@ class puHistogramConfig:
           inputFiles: list of input files (Ntuples)
           outputFile: output file of the job -- a ROOT file containing histogram
         """
-        lines = jobOptions['inputFiles'] + [ '', jobOptions['outputFile'] ]
+        lines = jobOptions['inputFiles'] + \
+                [ '', '%s %s %s' % (self.era, jobOptions['histName'], jobOptions['outputFile']) ]
         assert(len(lines) >= 3)
         createFile(jobOptions['cfgFile_path'], lines, nofNewLines = 1)
 
@@ -215,14 +214,18 @@ class puHistogramConfig:
         )
         return num_jobs
 
-    def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
+    def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name, process_name = ''):
         sbatch_hadd_file = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s.py" % hadd_stage_name)
         sbatch_hadd_file = sbatch_hadd_file.replace(".root", "")
 
-        scriptFile = os.path.join(self.dirs[DKEY_SCRIPTS], os.path.basename(sbatch_hadd_file).replace(".py", ".sh"))
-        logFile    = os.path.join(self.dirs[DKEY_LOGS],    os.path.basename(sbatch_hadd_file).replace(".py", ".log"))
+        scriptsDir = self.dirs[process_name][DKEY_SCRIPTS] if process_name else self.dirs[DKEY_SCRIPTS]
+        logDir     = self.dirs[process_name][DKEY_LOGS]    if process_name else self.dirs[DKEY_LOGS]
+        haddRtDir  = self.dirs[process_name][DKEY_HADD_RT] if process_name else self.dirs[DKEY_HADD_RT]
 
-        sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], hadd_stage_name) if self.dirs[DKEY_HADD_RT] else ''
+        scriptFile      = os.path.join(scriptsDir, os.path.basename(sbatch_hadd_file).replace(".py", ".sh"))
+        logFile         = os.path.join(logDir,     os.path.basename(sbatch_hadd_file).replace(".py", ".log"))
+        sbatch_hadd_dir = os.path.join(haddRtDir,  hadd_stage_name)
+
         self.num_jobs['hadd'] += tools_createScript_sbatch_hadd(
             sbatch_script_file_name = sbatch_hadd_file,
             input_file_names        = inputFiles,
@@ -275,6 +278,7 @@ class puHistogramConfig:
                 inputFiles      = cfg['inputFiles'],
                 outputFile      = cfg['outputFile'],
                 hadd_stage_name = "_".join([ key, "ClusterHistogramAggregator" ]),
+                process_name    = key,
             )
             jobOptions[key] = {
                 'inputFiles'   : cfg['inputFiles'],
@@ -294,12 +298,9 @@ class puHistogramConfig:
                 "",
             ])
             self.filesToClean.append(cfg['outputFile'])
-            # self.targets.append(cfg['outputFile'])
 
     def addToMakefile_plot(self, lines_makefile):
-        phonie_target = "sbatch_plot"
-
-        cmd_string = "plot_from_histogram.py -i %s -j autoPU -o %s -x '# PU interactions' " \
+        cmd_string = "plot_from_histogram.py -i %s -j %s -o %s -x '# PU interactions' " \
                      "-y '# events' -t '%s' -g"
         cmd_log_string = cmd_string + " -l"
 
@@ -317,12 +318,12 @@ class puHistogramConfig:
                 'jobs' : {
                     'linear' : {
                         'outputFile' : plot_linear,
-                        'cmd'        : cmd_string % (cfg['outputFile'], plot_linear, key),
+                        'cmd'        : cmd_string % (cfg['outputFile'], key, plot_linear, key),
                         'logFile'    : logFile_linear,
                     },
                     'log' : {
                         'outputFile' : plot_log,
-                        'cmd'        : cmd_log_string % (cfg['outputFile'], plot_log, key),
+                        'cmd'        : cmd_log_string % (cfg['outputFile'], key, plot_log, key),
                         'logFile'    : logFile_log,
                     }
                 }
@@ -341,6 +342,34 @@ class puHistogramConfig:
                     "",
                 ])
                 self.num_jobs['plot'] += 1
+
+    def addToMakefile_finalHadd(self, lines_makefile):
+        outputFiles     = [
+            self.outputFiles[key]['outputFile'] for key in \
+            sorted(self.outputFiles.keys(), key = lambda k: k.lower())
+        ]
+        outputFiles_cat = ' '.join(outputFiles)
+        if self.is_sbatch:
+            scriptFile = self.create_hadd_python_file(
+                inputFiles      = outputFiles,
+                outputFile      = self.output_file,
+                hadd_stage_name = "_".join([ 'final', "ClusterHistogramAggregator" ]),
+            )
+            lines_makefile.extend([
+                "%s: %s"      % (self.output_file, outputFiles_cat),
+                "\trm -f %s"  % self.output_file,
+                "\tpython %s" % scriptFile,
+            ])
+        else:
+            lines_makefile.extend([
+                "%s: %s"       % (self.output_file, outputFiles_cat),
+                "\trm -f %s"   % self.output_file,
+                "\thadd %s %s" % (self.output_file, outputFiles_cat),
+                "",
+            ])
+            self.num_jobs['hadd'] += 1
+        self.filesToClean.append(self.output_file)
+        self.targets.append(self.output_file)
 
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the PU profile production.
@@ -368,6 +397,9 @@ class puHistogramConfig:
 
         self.inputFileIds = {}
         for sample_name, sample_info in self.samples.items():
+            if not sample_info['use_it']:
+                continue
+
             process_name = sample_info["process_name_specific"]
             is_mc = (sample_info["type"] == "mc")
 
@@ -377,7 +409,7 @@ class puHistogramConfig:
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable, process_name))
 
             inputFileList = generateInputFileList(sample_info, self.max_files_per_job)
-            key_dir = getKey(sample_name)
+            key_dir = getKey(process_name)
 
             outputFile = os.path.join(
                 self.dirs[key_dir][DKEY_HISTO], "%s.root" % process_name
@@ -415,6 +447,7 @@ class puHistogramConfig:
                     self.dirs[key_dir][DKEY_CFGS], "puProfile_%s_%i_cfg.sh" % (process_name, jobId)
                 )
                 self.jobOptions_sbatch[key_file] = {
+                    'histName'     : process_name,
                     'inputFiles'   : self.inputFiles[key_file],
                     'cfgFile_path' : self.cfgFiles_puProfile[key_file],
                     'outputFile'   : self.outputFiles_tmp[key_file],
@@ -435,6 +468,7 @@ class puHistogramConfig:
         self.addToMakefile_puProfile(lines_makefile)
         self.addToMakefile_hadd(lines_makefile)
         self.addToMakefile_plot(lines_makefile)
+        self.addToMakefile_finalHadd(lines_makefile)
         self.createMakefile(lines_makefile)
         logging.info("Done")
 

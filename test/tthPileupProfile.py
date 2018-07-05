@@ -17,6 +17,11 @@ parser.add_argument('-V', '--validate',
   dest = 'validate', action = 'store_true', default = False,
   help = 'R|Validate the results',
 )
+parser.add_argument('-o', '--output-file',
+  type = str, dest = 'output_file', metavar = 'filename', default = 'pileup_{era}.root',
+  required = False,
+  help = 'R|File name of the output file',
+)
 args = parser.parse_args()
 
 # Common arguments
@@ -36,12 +41,19 @@ files_per_job = args.files_per_job
 validate      = args.validate
 use_home      = args.use_home
 
+# Custom arguments
+output_file = args.output_file
+
 # Use the arguments
+if '{era}' in output_file:
+  output_file = output_file.format(era = era)
 
 if mode == 'sync':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017
 elif mode == 'all':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017
+  for sample_key, sample_entry in samples_2017.items():
+    sample_entry['use_it'] = True
 else:
   raise ValueError('Unexpected mode: %s' % mode)
 
@@ -64,19 +76,19 @@ if __name__ == '__main__':
   outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHPileupProduction", era, version)
 
   if validate:
-    validation_result = validate_pu(outputDir, samples)
+    validation_result = validate_pu(os.path.join(outputDir, output_file), samples)
     sys.exit(validation_result)
 
   puHistogramProduction = puHistogramConfig(
     configDir          = configDir,
     outputDir          = outputDir,
+    output_file        = output_file,
     executable         = "puHistogramProducer.sh",
     samples            = samples,
     max_files_per_job  = files_per_job,
     era                = era,
     check_output_files = check_output_files,
     running_method     = running_method,
-    version            = version,
     num_parallel_jobs  = num_parallel_jobs,
     dry_run            = dry_run,
     use_home           = use_home,

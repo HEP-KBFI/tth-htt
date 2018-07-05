@@ -22,5 +22,13 @@ process.comp_LeptonFakeRate = cms.PSet(
     absEtaBins_mu = cms.vdouble(0., 1.479, 9.9),
     ptBins_mu = cms.vdouble(10., 15., 20., 30., 45., 65., 100000.),
 
+    processName = cms.string('QCD'),      ## ADDED FOR CONV, CORREC.S
+    HistogramName = cms.string('mT_fix_L'),    ## ADDED FOR CONV, CORREC.S
+    Conversion_uncert = cms.double(0.50), ## ADDED FOR CONV, CORREC.S
+
     outputFileName = cms.string("plots/comp_LeptonFakeRate.png")
+
+
+
+
 )

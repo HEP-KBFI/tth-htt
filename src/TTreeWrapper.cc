@@ -28,6 +28,7 @@ TTreeWrapper::TTreeWrapper(const std::string & treeName,
   , fileCount_(fileNames_.size())
   , cumulativeMaxEventCount_(0)
   , eventCount_(-1)
+  , basketSize_(-1)
 {
   if(! treeName_.empty())
   {
@@ -157,6 +158,11 @@ TTreeWrapper::hasNextEvent()
         << treeName_;
     }
 
+    // set the basket size different than what the default is only if the user has requested so
+    if(basketSize_ > 0)
+    {
+      currentTreePtr_->SetBasketSize("*", basketSize_);
+    }
     // set the branch addresses
     for(ReaderBase * reader: readers_)
     {
@@ -186,6 +192,18 @@ TTreeWrapper::hasNextEvent()
   }
 
   return true;
+}
+
+TTree *
+TTreeWrapper::getCurrentTree() const
+{
+  return currentTreePtr_;
+}
+
+void
+TTreeWrapper::setBasketSize(int basketSize)
+{
+  basketSize_ = basketSize;
 }
 
 void
@@ -220,7 +238,11 @@ TTreeWrapper::getEventCount() const
     long long totalNofEvents = 0;
     for(const std::string & fileName: fileNames_)
     {
+#if 0
       TFile * filePtr = TFileOpenWrapper::Open(fileName.c_str(), "READ");
+#else
+      TFile * filePtr = TFile::Open(fileNames_[currentFileIdx_].c_str(), "READ");
+#endif
       if(! filePtr)
       {
         throw cmsException(this, __func__) << "Could not open file " << fileName;
@@ -238,7 +260,12 @@ TTreeWrapper::getEventCount() const
       }
       totalNofEvents += treePtr -> GetEntries();
 
+#if 0
       TFileOpenWrapper::Close(filePtr);
+#else
+      filePtr -> Close();
+      delete filePtr;
+#endif
     }
     eventCount_ = totalNofEvents;
   }
