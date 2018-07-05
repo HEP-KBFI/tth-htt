@@ -10,7 +10,7 @@ samples_2017["/SingleElectron/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleElectron_Run2017B_17Nov2017_v1"),
   ("nof_files",                       115),
   ("nof_db_files",                    634),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     56501676, ],
   }),
   ("nof_tree_events",                 56501676),
@@ -320,7 +320,7 @@ samples_2017["/SingleElectron/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleElectron_Run2017C_17Nov2017_v1"),
   ("nof_files",                       259),
   ("nof_db_files",                    1705),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    127361546, ],
   }),
   ("nof_tree_events",                 127361546),
@@ -890,7 +890,7 @@ samples_2017["/SingleElectron/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleElectron_Run2017D_17Nov2017_v1"),
   ("nof_files",                       103),
   ("nof_db_files",                    693),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     50610320, ],
   }),
   ("nof_tree_events",                 50610320),
@@ -1451,7 +1451,7 @@ samples_2017["/SingleElectron/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleElectron_Run2017E_17Nov2017_v1"),
   ("nof_files",                       203),
   ("nof_db_files",                    1280),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    100205122, ],
   }),
   ("nof_tree_events",                 100205122),
@@ -2012,7 +2012,7 @@ samples_2017["/SingleElectron/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleElectron_Run2017F_17Nov2017_v1"),
   ("nof_files",                       256),
   ("nof_db_files",                    1583),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    126059593, ],
   }),
   ("nof_tree_events",                 126059593),
@@ -2627,7 +2627,7 @@ samples_2017["/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleMuon_Run2017B_17Nov2017_v1"),
   ("nof_files",                       268),
   ("nof_db_files",                    1146),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    128496874, ],
   }),
   ("nof_tree_events",                 128496874),
@@ -2937,7 +2937,7 @@ samples_2017["/SingleMuon/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleMuon_Run2017C_17Nov2017_v1"),
   ("nof_files",                       313),
   ("nof_db_files",                    1511),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    154633551, ],
   }),
   ("nof_tree_events",                 154633551),
@@ -3507,7 +3507,7 @@ samples_2017["/SingleMuon/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleMuon_Run2017D_17Nov2017_v1"),
   ("nof_files",                       140),
   ("nof_db_files",                    823),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     69031074, ],
   }),
   ("nof_tree_events",                 69031074),
@@ -4068,7 +4068,7 @@ samples_2017["/SingleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleMuon_Run2017E_17Nov2017_v1"),
   ("nof_files",                       310),
   ("nof_db_files",                    1669),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    151713898, ],
   }),
   ("nof_tree_events",                 151713898),
@@ -4629,7 +4629,7 @@ samples_2017["/SingleMuon/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleMuon_Run2017F_17Nov2017_v1"),
   ("nof_files",                       492),
   ("nof_db_files",                    2737),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    235942694, ],
   }),
   ("nof_tree_events",                 235942694),
@@ -5244,7 +5244,7 @@ samples_2017["/DoubleEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleEG_Run2017B_17Nov2017_v1"),
   ("nof_files",                       110),
   ("nof_db_files",                    759),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     54125900, ],
   }),
   ("nof_tree_events",                 54125900),
@@ -5554,7 +5554,7 @@ samples_2017["/DoubleEG/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleEG_Run2017C_17Nov2017_v1"),
   ("nof_files",                       121),
   ("nof_db_files",                    847),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     60063430, ],
   }),
   ("nof_tree_events",                 60063430),
@@ -6124,7 +6124,7 @@ samples_2017["/DoubleEG/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleEG_Run2017D_17Nov2017_v1"),
   ("nof_files",                       51),
   ("nof_db_files",                    344),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     25209987, ],
   }),
   ("nof_tree_events",                 25209987),
@@ -6685,7 +6685,7 @@ samples_2017["/DoubleEG/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleEG_Run2017E_17Nov2017_v1"),
   ("nof_files",                       110),
   ("nof_db_files",                    639),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     54624312, ],
   }),
   ("nof_tree_events",                 54624312),
@@ -7246,7 +7246,7 @@ samples_2017["/DoubleEG/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleEG_Run2017F_17Nov2017_v1"),
   ("nof_files",                       146),
   ("nof_db_files",                    1024),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     72430490, ],
   }),
   ("nof_tree_events",                 72430490),
@@ -7861,7 +7861,7 @@ samples_2017["/DoubleMuon/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleMuon_Run2017B_17Nov2017_v1"),
   ("nof_files",                       27),
   ("nof_db_files",                    164),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     13572040, ],
   }),
   ("nof_tree_events",                 13572040),
@@ -8171,7 +8171,7 @@ samples_2017["/DoubleMuon/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleMuon_Run2017C_17Nov2017_v1"),
   ("nof_files",                       92),
   ("nof_db_files",                    466),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     46273101, ],
   }),
   ("nof_tree_events",                 46273101),
@@ -8741,7 +8741,7 @@ samples_2017["/DoubleMuon/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleMuon_Run2017D_17Nov2017_v1"),
   ("nof_files",                       45),
   ("nof_db_files",                    242),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     22646081, ],
   }),
   ("nof_tree_events",                 22646081),
@@ -9302,7 +9302,7 @@ samples_2017["/DoubleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleMuon_Run2017E_17Nov2017_v1"),
   ("nof_files",                       101),
   ("nof_db_files",                    596),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     50596536, ],
   }),
   ("nof_tree_events",                 50596536),
@@ -9863,7 +9863,7 @@ samples_2017["/DoubleMuon/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "DoubleMuon_Run2017F_17Nov2017_v1"),
   ("nof_files",                       151),
   ("nof_db_files",                    875),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     75300854, ],
   }),
   ("nof_tree_events",                 75300854),
@@ -10478,7 +10478,7 @@ samples_2017["/MuonEG/Run2017B-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "MuonEG_Run2017B_17Nov2017_v1"),
   ("nof_files",                       9),
   ("nof_db_files",                    70),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      4153318, ],
   }),
   ("nof_tree_events",                 4153318),
@@ -10788,7 +10788,7 @@ samples_2017["/MuonEG/Run2017C-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "MuonEG_Run2017C_17Nov2017_v1"),
   ("nof_files",                       29),
   ("nof_db_files",                    219),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     14579589, ],
   }),
   ("nof_tree_events",                 14579589),
@@ -11358,7 +11358,7 @@ samples_2017["/MuonEG/Run2017D-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "MuonEG_Run2017D_17Nov2017_v1"),
   ("nof_files",                       18),
   ("nof_db_files",                    126),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      9012928, ],
   }),
   ("nof_tree_events",                 9012928),
@@ -11919,7 +11919,7 @@ samples_2017["/MuonEG/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "MuonEG_Run2017E_17Nov2017_v1"),
   ("nof_files",                       37),
   ("nof_db_files",                    239),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     18703362, ],
   }),
   ("nof_tree_events",                 18703362),
@@ -12480,7 +12480,7 @@ samples_2017["/MuonEG/Run2017F-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "MuonEG_Run2017F_17Nov2017_v1"),
   ("nof_files",                       51),
   ("nof_db_files",                    362),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     25342217, ],
   }),
   ("nof_tree_events",                 25342217),
@@ -13095,7 +13095,7 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("process_name_specific",           "ttHJetToNonbb_M125_amcatnlo"),
   ("nof_files",                       20),
   ("nof_db_files",                    283),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      9650032, ],
     'CountFullWeighted'                      : [      9546940,      9545501,      9548448, ],
     'CountWeightedLHEWeightScale'            : [      3380513,      3446881,      3506197,      3370559,      3321835,      3283116,      3162507,      3060675,      2975974, ],
@@ -13136,7 +13136,7 @@ samples_2017["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIF
   ("process_name_specific",           "ttHJetTobb_M125_amcatnlo"),
   ("nof_files",                       20),
   ("nof_db_files",                    259),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      9911561, ],
     'CountFullWeighted'                      : [      9796917,      9797951,      9795797, ],
     'CountWeightedLHEWeightScale'            : [      3464063,      3533897,      3596202,      3457904,      3408828,      3369871,      3246390,      3142385,      3055869, ],
@@ -13177,7 +13177,7 @@ samples_2017["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-9
   ("process_name_specific",           "ttHToNonbb_M125_powheg"),
   ("nof_files",                       16),
   ("nof_db_files",                    219),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      7669336, ],
     'CountFullWeighted'                      : [      4316673,      4316067,      4316513, ],
     'CountWeightedLHEWeightScale'            : [      7971292,      7883359,      7847713,      7719931,      7522035,      7379372,      7281054,      7028131,      6828418, ],
@@ -13218,7 +13218,7 @@ samples_2017["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall1
   ("process_name_specific",           "GluGluHToZZTo4L"),
   ("nof_files",                       2),
   ("nof_db_files",                    47),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      1910458, ],
     'CountFullWeighted'                      : [     55156293,     55159997,     55158785, ],
     'CountWeightedLHEWeightScale'            : [      2217326,      2270457,      2314022,      1839233,      1890672,      1931295,      1551297,      1599735,      1636828, ],
@@ -13259,7 +13259,7 @@ samples_2017["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall1
   ("process_name_specific",           "GluGluHToZZTo4L_ext1"),
   ("nof_files",                       3),
   ("nof_db_files",                    42),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      1910458, ],
     'CountFullWeighted'                      : [     55156293,     55159997,     55158785, ],
     'CountWeightedLHEWeightScale'            : [      2217326,      2270457,      2314022,      1839233,      1890672,      1931295,      1551297,      1599735,      1636828, ],
@@ -13300,7 +13300,7 @@ samples_2017["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAO
   ("process_name_specific",           "TTZToLL_M10"),
   ("nof_files",                       16),
   ("nof_db_files",                    199),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     10772330, ],
     'CountFullWeighted'                      : [      2617076,      2616776,      2617319, ],
     'CountWeightedLHEWeightScale'            : [      5557259,      5480404,      5424031,      5218478,      5084767,      4975943,      4831239,      4668899,      4533180, ],
@@ -13341,7 +13341,7 @@ samples_2017["/TTZToLLNuNu_M-10_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFa
   ("process_name_specific",           "TTZToLL_M10_PSweights"),
   ("nof_files",                       8),
   ("nof_db_files",                    87),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     10772330, ],
     'CountFullWeighted'                      : [      2617076,      2616776,      2617319, ],
     'CountWeightedLHEWeightScale'            : [      5557259,      5480404,      5424031,      5218478,      5084767,      4975943,      4831239,      4668899,      4533180, ],
@@ -13382,7 +13382,7 @@ samples_2017["/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "TTZToLL_M-1to10"),
   ("nof_files",                       1),
   ("nof_db_files",                    17),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       250000, ],
     'CountFullWeighted'                      : [        13393,        13391,        13393, ],
     'CountWeightedLHEWeightScale'            : [       148075,       145248,       143120,       134496,       131176,       128459,       121512,       118020,       115079, ],
@@ -13423,7 +13423,7 @@ samples_2017["/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "TTZJets_LO"),
   ("nof_files",                       19),
   ("nof_db_files",                    241),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      9054309, ],
     'CountFullWeighted'                      : [      9036209,      9036067,      9035475, ],
     'CountWeightedLHEWeightScale'            : [     11948953,     10929024,     10051711,      9877932,      9036136,      8311704,      8308080,      7600830,      6992328, ],
@@ -13464,7 +13464,7 @@ samples_2017["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall
   ("process_name_specific",           "TTWJetsToLNu"),
   ("nof_files",                       10),
   ("nof_db_files",                    109),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      9815771, ],
     'CountFullWeighted'                      : [      3370570,      3370991,      3370096, ],
     'CountWeightedLHEWeightScale'            : [      5999167,      5917831,      5864306,      5473323,      5353280,      5259460,      4915813,      4783213,      4674180, ],
@@ -13505,7 +13505,7 @@ samples_2017["/TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8
   ("process_name_specific",           "TTWJetsToLNu_PSweights"),
   ("nof_files",                       10),
   ("nof_db_files",                    122),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      9815771, ],
     'CountFullWeighted'                      : [      3370570,      3370991,      3370096, ],
     'CountWeightedLHEWeightScale'            : [      5999167,      5917831,      5864306,      5473323,      5353280,      5259460,      4915813,      4783213,      4674180, ],
@@ -13546,7 +13546,7 @@ samples_2017["/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "TTWJets_LO"),
   ("nof_files",                       11),
   ("nof_db_files",                    153),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      5216384, ],
     'CountFullWeighted'                      : [      5193542,      5193269,      5193097, ],
     'CountWeightedLHEWeightScale'            : [      6711171,      6376518,      6070613,      5458217,      5193429,      4950391,      4528540,      4314192,      4116496, ],
@@ -13587,7 +13587,7 @@ samples_2017["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017
   ("process_name_specific",           "TTWW"),
   ("nof_files",                       1),
   ("nof_db_files",                    11),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       200000, ],
     'CountFullWeighted'                      : [       198825,       198829,       198818, ],
     'CountWeightedLHEWeightScale'            : [       260773,       238764,       220009,       217370,       199013,       183366,       184089,       168531,       155274, ],
@@ -13628,7 +13628,7 @@ samples_2017["/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunII
   ("process_name_specific",           "ST_s-channel_4f_leptonDecays"),
   ("nof_files",                       20),
   ("nof_db_files",                    217),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     19260299, ],
     'CountFullWeighted'                      : [     72023359,     72021942,     72023434, ],
     'CountWeightedLHEWeightScale'            : [     12247082,     12379908,     12495329,     11872651,     12020412,     12144451,     11570294,     11729462,     11861111, ],
@@ -13669,7 +13669,7 @@ samples_2017["/ST_s-channel_4f_leptonDecays_TuneCP5_PSweights_13TeV-amcatnlo-pyt
   ("process_name_specific",           "ST_s-channel_4f_leptonDecays_PSweights"),
   ("nof_files",                       20),
   ("nof_db_files",                    194),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     19260299, ],
     'CountFullWeighted'                      : [     72023359,     72021942,     72023434, ],
     'CountWeightedLHEWeightScale'            : [     12247082,     12379908,     12495329,     11872651,     12020412,     12144451,     11570294,     11729462,     11861111, ],
@@ -13710,7 +13710,7 @@ samples_2017["/ST_t-channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-ma
   ("process_name_specific",           "ST_t-channel_antitop_4f_inclusiveDecays"),
   ("nof_files",                       8),
   ("nof_db_files",                    116),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      3891190, ],
     'CountFullWeighted'                      : [      3891275,      3891465,      3891157, ],
     'CountWeightedLHEWeightScale'            : [      4194283,      4171745,      4187930,      3911233,      3891191,      3892359,      3656011,      3634662,      3624015, ],
@@ -13751,7 +13751,7 @@ samples_2017["/ST_t-channel_top_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspi
   ("process_name_specific",           "ST_t-channel_top_4f_inclusiveDecays"),
   ("nof_files",                       13),
   ("nof_db_files",                    186),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      5841455, ],
     'CountFullWeighted'                      : [      5841440,      5841174,      5841298, ],
     'CountWeightedLHEWeightScale'            : [      6292076,      6248473,      6268163,      5874439,      5840594,      5841927,      5497773,      5465067,      5450208, ],
@@ -13792,7 +13792,7 @@ samples_2017["/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/Run
   ("process_name_specific",           "ST_tW_antitop_5f_inclusiveDecays"),
   ("nof_files",                       16),
   ("nof_db_files",                    155),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      7756300, ],
     'CountFullWeighted'                      : [    271264409,    271263412,    271279062, ],
     'CountWeightedLHEWeightScale'            : [      7911692,      8069441,      8256241,      7482761,      7697295,      7908119,      7081574,      7331620,      7556107, ],
@@ -13833,7 +13833,7 @@ samples_2017["/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFa
   ("process_name_specific",           "ST_tW_top_5f_inclusiveDecays"),
   ("nof_files",                       16),
   ("nof_db_files",                    183),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     15194177, ],
     'CountFullWeighted'                      : [    530299708,    530287678,    530290407, ],
     'CountWeightedLHEWeightScale'            : [     15499430,     15807063,     16171951,     14658822,     15076981,     15490166,     13872655,     14361529,     14800744, ],
@@ -13874,7 +13874,7 @@ samples_2017["/ST_tW_top_5f_inclusiveDecays_TuneCP5_PSweights_13TeV-powheg-pythi
   ("process_name_specific",           "ST_tW_top_5f_inclusiveDecays_PSweights"),
   ("nof_files",                       16),
   ("nof_db_files",                    167),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     15194177, ],
     'CountFullWeighted'                      : [    530299708,    530287678,    530290407, ],
     'CountWeightedLHEWeightScale'            : [     15499430,     15807063,     16171951,     14658822,     15076981,     15490166,     13872655,     14361529,     14800744, ],
@@ -13915,7 +13915,7 @@ samples_2017["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2
   ("process_name_specific",           "TTTo2L2Nu"),
   ("nof_files",                       18),
   ("nof_db_files",                    164),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     78411202, ],
     'CountFullWeighted'                      : [   5651535742,   5651662209,   5651816671, ],
     'CountWeightedLHEWeightScale'            : [     87613472,     86088650,     85103319,     79691020,     77770108,     76301763,     72113840,     70043503,     68342594, ],
@@ -13956,7 +13956,7 @@ samples_2017["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniA
   ("process_name_specific",           "TTTo2L2Nu_PSweights"),
   ("nof_files",                       142),
   ("nof_db_files",                    1230),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     78411202, ],
     'CountFullWeighted'                      : [   5651535742,   5651662209,   5651816671, ],
     'CountWeightedLHEWeightScale'            : [     87613472,     86088650,     85103319,     79691020,     77770108,     76301763,     72113840,     70043503,     68342594, ],
@@ -13997,7 +13997,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-
   ("process_name_specific",           "TTToSemiLeptonic"),
   ("nof_files",                       84),
   ("nof_db_files",                    743),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    152543839, ],
     'CountFullWeighted'                      : [  45882982291,  45882431790,  45883751633, ],
     'CountWeightedLHEWeightScale'            : [    170441787,    167480222,    165568090,    155031947,    151310872,    148445465,    140292630,    136267648,    132961343, ],
@@ -14038,7 +14038,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall
   ("process_name_specific",           "TTToSemiLeptonic_PSweights"),
   ("nof_files",                       225),
   ("nof_db_files",                    2032),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    152543839, ],
     'CountFullWeighted'                      : [  45882982291,  45882431790,  45883751633, ],
     'CountWeightedLHEWeightScale'            : [    170441787,    167480222,    165568090,    155031947,    151310872,    148445465,    140292630,    136267648,    132961343, ],
@@ -14079,7 +14079,7 @@ samples_2017["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "TTToHadronic"),
   ("nof_files",                       86),
   ("nof_db_files",                    765),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    172664528, ],
     'CountFullWeighted'                      : [  40830139002,  40829773366,  40833977980, ],
     'CountWeightedLHEWeightScale'            : [    193608822,    190157928,    187937070,    175881174,    171604994,    168337010,    159048820,    154462196,    150695663, ],
@@ -14120,7 +14120,7 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
   ("process_name_specific",           "TTToHadronic_PSweights"),
   ("nof_files",                       262),
   ("nof_db_files",                    2498),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    172664528, ],
     'CountFullWeighted'                      : [  40830139002,  40829773366,  40833977980, ],
     'CountWeightedLHEWeightScale'            : [    193608822,    190157928,    187937070,    175881174,    171604994,    168337010,    159048820,    154462196,    150695663, ],
@@ -14161,7 +14161,7 @@ samples_2017["/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17
   ("process_name_specific",           "DYJetsToLL_M-10to50"),
   ("nof_files",                       79),
   ("nof_db_files",                    508),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     38832197, ],
     'CountFullWeighted'                      : [     38800924,     38801593,     38797099, ],
     'CountWeightedLHEWeightScale'            : [     26128243,     38976903,     53679581,     25975367,     38800924,     53484082,     25860526,     38668693,     53337108, ],
@@ -14202,7 +14202,7 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
   ("process_name_specific",           "DYJetsToLL_M-50"),
   ("nof_files",                       55),
   ("nof_db_files",                    372),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    212922560, ],
     'CountFullWeighted'                      : [ 3799442442496, 3799480967552, 3799259290880, ],
     'CountWeightedLHEWeightScale'            : [    142444597,    146930744,    149255982,    138581566,    144289672,    147875208,    135144827,    141783578,    146337876, ],
@@ -14243,7 +14243,7 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
   ("process_name_specific",           "DYJetsToLL_M-50_ext1"),
   ("nof_files",                       376),
   ("nof_db_files",                    2752),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    212922560, ],
     'CountFullWeighted'                      : [ 3799442442496, 3799480967552, 3799259290880, ],
     'CountWeightedLHEWeightScale'            : [    142444597,    146930744,    149255982,    138581566,    144289672,    147875208,    135144827,    141783578,    146337876, ],
@@ -14284,7 +14284,7 @@ samples_2017["/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY1JetsToLL_M-50"),
   ("nof_files",                       66),
   ("nof_db_files",                    489),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     66930078, ],
     'CountFullWeighted'                      : [     66878820,     66879567,     66875596, ],
     'CountWeightedLHEWeightScale'            : [     58167778,     67422751,     75208056,     57656357,     66878704,     74638899,     57236021,     66431791,     74171323, ],
@@ -14325,7 +14325,7 @@ samples_2017["/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY1JetsToLL_M-50_ext1"),
   ("nof_files",                       70),
   ("nof_db_files",                    510),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     66930078, ],
     'CountFullWeighted'                      : [     66878820,     66879567,     66875596, ],
     'CountWeightedLHEWeightScale'            : [     58167778,     67422751,     75208056,     57656357,     66878704,     74638899,     57236021,     66431791,     74171323, ],
@@ -14366,7 +14366,7 @@ samples_2017["/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY2JetsToLL_M-50"),
   ("nof_files",                       24),
   ("nof_db_files",                    209),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     21325241, ],
     'CountFullWeighted'                      : [     21304256,     21302128,     21302399, ],
     'CountWeightedLHEWeightScale'            : [     19925986,     21900642,     23312620,     19374119,     21304236,     22684717,     18920991,     20813781,     22169317, ],
@@ -14407,7 +14407,7 @@ samples_2017["/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY2JetsToLL_M-50_ext1"),
   ("nof_files",                       20),
   ("nof_db_files",                    204),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     21325241, ],
     'CountFullWeighted'                      : [     21304256,     21302128,     21302399, ],
     'CountWeightedLHEWeightScale'            : [     19925986,     21900642,     23312620,     19374119,     21304236,     22684717,     18920991,     20813781,     22169317, ],
@@ -14448,7 +14448,7 @@ samples_2017["/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY3JetsToLL_M-50"),
   ("nof_files",                       10),
   ("nof_db_files",                    132),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      5928535, ],
     'CountFullWeighted'                      : [      5920160,      5920151,      5920014, ],
     'CountWeightedLHEWeightScale'            : [      5979997,      6170754,      6242364,      5734268,      5920136,      5990771,      5532867,      5714520,      5784541, ],
@@ -14489,7 +14489,7 @@ samples_2017["/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY3JetsToLL_M-50_ext1"),
   ("nof_files",                       3),
   ("nof_db_files",                    48),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      5928535, ],
     'CountFullWeighted'                      : [      5920160,      5920151,      5920014, ],
     'CountWeightedLHEWeightScale'            : [      5979997,      6170754,      6242364,      5734268,      5920136,      5990771,      5532867,      5714520,      5784541, ],
@@ -14530,7 +14530,7 @@ samples_2017["/DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("process_name_specific",           "DY4JetsToLL_M-50"),
   ("nof_files",                       9),
   ("nof_db_files",                    163),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      4337967, ],
     'CountFullWeighted'                      : [      4327046,      4326910,      4327226, ],
     'CountWeightedLHEWeightScale'            : [      4744601,      4570453,      4378030,      4489301,      4326995,      4146655,      4283240,      4130489,      3959758, ],
@@ -14571,7 +14571,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia8/R
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-70to100"),
   ("nof_files",                       19),
   ("nof_db_files",                    183),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     17855066, ],
     'CountFullWeighted'                      : [     17833451,     17833747,     17834058, ],
     'CountWeightedLHEWeightScale'            : [     17168827,     18351459,     19140979,     16679911,     17833451,     18605235,     16277472,     17407956,     18164300, ],
@@ -14581,7 +14581,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia8/R
   ("nof_db_events",                   8995670),
   ("fsize_local",                     12557424544), # 12.56GB, avg file size 660.92MB
   ("fsize_db",                        405068200207), # 405.07GB, avg file size 2.21GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        145.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -14612,7 +14612,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia8/R
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-70to100_ext1"),
   ("nof_files",                       18),
   ("nof_db_files",                    192),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     17855066, ],
     'CountFullWeighted'                      : [     17833451,     17833747,     17834058, ],
     'CountWeightedLHEWeightScale'            : [     17168827,     18351459,     19140979,     16679911,     17833451,     18605235,     16277472,     17407956,     18164300, ],
@@ -14622,7 +14622,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia8/R
   ("nof_db_events",                   8859396),
   ("fsize_local",                     12389460174), # 12.39GB, avg file size 688.30MB
   ("fsize_db",                        401795378611), # 401.80GB, avg file size 2.09GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        145.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -14653,7 +14653,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-100to200"),
   ("nof_files",                       18),
   ("nof_db_files",                    246),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      9822283, ],
     'CountFullWeighted'                      : [      9805814,      9804224,      9804324, ],
     'CountWeightedLHEWeightScale'            : [     10837454,     11510107,     11951771,      9235254,      9805678,     10178174,      8080459,      8576284,      8900186, ],
@@ -14663,7 +14663,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_events",                   8796005),
   ("fsize_local",                     10786339904), # 10.79GB, avg file size 599.24MB
   ("fsize_db",                        379888624037), # 379.89GB, avg file size 1.54GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        202.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -14694,7 +14694,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-100to200_ext1"),
   ("nof_files",                       3),
   ("nof_db_files",                    37),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      9822283, ],
     'CountFullWeighted'                      : [      9805814,      9804224,      9804324, ],
     'CountWeightedLHEWeightScale'            : [     10837454,     11510107,     11951771,      9235254,      9805678,     10178174,      8080459,      8576284,      8900186, ],
@@ -14704,7 +14704,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_events",                   1026278),
   ("fsize_local",                     1260382083), # 1.26GB, avg file size 420.13MB
   ("fsize_db",                        43976270871), # 43.98GB, avg file size 1.19GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        202.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -14735,7 +14735,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-200to400"),
   ("nof_files",                       4),
   ("nof_db_files",                    62),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      2814413, ],
     'CountFullWeighted'                      : [      2805738,      2805704,      2805623, ],
     'CountWeightedLHEWeightScale'            : [      3358192,      3326243, 1368260657904,      2832723,      2805678, 1080037883424,      2450805,      2427262, 874595336632, ],
@@ -14776,7 +14776,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-200to400_ext1"),
   ("nof_files",                       3),
   ("nof_db_files",                    39),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      2814413, ],
     'CountFullWeighted'                      : [      2805738,      2805704,      2805623, ],
     'CountWeightedLHEWeightScale'            : [      3358192,      3326243, 1368260657904,      2832723,      2805678, 1080037883424,      2450805,      2427262, 874595336632, ],
@@ -14817,7 +14817,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-400to600"),
   ("nof_files",                       4),
   ("nof_db_files",                    58),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      2832869, ],
     'CountFullWeighted'                      : [      2819551,      2819489,      2819569, ],
     'CountWeightedLHEWeightScale'            : [      3523236,      3315892,  -3189664588,      2995399,      2819532,  -2717541762,      2602055,      2449341,  -2325523304, ],
@@ -14858,7 +14858,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-400to600_ext1"),
   ("nof_files",                       2),
   ("nof_db_files",                    41),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      2832869, ],
     'CountFullWeighted'                      : [      2819551,      2819489,      2819569, ],
     'CountWeightedLHEWeightScale'            : [      3523236,      3315892,  -3189664588,      2995399,      2819532,  -2717541762,      2602055,      2449341,  -2325523304, ],
@@ -14899,7 +14899,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-600toInf_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("process_name_specific",           "DYJetsToLL_M-4to50_HT-600toInf"),
   ("nof_files",                       4),
   ("nof_db_files",                    89),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      1771556, ],
     'CountFullWeighted'                      : [      1758974,      1758688,      1758831, ],
     'CountWeightedLHEWeightScale'            : [      2269955,      2053505,    451571064,      1943764,      1758966,    367612552,      1696393,      1535289,    307377828, ],
@@ -14940,7 +14940,7 @@ samples_2017["/DYJetsToLL_M-50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT100to200"),
   ("nof_files",                       21),
   ("nof_db_files",                    197),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     13941644, ],
     'CountFullWeighted'                      : [     13920291,     13919911,     13920515, ],
     'CountWeightedLHEWeightScale'            : [     14109683,     14425694,     14515495,     13612223,     13920266,     14009137,     13201511,     13502687,     13591080, ],
@@ -14981,7 +14981,7 @@ samples_2017["/DYJetsToLL_M-50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT100to200_ext1"),
   ("nof_files",                       8),
   ("nof_db_files",                    101),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     13941644, ],
     'CountFullWeighted'                      : [     13920291,     13919911,     13920515, ],
     'CountWeightedLHEWeightScale'            : [     14109683,     14425694,     14515495,     13612223,     13920266,     14009137,     13201511,     13502687,     13591080, ],
@@ -15022,7 +15022,7 @@ samples_2017["/DYJetsToLL_M-50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT200to400"),
   ("nof_files",                       20),
   ("nof_db_files",                    249),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     11117379, ],
     'CountFullWeighted'                      : [     11087279,     11086963,     11086491, ],
     'CountWeightedLHEWeightScale'            : [     12134704,     11707775,     11242082,     11490340,     11087103,     10646459,     10967749,     10583561,     10163409, ],
@@ -15063,7 +15063,7 @@ samples_2017["/DYJetsToLL_M-50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT200to400_ext1"),
   ("nof_files",                       3),
   ("nof_db_files",                    42),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     11117379, ],
     'CountFullWeighted'                      : [     11087279,     11086963,     11086491, ],
     'CountWeightedLHEWeightScale'            : [     12134704,     11707775,     11242082,     11490340,     11087103,     10646459,     10967749,     10583561,     10163409, ],
@@ -15104,7 +15104,7 @@ samples_2017["/DYJetsToLL_M-50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT400to600"),
   ("nof_files",                       19),
   ("nof_db_files",                    223),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     10473195, ],
     'CountFullWeighted'                      : [     10427070,     10427138,     10426452, ],
     'CountWeightedLHEWeightScale'            : [     12353516,     11423813,     10596064,     11278894,     10426957,      9669095,     10423454,      9633741,      8931309, ],
@@ -15145,7 +15145,7 @@ samples_2017["/DYJetsToLL_M-50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT400to600_ext1"),
   ("nof_files",                       3),
   ("nof_db_files",                    36),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     10473195, ],
     'CountFullWeighted'                      : [     10427070,     10427138,     10426452, ],
     'CountWeightedLHEWeightScale'            : [     12353516,     11423813,     10596064,     11278894,     10426957,      9669095,     10423454,      9633741,      8931309, ],
@@ -15186,7 +15186,7 @@ samples_2017["/DYJetsToLL_M-50_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("process_name_specific",           "DYJetsToLL_M50_HT600to800"),
   ("nof_files",                       17),
   ("nof_db_files",                    195),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      8003554, ],
     'CountFullWeighted'                      : [      7956199,      7956464,      7956058, ],
     'CountWeightedLHEWeightScale'            : [      9769552,      8839640,      8051806,      8795636,      7955984,      7244806,      8021605,      7253479,      6603465, ],
@@ -15227,7 +15227,7 @@ samples_2017["/DYJetsToLL_M-50_HT-800to1200_TuneCP5_13TeV-madgraphMLM-pythia8/Ru
   ("process_name_specific",           "DYJetsToLL_M50_HT800to1200"),
   ("nof_files",                       7),
   ("nof_db_files",                    105),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      3065315, ],
     'CountFullWeighted'                      : [      3040304,      3040616,      3040493, ],
     'CountWeightedLHEWeightScale'            : [      3827385,      3400176,      3049658,      3423400,      3040261,      2726379,      3101642,      2753943,      2468926, ],
@@ -15268,7 +15268,7 @@ samples_2017["/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_13TeV-madgraphMLM-pythia8/R
   ("process_name_specific",           "DYJetsToLL_M50_HT1200to2500"),
   ("nof_files",                       2),
   ("nof_db_files",                    34),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       625517, ],
     'CountFullWeighted'                      : [       616879,       616856,       616938, ],
     'CountWeightedLHEWeightScale'            : [       798150,       692114,       608015,       711505,       616877,       541846,       642061,       556575,       488819, ],
@@ -15309,7 +15309,7 @@ samples_2017["/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8/Ru
   ("process_name_specific",           "DYJetsToLL_M50_HT2500toInf"),
   ("nof_files",                       1),
   ("nof_db_files",                    25),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       388323, ],
     'CountFullWeighted'                      : [       371694,       371699,       371633, ],
     'CountWeightedLHEWeightScale'            : [       497116,       414776,       352186,       445472,       371690,       315583,       403366,       336529,       285740, ],
@@ -15350,7 +15350,7 @@ samples_2017["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-9
   ("process_name_specific",           "WJetsToLNu"),
   ("nof_files",                       48),
   ("nof_db_files",                    382),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     23240598, ],
     'CountFullWeighted'                      : [     23218209,     23217230,     23220659, ],
     'CountWeightedLHEWeightScale'            : [     20436583,     23324427,     25915487,     20334377,     23217958,     25806386,     20251024,     23131219,     25717372, ],
@@ -15391,7 +15391,7 @@ samples_2017["/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   ("process_name_specific",           "W1JetsToLNu"),
   ("nof_files",                       63),
   ("nof_db_files",                    484),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     30003848, ],
     'CountFullWeighted'                      : [     29983100,     29983178,     29979454, ],
     'CountWeightedLHEWeightScale'            : [     26174221,     30279088,     33731028,     25896819,     29983100,     33420087,     25669440,     29740171,     33165313, ],
@@ -15432,7 +15432,7 @@ samples_2017["/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   ("process_name_specific",           "W2JetsToLNu"),
   ("nof_files",                       42),
   ("nof_db_files",                    312),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     19944844, ],
     'CountFullWeighted'                      : [     19922031,     19924052,     19923974, ],
     'CountWeightedLHEWeightScale'            : [     18822743,     20546717,     21783938,     18240535,     19922031,     21130299,     17764594,     19412002,     20596058, ],
@@ -15473,7 +15473,7 @@ samples_2017["/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   ("process_name_specific",           "W3JetsToLNu"),
   ("nof_files",                       40),
   ("nof_db_files",                    305),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     19644745, ],
     'CountFullWeighted'                      : [     19613757,     19614654,     19614099, ],
     'CountWeightedLHEWeightScale'            : [     19976421,     20527021,     20715720,     19077868,     19613757,     19801497,     18346378,     18870305,     19057054, ],
@@ -15514,7 +15514,7 @@ samples_2017["/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   ("process_name_specific",           "W4JetsToLNu"),
   ("nof_files",                       23),
   ("nof_db_files",                    255),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     11285729, ],
     'CountFullWeighted'                      : [     11255726,     11256007,     11256335, ],
     'CountWeightedLHEWeightScale'            : [     12417051,     11957773,     11455425,     11680731,     11255553,     10787593,     11089755,     10691706,     10251263, ],
@@ -15555,7 +15555,7 @@ samples_2017["/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "WWTo2L2Nu"),
   ("nof_files",                       4),
   ("nof_db_files",                    50),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      1818828, ],
     'CountFullWeighted'                      : [     20148320,     20147735,     20150070, ],
     'CountWeightedLHEWeightScale'            : [      1833441,      1855927,      1874350,      1786764,      1812086,      1832609,      1747888,      1775400,      1797814, ],
@@ -15596,7 +15596,7 @@ samples_2017["/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "WWToLNuQQ"),
   ("nof_files",                       18),
   ("nof_db_files",                    183),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     18484257, ],
     'CountFullWeighted'                      : [    850044306,    850044787,    849963073, ],
     'CountWeightedLHEWeightScale'            : [     18631994,     18861035,     19048755,     18157755,     18415500,     18624553,     17762760,     18042775,     18270966, ],
@@ -15637,7 +15637,7 @@ samples_2017["/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "WWToLNuQQ_ext1"),
   ("nof_files",                       21),
   ("nof_db_files",                    194),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     18484257, ],
     'CountFullWeighted'                      : [    850044306,    850044787,    849963073, ],
     'CountWeightedLHEWeightScale'            : [     18631994,     18861035,     19048755,     18157755,     18415500,     18624553,     17762760,     18042775,     18270966, ],
@@ -15678,7 +15678,7 @@ samples_2017["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAOD-94
   ("process_name_specific",           "WZTo3LNu"),
   ("nof_files",                       22),
   ("nof_db_files",                    212),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     10751052, ],
     'CountFullWeighted'                      : [     92530503,     92527032,     92534978, ],
     'CountWeightedLHEWeightScale'            : [      6894418,      6916486,      6879895,      6655807,      6739361,      6761238,      6441152,      6570178,      6636047, ],
@@ -15719,7 +15719,7 @@ samples_2017["/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "WZTo1L1Nu2Q"),
   ("nof_files",                       39),
   ("nof_db_files",                    359),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     18998465, ],
     'CountFullWeighted'                      : [    350681418,    350705428,    350629686, ],
     'CountWeightedLHEWeightScale'            : [     11741593,     11808349,     11889208,     11210699,     11293708,     11375335,     10746525,     10841925,     10924861, ],
@@ -15760,7 +15760,7 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realist
   ("process_name_specific",           "ZZTo4L"),
   ("nof_files",                       15),
   ("nof_db_files",                    204),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    102677048, ],
     'CountFullWeighted'                      : [    136028285,    136030878,    136039542, ],
     'CountWeightedLHEWeightScale'            : [     97505821,    103781241,    107198791,     94770105,    101623232,    105985610,     92423618,     99723949,    104767273, ],
@@ -15801,7 +15801,7 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_realist
   ("process_name_specific",           "ZZTo4L_ext1"),
   ("nof_files",                       193),
   ("nof_db_files",                    1490),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [    102677048, ],
     'CountFullWeighted'                      : [    136028285,    136030878,    136039542, ],
     'CountWeightedLHEWeightScale'            : [     97505821,    103781241,    107198791,     94770105,    101623232,    105985610,     92423618,     99723949,    104767273, ],
@@ -15842,7 +15842,7 @@ samples_2017["/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIIFall17MiniAOD-94X_mc2017_real
   ("process_name_specific",           "ZZTo2L2Nu"),
   ("nof_files",                       17),
   ("nof_db_files",                    219),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      8289873, ],
     'CountFullWeighted'                      : [      4981117,      4981422,      4981220, ],
     'CountWeightedLHEWeightScale'            : [      8327422,      8431771,      8523322,      8162119,      8280061,      8380626,      8024108,      8152220,      8261354, ],
@@ -15883,7 +15883,7 @@ samples_2017["/QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "QCD_Pt15to20_bcToE"),
   ("nof_files",                       5),
   ("nof_db_files",                    122),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      2145233, ],
     'CountFullWeighted'                      : [      2145515,      2145317,      2145252, ],
     'CountWeighted'                          : [      2145331,      2145133,      2145069, ],
@@ -15923,7 +15923,7 @@ samples_2017["/QCD_Pt_20to30_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "QCD_Pt20to30_bcToE"),
   ("nof_files",                       21),
   ("nof_db_files",                    238),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     10266970, ],
     'CountFullWeighted'                      : [     10266467,     10267517,     10268048, ],
     'CountWeighted'                          : [     10266128,     10267180,     10267709, ],
@@ -15963,7 +15963,7 @@ samples_2017["/QCD_Pt_30to80_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "QCD_Pt30to80_bcToE"),
   ("nof_files",                       33),
   ("nof_db_files",                    282),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     16030011, ],
     'CountFullWeighted'                      : [     16038883,     16037799,     16038648, ],
     'CountWeighted'                          : [     16030470,     16029369,     16030238, ],
@@ -16003,7 +16003,7 @@ samples_2017["/QCD_Pt_80to170_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94X
   ("process_name_specific",           "QCD_Pt80to170_bcToE"),
   ("nof_files",                       33),
   ("nof_db_files",                    282),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     15972037, ],
     'CountFullWeighted'                      : [     15972733,     15972612,     15972279, ],
     'CountWeighted'                          : [     15972733,     15972612,     15972279, ],
@@ -16043,7 +16043,7 @@ samples_2017["/QCD_Pt_170to250_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94
   ("process_name_specific",           "QCD_Pt170to250_bcToE"),
   ("nof_files",                       20),
   ("nof_db_files",                    227),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      9831904, ],
     'CountFullWeighted'                      : [      9832177,      9832303,      9831160, ],
     'CountWeighted'                          : [      9831563,      9831689,      9830545, ],
@@ -16083,7 +16083,7 @@ samples_2017["/QCD_Pt_250toInf_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD-94
   ("process_name_specific",           "QCD_Pt250toInf_bcToE"),
   ("nof_files",                       21),
   ("nof_db_files",                    228),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      9921358, ],
     'CountFullWeighted'                      : [      9920806,      9920503,      9922160, ],
     'CountWeighted'                          : [      9920806,      9920503,      9922160, ],
@@ -16123,7 +16123,7 @@ samples_2017["/QCD_Pt-15to20_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "QCD_Pt15to20_EMEnriched"),
   ("nof_files",                       23),
   ("nof_db_files",                    193),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     10995821, ],
     'CountFullWeighted'                      : [     10996904,     10996117,     10996451, ],
     'CountWeighted'                          : [     10995570,     10994781,     10995114, ],
@@ -16163,7 +16163,7 @@ samples_2017["/QCD_Pt-20to30_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "QCD_Pt20to30_EMEnriched"),
   ("nof_files",                       24),
   ("nof_db_files",                    151),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     11545386, ],
     'CountFullWeighted'                      : [     11544547,     11544930,     11544404, ],
     'CountWeighted'                          : [     11544540,     11544923,     11544397, ],
@@ -16203,7 +16203,7 @@ samples_2017["/QCD_Pt-30to50_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "QCD_Pt30to50_EMEnriched"),
   ("nof_files",                       30),
   ("nof_db_files",                    260),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     14619987, ],
     'CountFullWeighted'                      : [     14619515,     14619536,     14619311, ],
     'CountWeighted'                          : [     14619515,     14619536,     14619311, ],
@@ -16243,7 +16243,7 @@ samples_2017["/QCD_Pt-50to80_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniAOD
   ("process_name_specific",           "QCD_Pt50to80_EMEnriched"),
   ("nof_files",                       22),
   ("nof_db_files",                    157),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     10665765, ],
     'CountFullWeighted'                      : [     10665193,     10665752,     10665320, ],
     'CountWeighted'                          : [     10665193,     10665752,     10665320, ],
@@ -16283,7 +16283,7 @@ samples_2017["/QCD_Pt-80to120_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniAO
   ("process_name_specific",           "QCD_Pt80to120_EMEnriched"),
   ("nof_files",                       17),
   ("nof_db_files",                    170),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      8414260, ],
     'CountFullWeighted'                      : [      8414504,      8415848,      8416118, ],
     'CountWeighted'                          : [      8413061,      8414409,      8414681, ],
@@ -16323,7 +16323,7 @@ samples_2017["/QCD_Pt-120to170_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniA
   ("process_name_specific",           "QCD_Pt120to170_EMEnriched"),
   ("nof_files",                       18),
   ("nof_db_files",                    152),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      8757439, ],
     'CountFullWeighted'                      : [      8758171,      8757523,      8757765, ],
     'CountWeighted'                          : [      8758074,      8757426,      8757669, ],
@@ -16363,7 +16363,7 @@ samples_2017["/QCD_Pt-170to300_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniA
   ("process_name_specific",           "QCD_Pt170to300_EMEnriched"),
   ("nof_files",                       8),
   ("nof_db_files",                    66),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      3521215, ],
     'CountFullWeighted'                      : [      3521392,      3521217,      3521280, ],
     'CountWeighted'                          : [      3521392,      3521217,      3521280, ],
@@ -16403,7 +16403,7 @@ samples_2017["/QCD_Pt-300toInf_EMEnriched_TuneCP5_13TeV_pythia8/RunIIFall17MiniA
   ("process_name_specific",           "QCD_Pt300toInf_EMEnriched"),
   ("nof_files",                       6),
   ("nof_db_files",                    68),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      2898084, ],
     'CountFullWeighted'                      : [      2898037,      2897984,      2898159, ],
     'CountWeighted'                          : [      2898037,      2897984,      2898159, ],
@@ -16443,7 +16443,7 @@ samples_2017["/QCD_Pt-20toInf_MuEnrichedPt15_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("process_name_specific",           "QCD_Mu15"),
   ("nof_files",                       34),
   ("nof_db_files",                    261),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     16404691, ],
     'CountFullWeighted'                      : [     16405190,     16405258,     16406307, ],
     'CountWeighted'                          : [     16405190,     16405258,     16406307, ],
@@ -16483,7 +16483,7 @@ samples_2017["/QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mini
   ("process_name_specific",           "QCD_Pt15to20_Mu5"),
   ("nof_files",                       12),
   ("nof_db_files",                    120),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      5748990, ],
     'CountFullWeighted'                      : [      5749313,      5749126,      5750046, ],
     'CountWeighted'                          : [      5748375,      5748185,      5749110, ],
@@ -16523,7 +16523,7 @@ samples_2017["/QCD_Pt-20to30_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mini
   ("process_name_specific",           "QCD_Pt20to30_Mu5"),
   ("nof_files",                       57),
   ("nof_db_files",                    414),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     28006402, ],
     'CountFullWeighted'                      : [     28008798,     28004703,     28006640, ],
     'CountWeighted'                          : [     28008361,     28004263,     28006205, ],
@@ -16563,7 +16563,7 @@ samples_2017["/QCD_Pt-30to50_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mini
   ("process_name_specific",           "QCD_Pt30to50_Mu5"),
   ("nof_files",                       58),
   ("nof_db_files",                    488),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     28667918, ],
     'CountFullWeighted'                      : [     28669114,     28667848,     28668400, ],
     'CountWeighted'                          : [     28669114,     28667848,     28668400, ],
@@ -16603,7 +16603,7 @@ samples_2017["/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mini
   ("process_name_specific",           "QCD_Pt50to80_Mu5"),
   ("nof_files",                       49),
   ("nof_db_files",                    323),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     23903676, ],
     'CountFullWeighted'                      : [     23901048,     23901343,     23902191, ],
     'CountWeighted'                          : [     23901048,     23901343,     23902191, ],
@@ -16643,7 +16643,7 @@ samples_2017["/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Min
   ("process_name_specific",           "QCD_Pt80to120_Mu5"),
   ("nof_files",                       47),
   ("nof_db_files",                    351),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     23098427, ],
     'CountFullWeighted'                      : [     23100059,     23099366,     23100892, ],
     'CountWeighted'                          : [     23097237,     23096541,     23098073, ],
@@ -16683,7 +16683,7 @@ samples_2017["/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("process_name_specific",           "QCD_Pt120to170_Mu5"),
   ("nof_files",                       42),
   ("nof_db_files",                    377),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     20821535, ],
     'CountFullWeighted'                      : [     20823345,     20821461,     20820938, ],
     'CountWeighted'                          : [     20822816,     20820930,     20820407, ],
@@ -16723,7 +16723,7 @@ samples_2017["/QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("process_name_specific",           "QCD_Pt170to300_Mu5"),
   ("nof_files",                       94),
   ("nof_db_files",                    796),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     46438676, ],
     'CountFullWeighted'                      : [     46436843,     46440321,     46435783, ],
     'CountWeighted'                          : [     46436843,     46440321,     46435783, ],
@@ -16763,7 +16763,7 @@ samples_2017["/QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("process_name_specific",           "QCD_Pt300to470_Mu5"),
   ("nof_files",                       36),
   ("nof_db_files",                    309),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     17620456, ],
     'CountFullWeighted'                      : [     17621142,     17621031,     17617607, ],
     'CountWeighted'                          : [     17621139,     17621028,     17617603, ],
@@ -16803,7 +16803,7 @@ samples_2017["/QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("process_name_specific",           "QCD_Pt470to600_Mu5"),
   ("nof_files",                       49),
   ("nof_db_files",                    614),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     24230220, ],
     'CountFullWeighted'                      : [     24230054,     24231093,     24231504, ],
     'CountWeighted'                          : [     24229971,     24231010,     24231421, ],
@@ -16843,7 +16843,7 @@ samples_2017["/QCD_Pt-600to800_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("process_name_specific",           "QCD_Pt600to800_Mu5"),
   ("nof_files",                       34),
   ("nof_db_files",                    314),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     16392140, ],
     'CountFullWeighted'                      : [     16391706,     16392042,     16392670, ],
     'CountWeighted'                          : [     16391706,     16392041,     16392670, ],
@@ -16883,7 +16883,7 @@ samples_2017["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17M
   ("process_name_specific",           "QCD_Pt800to1000_Mu5"),
   ("nof_files",                       32),
   ("nof_db_files",                    361),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     15694987, ],
     'CountFullWeighted'                      : [     15695260,     15694645,     15695161, ],
     'CountWeighted'                          : [     15695260,     15694645,     15695161, ],
@@ -16923,7 +16923,7 @@ samples_2017["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17M
   ("process_name_specific",           "QCD_Pt1000toInf_Mu5"),
   ("nof_files",                       24),
   ("nof_db_files",                    268),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     11464778, ],
     'CountFullWeighted'                      : [     11464458,     11464255,     11465068, ],
     'CountWeighted'                          : [     11464458,     11464255,     11465068, ],
@@ -16963,7 +16963,7 @@ samples_2017["/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc20
   ("process_name_specific",           "WWW_4F"),
   ("nof_files",                       1),
   ("nof_db_files",                    21),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       240000, ],
     'CountFullWeighted'                      : [        49992,        49994,        49993, ],
     'CountWeightedLHEWeightScale'            : [       221078,       218601,       216584,       212643,       210465,       208628,       205660,       203719,       202043, ],
@@ -17004,7 +17004,7 @@ samples_2017["/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc20
   ("process_name_specific",           "WWZ_4F"),
   ("nof_files",                       1),
   ("nof_db_files",                    14),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       250000, ],
     'CountFullWeighted'                      : [        41195,        41195,        41199, ],
     'CountWeightedLHEWeightScale'            : [       234842,       230878,       227610,       225260,       221575,       218508,       217309,       213886,       210959, ],
@@ -17045,7 +17045,7 @@ samples_2017["/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
   ("process_name_specific",           "WZZ"),
   ("nof_files",                       1),
   ("nof_db_files",                    18),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       250000, ],
     'CountFullWeighted'                      : [        13945,        13953,        13936, ],
     'CountWeightedLHEWeightScale'            : [       234231,       229281,       225180,       224274,       219657,       215781,       215952,       211622,       207927, ],
@@ -17086,7 +17086,7 @@ samples_2017["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
   ("process_name_specific",           "ZZZ"),
   ("nof_files",                       1),
   ("nof_db_files",                    17),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       250000, ],
     'CountFullWeighted'                      : [         3505,         3505,         3505, ],
     'CountWeightedLHEWeightScale'            : [       219040,       218488,       218534,       214005,       213545,       213538,       209796,       209407,       209364, ],
@@ -17127,7 +17127,7 @@ samples_2017["/WZG_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_
   ("process_name_specific",           "WZG"),
   ("nof_files",                       3),
   ("nof_db_files",                    43),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       995620, ],
     'CountFullWeighted'                      : [        43299,        43302,        43296, ],
     'CountWeightedLHEWeightScale'            : [       901088,       889520,       877626,       846132,       836581,       826461,       801464,       793566,       784874, ],
@@ -17168,7 +17168,7 @@ samples_2017["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17Min
   ("process_name_specific",           "TTGJets"),
   ("nof_files",                       10),
   ("nof_db_files",                    138),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     14050206, ],
     'CountFullWeighted'                      : [     99997982,    100016938,     99992745, ],
     'CountWeightedLHEWeightScale'            : [      6233160,      6187574,      6156494,      5582979,      5448804,      5338184,      4905252,      4738114,      4596879, ],
@@ -17209,7 +17209,7 @@ samples_2017["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17Min
   ("process_name_specific",           "TTGJets_ext1"),
   ("nof_files",                       20),
   ("nof_db_files",                    214),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     14050206, ],
     'CountFullWeighted'                      : [     99997982,    100016938,     99992745, ],
     'CountWeightedLHEWeightScale'            : [      6233160,      6187574,      6156494,      5582979,      5448804,      5338184,      4905252,      4738114,      4596879, ],
@@ -17250,7 +17250,7 @@ samples_2017["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017
   ("process_name_specific",           "TTTT"),
   ("nof_files",                       3),
   ("nof_db_files",                    29),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       993804, ],
     'CountFullWeighted'                      : [         8179,         8175,         8181, ],
     'CountWeightedLHEWeightScale'            : [       483397,       457809,       435176,       400134,       372230,       348445,       327459,       301045,       278885, ],
@@ -17291,7 +17291,7 @@ samples_2017["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017
   ("process_name_specific",           "TTWH"),
   ("nof_files",                       1),
   ("nof_db_files",                    17),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       200000, ],
     'CountFullWeighted'                      : [       198833,       198852,       198848, ],
     'CountWeightedLHEWeightScale'            : [       248023,       236356,       225581,       208825,       198968,       189898,       178330,       169914,       162143, ],
@@ -17332,7 +17332,7 @@ samples_2017["/TTTW_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017
   ("process_name_specific",           "TTTW"),
   ("nof_files",                       1),
   ("nof_db_files",                    15),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       200000, ],
     'CountFullWeighted'                      : [       199564,       199545,       199536, ],
     'CountWeightedLHEWeightScale'            : [       273926,       265480,       254600,       206108,       199714,       191475,       159131,       154148,       147774, ],
@@ -17373,7 +17373,7 @@ samples_2017["/tZq_ll_4f_ckm_NLO_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIF
   ("process_name_specific",           "tZq_ll_4f"),
   ("nof_files",                       27),
   ("nof_db_files",                    292),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [     13220024, ],
     'CountFullWeighted'                      : [       985394,       985551,       985201, ],
     'CountWeightedLHEWeightScale'            : [      3744154,      3691471,      3655648,      3532922,      3453268,      3391923,      3334946,      3238678,      3161044, ],
@@ -17414,7 +17414,7 @@ samples_2017["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-94X_
   ("process_name_specific",           "WWTo2L2Nu_DoubleScattering"),
   ("nof_files",                       3),
   ("nof_db_files",                    23),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [      1000000, ],
     'CountFullWeighted'                      : [       999964,       999993,      1000102, ],
     'CountWeighted'                          : [       999964,       999993,      1000102, ],
@@ -17454,7 +17454,7 @@ samples_2017["/THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] =
   ("process_name_specific",           "THQ"),
   ("nof_files",                       1),
   ("nof_db_files",                    9),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       124500, ],
     'CountFullWeighted'                      : [         8741,         8744,         8744, ],
     'CountWeightedLHEWeightScale'            : [        11079,        10002,         9094,         9683,         8741,         7947,         8610,         7772,         7066, ],
@@ -17495,7 +17495,7 @@ samples_2017["/THW_5f_Hincl_13TeV_madgraph_pythia8_Fall17/private/MINIAODSIM"] =
   ("process_name_specific",           "THW"),
   ("nof_files",                       1),
   ("nof_db_files",                    4),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [        50000, ],
     'CountFullWeighted'                      : [         5417,         5426,         5428, ],
     'CountWeightedLHEWeightScale'            : [         5195,         6162,         6701,         4567,         5417,         5891,         4077,         4836,         5259, ],
@@ -17536,7 +17536,7 @@ samples_2017["/ST_tWll_5f_LO_TuneCP5_PSweights_13TeV_madgraph_pythia8_Fall17/pri
   ("process_name_specific",           "ST_tWll"),
   ("nof_files",                       1),
   ("nof_db_files",                    1),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [        12500, ],
     'CountFullWeighted'                      : [        12478,        12479,        12478, ],
     'CountWeightedLHEWeightScale'            : [            0, ],
@@ -17577,7 +17577,7 @@ samples_2017["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_Fall17/private/
   ("process_name_specific",           "VHToNonbb_M125"),
   ("nof_files",                       2),
   ("nof_db_files",                    12),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       200165, ],
     'CountFullWeighted'                      : [      1170235,      1169963,      1171232, ],
     'CountWeightedLHEWeightScale'            : [       101326,       102197,       103327,        97534,        98368,        99304,        93471,        94307,        95136, ],
@@ -17618,7 +17618,7 @@ samples_2017["/WpWpJJ_EWK_QCD_TuneCP5_13TeV_madgraph_pythia8_Fall17/private/MINI
   ("process_name_specific",           "WpWpJJ_EWK_QCD"),
   ("nof_files",                       1),
   ("nof_db_files",                    2),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [        24750, ],
     'CountFullWeighted'                      : [        24610,        24614,        24607, ],
     'CountWeightedLHEWeightScale'            : [        30559,        29065,        27720,        25908,        24610,        23446,        22504,        21351,        20320, ],
