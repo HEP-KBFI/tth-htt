@@ -842,8 +842,15 @@ int main(int argc, char* argv[])
       }
     }
 
-    if ( isMC ) {
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, lumiScale);
+    double evtWeight_inclusive = 1.;
+    if(isMC)
+    {
+      if(apply_genWeight) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if(isMC_tH)         evtWeight_inclusive *= eventInfo.genWeight_tH;
+      evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
+      evtWeight_inclusive *= eventInfo.pileupWeight;
+      evtWeight_inclusive *= lumiScale;
+      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
     }
 
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e);
@@ -1192,11 +1199,7 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     double btagWeight = 1.;
     if ( isMC ) {
-      evtWeight *= lumiScale;
-      if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
-      if ( isMC_tH ) evtWeight *= eventInfo.genWeight_tH;
-      evtWeight *= eventInfo.pileupWeight;
-      evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
+      evtWeight *= evtWeight_inclusive;
       btagWeight = get_BtagWeight(selJets);
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
