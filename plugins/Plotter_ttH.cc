@@ -172,6 +172,7 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
   
   //---------------------------------------------------------------------------
   // CV: sum ttW and ttWW backgrounds
+  assert(histogramTTW && histogramTTW_density && histogramTTWW && histogramTTWW_density);
   histogramTTW->Add(histogramTTWW);
   histogramTTW_density->Add(histogramTTWW_density);
   //---------------------------------------------------------------------------
@@ -258,7 +259,7 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
   }
   
   const int color_ttW         = 823; // dark green
-  const int color_ttZ         = 822; // dark green
+  const int color_ttZ         = 822; // light green
   const int color_ttH         = 628; // red
   const int color_ttjets      =  16; // gray
   const int color_EWK         = 610; // purple

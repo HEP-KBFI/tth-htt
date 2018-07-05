@@ -19,7 +19,7 @@ process.makePlots.processSignal = cms.string("signal")
 process.makePlots.categories = cms.VPSet(
     cms.PSet(
         name = cms.string("2lss_1tau_SS_Fakeable_mcClosure_wFakeRateWeights"),
-        label = cms.string("2lss_1tau")
+        label = cms.string("2lss+1#tau_{h}")
     )
 )
 
