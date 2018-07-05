@@ -6,12 +6,13 @@
 std::map<std::string, int> GenHadTauReader::numInstances_;
 std::map<std::string, GenHadTauReader *> GenHadTauReader::instances_;
 
-GenHadTauReader::GenHadTauReader()
-  : GenHadTauReader("GenVisTau")
+GenHadTauReader::GenHadTauReader(unsigned int max_nHadTaus)
+  : GenHadTauReader("GenVisTau", max_nHadTaus)
 {}
 
-GenHadTauReader::GenHadTauReader(const std::string & branchName_obj)
-  : max_nHadTaus_(32)
+GenHadTauReader::GenHadTauReader(const std::string & branchName_obj,
+                                 unsigned int max_nHadTaus)
+  : max_nHadTaus_(max_nHadTaus)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , hadTau_pt_(nullptr)

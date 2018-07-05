@@ -44,10 +44,10 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
 {
   if(readGenMatching_)
   {
-    genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_obj_.data()));
-    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau",    branchName_obj_.data()));
-    genPhotonReader_ = new GenPhotonReader(Form("%s_genPhoton", branchName_obj_.data()));
-    genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_obj_.data()));
+    genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_obj_.data()), max_nLeptons_);
+    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau",    branchName_obj_.data()), max_nLeptons_);
+    genPhotonReader_ = new GenPhotonReader(Form("%s_genPhoton", branchName_obj_.data()), max_nLeptons_);
+    genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_obj_.data()), max_nLeptons_);
   }
   setBranchNames();
 }

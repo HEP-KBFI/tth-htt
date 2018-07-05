@@ -2,13 +2,15 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
-GenParticleWriter::GenParticleWriter(const std::string & branchName_obj)
-  : GenParticleWriter(Form("n%s", branchName_obj.data()), branchName_obj)
+GenParticleWriter::GenParticleWriter(const std::string & branchName_obj,
+                                     unsigned int max_nParticles)
+  : GenParticleWriter(Form("n%s", branchName_obj.data()), branchName_obj, max_nParticles)
 {}
 
 GenParticleWriter::GenParticleWriter(const std::string & branchName_num,
-                                     const std::string & branchName_obj)
-  : max_nParticles_(32)
+                                     const std::string & branchName_obj,
+                                     unsigned int max_nParticles)
+  : max_nParticles_(max_nParticles)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , particle_pt_(nullptr)

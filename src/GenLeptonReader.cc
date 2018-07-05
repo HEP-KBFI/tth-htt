@@ -6,12 +6,13 @@
 std::map<std::string, int> GenLeptonReader::numInstances_;
 std::map<std::string, GenLeptonReader *> GenLeptonReader::instances_;
 
-GenLeptonReader::GenLeptonReader()
-  : GenLeptonReader("GenLep")
+GenLeptonReader::GenLeptonReader(unsigned int max_nPromptLeptons)
+  : GenLeptonReader("GenLep", max_nPromptLeptons)
 {}
 
-GenLeptonReader::GenLeptonReader(const std::string & branchName_promptLeptons)
-  : max_nPromptLeptons_(32)
+GenLeptonReader::GenLeptonReader(const std::string & branchName_promptLeptons,
+                                 unsigned int max_nPromptLeptons)
+  : max_nPromptLeptons_(max_nPromptLeptons)
   , branchName_nPromptLeptons_(Form("n%s", branchName_promptLeptons.data()))
   , branchName_promptLeptons_(branchName_promptLeptons)
   , promptLepton_pt_(nullptr)

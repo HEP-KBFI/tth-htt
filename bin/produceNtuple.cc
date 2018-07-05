@@ -284,7 +284,8 @@ main(int argc,
     inputTree -> registerReader(genHadTauReader);
     genPhotonReader = new GenPhotonReader(branchName_genPhotons);
     inputTree -> registerReader(genPhotonReader);
-    genJetReader = new GenJetReader(branchName_genJets, true);
+    genJetReader = new GenJetReader(branchName_genJets);
+    genJetReader->read_partonFlavour();
     inputTree -> registerReader(genJetReader);
   }
 
