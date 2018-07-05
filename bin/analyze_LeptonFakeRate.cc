@@ -284,11 +284,17 @@ struct numerator_and_denominatorHistManagers
         electronHistManager_->fillHistograms(electron, evtWeight);
         if(isMC_)
         {
-          if(electron.genHadTau())                         electronHistManager_genHadTau_->fillHistograms(electron, evtWeight);
-          if(                        electron.genLepton()) electronHistManager_genLepton_->fillHistograms(electron, evtWeight);
-          if(electron.genPhoton() && !electron.genLepton() && (electron.genPhoton()->pt() > (0.5*electron.pt())) ) electronHistManager_genPhoton_->fillHistograms(electron, evtWeight);        // GEN PHOTON MATCH
-          if(electron.genHadTau() || electron.genLepton()) electronHistManager_genHadTauOrLepton_->fillHistograms(electron, evtWeight);
-          else                                             electronHistManager_genJet_->fillHistograms(electron, evtWeight);
+          if(electron.genLepton()){ 
+	    electronHistManager_genLepton_->fillHistograms(electron, evtWeight);
+	    electronHistManager_genHadTauOrLepton_->fillHistograms(electron, evtWeight);
+	  }else if(electron.genHadTau()){
+	    electronHistManager_genHadTau_->fillHistograms(electron, evtWeight);
+	    electronHistManager_genHadTauOrLepton_->fillHistograms(electron, evtWeight);
+	  }else if(electron.genPhoton() && !electron.genLepton() && (electron.genPhoton()->pt() > (0.5*electron.pt())) ){
+	    electronHistManager_genPhoton_->fillHistograms(electron, evtWeight);
+	  }else{
+	    electronHistManager_genJet_->fillHistograms(electron, evtWeight);
+	  }
         }
       }
       else if(lepton_type_ == kMuon)
@@ -300,11 +306,17 @@ struct numerator_and_denominatorHistManagers
         muonHistManager_->fillHistograms(muon, evtWeight);
         if(isMC_)
         {
-          if(muon.genHadTau()                    ) muonHistManager_genHadTau_->fillHistograms(muon, evtWeight);
-          if(                    muon.genLepton()) muonHistManager_genLepton_->fillHistograms(muon, evtWeight);
-          if(muon.genPhoton() && !muon.genLepton() && (muon.genPhoton()->pt() > (0.5*muon.pt())) ) muonHistManager_genPhoton_->fillHistograms(muon, evtWeight);                        // GEN PHOTON MATCH  
-          if(muon.genHadTau() || muon.genLepton()) muonHistManager_genHadTauOrLepton_->fillHistograms(muon, evtWeight);
-          else                                     muonHistManager_genJet_->fillHistograms(muon, evtWeight);
+          if(muon.genLepton()){ 
+	    muonHistManager_genLepton_->fillHistograms(muon, evtWeight);
+	    muonHistManager_genHadTauOrLepton_->fillHistograms(muon, evtWeight);
+	  }else if(muon.genHadTau()){
+	    muonHistManager_genHadTau_->fillHistograms(muon, evtWeight);
+	    muonHistManager_genHadTauOrLepton_->fillHistograms(muon, evtWeight);
+	    //	  }else if(muon.genPhoton() && !muon.genLepton() && (muon.genPhoton()->pt() > (0.5*muon.pt())) ){
+	    //    muonHistManager_genPhoton_->fillHistograms(muon, evtWeight);                        
+	  }else{
+	    muonHistManager_genJet_->fillHistograms(muon, evtWeight);
+	  }
         }
       }
       else

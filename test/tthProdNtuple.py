@@ -50,7 +50,7 @@ golden_json_2017  = os.path.join(
 )
 
 # Use the arguments
-version              = "%s_w%sPresel_%s_%s" % (
+version = "%s_w%sPresel_%s_%s" % (
   version, ("" if preselection else "o"), "nonNom" if use_nonnominal else "nom", mode
 )
 

@@ -35,6 +35,7 @@ RecoMuonReader::~RecoMuonReader()
   {
     RecoMuonReader * gInstance = instances_[branchName_obj_];
     assert(gInstance);
+    delete gInstance->leptonReader_;
     delete[] gInstance->mediumIdPOG_;
     delete[] gInstance->segmentCompatibility_;
     delete[] gInstance->ptErr_;

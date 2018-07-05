@@ -12,11 +12,11 @@
  */
 class hltPath
 {
- public:
+public:
   hltPath(const std::string & branchName,
-	  double minPt = -1.,
-	  double maxPt = -1.,
-	  const std::string & label = "");
+          double minPt = -1.,
+          double maxPt = -1.,
+          const std::string & label = "");
   ~hltPath() {}
 
   const std::string &
@@ -36,7 +36,7 @@ class hltPath
 
   friend class hltPathReader;
 
- protected:
+protected:
   std::vector<std::string>
   get_available_branches(TTree * tree) const;
 
