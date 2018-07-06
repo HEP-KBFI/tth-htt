@@ -260,7 +260,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       for hadTau_frWeight in self.hadTau_frWeights:
         if hadTau_frWeight == "enabled" and not hadTau_selection.startswith("Fakeable"):
           continue
-        if hadTau_frWeight == "disabled" and not hadTau_selection == "Tight":
+        if hadTau_frWeight == "disabled" and not hadTau_selection in [ "Tight", "forBDTtraining" ]:
           continue
         hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
 
@@ -451,10 +451,14 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                 self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
               self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
+          if self.isBDTtraining or self.do_sync:
+            continue
+
           # sum fake contributions for the total of all MC sample
           # input processes: TT1t0e0m1j, TT0t1e0m1j, TT0t0e1m1j, TT0t0e0m2j; TTW1t0e0m1j,...
           # output process: fakes_mc
           key_addBackgrounds_job = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
+          key_hadd_stage1_5 = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])
@@ -486,17 +490,25 @@ class analyzeConfig_0l_2tau(analyzeConfig):
           self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s_%s.root" % \
             (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection))
 
-    if self.isBDTtraining:
+    if self.isBDTtraining or self.do_sync:
       if self.is_sbatch:
         logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
         self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
         if self.isBDTtraining:
           self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+        elif self.do_sync:
+          self.createScript_sbatch_syncNtuple(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
       logging.info("Creating Makefile")
       lines_makefile = []
       if self.isBDTtraining:
         self.addToMakefile_analyze(lines_makefile)
         self.addToMakefile_hadd_stage1(lines_makefile)
+      elif self.do_sync:
+        self.addToMakefile_syncNtuple(lines_makefile)
+        outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
+        self.outputFile_sync['sync'] = outputFile_sync_path
+        self.targets.append(outputFile_sync_path)
+        self.addToMakefile_hadd_sync(lines_makefile)
       else:
         raise ValueError("Internal logic error")
       self.createMakefile(lines_makefile)
