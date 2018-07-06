@@ -267,8 +267,10 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       hadTauSelection = None
       if hadTau_selection == "forBDTtraining":
         hadTauSelection = "Tight|%s" % self.hadTau_selection_relaxed
+      elif hadTau_selection == "Fakeable_mcClosure_t":
+        hadTauSelection = "Fakeable|%s" % self.hadTau_selection_part2
       else:
-        hadTauSelection = "|".join([hadTau_selection, self.hadTau_selection_part2])
+        hadTauSelection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
 
       for hadTau_frWeight in self.hadTau_frWeights:
         if hadTau_frWeight == "enabled" and not hadTau_selection.startswith("Fakeable"):
