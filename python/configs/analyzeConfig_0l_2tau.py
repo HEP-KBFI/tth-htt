@@ -95,7 +95,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       use_home           = use_home,
     )
 
-    ##self.hadTau_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ]
     self.hadTau_selections = [ "Tight", "Fakeable" ]
     self.hadTau_frWeights = [ "enabled", "disabled" ]
     self.hadTau_selection_part2 = hadTau_selection
@@ -308,6 +307,8 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   continue
                 if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
                   continue
+
+                logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (hadTau_selection_and_frWeight, central_or_shift))
 
                 # build config files for executing analysis code
                 key_dir = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
