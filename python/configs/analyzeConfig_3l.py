@@ -74,6 +74,7 @@ class analyzeConfig_3l(analyzeConfig):
       outputDir                 = outputDir,
       executable_analyze        = executable_analyze,
       channel                   = "3l",
+      samples                   = samples,
       central_or_shifts         = central_or_shifts,
       max_files_per_job         = max_files_per_job,
       era                       = era,
@@ -93,7 +94,6 @@ class analyzeConfig_3l(analyzeConfig):
       use_home                  = use_home,
     )
 
-    self.samples = samples
     self.MEMbranch = MEMbranch
 
     self.lepton_selections = [ "Tight", "Fakeable" ]

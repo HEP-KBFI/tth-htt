@@ -81,6 +81,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       outputDir                 = outputDir,
       executable_analyze        = executable_analyze,
       channel                   = "2lss_1tau",
+      samples                   = samples,
       lep_mva_wp                = lep_mva_wp,
       central_or_shifts         = central_or_shifts,
       max_files_per_job         = max_files_per_job,
@@ -104,7 +105,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.lep_mLL_veto = lep_mLL_veto
     self.e_dR_cleaning = e_dR_cleaning
 
-    self.samples = samples
     self.MEMbranch = MEMbranch
 
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]
@@ -233,7 +233,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
     jobOptions['lep_mLL_veto'] = self.lep_mLL_veto
     jobOptions['e_dR_cleaning'] = self.e_dR_cleaning
-    
+
     self.set_leptonFakeRateWeightHistogramNames(jobOptions['central_or_shift'], lepton_and_hadTau_selection)
     jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
     jobOptions['leptonFakeRateWeight.histogramName_e'] = self.leptonFakeRateWeight_histogramName_e

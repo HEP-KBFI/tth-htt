@@ -158,6 +158,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       outputDir             = outputDir,
       executable_analyze    = executable_analyze,
       channel               = "LeptonFakeRate",
+      samples               = samples,
       central_or_shifts     = central_or_shifts,
       max_files_per_job     = max_files_per_job,
       era                   = era,
@@ -179,8 +180,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     if not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \
        not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')):
       raise ValueError('CMSSW path for combine not valid: %s' % self.cmssw_base_dir_combine)
-
-    self.samples = samples
 
     self.absEtaBins_e = absEtaBins_e
     self.ptBins_e = ptBins_e
