@@ -224,9 +224,9 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_dataToMCcorrectionInterface;  
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
+  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
+  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
-  //cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", isDEBUG);
-  cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", false);
   Data_to_MC_CorrectionInterface* dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface(cfg_dataToMCcorrectionInterface);
   Data_to_MC_CorrectionInterface_0l_2tau_trigger* dataToMCcorrectionInterface_0l_2tau_trigger = new Data_to_MC_CorrectionInterface_0l_2tau_trigger(cfg_dataToMCcorrectionInterface);
   
@@ -237,7 +237,7 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_0l_2tau") 
     << "Invalid Configuration parameter 'applyFakeRateWeights' = " << applyFakeRateWeights_string << " !!\n";
   
-  bool isBDTtraining = cfg_analyze.getParameter<bool>("isBDTtraining");
+  bool selectBDT = cfg_analyze.getParameter<bool>("selectBDT");
 
   JetToTauFakeRateInterface* jetToTauFakeRateInterface = 0;
   if ( applyFakeRateWeights == kFR_2tau ) {
@@ -280,13 +280,6 @@ int main(int argc, char* argv[])
   
   std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
-
-  const bool selectBDT = [&cfg_analyze]() -> bool
-  {
-    if(cfg_analyze.exists("selectBDT"))
-      return cfg_analyze.getParameter<bool>("selectBDT");
-    return false;
-  }();
 
   const double minPt_hadTau_lead    = 40.;
   const double minPt_hadTau_sublead = 40.;
@@ -1213,7 +1206,7 @@ int main(int argc, char* argv[])
 	  const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
 	  bool isGenMatched = false;
 	  
-	  if ( isMC && isBDTtraining ) {
+    if ( isMC && selectBDT ) {
 	    std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
 									(*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(),
 									genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
@@ -1267,7 +1260,7 @@ int main(int argc, char* argv[])
           const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
           bool isGenMatched = false;
 
-          if ( isMC && isBDTtraining ) {
+          if ( isMC && selectBDT ) {
 	    std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
                                                                         (*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(),
                                                                         genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
