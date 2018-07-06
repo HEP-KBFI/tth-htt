@@ -88,6 +88,12 @@ process.analyze_0l_2tau = cms.PSet(
     selEventsFileName_output = cms.string(''),
     selectBDT = cms.bool(False),
 
+    syncNtuple = cms.PSet(
+        tree = cms.string(''),
+        output = cms.string(''),
+        requireGenMatching = cms.bool(False),
+    ),
+    useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
 )
