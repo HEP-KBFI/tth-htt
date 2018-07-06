@@ -931,6 +931,7 @@ int main(int argc, char* argv[])
     {
       if(apply_genWeight) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
       if(isMC_tH)         evtWeight_inclusive *= eventInfo.genWeight_tH;
+      lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
       evtWeight_inclusive *= lumiScale;
@@ -1251,9 +1252,6 @@ int main(int argc, char* argv[])
     int idxSelLepton_genMatch = selLepton_genMatch.idx_;
     assert(idxSelLepton_genMatch != kGen_LeptonUndefined1);
 
-    if ( isMC ) {
-      lheInfoReader->read();
-    }
 	//--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 	//  (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 	//    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
