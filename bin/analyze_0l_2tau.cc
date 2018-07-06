@@ -665,11 +665,13 @@ int main(int argc, char* argv[])
       "mindr_tau1_jet", "mindr_tau2_jet", 
       "avg_dr_jet", "ptmiss", "htmiss", "tau1_mva", "tau2_mva", "tau1_pt", "tau2_pt",
       "tau1_eta", "tau2_eta", "dr_taus", "mT_tau1", "mT_tau2", "mTauTauVis", "mTauTau",
-      "dr_HadTop1_tau_lead","dr_HadTop1_tau_sublead", "dr_HadTop1_tautau",
-      "dr_HadTop2_tau_lead","dr_HadTop2_tau_sublead", "dr_HadTop2_tautau",
-      "HadTop1_pt","HadTop1_eta","HadTop2_pt","HadTop2_eta",
-      "HTT_wKinFit_top1",  "HTT_wKinFitNew_top1",  "HTT_noKinFit_top1",
-      "HTT_wKinFit_top2",  "HTT_wKinFitNew_top2",  "HTT_noKinFit_top2",
+
+      "HTT_wKinFit_top1", "HTT_wKinFitNew_top1", "HTT_noKinFit_top1", "dr_HadTop1_tau_lead_top1",
+      "dr_HadTop1_tau_sublead_top1", "dr_HadTop1_tautau_top1", "HadTop1_pt_top1", "HadTop1_eta_top1",
+
+      "HTT_wKinFit_top2", "HTT_wKinFitNew_top2", "HTT_noKinFit_top2", "dr_HadTop1_tau_lead_top2",
+      "dr_HadTop1_tau_sublead_top2", "dr_HadTop1_tautau_top2", "HadTop1_pt_top2", "HadTop1_eta_top2",
+
       "lumiScale", "genWeight", "evtWeight"
     );
     bdt_filler -> register_variable<int_type>(
@@ -1443,32 +1445,32 @@ int main(int argc, char* argv[])
           ("mT_tau2",        comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi()))
           ("mTauTauVis",     mTauTauVis)
           ("mTauTau",        mTauTau)
-          ("bWj1Wj2_isGenMatchedWithKinFit_top1", max_truth_hadTopTaggerWithKinFit)
+          ("HTT_wKinFit_top1",                       max_mvaOutput_hadTopTaggerWithKinFit)
+          ("HTT_wKinFitNew_top1",                    max_mvaOutput_hadTopTaggerWithKinFitNew)
+          ("HTT_noKinFit_top1",                      max_mvaOutput_hadTopTaggerNoKinFit)
+          ("dr_HadTop1_tau_lead_top1",               deltaR(unfittedHadTopP4, selHadTau_lead->p4()))
+          ("dr_HadTop1_tau_sublead_top1",            deltaR(unfittedHadTopP4, selHadTau_sublead->p4()))
+          ("dr_HadTop1_tautau_top1",                 deltaR(unfittedHadTopP4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
+          ("HadTop1_pt_top1",                        unfittedHadTopP4.pt())
+          ("HadTop1_eta_top1",                       std::fabs(unfittedHadTopP4.eta()))
+          ("HTT_wKinFit_top2",                       max_mvaOutput_hadTopTaggerWithKinFitTop2)
+          ("HTT_wKinFitNew_top2",                    max_mvaOutput_hadTopTaggerWithKinFitNewTop2)
+          ("HTT_noKinFit_top2",                      max_mvaOutput_hadTopTaggerNoKinFitTop2)
+          ("dr_HadTop1_tau_lead_top2",               deltaR(unfittedHadTop2P4, selHadTau_lead->p4()))
+          ("dr_HadTop1_tau_sublead_top2",            deltaR(unfittedHadTop2P4, selHadTau_sublead->p4()))
+          ("dr_HadTop1_tautau_top2",                 deltaR(unfittedHadTop2P4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
+          ("HadTop1_pt_top2",                        unfittedHadTop2P4.pt())
+          ("HadTop1_eta_top2",                       std::fabs(unfittedHadTop2P4.eta()))
+          ("bWj1Wj2_isGenMatchedWithKinFit_top1",    max_truth_hadTopTaggerWithKinFit)
           ("bWj1Wj2_isGenMatchedWithKinFitNew_top1", max_truth_hadTopTaggerWithKinFitNew)
-          ("bWj1Wj2_isGenMatchedNoKinFit_top1",   max_truth_hadTopTaggerNoKinFit)
-          ("HTT_wKinFit_top1",                    max_mvaOutput_hadTopTaggerWithKinFit)
-          ("HTT_wKinFitNew_top1",                 max_mvaOutput_hadTopTaggerWithKinFitNew)
-          ("HTT_noKinFit_top1",                   max_mvaOutput_hadTopTaggerNoKinFit)
-          ("dr_HadTop1_tau_lead_top1",             deltaR(unfittedHadTopP4, selHadTau_lead->p4()))
-          ("dr_HadTop1_tau_sublead_top1",          deltaR(unfittedHadTopP4, selHadTau_sublead->p4()))
-          ("dr_HadTop1_tautau_top1",               deltaR(unfittedHadTopP4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
-          ("HadTop1_pt_top1",                      unfittedHadTopP4.pt())
-          ("HadTop1_eta_top1",                     std::fabs(unfittedHadTopP4.eta()))
-          ("ncombo_top1",                         ncombo)
-          ("hadtruth_top1",                       hadtruth)
-          ("bWj1Wj2_isGenMatchedWithKinFit_top2", max_truth_hadTopTaggerWithKinFitTop2)
+          ("bWj1Wj2_isGenMatchedNoKinFit_top1",      max_truth_hadTopTaggerNoKinFit)
+          ("bWj1Wj2_isGenMatchedWithKinFit_top2",    max_truth_hadTopTaggerWithKinFitTop2)
           ("bWj1Wj2_isGenMatchedWithKinFitNew_top2", max_truth_hadTopTaggerWithKinFitNewTop2)
-          ("bWj1Wj2_isGenMatchedNoKinFit_top2",   max_truth_hadTopTaggerNoKinFitTop2)
-          ("HTT_wKinFit_top2",                    max_mvaOutput_hadTopTaggerWithKinFitTop2)
-          ("HTT_wKinFitNew_top2",                 max_mvaOutput_hadTopTaggerWithKinFitNewTop2)
-          ("HTT_noKinFit_top2",                   max_mvaOutput_hadTopTaggerNoKinFitTop2)
-          ("dr_HadTop1_tau_lead_top2",             deltaR(unfittedHadTop2P4, selHadTau_lead->p4()))
-          ("dr_HadTop1_tau_sublead_top2",          deltaR(unfittedHadTop2P4, selHadTau_sublead->p4()))
-          ("dr_HadTop1_tautau_top2",               deltaR(unfittedHadTop2P4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
-          ("HadTop1_pt_top2",                      unfittedHadTop2P4.pt())
-          ("HadTop1_eta_top2",                     std::fabs(unfittedHadTop2P4.eta()))
-          ("ncombo_top2",                         ncombo_top2)
-          ("hadtruth_top2",                       hadtruth_top2)
+          ("bWj1Wj2_isGenMatchedNoKinFit_top2",      max_truth_hadTopTaggerNoKinFitTop2)
+          ("ncombo_top1",                            ncombo)
+          ("hadtruth_top1",                          hadtruth)
+          ("ncombo_top2",                            ncombo_top2)
+          ("hadtruth_top2",                          hadtruth_top2)
           ("lumiScale",      lumiScale)
           ("genWeight",      eventInfo.genWeight)
           ("evtWeight",      evtWeight)
