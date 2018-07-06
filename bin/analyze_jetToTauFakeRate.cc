@@ -642,6 +642,7 @@ int main(int argc, char* argv[])
     {
       if(apply_genWeight) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
       if(isMC_tH)         evtWeight_inclusive *= eventInfo.genWeight_tH;
+      lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
       evtWeight_inclusive *= lumiScale;
@@ -795,10 +796,6 @@ int main(int argc, char* argv[])
     std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
     Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, selHadTaus, selJets);
     double met_LD = compMEt_LD(met.p4(), mht_p4);
-
-    if ( isMC ) {
-      lheInfoReader->read();
-    }
 
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 

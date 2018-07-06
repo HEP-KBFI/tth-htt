@@ -951,6 +951,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     {
       if(apply_genWeight) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
       if(isMC_tH)         evtWeight_inclusive *= eventInfo.genWeight_tH;
+      lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
       evtWeight_inclusive *= lumiScale;
@@ -1315,10 +1316,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     const leptonGenMatchEntry& selLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, selLepton_lead, selLepton_sublead);
     int idxSelLepton_genMatch = selLepton_genMatch.idx_;
     assert(idxSelLepton_genMatch != kGen_LeptonUndefined2);
-
-    if ( isMC ) {
-      lheInfoReader->read();
-    }
 
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",

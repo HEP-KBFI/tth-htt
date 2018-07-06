@@ -955,6 +955,7 @@ main(int argc,
     {
       if(apply_genWeight) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
       if(isMC_tH)         evtWeight_inclusive *= eventInfo.genWeight_tH;
+      lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
       evtWeight_inclusive *= lumiScale;
@@ -1035,11 +1036,6 @@ main(int argc,
       jetGenMatcher.addGenLeptonMatch(selJets_dR07, genLeptons, 0.2);
       jetGenMatcher.addGenHadTauMatch(selJets_dR07, genHadTaus, 0.2);
       jetGenMatcher.addGenJetMatch   (selJets_dR07, genJets,    0.2);
-    }
-
-    if(isMC)
-    {
-      lheInfoReader->read();
     }
 
     if(run_lumi_eventSelector)
