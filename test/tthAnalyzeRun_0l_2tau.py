@@ -57,9 +57,23 @@ hadTau_charge_selections = [ "OS", "SS" ]
 
 if mode == "default":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  hadTau_selection         = "dR03mvaMedium"
+  for sample_name, sample_info in samples.items():
+    if sample_info["process_name_specific"] in [
+          "TTTo2L2Nu_PSweights", "TTToSemiLeptonic_PSweights", "TTToHadronic_PSweights",
+        ]:
+      # Use non-PSweights samples for the analysis to estimate the irreducible ttbar background
+      sample_info["use_it"] = False
+
+  hadTau_selection = "dR03mvaMedium"
 elif mode == "forBDTtraining":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
+  for sample_name, sample_info in samples.items():
+    if sample_info["process_name_specific"] in [
+          "TTTo2L2Nu", "TTToSemiLeptonic", "TTToHadronic",
+        ]:
+      # Use PSweights samples only for BDT training
+      sample_info["use_it"] = False
+
   hadTau_selection         = "dR03mvaLoose"
   hadTau_selection_relaxed = "dR03mvaVLoose"
   hadTau_charge_selections = [ "OS" ]
