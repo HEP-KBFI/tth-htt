@@ -78,6 +78,7 @@ class analyzeConfig(object):
           outputDir,
           executable_analyze,
           channel,
+          samples,
           central_or_shifts,
           max_files_per_job,
           era,
@@ -106,6 +107,7 @@ class analyzeConfig(object):
         self.outputDir = outputDir
         self.executable_analyze = executable_analyze
         self.channel = channel
+        self.samples = samples
         self.lep_mva_wp = lep_mva_wp
         self.central_or_shifts = central_or_shifts
         self.max_files_per_job = max_files_per_job

@@ -70,6 +70,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       outputDir                 = outputDir,
       executable_analyze        = executable_analyze,
       channel                   = "ttWctrl",
+      samples                   = samples,
       central_or_shifts         = central_or_shifts,
       max_files_per_job         = max_files_per_job,
       era                       = era,
@@ -88,8 +89,6 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       use_home                  = use_home,
       do_sync                   = do_sync,
     )
-
-    self.samples = samples
 
     self.lepton_selections = [ "Tight", "Fakeable" ]
     self.lepton_frWeights = [ "enabled", "disabled" ]

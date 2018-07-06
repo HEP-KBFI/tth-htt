@@ -72,6 +72,7 @@ class analyzeConfig_4l(analyzeConfig):
       outputDir                 = outputDir,
       executable_analyze        = executable_analyze,
       channel                   = "4l",
+      samples                   = samples,
       central_or_shifts         = central_or_shifts,
       max_files_per_job         = max_files_per_job,
       era                       = era,
@@ -90,8 +91,6 @@ class analyzeConfig_4l(analyzeConfig):
       isDebug                   = isDebug,
       use_home                  = use_home,
     )
-
-    self.samples = samples
 
     self.lepton_selections = [ "Tight", "Fakeable" ]
     self.lepton_frWeights = [ "enabled", "disabled" ]

@@ -76,6 +76,7 @@ class analyzeConfig_2lss(analyzeConfig):
       outputDir                 = outputDir,
       executable_analyze        = executable_analyze,
       channel                   = "2lss",
+      samples                   = samples,
       central_or_shifts         = central_or_shifts,
       max_files_per_job         = max_files_per_job,
       era                       = era,
@@ -95,7 +96,6 @@ class analyzeConfig_2lss(analyzeConfig):
       use_home                  = use_home,
     )
 
-    self.samples = samples
     self.MEMbranch = MEMbranch
 
     self.lepton_selections = [ "Tight", "Fakeable" ]
