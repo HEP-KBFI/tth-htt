@@ -22,7 +22,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions.h" // check_mvaInputs, get_mvaInputVariables
-#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 1l_2tau category
+#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h" // LeptonFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h" // JetToTauFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
@@ -38,8 +38,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader, EventInfo
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // Reco*CollectionCleaner
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // Reco*CollectionGenMatcher
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
@@ -483,7 +483,7 @@ int main(int argc, char* argv[])
   };
   std::map<int, selHistManagerType*> selHistManagers;
   for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
-	hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
+        hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
 
     std::string process_and_genMatch = process_string;
     if ( apply_hadTauGenMatching ) process_and_genMatch += hadTauGenMatch_definition->name_;
@@ -552,7 +552,7 @@ int main(int argc, char* argv[])
       "0l_2tau_bloose", "0l_2tau_btight"
     };
     for ( vstring::const_iterator category = categories_tau.begin();
-	  category != categories_tau.end(); ++category ) {
+          category != categories_tau.end(); ++category ) {
       TString histogramDir_category = histogramDir.data();
       histogramDir_category.ReplaceAll("0l_2tau", category->data());
       selHistManager->hadTaus_in_categories_[*category] = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
@@ -604,21 +604,21 @@ int main(int argc, char* argv[])
     const vstring decayModes_evt = eventInfo.getDecayModes();
     if ( isSignal ) {
       for ( vstring::const_iterator decayMode = decayModes_evt.begin();
-	    decayMode != decayModes_evt.end(); ++decayMode) {
+            decayMode != decayModes_evt.end(); ++decayMode) {
 
-	std::string decayMode_and_genMatch = (*decayMode);
-	if ( apply_hadTauGenMatching ) decayMode_and_genMatch += hadTauGenMatch_definition->name_;
+        std::string decayMode_and_genMatch = (*decayMode);
+        if ( apply_hadTauGenMatching ) decayMode_and_genMatch += hadTauGenMatch_definition->name_;
 
-	selHistManager->evt_in_decayModes_[*decayMode] = new EvtHistManager_0l_2tau(makeHistManager_cfg(decayMode_and_genMatch,
+        selHistManager->evt_in_decayModes_[*decayMode] = new EvtHistManager_0l_2tau(makeHistManager_cfg(decayMode_and_genMatch,
           Form("%s/sel/evt", histogramDir.data()), central_or_shift));
-	selHistManager->evt_in_decayModes_[*decayMode]->bookHistograms(fs);
+        selHistManager->evt_in_decayModes_[*decayMode]->bookHistograms(fs);
       }
     }
     vstring categories_evt = { 
       "0l_2tau_bloose", "0l_2tau_btight"
     };
     for ( vstring::const_iterator category = categories_evt.begin();
-	  category != categories_evt.end(); ++category ) {
+          category != categories_evt.end(); ++category ) {
       TString histogramDir_category = histogramDir.data();
       histogramDir_category.ReplaceAll("0l_2tau", category->data());
       selHistManager->evt_in_categories_[*category] = new EvtHistManager_0l_2tau(makeHistManager_cfg(process_and_genMatch, 
@@ -798,8 +798,8 @@ int main(int argc, char* argv[])
     bool selTrigger_2tau = use_triggers_2tau && isTriggered_2tau;
     if ( !selTrigger_2tau ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
-	std::cout << " (selTrigger_2tau = " << selTrigger_2tau << ")" << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+        std::cout << " (selTrigger_2tau = " << selTrigger_2tau << ")" << std::endl;
       }
       continue;
     }
@@ -979,10 +979,10 @@ int main(int argc, char* argv[])
       const double btagWeight = get_BtagWeight(selJets);
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
-	std::cout << "lumiScale = " << lumiScale << std::endl;
-	if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
-	std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
-	std::cout << "btagWeight = " << btagWeight << std::endl;
+        std::cout << "lumiScale = " << lumiScale << std::endl;
+        if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
+        std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
+        std::cout << "btagWeight = " << btagWeight << std::endl;
       }
     }
 
@@ -995,7 +995,7 @@ int main(int argc, char* argv[])
 
       dataToMCcorrectionInterface->setHadTaus(
         selHadTau_lead_genPdgId, selHadTau_lead->pt(), selHadTau_lead->eta(),
-	selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta());
+        selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta());
 
       dataToMCcorrectionInterface_0l_2tau_trigger->setHadTaus(
         selHadTau_lead->pt(), selHadTau_lead->eta(), selHadTau_lead->phi(),
@@ -1005,7 +1005,7 @@ int main(int argc, char* argv[])
 //--- apply data/MC corrections for trigger efficiency
       double sf_triggerEff = dataToMCcorrectionInterface_0l_2tau_trigger->getSF_triggerEff();
       if ( isDEBUG ) {
-	std::cout << "sf_triggerEff = " << sf_triggerEff << std::endl;
+        std::cout << "sf_triggerEff = " << sf_triggerEff << std::endl;
       }
       triggerWeight *= sf_triggerEff;
       weight_data_to_MC_correction *= sf_triggerEff;
@@ -1017,12 +1017,12 @@ int main(int argc, char* argv[])
       sf_hadTauEff *= dataToMCcorrectionInterface->getSF_eToTauFakeRate();
       sf_hadTauEff *= dataToMCcorrectionInterface->getSF_muToTauFakeRate();
       if ( isDEBUG ) { 
-	std::cout << "sf_hadTauEff = " << sf_hadTauEff << std::endl;
+        std::cout << "sf_hadTauEff = " << sf_hadTauEff << std::endl;
       }
       weight_hadTauEff *= sf_hadTauEff;
       weight_data_to_MC_correction *= sf_hadTauEff;
       if ( isDEBUG ) {
-	std::cout << "weight_data_to_MC_correction = " << weight_data_to_MC_correction << std::endl;
+        std::cout << "weight_data_to_MC_correction = " << weight_data_to_MC_correction << std::endl;
       }
       evtWeight *= weight_data_to_MC_correction;
     }       
@@ -1030,8 +1030,8 @@ int main(int argc, char* argv[])
     // veto events that contain leptons passing tight selection criteria, to avoid overlap with other channels
     if ( !(tightLeptons.size() <= 0) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event " << eventInfo.str() << " FAILS tightLeptons selection." << std::endl;
-	printCollection("tightLeptons", tightLeptons);
+        std::cout << "event " << eventInfo.str() << " FAILS tightLeptons selection." << std::endl;
+        printCollection("tightLeptons", tightLeptons);
       }
       continue;
     }
@@ -1062,11 +1062,11 @@ int main(int argc, char* argv[])
 
       weight_fakeRate = getWeight_2L(
         prob_fake_hadTau_lead, passesTight_hadTau_lead, 
-	prob_fake_hadTau_sublead, passesTight_hadTau_sublead
+        prob_fake_hadTau_sublead, passesTight_hadTau_sublead
       );
 
       if ( isDEBUG ) {
-	std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
+        std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
       }
       evtWeight *= weight_fakeRate;
     }    
@@ -1135,10 +1135,10 @@ int main(int argc, char* argv[])
     
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event " << eventInfo.str() << " FAILS MEt filters." << std::endl;
-	}
-	continue;
+        if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS MEt filters." << std::endl;
+        }
+        continue;
       }
     }
     cutFlowTable.update("MEt filters", evtWeight);
@@ -1153,10 +1153,10 @@ int main(int argc, char* argv[])
     }
     if ( failsSignalRegionVeto ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event " << eventInfo.str() << " FAILS overlap w/ the SR: "
+        std::cout << "event " << eventInfo.str() << " FAILS overlap w/ the SR: "
                      "# tight taus = " << tightHadTaus.size() << " >= 2\n"
         ;
-	printCollection("tightHadTaus", tightHadTaus);
+        printCollection("tightHadTaus", tightHadTaus);
       }
       continue; // CV: avoid overlap with signal region
     }
@@ -1197,41 +1197,42 @@ int main(int argc, char* argv[])
     // resolved HTT
     for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
       for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
-	if ( &(*selWJet1) == &(*selBJet) ) continue;
-	for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
-	  if ( &(*selWJet2) == &(*selBJet) ) continue;
-	  if ( &(*selWJet2) == &(*selWJet1) ) continue;
-	  ncombo++;
+        if ( &(*selWJet1) == &(*selBJet) ) continue;
+        for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
+          if ( &(*selWJet2) == &(*selBJet) ) continue;
+          if ( &(*selWJet2) == &(*selWJet1) ) continue;
+          ncombo++;
 
-	  const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
-	  bool isGenMatched = false;
-	  
-    if ( isMC && selectBDT ) {
-	    std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
-									(*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(),
-									genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
-									kGenTop
-									);
+          const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
+          bool isGenMatched = false;
 
-	    std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
-									    (*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(),
-									    genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2],
-									    kGenAntiTop
-									    );
-	    
-	    isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
+          if ( isMC && selectBDT ) {
+            std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
+              (*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(),
+              genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
+              kGenTop
+            );
+
+            std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
+              (*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(),
+              genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2],
+              kGenAntiTop
+            );
+
+            isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
             if ( isGenMatched ) hadtruth = true;
           }
+
           if ( bdtResult.at(kXGB_with_kinFit) > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
             max_truth_hadTopTaggerWithKinFit = isGenMatched;
             max_mvaOutput_hadTopTaggerWithKinFit = bdtResult.at(kXGB_with_kinFit);
             fittedHadTopP4 = hadTopTagger->kinFit()->fittedTop();
             unfittedHadTopP4 = (*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4();
-	    selBJetTopPt = (*selBJet)->pt();
-	    selWJet1TopPt = (*selWJet1)->pt();
-	    selWJet2TopPt = (*selWJet2)->pt();
+            selBJetTopPt = (*selBJet)->pt();
+            selWJet1TopPt = (*selWJet1)->pt();
+            selWJet2TopPt = (*selWJet2)->pt();
           }
-          
+
           if ( bdtResult.at(kXGB_with_kinFitNew) > max_mvaOutput_hadTopTaggerWithKinFitNew ) { // hadTopTaggerWithKinFit
             max_truth_hadTopTaggerWithKinFitNew = isGenMatched;
             max_mvaOutput_hadTopTaggerWithKinFitNew = bdtResult.at(kXGB_with_kinFitNew);
@@ -1247,31 +1248,41 @@ int main(int argc, char* argv[])
     }
     // resolved 2nd Top
     for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
-      if(fabs((*selBJet)->pt() - selBJetTopPt) < 0.005 || fabs((*selBJet)->pt() - selWJet1TopPt) < 0.005 || fabs((*selBJet)->pt() - selWJet2TopPt) < 0.005)continue;
+      if(fabs((*selBJet)->pt() - selBJetTopPt) < 0.005 ||
+         fabs((*selBJet)->pt() - selWJet1TopPt) < 0.005 ||
+         fabs((*selBJet)->pt() - selWJet2TopPt) < 0.005) continue;
+
       for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
         if ( &(*selWJet1) == &(*selBJet) ) continue;
-	if(fabs((*selWJet1)->pt() - selBJetTopPt) < 0.005 || fabs((*selWJet1)->pt() - selWJet1TopPt) < 0.005 || fabs((*selWJet1)->pt() - selWJet2TopPt) < 0.005)continue;
+
+        if(fabs((*selWJet1)->pt() - selBJetTopPt) < 0.005 ||
+           fabs((*selWJet1)->pt() - selWJet1TopPt) < 0.005 ||
+           fabs((*selWJet1)->pt() - selWJet2TopPt) < 0.005) continue;
+
         for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
           if ( &(*selWJet2) == &(*selBJet) ) continue;
           if ( &(*selWJet2) == &(*selWJet1) ) continue;
-	  if(fabs((*selWJet2)->pt() - selBJetTopPt) < 0.005 || fabs((*selWJet2)->pt() - selWJet1TopPt) < 0.005 || fabs((*selWJet2)->pt() - selWJet2TopPt) < 0.005)continue;
+
+          if(fabs((*selWJet2)->pt() - selBJetTopPt) < 0.005 ||
+             fabs((*selWJet2)->pt() - selWJet1TopPt) < 0.005 ||
+             fabs((*selWJet2)->pt() - selWJet2TopPt) < 0.005) continue;
           ncombo_top2++;
 
           const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
           bool isGenMatched = false;
 
           if ( isMC && selectBDT ) {
-	    std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
-                                                                        (*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(),
-                                                                        genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
-                                                                        kGenTop
-                                                                        );
+            std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
+              (*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(),
+              genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
+              kGenTop
+            );
 
-	    std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
-                                                                            (*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(),
-                                                                            genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2],
-                                                                            kGenAntiTop
-                                                                            );
+            std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
+              (*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(),
+              genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2],
+              kGenAntiTop
+            );
 
             isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
             if ( isGenMatched ) hadtruth_top2 = true;
@@ -1428,36 +1439,36 @@ int main(int argc, char* argv[])
           ("tau1_eta",       selHadTau_lead -> eta())
           ("tau2_eta",       selHadTau_sublead -> eta())
           ("dr_taus",        deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4()))
-   	  ("mT_tau1",        comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi()))
+          ("mT_tau1",        comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi()))
           ("mT_tau2",        comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi()))
           ("mTauTauVis",     mTauTauVis)
-	  ("mTauTau",        mTauTau)
-	  ("bWj1Wj2_isGenMatchedWithKinFit_top1", max_truth_hadTopTaggerWithKinFit)
-	  ("bWj1Wj2_isGenMatchedWithKinFitNew_top1", max_truth_hadTopTaggerWithKinFitNew)
-	  ("bWj1Wj2_isGenMatchedNoKinFit_top1",   max_truth_hadTopTaggerNoKinFit)
-	  ("HTT_wKinFit_top1",                    max_mvaOutput_hadTopTaggerWithKinFit)
-	  ("HTT_wKinFitNew_top1",                 max_mvaOutput_hadTopTaggerWithKinFitNew)
-	  ("HTT_noKinFit_top1",                   max_mvaOutput_hadTopTaggerNoKinFit)
-	  ("dr_HadTop1_tau_lead_top1",             deltaR(unfittedHadTopP4, selHadTau_lead->p4()))
-	  ("dr_HadTop1_tau_sublead_top1",          deltaR(unfittedHadTopP4, selHadTau_sublead->p4()))
-	  ("dr_HadTop1_tautau_top1",               deltaR(unfittedHadTopP4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
-	  ("HadTop1_pt_top1",                      unfittedHadTopP4.pt())
-	  ("HadTop1_eta_top1",                     std::fabs(unfittedHadTopP4.eta()))
-	  ("ncombo_top1",                         ncombo)
-	  ("hadtruth_top1",                       hadtruth)
-	  ("bWj1Wj2_isGenMatchedWithKinFit_top2", max_truth_hadTopTaggerWithKinFitTop2)
-	  ("bWj1Wj2_isGenMatchedWithKinFitNew_top2", max_truth_hadTopTaggerWithKinFitNewTop2)
-	  ("bWj1Wj2_isGenMatchedNoKinFit_top2",   max_truth_hadTopTaggerNoKinFitTop2)
-	  ("HTT_wKinFit_top2",                    max_mvaOutput_hadTopTaggerWithKinFitTop2)
-	  ("HTT_wKinFitNew_top2",                 max_mvaOutput_hadTopTaggerWithKinFitNewTop2)
-	  ("HTT_noKinFit_top2",                   max_mvaOutput_hadTopTaggerNoKinFitTop2)
-	  ("dr_HadTop1_tau_lead_top2",             deltaR(unfittedHadTop2P4, selHadTau_lead->p4()))
-	  ("dr_HadTop1_tau_sublead_top2",          deltaR(unfittedHadTop2P4, selHadTau_sublead->p4()))
-	  ("dr_HadTop1_tautau_top2",               deltaR(unfittedHadTop2P4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
-	  ("HadTop1_pt_top2",                      unfittedHadTop2P4.pt())
-	  ("HadTop1_eta_top2",                     std::fabs(unfittedHadTop2P4.eta()))
-	  ("ncombo_top2",                         ncombo_top2)
-	  ("hadtruth_top2",                       hadtruth_top2)
+          ("mTauTau",        mTauTau)
+          ("bWj1Wj2_isGenMatchedWithKinFit_top1", max_truth_hadTopTaggerWithKinFit)
+          ("bWj1Wj2_isGenMatchedWithKinFitNew_top1", max_truth_hadTopTaggerWithKinFitNew)
+          ("bWj1Wj2_isGenMatchedNoKinFit_top1",   max_truth_hadTopTaggerNoKinFit)
+          ("HTT_wKinFit_top1",                    max_mvaOutput_hadTopTaggerWithKinFit)
+          ("HTT_wKinFitNew_top1",                 max_mvaOutput_hadTopTaggerWithKinFitNew)
+          ("HTT_noKinFit_top1",                   max_mvaOutput_hadTopTaggerNoKinFit)
+          ("dr_HadTop1_tau_lead_top1",             deltaR(unfittedHadTopP4, selHadTau_lead->p4()))
+          ("dr_HadTop1_tau_sublead_top1",          deltaR(unfittedHadTopP4, selHadTau_sublead->p4()))
+          ("dr_HadTop1_tautau_top1",               deltaR(unfittedHadTopP4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
+          ("HadTop1_pt_top1",                      unfittedHadTopP4.pt())
+          ("HadTop1_eta_top1",                     std::fabs(unfittedHadTopP4.eta()))
+          ("ncombo_top1",                         ncombo)
+          ("hadtruth_top1",                       hadtruth)
+          ("bWj1Wj2_isGenMatchedWithKinFit_top2", max_truth_hadTopTaggerWithKinFitTop2)
+          ("bWj1Wj2_isGenMatchedWithKinFitNew_top2", max_truth_hadTopTaggerWithKinFitNewTop2)
+          ("bWj1Wj2_isGenMatchedNoKinFit_top2",   max_truth_hadTopTaggerNoKinFitTop2)
+          ("HTT_wKinFit_top2",                    max_mvaOutput_hadTopTaggerWithKinFitTop2)
+          ("HTT_wKinFitNew_top2",                 max_mvaOutput_hadTopTaggerWithKinFitNewTop2)
+          ("HTT_noKinFit_top2",                   max_mvaOutput_hadTopTaggerNoKinFitTop2)
+          ("dr_HadTop1_tau_lead_top2",             deltaR(unfittedHadTop2P4, selHadTau_lead->p4()))
+          ("dr_HadTop1_tau_sublead_top2",          deltaR(unfittedHadTop2P4, selHadTau_sublead->p4()))
+          ("dr_HadTop1_tautau_top2",               deltaR(unfittedHadTop2P4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
+          ("HadTop1_pt_top2",                      unfittedHadTop2P4.pt())
+          ("HadTop1_eta_top2",                     std::fabs(unfittedHadTop2P4.eta()))
+          ("ncombo_top2",                         ncombo_top2)
+          ("hadtruth_top2",                       hadtruth_top2)
           ("lumiScale",      lumiScale)
           ("genWeight",      eventInfo.genWeight)
           ("evtWeight",      evtWeight)
@@ -1485,7 +1496,7 @@ int main(int argc, char* argv[])
 
   std::cout << "sel. Entries by gen. matching:" << std::endl;
   for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
-	hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
+        hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
 
     std::string process_and_genMatch = process_string;
     if ( apply_hadTauGenMatching ) process_and_genMatch += hadTauGenMatch_definition->name_;
@@ -1493,7 +1504,8 @@ int main(int argc, char* argv[])
     int idxHadTau = hadTauGenMatch_definition->idx_;
 
     const TH1* histogram_EventCounter = selHistManagers[idxHadTau]->evt_->getHistogram_EventCounter();
-    std::cout << " " << process_and_genMatch << " = " << histogram_EventCounter->GetEntries() << " (weighted = " << histogram_EventCounter->Integral() << ")" << std::endl;
+    std::cout << " " << process_and_genMatch << " = " << histogram_EventCounter->GetEntries()
+              << " (weighted = " << histogram_EventCounter->Integral() << ")" << std::endl;
   }
   std::cout << std::endl;
 
@@ -1533,4 +1545,3 @@ int main(int argc, char* argv[])
 
   return EXIT_SUCCESS;
 }
-
