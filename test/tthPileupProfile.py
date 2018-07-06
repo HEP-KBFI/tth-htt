@@ -52,7 +52,8 @@ if mode == 'sync':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017
 elif mode == 'all':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017
-  for sample_key, sample_entry in samples_2017.items():
+  for sample_name, sample_entry in samples_2017.items():
+    if sample_name == 'sum_events': continue
     sample_entry['use_it'] = True
 else:
   raise ValueError('Unexpected mode: %s' % mode)
@@ -71,6 +72,7 @@ if __name__ == '__main__':
 
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
+  del samples['sum_events']
 
   configDir = os.path.join("/home",       getpass.getuser(), "ttHPileupProduction", era, version)
   outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHPileupProduction", era, version)

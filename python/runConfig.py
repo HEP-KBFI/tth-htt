@@ -36,7 +36,8 @@ def filter_samples(sample, condition):
   regex = condition[1]
 
   sample_key = ALLOWED_CONDITION_KEYS[key]
-  for sample_entry in sample.values():
+  for sample_name, sample_entry in sample.values():
+    if sample_name == 'sum_events': continue
     use_it = bool(regex.match(sample_entry[sample_key]))
     sample_entry['use_it'] = use_it
     logging_str = 'Enabling' if use_it else 'Disabling'

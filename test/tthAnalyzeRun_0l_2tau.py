@@ -58,6 +58,7 @@ hadTau_charge_selections = [ "OS", "SS" ]
 if mode == "default":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
   for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
     if sample_info["process_name_specific"] in [
           "TTTo2L2Nu_PSweights", "TTToSemiLeptonic_PSweights", "TTToHadronic_PSweights",
         ]:
@@ -68,6 +69,7 @@ if mode == "default":
 elif mode == "forBDTtraining":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
   for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
     if sample_info["process_name_specific"] in [
           "TTTo2L2Nu", "TTToSemiLeptonic", "TTToHadronic",
         ]:
@@ -92,10 +94,18 @@ else:
   raise ValueError("Invalid era: %s" % era)
 
 for sample_name, sample_info in samples.items():
+  if sample_name == 'sum_events': continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "2tau" ]
-  if sample_name.startswith(("/DoubleEG/", "/DoubleMuon/", "/MuonEG/", "/SingleElectron/", "/SingleMuon/")):
-    sample_info["use_it"] = False
+  if sample_info["type"] == "data":
+    if era == "2017":
+      if not sample_name.startswith(("/SingleElectron/", "/SingleMuon/")):
+        sample_info["use_it"] = False
+    elif era == "2016":
+      if not sample_name.startswith("/Tau/"):
+        sample_info["use_it"] = False
+    else:
+      raise ValueError("Invalid era: %s" % era)
 
 if __name__ == '__main__':
   logging.basicConfig(

@@ -48,6 +48,7 @@ else:
   raise ValueError("Invalid era: %s" % era)
 
 for sample_name, sample_info in samples.items():
+  if sample_name == 'sum_events': continue
   if sample_info["use_it"] == False: continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1mu", "2mu" ]
