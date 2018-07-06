@@ -36,7 +36,6 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
-rle_select        = os.path.expanduser(args.rle_select)
 hlt_filter        = args.hlt_filter
 files_per_job     = args.files_per_job
 use_home          = args.use_home
@@ -52,10 +51,10 @@ for systematic_label in systematics_label:
 hadTau_charge_selections = [ "OS", "SS" ]
 
 if mode == "default":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
   hadTau_selection         = "dR03mvaMedium"
 elif mode == "forBDTtraining":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
   hadTau_selection         = "dR03mvaLoose"
   hadTau_selection_relaxed = "dR03mvaVLoose"
   hadTau_charge_selections = [ "OS" ]
@@ -123,7 +122,6 @@ if __name__ == '__main__':
     select_rle_output                     = True,
     dry_run                               = dry_run,
     isDebug                               = debug,
-    rle_select                            = rle_select,
     hlt_filter                            = hlt_filter,
     use_home                              = use_home,
   )
