@@ -1454,7 +1454,7 @@ int main(int argc, char* argv[])
       ((apply_hadTauGenMatching && selHadTau_genMatch.numGenMatchedJets_ == 0) || ! apply_hadTauGenMatching)
     ;
 
-    if(bdt_filler && isGenMatched)
+    if(bdt_filler)
     {
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("mindr_tau1_jet", TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets)))

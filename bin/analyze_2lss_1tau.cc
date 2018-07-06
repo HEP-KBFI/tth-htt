@@ -2105,7 +2105,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
     ;
 
-    if ( bdt_filler && isGenMatched ) {
+    if ( bdt_filler ) {
 
       std::map<std::string, double> mvaInputs_Hjj_tagger;
       double mvaOutput_Hjj_tagger = -1.;

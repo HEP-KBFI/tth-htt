@@ -1922,7 +1922,7 @@ int main(int argc, char* argv[])
       ((apply_hadTauGenMatching && selHadTau_genMatch.numGenMatchedJets_ == 0) || ! apply_hadTauGenMatching)
     ;
 
-    if ( bdt_filler && isGenMatched ) {
+    if ( bdt_filler ) {
 
       double lep_genLepPt = (selLepton->genLepton() != 0)  ? selLepton->genLepton()->pt() : 0. ;
       double tau1_genTauPt = (selHadTau_lead->genHadTau() != 0)  ? selHadTau_lead->genHadTau()->pt() : 0. ;

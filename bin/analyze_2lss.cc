@@ -1776,7 +1776,7 @@ int main(int argc, char* argv[])
       ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
     ;
 
-    if ( bdt_filler && isGenMatched ) {
+    if ( bdt_filler ) {
       //FR weights for bdt ntuple
       if(leptonFakeRateInterface) {
         if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());

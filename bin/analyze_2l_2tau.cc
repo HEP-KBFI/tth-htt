@@ -1740,7 +1740,7 @@ int main(int argc, char* argv[])
       ((apply_hadTauGenMatching && selHadTau_genMatch.numGenMatchedJets_ == 0) || ! apply_hadTauGenMatching)
     ;
 
-    if ( bdt_filler && isGenMatched ) {
+    if ( bdt_filler ) {
 
       double lep1_genLepPt = selLepton_lead->genLepton()     ? selLepton_lead->genLepton()->pt()    : 0.;
       double lep2_genLepPt = selLepton_sublead->genLepton()  ? selLepton_sublead->genLepton()->pt() : 0.;
