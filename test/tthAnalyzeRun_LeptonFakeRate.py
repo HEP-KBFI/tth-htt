@@ -10,7 +10,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_8_1_0') # immediate parent dir to src folder
 
-
+qcd_inclusive = False # set to True if you want to process inclusive muon-enriched sample
 
 mode_choices           = [ 'default', 'sync' ]
 sys_choices            = [ 'full' ] + systematics.an_leptonFR_opts
@@ -66,6 +66,13 @@ for sample_name, sample_info in samples.items():
   if sample_name.startswith(('/MuonEG/Run', '/Tau/Run', '/DoubleEG/Run', '/SingleElectron/Run2017B')):
       # '/SingleElectron/Run2017B' excluded since no useful triggers present in that dataset
       sample_info["use_it"] = False
+  if sample_info["sample_category"] == "QCD":
+    sample_info["use_it"] = True
+    if sample_info["process_name_specific"].endswith("_Mu5"):
+      sample_info["use_it"] = not qcd_inclusive
+    elif sample_info["process_name_specific"] == "QCD_Mu15":
+      sample_info["use_it"] = qcd_inclusive
+
 
 if __name__ == '__main__':
   logging.basicConfig(
