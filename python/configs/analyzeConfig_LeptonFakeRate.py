@@ -395,10 +395,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
 
       is_mc = (sample_info["type"] == "mc")
-      lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
-      apply_genWeight = sample_info["apply_genWeight"] if (is_mc and "apply_genWeight" in sample_info.keys()) else False
       sample_category = sample_info["sample_category"]
-      triggers = sample_info["triggers"]
 
       for central_or_shift in self.central_or_shifts:
         inputFileList = inputFileLists[sample_name]
@@ -631,18 +628,18 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         self.createCfg_prep_dcard_LeptonFakeRate(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
       # Create setupDatacards_LeptonFakeRate.py script from the template
-      systematics = []
+      systematics_leptonFR = []
       for systematic in self.central_or_shifts:
         if systematic == 'central':
           continue
         systematic_name = systematic.replace('Up', '').replace('Down', '')
-        if systematic_name not in systematics:
-          systematics.append(systematic_name)
+        if systematic_name not in systematics_leptonFR:
+          systematics_leptonFR.append(systematic_name)
       setup_dcards_template_file = os.path.join(jinja_template_dir, 'setupDatacards_LeptonFakeRate.py.template')
       setup_dcards_template = open(setup_dcards_template_file, 'r').read()
       setup_dcards_script = jinja2.Template(setup_dcards_template).render(
         leptons           = lepton_bins_merged,
-        central_or_shifts = systematics,
+        central_or_shifts = systematics_leptonFR,
       )
       setup_dcards_script_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'setupDatacards_LeptonFakeRate.py')
       logging.debug("writing setupDatacards_LeptonFakeRate script file = '%s'" % setup_dcards_script_path)
