@@ -45,6 +45,7 @@ namespace aux
       case 0:  hadTauIdxLabel = "_lead";    break;
       case 1:  hadTauIdxLabel = "_sublead"; break;
       case 2:  hadTauIdxLabel = "_third";   break;
+      case 3:  hadTauIdxLabel = "_fourth";  break;	
       default: assert(0);
     }
     return hadTauIdxLabel;
