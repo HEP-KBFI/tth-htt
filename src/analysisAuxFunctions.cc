@@ -106,6 +106,37 @@ compMEt_LD(const Particle::LorentzVector & met_p4,
   return met_coef * met_p4.pt() + mht_coef * mht_p4.pt();
 }
 
+double
+compHT(const std::vector<const RecoLepton *> & leptons,
+       const std::vector<const RecoHadTau *> & hadTaus,
+       const std::vector<const RecoJet *> & jets)
+{
+  double ht = 0;
+  for(const RecoLepton * lepton: leptons)
+  {
+    ht += lepton->pt();
+  }
+  for(const RecoHadTau * hadTau: hadTaus)
+  {
+    ht += hadTau->pt();
+  }
+  for(const RecoJet * jet: jets)
+  {
+    ht += jet->pt();
+  }
+  return ht;
+}
+
+double
+compSTMEt(const std::vector<const RecoLepton *> & leptons,
+	  const std::vector<const RecoHadTau *> & hadTaus,
+	  const std::vector<const RecoJet *> & jets,
+	  const Particle::LorentzVector & met_p4)
+{
+  double stmet = compHT(leptons, hadTaus, jets) + met_p4.pt();
+  return stmet;
+}
+
 std::vector<const RecoLepton *>
 mergeLeptonCollectionsNoSort(const std::vector<const RecoElectron *> & electrons,
                              const std::vector<const RecoMuon *> & muons)
@@ -217,4 +248,17 @@ nCombinationsK(int n,
     result /= i;
   }
   return result;
+}
+
+int
+countTrigObjs_passingL1(const std::vector<TrigObj>& trigObjs, int Id, double min_l1pt, double min_l1pt_2)
+{
+  int numSelTrigObjs = 0;
+  for ( std::vector<TrigObj>::const_iterator trigObj = trigObjs.begin();
+	trigObj != trigObjs.end(); ++trigObj ) {
+    if ( trigObj->id() == Id && trigObj->l1pt() > min_l1pt && (trigObj->l1pt_2() > min_l1pt_2 || min_l1pt_2 == -1.) ) {
+      ++numSelTrigObjs;
+    }
+  }
+  return numSelTrigObjs;
 }
