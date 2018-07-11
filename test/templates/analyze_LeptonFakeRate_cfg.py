@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import recommen
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring('/hdfs/local/karl/ttHNtupleProduction/2017/2018May29_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/tree_1.root'),
+    fileNames = cms.vstring('/hdfs/local/karl/ttHNtupleProduction/2017/2018Jul02_woPresel_nom_all/ntuples/QCD_Mu15/0000/tree_1.root'),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )

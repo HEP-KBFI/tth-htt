@@ -10,7 +10,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_8_1_0') # immediate parent dir to src folder
 
-qcd_inclusive = False # set to True if you want to process inclusive muon-enriched sample
+qcd_inclusive = True # set to True if you want to process inclusive muon-enriched sample 
 
 mode_choices           = [ 'default', 'sync' ]
 sys_choices            = [ 'full' ] + systematics.an_leptonFR_opts
