@@ -197,7 +197,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
     self.cfgFile_addBackgrounds_Convs_LeptonFakeRate = os.path.join(self.template_dir, "addBackground_Convs_LeptonFakeRate_cfg.py") ## NEWLY ADDED FOR CONV. BG
     self.jobOptions_addBackgrounds_Convs_LeptonFakeRate = {}                                                                        ## NEWLY ADDED FOR CONV. BG
-    self.processToSubtractConvsFrom = "ttH"      ## NEWLY ADDED FOR CONV. BG (CHANGE TO QCD WHEN SAMPLES ARRIVE)
+    self.processToSubtractConvsFrom = "QCD"      ## NEWLY ADDED FOR CONV. BG
 
     self.executable_prep_dcard = executable_prep_dcard
     self.cfgFile_prep_dcard = os.path.join(self.template_dir, "prepareDatacards_LeptonFakeRate_cfg.py")
@@ -761,7 +761,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
     self.addToMakefile_backgrounds_from_data(lines_makefile)
-    # self.addToMakefile_backgrounds_from_MC(lines_makefile)   ## ADDED FOR CONV. BGS
+    self.addToMakefile_backgrounds_from_MC(lines_makefile)   ## ADDED FOR CONV. BGS
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_combine(lines_makefile)

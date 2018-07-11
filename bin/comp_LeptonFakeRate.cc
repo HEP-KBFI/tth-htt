@@ -156,8 +156,14 @@ struct fitResultType
 
 void readConversionCorr(TFile* inputFile, std::map<std::string, fitResultType*>& fitResults, const std::string& process, const std::string& variable, const double& conv_unc ){
 
-  std::string histogramName_QCD_num_e = "LeptonFakeRate/numerator/electrons/tight";    
-  std::string histogramName_QCD_den_e = "LeptonFakeRate/numerator/electrons/fakeable"; // QCD (fakeable - tight)
+  // std::string histogramName_QCD_num_e = "LeptonFakeRate/numerator/electrons/tight";    
+  // std::string histogramName_QCD_den_e = "LeptonFakeRate/numerator/electrons/fakeable"; // QCD (fakeable - tight)
+
+  std::string histogramName_QCD_num_el = "";
+  std::string histogramName_QCD_den_el = "";
+  std::string histogramName_QCD_num_g_el = "";
+  std::string histogramName_QCD_den_g_el = "";
+
 
   for ( std::map<std::string, fitResultType*>::iterator fitResult = fitResults.begin();
         fitResult != fitResults.end(); ++fitResult ) {
@@ -165,20 +171,28 @@ void readConversionCorr(TFile* inputFile, std::map<std::string, fitResultType*>&
         std::cout << "abs(eta): min = " << fitResult->second->minAbsEta_ << ", max = " << fitResult->second->maxAbsEta_ << std::endl;
 
 
-	if ( fitResult->second->lepton_type_ == fitResultType::kMuon     ) continue; // SINCE VALID ONLY FOR ELECTRONS                                                                                                               
-	
+	if( fitResult->second->lepton_type_ == fitResultType::kMuon){ // SINCE VALID ONLY FOR ELECTRONS                                                                                                               
+	  std::cout << "Skipping since muon" << std::endl;
+	  continue; 
+	}
 
-	std::string histogramName_QCD_num_el = Form("LeptonFakeRate/numerator/electrons/tight/%s/%s/%s/%s", (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
+        if((fitResult->second->minPt_ == -1.) && (fitResult->second->maxPt_ == -1.) && (fitResult->second->minAbsEta_ == -1.) && (fitResult->second->maxAbsEta_ == -1.)){ // INCLUSIVE
+	  histogramName_QCD_num_el = Form("LeptonFakeRate/numerator/electrons_tight/incl/%s/%s", process.data(), variable.data()); // QCD tight
+	  histogramName_QCD_den_el = Form("LeptonFakeRate/denominator/electrons_fakeable/incl/%s/%s", process.data(), variable.data()); // QCD (fakeable - tight)
+	  histogramName_QCD_num_g_el = Form("LeptonFakeRate/numerator/electrons_tight/incl/%s%s/%s", process.data(), "g", variable.data()); // QCD tight (gen photon matched)
+	  histogramName_QCD_den_g_el = Form("LeptonFakeRate/denominator/electrons_fakeable/incl/%s%s/%s", process.data(), "g", variable.data()); // QCD (fakeable - tight) (gen photon matched)
+	}else{ // PT AND ETA BINNED
+ 	  histogramName_QCD_num_el = Form("LeptonFakeRate/numerator/electrons_tight/%s/%s/%s/%s", (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
 						   (getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_)).data(), process.data(), variable.data()); // QCD tight
-
-	std::string histogramName_QCD_den_el = Form("LeptonFakeRate/numerator/electrons/fakeable/%s/%s/%s/%s", (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
+	  histogramName_QCD_den_el = Form("LeptonFakeRate/denominator/electrons_fakeable/%s/%s/%s/%s", (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
 						   (getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_)).data(), process.data(), variable.data()); // QCD (fakeable - tight)
-
-	std::string histogramName_QCD_num_g_el = Form("LeptonFakeRate/numerator/electrons/tight/%s/%s/%s%s/%s", (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
+ 	  histogramName_QCD_num_g_el = Form("LeptonFakeRate/numerator/electrons_tight/%s/%s/%s%s/%s", (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
 						   (getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_)).data(), process.data(), "g", variable.data()); // QCD tight (gen photon matched)
-
-	std::string histogramName_QCD_den_g_el = Form("LeptonFakeRate/numerator/electrons/fakeable/%s/%s/%s%s/%s", (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
+	  histogramName_QCD_den_g_el = Form("LeptonFakeRate/denominator/electrons_fakeable/%s/%s/%s%s/%s", (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
 						   (getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_)).data(), process.data(), "g", variable.data()); // QCD (fakeable - tight) (gen photon matched)
+	}
+
+
 
 
 	TH1* histogram_QCD_num_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_num_el.data()));
@@ -206,14 +220,18 @@ void readConversionCorr(TFile* inputFile, std::map<std::string, fitResultType*>&
 	}else{
           FakeRate_QCD = 1.0;
 	}  
+	std::cout << " FakeRate_QCD " << FakeRate_QCD << std::endl;
 
         double FR_Conv_Corr = 1.;
         if(FakeRate_QCD != 0.){
 	  FR_Conv_Corr = FakeRate_QCD_NC/FakeRate_QCD; // central value computed here
 	}
+	std::cout << " FR_Conv_Corr " << FR_Conv_Corr << std::endl;
 
+	std::cout<< " histogram_QCD_num_el->Integral() " << histogram_QCD_num_el->Integral() << " histogram_QCD_den_el->Integral() " << histogram_QCD_den_el->Integral() << std::endl;
+ 
         // ERROR PROP. ON FAKE RATE CORR.
-        assert( histogram_QCD_num_el->Integral() == 0. || histogram_QCD_den_el->Integral() == 0.);
+        assert( ((histogram_QCD_num_el->Integral() != 0.) && (histogram_QCD_den_el->Integral() != 0.)) );
 
         double alpha_pass = histogram_QCD_num_g_el->Integral()/histogram_QCD_num_el->Integral();
         double alpha_fail = histogram_QCD_den_g_el->Integral()/histogram_QCD_den_el->Integral();
@@ -655,6 +673,7 @@ int main(int argc, char* argv[])
   readPrefit(inputFile_mc, fitResults_e_fail);
   readPrefit(inputFile_mc, fitResults_mu_pass);
   readPrefit(inputFile_mc, fitResults_mu_fail);
+
 
   readConversionCorr(inputFile_mc, fitResults_e_pass, process, variable, conv_unc); // ADDED FOR ELECTRON CONV. CORRECTIONS
 
