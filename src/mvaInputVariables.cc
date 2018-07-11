@@ -248,27 +248,6 @@ comp_max_dr_jet(const std::vector<const RecoJet *> & jets_cleaned)
   return dRmax;
 }
 
-double
-compHT(const std::vector<const RecoLepton *> & leptons,
-       const std::vector<const RecoHadTau *> & hadTaus,
-       const std::vector<const RecoJet *> & jets_cleaned)
-{
-  double ht = 0.;
-  for(const RecoLepton * lepton: leptons)
-  {
-    ht += lepton->pt();
-  }
-  for(const RecoHadTau * hadTau: hadTaus)
-  {
-    ht += hadTau->pt();
-  }
-  for(const RecoJet * jet: jets_cleaned)
-  {
-    ht += jet->pt();
-  }
-  return ht;
-}
-
 double 
 comp_cosThetaStar(const Particle::LorentzVector & daughterP4, const Particle::LorentzVector & motherP4)
 {
