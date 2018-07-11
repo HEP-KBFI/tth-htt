@@ -18,6 +18,7 @@ import os
 import sys
 import logging
 import ROOT
+import math
 
 # the first entry in each array must be inclusive
 samples_to_sum_2017 = [
@@ -63,7 +64,7 @@ samples_to_sum_2017 = [
   [ 'WWToLNuQQ',                      'WWToLNuQQ_ext1',                         ],
 ]
 
-def plot(input_files, output_files, title, expected_neff):
+def plot(input_files, output_files, title, expected_neff, mode):
   histogram_dict = {}
   for sample_name, sample_entry in input_files.items():
     if not os.path.isfile(sample_entry['input']):
@@ -73,7 +74,7 @@ def plot(input_files, output_files, title, expected_neff):
     logging.debug('Opened file {}'.format(sample_entry['input']))
     root_directories = list(filter(
       lambda root_dir: root_dir != None, [
-        root_file.Get(os.path.join(key.GetName(), 'unbiased', 'genEvt')) \
+        root_file.Get(os.path.join(key.GetName(), mode, 'genEvt')) \
         for key in root_file.GetListOfKeys() if key.GetClassName() == 'TDirectoryFile'
       ]
     ))
@@ -98,7 +99,7 @@ def plot(input_files, output_files, title, expected_neff):
                        if histogram_name_actual != 'lumiScale' else 'central'
       histogram = histogram_dir.Get(histogram_name_actual).Clone()
       histogram.SetDirectory(0)
-      if histogram.GetEntries() != sample_entry['nentries']:
+      if histogram.GetEntries() != sample_entry['nentries'] and mode == 'unbiased':
         raise RuntimeError('Expected {} entries from {} in file {}, but got {} entries'.format(
           sample_entry['nentries'], histogram_name, sample_entry['input'], histogram.GetEntries(),
         ))
@@ -153,13 +154,14 @@ def plot(input_files, output_files, title, expected_neff):
     else:
       assert(nentries == histograms['nentries'])
 
-    if not (y_down < expected_neff < y_up):
+    if not (y_down < expected_neff < y_up) and mode == 'unbiased':
       logging.warning(
         "Event effective event count {} not within {} +- {}".format(expected_neff, y_content, y_error)
       )
 
-  min_y = min(min_y, expected_neff)
-  max_y = max(max_y, expected_neff)
+  if mode == 'unbiased':
+    min_y = min(min_y, expected_neff)
+    max_y = max(max_y, expected_neff)
   diff = 0.2 * (max_y - min_y)
   min_y -= diff
   max_y += diff
@@ -214,7 +216,9 @@ def plot(input_files, output_files, title, expected_neff):
     line_up.Draw()
     lines.append(line_up)
 
-    leg_name = '%s (%.1f #pm %.1f)' % (histogram_name, y_content, y_error)
+    sig_digits = max(8 - int(math.ceil(math.log10(y_content))), 1) if y_content > 0. else 1
+    leg_pattern = '%s (%.{}f #pm %.{}f)'.format(sig_digits, sig_digits)
+    leg_name = leg_pattern % (histogram_name, y_content, y_error)
     legend.AddEntry(histogram, leg_name)
 
     logging.debug(
@@ -223,7 +227,7 @@ def plot(input_files, output_files, title, expected_neff):
       )
     )
 
-    if not expected_histogram:
+    if not expected_histogram and mode == 'unbiased':
       expected_histogram = histogram.Clone()
       expected_histogram.Reset()
       expected_histogram.SetBinContent(1, expected_neff)
@@ -235,10 +239,11 @@ def plot(input_files, output_files, title, expected_neff):
       expected_histogram.SetLineStyle(9)
       expected_histogram.SetFillStyle(fill_style)
 
-  logging.debug('Expecting {} events'.format(expected_neff))
-  expected_histogram.Draw("e2 same")
+  if expected_histogram:
+    logging.debug('Expecting {} events'.format(expected_neff))
+    expected_histogram.Draw("e2 same")
+    legend.AddEntry(expected_histogram, 'expected (%.1f)' % expected_neff)
 
-  legend.AddEntry(expected_histogram, 'expected (%.1f)' % expected_neff)
   legend.Draw()
 
   for output_file in output_files:
@@ -246,7 +251,8 @@ def plot(input_files, output_files, title, expected_neff):
 
   canvas.Close()
   legend.Delete()
-  expected_histogram.Delete()
+  if expected_histogram:
+    expected_histogram.Delete()
   for histogram_name in histogram_dict:
     histogram_dict[histogram_name]['histogram'].Delete()
   for line in lines:
@@ -265,6 +271,11 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', required = False, choices = [ '2017' ], default = '2017',
   help = 'R|Path to the sample dictionary',
+)
+parser.add_argument('-m', '--mode',
+  type = str, dest = 'mode', metavar = 'mode', required = True, choices = [ 'sel', 'unbiased' ],
+  default = 'unbiased',
+  help = 'R|Draw effective event counts for fully inclusive or for selected events',
 )
 parser.add_argument('-i', '--input',
   type = str, dest = 'input', metavar = 'pattern', required = True,
@@ -367,4 +378,4 @@ for valid_samples in valid_samples_to_sum:
     os.path.join(args.output, '%s.%s' % (valid_samples['label'], ext)) for ext in args.extension
   ]
   expected_neff = lumi * valid_samples['xs']
-  plot(input_files, output_files, valid_samples['label'], expected_neff)
+  plot(input_files, output_files, valid_samples['label'], expected_neff, args.mode)
