@@ -254,6 +254,12 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
 ])
 """
 
+dictionary_sum_events_str = """{{ dict_name }}["sum_events"] = [{%- for sample_list in sample_lists %}
+  [ {% for sample in sample_list %}{{ "%-50s"|format("'%s',"|format(sample)) }} {% endfor %} ],
+{%- endfor %}
+]
+"""
+
 path_entry_str = """      OD([
         ("path",      "{{ path }}"),
         ("selection", "{{ selection }}"),
@@ -1070,37 +1076,6 @@ if __name__ == '__main__':
         continue
       if entry['located']:
         process_paths(meta_dict, key)
-    for key_arr in sum_events:
-      event_sum = {}
-      missing_keys = []
-      for meta_key, meta_entry in meta_dict.items():
-        if meta_entry['process_name_specific'] in key_arr:
-          if not meta_entry['located']:
-            missing_keys.append(meta_entry['process_name_specific'])
-          else:
-            for histogram_name, values in meta_entry['nof_events'].items():
-              if histogram_name in event_sum:
-                if len(event_sum[histogram_name]) != len(values):
-                  raise RuntimeError(
-                    "Expected {nBins_expected} bins from histogram {histogram_name} in sample "
-                    "{sample_name}, but got {nBins_actual} bins".format(
-                      nBins_expected = len(event_sum[histogram_name]),
-                      histogram_name = histogram_name,
-                      sample_name    = meta_entry['process_name_specific'],
-                      nBins_actual   = len(values),
-                    )
-                  )
-                for idxBin, value in enumerate(values):
-                  event_sum[histogram_name][idxBin] += value
-              else:
-                event_sum[histogram_name] = values
-      if 0 < len(missing_keys) < len(key_arr):
-        logging.warning(
-          "Could not find all samples to compute the number of events: %s" % ', '.join(missing_keys)
-        )
-      for meta_key, meta_entry in meta_dict.items():
-        if meta_entry['process_name_specific'] in key_arr:
-          meta_entry['nof_events'] = event_sum
 
     for key, entry in meta_dict.items():
       if not name_regex.match(entry['process_name_specific']):
@@ -1155,6 +1130,11 @@ if __name__ == '__main__':
         ) + '\n\n'
       else:
         logging.warning("Could not locate paths for {key}".format(key = key))
+
+  output += jinja2.Template(dictionary_sum_events_str).render(
+    dict_name    = args.output_dict_name,
+    sample_lists = sum_events,
+  ) + '\n\n'
 
   dictionary_path = os.path.join(args.output_directory, args.generate_python)
   with open(dictionary_path, 'w') as f:

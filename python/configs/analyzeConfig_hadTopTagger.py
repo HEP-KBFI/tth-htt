@@ -37,6 +37,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
       outputDir          = outputDir,
       executable_analyze = executable_analyze,
       channel            = "hadTopTagger",
+      samples            = samples,
       central_or_shifts  = [ "central" ],
       max_files_per_job  = max_files_per_job,
       era                = era,
@@ -52,8 +53,6 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
       isDebug            = isDebug,
       use_home           = use_home,
     )
-
-    self.samples = samples
 
     self.hadTau_selection = hadTau_selection
 

@@ -536,7 +536,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythi
   ("nof_db_files",          246),
   ("fsize_db",              379888624037),
   ("xsection",              202.8),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 379.89GB; nevents: 8.80M; release: 9_4_0_patch1; last modified: 2018-01-17 05:05:38"),
 ])
@@ -549,7 +549,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythi
   ("nof_db_files",          37),
   ("fsize_db",              43976270871),
   ("xsection",              202.8),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 43.98GB; nevents: 1.03M; release: 9_4_0_patch1; last modified: 2018-03-03 17:55:10"),
 ])

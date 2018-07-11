@@ -31,6 +31,7 @@ GenEvtHistManager::bookHistograms(TFileDirectory & dir)
   histogram_numGenJets_withinAcc_                     = book1D(dir, "numGenJets_withinAcc",                     "numGenJets_withinAcc",                     20, -0.5, +19.5);
   histogram_numGenLeptonsAndHadTausAndJets_withinAcc_ = book1D(dir, "numGenLeptonsAndHadTausAndJets_withinAcc", "numGenLeptonsAndHadTausAndJets_withinAcc", 20, -0.5, +19.5);
 
+  histogram_lumiScale_    = book1D(dir, "lumiScale",    "lumiScale",    1, -0.5, +0.5);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
@@ -59,6 +60,7 @@ GenEvtHistManager::fillHistograms(const std::vector<GenLepton> & genElectrons,
                                   const std::vector<GenHadTau> & genHadTaus,
                                   const std::vector<GenPhoton> & genPhotons,
                                   const std::vector<GenJet> & genJets,
+                                  double lumiScale,
                                   double evtWeight)
 {
   const int numGenElectrons_withinAcc = countGenParticles_withinAcc(genElectrons, minGenElectronPt_, maxGenElectronAbsEta_);
@@ -84,5 +86,6 @@ GenEvtHistManager::fillHistograms(const std::vector<GenLepton> & genElectrons,
   fillWithOverFlow(histogram_numGenJets_withinAcc_,                     numGenJets_withinAcc,                     evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numGenLeptonsAndHadTausAndJets_withinAcc_, numGenLeptonsAndHadTausAndJets_withinAcc, evtWeight, evtWeightErr);
 
+  fillWithOverFlow(histogram_lumiScale_,    0., lumiScale, lumiScale);
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

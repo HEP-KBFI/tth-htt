@@ -25,7 +25,7 @@ RecoJetWriter::RecoJetWriter(int era,
   , ptMassOption_(isMC_ ? kJet_central : kJet_central_nonNominal)
   , write_ptMass_systematics_(false)
   , write_BtagWeight_systematics_(false)
-  , max_nJets_(32)
+  , max_nJets_(256)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , branchName_btag_(! RecoJet::useDeepCSV ? "CSVV2" : "DeepB")
@@ -39,9 +39,9 @@ RecoJetWriter::RecoJetWriter(int era,
   , jet_QGDiscr_(nullptr)
   , jet_jetId_(nullptr)
 {
-  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()));
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()));
-  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()));
+  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nJets_);
+  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()), max_nJets_);
+  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()), max_nJets_);
   setBranchNames();
 }
 

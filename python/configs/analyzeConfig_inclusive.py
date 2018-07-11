@@ -29,6 +29,7 @@ class analyzeConfig_inclusive(analyzeConfig):
       outputDir          = outputDir,
       executable_analyze = executable_analyze,
       channel            = "inclusive",
+      samples            = samples,
       central_or_shifts  = central_or_shifts,
       max_files_per_job  = 1,
       era                = era,
@@ -50,7 +51,6 @@ class analyzeConfig_inclusive(analyzeConfig):
     )
 
     self.cfgFile_analyze = cfgFile_analyze
-    self.samples = samples
     self.output_tree = output_tree
     self.check_output_files = check_output_files
     self.rle_select = rle_select

@@ -12,9 +12,11 @@ class TTree;
 class GenParticleWriter
 {
 public:
-  GenParticleWriter(const std::string & branchName_obj);
+  GenParticleWriter(const std::string & branchName_obj,
+                    unsigned int max_nParticles = 32);
   GenParticleWriter(const std::string & branchName_num,
-                    const std::string & branchName_obj);
+                    const std::string & branchName_obj,
+                    unsigned int max_nParticles = 32);
   ~GenParticleWriter();
 
   /**

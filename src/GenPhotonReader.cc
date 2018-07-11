@@ -6,12 +6,13 @@
 std::map<std::string, int> GenPhotonReader::numInstances_;
 std::map<std::string, GenPhotonReader *> GenPhotonReader::instances_;
 
-GenPhotonReader::GenPhotonReader()
-  : GenPhotonReader("GenPhoton")
+GenPhotonReader::GenPhotonReader(unsigned int max_nPhotons)
+  : GenPhotonReader("GenPhoton", max_nPhotons)
 {}
 
-GenPhotonReader::GenPhotonReader(const std::string & branchName_obj)
-  : max_nPhotons_(32)
+GenPhotonReader::GenPhotonReader(const std::string & branchName_obj,
+                                 unsigned int max_nPhotons)
+  : max_nPhotons_(max_nPhotons)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , photon_pt_(nullptr)

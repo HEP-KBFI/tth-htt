@@ -7,9 +7,9 @@ std::map<std::string, int> GenJetReader::numInstances_;
 std::map<std::string, GenJetReader *> GenJetReader::instances_;
 
 GenJetReader::GenJetReader(const std::string & branchName_obj,
-                           bool read_partonFlavour)
-  : read_partonFlavour_(read_partonFlavour)
-  , max_nJets_(32)
+                           unsigned int max_nJets)
+  : read_partonFlavour_(false)
+  , max_nJets_(max_nJets)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , jet_pt_(nullptr)
@@ -47,12 +47,12 @@ GenJetReader::setBranchNames()
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
     branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
-    branchName_pdgId_ = Form("%s_%s", branchName_obj_.data(), read_partonFlavour_ ? "partonFlavour" : "pdgId");
+    branchName_pdgId_ = Form("%s_%s", branchName_obj_.data(), "pdgId");
     instances_[branchName_obj_] = this;
   }
   else
   {
-    if(branchName_num_ != instances_[branchName_obj_]->branchName_num_ )
+    if(branchName_num_ != instances_[branchName_obj_]->branchName_num_)
     {
       throw cmsException(this)
         << "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
@@ -62,6 +62,12 @@ GenJetReader::setBranchNames()
     }
   }
   ++numInstances_[branchName_obj_];
+}
+
+void
+GenJetReader::read_partonFlavour()
+{
+  branchName_pdgId_ = Form("%s_%s", branchName_obj_.data(), "partonFlavour");
 }
 
 void

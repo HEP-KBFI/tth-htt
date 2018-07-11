@@ -9,6 +9,7 @@ import os
 import logging
 import uuid
 import inspect
+import copy
 
 DEPENDENCIES = [
     "",  # CMSSW_BASE/src
@@ -78,6 +79,7 @@ class analyzeConfig(object):
           outputDir,
           executable_analyze,
           channel,
+          samples,
           central_or_shifts,
           max_files_per_job,
           era,
@@ -106,6 +108,58 @@ class analyzeConfig(object):
         self.outputDir = outputDir
         self.executable_analyze = executable_analyze
         self.channel = channel
+
+        # sum the event counts for samples which cover the same phase space only if
+        # there are multiple such samples
+        event_sums = copy.deepcopy(samples['sum_events'])
+        del samples['sum_events']
+        dbs_list_to_sum = []
+        for sample_list_to_sum in event_sums:
+          dbs_list = []
+          for sample_to_sum in sample_list_to_sum:
+            for dbs_key, sample_entry in samples.items():
+              if sample_entry['process_name_specific'] == sample_to_sum and sample_entry['use_it']:
+                dbs_list.append(dbs_key)
+          if len(dbs_list) > 1:
+            dbs_list_to_sum.append(dbs_list)
+            dbs_names = [ samples[dbs_key]['process_name_specific'] for dbs_key in dbs_list ]
+            missing_dbs_names = list(sorted(list(set(sample_list_to_sum) - set(dbs_names)), key = lambda k: k.lower()))
+            if missing_dbs_names:
+              logging.info(
+                'Summing the effective counts of {} but NOT the effective counts of {} because the latter '
+                'is not processed'.format(', '.join(dbs_names), ', '.join(missing_dbs_names))
+              )
+            else:
+              logging.info('Summing the effective counts of {}'.format(', '.join(dbs_names)))
+          elif len(dbs_list) == 1:
+            logging.info('NOT summing the effective event counts of {} as only {} is processed'.format(
+              ', '.join(sample_list_to_sum), samples[dbs_list[0]]['process_name_specific']
+            ))
+          else:
+            logging.info('NOT summing the effective event counts of {} as none of the samples are needed'.format(
+              ', '.join(sample_list_to_sum)
+            ))
+        for dbs_list in dbs_list_to_sum:
+          dbs_list_human = ', '.join(samples[dbs_key]['process_name_specific'] for dbs_key in dbs_list)
+          nof_events = {}
+          for dbs_key in dbs_list:
+            if len(nof_events) == 0:
+              nof_events = copy.deepcopy(samples[dbs_key]['nof_events'])
+            else:
+              if set(samples[dbs_key]['nof_events']) != set(nof_events.keys()):
+                raise ValueError('Mismatching event counts for samples: %s' % dbs_list_human)
+              for count_type, count_array in samples[dbs_key]['nof_events'].items():
+                if len(nof_events[count_type]) != len(count_array):
+                  raise ValueError(
+                    'Mismatching array length of %s for samples: %s' % (count_type, dbs_list_human)
+                  )
+                for count_idx, count_val in enumerate(count_array):
+                  nof_events[count_type][count_idx] += count_val
+          for dbs_key in dbs_list:
+            samples[dbs_key]['nof_events'] = copy.deepcopy(nof_events)
+
+        self.samples = copy.deepcopy(samples)
+
         self.lep_mva_wp = lep_mva_wp
         self.central_or_shifts = central_or_shifts
         self.max_files_per_job = max_files_per_job
@@ -163,7 +217,6 @@ class analyzeConfig(object):
         ))
 
         self.dirs = {}
-        self.samples = {}
 
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}

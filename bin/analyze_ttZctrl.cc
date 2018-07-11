@@ -677,8 +677,16 @@ int main(int argc, char* argv[])
       }
     }
 
-    if ( isMC ) {
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
+    double evtWeight_inclusive = 1.;
+    if(isMC)
+    {
+      if(apply_genWeight) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if(isMC_tH)         evtWeight_inclusive *= eventInfo.genWeight_tH;
+      lheInfoReader->read();
+      evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
+      evtWeight_inclusive *= eventInfo.pileupWeight;
+      evtWeight_inclusive *= lumiScale;
+      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
     }
 
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
@@ -1021,10 +1029,6 @@ int main(int argc, char* argv[])
     int idxSelLepton_genMatch = selLepton_genMatch.idx_;
     assert(idxSelLepton_genMatch != kGen_LeptonUndefined3);
 
-    if ( isMC ) {
-      lheInfoReader->read();
-    }
-
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
@@ -1033,11 +1037,7 @@ int main(int argc, char* argv[])
     double triggerWeight = 1.;
     double leptonSF_weight = 1.;
     if ( isMC ) {
-      evtWeight *= lumiScale;
-      if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
-      if ( isMC_tH ) evtWeight *= eventInfo.genWeight_tH;
-      evtWeight *= eventInfo.pileupWeight;
-      evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
+      evtWeight *= evtWeight_inclusive;
       for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
 	    jet != selJets.end(); ++jet ) {
 	btagWeight *= (*jet)->BtagWeight();
@@ -1427,7 +1427,7 @@ int main(int argc, char* argv[])
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
 
     if ( isMC ) {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
+      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, lumiScale);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
 

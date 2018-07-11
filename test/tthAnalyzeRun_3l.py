@@ -79,6 +79,7 @@ else:
   raise ValueError("Invalid era: %s" % era)
 
 for sample_name, sample_info in samples.items():
+  if sample_name == 'sum_events': continue
   if sample_name.startswith('/Tau/Run'):
     sample_info["use_it"] = False
 

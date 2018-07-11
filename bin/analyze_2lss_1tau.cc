@@ -946,8 +946,16 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
     }
 
-    if ( isMC ) {
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
+    double evtWeight_inclusive = 1.;
+    if(isMC)
+    {
+      if(apply_genWeight) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if(isMC_tH)         evtWeight_inclusive *= eventInfo.genWeight_tH;
+      lheInfoReader->read();
+      evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
+      evtWeight_inclusive *= eventInfo.pileupWeight;
+      evtWeight_inclusive *= lumiScale;
+      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
     }
 
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
@@ -1309,21 +1317,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     int idxSelLepton_genMatch = selLepton_genMatch.idx_;
     assert(idxSelLepton_genMatch != kGen_LeptonUndefined2);
 
-    if ( isMC ) {
-      lheInfoReader->read();
-    }
-
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
     double evtWeight = 1.;
     double btagWeight = 1.;
     if ( isMC ) {
-      evtWeight *= lumiScale;
-      if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
-      if ( isMC_tH ) evtWeight *= eventInfo.genWeight_tH;
-      evtWeight *= eventInfo.pileupWeight;
-      evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
+      evtWeight *= evtWeight_inclusive;
       btagWeight = get_BtagWeight(selJets);
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
@@ -2084,7 +2084,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
 
     if ( isMC ) {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
+      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, lumiScale);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
 
@@ -2105,7 +2105,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
     ;
 
-    if ( bdt_filler && isGenMatched ) {
+    if ( bdt_filler ) {
 
       std::map<std::string, double> mvaInputs_Hjj_tagger;
       double mvaOutput_Hjj_tagger = -1.;

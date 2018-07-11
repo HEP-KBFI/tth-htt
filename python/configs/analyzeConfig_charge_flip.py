@@ -38,6 +38,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
       outputDir          = outputDir,
       executable_analyze = executable_analyze,
       channel            = "charge_flip",
+      samples            = samples,
       central_or_shifts  = central_or_shifts,
       max_files_per_job  = max_files_per_job,
       era                = era,
@@ -53,8 +54,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
       isDebug            = isDebug,
       use_home           = use_home,
     )
-
-    self.samples = samples
 
     self.prep_dcard_processesToCopy = ["data_obs", "DY", "DY_fake", "WJets", "TTbar", "Singletop", "Diboson"]
     self.prep_dcard_signals = [ "DY" ]

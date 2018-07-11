@@ -452,8 +452,16 @@ int main(int argc, char* argv[])
       }
     }
 
-    if ( isMC ) {
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
+    double evtWeight_inclusive = 1.;
+    if(isMC)
+    {
+      if(apply_genWeight) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if(isMC_tH)         evtWeight_inclusive *= eventInfo.genWeight_tH;
+      lheInfoReader->read();
+      evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
+      evtWeight_inclusive *= eventInfo.pileupWeight;
+      evtWeight_inclusive *= lumiScale;
+      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
     }
 
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e);
@@ -599,20 +607,13 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("= 0 presel muons");
     cutFlowHistManager->fillHistograms("= 0 presel muons", lumiScale);
-    
-    if ( isMC ) {
-      lheInfoReader->read();
-    }
 
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
     double evtWeight = 1.;
     if ( isMC ) {
-      evtWeight *= lumiScale;
-      if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
-      evtWeight *= eventInfo.pileupWeight;
-      evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
+      evtWeight *= evtWeight_inclusive;
       evtWeight *= get_BtagWeight(selJets);
     }
 
@@ -859,7 +860,7 @@ int main(int argc, char* argv[])
     else if ( isCharge_OS ) preselElectronHistManagerOS.fillHistograms(preselElectrons, evtWeight);
 
     if ( isMC ) {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
+      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, lumiScale);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
 

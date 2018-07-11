@@ -45,9 +45,9 @@ RecoHadTauWriter::RecoHadTauWriter(int era,
   , hadTau_idAgainstMu_(nullptr)
   , hadTau_filterBits_(nullptr)
 {
-  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()));
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()));
-  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()));
+  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nHadTaus_);
+  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()), max_nHadTaus_);
+  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()), max_nHadTaus_);
   setBranchNames();
 }
 

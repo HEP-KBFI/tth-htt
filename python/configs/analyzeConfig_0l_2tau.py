@@ -61,10 +61,13 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         executable_addBackgrounds,
         executable_addBackgroundJetToTauFakes,
         histograms_to_fit,
+        do_sync           = False,
         select_rle_output = False,
         verbose           = False,
         dry_run           = False,
         isDebug           = False,
+        rle_select        = '',
+        use_nonnominal    = False,
         hlt_filter        = False,
         use_home          = True,
       ):
@@ -73,6 +76,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       outputDir          = outputDir,
       executable_analyze = executable_analyze,
       channel            = "0l_2tau",
+      samples            = samples,
       lep_mva_wp         = lep_mva_wp,
       central_or_shifts  = central_or_shifts,
       max_files_per_job  = max_files_per_job,
@@ -84,15 +88,13 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       num_parallel_jobs  = num_parallel_jobs,
       histograms_to_fit  = histograms_to_fit,
       triggers           = [ '2tau', ],
+      do_sync            = do_sync,
       verbose            = verbose,
       dry_run            = dry_run,
       isDebug            = isDebug,
       use_home           = use_home,
     )
 
-    self.samples = samples
-
-    ##self.hadTau_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ]
     self.hadTau_selections = [ "Tight", "Fakeable" ]
     self.hadTau_frWeights = [ "enabled", "disabled" ]
     self.hadTau_selection_part2 = hadTau_selection
@@ -136,6 +138,8 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_0l_2tau_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_0l_2tau_cfg.py")
 
+    self.rle_select = rle_select
+    self.use_nonnominal = use_nonnominal
     self.select_rle_output = select_rle_output
     self.hlt_filter = hlt_filter
 
@@ -227,7 +231,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
           hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
           for hadTau_charge_selection in self.hadTau_charge_selections:
             key_dir = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
-            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
+            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
               initDict(self.dirs, [ key_dir, dir_type ])
               if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
                 self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
@@ -235,7 +239,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
               else:
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                   "_".join([ hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_SYNC ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
@@ -257,10 +261,19 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job)
 
     for hadTau_selection in self.hadTau_selections:
+
+      hadTauSelection = None
+      if hadTau_selection == "forBDTtraining":
+        hadTauSelection = "Tight|%s" % self.hadTau_selection_relaxed
+      elif hadTau_selection == "Fakeable_mcClosure_t":
+        hadTauSelection = "Fakeable|%s" % self.hadTau_selection_part2
+      else:
+        hadTauSelection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
+
       for hadTau_frWeight in self.hadTau_frWeights:
         if hadTau_frWeight == "enabled" and not hadTau_selection.startswith("Fakeable"):
           continue
-        if hadTau_frWeight == "disabled" and not hadTau_selection == "Tight":
+        if hadTau_frWeight == "disabled" and not hadTau_selection in [ "Tight", "forBDTtraining" ]:
           continue
         hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
 
@@ -295,6 +308,8 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                 if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
                   continue
 
+                logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (hadTau_selection_and_frWeight, central_or_shift))
+
                 # build config files for executing analysis code
                 key_dir = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
                 key_analyze_job = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift, jobId)
@@ -302,6 +317,38 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                 if len(ntupleFiles) == 0:
                   logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
                   continue
+
+                syncOutput = ''
+                syncTree = ''
+                syncRequireGenMatching = False
+                if self.do_sync:
+                  if hadTau_charge_selection != 'OS':
+                    continue
+                  if hadTau_selection_and_frWeight == 'Tight':
+                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift))
+                    syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
+                    syncRequireGenMatching = True
+                  elif hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights':
+                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
+                    syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
+                  elif hadTau_selection_and_frWeight == "Fakeable_mcClosure_t_wFakeRateWeights":
+                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_mcClosure_t.root' % (self.channel, central_or_shift))
+                    syncTree = 'syncTree_%s_mcClosure_t' % self.channel.replace('_', '')
+                  else:
+                    continue
+
+                if syncTree and central_or_shift != "central":
+                  syncTree = os.path.join(central_or_shift, syncTree)
+
+                syncRLE = ''
+                if self.do_sync and self.rle_select:
+                  syncRLE = self.rle_select % syncTree
+                  if not os.path.isfile(syncRLE):
+                    logging.warning("Input RLE file for the sync is missing: %s; skipping the job" % syncRLE)
+                    continue
+
+                if syncOutput:
+                  self.inputFiles_sync['sync'].append(syncOutput)
 
                 cfg_key = getKey(
                   self.channel, process_name, hadTau_selection_and_frWeight,
@@ -315,11 +362,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                 applyFakeRateWeights = self.applyFakeRateWeights \
                   if self.isBDTtraining or hadTau_selection.find("Tight") == -1 \
                   else "disabled"
-                hadTauSelection = None
-                if hadTau_selection == "forBDTtraining":
-                  hadTauSelection = "Tight|%s" % self.hadTau_selection_relaxed
-                else:
-                  hadTauSelection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
 
                 self.jobOptions_analyze[key_analyze_job] = {
                   'ntupleFiles'              : ntupleFiles,
@@ -334,7 +376,12 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'applyFakeRateWeights'     : applyFakeRateWeights,
                   'central_or_shift'         : central_or_shift,
                   'selectBDT'                : self.isBDTtraining,
+                  'syncOutput'               : syncOutput,
+                  'syncTree'                 : syncTree,
+                  'syncRLE'                  : syncRLE,
+                  'syncRequireGenMatching'   : syncRequireGenMatching,
                   'apply_hlt_filter'         : self.hlt_filter,
+                  'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, hadTau_selection)
@@ -451,10 +498,14 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                 self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
               self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
+          if self.isBDTtraining or self.do_sync:
+            continue
+
           # sum fake contributions for the total of all MC sample
           # input processes: TT1t0e0m1j, TT0t1e0m1j, TT0t0e1m1j, TT0t0e0m2j; TTW1t0e0m1j,...
           # output process: fakes_mc
           key_addBackgrounds_job = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
+          key_hadd_stage1_5 = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])
@@ -486,17 +537,25 @@ class analyzeConfig_0l_2tau(analyzeConfig):
           self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s_%s.root" % \
             (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection))
 
-    if self.isBDTtraining:
+    if self.isBDTtraining or self.do_sync:
       if self.is_sbatch:
         logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
         self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
         if self.isBDTtraining:
           self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+        elif self.do_sync:
+          self.createScript_sbatch_syncNtuple(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
       logging.info("Creating Makefile")
       lines_makefile = []
       if self.isBDTtraining:
         self.addToMakefile_analyze(lines_makefile)
         self.addToMakefile_hadd_stage1(lines_makefile)
+      elif self.do_sync:
+        self.addToMakefile_syncNtuple(lines_makefile)
+        outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
+        self.outputFile_sync['sync'] = outputFile_sync_path
+        self.targets.append(outputFile_sync_path)
+        self.addToMakefile_hadd_sync(lines_makefile)
       else:
         raise ValueError("Internal logic error")
       self.createMakefile(lines_makefile)
