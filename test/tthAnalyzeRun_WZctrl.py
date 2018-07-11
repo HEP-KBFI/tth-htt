@@ -66,6 +66,7 @@ else:
   raise ValueError("Invalid era: %s" % era)
 
 for sample_name, sample_info in samples.items():
+  if sample_name == 'sum_events': continue
   if sample_info["process_name_specific"] == "WZTo3LNu":
     sample_info["sample_category"] = "WZ"
 

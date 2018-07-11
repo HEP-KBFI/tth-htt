@@ -15172,7 +15172,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_events",                   8796005),
   ("fsize_local",                     10147403870), # 10.15GB, avg file size 57.33MB
   ("fsize_db",                        379888624037), # 379.89GB, avg file size 1.54GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        202.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -15209,7 +15209,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_events",                   1026278),
   ("fsize_local",                     1184713236), # 1.18GB, avg file size 56.41MB
   ("fsize_db",                        43976270871), # 43.98GB, avg file size 1.19GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        202.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -17897,4 +17897,29 @@ samples_2017["/WpWpJJ_EWK_QCD_TuneCP5_13TeV_madgraph_pythia8_Fall17/private/MINI
     # not computed
   ]),
 ])
+
+samples_2017["sum_events"] = [
+  [ 'ST_s-channel_4f_leptonDecays',                    'ST_s-channel_4f_leptonDecays_PSweights',           ],
+  [ 'DY1JetsToLL_M-50',                                'DY1JetsToLL_M-50_ext1',                            ],
+  [ 'GluGluHToZZTo4L',                                 'GluGluHToZZTo4L_ext1',                             ],
+  [ 'DYJetsToLL_M50_HT200to400',                       'DYJetsToLL_M50_HT200to400_ext1',                   ],
+  [ 'DY3JetsToLL_M-50',                                'DY3JetsToLL_M-50_ext1',                            ],
+  [ 'DYJetsToLL_M-4to50_HT-400to600',                  'DYJetsToLL_M-4to50_HT-400to600_ext1',              ],
+  [ 'ZZTo4L',                                          'ZZTo4L_ext1',                                      ],
+  [ 'TTToHadronic',                                    'TTToHadronic_PSweights',                           ],
+  [ 'DYJetsToLL_M-4to50_HT-70to100',                   'DYJetsToLL_M-4to50_HT-70to100_ext1',               ],
+  [ 'DYJetsToLL_M-4to50_HT-200to400',                  'DYJetsToLL_M-4to50_HT-200to400_ext1',              ],
+  [ 'TTWJetsToLNu',                                    'TTWJetsToLNu_PSweights',                           ],
+  [ 'TTTo2L2Nu',                                       'TTTo2L2Nu_PSweights',                              ],
+  [ 'DY2JetsToLL_M-50',                                'DY2JetsToLL_M-50_ext1',                            ],
+  [ 'TTZToLL_M10',                                     'TTZToLL_M10_PSweights',                            ],
+  [ 'TTGJets',                                         'TTGJets_ext1',                                     ],
+  [ 'ST_tW_top_5f_inclusiveDecays',                    'ST_tW_top_5f_inclusiveDecays_PSweights',           ],
+  [ 'TTToSemiLeptonic',                                'TTToSemiLeptonic_PSweights',                       ],
+  [ 'DYJetsToLL_M50_HT400to600',                       'DYJetsToLL_M50_HT400to600_ext1',                   ],
+  [ 'WWToLNuQQ',                                       'WWToLNuQQ_ext1',                                   ],
+  [ 'DYJetsToLL_M50_HT100to200',                       'DYJetsToLL_M50_HT100to200_ext1',                   ],
+  [ 'DYJetsToLL_M-50',                                 'DYJetsToLL_M-50_ext1',                             ],
+  [ 'DYJetsToLL_M-4to50_HT-100to200',                  'DYJetsToLL_M-4to50_HT-100to200_ext1',              ],
+]
 

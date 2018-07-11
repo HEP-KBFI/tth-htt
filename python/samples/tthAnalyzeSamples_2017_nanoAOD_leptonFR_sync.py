@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-07-03 17:48:42 with the following command:
+# file generated at 2018-07-06 17:47:24 with the following command:
 # create_dictionary.py -v -m python/samples/metaDict_2017.py -p /hdfs/local/ram/ttHNtupleProduction/2017/2018Mar19_wNanoPrep_wPresel_all/ntuples/SingleMuon_Run2017E_17Nov2017_v1 -f .*SingleMuon.* -Z zeroes.txt -z zombies.txt -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_nanoAOD_leptonFR_sync.py
 
 samples_2017 = OD()
@@ -10,7 +10,7 @@ samples_2017["/SingleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
   ("process_name_specific",           "SingleMuon_Run2017E_17Nov2017_v1"),
   ("nof_files",                       5),
   ("nof_db_files",                    1669),
-  ("nof_events",                      { 
+  ("nof_events",                      {
     'Count'                                  : [       529684, ],
   }),
   ("nof_tree_events",                 923),
@@ -489,4 +489,29 @@ samples_2017["/SingleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
     "HLT_VBF_DoubleTightChargedIsoPFTau20_Trk1_eta2p1_Reg",
   ]),
 ])
+
+samples_2017["sum_events"] = [
+  [ 'ST_s-channel_4f_leptonDecays',                    'ST_s-channel_4f_leptonDecays_PSweights',           ],
+  [ 'DY1JetsToLL_M-50',                                'DY1JetsToLL_M-50_ext1',                            ],
+  [ 'GluGluHToZZTo4L',                                 'GluGluHToZZTo4L_ext1',                             ],
+  [ 'DYJetsToLL_M50_HT200to400',                       'DYJetsToLL_M50_HT200to400_ext1',                   ],
+  [ 'DY3JetsToLL_M-50',                                'DY3JetsToLL_M-50_ext1',                            ],
+  [ 'DYJetsToLL_M-4to50_HT-400to600',                  'DYJetsToLL_M-4to50_HT-400to600_ext1',              ],
+  [ 'ZZTo4L',                                          'ZZTo4L_ext1',                                      ],
+  [ 'TTToHadronic',                                    'TTToHadronic_PSweights',                           ],
+  [ 'DYJetsToLL_M-4to50_HT-70to100',                   'DYJetsToLL_M-4to50_HT-70to100_ext1',               ],
+  [ 'DYJetsToLL_M-4to50_HT-200to400',                  'DYJetsToLL_M-4to50_HT-200to400_ext1',              ],
+  [ 'TTWJetsToLNu',                                    'TTWJetsToLNu_PSweights',                           ],
+  [ 'TTTo2L2Nu',                                       'TTTo2L2Nu_PSweights',                              ],
+  [ 'DY2JetsToLL_M-50',                                'DY2JetsToLL_M-50_ext1',                            ],
+  [ 'TTZToLL_M10',                                     'TTZToLL_M10_PSweights',                            ],
+  [ 'TTGJets',                                         'TTGJets_ext1',                                     ],
+  [ 'ST_tW_top_5f_inclusiveDecays',                    'ST_tW_top_5f_inclusiveDecays_PSweights',           ],
+  [ 'TTToSemiLeptonic',                                'TTToSemiLeptonic_PSweights',                       ],
+  [ 'DYJetsToLL_M50_HT400to600',                       'DYJetsToLL_M50_HT400to600_ext1',                   ],
+  [ 'WWToLNuQQ',                                       'WWToLNuQQ_ext1',                                   ],
+  [ 'DYJetsToLL_M50_HT100to200',                       'DYJetsToLL_M50_HT100to200_ext1',                   ],
+  [ 'DYJetsToLL_M-50',                                 'DYJetsToLL_M-50_ext1',                             ],
+  [ 'DYJetsToLL_M-4to50_HT-100to200',                  'DYJetsToLL_M-4to50_HT-100to200_ext1',              ],
+]
 

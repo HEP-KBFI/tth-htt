@@ -49,7 +49,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
         lep_mva_wp,
         lep_minPt_lead,
         lep_minPt_sublead,
-        lep_minPt_third,              
+        lep_minPt_third,
         hadTau_selection,
         applyFakeRateWeights,
         chargeSumSelections,
@@ -82,6 +82,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       outputDir                 = outputDir,
       executable_analyze        = executable_analyze,
       channel                   = "3l_1tau",
+      samples                   = samples,
       lep_mva_wp                = lep_mva_wp,
       central_or_shifts         = central_or_shifts,
       max_files_per_job         = max_files_per_job,
@@ -104,9 +105,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
     self.lep_minPt_lead = lep_minPt_lead
     self.lep_minPt_sublead = lep_minPt_sublead
-    self.lep_minPt_third = lep_minPt_third  
+    self.lep_minPt_third = lep_minPt_third
 
-    self.samples = samples
     self.MEMbranch = MEMbranch
 
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]

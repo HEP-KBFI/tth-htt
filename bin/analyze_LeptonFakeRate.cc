@@ -950,9 +950,16 @@ main(int argc,
     }
   
 //--- fill generator level histograms (before cuts)
+    double evtWeight_inclusive = 1.;
     if(isMC)
     {
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
+      if(apply_genWeight) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if(isMC_tH)         evtWeight_inclusive *= eventInfo.genWeight_tH;
+      lheInfoReader->read();
+      evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
+      evtWeight_inclusive *= eventInfo.pileupWeight;
+      evtWeight_inclusive *= lumiScale;
+      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
     }
 
 //--- build reco level collections of electrons, muons and hadronic taus;
@@ -1031,11 +1038,6 @@ main(int argc,
       jetGenMatcher.addGenJetMatch   (selJets_dR07, genJets,    0.2);
     }
 
-    if(isMC)
-    {
-      lheInfoReader->read();
-    }
-
     if(run_lumi_eventSelector)
     {
       std::cout << "Event Particle Collection Info\n";
@@ -1063,13 +1065,7 @@ main(int argc,
     double evtWeight = 1.;
     if(isMC)
     {
-      evtWeight *= lumiScale;
-      evtWeight *= eventInfo.pileupWeight;
-
-      if(apply_genWeight) evtWeight *= boost::math::sign(eventInfo.genWeight);
-      if(isMC_tH)         evtWeight *= eventInfo.genWeight_tH;
-
-      evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
+      evtWeight *= evtWeight_inclusive;
 
       const double btagWeight = get_BtagWeight(selJets_dR04); // changed b-tag jet collection to selJets_dR04 from selJets_dR07 here !!!
       evtWeight *= btagWeight;
@@ -1616,7 +1612,7 @@ main(int argc,
 //--- fill generator level histograms (after cuts)
     if(isMC)
     {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets);
+      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, lumiScale);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
 

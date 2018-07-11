@@ -13,8 +13,9 @@ class GenLeptonReader
   : public ReaderBase
 {
 public:
-  GenLeptonReader();
-  GenLeptonReader(const std::string & branchName_promptLeptons);
+  GenLeptonReader(unsigned int max_nPromptLeptons = 32);
+  GenLeptonReader(const std::string & branchName_promptLeptons,
+                  unsigned int max_nPromptLeptons = 32);
   ~GenLeptonReader();
 
   /**

@@ -13,8 +13,9 @@ class GenPhotonReader
   : public ReaderBase
 {
 public:
-  GenPhotonReader();
-  GenPhotonReader(const std::string & branchName_obj);
+  GenPhotonReader(unsigned int max_nPhotons = 32);
+  GenPhotonReader(const std::string & branchName_obj,
+                  unsigned int max_nPhotons = 32);
   ~GenPhotonReader();
 
   /**

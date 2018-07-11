@@ -70,6 +70,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       outputDir                 = outputDir,
       executable_analyze        = executable_analyze,
       channel                   = "2los_1tau",
+      samples                   = samples,
       lep_mva_wp                = lep_mva_wp,
       central_or_shifts         = central_or_shifts,
       max_files_per_job         = max_files_per_job,
@@ -88,8 +89,6 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       isDebug                   = isDebug,
       use_home                  = use_home,
     )
-
-    self.samples = samples
 
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]
     self.lepton_and_hadTau_frWeights = [ "enabled", "disabled" ]

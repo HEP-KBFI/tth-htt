@@ -7,5 +7,5 @@ samples_2017[sync_key]['nof_files'] = 1
 samples_2017[sync_key]['nof_tree_events'] = 56465
 
 for sample_key in samples_2017:
-  if sample_key != sync_key:
+  if sample_key not in [ sync_key, 'sum_events' ]:
     del samples_2017[sample_key]

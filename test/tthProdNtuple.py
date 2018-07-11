@@ -76,7 +76,8 @@ if era == "2017":
 else:
   raise ValueError("Invalid era: %s" % era)
 
-for sample_key, sample_entry in samples.items():
+del samples['sum_events']
+for sample_name, sample_entry in samples.items():
   if mode == "all":
     sample_entry['use_it'] = True
   elif mode == 'forBDTtraining':

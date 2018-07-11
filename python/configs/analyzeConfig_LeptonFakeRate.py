@@ -158,6 +158,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       outputDir             = outputDir,
       executable_analyze    = executable_analyze,
       channel               = "LeptonFakeRate",
+      samples               = samples,
       central_or_shifts     = central_or_shifts,
       max_files_per_job     = max_files_per_job,
       era                   = era,
@@ -180,8 +181,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
        not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')):
       raise ValueError('CMSSW path for combine not valid: %s' % self.cmssw_base_dir_combine)
 
-    self.samples = samples
-
     self.absEtaBins_e = absEtaBins_e
     self.ptBins_e = ptBins_e
     self.absEtaBins_mu = absEtaBins_mu
@@ -198,7 +197,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
     self.cfgFile_addBackgrounds_Convs_LeptonFakeRate = os.path.join(self.template_dir, "addBackground_Convs_LeptonFakeRate_cfg.py") ## NEWLY ADDED FOR CONV. BG
     self.jobOptions_addBackgrounds_Convs_LeptonFakeRate = {}                                                                        ## NEWLY ADDED FOR CONV. BG
-    self.processToSubtractConvsFrom = "ttH"      ## NEWLY ADDED FOR CONV. BG (CHANGE TO QCD WHEN SAMPLES ARRIVE)
+    self.processToSubtractConvsFrom = "QCD"      ## NEWLY ADDED FOR CONV. BG
 
     self.executable_prep_dcard = executable_prep_dcard
     self.cfgFile_prep_dcard = os.path.join(self.template_dir, "prepareDatacards_LeptonFakeRate_cfg.py")
@@ -396,10 +395,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
 
       is_mc = (sample_info["type"] == "mc")
-      lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
-      apply_genWeight = sample_info["apply_genWeight"] if (is_mc and "apply_genWeight" in sample_info.keys()) else False
       sample_category = sample_info["sample_category"]
-      triggers = sample_info["triggers"]
 
       for central_or_shift in self.central_or_shifts:
         inputFileList = inputFileLists[sample_name]
@@ -632,18 +628,18 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         self.createCfg_prep_dcard_LeptonFakeRate(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
       # Create setupDatacards_LeptonFakeRate.py script from the template
-      systematics = []
+      systematics_leptonFR = []
       for systematic in self.central_or_shifts:
         if systematic == 'central':
           continue
         systematic_name = systematic.replace('Up', '').replace('Down', '')
-        if systematic_name not in systematics:
-          systematics.append(systematic_name)
+        if systematic_name not in systematics_leptonFR:
+          systematics_leptonFR.append(systematic_name)
       setup_dcards_template_file = os.path.join(jinja_template_dir, 'setupDatacards_LeptonFakeRate.py.template')
       setup_dcards_template = open(setup_dcards_template_file, 'r').read()
       setup_dcards_script = jinja2.Template(setup_dcards_template).render(
         leptons           = lepton_bins_merged,
-        central_or_shifts = systematics,
+        central_or_shifts = systematics_leptonFR,
       )
       setup_dcards_script_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'setupDatacards_LeptonFakeRate.py')
       logging.debug("writing setupDatacards_LeptonFakeRate script file = '%s'" % setup_dcards_script_path)
@@ -765,7 +761,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
     self.addToMakefile_backgrounds_from_data(lines_makefile)
-    # self.addToMakefile_backgrounds_from_MC(lines_makefile)   ## ADDED FOR CONV. BGS
+    self.addToMakefile_backgrounds_from_MC(lines_makefile)   ## ADDED FOR CONV. BGS
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_combine(lines_makefile)

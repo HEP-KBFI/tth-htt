@@ -7,13 +7,15 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_0l_2tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts
 systematics.full = systematics.an_common
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
+parser.add_rle_select()
+parser.add_nonnominal()
 parser.add_tau_id_wp()
 parser.add_hlt_filter()
 parser.add_files_per_job()
@@ -37,6 +39,7 @@ running_method     = args.running_method
 mode              = args.mode
 systematics_label = args.systematics
 rle_select        = os.path.expanduser(args.rle_select)
+use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
 files_per_job     = args.files_per_job
 use_home          = args.use_home
@@ -48,17 +51,40 @@ for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
+do_sync = mode.startswith('sync')
 
 hadTau_charge_selections = [ "OS", "SS" ]
 
 if mode == "default":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
-  hadTau_selection         = "dR03mvaMedium"
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if sample_info["process_name_specific"] in [
+          "TTTo2L2Nu_PSweights", "TTToSemiLeptonic_PSweights", "TTToHadronic_PSweights",
+        ]:
+      # Use non-PSweights samples for the analysis to estimate the irreducible ttbar background
+      sample_info["use_it"] = False
+
+  hadTau_selection = "dR03mvaMedium"
 elif mode == "forBDTtraining":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if sample_info["process_name_specific"] in [
+          "TTTo2L2Nu", "TTToSemiLeptonic", "TTToHadronic",
+        ]:
+      # Use PSweights samples only for BDT training
+      sample_info["use_it"] = False
+
   hadTau_selection         = "dR03mvaLoose"
   hadTau_selection_relaxed = "dR03mvaVLoose"
   hadTau_charge_selections = [ "OS" ]
+elif mode == "sync":
+  if use_nonnominal:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+  else:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
+  hadTau_selection = "dR03mvaMedium"
 else:
   raise ValueError("Internal logic error")
 
@@ -68,10 +94,18 @@ else:
   raise ValueError("Invalid era: %s" % era)
 
 for sample_name, sample_info in samples.items():
+  if sample_name == 'sum_events': continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "2tau" ]
-  if sample_name.startswith(("/DoubleEG/", "/DoubleMuon/", "/MuonEG/", "/SingleElectron/", "/SingleMuon/")):
-    sample_info["use_it"] = False
+  if sample_info["type"] == "data":
+    if era == "2017":
+      if not sample_name.startswith(("/SingleElectron/", "/SingleMuon/")):
+        sample_info["use_it"] = False
+    elif era == "2016":
+      if not sample_name.startswith("/Tau/"):
+        sample_info["use_it"] = False
+    else:
+      raise ValueError("Invalid era: %s" % era)
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -122,8 +156,10 @@ if __name__ == '__main__':
     ],
     select_rle_output                     = True,
     dry_run                               = dry_run,
+    do_sync                               = do_sync,
     isDebug                               = debug,
     rle_select                            = rle_select,
+    use_nonnominal                        = use_nonnominal,
     hlt_filter                            = hlt_filter,
     use_home                              = use_home,
   )
