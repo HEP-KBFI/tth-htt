@@ -3,6 +3,9 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle::LorentzVector
+#include "tthAnalysis/HiggsToTauTau/interface/TrigObj.h" // TrigObj
+
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 #include <DataFormats/Math/interface/LorentzVector.h> // math::PtEtaPhiMLorentzVector
 
@@ -220,6 +223,25 @@ compMEt_LD(const math::PtEtaPhiMLorentzVector & met_p4,
            const math::PtEtaPhiMLorentzVector & mht_p4);
 
 /**
+ * @brief Compute scalar HT observable
+ */
+
+double
+compHT(const std::vector<const RecoLepton *> & leptons,
+       const std::vector<const RecoHadTau *> & hadTaus,
+       const std::vector<const RecoJet *> & jets);
+
+/**
+ * @brief Compute STMET observable (used in e.g. EXO-17-016 paper)
+ */
+
+double
+compSTMEt(const std::vector<const RecoLepton *> & leptons,
+	  const std::vector<const RecoHadTau *> & hadTaus,
+	  const std::vector<const RecoJet *> & jets,
+	  const Particle::LorentzVector & met_p4);
+
+/**
  * @brief Set flags indicating whether or not lepton passes loose, fakeable and/or tight selection criteria
  */
 template <typename T>
@@ -336,5 +358,14 @@ auto as_integer(Enumeration const value)
 {
   return static_cast<typename std::underlying_type<Enumeration>::type>(value);
 }
+
+/**
+ * @brief Count number of trigger objects of given type and passing given pT threshold
+ * @param Id type
+ * @param min_l1pt pT threshold
+ * @return Number of trigger objects passing selection
+ */
+int
+countTrigObjs_passingL1(const std::vector<TrigObj>& trigObjs, int Id, double min_l1pt, double min_l1pt_2 = -1.);
 
 #endif
