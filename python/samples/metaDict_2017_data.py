@@ -380,3 +380,78 @@ meta_dictionary["/MuonEG/Run2017F-17Nov2017-v1/MINIAOD"] =  OD([
   ("comment",               "status: VALID; size: 1.03TB; nevents: 25.78M; release: 9_4_0; last modified: 2018-01-11 15:03:35"),
 ])
 
+meta_dictionary["/Tau/Run2017B-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2017B_17Nov2017_v1"),
+  ("nof_db_events",         38158216),
+  ("nof_db_files",          537),
+  ("fsize_db",              1210113570052),
+  ("xsection",              None),
+  ("use_it",                False),
+  ("genWeight",             False),
+  ("run_range",             [297047, 299329]),
+  ("golden_run_range",      [297050, 299329]),
+  ("comment",               "status: VALID; size: 1.21TB; nevents: 38.16M; release: 9_4_0; last modified: 2017-12-19 17:17:47"),
+])
+
+meta_dictionary["/Tau/Run2017C-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2017C_17Nov2017_v1"),
+  ("nof_db_events",         55416425),
+  ("nof_db_files",          642),
+  ("fsize_db",              1731239912493),
+  ("xsection",              None),
+  ("use_it",                False),
+  ("genWeight",             False),
+  ("run_range",             [299368, 302029]),
+  ("golden_run_range",      [299368, 302029]),
+  ("comment",               "status: VALID; size: 1.73TB; nevents: 55.42M; release: 9_4_0; last modified: 2018-01-05 06:45:57"),
+])
+
+meta_dictionary["/Tau/Run2017D-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2017D_17Nov2017_v1"),
+  ("nof_db_events",         20530776),
+  ("nof_db_files",          202),
+  ("fsize_db",              634722377016),
+  ("xsection",              None),
+  ("use_it",                False),
+  ("genWeight",             False),
+  ("run_range",             [302031, 302663]),
+  ("golden_run_range",      [302031, 302663]),
+  ("comment",               "status: VALID; size: 634.72GB; nevents: 20.53M; release: 9_4_0; last modified: 2018-01-09 21:57:05"),
+])
+
+meta_dictionary["/Tau/Run2017E-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2017E_17Nov2017_v1"),
+  ("nof_db_events",         44318231),
+  ("nof_db_files",          578),
+  ("fsize_db",              1565440963094),
+  ("xsection",              None),
+  ("use_it",                False),
+  ("genWeight",             False),
+  ("run_range",             [303824, 304797]),
+  ("golden_run_range",      [303825, 304797]),
+  ("comment",               "status: VALID; size: 1.57TB; nevents: 44.32M; release: 9_4_0; last modified: 2018-01-17 05:19:56"),
+])
+
+meta_dictionary["/Tau/Run2017F-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2017F_17Nov2017_v1"),
+  ("nof_db_events",         88506372),
+  ("nof_db_files",          1124),
+  ("fsize_db",              3178333175081),
+  ("xsection",              None),
+  ("use_it",                False),
+  ("genWeight",             False),
+  ("run_range",             [305040, 306460]),
+  ("golden_run_range",      [305044, 306460]),
+  ("comment",               "status: VALID; size: 3.18TB; nevents: 88.51M; release: 9_4_0; last modified: 2018-01-13 08:47:54"),
+])
+
