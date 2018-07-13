@@ -197,6 +197,7 @@ class analyzeConfig(object):
 
         if self.era == '2017':
           from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
+          from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import get_branch_type
           self.stitched_weights = "tthAnalysis/HiggsToTauTau/data/stitched_weights_2017.root"
         else:
           raise ValueError('Invalid era: %s' % self.era)
@@ -275,6 +276,8 @@ class analyzeConfig(object):
               'histogram_path'    : '%s/%s' % (inclusive_sample, histogram_path),
               'branch_name_xaxis' : branch_name_xaxis,
               'branch_name_yaxis' : branch_name_yaxis,
+              'branch_type_xaxis' : get_branch_type(branch_name_xaxis),
+              'branch_type_yaxis' : get_branch_type(branch_name_yaxis),
             }
           # loop over the binned samples
           for binning_key in binning_vars:
@@ -285,6 +288,8 @@ class analyzeConfig(object):
                   'histogram_path'    : '%s/%s' % (binned_sample, histogram_path),
                   'branch_name_xaxis' : branch_name_xaxis,
                   'branch_name_yaxis' : branch_name_yaxis,
+                  'branch_type_xaxis' : get_branch_type(branch_name_xaxis),
+                  'branch_type_yaxis' : get_branch_type(branch_name_yaxis),
                 }
 
         self.workingDir = os.getcwd()
@@ -608,11 +613,16 @@ class analyzeConfig(object):
           histogram_name = '%s/%s' % (process_stitching_args['histogram_path'], stitch_histogram_name)
           branch_name_xaxis = process_stitching_args['branch_name_xaxis']
           branch_name_yaxis = process_stitching_args['branch_name_yaxis']
+          branch_type_xaxis = process_stitching_args['branch_type_xaxis']
+          branch_type_yaxis = process_stitching_args['branch_type_yaxis']
           lines.extend([
+            "{}.{:<{len}} = cms.bool({})".format    (process_string, 'evtWeight.apply',           True,                  len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.histogramFile',   self.stitched_weights, len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.histogramName',   histogram_name,        len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchNameXaxis', branch_name_xaxis,     len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchNameYaxis', branch_name_yaxis,     len = max_option_len),
+            "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchTypeXaxis', branch_type_xaxis,     len = max_option_len),
+            "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchTypeYaxis', branch_type_yaxis,     len = max_option_len),
           ])
 
         return lines

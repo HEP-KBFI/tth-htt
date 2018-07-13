@@ -88,9 +88,12 @@ process.analyze_inclusive = cms.PSet(
     hasLHE = cms.bool(True),
 
     evtWeight = cms.PSet(
+        apply = cms.bool(False),
         histogramFile = cms.string(''),
         histogramName = cms.string(''),
         branchNameXaxis = cms.string(''),
         branchNameYaxis = cms.string(''),
+        branchTypeXaxis = cms.string(''),
+        branchTypeYaxis = cms.string(''),
     ),
 )

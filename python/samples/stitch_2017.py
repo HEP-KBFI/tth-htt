@@ -49,6 +49,16 @@ samples_to_stitch_2017 = [
   },
 ]
 
+def get_branch_type(branch_name):
+  if not branch_name:
+    return ''
+  elif branch_name == 'LHE_Njets':
+    return 'UChar_t'
+  elif branch_name == 'LHE_HT':
+    return 'Float_t'
+  else:
+    raise ValueError('Unrecognized branch name: %s' % branch_name)
+
 # [$] the inclusive sample contains 0-3 jets:
 # https://github.com/cms-sw/genproductions/blob/cdedd4c7274cf75733bebff3b8c935e285d6b862/bin/MadGraph5_aMCatNLO/cards/production/2017/13TeV/dyellell012j_5f_NLO_FXFX/dyellell012j_5f_NLO_FXFX_proc_card.dat#L6-L8
 # [*] not used b/c the sample was produced w/ incorrect gridpack (or, to be precise, w/ incorrect MG cards)

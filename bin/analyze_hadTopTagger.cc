@@ -85,6 +85,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTaggerFill.h" // HadTopTaggerFill
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
@@ -195,6 +196,14 @@ int main(int argc, char* argv[])
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
 
+  const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
+  const bool applyAdditionalEvtWeight = additionalEvtWeight.getParameter<bool>("apply");
+  EvtWeightManager * eventWeightManager = nullptr;
+  if(applyAdditionalEvtWeight)
+  {
+    eventWeightManager = new EvtWeightManager(additionalEvtWeight);
+  }
+
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
@@ -260,6 +269,11 @@ int main(int argc, char* argv[])
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
   const bool useNonNominal = false;//cfg_analyze.getParameter<bool>("useNonNominal");
+
+  if(eventWeightManager)
+  {
+    inputTree->registerReader(eventWeightManager);
+  }
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
@@ -1428,6 +1442,7 @@ int main(int argc, char* argv[])
   delete lheInfoReader;
   delete hadTopTaggerFill;
   delete inputTree;
+  delete eventWeightManager;
 
   clock.Show("analyze_hadTopTagger");
 

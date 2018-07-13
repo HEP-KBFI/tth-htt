@@ -34,6 +34,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017, getBTagWeight_option()
@@ -573,6 +574,14 @@ main(int argc,
     }
   }
 
+  const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
+  const bool applyAdditionalEvtWeight = additionalEvtWeight.getParameter<bool>("apply");
+  EvtWeightManager * eventWeightManager = nullptr;
+  if(applyAdditionalEvtWeight)
+  {
+    eventWeightManager = new EvtWeightManager(additionalEvtWeight);
+  }
+
   checkOptionValidity(central_or_shift, isMC);
   const int jetPt_option     = getJet_option       (central_or_shift, isMC);
   const int lheScale_option  = getLHEscale_option  (central_or_shift);
@@ -607,6 +616,11 @@ main(int argc,
   triggers.insert(triggers.end(), triggers_mu.begin(), triggers_mu.end());
   hltPathReader hltPathReader_instance(triggers);
   inputTree -> registerReader(&hltPathReader_instance);
+
+  if(eventWeightManager)
+  {
+    inputTree->registerReader(eventWeightManager);
+  }
 
 //--- declare particle collections
   RecoMuonReader * muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
@@ -953,8 +967,9 @@ main(int argc,
     double evtWeight_inclusive = 1.;
     if(isMC)
     {
-      if(apply_genWeight) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(isMC_tH)         evtWeight_inclusive *= eventInfo.genWeight_tH;
+      if(apply_genWeight)    evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if(isMC_tH)            evtWeight_inclusive *= eventInfo.genWeight_tH;
+      if(eventWeightManager) evtWeight_inclusive *= eventWeightManager->getWeight();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
@@ -1646,6 +1661,7 @@ main(int argc,
   delete genEvtHistManager_afterCuts;
   delete lheInfoHistManager;
   delete metFilterHistManager;
+  delete eventWeightManager;
 
   hltPaths_LeptonFakeRate_delete(triggers_e);
   hltPaths_LeptonFakeRate_delete(triggers_mu);

@@ -63,6 +63,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L, getWeight_3L
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
@@ -164,6 +165,14 @@ int main(int argc, char* argv[])
   bool isCentral = ( central_or_shift == "central" ) ? true : false;
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
+
+  const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
+  const bool applyAdditionalEvtWeight = additionalEvtWeight.getParameter<bool>("apply");
+  EvtWeightManager * eventWeightManager = nullptr;
+  if(applyAdditionalEvtWeight)
+  {
+    eventWeightManager = new EvtWeightManager(additionalEvtWeight);
+  }
   
   checkOptionValidity(central_or_shift, isMC);
   const int electronPt_option          = getElectronPt_option   (central_or_shift);
@@ -243,6 +252,11 @@ int main(int argc, char* argv[])
 
   hltPathReader hltPathReader_instance({ triggers_1e, triggers_2e });
   inputTree -> registerReader(&hltPathReader_instance);
+
+  if(eventWeightManager)
+  {
+    inputTree->registerReader(eventWeightManager);
+  }
 
 //--- declare particle collections
   const bool readGenObjects = isMC && !redoGenMatching;
@@ -455,8 +469,9 @@ int main(int argc, char* argv[])
     double evtWeight_inclusive = 1.;
     if(isMC)
     {
-      if(apply_genWeight) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(isMC_tH)         evtWeight_inclusive *= eventInfo.genWeight_tH;
+      if(apply_genWeight)    evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if(isMC_tH)            evtWeight_inclusive *= eventInfo.genWeight_tH;
+      if(eventWeightManager) evtWeight_inclusive *= eventWeightManager->getWeight();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
@@ -898,6 +913,7 @@ int main(int argc, char* argv[])
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;
   delete lheInfoHistManager;
+  delete eventWeightManager;
 
   hltPaths_delete(triggers_1e);
   hltPaths_delete(triggers_2e);
