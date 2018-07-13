@@ -59,4 +59,11 @@ process.analyze_charge_flip = cms.PSet(
     selEventsFileName_output = cms.string(''),
     isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
+
+    evtWeight = cms.PSet(
+        histogramFile = cms.string(''),
+        histogramName = cms.string(''),
+        branchNameXaxis = cms.string(''),
+        branchNameYaxis = cms.string(''),
+    ),
 )

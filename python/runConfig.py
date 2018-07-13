@@ -31,16 +31,19 @@ def condition_type(value):
     )
   return (key, regex)
 
-def filter_samples(sample, condition):
+def filter_samples(sample, condition, force = False):
   key = condition[0]
   regex = condition[1]
 
   sample_key = ALLOWED_CONDITION_KEYS[key]
-  for sample_name, sample_entry in sample.values():
+  for sample_name, sample_entry in sample.items():
     if sample_name == 'sum_events': continue
     use_it = bool(regex.match(sample_entry[sample_key]))
-    sample_entry['use_it'] = use_it
-    logging_str = 'Enabling' if use_it else 'Disabling'
+    if force:
+      sample_entry['use_it'] = use_it
+    else:
+      sample_entry['use_it'] &= use_it
+    logging_str = 'Enabling' if sample_entry['use_it'] else 'Disabling'
     logging.info('%s sample %s' % (logging_str, sample_entry[ALLOWED_CONDITION_KEYS['name']]))
 
   return sample

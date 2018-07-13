@@ -89,6 +89,13 @@ process.analyze_ttWctrl = cms.PSet(
         requireGenMatching = cms.bool(False),
     ),
     hasLHE = cms.bool(True),
+
+    evtWeight = cms.PSet(
+        histogramFile = cms.string(''),
+        histogramName = cms.string(''),
+        branchNameXaxis = cms.string(''),
+        branchNameYaxis = cms.string(''),
+    ),
 )
 
 

@@ -110,4 +110,11 @@ process.analyze_2los_1tau = cms.PSet(
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
+
+    evtWeight = cms.PSet(
+        histogramFile = cms.string(''),
+        histogramName = cms.string(''),
+        branchNameXaxis = cms.string(''),
+        branchNameYaxis = cms.string(''),
+    ),
 )
