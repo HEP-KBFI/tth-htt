@@ -88,6 +88,13 @@ process.analyze_hadTopTagger_gen = cms.PSet(
     selEventsFileName_output_resolved = cms.string('selEvents_hadTopTagger_gen_resolved.txt'),
     isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
+
+    evtWeight = cms.PSet(
+        histogramFile = cms.string(''),
+        histogramName = cms.string(''),
+        branchNameXaxis = cms.string(''),
+        branchNameYaxis = cms.string(''),
+    ),
 )
 
 ## inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb28_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"

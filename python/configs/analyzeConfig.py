@@ -195,6 +195,98 @@ class analyzeConfig(object):
         self.triggers = triggers
         self.triggerTable = Triggers(self.era)
 
+        if self.era == '2017':
+          from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
+          self.stitched_weights = "tthAnalysis/HiggsToTauTau/data/stitched_weights_2017.root"
+        else:
+          raise ValueError('Invalid era: %s' % self.era)
+        assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.stitched_weights)))
+
+        # create temporary LUT
+        samples_lut = {}
+        for sample_key, sample_entry in self.samples.items():
+          if sample_key == 'sum_events': continue
+          process_name = sample_entry['process_name_specific']
+          assert(process_name not in samples_lut)
+          samples_lut[process_name] = sample_key
+
+        # loop over the list of binned samples to determine the coverage of phase spaces
+        for samples_to_stitch_entry in samples_to_stitch:
+          # loop over the inclusive samples
+          inclusive_samples = []
+          for inclusive_sample in samples_to_stitch_entry['inclusive']['samples']:
+            assert(inclusive_sample in samples_lut)
+            if not self.samples[samples_lut[inclusive_sample]]['use_it']:
+              raise ValueError('Sample %s not enabled' % inclusive_sample)
+            inclusive_samples.append(inclusive_sample)
+
+          # loop over the binned samples
+          all_present = { key : True for key in samples_to_stitch_entry.keys() if key != 'inclusive' }
+          for binning_key in all_present:
+            for binned_samples in samples_to_stitch_entry[binning_key]:
+              for binned_sample in binned_samples['samples']:
+                # if at least one sample is not enabled, disable all other samples that
+                # are binned by the same variable
+                assert(binned_sample in samples_lut)
+                if not self.samples[samples_lut[binned_sample]]['use_it']:
+                  logging.warning('Sample %s not used' % binned_sample)
+                all_present[binning_key] &= self.samples[samples_lut[binned_sample]]['use_it']
+          for binning_key in all_present:
+            if not all_present[binning_key]:
+              logging.info(
+                'Disabling %s-binned samples that are complementary to: %s' % (
+                  binning_key, ', '.join(inclusive_samples)
+                )
+              )
+              for binned_samples in samples_to_stitch_entry[binning_key]:
+                for binned_sample in binned_samples['samples']:
+                  logging.warning('Disabling sample %s' % binned_sample)
+                  self.samples[samples_lut[binned_sample]]['use_it'] = False
+              del samples_to_stitch_entry[binning_key]
+
+        # construct the list of arguments that need to be propagated to the config files
+        # these parameters specify how to access additional weights at the analysis level such
+        # that the phase space is modelled accurately
+        self.stitching_args = {}
+        for samples_to_stitch_entry in samples_to_stitch:
+          binning_vars = [var for var in samples_to_stitch_entry if var != 'inclusive']
+          histogram_path = ''
+          branch_name_xaxis = ''
+          branch_name_yaxis = ''
+          if len(binning_vars) == 0:
+            # only inclusive sample is being used
+            continue
+          elif len(binning_vars) == 1:
+            histogram_path = binning_vars[0]
+            branch_name_xaxis = binning_vars[0]
+          elif len(binning_vars) == 2:
+            histogram_path = '%s_v_%s' % (binning_vars[0], binning_vars[1])
+            branch_name_xaxis = binning_vars[0]
+            branch_name_yaxis = binning_vars[1]
+          else:
+            raise ValueError(
+              'More than 2 variables by which the samples are binned: %s' % ', '.join(binning_vars)
+            )
+          assert(histogram_path != '' and branch_name_xaxis != '')
+          # loop over the inclusive samples:
+          for inclusive_sample in samples_to_stitch_entry['inclusive']['samples']:
+            assert(inclusive_sample not in self.stitching_args)
+            self.stitching_args[inclusive_sample] = {
+              'histogram_path'    : '%s/%s' % (inclusive_sample, histogram_path),
+              'branch_name_xaxis' : branch_name_xaxis,
+              'branch_name_yaxis' : branch_name_yaxis,
+            }
+          # loop over the binned samples
+          for binning_key in binning_vars:
+            for binned_samples in samples_to_stitch_entry[binning_key]:
+              for binned_sample in binned_samples['samples']:
+                assert(binned_sample not in self.stitching_args)
+                self.stitching_args[binned_sample] = {
+                  'histogram_path'    : '%s/%s' % (binned_sample, histogram_path),
+                  'branch_name_xaxis' : branch_name_xaxis,
+                  'branch_name_yaxis' : branch_name_yaxis,
+                }
+
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)
         if template_dir:
@@ -349,6 +441,7 @@ class analyzeConfig(object):
         process_string = 'process.analyze_%s' % self.channel
         current_function_name = inspect.stack()[0][3]
 
+        stitch_histogram_name = ''
         is_mc = (sample_info["type"] == "mc")
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
@@ -358,29 +451,32 @@ class analyzeConfig(object):
           jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
         if 'lumiScale' not in jobOptions:
           nof_events = -1
-          #TODO: once all Ntuples have been migrated to the latest convention, keep only the else part
-          if type(sample_info["nof_events"]) != dict:
-            nof_events = sample_info["nof_events"]
-          else:
-            if is_mc:
-              # Convention: CountWeighted includes the sign of genWeight, CountFullWeighted includes the full genWeight
-              central_or_shift = jobOptions['central_or_shift']
-              if central_or_shift == systematics.PU_().up:
-                nof_events = sample_info["nof_events"]['CountWeighted'][1] # PU weight up
-              elif central_or_shift == systematics.PU_().down:
-                nof_events = sample_info["nof_events"]['CountWeighted'][2] # PU weight down
-              elif central_or_shift in systematics.LHE().x1_up:
-                nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][5] # muR=1   muF=2
-              elif central_or_shift in systematics.LHE().y1_up:
-                nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][7] # muR=2   muF=1
-              elif central_or_shift in systematics.LHE().x1_down:
-                nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][3] # muR=1   muF=0.5
-              elif central_or_shift in systematics.LHE().y1_down:
-                nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][1] # muR=0.5 muF=1
-              else:
-                nof_events = sample_info["nof_events"]['CountWeighted'][0] # PU weight central
+          if is_mc:
+            # Convention: CountWeighted includes the sign of genWeight, CountFullWeighted includes the full genWeight
+            central_or_shift = jobOptions['central_or_shift']
+            if central_or_shift == systematics.PU_().up:
+              nof_events = sample_info["nof_events"]['CountWeighted'][1] # PU weight up
+              stitch_histogram_name = 'CountWeighted_1'
+            elif central_or_shift == systematics.PU_().down:
+              nof_events = sample_info["nof_events"]['CountWeighted'][2] # PU weight down
+              stitch_histogram_name = 'CountWeighted_2'
+            elif central_or_shift in systematics.LHE().x1_up:
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][5] # muR=1   muF=2
+              stitch_histogram_name = 'CountWeightedLHEWeightScale_5'
+            elif central_or_shift in systematics.LHE().y1_up:
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][7] # muR=2   muF=1
+              stitch_histogram_name = 'CountWeightedLHEWeightScale_7'
+            elif central_or_shift in systematics.LHE().x1_down:
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][3] # muR=1   muF=0.5
+              stitch_histogram_name = 'CountWeightedLHEWeightScale_3'
+            elif central_or_shift in systematics.LHE().y1_down:
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][1] # muR=0.5 muF=1
+              stitch_histogram_name = 'CountWeightedLHEWeightScale_1'
             else:
-              nof_events = sample_info["nof_events"]['Count'][0]
+              nof_events = sample_info["nof_events"]['CountWeighted'][0] # PU weight central
+              stitch_histogram_name = 'CountWeighted_0'
+          else:
+            nof_events = sample_info["nof_events"]['Count'][0]
           assert(nof_events > 0)
           jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / nof_events if (self.use_lumi and is_mc) else 1.
         if 'hasLHE' not in jobOptions:
@@ -506,6 +602,18 @@ class analyzeConfig(object):
                 lines.append(
                     "{}.{:<{len}} = cms.bool({})".format(process_string, 'syncNtuple.requireGenMatching', jobOptions['syncRequireGenMatching'], len = max_option_len),
                 )
+
+        if sample_info['process_name_specific'] in self.stitching_args:
+          process_stitching_args = self.stitching_args[sample_info['process_name_specific']]
+          histogram_name = '%s/%s' % (process_stitching_args['histogram_path'], stitch_histogram_name)
+          branch_name_xaxis = process_stitching_args['branch_name_xaxis']
+          branch_name_yaxis = process_stitching_args['branch_name_yaxis']
+          lines.extend([
+            "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.histogramFile',   self.stitched_weights, len = max_option_len),
+            "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.histogramName',   histogram_name,        len = max_option_len),
+            "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchNameXaxis', branch_name_xaxis,     len = max_option_len),
+            "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchNameYaxis', branch_name_yaxis,     len = max_option_len),
+          ])
 
         return lines
 

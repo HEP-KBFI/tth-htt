@@ -200,6 +200,13 @@ process.analyze_LeptonFakeRate = cms.PSet(
     isDEBUG = cms.bool(False),
     applyMETFilters = cms.bool(True),
     hasLHE = cms.bool(True),
+
+    evtWeight = cms.PSet(
+        histogramFile = cms.string(''),
+        histogramName = cms.string(''),
+        branchNameXaxis = cms.string(''),
+        branchNameYaxis = cms.string(''),
+    ),
 )
 
 
