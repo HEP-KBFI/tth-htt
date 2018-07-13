@@ -37,7 +37,8 @@ def comp_weights_1(f, samples_to_stitch, split_var, apply_sf = True):
         for nof_key, nof_arr in sample_entry['nof_events'].items():
           assert(len(nof_arr) == len(inclusive_nof_events[nof_key]))
           for idx, nof in enumerate(nof_arr):
-            inclusive_nof_events[nof_key][idx] += abs(nof) #TODO remove once the event counts are fixed
+            assert(nof > 0)
+            inclusive_nof_events[nof_key][idx] += nof
 
   # sum the binned nof events
   for binned_sample in split_dict:
@@ -54,7 +55,8 @@ def comp_weights_1(f, samples_to_stitch, split_var, apply_sf = True):
           for nof_key, nof_arr in sample_entry['nof_events'].items():
             assert(len(nof_arr) == len(nof_events[nof_key]))
             for idx, nof in enumerate(nof_arr):
-              nof_events[nof_key][idx] += abs(nof) #TODO remove once the event counts are fixed
+              assert(nof > 0)
+              nof_events[nof_key][idx] += nof
         if xs < 0:
           xs = sample_entry['xsection']
     assert(xs > 0)
@@ -200,7 +202,8 @@ def comp_weights_2(f, samples_to_stitch, split_var_1, split_var_2, apply_sf = Tr
         for nof_key, nof_arr in sample_entry['nof_events'].items():
           assert(len(nof_arr) == len(inclusive_nof_events[nof_key]))
           for idx, nof in enumerate(nof_arr):
-            inclusive_nof_events[nof_key][idx] += abs(nof) #TODO remove once the event counts are fixed
+            assert(nof > 0)
+            inclusive_nof_events[nof_key][idx] += nof
 
   # sum the binned nof events
   for binned_sample in split_dict_1:
@@ -217,7 +220,8 @@ def comp_weights_2(f, samples_to_stitch, split_var_1, split_var_2, apply_sf = Tr
           for nof_key, nof_arr in sample_entry['nof_events'].items():
             assert(len(nof_arr) == len(nof_events[nof_key]))
             for idx, nof in enumerate(nof_arr):
-              nof_events[nof_key][idx] += abs(nof) #TODO remove once the event counts are fixed
+              assert(nof > 0)
+              nof_events[nof_key][idx] += nof
         if xs < 0:
           xs = sample_entry['xsection']
     assert(xs > 0)
@@ -243,7 +247,8 @@ def comp_weights_2(f, samples_to_stitch, split_var_1, split_var_2, apply_sf = Tr
           for nof_key, nof_arr in sample_entry['nof_events'].items():
             assert(len(nof_arr) == len(nof_events[nof_key]))
             for idx, nof in enumerate(nof_arr):
-              nof_events[nof_key][idx] += abs(nof) #TODO remove once the event counts are fixed
+              assert(nof > 0)
+              nof_events[nof_key][idx] += nof
         if xs < 0:
           xs = sample_entry['xsection']
     assert(xs > 0)
