@@ -93,6 +93,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
@@ -956,6 +957,14 @@ int main(int argc, char* argv[])
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits");
 
+  const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
+  const bool applyAdditionalEvtWeight = additionalEvtWeight.getParameter<bool>("apply");
+  EvtWeightManager * eventWeightManager = nullptr;
+  if(applyAdditionalEvtWeight)
+  {
+    eventWeightManager = new EvtWeightManager(additionalEvtWeight);
+  }
+
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
@@ -1039,6 +1048,11 @@ int main(int argc, char* argv[])
 
   hltPathReader hltPathReader_instance({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
   inputTree -> registerReader(&hltPathReader_instance);
+
+  if(eventWeightManager)
+  {
+    inputTree->registerReader(eventWeightManager);
+  }
 
 //--- declare particle collections
   const bool readGenObjects = isMC && !redoGenMatching;
@@ -2752,6 +2766,7 @@ int main(int argc, char* argv[])
   delete genHadTauReader;
   delete genJetReader;
   delete lheInfoReader;
+  delete eventWeightManager;
 /*
   delete hadTopTagger;
  */

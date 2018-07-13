@@ -83,6 +83,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopKinFit.h" // HadTopKinFit
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
@@ -239,6 +240,13 @@ int main(int argc, char* argv[])
   const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
+  const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
+  const bool applyAdditionalEvtWeight = additionalEvtWeight.getParameter<bool>("apply");
+  EvtWeightManager * eventWeightManager = nullptr;
+  if(applyAdditionalEvtWeight)
+  {
+    eventWeightManager = new EvtWeightManager(additionalEvtWeight);
+  }
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
@@ -346,6 +354,11 @@ int main(int argc, char* argv[])
 
   hltPathReader hltPathReader_instance({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
   inputTree -> registerReader(&hltPathReader_instance);
+
+  if(eventWeightManager)
+  {
+    inputTree->registerReader(eventWeightManager);
+  }
 
 //--- declare particle collections
   const bool readGenObjects = isMC && !redoGenMatching;
@@ -900,8 +913,9 @@ int main(int argc, char* argv[])
     double evtWeight_inclusive = 1.;
     if(isMC)
     {
-      if(apply_genWeight) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(isMC_tH)         evtWeight_inclusive *= eventInfo.genWeight_tH;
+      if(apply_genWeight)    evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if(isMC_tH)            evtWeight_inclusive *= eventInfo.genWeight_tH;
+      if(eventWeightManager) evtWeight_inclusive *= eventWeightManager->getWeight();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
@@ -1909,6 +1923,7 @@ int main(int argc, char* argv[])
   delete genEvtHistManager_afterCuts;
   delete lheInfoHistManager;
   delete cutFlowHistManager;
+  delete eventWeightManager;
 
   delete inputTree;
 
