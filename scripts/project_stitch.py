@@ -47,7 +47,6 @@ for output_dir in [ output_root_dir, output_plot_dir ]:
 
 for sample_set_to_stich in samples_to_stitch:
   binning_keys = filter(lambda key: key != 'inclusive', sample_set_to_stich.keys())
-  if sample_set_to_stich['inclusive']['samples'][0].startswith('DY') : continue
 
   sample_list = []
   for key in sample_set_to_stich:
