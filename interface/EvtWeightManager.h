@@ -16,7 +16,8 @@ class EvtWeightManager
   : public ReaderBase
 {
 public:
-  EvtWeightManager(const edm::ParameterSet & cfg);
+  EvtWeightManager(const edm::ParameterSet & cfg,
+                   bool isDebug = false);
   ~EvtWeightManager();
 
   void
@@ -39,6 +40,8 @@ protected:
   TFile * histogram_file_;
   TH1 * binnedHistogram_1var_;
   TH2 * binnedHistogram_2var_;
+
+  bool isDebug_;
 };
 
 #endif // EVTWEIGHTMANAGER_H

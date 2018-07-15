@@ -11,10 +11,12 @@
 #include <cassert> // assert()
 #include <iostream> // std::cout
 
-EvtWeightManager::EvtWeightManager(const edm::ParameterSet & cfg)
+EvtWeightManager::EvtWeightManager(const edm::ParameterSet & cfg,
+                                   bool isDebug)
   : histogram_file_(nullptr)
   , binnedHistogram_1var_(nullptr)
   , binnedHistogram_2var_(nullptr)
+  , isDebug_(isDebug)
 {
   const std::string histogramFile = cfg.getParameter<std::string>("histogramFile");
   const std::string histogramName = cfg.getParameter<std::string>("histogramName");
@@ -82,14 +84,15 @@ EvtWeightManager::getWeight() const
   double weight = 0.;
   if(binnedHistogram_1var_)
   {
-    Int_t bin_x = -1;
+    Double_t val_x = 0.;
+
     if(binnedHistogram_varType_x_ == "UChar_t")
     {
-      bin_x = binnedHistogram_1var_->GetXaxis()->FindBin(static_cast<Double_t>(var_x_uchar_));
+      val_x = static_cast<Double_t>(var_x_uchar_);
     }
     else if(binnedHistogram_varType_x_ == "Float_t")
     {
-      bin_x = binnedHistogram_1var_->GetXaxis()->FindBin(static_cast<Double_t>(var_x_float_));
+      val_x = static_cast<Double_t>(var_x_float_);
     }
     else
     {
@@ -97,21 +100,33 @@ EvtWeightManager::getWeight() const
         << "Unknown type for the x-axis quantity: " << binnedHistogram_varType_x_
       ;
     }
+    const TAxis * const xAxis = binnedHistogram_1var_->GetXaxis();
+    assert(xAxis);
+    const Int_t bin_x = xAxis->FindBin(val_x);
     assert(bin_x >= 0);
 
     weight = binnedHistogram_1var_->GetBinContent(bin_x);
+
+    if(isDebug_)
+    {
+      std::cout << get_human_line(this, __func__, __LINE__)
+                << ": weight("
+                << xAxis->GetBinLowEdge(bin_x) << " <= " << val_x << " < "
+                << xAxis->GetBinUpEdge(bin_x) << "; "
+                << binnedHistogram_varName_x_ << ") = " << weight << '\n'
+      ;
+    }
   }
   else if(binnedHistogram_2var_)
   {
-    Int_t bin_x = -1;
-    Int_t bin_y = -1;
+    Double_t val_x = 0.;
     if(binnedHistogram_varType_x_ == "UChar_t")
     {
-      bin_x = binnedHistogram_2var_->GetXaxis()->FindBin(static_cast<Double_t>(var_x_uchar_));
+      val_x = static_cast<Double_t>(var_x_uchar_);
     }
     else if(binnedHistogram_varType_x_ == "Float_t")
     {
-      bin_x = binnedHistogram_2var_->GetXaxis()->FindBin(static_cast<Double_t>(var_x_float_));
+      val_x = static_cast<Double_t>(var_x_float_);
     }
     else
     {
@@ -119,15 +134,19 @@ EvtWeightManager::getWeight() const
         << "Unknown type for the x-axis quantity: " << binnedHistogram_varType_x_
       ;
     }
+    const TAxis * const xAxis = binnedHistogram_2var_->GetXaxis();
+    assert(xAxis);
+    const Int_t bin_x = xAxis->FindBin(val_x);
     assert(bin_x >= 0);
 
+    Double_t val_y = 0.;
     if(binnedHistogram_varType_y_ == "UChar_t")
     {
-      bin_y = binnedHistogram_2var_->GetYaxis()->FindBin(static_cast<Double_t>(var_y_uchar_));
+      val_y = static_cast<Double_t>(var_y_uchar_);
     }
     else if(binnedHistogram_varType_y_ == "Float_t")
     {
-      bin_y = binnedHistogram_2var_->GetYaxis()->FindBin(static_cast<Double_t>(var_y_float_));
+      val_y = static_cast<Double_t>(var_y_float_);
     }
     else
     {
@@ -135,9 +154,25 @@ EvtWeightManager::getWeight() const
         << "Unknown type for the x-axis quantity: " << binnedHistogram_varType_y_
       ;
     }
+    const TAxis * const yAxis = binnedHistogram_2var_->GetYaxis();
+    assert(yAxis);
+    const Int_t bin_y = yAxis->FindBin(val_y);
     assert(bin_y >= 0);
 
     weight = binnedHistogram_2var_->GetBinContent(bin_x, bin_y);
+
+    if(isDebug_)
+    {
+      std::cout << get_human_line(this, __func__, __LINE__)
+                << ": weight("
+                << xAxis->GetBinLowEdge(bin_x) << " <= " << val_x << " < "
+                << xAxis->GetBinUpEdge(bin_x) << " x "
+                << yAxis->GetBinLowEdge(bin_y) << " <= " << val_y << " < "
+                << yAxis->GetBinUpEdge(bin_y) << "; "
+                << binnedHistogram_varName_x_ << " x " << binnedHistogram_varName_y_
+                << ") = " << weight << '\n'
+      ;
+    }
   }
   else
   {
@@ -146,9 +181,5 @@ EvtWeightManager::getWeight() const
     ;
   }
 
-  if(weight == 0.)
-  {
-    std::cout << get_human_line(this, __func__, __LINE__) << ": got 0 event weight\n";
-  }
   return weight;
 }
