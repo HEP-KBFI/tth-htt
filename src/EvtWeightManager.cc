@@ -48,8 +48,6 @@ EvtWeightManager::~EvtWeightManager()
     histogram_file_->Close();
   }
   delete histogram_file_;
-  delete binnedHistogram_1var_;
-  delete binnedHistogram_2var_;
 }
 
 void
