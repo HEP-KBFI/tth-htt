@@ -384,12 +384,15 @@ def comp_weights_2(f, samples_to_stitch, split_var_1, split_var_2, apply_sf = Tr
                   if lumi_split_2 == 0.:
                     weight = 1.
                   else:
-                    weight = lumi_split_1 / (lumi_split_1 + lumi_split_2)
+                    if apply_sf:
+                      weight = lumi_split_1 / (lumi_split_1 + lumi_split_2)
+                    else:
+                      weight = lumi_incl / (lumi_split_1 + lumi_split_2)
                 else:
                   if apply_sf:
-                    weight = lumi_incl / (lumi_incl + lumi_split_1 + lumi_split_2)
-                  else:
                     weight = lumi_split_1 / (lumi_incl + lumi_split_1 + lumi_split_2)
+                  else:
+                    weight = lumi_incl / (lumi_incl + lumi_split_1 + lumi_split_2)
                 assert(weight >= 0.)
                 histogram.SetBinContent(split_idx_1, split_idx_2, weight)
             else:
