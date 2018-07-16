@@ -285,6 +285,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.comp_LeptonFakeRate.absEtaBins_mu = cms.vdouble(%s)" % jobOptions['absEtaBins_mu'])
     lines.append("process.comp_LeptonFakeRate.ptBins_mu = cms.vdouble(%s)" % jobOptions['ptBins_mu'])
     lines.append("process.comp_LeptonFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
+    lines.append("process.comp_LeptonFakeRate.HistogramName = cms.string('%s')" % self.numerator_histogram)
     create_cfg(self.cfgFile_comp_LeptonFakeRate, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_prep_dcard_LeptonFakeRate(self, jobOptions):
@@ -300,7 +301,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
-    if jobOptions['histogramToFit'] in [ "mT_fix_L" ]:
+    if jobOptions['histogramToFit'] in [ "mT_fix_L", "mT_fix_L_num", "mT_fix_L_den" ]:
       lines.append("process.prepareDatacards.histogramToFit_xMin = cms.double(0.)")
       lines.append("process.prepareDatacards.histogramToFit_xMax = cms.double(150.)")
       lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(10.)")

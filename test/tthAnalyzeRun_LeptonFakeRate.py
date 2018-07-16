@@ -10,7 +10,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_8_1_0') # immediate parent dir to src folder
 
-qcd_inclusive = True # set to True if you want to process inclusive muon-enriched sample 
+qcd_inclusive = True # set to True if you want to process inclusive muon-enriched sample
 
 mode_choices           = [ 'default', 'sync' ]
 sys_choices            = [ 'full' ] + systematics.an_leptonFR_opts
@@ -101,8 +101,8 @@ if __name__ == '__main__':
     ptBins_mu                                = [ 10., 15., 20., 32., 45., 65., 100. ], ## CERN binning scheme
     fillGenEvtHistograms                     = False,
     central_or_shifts                        = central_or_shifts,
-    numerator_histogram                      = ("mT_fix_L",     "m_{T}^{fix}"), # or ("pt", "p_{T}"),
-    denominator_histogram                    = ("EventCounter", "Number of events"),
+    numerator_histogram                      = ("mT_fix_L_num",     "m_{T}^{fix,num}"), # or ("pt", "p_{T}"),
+    denominator_histogram                    = ("mT_fix_L_den",     "m_{T}^{fix,den}"), # or ("EventCounter", "Number of events"),
     prep_dcard                               = True,
     max_files_per_job                        = files_per_job,
     era                                      = era,
