@@ -9,7 +9,9 @@ EvtHistManager_LeptonFakeRate::EvtHistManager_LeptonFakeRate(const edm::Paramete
 void
 EvtHistManager_LeptonFakeRate::bookHistograms(TFileDirectory & dir)
 {
-  histogram_mT_fix_L_     = book1D(dir, "mT_fix_L",    "mT_fix_L",      40,  0.,  200.);
+  histogram_mT_fix_L_     = book1D(dir, "mT_fix_L",     "mT_fix_L",     40,  0.,  200.);
+  histogram_mT_fix_L_num_ = book1D(dir, "mT_fix_L_num", "mT_fix_L_num", 40,  0.,  200.);
+  histogram_mT_fix_L_den_ = book1D(dir, "mT_fix_L_den", "mT_fix_L_den", 40,  0.,  200.);
   histogram_mT_L_         = book1D(dir, "mT_L",         "mT_L",         40,  0.,  200.);
   histogram_MET_          = book1D(dir, "MET",          "MET",          40,  0.,  200.);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter",  1, -0.5,  +0.5);
@@ -25,6 +27,8 @@ EvtHistManager_LeptonFakeRate::fillHistograms(double met,
 
   fillWithOverFlow(histogram_MET_,          met,      evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mT_fix_L_,     mT_fix_L, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mT_fix_L_num_, mT_fix_L, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mT_fix_L_den_, mT_fix_L, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mT_L_,         mT_L,     evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_EventCounter_, 0.,       evtWeight, evtWeightErr);
 }

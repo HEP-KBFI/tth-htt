@@ -32,6 +32,8 @@ public:
 private:
   TH1 * histogram_mT_L_;
   TH1 * histogram_mT_fix_L_;
+  TH1 * histogram_mT_fix_L_num_;
+  TH1 * histogram_mT_fix_L_den_;
   TH1 * histogram_MET_;
   TH1 * histogram_EventCounter_;
 };
