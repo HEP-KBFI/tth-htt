@@ -219,6 +219,7 @@ class analyzeConfig(object):
             assert(inclusive_sample in samples_lut)
             if not self.samples[samples_lut[inclusive_sample]]['use_it']:
               logging.warning('Sample {} not enabled'.format(inclusive_sample))
+              continue
             inclusive_samples.append(inclusive_sample)
 
           # loop over the binned samples
