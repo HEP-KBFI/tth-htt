@@ -218,7 +218,7 @@ class analyzeConfig(object):
           for inclusive_sample in samples_to_stitch_entry['inclusive']['samples']:
             assert(inclusive_sample in samples_lut)
             if not self.samples[samples_lut[inclusive_sample]]['use_it']:
-              raise ValueError('Sample %s not enabled' % inclusive_sample)
+              logging.warning('Sample {} not enabled'.format(inclusive_sample))
             inclusive_samples.append(inclusive_sample)
 
           # loop over the binned samples
