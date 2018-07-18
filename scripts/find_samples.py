@@ -174,6 +174,7 @@ LUMI_UNITS = [ '/fb', '/pb', '/nb', '/ub' ]
 
 DATA_TIER     = 'MINIAOD'
 MC_TIER       = '%sSIM' % DATA_TIER
+PRIVATE_TIER  = 'USER'
 AQC_KEY       = 'cat'
 PDS_KEY       = 'data'
 
@@ -182,6 +183,7 @@ DASGOCLIENT_QUERY_ANY_STATUS = "dasgoclient -query='dataset dataset=%s status=* 
 DASGOCLIENT_QUERY_RELEASE    = "dasgoclient -query='release dataset=%s' -unique"
 DASGOCLIENT_QUERY_RUNLUMI    = "dasgoclient -query='run,lumi dataset=%s' -unique"
 
+PRIVATE_REGEX = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % PRIVATE_TIER)
 MC_REGEX      = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
 DATASET_REGEX = re.compile("^/(.*)/(.*)/[0-9A-Za-z]+$")
 
@@ -455,10 +457,6 @@ if __name__ == '__main__':
     dest = 'luminosity', action = 'store_true', default = False, required = False,
     help = 'R|Compute integrated luminosity for each selected PD',
   )
-  parser.add_argument('-P', '--private-path',
-    type = str, dest = 'private_path', metavar = 'path', required = False,
-    help = 'R|Path to private MINIAODs',
-  )
   parser.add_argument('-V', '--verbose',
     dest = 'verbose', action = 'store_true', default = False, required = False,
     help = 'R|Verbose output',
@@ -492,7 +490,6 @@ if __name__ == '__main__':
   required_cmssw_version = Version(required_cmssw_version_str)
   verbose = args.verbose
   crab_string = args.crab_string
-  private_path = args.private_path
 
   primary_datasets = args.primary_datasets
   DATA_GREP_STR = '\\|'.join(map(lambda sample: '^/%s/' % sample, primary_datasets))
@@ -563,7 +560,7 @@ if __name__ == '__main__':
           # probably a comment or an empty line
           continue
         fields = field_str.split()
-        if len(fields) != 5:
+        if len(fields) < 5:
           raise ValueError("Unparseable line in file %s: %s" % (line_stripped, mc_input))
 
         das_name        = fields[0]
@@ -571,14 +568,16 @@ if __name__ == '__main__':
         sample_category = fields[2]
         specific_name   = fields[3]
         xs              = float(fields[4]) # let it fail
+        private_path    = fields[5] if len(fields) == 6 else ''
 
-        if not MC_REGEX.match(das_name):
+        if not MC_REGEX.match(das_name) and not PRIVATE_REGEX.match(das_name):
           raise ValueError("Error: line '%s' does not correspond to proper DBS name" % das_name)
         das_query_results[das_name] = {
           'sample_category' : sample_category,
           'specific_name'   : specific_name,
           'xs'              : xs,
           'use_it'          : use_it,
+          'private_path'    : private_path,
         }
 
     for dataset_idx, dataset in enumerate(das_query_results):
@@ -587,15 +586,13 @@ if __name__ == '__main__':
           "Querying sample (%d/%d): %s;" % (dataset_idx + 1, len(das_query_results), dataset)
         )
       dataset_split = dataset.split('/')
-      if dataset_split[2] == 'private':
+      if dataset_split[3] == PRIVATE_TIER:
         # The sample is privately produced and we would have to get the stats from the FS directly
         # Fill the meta-dictionary with some basic values
         sys.stdout.write("\n(It's a privately produced sample)\n")
-        if not private_path:
-          raise ValueError('No path to private samples provided!')
-        if not os.path.isdir(private_path):
-          raise ValueError('No such path: %s' % private_path)
-        dataset_private_path = os.path.join(private_path, dataset_split[1])
+        dataset_private_path = das_query_results[dataset]['private_path']
+        if not dataset_private_path:
+          raise ValueError('No path provided for sample %s' % dataset)
         fs_results = scan_private(dataset_private_path)
 
         das_query_results[dataset]['name'] = dataset
