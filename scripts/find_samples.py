@@ -401,6 +401,10 @@ if __name__ == '__main__':
     type = str, dest = 'dataset', metavar = 'path', default = 'datasets.txt', required = False,
     help = 'R|Output path of the dataset list (valid if -i/--input not provided)',
   )
+  parser.add_argument('-s', '--sum-events',
+    type = str, dest = 'sum_events', metavar = 'file', default = '', required = False,
+    help = 'R|File containing list of samples that cover the same phase space (one such list per line)',
+  )
   parser.add_argument('-c', '--crab-string',
     type = str, nargs = '+', dest = 'crab_string', metavar = 'path', default = [], required = False,
     help = 'R|Fill CRAB string',
@@ -511,7 +515,11 @@ if __name__ == '__main__':
   brilcalc_path = os.path.join(args.brilconda_dir, 'bin', 'brilcalc')
   units = args.units
   tmp_dir = args.tmp_dir
+  sum_events_file = args.sum_events
   lumi_pool = None
+
+  if sum_events_file and not os.path.isfile(sum_events_file):
+    raise ValueError('No such file: %s' % sum_events_file)
 
   if compute_lumi:
     # Check if the brilconda package has been installed
@@ -694,19 +702,13 @@ if __name__ == '__main__':
       dataset_entry['specific_name'] for dataset_entry in das_query_results.values() \
       if dataset_entry['use_it']
     ]
-    sum_events = {}
-    for specific_name_ref in specific_names:
-      for specific_name_test in specific_names:
-        for sum_suffix in sum_suffixes:
-          if re.match('^' + specific_name_ref + sum_suffix, specific_name_test):
-            if specific_name_ref not in sum_events:
-              sum_events[specific_name_ref] = []
-            sum_events[specific_name_ref].append(specific_name_test)
-    sum_events_flattened = [
-      [ specific_name_ref] + specific_name_tests \
-      for specific_name_ref, specific_name_tests in sum_events.items()
-    ]
-    sum_events_flattened = list(sorted(sum_events_flattened, key = lambda x: x[0].lower()))
+    sum_events_flattened = []
+    if sum_events_file:
+      with open(sum_events_file, 'r') as sum_events_file_ptr:
+        for line in sum_events_file_ptr:
+          line_split = line.rstrip('\n').split()
+          if line_split:
+            sum_events_flattened.append(line_split)
 
     # Let's get the total event counts in each sample category; we want to maintain the original
     # order of sample categories they were declared
@@ -730,7 +732,7 @@ if __name__ == '__main__':
         command    = execution_command,
         date       = execution_datetime,
         sum_events = sum_events_flattened,
-        is_mc      = True,
+        is_mc      = bool(sum_events_flattened),
       ))
       f.write('\n'.join(meta_dictionary_entries))
       f.write(jinja2.Template(METADICT_FOOTER).render(event_statistics = event_statistics))
