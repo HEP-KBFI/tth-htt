@@ -67,7 +67,7 @@ else:
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
-  if sample_info["process_name_specific"] == "WZTo3LNu":
+  if sample_info["process_name_specific"].startswith("WZTo3LNu"):
     sample_info["sample_category"] = "WZ"
 
 if __name__ == '__main__':
