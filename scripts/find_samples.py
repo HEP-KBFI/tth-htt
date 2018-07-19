@@ -452,6 +452,10 @@ if __name__ == '__main__':
     type = str, dest = 'version', metavar = 'version', default = '9_4_0', required = False,
     help = 'R|Minimum required CMSSW version',
   )
+  parser.add_argument('-C', '--custom-strings',
+    type = str, nargs = '+', dest = 'custom_strings', metavar = 'str', default = [], required = False,
+    help = 'R|Custom string(s) a dataset name must contain',
+  )
   parser.add_argument('-t', '--tmp-dir',
     type = str, dest = 'tmp_dir', metavar = 'path', required = False,
     default = os.path.join('/tmp', getpass.getuser()),
@@ -516,6 +520,7 @@ if __name__ == '__main__':
   units = args.units
   tmp_dir = args.tmp_dir
   sum_events_file = args.sum_events
+  custom_strings = args.custom_strings
   lumi_pool = None
 
   if sum_events_file and not os.path.isfile(sum_events_file):
@@ -751,7 +756,9 @@ if __name__ == '__main__':
     for data_sample in data_samples_list:
       collection_match = collection_regex.match(data_sample)
       if not collection_match:
-        raise ValueError("Could not parse sample: %s" % data_sample)
+        continue
+      if custom_strings and not any(map(lambda custom_string: custom_string in data_sample, custom_strings)):
+        continue
       primary_dataset    = collection_match.group(PDS_KEY)
       aqcuisition_period = collection_match.group(AQC_KEY)
 
