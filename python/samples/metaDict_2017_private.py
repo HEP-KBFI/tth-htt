@@ -5,13 +5,6 @@ from collections import OrderedDict as OD
 
 meta_dictionary = OD()
 
-
-### event sums
-
-sum_events = { 
-}
-
-
 meta_dictionary["/THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17/private/USER"] =  OD([
   ("crab_string",           "NanoProduction_v2_2018May23_THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17__private"),
   ("sample_category",       "tHq"),
