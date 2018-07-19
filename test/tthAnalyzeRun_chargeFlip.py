@@ -57,16 +57,14 @@ for sample_name, sample_info in samples.items():
     sample_info["sample_category"] = "DY"
   elif sample_info["process_name_specific"].startswith("TTTo") and sample_info["sample_category"] == "TT":
     sample_info["sample_category"] = "TTbar"
-  elif sample_info["process_name_specific"] == "WJetsToLNu":
+  elif sample_info["process_name_specific"].startswith(("WJetsToLNu", "W1JetsToLNu", "W2JetsToLNu", "W3JetsToLNu", "W4JetsToLNu")):
     sample_info["sample_category"] = "WJets"
   elif sample_info["process_name_specific"].startswith("ST_") and sample_info["sample_category"] == "TT":
     sample_info["sample_category"] = "Singletop"
-  elif sample_info["process_name_specific"] in ["WWTo2L2Nu", "WZTo3LNu", "ZZTo4L"]:
+  elif sample_info["process_name_specific"].startswith(("WWTo2L2Nu", "WZTo3LNu", "ZZTo4L")):
     sample_info["sample_category"] = "Diboson"
-  elif "Muon" in sample_name or "Tau" in sample_name:
-      sample_info["use_it"] = False
   elif sample_info["sample_category"] == "data_obs":
-    sample_info["use_it"] = True
+    sample_info["use_it"] = not ("Muon" in sample_name or "Tau" in sample_name)
   else:
     sample_info["use_it"] = False
 
