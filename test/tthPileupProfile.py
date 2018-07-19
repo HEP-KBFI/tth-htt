@@ -49,19 +49,29 @@ if '{era}' in output_file:
   output_file = output_file.format(era = era)
 
 if mode == 'sync':
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_nanoAOD_sync import samples_2016 as samples
+  elif era == "2017":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017 as samples
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD_sync import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
 elif mode == 'all':
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017
-  for sample_name, sample_entry in samples_2017.items():
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_nanoAOD import samples_2016 as samples
+  elif era == "2017":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
+
+  for sample_name, sample_entry in samples.items():
     if sample_name == 'sum_events': continue
     sample_entry['use_it'] = True
 else:
-  raise ValueError('Unexpected mode: %s' % mode)
-
-if era == "2017":
-  samples = samples_2017
-else:
-  raise ValueError("Invalid era: %s" % era)
+  raise ValueError('Invalid mode: %s' % mode)
 
 if __name__ == '__main__':
   logging.basicConfig(

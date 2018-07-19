@@ -48,14 +48,33 @@ for systematic_label in systematics_label:
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
 
-if era == "2017":
-  if mode == 'default':
+if mode == 'default':
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
+  elif era == "2017":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  elif mode == 'sync':
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
+elif mode == 'sync':
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_sync import samples_2017 as samples
+  elif era == "2017":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_sync import samples_2017 as samples
+  elif era == "2018":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_sync import samples_2017 as samples
   else:
-    raise ValueError('Invalid mode: %s' % mode)
+    raise ValueError("Invalid era: %s" % era)
+else:
+  raise ValueError('Invalid mode: %s' % mode)
+
+if era == "2016":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2016 as lumi
+elif era == "2017":
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
+elif era == "2018":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2018 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
 
@@ -63,8 +82,7 @@ for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "1mu", "2e", "2mu" ]
-  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run', '/DoubleEG/Run', '/SingleElectron/Run2017B')):
-      # '/SingleElectron/Run2017B' excluded since no useful triggers present in that dataset
+  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):
       sample_info["use_it"] = False
   if sample_info["sample_category"] == "QCD":
     sample_info["use_it"] = True
@@ -72,7 +90,10 @@ for sample_name, sample_info in samples.items():
       sample_info["use_it"] = not qcd_inclusive
     elif sample_info["process_name_specific"] == "QCD_Mu15":
       sample_info["use_it"] = qcd_inclusive
-
+  if era == "2017":
+    if sample_name.startswith(('/DoubleEG/Run', '/SingleElectron/Run2017B')):
+      # '/SingleElectron/Run2017B' excluded since no useful triggers present in that dataset
+      sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.basicConfig(
