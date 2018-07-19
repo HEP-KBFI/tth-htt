@@ -54,18 +54,16 @@ for sample_name, sample_info in samples.items():
     sample_info["triggers"] = [ "1mu", "2mu" ]
   if sample_info["process_name_specific"].startswith("DYJetsToLL"):
     sample_info["sample_category"] = "DY"
-  elif "TTJets" in sample_name:
+  elif sample_info["process_name_specific"].startswith("TTTo") and sample_info["sample_category"] == "TT":
     sample_info["sample_category"] = "TTbar"
-  elif sample_info["process_name_specific"] == "WJetsToLNu":
+  elif sample_info["process_name_specific"].startswith(("WJetsToLNu", "W1JetsToLNu", "W2JetsToLNu", "W3JetsToLNu", "W4JetsToLNu")):
     sample_info["sample_category"] = "WJets"
-  elif sample_info["process_name_specific"].startswith("ST_"):
+  elif sample_info["process_name_specific"].startswith("ST_") and sample_info["sample_category"] == "TT":
     sample_info["sample_category"] = "Singletop"
-  elif sample_info["process_name_specific"] in ["WWTo2L2Nu", "WZTo3LNu", "ZZTo4L"]:
+  elif sample_info["process_name_specific"].startswith(("WWTo2L2Nu", "WZTo3LNu", "ZZTo4L")):
     sample_info["sample_category"] = "Diboson"
-  elif "Muon" in sample_name:
-      sample_info["use_it"] = True
   elif sample_info["sample_category"] == "data_obs":
-    sample_info["use_it"] = False
+      sample_info["use_it"] = "Muon" in sample_name
   else:
     sample_info["use_it"] = False
 
