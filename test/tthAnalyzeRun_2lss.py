@@ -53,23 +53,64 @@ do_sync = mode.startswith('sync')
 lepton_charge_selections = [ "OS", "SS" ]
 
 if mode == "default":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
+  elif era == "2017":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
 elif mode == "forBDTtraining":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
-  lepton_charge_selections = ["SS"]
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_BDT import samples_2016 as samples
+  elif era == "2017":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_BDT import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
+
+  lepton_charge_selections = [ "SS" ]
 elif mode == "sync_wMEM":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_sync import samples_2016 as samples
+  elif era == "2017":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_sync import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
 elif mode == "sync":
   if use_nonnominal:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync_nom import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync_nom import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
 else:
-  raise ValueError("Internal logic error")
+  raise ValueError("Invalid mode: %s" % mode)
 
-if era == "2017":
+if era == "2016":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2016 as lumi
+  hadTauVeto_selection = "dR03mvaMedium"
+elif era == "2017":
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
-  samples = samples_2017
+  hadTauVeto_selection = "dR03mvaLoose"
+elif era == "2018":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2018 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
 
@@ -104,7 +145,7 @@ if __name__ == '__main__':
     samples                   = samples,
     MEMbranch                 = None, # CV: MEM not implemented for 2lss channel yet
     lepton_charge_selections  = lepton_charge_selections,
-    hadTauVeto_selection      = "dR03mvaLoose", # veto events containing taus that pass tau ID WP applied in 2lss+1tau channel,
+    hadTauVeto_selection      = hadTauVeto_selection, # veto events containing taus that pass tau ID WP applied in 2lss+1tau channel,
     applyFakeRateWeights      = "2lepton",
     central_or_shifts         = central_or_shifts,
     max_files_per_job         = files_per_job,

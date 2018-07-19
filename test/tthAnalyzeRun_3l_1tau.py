@@ -74,60 +74,188 @@ chargeSumSelections = [ "OS" ] if "forBDTtraining" in mode else [ "OS", "SS" ]
 
 if mode == "default":
   if use_preselected:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_preselected import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017 as samples
+    elif era == "2019":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_preselected import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
-  hadTau_selection     = "dR03mvaLoose"
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
+
+  if era == "2016":
+    hadTau_selection = "dR03mvaMedium"
+  elif era == "2017":
+    hadTau_selection = "dR03mvaLoose"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
+
   applyFakeRateWeights = "3lepton"
 elif mode == "addMEM":
   if use_preselected:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_preselected_3l1tau import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_preselected_3l1tau import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_preselected_3l1tau import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_preselected_3l1tau import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_3l1tau import samples_2017
-  hadTau_selection     = "dR03mvaLoose"
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_3l1tau import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_3l1tau import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_3l1tau import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
+
+  if era == "2016":
+    MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaVLoose'
+    hadTau_selection = "dR03mvaVLoose"
+  elif era == "2017":
+    MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaLoose'
+    hadTau_selection = "dR03mvaLoose"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
+
   applyFakeRateWeights = "3lepton"
-  MEMbranch            = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaLoose'
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
-  applyFakeRateWeights     = "4L"
-  hadTau_selection         = "dR03mvaTight"
-  hadTau_selection_relaxed = "dR03mvaVVLoose"
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_BDT import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_BDT import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
+
+  if era == "2016":
+    hadTau_selection         = "dR03mvaTight"
+    hadTau_selection_relaxed = "dR03mvaVVLoose"
+  elif era == "2017":
+    hadTau_selection         = "dR03mvaTight"
+    hadTau_selection_relaxed = "dR03mvaVVLoose"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
+
+  applyFakeRateWeights = "4L"
 elif mode == "forBDTtraining_afterAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_addMEM_3l1tau import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_BDT_addMEM_3l1tau import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_addMEM_3l1tau import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_BDT_addMEM_3l1tau import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
+
+  if era == "2016":
+    MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVLoose'
+    hadTau_selection         = "dR03mvaVTight"
+    hadTau_selection_relaxed = "dR03mvaVLoose"
+  elif era == "2017":
+    MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVVLoose'
+    hadTau_selection         = "dR03mvaTight"
+    hadTau_selection_relaxed = "dR03mvaVVLoose"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
+
   applyFakeRateWeights     = "4L"
-  hadTau_selection         = "dR03mvaTight"
-  hadTau_selection_relaxed = "dR03mvaVVLoose"
-  MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVVLoose'
 elif mode.startswith("sync"):
   if mode == "sync_wMEM":
     if use_preselected:
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_preselected_sync import samples_2017
+      if era == "2016":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_preselected_sync import samples_2016 as samples
+      elif era == "2017":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_preselected_sync import samples_2017 as samples
+      elif era == "2018":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_preselected_sync import samples_2018 as samples
+      else:
+        raise ValueError("Invalid era: %s" % era)
     else:
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
+      if era == "2016":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_sync import samples_2016 as samples
+      elif era == "2017":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
+      elif era == "2018":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_sync import samples_2018 as samples
+      else:
+        raise ValueError("Invalid era: %s" % era)
   elif mode == "sync":
     if use_preselected:
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected_sync import samples_2017
+      if era == "2016":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_preselected_sync import samples_2016 as samples
+      elif era == "2017":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected_sync import samples_2017 as samples
+      elif era == "2018":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_preselected_sync import samples_2018 as samples
+      else:
+        raise ValueError("Invalid era: %s" % era)
     else:
       if use_nonnominal:
-        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+        if era == "2016":
+          from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
+        elif era == "2017":
+          from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+        elif era == "2018":
+          from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
+        else:
+          raise ValueError("Invalid era: %s" % era)
       else:
-        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017
+        if era == "2016":
+          from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync_nom import samples_2016 as samples
+        elif era == "2017":
+          from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
+        elif era == "2018":
+          from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync_nom import samples_2018 as samples
+        else:
+          raise ValueError("Invalid era: %s" % era)
   else:
-    raise ValueError("Internal logic error")
-  hadTau_selection     = "dR03mvaLoose"
+    raise ValueError("Invalid mode: %s" % mode)
+
+  if era == "2016":
+    hadTau_selection = "dR03mvaMedium"
+  elif era == "2017":
+    hadTau_selection = "dR03mvaLoose"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
   applyFakeRateWeights = "3lepton"
 else:
-  raise ValueError("Internal logic error")
+  raise ValueError("Invalid mode: %s" % mode)
 
-if era == "2017":
+if era == "2016":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2016 as lumi
+elif era == "2017":
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
-  samples = samples_2017
+elif era == "2018":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2018 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
 

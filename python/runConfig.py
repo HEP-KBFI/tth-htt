@@ -57,7 +57,7 @@ class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
 class tthAnalyzeParser(argparse.ArgumentParser):
   def __init__(
     self,
-    era_choices = ('2017',),
+    era_choices = ('2016', '2017', '2018'),
     default_num_parallel_jobs = 100,
     max_help_position = 45,
     isAddMEM = False,

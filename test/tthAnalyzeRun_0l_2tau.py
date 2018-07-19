@@ -56,40 +56,86 @@ do_sync = mode.startswith('sync')
 hadTau_charge_selections = [ "OS", "SS" ]
 
 if mode == "default":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if sample_info["process_name_specific"] in [
-          "TTTo2L2Nu_PSweights", "TTToSemiLeptonic_PSweights", "TTToHadronic_PSweights",
-        ]:
-      # Use non-PSweights samples for the analysis to estimate the irreducible ttbar background
-      sample_info["use_it"] = False
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
+    hadTau_selection = "dR03mvaTight"
+  elif era == "2017":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+    for sample_name, sample_info in samples.items():
+      if sample_name == 'sum_events': continue
+      if sample_info["process_name_specific"] in [
+            "TTTo2L2Nu_PSweights", "TTToSemiLeptonic_PSweights", "TTToHadronic_PSweights",
+          ]:
+        # Use non-PSweights samples for the analysis to estimate the irreducible ttbar background
+        sample_info["use_it"] = False
 
-  hadTau_selection = "dR03mvaMedium"
+    hadTau_selection = "dR03mvaMedium"
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
+
 elif mode == "forBDTtraining":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if sample_info["process_name_specific"] in [
-          "TTTo2L2Nu", "TTToSemiLeptonic", "TTToHadronic",
-        ]:
-      # Use PSweights samples only for BDT training
-      sample_info["use_it"] = False
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_BDT import samples_2016 as samples
 
-  hadTau_selection         = "dR03mvaLoose"
-  hadTau_selection_relaxed = "dR03mvaVLoose"
+    hadTau_selection         = "dR03mvaMedium"
+    hadTau_selection_relaxed = "dR03mvaLoose"
+  elif era == "2017":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
+    for sample_name, sample_info in samples.items():
+      if sample_name == 'sum_events': continue
+      if sample_info["process_name_specific"] in [
+            "TTTo2L2Nu", "TTToSemiLeptonic", "TTToHadronic",
+          ]:
+        # Use PSweights samples only for BDT training
+        sample_info["use_it"] = False
+
+    hadTau_selection         = "dR03mvaLoose"
+    hadTau_selection_relaxed = "dR03mvaVLoose"
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_BDT import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
+
   hadTau_charge_selections = [ "OS" ]
 elif mode == "sync":
   if use_nonnominal:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
-  hadTau_selection = "dR03mvaMedium"
-else:
-  raise ValueError("Internal logic error")
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync_nom import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync_nom import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
 
-if era == "2017":
+  if era == "2016":
+    hadTau_selection = "dR03mvaTight"
+  elif era == "2017":
+    hadTau_selection = "dR03mvaMedium"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
+else:
+  raise ValueError("Invalid mode: %s" % mode)
+
+if era == "2016":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2016 as lumi
+elif era == "2017":
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
+elif era == "2018":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2018 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
 
@@ -98,12 +144,14 @@ for sample_name, sample_info in samples.items():
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "2tau" ]
   if sample_info["type"] == "data":
-    if era == "2017":
-      if not sample_name.startswith(("/SingleElectron/", "/SingleMuon/")):
-        sample_info["use_it"] = False
-    elif era == "2016":
+    if era == "2016":
       if not sample_name.startswith("/Tau/"):
         sample_info["use_it"] = False
+    elif era == "2017":
+      if not sample_name.startswith(("/SingleElectron/", "/SingleMuon/")):
+        sample_info["use_it"] = False
+    elif era == "2018":
+      raise ValueError("Implement me!")
     else:
       raise ValueError("Invalid era: %s" % era)
 

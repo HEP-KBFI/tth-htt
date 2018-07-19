@@ -45,9 +45,15 @@ for systematic_label in systematics_label:
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
 
-if era == "2017":
+if era == "2016":
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2016 as lumi
+elif era == "2017":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
+elif era == "2018":
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2018 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
 
@@ -55,9 +61,9 @@ for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "1mu", "1e1mu" ]
-  if sample_name.startswith(("/DoubleMuon/", "/DoubleEG/", "/Tau/")) and sample_name.find("PromptReco-v3") == -1:
-    #TODO: taken from 2016 samples config, needs a review
-    sample_info["use_it"] = False
+  if era == "2016" and sample_name.startswith(("/DoubleMuon/", "/DoubleEG/", "/Tau/")) and \
+     sample_name.find("PromptReco-v3") == -1:
+      sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.basicConfig(
