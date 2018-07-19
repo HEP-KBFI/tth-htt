@@ -1,7 +1,12 @@
 # Integrated luminosity
+
+# Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/756030a1229b9ad037c4ef59f8755537508114e9/test/datasets_data_2016_v1.txt#L50
+# Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/688.html
+lumi_2016 = 35.922e+3 # 1/pb (uncertainty: 2.5%)
+
 # Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/4564463eed45251a4fd274ed754b1a37bae8e98e/test/datasets_data_2017_v2.txt#L33
 # Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/761/1.html
-lumi_2017 = 41.529e+3 # 1/pb (uncertaintiy: 2.3%)
+lumi_2017 = 41.529e+3 # 1/pb (uncertainty: 2.3%)
 
 # Systematic uncertainties
 
@@ -218,7 +223,7 @@ class Triggers(object):
         '1e1tau' : { # stored in SingleElectron dataset
           'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
         },
-        '2tau' : { # stored in Tau dataset 
+        '2tau' : { # stored in Tau dataset
           'HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg',
           'HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg',
           'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg',

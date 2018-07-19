@@ -53,17 +53,52 @@ for systematic_label in systematics_label:
       central_or_shifts.append(central_or_shift)
 do_sync = mode.startswith('sync')
 
-if era == "2017":
-  if mode == 'default':
+if mode == 'default':
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
+  elif era == "2017":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  elif mode == 'sync_wMEM':
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
+elif mode == 'sync_wMEM':
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_sync import samples_2016 as samples
+  elif era == "2017":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
-  elif mode == 'sync':
-    if use_nonnominal:
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_sync import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
+elif mode == 'sync':
+  if use_nonnominal:
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
+    elif era == "2017":
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
     else:
+      raise ValueError("Invalid era: %s" % era)
+  else:
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync_nom import samples_2016 as samples
+    elif era == "2017":
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync_nom import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
+else:
+  raise ValueError("Invalid mode: %s" % mode)
+
+if era == "2016":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2016 as lumi
+elif era == "2017":
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
+elif era == "2018":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2018 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
 

@@ -55,34 +55,77 @@ for systematic_label in systematics_label:
 version = "%s_%s_%s" % (version, mode, 'nonNom' if use_nonnominal else 'nom')
 
 if mode == 'default':
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples import samples_2017
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
+  elif era == "2017":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
 
   leptonSelection = "Fakeable"
   hadTauSelection = "Tight"
-  hadTauWP        = "dR03mvaLoose"
+  if era == "2016":
+    hadTauWP = "dR03mvaMedium"
+  elif era == "2017":
+    hadTauWP = "dR03mvaLoose"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
 elif mode == 'bdt':
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_BDT import samples_2016 as samples
+  elif era == "2017":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_BDT import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
 
   leptonSelection = "Loose"
   hadTauSelection = "Tight"
-  hadTauWP        = "dR03mvaVVLoose"
+  if era == "2016":
+    hadTauWP = "dR03mvaVLoose"
+  elif era == "2017":
+    hadTauWP = "dR03mvaVVLoose"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
 elif mode == 'sync':
   if use_nonnominal:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync_nom import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync_nom import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
 
   leptonSelection = "Fakeable"
   hadTauSelection = "Tight"
-  hadTauWP = "dR03mvaLoose"
+  if era == "2016":
+    hadTauWP = "dR03mvaMedium"
+  elif era == "2017":
+    hadTauWP = "dR03mvaLoose"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
 else:
-  raise ValueError("Internal logic error")
-
-if era == "2017":
-  samples = samples_2017
-else:
-  raise ValueError("Invalid era: %s" % era)
-
+  raise ValueError("Invalid mode: %s" % mode)
 
 if __name__ == '__main__':
   logging.basicConfig(
