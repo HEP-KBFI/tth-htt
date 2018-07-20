@@ -1,47 +1,36 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import recommendedMEtFilters
+from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
 
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring('/hdfs/local/karl/ttHNtupleProduction/2017/2018Jul02_woPresel_nom_all/ntuples/QCD_Mu15/0000/tree_1.root'),
+    fileNames = cms.vstring(),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
 
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('analyze_LeptonFakeRate.root')
+    fileName = cms.string('')
 )
 
 process.analyze_LeptonFakeRate = cms.PSet(
     treeName = cms.string('Events'),
 
-    process = cms.string('ttH'),
+    process = cms.string(''),
 
-    era = cms.string('2017'),
+    era = cms.string(''),
 
     use_triggers_1e = cms.bool(True),
     use_triggers_2e = cms.bool(True),
     use_triggers_1mu = cms.bool(True),
     use_triggers_2mu = cms.bool(True),
 
-    triggers_1e = cms.vstring([
-        'HLT_Ele8_CaloIdM_TrackIdM_PFJet30',
-        'HLT_Ele17_CaloIdM_TrackIdM_PFJet30',
-        'HLT_Ele23_CaloIdM_TrackIdM_PFJet30',
-    ]),
-    triggers_1mu = cms.vstring([
-        'HLT_Mu27',
-        'HLT_Mu20',
-        'HLT_Mu3_PFJet40',
-    ]),
+    triggers_1e = cms.vstring(),
+    triggers_1mu = cms.vstring(),
     triggers_2e = cms.vstring(),
-    triggers_2mu = cms.vstring([
-        'HLT_Mu17',
-        'HLT_Mu8',
-    ]),
+    triggers_2mu = cms.vstring(),
 
     triggers_mu_cfg = cms.VPSet(
         cms.PSet(
@@ -176,12 +165,13 @@ process.analyze_LeptonFakeRate = cms.PSet(
     minRecoPt_global_mu = cms.double(5),
 
     isMC = cms.bool(True),
-    central_or_shift = cms.string('central'),
+    central_or_shift = cms.string(''),
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_met_filters = cms.bool(True),
-    cfgMEtFilter = recommendedMEtFilters,
+    cfgMEtFilter = None,
     fillGenEvtHistograms = cms.bool(True),
+    cfgEvtYieldHistManager = None,
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
