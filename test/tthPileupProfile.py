@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthPileupProfile.py -v 2018May09 -e 2017 -m all
 
-mode_choices = [ 'all', 'sync' ]
+mode_choices = [ 'all', 'sync', 'hh' ]
 
 parser = tthAnalyzeParser(default_num_parallel_jobs = 40)
 parser.add_modes(mode_choices)
@@ -70,6 +70,15 @@ elif mode == 'all':
   for sample_name, sample_entry in samples.items():
     if sample_name == 'sum_events': continue
     sample_entry['use_it'] = True
+elif mode == 'hh':
+  if era == "2016":
+    from hhAnalysis.tttt.samples.hhAnalyzeSamples_2016_nanoAOD import samples_2016 as samples
+  elif era == "2017":
+    from hhAnalysis.tttt.samples.hhAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
+  elif era == "2018":
+    from hhAnalysis.tttt.samples.hhAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
 else:
   raise ValueError('Invalid mode: %s' % mode)
 
