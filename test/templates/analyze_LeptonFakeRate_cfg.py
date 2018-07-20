@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
+from tthAnalysis.HiggsToTauTau.configs.LeptonFakeRate_trigger_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
 
 process = cms.PSet()
@@ -32,127 +33,8 @@ process.analyze_LeptonFakeRate = cms.PSet(
     triggers_2e = cms.vstring(),
     triggers_2mu = cms.vstring(),
 
-    triggers_mu_cfg = cms.VPSet(
-        cms.PSet(
-            path = cms.string("HLT_Mu27"),
-            cone_minPt = cms.double(45.),
-            cone_maxPt = cms.double(100.),
-            minRecoPt = cms.double(27.), # NEWLY ADDED AFTER GIOVANNI SYNC
-            jet_minPt = cms.double(30.),
-#            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(225), ## 2016 VALUE: 143
-            is_trigger_1mu = cms.bool(True),
-            is_trigger_2mu = cms.bool(False),
-            is_trigger_1e = cms.bool(False),
-            is_trigger_2e = cms.bool(False)
-        ),
-        cms.PSet(
-            path = cms.string("HLT_Mu20"),
-            cone_minPt = cms.double(32.),
-            cone_maxPt = cms.double(100.),
-            minRecoPt = cms.double(20.), # NEWLY ADDED AFTER GIOVANNI SYNC
-            jet_minPt = cms.double(30.),
-#            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(225), ## 2016 VALUE: 143
-            is_trigger_1mu = cms.bool(True),
-            is_trigger_2mu = cms.bool(False),
-            is_trigger_1e = cms.bool(False),
-            is_trigger_2e = cms.bool(False)
-        ),
-        cms.PSet(
-            path = cms.string("HLT_Mu17"),
-            cone_minPt = cms.double(32.),
-            cone_maxPt = cms.double(100.),
-            minRecoPt = cms.double(17.), # NEWLY ADDED AFTER GIOVANNI SYNC
-            jet_minPt = cms.double(30.),
-#            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(594), ## 2016 VALUE: 126
-            is_trigger_1mu = cms.bool(False),
-            is_trigger_2mu = cms.bool(True),
-            is_trigger_1e = cms.bool(False),
-            is_trigger_2e = cms.bool(False)
-         ),
-        cms.PSet(
-            path = cms.string("HLT_Mu8"),
-            cone_minPt = cms.double(15.),
-            cone_maxPt = cms.double(45.),
-            minRecoPt = cms.double(8.), # NEWLY ADDED AFTER GIOVANNI SYNC
-            jet_minPt = cms.double(30.),
-#            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(15948), ## 2016 VALUE: 9072
-            is_trigger_1mu = cms.bool(False),
-            is_trigger_2mu = cms.bool(True),
-            is_trigger_1e = cms.bool(False),
-            is_trigger_2e = cms.bool(False)
-        ),
-        cms.PSet(
-            path = cms.string("HLT_Mu3_PFJet40"),
-            cone_minPt = cms.double(10.),
-            cone_maxPt = cms.double(32.),
-            minRecoPt = cms.double(-1.), # NEWLY ADDED AFTER GIOVANNI SYNC
-            jet_minPt = cms.double(45.), # UPDATED FROM 2016 VALUE (40 GeV) FOR 2017 DATA
-#            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(8992), ## 2016 VALUE: 4841
-            is_trigger_1mu = cms.bool(True),
-            is_trigger_2mu = cms.bool(False),
-            is_trigger_1e = cms.bool(False),
-            is_trigger_2e = cms.bool(False)
-         )
-    ),
-    triggers_e_cfg = cms.VPSet(
-        cms.PSet(
-            path = cms.string("HLT_Ele8_CaloIdM_TrackIdM_PFJet30"),
-            cone_minPt = cms.double(15.),
-            cone_maxPt = cms.double(45.),
-            minRecoPt = cms.double(8.), # NEWLY ADDED AFTER GIOVANNI SYNC
-            jet_minPt = cms.double(30.),
-#            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(11365),
-            is_trigger_1mu = cms.bool(False),
-            is_trigger_2mu = cms.bool(False),
-            is_trigger_1e = cms.bool(True),
-            is_trigger_2e = cms.bool(False)
-        ),
-#        cms.PSet(
-#            path = cms.string("HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30"), ## DOESN'T EXIST IN 2017 DATA
-#            cone_minPt = cms.double(20.),
-#            cone_maxPt = cms.double(30.),
-#            minRecoPt = cms.double(12.), # NEWLY ADDED AFTER GIOVANNI SYNC
-#            jet_minPt = cms.double(30.),
-##            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-#            average_prescale = cms.double(1086), #TODO: update
-#            is_trigger_1mu = cms.bool(False),
-#            is_trigger_2mu = cms.bool(False),
-#            is_trigger_1e = cms.bool(True),
-#            is_trigger_2e = cms.bool(False)
-#        ),
-        cms.PSet(
-            path = cms.string("HLT_Ele17_CaloIdM_TrackIdM_PFJet30"),
-            cone_minPt = cms.double(25.),
-            cone_maxPt = cms.double(100.),
-            minRecoPt = cms.double(17.), # NEWLY ADDED AFTER GIOVANNI SYNC
-            jet_minPt = cms.double(30.),
-#            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(1167), ## 2016 VALUE: 569
-            is_trigger_1mu = cms.bool(False),
-            is_trigger_2mu = cms.bool(False),
-            is_trigger_1e = cms.bool(True),
-            is_trigger_2e = cms.bool(False)
-        ),
-        cms.PSet(
-            path = cms.string("HLT_Ele23_CaloIdM_TrackIdM_PFJet30"),
-            cone_minPt = cms.double(32.),
-            cone_maxPt = cms.double(100.),
-            minRecoPt = cms.double(23.), # NEWLY ADDED AFTER GIOVANNI SYNC
-            jet_minPt = cms.double(30.),
-#            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(1069), ## suggested by christian to be checked with Giovanni !!!
-            is_trigger_1mu = cms.bool(False),
-            is_trigger_2mu = cms.bool(False),
-            is_trigger_1e = cms.bool(True),
-            is_trigger_2e = cms.bool(False)
-        )
-    ),
+    triggers_mu_cfg = None,
+    triggers_e_cfg = None,
 
     absEtaBins_e = cms.vdouble(0., 1.479, 9.9),
     ptBins_e = cms.vdouble(15., 20., 30., 45., 65., 100000.),

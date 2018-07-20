@@ -236,6 +236,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       'ptBins_e',
       'absEtaBins_mu',
       'ptBins_mu',
+      'triggers_mu_cfg',
+      'triggers_e_cfg',
     ]
     lines = super(analyzeConfig_LeptonFakeRate, self).createCfg_analyze(
       jobOptions, sample_info, additionalJobOptions, isLeptonFR = True
@@ -447,6 +449,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'ptBins_mu'                : self.ptBins_mu,
             'central_or_shift'         : central_or_shift,
             'fillGenEvtHistograms'     : self.fillGenEvtHistograms,
+            'triggers_mu_cfg'          : 'triggers_mu_cfg_%s' % self.era,
+            'triggers_e_cfg'           : 'triggers_e_cfg_%s'  % self.era,
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
