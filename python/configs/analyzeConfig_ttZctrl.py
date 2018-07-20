@@ -129,6 +129,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     self.histogramDir_prep_dcard = "ttZctrl_Tight"
     self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "conversions", "fakes_data" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_ttZctrl_cfg.py")
+    self.make_plots_signal = "TTZ"
 
     self.select_rle_output = select_rle_output
     self.rle_select = rle_select
@@ -598,7 +599,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
       'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
       'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
       'histogramDir' : self.histogramDir_prep_dcard,
-      'label' : None,
+      'label' : "t#bar{t}Z control region",
       'make_plots_backgrounds' : self.make_plots_backgrounds
     }
     self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])

@@ -7,23 +7,19 @@ process.fwliteInput = cms.PSet(
 )
 
 process.makePlots = cms.PSet(
-    pluginType = cms.string("Plotter_ttH"),
 
-    applyRebinning = cms.bool(True),
-    apply_fixed_rebinning = cms.int32(2),
-    apply_automatic_rebinning = cms.bool(True),
-    minEvents_automatic_rebinning = cms.double(0.5),
-    applyAutoBlinding = cms.bool(True),
-    divideByBinWidth = cms.bool(False),
-    processData = cms.string("data_obs"),
+    pluginType = cms.string("Plotter_mcClosure"),
+
+    process_signal = cms.string(""),
+    process_sideband = cms.string("fakes_mc"),
     processesBackground = cms.vstring(),
-    processSignal = cms.string(""),
     categories = cms.VPSet(),
+
     distributions = cms.VPSet(
         cms.PSet(
             histogramName = cms.string("sel/evt/$PROCESS/numJets"),
             xAxisTitle = cms.string("jet Multiplicity"),
-            yAxisTitle = cms.string("Events")
+            yAxisTitle = cms.string("N")
         ),
         cms.PSet(
             histogramName = cms.string("sel/evt/$PROCESS/numBJets_loose"),
@@ -54,20 +50,7 @@ process.makePlots = cms.PSet(
 
     nuisanceParameters = cms.PSet(
         normalization = cms.PSet(
-            signal = cms.string("1.0 +/- 0.20"),
-            tHq = cms.string("1.0 +/- 0.20"),
-            tHW = cms.string("1.0 +/- 0.20"),
-            TT = cms.string("1.0 +/- 0.20"),
-            TTW = cms.string("1.0 +/- 0.20"),
-            TTWW = cms.string("1.0 +/- 0.20"),
-            TTZ = cms.string("1.0 +/- 0.20"),
-            EWK = cms.string("1.0 +/- 0.20"),
-            Rares = cms.string("1.0 +/- 0.20"),
-            conversions = cms.string("1.0 +/- 0.20"),
-            fakes_data = cms.string("1.0 +/- 0.20"),
-            flips_data = cms.string("1.0 +/- 0.20"),
-            VH = cms.string("1.0 +/- 0.20"),
-            WZ = cms.string("1.0 +/- 0.20"),
+            fakes_mc = cms.string("1.0 +/- 0.00")
         ),
         shape = cms.PSet(
             CMS_ttHl_btag_HF = cms.string("0.00 +/- 1.00"),
@@ -78,12 +61,12 @@ process.makePlots = cms.PSet(
             CMS_ttHl_btag_LFStats2 = cms.string("0.00 +/- 1.00"),
             CMS_ttHl_btag_cErr1 = cms.string("0.00 +/- 1.00"),
             CMS_ttHl_btag_cErr2 = cms.string("0.00 +/- 1.00"),
-            CMS_ttHl_JES = cms.string("0.00 +/- 1.00"),
+            CMS_ttHl_JES = cms.string("0.00 +/- 1.00")
         )
     ),
-    showUncertainty = cms.bool(False),
+    showUncertainty = cms.bool(True),
 
-    labelOnTop = cms.string("CMS Preliminary; ttH, H #rightarrow #tau#tau; %1.1f fb^{-1} at #sqrt{s} = 13 TeV"),
+    labelOnTop = cms.string("CMS Simulation; ttH, H #rightarrow #tau#tau; %1.1f fb^{-1} at #sqrt{s} = 13 TeV"),
     intLumiData = cms.double(0.), # in units of fb^-1
 
     outputFileName = cms.string("")

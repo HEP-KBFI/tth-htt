@@ -137,6 +137,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     self.jobOptions_addFlips = {}
     self.histogramDir_prep_dcard = "ttWctrl_SS_Tight"
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_ttWctrl_cfg.py") #TODO
+    self.make_plots_signal = "TTW"
 
     self.select_rle_output = select_rle_output
     self.use_nonnominal = use_nonnominal
@@ -709,7 +710,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
         'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
         'histogramDir' : self.histogramDir_prep_dcard,
-        'label' : None,
+        'label' : "t#bar{t}W control region",
         'make_plots_backgrounds' : self.make_plots_backgrounds
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
