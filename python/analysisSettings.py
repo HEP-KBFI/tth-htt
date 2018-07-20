@@ -8,6 +8,16 @@ lumi_2016 = 35.922e+3 # 1/pb (uncertainty: 2.5%)
 # Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/761/1.html
 lumi_2017 = 41.529e+3 # 1/pb (uncertainty: 2.3%)
 
+def get_lumi(era):
+  if era == "2016":
+    return lumi_2016
+  elif era == "2017":
+    return lumi_2017
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
+
 # Systematic uncertainties
 
 class systematics(object):

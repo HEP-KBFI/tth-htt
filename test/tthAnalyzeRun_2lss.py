@@ -2,7 +2,7 @@
 import os, logging, sys, getpass
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_2lss import analyzeConfig_2lss
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
-from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g. to run: ./tthAnalyzeRun_2lss.py -v 2017Dec13 -m default -e 2017
@@ -49,6 +49,7 @@ for systematic_label in systematics_label:
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
 do_sync = mode.startswith('sync')
+lumi = get_lumi(era)
 
 lepton_charge_selections = [ "OS", "SS" ]
 
@@ -104,13 +105,11 @@ else:
   raise ValueError("Invalid mode: %s" % mode)
 
 if era == "2016":
-  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2016 as lumi
   hadTauVeto_selection = "dR03mvaMedium"
 elif era == "2017":
-  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
   hadTauVeto_selection = "dR03mvaLoose"
 elif era == "2018":
-  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2018 as lumi
+  pass
 else:
   raise ValueError("Invalid era: %s" % era)
 
