@@ -184,7 +184,75 @@ class Triggers(object):
 
   def __init__(self, era):
 
-    if era == "2017":
+    if era == "2016":
+      self.triggers_analysis = {
+        '3mu' : {
+          'HLT_TripleMu_12_10_5',
+        },
+        '1e2mu' : {
+          'HLT_DiMu9_Ele9_CaloIdL_TrackIdL',
+        },
+        '2e1mu' : {
+          'HLT_Mu8_DiEle12_CaloIdL_TrackIdL',
+        },
+        '3e' : {
+          'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL',
+        },
+        '2mu' : {
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ',
+          'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ',
+        },
+        '1e1mu' : {
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',
+          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL',
+        },
+        '2e' : {
+          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
+        },
+        '1mu' : {
+          'HLT_IsoMu22',
+          'HLT_IsoTkMu22',
+          'HLT_IsoMu22_eta2p1',
+          'HLT_IsoTkMu22_eta2p1',
+          'HLT_IsoMu24',
+          'HLT_IsoTkMu24',
+        },
+        '1e' : {
+          'HLT_Ele25_WPTight_Gsf',
+          'HLT_Ele27_WPTight_Gsf',
+          'HLT_Ele25_eta2p1_WPTight_Gsf',
+          'HLT_Ele27_eta2p1_WPLoose_Gsf',
+#          'HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded',
+        },
+        '1mu1tau' : {
+          'HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1',
+        },
+        '1e1tau' : {
+          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30',
+#          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1',
+#          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20',
+        },
+        '2tau' : {
+          'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg',
+          'HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg',
+        },
+      }
+      self.triggers_leptonFR = {
+        '1e' : set(),
+        '1mu': {
+          'HLT_Mu27',
+        },
+        '2e' : {
+          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30',
+          'HLT_Ele12_CaloIdM_TrackIdM_PFJet30',
+        },
+        '2mu': {
+          'HLT_Mu17',
+          'HLT_Mu8',
+          'HLT_Mu3_PFJet40',
+        }
+      }
+    elif era == "2017":
 
       self.triggers_analysis = {
         '3mu' : {
@@ -259,6 +327,8 @@ class Triggers(object):
         }
       }
 
+    elif era == "2018":
+      raise ValueError("Implement me!")
     else:
       raise ValueError("Invalid era: %s" % era)
 
