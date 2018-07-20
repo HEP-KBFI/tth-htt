@@ -303,6 +303,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("    label = cms.string('%s')" % self.channel)
     lines.append("  )")
     lines.append(")")
+    lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
     create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
 
   def addToMakefile_hadd_stage1_6(self, lines_makefile):
@@ -961,7 +962,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_sum%s_cfg.py" % (self.channel, chargeSumSelection)),
           'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_sum%s.png" % (self.channel, chargeSumSelection)),
           'histogramDir' : (self.histogramDir_prep_dcard % chargeSumSelection),
-          'label' : None,
+          'label' : "2lSS+1#tau_{h}",
           'make_plots_backgrounds' : self.make_plots_backgrounds
         }
         self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
@@ -977,7 +978,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_lepOS_sum%s_cfg.py" % (self.channel, chargeSumSelection)),
             'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_lepOS_sum%s.png" % (self.channel, chargeSumSelection)),
             'histogramDir' : (self.histogramDir_prep_dcard_OS % chargeSumSelection),
-            'label' : "OS",
+            'label' : "2lSS+1#tau_{h} OS",
             'make_plots_backgrounds' : make_plots_backgrounds
           }
           self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
