@@ -819,7 +819,7 @@ if __name__ == '__main__':
                       type = str, default = '', required = False,
                       help = 'R|Generate SLURM jobs instead of running locally')
   parser.add_argument('-E', '--era', dest = 'era', metavar = 'era', type = int, default = -1,
-                      required = True, choices = (2017,),
+                      required = True, choices = (2016,2017,2018),
                       help = 'R|Era of the samples')
   parser.add_argument('-M', '--find-missing-branches', dest = 'missing_branches', action = 'store_true',
                       default = False,
