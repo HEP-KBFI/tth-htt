@@ -130,6 +130,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         absEtaBins_mu,
         ptBins_e,
         ptBins_mu,
+        lep_mva_wp,
         fillGenEvtHistograms,
         central_or_shifts,
         numerator_histogram,
@@ -174,6 +175,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       dry_run               = dry_run,
       isDebug               = isDebug,
       use_home              = use_home,
+      lep_mva_wp            = lep_mva_wp,
     )
 
     self.cmssw_base_dir_combine = cmssw_base_dir_combine
@@ -451,6 +453,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'fillGenEvtHistograms'     : self.fillGenEvtHistograms,
             'triggers_mu_cfg'          : 'triggers_mu_cfg_%s' % self.era,
             'triggers_e_cfg'           : 'triggers_e_cfg_%s'  % self.era,
+            'lep_mva_cut'              : self.lep_mva_cut,
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
