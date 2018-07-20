@@ -18,7 +18,7 @@ EvtYieldHistManager_2017 = cms.PSet(
         luminosity = cms.double(9.314)
     ),
     Run2017F = cms.PSet(
-        runRange = cms.string("305040-306460"),
+        runRange = cms.string("305040-306462"),
         luminosity = cms.double(13.539)
     )
 )
