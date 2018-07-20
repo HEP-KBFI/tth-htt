@@ -2099,7 +2099,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
 
     if ( isMC ) {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, lumiScale);
+      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
 
