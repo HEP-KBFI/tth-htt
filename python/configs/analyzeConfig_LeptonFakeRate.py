@@ -266,6 +266,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.addBackground_LeptonFakeRate.processData = cms.string('%s')" % self.processToSubtractConvsFrom)
     lines.append("process.addBackground_LeptonFakeRate.processLeptonFakes = cms.string('%s_NC')" % self.processToSubtractConvsFrom)
     lines.append("process.addBackground_LeptonFakeRate.processesToSubtract = cms.vstring('%sg')" % self.processToSubtractConvsFrom)
+    lines.append("process.addBackground_LeptonFakeRate.sysShifts = cms.vstring()" % self.central_or_shifts)
     logging.info("self.cfgFile_addBackgrounds_Convs_LeptonFakeRate => %s" % self.cfgFile_addBackgrounds_Convs_LeptonFakeRate)
     logging.info("jobOptions['cfgFile_modified'] => %s" % jobOptions['cfgFile_modified'])
     create_cfg(self.cfgFile_addBackgrounds_Convs_LeptonFakeRate, jobOptions['cfgFile_modified'], lines)

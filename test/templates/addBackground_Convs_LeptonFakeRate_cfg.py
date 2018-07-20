@@ -5,13 +5,13 @@ import os
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring('/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Nov4/2016/2017Nov4/histograms/LeptonFakeRate/histograms_harvested_stage1_5.root'),
+    fileNames = cms.vstring(),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
 
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('addBackgroundLeptonFakeRate2.root')
+    fileName = cms.string('')
 )
 
 process.addBackground_LeptonFakeRate = cms.PSet(
@@ -27,23 +27,8 @@ process.addBackground_LeptonFakeRate = cms.PSet(
             lepton = cms.string("muon")
         ),
         ),
-    processData = cms.string("QCD"), ## TO BE CHANGED TO QCD IN THE FINAL VERSION
-    processLeptonFakes = cms.string("QCD_NC"),
-    processesToSubtract = cms.vstring(
-        "QCDg",
-#        "signall_plus_t"
-    ),
-    sysShifts = cms.vstring(
-      "central",
-      "CMS_ttHl_JESUp",
-      "CMS_ttHl_JESDown",
-      "CMS_ttHl_JERUp",
-      "CMS_ttHl_JERDown",
-      "CMS_ttHl_UnclusteredEnUp",
-      "CMS_ttHl_UnclusteredEnDown"
-    )
+    processData = cms.string(""),
+    processLeptonFakes = cms.string(""),
+    processesToSubtract = cms.vstring(),
+    sysShifts = cms.vstring()
 )
-
-process.fwliteInput.fileNames = cms.vstring('analyze_LeptonFakeRate.root')
-
-
