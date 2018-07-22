@@ -282,7 +282,7 @@ getBranchName_MEt(const std::string & default_branchName,
   }
   else if(era == kEra_2018)
   {
-    throw cmsException(__func__, __LINE__) << "Invalid era = " << era;
+    throw cmsException(__func__, __LINE__) << "Implement me!";
   }
   else
   {
