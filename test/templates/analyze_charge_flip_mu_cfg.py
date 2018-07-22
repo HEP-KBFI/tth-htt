@@ -53,8 +53,8 @@ process.analyze_charge_flip = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
 
-    cfgMEtFilter = None,
-    cfgEvtYieldHistManager = None,
+    cfgMEtFilter = cms.PSet(),
+    cfgEvtYieldHistManager = cms.PSet(),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),

@@ -33,8 +33,8 @@ process.analyze_LeptonFakeRate = cms.PSet(
     triggers_2e = cms.vstring(),
     triggers_2mu = cms.vstring(),
 
-    triggers_mu_cfg = None,
-    triggers_e_cfg = None,
+    triggers_mu_cfg = cms.VPSet(),
+    triggers_e_cfg = cms.VPSet(),
 
     absEtaBins_e = cms.vdouble(0., 1.479, 9.9),
     ptBins_e = cms.vdouble(15., 20., 30., 45., 65., 100000.),
@@ -51,9 +51,9 @@ process.analyze_LeptonFakeRate = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_met_filters = cms.bool(True),
-    cfgMEtFilter = None,
+    cfgMEtFilter = cms.PSet(),
     fillGenEvtHistograms = cms.bool(True),
-    cfgEvtYieldHistManager = None,
+    cfgEvtYieldHistManager = cms.PSet(),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),

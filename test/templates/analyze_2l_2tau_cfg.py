@@ -87,11 +87,11 @@ process.analyze_2l_2tau = cms.PSet(
     apply_genWeight = cms.bool(True),
     apply_hlt_filter = cms.bool(False),
     apply_met_filters = cms.bool(True),
-    cfgMEtFilter = None,
+    cfgMEtFilter = cms.PSet(),
     apply_hadTauFakeRateSF = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
-    cfgEvtYieldHistManager = None,
+    cfgEvtYieldHistManager = cms.PSet(),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),

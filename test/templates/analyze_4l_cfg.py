@@ -77,10 +77,10 @@ process.analyze_4l = cms.PSet(
     apply_genWeight = cms.bool(True),
     apply_hlt_filter = cms.bool(False),
     apply_met_filters = cms.bool(True),
-    cfgMEtFilter = None,
+    cfgMEtFilter = cms.PSet(),
 
     fillGenEvtHistograms = cms.bool(False),
-    cfgEvtYieldHistManager = None,
+    cfgEvtYieldHistManager = cms.PSet(),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
