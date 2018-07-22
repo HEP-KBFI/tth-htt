@@ -14,8 +14,13 @@ double
 get_BtagWP(int era,
            BtagWP wp)
 {
-  assert(era == kEra_2017);
-  return RecoJet::useDeepCSV ? BtagWP_deepCSV_2017.at(wp) : BtagWP_CSVv2_2017.at(wp);
+  switch(era)
+  {
+    case kEra_2016: return BtagWP_CSV_2016.at(wp);
+    case kEra_2017: return BtagWP_deepCSV_2017.at(wp);
+    case kEra_2018: throw cmsException(__func__, __LINE__) << "Implement me!";
+    default: throw cmsException(__func__, __LINE__) << "Invalid era = " << era;
+  }
 }
 
 bool

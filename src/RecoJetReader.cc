@@ -27,7 +27,6 @@ RecoJetReader::RecoJetReader(int era,
   , max_nJets_(256)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
-  , branchName_btag_(! RecoJet::useDeepCSV ? "CSVV2" : "DeepB")
   , genLeptonReader_(nullptr)
   , genHadTauReader_(nullptr)
   , genJetReader_(nullptr)
@@ -46,6 +45,14 @@ RecoJetReader::RecoJetReader(int era,
   , jet_pullMag_(nullptr)
   , jet_jetId_(nullptr)
 {
+  switch(era_)
+  {
+    case kEra_2016: branchName_btag_ = "CSVV2"; break;
+    case kEra_2017: branchName_btag_ = "DeepB"; break;
+    case kEra_2018: throw cmsException(this) << "Implement me!";
+    default: throw cmsException(this) << "Invalid era = " << era_;
+  }
+  assert(! branchName_btag_.empty());
   if(readGenMatching_)
   {
     genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_obj_.data()), max_nJets_);
@@ -114,7 +121,7 @@ RecoJetReader::setBranchName_BtagWeight(int central_or_shift)
     ;
   }
   branchName_BtagWeight_ = getBranchName_bTagWeight(
-    branchName_obj_, era_, central_or_shift, RecoJet::useDeepCSV
+    branchName_obj_, era_, central_or_shift
   );
 }
 
@@ -157,11 +164,11 @@ RecoJetReader::setBranchNames()
     branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
     branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("btag%s", branchName_btag_.data()));
     branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
-    branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central, RecoJet::useDeepCSV);
+    branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central);
     for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
     {
       branchNames_BtagWeight_systematics_[idxShift] = getBranchName_bTagWeight(
-        branchName_obj_, era_, idxShift, RecoJet::useDeepCSV
+        branchName_obj_, era_, idxShift
       );
     }
     branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
