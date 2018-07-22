@@ -10,9 +10,17 @@ RecoJetSelectorBtag::RecoJetSelectorBtag(int era,
   , debug_(debug)
   , min_pt_(25.)
   , max_absEta_(2.4)
-  , min_jetId_(2) // 2 means tight (loose jet ID deprecated since 94x)
+  , min_jetId_(-1.e+3)
   , min_BtagCSV_(-1.e+3)
-{}
+{
+  switch(era)
+  {
+    case kEra_2016: break;
+    case kEra_2017: min_jetId_ = 2; break; // 2 means tight (loose jet ID deprecated since 94x)
+    case kEra_2018: throw cmsException(this) << "Implement me!";
+    default: throw cmsException(this) << "Implement me!";
+  }
+}
 
 void
 RecoJetSelectorBtag::set_min_pt(double min_pt)
