@@ -557,8 +557,8 @@ class analyzeConfig(object):
             "{}.{:<{len}} = cms.string('{}')".format        (process_string, 'era',                    self.era,     len = max_option_len),
             "{}.{:<{len}} = cms.bool({})".format            (process_string, 'redoGenMatching',       'False',       len = max_option_len),
             "{}.{:<{len}} = cms.bool({})".format            (process_string, 'isDEBUG',                self.isDebug, len = max_option_len),
-            "{}.{:<{len}} = EvtYieldHistManager_%s".format  (process_string, 'cfgEvtYieldHistManager', self.era,     len = max_option_len),
-            "{}.{:<{len}} = recommendedMEtFilters_%s".format(process_string, 'cfgMEtFilter',           self.era,     len = max_option_len),
+            "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era,     len = max_option_len),
+            "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era,     len = max_option_len),
         ]
         for jobOptions_key in jobOptions_keys:
             if jobOptions_key not in jobOptions: continue # temporary?
