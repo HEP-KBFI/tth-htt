@@ -195,13 +195,18 @@ class analyzeConfig(object):
         self.triggers = triggers
         self.triggerTable = Triggers(self.era)
 
-        if self.era == '2017':
+        samples_to_stitch = []
+        if self.era == '2016':
+          pass
+        elif self.era == '2017':
           from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
           from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import get_branch_type
           self.stitched_weights = "tthAnalysis/HiggsToTauTau/data/stitched_weights_2017.root"
+          assert (os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.stitched_weights)))
+        elif self.era == '2018':
+          raise ValueError('Implement me!')
         else:
           raise ValueError('Invalid era: %s' % self.era)
-        assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.stitched_weights)))
 
         # create temporary LUT
         samples_lut = {}
