@@ -381,7 +381,7 @@ int main(int argc, char* argv[])
   inputTree -> registerReader(metReader);
 
   MEtFilter metFilters;
-  MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilters);
+  MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilters, era);
   inputTree -> registerReader(metFilterReader);
 
 //--- declare generator level information

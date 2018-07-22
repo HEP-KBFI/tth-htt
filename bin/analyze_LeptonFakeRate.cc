@@ -664,7 +664,7 @@ main(int argc,
   
 //--- declare MET filter
   MEtFilter metFilter;
-  MEtFilterReader * metFilterReader = new MEtFilterReader(&metFilter);
+  MEtFilterReader * metFilterReader = new MEtFilterReader(&metFilter, era);
   inputTree->registerReader(metFilterReader);
 
 // --- Setting up the Met Filter Hist Manager ----
