@@ -95,6 +95,7 @@ class nohdfs:
   def get_dir_entries(self, path_obj):
     if not os.path.isdir(path_obj.name_fuse):
       raise hdfsException("No such path: %s" % path_obj.name_fuse)
+    entries = []
     try:
       entries = [
         nohdfs.info(os.path.join(path_obj.name_fuse, entry)) for entry in os.listdir(path_obj.name_fuse)
