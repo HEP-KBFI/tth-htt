@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauSelectorLoose
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
 RecoHadTauSelectorLoose::RecoHadTauSelectorLoose(int era,
                                                  int index,
@@ -14,7 +15,13 @@ RecoHadTauSelectorLoose::RecoHadTauSelectorLoose(int era,
   apply_decayModeFinding_ = true;
   min_antiElectron_       = -1000;
   min_antiMuon_           = -1000;
-  set("dR03mvaVLoose");
+  switch(era)
+  {
+    case kEra_2016: set("dR03mvaLoose"); break; // was dR03mvaVLoose, i.e. one step lower than what fakeable selector required
+    case kEra_2017: set("dR03mvaVLoose"); break;
+    case kEra_2018: throw cmsException(this) << "Implement me!";
+    default: throw cmsException(this) << "Invalid era = " << era;
+  }
 }
 
 void
