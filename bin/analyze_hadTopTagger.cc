@@ -161,10 +161,7 @@ int main(int argc, char* argv[])
   bool isSignal = ( process_string == "signal" ) ? true : false;
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
-  int era = -1;
-  if      ( era_string == "2017" ) era = kEra_2017;
-  else throw cms::Exception("analyze_hadTopTagger")
-    << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
+  const int era = get_era(era_string);
 
   // read leptons and hadronic taus to do cleaning
   std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection").data();

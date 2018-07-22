@@ -105,10 +105,7 @@ int main(int argc, char* argv[])
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
-  int era = -1;
-  if ( era_string == "2017" ) era = kEra_2017;
-  else throw cms::Exception("analyze_charge_flip_mu") 
-    << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
+  const int era = get_era(era_string);
 
   std::string histogramDir = "charge_flip";
 
