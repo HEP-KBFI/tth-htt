@@ -3,6 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau, GenLepton, GenHadTau, GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
 RecoHadTauWriter::RecoHadTauWriter(int era)
   : RecoHadTauWriter(era, "Tau")
@@ -91,8 +92,17 @@ void RecoHadTauWriter::setBranchNames()
   branchName_decayMode_ = Form("%s_%s", branchName_obj_.data(), "decayMode");
   branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
   branchName_idDecayModeNewDMs_ = Form("%s_%s", branchName_obj_.data(), "idDecayModeNewDMs");
-  branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDMdR032017v2_log");
-  branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDMdR032017v2");
+  std::string mvaString;
+  switch(era_)
+  {
+    case kEra_2016: mvaString = "MVAoldDMdR03";       break;
+    case kEra_2017: mvaString = "MVAoldDMdR032017v2"; break;
+    case kEra_2018: throw cmsException(this, __func__, __LINE__) << "Implement me!";
+    default: throw cmsException(this, __func__, __LINE__) << "Invalid era = " << era_;
+  }
+  assert(! mvaString.empty());
+  branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), Form("id%s_log", mvaString.data()));
+  branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), Form("raw%s", mvaString.data()));
   branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM_log");
   branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDM");
   branchName_idCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "idCI3hitdR03");
