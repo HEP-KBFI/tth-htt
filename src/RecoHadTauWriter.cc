@@ -161,7 +161,16 @@ void RecoHadTauWriter::write(const std::vector<const RecoHadTau *> & hadTaus)
     hadTau_decayMode_[idxHadTau] = hadTau->decayMode();
     hadTau_idDecayMode_[idxHadTau] = hadTau->decayModeFinding();
     hadTau_idDecayModeNewDMs_[idxHadTau] = hadTau->decayModeFindingNew();
-    hadTau_idMVA_dR03_[idxHadTau] = hadTau->id_mva_dR03();
+    // "undo" insertion of "VVLose" (95% signal efficiency) working point for tau ID MVA trained
+    // for dR=0->3 isolation cone and restore discriminator information
+    if(era_ == kEra_2016)
+    {
+      hadTau_idMVA_dR03_[idxHadTau] = hadTau->id_mva_dR03() >= 2 ? hadTau->id_mva_dR03() - 1 : 0;
+    }
+    else
+    {
+      hadTau_idMVA_dR03_[idxHadTau] = hadTau->id_mva_dR03();
+    }
     hadTau_rawMVA_dR03_[idxHadTau] = hadTau->raw_mva_dR03();
     hadTau_idMVA_dR05_[idxHadTau] = hadTau->id_mva_dR05();
     hadTau_rawMVA_dR05_[idxHadTau] = hadTau->raw_mva_dR05();
