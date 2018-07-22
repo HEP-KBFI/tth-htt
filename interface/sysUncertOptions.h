@@ -167,8 +167,7 @@ checkOptionValidity(const std::string & central_or_shift,
 std::string
 getBranchName_bTagWeight(const std::string & default_collectionName,
                          int era,
-                         int central_or_shift,
-                         bool useDeepCSV);
+                         int central_or_shift);
 
 /**
  * @brief Return branch name to read RecoJet pt and mass

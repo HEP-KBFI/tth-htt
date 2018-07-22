@@ -1,6 +1,5 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonWriter.h" // RecoLeptonWriter
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet::useDeepCSV
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_obj)

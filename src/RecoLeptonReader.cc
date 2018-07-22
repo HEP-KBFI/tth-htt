@@ -1,6 +1,5 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet::useDeepCSV
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
