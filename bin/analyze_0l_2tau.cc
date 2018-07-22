@@ -158,10 +158,7 @@ int main(int argc, char* argv[])
   bool isMCClosure_t = histogramDir.find("mcClosure_t") != std::string::npos;
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
-  int era = -1;
-  if ( era_string == "2017" ) era = kEra_2017;
-  else throw cms::Exception("analyze_0l_2tau") 
-    << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
+  const int era = get_era(era_string);
 
   vstring triggerNames_2tau = cfg_analyze.getParameter<vstring>("triggers_2tau");
   std::vector<hltPath*> triggers_2tau = create_hltPaths(triggerNames_2tau);
