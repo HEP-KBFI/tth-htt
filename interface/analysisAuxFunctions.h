@@ -31,7 +31,7 @@ const double mht_coef =  0.4;
 //--- declare data-taking periods
 enum
 {
-  kEra_undefined, kEra_2016, kEra_2017
+  kEra_undefined, kEra_2016, kEra_2017, kEra_2018
 };
 
 //--- declare selection criteria for leptons and hadronic taus
