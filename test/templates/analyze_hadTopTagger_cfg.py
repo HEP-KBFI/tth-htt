@@ -61,8 +61,8 @@ process.analyze_hadTopTagger = cms.PSet(
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False),
 
-    cfgMEtFilter = None,
-    cfgEvtYieldHistManager = None,
+    cfgMEtFilter = cms.PSet(),
+    cfgEvtYieldHistManager = cms.PSet(),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
