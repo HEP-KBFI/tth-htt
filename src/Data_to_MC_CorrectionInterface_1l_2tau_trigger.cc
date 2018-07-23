@@ -445,22 +445,24 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
 {
   if(isDEBUG_)
   {
-    std::cout << "<Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff>:\n";
+    std::cout << get_human_line(this, __func__, __LINE__) << '\n';
   }
+
+  double eff_1l_data             = 0.;
+  double eff_1l_mc               = 0.;
+  double eff_1l1tau_lepLeg_data  = 0.;
+  double eff_1l1tau_lepLeg_mc    = 0.;
+  double eff_1l1tau_tauLeg1_data = 0.;
+  double eff_1l1tau_tauLeg1_mc   = 0.;
+  double eff_1l1tau_tauLeg2_data = 0.;
+  double eff_1l1tau_tauLeg2_mc   = 0.;
+
+  bool isTriggered_1l     = false;
+  bool isTriggered_1l1tau = false;
 
   double sf = 1.;
   if(era_ == kEra_2016)
   {
-    double eff_1l_data             = 0.;
-    double eff_1l_mc               = 0.;
-    double eff_1l1tau_lepLeg_data  = 0.;
-    double eff_1l1tau_lepLeg_mc    = 0.;
-    double eff_1l1tau_tauLeg1_data = 0.;
-    double eff_1l1tau_tauLeg1_mc   = 0.;
-    double eff_1l1tau_tauLeg2_data = 0.;
-    double eff_1l1tau_tauLeg2_mc   = 0.;
-    bool isTriggered_1l     = false;
-    bool isTriggered_1l1tau = false;
     const bool hadTau1_isGenTau = (hadTau1_genPdgId_ == 11 || hadTau1_genPdgId_ == 13 || hadTau1_genPdgId_ == 15);
     const bool hadTau2_isGenTau = (hadTau2_genPdgId_ == 11 || hadTau2_genPdgId_ == 13 || hadTau2_genPdgId_ == 15);
 
@@ -542,89 +544,9 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
     {
       assert(0);
     }
-
-    const double eff_1l1tau_tauLegs_data = 1. - (1. - eff_1l1tau_tauLeg1_data) * (1. - eff_1l1tau_tauLeg2_data);
-    const double eff_1l1tau_tauLegs_mc   = 1. - (1. - eff_1l1tau_tauLeg1_mc)   * (1. - eff_1l1tau_tauLeg2_mc);
-    if(isDEBUG_)
-    {
-      std::cout << "hadTau (lead):    pT = " << hadTau1_pt_ << ", eta = " << hadTau1_eta_ << "\n"
-                   "hadTau (sublead): pT = " << hadTau2_pt_ << ", eta = " << hadTau2_eta_ << "\n"
-                   "eff (L):      data = " << eff_1l_data             << ", MC = " << eff_1l_mc             << "\n"
-                   "eff (X_lep):  data = " << eff_1l1tau_lepLeg_data  << ", MC = " << eff_1l1tau_lepLeg_mc  << "\n"
-                   "eff (X_tau):  data = " << eff_1l1tau_tauLegs_data << ", MC = " << eff_1l1tau_tauLegs_mc << "\n"
-                   "eff (X_tau1): data = " << eff_1l1tau_tauLeg1_data << ", MC = " << eff_1l1tau_tauLeg1_mc << "\n"
-                   "eff (X_tau2): data = " << eff_1l1tau_tauLeg2_data << ", MC = " << eff_1l1tau_tauLeg2_mc << '\n'
-      ;
-    }
-
-    //-------------------------------------------------------------------------------------------------------------------
-    // CV: data/MC corrections are agreed as discussed on HTT working mailing list
-    //    (email from Alexei Raspereza on February 22nd 2017)
-    if(isTriggered_1l && isTriggered_1l1tau)
-    {
-      // case 4: both single lepton trigger and lepton+tau cross trigger fire
-      const double eff_data = std::min(eff_1l_data, eff_1l1tau_lepLeg_data) * eff_1l1tau_tauLegs_data;
-      const double eff_mc   = std::min(eff_1l_mc,   eff_1l1tau_lepLeg_mc)   * eff_1l1tau_tauLegs_mc;
-      sf = aux::compSF(eff_data, eff_mc);
-      if(isDEBUG_)
-      {
-        std::cout << "case 4: both single lepton trigger and lepton+tau cross trigger fire\n "
-                     "eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << '\n'
-        ;
-      }
-    }
-    else if(isTriggered_1l1tau)
-    {
-      // case 3: lepton+tau cross trigger fires, single lepton trigger doesn't fire
-      const double eff_data = std::max(1.e-2, (eff_1l1tau_lepLeg_data - eff_1l_data) * eff_1l1tau_tauLegs_data);
-      const double eff_mc   = std::max(1.e-2, (eff_1l1tau_lepLeg_mc   - eff_1l_mc)   * eff_1l1tau_tauLegs_mc);
-      sf = aux::compSF(eff_data, eff_mc);
-      if(isDEBUG_)
-      {
-        std::cout << "case 3: lepton+tau cross trigger fires, single lepton trigger doesn't fire\n "
-                     "eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << '\n'
-        ;
-      }
-    }
-    else if(isTriggered_1l)
-    {
-      // case 2: single lepton trigger fires, lepton+tau cross trigger doesn't fire
-      const double eff_data = std::max(1.e-2, eff_1l_data - eff_1l1tau_tauLegs_data * std::min(eff_1l_data, eff_1l1tau_lepLeg_data));
-      const double eff_mc   = std::max(1.e-2, eff_1l_mc   - eff_1l1tau_tauLegs_mc   * std::min(eff_1l_mc,   eff_1l1tau_lepLeg_mc));
-      sf = aux::compSF(eff_data, eff_mc);
-      if(isDEBUG_)
-      {
-        std::cout << "case 2: single lepton trigger fires, lepton+tau cross trigger doesn't fire\n "
-                     "eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << '\n'
-        ;
-      }
-    }
-    else
-    {
-      // case 1: neither single lepton trigger nor lepton+tau cross trigger fires (SF doesn't matter, as event does not pass event selection)
-      sf = 0.;
-      if(isDEBUG_)
-      {
-        std::cout << "case 1: neither single lepton trigger nor lepton+tau cross trigger fires\n"
-                     "--> setting SF = " << sf << '\n'
-        ;
-      }
-    }
   }
   else if(era_ == kEra_2017)
   {
-    double eff_1l_data             = 0.;
-    double eff_1l_mc               = 0.;
-    double eff_1l1tau_lepLeg_data  = 0.;
-    double eff_1l1tau_lepLeg_mc    = 0.;
-    double eff_1l1tau_tauLeg1_data = 0.;
-    double eff_1l1tau_tauLeg1_mc   = 0.;
-    double eff_1l1tau_tauLeg2_data = 0.;
-    double eff_1l1tau_tauLeg2_mc   = 0.;
-
-    bool isTriggered_1l     = false;
-    bool isTriggered_1l1tau = false;
-
     if(lepton_type_ == kElectron)
     {
       if(isDEBUG_)
@@ -685,79 +607,6 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
     {
       assert(0);
     }
-
-    const double eff_1l1tau_tauLegs_data = 1. - (1. - eff_1l1tau_tauLeg1_data) * (1. - eff_1l1tau_tauLeg2_data);
-    const double eff_1l1tau_tauLegs_mc   = 1. - (1. - eff_1l1tau_tauLeg1_mc)   * (1. - eff_1l1tau_tauLeg2_mc);
-    if(isDEBUG_)
-    {
-      std::cout << "hadTau (lead):    pT = " << hadTau1_pt_ << ", eta = " << hadTau1_eta_ << "\n"
-                   "hadTau (sublead): pT = " << hadTau2_pt_ << ", eta = " << hadTau2_eta_ << "\n"
-                   "eff (L):      data = " << eff_1l_data             << ", MC = " << eff_1l_mc             << "\n"
-                   "eff (X_lep):  data = " << eff_1l1tau_lepLeg_data  << ", MC = " << eff_1l1tau_lepLeg_mc  << "\n"
-                   "eff (X_tau):  data = " << eff_1l1tau_tauLegs_data << ", MC = " << eff_1l1tau_tauLegs_mc << "\n"
-                   "eff (X_tau1): data = " << eff_1l1tau_tauLeg1_data << ", MC = " << eff_1l1tau_tauLeg1_mc << "\n"
-                   "eff (X_tau2): data = " << eff_1l1tau_tauLeg2_data << ", MC = " << eff_1l1tau_tauLeg2_mc << '\n'
-      ;
-    }
-
-    //-------------------------------------------------------------------------------------------------------------------
-    // CV: data/MC corrections are agreed as discussed on HTT working mailing list 
-    //     (email from Alexei Raspereza on February 22nd 2017)
-
-    if(isTriggered_1l && isTriggered_1l1tau)
-    {
-      // case 4: both single lepton trigger and lepton+tau cross trigger fire
-
-      const double eff_data = std::min(eff_1l_data, eff_1l1tau_lepLeg_data) * eff_1l1tau_tauLegs_data;
-      const double eff_mc   = std::min(eff_1l_mc,   eff_1l1tau_lepLeg_mc)   * eff_1l1tau_tauLegs_mc;
-
-      sf = aux::compSF(eff_data, eff_mc);
-      if(isDEBUG_)
-      {
-        std::cout << "case 4: both single lepton trigger and lepton+tau cross trigger fire\n"
-                     " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << '\n';
-      }
-    }
-    else if(isTriggered_1l1tau)
-    {
-      // case 3: lepton+tau cross trigger fires, single lepton trigger doesn't fire
-
-      const double eff_data = std::max(1.e-2, (eff_1l1tau_lepLeg_data - eff_1l_data) * eff_1l1tau_tauLegs_data);
-      const double eff_mc   = std::max(1.e-2, (eff_1l1tau_lepLeg_mc   - eff_1l_mc)   * eff_1l1tau_tauLegs_mc);
-
-      sf = aux::compSF(eff_data, eff_mc);
-      if(isDEBUG_)
-      {
-        std::cout << "case 3: lepton+tau cross trigger fires, single lepton trigger doesn't fire\n"
-                     " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << '\n';
-      }
-    }
-    else if(isTriggered_1l)
-    {
-      // case 2: single lepton trigger fires, lepton+tau cross trigger doesn't fire
-
-      const double eff_data = std::max(1.e-2, eff_1l_data - eff_1l1tau_tauLegs_data * std::min(eff_1l_data, eff_1l1tau_lepLeg_data));
-      const double eff_mc   = std::max(1.e-2, eff_1l_mc   - eff_1l1tau_tauLegs_mc   * std::min(eff_1l_mc,   eff_1l1tau_lepLeg_mc));
-
-      sf = aux::compSF(eff_data, eff_mc);
-      if(isDEBUG_)
-      {
-        std::cout << "case 2: single lepton trigger fires, lepton+tau cross trigger doesn't fire\n"
-                     " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << '\n';
-      }
-    }
-    else
-    {
-      // case 1: neither single lepton trigger nor lepton+tau cross trigger fires
-      // (SF doesn't matter, as event does not pass event selection)
-
-      sf = 0.;
-      if(isDEBUG_)
-      {
-        std::cout << "case 1: neither single lepton trigger nor lepton+tau cross trigger fires\n"
-                     "--> setting SF = " << sf << '\n';
-      }
-    } // isTriggered_*
   }
   else if(era_ == kEra_2018)
   {
@@ -767,6 +616,79 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid era = " << era_;
   }
+
+  const double eff_1l1tau_tauLegs_data = 1. - (1. - eff_1l1tau_tauLeg1_data) * (1. - eff_1l1tau_tauLeg2_data);
+  const double eff_1l1tau_tauLegs_mc   = 1. - (1. - eff_1l1tau_tauLeg1_mc)   * (1. - eff_1l1tau_tauLeg2_mc);
+  if(isDEBUG_)
+  {
+    std::cout << "hadTau (lead):    pT = " << hadTau1_pt_ << ", eta = " << hadTau1_eta_ << "\n"
+                 "hadTau (sublead): pT = " << hadTau2_pt_ << ", eta = " << hadTau2_eta_ << "\n"
+                 "eff (L):      data = " << eff_1l_data             << ", MC = " << eff_1l_mc             << "\n"
+                 "eff (X_lep):  data = " << eff_1l1tau_lepLeg_data  << ", MC = " << eff_1l1tau_lepLeg_mc  << "\n"
+                 "eff (X_tau):  data = " << eff_1l1tau_tauLegs_data << ", MC = " << eff_1l1tau_tauLegs_mc << "\n"
+                 "eff (X_tau1): data = " << eff_1l1tau_tauLeg1_data << ", MC = " << eff_1l1tau_tauLeg1_mc << "\n"
+                 "eff (X_tau2): data = " << eff_1l1tau_tauLeg2_data << ", MC = " << eff_1l1tau_tauLeg2_mc << '\n'
+    ;
+  }
+
+  //-------------------------------------------------------------------------------------------------------------------
+  // CV: data/MC corrections are agreed as discussed on HTT working mailing list
+  //     (email from Alexei Raspereza on February 22nd 2017)
+
+  if(isTriggered_1l && isTriggered_1l1tau)
+  {
+    // case 4: both single lepton trigger and lepton+tau cross trigger fire
+
+    const double eff_data = std::min(eff_1l_data, eff_1l1tau_lepLeg_data) * eff_1l1tau_tauLegs_data;
+    const double eff_mc   = std::min(eff_1l_mc,   eff_1l1tau_lepLeg_mc)   * eff_1l1tau_tauLegs_mc;
+
+    sf = aux::compSF(eff_data, eff_mc);
+    if(isDEBUG_)
+    {
+      std::cout << "case 4: both single lepton trigger and lepton+tau cross trigger fire\n"
+                   " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << '\n';
+    }
+  }
+  else if(isTriggered_1l1tau)
+  {
+    // case 3: lepton+tau cross trigger fires, single lepton trigger doesn't fire
+
+    const double eff_data = std::max(1.e-2, (eff_1l1tau_lepLeg_data - eff_1l_data) * eff_1l1tau_tauLegs_data);
+    const double eff_mc   = std::max(1.e-2, (eff_1l1tau_lepLeg_mc   - eff_1l_mc)   * eff_1l1tau_tauLegs_mc);
+
+    sf = aux::compSF(eff_data, eff_mc);
+    if(isDEBUG_)
+    {
+      std::cout << "case 3: lepton+tau cross trigger fires, single lepton trigger doesn't fire\n"
+                   " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << '\n';
+    }
+  }
+  else if(isTriggered_1l)
+  {
+    // case 2: single lepton trigger fires, lepton+tau cross trigger doesn't fire
+
+    const double eff_data = std::max(1.e-2, eff_1l_data - eff_1l1tau_tauLegs_data * std::min(eff_1l_data, eff_1l1tau_lepLeg_data));
+    const double eff_mc   = std::max(1.e-2, eff_1l_mc   - eff_1l1tau_tauLegs_mc   * std::min(eff_1l_mc,   eff_1l1tau_lepLeg_mc));
+
+    sf = aux::compSF(eff_data, eff_mc);
+    if(isDEBUG_)
+    {
+      std::cout << "case 2: single lepton trigger fires, lepton+tau cross trigger doesn't fire\n"
+                   " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << '\n';
+    }
+  }
+  else
+  {
+    // case 1: neither single lepton trigger nor lepton+tau cross trigger fires
+    // (SF doesn't matter, as event does not pass event selection)
+
+    sf = 0.;
+    if(isDEBUG_)
+    {
+      std::cout << "case 1: neither single lepton trigger nor lepton+tau cross trigger fires\n"
+                   "--> setting SF = " << sf << '\n';
+    }
+  } // isTriggered_*
 
   return sf;
 }
