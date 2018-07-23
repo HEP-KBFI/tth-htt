@@ -58,6 +58,13 @@ MEtFilterReader::setBranchAddresses(TTree * tree)
         {
           metFilterFlagString += "_bool";
         }
+        else if(flag == MEtFilterFlag::BadChargedCandidateSummer16Filter ||
+                flag == MEtFilterFlag::BadPFMuonSummer16Filter           ||
+                flag == MEtFilterFlag::ecalBadCalibFilter                 )
+        {
+          // branch not present in 2016 Ntuples?
+          continue;
+        }
       }
       bai.setBranchAddress(metFilter_->getFlagRef(flag_enum), metFilterFlagString);
     }
