@@ -1,5 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_0l_2tau_trigger.h"
 
+#include "tthAnalysis/TauTriggerSFs2017/interface/TauTriggerSFs2017.h"
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()

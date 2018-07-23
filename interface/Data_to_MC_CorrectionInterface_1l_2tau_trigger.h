@@ -1,9 +1,10 @@
 #ifndef tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_1l_2tau_trigger_h
 #define tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_1l_2tau_trigger_h
 
-#include "tthAnalysis/TauTriggerSFs2017/interface/TauTriggerSFs2017.h"
-
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
+
+// forwad declarations
+class TauTriggerSFs2017;
 
 class Data_to_MC_CorrectionInterface_1l_2tau_trigger
 {
