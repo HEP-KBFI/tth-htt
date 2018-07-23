@@ -7,9 +7,9 @@ import FWCore.ParameterSet.Config as cms
 
 recommendedMEtFilters_2016 = cms.PSet(
     apply_Flag_BadChargedCandidateFilter          = cms.PSet(forMC = cms.bool(True),  forData = cms.bool(True)),
-    apply_Flag_BadChargedCandidateSummer16Filter  = cms.PSet(forMC = cms.bool(True),  forData = cms.bool(True)),
-    apply_Flag_BadPFMuonFilter                    = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)),
-    apply_Flag_BadPFMuonSummer16Filter            = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)),
+    apply_Flag_BadChargedCandidateSummer16Filter  = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)), # branch not present in 2016 Ntuples??
+    apply_Flag_BadPFMuonFilter                    = cms.PSet(forMC = cms.bool(True),  forData = cms.bool(True)),
+    apply_Flag_BadPFMuonSummer16Filter            = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)), # branch not present in 2016 Ntuples??
     apply_Flag_CSCTightHalo2015Filter             = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)),
     apply_Flag_CSCTightHaloFilter                 = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)),
     apply_Flag_CSCTightHaloTrkMuUnvetoFilter      = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)),
@@ -20,7 +20,7 @@ recommendedMEtFilters_2016 = cms.PSet(
     apply_Flag_HcalStripHaloFilter                = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)),
     apply_Flag_METFilters                         = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)),
     apply_Flag_chargedHadronTrackResolutionFilter = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)),
-    apply_Flag_ecalBadCalibFilter                 = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)),
+    apply_Flag_ecalBadCalibFilter                 = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)), # branch not present in 2016 Ntuples??
     apply_Flag_ecalLaserCorrFilter                = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)),
     apply_Flag_eeBadScFilter                      = cms.PSet(forMC = cms.bool(False), forData = cms.bool(True)),
     apply_Flag_globalSuperTightHalo2016Filter     = cms.PSet(forMC = cms.bool(False), forData = cms.bool(False)),
