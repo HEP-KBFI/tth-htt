@@ -81,18 +81,8 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0
   }
   else if(era_ == kEra_2017)
   {
-    LocalFileInPath inputFileName_tauLeg("tthAnalysis/TauTriggerSFs2017/data/tauTriggerEfficiencies2017.root");
-    std::string hadTauSelection_TauTriggerSFs2017;
-    if     (hadTauSelection_ == "dR03mvaVVLoose") hadTauSelection_TauTriggerSFs2017 = "medium"; // CV: trigger efficiency turn-on curve has not been measured for this working-point
-    else if(hadTauSelection_ == "dR03mvaVLoose" ) hadTauSelection_TauTriggerSFs2017 = "medium"; // CV: trigger efficiency turn-on curve has not been measured for this working-point
-    else if(hadTauSelection_ == "dR03mvaLoose"  ) hadTauSelection_TauTriggerSFs2017 = "medium"; // CV: trigger efficiency turn-on curve has not been measured for this working-point
-    else if(hadTauSelection_ == "dR03mvaMedium" ) hadTauSelection_TauTriggerSFs2017 = "medium";
-    else if(hadTauSelection_ == "dR03mvaTight"  ) hadTauSelection_TauTriggerSFs2017 = "tight";
-    else if(hadTauSelection_ == "dR03mvaVTight" ) hadTauSelection_TauTriggerSFs2017 = "vtight";
-    else if(hadTauSelection_ == "dR03mvaVVTight") hadTauSelection_TauTriggerSFs2017 = "vtight"; // CV: trigger efficiency turn-on curve has not been measured for this working-point
-    else throw cmsException(__func__, __LINE__)
-           << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_
-         ;
+    const LocalFileInPath inputFileName_tauLeg("tthAnalysis/TauTriggerSFs2017/data/tauTriggerEfficiencies2017.root");
+    const std::string hadTauSelection_TauTriggerSFs2017 = aux::get_hadTauSelection_TauTriggerSFs2017(hadTauSelection_);
     effTrigger_tauLeg_ = new TauTriggerSFs2017(inputFileName_tauLeg.fullPath().data(), hadTauSelection_TauTriggerSFs2017);
   }
   else if(era_ == kEra_2018)

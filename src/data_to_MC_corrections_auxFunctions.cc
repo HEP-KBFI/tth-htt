@@ -68,6 +68,23 @@ namespace aux
   }
 
   std::string
+  get_hadTauSelection_TauTriggerSFs2017(const std::string & hadTauSelection)
+  {
+    std::string hadTauSelection_TauTriggerSFs2017;
+    if     (hadTauSelection == "dR03mvaVVLoose") hadTauSelection_TauTriggerSFs2017 = "medium"; // CV: trigger efficiency turn-on curve has not been measured for this working-point
+    else if(hadTauSelection == "dR03mvaVLoose" ) hadTauSelection_TauTriggerSFs2017 = "medium"; // CV: trigger efficiency turn-on curve has not been measured for this working-point
+    else if(hadTauSelection == "dR03mvaLoose"  ) hadTauSelection_TauTriggerSFs2017 = "medium"; // CV: trigger efficiency turn-on curve has not been measured for this working-point
+    else if(hadTauSelection == "dR03mvaMedium" ) hadTauSelection_TauTriggerSFs2017 = "medium";
+    else if(hadTauSelection == "dR03mvaTight"  ) hadTauSelection_TauTriggerSFs2017 = "tight";
+    else if(hadTauSelection == "dR03mvaVTight" ) hadTauSelection_TauTriggerSFs2017 = "vtight";
+    else if(hadTauSelection == "dR03mvaVVTight") hadTauSelection_TauTriggerSFs2017 = "vtight"; // CV: trigger efficiency turn-on curve has not been measured for this working-point
+    else throw cmsException(__func__, __LINE__)
+           << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection
+         ;
+    return hadTauSelection_TauTriggerSFs2017;
+  }
+
+  std::string
   getHadTauDecayModeLabel(int hadTauDecayMode)
   {
     std::string hadTauDecayModeLabel;
