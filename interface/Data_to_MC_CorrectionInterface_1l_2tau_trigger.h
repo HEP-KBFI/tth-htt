@@ -50,7 +50,7 @@ public:
   getSF_triggerEff() const;
   //-----------------------------------------------------------------------------
 
-private:
+protected:
 
   //-----------------------------------------------------------------------------
   // data/MC corrections for trigger efficiencies in 2017 ReReco data and Summer17 MC
