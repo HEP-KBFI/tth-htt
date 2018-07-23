@@ -378,6 +378,10 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::~Data_to_MC_CorrectionInterface_
     aux::clearCollection(effTrigger_1m1tau_tauLeg_mc_gentau_);
     aux::clearCollection(effTrigger_1m1tau_tauLeg_mc_faketau_);
   }
+  else if(era_ == kEra_2017)
+  {
+    delete effTrigger_tauLeg_;
+  }
 }
 
 void
