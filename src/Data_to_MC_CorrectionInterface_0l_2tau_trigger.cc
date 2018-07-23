@@ -46,29 +46,11 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0
   {
     edm::ParameterSet cfg_triggerSF_2tau = cfg.getParameter<edm::ParameterSet>("triggerSF_2tau");
 
-    std::string hadTauSelectionLabel;
-    if     (hadTauSelection_ == "dR03mvaVVLoose") hadTauSelectionLabel = "VLooseIso"; // CV: custom WP for which no trigger efficiency turn-on curve has been measured
-    else if(hadTauSelection_ == "dR03mvaVLoose" ) hadTauSelectionLabel = "VLooseIso";
-    else if(hadTauSelection_ == "dR03mvaLoose"  ) hadTauSelectionLabel = "LooseIso";
-    else if(hadTauSelection_ == "dR03mvaMedium" ) hadTauSelectionLabel = "MediumIso";
-    else if(hadTauSelection_ == "dR03mvaTight"  ) hadTauSelectionLabel = "TightIso";
-    else if(hadTauSelection_ == "dR03mvaVTight" ) hadTauSelectionLabel = "VTightIso";
-    else if(hadTauSelection_ == "dR03mvaVVTight") hadTauSelectionLabel = "VVTightIso";
-    else throw cmsException(this)
-           << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_
-         ;
-
+    const std::string hadTauSelectionLabel = aux::getHadTauSelectionLabel(hadTauSelection_);
     const std::vector<int> hadTauDecayModes_2tau_perLeg = { 0, 1, 2, 10 };
     for(int hadTauDecayMode: hadTauDecayModes_2tau_perLeg)
     {
-      std::string hadTauDecayModeLabel;
-      if     (hadTauDecayMode ==  0                        ) hadTauDecayModeLabel = "dm0";  // 1-prong without pi0s
-      else if(hadTauDecayMode ==  1 || hadTauDecayMode == 2) hadTauDecayModeLabel = "dm1";  // 1-prong with pi0s
-      else if(hadTauDecayMode == 10                        ) hadTauDecayModeLabel = "dm10"; // 3-prong
-      else throw cmsException(this)
-             << "Invalid Configuration parameter 'hadTauDecayMode' = " << hadTauDecayMode
-           ;
-
+      const std::string hadTauDecayModeLabel = aux::getHadTauDecayModeLabel(hadTauDecayMode);
       const std::string fitName_2tau_data_gentau = Form("data_genuine_%s_%s", hadTauSelectionLabel.data(), hadTauDecayModeLabel.data());
       const edm::ParameterSet cfg_fit_2tau_data_gentau = cfg_triggerSF_2tau.getParameter<edm::ParameterSet>(fitName_2tau_data_gentau);
       effTrigger_2tau_perLeg_data_gentau_[hadTauDecayMode].push_back(new lutWrapperCrystalBall(
