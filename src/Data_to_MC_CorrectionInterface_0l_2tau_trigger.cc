@@ -159,127 +159,52 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff() const
     std::cout << get_human_line(this, __func__, __LINE__) << '\n';
   }
 
-  double sf = 1.;
+  double eff_2tau_tauLeg1_data = 0.;
+  double eff_2tau_tauLeg1_mc   = 0.;
+  double eff_2tau_tauLeg2_data = 0.;
+  double eff_2tau_tauLeg2_mc   = 0.;
+
   if(era_ == kEra_2016)
   {
-
-    double eff_2tau_leg1_data = 0.;
-    double eff_2tau_leg1_mc = 0.;
     const bool hadTau1_isGenTau = (hadTau1_genPdgId_ == 11 || hadTau1_genPdgId_ == 13 || hadTau1_genPdgId_ == 15);
     if(hadTau1_isGenTau)
     {
-      eff_2tau_leg1_data = get_from_lut(effTrigger_2tau_perLeg_data_gentau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
-      eff_2tau_leg1_mc   = get_from_lut(effTrigger_2tau_perLeg_mc_gentau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
+      eff_2tau_tauLeg1_data = get_from_lut(effTrigger_2tau_perLeg_data_gentau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
+      eff_2tau_tauLeg1_mc   = get_from_lut(effTrigger_2tau_perLeg_mc_gentau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
     }
     else
     {
-      eff_2tau_leg1_data = get_from_lut(effTrigger_2tau_perLeg_data_faketau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
-      eff_2tau_leg1_mc   = get_from_lut(effTrigger_2tau_perLeg_mc_faketau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
+      eff_2tau_tauLeg1_data = get_from_lut(effTrigger_2tau_perLeg_data_faketau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
+      eff_2tau_tauLeg1_mc   = get_from_lut(effTrigger_2tau_perLeg_mc_faketau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
     }
 
-    double eff_2tau_leg2_data = 0.;
-    double eff_2tau_leg2_mc = 0.;
     const bool hadTau2_isGenTau = (hadTau2_genPdgId_ == 11 || hadTau2_genPdgId_ == 13 || hadTau2_genPdgId_ == 15);
     if(hadTau2_isGenTau)
     {
-      eff_2tau_leg2_data = get_from_lut(effTrigger_2tau_perLeg_data_gentau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
-      eff_2tau_leg2_mc   = get_from_lut(effTrigger_2tau_perLeg_mc_gentau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
+      eff_2tau_tauLeg2_data = get_from_lut(effTrigger_2tau_perLeg_data_gentau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
+      eff_2tau_tauLeg2_mc   = get_from_lut(effTrigger_2tau_perLeg_mc_gentau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
     }
     else
     {
-      eff_2tau_leg2_data = get_from_lut(effTrigger_2tau_perLeg_data_faketau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
-      eff_2tau_leg2_mc   = get_from_lut(effTrigger_2tau_perLeg_mc_faketau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
+      eff_2tau_tauLeg2_data = get_from_lut(effTrigger_2tau_perLeg_data_faketau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
+      eff_2tau_tauLeg2_mc   = get_from_lut(effTrigger_2tau_perLeg_mc_faketau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
     }
-
-    const double eff_2tau_data = eff_2tau_leg1_data * eff_2tau_leg2_data;
-    const double eff_2tau_mc   = eff_2tau_leg1_mc   * eff_2tau_leg2_mc;
-
-    if(isDEBUG_)
-    {
-      std::cout << "hadTau (lead): pT = "    << hadTau1_pt_ << ", eta = " << hadTau1_eta_ << "\n"
-                   "hadTau (sublead): pT = " << hadTau2_pt_ << ", eta = " << hadTau2_eta_ << '\n'
-      ;
-    }
-
-    if(isTriggered_2tau_)
-    {
-      sf = aux::compSF(eff_2tau_data, eff_2tau_mc);
-      if(isDEBUG_)
-      {
-        std::cout << " eff: data = " << eff_2tau_data << ", "
-                     "MC = " << eff_2tau_mc << " --> SF = " << sf << '\n'
-        ;
-      }
-    }
-    else
-    {
-      sf = 0.;
-      if(isDEBUG_)
-      {
-        std::cout << "neither single lepton trigger nor lepton+tau cross trigger fires\n"
-                     "--> setting SF = " << sf << '\n'
-        ;
-      }
-    }
-
   }
   if(era_ == kEra_2017)
   {
-    double eff_2tau_tauLeg1_data = 0.;
-    double eff_2tau_tauLeg1_mc   = 0.;
     if(std::fabs(hadTau1_eta_) <= 2.1)
     {
       eff_2tau_tauLeg1_data = effTrigger_tauLeg_->getDiTauEfficiencyData(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, triggerSF_option_);
       eff_2tau_tauLeg1_mc   = effTrigger_tauLeg_->getDiTauEfficiencyMC(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, triggerSF_option_);
     }
-      
-    double eff_2tau_tauLeg2_data = 0.;
-    double eff_2tau_tauLeg2_mc   = 0.;
+
     if(std::fabs(hadTau2_eta_) <= 2.1)
     {
       eff_2tau_tauLeg2_data = effTrigger_tauLeg_->getDiTauEfficiencyData(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, triggerSF_option_);
       eff_2tau_tauLeg2_mc   = effTrigger_tauLeg_->getDiTauEfficiencyMC(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, triggerSF_option_);
     }
 
-    if(isDEBUG_)
-    {
-      std::cout << "hadTau (lead):    pT = " << hadTau1_pt_ << ", eta = " << hadTau1_eta_ << "\n"
-                   "hadTau (sublead): pT = " << hadTau2_pt_ << ", eta = " << hadTau2_eta_ << "\n"
-                   "eff (tau1): data = " << eff_2tau_tauLeg1_data << ", MC = " << eff_2tau_tauLeg1_mc << "\n"
-                   "eff (tau2): data = " << eff_2tau_tauLeg2_data << ", MC = " << eff_2tau_tauLeg2_mc << '\n'
-      ;
-    }
-
-    //-------------------------------------------------------------------------------------------------------------------
-    if(isTriggered_2tau_)
-    {
-      // case 2: ditau trigger fires
-
-      const double eff_data = eff_2tau_tauLeg1_data*eff_2tau_tauLeg2_data;
-      const double eff_mc   = eff_2tau_tauLeg1_mc*eff_2tau_tauLeg2_mc;
-
-      sf = aux::compSF(eff_data, eff_mc);
-      if(isDEBUG_)
-      {
-        std::cout << "case 2: ditau trigger fires\n"
-                     " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << '\n'
-        ;
-      }
-    }
-    else 
-    {
-      // case 1: ditau trigger doesn't fire
-      // (SF doesn't matter, as event does not pass event selection)
-
-      sf = 0.;
-      if(isDEBUG_)
-      {
-        std::cout << "case 1: ditau trigger doesn't fire\n"
-                     "--> setting SF = " << sf << '\n'
-        ;
-      }
-    } // isTriggered_*
-  } // era_
+  }
   else if(era_ == kEra_2018)
   {
     throw cmsException(this, __func__, __LINE__) << "Implement me!";
@@ -287,6 +212,45 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff() const
   else
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid era = " << era_;
+  }
+
+  if(isDEBUG_)
+  {
+    std::cout << "hadTau (lead):    pT = " << hadTau1_pt_ << ", eta = " << hadTau1_eta_ << "\n"
+                 "hadTau (sublead): pT = " << hadTau2_pt_ << ", eta = " << hadTau2_eta_ << "\n"
+                 "eff (tau1): data = " << eff_2tau_tauLeg1_data << ", MC = " << eff_2tau_tauLeg1_mc << "\n"
+                 "eff (tau2): data = " << eff_2tau_tauLeg2_data << ", MC = " << eff_2tau_tauLeg2_mc << '\n'
+    ;
+  }
+
+  double sf = 1.;
+  if(isTriggered_2tau_)
+  {
+    // case 2: ditau trigger fires
+
+    const double eff_data = eff_2tau_tauLeg1_data * eff_2tau_tauLeg2_data;
+    const double eff_mc   = eff_2tau_tauLeg1_mc   * eff_2tau_tauLeg2_mc;
+
+    sf = aux::compSF(eff_data, eff_mc);
+    if(isDEBUG_)
+    {
+      std::cout << "case 2: ditau trigger fires\n"
+                   " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << '\n'
+      ;
+    }
+  }
+  else
+  {
+    // case 1: ditau trigger doesn't fire
+    // (SF doesn't matter, as event does not pass event selection)
+
+    sf = 0.;
+    if(isDEBUG_)
+    {
+      std::cout << "case 1: ditau trigger doesn't fire\n"
+                   "--> setting SF = " << sf << '\n'
+      ;
+    }
   }
 
   return sf;
