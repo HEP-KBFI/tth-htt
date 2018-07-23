@@ -116,6 +116,14 @@ get_from_lut(const vLutWrapperBase & corrections,
              double eta,
              bool isDEBUG = false);
 
+double
+get_from_lut(const std::map<int, vLutWrapperBase> & corrections,
+             double hadTau_pt,
+             double hadTau_eta,
+             int hadTau_decayMode,
+             bool isDEBUG = false);
+
+
 class lutWrapperTH1
   : public lutWrapperBase
 {

@@ -1043,9 +1043,24 @@ int main(int argc, char* argv[])
         selHadTau_lead_genPdgId, selHadTau_lead->pt(), selHadTau_lead->eta(),
         selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta());
 
-      dataToMCcorrectionInterface_0l_2tau_trigger->setHadTaus(
-        selHadTau_lead->pt(), selHadTau_lead->eta(), selHadTau_lead->phi(),
-        selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->phi());
+      if(era == kEra_2016)
+      {
+        dataToMCcorrectionInterface_0l_2tau_trigger->setHadTaus(
+          selHadTau_lead_genPdgId,    selHadTau_lead->pt(),    selHadTau_lead->eta(),    selHadTau_lead->decayMode(),
+          selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->decayMode()
+        );
+      }
+      else if(era == kEra_2017)
+      {
+        dataToMCcorrectionInterface_0l_2tau_trigger->setHadTaus(
+          selHadTau_lead->pt(),    selHadTau_lead->eta(),    selHadTau_lead->phi(),
+          selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->phi()
+        );
+      }
+      else if(era == kEra_2018)
+      {
+        throw cmsException("analyze_0l_2tau", __LINE__) << "Invalid era = " << era;
+      }
       dataToMCcorrectionInterface_0l_2tau_trigger->setTriggerBits(isTriggered_2tau);
 
 //--- apply data/MC corrections for trigger efficiency
