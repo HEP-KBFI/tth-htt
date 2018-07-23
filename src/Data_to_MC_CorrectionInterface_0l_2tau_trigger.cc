@@ -45,7 +45,7 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0
 
   if(era_ == kEra_2016)
   {
-    edm::ParameterSet cfg_triggerSF_2tau = cfg.getParameter<edm::ParameterSet>("triggerSF_2tau");
+    const edm::ParameterSet cfg_triggerSF_2tau = cfg.getParameter<edm::ParameterSet>("triggerSF_2tau");
 
     const std::string hadTauSelectionLabel = aux::getHadTauSelectionLabel(hadTauSelection_);
     const std::vector<int> hadTauDecayModes_2tau_perLeg = { 0, 1, 2, 10 };
