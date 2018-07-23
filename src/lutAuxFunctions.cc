@@ -356,6 +356,28 @@ get_from_lut(const vLutWrapperBase & corrections,
   }
   return sf;
 }
+
+double
+get_from_lut(const std::map<int, vLutWrapperBase> & corrections,
+             double hadTau_pt,
+             double hadTau_eta,
+             int hadTau_decayMode,
+             bool isDEBUG)
+{
+  double sf = 1.;
+  const std::map<int, vLutWrapperBase>::const_iterator correction = corrections.find(hadTau_decayMode);
+  if(correction != corrections.end())
+  {
+    sf = get_from_lut(correction->second, hadTau_pt, hadTau_eta, isDEBUG);
+  }
+  else
+  {
+    throw cmsException(__func__, __LINE__)
+      << "Invalid parameter 'hadTauDecayMode' = " << hadTau_decayMode
+    ;
+  }
+  return sf;
+}
 //-------------------------------------------------------------------------------
 
 
