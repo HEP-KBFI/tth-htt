@@ -15,7 +15,6 @@ systematics.full = systematics.an_common
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp("dR03mvaLoose")
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_rle_select()
@@ -38,7 +37,6 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
-tau_id_wp         = args.tau_id_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 rle_select        = os.path.expanduser(args.rle_select)
@@ -84,6 +82,15 @@ elif mode == 'sync':
       raise ValueError("Invalid era: %s" % era)
 else:
   raise ValueError("Invalid mode: %s" % mode)
+
+if era == "2016":
+  hadTauVeto_selection = "dR03mvaMedium"
+elif era == "2017":
+  hadTauVeto_selection = "dR03mvaLoose"
+elif era == "2018":
+  pass
+else:
+  raise ValueError("Invalid era: %s" % era)
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue

@@ -67,7 +67,6 @@ do_sync = mode.startswith('sync')
 lumi = get_lumi(era)
 
 MEMbranch                = ''
-hadTau_selection_veto    = "dR03mvaMedium"
 lepton_charge_selections = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
 chargeSumSelections      = [ "OS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
 
@@ -120,8 +119,17 @@ elif mode == "addMEM":
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_2lss1tau import samples_2017 as samples
     else:
       raise ValueError("Invalid era: %s" % era)
-  MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaLoose'
-  hadTau_selection     = "dR03mvaLoose"
+
+  if era == "2016":
+    MEMbranch        = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
+    hadTau_selection = "dR03mvaMedium"
+  elif era == "2017":
+    MEMbranch        = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaLoose'
+    hadTau_selection = "dR03mvaLoose"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
   applyFakeRateWeights = "2lepton"
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
@@ -239,6 +247,16 @@ elif mode.startswith("sync"):
   applyFakeRateWeights = "2lepton"
 else:
   raise ValueError("Invalid mode: %s" % mode)
+
+# To avoid overlap w/ 2l+2tau SR
+if era == "2016":
+  hadTau_selection_veto = "dR03mvaVTight"
+elif era == "2017":
+  hadTau_selection_veto = "dR03mvaMedium"
+elif era == "2018":
+  raise ValueError("Implement me!")
+else:
+  raise ValueError("Invalid era: %s" % era)
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue

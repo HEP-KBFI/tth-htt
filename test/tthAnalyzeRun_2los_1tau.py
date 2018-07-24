@@ -96,7 +96,7 @@ elif mode == "forBDTtraining":
 
   if era == "2016":
     hadTau_selection         = "dR03mvaVTight"
-    hadTau_selection_relaxed = "dR03mvaLoose"
+    hadTau_selection_relaxed = "dR03mvaMedium"
   elif era == "2017":
     hadTau_selection         = "dR03mvaTight"
     hadTau_selection_relaxed = "dR03mvaVLoose"

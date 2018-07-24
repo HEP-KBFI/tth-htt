@@ -126,8 +126,8 @@ elif mode == "addMEM":
       raise ValueError("Invalid era: %s" % era)
 
   if era == "2016":
-    MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaVLoose'
-    hadTau_selection = "dR03mvaVLoose"
+    MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaMedium'
+    hadTau_selection = "dR03mvaMedium"
   elif era == "2017":
     MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaLoose'
     hadTau_selection = "dR03mvaLoose"
@@ -151,8 +151,8 @@ elif mode == "forBDTtraining_beforeAddMEM":
       raise ValueError("Invalid era: %s" % era)
 
   if era == "2016":
-    hadTau_selection         = "dR03mvaTight"
-    hadTau_selection_relaxed = "dR03mvaVVLoose"
+    hadTau_selection         = "dR03mvaVTight"
+    hadTau_selection_relaxed = "dR03mvaMedium"
   elif era == "2017":
     hadTau_selection         = "dR03mvaTight"
     hadTau_selection_relaxed = "dR03mvaVVLoose"
@@ -178,7 +178,7 @@ elif mode == "forBDTtraining_afterAddMEM":
   if era == "2016":
     MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVLoose'
     hadTau_selection         = "dR03mvaVTight"
-    hadTau_selection_relaxed = "dR03mvaVLoose"
+    hadTau_selection_relaxed = "dR03mvaMedium"
   elif era == "2017":
     MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVVLoose'
     hadTau_selection         = "dR03mvaTight"

@@ -14,7 +14,7 @@ parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
 parser.add_rle_select()
 parser.add_nonnominal()
-parser.add_tau_id_wp('dR03mvaLoose')
+parser.add_tau_id_wp()
 parser.add_use_home()
 parser.add_argument('-o', '--output-tree',
   type = str, dest = 'output_tree', metavar = 'name', default = 'syncTree', required = False,
@@ -83,6 +83,15 @@ else:
     else:
       raise ValueError("Invalid era: %s" % era)
 
+if era == "2016":
+  hadTau_selection = "dR03mvaMedium"
+elif era == "2017":
+  hadTau_selection = "dR03mvaLoose"
+elif era == "2018":
+  raise ValueError("Implement me!")
+else:
+  raise ValueError("Invalid era: %s" % era)
+
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
@@ -92,6 +101,14 @@ if __name__ == '__main__':
 
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
+
+  if tau_id_wp:
+    logging.warning(
+      "Changing hadTau_selection_denominator from {} to {}".format(
+        hadTau_selection, tau_id_wp
+      )
+    )
+    hadTau_selection = tau_id_wp
 
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
@@ -114,7 +131,7 @@ if __name__ == '__main__':
     dry_run                 = dry_run,
     isDebug                 = debug,
     rle_select              = rle_select,
-    hadTauSelection_tauIdWP = tau_id_wp,
+    hadTauSelection_tauIdWP = hadTau_selection,
     central_or_shifts       = central_or_shifts,
     use_nonnominal          = use_nonnominal,
     use_home                = use_home,

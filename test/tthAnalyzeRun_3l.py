@@ -169,9 +169,6 @@ if __name__ == '__main__':
     use_home                              = use_home,
   )
 
-  if mode.find("forBDTtraining") != -1:
-    analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
-
   job_statistics = analysis.create()
   for job_type, num_jobs in job_statistics.items():
     logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
