@@ -101,6 +101,9 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.hadTau_charge_selections = hadTau_charge_selections
     self.applyFakeRateWeights = applyFakeRateWeights
     run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
+    if self.era != '2017':
+      logging.warning('mcClosure for lepton FR not possible for era %s' % self.era)
+      run_mcClosure = False
     if run_mcClosure:
       # Run MC closure jobs only if the analysis is run w/ (at least some) systematic uncertainties
       #self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_all" ]) #TODO
