@@ -20,6 +20,7 @@ parser.add_nonnominal()
 parser.add_hlt_filter()
 parser.add_files_per_job()
 parser.add_use_home()
+parser.add_lep_mva_wp()
 args = parser.parse_args()
 
 # Common arguments
