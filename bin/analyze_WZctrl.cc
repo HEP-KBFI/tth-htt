@@ -1229,11 +1229,17 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
 
-    double minPt_lead = -1.;
-    if ( era == kEra_2017 ) minPt_lead = 25.; // CV: increase minimum lepton pT cut to 25 GeV to keep-up with higher trigger thresholds in 2016 data
-    else assert(0);
-    double minPt_sublead = 15.;
-    double minPt_third = 10.;
+    const double minPt_lead = 25.;
+    const double minPt_sublead = 15.;
+    double minPt_third = -1.;
+    switch(era)
+    {
+      case kEra_2016: minPt_third = 15.; break; // AN2017_029_v5:371
+      case kEra_2017: minPt_third = 10.; break;
+      case kEra_2018: throw cmsException("analyze_3l", __LINE__) << "Implement me!";
+      default:        throw cmsException("analyze_3l", __LINE__) << "Invalid era = " << era;
+    }
+    assert(minPt_third > 0.);
     // CV: according to Giovanni, the pT cuts should be applied on cone_pt
     //    (combined efficiency of single lepton, double lepton, and triple lepton triggers assumed to be high,
     //     even if one or two leptons and fakes and hence cone_pt may be significantly smaller than lepton_pt,
@@ -1370,7 +1376,8 @@ int main(int argc, char* argv[])
 //--- compute integer discriminant based on both BDT outputs,
 //    as defined in Table 16 () of AN-2015/321 (AN-2016/211) for analysis of 2015 (2016) data
     Double_t mvaDiscr_2lss = -1;
-    if ( era == kEra_2017 ) {
+    if(era == kEra_2016 || era == kEra_2017)
+    {
       if      ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV >  +0.4 ) mvaDiscr_2lss = 7.;
       else if ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV >  +0.1 ) mvaDiscr_2lss = 6.;
       else if ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV <= +0.1 ) mvaDiscr_2lss = 5.;
@@ -1406,7 +1413,8 @@ int main(int argc, char* argv[])
 //--- compute integer discriminant based on both BDT outputs,
 //    as defined in Table 16 (10) of AN-2015/321 (AN-2016/211) for analysis of 2015 (2016) data
     Double_t mvaDiscr_3l = -1;
-    if ( era == kEra_2017 ) {
+    if(era == kEra_2016 || era == kEra_2017)
+    {
       if      ( mvaOutput_3l_ttbar > +0.30 && mvaOutput_3l_ttV >  +0.25 ) mvaDiscr_3l = 5.;
       else if ( mvaOutput_3l_ttbar > +0.30 && mvaOutput_3l_ttV <= +0.25 ) mvaDiscr_3l = 4.;
       else if ( mvaOutput_3l_ttbar > -0.30 && mvaOutput_3l_ttV >  +0.25 ) mvaDiscr_3l = 3.;
