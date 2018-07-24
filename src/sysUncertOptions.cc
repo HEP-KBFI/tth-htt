@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
 #include <TString.h> // Form()
 
