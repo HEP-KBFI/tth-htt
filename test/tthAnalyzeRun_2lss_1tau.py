@@ -66,11 +66,10 @@ for systematic_label in systematics_label:
 do_sync = mode.startswith('sync')
 lumi = get_lumi(era)
 
-MEMbranch                          = ''
-hadTau_selection_veto              = "dR03mvaMedium"
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v1.root"
-lepton_charge_selections           = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
-chargeSumSelections                = [ "OS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
+MEMbranch                = ''
+hadTau_selection_veto    = "dR03mvaMedium"
+lepton_charge_selections = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
+chargeSumSelections      = [ "OS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
 
 if mode == "default":
   if use_preselected:
@@ -330,9 +329,7 @@ if __name__ == '__main__':
   )
 
   if mode.find("forBDTtraining") != -1:
-    if hadTau_selection_relaxed == "dR03mvaVVLoose":
-      hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
-    analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
+    analysis.set_BDT_training(hadTau_selection_relaxed)
 
   job_statistics = analysis.create()
   for job_type, num_jobs in job_statistics.items():
