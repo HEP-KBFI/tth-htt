@@ -79,7 +79,7 @@ if mode == "default":
       raise ValueError("Invalid era: %s" % era)
 
   if era == "2016":
-    hadTau_selection = "dR03mvaTight"
+    hadTau_selection = "dR03mvaVTight"
   elif era == "2017":
     hadTau_selection = "dR03mvaMedium"
   elif era == "2018":
@@ -102,8 +102,8 @@ elif mode == "forBDTtraining":
       raise ValueError("Invalid era: %s" % era)
 
   if era == "2016":
-    hadTau_selection         = "dR03mvaMedium"
-    hadTau_selection_relaxed = "dR03mvaLoose"
+    hadTau_selection         = "dR03mvaTight"
+    hadTau_selection_relaxed = "dR03mvaMedium"
   elif era == "2017":
     hadTau_selection         = "dR03mvaLoose"
     hadTau_selection_relaxed = "dR03mvaVLoose"
@@ -167,7 +167,7 @@ elif mode.startswith("sync"):
     raise ValueError("Invalid mode: %s" % mode)
 
   if era == "2016":
-    hadTau_selection = "dR03mvaTight"
+    hadTau_selection = "dR03mvaVTight"
   elif era == "2017":
     hadTau_selection = "dR03mvaMedium"
   elif era == "2018":

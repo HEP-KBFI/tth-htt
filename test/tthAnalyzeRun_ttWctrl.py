@@ -15,7 +15,6 @@ systematics.full = systematics.an_common
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp("dR03mvaLoose")
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_files_per_job()
@@ -38,7 +37,6 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
-tau_id_wp         = args.tau_id_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 rle_select        = os.path.expanduser(args.rle_select)
@@ -94,6 +92,15 @@ elif mode == 'sync':
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
+if era == "2016":
+  hadTauVeto_selection = "dR03mvaMedium"
+elif era == "2017":
+  hadTauVeto_selection = "dR03mvaLoose"
+elif era == "2018":
+  pass
+else:
+  raise ValueError("Invalid era: %s" % era)
+
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
@@ -116,7 +123,7 @@ if __name__ == '__main__':
     cfgFile_analyze           = "analyze_ttWctrl_cfg.py",
     samples                   = samples,
     lepton_charge_selections  = [ "OS", "SS" ],
-    hadTauVeto_selection      = tau_id_wp,
+    hadTauVeto_selection      = hadTauVeto_selection,
     applyFakeRateWeights      = "2lepton",
     central_or_shifts         = central_or_shifts,
     max_files_per_job         = files_per_job,

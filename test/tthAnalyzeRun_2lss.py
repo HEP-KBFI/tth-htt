@@ -109,7 +109,7 @@ if era == "2016":
 elif era == "2017":
   hadTauVeto_selection = "dR03mvaLoose"
 elif era == "2018":
-  pass
+  raise ValueError("Implement me!")
 else:
   raise ValueError("Invalid era: %s" % era)
 

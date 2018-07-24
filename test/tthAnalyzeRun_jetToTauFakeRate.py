@@ -13,7 +13,7 @@ systematics.full = systematics.an_jetToTauFR
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp("dR03mvaVLoose")
+parser.add_tau_id_wp()
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_hlt_filter()
@@ -55,6 +55,15 @@ elif era == "2018":
 else:
   raise ValueError("Invalid era: %s" % era)
 
+if era == "2016":
+  hadTau_selection_denominator = "dR03mvaLoose"
+elif era == "2017":
+  hadTau_selection_denominator = "dR03mvaVLoose"
+elif era == "2018":
+  raise ValueError("Implement me!")
+else:
+  raise ValueError("Invalid era: %s" % era)
+
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
   if sample_info["type"] == "mc":
@@ -78,6 +87,14 @@ if __name__ == '__main__':
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
 
+  if tau_id_wp:
+    logging.warning(
+      "Changing hadTau_selection_denominator from {} to {}".format(
+        hadTau_selection_denominator, tau_id_wp
+      )
+    )
+    hadTau_selection_denominator = tau_id_wp
+
   analysis = analyzeConfig_jetToTauFakeRate(
     configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
     outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
@@ -88,7 +105,7 @@ if __name__ == '__main__':
     jet_maxPt                        = 1.e+6,
     jet_minAbsEta                    = -1.,
     jet_maxAbsEta                    = 2.3,
-    hadTau_selection_denominator     = tau_id_wp,
+    hadTau_selection_denominator     = hadTau_selection_denominator,
     hadTau_selections_numerator      = [
       "dR03mvaVLoose",
       "dR03mvaLoose",

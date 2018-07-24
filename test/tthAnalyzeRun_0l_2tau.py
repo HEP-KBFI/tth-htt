@@ -59,7 +59,7 @@ hadTau_charge_selections = [ "OS", "SS" ]
 if mode == "default":
   if era == "2016":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
-    hadTau_selection = "dR03mvaTight"
+    hadTau_selection = "dR03mvaVTight"
   elif era == "2017":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
     for sample_name, sample_info in samples.items():
@@ -121,7 +121,7 @@ elif mode == "sync":
       raise ValueError("Invalid era: %s" % era)
 
   if era == "2016":
-    hadTau_selection = "dR03mvaTight"
+    hadTau_selection = "dR03mvaVTight"
   elif era == "2017":
     hadTau_selection = "dR03mvaMedium"
   elif era == "2018":
