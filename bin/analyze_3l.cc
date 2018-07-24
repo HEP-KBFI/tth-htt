@@ -825,7 +825,7 @@ int main(int argc, char* argv[])
     //std::vector<GenParticle> genLepFromTau;
     //std::vector<GenParticle> genTop;
     //std::vector<GenParticle> genVbosons;
-    //if ( isMC && writeSelEventsFile && era == kEra_2017 ) {
+    //if ( isMC && writeSelEventsFile && (era == kEra_2016 || era == kEra_2017) ) {
     //  genHadTaus = genHadTauReader->read();
     //  genNuFromTau = genNuFromTauReader->read();
     //  genTau = genTauReader->read();

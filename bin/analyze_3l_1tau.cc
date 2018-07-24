@@ -2169,7 +2169,7 @@ int main(int argc, char* argv[])
       const RLEUnit rleUnit{ eventInfo.run, eventInfo.lumi, eventInfo.event };
       mem.add(rleUnit);
       const METUnit<double> metUnit{
-        met.pt(), met.phi(), met.covXX(), met.covXY(), met.covYY(), era == kEra_2017
+        met.pt(), met.phi(), met.covXX(), met.covXY(), met.covYY(), true
       };
       mem.add(metUnit);
       mem.add(mvaInputs_3l, mvaOutput_3l_ttV, mvaOutput_3l_ttbar);
@@ -2183,7 +2183,7 @@ int main(int argc, char* argv[])
         //-----------------------------------------------------------------------
         // CV: functionality temporarily disabled,
         //     as all generator level information is stored in RecoLepton, RecoHadTau and RecoJet branches in case tthProdNtuple workflow is used
-        //if ( era == kEra_2017 ) {
+        //if ( era == kEra_2016 || era == kEra_2017 ) {
         //  mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
         //          genNuFromTau, genTau, genLepFromTop, genNuFromTop,
         //          genTop, genVbosons);
