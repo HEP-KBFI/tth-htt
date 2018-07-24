@@ -375,13 +375,24 @@ class analyzeConfig(object):
             self.lep_mva_wp = "075"
 
         if self.lep_mva_wp == "090":
+            if self.era not in [ "2017" ]:
+              raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
             self.lep_mva_cut = 0.90
         elif self.lep_mva_wp == "075":
+            if self.era not in [ "2016", "2017" ]:
+              raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
             self.lep_mva_cut = 0.75
         else:
             raise ValueError("Invalid Configuration parameter 'lep_mva_wp' = %s !!" % self.lep_mva_wp)
 
-        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva%s_2017_CERN_2018May29.root" % self.lep_mva_wp
+        if self.era == '2016':
+            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2016_data.root"
+        elif self.era == '2017':
+            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva%s_2017_CERN_2018May29.root" % self.lep_mva_wp
+        elif self.era == '2018':
+            raise ValueError('Implement me!')
+        else:
+          raise ValueError('Invalid era: %s' % self.era)
         if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
             raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
@@ -397,8 +408,13 @@ class analyzeConfig(object):
                 logging.error(str(time))
 
     def set_leptonFakeRateWeightHistogramNames(self, central_or_shift, lepton_and_hadTau_selection):
+        if 'mcClosure' in lepton_and_hadTau_selection and self.era != '2017':
+          raise ValueError('Invalid selection for era %s: %s' % (self.era, lepton_and_hadTau_selection))
         suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection else 'data_comb'
-        self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (self.lep_mva_wp, suffix)
+        if self.era == '2016':
+          self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s" % (self.lep_mva_wp, suffix)
+        elif self.era == '2017':
+          self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (self.lep_mva_wp, suffix)
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (self.lep_mva_wp, suffix)
 
         leptonFakeRateWeight_histogramName_e_suffix = ''
@@ -412,9 +428,19 @@ class analyzeConfig(object):
         elif central_or_shift == "CMS_ttHl_FRe_shape_normDown":
             leptonFakeRateWeight_histogramName_e_suffix = '_down'
         elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelUp":
-            leptonFakeRateWeight_histogramName_e_suffix = '_be1'
+            if self.era == '2016':
+                leptonFakeRateWeight_histogramName_e_suffix = '_b1'
+            elif self.era == '2017':
+                leptonFakeRateWeight_histogramName_e_suffix = '_be1'
+            else:
+                raise ValueError('Invalid era: %s' % self.era)
         elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelDown":
-            leptonFakeRateWeight_histogramName_e_suffix = '_be2'
+            if self.era == '2016':
+                leptonFakeRateWeight_histogramName_e_suffix = '_b2'
+            elif self.era == '2017':
+                leptonFakeRateWeight_histogramName_e_suffix = '_be2'
+            else:
+                raise ValueError('Invalid era: %s' % self.era)
         elif central_or_shift == "CMS_ttHl_FRm_shape_ptUp":
             leptonFakeRateWeight_histogramName_mu_suffix = '_pt1'
         elif central_or_shift == "CMS_ttHl_FRm_shape_ptDown":
@@ -424,9 +450,19 @@ class analyzeConfig(object):
         elif central_or_shift == "CMS_ttHl_FRm_shape_normDown":
             leptonFakeRateWeight_histogramName_mu_suffix = '_down'
         elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelUp":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
+            if self.era == '2016':
+                leptonFakeRateWeight_histogramName_mu_suffix = '_b1'
+            elif self.era == '2017':
+                leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
+            else:
+                raise ValueError('Invalid era: %s' % self.era)
         elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelDown":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
+            if self.era == '2016':
+                leptonFakeRateWeight_histogramName_mu_suffix = '_b2'
+            elif self.era == '2017':
+                leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
+            else:
+                raise ValueError('Invalid era: %s' % self.era)
 
         self.leptonFakeRateWeight_histogramName_e  += leptonFakeRateWeight_histogramName_e_suffix
         self.leptonFakeRateWeight_histogramName_mu += leptonFakeRateWeight_histogramName_mu_suffix
