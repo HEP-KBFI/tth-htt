@@ -61,6 +61,8 @@ lep_minPt_third   = 10.
 #lep_minPt_sublead = 15.
 #lep_minPt_third   = 10.
 
+# 20/10/10 per AN2016_372_v14:360, but 25/15 if e (10 if mu)/10 in the old VHbb branch
+
 # Use the arguments
 central_or_shifts = []
 for systematic_label in systematics_label:
