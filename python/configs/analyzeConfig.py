@@ -392,12 +392,19 @@ class analyzeConfig(object):
         elif self.era == '2018':
             raise ValueError('Implement me!')
         else:
-          raise ValueError('Invalid era: %s' % self.era)
+            raise ValueError('Invalid era: %s' % self.era)
         if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
             raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
         self.hadTau_selection_relaxed = None
-        self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
+        if self.era == '2016':
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
+        elif self.era == '2017':
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
+        elif self.era == '2018':
+            raise ValueError('Implement me!')
+        else:
+            raise ValueError('Invalid era: %s' % self.era)
         self.isBDTtraining = False
         self.mcClosure_dir = {}
 
@@ -488,9 +495,22 @@ class analyzeConfig(object):
            for the purpose of preparing event list files for BDT training.
         """
         self.hadTau_selection_relaxed = hadTau_selection_relaxed
+        if self.hadTau_selection_relaxed == "dR03mvaVLoose":
+            if self.era == "2016":
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vLoosePresel.root"
+            elif self.era == "2017":
+                pass
+            elif self.era == "2018":
+                raise ValueError("Implement me!")
+            else:
+                raise ValueError("Invalid era: %s" % self.era)
         if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
-            if self.era == "2017":
+            if self.era == "2016":
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
+            elif self.era == "2017":
                 self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
+            elif self.era == "2018":
+                raise ValueError("Implement me!")
             else:
                 raise ValueError("Invalid era: %s" % self.era)
         self.isBDTtraining = True
