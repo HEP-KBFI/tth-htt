@@ -585,6 +585,8 @@ if __name__ == '__main__':
 
         if not MC_REGEX.match(das_name) and not PRIVATE_REGEX.match(das_name):
           raise ValueError("Error: line '%s' does not correspond to proper DBS name" % das_name)
+        if custom_strings and not any(map(lambda custom_string: custom_string in das_name, custom_strings)):
+          continue
         das_query_results[das_name] = {
           'sample_category' : sample_category,
           'specific_name'   : specific_name,
