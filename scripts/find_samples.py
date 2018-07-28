@@ -188,7 +188,18 @@ MC_REGEX      = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
 DATASET_REGEX = re.compile("^/(.*)/(.*)/[0-9A-Za-z]+$")
 
 def get_crab_string(dataset_name, paths):
+  paths_ = []
   for path in paths:
+    if os.path.isfile(path):
+      with open(path, 'r') as f:
+        for line in f:
+          path_candidate = line.rstrip('\n')
+          if not os.path.isdir(path_candidate):
+            raise RuntimeError('Not a directory: %s' % path_candidate)
+          paths_.append(path_candidate)
+    else:
+      paths_.append(path)
+  for path in paths_:
     version = os.path.basename(path)
     dataset_match = DATASET_REGEX.match(dataset_name)
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
