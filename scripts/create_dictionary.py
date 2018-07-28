@@ -758,6 +758,9 @@ def obtain_paths(hdfs_system, input_path):
     paths = input_path
   return paths
 
+def round_sign(x, sign_digits = 6):
+  return round(x, abs(math.floor(math.log10(x))) + sign_digits if 0. < x < 1. else 0)
+
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
@@ -1120,7 +1123,7 @@ if __name__ == '__main__':
           fsize_local_human               = human_size(meta_dict[key]['fsize_local']),
           avg_fsize_local_human           = human_size(float(meta_dict[key]['fsize_local']) / meta_dict[key]['nof_files']),
           use_it                          = meta_dict[key]['use_it'],
-          xsection                        = round(meta_dict[key]['xsection'], 6) if is_mc else None,
+          xsection                        = round_sign(meta_dict[key]['xsection'], 6) if is_mc else None,
           genWeight                       = meta_dict[key]['genWeight'],
           triggers                        = meta_dict[key]['triggers'],
           has_LHE                         = meta_dict[key]['has_LHE'],
