@@ -23,6 +23,7 @@ process.prepareDatacards = cms.PSet(
 #        "tHl_plus_t",
 #        "ttH_hbbl_plus_t",
 #        "signall_plus_t"
+        "QCD",
     ),
 
     sf_signal = cms.double(1.),

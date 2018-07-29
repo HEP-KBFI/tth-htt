@@ -12,8 +12,6 @@ ROOT.gSystem.Load('libHiggsAnalysisCombinedLimit')
 
 
 ### WORKSPACE PATH  [CHANGE BOTH WORKSPACE AND MLFIT ROOT FILE AT THE SAME TIME]
-# fin = ROOT.TFile('/home/ram/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor/src/CombineHarvester/ttH_htt_LeptonFakeRate/output/mlfit_LeptonFakeRate_LATEST2/mu_incl/wsp.root')
-# fin = ROOT.TFile('/home/ram/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor/src/CombineHarvester/ttH_htt_LeptonFakeRate/output/mlfit_LeptonFakeRate_LATEST2/e_incl/wsp.root')
 fin = ROOT.TFile(sys.argv[1])
 
 wsp = fin.Get('w')
@@ -23,8 +21,6 @@ cmb.SetFlag("workspaces-use-clone", True)
 ch.ParseCombineWorkspace(cmb, wsp, 'ModelConfig', 'data_obs', False)
 
 ### MLFIT ROOT FILE PATH [CHANGE BOTH WORKSPACE AND MLFIT ROOT FILE AT THE SAME TIME]
-# mlf = ROOT.TFile('/home/ram/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor/src/CombineHarvester/ttH_htt_LeptonFakeRate/output/mlfit_LeptonFakeRate_LATEST2/mu_incl/mlfitmu_incl.root')
-# mlf = ROOT.TFile('/home/ram/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor/src/CombineHarvester/ttH_htt_LeptonFakeRate/output/mlfit_LeptonFakeRate_LATEST2/e_incl/mlfite_incl.root')
 mlf = ROOT.TFile(sys.argv[2])
 
 
@@ -42,16 +38,15 @@ def AddSystQuad(a,b):
 
 
 def PrintTables(cmb, uargs, fit_status):
-#    c_m_incl = cmb.cp().bin(['muons_tight_incl_shapes'])
     c_m_incl = cmb.cp().bin([sys.argv[3]])
-#    print  c_m_incl.cp().PrintAll()
 
+#    print  c_m_incl.cp().PrintAll()
 #    print r'data_obs : $%.2f$ \\' % (c_m_incl.cp().GetObservedRate())
 #    print r'EWK : $%.2f$ +/- $%.2f$  \\' % (c_m_incl.cp().process(['EWK']).GetRate(), c_m_incl.cp().process(['EWK']).GetUncertainty(*uargs))
 #    print r'ttZ : $%.2f$ +/- $%.2f$  \\' % (c_m_incl.cp().process(['TTZ']).GetRate(), c_m_incl.cp().process(['TTZ']).GetUncertainty(*uargs))
 #    print r'ttW : $%.2f$ +/- $%.2f$  \\' % (c_m_incl.cp().process(['TTW']).GetRate(), c_m_incl.cp().process(['TTW']).GetUncertainty(*uargs))
-    print r'%s fakes_data : %.2f +/- %.2f' % (fit_status, c_m_incl.cp().process(['fakes_data']).GetRate(), c_m_incl.cp().process(['fakes_data']).GetUncertainty(*uargs)) ## FOR DATA DRIVEN FAKE ESTIMATE
-##    print r'%s QCD : %.2f +/- %.2f' % (fit_status, c_m_incl.cp().process(['QCD']).GetRate(), c_m_incl.cp().process(['QCD']).GetUncertainty(*uargs)) ## FOR MC DRIVEN FAKE ESTIMATE
+#    print r'%s fakes_data : %.2f +/- %.2f' % (fit_status, c_m_incl.cp().process(['fakes_data']).GetRate(), c_m_incl.cp().process(['fakes_data']).GetUncertainty(*uargs))
+    print r'%s QCD : %.2f +/- %.2f' % (fit_status, c_m_incl.cp().process(['QCD']).GetRate(), c_m_incl.cp().process(['QCD']).GetUncertainty(*uargs))
 
 
 

@@ -29,8 +29,34 @@ LAYOUTS = {
 LAYOUTS1 = { ## FOR tt
     "e": [
         ('fakes_data', {
-            'entries': ['fakes_data'], ## for data driven fake estimate
-#            'entries': ['QCD'],       ## for mc driven fake estimate
+            'entries': ['fakes_data'],
+            'legend': 'Fakes',
+            'color': ROOT.TColor.GetColor(250, 202, 255)
+        }
+        ),
+        ('Rares', {
+            'entries': ['Raresl_plus_t'],
+            'legend': 'Rares',
+            'color': ROOT.TColor.GetColor(0,255,0)
+        }
+        ),
+        ('TT', {
+            'entries': ['TTl_plus_t'],
+            'legend': 't#bar{t}',
+            'color': ROOT.TColor.GetColor(155, 152, 204)
+        }
+        ),
+        ('EWK', {
+            'entries': ['EWKl_plus_t'],
+            'legend': 'Electroweak',
+            'color': ROOT.TColor.GetColor(222, 90, 106)
+        }
+        ),
+    ],
+
+    "mu": [
+        ('fakes_data', {
+            'entries': ['fakes_data'],
             'legend': 'Fakes',
             'color': ROOT.TColor.GetColor(250, 202, 255)
         }
@@ -57,107 +83,9 @@ LAYOUTS1 = { ## FOR tt
 }
 
 
-LAYOUTS2 = { ## FOR et, mt
-    "et_mt": [
-        ('ggH125', {
-            'entries': ['ggH125', 'qqH125'],
-            'legend': 'SM H#rightarrow#tau#tau',
-            'color': ROOT.TColor.GetColor(0,255,0)
-        }
-        ),
-        ('TT', {
-            'entries': ['TTJT','TTJL'],
-            'legend': 't#bar{t}',
-            'color': ROOT.TColor.GetColor(155, 152, 204)
-        }
-        ),
-        ('EWK', {
-            'entries': ['VVT','VVL'],
-            'legend': 'Electroweak',
-            'color': ROOT.TColor.GetColor(222, 90, 106)
-        }
-        ),
-        ('ZLL', {
-            'entries': ['ZL'],
-            'legend': 'Z#rightarrowll',
-#            'color': ROOT.TColor.GetColor(100, 192, 232)
-            'color': ROOT.TColor.GetColor(0, 0, 255)
-        }
-        ),
-        ('jetFakes', {
-            'entries': ['jetFakes'],
-            'legend': 'Fakes',
-            'color': ROOT.TColor.GetColor(250, 202, 255)
-        }
-        ),
-        ('ZTT', {
-            'entries': ['ZTT'],
-            'legend': 'Z#rightarrow#tau#tau',
-            'color': ROOT.TColor.GetColor(248, 206, 104)
-        }
-        )
-    ]
-}
-
-
-LAYOUTS3 = { ## FOR em, mm
-    "em_mm": [
-        ('ggH125', {
-            'entries': ['ggH125', 'qqH125'],
-            'legend': 'SM H#rightarrow#tau#tau',
-            'color': ROOT.TColor.GetColor(0,255,0)
-        }
-        ),
-        ('TT', {
-            'entries': ['TT'],
-            'legend': 't#bar{t}',
-            'color': ROOT.TColor.GetColor(155, 152, 204)
-        }
-        ),
-        ('EWK', {
-            'entries': ['W', 'VV'],   ### COMMENT FOR CASES WHEN W TEMPLATES IS ZERO !
-#            'entries': ['VV'],       ### UNCOMMENT FOR CASES WHEN W TEMPLATES IS ZERO !
-            'legend': 'Electroweak',
-            'color': ROOT.TColor.GetColor(222, 90, 106)
-        }
-        ),
-        ('ZLL', {
-            'entries': ['ZLL'],
-            'legend': 'Z#rightarrowll',
-#            'color': ROOT.TColor.GetColor(100, 192, 232)
-            'color': ROOT.TColor.GetColor(0, 0, 255)
-        }
-        ),
-        ('QCD', {
-            'entries': ['QCD'],         ### COMMENT OUT THIS BLOCK FOR CASES WHEN QCD TEMPLATES IS ZERO !
-            'legend': 'QCD multijet',
-            'color': ROOT.TColor.GetColor(250, 202, 255)
-        }
-        ),
-        ('ZTT', {
-            'entries': ['ZTT'],
-            'legend': 'Z#rightarrow#tau#tau',
-            'color': ROOT.TColor.GetColor(248, 206, 104)
-        }
-        )
-    ]
-}
-
-
-
-
 # customise the layouts for each channel
 LAYOUTS['e'] = deepcopy(LAYOUTS1['e'])
-LAYOUTS['mu'] = deepcopy(LAYOUTS1['e'])
-
-# LAYOUTS['mt'] = deepcopy(LAYOUTS2['et_mt'])
-# LAYOUTS['et'] = deepcopy(LAYOUTS2['et_mt'])
-
-# LAYOUTS['em'] = deepcopy(LAYOUTS3['em_mm'])
-# dict(LAYOUTS['em'])['ZLL']['entries'] = ['ZLL']
-
-# LAYOUTS['mm'] = deepcopy(LAYOUTS3['em_mm'])
-# dict(LAYOUTS['mm'])['ZLL']['entries'] = ['ZLL']
+LAYOUTS['mu'] = deepcopy(LAYOUTS1['mu'])
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--input', '-i', help='Output of PostFitShapes or PostFitShapesFromWorkspace, specified as FILE:BIN')
@@ -273,7 +201,7 @@ pads[0].RedrawAxis()
 
 # CMS logo
 plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
-plot.DrawTitle(pads[0], '%.1f fb^{-1} (13 TeV)' % intLumiData, 3)
+plot.DrawTitle(pads[0], '%.1f pb^{-1} (13 TeV)' % intLumiData, 3)
 
 # latex = ROOT.TLatex()
 # plot.Set(latex, NDC=None, TextFont=42, TextSize=0.08)
