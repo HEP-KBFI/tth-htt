@@ -18328,5 +18328,8 @@ samples_2017["sum_events"] = [
   [ 'DYJetsToLL_M50_HT100to200',                       'DYJetsToLL_M50_HT100to200_ext1',                   ],
   [ 'DYJetsToLL_M-50',                                 'DYJetsToLL_M-50_ext1',                             ],
   [ 'DYJetsToLL_M-4to50_HT-100to200',                  'DYJetsToLL_M-4to50_HT-100to200_ext1',              ],
+  [ 'ST_tWll',                                         'ST_tWll_v14-v1'                                    ],
+  [ 'VHToNonbb_M125',                                  'VHToNonbb_M125_v14-v2'                             ],
+  [ 'WpWpJJ_EWK_QCD',                                  'WpWpJJ_EWK_QCD_v14-v1'                             ],
 ]
 
