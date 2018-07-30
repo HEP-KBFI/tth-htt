@@ -23,8 +23,11 @@ process.comp_LeptonFakeRate = cms.PSet(
     ptBins_mu = cms.vdouble(),
 
     processName = cms.string('QCD'),
-    HistogramName = cms.string(''),
+    HistogramName_num = cms.string(''),
     Conversion_uncert = cms.double(0.50),
 
-    outputFileName = cms.string("")
+    outputFileName = cms.string(""),
+
+    HistogramName_den = cms.string(''),
+#    use_fakes_from_MC = cms.bool(False),
 )
