@@ -154,6 +154,32 @@ struct fitResultType
 };
 
 
+void compFakeRateFromHistos(const TH1* histogram_QCD_Pass, const TH1* histogram_QCD_Fail, std::map<std::string, fitResultType*>::iterator fitResult, 
+                            double avFakeRate_QCD, double avFakeRateErrUp_QCD, double avFakeRateErrDown_QCD, double avFakeRateErr_QCD)
+{
+
+  // Fake Rate computation (QCD e)                                                                                                                                                                                                          
+  double nPass_QCD = compIntegral(histogram_QCD_Pass, true, true);
+  double nPassErr_QCD = compIntegralErr(histogram_QCD_Pass, true, true);
+  double nFail_QCD = compIntegral(histogram_QCD_Fail, true, true);
+  double nFailErr_QCD = compIntegralErr(histogram_QCD_Fail, true, true);
+  bool errorFlag;
+
+  compFakeRate(nPass_QCD, nPassErr_QCD, nFail_QCD, nFailErr_QCD, avFakeRate_QCD, avFakeRateErrUp_QCD, avFakeRateErrDown_QCD, errorFlag);
+
+  if ( !errorFlag) {
+    avFakeRateErr_QCD = TMath::Sqrt(0.5*(avFakeRateErrUp_QCD*avFakeRateErrUp_QCD + avFakeRateErrDown_QCD*avFakeRateErrDown_QCD));                                                                                 
+  } else {
+    throw cms::Exception("compFakeRateFromHistos")
+      << "Failed to compute fake rate for " << fitResult->second->minPt_ << " < pT < " << fitResult->second->maxPt_ << " && " << fitResult->second->minAbsEta_ << " < abs(eta) < " << fitResult->second->maxAbsEta_
+      << " (nPass = " << nPass_QCD << " +/- " << nPassErr_QCD<< ", nFail = " << nFail_QCD << " +/- " << nFailErr_QCD << ") !!\n";
+  }
+
+
+}
+
+
+
 void readConversionCorr(TFile* inputFile, std::map<std::string, fitResultType*>& fitResults, const std::string& process, const std::string& variable, const double& conv_unc ){
 
   // std::string histogramName_QCD_num_e = "LeptonFakeRate/numerator/electrons/tight";    
@@ -194,13 +220,51 @@ void readConversionCorr(TFile* inputFile, std::map<std::string, fitResultType*>&
 
 
 
-
-	TH1* histogram_QCD_num_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_num_el.data()));
-	TH1* histogram_QCD_den_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_den_el.data()));
-	TH1* histogram_QCD_num_g_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_num_g_el.data()));
-	TH1* histogram_QCD_den_g_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_den_g_el.data()));
+	TH1* histogram_QCD_num_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_num_el.data())); // QCD e num [= Pass]
+	TH1* histogram_QCD_den_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_den_el.data())); // QCD e den [= (Fail - Pass)]
+	TH1* histogram_QCD_num_g_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_num_g_el.data())); // QCD Converted e num [= Pass_Converted]
+	TH1* histogram_QCD_den_g_el = dynamic_cast<TH1*>(inputFile->Get(histogramName_QCD_den_g_el.data())); // QCD Converted e den [= (Fail_Converted - Pass_Converted)]
+        TH1* histogram_QCD_num_el_NC = subtractHistograms("histogram_QCD_num_el_NC", histogram_QCD_num_el, histogram_QCD_num_g_el, 1); // QCD Non Converted e num [= Pass_NonConverted]
+        TH1* histogram_QCD_den_el_NC = subtractHistograms("histogram_QCD_den_el_NC", histogram_QCD_den_el, histogram_QCD_den_g_el, 1); // QCD Non Converted e den [= (Fail_NonConverted - Pass_NonConverted)]
 
         
+	TH1* histogram_QCD_Pass = histogram_QCD_num_el; // QCD e Pass 
+        TH1* histogram_QCD_Pass_twice = addHistograms("histogram_QCD_Pass_twice", histogram_QCD_Pass, histogram_QCD_Pass, 1); // 2 x (QCD e Pass)
+	TH1* histogram_QCD_Fail = addHistograms("histogram_QCD_Fail", histogram_QCD_den_el, histogram_QCD_Pass_twice, 1); // QCD e Fail
+
+
+	TH1* histogram_QCD_Pass_NC = histogram_QCD_num_el_NC; // QCD Non Converted e Pass 
+        TH1* histogram_QCD_Pass_NC_twice = addHistograms("histogram_QCD_Pass_NC_twice", histogram_QCD_Pass_NC, histogram_QCD_Pass_NC, 1); // 2 x (QCD Non Converted e Pass) 
+	TH1* histogram_QCD_Fail_NC = addHistograms("histogram_QCD_Fakeable", histogram_QCD_den_el_NC, histogram_QCD_Pass_NC_twice, 1); // QCD Non Converted e Fail
+
+        // Fake Rate computation (QCD e)
+	double avFakeRate_QCD = 0.;
+        double avFakeRateErrUp_QCD = 0.;
+        double avFakeRateErrDown_QCD = 0.;
+        double avFakeRateErr_QCD = 0.;
+        compFakeRateFromHistos(histogram_QCD_Pass, histogram_QCD_Fail, fitResult, avFakeRate_QCD, avFakeRateErrUp_QCD, avFakeRateErrDown_QCD, avFakeRateErr_QCD);
+
+        // Fake Rate computation (QCD Non Converted e)
+	double avFakeRate_QCD_NC = 0.;
+        double avFakeRateErrUp_QCD_NC = 0.;
+        double avFakeRateErrDown_QCD_NC = 0.;
+        double avFakeRateErr_QCD_NC = 0.;
+        compFakeRateFromHistos(histogram_QCD_Pass_NC, histogram_QCD_Fail_NC, fitResult, avFakeRate_QCD_NC, avFakeRateErrUp_QCD_NC, avFakeRateErrDown_QCD_NC, avFakeRateErr_QCD_NC);
+
+
+        double FR_Conv_Corr = 1.;
+	double Err_FR_Conv_Corr = 0.;
+        if(avFakeRate_QCD != 0.){
+	  FR_Conv_Corr = avFakeRate_QCD_NC/avFakeRate_QCD; // central value computed here
+          Err_FR_Conv_Corr = TMath::Abs( ((avFakeRate_QCD * avFakeRateErr_QCD_NC) - (avFakeRate_QCD_NC * avFakeRateErr_QCD))/(TMath::Power(avFakeRate_QCD, 2.0)) );
+	}
+	std::cout << " FR_Conv_Corr " << FR_Conv_Corr << " +/- " << Err_FR_Conv_Corr << std::endl;
+        fitResult->second->SetConv_corr(FR_Conv_Corr, Err_FR_Conv_Corr);   
+
+
+
+
+	/*
         double FakeRate_QCD_NC_num = ( histogram_QCD_num_el->Integral() - histogram_QCD_num_g_el->Integral() );     // = pass (QCD Conv. Rejected)
         double FakeRate_QCD_NC_den = ( histogram_QCD_num_el->Integral() + histogram_QCD_den_el->Integral()) 
 	                               - (histogram_QCD_num_g_el->Integral() + histogram_QCD_den_g_el->Integral()) 
@@ -244,64 +308,15 @@ void readConversionCorr(TFile* inputFile, std::map<std::string, fitResultType*>&
 
         fitResult->second->SetConv_corr(FR_Conv_Corr, Err_FR_Conv_Corr); 
 	// fitResult->second->ApplyConv_corr(); // NOT NEEDED
-
-
-	/*
-	// WORK NEEDED HERE !!
-	std::string histogramName = "LeptonFakeRate";
-	histogramName.append("/");
-	if      ( fitResult->second->pass_or_fail_ == fitResultType::kPass ) histogramName.append("numerator");
-	else if ( fitResult->second->pass_or_fail_ == fitResultType::kFail ) histogramName.append("denominator");
-	else assert(0);
-	histogramName.append("/");
-	if      ( fitResult->second->lepton_type_ == fitResultType::kElectron ) histogramName.append("electrons");
-	else if ( fitResult->second->lepton_type_ == fitResultType::kMuon     ) continue; // SINCE VALID ONLY FOR ELECTRONS
-	else assert(0);
-	histogramName.append("_");
-	if      ( fitResult->second->pass_or_fail_ == fitResultType::kPass ) histogramName.append("tight");
-	else if ( fitResult->second->pass_or_fail_ == fitResultType::kFail ) histogramName.append("fakeable");
-	else assert(0);
-	histogramName.append("/");
-	histogramName.append(getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_));
-	histogramName.append("/");
-	histogramName.append(getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_));
-	histogramName.append("/");
-	histogramName.append(process); // process name (given via config)           
-	std::string dir_name = process + "g";     // conversions sub-dir name
-        histogramName.append("/"); 
-        std::string histogramName_Conv = histogramName;
-	histogramName.append(variable);            // variable name (given via config)           
-	
-	histogramName_Conv.append(dir_name);       // conversions sub-dir variable name (given via config)           
-	std::cout << "loading histogram = '" << histogramName << "'" << std::endl;
-	TH1* histogram = dynamic_cast<TH1*>(inputFile->Get(histogramName.data()));
-	if ( !histogram ) throw cms::Exception("fillHistogram")
-			    << "Failed to load histogram = '" << histogramName << "' from file = '" << inputFile->GetName() << "' !!\n";
-	std::cout << "loading histogram = '" << histogramName_Conv << "'" << std::endl;
-	TH1* histogram_Conv = dynamic_cast<TH1*>(inputFile->Get(histogramName_Conv.data()));
-	if ( !histogram_Conv ) throw cms::Exception("fillHistogram")
-			    << "Failed to load histogram = '" << histogramName_Conv << "' from file = '" << inputFile->GetName() << "' !!\n";
-
-        double conv_corr  = 1.;
-        double conv_err = 0.; 
-        if(histogram->Integral() > 0.){
-           conv_corr = (histogram->Integral() - histogram_Conv->Integral())/histogram->Integral(); 
-           conv_err = ;
-
-	}else{
-          conv_corr  = 1.;
-          conv_err = 0.;
-	} 
-
-	// SetConv_corr(double corr, double corr_err)
-	//  ApplyConv_corr()
 	*/
+
+
   }
 }
 
 
 
-void readPrefit(TFile* inputFile, std::map<std::string, fitResultType*>& fitResults)
+void readPrefit(TFile* inputFile, std::map<std::string, fitResultType*>& fitResults, const std::string& variable_den)
 {
   for ( std::map<std::string, fitResultType*>::iterator fitResult = fitResults.begin();
 	fitResult != fitResults.end(); ++fitResult ) {
@@ -331,7 +346,9 @@ void readPrefit(TFile* inputFile, std::map<std::string, fitResultType*>& fitResu
     histogramName.append("fakes_mc"); // old line in def code
     // histogramName.append("fakes_data");
     histogramName.append("/");
-    histogramName.append("EventCounter");
+    // histogramName.append("EventCounter"); // DEF LINE
+    // histogramName.append("mT_fix_L_den");
+    histogramName.append(variable_den);
     std::cout << "loading histogram = '" << histogramName << "'" << std::endl;
     TH1* histogram = dynamic_cast<TH1*>(inputFile->Get(histogramName.data()));
     if ( !histogram ) throw cms::Exception("fillHistogram") 
@@ -614,10 +631,21 @@ int main(int argc, char* argv[])
 
 
   std::string process = cfg_comp.getParameter<std::string>("processName"); // ADDED FOR CONV. CORR.S
-  std::string variable = cfg_comp.getParameter<std::string>("HistogramName");   // ADDED FOR CONV. CORR.S
+  std::string variable = cfg_comp.getParameter<std::string>("HistogramName_num");   // ADDED FOR CONV. CORR.S
+  std::string variable_den = cfg_comp.getParameter<std::string>("HistogramName_den");
   double conv_unc = cfg_comp.getParameter<double>("Conversion_uncert");    // ADDED FOR CONV. CORR.S
 
+
   // process, variable, conv_unc
+
+  /*
+  bool use_fakes_from_MC = cfg_comp.getParameter<bool>("use_fakes_from_MC"); // handle for switching to MC based QCD computation
+  if(use_fakes_from_MC){
+    std::cout<< "Using Fakes from MC expectation " << std::endl;
+  }else{
+    std::cout<< "Using Fakes from data driven methods " << std::endl;
+  } 
+  */
 
   fwlite::InputSource inputFiles(cfg); 
   if ( !(inputFiles.files().size() == 2) )
@@ -669,10 +697,10 @@ int main(int argc, char* argv[])
   TFile* inputFile_mc = new TFile(inputFileName_mc.data());
   if ( !inputFile_mc ) throw cms::Exception("comp_LeptonFakeRate") 
     << "Failed to open input file = '" << inputFileName_mc << "' !!\n";
-  readPrefit(inputFile_mc, fitResults_e_pass);
-  readPrefit(inputFile_mc, fitResults_e_fail);
-  readPrefit(inputFile_mc, fitResults_mu_pass);
-  readPrefit(inputFile_mc, fitResults_mu_fail);
+  readPrefit(inputFile_mc, fitResults_e_pass, variable_den);
+  readPrefit(inputFile_mc, fitResults_e_fail, variable_den);
+  readPrefit(inputFile_mc, fitResults_mu_pass, variable_den);
+  readPrefit(inputFile_mc, fitResults_mu_fail, variable_den);
 
 
   readConversionCorr(inputFile_mc, fitResults_e_pass, process, variable, conv_unc); // ADDED FOR ELECTRON CONV. CORRECTIONS

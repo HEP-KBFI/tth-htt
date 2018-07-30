@@ -131,6 +131,7 @@ if __name__ == '__main__':
     executable_addBackgrounds_LeptonFakeRate = "addBackground_LeptonFakeRate",
     executable_prep_dcard                    = "prepareDatacards",
     executable_comp_LeptonFakeRate           = "comp_LeptonFakeRate",
+    use_QCD_fromMC                           = False,
     num_parallel_jobs                        = num_parallel_jobs,
     select_rle_output                        = True,
     dry_run                                  = dry_run,
