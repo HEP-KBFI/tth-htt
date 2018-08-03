@@ -93,7 +93,7 @@ elif mode == 'hh':
   if era == "2016":
     from hhAnalysis.tttt.samples.hhAnalyzeSamples_2016_nanoAOD import samples_2016 as samples
   elif era == "2017":
-    from hhAnalysis.tttt.samples.hhAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
+    from hhAnalysis.tttt.samples.hhAnalyzeSamples_2017_nanoAOD_private_hh import samples_2017 as samples
   elif era == "2018":
     from hhAnalysis.tttt.samples.hhAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
   pileup = os.path.join(
