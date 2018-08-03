@@ -79,6 +79,15 @@ echo "Making PostFit plots"
 PREFIT_VALUES=""
 POSTFIT_VALUES=""
 
+CHANNEL="e"
+if [ `echo {{ l_array }} | grep -c "mu_" ` -gt 0 ]
+then
+ CHANNEL="mu"
+else
+ CHANNEL="e"
+fi
+
+
 if [ -f "$MLFIT_FILE" ]
 then
     echo "$MLFIT_FILE exists."
@@ -87,13 +96,24 @@ then
         {% for pre_or_post in [ 'prefit', 'postfit' ] %}
           {% for log_or_linear in [ 'log', 'linear' ] %}
         python $POSTFITPLOT -i $MLFIT_FILE:"{{ l_sub_dir }}_shapes_{{ pre_or_post }}" \
-          -c e --x-title "$PLOT_LABEL" -l "$LUMI"                                     \
+          -c $CHANNEL --x-title "$PLOT_LABEL" -l "$LUMI"                                     \
           {% if log_or_linear == 'log' %}--logy {% endif %}                           \
           -o "{{ l_array }}_num_{{ pre_or_post }}_{{ log_or_linear }}"                \
           &> "$OUTPUT_DIR_JOB/plot_shapes_{{ pre_or_post }}_{{ log_or_linear }}.log"
           {% endfor %}
         {% endfor %}
     fi
+    if [ {{ is_num }} = False ]; then  ## MY LINE ENDS
+        {% for pre_or_post in [ 'prefit', 'postfit' ] %}
+          {% for log_or_linear in [ 'log', 'linear' ] %}
+        python $POSTFITPLOT -i $MLFIT_FILE:"{{ l_sub_dir }}_shapes_{{ pre_or_post }}" \
+            -c $CHANNEL --x-title "$PLOT_LABEL" -l "$LUMI"                                     \
+            {% if log_or_linear == 'log' %}--logy {% endif %}                           \
+            -o "{{ l_array }}_den_{{ pre_or_post }}_{{ log_or_linear }}"                \
+            &> "$OUTPUT_DIR_JOB/plot_shapes_{{ pre_or_post }}_{{ log_or_linear }}.log"
+            {% endfor %}
+        {% endfor %}
+    fi  ## MY LINE ENDS
 
     FIT_RESULTS="$OUTPUT_DIR_JOB/fit_results_{{ l_array }}.txt"
     python $YIELDTABLE $WSP_PATH              \

@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonSelectorFakeable
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,

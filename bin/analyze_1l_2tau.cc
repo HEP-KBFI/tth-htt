@@ -820,6 +820,12 @@ int main(int argc, char* argv[])
      lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string,
       Form("%s/sel/lheInfo", histogramDir.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
+
+    if(eventWeightManager)
+    {
+      genEvtHistManager_beforeCuts->bookHistograms(fs, eventWeightManager);
+      genEvtHistManager_afterCuts->bookHistograms(fs, eventWeightManager);
+    }
   }
 
   NtupleFillerBDT<float, int>* bdt_filler = nullptr;
@@ -965,6 +971,10 @@ int main(int argc, char* argv[])
       evtWeight_inclusive *= eventInfo.pileupWeight;
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      if(eventWeightManager)
+      {
+        genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+      }
     }
 
     std::vector<GenParticle> genTopQuarks;
@@ -1959,6 +1969,10 @@ int main(int argc, char* argv[])
     if ( isMC ) {
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
+      if(eventWeightManager)
+      {
+        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+      }
     }
 
     if ( selEventsFile ) {
