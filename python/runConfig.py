@@ -3,6 +3,7 @@ import argparse, datetime, re, logging
 ALLOWED_CONDITION_KEYS = {
   'name' : 'process_name_specific',
   'cat'  : 'sample_category',
+  'path' : 'path',
 }
 
 def positive_int_type(value):
@@ -38,7 +39,10 @@ def filter_samples(sample, condition, force = False):
   sample_key = ALLOWED_CONDITION_KEYS[key]
   for sample_name, sample_entry in sample.items():
     if sample_name == 'sum_events': continue
-    use_it = bool(regex.match(sample_entry[sample_key]))
+    if sample_key == 'path':
+      use_it = bool(regex.match(sample_entry['local_paths'][0]['path']))
+    else:
+      use_it = bool(regex.match(sample_entry[sample_key]))
     if force:
       sample_entry['use_it'] = use_it
     else:
