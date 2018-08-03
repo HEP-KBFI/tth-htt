@@ -148,6 +148,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         executable_addBackgrounds_LeptonFakeRate,
         executable_prep_dcard,
         executable_comp_LeptonFakeRate,
+        use_QCD_fromMC,
         select_rle_output = False,
         verbose           = False,
         dry_run           = False,
@@ -183,6 +184,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
        not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')):
       raise ValueError('CMSSW path for combine not valid: %s' % self.cmssw_base_dir_combine)
 
+    self.use_QCD_fromMC = use_QCD_fromMC
     self.absEtaBins_e = absEtaBins_e
     self.ptBins_e = ptBins_e
     self.absEtaBins_mu = absEtaBins_mu
@@ -292,7 +294,12 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.comp_LeptonFakeRate.absEtaBins_mu = cms.vdouble(%s)" % jobOptions['absEtaBins_mu'])
     lines.append("process.comp_LeptonFakeRate.ptBins_mu = cms.vdouble(%s)" % jobOptions['ptBins_mu'])
     lines.append("process.comp_LeptonFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
-    lines.append("process.comp_LeptonFakeRate.HistogramName = cms.string('%s')" % self.numerator_histogram)
+    lines.append("process.comp_LeptonFakeRate.HistogramName_num = cms.string('%s')" % self.numerator_histogram)
+    lines.append("process.comp_LeptonFakeRate.HistogramName_den = cms.string('%s')" % self.denominator_histogram)
+    # if self.use_QCD_fromMC : 
+    #  lines.append("process.comp_LeptonFakeRate.use_fakes_from_MC = cms.bool(True)")
+    # else:
+    #  lines.append("process.comp_LeptonFakeRate.use_fakes_from_MC = cms.bool(False)")
     create_cfg(self.cfgFile_comp_LeptonFakeRate, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_prep_dcard_LeptonFakeRate(self, jobOptions):
@@ -308,7 +315,11 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
-    if jobOptions['histogramToFit'] in [ "mT_fix_L", "mT_fix_L_num", "mT_fix_L_den" ]:
+    #if self.use_QCD_fromMC :
+    #  lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'TTl_plus_t', 'Raresl_plus_t', 'EWKl_plus_t', 'QCD')")
+    #else:
+    #  lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'TTl_plus_t', 'Raresl_plus_t', 'EWKl_plus_t', 'fakes_data')")
+    if jobOptions['histogramToFit'] in [ "mT_fix_L", "mT_fix_L_num", "mT_fix_L_den"]:
       lines.append("process.prepareDatacards.histogramToFit_xMin = cms.double(0.)")
       lines.append("process.prepareDatacards.histogramToFit_xMax = cms.double(150.)")
       lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(10.)")
@@ -644,7 +655,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         systematic_name = systematic.replace('Up', '').replace('Down', '')
         if systematic_name not in systematics_leptonFR:
           systematics_leptonFR.append(systematic_name)
-      setup_dcards_template_file = os.path.join(jinja_template_dir, 'setupDatacards_LeptonFakeRate.py.template')
+      if self.use_QCD_fromMC:
+        setup_dcards_template_file = os.path.join(jinja_template_dir, 'setupDatacards_LeptonFakeRate_fakes_from_mc.py.template')
+      else:
+        setup_dcards_template_file = os.path.join(jinja_template_dir, 'setupDatacards_LeptonFakeRate_fakes_from_data.py.template')
       setup_dcards_template = open(setup_dcards_template_file, 'r').read()
       setup_dcards_script = jinja2.Template(setup_dcards_template).render(
         leptons           = lepton_bins_merged,
@@ -658,8 +672,12 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         os.fsync(setup_dcards_script_file.fileno())
       add_chmodX(setup_dcards_script_path)
 
-      postfit_plot_script_path = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonFR/scripts/postFitPlot.py')
-      yieldtable_script_path   = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonFR/scripts/yieldTable.py')
+      if self.use_QCD_fromMC:
+          postfit_plot_script_path = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonFR/scripts/postFitPlot_fakes_from_mc.py')
+          yieldtable_script_path   = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonFR/scripts/yieldTable_fakes_from_mc.py')
+      else:
+          postfit_plot_script_path = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonFR/scripts/postFitPlot_fakes_from_data.py')
+          yieldtable_script_path   = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonFR/scripts/yieldTable_fakes_from_data.py')
 
       # Create run_postFit.sh script from the template
       combine_output_dir = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output')

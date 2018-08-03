@@ -7,9 +7,9 @@ getMEtFilterFlagString(MEtFilterFlag flag)
 {
   switch(flag)
   {
-    case MEtFilterFlag::BadChargedCandidateFilter:          return "Flag_BadChargedCandidateFilter"; //
+    case MEtFilterFlag::BadChargedCandidateFilter:          return "Flag_BadChargedCandidateFilter";
     case MEtFilterFlag::BadChargedCandidateSummer16Filter:  return "Flag_BadChargedCandidateSummer16Filter";
-    case MEtFilterFlag::BadPFMuonFilter:                    return "Flag_BadPFMuonFilter"; //
+    case MEtFilterFlag::BadPFMuonFilter:                    return "Flag_BadPFMuonFilter";
     case MEtFilterFlag::BadPFMuonSummer16Filter:            return "Flag_BadPFMuonSummer16Filter";
     case MEtFilterFlag::CSCTightHalo2015Filter:             return "Flag_CSCTightHalo2015Filter";
     case MEtFilterFlag::CSCTightHaloFilter:                 return "Flag_CSCTightHaloFilter";
