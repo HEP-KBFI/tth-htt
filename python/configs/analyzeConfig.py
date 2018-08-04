@@ -807,8 +807,6 @@ class analyzeConfig(object):
                     explicit_binning = histogramToFit_options['explicit_binning']
                     assert(type(explicit_binning) == list and sorted(explicit_binning) == explicit_binning)
                     lines.append("process.prepareDatacards.explicit_binning = cms.vdouble(%s)" % explicit_binning)
-        # If self.histograms_to_fit is not a dictionary but a list, do not modify anything but
-        # use the default settings specified in the original prepareDatacards template
 
         create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
