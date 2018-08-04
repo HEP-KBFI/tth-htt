@@ -143,7 +143,7 @@ for sample_name, sample_entry in samples.items():
   elif mode == 'forBDTtraining':
     sample_entry['use_it'] = not sample_entry['use_it']
   elif mode == 'hh':
-    sample_entry['use_it'] = sample_entry['process_name_specific'].startswith('x_to_hh_')
+    sample_entry['use_it'] = sample_entry['process_name_specific'].startswith(('signal_hh_', 'signal_radion'))
   elif 'sync' in mode or mode == 'all_except_forBDTtraining':
     pass
   else:
