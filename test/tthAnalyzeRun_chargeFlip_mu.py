@@ -96,7 +96,9 @@ if __name__ == '__main__':
     check_output_files = check_output_files,
     running_method     = running_method,
     num_parallel_jobs  = num_parallel_jobs,
-    histograms_to_fit  = [ "mass_ll" ],
+    histograms_to_fit  = {
+      "mass_ll" : {},
+    },
     select_rle_output  = False,
     dry_run            = dry_run,
     isDebug            = debug,

@@ -117,10 +117,10 @@ if __name__ == '__main__':
     num_parallel_jobs                     = num_parallel_jobs,
     executable_addBackgrounds             = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
-    histograms_to_fit                     = [
-      "EventCounter",
-      "numJets"
-    ],
+    histograms_to_fit                     = {
+      "EventCounter" : {},
+      "numJets"      : {},
+    },
     select_rle_output                     = True,
     select_root_output                    = False,
     dry_run                               = dry_run,

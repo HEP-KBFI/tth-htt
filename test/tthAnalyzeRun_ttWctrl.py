@@ -102,7 +102,11 @@ if __name__ == '__main__':
     executable_addBackgrounds = "addBackgrounds",
     executable_addFakes       = "addBackgroundLeptonFakes",
     executable_addFlips       = "addBackgroundLeptonFlips",
-    histograms_to_fit         = [ "EventCounter", "numJets", "mvaDiscr_2lss" ],
+    histograms_to_fit         = {
+      "EventCounter"  : {},
+      "numJets"       : {},
+      "mvaDiscr_2lss" : {},
+    },
     select_rle_output         = True,
     hlt_filter                = hlt_filter,
     dry_run                   = dry_run,
