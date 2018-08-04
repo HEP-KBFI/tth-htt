@@ -750,7 +750,7 @@ if __name__ == '__main__':
         command    = execution_command,
         date       = execution_datetime,
         sum_events = sum_events_flattened,
-        is_mc      = bool(sum_events_flattened),
+        is_mc      = True,
       ))
       f.write('\n'.join(meta_dictionary_entries))
       f.write(jinja2.Template(METADICT_FOOTER).render(event_statistics = event_statistics))
