@@ -50,6 +50,13 @@ samples_to_sum_2017 = [
     'W2JetsToLNu',
     'W3JetsToLNu',
     'W4JetsToLNu',
+    'WJetsToLNu_HT100To200',
+    'WJetsToLNu_HT200To400',
+    'WJetsToLNu_HT400To600',
+    'WJetsToLNu_HT600To800',
+    'WJetsToLNu_HT800To1200',
+    'WJetsToLNu_HT1200To2500',
+    'WJetsToLNu_HT2500ToInf',
   ],
   [ 'GluGluHToZZTo4L',                'GluGluHToZZTo4L_ext1',                   ],
   [ 'ST_s-channel_4f_leptonDecays',   'ST_s-channel_4f_leptonDecays_PSweights', ],
@@ -156,7 +163,7 @@ def plot(input_files, output_files, title, expected_neff, mode):
 
     if not (y_down < expected_neff < y_up) and mode == 'unbiased':
       logging.warning(
-        "Event effective event count {} not within {} +- {}".format(expected_neff, y_content, y_error)
+        "Effective event count {} not within {} +- {}".format(expected_neff, y_content, y_error)
       )
 
   if mode == 'unbiased':
