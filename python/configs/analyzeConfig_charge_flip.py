@@ -27,7 +27,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
                check_output_files,
                running_method,
                num_parallel_jobs,
-               histograms_to_fit = [],
+               histograms_to_fit,
                select_rle_output = False,
                verbose           = False,
                dry_run           = True,

@@ -759,7 +759,7 @@ def obtain_paths(hdfs_system, input_path):
   return paths
 
 def round_sign(x, sign_digits = 6):
-  return round(x, int(abs(math.floor(math.log10(x)))) + sign_digits if 0. < x < 1. else 0)
+  return round(x, max(int(abs(math.floor(math.log10(x)))) + sign_digits, 0))
 
 if __name__ == '__main__':
   logging.basicConfig(

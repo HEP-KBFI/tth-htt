@@ -169,7 +169,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       check_output_files    = check_output_files,
       running_method        = running_method,
       num_parallel_jobs     = num_parallel_jobs,
-      histograms_to_fit     = [ numerator_histogram, denominator_histogram ],
+      histograms_to_fit     = { numerator_histogram[0] : {}, denominator_histogram[0] : {} },
       executable_prep_dcard = executable_prep_dcard,
       triggers              = [ '1e', '1mu', '2e', '2mu' ],
       verbose               = verbose,
@@ -216,7 +216,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
     self.numerator_histogram = numerator_histogram[0]
     self.denominator_histogram = denominator_histogram[0]
-    self.histograms_to_fit = [ self.numerator_histogram, self.denominator_histogram ]
     self.numerator_plotLabel = numerator_histogram[1]
     self.denominator_plotLabel = denominator_histogram[1]
 
@@ -296,7 +295,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.comp_LeptonFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
     lines.append("process.comp_LeptonFakeRate.HistogramName_num = cms.string('%s')" % self.numerator_histogram)
     lines.append("process.comp_LeptonFakeRate.HistogramName_den = cms.string('%s')" % self.denominator_histogram)
-    # if self.use_QCD_fromMC : 
+    # if self.use_QCD_fromMC :
     #  lines.append("process.comp_LeptonFakeRate.use_fakes_from_MC = cms.bool(True)")
     # else:
     #  lines.append("process.comp_LeptonFakeRate.use_fakes_from_MC = cms.bool(False)")
@@ -509,7 +508,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         ],
         'processes_input' : processes_input,
         'process_output' : "fakes_mc",
-        'histogramsToCopy' : self.histograms_to_fit,
+        'histogramsToCopy' : list(self.histograms_to_fit.keys()),
         'sysShifts' : []
       }
       self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job])
