@@ -149,14 +149,14 @@ if __name__ == '__main__':
     num_parallel_jobs         = num_parallel_jobs,
     executable_addBackgrounds = "addBackgrounds",
     executable_addFakes       = "addBackgroundLeptonFakes",
-    histograms_to_fit         = [
-      "EventCounter",
-      "numJets",
-      "mvaDiscr_2lss",
-      "mvaOutput_2los_1tau_ttbar",
-      "mvaDiscr_2los_1tau",
-      "mTauTauVis"
-    ],
+    histograms_to_fit         = {
+      "EventCounter"              : {},
+      "numJets"                   : {},
+      "mvaDiscr_2lss"             : {},
+      "mvaOutput_2los_1tau_ttbar" : {},
+      "mvaDiscr_2los_1tau"        : {},
+      "mTauTauVis"                : {},
+    },
     select_rle_output         = True,
     dry_run                   = dry_run,
     isDebug                   = debug,

@@ -808,7 +808,9 @@ int main(int argc, char* argv[])
       "lep1_fake_prob", "lep2_fake_prob", "tau_fake_prob","dr_leps",
       "mvaOutput_hadTopTaggerWithKinFit",
       "max_lep_eta", "min_lep_eta",
-      "HadTop_pt", "HadTop_eta", "genTopPt", "mbb", "ptbb", "mbb_loose", "ptbb_loose",
+      "HadTop_pt", "HadTop_eta", "genTopPt", 
+      "mbb", "ptbb", "b1_pt", "b2_pt", "drbb", "detabb", 
+      "mbb_loose", "ptbb_loose", "b1_loose_pt", "b2_loose_pt", "drbb_loose", "detabb_loose",
       "fittedHadTop_pt", "fittedHadTop_eta", "fitHTptoHTpt", "fitHTptoHTmass",
       "dr_lepSS_HTunfitted", "dr_lepSS_HTfitted",
       "dr_lepOS_HTunfitted", "dr_lepOS_HTfitted",
@@ -1875,8 +1877,16 @@ int main(int argc, char* argv[])
           ("tau_charge",           selHadTau -> charge())
           ("mbb",       selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : -1.  )
           ("ptbb",       selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).pt() : -1.  )
+          ("b1_pt",       selBJets_medium.size()>0 ?  selBJets_medium[0]->pt() : -1. )
+          ("b2_pt",       selBJets_medium.size()>1 ?  selBJets_medium[1]->pt() : -1. ) 
+	  ("drbb",       selBJets_medium.size()>1 ? deltaR(selBJets_medium[0]->p4(), selBJets_medium[1]->p4()) : -1. ) 
+	  ("detabb",     selBJets_medium.size()>1 ? TMath::Abs(selBJets_medium[0]->eta() - selBJets_medium[1]->eta()) : -1. )
           ("mbb_loose",       selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -1.  )
           ("ptbb_loose",       selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).pt() : -1.  )
+   	  ("b1_loose_pt",       selBJets_loose.size()>0 ?  selBJets_loose[0]->pt() : -1. )
+          ("b2_loose_pt",       selBJets_loose.size()>1 ?  selBJets_loose[1]->pt() : -1. ) 
+	  ("drbb_loose",       selBJets_loose.size()>1 ? deltaR(selBJets_loose[0]->p4(), selBJets_loose[1]->p4()) : -1. ) 
+	  ("detabb_loose",     selBJets_loose.size()>1 ? TMath::Abs(selBJets_loose[0]->eta() - selBJets_loose[1]->eta()) : -1. )
         .fill()
       ;
     }

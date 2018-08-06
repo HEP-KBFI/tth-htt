@@ -778,38 +778,36 @@ class analyzeConfig(object):
 
         # If the user has specified the binning options for a particular histogram, we expect to see
         # a dictionary instead of a list of histogram names that's been passed to this class as histograms_to_fit
-        if type(self.histograms_to_fit) == dict:
-            if histogramToFit in self.histograms_to_fit:
-                histogramToFit_options = self.histograms_to_fit[histogramToFit]
-                # Check the binning options
-                if not histogramToFit_options:
-                    # Use whatever the default setting are in the original prepareDatacards template
-                    pass
-                else:
-                    # Expected syntax:
-                    # {
-                    #   "EventCounter"    : { 'auto_rebin' : True, 'min_auto_rebin' = 0.05 }, # no quantile
-                    #   "numJets"         : { 'quantile_rebin' : 5 }, # also enables quantile rebinning, no auto
-                    #   "mTauTauVis1_sel" : {}, # default settings (no auto or quantile rebinning)
-                    # }
-                    if 'auto_rebin' in histogramToFit_options:
-                        lines.append("process.prepareDatacards.apply_automatic_rebinning = cms.bool(%s)" % \
-                                     histogramToFit_options['auto_rebin'])
-                    if 'min_auto_rebin' in histogramToFit_options:
-                        lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(%.3f)" % \
-                                     histogramToFit_options['min_auto_rebin'])
-                    if 'quantile_rebin' in histogramToFit_options:
-                        lines.append("process.prepareDatacards.nbin_quantile_rebinning = cms.int32(%d)" % \
-                                     histogramToFit_options['quantile_rebin'])
-                        if 'quantile_in_fakes' in histogramToFit_options:
-                            lines.append("process.prepareDatacards.quantile_rebinning_in_fakes = cms.bool(%s)" % \
-                                         histogramToFit_options['quantile_in_fakes'])
-                    if 'explicit_binning' in histogramToFit_options:
-                        explicit_binning = histogramToFit_options['explicit_binning']
-                        assert(type(explicit_binning) == list and sorted(explicit_binning) == explicit_binning)
-                        lines.append("process.prepareDatacards.explicit_binning = cms.vdouble(%s)" % explicit_binning)
-        # If self.histograms_to_fit is not a dictionary but a list, do not modify anything but
-        # use the default settings specified in the original prepareDatacards template
+        assert(histogramToFit in self.histograms_to_fit)
+        histogramToFit_options = self.histograms_to_fit[histogramToFit]
+
+        # Check the binning options
+        if not histogramToFit_options:
+            # Use whatever the default setting are in the original prepareDatacards template
+            pass
+        else:
+            # Expected syntax:
+            # {
+            #   "EventCounter"    : { 'auto_rebin' : True, 'min_auto_rebin' = 0.05 }, # no quantile
+            #   "numJets"         : { 'quantile_rebin' : 5 }, # also enables quantile rebinning, no auto
+            #   "mTauTauVis1_sel" : {}, # default settings (no auto or quantile rebinning)
+            # }
+            if 'auto_rebin' in histogramToFit_options:
+                lines.append("process.prepareDatacards.apply_automatic_rebinning = cms.bool(%s)" % \
+                             histogramToFit_options['auto_rebin'])
+            if 'min_auto_rebin' in histogramToFit_options:
+                lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(%.3f)" % \
+                             histogramToFit_options['min_auto_rebin'])
+            if 'quantile_rebin' in histogramToFit_options:
+                lines.append("process.prepareDatacards.nbin_quantile_rebinning = cms.int32(%d)" % \
+                             histogramToFit_options['quantile_rebin'])
+                if 'quantile_in_fakes' in histogramToFit_options:
+                    lines.append("process.prepareDatacards.quantile_rebinning_in_fakes = cms.bool(%s)" % \
+                                 histogramToFit_options['quantile_in_fakes'])
+            if 'explicit_binning' in histogramToFit_options:
+                explicit_binning = histogramToFit_options['explicit_binning']
+                assert(type(explicit_binning) == list and sorted(explicit_binning) == explicit_binning)
+                lines.append("process.prepareDatacards.explicit_binning = cms.vdouble(%s)" % explicit_binning)
 
         create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
