@@ -59,9 +59,6 @@ process.analyze_3l_1tau = cms.PSet(
     electronSelection = cms.string(''),
     muonSelection = cms.string(''),
     lep_mva_cut = cms.double(1.),
-    lep_minPt_lead = cms.double(20.),
-    lep_minPt_sublead = cms.double(10.),
-    lep_minPt_third = cms.double(10.),
     apply_leptonGenMatching = cms.bool(True),
 
     hadTauSelection = cms.string(''),
