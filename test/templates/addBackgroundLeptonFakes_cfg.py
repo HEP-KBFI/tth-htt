@@ -26,5 +26,6 @@ process.addBackgroundLeptonFakes = cms.PSet(
     processData = cms.string("data_obs"),
     processLeptonFakes = cms.string("fakes_data"),
     processesToSubtract = cms.vstring(),
-    sysShifts = cms.vstring()
+    sysShifts = cms.vstring(),
+    disable_makeBinContentsPositive_forTailFit = cms.bool(False)
 )
