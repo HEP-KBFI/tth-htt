@@ -47,9 +47,6 @@ class analyzeConfig_3l_1tau(analyzeConfig):
         samples,
         MEMbranch,
         lep_mva_wp,
-        lep_minPt_lead,
-        lep_minPt_sublead,
-        lep_minPt_third,
         hadTau_selection,
         applyFakeRateWeights,
         chargeSumSelections,
@@ -102,10 +99,6 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       isDebug                   = isDebug,
       use_home                  = use_home,
     )
-
-    self.lep_minPt_lead = lep_minPt_lead
-    self.lep_minPt_sublead = lep_minPt_sublead
-    self.lep_minPt_third = lep_minPt_third
 
     self.MEMbranch = MEMbranch
 
@@ -227,10 +220,6 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     )
     if 'mcClosure' in lepton_and_hadTau_selection:
       self.mcClosure_dir['%s_%s' % (lepton_and_hadTau_selection, jobOptions['chargeSumSelection'])] = jobOptions['histogramDir']
-
-    jobOptions['lep_minPt_lead'] = self.lep_minPt_lead
-    jobOptions['lep_minPt_sublead'] = self.lep_minPt_sublead
-    jobOptions['lep_minPt_third'] = self.lep_minPt_third
 
     self.set_leptonFakeRateWeightHistogramNames(jobOptions['central_or_shift'], lepton_and_hadTau_selection)
     jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
