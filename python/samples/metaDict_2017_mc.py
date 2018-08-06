@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-07-28 17:30:03 with the following command:
+# file generated at 2018-08-06 18:53:55 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets_mc_2017.txt -m python/samples/metaDict_2017_mc.py -s ../NanoAOD/test/datasets_sum_2017.txt -c python/samples/sampleLocations_2017.txt
 
 meta_dictionary = OD()
@@ -8,7 +8,7 @@ meta_dictionary = OD()
 
 ### event sums
 
-sum_events = {
+sum_events = { 
   ("DY1JetsToLL_M-50", "DY1JetsToLL_M-50_ext1"),
   ("DY2JetsToLL_M-50", "DY2JetsToLL_M-50_ext1"),
   ("DY3JetsToLL_M-50", "DY3JetsToLL_M-50_ext1"),
@@ -17,6 +17,7 @@ sum_events = {
   ("DYJetsToLL_M-4to50_HT-200to400", "DYJetsToLL_M-4to50_HT-200to400_ext1"),
   ("DYJetsToLL_M-4to50_HT-400to600", "DYJetsToLL_M-4to50_HT-400to600_ext1"),
   ("DYJetsToLL_M-50", "DYJetsToLL_M-50_ext1"),
+  ("DYJetsToLL_M-50_LO", "DYJetsToLL_M-50_LO_ext1"),
   ("DYJetsToLL_M50_HT100to200", "DYJetsToLL_M50_HT100to200_ext1"),
   ("DYJetsToLL_M50_HT200to400", "DYJetsToLL_M50_HT200to400_ext1"),
   ("DYJetsToLL_M50_HT400to600", "DYJetsToLL_M50_HT400to600_ext1"),
@@ -425,6 +426,32 @@ meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 7.38TB; nevents: 186.00M; release: 9_4_0_patch1; last modified: 2018-02-19 14:25:32"),
+])
+
+meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "NanoProduction_v2_2018Aug06_DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10-v1"),
+  ("sample_category",       "EWK"),
+  ("process_name_specific", "DYJetsToLL_M-50_LO"),
+  ("nof_db_events",         48141885),
+  ("nof_db_files",          737),
+  ("fsize_db",              1951411106522),
+  ("xsection",              5765.4),
+  ("use_it",                False),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 1.95TB; nevents: 48.14M; release: 9_4_0_patch1; last modified: 2018-01-09 21:55:51"),
+])
+
+meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10_ext1-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "NanoProduction_v2_2018Aug06_DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10_ext1-v1"),
+  ("sample_category",       "EWK"),
+  ("process_name_specific", "DYJetsToLL_M-50_LO_ext1"),
+  ("nof_db_events",         48787900),
+  ("nof_db_files",          674),
+  ("fsize_db",              1970017375652),
+  ("xsection",              5765.4),
+  ("use_it",                False),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 1.97TB; nevents: 48.79M; release: 9_4_0_patch1; last modified: 2018-01-24 22:44:40"),
 ])
 
 meta_dictionary["/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] =  OD([
@@ -1579,7 +1606,7 @@ meta_dictionary["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-9
 # TTW:                       15.03M
 # TTWW:                      200.00k
 # TT:                        455.80M
-# EWK:                       853.48M
+# EWK:                       950.41M
 # QCD:                       414.13M
 # Rares:                     33.71M
 # VH:                        918.51k
