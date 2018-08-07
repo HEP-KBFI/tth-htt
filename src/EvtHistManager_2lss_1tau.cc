@@ -1,24 +1,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2lss_1tau.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era(), kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 EvtHistManager_2lss_1tau::EvtHistManager_2lss_1tau(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)
-  , era_(-1)
-{
-  const std::string era_string = cfg.getParameter<std::string>("era");
-  if(era_string == "2017" )
-  {
-    era_ = kEra_2017;
-  }
-  else
-  {
-    throw cmsException(this)
-      << "Invalid Configuration parameter 'era' = " << era_string;
-  }
-}
+  , era_(get_era(cfg.getParameter<std::string>("era")))
+{}
 
 const TH1 *
 EvtHistManager_2lss_1tau::getHistogram_EventCounter() const

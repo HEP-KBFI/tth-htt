@@ -10,7 +10,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kHadTauPt_*
 
 #include <TFile.h> // TFile
-#include <TGraph.h> // TGraph
+#include <TGraphAsymmErrors.h> // TGraphAsymmErrors
 #include <TFormula.h> // TFormula
 
 #include <boost/range/numeric.hpp> // boost::accumulate()
@@ -27,7 +27,10 @@ RecoHadTauReader::RecoHadTauReader(int era,
 RecoHadTauReader::RecoHadTauReader(int era,
                                    const std::string & branchName_obj,
                                    bool readGenMatching)
-  : era_(era)
+  : tauIdMVArun2dR03DB_wpFile_(nullptr)
+  , DBdR03oldDMwLTEff95_(nullptr)
+  , mvaOutput_normalization_DBdR03oldDMwLT_(nullptr)
+  , era_(era)
   , max_nHadTaus_(32)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
@@ -64,6 +67,10 @@ RecoHadTauReader::RecoHadTauReader(int era,
     genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_obj_.data()), max_nHadTaus_);
   }
   setBranchNames();
+  if(era == kEra_2016)
+  {
+    readDBdR03oldDMwLTEff95();
+  }
 }
 
 RecoHadTauReader::~RecoHadTauReader()
@@ -74,6 +81,22 @@ RecoHadTauReader::~RecoHadTauReader()
   if(numInstances_[branchName_obj_] == 0)
   {
     numInstances_.erase(branchName_obj_);
+
+    if(era_ == kEra_2016)
+    {
+      int numInstances_total = 0;
+      for(const auto & it: numInstances_)
+      {
+        numInstances_total += it.second;
+      }
+      if(numInstances_total == 0)
+      {
+        RecoHadTauReader * const gInstance = instances_.begin()->second;
+        assert(gInstance);
+        delete gInstance->tauIdMVArun2dR03DB_wpFile_;
+      }
+    }
+
     RecoHadTauReader * const gInstance = instances_[branchName_obj_];
     assert(gInstance);
 
@@ -107,6 +130,24 @@ RecoHadTauReader::~RecoHadTauReader()
 }
 
 void
+RecoHadTauReader::readDBdR03oldDMwLTEff95()
+{
+  RecoHadTauReader * gInstance = instances_.begin()->second;
+  assert(gInstance);
+  if(! gInstance->tauIdMVArun2dR03DB_wpFile_)
+  {
+    const LocalFileInPath tauIdMVArun2dR03DB_wpFilePath = LocalFileInPath(
+      "tthAnalysis/HiggsToTauTau/data/wpDiscriminationByIsolationMVARun2v1_DBdR03oldDMwLT.root"
+    );
+    gInstance->tauIdMVArun2dR03DB_wpFile_ = new TFile(tauIdMVArun2dR03DB_wpFilePath.fullPath().c_str(), "read");
+  }
+  DBdR03oldDMwLTEff95_ = dynamic_cast<TGraphAsymmErrors *>(gInstance->tauIdMVArun2dR03DB_wpFile_->Get("DBdR03oldDMwLTEff95"));
+  mvaOutput_normalization_DBdR03oldDMwLT_ = dynamic_cast<TFormula *>(
+    gInstance->tauIdMVArun2dR03DB_wpFile_->Get("mvaOutput_normalization_DBdR03oldDMwLT")
+  );
+}
+
+void
 RecoHadTauReader::setHadTauPt_central_or_shift(int hadTauPt_option)
 {
   hadTauPt_option_ = hadTauPt_option;
@@ -127,8 +168,17 @@ RecoHadTauReader::setBranchNames()
     branchName_decayMode_ = Form("%s_%s", branchName_obj_.data(), "decayMode");
     branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
     branchName_idDecayModeNewDMs_ = Form("%s_%s", branchName_obj_.data(), "idDecayModeNewDMs");
-    branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDMdR032017v2_log");
-    branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDMdR032017v2");
+    std::string mvaString;
+    switch(era_)
+    {
+      case kEra_2016: mvaString = "MVAoldDMdR03";       break;
+      case kEra_2017: mvaString = "MVAoldDMdR032017v2"; break;
+      case kEra_2018: throw cmsException(this, __func__, __LINE__) << "Implement me!";
+      default: throw cmsException(this, __func__, __LINE__) << "Invalid era = " << era_;
+    }
+    assert(! mvaString.empty());
+    branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), Form("id%s_log", mvaString.data()));
+    branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), Form("raw%s", mvaString.data()));
     branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM_log");
     branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDM");
     branchName_idCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "idCI3hitdR03");
@@ -220,6 +270,28 @@ RecoHadTauReader::read() const
         default: throw cmsException(this) << "Invalid tau ES option: " << hadTauPt_option_;
       }
 
+      Int_t hadTau_idMVA_dR03 = hadTau_idMVA_dR03_[idxHadTau];
+      if(era_ == kEra_2016)
+      {
+        if(hadTau_idMVA_dR03 >= 1)
+        {
+          hadTau_idMVA_dR03 += 1;
+        }
+        else
+        {
+          assert(DBdR03oldDMwLTEff95_ && mvaOutput_normalization_DBdR03oldDMwLT_);
+          if(mvaOutput_normalization_DBdR03oldDMwLT_->Eval(gInstance->hadTau_rawMVA_dR03_[idxHadTau]) >
+             DBdR03oldDMwLTEff95_->Eval(gInstance->hadTau_pt_[idxHadTau]))
+          {
+            hadTau_idMVA_dR03 = 1;
+          }
+          else
+          {
+            hadTau_idMVA_dR03 = 0;
+          }
+        }
+      }
+
       hadTaus.push_back({
         {
           hadTau_pt,
@@ -233,7 +305,7 @@ RecoHadTauReader::read() const
         gInstance->hadTau_decayMode_[idxHadTau],
         gInstance->hadTau_idDecayMode_[idxHadTau],
         gInstance->hadTau_idDecayModeNewDMs_[idxHadTau],
-        gInstance->hadTau_idMVA_dR03_[idxHadTau],
+        hadTau_idMVA_dR03,
         gInstance->hadTau_rawMVA_dR03_[idxHadTau],
         gInstance->hadTau_idMVA_dR05_[idxHadTau],
         gInstance->hadTau_rawMVA_dR05_[idxHadTau],

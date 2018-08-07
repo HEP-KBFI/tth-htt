@@ -39,12 +39,22 @@ samples_to_stitch_2017 = [
     'inclusive' : {
       'samples'   : [ 'WJetsToLNu' ],
       'LHE_Njets' : [ 0, 5 ],
+      'LHE_HT'    : [ 0., 100000. ],
     },
     'LHE_Njets' : [
       { 'value' : [ 1, 2 ], 'samples' : [ 'W1JetsToLNu' ] },
       { 'value' : [ 2, 3 ], 'samples' : [ 'W2JetsToLNu' ] },
       { 'value' : [ 3, 4 ], 'samples' : [ 'W3JetsToLNu' ] },
       { 'value' : [ 4, 5 ], 'samples' : [ 'W4JetsToLNu' ] },
+    ],
+    'LHE_HT'    : [
+      { 'value' : [  100.,    200. ], 'samples' : [ 'WJetsToLNu_HT100To200'   ] },
+      { 'value' : [  200.,    400. ], 'samples' : [ 'WJetsToLNu_HT200To400'   ] },
+      { 'value' : [  400.,    600. ], 'samples' : [ 'WJetsToLNu_HT400To600'   ] },
+      { 'value' : [  600.,    800. ], 'samples' : [ 'WJetsToLNu_HT600To800'   ] },
+      { 'value' : [  800.,   1200. ], 'samples' : [ 'WJetsToLNu_HT800To1200'  ] },
+      { 'value' : [ 1200.,   2500. ], 'samples' : [ 'WJetsToLNu_HT1200To2500' ] },
+      { 'value' : [ 2500., 100000. ], 'samples' : [ 'WJetsToLNu_HT2500ToInf'  ] },
     ],
   },
 ]

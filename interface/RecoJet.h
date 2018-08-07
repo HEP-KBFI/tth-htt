@@ -50,8 +50,6 @@ public:
   friend class RecoJetReader;
   friend class RecoJetWriter;
 
-  const static bool useDeepCSV = true;
-
 protected:
   Double_t charge_;     ///< jet charge, computed according to JME-13-006
   Double_t BtagCSV_;    ///< CSV b-tagging discriminator value

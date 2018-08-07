@@ -22,6 +22,9 @@ namespace aux
   getHadTauSelectionLabel(const std::string & hadTauSelection);
 
   std::string
+  get_hadTauSelection_TauTriggerSFs2017(const std::string & hadTauSelection);
+
+  std::string
   getHadTauDecayModeLabel(int hadTauDecayMode);
 
   void

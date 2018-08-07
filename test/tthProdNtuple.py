@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
-mode_choices = [ 'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync' ]
+mode_choices = [ 'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh' ]
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -44,7 +44,11 @@ preselection = args.enable_preselection
 pileup       = os.path.join(
   os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s.root' % era
 )
-golden_json_2017  = os.path.join(
+golden_json_2016 = os.path.join(
+  os.environ['CMSSW_BASE'], 'src/tthAnalysis/NanoAOD/data',
+  'Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
+)
+golden_json_2017 = os.path.join(
   os.environ['CMSSW_BASE'], 'src/tthAnalysis/NanoAOD/data',
   'Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt'
 )
@@ -56,23 +60,79 @@ version = "%s_w%sPresel_%s_%s" % (
 
 if mode == 'sync':
   if preselection:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_nanoAOD_sync import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD_sync import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
 elif mode == 'leptonFR_sync':
   if preselection:
     raise ValueError("Does not make sense to apply preselection to Ntuples used in lepton FR sync")
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_leptonFR_sync import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_nanoAOD_leptonFR_sync import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_leptonFR_sync import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD_leptonFR_sync import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
+elif mode == 'hh':
+  if era == "2016":
+    from hhAnalysis.tttt.samples.hhAnalyzeSamples_2016_nanoAOD import samples_2016 as samples
+    pileup = os.path.join(
+      os.environ['CMSSW_BASE'], 'src/hhAnalysis/tttt/data/pileup_hh_2016.root'
+    )
+  elif era == "2017":
+    from hhAnalysis.tttt.samples.hhAnalyzeSamples_2017_nanoAOD_hh_private import samples_2017 as samples
+    pileup = os.path.join(
+      os.environ['CMSSW_BASE'], 'src/hhAnalysis/tttt/data/pileup_hh_private_2017.root'
+    )
+  elif era == "2018":
+    from hhAnalysis.tttt.samples.hhAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
+    pileup = os.path.join(
+      os.environ['CMSSW_BASE'], 'src/hhAnalysis/tttt/data/pileup_hh_2018.root'
+    )
+  else:
+    raise ValueError("Invalid era: %s" % era)
 else:
   if preselection:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_nanoAOD import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
 
-if era == "2017":
-  samples = samples_2017
+if era == "2016":
+  golden_json = golden_json_2016
+elif era == "2017":
   golden_json = golden_json_2017
+elif era == "2018":
+  raise ValueError("Implement me!")
 else:
   raise ValueError("Invalid era: %s" % era)
 
@@ -82,10 +142,12 @@ for sample_name, sample_entry in samples.items():
     sample_entry['use_it'] = True
   elif mode == 'forBDTtraining':
     sample_entry['use_it'] = not sample_entry['use_it']
+  elif mode == 'hh':
+    sample_entry['use_it'] = sample_entry['process_name_specific'].startswith(('signal_hh_', 'signal_radion'))
   elif 'sync' in mode or mode == 'all_except_forBDTtraining':
     pass
   else:
-    raise ValueError("Internal logic error")
+    raise ValueError("Invalid mode: %s" % mode)
 
 if preselection:
   preselection_cuts = {

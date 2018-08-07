@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonSelectorFakeable
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
@@ -10,28 +10,47 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
   : era_(era)
   , debug_(debug)
   , set_selection_flags_(set_selection_flags)
-  , min_cone_pt_(10.) // F
-  , min_lepton_pt_(5.) // L
+  , min_cone_pt_(-1.e+3)
+  , min_lepton_pt_(-1.e+3)
   , max_absEta_(2.4) // L
   , max_dxy_(0.05) // L
   , max_dz_(0.1) // L
   , max_relIso_(0.4) // L
   , max_sip3d_(8.) // L
   , apply_looseIdPOG_(true) // L
-  , binning_mvaTTH_({ 0.90 }) // F; Table 6 in AN2017_029_v5
-  , min_jetPtRatio_({ 0.60, -1.e+3 }) // F; [*]
   , apply_mediumIdPOG_(false) // L
-  , min_segmentCompatibility_({ 0.3, -1.e+3 }) // F
 {
   switch(era_)
   {
+    case kEra_2016:
+    {
+// CV: use original lepton pT instead of mixing lepton pT and cone_pT, as discussed on slide 2 of
+//     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
+      min_cone_pt_ = -1.e+3;
+      min_lepton_pt_ = 10.;
+      binning_mvaTTH_ = { 0.75 };
+      min_jetPtRatio_ = { 0.30, -1.e+3 };
+      min_segmentCompatibility_ = { -1.e+3, -1.e+3 }; // F
+      max_jetBtagCSV_ = { BtagWP_CSV_2016.at(BtagWP::kLoose), BtagWP_CSV_2016.at(BtagWP::kMedium) };
+      break;
+    }
     case kEra_2017:
     {
+      min_cone_pt_ = 10.; // F
+      min_lepton_pt_ = 5.; // L
+      binning_mvaTTH_ = { 0.90 }; // F; Table 6 in AN2017_029_v5
+      min_jetPtRatio_ = { 0.60, -1.e+3 }; // F; [*]
+      min_segmentCompatibility_ = { 0.3, -1.e+3 }; // F
       max_jetBtagCSV_ = { 0.07, BtagWP_deepCSV_2017.at(BtagWP::kMedium) };  // F; [*]
       break;
     }
+    case kEra_2018:
+    {
+      throw cmsException(this) << "Implement me!";
+    }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
+  assert(min_lepton_pt_ > 0.);
   assert(binning_mvaTTH_.size() == 1);
   assert(min_jetPtRatio_.size() == binning_mvaTTH_.size() + 1);
   assert(min_segmentCompatibility_.size() == binning_mvaTTH_.size() + 1);

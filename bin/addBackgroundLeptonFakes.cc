@@ -90,6 +90,8 @@ int main(int argc, char* argv[])
   std::string processLeptonFakes = cfgAddBackgroundLeptonFakes.getParameter<std::string>("processLeptonFakes");
   vstring processesToSubtract = cfgAddBackgroundLeptonFakes.getParameter<vstring>("processesToSubtract");
 
+  bool disable_makeBinContentsPositive_forTailFit = cfgAddBackgroundLeptonFakes.getParameter<bool>("disable_makeBinContentsPositive_forTailFit");
+
   vstring central_or_shifts = cfgAddBackgroundLeptonFakes.getParameter<vstring>("sysShifts");
   bool contains_central_value = false;
   for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
@@ -189,7 +191,9 @@ int main(int argc, char* argv[])
 	    if ( verbosity ) {
 	      std::cout << " integral(Fakes) = " << histogramLeptonFakes->Integral() << std::endl;
 	    }
-	    makeBinContentsPositive(histogramLeptonFakes, verbosity);	  
+
+            if(!disable_makeBinContentsPositive_forTailFit){ makeBinContentsPositive(histogramLeptonFakes, verbosity); }	  
+
           }
 	}
       }

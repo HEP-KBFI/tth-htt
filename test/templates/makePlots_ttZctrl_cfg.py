@@ -1,30 +1,11 @@
 import FWCore.ParameterSet.Config as cms
 
-import os
-
 from tthAnalysis.HiggsToTauTau.configs.makePlots_cfi import process
 
 process.makePlots.pluginType = cms.string("Plotter_ttH")
 process.makePlots.applyRebinning = cms.bool(False)
 process.makePlots.apply_automatic_rebinning = cms.bool(False)
 process.makePlots.applyAutoBlinding = cms.bool(False)
-
-process.makePlots.processesBackground = cms.vstring(
-    "TTW",
-    "signal",
-    "EWK",
-    "Rares",
-    "conversions",
-    "fakes_data",
-)
-process.makePlots.processSignal = cms.string("TTZ")
-
-process.makePlots.categories = cms.VPSet(
-    cms.PSet(
-        name = cms.string("ttZctrl_2lepton"),
-        label = cms.string("t#bar{t}Z control region"),
-    )
-)
 
 process.makePlots.distributions.extend([
     cms.PSet(

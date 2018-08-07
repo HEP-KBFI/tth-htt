@@ -3,7 +3,7 @@ import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_WZctrl import analyzeConfig_WZctrl
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
-from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_WZctrl.py -v 2017Dec13 -e 2017
@@ -15,7 +15,6 @@ systematics.full = systematics.an_common
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp("dR03mvaLoose")
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_rle_select()
@@ -38,7 +37,6 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
-tau_id_wp         = args.tau_id_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 rle_select        = os.path.expanduser(args.rle_select)
@@ -52,16 +50,45 @@ for systematic_label in systematics_label:
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
 do_sync = mode.startswith('sync')
+lumi = get_lumi(era)
 
-if era == "2017":
-  if mode == 'default':
+if mode == 'default':
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
+  elif era == "2017":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  elif mode == 'sync':
-    if use_nonnominal:
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
+elif mode == 'sync':
+  if use_nonnominal:
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
+    elif era == "2017":
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
     else:
+      raise ValueError("Invalid era: %s" % era)
+  else:
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync_nom import samples_2016 as samples
+    elif era == "2017":
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
-  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync_nom import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
+else:
+  raise ValueError("Invalid mode: %s" % mode)
+
+if era == "2016":
+  hadTauVeto_selection = "dR03mvaMedium"
+elif era == "2017":
+  hadTauVeto_selection = "dR03mvaLoose"
+elif era == "2018":
+  pass
 else:
   raise ValueError("Invalid era: %s" % era)
 
@@ -103,13 +130,13 @@ if __name__ == '__main__':
     num_parallel_jobs                     = num_parallel_jobs,
     executable_addBackgrounds             = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
-    histograms_to_fit                     = [
-      "EventCounter",
-      "numJets",
-      "mLL",
-      "mT",
-      "mvaDiscr_3l"
-    ],
+    histograms_to_fit                     = {
+      "EventCounter" : {},
+      "numJets"      : {},
+      "mLL"          : {},
+      "mT"           : {},
+      "mvaDiscr_3l"  : {},
+    },
     select_rle_output  = True,
     hlt_filter         = hlt_filter,
     dry_run            = dry_run,

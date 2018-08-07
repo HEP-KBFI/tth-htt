@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronSelectorFakeable
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException(), assert()
 
 RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
@@ -11,37 +11,65 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , debug_(debug)
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
-  , min_cone_pt_(10.) // F
-  , min_lepton_pt_(7.) // L
+  , min_cone_pt_(-1.e+3)
+  , min_lepton_pt_(-1.e+3)
   , max_absEta_(2.5) // L
   , max_dxy_(0.05) // L
   , max_dz_(0.1) // L
   , max_relIso_(0.4) // L
   , max_sip3d_(8.) // L
-  , binning_absEta_({ 1.479 }) // F; [*]
-  , min_pt_trig_(-1.) // LFR sync; used to be 30 GeV Lines:237-240 in AN_2017_029_v5
-  , max_sigmaEtaEta_trig_({ 0.011, 0.030 }) // F; [*]
-  , max_HoE_trig_({ 0.10, 0.10 }) // F; [*]
-  , max_deltaEta_trig_({ +1.e+3, +1.e+3 }) // F; [*]
-  , max_deltaPhi_trig_({ +1.e+3, +1.e+3 }) // F; [*]
-  , min_OoEminusOoP_trig_(-0.04) // F; [*]
-  , max_OoEminusOoP_trig_({ +1.e+3, +1.e+3 }) // F; [*]
-  , binning_mvaTTH_({ 0.90 }) // F; Table 7 in AN2017_029_v5
-  , min_jetPtRatio_({ 0.60, -1.e+3 }) // F; [*]
-  , min_mvaIDraw_({ 0.50, -1.e+3 }) // F; [*]
+  , min_OoEminusOoP_trig_(-1.e+3)
   , apply_conversionVeto_(true) // F (after Giovanni sync)
   , max_nLostHits_(0) // F
 {
   switch(era_)
   {
+    case kEra_2016:
+    {
+// CV: use original lepton pT instead of mixing lepton pT and cone_pT, as discussed on slide 2 of
+//     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
+      min_cone_pt_ = -1.e+3;
+      min_lepton_pt_ = 10.;
+      binning_absEta_ = { 0.8, 1.479 };
+      min_pt_trig_ = 30.;
+      max_sigmaEtaEta_trig_ = { 0.011, 0.011, 0.030 };
+      max_HoE_trig_ = { 0.10, 0.10, 0.07 };
+      max_deltaEta_trig_ = { 0.01, 0.01, 0.008 };
+      max_deltaPhi_trig_ = { 0.04, 0.04, 0.07 };
+      min_OoEminusOoP_trig_ = -0.05;
+      max_OoEminusOoP_trig_ = { 0.010, 0.010, 0.005 };
+      binning_mvaTTH_ = { 0.75 };
+      min_jetPtRatio_ = { 0.30, -1.e+3 };
+      min_mvaIDraw_ = { -1.e+3, -1.e+3 };
+      max_jetBtagCSV_ = { BtagWP_CSV_2016.at(BtagWP::kLoose), BtagWP_CSV_2016.at(BtagWP::kMedium) };
+      break;
+    }
     case kEra_2017:
     {
+      min_cone_pt_ = 10.; // F
+      min_lepton_pt_ = 7.; // L
+      binning_absEta_ = { 1.479 }; // F; [*]
+      min_pt_trig_ = -1.; // LFR sync; used to be 30 GeV Lines:237-240 in AN_2017_029_v5
+      max_sigmaEtaEta_trig_ = { 0.011, 0.030 }; // F; [*]
+      max_HoE_trig_ = { 0.10, 0.10 }; // F; [*]
+      max_deltaEta_trig_ = { +1.e+3, +1.e+3 }; // F; [*]
+      max_deltaPhi_trig_ = { +1.e+3, +1.e+3 }; // F; [*]
+      min_OoEminusOoP_trig_ = -0.04; // F; [*]
+      max_OoEminusOoP_trig_ = { +1.e+3, +1.e+3 }; // F; [*]
+      binning_mvaTTH_ = { 0.90 }; // F; Table 7 in AN2017_029_v5
+      min_jetPtRatio_ = { 0.60, -1.e+3 }; // F; [*]
+      min_mvaIDraw_ = { 0.50, -1.e+3 }; // F; [*]
       max_jetBtagCSV_ = { 0.07, BtagWP_deepCSV_2017.at(BtagWP::kMedium) }; // F; [*]
       break;
     }
+    case kEra_2018:
+    {
+      throw cmsException(this) << "Implement me!";
+    }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
-  assert(binning_absEta_.size() == 1);
+  assert(min_lepton_pt_ > 0.);
+  assert(binning_absEta_.size() > 0);
   assert(max_sigmaEtaEta_trig_.size() == binning_absEta_.size() + 1);
   assert(max_HoE_trig_.size() == binning_absEta_.size() + 1);
   assert(max_deltaEta_trig_.size() == binning_absEta_.size() + 1);
@@ -200,7 +228,17 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  if(electron.cone_pt() > min_pt_trig_ && apply_offline_e_trigger_cuts_)
+  double pt = -1.e+3;
+  switch(era_)
+  {
+    case kEra_2016: pt = electron.pt();      break;
+    case kEra_2017: pt = electron.cone_pt(); break;
+    case kEra_2018: throw cmsException(this, __func__, __LINE__) << "Implement me!";
+    default: throw cmsException(this, __func__, __LINE__) << "Invalid era = " << era_;
+  }
+  assert(pt > 0.);
+
+  if(pt > min_pt_trig_ && apply_offline_e_trigger_cuts_)
   {
     std::size_t idxBin_absEta = binning_absEta_.size();
     for(std::size_t binning_absEta_idx = 0; binning_absEta_idx < binning_absEta_.size(); ++binning_absEta_idx)
@@ -229,7 +267,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
       return false;
     }
 
-    if(std::fabs(electron.deltaEta()) > max_deltaEta_trig_[idxBin_absEta])
+    if(std::fabs(electron.deltaEta()) > max_deltaEta_trig_[idxBin_absEta]) // why no abs in 2016?
     {
       if(debug_)
       {
@@ -238,7 +276,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
       return false;
     }
 
-    if(std::fabs(electron.deltaPhi()) > max_deltaPhi_trig_[idxBin_absEta])
+    if(std::fabs(electron.deltaPhi()) > max_deltaPhi_trig_[idxBin_absEta]) // why no abs in 2016?
     {
       if(debug_)
       {

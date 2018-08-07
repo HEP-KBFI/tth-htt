@@ -3,7 +3,7 @@
 RecoElectron::RecoElectron(const RecoLepton & lepton,
                            Double_t eCorr,
                            Double_t mvaRaw_POG,
-			   Bool_t mvaID_POG,
+                           Bool_t mvaID_POG,
                            Double_t sigmaEtaEta,
                            Double_t HoE,
                            Double_t deltaEta,
