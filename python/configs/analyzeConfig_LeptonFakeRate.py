@@ -673,8 +673,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
       # Create run_postFit.sh script from the template
       combine_output_dir = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output')
-
-      postfit_template_file = os.path.join(jinja_template_dir, 'run_postFit.sh.template')
+      if self.use_QCD_fromMC:
+        postfit_template_file = os.path.join(jinja_template_dir, 'run_postFit_fakes_from_mc.sh.template')
+      else:
+        postfit_template_file = os.path.join(jinja_template_dir, 'run_postFit_fakes_from_data.sh.template')
       postfit_template = open(postfit_template_file, 'r').read()
       for lepton in ['electron', 'muon']:
         for selection in ['fakeable', 'tight']:
