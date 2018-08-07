@@ -1,40 +1,40 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import recommendedMEtFilters
-from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_2017_cfi import EvtYieldHistManager_2017
+from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
+from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_cfi import *
 
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring(''),
+    fileNames = cms.vstring(),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
 
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('analyze_0l_2tau.root')
+    fileName = cms.string('')
 )
 
 process.analyze_0l_2tau = cms.PSet(
     treeName = cms.string('Events'),
 
-    process = cms.string('ttH'),
+    process = cms.string(''),
 
-    histogramDir = cms.string('0l_2tau_OS_Tight'),
+    histogramDir = cms.string(''),
 
-    era = cms.string('2017'),
+    era = cms.string(''),
 
-    triggers_2tau = cms.vstring(""),
+    triggers_2tau = cms.vstring(),
     use_triggers_2tau = cms.bool(True),
 
-    hadTauSelection = cms.string('Tight|dR03mvaTight'),
-    hadTauChargeSelection = cms.string('OS'),
+    hadTauSelection = cms.string(''),
+    hadTauChargeSelection = cms.string(''),
     apply_hadTauGenMatching = cms.bool(False),
 
-    applyFakeRateWeights = cms.string("disabled"), # either "disabled", or "2tau"
+    applyFakeRateWeights = cms.string(""),
     hadTauFakeRateWeight = cms.PSet(
-        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"),
+        inputFileName = cms.string(""),
         lead = cms.PSet(
             absEtaBins = cms.vdouble(-1., 1.479, 9.9),
             graphName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"),
@@ -50,17 +50,18 @@ process.analyze_0l_2tau = cms.PSet(
             applyFitFunction = cms.bool(True)
         )
     ),
+    triggerSF_2tau = cms.PSet(),
 
     isMC = cms.bool(False),
-    central_or_shift = cms.string('central'),
+    central_or_shift = cms.string(''),
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_hlt_filter = cms.bool(False),
     apply_met_filters = cms.bool(True),
-    cfgMEtFilter = recommendedMEtFilters,
+    cfgMEtFilter = cms.PSet(),
 
     fillGenEvtHistograms = cms.bool(False),
-    cfgEvtYieldHistManager = EvtYieldHistManager_2017,
+    cfgEvtYieldHistManager = cms.PSet(),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),

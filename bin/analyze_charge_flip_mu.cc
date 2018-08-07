@@ -53,7 +53,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBTagWeight_option, isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
-#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface.h
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2016.h"
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2017.h"
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2018.h"
 #include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // getLeptonGenMatch_definitions_1lepton, getLeptonGenMatch_string, getLeptonGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
@@ -105,10 +107,7 @@ int main(int argc, char* argv[])
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
-  int era = -1;
-  if ( era_string == "2017" ) era = kEra_2017;
-  else throw cms::Exception("analyze_charge_flip_mu") 
-    << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
+  const int era = get_era(era_string);
 
   std::string histogramDir = "charge_flip";
 
@@ -166,7 +165,14 @@ int main(int argc, char* argv[])
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", "dR03mvaLoose");
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
-  Data_to_MC_CorrectionInterface* dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface(cfg_dataToMCcorrectionInterface);
+  Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
+  switch(era)
+  {
+    case kEra_2016: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2016(cfg_dataToMCcorrectionInterface); break;
+    case kEra_2017: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2017(cfg_dataToMCcorrectionInterface); break;
+    case kEra_2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
+    default: throw cmsException("analyze_charge_flip_mu", __LINE__) << "Invalid era = " << era;
+  }
 
   bool fillGenEvtHistograms = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
 
@@ -532,6 +538,12 @@ int main(int argc, char* argv[])
     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
       Form("charge_flip_%s/sel/lheInfo", charge_and_leptonSelectionSS.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
+
+    if(eventWeightManager)
+    {
+      genEvtHistManager_beforeCuts->bookHistograms(fs, eventWeightManager);
+      genEvtHistManager_afterCuts->bookHistograms(fs, eventWeightManager);
+    }
   }
 
   int analyzedEntries = 0;
@@ -600,6 +612,10 @@ int main(int argc, char* argv[])
       evtWeight_inclusive *= eventInfo.pileupWeight;
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      if(eventWeightManager)
+      {
+        genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+      }
     }
 
     bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu);
@@ -1166,6 +1182,10 @@ int main(int argc, char* argv[])
     if ( isMC ) {
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
+      if(eventWeightManager)
+      {
+        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+      }
     }
     
     if(isCharge_OS == true && central_or_shift == "central"){

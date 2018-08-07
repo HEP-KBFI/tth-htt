@@ -78,7 +78,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow2d
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L, getWeight_3L
-#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2016.h"
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2017.h"
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2018.h"
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTH2, getSF_from_TH2
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
@@ -161,10 +163,7 @@ int main(int argc, char* argv[])
   bool isSignal = ( process_string == "signal" ) ? true : false;
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
-  int era = -1;
-  if      ( era_string == "2017" ) era = kEra_2017;
-  else throw cms::Exception("analyze_hadTopTagger")
-    << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
+  const int era = get_era(era_string);
 
   // read leptons and hadronic taus to do cleaning
   std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection").data();

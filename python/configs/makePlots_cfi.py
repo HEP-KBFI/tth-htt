@@ -7,6 +7,7 @@ process.fwliteInput = cms.PSet(
 )
 
 process.makePlots = cms.PSet(
+    pluginType = cms.string("Plotter_ttH"),
 
     applyRebinning = cms.bool(True),
     apply_fixed_rebinning = cms.int32(2),
@@ -15,25 +16,9 @@ process.makePlots = cms.PSet(
     applyAutoBlinding = cms.bool(True),
     divideByBinWidth = cms.bool(False),
     processData = cms.string("data_obs"),
-    processesBackground = cms.vstring(
-        ##"TT",
-        "TTW",
-        "TTWW",
-        "TTZ",
-        "EWK",
-        "Rares",
-        "conversions",
-        "fakes_data"
-    ),
-    processSignal = cms.string("signal"),
-
-    categories = cms.VPSet(
-        cms.PSet(
-            name = cms.string("2lss_1tau_SS_Tight"),
-            label = cms.string("2lss_1tau")
-        )
-    ),
-
+    processesBackground = cms.vstring(),
+    processSignal = cms.string(""),
+    categories = cms.VPSet(),
     distributions = cms.VPSet(
         cms.PSet(
             histogramName = cms.string("sel/evt/$PROCESS/numJets"),
@@ -80,7 +65,9 @@ process.makePlots = cms.PSet(
             Rares = cms.string("1.0 +/- 0.20"),
             conversions = cms.string("1.0 +/- 0.20"),
             fakes_data = cms.string("1.0 +/- 0.20"),
+            flips_data = cms.string("1.0 +/- 0.20"),
             VH = cms.string("1.0 +/- 0.20"),
+            WZ = cms.string("1.0 +/- 0.20"),
         ),
         shape = cms.PSet(
             CMS_ttHl_btag_HF = cms.string("0.00 +/- 1.00"),
@@ -97,7 +84,7 @@ process.makePlots = cms.PSet(
     showUncertainty = cms.bool(False),
 
     labelOnTop = cms.string("CMS Preliminary; ttH, H #rightarrow #tau#tau; %1.1f fb^{-1} at #sqrt{s} = 13 TeV"),
-    intLumiData = cms.double(41.5), # in units of fb^-1
+    intLumiData = cms.double(0.), # in units of fb^-1
 
-    outputFileName = cms.string("plots/makePlots.png")
+    outputFileName = cms.string("")
 )

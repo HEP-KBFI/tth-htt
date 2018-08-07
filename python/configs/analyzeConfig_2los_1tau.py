@@ -95,6 +95,9 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     self.hadTau_selection_part2 = hadTau_selection
     self.applyFakeRateWeights = applyFakeRateWeights
     run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
+    if self.era != '2017':
+      logging.warning('mcClosure for lepton FR not possible for era %s' % self.era)
+      run_mcClosure = False
     if run_mcClosure:
       # Run MC closure jobs only if the analysis is run w/ (at least some) systematic uncertainties
       #self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_all" ]) #TODO
@@ -249,6 +252,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     lines.append("    label = cms.string('%s')" % self.channel)
     lines.append("  )")
     lines.append(")")
+    lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
     create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
 
   def addToMakefile_backgrounds_from_data(self, lines_makefile):
@@ -757,7 +761,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
         'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
         'histogramDir' : self.histogramDir_prep_dcard,
-        'label' : None,
+        'label' : "2lOS+2#tau_{h}",
         'make_plots_backgrounds' : self.make_plots_backgrounds
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])

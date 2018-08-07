@@ -10,19 +10,17 @@ process.fwliteInput = cms.PSet(
 )
 
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('addMEM_2lss_1tau.root')
+    fileName = cms.string('')
 )
 
 process.addMEM_2lss_1tau = cms.PSet(
     treeName = cms.string('Events'),
 
-    era = cms.string('2017'),
-
-    leptonSelection = cms.string('Fakeable'),
-
-    hadTauSelection = cms.string('Tight|dR03mvaMedium'),
-
+    era = cms.string(''),
     isMC = cms.bool(True),
+
+    leptonSelection = cms.string(''),
+    hadTauSelection = cms.string(''),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
@@ -31,15 +29,22 @@ process.addMEM_2lss_1tau = cms.PSet(
     branchName_met = cms.string('MET'),
 
     copy_all_branches = cms.bool(True),
-
     copy_histograms = cms.vstring(
         "Count",
-        "CountFullWeighted",
-        "CountWeighted",
         "CountPosWeight",
         "CountNegWeight",
+        "CountWeighted",
+        "CountWeightedNoPU",
+        "CountFullWeighted",
+        "CountFullWeightedNoPU",
         "CountWeightedLHEWeightScale",
+        "CountWeightedLHEWeightScaleNoPU",
+        "CountFullWeightedLHEWeightScale",
+        "CountFullWeightedLHEWeightScaleNoPU",
         "CountWeightedLHEWeightPdf",
+        "CountWeightedLHEWeightPdfNoPU",
+        "CountFullWeightedLHEWeightPdf",
+        "CountFullWeightedLHEWeightPdfNoPU",
     ),
 
     selEventsFileName_input = cms.string(''),
@@ -47,9 +52,7 @@ process.addMEM_2lss_1tau = cms.PSet(
     readGenObjects = cms.bool(True),
     isForBDTtraining = cms.bool(False),
 
-    central_or_shift = cms.vstring(
-        "central",
-    ),
+    central_or_shift = cms.vstring(),
     useNonNominal = cms.bool(False),
     dryRun = cms.bool(False),
 )

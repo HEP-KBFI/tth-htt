@@ -201,7 +201,9 @@ main(int argc,
   double minPt_mu  = -1.;
   switch(era)
   {
+    case kEra_2016: minPt_ele = 23.; minPt_mu = 18.; break;
     case kEra_2017: minPt_ele = 23.; minPt_mu = 18.; break;
+    case kEra_2018: throw cmsException("produceNtuple", __LINE__) << "Implement me!";
     default:        throw cmsException("produceNtuple", __LINE__) << "Unsupported era = " << era;
   }
 

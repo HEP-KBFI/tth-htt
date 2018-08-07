@@ -3,7 +3,7 @@ import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_LeptonFakeRate import analyzeConfig_LeptonFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
-from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_LeptonFakeRate.py -v 2017Dec13 -e 2017
@@ -19,6 +19,7 @@ systematics.full       = systematics.an_leptonFR
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
+parser.add_lep_mva_wp()
 parser.add_files_per_job()
 parser.add_use_home()
 args = parser.parse_args()
@@ -38,6 +39,7 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+lep_mva_wp        = args.lep_mva_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 
@@ -47,24 +49,34 @@ for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
+lumi = get_lumi(era)
 
-if era == "2017":
-  if mode == 'default':
+if mode == 'default':
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
+  elif era == "2017":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  elif mode == 'sync':
+  elif era == "2018":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
+elif mode == 'sync':
+  if era == "2016":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_sync import samples_2017 as samples
+  elif era == "2017":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_sync import samples_2017 as samples
+  elif era == "2018":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_sync import samples_2017 as samples
   else:
-    raise ValueError('Invalid mode: %s' % mode)
-  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
+    raise ValueError("Invalid era: %s" % era)
 else:
-  raise ValueError("Invalid era: %s" % era)
+  raise ValueError('Invalid mode: %s' % mode)
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "1mu", "2e", "2mu" ]
-  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run', '/DoubleEG/Run', '/SingleElectron/Run2017B')):
-      # '/SingleElectron/Run2017B' excluded since no useful triggers present in that dataset
+  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):
       sample_info["use_it"] = False
   if sample_info["sample_category"] == "QCD":
     sample_info["use_it"] = True
@@ -72,7 +84,10 @@ for sample_name, sample_info in samples.items():
       sample_info["use_it"] = not qcd_inclusive
     elif sample_info["process_name_specific"] == "QCD_Mu15":
       sample_info["use_it"] = qcd_inclusive
-
+  if era == "2017":
+    if sample_name.startswith(('/DoubleEG/Run', '/SingleElectron/Run2017B')):
+      # '/SingleElectron/Run2017B' excluded since no useful triggers present in that dataset
+      sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -99,6 +114,7 @@ if __name__ == '__main__':
     absEtaBins_mu                            = [ 0., 1.2, 2.4 ],                       ## CERN binning scheme
     ptBins_e                                 = [ 15., 25., 35., 45., 65., 100. ],      ## CERN binning scheme
     ptBins_mu                                = [ 10., 15., 20., 32., 45., 65., 100. ], ## CERN binning scheme
+    lep_mva_wp                               = lep_mva_wp,
     fillGenEvtHistograms                     = False,
     central_or_shifts                        = central_or_shifts,
     numerator_histogram                      = ("mT_fix_L_num",     "m_{T}^{fix,num}"), # or ("pt", "p_{T}"),

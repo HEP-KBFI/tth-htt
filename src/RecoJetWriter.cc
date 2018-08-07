@@ -4,6 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet, GenLepton, GenHadTau, GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kBtag_*, kJet_*
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
 RecoJetWriter::RecoJetWriter(int era,
                              bool isMC)
@@ -28,7 +29,6 @@ RecoJetWriter::RecoJetWriter(int era,
   , max_nJets_(256)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , branchName_btag_(! RecoJet::useDeepCSV ? "CSVV2" : "DeepB")
   , genLeptonWriter_(nullptr)
   , genHadTauWriter_(nullptr)
   , genJetWriter_(nullptr)
@@ -39,6 +39,14 @@ RecoJetWriter::RecoJetWriter(int era,
   , jet_QGDiscr_(nullptr)
   , jet_jetId_(nullptr)
 {
+  switch(era_)
+  {
+    case kEra_2016: branchName_btag_ = "CSVV2"; break;
+    case kEra_2017: branchName_btag_ = "DeepB"; break;
+    case kEra_2018: throw cmsException(this) << "Implement me!";
+    default: throw cmsException(this) << "Invalid era = " << era_;
+  }
+  assert(! branchName_btag_.empty());
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nJets_);
   genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()), max_nJets_);
   genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()), max_nJets_);
@@ -91,11 +99,11 @@ RecoJetWriter::setBranchNames()
   branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
   branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
   branchName_jetId_ = Form("%s_%s", branchName_obj_.data(), "jetId");
-  branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central, RecoJet::useDeepCSV);
+  branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central);
   for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
   {
     branchNames_BtagWeight_systematics_[idxShift] = getBranchName_bTagWeight(
-      branchName_obj_, era_, idxShift, RecoJet::useDeepCSV
+      branchName_obj_, era_, idxShift
     );
   }
 }

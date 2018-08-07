@@ -3,7 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonWriter.h" // RecoLeptonWriter
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2016, kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
 RecoElectronWriter::RecoElectronWriter(int era)
   : RecoElectronWriter(era, "Electron")

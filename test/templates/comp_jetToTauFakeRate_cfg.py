@@ -6,9 +6,7 @@ process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
     fileNames = cms.vstring(),
-    
     maxEvents = cms.int32(-1),
-    
     outputEvery = cms.uint32(100000)
 )
 
@@ -18,33 +16,24 @@ process.fwliteOutput = cms.PSet(
 
 process.comp_jetToTauFakeRate = cms.PSet(
 
-    looseRegion = cms.string("jetToTauFakeRate_OS/denominator/"),
-    tightRegion = cms.string("jetToTauFakeRate_OS/numerator/"),
+    looseRegion = cms.string(""),
+    tightRegion = cms.string(""),
 
-    processData = cms.string("data_obs"),    
-    processesToSubtract = cms.vstring(
-        "TTt",
-        "TTl", 
-        "EWK",
-        "Rares",
-        "TTW",
-        "TTZ",
-        "signal"
-    ),
+    processData = cms.string("data_obs"),
+    processesToSubtract = cms.vstring(),
 
     processMC = cms.string("TTj"),
-    
+
     hadTauSelections = cms.vstring(
-        #"dR03mvaVLoose", # CV: VLoose discriminator applied in denominator; so cannot be used in numerator
-        "dR03mvaLoose", # CV: Loose discriminator applied in denominator, so cannot be used in numerator
+        "dR03mvaLoose",
         "dR03mvaMedium",
         "dR03mvaTight",
         "dR03mvaVTight",
         "dR03mvaVVTight"
     ),
-    
-    absEtaBins = cms.vdouble(-1., 1.479, 9.9),
-    ptBins = cms.vdouble(20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200.),
+
+    absEtaBins = cms.vdouble(),
+    ptBins = cms.vdouble(),
 
     isMC = cms.bool(False),
 
@@ -54,5 +43,5 @@ process.comp_jetToTauFakeRate = cms.PSet(
     xMin = cms.double(0.),
     xMax = cms.double(200.),
 
-    outputFileName = cms.string("plots/comp_jetToTauFakeRate.png")
+    outputFileName = cms.string("")
 )

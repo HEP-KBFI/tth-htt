@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
 #include <TString.h> // Form()
 
@@ -198,38 +198,34 @@ checkOptionValidity(const std::string & central_or_shift,
 std::string
 getBranchName_bTagWeight(const std::string & default_collectionName,
                          int era,
-                         int central_or_shift,
-                         bool useDeepCSV)
+                         int central_or_shift)
 {
   std::map<int, std::string> branchNames_bTagWeight; //TODO make static?
-  if(era == kEra_2017)
+  switch(era)
   {
-    branchNames_bTagWeight[kBtag_central]      = Form(
-      "%s_btagSF_%s_shape", default_collectionName.data(), useDeepCSV ? "deepcsv" : "csvv2"
-    );
-    branchNames_bTagWeight[kBtag_hfUp]         = branchNames_bTagWeight[kBtag_central] + "_up_hf";
-    branchNames_bTagWeight[kBtag_hfDown]       = branchNames_bTagWeight[kBtag_central] + "_down_hf";
-    branchNames_bTagWeight[kBtag_hfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_up_hfstats1";
-    branchNames_bTagWeight[kBtag_hfStats1Down] = branchNames_bTagWeight[kBtag_central] + "_down_hfstats1";
-    branchNames_bTagWeight[kBtag_hfStats2Up]   = branchNames_bTagWeight[kBtag_central] + "_up_hfstats2";
-    branchNames_bTagWeight[kBtag_hfStats2Down] = branchNames_bTagWeight[kBtag_central] + "_down_hfstats2";
-    branchNames_bTagWeight[kBtag_lfUp]         = branchNames_bTagWeight[kBtag_central] + "_up_lf";
-    branchNames_bTagWeight[kBtag_lfDown]       = branchNames_bTagWeight[kBtag_central] + "_down_lf";
-    branchNames_bTagWeight[kBtag_lfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_up_lfstats1";
-    branchNames_bTagWeight[kBtag_lfStats1Down] = branchNames_bTagWeight[kBtag_central] + "_down_lfstats1";
-    branchNames_bTagWeight[kBtag_lfStats2Up]   = branchNames_bTagWeight[kBtag_central] + "_up_lfstats2";
-    branchNames_bTagWeight[kBtag_lfStats2Down] = branchNames_bTagWeight[kBtag_central] + "_down_lfstats2";
-    branchNames_bTagWeight[kBtag_cErr1Up]      = branchNames_bTagWeight[kBtag_central] + "_up_cferr1";
-    branchNames_bTagWeight[kBtag_cErr1Down]    = branchNames_bTagWeight[kBtag_central] + "_down_cferr1";
-    branchNames_bTagWeight[kBtag_cErr2Up]      = branchNames_bTagWeight[kBtag_central] + "_up_cferr2";
-    branchNames_bTagWeight[kBtag_cErr2Down]    = branchNames_bTagWeight[kBtag_central] + "_down_cferr2";
-    branchNames_bTagWeight[kBtag_jesUp]        = branchNames_bTagWeight[kBtag_central] + "_up_jes";
-    branchNames_bTagWeight[kBtag_jesDown]      = branchNames_bTagWeight[kBtag_central] + "_down_jes";
+    case kEra_2016: branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_csvv2_shape", default_collectionName.data());   break;
+    case kEra_2017: branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_deepcsv_shape", default_collectionName.data()); break;
+    case kEra_2018: throw cmsException(__func__, __LINE__) << "Implement me!";
+    default: throw cmsException(__func__, __LINE__) << "Invalid era = " << era;
   }
-  else
-  {
-    throw cmsException(__func__, __LINE__) << "Invalid era = " << era;
-  }
+  branchNames_bTagWeight[kBtag_hfUp]         = branchNames_bTagWeight[kBtag_central] + "_up_hf";
+  branchNames_bTagWeight[kBtag_hfDown]       = branchNames_bTagWeight[kBtag_central] + "_down_hf";
+  branchNames_bTagWeight[kBtag_hfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_up_hfstats1";
+  branchNames_bTagWeight[kBtag_hfStats1Down] = branchNames_bTagWeight[kBtag_central] + "_down_hfstats1";
+  branchNames_bTagWeight[kBtag_hfStats2Up]   = branchNames_bTagWeight[kBtag_central] + "_up_hfstats2";
+  branchNames_bTagWeight[kBtag_hfStats2Down] = branchNames_bTagWeight[kBtag_central] + "_down_hfstats2";
+  branchNames_bTagWeight[kBtag_lfUp]         = branchNames_bTagWeight[kBtag_central] + "_up_lf";
+  branchNames_bTagWeight[kBtag_lfDown]       = branchNames_bTagWeight[kBtag_central] + "_down_lf";
+  branchNames_bTagWeight[kBtag_lfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_up_lfstats1";
+  branchNames_bTagWeight[kBtag_lfStats1Down] = branchNames_bTagWeight[kBtag_central] + "_down_lfstats1";
+  branchNames_bTagWeight[kBtag_lfStats2Up]   = branchNames_bTagWeight[kBtag_central] + "_up_lfstats2";
+  branchNames_bTagWeight[kBtag_lfStats2Down] = branchNames_bTagWeight[kBtag_central] + "_down_lfstats2";
+  branchNames_bTagWeight[kBtag_cErr1Up]      = branchNames_bTagWeight[kBtag_central] + "_up_cferr1";
+  branchNames_bTagWeight[kBtag_cErr1Down]    = branchNames_bTagWeight[kBtag_central] + "_down_cferr1";
+  branchNames_bTagWeight[kBtag_cErr2Up]      = branchNames_bTagWeight[kBtag_central] + "_up_cferr2";
+  branchNames_bTagWeight[kBtag_cErr2Down]    = branchNames_bTagWeight[kBtag_central] + "_down_cferr2";
+  branchNames_bTagWeight[kBtag_jesUp]        = branchNames_bTagWeight[kBtag_central] + "_up_jes";
+  branchNames_bTagWeight[kBtag_jesDown]      = branchNames_bTagWeight[kBtag_central] + "_down_jes";
   assert(branchNames_bTagWeight.count(central_or_shift));
   return branchNames_bTagWeight.at(central_or_shift);
 }
@@ -241,7 +237,7 @@ getBranchName_jetPtMass(const std::string & default_collectionName,
                         bool isPt)
 {
   std::map<int, std::string> branchNames_sys; // make static?
-  if(era == kEra_2017)
+  if(era == kEra_2016 || era == kEra_2017)
   {
     branchNames_sys[kJet_central_nonNominal] = Form(
       "%s_%s", default_collectionName.data(), isPt ? "pt" : "mass"
@@ -251,6 +247,10 @@ getBranchName_jetPtMass(const std::string & default_collectionName,
     branchNames_sys[kJet_jesDown] = branchNames_sys[kJet_central_nonNominal] + "_jesTotalDown";
     branchNames_sys[kJet_jerUp]   = branchNames_sys[kJet_central_nonNominal] + "_jerUp";
     branchNames_sys[kJet_jerDown] = branchNames_sys[kJet_central_nonNominal] + "_jerDown";
+  }
+  else if(era == kEra_2018)
+  {
+    throw cmsException(__func__, __LINE__) << "Implement me!";
   }
   else
   {
@@ -267,7 +267,7 @@ getBranchName_MEt(const std::string & default_branchName,
                   bool isPt)
 {
   std::map<int, std::string> branchNames_sys; // make static?
-  if(era == kEra_2017)
+  if(era == kEra_2016 || era == kEra_2017)
   {
     branchNames_sys[kMEt_central_nonNominal] = Form(
       "%s_%s", default_branchName.data(), isPt ? "pt" : "phi"
@@ -279,6 +279,10 @@ getBranchName_MEt(const std::string & default_branchName,
     branchNames_sys[kMEt_shifted_JetResDown]        = branchNames_sys[kMEt_central_nonNominal] + "_jerDown";
     branchNames_sys[kMEt_shifted_UnclusteredEnUp]   = branchNames_sys[kMEt_central_nonNominal] + "_unclustEnUp";
     branchNames_sys[kMEt_shifted_UnclusteredEnDown] = branchNames_sys[kMEt_central_nonNominal] + "_unclustEnDown";
+  }
+  else if(era == kEra_2018)
+  {
+    throw cmsException(__func__, __LINE__) << "Implement me!";
   }
   else
   {

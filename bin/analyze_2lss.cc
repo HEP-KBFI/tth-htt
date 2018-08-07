@@ -80,7 +80,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
-#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2016.h"
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2017.h"
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2018.h"
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTH2, getSF_from_TH2
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
@@ -151,10 +153,7 @@ int main(int argc, char* argv[])
   bool isMCClosure_m = histogramDir.find("mcClosure_m") != std::string::npos;
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
-  int era = -1;
-  if      ( era_string == "2017" ) era = kEra_2017;
-  else throw cms::Exception("analyze_2lss")
-    << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
+  const int era = get_era(era_string);
 
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e, "triggers_1e");
@@ -261,7 +260,14 @@ int main(int argc, char* argv[])
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
-  Data_to_MC_CorrectionInterface* dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface(cfg_dataToMCcorrectionInterface);
+  Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
+  switch(era)
+  {
+    case kEra_2016: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2016(cfg_dataToMCcorrectionInterface); break;
+    case kEra_2017: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2017(cfg_dataToMCcorrectionInterface); break;
+    case kEra_2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
+    default: throw cmsException("analyze_2lss", __LINE__) << "Invalid era = " << era;
+  }
 
   std::string applyFakeRateWeights_string = cfg_analyze.getParameter<std::string>("applyFakeRateWeights");
   int applyFakeRateWeights = -1;
@@ -399,7 +405,7 @@ int main(int argc, char* argv[])
   inputTree -> registerReader(metReader);
 
   MEtFilter metFilters;
-  MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilters);
+  MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilters, era);
   inputTree -> registerReader(metFilterReader);
 
 //--- declare generator level information
@@ -713,6 +719,12 @@ int main(int argc, char* argv[])
     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string,
       Form("%s/sel/lheInfo", histogramDir.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
+
+    if(eventWeightManager)
+    {
+      genEvtHistManager_beforeCuts->bookHistograms(fs, eventWeightManager);
+      genEvtHistManager_afterCuts->bookHistograms(fs, eventWeightManager);
+    }
   }
 
   std::cout << "Book BDT filling" << std::endl;
@@ -861,6 +873,10 @@ int main(int argc, char* argv[])
       evtWeight_inclusive *= eventInfo.pileupWeight;
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      if(eventWeightManager)
+      {
+        genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+      }
     }
 
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
@@ -1369,10 +1385,8 @@ int main(int argc, char* argv[])
     cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
     cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
 
-    double minPt_lead = -1.;
-    if ( era == kEra_2017 ) minPt_lead = 25.; // CV: increase minimum lepton pT cut to 25 GeV to keep-up with higher trigger thresholds in 2016 data
-    else assert(0);
-    double minPt_sublead = 15.;
+    const double minPt_lead = 25.;
+    const double minPt_sublead = 15.;
     // CV: according to Giovanni, the pT cuts should be applied on cone_pt
     //    (combined efficiency of single lepton and double lepton triggers assumed to be high,
     //     even if one or two leptons and fakes and hence cone_pt may be significantly smaller than lepton_pt,
@@ -1551,7 +1565,8 @@ int main(int argc, char* argv[])
 //--- compute integer discriminant based on both BDT outputs,
 //    as defined in Table 16 () of AN-2015/321 (AN-2016/211) for analysis of 2015 (2016) data
     Double_t mvaDiscr_2lss = -1;
-    if ( era == kEra_2017 ) {
+    if(era == kEra_2016 || era == kEra_2017)
+    {
       if      ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV >  +0.4 ) mvaDiscr_2lss = 7.;
       else if ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV >  +0.1 ) mvaDiscr_2lss = 6.;
       else if ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV <= +0.1 ) mvaDiscr_2lss = 5.;
@@ -1778,6 +1793,10 @@ int main(int argc, char* argv[])
     if ( isMC ) {
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
+      if(eventWeightManager)
+      {
+        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+      }
     }
 
     if ( selEventsFile ) {

@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronSelectorTight
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException(), assert()
 
 RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
@@ -11,34 +11,57 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
   , debug_(debug)
-  , min_pt_(7.) // F
+  , min_pt_(-1.e+3)
   , max_absEta_(2.5) // F
   , max_dxy_(0.05) // F
   , max_dz_(0.1) // F
   , max_relIso_(0.4) // F
   , max_sip3d_(8.) // F
-  , binning_absEta_({ 1.479 }) // F
-  , min_pt_trig_(-1.) // Lines:237-240 in AN_2017_029_V5
-  , max_sigmaEtaEta_trig_({ 0.011, 0.030 }) // F
-  , max_HoE_trig_({ 0.10, 0.10 }) // F
-  , max_deltaEta_trig_({ +1.e+3, +1.e+3 }) // F
-  , max_deltaPhi_trig_({ +1.e+3, +1.e+3 }) // F
-  , min_OoEminusOoP_trig_(-0.04) // F
-  , max_OoEminusOoP_trig_({ +1.e+3, +1.e+3 }) // F
+  , min_pt_trig_(-1.e+3)
+  , min_OoEminusOoP_trig_(-1.e+3)
   , apply_conversionVeto_(true) // T
   , max_nLostHits_(0) // F
-  , min_mvaTTH_(0.90) // Table 7 in AN2017_029_v5
 {
   switch(era_)
   {
+    case kEra_2016:
+    {
+      min_pt_ = 10.;
+      binning_absEta_ = { 0.8, 1.479 };
+      min_pt_trig_ = 30.;
+      max_sigmaEtaEta_trig_ = { 0.011, 0.011, 0.030 };
+      max_HoE_trig_ = { 0.10, 0.10, 0.07 };
+      max_deltaEta_trig_ = { 0.01, 0.01, 0.008 };
+      max_deltaPhi_trig_ = { 0.04, 0.04, 0.07 };
+      min_OoEminusOoP_trig_ = -0.05;
+      max_OoEminusOoP_trig_ = { 0.010, 0.010, 0.005 };
+      min_mvaTTH_ = 0.75;
+      max_jetBtagCSV_ = BtagWP_CSV_2016.at(BtagWP::kMedium);
+      break;
+    }
     case kEra_2017:
     {
+      min_pt_ = 7.; // F
+      binning_absEta_ = { 1.479 }; // F
+      min_pt_trig_ = -1.; // Lines:237-240 in AN_2017_029_V5
+      max_sigmaEtaEta_trig_ = { 0.011, 0.030 }; // F
+      max_HoE_trig_ = { 0.10, 0.10 }; // F
+      max_deltaEta_trig_ = { +1.e+3, +1.e+3 }; // F
+      max_deltaPhi_trig_ = { +1.e+3, +1.e+3 }; // F
+      min_OoEminusOoP_trig_ = -0.04; // F
+      max_OoEminusOoP_trig_ = { +1.e+3, +1.e+3 }; // F
+      min_mvaTTH_ = 0.90; // Table 7 in AN2017_029_v5
       max_jetBtagCSV_ = BtagWP_deepCSV_2017.at(BtagWP::kMedium); // F
       break;
     }
+    case kEra_2018:
+    {
+      throw cmsException(this) << "Implement me!";
+    }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
-  assert(binning_absEta_.size() == 1);
+  assert(min_pt_ > 0.);
+  assert(binning_absEta_.size() > 0);
   assert(max_sigmaEtaEta_trig_.size() == binning_absEta_.size() + 1);
   assert(max_HoE_trig_.size() == binning_absEta_.size() + 1);
   assert(max_deltaEta_trig_.size() == binning_absEta_.size() + 1);
@@ -218,7 +241,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
       }
       return false;
     }
-    if(std::fabs(electron.deltaEta()) > max_deltaEta_trig_[idxBin])
+    if(std::fabs(electron.deltaEta()) > max_deltaEta_trig_[idxBin]) // why no abs in 2016?
     {
       if(debug_)
       {
@@ -226,7 +249,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
       }
       return false;
     }
-    if(std::fabs(electron.deltaPhi()) > max_deltaPhi_trig_[idxBin])
+    if(std::fabs(electron.deltaPhi()) > max_deltaPhi_trig_[idxBin]) // why no abs in 2016?
     {
       if(debug_)
       {

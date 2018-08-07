@@ -3,29 +3,29 @@ import FWCore.ParameterSet.Config as cms
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames   = cms.vstring(''),
+    fileNames   = cms.vstring(),
     maxEvents   = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
 
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('produceNtuple.root')
+    fileName = cms.string('')
 )
 
 process.produceNtuple = cms.PSet(
     treeName = cms.string('Events'),
 
-    era = cms.string('2017'),
+    era = cms.string(''),
 
-    leptonSelection = cms.string('Fakeable'),
-    hadTauSelection = cms.string('Fakeable|dR03mvaMedium'),
+    leptonSelection = cms.string(''),
+    hadTauSelection = cms.string(''),
 
-    minNumLeptons             = cms.int32(1),
-    minNumHadTaus             = cms.int32(1),
-    minNumLeptons_and_HadTaus = cms.int32(2),
-    minNumJets                = cms.int32(2),
-    minNumBJets_loose         = cms.int32(2),
-    minNumBJets_medium        = cms.int32(1),
+    minNumLeptons             = cms.int32(-1),
+    minNumHadTaus             = cms.int32(-1),
+    minNumLeptons_and_HadTaus = cms.int32(-1),
+    minNumJets                = cms.int32(-1),
+    minNumBJets_loose         = cms.int32(-1),
+    minNumBJets_medium        = cms.int32(-1),
 
     branchName_electrons  = cms.string('Electron'),
     branchName_muons      = cms.string('Muon'),

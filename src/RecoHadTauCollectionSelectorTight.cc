@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauSelectorTight
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
 RecoHadTauSelectorTight::RecoHadTauSelectorTight(int era,
                                                  int index,
@@ -15,6 +16,13 @@ RecoHadTauSelectorTight::RecoHadTauSelectorTight(int era,
   min_antiElectron_       = -1000;
   min_antiMuon_           = -1000;
   set("dR03mvaLoose");
+  switch(era)
+  {
+    case kEra_2016: set("dR03mvaTight"); break; // or maybe set it to dR03mvaMedium??
+    case kEra_2017: set("dR03mvaLoose"); break;
+    case kEra_2018: throw cmsException(this) << "Implement me!";
+    default: throw cmsException(this) << "Invalid era = " << era;
+  }
 }
 
 void

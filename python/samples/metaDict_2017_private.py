@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-07-18 15:20:59 with the following command:
+# file generated at 2018-07-27 12:54:50 with the following command:
 # find_samples.py -i ../NanoAOD/test/datasets_private_2017.txt -m python/samples/metaDict_2017_private.py -c /hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018May23 -V
 
 meta_dictionary = OD()
@@ -51,7 +51,7 @@ meta_dictionary["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_Fall17/priva
   ("nof_db_events",         200165),
   ("nof_db_files",          12),
   ("fsize_db",              12634080628),
-  ("xsection",              0.952),
+  ("xsection",              2.505),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 12.63GB; nevents: 200.16k; release: 9_4_0; last modified: 2018-05-23 16:16:12"),
@@ -64,7 +64,7 @@ meta_dictionary["/WpWpJJ_EWK_QCD_TuneCP5_13TeV_madgraph_pythia8_Fall17/private/U
   ("nof_db_events",         24750),
   ("nof_db_files",          2),
   ("fsize_db",              1843708097),
-  ("xsection",              0.03711),
+  ("xsection",              0.04932),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.84GB; nevents: 24.75k; release: 9_4_0; last modified: 2018-05-23 16:07:37"),

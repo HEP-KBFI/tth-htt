@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
 from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
@@ -13,7 +13,9 @@ def project(input_file, output_file, binnings):
   if not os.path.isfile(input_file):
     raise RuntimeError('No such file: %s' % input_file)
   root_file = ROOT.TFile.Open(input_file, 'read')
-  assert(root_file)
+  if not root_file:
+    print('Unable to read file %s' % input_file)
+    return False
   events = root_file.Get('Events')
   assert(events)
 
@@ -32,6 +34,7 @@ def project(input_file, output_file, binnings):
 
   out_file.Close()
   root_file.Close()
+  return True
 
 def hadd(input_files, output_file):
   cmd_str = 'hadd -f %s %s' % (output_file, ' '.join(input_files))
@@ -73,6 +76,7 @@ for sample_set_to_stich in samples_to_stitch:
     if sample_name in sample_list:
       base_path = sample_entry['local_paths'][0]['path']
       nof_files = sample_entry['nof_files']
+      blacklist = sample_entry['local_paths'][0]['blacklist']
 
       current_subfolder = os.path.join(output_root_dir, sample_name)
       create_if_not_exists(current_subfolder)
@@ -81,10 +85,13 @@ for sample_set_to_stich in samples_to_stitch:
       final_output_file = os.path.join(output_root_dir, '%s.root' % sample_name)
 
       for idx in range(1, nof_files + 1):
+        if idx in blacklist:
+          continue
         input_file = os.path.join(base_path, '%04d' % (idx // 1000), 'tree_%d.root' % idx)
         output_file = os.path.join(current_subfolder, 'histogram_%d.root' % idx)
-        output_files.append(output_file)
-        project(input_file, output_file, binning)
+        file_exists = project(input_file, output_file, binning)
+        if file_exists:
+          output_files.append(output_file)
 
       hadd(output_files, final_output_file)
 

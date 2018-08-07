@@ -534,6 +534,8 @@ main(int argc,
   const double minRecoPt_global_e  = cfg_analyze.getParameter<double>("minRecoPt_global_e");
   const double minRecoPt_global_mu = cfg_analyze.getParameter<double>("minRecoPt_global_mu");
 
+  const double lep_mva_cut = cfg_analyze.getParameter<double>("lep_mva_cut"); // CV: used for tight lepton selection only
+
   const std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
   const std::string branchName_muons     = cfg_analyze.getParameter<std::string>("branchName_muons");
   const std::string branchName_jets      = cfg_analyze.getParameter<std::string>("branchName_jets");
@@ -629,6 +631,7 @@ main(int argc,
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
+  tightMuonSelector.getSelector().set_min_mvaTTH(lep_mva_cut);
 
   RecoElectronReader * electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
   inputTree->registerReader(electronReader);
@@ -639,6 +642,7 @@ main(int argc,
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
   fakeableElectronSelector.enable_offline_e_trigger_cuts();
   tightElectronSelector.enable_offline_e_trigger_cuts();
+  tightElectronSelector.getSelector().set_min_mvaTTH(lep_mva_cut);
 
   RecoJetReader * jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
@@ -660,7 +664,7 @@ main(int argc,
   
 //--- declare MET filter
   MEtFilter metFilter;
-  MEtFilterReader * metFilterReader = new MEtFilterReader(&metFilter);
+  MEtFilterReader * metFilterReader = new MEtFilterReader(&metFilter, era);
   inputTree->registerReader(metFilterReader);
 
 // --- Setting up the Met Filter Hist Manager ----
@@ -858,6 +862,12 @@ main(int argc,
 
     lheInfoHistManager = new LHEInfoHistManager(getHistManagerCfg("gen_sel/lheInfo"));
     lheInfoHistManager->bookHistograms(fs);
+
+    if(eventWeightManager)
+    {
+      genEvtHistManager_beforeCuts->bookHistograms(fs, eventWeightManager);
+      genEvtHistManager_afterCuts->bookHistograms(fs, eventWeightManager);
+    }
   }
 
 //--- book additional event level histograms
@@ -975,6 +985,10 @@ main(int argc,
       evtWeight_inclusive *= eventInfo.pileupWeight;
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      if(eventWeightManager)
+      {
+        genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+      }
     }
 
 //--- build reco level collections of electrons, muons and hadronic taus;
@@ -1629,6 +1643,10 @@ main(int argc,
     {
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
+      if(eventWeightManager)
+      {
+        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+      }
     }
 
     ++selectedEntries;

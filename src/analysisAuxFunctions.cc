@@ -14,8 +14,13 @@ double
 get_BtagWP(int era,
            BtagWP wp)
 {
-  assert(era == kEra_2017);
-  return RecoJet::useDeepCSV ? BtagWP_deepCSV_2017.at(wp) : BtagWP_CSVv2_2017.at(wp);
+  switch(era)
+  {
+    case kEra_2016: return BtagWP_CSV_2016.at(wp);
+    case kEra_2017: return BtagWP_deepCSV_2017.at(wp);
+    case kEra_2018: throw cmsException(__func__, __LINE__) << "Implement me!";
+    default: throw cmsException(__func__, __LINE__) << "Invalid era = " << era;
+  }
 }
 
 bool
@@ -51,9 +56,17 @@ get_selection(const std::string & selectionString)
 int
 get_era(const std::string & eraString)
 {
-  if(eraString == "2017")
+  if(eraString == "2016")
+  {
+    return kEra_2016;
+  }
+  else if(eraString == "2017")
   {
     return kEra_2017;
+  }
+  else if(eraString == "2018")
+  {
+    return kEra_2018;
   }
   throw cmsException(__func__) << "Invalid Configuration parameter 'era' = " << eraString;
 }

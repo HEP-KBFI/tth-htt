@@ -3,7 +3,7 @@ import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_charge_flip import analyzeConfig_charge_flip
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
-from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_chargeFlip.py -v 2017Dec13 -e 2017
@@ -41,10 +41,14 @@ for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
+lumi = get_lumi(era)
 
-if era == "2017":
+if era == "2016":
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
+elif era == "2017":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
+elif era == "2018":
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
 else:
   raise ValueError("Invalid era: %s" % era)
 
@@ -55,7 +59,7 @@ for sample_name, sample_info in samples.items():
     sample_info["triggers"] = [ "1e", "2e" ]
   if sample_info["process_name_specific"].startswith("DYJetsToLL"):
     sample_info["sample_category"] = "DY"
-  elif sample_info["process_name_specific"].startswith("TTTo") and sample_info["sample_category"] == "TT":
+  elif sample_info["process_name_specific"].startswith(("TTTo", "TTJets")) and sample_info["sample_category"] == "TT":
     sample_info["sample_category"] = "TTbar"
   elif sample_info["process_name_specific"].startswith(("WJetsToLNu", "W1JetsToLNu", "W2JetsToLNu", "W3JetsToLNu", "W4JetsToLNu")):
     sample_info["sample_category"] = "WJets"
@@ -97,7 +101,9 @@ if __name__ == '__main__':
     check_output_files = check_output_files,
     running_method     = running_method,
     num_parallel_jobs  = num_parallel_jobs,
-    histograms_to_fit  = [ "mass_ll" ],
+    histograms_to_fit  = {
+      "mass_ll" : {},
+    },
     select_rle_output  = False,
     dry_run            = dry_run,
     isDebug            = debug,
