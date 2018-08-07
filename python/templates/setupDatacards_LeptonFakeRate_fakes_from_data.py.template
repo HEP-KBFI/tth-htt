@@ -131,7 +131,7 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
 
 ################### Shape systematics #############################
 {% for central_or_shift in central_or_shifts %} ## No shape unc. applied to fakes_data (due to issues in [data - Bg] in tails  of mT_fix_L causing fit failure for some bins)
-cb.cp().AddSyst(cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'process')(channels, bkg_procs, 1.00))   
+cb.cp().AddSyst(cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'process')(channels, bkg_procs_arr, 1.00))   
 {% endfor %}
 
 ##########################################################################

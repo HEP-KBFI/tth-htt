@@ -1,0 +1,199 @@
+#!/bin/bash
+
+EXIT_WHEN_FAIL=false
+VERBOSITY_LEVEL=3
+PARALLEL_JOBS=1
+SIGNAL_RESONANCE=125
+MINIMIZERALGOS="Minuit2,Migrad"
+LUMI="{{ int_lumi_data }}"
+
+# Let's record the paths to the scripts which we're about to run
+POSTFITPLOT="{{ postfit_plot_script }}"
+YIELDTABLE="{{ yieldtable_script }}"
+
+# Path to the new CMSSW area
+NEW_CMSSW_BASE="{{ new_cmssw_base }}"
+NEW_CMSSW_AREA="$NEW_CMSSW_BASE/src/CombineHarvester/ttH_htt_LeptonFakeRate"
+
+echo "Initializing new CMSSW workspace to: '$NEW_CMSSW_BASE/src'"
+cd "$NEW_CMSSW_BASE/src"
+eval $(scramv1 runtime -sh) # same as cmsenv
+echo "Switched to scram architecture: $SCRAM_ARCH"
+echo "New \$CMSSW_BASE = $CMSSW_BASE"
+
+# Read the input datacard directory and output directory
+OUTPUT_DIR="{{ output_dir }}"
+
+echo "Going to the output directory: $OUTPUT_DIR"
+cd $OUTPUT_DIR
+
+echo "Performing fits for {{ l_array }}"
+
+OUTPUT_DIR_JOB="{% if is_num %}{{ numerator_output_dir }}{% else %}{{ denominator_output_dir }}{% endif %}/{{ l_array }}"
+mkdir -p $OUTPUT_DIR_JOB
+
+WSP_PATH="$OUTPUT_DIR_JOB/wsp.root"
+DATACARD_PATH="$OUTPUT_DIR_JOB/datacard.txt"
+
+echo "Making Workspace for $DATACARD_PATH"
+combineTool.py              \
+  -M T2W                    \
+  -o $WSP_PATH              \
+  -i $DATACARD_PATH         \
+  -v $VERBOSITY_LEVEL       \
+  --parallel $PARALLEL_JOBS \
+  &> "$OUTPUT_DIR_JOB/combine.log"
+
+echo "Running MaxLikelihood Fit/FitDiagnostics on {{ l_array }}"
+combineTool.py                            \
+  -M FitDiagnostics                     \
+  -m $SIGNAL_RESONANCE                    \
+  --robustFit 1                           \
+  --setRobustFitAlgo $MINIMIZERALGOS \
+  -d "$DATACARD_PATH"       \
+  --skipBOnlyFit                          \
+{% if l_range %}  --setParameterRanges r={{ l_range }} {% endif %} \
+  --there                                 \
+  -n {{ l_array }}                        \
+  --parallel $PARALLEL_JOBS               \
+  -v $VERBOSITY_LEVEL                     \
+  &> "$OUTPUT_DIR_JOB/combineTool.log"
+
+NAME='{{ l_array }}_mlfit_shapes.root'
+echo "Extracting PostFit shapes from the mlfit: $NAME"
+MLFIT_OUTPUT='fitDiagnostics{{ l_array }}.root'
+PostFitShapesFromWorkspace               \
+  -w $WSP_PATH                           \
+  -d $DATACARD_PATH                      \
+  -o $OUTPUT_DIR_JOB/$NAME               \
+  -f $OUTPUT_DIR_JOB/$MLFIT_OUTPUT:fit_s \
+  -m $SIGNAL_RESONANCE                   \
+  --postfit                              \
+  --sampling                             \
+  --print                                \
+  &> "$OUTPUT_DIR_JOB/PostFitShapesFromWorkspace.log"
+
+MLFIT_FILE="$OUTPUT_DIR_JOB/$NAME"
+
+echo "Making PostFit plots"
+PREFIT_VALUES=""
+POSTFIT_VALUES=""
+
+CHANNEL="e"
+if [ `echo {{ l_array }} | grep -c "mu_" ` -gt 0 ]
+then
+ CHANNEL="mu"
+else
+ CHANNEL="e"
+fi
+
+
+if [ -f "$MLFIT_FILE" ]
+then
+    echo "$MLFIT_FILE exists."
+    PLOT_LABEL={% if is_num %}{{ numerator_plotLabel }}{% else %}{{ denominator_plotLabel }}{% endif %}
+    if [ {{ is_num }} = True ]; then
+        {% for pre_or_post in [ 'prefit', 'postfit' ] %}
+          {% for log_or_linear in [ 'log', 'linear' ] %}
+        python $POSTFITPLOT -i $MLFIT_FILE:"{{ l_sub_dir }}_shapes_{{ pre_or_post }}" \
+          -c $CHANNEL --x-title "$PLOT_LABEL" -l "$LUMI"                                     \
+          {% if log_or_linear == 'log' %}--logy {% endif %}                           \
+          -o "{{ l_array }}_num_{{ pre_or_post }}_{{ log_or_linear }}"                \
+          &> "$OUTPUT_DIR_JOB/plot_shapes_{{ pre_or_post }}_{{ log_or_linear }}.log"
+          {% endfor %}
+        {% endfor %}
+    fi
+    if [ {{ is_num }} = False ]; then  ## MY LINE ENDS
+        {% for pre_or_post in [ 'prefit', 'postfit' ] %}
+          {% for log_or_linear in [ 'log', 'linear' ] %}
+        python $POSTFITPLOT -i $MLFIT_FILE:"{{ l_sub_dir }}_shapes_{{ pre_or_post }}" \
+            -c $CHANNEL --x-title "$PLOT_LABEL" -l "$LUMI"                                     \
+            {% if log_or_linear == 'log' %}--logy {% endif %}                           \
+            -o "{{ l_array }}_den_{{ pre_or_post }}_{{ log_or_linear }}"                \
+            &> "$OUTPUT_DIR_JOB/plot_shapes_{{ pre_or_post }}_{{ log_or_linear }}.log"
+            {% endfor %}
+        {% endfor %}
+    fi  ## MY LINE ENDS
+
+    FIT_RESULTS="$OUTPUT_DIR_JOB/fit_results_{{ l_array }}.txt"
+    python $YIELDTABLE $WSP_PATH              \
+      $OUTPUT_DIR_JOB/$MLFIT_OUTPUT "{{ l_sub_dir }}_shapes" \
+      1> $FIT_RESULTS                                        \
+      2> "${FIT_RESULTS%.*}_errors.log"
+
+    PREFIT_VALUES=`grep "Pre-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
+    POSTFIT_VALUES=`grep "Post-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
+else
+    echo "$MLFIT_FILE does not exist."
+fi
+
+if [ -z "$PREFIT_VALUES" ]; then
+    PREFIT_VALUES="-1 -1"
+fi
+if [ -z "$POSTFIT_VALUES" ]; then
+    POSTFIT_VALUES="-1 -1"
+fi
+echo "{{ lepton_letter }} {% if is_num %}num{% else %}den{% endif %} {{ selection }}"\
+     "{{ l_is_inclusive }} {{ l_eta_low }} {{ l_eta_high }} {{ l_pt_low }} {{ l_pt_high }}"\
+     "$PREFIT_VALUES $POSTFIT_VALUES" > "$OUTPUT_DIR_JOB/fit_results.txt"
+
+echo "Creating impact plots for {{ l_array }}"
+
+# we have to cd there since the ordinary output directory is going to be polluted with root files
+# and AFAICS there is no option to redirect these root files to a desired location other than $PWD
+OUTPUT_DIR_IMPACTS="$OUTPUT_DIR_JOB/impacts"
+mkdir -p $OUTPUT_DIR_IMPACTS
+cd $OUTPUT_DIR_IMPACTS
+
+combineTool.py                            \
+  -M Impacts                              \
+  -d $WSP_PATH                            \
+  -m $SIGNAL_RESONANCE                    \
+  --setRobustFitAlgo $MINIMIZERALGOS      \
+  -n {{ l_array }}                        \
+  --robustFit 1                           \
+  --doInitialFit                          \
+  --parallel $PARALLEL_JOBS               \
+  -v $VERBOSITY_LEVEL                     \
+  &> "$OUTPUT_DIR_JOB/impacts_initialFit.log"
+
+combineTool.py                            \
+  -M Impacts                              \
+  -d $WSP_PATH                            \
+  -m $SIGNAL_RESONANCE                    \
+  --setRobustFitAlgo $MINIMIZERALGOS      \
+  -n {{ l_array }}                        \
+  --robustFit 1                           \
+  --doFits                                \
+  --parallel $PARALLEL_JOBS               \
+  -v $VERBOSITY_LEVEL                     \
+  &> "$OUTPUT_DIR_JOB/impacts_allFits.log"
+
+JSON_PATH="$OUTPUT_DIR_JOB/impacts_{{ l_array }}.json"
+
+combineTool.py                            \
+  -M Impacts                              \
+  -d $WSP_PATH                            \
+  -m $SIGNAL_RESONANCE                    \
+  --robustFit 1                           \
+  --setRobustFitAlgo $MINIMIZERALGOS      \
+  -n {{ l_array }}                        \
+  --parallel $PARALLEL_JOBS               \
+  -o $JSON_PATH                           \
+  &> "$OUTPUT_DIR_JOB/impacts_json.log"
+
+plotImpacts.py  \
+  -i $JSON_PATH \
+  -o impacts    \
+  &> "$OUTPUT_DIR_JOB/impacts_plot.log"
+
+IMPACT_PLOT="$OUTPUT_DIR_JOB/impacts_{{ l_array }}.pdf"
+mv impacts.pdf "$IMPACT_PLOT"
+
+if [ -f "$IMPACT_PLOT" ]; then
+  echo "Created impact plot at $IMPACT_PLOT";
+else
+  echo "Failed to create the impact plot";
+fi
+
+cd $OLDPWD
