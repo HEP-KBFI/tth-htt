@@ -73,7 +73,9 @@ private:
   TH1 * histogram_EventCounter_;
 
   TH1 * histogram_evtWeightManager_1D_;
+  TH1 * histogram_evtWeightManager_1D_counter_;
   TH2 * histogram_evtWeightManager_2D_;
+  TH2 * histogram_evtWeightManager_2D_counter_;
 };
 
 #endif
