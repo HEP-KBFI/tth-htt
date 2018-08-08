@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-08-05 16:48:14 with the following command:
+# file generated at 2018-08-07 23:36:48 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017_post.txt -Z zeroes.txt -z zombies.txt -N samples_2017 -E 2017 -g tthAnalyzeSamples_2017.py -o python/samples -M
 
 samples_2017 = OD()
@@ -17086,6 +17086,98 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
   ]),
 ])
 
+samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "DYJetsToLL_M-50_LO"),
+  ("nof_files",                       98),
+  ("nof_db_files",                    737),
+  ("nof_events",                      {
+    'Count'                                  : [     48141885, ],
+    'CountFullWeighted'                      : [     48102694,     48097991,     48099159, ],
+    'CountWeighted'                          : [     48102694,     48097991,     48099159, ],
+    'CountFullWeightedNoPU'                  : [     48099551, ],
+    'CountWeightedNoPU'                      : [     48099551, ],
+    'CountWeightedLHEWeightScale'            : [     42612532,     48315002,     53381556,     42408502,     48102293,     53163275,     42241331,     47927745,     52984390, ],
+    'CountWeightedLHEWeightScaleNoPU'        : [     42613074,     48312341,     53381506,     42409062,     48099547,     53163244,     42241904,     47925183,     52984384, ],
+    'CountFullWeightedLHEWeightScale'        : [     42612532,     48315002,     53381556,     42408502,     48102293,     53163275,     42241331,     47927745,     52984390, ],
+    'CountFullWeightedLHEWeightScaleNoPU'    : [     42613074,     48312341,     53381506,     42409062,     48099547,     53163244,     42241904,     47925183,     52984384, ],
+  }),
+  ("nof_tree_events",                 48141885),
+  ("nof_db_events",                   48141885),
+  ("fsize_local",                     56845384177), # 56.85GB, avg file size 580.05MB
+  ("fsize_db",                        1951411106522), # 1.95TB, avg file size 2.65GB
+  ("use_it",                          False),
+  ("xsection",                        5765.4),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Aug07_woPresel_nom_all/ntuples/DYJetsToLL_M-50_LO"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10_ext1-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "DYJetsToLL_M-50_LO_ext1"),
+  ("nof_files",                       99),
+  ("nof_db_files",                    674),
+  ("nof_events",                      {
+    'Count'                                  : [     48787900, ],
+    'CountFullWeighted'                      : [     48743961,     48743869,     48742622, ],
+    'CountWeighted'                          : [     48743961,     48743869,     48742622, ],
+    'CountFullWeightedNoPU'                  : [     48744812, ],
+    'CountWeightedNoPU'                      : [     48744812, ],
+    'CountWeightedLHEWeightScale'            : [     43182997,     48959279,     54098360,     42976613,     48743961,     53877540,     42807512,     48567570,     53696578, ],
+    'CountWeightedLHEWeightScaleNoPU'        : [     43183106,     48960126,     54098481,     42976696,     48744812,     53877638,     42807580,     48568389,     53696658, ],
+    'CountFullWeightedLHEWeightScale'        : [     43182997,     48959279,     54098360,     42976613,     48743961,     53877540,     42807512,     48567570,     53696578, ],
+    'CountFullWeightedLHEWeightScaleNoPU'    : [     43183106,     48960126,     54098481,     42976696,     48744812,     53877638,     42807580,     48568389,     53696658, ],
+  }),
+  ("nof_tree_events",                 48787900),
+  ("nof_db_events",                   48787900),
+  ("fsize_local",                     57594771423), # 57.59GB, avg file size 581.77MB
+  ("fsize_db",                        1970017375652), # 1.97TB, avg file size 2.92GB
+  ("use_it",                          False),
+  ("xsection",                        5765.4),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Aug07_woPresel_nom_all/ntuples/DYJetsToLL_M-50_LO_ext1"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
 samples_2017["/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
@@ -21268,6 +21360,7 @@ samples_2017["sum_events"] = [
   [ 'VHToNonbb_M125',                                  'VHToNonbb_M125_v14-v2',                            ],
   [ 'DYJetsToLL_M50_HT400to600',                       'DYJetsToLL_M50_HT400to600_ext1',                   ],
   [ 'ST_tWll',                                         'ST_tWll_v14-v1',                                   ],
+  [ 'DYJetsToLL_M-50_LO',                              'DYJetsToLL_M-50_LO_ext1',                          ],
   [ 'TTZToLL_M10',                                     'TTZToLL_M10_PSweights',                            ],
   [ 'TTGJets',                                         'TTGJets_ext1',                                     ],
   [ 'DY1JetsToLL_M-50',                                'DY1JetsToLL_M-50_ext1',                            ],

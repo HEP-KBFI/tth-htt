@@ -17622,9 +17622,9 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Mini
   ("nof_db_files",                    737),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 47492910),
+  ("nof_tree_events",                 48141885),
   ("nof_db_events",                   48141885),
-  ("fsize_local",                     47096653552), # 47.10GB, avg file size 48.45MB
+  ("fsize_local",                     47739058016), # 47.74GB, avg file size 49.11MB
   ("fsize_db",                        1951411106522), # 1.95TB, avg file size 2.65GB
   ("use_it",                          False),
   ("xsection",                        5765.4),
@@ -17636,7 +17636,7 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Mini
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Aug06/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NanoProduction_v2_2018Aug06_DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10-v1/180805_233541"),
         ("selection", "*"),
-        ("blacklist", [5, 9, 12, 93, 155, 313, 316, 460, 481, 639, 742, 759, 950]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -17659,9 +17659,9 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Mini
   ("nof_db_files",                    674),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 48639833),
+  ("nof_tree_events",                 48787900),
   ("nof_db_events",                   48787900),
-  ("fsize_local",                     48184499458), # 48.18GB, avg file size 48.82MB
+  ("fsize_local",                     48329442094), # 48.33GB, avg file size 48.97MB
   ("fsize_db",                        1970017375652), # 1.97TB, avg file size 2.92GB
   ("use_it",                          False),
   ("xsection",                        5765.4),
@@ -17673,7 +17673,7 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Mini
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Aug06/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NanoProduction_v2_2018Aug06_DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10_ext1-v1/180805_233809"),
         ("selection", "*"),
-        ("blacklist", [6, 689, 919]),
+        ("blacklist", []),
       ]),
     ]
   ),
