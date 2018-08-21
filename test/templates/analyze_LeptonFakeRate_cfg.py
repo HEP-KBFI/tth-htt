@@ -84,12 +84,3 @@ process.analyze_LeptonFakeRate = cms.PSet(
         branchTypeYaxis = cms.string(''),
     ),
 )
-
-
-
-process.analyze_LeptonFakeRate.triggers_mu_cfg  = triggers_mu_cfg_2017
-process.analyze_LeptonFakeRate.triggers_e_cfg   = triggers_e_cfg_2017
-process.analyze_LeptonFakeRate.cfgEvtYieldHistManager = EvtYieldHistManager_2017
-
-
-
