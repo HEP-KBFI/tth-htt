@@ -138,4 +138,6 @@ getTArraDfromVector(const std::vector<double> & histogramBinning);
 
 TH1* compRatioHistogram(const std::string& ratioHistogramName, const TH1* numerator, const TH1* denominator);
 
+void divideByBinWidth(TH1* histogram);
+
 #endif // tthAnalysis_HiggsToTauTau_histogramAuxFunctions_h

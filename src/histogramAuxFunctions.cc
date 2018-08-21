@@ -884,3 +884,17 @@ TH1* compRatioHistogram(const std::string& ratioHistogramName, const TH1* numera
 
   return histogramRatio;
 }
+
+void divideByBinWidth(TH1* histogram)
+{
+  if ( !histogram ) return;
+  TAxis* xAxis = histogram->GetXaxis();
+  int numBins = xAxis->GetNbins();
+  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+    double binContent = histogram->GetBinContent(iBin);
+    double binError = histogram->GetBinError(iBin);
+    double binWidth = xAxis->GetBinWidth(iBin);
+    histogram->SetBinContent(iBin, binContent/binWidth);
+    histogram->SetBinError(iBin, binError/binWidth);
+  }
+}
