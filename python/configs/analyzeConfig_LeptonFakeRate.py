@@ -256,6 +256,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
+    # if self.use_QCD_fromMC:
+    #   lines.append("process.addBackground_LeptonFakeRate.processData = cms.string('%s')" % "QCD")
+    #   lines.append("process.addBackground_LeptonFakeRate.processLeptonFakes = cms.string('%s')" % "QCD")
+    #   lines.append("process.addBackground_LeptonFakeRate.processesToSubtract = cms.vstring()")
     # lines.append("process.addBackgrounds.categories = cms.vstring(%s)" % jobOptions['categories'])
     # lines.append("process.addBackgrounds.processes_input = cms.vstring(%s)" % jobOptions['processes_input'])
     # lines.append("process.addBackgrounds.process_output = cms.string('%s')" % jobOptions['process_output'])
@@ -271,7 +275,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.addBackground_LeptonFakeRate.processData = cms.string('%s')" % self.processToSubtractConvsFrom)
     lines.append("process.addBackground_LeptonFakeRate.processLeptonFakes = cms.string('%s_NC')" % self.processToSubtractConvsFrom)
     lines.append("process.addBackground_LeptonFakeRate.processesToSubtract = cms.vstring('%sg')" % self.processToSubtractConvsFrom)
-    lines.append("process.addBackground_LeptonFakeRate.sysShifts = cms.vstring()" % self.central_or_shifts)
+    # lines.append("process.addBackground_LeptonFakeRate.sysShifts = cms.vstring()" % self.central_or_shifts)
     logging.info("self.cfgFile_addBackgrounds_Convs_LeptonFakeRate => %s" % self.cfgFile_addBackgrounds_Convs_LeptonFakeRate)
     logging.info("jobOptions['cfgFile_modified'] => %s" % jobOptions['cfgFile_modified'])
     create_cfg(self.cfgFile_addBackgrounds_Convs_LeptonFakeRate, jobOptions['cfgFile_modified'], lines)
@@ -341,6 +345,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
   def addToMakefile_backgrounds_from_MC(self, lines_makefile):
     self.addToMakefile_hadd_stage1_5(lines_makefile)
     self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_Convs_LeptonFakeRate", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
+
 
 
   def addToMakefile_combine(self, lines_makefile):
@@ -788,8 +793,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_backgrounds_from_data(lines_makefile)
-    self.addToMakefile_backgrounds_from_MC(lines_makefile)
+    self.addToMakefile_backgrounds_from_data(lines_makefile) ## this step now does both e Conv, fakes_data and fakes_mc computation
+    # self.addToMakefile_backgrounds_from_MC(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_combine(lines_makefile)
@@ -800,3 +805,5 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
     return self.num_jobs
 
+  
+      
