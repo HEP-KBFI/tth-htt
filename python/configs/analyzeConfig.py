@@ -657,7 +657,8 @@ class analyzeConfig(object):
             assert(jobOptions_expr)
             if jobOptions_key.startswith('apply_') and jobOptions_key.endswith('GenMatching'):
                 jobOptions_val = jobOptions_val and is_mc and not self.isBDTtraining
-            jobOptions_val = jobOptions_expr % str(jobOptions_val)
+            if jobOptions_key not in [ 'triggers_mu_cfg', 'triggers_e_cfg' ]:
+              jobOptions_val = jobOptions_expr % str(jobOptions_val)
             lines.append("{}.{:<{len}} = {}".format(process_string, jobOptions_key, jobOptions_val, len = max_option_len))
 
         blacklist = set(sample_info["missing_hlt_paths"]) | set(sample_info["missing_from_superset"])

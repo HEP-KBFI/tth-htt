@@ -3,6 +3,7 @@ import os
 
 from tthAnalysis.HiggsToTauTau.configs.LeptonFakeRate_trigger_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
+from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_cfi import *
 
 process = cms.PSet()
 
@@ -83,10 +84,3 @@ process.analyze_LeptonFakeRate = cms.PSet(
         branchTypeYaxis = cms.string(''),
     ),
 )
-
-
-
-
-
-
-
