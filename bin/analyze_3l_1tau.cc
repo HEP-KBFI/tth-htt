@@ -200,9 +200,9 @@ int main(int argc, char* argv[])
   const int electronSelection = get_selection(electronSelection_string);
   const int muonSelection     = get_selection(muonSelection_string);
   double lep_mva_cut = cfg_analyze.getParameter<double>("lep_mva_cut"); // CV: used for tight lepton selection only
-  double lep_minPt_lead = cfg_analyze.getParameter<double>("lep_minPt_lead"); 
-  double lep_minPt_sublead = cfg_analyze.getParameter<double>("lep_minPt_sublead"); 
-  double lep_minPt_third = cfg_analyze.getParameter<double>("lep_minPt_third"); 
+  const double lep_minPt_lead = 25.;
+  const double lep_minPt_sublead = 15.;
+  const double lep_minPt_third = 10.;
   
   bool apply_leptonGenMatching = cfg_analyze.getParameter<bool>("apply_leptonGenMatching");
   std::vector<leptonGenMatchEntry> leptonGenMatch_definitions = getLeptonGenMatch_definitions_3lepton(apply_leptonGenMatching);
