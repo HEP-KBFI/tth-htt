@@ -733,64 +733,90 @@ void compareDatacards_run(const ComparisonEntries & entry,
     "signal",
     "fakes_mc",
     "fakes_data",
-//    "flips_data"
+    "conversions",
+    "ttH_hmm",
+    "ttH_hzg",
+    "tHq",
+    "THW",
+    "VH",
+    "flips_data",
   };
 
   const std::vector<std::string> sysShifts_common = {
-     "CMS_ttHl_btag_HFUp",
-     "CMS_ttHl_btag_HFDown",
-     "CMS_ttHl_btag_HFStats1Up",
-     "CMS_ttHl_btag_HFStats1Down",
-     "CMS_ttHl_btag_HFStats2Up",
-     "CMS_ttHl_btag_HFStats2Down",
-     "CMS_ttHl_btag_LFUp",
-     "CMS_ttHl_btag_LFDown",
-     "CMS_ttHl_btag_LFStats1Up",
-     "CMS_ttHl_btag_LFStats1Down",
-     "CMS_ttHl_btag_LFStats2Up",
-     "CMS_ttHl_btag_LFStats2Down",
-     "CMS_ttHl_btag_cErr1Up",
-     "CMS_ttHl_btag_cErr1Down",
-     "CMS_ttHl_btag_cErr2Up",
-     "CMS_ttHl_btag_cErr2Down",
-     "CMS_ttHl_JESUp",
-     "CMS_ttHl_JESDown",
-     "CMS_ttHl_tauESUp",
-     "CMS_ttHl_tauESDown",
-/*     "CMS_ttHl_FRjt_normUp",
-     "CMS_ttHl_FRjt_normDown",
-     "CMS_ttHl_FRjt_shapeUp",
-     "CMS_ttHl_FRjt_shapeDown",
-     "CMS_ttHl_FRet_shiftUp",
-     "CMS_ttHl_FRet_shiftDown",
-     "CMS_ttHl_FRmt_shiftUp",
-     "CMS_ttHl_FRmt_shiftDown",
-     "CMS_ttHl_thu_shape_ttH_x1Up",
-     "CMS_ttHl_thu_shape_ttH_x1Down",
-     "CMS_ttHl_thu_shape_ttH_y1Up",
-     "CMS_ttHl_thu_shape_ttH_y1Down",
-     "CMS_ttHl_thu_shape_ttW_x1Up",
-     "CMS_ttHl_thu_shape_ttW_x1Down",
-     "CMS_ttHl_thu_shape_ttW_y1Up",
-     "CMS_ttHl_thu_shape_ttW_y1Down",
-     "CMS_ttHl_thu_shape_ttZ_x1Up",
-     "CMS_ttHl_thu_shape_ttZ_x1Down",
-     "CMS_ttHl_thu_shape_ttZ_y1Up",
-     "CMS_ttHl_thu_shape_ttZ_y1Down",*/
-     ""
+    "CMS_ttHl_JESUp",
+    "CMS_ttHl_JESDown",
+    "CMS_ttHl_JERUp",
+    "CMS_ttHl_JERDown",
+    "CMS_ttHl_tauESUp",
+    "CMS_ttHl_tauESDown",
+    "CMS_ttHl_UnclusteredEnUp",
+    "CMS_ttHl_UnclusteredEnDown",
+    "CMS_ttHl_btag_HFUp",
+    "CMS_ttHl_btag_HFDown",
+    "CMS_ttHl_btag_HFStats1Up",
+    "CMS_ttHl_btag_HFStats1Down",
+    "CMS_ttHl_btag_HFStats2Up",
+    "CMS_ttHl_btag_HFStats2Down",
+    "CMS_ttHl_btag_LFUp",
+    "CMS_ttHl_btag_LFDown",
+    "CMS_ttHl_btag_LFStats1Up",
+    "CMS_ttHl_btag_LFStats1Down",
+    "CMS_ttHl_btag_LFStats2Up",
+    "CMS_ttHl_btag_LFStats2Down",
+    "CMS_ttHl_btag_cErr1Up",
+    "CMS_ttHl_btag_cErr1Down",
+    "CMS_ttHl_btag_cErr2Up",
+    "CMS_ttHl_btag_cErr2Down",
+    "CMS_ttHl_FRjt_normUp",
+    "CMS_ttHl_FRjt_normDown",
+    "CMS_ttHl_FRjt_shapeUp",
+    "CMS_ttHl_FRjt_shapeDown",
+    "CMS_ttHl_FRet_shiftUp",
+    "CMS_ttHl_FRet_shiftDown",
+    "CMS_ttHl_FRmt_shiftUp",
+    "CMS_ttHl_FRmt_shiftDown",
+    "CMS_ttHl_thu_shape_ttH_x1Up",
+    "CMS_ttHl_thu_shape_ttH_x1Down",
+    "CMS_ttHl_thu_shape_ttH_y1Up",
+    "CMS_ttHl_thu_shape_ttH_y1Down",
+    "CMS_ttHl_thu_shape_ttW_x1Up",
+    "CMS_ttHl_thu_shape_ttW_x1Down",
+    "CMS_ttHl_thu_shape_ttW_y1Up",
+    "CMS_ttHl_thu_shape_ttW_y1Down",
+    "CMS_ttHl_thu_shape_ttZ_x1Up",
+    "CMS_ttHl_thu_shape_ttZ_x1Down",
+    "CMS_ttHl_thu_shape_ttZ_y1Up",
+    "CMS_ttHl_thu_shape_ttZ_y1Down",
+    "CMS_ttHl_triggerUp",
+    "CMS_ttHl_triggerDown",
+    "",
   };
 
   const std::vector<std::string> sysShifts_CMS_ttHl_FR_shape = {
-//    "CMS_ttHl_FRe_shape_ptUp",
-//    "CMS_ttHl_FRe_shape_ptDown",
-//    "CMS_ttHl_FRe_shape_etaUp",
-//    "CMS_ttHl_FRe_shape_etaDown",
-//    "CMS_ttHl_FRe_shape_eta_barrelUp",
-//    "CMS_ttHl_FRe_shape_eta_barrelDown",
-//    "CMS_ttHl_FRm_shape_ptUp",
-//    "CMS_ttHl_FRm_shape_ptDown",
-//    "CMS_ttHl_FRm_shape_etaUp",
-//    "CMS_ttHl_FRm_shape_etaDown",
+    "CMS_ttHl_FRe_shape_ptUp",
+    "CMS_ttHl_FRe_shape_ptDown",
+    "CMS_ttHl_FRe_shape_normUp",
+    "CMS_ttHl_FRe_shape_normDown",
+    "CMS_ttHl_FRe_shape_eta_barrelUp",
+    "CMS_ttHl_FRe_shape_eta_barrelDown",
+    "CMS_ttHl_FRm_shape_ptUp",
+    "CMS_ttHl_FRm_shape_ptDown",
+    "CMS_ttHl_FRm_shape_normUp",
+    "CMS_ttHl_FRm_shape_normDown",
+    "CMS_ttHl_FRm_shape_eta_barrelUp",
+    "CMS_ttHl_FRm_shape_eta_barrelDown",
+    "CMS_ttHl_Clos_e_normUp",
+    "CMS_ttHl_Clos_e_normDown",
+    "CMS_ttHl_Clos_e_shapeUp",
+    "CMS_ttHl_Clos_e_shapeDown",
+    "CMS_ttHl_Clos_m_normUp",
+    "CMS_ttHl_Clos_m_normDown",
+    "CMS_ttHl_Clos_m_shapeUp",
+    "CMS_ttHl_Clos_m_shapeDown",
+    "CMS_ttHl_Clos_t_normUp",
+    "CMS_ttHl_Clos_t_normDown",
+    "CMS_ttHl_Clos_t_shapeUp",
+    "CMS_ttHl_Clos_t_shapeDown",
   };
 
   std::vector<std::string> sysShifts = sysShifts_common;
@@ -867,18 +893,20 @@ void compareDatacards()
 
     TH1::AddDirectory(false);
 
-   /* const std::vector<std::array<std::string, 4>> discriminatingVariables_1l_2tau = {
-      { "1l_2tau_EventCounter",               "Events",                        ""    },
-      { "1l_2tau_SS_EventCounter",            "Events (SS)",                   ""    },
-      { "1l_2tau_SS_mTauTauVis",              "m_{#tau#tau} (SS)",             "GeV" },
-      { "1l_2tau_SS_mvaDiscr_1l_2tau",        "MVA discr 1l2#tau (SS)",        ""    },
-      { "1l_2tau_SS_mvaOutput_1l_2tau_ttbar", "MVA out 1l2#tau t#bar{t} (SS)", ""    },
-      { "1l_2tau_SS_numJets",                 "#Jets",                         ""    },
-      { "1l_2tau_mTauTauVis",                 "m_{#tau#tau}",                  "GeV" },
-      { "1l_2tau_mvaDiscr_1l_2tau",           "MVA discr 1l2#tau",             ""    },
-      { "1l_2tau_mvaOutput_1l_2tau_ttbar",    "MVA out 1l2#tau t#bar{t}",      ""    },
-      { "1l_2tau_numJets",                    "#Jets",                         ""    }
+   const std::vector<std::array<std::string, 3>> discriminatingVariables_1l_2tau = {
+//      { "1l_2tau_EventCounter",               "Events",                        ""    },
+//      { "1l_2tau_SS_EventCounter",            "Events (SS)",                   ""    },
+//      { "1l_2tau_SS_mTauTauVis",              "m_{#tau#tau} (SS)",             "GeV" },
+//      { "1l_2tau_SS_mvaDiscr_1l_2tau",        "MVA discr 1l2#tau (SS)",        ""    },
+//      { "1l_2tau_SS_mvaOutput_1l_2tau_ttbar", "MVA out 1l2#tau t#bar{t} (SS)", ""    },
+//      { "1l_2tau_SS_numJets",                 "#Jets",                         ""    },
+//      { "1l_2tau_mTauTauVis",                 "m_{#tau#tau}",                  "GeV" },
+//      { "1l_2tau_mvaDiscr_1l_2tau",           "MVA discr 1l2#tau",             ""    },
+//      { "1l_2tau_mvaOutput_1l_2tau_ttbar",    "MVA out 1l2#tau t#bar{t}",      ""    },
+//      { "1l_2tau_numJets",                    "#Jets",                         ""    },
+      { "3l_1tau_OS_mvaOutput_final",           "MVA output",                    ""    },
     };
+  /*
     const std::vector<std::array<std::string, 4>> discriminatingVariables_2lss_1tau = {
       { "2lss_1tau_sumOS_EventCounter",            "Events (sumOS)",                   ""    },
       { "2lss_1tau_sumSS_EventCounter",            "Events (sumSS)",                   ""    },
@@ -894,24 +922,19 @@ void compareDatacards()
       { "2lss_1tau_sumSS_numJets",                 "#Jets (sumSS)",                    ""    }
     };*/
 
-   const std::vector<std::array<std::string, 4>> discriminatingVariables_2l_2tau ={
-      {"2l_2tau_mTauTauVis",		"m_{#tau#tau} (sumOS)",		""}
-   };
     std::vector<ComparisonEntries> entries;
-//    const std::string ref_path  = "/home/karl/ttHAnalysis/2016/2017Oct11/datacards/2lss_1tau/";
-    const std::string ref_path = "/home/karmakar/ttHAnalysis/2016/2018Feb23_VTight/datacards/2l_2tau";
-//    const std::string test_path = "/home/karl/ttHAnalysis/2016/2017Oct11/datacards/2lss_1tau/";
-    const std::string test_path = "/home/karmakar/ttHAnalysis/2017/2018May28_Medium/datacards/2l_2tau";
+    const std::string ref_path  = "/home/karl/ttHAnalysis/2017/2018Jun27/datacards/3l_1tau/";
+    const std::string test_path = "/home/karl/ttHAnalysis/2017/2018Aug06/datacards/3l_1tau/";
 
-    for(const std::array<std::string, 4> & var: discriminatingVariables_2l_2tau)
+    for(const std::array<std::string, 3> & var: discriminatingVariables_1l_2tau)
     {
       double sf_ref = 1.;
-      const InputFileEntry ref  = {ref_path,  Form("prepareDatacards_%s.root", var.at(0).c_str()), "Tallinn 2016", sf_ref};
+      const InputFileEntry ref  = {ref_path,  Form("addSystFakeRates_%s.root", var.at(0).c_str()), "Official dcards", sf_ref};
       
-      double sf_test = 35.9/41.5;
-      const InputFileEntry test = {test_path, Form("prepareDatacards_%s.root", var.at(0).c_str()), "Tallinn 2017", sf_test};
+      double sf_test = 1.;
+      const InputFileEntry test = {test_path, Form("addSystFakeRates_%s.root", var.at(0).c_str()), "New dcards", sf_test};
       
-      const std::string outputFilePath = Form("/home/karmakar/ttHAnalysis/plots_sys_2018May28_v2/plots_%s", var.at(0).c_str());
+      const std::string outputFilePath = Form("/home/karl/sandbox/compareDatacards_3l1tau/plots_%s", var.at(0).c_str());
       entries.push_back({ref, test, {}, outputFilePath, var.at(1), var.at(2)});
     }
 
