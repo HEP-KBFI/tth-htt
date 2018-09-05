@@ -17552,7 +17552,7 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
   ("nof_db_events",                   26923935),
   ("fsize_local",                     28709057318), # 28.71GB, avg file size 52.97MB
   ("fsize_db",                        1065736102325), # 1.07TB, avg file size 2.86GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        5765.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -17589,7 +17589,7 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
   ("nof_db_events",                   185998625),
   ("fsize_local",                     198263559520), # 198.26GB, avg file size 52.84MB
   ("fsize_db",                        7376341087077), # 7.38TB, avg file size 2.68GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        5765.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -17626,7 +17626,7 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Mini
   ("nof_db_events",                   48141885),
   ("fsize_local",                     47739058016), # 47.74GB, avg file size 49.11MB
   ("fsize_db",                        1951411106522), # 1.95TB, avg file size 2.65GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        5765.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -17663,7 +17663,7 @@ samples_2017["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Mini
   ("nof_db_events",                   48787900),
   ("fsize_local",                     48329442094), # 48.33GB, avg file size 48.97MB
   ("fsize_db",                        1970017375652), # 1.97TB, avg file size 2.92GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        5765.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),

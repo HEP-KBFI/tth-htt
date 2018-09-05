@@ -2,8 +2,8 @@
 samples_to_stitch_2017 = [
   {
     'inclusive' : {
-      'samples'   : [ 'DYJetsToLL_M-50', 'DYJetsToLL_M-50_ext1' ],
-      'LHE_Njets' : [ 0, 4 ], # [$]
+      'samples'   : [ 'DYJetsToLL_M-50_LO', 'DYJetsToLL_M-50_LO_ext1' ],
+      'LHE_Njets' : [ 0, 5 ],
       'LHE_HT'    : [ 0., 100000. ],
     },
     'LHE_Njets' : [
@@ -69,7 +69,5 @@ def get_branch_type(branch_name):
   else:
     raise ValueError('Unrecognized branch name: %s' % branch_name)
 
-# [$] the inclusive sample contains 0-3 jets:
-# https://github.com/cms-sw/genproductions/blob/cdedd4c7274cf75733bebff3b8c935e285d6b862/bin/MadGraph5_aMCatNLO/cards/production/2017/13TeV/dyellell012j_5f_NLO_FXFX/dyellell012j_5f_NLO_FXFX_proc_card.dat#L6-L8
 # [*] not used b/c the sample was produced w/ incorrect gridpack (or, to be precise, w/ incorrect MG cards)
 # see https://hypernews.cern.ch/HyperNews/CMS/get/generators/4005.html for more information

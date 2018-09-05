@@ -72,11 +72,11 @@ elif mode == 'all':
     sample_entry['use_it'] = True
 elif mode == 'hh':
   if era == "2016":
-    from hhAnalysis.tttt.samples.hhAnalyzeSamples_2016_nanoAOD import samples_2016 as samples
+    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2016_nanoAOD import samples_2016 as samples
   elif era == "2017":
-    from hhAnalysis.tttt.samples.hhAnalyzeSamples_2017_nanoAOD_hh_private import samples_2017 as samples
+    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_nanoAOD_hh_private import samples_2017 as samples
   elif era == "2018":
-    from hhAnalysis.tttt.samples.hhAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
+    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
   else:
     raise ValueError("Invalid era: %s" % era)
 else:
