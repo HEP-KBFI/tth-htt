@@ -701,11 +701,11 @@ int main(int argc, char* argv[])
       "avg_dr_jet", "ptmiss", "htmiss", "tau1_mva", "tau2_mva", "tau1_pt", "tau2_pt",
       "tau1_eta", "tau2_eta", "dr_taus", "mT_tau1", "mT_tau2", "mTauTauVis", "mTauTau",
 
-      "HTT_wKinFit_top1", "HTT_wKinFitNew_top1", "HTT_noKinFit_top1", "dr_HadTop1_tau_lead_top1",
-      "dr_HadTop1_tau_sublead_top1", "dr_HadTop1_tautau_top1", "HadTop1_pt_top1", "HadTop1_eta_top1",
+      "HTT_wKinFit_top1", "HTT_wKinFitNew_top1", "HTT_noKinFit_top1", "dr_HadTop1_tau_lead",
+      "dr_HadTop1_tau_sublead", "dr_HadTop1_tautau", "HadTop1_pt", "HadTop1_eta",
 
-      "HTT_wKinFit_top2", "HTT_wKinFitNew_top2", "HTT_noKinFit_top2", "dr_HadTop1_tau_lead_top2",
-      "dr_HadTop1_tau_sublead_top2", "dr_HadTop1_tautau_top2", "HadTop1_pt_top2", "HadTop1_eta_top2",
+      "HTT_wKinFit_top2", "HTT_wKinFitNew_top2", "HTT_noKinFit_top2", "dr_HadTop2_tau_lead",
+      "dr_HadTop2_tau_sublead", "dr_HadTop2_tautau", "HadTop2_pt", "HadTop2_eta",
 
       "lumiScale", "genWeight", "evtWeight"
     );
@@ -1037,18 +1037,19 @@ int main(int argc, char* argv[])
         selHadTau_lead_genPdgId, selHadTau_lead->pt(), selHadTau_lead->eta(),
         selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta());
 
-      dataToMCcorrectionInterface_0l_2tau_trigger->setHadTaus(
-        selHadTau_lead->pt(), selHadTau_lead->eta(), selHadTau_lead->phi(),
-        selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->phi());
-      dataToMCcorrectionInterface_0l_2tau_trigger->setTriggerBits(isTriggered_2tau);
-
-//--- apply data/MC corrections for trigger efficiency
-      double sf_triggerEff = dataToMCcorrectionInterface_0l_2tau_trigger->getSF_triggerEff();
-      if ( isDEBUG ) {
-        std::cout << "sf_triggerEff = " << sf_triggerEff << std::endl;
-      }
-      triggerWeight *= sf_triggerEff;
-      weight_data_to_MC_correction *= sf_triggerEff;
+	dataToMCcorrectionInterface_0l_2tau_trigger->setHadTaus(
+								selHadTau_lead->pt(), selHadTau_lead->eta(), selHadTau_lead->phi(),
+								selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->phi());
+	dataToMCcorrectionInterface_0l_2tau_trigger->setTriggerBits(isTriggered_2tau);
+	
+	//--- apply data/MC corrections for trigger efficiency
+	double sf_triggerEff = dataToMCcorrectionInterface_0l_2tau_trigger->getSF_triggerEff();
+	if ( isDEBUG ) {
+	  std::cout << "sf_triggerEff = " << sf_triggerEff << std::endl;
+	}
+      
+	triggerWeight *= sf_triggerEff;
+	weight_data_to_MC_correction *= sf_triggerEff;
 
 //--- apply data/MC corrections for hadronic tau identification efficiency 
 //    and for e->tau and mu->tau misidentification rates     
@@ -1491,19 +1492,19 @@ int main(int argc, char* argv[])
           ("HTT_wKinFit_top1",                       max_mvaOutput_hadTopTaggerWithKinFit)
           ("HTT_wKinFitNew_top1",                    max_mvaOutput_hadTopTaggerWithKinFitNew)
           ("HTT_noKinFit_top1",                      max_mvaOutput_hadTopTaggerNoKinFit)
-          ("dr_HadTop1_tau_lead_top1",               deltaR(unfittedHadTopP4, selHadTau_lead->p4()))
-          ("dr_HadTop1_tau_sublead_top1",            deltaR(unfittedHadTopP4, selHadTau_sublead->p4()))
-          ("dr_HadTop1_tautau_top1",                 deltaR(unfittedHadTopP4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
-          ("HadTop1_pt_top1",                        unfittedHadTopP4.pt())
-          ("HadTop1_eta_top1",                       std::fabs(unfittedHadTopP4.eta()))
+          ("dr_HadTop1_tau_lead",               deltaR(unfittedHadTopP4, selHadTau_lead->p4()))
+          ("dr_HadTop1_tau_sublead",            deltaR(unfittedHadTopP4, selHadTau_sublead->p4()))
+          ("dr_HadTop1_tautau",                 deltaR(unfittedHadTopP4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
+          ("HadTop1_pt",                        unfittedHadTopP4.pt())
+          ("HadTop1_eta",                       std::fabs(unfittedHadTopP4.eta()))
           ("HTT_wKinFit_top2",                       max_mvaOutput_hadTopTaggerWithKinFitTop2)
           ("HTT_wKinFitNew_top2",                    max_mvaOutput_hadTopTaggerWithKinFitNewTop2)
           ("HTT_noKinFit_top2",                      max_mvaOutput_hadTopTaggerNoKinFitTop2)
-          ("dr_HadTop1_tau_lead_top2",               deltaR(unfittedHadTop2P4, selHadTau_lead->p4()))
-          ("dr_HadTop1_tau_sublead_top2",            deltaR(unfittedHadTop2P4, selHadTau_sublead->p4()))
-          ("dr_HadTop1_tautau_top2",                 deltaR(unfittedHadTop2P4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
-          ("HadTop1_pt_top2",                        unfittedHadTop2P4.pt())
-          ("HadTop1_eta_top2",                       std::fabs(unfittedHadTop2P4.eta()))
+          ("dr_HadTop2_tau_lead",               deltaR(unfittedHadTop2P4, selHadTau_lead->p4()))
+          ("dr_HadTop2_tau_sublead",            deltaR(unfittedHadTop2P4, selHadTau_sublead->p4()))
+          ("dr_HadTop2_tautau",                 deltaR(unfittedHadTop2P4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
+          ("HadTop2_pt",                        unfittedHadTop2P4.pt())
+          ("HadTop2_eta",                       std::fabs(unfittedHadTop2P4.eta()))
           ("bWj1Wj2_isGenMatchedWithKinFit_top1",    max_truth_hadTopTaggerWithKinFit)
           ("bWj1Wj2_isGenMatchedWithKinFitNew_top1", max_truth_hadTopTaggerWithKinFitNew)
           ("bWj1Wj2_isGenMatchedNoKinFit_top1",      max_truth_hadTopTaggerNoKinFit)
