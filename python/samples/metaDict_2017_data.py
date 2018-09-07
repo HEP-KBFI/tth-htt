@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
 # file generated at 2018-05-10 23:27:16 with the following command:
-# find_samples.py -V -m python/samples/metaDict_2017_data.py -d  -c /hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Apr26
+# find_samples.py -V -m python/samples/metaDict_2017_data.py -d ../NanoAOD/test/datasets_data.txt -l -c /hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Apr26 /hdfs/cms/store/user/kaehatah/2018Jul12
 
 meta_dictionary = OD()
 
@@ -381,7 +381,7 @@ meta_dictionary["/MuonEG/Run2017F-17Nov2017-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2017B-17Nov2017-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018Jul12_Tau__Run2017B-17Nov2017-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2017B_17Nov2017_v1"),
   ("nof_db_events",         38158216),
@@ -396,7 +396,7 @@ meta_dictionary["/Tau/Run2017B-17Nov2017-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2017C-17Nov2017-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018Jul12_Tau__Run2017C-17Nov2017-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2017C_17Nov2017_v1"),
   ("nof_db_events",         55416425),
@@ -411,7 +411,7 @@ meta_dictionary["/Tau/Run2017C-17Nov2017-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2017D-17Nov2017-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018Jul12_Tau__Run2017D-17Nov2017-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2017D_17Nov2017_v1"),
   ("nof_db_events",         20530776),
@@ -426,7 +426,7 @@ meta_dictionary["/Tau/Run2017D-17Nov2017-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2017E-17Nov2017-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018Jul12_Tau__Run2017E-17Nov2017-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2017E_17Nov2017_v1"),
   ("nof_db_events",         44318231),
@@ -441,7 +441,7 @@ meta_dictionary["/Tau/Run2017E-17Nov2017-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2017F-17Nov2017-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018Jul12_Tau__Run2017F-17Nov2017-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2017F_17Nov2017_v1"),
   ("nof_db_events",         88506372),

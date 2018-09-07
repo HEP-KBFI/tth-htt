@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonSelectorTight
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
@@ -10,7 +10,7 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
   : era_(era)
   , set_selection_flags_(set_selection_flags)
   , debug_(debug)
-  , min_pt_(5.) // F
+  , min_pt_(-1.e+3)
   , max_absEta_(2.4) // F
   , max_dxy_(0.05) // F
   , max_dz_(0.1) // F
@@ -18,20 +18,36 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
   , max_sip3d_(8.) // F
   , apply_looseIdPOG_(true) // F
   , apply_mediumIdPOG_(true) // T
-  , min_mvaTTH_(0.90) // Table 6 in AN2017_029_v5
+  , min_mvaTTH_(-1.e+3)
 {
   switch(era_)
   {
+    case kEra_2016:
+    {
+      min_pt_ = 10.;
+      min_mvaTTH_ = 0.75;
+      max_jetBtagCSV_ = BtagWP_CSV_2016.at(BtagWP::kMedium);
+      break;
+    }
     case kEra_2017:
     {
-      max_jetBtagCSV_ = BtagWP_deepCSV_2017.at(BtagWP::kMedium); // F
+      min_pt_ = 5.; // F
+      min_mvaTTH_ = 0.90; // Table 6 in AN2017_029_v5
+      max_jetBtagCSV_ = BtagWP_deepCSV_2017.at(BtagWP::kMedium);  // F; [*]
       break;
+    }
+    case kEra_2018:
+    {
+      throw cmsException(this) << "Implement me!";
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
   // F -- inherited from the fakeable selection
   //      https://gitlab.cern.ch/ttH_leptons/doc/blob/dbb7082bb3668bb3e839293602bc16f47f11c515/2017/objects.md
   // T -- additional tight cut not applied in the fakeable selection
+  assert(min_pt_ > 0.);
+  assert(min_mvaTTH_ > 0.);
+  assert(max_jetBtagCSV_ > 0.);
 }
 
 bool

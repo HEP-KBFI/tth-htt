@@ -1,24 +1,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_ttZctrl.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era(), kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 EvtHistManager_ttZctrl::EvtHistManager_ttZctrl(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
-  , era_(-1)
-{
-  const std::string era_string = cfg.getParameter<std::string>("era");
-  if(era_string == "2017" )
-  {
-    era_ = kEra_2017;
-  }
-  else
-  {
-    throw cmsException(this)
-      << "Invalid Configuration parameter 'era' = " << era_string;
-  }
-}
+  , era_(get_era(cfg.getParameter<std::string>("era")))
+{}
 
 void
 EvtHistManager_ttZctrl::bookHistograms(TFileDirectory & dir)
@@ -33,19 +22,11 @@ EvtHistManager_ttZctrl::bookHistograms(TFileDirectory & dir)
 
   histogram_mvaOutput_2lss_ttV_   = book1D(dir, "mvaOutput_2lss_ttV",   "mvaOutput_2lss_ttV",   40, -1., +1.);
   histogram_mvaOutput_2lss_ttbar_ = book1D(dir, "mvaOutput_2lss_ttbar", "mvaOutput_2lss_ttbar", 40, -1., +1.);
-  switch(era_)
-  {
-    case kEra_2017: histogram_mvaDiscr_2lss_ = book1D(dir, "mvaDiscr_2lss", "mvaDiscr_2lss", 7, 0.5, 7.5); break;
-    default:        assert(0);
-  }
+  histogram_mvaDiscr_2lss_        = book1D(dir, "mvaDiscr_2lss", "mvaDiscr_2lss", 7, 0.5, 7.5);
 
   histogram_mvaOutput_3l_ttV_   = book1D(dir, "mvaOutput_3l_ttV",   "mvaOutput_3l_ttV",   40, -1., +1.);
   histogram_mvaOutput_3l_ttbar_ = book1D(dir, "mvaOutput_3l_ttbar", "mvaOutput_3l_ttbar", 40, -1., +1.);
-  switch(era_)
-  {
-    case kEra_2017: histogram_mvaDiscr_3l_  = book1D(dir, "mvaDiscr_3l", "mvaDiscr_3l", 5, 0.5, 5.5); break;
-    default:        assert(0);
-  }
+  histogram_mvaDiscr_3l_        = book1D(dir, "mvaDiscr_3l",        "mvaDiscr_3l",         5,  0.5, 5.5);
 
   histogram_mLL_             = book1D(dir, "mLL",             "mLL",             30, 60., 120.);
   histogram_mT_              = book1D(dir, "mT",              "mT",              40,  0., 200.);

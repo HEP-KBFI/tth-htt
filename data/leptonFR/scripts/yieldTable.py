@@ -50,7 +50,8 @@ def PrintTables(cmb, uargs, fit_status):
 #    print r'EWK : $%.2f$ +/- $%.2f$  \\' % (c_m_incl.cp().process(['EWK']).GetRate(), c_m_incl.cp().process(['EWK']).GetUncertainty(*uargs))
 #    print r'ttZ : $%.2f$ +/- $%.2f$  \\' % (c_m_incl.cp().process(['TTZ']).GetRate(), c_m_incl.cp().process(['TTZ']).GetUncertainty(*uargs))
 #    print r'ttW : $%.2f$ +/- $%.2f$  \\' % (c_m_incl.cp().process(['TTW']).GetRate(), c_m_incl.cp().process(['TTW']).GetUncertainty(*uargs))
-    print r'%s fakes_data : %.2f +/- %.2f' % (fit_status, c_m_incl.cp().process(['fakes_data']).GetRate(), c_m_incl.cp().process(['fakes_data']).GetUncertainty(*uargs))
+    print r'%s fakes_data : %.2f +/- %.2f' % (fit_status, c_m_incl.cp().process(['fakes_data']).GetRate(), c_m_incl.cp().process(['fakes_data']).GetUncertainty(*uargs)) ## FOR DATA DRIVEN FAKE ESTIMATE
+##    print r'%s QCD : %.2f +/- %.2f' % (fit_status, c_m_incl.cp().process(['QCD']).GetRate(), c_m_incl.cp().process(['QCD']).GetUncertainty(*uargs)) ## FOR MC DRIVEN FAKE ESTIMATE
 
 
 

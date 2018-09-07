@@ -1,6 +1,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow()
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+
+#include <TH2.h> // TH2
 
 GenEvtHistManager::GenEvtHistManager(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
@@ -14,6 +18,10 @@ GenEvtHistManager::GenEvtHistManager(const edm::ParameterSet & cfg)
   , maxGenPhotonAbsEta_(2.7)
   , minGenJetPt_(20.)
   , maxGenJetAbsEta_(2.7)
+  , histogram_evtWeightManager_1D_(nullptr)
+  , histogram_evtWeightManager_1D_counter_(nullptr)
+  , histogram_evtWeightManager_2D_(nullptr)
+  , histogram_evtWeightManager_2D_counter_(nullptr)
 {}
 
 // [*] https://github.com/CERN-PH-CMG/cmg-cmssw/blob/534b379810bf806c75837c4e3a8e2193275fe79e/PhysicsTools/Heppy/python/analyzers/objects/LeptonAnalyzer.py#L708
@@ -88,4 +96,68 @@ GenEvtHistManager::fillHistograms(const std::vector<GenLepton> & genElectrons,
 
   fillWithOverFlow(histogram_lumiScale_,    0., lumiScale, lumiScale);
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
+}
+
+void
+GenEvtHistManager::bookHistograms(TFileDirectory & dir,
+                                  const EvtWeightManager * const eventWeightManager)
+{
+  assert(eventWeightManager);
+  const int histogramDimension = eventWeightManager->getDimension();
+
+  TDirectory * const subdir = createHistogramSubdirectory(dir);
+  subdir->cd();
+
+  switch(histogramDimension)
+  {
+    case 1:
+    {
+      histogram_evtWeightManager_1D_ = static_cast<TH1 *>(eventWeightManager->getHistogram_1D()->Clone());
+      histogram_evtWeightManager_1D_->Reset();
+      histogram_evtWeightManager_1D_counter_ = static_cast<TH1 *>(histogram_evtWeightManager_1D_->Clone());
+      histogram_evtWeightManager_1D_counter_->SetName(Form("%s_counter", histogram_evtWeightManager_1D_->GetName()));
+      histogram_evtWeightManager_1D_counter_->SetTitle(Form("%s_counter", histogram_evtWeightManager_1D_->GetTitle()));
+      histograms_.push_back(histogram_evtWeightManager_1D_);
+      histograms_.push_back(histogram_evtWeightManager_1D_counter_);
+      break;
+    }
+    case 2:
+    {
+      histogram_evtWeightManager_2D_ = static_cast<TH2 *>(eventWeightManager->getHistogram_2D()->Clone());
+      histogram_evtWeightManager_2D_->Reset();
+      histogram_evtWeightManager_2D_counter_ = static_cast<TH2 *>(histogram_evtWeightManager_2D_->Clone());
+      histogram_evtWeightManager_2D_counter_->SetName(Form("%s_counter", histogram_evtWeightManager_2D_->GetName()));
+      histogram_evtWeightManager_2D_counter_->SetTitle(Form("%s_counter", histogram_evtWeightManager_2D_->GetTitle()));
+      histograms_.push_back(histogram_evtWeightManager_2D_);
+      histograms_.push_back(histogram_evtWeightManager_2D_counter_);
+      break;
+    }
+    default: throw cmsException(this, __func__, __LINE__) << "Invalid dimension = " << histogramDimension;
+  }
+}
+
+void
+GenEvtHistManager::fillHistograms(const EvtWeightManager * const eventWeightManager,
+                                  double evtWeight)
+{
+  assert(eventWeightManager);
+  if(histogram_evtWeightManager_1D_)
+  {
+    const int bin_x = eventWeightManager->getBinIdx_1D();
+    const double binCenter_x = histogram_evtWeightManager_1D_->GetXaxis()->GetBinCenter(bin_x);
+    histogram_evtWeightManager_1D_->Fill(binCenter_x, evtWeight);
+    histogram_evtWeightManager_1D_counter_->Fill(binCenter_x, 1.);
+  }
+  else if(histogram_evtWeightManager_2D_)
+  {
+    const std::pair<int, int> bin_xy = eventWeightManager->getBinIdx_2D();
+    const double binCenter_x = histogram_evtWeightManager_2D_->GetXaxis()->GetBinCenter(bin_xy.first);
+    const double binCenter_y = histogram_evtWeightManager_2D_->GetYaxis()->GetBinCenter(bin_xy.second);
+    histogram_evtWeightManager_2D_->Fill(binCenter_x, binCenter_y, evtWeight);
+    histogram_evtWeightManager_2D_counter_->Fill(binCenter_x, binCenter_y, 1.);
+  }
+  else
+  {
+    throw cmsException(this, __func__, __LINE__) << "Neither 1D or 2D histograms initialized";
+  }
 }

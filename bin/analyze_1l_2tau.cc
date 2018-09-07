@@ -75,7 +75,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L, getWeight_3L
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
-#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2016.h"
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2017.h"
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2018.h"
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_1l_2tau_trigger.h" // Data_to_MC_CorrectionInterface_1l_2tau_trigger
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
@@ -172,10 +174,7 @@ int main(int argc, char* argv[])
   bool isMCClosure_t = histogramDir.find("mcClosure_t") != std::string::npos;
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
-  int era = -1;
-  if ( era_string == "2017" ) era = kEra_2017;
-  else throw cms::Exception("analyze_1l_2tau")
-    << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
+  const int era = get_era(era_string);
 
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e, "triggers_1e");
@@ -294,7 +293,14 @@ int main(int argc, char* argv[])
   //cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", isDEBUG);
   cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", false);
   //cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", true);
-  Data_to_MC_CorrectionInterface* dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface(cfg_dataToMCcorrectionInterface);
+  Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
+  switch(era)
+  {
+    case kEra_2016: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2016(cfg_dataToMCcorrectionInterface); break;
+    case kEra_2017: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2017(cfg_dataToMCcorrectionInterface); break;
+    case kEra_2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
+    default: throw cmsException("analyze_1l_2tau", __LINE__) << "Invalid era = " << era;
+  }
   Data_to_MC_CorrectionInterface_1l_2tau_trigger* dataToMCcorrectionInterface_1l_2tau_trigger = new Data_to_MC_CorrectionInterface_1l_2tau_trigger(cfg_dataToMCcorrectionInterface);
 
   std::string applyFakeRateWeights_string = cfg_analyze.getParameter<std::string>("applyFakeRateWeights");
@@ -363,8 +369,16 @@ int main(int argc, char* argv[])
   }();
 
   const double maxAbsEta_lept = 2.1;
-  const double minPt_ele = 30.;
-  const double minPt_mu  = 25.;
+  double minPt_ele = -1.;
+  double minPt_mu  = -1.;
+  switch(era)
+  {
+    case kEra_2016: minPt_ele = 25.; minPt_mu  = 20.; break; // AN2016_372_v14:331
+    case kEra_2017: minPt_ele = 30.; minPt_mu  = 25.; break;
+    case kEra_2018: throw cmsException("analyze_1l_2tau", __LINE__) << "Implement me!";
+    default:        throw cmsException("analyze_1l_2tau", __LINE__) << "Invalid era = " << era;
+  }
+  assert(minPt_ele > 0. && minPt_mu > 0.);
   const double minPt_hadTau_lead    = 30.;
   const double minPt_hadTau_sublead = 20.;
 
@@ -470,7 +484,7 @@ int main(int argc, char* argv[])
   inputTree -> registerReader(metReader);
 
   MEtFilter metFilters;
-  MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilters);
+  MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilters, era);
   inputTree -> registerReader(metFilterReader);
 
   GenLeptonReader* genLeptonReader = 0;
@@ -806,6 +820,12 @@ int main(int argc, char* argv[])
      lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string,
       Form("%s/sel/lheInfo", histogramDir.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
+
+    if(eventWeightManager)
+    {
+      genEvtHistManager_beforeCuts->bookHistograms(fs, eventWeightManager);
+      genEvtHistManager_afterCuts->bookHistograms(fs, eventWeightManager);
+    }
   }
 
   NtupleFillerBDT<float, int>* bdt_filler = nullptr;
@@ -951,6 +971,10 @@ int main(int argc, char* argv[])
       evtWeight_inclusive *= eventInfo.pileupWeight;
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      if(eventWeightManager)
+      {
+        genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+      }
     }
 
     std::vector<GenParticle> genTopQuarks;
@@ -1366,9 +1390,28 @@ int main(int argc, char* argv[])
         selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta());
 
       dataToMCcorrectionInterface_1l_2tau_trigger->setLeptons(selLepton_type, selLepton->pt(), selLepton->eta());
-      dataToMCcorrectionInterface_1l_2tau_trigger->setHadTaus(
-        selHadTau_lead->pt(), selHadTau_lead->eta(), selHadTau_lead->phi(),
-        selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->phi());
+      if(era == kEra_2016)
+      {
+        dataToMCcorrectionInterface_1l_2tau_trigger->setHadTaus(
+          selHadTau_lead_genPdgId,    selHadTau_lead->pt(),    selHadTau_lead->eta(),    selHadTau_lead->decayMode(),
+          selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->decayMode()
+        );
+      }
+      else if(era == kEra_2017)
+      {
+        dataToMCcorrectionInterface_1l_2tau_trigger->setHadTaus(
+          selHadTau_lead->pt(),    selHadTau_lead->eta(),    selHadTau_lead->phi(),
+          selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->phi()
+        );
+      }
+      else if(era == kEra_2018)
+      {
+        throw cmsException("analyze_1l_2tau", __LINE__) << "Implement me!";
+      }
+      else
+      {
+        throw cmsException("analyze_1l_2tau", __LINE__) << "Invalid era = " << era;
+      }
       dataToMCcorrectionInterface_1l_2tau_trigger->setTriggerBits(isTriggered_1e, isTriggered_1e1tau, isTriggered_1mu, isTriggered_1mu1tau);
 
 //--- apply data/MC corrections for trigger efficiency
@@ -1924,8 +1967,12 @@ int main(int argc, char* argv[])
       evtWeight);
 
     if ( isMC ) {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, lumiScale);
+      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
+      if(eventWeightManager)
+      {
+        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+      }
     }
 
     if ( selEventsFile ) {

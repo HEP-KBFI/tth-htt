@@ -1,35 +1,35 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import recommendedMEtFilters
-from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_2017_cfi import EvtYieldHistManager_2017
+from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
+from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_cfi import *
 
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring(''),
+    fileNames = cms.vstring(),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
 
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('analyze_1l_2tau.root')
+    fileName = cms.string('')
 )
 
 process.analyze_1l_2tau = cms.PSet(
     treeName = cms.string('Events'),
 
-    process = cms.string('ttH'),
+    process = cms.string(''),
 
-    histogramDir = cms.string('1l_2tau_OS_Tight'),
+    histogramDir = cms.string(''),
 
-    era = cms.string('2017'),
+    era = cms.string(''),
 
-    triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
+    triggers_1e = cms.vstring(),
     use_triggers_1e = cms.bool(True),
     triggers_1e1tau = cms.vstring(),
     use_triggers_1e1tau = cms.bool(False),
-    triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
+    triggers_1mu = cms.vstring(),
     use_triggers_1mu = cms.bool(True),
     triggers_1mu1tau = cms.vstring(),
     use_triggers_1mu1tau = cms.bool(False),
@@ -39,23 +39,23 @@ process.analyze_1l_2tau = cms.PSet(
     apply_offline_e_trigger_cuts_1mu = cms.bool(True),
     apply_offline_e_trigger_cuts_1mu1tau = cms.bool(True),
 
-    electronSelection = cms.string('Tight'),
-    muonSelection = cms.string('Tight'),
-    lep_mva_cut = cms.double(0.75), # CV: used for tight lepton selection only
+    electronSelection = cms.string(''),
+    muonSelection = cms.string(''),
+    lep_mva_cut = cms.double(1.),
     apply_leptonGenMatching = cms.bool(False),
 
-    hadTauSelection = cms.string('Tight|dR03mvaTight'),
-    hadTauChargeSelection = cms.string('OS'),
+    hadTauSelection = cms.string(''),
+    hadTauChargeSelection = cms.string(''),
     apply_hadTauGenMatching = cms.bool(False),
 
-    applyFakeRateWeights = cms.string("disabled"), # either "disabled", "3L" or "2tau"
+    applyFakeRateWeights = cms.string(""),
     leptonFakeRateWeight = cms.PSet(
-        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2017_Tallinn_2018May22.root"),
-        histogramName_e = cms.string("FR_mva090_el_data_comb"),
-        histogramName_mu = cms.string("FR_mva090_mu_data_comb"),
+        inputFileName = cms.string(""),
+        histogramName_e = cms.string(""),
+        histogramName_mu = cms.string(""),
     ),
     hadTauFakeRateWeight = cms.PSet(
-        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"),
+        inputFileName = cms.string(""),
         lead = cms.PSet(
             absEtaBins = cms.vdouble(-1., 1.479, 9.9),
             graphName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"),
@@ -73,17 +73,17 @@ process.analyze_1l_2tau = cms.PSet(
     ),
 
     isMC = cms.bool(False),
-    central_or_shift = cms.string('central'),
+    central_or_shift = cms.string(''),
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_hlt_filter = cms.bool(False),
     apply_met_filters = cms.bool(True),
-    cfgMEtFilter = recommendedMEtFilters,
+    cfgMEtFilter = cms.PSet(),
     apply_hadTauFakeRateSF = cms.bool(False),
     isBDTtraining = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
-    cfgEvtYieldHistManager = EvtYieldHistManager_2017,
+    cfgEvtYieldHistManager = cms.PSet(),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),

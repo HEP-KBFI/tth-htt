@@ -5,7 +5,7 @@
  *
  * Book and fill histograms for event-level quantities on generator level in ttH, H->tautau analysis
  *
- * \author Christian Veelken, Tallin
+ * \author Christian Veelken, Tallinn
  *
  */
 
@@ -16,6 +16,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhoton.h" // GenPhoton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
+// forward declarations
+class EvtWeightManager;
+
 class GenEvtHistManager
   : public HistManagerBase
 {
@@ -25,7 +28,7 @@ public:
 
   /// book and fill histograms
   void
-  bookHistograms(TFileDirectory& dir) override;
+  bookHistograms(TFileDirectory & dir) override;
 
   void
   fillHistograms(const std::vector<GenLepton> & genElectrons,
@@ -35,6 +38,14 @@ public:
                  const std::vector<GenJet> & genJets,
                  double lumiScale,
                  double evtWeight = 1.);
+
+  void
+  bookHistograms(TFileDirectory & dir,
+                 const EvtWeightManager * const eventWeightManager);
+
+  void
+  fillHistograms(const EvtWeightManager * const eventWeightManager,
+                 double evtWeight);
 
 private:
   double minGenElectronPt_;
@@ -61,7 +72,10 @@ private:
   TH1 * histogram_lumiScale_;
   TH1 * histogram_EventCounter_;
 
-  std::vector<TH1 *> histograms_;
+  TH1 * histogram_evtWeightManager_1D_;
+  TH1 * histogram_evtWeightManager_1D_counter_;
+  TH2 * histogram_evtWeightManager_2D_;
+  TH2 * histogram_evtWeightManager_2D_counter_;
 };
 
 #endif

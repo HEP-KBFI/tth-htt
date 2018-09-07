@@ -104,6 +104,9 @@ class analyzeConfig_2lss(analyzeConfig):
     self.hadTauVeto_selection_part2 = hadTauVeto_selection
     self.applyFakeRateWeights = applyFakeRateWeights
     run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
+    if self.era != '2017':
+      logging.warning('mcClosure for lepton FR not possible for era %s' % self.era)
+      run_mcClosure = False
     if run_mcClosure:
       # Run MC closure jobs only if the analysis is run w/ (at least some) systematic uncertainties
       # self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_all" ]) #TODO
@@ -209,26 +212,6 @@ class analyzeConfig_2lss(analyzeConfig):
     lines.append("process.addBackgroundLeptonFlips.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
     lines.append("process.addBackgroundLeptonFlips.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
     create_cfg(self.cfgFile_addFlips, jobOptions['cfgFile_modified'], lines)
-
-  def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
-    """Fills the template of python configuration file for making control plots
-
-       Args:
-         histogramFile: name of the input ROOT file
-    """
-    lines = []
-    lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-    lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
-    lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
-    lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
-    lines.append("process.makePlots.categories = cms.VPSet(")
-    lines.append("  cms.PSet(")
-    lines.append("    signal = cms.string('%s')," % jobOptions['histogramDir_signal'])
-    lines.append("    sideband = cms.string('%s')," % jobOptions['histogramDir_sideband'])
-    lines.append("    label = cms.string('%s')" % self.channel)
-    lines.append("  )")
-    lines.append(")")
-    create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
 
   def addToMakefile_hadd_stage1_6(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for building the intermediate histogram file
@@ -772,7 +755,7 @@ class analyzeConfig_2lss(analyzeConfig):
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
         'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
         'histogramDir' : self.histogramDir_prep_dcard,
-        'label' : None,
+        'label' : "2lSS",
         'make_plots_backgrounds' : self.make_plots_backgrounds
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
@@ -788,7 +771,7 @@ class analyzeConfig_2lss(analyzeConfig):
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_OS_cfg.py" % self.channel),
           'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_OS.png" % self.channel),
           'histogramDir' : self.histogramDir_prep_dcard_OS,
-          'label' : "OS",
+          'label' : "2lSS OS",
           'make_plots_backgrounds' : make_plots_backgrounds
         }
         self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])

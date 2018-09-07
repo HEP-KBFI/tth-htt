@@ -208,10 +208,10 @@ lutWrapperBase::lutWrapperBase(const std::string & lutName,
                                int lutType,
                                double xMin,
                                double xMax,
-			       int xAction,
+                               int xAction,
                                double yMin,
                                double yMax,
-			       int yAction)
+                               int yAction)
   : inputFile_(nullptr)
   , lutName_(lutName)
   , xMin_(xMin)
@@ -230,10 +230,10 @@ lutWrapperBase::lutWrapperBase(std::map<std::string, TFile *> & inputFiles,
                                int lutType,
                                double xMin,
                                double xMax,
-			       int xAction,
+                               int xAction,
                                double yMin,
                                double yMax,
-			       int yAction)
+                               int yAction)
   : inputFileName_(inputFileName)
   , inputFile_(nullptr)
   , lutName_(lutName)
@@ -260,18 +260,18 @@ void
 lutWrapperBase::initialize(int lutType)
 {
   if     (lutType == kXpt        || lutType == kXptYpt     || lutType == kXptYeta    || lutType == kXptYabsEta) lutTypeX_ = kPt;
-  else if(lutType == kXeta       || lutType == kXetaYpt                                                       ) lutTypeX_ = kEta;
-  else if(lutType == kXabsEta    || lutType == kXabsEtaYpt                                                    ) lutTypeX_ = kAbsEta;
+  else if(lutType == kXeta       || lutType == kXetaYpt                                                      ) lutTypeX_ = kEta;
+  else if(lutType == kXabsEta    || lutType == kXabsEtaYpt                                                   ) lutTypeX_ = kAbsEta;
   else assert(0);
   if(xMin_ != -1. && xMax_ != -1.)
   {
     assert(xMax_ > xMin_);
   }
 
-  if     (lutType == kXpt        || lutType == kXeta       || lutType == kXabsEta                             ) lutTypeY_ = kUndefined;
-  else if(lutType == kXptYpt     || lutType == kXetaYpt    || lutType == kXabsEtaYpt                          ) lutTypeY_ = kPt;
-  else if(lutType == kXptYeta                                                                                 ) lutTypeY_ = kEta;
-  else if(lutType == kXptYabsEta                                                                              ) lutTypeY_ = kAbsEta;
+  if     (lutType == kXpt        || lutType == kXeta       || lutType == kXabsEta                            ) lutTypeY_ = kUndefined;
+  else if(lutType == kXptYpt     || lutType == kXetaYpt    || lutType == kXabsEtaYpt                         ) lutTypeY_ = kPt;
+  else if(lutType == kXptYeta                                                                                ) lutTypeY_ = kEta;
+  else if(lutType == kXptYabsEta                                                                             ) lutTypeY_ = kAbsEta;
   else assert(0);
 
   if(lutTypeY_ == kUndefined)
@@ -297,9 +297,10 @@ lutWrapperBase::getSF(double pt,
     case kAbsEta: x = std::fabs(eta); break;
     default:                          break;
   }
-  if ( xAction_ == kCut || xAction_ == kLimit_and_Cut ) {
-    if ( xMin_ != -1. && x < xMin_ ) return 1.;
-    if ( xMax_ != -1. && x > xMax_ ) return 1.;
+  if(xAction_ == kCut || xAction_ == kLimit_and_Cut)
+  {
+    if(xMin_ != -1. && x < xMin_) return 1.;
+    if(xMax_ != -1. && x > xMax_) return 1.;
   }
   double y = 0.;
   switch(lutTypeY_)
@@ -309,9 +310,10 @@ lutWrapperBase::getSF(double pt,
     case kAbsEta: y = std::fabs(eta); break;
     default:                          break;
   }
-  if ( yAction_ == kCut || yAction_ == kLimit_and_Cut ) {
-    if ( yMin_ != -1. && y < yMin_ ) return 1.;
-    if ( yMax_ != -1. && y > yMax_ ) return 1.;
+  if(yAction_ == kCut || yAction_ == kLimit_and_Cut)
+  {
+    if(yMin_ != -1. && y < yMin_) return 1.;
+    if(yMax_ != -1. && y > yMax_) return 1.;
   }
   return getSF_private(x, y);
 }
@@ -354,6 +356,28 @@ get_from_lut(const vLutWrapperBase & corrections,
   }
   return sf;
 }
+
+double
+get_from_lut(const std::map<int, vLutWrapperBase> & corrections,
+             double hadTau_pt,
+             double hadTau_eta,
+             int hadTau_decayMode,
+             bool isDEBUG)
+{
+  double sf = 1.;
+  const std::map<int, vLutWrapperBase>::const_iterator correction = corrections.find(hadTau_decayMode);
+  if(correction != corrections.end())
+  {
+    sf = get_from_lut(correction->second, hadTau_pt, hadTau_eta, isDEBUG);
+  }
+  else
+  {
+    throw cmsException(__func__, __LINE__)
+      << "Invalid parameter 'hadTauDecayMode' = " << hadTau_decayMode
+    ;
+  }
+  return sf;
+}
 //-------------------------------------------------------------------------------
 
 
@@ -370,7 +394,7 @@ lutWrapperTH1::lutWrapperTH1(std::map<std::string, TFile *> & inputFiles,
 			     int yAction)
   : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, xAction, yMin, yMax, yAction)
 {
-  if ( yAction_ == kLimit || yAction_ == kLimit_and_Cut )
+  if(yAction_ == kLimit || yAction_ == kLimit_and_Cut )
     throw cmsException(__func__, __LINE__)
       << " Configuration parameter 'yAction' = " << yAction << " not supported for objects of class lutWrapperTH1 !!\n";  
   lut_ = loadTH1(inputFile_, lutName_);
@@ -459,15 +483,18 @@ lutWrapperTGraph::lutWrapperTGraph(std::map<std::string, TFile *> & inputFiles,
                                    int lutType,
                                    double xMin,
                                    double xMax,
-				   int xAction,
+                                   int xAction,
                                    double yMin,
                                    double yMax,
-				   int yAction)
+                                   int yAction)
   : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, xAction, yMin, yMax, yAction)
 {
-  if ( yAction_ == kLimit || yAction_ == kLimit_and_Cut )
+  if(yAction_ == kLimit || yAction_ == kLimit_and_Cut)
+  {
     throw cmsException(__func__, __LINE__)
-      << " Configuration parameter 'yAction' = " << yAction << " not supported for objects of class lutWrapperTGraph !!\n";  
+      << " Configuration parameter 'yAction' = " << yAction << " not supported for objects of class lutWrapperTGraph"
+    ;
+  }
   lut_ = loadTGraph(inputFile_, lutName_);
 }
 
@@ -503,7 +530,7 @@ lutWrapperCrystalBall::lutWrapperCrystalBall(const std::string & lutName,
   , n_    (cfg.getParameter<double>("n"))
   , norm_ (cfg.getParameter<double>("norm"))
 {
-  if ( yAction_ == kLimit || yAction_ == kLimit_and_Cut )
+  if(yAction_ == kLimit || yAction_ == kLimit_and_Cut )
     throw cmsException(__func__, __LINE__)
       << " Configuration parameter 'yAction' = " << yAction << " not supported for objects of class lutWrapperCrystalBall !!\n";  
 }

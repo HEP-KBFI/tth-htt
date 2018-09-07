@@ -8,7 +8,7 @@
 
 // forward declarations
 class TFile;
-class TGraph;
+class TGraphAsymmErrors;
 class TFormula;
 class TTree;
 class GenLeptonReader;
@@ -43,6 +43,17 @@ public:
   read() const;
 
 protected:
+  /**
+   * @brief Compute "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0.3 isolation cone,
+   *        used to enhance background event statistics for training of event-level MVAs that separate ttH signal from backgrounds
+   */
+  void
+  readDBdR03oldDMwLTEff95();
+
+  TFile * tauIdMVArun2dR03DB_wpFile_;
+  TGraphAsymmErrors * DBdR03oldDMwLTEff95_;
+  TFormula * mvaOutput_normalization_DBdR03oldDMwLT_;
+
   /**
    * @brief Initialize names of branches to be read from tree
    */

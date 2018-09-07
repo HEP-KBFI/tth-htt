@@ -109,6 +109,12 @@ class analyzeConfig(object):
         self.executable_analyze = executable_analyze
         self.channel = channel
 
+        if self.channel.startswith('hh'):
+          DEPENDENCIES.extend([
+            "hhAnalysis/multilepton",
+            "TauAnalysis/ClassicSVfit4tau",
+          ])
+
         # sum the event counts for samples which cover the same phase space only if
         # there are multiple such samples
         event_sums = copy.deepcopy(samples['sum_events'])
@@ -195,13 +201,18 @@ class analyzeConfig(object):
         self.triggers = triggers
         self.triggerTable = Triggers(self.era)
 
-        if self.era == '2017':
+        samples_to_stitch = []
+        if self.era == '2016':
+          pass
+        elif self.era == '2017':
           from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
           from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import get_branch_type
           self.stitched_weights = "tthAnalysis/HiggsToTauTau/data/stitched_weights_2017.root"
+          assert (os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.stitched_weights)))
+        elif self.era == '2018':
+          raise ValueError('Implement me!')
         else:
           raise ValueError('Invalid era: %s' % self.era)
-        assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.stitched_weights)))
 
         # create temporary LUT
         samples_lut = {}
@@ -219,6 +230,7 @@ class analyzeConfig(object):
             assert(inclusive_sample in samples_lut)
             if not self.samples[samples_lut[inclusive_sample]]['use_it']:
               logging.warning('Sample {} not enabled'.format(inclusive_sample))
+              continue
             inclusive_samples.append(inclusive_sample)
 
           # loop over the binned samples
@@ -325,6 +337,8 @@ class analyzeConfig(object):
         self.outputFile_hadd_stage1_5 = {}
         self.cfgFile_addFakes = os.path.join(self.template_dir, "addBackgroundLeptonFakes_cfg.py")
         self.jobOptions_addFakes = {}
+        self.cfgFile_addTailFits = os.path.join(self.template_dir, "addBackgrounds_TailFit_cfg.py")     ## MY LINE
+        self.jobOptions_addTailFits = {}                                                                  ## MY LINE
         self.inputFiles_hadd_stage2 = {}
         self.outputFile_hadd_stage2 = {}
         self.cfgFile_prep_dcard = os.path.join(self.template_dir, "prepareDatacards_cfg.py")
@@ -358,6 +372,7 @@ class analyzeConfig(object):
         self.num_jobs['hadd'] = 0
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
+        self.num_jobs['addTailFits'] = 0 ## MY LINE
 
         self.leptonFakeRateWeight_inputFile = None
         self.leptonFakeRateWeight_histogramName_e = None
@@ -369,20 +384,39 @@ class analyzeConfig(object):
             self.lep_mva_wp = "075"
 
         if self.lep_mva_wp == "090":
+            if self.era not in [ "2017" ]:
+              raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
             self.lep_mva_cut = 0.90
         elif self.lep_mva_wp == "075":
+            if self.era not in [ "2016", "2017" ]:
+              raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
             self.lep_mva_cut = 0.75
         else:
             raise ValueError("Invalid Configuration parameter 'lep_mva_wp' = %s !!" % self.lep_mva_wp)
 
-        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva%s_2017_CERN_2018May29.root" % self.lep_mva_wp
+        if self.era == '2016':
+            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2016_data.root"
+        elif self.era == '2017':
+            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva%s_2017_CERN_2018May29.root" % self.lep_mva_wp
+        elif self.era == '2018':
+            raise ValueError('Implement me!')
+        else:
+            raise ValueError('Invalid era: %s' % self.era)
         if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
             raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
         self.hadTau_selection_relaxed = None
-        self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
+        if self.era == '2016':
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
+        elif self.era == '2017':
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
+        elif self.era == '2018':
+            raise ValueError('Implement me!')
+        else:
+            raise ValueError('Invalid era: %s' % self.era)
         self.isBDTtraining = False
         self.mcClosure_dir = {}
+        self.cfgFile_make_plots_mcClosure = ''
 
     def __del__(self):
         for hostname, times in self.cvmfs_error_log.items():
@@ -390,9 +424,30 @@ class analyzeConfig(object):
             for time in times:
                 logging.error(str(time))
 
+    def set_triggerSF_2tau(self, lines):
+        lines.extend([
+          "",
+          "jsonFileName = os.path.expandvars('$CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/triggerSF/2016/trigger_sf_tt.json')",
+          "jsonFile = open(jsonFileName)",
+          "import json",
+          "jsonData = json.load(jsonFile)",
+          "for fit, parameters in jsonData.items():",
+          "  pset = cms.PSet()",
+          "  for parameterName, parameterValue in parameters.items():",
+          "    setattr(pset, parameterName, cms.double(parameterValue))",
+          "    setattr(process.analyze_%s.triggerSF_2tau, fit, pset)" % self.channel,
+          "",
+        ])
+        return lines
+
     def set_leptonFakeRateWeightHistogramNames(self, central_or_shift, lepton_and_hadTau_selection):
+        if 'mcClosure' in lepton_and_hadTau_selection and self.era != '2017':
+          raise ValueError('Invalid selection for era %s: %s' % (self.era, lepton_and_hadTau_selection))
         suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection else 'data_comb'
-        self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (self.lep_mva_wp, suffix)
+        if self.era == '2016':
+          self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s" % (self.lep_mva_wp, suffix)
+        elif self.era == '2017':
+          self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (self.lep_mva_wp, suffix)
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (self.lep_mva_wp, suffix)
 
         leptonFakeRateWeight_histogramName_e_suffix = ''
@@ -406,9 +461,19 @@ class analyzeConfig(object):
         elif central_or_shift == "CMS_ttHl_FRe_shape_normDown":
             leptonFakeRateWeight_histogramName_e_suffix = '_down'
         elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelUp":
-            leptonFakeRateWeight_histogramName_e_suffix = '_be1'
+            if self.era == '2016':
+                leptonFakeRateWeight_histogramName_e_suffix = '_b1'
+            elif self.era == '2017':
+                leptonFakeRateWeight_histogramName_e_suffix = '_be1'
+            else:
+                raise ValueError('Invalid era: %s' % self.era)
         elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelDown":
-            leptonFakeRateWeight_histogramName_e_suffix = '_be2'
+            if self.era == '2016':
+                leptonFakeRateWeight_histogramName_e_suffix = '_b2'
+            elif self.era == '2017':
+                leptonFakeRateWeight_histogramName_e_suffix = '_be2'
+            else:
+                raise ValueError('Invalid era: %s' % self.era)
         elif central_or_shift == "CMS_ttHl_FRm_shape_ptUp":
             leptonFakeRateWeight_histogramName_mu_suffix = '_pt1'
         elif central_or_shift == "CMS_ttHl_FRm_shape_ptDown":
@@ -418,9 +483,19 @@ class analyzeConfig(object):
         elif central_or_shift == "CMS_ttHl_FRm_shape_normDown":
             leptonFakeRateWeight_histogramName_mu_suffix = '_down'
         elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelUp":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
+            if self.era == '2016':
+                leptonFakeRateWeight_histogramName_mu_suffix = '_b1'
+            elif self.era == '2017':
+                leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
+            else:
+                raise ValueError('Invalid era: %s' % self.era)
         elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelDown":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
+            if self.era == '2016':
+                leptonFakeRateWeight_histogramName_mu_suffix = '_b2'
+            elif self.era == '2017':
+                leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
+            else:
+                raise ValueError('Invalid era: %s' % self.era)
 
         self.leptonFakeRateWeight_histogramName_e  += leptonFakeRateWeight_histogramName_e_suffix
         self.leptonFakeRateWeight_histogramName_mu += leptonFakeRateWeight_histogramName_mu_suffix
@@ -430,9 +505,22 @@ class analyzeConfig(object):
            for the purpose of preparing event list files for BDT training.
         """
         self.hadTau_selection_relaxed = hadTau_selection_relaxed
+        if self.hadTau_selection_relaxed == "dR03mvaVLoose":
+            if self.era == "2016":
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vLoosePresel.root"
+            elif self.era == "2017":
+                pass
+            elif self.era == "2018":
+                raise ValueError("Implement me!")
+            else:
+                raise ValueError("Invalid era: %s" % self.era)
         if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
-            if self.era == "2017":
+            if self.era == "2016":
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
+            elif self.era == "2017":
                 self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
+            elif self.era == "2018":
+                raise ValueError("Implement me!")
             else:
                 raise ValueError("Invalid era: %s" % self.era)
         self.isBDTtraining = True
@@ -496,9 +584,6 @@ class analyzeConfig(object):
             'electronSelection',
             'muonSelection',
             'lep_mva_cut',
-            'lep_minPt_lead',
-            'lep_minPt_sublead',
-            'lep_minPt_third',
             'lep_mLL_veto',
             'e_dR_cleaning',
             'chargeSumSelection',
@@ -548,9 +633,11 @@ class analyzeConfig(object):
             "# Filled in %s" % current_function_name,
             "process.fwliteInput.fileNames = cms.vstring(%s)"  % jobOptions['ntupleFiles'],
             "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
-            "{}.{:<{len}} = cms.string('{}')".format(process_string, 'era',             self.era,     len = max_option_len),
-            "{}.{:<{len}} = cms.bool({})".format    (process_string, 'redoGenMatching', 'False',      len = max_option_len),
-            "{}.{:<{len}} = cms.bool({})".format    (process_string, 'isDEBUG',         self.isDebug, len = max_option_len),
+            "{}.{:<{len}} = cms.string('{}')".format        (process_string, 'era',                    self.era,     len = max_option_len),
+            "{}.{:<{len}} = cms.bool({})".format            (process_string, 'redoGenMatching',       'False',       len = max_option_len),
+            "{}.{:<{len}} = cms.bool({})".format            (process_string, 'isDEBUG',                self.isDebug, len = max_option_len),
+            "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era,     len = max_option_len),
+            "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era,     len = max_option_len),
         ]
         for jobOptions_key in jobOptions_keys:
             if jobOptions_key not in jobOptions: continue # temporary?
@@ -580,7 +667,8 @@ class analyzeConfig(object):
             assert(jobOptions_expr)
             if jobOptions_key.startswith('apply_') and jobOptions_key.endswith('GenMatching'):
                 jobOptions_val = jobOptions_val and is_mc and not self.isBDTtraining
-            jobOptions_val = jobOptions_expr % str(jobOptions_val)
+            if jobOptions_key not in [ 'triggers_mu_cfg', 'triggers_e_cfg' ]:
+              jobOptions_val = jobOptions_expr % str(jobOptions_val)
             lines.append("{}.{:<{len}} = {}".format(process_string, jobOptions_key, jobOptions_val, len = max_option_len))
 
         blacklist = set(sample_info["missing_hlt_paths"]) | set(sample_info["missing_from_superset"])
@@ -671,6 +759,41 @@ class analyzeConfig(object):
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
 
+    def createCfg_addTailFits(self, jobOptions):
+        """Create python configuration file for the addBackgrounds_TailFit executable (Tail Fitting of histograms)
+        Args:
+        inputFiles: input file (the ROOT file produced by hadd_stage1)
+        outputFile: output file of the job
+        """
+        lines = []
+        lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
+        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
+        lines.append("process.addBackgrounds_TailFit.InputDir = cms.string('%s')" % os.path.basename(jobOptions['inputDir']))
+        lines.append("process.addBackgrounds_TailFit.histogramName = cms.string('%s')" % os.path.basename(jobOptions['histogramName']))
+        lines.append("process.addBackgrounds_TailFit.nominal_fit_func = cms.PSet(")
+        lines.append("   FitfuncName   = cms.string('%s')," % "Exponential")
+        lines.append("   FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_nom'])
+        lines.append("   FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_nom'])
+        lines.append("   )")
+        if jobOptions['histogramName'].find("dihiggsMass") != -1:
+            lines.append("process.addBackgrounds_TailFit.alternate_fit_funcs = cms.VPSet(")
+            lines.append("   cms.PSet(")
+            lines.append("       FitfuncName   = cms.string('%s')," % "LegendrePolynomial3")
+            lines.append("       FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_alt0'])
+            lines.append("       FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_alt0'])
+            lines.append("       ),")
+            lines.append(" )")
+        else:
+            lines.append("process.addBackgrounds_TailFit.alternate_fit_funcs = cms.VPSet(")
+            lines.append("   cms.PSet(")
+            lines.append("       FitfuncName   = cms.string('%s')," % "LegendrePolynomial1")
+            lines.append("       FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_alt0'])
+            lines.append("       FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_alt0'])
+            lines.append("       ),")
+            lines.append(" )")
+        create_cfg(self.cfgFile_addTailFits, jobOptions['cfgFile_modified'], lines)
+
+
     def createCfg_prep_dcard(self, jobOptions):
         """Fills the template of python configuration file for datacard preparation
 
@@ -698,38 +821,36 @@ class analyzeConfig(object):
 
         # If the user has specified the binning options for a particular histogram, we expect to see
         # a dictionary instead of a list of histogram names that's been passed to this class as histograms_to_fit
-        if type(self.histograms_to_fit) == dict:
-            if histogramToFit in self.histograms_to_fit:
-                histogramToFit_options = self.histograms_to_fit[histogramToFit]
-                # Check the binning options
-                if not histogramToFit_options:
-                    # Use whatever the default setting are in the original prepareDatacards template
-                    pass
-                else:
-                    # Expected syntax:
-                    # {
-                    #   "EventCounter"    : { 'auto_rebin' : True, 'min_auto_rebin' = 0.05 }, # no quantile
-                    #   "numJets"         : { 'quantile_rebin' : 5 }, # also enables quantile rebinning, no auto
-                    #   "mTauTauVis1_sel" : {}, # default settings (no auto or quantile rebinning)
-                    # }
-                    if 'auto_rebin' in histogramToFit_options:
-                        lines.append("process.prepareDatacards.apply_automatic_rebinning = cms.bool(%s)" % \
-                                     histogramToFit_options['auto_rebin'])
-                    if 'min_auto_rebin' in histogramToFit_options:
-                        lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(%.3f)" % \
-                                     histogramToFit_options['min_auto_rebin'])
-                    if 'quantile_rebin' in histogramToFit_options:
-                        lines.append("process.prepareDatacards.nbin_quantile_rebinning = cms.int32(%d)" % \
-                                     histogramToFit_options['quantile_rebin'])
-                        if 'quantile_in_fakes' in histogramToFit_options:
-                            lines.append("process.prepareDatacards.quantile_rebinning_in_fakes = cms.bool(%s)" % \
-                                         histogramToFit_options['quantile_in_fakes'])
-                    if 'explicit_binning' in histogramToFit_options:
-                        explicit_binning = histogramToFit_options['explicit_binning']
-                        assert(type(explicit_binning) == list and sorted(explicit_binning) == explicit_binning)
-                        lines.append("process.prepareDatacards.explicit_binning = cms.vdouble(%s)" % explicit_binning)
-        # If self.histograms_to_fit is not a dictionary but a list, do not modify anything but
-        # use the default settings specified in the original prepareDatacards template
+        assert(histogramToFit in self.histograms_to_fit)
+        histogramToFit_options = self.histograms_to_fit[histogramToFit]
+
+        # Check the binning options
+        if not histogramToFit_options:
+            # Use whatever the default setting are in the original prepareDatacards template
+            pass
+        else:
+            # Expected syntax:
+            # {
+            #   "EventCounter"    : { 'auto_rebin' : True, 'min_auto_rebin' = 0.05 }, # no quantile
+            #   "numJets"         : { 'quantile_rebin' : 5 }, # also enables quantile rebinning, no auto
+            #   "mTauTauVis1_sel" : {}, # default settings (no auto or quantile rebinning)
+            # }
+            if 'auto_rebin' in histogramToFit_options:
+                lines.append("process.prepareDatacards.apply_automatic_rebinning = cms.bool(%s)" % \
+                             histogramToFit_options['auto_rebin'])
+            if 'min_auto_rebin' in histogramToFit_options:
+                lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(%.3f)" % \
+                             histogramToFit_options['min_auto_rebin'])
+            if 'quantile_rebin' in histogramToFit_options:
+                lines.append("process.prepareDatacards.nbin_quantile_rebinning = cms.int32(%d)" % \
+                             histogramToFit_options['quantile_rebin'])
+                if 'quantile_in_fakes' in histogramToFit_options:
+                    lines.append("process.prepareDatacards.quantile_rebinning_in_fakes = cms.bool(%s)" % \
+                                 histogramToFit_options['quantile_in_fakes'])
+            if 'explicit_binning' in histogramToFit_options:
+                explicit_binning = histogramToFit_options['explicit_binning']
+                assert(type(explicit_binning) == list and sorted(explicit_binning) == explicit_binning)
+                lines.append("process.prepareDatacards.explicit_binning = cms.vdouble(%s)" % explicit_binning)
 
         create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
@@ -817,6 +938,26 @@ class analyzeConfig(object):
         lines.append(")")
         lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
+
+    def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
+      """Fills the template of python configuration file for making control plots
+
+      Args:
+        histogramFile: name of the input ROOT file
+      """
+      lines = []
+      lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
+      lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
+      lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
+      lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+      lines.append("process.makePlots.categories = cms.VPSet(")
+      lines.append("  cms.PSet(")
+      lines.append("    signal = cms.string('%s')," % self.histogramDir_prep_dcard)
+      lines.append("    sideband = cms.string('%s')," % self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights"))
+      lines.append("    label = cms.string('%s')" % self.channel)
+      lines.append("  )")
+      lines.append(")")
+      create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
                             key_cfg_file = 'cfgFile_modified', key_input_file = 'inputFile',

@@ -29,7 +29,8 @@ LAYOUTS = {
 LAYOUTS1 = { ## FOR tt
     "e": [
         ('fakes_data', {
-            'entries': ['fakes_data'],
+            'entries': ['fakes_data'], ## for data driven fake estimate
+#            'entries': ['QCD'],       ## for mc driven fake estimate
             'legend': 'Fakes',
             'color': ROOT.TColor.GetColor(250, 202, 255)
         }
