@@ -922,9 +922,12 @@ class analyzeConfig(object):
            Args:
              histogram_file: name of the input ROOT file
         """
-        category_label = self.channel
-        if jobOptions['label']:
-            category_label += " (%s)" % jobOptions['label']
+        if jobOptions['skipChannel']:
+          category_label = jobOptions['label']
+        else:
+          category_label = self.channel
+          if jobOptions['label']:
+              category_label += " (%s)" % jobOptions['label']
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
@@ -937,6 +940,13 @@ class analyzeConfig(object):
         lines.append("  )")
         lines.append(")")
         lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
+        if 'massPoint' in jobOptions:
+            for plotOption in [ 'legendEntrySignal', 'labelOnTop' ]:
+                lines.append("if 'masspoint' in process.makePlots.%s._value:" % plotOption)
+                lines.append("  process.makePlots.{plotOption} = cms.string(process.makePlots.{plotOption}._value.replace('masspoint', '{massPoint}'))".format(
+                  massPoint = jobOptions['massPoint'],
+                  plotOption = plotOption,
+                ))
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
@@ -957,6 +967,14 @@ class analyzeConfig(object):
       lines.append("    label = cms.string('%s')" % self.channel)
       lines.append("  )")
       lines.append(")")
+      lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
+      if 'massPoint' in jobOptions:
+            for plotOption in [ 'legendEntrySignal', 'labelOnTop' ]:
+                lines.append("if '{masspoint}' in process.makePlots.%s._value:" % plotOption)
+                lines.append("  process.makePlots.{plotOption} = cms.string(process.makePlots.{plotOption}._value.format(masspoint = '{massPoint}'))".format(
+                  massPoint = jobOptions['massPoint'],
+                  plotOption = plotOption,
+                ))
       create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
