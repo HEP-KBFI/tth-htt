@@ -13,7 +13,8 @@ class MEtFilterReader
   : public ReaderBase
 {
 public:
-  MEtFilterReader(MEtFilter * metFilter);
+  MEtFilterReader(MEtFilter * metFilter,
+                  int era);
   ~MEtFilterReader();
 
   void
@@ -33,6 +34,7 @@ protected:
   static MEtFilterReader * instance_;
 
   MEtFilter * metFilter_;
+  int era_;
 };
 
 #endif

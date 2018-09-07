@@ -2,7 +2,7 @@
 import os, logging, sys, getpass
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_2los_1tau import analyzeConfig_2los_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
-from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_2los_1tau.py -v 2017Dec13 -m default -e 2017
@@ -49,30 +49,65 @@ for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
+lumi = get_lumi(era)
 
 if mode == "default":
   if use_preselected:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_preselected import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017 as samples
+    elif era == "2019":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_preselected import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
-  hadTau_selection     = "dR03mvaLoose"
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
+
+  if era == "2016":
+    hadTau_selection = "dR03mvaMedium"
+  elif era == "2017":
+    hadTau_selection = "dR03mvaLoose"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
+
   applyFakeRateWeights = "3L"
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017
-  hadTau_selection         = "dR03mvaTight"
-  hadTau_selection_relaxed = "dR03mvaVLoose"
-  applyFakeRateWeights     = "3L"
-else:
-  raise ValueError("Internal logic error")
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_BDT import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_BDT import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
 
-if era == "2017":
-  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
-  samples = samples_2017
+  if era == "2016":
+    hadTau_selection         = "dR03mvaVTight"
+    hadTau_selection_relaxed = "dR03mvaMedium"
+  elif era == "2017":
+    hadTau_selection         = "dR03mvaTight"
+    hadTau_selection_relaxed = "dR03mvaVLoose"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
+
+  applyFakeRateWeights = "3L"
 else:
-  raise ValueError("Invalid era: %s" % era)
+  raise ValueError("Invalid mode: %s" % mode)
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -114,14 +149,14 @@ if __name__ == '__main__':
     num_parallel_jobs         = num_parallel_jobs,
     executable_addBackgrounds = "addBackgrounds",
     executable_addFakes       = "addBackgroundLeptonFakes",
-    histograms_to_fit         = [
-      "EventCounter",
-      "numJets",
-      "mvaDiscr_2lss",
-      "mvaOutput_2los_1tau_ttbar",
-      "mvaDiscr_2los_1tau",
-      "mTauTauVis"
-    ],
+    histograms_to_fit         = {
+      "EventCounter"              : {},
+      "numJets"                   : {},
+      "mvaDiscr_2lss"             : {},
+      "mvaOutput_2los_1tau_ttbar" : {},
+      "mvaDiscr_2los_1tau"        : {},
+      "mTauTauVis"                : {},
+    },
     select_rle_output         = True,
     dry_run                   = dry_run,
     isDebug                   = debug,

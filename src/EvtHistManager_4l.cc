@@ -1,11 +1,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_4l.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow(), getLogWeight()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era(), kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 EvtHistManager_4l::EvtHistManager_4l(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
+  , era_(get_era(cfg.getParameter<std::string>("era")))
 {}
 
 const TH1 *
@@ -31,11 +32,11 @@ EvtHistManager_4l::bookHistograms(TFileDirectory & dir)
 
 void
 EvtHistManager_4l::fillHistograms(int numElectrons,
-				  int numMuons,
-				  int numJets,
-				  int numBJets_loose,
-				  int numBJets_medium,
-				  double evtWeight)
+                                  int numMuons,
+                                  int numJets,
+                                  int numBJets_loose,
+                                  int numBJets_medium,
+                                  double evtWeight)
 {
   const double evtWeightErr = 0.;
 

@@ -1,24 +1,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2lss.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era(), kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 EvtHistManager_2lss::EvtHistManager_2lss(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)
-  , era_(-1)
-{
-  const std::string era_string = cfg.getParameter<std::string>("era");
-  if(era_string == "2017" )
-  {
-    era_ = kEra_2017;
-  }
-  else
-  {
-    throw cmsException(this)
-      << "Invalid Configuration parameter 'era' = " << era_string;
-  }
-}
+  , era_(get_era(cfg.getParameter<std::string>("era")))
+{}
 
 const TH1 *
 EvtHistManager_2lss::getHistogram_EventCounter() const
@@ -40,11 +29,7 @@ void EvtHistManager_2lss::bookHistograms(TFileDirectory & dir)
 
   histogram_mvaOutput_2lss_ttV_   = book1D(dir, "mvaOutput_2lss_ttV",   "mvaOutput_2lss_ttV",   40, -1., +1.);
   histogram_mvaOutput_2lss_ttbar_ = book1D(dir, "mvaOutput_2lss_ttbar", "mvaOutput_2lss_ttbar", 40, -1., +1.);
-  switch(era_)
-  {
-    case kEra_2017: histogram_mvaDiscr_2lss_ = book1D(dir, "mvaDiscr_2lss", "mvaDiscr_2lss", 7, 0.5, 7.5); break;
-    default:        assert(0);
-  }
+  histogram_mvaDiscr_2lss_        = book1D(dir, "mvaDiscr_2lss",        "mvaDiscr_2lss",         7,  0.5, 7.5);
 
   histogram_mvaOutput_Hj_tagger_  = book1D(dir, "mvaOutput_Hj_tagger",  "mvaOutput_Hj_tagger",  20, -1., +1.);
   histogram_mvaOutput_Hjj_tagger_ = book1D(dir, "mvaOutput_Hjj_tagger", "mvaOutput_Hjj_tagger", 20, -1., +1.);
@@ -54,17 +39,17 @@ void EvtHistManager_2lss::bookHistograms(TFileDirectory & dir)
 
 void
 EvtHistManager_2lss::fillHistograms(int numElectrons,
-				    int numMuons,
-				    int numHadTaus,
-				    int numJets,
-				    int numBJets_loose,
-				    int numBJets_medium,
-				    double evtWeight,
-				    double mvaOutput_2lss_ttV,
-				    double mvaOutput_2lss_ttbar,
-				    double mvaDiscr_2lss,
-				    double mvaOutput_Hj_tagger,
-				    double mvaOutput_Hjj_tagger)
+                                    int numMuons,
+                                    int numHadTaus,
+                                    int numJets,
+                                    int numBJets_loose,
+                                    int numBJets_medium,
+                                    double evtWeight,
+                                    double mvaOutput_2lss_ttV,
+                                    double mvaOutput_2lss_ttbar,
+                                    double mvaDiscr_2lss,
+                                    double mvaOutput_Hj_tagger,
+                                    double mvaOutput_Hjj_tagger)
 {
   const double evtWeightErr = 0.;
 

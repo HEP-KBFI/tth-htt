@@ -174,6 +174,7 @@ LUMI_UNITS = [ '/fb', '/pb', '/nb', '/ub' ]
 
 DATA_TIER     = 'MINIAOD'
 MC_TIER       = '%sSIM' % DATA_TIER
+PRIVATE_TIER  = 'USER'
 AQC_KEY       = 'cat'
 PDS_KEY       = 'data'
 
@@ -182,11 +183,23 @@ DASGOCLIENT_QUERY_ANY_STATUS = "dasgoclient -query='dataset dataset=%s status=* 
 DASGOCLIENT_QUERY_RELEASE    = "dasgoclient -query='release dataset=%s' -unique"
 DASGOCLIENT_QUERY_RUNLUMI    = "dasgoclient -query='run,lumi dataset=%s' -unique"
 
+PRIVATE_REGEX = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % PRIVATE_TIER)
 MC_REGEX      = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
 DATASET_REGEX = re.compile("^/(.*)/(.*)/[0-9A-Za-z]+$")
 
 def get_crab_string(dataset_name, paths):
+  paths_ = []
   for path in paths:
+    if os.path.isfile(path):
+      with open(path, 'r') as f:
+        for line in f:
+          path_candidate = line.rstrip('\n')
+          if not os.path.isdir(path_candidate):
+            raise RuntimeError('Not a directory: %s' % path_candidate)
+          paths_.append(path_candidate)
+    else:
+      paths_.append(path)
+  for path in paths_:
     version = os.path.basename(path)
     dataset_match = DATASET_REGEX.match(dataset_name)
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
@@ -399,6 +412,10 @@ if __name__ == '__main__':
     type = str, dest = 'dataset', metavar = 'path', default = 'datasets.txt', required = False,
     help = 'R|Output path of the dataset list (valid if -i/--input not provided)',
   )
+  parser.add_argument('-s', '--sum-events',
+    type = str, dest = 'sum_events', metavar = 'file', default = '', required = False,
+    help = 'R|File containing list of samples that cover the same phase space (one such list per line)',
+  )
   parser.add_argument('-c', '--crab-string',
     type = str, nargs = '+', dest = 'crab_string', metavar = 'path', default = [], required = False,
     help = 'R|Fill CRAB string',
@@ -446,6 +463,10 @@ if __name__ == '__main__':
     type = str, dest = 'version', metavar = 'version', default = '9_4_0', required = False,
     help = 'R|Minimum required CMSSW version',
   )
+  parser.add_argument('-C', '--custom-strings',
+    type = str, nargs = '+', dest = 'custom_strings', metavar = 'str', default = [], required = False,
+    help = 'R|Custom string(s) a dataset name must contain',
+  )
   parser.add_argument('-t', '--tmp-dir',
     type = str, dest = 'tmp_dir', metavar = 'path', required = False,
     default = os.path.join('/tmp', getpass.getuser()),
@@ -454,10 +475,6 @@ if __name__ == '__main__':
   parser.add_argument('-l', '--luminosity',
     dest = 'luminosity', action = 'store_true', default = False, required = False,
     help = 'R|Compute integrated luminosity for each selected PD',
-  )
-  parser.add_argument('-P', '--private-path',
-    type = str, dest = 'private_path', metavar = 'path', required = False,
-    help = 'R|Path to private MINIAODs',
   )
   parser.add_argument('-V', '--verbose',
     dest = 'verbose', action = 'store_true', default = False, required = False,
@@ -492,7 +509,6 @@ if __name__ == '__main__':
   required_cmssw_version = Version(required_cmssw_version_str)
   verbose = args.verbose
   crab_string = args.crab_string
-  private_path = args.private_path
 
   primary_datasets = args.primary_datasets
   DATA_GREP_STR = '\\|'.join(map(lambda sample: '^/%s/' % sample, primary_datasets))
@@ -514,7 +530,12 @@ if __name__ == '__main__':
   brilcalc_path = os.path.join(args.brilconda_dir, 'bin', 'brilcalc')
   units = args.units
   tmp_dir = args.tmp_dir
+  sum_events_file = args.sum_events
+  custom_strings = args.custom_strings
   lumi_pool = None
+
+  if sum_events_file and not os.path.isfile(sum_events_file):
+    raise ValueError('No such file: %s' % sum_events_file)
 
   if compute_lumi:
     # Check if the brilconda package has been installed
@@ -563,7 +584,7 @@ if __name__ == '__main__':
           # probably a comment or an empty line
           continue
         fields = field_str.split()
-        if len(fields) != 5:
+        if len(fields) < 5:
           raise ValueError("Unparseable line in file %s: %s" % (line_stripped, mc_input))
 
         das_name        = fields[0]
@@ -571,14 +592,18 @@ if __name__ == '__main__':
         sample_category = fields[2]
         specific_name   = fields[3]
         xs              = float(fields[4]) # let it fail
+        private_path    = fields[5] if len(fields) == 6 else ''
 
-        if not MC_REGEX.match(das_name):
+        if not MC_REGEX.match(das_name) and not PRIVATE_REGEX.match(das_name):
           raise ValueError("Error: line '%s' does not correspond to proper DBS name" % das_name)
+        if custom_strings and not any(map(lambda custom_string: custom_string in das_name, custom_strings)):
+          continue
         das_query_results[das_name] = {
           'sample_category' : sample_category,
           'specific_name'   : specific_name,
           'xs'              : xs,
           'use_it'          : use_it,
+          'private_path'    : private_path,
         }
 
     for dataset_idx, dataset in enumerate(das_query_results):
@@ -587,15 +612,13 @@ if __name__ == '__main__':
           "Querying sample (%d/%d): %s;" % (dataset_idx + 1, len(das_query_results), dataset)
         )
       dataset_split = dataset.split('/')
-      if dataset_split[2] == 'private':
+      if dataset_split[3] == PRIVATE_TIER:
         # The sample is privately produced and we would have to get the stats from the FS directly
         # Fill the meta-dictionary with some basic values
         sys.stdout.write("\n(It's a privately produced sample)\n")
-        if not private_path:
-          raise ValueError('No path to private samples provided!')
-        if not os.path.isdir(private_path):
-          raise ValueError('No such path: %s' % private_path)
-        dataset_private_path = os.path.join(private_path, dataset_split[1])
+        dataset_private_path = das_query_results[dataset]['private_path']
+        if not dataset_private_path:
+          raise ValueError('No path provided for sample %s' % dataset)
         fs_results = scan_private(dataset_private_path)
 
         das_query_results[dataset]['name'] = dataset
@@ -697,19 +720,13 @@ if __name__ == '__main__':
       dataset_entry['specific_name'] for dataset_entry in das_query_results.values() \
       if dataset_entry['use_it']
     ]
-    sum_events = {}
-    for specific_name_ref in specific_names:
-      for specific_name_test in specific_names:
-        for sum_suffix in sum_suffixes:
-          if re.match('^' + specific_name_ref + sum_suffix, specific_name_test):
-            if specific_name_ref not in sum_events:
-              sum_events[specific_name_ref] = []
-            sum_events[specific_name_ref].append(specific_name_test)
-    sum_events_flattened = [
-      [ specific_name_ref] + specific_name_tests \
-      for specific_name_ref, specific_name_tests in sum_events.items()
-    ]
-    sum_events_flattened = list(sorted(sum_events_flattened, key = lambda x: x[0].lower()))
+    sum_events_flattened = []
+    if sum_events_file:
+      with open(sum_events_file, 'r') as sum_events_file_ptr:
+        for line in sum_events_file_ptr:
+          line_split = line.rstrip('\n').split()
+          if line_split:
+            sum_events_flattened.append(line_split)
 
     # Let's get the total event counts in each sample category; we want to maintain the original
     # order of sample categories they were declared
@@ -752,7 +769,9 @@ if __name__ == '__main__':
     for data_sample in data_samples_list:
       collection_match = collection_regex.match(data_sample)
       if not collection_match:
-        raise ValueError("Could not parse sample: %s" % data_sample)
+        continue
+      if custom_strings and not any(map(lambda custom_string: custom_string in data_sample, custom_strings)):
+        continue
       primary_dataset    = collection_match.group(PDS_KEY)
       aqcuisition_period = collection_match.group(AQC_KEY)
 

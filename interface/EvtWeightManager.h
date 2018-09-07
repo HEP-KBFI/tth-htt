@@ -26,6 +26,21 @@ public:
   double
   getWeight() const;
 
+  int
+  getDimension() const;
+
+  TH1 *
+  getHistogram_1D() const;
+
+  TH2 *
+  getHistogram_2D() const;
+
+  int
+  getBinIdx_1D() const;
+
+  std::pair<int, int>
+  getBinIdx_2D() const;
+
 protected:
   std::string binnedHistogram_varName_x_;
   std::string binnedHistogram_varName_y_;

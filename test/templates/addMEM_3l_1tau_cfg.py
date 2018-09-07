@@ -3,26 +3,24 @@ import FWCore.ParameterSet.Config as cms
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring(''),
+    fileNames = cms.vstring(),
     skipEvents = cms.uint32(0),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(1000)
 )
 
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('addMEM_3l_1tau.root')
+    fileName = cms.string('')
 )
 
 process.addMEM_3l_1tau = cms.PSet(
     treeName = cms.string('Events'),
 
-    era = cms.string('2017'),
-
-    leptonSelection = cms.string('Fakeable'),
-
-    hadTauSelection = cms.string('Tight|dR03mvaMedium'),
-
+    era = cms.string(''),
     isMC = cms.bool(True),
+
+    leptonSelection = cms.string(''),
+    hadTauSelection = cms.string(''),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
@@ -34,21 +32,27 @@ process.addMEM_3l_1tau = cms.PSet(
 
     copy_histograms = cms.vstring(
         "Count",
-        "CountFullWeighted",
-        "CountWeighted",
         "CountPosWeight",
         "CountNegWeight",
+        "CountWeighted",
+        "CountWeightedNoPU",
+        "CountFullWeighted",
+        "CountFullWeightedNoPU",
         "CountWeightedLHEWeightScale",
+        "CountWeightedLHEWeightScaleNoPU",
+        "CountFullWeightedLHEWeightScale",
+        "CountFullWeightedLHEWeightScaleNoPU",
         "CountWeightedLHEWeightPdf",
+        "CountWeightedLHEWeightPdfNoPU",
+        "CountFullWeightedLHEWeightPdf",
+        "CountFullWeightedLHEWeightPdfNoPU",
     ),
 
     selEventsFileName_input = cms.string(''),
     isDEBUG = cms.bool(False),
     readGenObjects = cms.bool(True),
 
-    central_or_shift = cms.vstring(
-        "central",
-    ),
+    central_or_shift = cms.vstring(),
     useNonNominal = cms.bool(False),
     dryRun = cms.bool(False),
 )

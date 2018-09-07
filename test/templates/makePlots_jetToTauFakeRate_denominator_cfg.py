@@ -1,25 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-import os
-
 from tthAnalysis.HiggsToTauTau.configs.makePlots_cfi import process
-
-process.makePlots.processesBackground = cms.vstring(
-    "TT",
-    "TTW",
-    "TTWW",
-    "TTZ",
-    "EWK",
-    "Rares",
-)
-process.makePlots.processSignal = cms.string("signal")
-
-process.makePlots.categories = cms.VPSet(
-    cms.PSet(
-        name = cms.string("jetToTauFakeRate_OS"),
-        label = cms.string("jet #rightarrow #tau_{h} CR")
-    )
-)
 
 process.makePlots.distributions = cms.VPSet(
     cms.PSet(
@@ -45,15 +26,3 @@ process.makePlots.distributions = cms.VPSet(
         yAxisTitle = cms.string("dN/d#phi")
     )
 )
-
-process.makePlots.nuisanceParameters.normalization = cms.PSet(
-    signal = cms.string("1.0 +/- 0.20"),
-    TT = cms.string("1.0 +/- 0.20"),
-    TTW = cms.string("1.0 +/- 0.20"),
-    TTWW = cms.string("1.0 +/- 0.20"),
-    TTZ = cms.string("1.0 +/- 0.20"),
-    EWK = cms.string("1.0 +/- 0.20"),
-    Rares = cms.string("1.0 +/- 0.20")
-)
-
-

@@ -23,7 +23,7 @@ import math
 # the first entry in each array must be inclusive
 samples_to_sum_2017 = [
   [
-    'DYJetsToLL_M-50',                'DYJetsToLL_M-50_ext1',
+    'DYJetsToLL_M-50_LO',             'DYJetsToLL_M-50_LO_ext1',
     'DY1JetsToLL_M-50',               'DY1JetsToLL_M-50_ext1',
     'DY2JetsToLL_M-50',               'DY2JetsToLL_M-50_ext1',
     'DY3JetsToLL_M-50',               'DY3JetsToLL_M-50_ext1',
@@ -50,6 +50,13 @@ samples_to_sum_2017 = [
     'W2JetsToLNu',
     'W3JetsToLNu',
     'W4JetsToLNu',
+    'WJetsToLNu_HT100To200',
+    'WJetsToLNu_HT200To400',
+    'WJetsToLNu_HT400To600',
+    'WJetsToLNu_HT600To800',
+    'WJetsToLNu_HT800To1200',
+    'WJetsToLNu_HT1200To2500',
+    'WJetsToLNu_HT2500ToInf',
   ],
   [ 'GluGluHToZZTo4L',                'GluGluHToZZTo4L_ext1',                   ],
   [ 'ST_s-channel_4f_leptonDecays',   'ST_s-channel_4f_leptonDecays_PSweights', ],
@@ -156,7 +163,7 @@ def plot(input_files, output_files, title, expected_neff, mode):
 
     if not (y_down < expected_neff < y_up) and mode == 'unbiased':
       logging.warning(
-        "Event effective event count {} not within {} +- {}".format(expected_neff, y_content, y_error)
+        "Effective event count {} not within {} +- {}".format(expected_neff, y_content, y_error)
       )
 
   if mode == 'unbiased':
@@ -320,15 +327,12 @@ if args.era == '2017':
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
   samples_to_sum = samples_to_sum_2017
 
-  # We need to add DY 4-jet cross section to the inclusive cross section b/c it's not covered
-  # by the inclusive sample, but is covered by HT-binned samples which overlap w/ the inclusive sample.
   samples_lut = {}
   for sample_key, sample_entry in samples.items():
     if sample_key == 'sum_events': continue
     sample_name = sample_entry['process_name_specific']
     assert(sample_name not in samples_lut)
     samples_lut[sample_name] = sample_key
-  samples[samples_lut['DYJetsToLL_M-50']]['xsection'] += samples[samples_lut['DY4JetsToLL_M-50']]['xsection']
 else:
   raise RuntimeError('Invalid era: %s' % args.era)
 if 'sum_events' in samples:

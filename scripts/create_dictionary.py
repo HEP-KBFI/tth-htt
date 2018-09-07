@@ -95,6 +95,7 @@ class nohdfs:
   def get_dir_entries(self, path_obj):
     if not os.path.isdir(path_obj.name_fuse):
       raise hdfsException("No such path: %s" % path_obj.name_fuse)
+    entries = []
     try:
       entries = [
         nohdfs.info(os.path.join(path_obj.name_fuse, entry)) for entry in os.listdir(path_obj.name_fuse)
@@ -757,6 +758,9 @@ def obtain_paths(hdfs_system, input_path):
     paths = input_path
   return paths
 
+def round_sign(x, sign_digits = 6):
+  return round(x, max(int(abs(math.floor(math.log10(x)))) + sign_digits, 0))
+
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
@@ -819,7 +823,7 @@ if __name__ == '__main__':
                       type = str, default = '', required = False,
                       help = 'R|Generate SLURM jobs instead of running locally')
   parser.add_argument('-E', '--era', dest = 'era', metavar = 'era', type = int, default = -1,
-                      required = True, choices = (2017,),
+                      required = True, choices = (2016,2017,2018),
                       help = 'R|Era of the samples')
   parser.add_argument('-M', '--find-missing-branches', dest = 'missing_branches', action = 'store_true',
                       default = False,
@@ -1119,7 +1123,7 @@ if __name__ == '__main__':
           fsize_local_human               = human_size(meta_dict[key]['fsize_local']),
           avg_fsize_local_human           = human_size(float(meta_dict[key]['fsize_local']) / meta_dict[key]['nof_files']),
           use_it                          = meta_dict[key]['use_it'],
-          xsection                        = round(meta_dict[key]['xsection'], 6) if is_mc else None,
+          xsection                        = round_sign(meta_dict[key]['xsection'], 6) if is_mc else None,
           genWeight                       = meta_dict[key]['genWeight'],
           triggers                        = meta_dict[key]['triggers'],
           has_LHE                         = meta_dict[key]['has_LHE'],

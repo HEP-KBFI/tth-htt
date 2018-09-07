@@ -1,7 +1,22 @@
 # Integrated luminosity
+
+# Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/756030a1229b9ad037c4ef59f8755537508114e9/test/datasets_data_2016_v1.txt#L50
+# Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/688.html
+lumi_2016 = 35.922e+3 # 1/pb (uncertainty: 2.5%)
+
 # Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/4564463eed45251a4fd274ed754b1a37bae8e98e/test/datasets_data_2017_v2.txt#L33
 # Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/761/1.html
-lumi_2017 = 41.529e+3 # 1/pb (uncertaintiy: 2.3%)
+lumi_2017 = 41.529e+3 # 1/pb (uncertainty: 2.3%)
+
+def get_lumi(era):
+  if era == "2016":
+    return lumi_2016
+  elif era == "2017":
+    return lumi_2017
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
 
 # Systematic uncertainties
 
@@ -169,7 +184,75 @@ class Triggers(object):
 
   def __init__(self, era):
 
-    if era == "2017":
+    if era == "2016":
+      self.triggers_analysis = {
+        '3mu' : {
+          'HLT_TripleMu_12_10_5',
+        },
+        '1e2mu' : {
+          'HLT_DiMu9_Ele9_CaloIdL_TrackIdL',
+        },
+        '2e1mu' : {
+          'HLT_Mu8_DiEle12_CaloIdL_TrackIdL',
+        },
+        '3e' : {
+          'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL',
+        },
+        '2mu' : {
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ',
+          'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ',
+        },
+        '1e1mu' : {
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',
+          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL',
+        },
+        '2e' : {
+          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
+        },
+        '1mu' : {
+          'HLT_IsoMu22',
+          'HLT_IsoTkMu22',
+          'HLT_IsoMu22_eta2p1',
+          'HLT_IsoTkMu22_eta2p1',
+          'HLT_IsoMu24',
+          'HLT_IsoTkMu24',
+        },
+        '1e' : {
+          'HLT_Ele25_WPTight_Gsf',
+          'HLT_Ele27_WPTight_Gsf',
+          'HLT_Ele25_eta2p1_WPTight_Gsf',
+          'HLT_Ele27_eta2p1_WPLoose_Gsf',
+#          'HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded',
+        },
+        '1mu1tau' : {
+          'HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1',
+        },
+        '1e1tau' : {
+          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30',
+#          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1',
+#          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20',
+        },
+        '2tau' : {
+          'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg',
+          'HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg',
+        },
+      }
+      self.triggers_leptonFR = {
+        '1e' : set(),
+        '1mu': {
+          'HLT_Mu27',
+        },
+        '2e' : {
+          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30',
+          'HLT_Ele12_CaloIdM_TrackIdM_PFJet30',
+        },
+        '2mu': {
+          'HLT_Mu17',
+          'HLT_Mu8',
+          'HLT_Mu3_PFJet40',
+        }
+      }
+    elif era == "2017":
 
       self.triggers_analysis = {
         '3mu' : {
@@ -218,7 +301,7 @@ class Triggers(object):
         '1e1tau' : { # stored in SingleElectron dataset
           'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
         },
-        '2tau' : { # stored in Tau dataset 
+        '2tau' : { # stored in Tau dataset
           'HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg',
           'HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg',
           'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg',
@@ -244,6 +327,8 @@ class Triggers(object):
         }
       }
 
+    elif era == "2018":
+      raise ValueError("Implement me!")
     else:
       raise ValueError("Invalid era: %s" % era)
 
