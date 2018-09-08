@@ -13,6 +13,7 @@
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
 #include <TError.h> // gErrorAbortLevel, kError
+#include <TH2F.h>
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -21,6 +22,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
+#include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h" // XGBInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions.h" // check_mvaInputs, get_mvaInputVariables
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h" // LeptonFakeRateInterface
@@ -480,6 +482,28 @@ int main(int argc, char* argv[])
 
   std::map<std::string, double> mvaInputs_ttbar;
 
+  //--- initialize XGBs used to discriminate ttH vs. ttbar 
+  std::string xgbFileName_0l_2tau_ttbar = "tthAnalysis/HiggsToTauTau/data/0l_2tau_XGB_HTTWithKinFitReduced_evtLevelTT_TTH_19Var.pkl";
+  //--- initialize XGBs used to discriminate ttH vs. ttV
+  std::string xgbFileName_0l_2tau_ttv = "tthAnalysis/HiggsToTauTau/data/0l_2tau_XGB_HTTWithKinFitReduced_evtLevelTTV_TTH_16Var.pkl";
+  //--- initialize XGBs used to discriminate ttH vs. ttbar+ttV
+  std::string xgbFileName_0l_2tau_sum = "tthAnalysis/HiggsToTauTau/data/0l_2tau_XGB_HTTWithKinFitReduced_evtLevelSUM_TTH_19Var.pkl";
+  std::vector<std::string> xgbInputVariables_0l_2tau_ttbar = 
+    { "mindr_tau1_jet", "mindr_tau2_jet", "avg_dr_jet", "ptmiss", "htmiss", "tau1_pt", "tau2_pt", "tau1_eta", "tau2_eta",
+      "dr_taus", "mT_tau1", "mT_tau2", "mTauTauVis", "HTT_wKinFit_top1", "HadTop1_pt", "HadTop1_eta", "HTT_wKinFit_top2",
+      "HadTop2_pt", "nJet"};
+  std::vector<std::string> xgbInputVariables_0l_2tau_ttv =
+    { "mindr_tau1_jet", "mindr_tau2_jet", "avg_dr_jet", "ptmiss", "htmiss", "tau1_pt", "tau2_pt", "tau1_eta", "tau2_eta",
+      "dr_taus", "mT_tau1", "mT_tau2", "mTauTauVis", "HTT_wKinFit_top1", "HTT_wKinFit_top2", "nJet"};
+  XGBInterface xgb_0l_2tau_ttbar(xgbFileName_0l_2tau_ttbar, xgbInputVariables_0l_2tau_ttbar);
+  XGBInterface xgb_0l_2tau_ttv(xgbFileName_0l_2tau_ttv, xgbInputVariables_0l_2tau_ttv);
+  XGBInterface xgb_0l_2tau_sum(xgbFileName_0l_2tau_sum, xgbInputVariables_0l_2tau_ttbar);
+  std::map<std::string, double> xgbInputs_ttbar;
+  std::map<std::string, double> xgbInputs_ttv; 
+  //2D map for ttbar vs ttV
+  TFile *fmap = new TFile("tthAnalysis/HiggsToTauTau/data/HTT_from20_to_10bins_relLepIDFalse_CumulativeBins.root");
+  TH2F *hTargetBinning = (TH2F*)fmap->Get("hTargetBinning");
+
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
 
@@ -521,6 +545,7 @@ int main(int argc, char* argv[])
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_ttbar_;
     //MVAInputVarHistManager* mvaInputVariables_ttV_;
+    MVAInputVarHistManager* xgbInputVariables_ttbar_;
     EvtHistManager_0l_2tau* evt_;    
     std::map<std::string, EvtHistManager_0l_2tau*> evt_in_decayModes_;
     std::map<std::string, EvtHistManager_0l_2tau*> evt_in_categories_;
@@ -644,6 +669,9 @@ int main(int argc, char* argv[])
     //selHistManager->mvaInputVariables_ttV_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch, 
     //  Form("%s/sel/mvaInputs_ttV", histogramDir.data()), central_or_shift));
     //selHistManager->mvaInputVariables_ttV_->bookHistograms(fs, mvaInputVariables_0l_2tau_ttV);
+    selHistManager->xgbInputVariables_ttbar_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
+      Form("%s/sel/xgbInputs_ttbar", histogramDir.data()), central_or_shift));
+    selHistManager->xgbInputVariables_ttbar_->bookHistograms(fs, xgbInputVariables_0l_2tau_ttbar);
     selHistManager->evt_ = new EvtHistManager_0l_2tau(makeHistManager_cfg(process_and_genMatch, 
       Form("%s/sel/evt", histogramDir.data()), central_or_shift));
     selHistManager->evt_->bookHistograms(fs);         
@@ -1014,7 +1042,7 @@ int main(int argc, char* argv[])
     preselHistManager->metFilters_->fillHistograms(metFilters, 1.);
     preselHistManager->evt_->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      -1., 
+      -1., -1., -1., -1., -1.,
       mTauTauVis_presel, -1., 1.);
     preselHistManager->evtYield_->fillHistograms(eventInfo, 1.);
 
@@ -1430,6 +1458,51 @@ int main(int argc, char* argv[])
 
     double mvaOutput_0l_2tau_ttbar = mva_0l_2tau_ttbar(mvaInputs_ttbar);    
 
+    //--- compute output of BDTs used to discriminate ttH vs. ttbar and ttV training using XGB
+    xgbInputs_ttbar["mindr_tau1_jet"]       = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
+    xgbInputs_ttbar["mindr_tau2_jet"]       = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
+    xgbInputs_ttbar["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
+    xgbInputs_ttbar["ptmiss"]               = met.pt();
+    xgbInputs_ttbar["htmiss"]               = mht_p4.pt();
+    xgbInputs_ttbar["tau1_pt"]              = selHadTau_lead->pt();
+    xgbInputs_ttbar["tau2_pt"]              = selHadTau_sublead->pt();
+    xgbInputs_ttbar["tau1_eta"]             = selHadTau_lead->absEta();
+    xgbInputs_ttbar["tau2_eta"]             = selHadTau_sublead->absEta();
+    xgbInputs_ttbar["dr_taus"]              = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
+    xgbInputs_ttbar["mT_tau1"]              = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
+    xgbInputs_ttbar["mT_tau2"]              = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
+    xgbInputs_ttbar["mTauTauVis"]           = mTauTauVis;
+    xgbInputs_ttbar["HTT_wKinFit_top1"]     = max_mvaOutput_hadTopTaggerWithKinFit;
+    xgbInputs_ttbar["HadTop1_pt"]           = unfittedHadTopP4.pt();
+    xgbInputs_ttbar["HadTop1_eta"]          = std::fabs(unfittedHadTopP4.eta());
+    xgbInputs_ttbar["HTT_wKinFit_top2"]     = max_mvaOutput_hadTopTaggerWithKinFitTop2;
+    xgbInputs_ttbar["HadTop2_pt"]           = unfittedHadTop2P4.pt();
+    xgbInputs_ttbar["nJet"]                 = std::fabs(unfittedHadTop2P4.eta());
+    double mvaOutput_0l_2tau_HTT_tt = xgb_0l_2tau_ttbar(xgbInputs_ttbar);
+    double mvaOutput_0l_2tau_HTT_sum = xgb_0l_2tau_sum(xgbInputs_ttbar);
+
+    xgbInputs_ttv["mindr_tau1_jet"]       = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
+    xgbInputs_ttv["mindr_tau2_jet"]       = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
+    xgbInputs_ttv["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
+    xgbInputs_ttv["ptmiss"]               = met.pt();
+    xgbInputs_ttv["htmiss"]               = mht_p4.pt();
+    xgbInputs_ttv["tau1_pt"]              = selHadTau_lead->pt();
+    xgbInputs_ttv["tau2_pt"]              = selHadTau_sublead->pt();
+    xgbInputs_ttv["tau1_eta"]             = selHadTau_lead->absEta();
+    xgbInputs_ttv["tau2_eta"]             = selHadTau_sublead->absEta();
+    xgbInputs_ttv["dr_taus"]              = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
+    xgbInputs_ttv["mT_tau1"]              = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
+    xgbInputs_ttv["mT_tau2"]              = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
+    xgbInputs_ttv["mTauTauVis"]           = mTauTauVis;
+    xgbInputs_ttv["HTT_wKinFit_top1"]     = max_mvaOutput_hadTopTaggerWithKinFit;
+    xgbInputs_ttv["HTT_wKinFit_top2"]     = max_mvaOutput_hadTopTaggerWithKinFitTop2;
+    xgbInputs_ttv["nJet"]                 = std::fabs(unfittedHadTop2P4.eta());
+    double mvaOutput_0l_2tau_HTT_ttv = xgb_0l_2tau_ttv(xgbInputs_ttv);
+    
+    //Get 2D map values
+    int ibin = hTargetBinning->FindBin(mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv);
+    float mvaDiscr_0l_2tau_HTT = hTargetBinning->GetBinContent(ibin);
+
 //--- fill histograms with events passing final selection 
     selHistManagerType* selHistManager = selHistManagers[idxSelHadTau_genMatch];
     assert(selHistManager != 0);
@@ -1449,10 +1522,12 @@ int main(int argc, char* argv[])
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_ttbar_->fillHistograms(mvaInputs_ttbar, evtWeight);
     //selHistManager->mvaInputVariables_ttV_->fillHistograms(mvaInputs_ttV, evtWeight);
+    selHistManager->xgbInputVariables_ttbar_->fillHistograms(xgbInputs_ttbar, evtWeight);
     selHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      mvaOutput_0l_2tau_ttbar, 
+      mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
+      mvaOutput_0l_2tau_HTT_sum, mvaDiscr_0l_2tau_HTT,
       mTauTauVis, mTauTau, evtWeight);
     if ( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
@@ -1466,6 +1541,10 @@ int main(int argc, char* argv[])
           selBJets_loose.size(),
           selBJets_medium.size(),
           mvaOutput_0l_2tau_ttbar,
+	  mvaOutput_0l_2tau_HTT_tt, 
+	  mvaOutput_0l_2tau_HTT_ttv,
+	  mvaOutput_0l_2tau_HTT_sum, 
+	  mvaDiscr_0l_2tau_HTT,
           mTauTauVis,
           mTauTau,
           evtWeight
@@ -1489,7 +1568,8 @@ int main(int argc, char* argv[])
     selHistManager->evt_in_categories_[category]->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      mvaOutput_0l_2tau_ttbar, 
+      mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
+      mvaOutput_0l_2tau_HTT_sum, mvaDiscr_0l_2tau_HTT,
       mTauTauVis, mTauTau, evtWeight);
 
     if ( isMC ) {
@@ -1751,6 +1831,9 @@ int main(int argc, char* argv[])
 
   delete inputTree;
   delete snm;
+
+  delete fmap;
+  delete hTargetBinning;
 
   clock.Show("analyze_0l_2tau");
 
