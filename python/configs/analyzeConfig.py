@@ -922,7 +922,7 @@ class analyzeConfig(object):
            Args:
              histogram_file: name of the input ROOT file
         """
-        if jobOptions['skipChannel']:
+        if 'skipChannel' in jobOptions and jobOptions['skipChannel']:
           category_label = jobOptions['label']
         else:
           category_label = self.channel
