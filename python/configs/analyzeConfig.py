@@ -109,6 +109,12 @@ class analyzeConfig(object):
         self.executable_analyze = executable_analyze
         self.channel = channel
 
+        if self.channel.startswith('hh'):
+          DEPENDENCIES.extend([
+            "hhAnalysis/multilepton",
+            "TauAnalysis/ClassicSVfit4tau",
+          ])
+
         # sum the event counts for samples which cover the same phase space only if
         # there are multiple such samples
         event_sums = copy.deepcopy(samples['sum_events'])
@@ -331,6 +337,8 @@ class analyzeConfig(object):
         self.outputFile_hadd_stage1_5 = {}
         self.cfgFile_addFakes = os.path.join(self.template_dir, "addBackgroundLeptonFakes_cfg.py")
         self.jobOptions_addFakes = {}
+        self.cfgFile_addTailFits = os.path.join(self.template_dir, "addBackgrounds_TailFit_cfg.py")     ## MY LINE
+        self.jobOptions_addTailFits = {}                                                                  ## MY LINE
         self.inputFiles_hadd_stage2 = {}
         self.outputFile_hadd_stage2 = {}
         self.cfgFile_prep_dcard = os.path.join(self.template_dir, "prepareDatacards_cfg.py")
@@ -364,6 +372,7 @@ class analyzeConfig(object):
         self.num_jobs['hadd'] = 0
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
+        self.num_jobs['addTailFits'] = 0 ## MY LINE
 
         self.leptonFakeRateWeight_inputFile = None
         self.leptonFakeRateWeight_histogramName_e = None
@@ -407,6 +416,7 @@ class analyzeConfig(object):
             raise ValueError('Invalid era: %s' % self.era)
         self.isBDTtraining = False
         self.mcClosure_dir = {}
+        self.cfgFile_make_plots_mcClosure = ''
 
     def __del__(self):
         if hasattr(self, "cvmfs_error_log"):
@@ -750,6 +760,41 @@ class analyzeConfig(object):
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
 
+    def createCfg_addTailFits(self, jobOptions):
+        """Create python configuration file for the addBackgrounds_TailFit executable (Tail Fitting of histograms)
+        Args:
+        inputFiles: input file (the ROOT file produced by hadd_stage1)
+        outputFile: output file of the job
+        """
+        lines = []
+        lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
+        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
+        lines.append("process.addBackgrounds_TailFit.InputDir = cms.string('%s')" % os.path.basename(jobOptions['inputDir']))
+        lines.append("process.addBackgrounds_TailFit.histogramName = cms.string('%s')" % os.path.basename(jobOptions['histogramName']))
+        lines.append("process.addBackgrounds_TailFit.nominal_fit_func = cms.PSet(")
+        lines.append("   FitfuncName   = cms.string('%s')," % "Exponential")
+        lines.append("   FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_nom'])
+        lines.append("   FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_nom'])
+        lines.append("   )")
+        if jobOptions['histogramName'].find("dihiggsMass") != -1:
+            lines.append("process.addBackgrounds_TailFit.alternate_fit_funcs = cms.VPSet(")
+            lines.append("   cms.PSet(")
+            lines.append("       FitfuncName   = cms.string('%s')," % "LegendrePolynomial3")
+            lines.append("       FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_alt0'])
+            lines.append("       FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_alt0'])
+            lines.append("       ),")
+            lines.append(" )")
+        else:
+            lines.append("process.addBackgrounds_TailFit.alternate_fit_funcs = cms.VPSet(")
+            lines.append("   cms.PSet(")
+            lines.append("       FitfuncName   = cms.string('%s')," % "LegendrePolynomial1")
+            lines.append("       FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_alt0'])
+            lines.append("       FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_alt0'])
+            lines.append("       ),")
+            lines.append(" )")
+        create_cfg(self.cfgFile_addTailFits, jobOptions['cfgFile_modified'], lines)
+
+
     def createCfg_prep_dcard(self, jobOptions):
         """Fills the template of python configuration file for datacard preparation
 
@@ -878,9 +923,12 @@ class analyzeConfig(object):
            Args:
              histogram_file: name of the input ROOT file
         """
-        category_label = self.channel
-        if jobOptions['label']:
-            category_label += " (%s)" % jobOptions['label']
+        if 'skipChannel' in jobOptions and jobOptions['skipChannel']:
+          category_label = jobOptions['label']
+        else:
+          category_label = self.channel
+          if jobOptions['label']:
+              category_label += " (%s)" % jobOptions['label']
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
@@ -893,7 +941,42 @@ class analyzeConfig(object):
         lines.append("  )")
         lines.append(")")
         lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
+        if 'massPoint' in jobOptions:
+            for plotOption in [ 'legendEntrySignal', 'labelOnTop' ]:
+                lines.append("if 'masspoint' in process.makePlots.%s._value:" % plotOption)
+                lines.append("  process.makePlots.{plotOption} = cms.string(process.makePlots.{plotOption}._value.replace('masspoint', '{massPoint}'))".format(
+                  massPoint = jobOptions['massPoint'],
+                  plotOption = plotOption,
+                ))
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
+
+    def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
+      """Fills the template of python configuration file for making control plots
+
+      Args:
+        histogramFile: name of the input ROOT file
+      """
+      lines = []
+      lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
+      lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
+      lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
+      lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+      lines.append("process.makePlots.categories = cms.VPSet(")
+      lines.append("  cms.PSet(")
+      lines.append("    signal = cms.string('%s')," % self.histogramDir_prep_dcard)
+      lines.append("    sideband = cms.string('%s')," % self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights"))
+      lines.append("    label = cms.string('%s')" % self.channel)
+      lines.append("  )")
+      lines.append(")")
+      lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
+      if 'massPoint' in jobOptions:
+            for plotOption in [ 'legendEntrySignal', 'labelOnTop' ]:
+                lines.append("if '{masspoint}' in process.makePlots.%s._value:" % plotOption)
+                lines.append("  process.makePlots.{plotOption} = cms.string(process.makePlots.{plotOption}._value.format(masspoint = '{massPoint}'))".format(
+                  massPoint = jobOptions['massPoint'],
+                  plotOption = plotOption,
+                ))
+      create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
                             key_cfg_file = 'cfgFile_modified', key_input_file = 'inputFile',
