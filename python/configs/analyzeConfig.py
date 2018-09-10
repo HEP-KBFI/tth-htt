@@ -409,10 +409,11 @@ class analyzeConfig(object):
         self.mcClosure_dir = {}
 
     def __del__(self):
-        for hostname, times in self.cvmfs_error_log.items():
-            logging.error("Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times)))
-            for time in times:
-                logging.error(str(time))
+        if hasattr(self, "cvmfs_error_log"):
+            for hostname, times in self.cvmfs_error_log.items():
+                logging.error("Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times)))
+                for time in times:
+                    logging.error(str(time))
 
     def set_triggerSF_2tau(self, lines):
         lines.extend([
