@@ -8,7 +8,7 @@ meta_dictionary = OD()
 
 ### event sums
 
-sum_events = { 
+sum_events = {
   ("DY1JetsToLL_M-50", "DY1JetsToLL_M-50_ext1"),
   ("DY2JetsToLL_M-50", "DY2JetsToLL_M-50_ext1"),
   ("DY3JetsToLL_M-50", "DY3JetsToLL_M-50_ext1"),
@@ -410,7 +410,7 @@ meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17
   ("nof_db_files",          372),
   ("fsize_db",              1065736102325),
   ("xsection",              5765.4),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.07TB; nevents: 26.92M; release: 9_4_0_patch1; last modified: 2018-01-11 00:33:57"),
 ])
@@ -423,7 +423,7 @@ meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17
   ("nof_db_files",          2752),
   ("fsize_db",              7376341087077),
   ("xsection",              5765.4),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 7.38TB; nevents: 186.00M; release: 9_4_0_patch1; last modified: 2018-02-19 14:25:32"),
 ])
@@ -436,7 +436,7 @@ meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17M
   ("nof_db_files",          737),
   ("fsize_db",              1951411106522),
   ("xsection",              5765.4),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.95TB; nevents: 48.14M; release: 9_4_0_patch1; last modified: 2018-01-09 21:55:51"),
 ])
@@ -449,7 +449,7 @@ meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17M
   ("nof_db_files",          674),
   ("fsize_db",              1970017375652),
   ("xsection",              5765.4),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.97TB; nevents: 48.79M; release: 9_4_0_patch1; last modified: 2018-01-24 22:44:40"),
 ])
