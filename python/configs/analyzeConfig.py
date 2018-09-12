@@ -774,7 +774,7 @@ class analyzeConfig(object):
         lines.append("   FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_nom'])
         lines.append("   FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_nom'])
         lines.append("   )")
-        if jobOptions['histogramName'].find("dihiggsMass") != -1:
+        if (jobOptions['histogramName'].find("dihiggsMass") or jobOptions['histogramName'].find("mTauTauVis")) != -1:
             lines.append("process.addBackgrounds_TailFit.alternate_fit_funcs = cms.VPSet(")
             lines.append("   cms.PSet(")
             lines.append("       FitfuncName   = cms.string('%s')," % "LegendrePolynomial3")
