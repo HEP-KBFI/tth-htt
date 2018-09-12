@@ -26,10 +26,10 @@ EvtHistManager_0l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_numBJets_medium_vs_numJets_ = book2D(dir, "numBJets_medium_vs_numJets", "numBJets_medium_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
 
   histogram_mvaOutput_0l_2tau_ttbar_ = book1D(dir, "mvaOutput_0l_2tau_ttbar", "mvaOutput_0l_2tau_ttbar", 20, -1., +1.);
-  histogram_mvaOutput_0l_2tau_HTT_tt_ = book1D(dir, "mvaOutput_0l_2tau_HTT_tt", "mvaOutput_0l_2tau_HTT_tt", 20, 0., +1.);
-  histogram_mvaOutput_0l_2tau_HTT_ttv_ = book1D(dir, "mvaOutput_0l_2tau_HTT_ttv", "mvaOutput_0l_2tau_HTT_ttv", 20, 0., +1.);
-  histogram_mvaOutput_0l_2tau_HTT_tt_ = book1D(dir, "mvaOutput_0l_2tau_HTT_sum", "mvaOutput_0l_2tau_HTT_sum", 20, 0., +1.);
-  histogram_mvaDiscr_0l_2tau_HTT_ = book1D(dir, "mvaDiscr_0l_2tau_HTT", "mvaDiscr_0l_2tau_HTT", 10, 0., +10.);
+  histogram_mvaOutput_0l_2tau_HTT_tt_ = book1D(dir, "mvaOutput_0l_2tau_HTT_tt", "mvaOutput_0l_2tau_HTT_tt", 20, 0., 1.);
+  histogram_mvaOutput_0l_2tau_HTT_ttv_ = book1D(dir, "mvaOutput_0l_2tau_HTT_ttv", "mvaOutput_0l_2tau_HTT_ttv", 20, 0., 1.);
+  histogram_mvaOutput_0l_2tau_HTT_sum_ = book1D(dir, "mvaOutput_0l_2tau_HTT_sum", "mvaOutput_0l_2tau_HTT_sum", 20, 0., 1.);
+  histogram_mvaDiscr_0l_2tau_HTT_ = book1D(dir, "mvaDiscr_0l_2tau_HTT", "mvaDiscr_0l_2tau_HTT", 10, 0., 10.);
   
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 40, 0., 200.);
   histogram_mTauTau_    = book1D(dir, "mTauTau",    "mTauTau",    30, 0., 300.);
