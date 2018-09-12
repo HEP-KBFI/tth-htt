@@ -416,12 +416,14 @@ class analyzeConfig(object):
             raise ValueError('Invalid era: %s' % self.era)
         self.isBDTtraining = False
         self.mcClosure_dir = {}
+        self.cfgFile_make_plots_mcClosure = ''
 
     def __del__(self):
-        for hostname, times in self.cvmfs_error_log.items():
-            logging.error("Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times)))
-            for time in times:
-                logging.error(str(time))
+        if hasattr(self, "cvmfs_error_log"):
+            for hostname, times in self.cvmfs_error_log.items():
+                logging.error("Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times)))
+                for time in times:
+                    logging.error(str(time))
 
     def set_triggerSF_2tau(self, lines):
         lines.extend([
@@ -760,9 +762,9 @@ class analyzeConfig(object):
 
     def createCfg_addTailFits(self, jobOptions):
         """Create python configuration file for the addBackgrounds_TailFit executable (Tail Fitting of histograms)
-        Args:                                                                                                                                                                                          
-        inputFiles: input file (the ROOT file produced by hadd_stage1)                                                                                                                         
-        outputFile: output file of the job                                                                                                                                                          
+        Args:
+        inputFiles: input file (the ROOT file produced by hadd_stage1)
+        outputFile: output file of the job
         """
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
@@ -921,9 +923,12 @@ class analyzeConfig(object):
            Args:
              histogram_file: name of the input ROOT file
         """
-        category_label = self.channel
-        if jobOptions['label']:
-            category_label += " (%s)" % jobOptions['label']
+        if 'skipChannel' in jobOptions and jobOptions['skipChannel']:
+          category_label = jobOptions['label']
+        else:
+          category_label = self.channel
+          if jobOptions['label']:
+              category_label += " (%s)" % jobOptions['label']
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
@@ -936,7 +941,42 @@ class analyzeConfig(object):
         lines.append("  )")
         lines.append(")")
         lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
+        if 'massPoint' in jobOptions:
+            for plotOption in [ 'legendEntrySignal', 'labelOnTop' ]:
+                lines.append("if 'masspoint' in process.makePlots.%s._value:" % plotOption)
+                lines.append("  process.makePlots.{plotOption} = cms.string(process.makePlots.{plotOption}._value.replace('masspoint', '{massPoint}'))".format(
+                  massPoint = jobOptions['massPoint'],
+                  plotOption = plotOption,
+                ))
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
+
+    def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
+      """Fills the template of python configuration file for making control plots
+
+      Args:
+        histogramFile: name of the input ROOT file
+      """
+      lines = []
+      lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
+      lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
+      lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
+      lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+      lines.append("process.makePlots.categories = cms.VPSet(")
+      lines.append("  cms.PSet(")
+      lines.append("    signal = cms.string('%s')," % self.histogramDir_prep_dcard)
+      lines.append("    sideband = cms.string('%s')," % self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights"))
+      lines.append("    label = cms.string('%s')" % self.channel)
+      lines.append("  )")
+      lines.append(")")
+      lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
+      if 'massPoint' in jobOptions:
+            for plotOption in [ 'legendEntrySignal', 'labelOnTop' ]:
+                lines.append("if '{masspoint}' in process.makePlots.%s._value:" % plotOption)
+                lines.append("  process.makePlots.{plotOption} = cms.string(process.makePlots.{plotOption}._value.format(masspoint = '{massPoint}'))".format(
+                  massPoint = jobOptions['massPoint'],
+                  plotOption = plotOption,
+                ))
+      create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
                             key_cfg_file = 'cfgFile_modified', key_input_file = 'inputFile',
