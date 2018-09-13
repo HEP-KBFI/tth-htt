@@ -949,6 +949,7 @@ class analyzeConfig(object):
                   massPoint = jobOptions['massPoint'],
                   plotOption = plotOption,
                 ))
+        lines.append("process.makePlots.nuisanceParameters.normalization.signal_hh_{massPoint} = cms.string('1.0 +/- 0.20')".format(massPoint = jobOptions['massPoint']))
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
