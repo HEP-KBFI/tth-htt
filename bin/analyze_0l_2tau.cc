@@ -502,9 +502,8 @@ int main(int argc, char* argv[])
   std::map<std::string, double> xgbInputs_ttv; 
   //2D map for ttbar vs ttV
   const LocalFileInPath mapFileName_fip("tthAnalysis/HiggsToTauTau/data/HTT_from20_to_10bins_relLepIDFalse_CumulativeBins.root");
-  TString mapFileName_(mapFileName_fip.fullPath());
-  TFile *fmap = new TFile(mapFileName_);
-  TH2F *hTargetBinning = (TH2F*)fmap->Get("hTargetBinning");
+  TFile * fmap = TFile::Open(mapFileName_fip.fullPath().c_str(), "read");
+  TH2F * hTargetBinning = static_cast<TH2F *>(fmap->Get("hTargetBinning"));
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1834,8 +1833,7 @@ int main(int argc, char* argv[])
   delete inputTree;
   delete snm;
 
-  delete fmap;
-  delete hTargetBinning;
+  fmap->Close();
 
   clock.Show("analyze_0l_2tau");
 
