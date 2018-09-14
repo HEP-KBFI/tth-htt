@@ -776,7 +776,7 @@ class analyzeConfig(object):
         lines.append("   FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_nom'])
         lines.append("   FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_nom'])
         lines.append("   )")
-        if jobOptions['histogramName'].find("dihiggsMass") != -1:
+        if jobOptions['histogramName'].find("dihiggsMass") != -1 or jobOptions['histogramName'].find("mTauTauVis") != -1:
             lines.append("process.addBackgrounds_TailFit.alternate_fit_funcs = cms.VPSet(")
             lines.append("   cms.PSet(")
             lines.append("       FitfuncName   = cms.string('%s')," % "LegendrePolynomial3")
@@ -784,6 +784,7 @@ class analyzeConfig(object):
             lines.append("       FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_alt0'])
             lines.append("       ),")
             lines.append(" )")
+
         else:
             lines.append("process.addBackgrounds_TailFit.alternate_fit_funcs = cms.VPSet(")
             lines.append("   cms.PSet(")
@@ -948,6 +949,7 @@ class analyzeConfig(object):
                   massPoint = jobOptions['massPoint'],
                   plotOption = plotOption,
                 ))
+            lines.append("process.makePlots.nuisanceParameters.normalization.signal_hh_{massPoint} = cms.string('1.0 +/- 0.20')".format(massPoint = jobOptions['massPoint']))
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
