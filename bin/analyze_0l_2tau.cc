@@ -501,8 +501,9 @@ int main(int argc, char* argv[])
   std::map<std::string, double> xgbInputs_ttbar;
   std::map<std::string, double> xgbInputs_ttv; 
   //2D map for ttbar vs ttV
-  TFile *fmap = new TFile("tthAnalysis/HiggsToTauTau/data/HTT_from20_to_10bins_relLepIDFalse_CumulativeBins.root");
-  TH2F *hTargetBinning = (TH2F*)fmap->Get("hTargetBinning");
+  const LocalFileInPath mapFileName_fip("tthAnalysis/HiggsToTauTau/data/HTT_from20_to_10bins_relLepIDFalse_CumulativeBins.root");
+  TFile * fmap = TFile::Open(mapFileName_fip.fullPath().c_str(), "read");
+  TH2F * hTargetBinning = static_cast<TH2F *>(fmap->Get("hTargetBinning"));
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -545,7 +546,7 @@ int main(int argc, char* argv[])
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_ttbar_;
     //MVAInputVarHistManager* mvaInputVariables_ttV_;
-    MVAInputVarHistManager* xgbInputVariables_ttbar_;
+    //MVAInputVarHistManager* xgbInputVariables_ttbar_;
     EvtHistManager_0l_2tau* evt_;    
     std::map<std::string, EvtHistManager_0l_2tau*> evt_in_decayModes_;
     std::map<std::string, EvtHistManager_0l_2tau*> evt_in_categories_;
@@ -669,9 +670,9 @@ int main(int argc, char* argv[])
     //selHistManager->mvaInputVariables_ttV_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch, 
     //  Form("%s/sel/mvaInputs_ttV", histogramDir.data()), central_or_shift));
     //selHistManager->mvaInputVariables_ttV_->bookHistograms(fs, mvaInputVariables_0l_2tau_ttV);
-    selHistManager->xgbInputVariables_ttbar_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/xgbInputs_ttbar", histogramDir.data()), central_or_shift));
-    selHistManager->xgbInputVariables_ttbar_->bookHistograms(fs, xgbInputVariables_0l_2tau_ttbar);
+    //selHistManager->xgbInputVariables_ttbar_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
+    //  Form("%s/sel/xgbInputs_ttbar", histogramDir.data()), central_or_shift));
+    //selHistManager->xgbInputVariables_ttbar_->bookHistograms(fs, xgbInputVariables_0l_2tau_ttbar);
     selHistManager->evt_ = new EvtHistManager_0l_2tau(makeHistManager_cfg(process_and_genMatch, 
       Form("%s/sel/evt", histogramDir.data()), central_or_shift));
     selHistManager->evt_->bookHistograms(fs);         
@@ -1042,7 +1043,7 @@ int main(int argc, char* argv[])
     preselHistManager->metFilters_->fillHistograms(metFilters, 1.);
     preselHistManager->evt_->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      -1., -1., -1., -1., -1.,
+      -1., 0., 0., 0., 0.,
       mTauTauVis_presel, -1., 1.);
     preselHistManager->evtYield_->fillHistograms(eventInfo, 1.);
 
@@ -1522,7 +1523,7 @@ int main(int argc, char* argv[])
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_ttbar_->fillHistograms(mvaInputs_ttbar, evtWeight);
     //selHistManager->mvaInputVariables_ttV_->fillHistograms(mvaInputs_ttV, evtWeight);
-    selHistManager->xgbInputVariables_ttbar_->fillHistograms(xgbInputs_ttbar, evtWeight);
+    //selHistManager->xgbInputVariables_ttbar_->fillHistograms(xgbInputs_ttbar, evtWeight);
     selHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
@@ -1832,8 +1833,7 @@ int main(int argc, char* argv[])
   delete inputTree;
   delete snm;
 
-  delete fmap;
-  delete hTargetBinning;
+  fmap->Close();
 
   clock.Show("analyze_0l_2tau");
 
