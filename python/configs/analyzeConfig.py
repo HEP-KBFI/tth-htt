@@ -755,7 +755,8 @@ class analyzeConfig(object):
         lines.append(")")
         processesToSubtract = []
         processesToSubtract.extend(self.nonfake_backgrounds)
-        processesToSubtract.extend([ "%s_conversion" % nonfake_background for nonfake_background in self.nonfake_backgrounds])
+        if '0l' not in self.channel:
+            processesToSubtract.extend([ "%s_conversion" % nonfake_background for nonfake_background in self.nonfake_backgrounds])
         lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
@@ -949,6 +950,7 @@ class analyzeConfig(object):
                   massPoint = jobOptions['massPoint'],
                   plotOption = plotOption,
                 ))
+            lines.append("  process.makePlots.nuisanceParameters.normalization.signal_hh_{massPoint} = cms.string('1.0 +/- 0.20')".format(massPoint = jobOptions['massPoint']))
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
@@ -977,6 +979,7 @@ class analyzeConfig(object):
                   massPoint = jobOptions['massPoint'],
                   plotOption = plotOption,
                 ))
+                lines.append("  process.makePlots.nuisanceParameters.normalization.signal_hh_{massPoint} = cms.string('1.0 +/- 0.20')".format(massPoint = jobOptions['massPoint']))
       create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
