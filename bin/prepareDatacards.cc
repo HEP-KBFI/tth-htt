@@ -63,15 +63,9 @@ namespace
     //std::cout << " enableException = " << enableException << std::endl;
 
     std::string histogramName_input_full = "";
-    // if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramName_input_full.append(central_or_shift);
-    // if( histogramName_input_full != "" ) histogramName_input_full.append("_");
-    // histogramName_input_full.append(histogramName_input);
-
-    if ( !(central_or_shift == "" || central_or_shift == "central") ){
-      histogramName_input_full = histogramName_input + "_" + central_or_shift;
-    } else {
-      histogramName_input_full.append(histogramName_input);
-    }
+    if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramName_input_full.append(central_or_shift);
+    if( histogramName_input_full != "" ) histogramName_input_full.append("_");
+    histogramName_input_full.append(histogramName_input);
     std::cout<< "histogramName_input_full: " << histogramName_input_full << std::endl;
 
     TH1* histogram_input = dynamic_cast<TH1*>(dir_input->Get(histogramName_input_full.data()));
