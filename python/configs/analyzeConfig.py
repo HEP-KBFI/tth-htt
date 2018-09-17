@@ -942,7 +942,7 @@ class analyzeConfig(object):
         lines.append("    label = cms.string('%s')" % category_label)
         lines.append("  )")
         lines.append(")")
-        lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
+        lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % (self.lumi / 1000))
         if 'massPoint' in jobOptions:
             for plotOption in [ 'legendEntrySignal', 'labelOnTop' ]:
                 lines.append("if 'masspoint' in process.makePlots.%s._value:" % plotOption)
