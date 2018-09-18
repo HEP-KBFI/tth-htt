@@ -136,16 +136,7 @@ for sample_name, sample_info in samples.items():
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "2tau" ]
   if sample_info["type"] == "data":
-    if era == "2016":
-      if not sample_name.startswith("/Tau/"):
-        sample_info["use_it"] = False
-    elif era == "2017":
-      if not sample_name.startswith(("/SingleElectron/", "/SingleMuon/")):
-        sample_info["use_it"] = False
-    elif era == "2018":
-      raise ValueError("Implement me!")
-    else:
-      raise ValueError("Invalid era: %s" % era)
+    sample_info["use_it"] = sample_name.startswith("/Tau/")
 
 if __name__ == '__main__':
   logging.basicConfig(
