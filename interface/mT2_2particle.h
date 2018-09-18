@@ -11,7 +11,7 @@
  *      A.J. Barr, M.J. Dolan, C. Englert and M. Spannowsky
  *    arXiv: 1309.6318
  *
- * This class implements the mT2 computation for the case that 2 "stable" visible particles are produced in the decay chain.
+ * This class implements the mT2 computation for the case that 2 "stable" visible particles are produced per decay chain.
  * It covers the cases:
  *  1) WW -> lnu lnu 
  *    (case mT2(1,1,0 in Ref. [1]; with b1=lepton1, b2=lepton2, cSum=MET, cMass=0)
