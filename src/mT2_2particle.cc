@@ -6,6 +6,8 @@ mT2_2particle::mT2_2particle(int numSteps)
   : minimizer_(nullptr)
   , f_(nullptr)
   , numSteps_(numSteps)
+  , min_mT2_(1.e+6)
+  , min_step_(-1)
 {
   f_ = new ROOT::Math::Functor(mT2Functor_, 2);
   minimizer_ = ROOT::Math::Factory::CreateMinimizer("Minuit2", "");
@@ -18,9 +20,9 @@ mT2_2particle::~mT2_2particle()
   delete f_;
 }
 
-std::pair<double, int> mT2_2particle::operator()(double b1Px, double b1Py, double b1Mass, 
-						 double b2Px, double b2Py, double b2Mass,
-						 double cSumPx, double cSumPy, double cMass)
+void mT2_2particle::operator()(double b1Px, double b1Py, double b1Mass, 
+			       double b2Px, double b2Py, double b2Mass,
+			       double cSumPx, double cSumPy, double cMass)
 {
   mT2Functor_.set_b1(b1Px, b1Py, b1Mass);
   mT2Functor_.set_b2(b2Px, b2Py, b2Mass);
@@ -29,8 +31,8 @@ std::pair<double, int> mT2_2particle::operator()(double b1Px, double b1Py, doubl
   double cSumPt = TMath::Sqrt(cSumPx*cSumPx + cSumPy*cSumPy);
   double log_cSumPt_over_2 = TMath::Log(0.5*TMath::Max(1., cSumPt));
 
-  double min_mT2 = 1.e+6;
-  int min_step = -1;
+  min_mT2_ = 1.e+6;
+  min_step_ = -1;
   for ( int iStep = 0; iStep < numSteps_; ++iStep ) {
     double c1Pt  = TMath::Exp(rnd_.Gaus(log_cSumPt_over_2, 1.)); // CV: draw pT from log-normal distribution
     double c1Phi = rnd_.Uniform(-TMath::Pi(), +TMath::Pi());     // CV: draw phi from uniform distribution
@@ -40,11 +42,19 @@ std::pair<double, int> mT2_2particle::operator()(double b1Px, double b1Py, doubl
     minimizer_->Minimize();
 
     double mT2 = minimizer_->MinValue();
-    if ( mT2 < min_mT2 || min_step == -1 ) {
-      min_mT2 = mT2;
-      min_step = iStep;
+    if ( mT2 < min_mT2_ || min_step_ == -1 ) {
+      min_mT2_ = mT2;
+      min_step_ = iStep;
     }
   }
-  return std::pair<double, int>(min_mT2, min_step);
 }
   
+double mT2_2particle::get_min_mT2() const
+{
+  return min_mT2_;
+}
+ 
+int mT2_2particle::get_min_step() const
+{
+  return min_step_;
+}

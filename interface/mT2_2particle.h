@@ -30,8 +30,6 @@
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/mt2.h"
-
 #include "Math/Minimizer.h"
 #include "Math/Functor.h"
 #include <TRandom3.h>
@@ -108,16 +106,21 @@ class mT2_2particle
   ~mT2_2particle();
 
   /// compute mT2 variable
-  std::pair<double, int> operator()(double b1Px, double b1Py, double b1Mass, 
-				    double b2Px, double b2Py, double b2Mass,
-				    double cSumPx, double cSumPy, double cMass);
+  void operator()(double b1Px, double b1Py, double b1Mass, 
+		  double b2Px, double b2Py, double b2Mass,
+		  double cSumPx, double cSumPy, double cMass);
   
+  double get_min_mT2() const;
+  int get_min_step() const;
+
  protected:
   ROOT::Math::Minimizer* minimizer_;
   mT2_2particle_namespace::mt2Functor_2particle mT2Functor_;
   ROOT::Math::Functor* f_;
   int numSteps_;
   TRandom3 rnd_;
+  double min_mT2_;
+  int min_step_;
 };
 
 #endif
