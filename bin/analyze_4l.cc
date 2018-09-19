@@ -95,7 +95,7 @@ typedef std::vector<std::string> vstring;
 enum { kFR_disabled, kFR_4lepton };
 
 /**
- * @brief Produce datacard and control plots for 3l categories.
+ * @brief Produce datacard and control plots for 4l categories.
  */
 int main(int argc, char* argv[])
 {
