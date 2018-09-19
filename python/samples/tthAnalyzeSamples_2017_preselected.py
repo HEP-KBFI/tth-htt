@@ -20864,7 +20864,7 @@ samples_2017["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17Mini
   ("fsize_local",                     6725133), # 6.73MB, avg file size 6.73MB
   ("fsize_db",                        44015654097), # 44.02GB, avg file size 1.26GB
   ("use_it",                          True),
-  ("xsection",                        2.505),
+  ("xsection",                        0.9425),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -21182,7 +21182,7 @@ samples_2017["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_Fall17/private/
   ("fsize_local",                     1768468), # 1.77MB, avg file size 1.77MB
   ("fsize_db",                        12634080628), # 12.63GB, avg file size 1.05GB
   ("use_it",                          True),
-  ("xsection",                        2.505),
+  ("xsection",                        0.9425),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),

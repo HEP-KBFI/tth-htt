@@ -26,6 +26,8 @@ process.produceNtuple = cms.PSet(
     minNumJets                = cms.int32(-1),
     minNumBJets_loose         = cms.int32(-1),
     minNumBJets_medium        = cms.int32(-1),
+    maxNumBJets_loose         = cms.int32(-1),
+    maxNumBJets_medium        = cms.int32(-1),
 
     branchName_electrons  = cms.string('Electron'),
     branchName_muons      = cms.string('Muon'),

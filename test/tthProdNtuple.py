@@ -143,21 +143,37 @@ for sample_name, sample_entry in samples.items():
   elif mode == 'forBDTtraining':
     sample_entry['use_it'] = not sample_entry['use_it']
   elif mode == 'hh':
-    sample_entry['use_it'] = sample_entry['process_name_specific'].startswith(('signal_hh_', 'signal_radion'))
+    sample_entry['use_it'] = sample_entry['process_name_specific'].startswith('signal') and \
+                             'hh' in sample_entry['process_name_specific']
   elif 'sync' in mode or mode == 'all_except_forBDTtraining':
     pass
   else:
     raise ValueError("Invalid mode: %s" % mode)
 
 if preselection:
-  preselection_cuts = {
-    'minNumLeptons'              : 1,
-    'minNumHadTaus'              : 1,
-    'minNumLeptons_and_HadTaus'  : 3,
-    'minNumJets'                 : -1,
-    'minNumBJets_loose'          : 2,
-    'minNumBJets_medium'         : 1,
-  }
+  if mode == 'hh':
+    # valid only for HH->4tau analysis; for HH->4W->2lss/3l channel the cuts do not apply
+    preselection_cuts = {
+      'minNumLeptons'             : -1,
+      'minNumHadTaus'             : -1,
+      'minNumLeptons_and_HadTaus' : 4,
+      'minNumJets'                : -1,
+      'minNumBJets_loose'         : -1,
+      'minNumBJets_medium'        : -1,
+      'maxNumBJets_loose'         : 1,
+      'maxNumBJets_medium'        : 0,
+    }
+  else:
+    preselection_cuts = {
+      'minNumLeptons'              : 1,
+      'minNumHadTaus'              : 1,
+      'minNumLeptons_and_HadTaus'  : 3,
+      'minNumJets'                 : -1,
+      'minNumBJets_loose'          : 2,
+      'minNumBJets_medium'         : 1,
+      'maxNumBJets_loose'          : -1,
+      'maxNumBJets_medium'         : -1,
+    }
   leptonSelection = 'Fakeable'
   hadTauSelection = 'Fakeable'
 else:
@@ -168,6 +184,8 @@ else:
     'minNumJets'                : -1,
     'minNumBJets_loose'         : -1,
     'minNumBJets_medium'        : -1,
+    'maxNumBJets_loose'         : -1,
+    'maxNumBJets_medium'        : -1,
   }
   leptonSelection = 'Loose'
   hadTauSelection = 'Loose'
