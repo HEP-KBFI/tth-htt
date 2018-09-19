@@ -30,8 +30,6 @@
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/mt2.h"
-
 #include "Math/Minimizer.h"
 #include "Math/Functor.h"
 #include <TRandom3.h>
