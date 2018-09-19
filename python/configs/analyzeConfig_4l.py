@@ -603,7 +603,7 @@ class analyzeConfig_4l(analyzeConfig):
 
     logging.info("Creating configuration files to run 'prepareDatacards'")
     for histogramToFit in self.histograms_to_fit:
-      key_prep_dcard_job = getKey(histogramToFit)
+      key_prep_dcard_job = getKey(histogramToFit, "OS")
       key_hadd_stage2 = getKey(get_lepton_selection_and_frWeight("Tight", "disabled"), "OS")
       self.jobOptions_prep_dcard[key_prep_dcard_job] = {
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
