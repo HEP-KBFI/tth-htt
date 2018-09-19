@@ -138,6 +138,8 @@ main(int argc,
   const int minNumJets                = cfg_produceNtuple.getParameter<int>("minNumJets");
   const int minNumBJets_loose         = cfg_produceNtuple.getParameter<int>("minNumBJets_loose");
   const int minNumBJets_medium        = cfg_produceNtuple.getParameter<int>("minNumBJets_medium");
+  const int maxNumBJets_loose         = cfg_produceNtuple.getParameter<int>("maxNumBJets_loose");
+  const int maxNumBJets_medium        = cfg_produceNtuple.getParameter<int>("maxNumBJets_medium");
   
   const bool isMC                 = cfg_produceNtuple.getParameter<bool>("isMC");
   const bool redoGenMatching      = cfg_produceNtuple.getParameter<bool>("redoGenMatching");
@@ -633,7 +635,9 @@ main(int argc,
 
     // apply requirement on b-jets 
     if(! (static_cast<int>(selBJets_loose.size())  >= minNumBJets_loose  ||
-          static_cast<int>(selBJets_medium.size()) >= minNumBJets_medium ))
+          static_cast<int>(selBJets_medium.size()) >= minNumBJets_medium ||
+          ((maxNumBJets_loose >= 0  && static_cast<int>(selBJets_loose.size())  <= maxNumBJets_loose)  || maxNumBJets_loose < 0) ||
+          ((maxNumBJets_medium >= 0 && static_cast<int>(selBJets_medium.size()) <= maxNumBJets_medium) || maxNumBJets_medium < 0)))
     {
       if(run_lumi_eventSelector || isDEBUG)
       {
@@ -644,7 +648,10 @@ main(int argc,
       }
       continue;
     }
-    cutFlowTable.update(Form(">= %i loose b-jets || %i medium b-jet", minNumBJets_loose, minNumBJets_medium));
+    cutFlowTable.update(Form(
+      ">= %i..%i loose b-jets || %i..%i medium b-jet",
+      minNumBJets_loose, maxNumBJets_loose, minNumBJets_medium, maxNumBJets_medium
+    ));
 
     std::vector<GenLepton> genLeptons;
     std::vector<GenLepton> genElectrons;
