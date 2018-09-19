@@ -64,7 +64,7 @@ process.analyze_4l = cms.PSet(
 
     applyFakeRateWeights = cms.string(""),
     leptonFakeRateWeight = cms.PSet(
-        inputFileName = cms.string(),
+        inputFileName = cms.string(""),
         histogramName_e = cms.string(""),
         histogramName_mu = cms.string("")
     ),

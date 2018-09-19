@@ -8,7 +8,7 @@ meta_dictionary = OD()
 
 ### event sums
 
-sum_events = { 
+sum_events = {
   ("DYJetsToLL_M-10to50_amcatnloFXFX_v1", "DYJetsToLL_M-10to50_amcatnloFXFX_v2", "DYJetsToLL_M-10to50_amcatnloFXFX_v2_ext1"),
   ("DYJetsToLL_M-5to50_HT-100to200", "DYJetsToLL_M-5to50_HT-100to200_ext1"),
   ("DYJetsToLL_M-5to50_HT-200to400", "DYJetsToLL_M-5to50_HT-200to400_ext1"),
@@ -2118,7 +2118,7 @@ meta_dictionary["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer1
   ("nof_db_events",         1007898),
   ("nof_db_files",          29),
   ("fsize_db",              36367011319),
-  ("xsection",              0.952),
+  ("xsection",              0.9425),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 36.37GB; nevents: 1.01M; release: 8_0_21; last modified: 2017-01-05 09:17:24"),

@@ -51,7 +51,7 @@ meta_dictionary["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_Fall17/priva
   ("nof_db_events",         200165),
   ("nof_db_files",          12),
   ("fsize_db",              12634080628),
-  ("xsection",              2.505),
+  ("xsection",              0.9425),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 12.63GB; nevents: 200.16k; release: 9_4_0; last modified: 2018-05-23 16:16:12"),
