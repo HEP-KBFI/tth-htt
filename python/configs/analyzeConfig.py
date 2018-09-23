@@ -943,14 +943,6 @@ class analyzeConfig(object):
         lines.append("  )")
         lines.append(")")
         lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % (self.lumi / 1000))
-        if 'massPoint' in jobOptions:
-            for plotOption in [ 'legendEntrySignal', 'labelOnTop' ]:
-                lines.append("if 'masspoint' in process.makePlots.%s._value:" % plotOption)
-                lines.append("  process.makePlots.{plotOption} = cms.string(process.makePlots.{plotOption}._value.replace('masspoint', '{massPoint}'))".format(
-                  massPoint = jobOptions['massPoint'],
-                  plotOption = plotOption,
-                ))
-            lines.append("  process.makePlots.nuisanceParameters.normalization.signal_radion_{massPoint} = cms.string('1.0 +/- 0.20')".format(massPoint = jobOptions['massPoint']))
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
