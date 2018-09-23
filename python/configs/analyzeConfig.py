@@ -935,7 +935,8 @@ class analyzeConfig(object):
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
         lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % jobOptions['make_plots_backgrounds'])
-        lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+        if 'skipSignal' not in jobOptions or not jobOptions['skipSignal']:
+          lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
         lines.append("process.makePlots.categories = cms.VPSet(")
         lines.append("  cms.PSet(")
         lines.append("    name = cms.string('%s')," % jobOptions['histogramDir'])
@@ -955,7 +956,8 @@ class analyzeConfig(object):
       lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
       lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
       lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
-      lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+      if 'skipSignal' not in jobOptions or not jobOptions['skipSignal']:
+        lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
       lines.append("process.makePlots.categories = cms.VPSet(")
       lines.append("  cms.PSet(")
       lines.append("    signal = cms.string('%s')," % self.histogramDir_prep_dcard)
@@ -964,14 +966,6 @@ class analyzeConfig(object):
       lines.append("  )")
       lines.append(")")
       lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
-      if 'massPoint' in jobOptions:
-            for plotOption in [ 'legendEntrySignal', 'labelOnTop' ]:
-                lines.append("if '{masspoint}' in process.makePlots.%s._value:" % plotOption)
-                lines.append("  process.makePlots.{plotOption} = cms.string(process.makePlots.{plotOption}._value.format(masspoint = '{massPoint}'))".format(
-                  massPoint = jobOptions['massPoint'],
-                  plotOption = plotOption,
-                ))
-                lines.append("  process.makePlots.nuisanceParameters.normalization.signal_hh_{massPoint} = cms.string('1.0 +/- 0.20')".format(massPoint = jobOptions['massPoint']))
       create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
