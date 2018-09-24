@@ -90,7 +90,7 @@ RecoJetSelectorBtag::operator()(const RecoJet & jet) const
     }
     return false;
   }
-  if(jet.absEta() > max_absEta_)
+  if(max_absEta_ > 0. && jet.absEta() > max_absEta_)
   {
     if(debug_)
     {

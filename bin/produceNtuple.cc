@@ -555,7 +555,11 @@ main(int argc,
       // Karl: there are no JEC uncertainties for non-nominal (i.e. MET-adjusted) jet pT
       const double cleanedJet_pt_max = useNonNominal_jetmet ? cleanedJet->pt() : cleanedJet->maxPt();
       const double cleanedJet_absEta = cleanedJet->absEta();
-      if(cleanedJet_pt_max >= min_jetSelector_pT && cleanedJet_absEta < max_jetSelector_absEta)
+      if(cleanedJet_pt_max >= min_jetSelector_pT && (
+           ((cleanedJet_absEta < max_jetSelector_absEta) && max_jetSelector_absEta > 0.) ||
+             max_jetSelector_absEta <= 0.
+           )
+         )
       {
         selJets.push_back(cleanedJet);
       }
