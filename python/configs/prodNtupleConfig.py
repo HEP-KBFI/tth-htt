@@ -175,6 +175,7 @@ class prodNtupleConfig:
             "process.produceNtuple.minNumBJets_medium        = cms.int32(%i)"    % self.preselection_cuts['minNumBJets_medium'],
             "process.produceNtuple.maxNumBJets_loose         = cms.int32(%i)"    % self.preselection_cuts['maxNumBJets_loose'],
             "process.produceNtuple.maxNumBJets_medium        = cms.int32(%i)"    % self.preselection_cuts['maxNumBJets_medium'],
+            "process.produceNtuple.applyJetEtaCut            = cms.bool(%s)"     % self.preselection_cuts['applyJetEtaCut'],
             "process.produceNtuple.isMC                      = cms.bool(%s)"     % jobOptions['is_mc'],
             "process.produceNtuple.redoGenMatching           = cms.bool(%s)"     % (not self.skip_tools_step),
             "process.produceNtuple.leptonSelection           = cms.string('%s')" % self.leptonSelection,
