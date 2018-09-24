@@ -17451,7 +17451,7 @@ samples_2017["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Apr26/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/NanoProduction_v2_2018Apr26_TTToHadronic_TuneCP5_13TeV-powheg-pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180426_011722"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [675]),
       ]),
     ]
   ),
