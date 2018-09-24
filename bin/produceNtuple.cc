@@ -140,7 +140,7 @@ main(int argc,
   const int minNumBJets_medium        = cfg_produceNtuple.getParameter<int>("minNumBJets_medium");
   const int maxNumBJets_loose         = cfg_produceNtuple.getParameter<int>("maxNumBJets_loose");
   const int maxNumBJets_medium        = cfg_produceNtuple.getParameter<int>("maxNumBJets_medium");
-  const bool applyJetEtaCut           = cfg_produceNtuple.getParameter<int>("applyJetEtaCut");
+  const bool applyJetEtaCut           = cfg_produceNtuple.getParameter<bool>("applyJetEtaCut");
   
   const bool isMC                 = cfg_produceNtuple.getParameter<bool>("isMC");
   const bool redoGenMatching      = cfg_produceNtuple.getParameter<bool>("redoGenMatching");
