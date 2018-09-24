@@ -83,16 +83,32 @@ class systematics(object):
 
       full = x1_().full + y1_().full
 
+    class HH(object):
+      class x1_(object):
+
+        up   = "CMS_ttHl_thu_shape_HH_x1Up"
+        down = "CMS_ttHl_thu_shape_HH_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_HH_y1Up"
+        down = "CMS_ttHl_thu_shape_HH_y1Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full
+
     ttH = TTH().full
     ttW = TTW().full
     ttZ = TTZ().full
+    hh  = HH().full
 
-    x1_up   = [ TTH().x1_().up,   TTW().x1_().up,   TTZ().x1_().up   ]
-    y1_up   = [ TTH().y1_().up,   TTW().y1_().up,   TTZ().y1_().up   ]
-    x1_down = [ TTH().x1_().down, TTW().x1_().down, TTZ().x1_().down ]
-    y1_down = [ TTH().y1_().down, TTW().y1_().down, TTZ().y1_().down ]
+    x1_up   = [ TTH().x1_().up,   TTW().x1_().up,   TTZ().x1_().up,   HH().x1_().up   ]
+    y1_up   = [ TTH().y1_().up,   TTW().y1_().up,   TTZ().y1_().up,   HH().y1_().up   ]
+    x1_down = [ TTH().x1_().down, TTW().x1_().down, TTZ().x1_().down, HH().x1_().down ]
+    y1_down = [ TTH().y1_().down, TTW().y1_().down, TTZ().y1_().down, HH().y1_().down ]
 
     full = ttH + ttW + ttZ
+    full_hh = full + hh
 
   class Btag(object):
 
@@ -179,6 +195,13 @@ class systematics(object):
 
   an_inclusive      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag
   an_inclusive_opts = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag" ]
+
+  # Karl: for HH analysis only
+  lhe_hh = LHE().full_hh
+  an_common_hh      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag +  FR_t +  lhe_hh +  triggerSF +  PU
+  an_common_opts_hh = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag", "FR_t", "lhe_hh", "triggerSF", "PU" ]
+  an_extended_hh      = an_common_hh      +    FRe_shape +  FRm_shape
+  an_extended_opts_hh = an_common_opts_hh + [ "FRe_shape", "FRm_shape" ]
 
 class Triggers(object):
 
