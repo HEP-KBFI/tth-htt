@@ -74,7 +74,7 @@ elif mode == 'hh':
   if era == "2016":
     from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2016_nanoAOD import samples_2016 as samples
   elif era == "2017":
-    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_nanoAOD_hh_private import samples_2017 as samples
+    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_nanoAOD_hh_merged import samples_2017 as samples
   elif era == "2018":
     from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
   else:
@@ -91,7 +91,8 @@ if __name__ == '__main__':
 
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
-  del samples['sum_events']
+  if 'sum_events' in samples:
+    del samples['sum_events']
 
   configDir = os.path.join("/home",       getpass.getuser(), "ttHPileupProduction", era, version)
   outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHPileupProduction", era, version)

@@ -178,7 +178,7 @@ class sbatchManager:
         self.analysisName      = "tthAnalysis"
         self.user              = getpass.getuser()
         self.pool_id           = pool_id
-        self.log_completion    = False
+        self.log_completion    = verbose_environ
         self.max_nof_greps     = 1000
         self.sbatchArgs        = ''
         self.datetime          = datetime.datetime.now().strftime('%m/%d/%y-%H:%M:%S')
