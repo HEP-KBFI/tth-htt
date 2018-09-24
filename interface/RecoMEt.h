@@ -27,7 +27,7 @@ public:
   /**
    * @brief Funtions to access data-members
    * @return Values of data-members
-   */
+   */  
   Double_t pt() const;
   Double_t phi() const;
   Double_t covXX() const;
