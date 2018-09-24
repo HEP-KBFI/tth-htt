@@ -804,7 +804,7 @@ class analyzeConfig(object):
              histogramToFit: name of the histogram used for signal extraction
         """
         category_output = self.channel
-        if jobOptions['label']:
+        if 'label' in jobOptions.keys() and jobOptions['label']:
             category_output += "_%s" % jobOptions['label']
         histogramToFit = jobOptions['histogramToFit']
         lines = []
