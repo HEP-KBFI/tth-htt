@@ -140,6 +140,7 @@ main(int argc,
   const int minNumBJets_medium        = cfg_produceNtuple.getParameter<int>("minNumBJets_medium");
   const int maxNumBJets_loose         = cfg_produceNtuple.getParameter<int>("maxNumBJets_loose");
   const int maxNumBJets_medium        = cfg_produceNtuple.getParameter<int>("maxNumBJets_medium");
+  const bool applyJetEtaCut           = cfg_produceNtuple.getParameter<int>("applyJetEtaCut");
   
   const bool isMC                 = cfg_produceNtuple.getParameter<bool>("isMC");
   const bool redoGenMatching      = cfg_produceNtuple.getParameter<bool>("redoGenMatching");
@@ -250,11 +251,15 @@ main(int argc,
   jetReader->read_BtagWeight_systematics(isMC);
   inputTree -> registerReader(jetReader);
   const RecoJetCollectionGenMatcher jetGenMatcher;
-  const RecoJetSelector jetSelector(era);
+  RecoJetSelector jetSelector(era);
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
 
 //--- save the default settings of jetSelector
+  if(! applyJetEtaCut)
+  {
+    jetSelector.set_max_absEta(-1.);
+  }
   const double min_jetSelector_pT     = jetSelector.get_min_pt();
   const double max_jetSelector_absEta = jetSelector.get_max_absEta();
 
@@ -267,7 +272,9 @@ main(int argc,
 //    requirements). The solution is to remove the pT cut in b-tagging selectors because the input jet
 //    collection all already passes the pT cut in at least one choice of systematic uncertainties.
   jetSelectorBtagLoose.getSelector().set_min_pt(-1.);
+  jetSelectorBtagLoose.getSelector().set_max_absEta(max_jetSelector_absEta);
   jetSelectorBtagMedium.getSelector().set_min_pt(-1.);
+  jetSelectorBtagMedium.getSelector().set_max_absEta(max_jetSelector_absEta);
 
 //--- declare missing transverse energy
   RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
