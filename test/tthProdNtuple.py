@@ -96,9 +96,9 @@ elif mode == 'hh':
       os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_2016.root'
     )
   elif era == "2017":
-    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_nanoAOD_hh_private import samples_2017 as samples
+    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_nanoAOD_hh_merged import samples_2017 as samples
     pileup = os.path.join(
-      os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_private_2017.root'
+      os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_2017.root'
     )
   elif era == "2018":
     from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
@@ -136,7 +136,8 @@ elif era == "2018":
 else:
   raise ValueError("Invalid era: %s" % era)
 
-del samples['sum_events']
+if 'sum_events' in samples:
+  del samples['sum_events']
 for sample_name, sample_entry in samples.items():
   if mode == "all":
     sample_entry['use_it'] = True
