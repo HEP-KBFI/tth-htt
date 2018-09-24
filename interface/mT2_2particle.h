@@ -14,15 +14,15 @@
  * This class implements the mT2 computation for the case that 2 "stable" visible particles are produced per decay chain.
  * It covers the cases:
  *  1) WW -> lnu lnu 
- *    (case mT2(1,1,0 in Ref. [1]; with b1=lepton1, b2=lepton2, cSum=MET, cMass=0)
+ *    (case mT2(1,1,0 in Ref. [1]; with b1=lepton1, b2=lepton2, cSum=MET, cMass=0 [ c=neutrinos produced in W boson decays ])
  *  2) ttbar -> bW bW, 
  *     where both W bosons decay to electrons or muons, 
  *     the latter being referred to as "lepton1" and "lepton2" 
- *    (case mT2(2,1,0) in Ref. [2]; with b1=bjet1, b2=bjet2, cSum=lepton1+lepton2+MET, cMass=mW)
+ *    (case mT2(2,1,0) in Ref. [2]; with b1=bjet1, b2=bjet2, cSum=lepton1+lepton2+MET, cMass=mW [ c=W bosons ])
  *  3) ttbar -> bW bW, 
  *     where both W bosons decay to tau leptons, which subsequently decay to electrons, muons, or tau_h, 
  *     the latter being referred to as "vis1" and "vis2" 
- *    (described in Section "KINEMATIC BOUNDING VARIABLES" in Ref. [2]; with b1=bjet1, b2=bjet2, cSum=vis1+vis2+MET, cMass=mW)
+ *    (described in Section "KINEMATIC BOUNDING VARIABLES" in Ref. [2]; with b1=bjet1, b2=bjet2, cSum=vis1+vis2+MET, cMass=mW [ c=W bosons ])
  *
  * \author Christian Veelken, Tallinn
  *
