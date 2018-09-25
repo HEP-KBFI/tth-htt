@@ -112,6 +112,7 @@ class analyzeConfig(object):
         if self.channel.startswith('hh'):
           DEPENDENCIES.extend([
             "hhAnalysis/multilepton",
+            "hhAnalysis/bbww",
             "TauAnalysis/ClassicSVfit4tau",
           ])
 
