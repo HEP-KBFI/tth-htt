@@ -64,7 +64,7 @@ class Plotter : public PlotterPluginBase
   std::vector<plotEntryType*> distributions_;
 
   bool applyRebinning_;
-  int apply_fixed_rebinning_;
+  bool apply_fixed_rebinning_;
   bool apply_automatic_rebinning_;
   double minEvents_automatic_rebinning_;
   bool applyAutoBlinding_;

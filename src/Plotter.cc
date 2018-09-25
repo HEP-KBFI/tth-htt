@@ -207,30 +207,32 @@ void Plotter::makePlots()
       TH1* histogramBackgroundSum_rebinned = (TH1*)histogramBackgroundSum->Clone(histogramNameBackgroundSum_rebinned.data());
       TH1* histogramData_blinded_rebinned = 0;
       TH1* histogramUncertainty_rebinned = 0;
+      int apply_fixed_rebinning = 1;
       if ( applyRebinning_ ) {
-	if ( apply_fixed_rebinning_ > 1 && !apply_automatic_rebinning_ ) {
+	//if ( apply_fixed_rebinning_ > 1 && !apply_automatic_rebinning_ ) {
+	if ( apply_fixed_rebinning_ ){
 	  TArrayD histogramBinning_output = getBinning(histogramData_rebinned);
 	  int numBins_output = histogramBinning_output.GetSize() - 1;
 	  if ( numBins_output < 10 ) {
-	    continue;
+	    apply_fixed_rebinning = 1;
 	  } else if ( numBins_output <= 20 ) {
-	    if ( (numBins_output % 2) == 0 ) apply_fixed_rebinning_ = 2;
-	    else continue;
+	    if ( (numBins_output % 2) == 0 ) apply_fixed_rebinning = 2;
+	    else apply_fixed_rebinning = 1;
 	  } else if ( numBins_output <= 40 ) {
-	    if ( (numBins_output % 3) == 0) apply_fixed_rebinning_ = 3;
-	    if ( (numBins_output % 2) == 0) apply_fixed_rebinning_ = 2;
-	    else continue;
+	    if ( (numBins_output % 3) == 0) apply_fixed_rebinning = 3;
+	    else if ( (numBins_output % 2) == 0) apply_fixed_rebinning = 2;
+	    else apply_fixed_rebinning = 1;
 	  } else {
-	    if ( (numBins_output % 5) == 0) apply_fixed_rebinning_ = 5;
-	    if ( (numBins_output % 4) == 0) apply_fixed_rebinning_ = 4;
-	    if ( (numBins_output % 3) == 0) apply_fixed_rebinning_ = 3;
-	    if ( (numBins_output % 2) == 0) apply_fixed_rebinning_ = 2;
-	    else continue;
+	    if ( (numBins_output % 5) == 0) apply_fixed_rebinning = 5;
+	    else if ( (numBins_output % 4) == 0) apply_fixed_rebinning = 4;
+	    else if ( (numBins_output % 3) == 0) apply_fixed_rebinning = 3;
+	    else if ( (numBins_output % 2) == 0) apply_fixed_rebinning = 2;
+	    else apply_fixed_rebinning = 1;
 	  }
-	  histogramData_rebinned->Rebin(apply_fixed_rebinning_);
-	  histogramSignal_rebinned->Rebin(apply_fixed_rebinning_);
-	  getHistogramsBackground_rebin(histogramsBackground_rebinned, apply_fixed_rebinning_);
-	  histogramBackgroundSum_rebinned->Rebin(apply_fixed_rebinning_); 
+	  histogramData_rebinned->Rebin(apply_fixed_rebinning);
+	  histogramSignal_rebinned->Rebin(apply_fixed_rebinning);
+	  getHistogramsBackground_rebin(histogramsBackground_rebinned, apply_fixed_rebinning);
+	  histogramBackgroundSum_rebinned->Rebin(apply_fixed_rebinning); 
 	}
 
 	TH1* histogramData_tmp = 0;
