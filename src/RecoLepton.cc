@@ -273,7 +273,7 @@ RecoLepton::isGenMatched() const
 bool
 RecoLepton::hasAnyGenMatch() const
 {
-  return !! genLepton_ || !! genHadTau_ || !! genJet_;
+  return !! genLepton_ || !! genHadTau_ || !! genPhoton_ || !! genJet_;
 }
 
 bool
