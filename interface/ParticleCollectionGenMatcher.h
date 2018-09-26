@@ -83,13 +83,13 @@ protected:
       Tgen * bestMatch = nullptr;
       double dR_bestMatch = 1.e+3;
 
-      for (const Tgen & genParticle: genParticles)
+      for(const Tgen & genParticle: genParticles)
       {
         const double dR = deltaR(
           recParticle->eta(), recParticle->phi(), genParticle.eta(), genParticle.phi()
         );
         const bool passesPtConstraint = genParticle.pt() / recParticle->pt() > minPtRel;
-        if(dR < dRmax && dR < dR_bestMatch && passesPtConstraint)
+        if(dR < dRmax && dR < dR_bestMatch && passesPtConstraint && ! genParticle.isMatchedToReco())
         {
           bestMatch = const_cast<Tgen *>(&genParticle);
           dR_bestMatch = dR;
