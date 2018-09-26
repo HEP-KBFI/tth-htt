@@ -464,3 +464,7 @@
   <use   name="root"/>
   <use   name="tthAnalysis/HiggsToTauTau"/>
 </bin>
+<bin file="testHiggsness_and_Topness.cc" name="testHiggsness_and_Topness">
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+</bin>
