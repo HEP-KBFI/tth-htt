@@ -242,6 +242,14 @@ compSTMEt(const std::vector<const RecoLepton *> & leptons,
 	  const Particle::LorentzVector & met_p4);
 
 /**
+ * @brief Compute Smin (= mT) observable, as defined in the paper
+          "Measuring the triple Higgs self-interaction at the Large Hadron Collider"; J.H. Kim, K. Kong, K.T. Matchev, M. Park; arXiv: 1807.11498
+ */
+
+double 
+comp_Smin(const Particle::LorentzVector& visP4, double metPx, double metPy);
+
+/**
  * @brief Set flags indicating whether or not lepton passes loose, fakeable and/or tight selection criteria
  */
 template <typename T>
