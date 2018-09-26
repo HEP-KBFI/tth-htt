@@ -29,7 +29,8 @@ namespace higgsness
 class Higgsness
 {
  public:
-  Higgsness(int maxObjFunctionCalls = 10000);
+  enum modeType { kPublishedChi2, kFixedChi2 };
+  Higgsness(modeType mode = kPublishedChi2, int maxObjFunctionCalls = 10000);
   ~Higgsness();
 
   void set_sigmaW_onshell(double sigmaW_onshell);
@@ -54,6 +55,8 @@ class Higgsness
   double operator()(const double* x) const;
 
  private:
+  modeType mode_;
+
   Particle::LorentzVector lepton1P4_;
   Particle::LorentzVector lepton2P4_;
   double metPx_;
@@ -73,6 +76,10 @@ class Higgsness
   mutable int fitStatus_;
   mutable double logHiggsness_;
   //-----------------------------------------------------------------------------
+
+  const int numPermutations_;
+  double* chi2_of_permutation_;
+  int* fitStatus_of_permutation_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_Higgsness_h
