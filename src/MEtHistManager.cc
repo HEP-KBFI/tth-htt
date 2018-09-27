@@ -18,7 +18,7 @@ MEtHistManager::bookHistograms(TFileDirectory & dir)
 
   histogram_mhtPt_vs_metPt_ = book2D(dir, "mhtPt_vs_metPt", "mht_vs_metPt", 40, 0., 200., 40, 0., 200.);
 
-  histogram_met_LD_ = book1D(dir, "met_LD", "met_LD", 40, 0., 2.);
+  histogram_met_LD_ = book1D(dir, "met_LD", "met_LD", 40, 0., 200.);
 }
 
 void
