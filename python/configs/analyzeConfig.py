@@ -109,13 +109,6 @@ class analyzeConfig(object):
         self.executable_analyze = executable_analyze
         self.channel = channel
 
-        if self.channel.startswith('hh'):
-          DEPENDENCIES.extend([
-            "hhAnalysis/multilepton",
-            "hhAnalysis/bbww",
-            "TauAnalysis/ClassicSVfit4tau",
-          ])
-
         # sum the event counts for samples which cover the same phase space only if
         # there are multiple such samples
         event_sums = copy.deepcopy(samples['sum_events'])
@@ -926,18 +919,14 @@ class analyzeConfig(object):
            Args:
              histogram_file: name of the input ROOT file
         """
-        if 'skipChannel' in jobOptions and jobOptions['skipChannel']:
-          category_label = jobOptions['label']
-        else:
-          category_label = self.channel
-          if jobOptions['label']:
-              category_label += " (%s)" % jobOptions['label']
+        category_label = self.channel
+        if jobOptions['label']:
+            category_label += " (%s)" % jobOptions['label']
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
         lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % jobOptions['make_plots_backgrounds'])
-        if 'skipSignal' not in jobOptions or not jobOptions['skipSignal']:
-          lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+        lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
         lines.append("process.makePlots.categories = cms.VPSet(")
         lines.append("  cms.PSet(")
         lines.append("    name = cms.string('%s')," % jobOptions['histogramDir'])
@@ -957,8 +946,7 @@ class analyzeConfig(object):
       lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
       lines.append("process.makePlots.outputFileName = cms.string('%s')" % jobOptions['outputFile'])
       lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
-      if 'skipSignal' not in jobOptions or not jobOptions['skipSignal']:
-        lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+      lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
       lines.append("process.makePlots.categories = cms.VPSet(")
       lines.append("  cms.PSet(")
       lines.append("    signal = cms.string('%s')," % self.histogramDir_prep_dcard)
