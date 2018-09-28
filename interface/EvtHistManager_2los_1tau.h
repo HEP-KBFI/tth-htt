@@ -35,6 +35,7 @@ public:
                  double mvaDiscr_2lss,
                  double mvaOutput_2los_1tau_ttV,
                  double mvaOutput_2los_1tau_ttbar,
+                 double mvaOutput_2los_1tau_SUM,
                  double mvaDiscr_2los_1tau,
                  double mTauTauVis,
                  double evtWeight);
@@ -59,6 +60,7 @@ private:
 
   TH1 * histogram_mvaOutput_2los_1tau_ttV_;
   TH1 * histogram_mvaOutput_2los_1tau_ttbar_;
+  TH1 * histogram_mvaOutput_2los_1tau_SUM_;
   TH1 * histogram_mvaDiscr_2los_1tau_;
 
   TH1 * histogram_mTauTauVis_;
