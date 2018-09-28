@@ -31,6 +31,8 @@ EvtHistManager_2los_1tau::bookHistograms(TFileDirectory & dir)
 
   histogram_mvaOutput_2los_1tau_ttV_   = book1D(dir, "mvaOutput_2los_1tau_ttV",   "mvaOutput_2los_1tau_ttV",   40, -1., +1.);
   histogram_mvaOutput_2los_1tau_ttbar_ = book1D(dir, "mvaOutput_2los_1tau_ttbar", "mvaOutput_2los_1tau_ttbar", 40, -1., +1.);
+  histogram_mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var_ = book1D(dir, "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var", "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var", 20, 0., +1.);
+
   histogram_mvaDiscr_2los_1tau_        = book1D(dir, "mvaDiscr_2los_1tau",        "mvaDiscr_2los_1tau",         8,  0.5, 8.5);
 
   histogram_mTauTauVis_   = book1D(dir, "mTauTauVis",   "mTauTauVis",  40,  0., 200.);
@@ -51,6 +53,7 @@ EvtHistManager_2los_1tau::fillHistograms(int numElectrons,
                                          double mvaOutput_2los_1tau_ttbar,
                                          double mvaDiscr_2los_1tau,
                                          double mTauTauVis,
+                                         double mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var,
                                          double evtWeight)
 {
   const double evtWeightErr = 0.;
@@ -61,7 +64,7 @@ EvtHistManager_2los_1tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
-  
+
   fillWithOverFlow2d(histogram_numBJets_loose_vs_numJets_,  numJets, numBJets_loose,  evtWeight, evtWeightErr);
   fillWithOverFlow2d(histogram_numBJets_medium_vs_numJets_, numJets, numBJets_medium, evtWeight, evtWeightErr);
 
@@ -72,6 +75,7 @@ EvtHistManager_2los_1tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mvaOutput_2los_1tau_ttV_,   mvaOutput_2los_1tau_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2los_1tau_ttbar_, mvaOutput_2los_1tau_ttbar, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaDiscr_2los_1tau_,        mvaDiscr_2los_1tau,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var_,        mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var,        evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mTauTauVis_,  mTauTauVis, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_EventCounter_, 0.,        evtWeight, evtWeightErr);

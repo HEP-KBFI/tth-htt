@@ -20,6 +20,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
+#include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h" // XGBInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions.h" // check_mvaInputs, get_mvaInputVariables
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2lss_1tau category
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
@@ -575,6 +576,17 @@ int main(int argc, char* argv[])
   TFile* inputFile_mva_mapping_2los_1tau = openFile(LocalFileInPath(inputFileName_mva_mapping_2los_1tau));
   TH2* mva_mapping_2los_1tau = loadTH2(inputFile_mva_mapping_2los_1tau, "hTargetBinning");
 
+//-- BDT trained by Kartik
+  std::string mvaFileName_2los_1tau_evtLevelSUM_TTH_19Var = "tthAnalysis/HiggsToTauTau/data/evtLevel_Sep2018/2los_1tau_XGB_HTT_evtLevelSUM_TTH_19Var.pkl";
+  std::vector<std::string> mvaInputs2los_1tau_evtLevelSUM_TTH_19VarSort =  {
+    "avg_dr_jet", "dr_lep1_tau_os", "dr_lep2_tau_ss", "dr_leps", "lep2_conePt", "mT_lep1", "mT_lep2",
+  "mTauTauVis", "tau_pt", "tau_eta", "min_lep_eta", "mindr_lep1_jet", "mindr_lep2_jet", "mindr_tau_jet",
+  "mbb_loose", "nJet", "res-HTT_2016", "HadTop_eta", "HadTop_pt"
+  };
+  XGBInterface mva_xgb_2los_1tau_evtLevelSUM_TTH_19Var(
+    mvaFileName_2los_1tau_evtLevelSUM_TTH_19Var, mvaInputs2los_1tau_evtLevelSUM_TTH_19VarSort
+  );
+
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
@@ -672,12 +684,12 @@ int main(int argc, char* argv[])
       preselHistManager->evt_ = new EvtHistManager_2los_1tau(makeHistManager_cfg(process_and_genMatch,
         Form("%s/presel/evt", histogramDir.data()), era_string, central_or_shift));
       preselHistManager->evt_->bookHistograms(fs);
-      edm::ParameterSet cfg_EvtYieldHistManager_presel = makeHistManager_cfg(process_and_genMatch, 
+      edm::ParameterSet cfg_EvtYieldHistManager_presel = makeHistManager_cfg(process_and_genMatch,
         Form("%s/presel/evtYield", histogramDir.data()), central_or_shift);
       cfg_EvtYieldHistManager_presel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
       cfg_EvtYieldHistManager_presel.addParameter<bool>("isMC", isMC);
       preselHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_presel);
-      preselHistManager->evtYield_->bookHistograms(fs);  								
+      preselHistManager->evtYield_->bookHistograms(fs);
       preselHistManagers[idxLepton][idxHadTau] = preselHistManager;
 
       selHistManagerType* selHistManager = new selHistManagerType();
@@ -757,12 +769,12 @@ int main(int argc, char* argv[])
           selHistManager -> evt_in_decayModes_[decayMode_evt] -> bookHistograms(fs);
         }
       }
-      edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch, 
+      edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/evtYield", histogramDir.data()), central_or_shift);
       cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
       cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);
       selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_sel);
-      selHistManager->evtYield_->bookHistograms(fs);  
+      selHistManager->evtYield_->bookHistograms(fs);
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/weights", histogramDir.data()), central_or_shift));
       selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "triggerWeight", "data_to_MC_correction", "fakeRate" });
@@ -806,10 +818,10 @@ int main(int argc, char* argv[])
       "lep1_genLepPt", "lep2_genLepPt",
       "tau_genTauPt",
       "lep1_fake_prob", "lep2_fake_prob", "tau_fake_prob","dr_leps",
-      "mvaOutput_hadTopTaggerWithKinFit",
+      "res-HTT_2016",
       "max_lep_eta", "min_lep_eta",
-      "HadTop_pt", "HadTop_eta", "genTopPt", 
-      "mbb", "ptbb", "b1_pt", "b2_pt", "drbb", "detabb", 
+      "HadTop_pt", "HadTop_eta", "genTopPt",
+      "mbb", "ptbb", "b1_pt", "b2_pt", "drbb", "detabb",
       "mbb_loose", "ptbb_loose", "b1_loose_pt", "b2_loose_pt", "drbb_loose", "detabb_loose",
       "fittedHadTop_pt", "fittedHadTop_eta", "fitHTptoHTpt", "fitHTptoHTmass",
       "dr_lepSS_HTunfitted", "dr_lepSS_HTfitted",
@@ -1263,7 +1275,7 @@ int main(int argc, char* argv[])
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       -1., -1., -1., -1., -1., -1.,
-      mTauTauVis_presel, 1.);
+      mTauTauVis_presel, -1., 1.);
     preselHistManager->evtYield_->fillHistograms(eventInfo, 1.);
 
 //--- apply final event selection
@@ -1711,6 +1723,30 @@ int main(int argc, char* argv[])
       if ( mvaOutput > mvaOutput_Hj_tagger ) mvaOutput_Hj_tagger = mvaOutput;
     }
 
+//--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Kartik for 2los_1tau category
+    const std::map<std::string, double>  mvaInputVariables_2los_1tau_evtLevelSUM_TTH_19Var = {
+      { "avg_dr_jet",     comp_avg_dr_jet(selJets) },
+      { "dr_lep1_tau_os", deltaR(selLepton_OS -> p4(), selHadTau -> p4())  },
+      { "dr_lep2_tau_ss", deltaR(selLepton_SS -> p4(), selHadTau -> p4())  },
+      { "dr_leps",        deltaR(selLepton_OS -> p4(), selLepton_SS -> p4()) },
+      { "lep2_conePt",    selLepton_sublead->cone_pt()  },
+      { "mT_lep1",        comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi())         },
+      { "mT_lep2",        comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi())         },
+      { "mTauTauVis",    mTauTauVis_sel },
+      { "tau_pt",         selHadTau -> pt()   },
+      { "tau_eta",        selHadTau -> absEta() },
+      { "min_lep_eta",    TMath::Min(selLepton_sublead -> eta(), selLepton_lead -> eta()) },
+      { "mindr_lep1_jet", TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets))},
+      { "mindr_lep2_jet", TMath::Min(10., comp_mindr_lep1_jet(*selLepton_sublead, selJets))},
+      { "mindr_tau_jet", TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets)) },
+      { "mbb_loose",     selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -1.   },
+      { "nJet",          selJets.size()     },
+      { "res-HTT_2016",  max_mvaOutput_hadTopTaggerWithKinFit },
+      { "HadTop_eta",   std::abs(unfittedHadTopP4.eta()) },
+      { "HadTop_pt",    unfittedHadTopP4.pt() },
+    };
+    const double mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var = mva_xgb_2los_1tau_evtLevelSUM_TTH_19Var(mvaInputVariables_2los_1tau_evtLevelSUM_TTH_19Var);
+
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 2los_1tau category
     mvaInputs_2los_1tau["lep1_conePt"]            = selLepton_lead->cone_pt();
     mvaInputs_2los_1tau["lep2_conePt"]            = selLepton_sublead->cone_pt();
@@ -1763,7 +1799,9 @@ int main(int argc, char* argv[])
       selElectrons.size(), selMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2los_1tau_ttV, mvaOutput_2los_1tau_ttbar, mvaDiscr_2los_1tau,
-      mTauTauVis_sel, evtWeight);
+      mTauTauVis_sel,
+      mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var,
+      evtWeight);
     if(isSignal)
     {
       const std::string decayModeStr = eventInfo.getDecayModeString();
@@ -1783,6 +1821,7 @@ int main(int argc, char* argv[])
           mvaOutput_2los_1tau_ttbar,
           mvaDiscr_2los_1tau,
           mTauTauVis_sel,
+          mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var,
           evtWeight
         );
       }
@@ -1833,7 +1872,7 @@ int main(int argc, char* argv[])
           ("tau_mva",              selHadTau -> raw_mva_dR03())
           ("tau_pt",               selHadTau -> pt())
           ("tau_eta",              selHadTau -> eta())
-          ("mvaOutput_hadTopTaggerWithKinFit", max_mvaOutput_hadTopTaggerWithKinFit)
+          ("res-HTT_2016", max_mvaOutput_hadTopTaggerWithKinFit)
           ("bWj1Wj2_isGenMatchedWithKinFit",   max_truth_hadTopTaggerWithKinFit)
           ("HadTop_pt",              unfittedHadTopP4.pt())
           ("HadTop_eta",             std::abs(unfittedHadTopP4.eta()))
@@ -1878,14 +1917,14 @@ int main(int argc, char* argv[])
           ("mbb",       selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : -1.  )
           ("ptbb",       selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).pt() : -1.  )
           ("b1_pt",       selBJets_medium.size()>0 ?  selBJets_medium[0]->pt() : -1. )
-          ("b2_pt",       selBJets_medium.size()>1 ?  selBJets_medium[1]->pt() : -1. ) 
-	  ("drbb",       selBJets_medium.size()>1 ? deltaR(selBJets_medium[0]->p4(), selBJets_medium[1]->p4()) : -1. ) 
+          ("b2_pt",       selBJets_medium.size()>1 ?  selBJets_medium[1]->pt() : -1. )
+	  ("drbb",       selBJets_medium.size()>1 ? deltaR(selBJets_medium[0]->p4(), selBJets_medium[1]->p4()) : -1. )
 	  ("detabb",     selBJets_medium.size()>1 ? TMath::Abs(selBJets_medium[0]->eta() - selBJets_medium[1]->eta()) : -1. )
           ("mbb_loose",       selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -1.  )
           ("ptbb_loose",       selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).pt() : -1.  )
    	  ("b1_loose_pt",       selBJets_loose.size()>0 ?  selBJets_loose[0]->pt() : -1. )
-          ("b2_loose_pt",       selBJets_loose.size()>1 ?  selBJets_loose[1]->pt() : -1. ) 
-	  ("drbb_loose",       selBJets_loose.size()>1 ? deltaR(selBJets_loose[0]->p4(), selBJets_loose[1]->p4()) : -1. ) 
+          ("b2_loose_pt",       selBJets_loose.size()>1 ?  selBJets_loose[1]->pt() : -1. )
+	  ("drbb_loose",       selBJets_loose.size()>1 ? deltaR(selBJets_loose[0]->p4(), selBJets_loose[1]->p4()) : -1. )
 	  ("detabb_loose",     selBJets_loose.size()>1 ? TMath::Abs(selBJets_loose[0]->eta() - selBJets_loose[1]->eta()) : -1. )
         .fill()
       ;
