@@ -156,6 +156,7 @@ if __name__ == '__main__':
       "mvaOutput_2los_1tau_ttbar" : {},
       "mvaDiscr_2los_1tau"        : {},
       "mTauTauVis"                : {},
+      "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var"  : {},
     },
     select_rle_output         = True,
     dry_run                   = dry_run,
