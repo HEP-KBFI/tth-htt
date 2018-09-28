@@ -7,6 +7,7 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
 {
   binningOptions_["avg_dr_jet"]                 = new binningOptionType("avg_dr_jet",                 30,  0.,    5.);
+  binningOptions_["res-HTT_2016"]               = new binningOptionType("res-HTT_2016",               30,  0.,    1.);
   binningOptions_["avr_dr_lep_tau"]             = new binningOptionType("avr_dr_lep_tau",             30,  0.,    5.);
   binningOptions_["max_dr_lep_tau"]             = new binningOptionType("max_dr_lep_tau",             30,  0.,    5.);
   binningOptions_["is_OS"]                      = new binningOptionType("is_OS",                      2,  0.,    2.);
@@ -33,7 +34,7 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["lep_pt"]                     = new binningOptionType("lep_pt",                     40,  0.,  200.);
   binningOptions_["lep_tth_mva"]                = new binningOptionType("lep_tth_mva",                40, -1.,   +1.);
   binningOptions_["lep1_abs_eta"]               = new binningOptionType("lep1_abs_eta",               50, -2.5,  +2.5);
-  binningOptions_["HadTop_eta"]                 = new binningOptionType("HadTop_eta",                 50, -2.5,  +2.5);
+  binningOptions_["HadTop_eta"]                 = new binningOptionType("HadTop_eta",                 50, 0.,  +2.5);
   binningOptions_["lep1_charge*tau_charge"]     = new binningOptionType("lep1_charge*tau_charge",      3, -1.5,  +1.5);
   binningOptions_["lep1_conePt"]                = new binningOptionType("lep1_conePt",                40,  0.,  200.);
   binningOptions_["lep1_pt"]                    = new binningOptionType("lep1_pt",                    40,  0.,  200.);

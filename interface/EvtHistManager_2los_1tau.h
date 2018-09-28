@@ -35,7 +35,6 @@ public:
                  double mvaDiscr_2lss,
                  double mvaOutput_2los_1tau_ttV,
                  double mvaOutput_2los_1tau_ttbar,
-                 double mvaOutput_2los_1tau_SUM,
                  double mvaDiscr_2los_1tau,
                  double mTauTauVis,
                  double mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var,
