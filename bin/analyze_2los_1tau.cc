@@ -84,6 +84,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopKinFit.h" // HadTopKinFit
+#include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h" // XGBInterface
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
@@ -452,6 +453,29 @@ int main(int argc, char* argv[])
   mvaInputVariables_Hjj_tagger.push_back("bdtJetPair_minjOvermaxjdr");
   TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagger);
 
+  std::string mvaFileNameEvt = "tthAnalysis/HiggsToTauTau/data/2los_1tau_XGB_HTT_evtLevelSUM_TTH_19Var.pkl";
+  std::vector<std::string> mvaInputVariables_2los_1tau_SUM;
+  mvaInputVariables_2los_1tau_SUM.push_back("avg_dr_jet");
+  mvaInputVariables_2los_1tau_SUM.push_back("dr_lep1_tau_os");
+  mvaInputVariables_2los_1tau_SUM.push_back("dr_lep2_tau_ss");
+  mvaInputVariables_2los_1tau_SUM.push_back("dr_leps");
+  mvaInputVariables_2los_1tau_SUM.push_back("lep2_conePt");
+  mvaInputVariables_2los_1tau_SUM.push_back("mT_lep1");
+  mvaInputVariables_2los_1tau_SUM.push_back("mT_lep2");
+  mvaInputVariables_2los_1tau_SUM.push_back("mTauTauVis");
+  mvaInputVariables_2los_1tau_SUM.push_back("tau_pt");
+  mvaInputVariables_2los_1tau_SUM.push_back("tau_eta");
+  mvaInputVariables_2los_1tau_SUM.push_back("min_lep_eta");
+  mvaInputVariables_2los_1tau_SUM.push_back("mindr_lep1_jet");
+  mvaInputVariables_2los_1tau_SUM.push_back("mindr_lep2_jet");
+  mvaInputVariables_2los_1tau_SUM.push_back("mindr_tau_jet");
+  mvaInputVariables_2los_1tau_SUM.push_back("mbb_loose");
+  mvaInputVariables_2los_1tau_SUM.push_back("nJet");
+  mvaInputVariables_2los_1tau_SUM.push_back("mvaOutput_hadTopTaggerWithKinFit");
+  mvaInputVariables_2los_1tau_SUM.push_back("HadTop_eta");
+  mvaInputVariables_2los_1tau_SUM.push_back("HadTop_pt");
+  XGBInterface mva_2los_1tau_SUM(mvaFileNameEvt, mvaInputVariables_2los_1tau_SUM);
+
 //--- declare generator level information
   GenLeptonReader* genLeptonReader = 0;
   GenHadTauReader* genHadTauReader = 0;
@@ -569,13 +593,6 @@ int main(int argc, char* argv[])
   mvaInputVariables_2los_1tau_ttbar.push_back("lep1_charge*tau_charge");
   TMVAInterface mva_2los_1tau_ttbar(mvaFileName_2los_1tau_ttbar, mvaInputVariables_2los_1tau_ttbar);
 
-  std::vector<std::string> mvaInputVariables_2los_1tau = get_mvaInputVariables(mvaInputVariables_2los_1tau_ttV, mvaInputVariables_2los_1tau_ttbar);
-  std::map<std::string, double> mvaInputs_2los_1tau;
-
-  std::string inputFileName_mva_mapping_2los_1tau = "tthAnalysis/HiggsToTauTau/data/evtLevel_deprecated/2los_1tau_BDT_mapping.root";
-  TFile* inputFile_mva_mapping_2los_1tau = openFile(LocalFileInPath(inputFileName_mva_mapping_2los_1tau));
-  TH2* mva_mapping_2los_1tau = loadTH2(inputFile_mva_mapping_2los_1tau, "hTargetBinning");
-
 //-- BDT trained by Kartik
   std::string mvaFileName_2los_1tau_evtLevelSUM_TTH_19Var = "tthAnalysis/HiggsToTauTau/data/evtLevel_Sep2018/2los_1tau_XGB_HTT_evtLevelSUM_TTH_19Var.pkl";
   std::vector<std::string> mvaInputs2los_1tau_evtLevelSUM_TTH_19VarSort =  {
@@ -586,6 +603,13 @@ int main(int argc, char* argv[])
   XGBInterface mva_xgb_2los_1tau_evtLevelSUM_TTH_19Var(
     mvaFileName_2los_1tau_evtLevelSUM_TTH_19Var, mvaInputs2los_1tau_evtLevelSUM_TTH_19VarSort
   );
+
+  std::vector<std::string> mvaInputVariables_2los_1tau = get_mvaInputVariables(mvaInputs2los_1tau_evtLevelSUM_TTH_19VarSort, mvaInputVariables_2los_1tau_ttbar); // those two are the only one important
+  std::map<std::string, double> mvaInputs_2los_1tau;
+
+  std::string inputFileName_mva_mapping_2los_1tau = "tthAnalysis/HiggsToTauTau/data/evtLevel_deprecated/2los_1tau_BDT_mapping.root";
+  TFile* inputFile_mva_mapping_2los_1tau = openFile(LocalFileInPath(inputFileName_mva_mapping_2los_1tau));
+  TH2* mva_mapping_2los_1tau = loadTH2(inputFile_mva_mapping_2los_1tau, "hTargetBinning");
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
