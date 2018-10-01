@@ -535,7 +535,7 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc,
 
   TLegend* legend = 0;
   if ( graph_mc ) {
-    TLegend* legend = new TLegend(0.73, 0.76, 0.88, 0.91, NULL, "brNDC");
+    legend = new TLegend(0.73, 0.76, 0.88, 0.91, NULL, "brNDC");
     legend->SetFillStyle(0);
     legend->SetBorderSize(0);
     legend->SetFillColor(10);
