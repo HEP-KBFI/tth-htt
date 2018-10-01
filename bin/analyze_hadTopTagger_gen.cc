@@ -2674,8 +2674,8 @@ int main(int argc, char* argv[])
 		      fillWithOverFlow(histogram_resolved_theta_t_sublead, theta_t_sublead, evtWeight);
 		    }
 
-		    bool selBJetFromTop_passesLoose = false;
-		    bool selBJetFromAntiTop_passesLoose = false;
+        selBJetFromTop_passesLoose = false;
+        selBJetFromAntiTop_passesLoose = false;
 		    for ( std::vector<const RecoJet*>::const_iterator selBJet_loose = selBJets_loose.begin();
 			  selBJet_loose != selBJets_loose.end(); ++selBJet_loose ) {
 		      if ( selBJetFromTop && deltaR(selBJetFromTop->p4(), (*selBJet_loose)->p4()) < 0.3 ) {

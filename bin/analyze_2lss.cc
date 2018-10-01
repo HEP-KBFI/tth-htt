@@ -1782,9 +1782,9 @@ int main(int argc, char* argv[])
           mvaOutput_Hj_tagger,
           mvaOutput_Hjj_tagger
         );
-	EvtHistManager_2lss* selHistManager_evt_category = selHistManager->evt_in_categories_and_decayModes_[category][decayModeStr];
-	if ( selHistManager_evt_category ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-          selHistManager_evt_category->fillHistograms(
+  EvtHistManager_2lss* selHistManager_evt_category_decMode = selHistManager->evt_in_categories_and_decayModes_[category][decayModeStr];
+  if ( selHistManager_evt_category_decMode ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
+          selHistManager_evt_category_decMode->fillHistograms(
             selElectrons.size(),
 	    selMuons.size(),
 	    selHadTaus.size(),
