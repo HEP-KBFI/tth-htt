@@ -331,8 +331,6 @@ class analyzeConfig(object):
         self.outputFile_hadd_stage1_5 = {}
         self.cfgFile_addFakes = os.path.join(self.template_dir, "addBackgroundLeptonFakes_cfg.py")
         self.jobOptions_addFakes = {}
-        self.cfgFile_addTailFits = os.path.join(self.template_dir, "addBackgrounds_TailFit_cfg.py")     ## MY LINE
-        self.jobOptions_addTailFits = {}                                                                  ## MY LINE
         self.inputFiles_hadd_stage2 = {}
         self.outputFile_hadd_stage2 = {}
         self.cfgFile_prep_dcard = os.path.join(self.template_dir, "prepareDatacards_cfg.py")
@@ -366,8 +364,7 @@ class analyzeConfig(object):
         self.num_jobs['hadd'] = 0
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
-        self.num_jobs['addTailFits'] = 0 ## MY LINE
-
+        
         self.leptonFakeRateWeight_inputFile = None
         self.leptonFakeRateWeight_histogramName_e = None
         self.leptonFakeRateWeight_histogramName_mu = None
@@ -754,101 +751,6 @@ class analyzeConfig(object):
         lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
-
-    def createCfg_addTailFits(self, jobOptions):
-        """Create python configuration file for the addBackgrounds_TailFit executable (Tail Fitting of histograms)
-        Args:
-        inputFiles: input file (the ROOT file produced by hadd_stage1)
-        outputFile: output file of the job
-        """
-        lines = []
-        lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
-        lines.append("process.addBackgrounds_TailFit.categories = cms.VPSet(")
-        lines.append("     cms.PSet(")
-        lines.append("         inputDir = cms.string('%s')," % os.path.basename(jobOptions['inputDir']))
-        lines.append("         outputDir = cms.string('%s')," % os.path.basename(jobOptions['inputDir']))
-        lines.append("         ),")
-        lines.append(")")
-        lines.append("process.addBackgrounds_TailFit.HistogramsToTailFit = cms.VPSet(")
-        lines.append("     cms.PSet(")
-        lines.append("         name = cms.string('%s')," % "dihiggsMass") 
-        lines.append("         nominal_fit_func = cms.PSet(")
-        lines.append("            FitfuncName   = cms.string('%s')," % "Exponential")
-        lines.append("            FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_nom_dihiggsMass'])
-        lines.append("            FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_nom_dihiggsMass'])
-        lines.append("            ),")
-        lines.append("         alternate_fit_funcs = cms.VPSet(")
-        lines.append("            cms.PSet(")
-        lines.append("                FitfuncName   = cms.string('%s')," % "LegendrePolynomial3")
-        lines.append("                FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_alt0_dihiggsMass'])
-        lines.append("                FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_alt0_dihiggsMass'])
-        lines.append("                ),")
-        lines.append("         )")
-        lines.append("     ),")
-        lines.append("     cms.PSet(")
-        lines.append("         name = cms.string('%s')," % "dihiggsVisMass") 
-        lines.append("         nominal_fit_func = cms.PSet(")
-        lines.append("            FitfuncName   = cms.string('%s')," % "Exponential")
-        lines.append("            FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_nom_dihiggsVisMass'])
-        lines.append("            FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_nom_dihiggsVisMass'])
-        lines.append("            ),")
-        lines.append("         alternate_fit_funcs = cms.VPSet(")
-        lines.append("            cms.PSet(")
-        lines.append("                FitfuncName   = cms.string('%s')," % "LegendrePolynomial1")
-        lines.append("                FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_alt0_dihiggsVisMass'])
-        lines.append("                FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_alt0_dihiggsVisMass'])
-        lines.append("                ),")
-        lines.append("         )")
-        lines.append("     ),")
-        lines.append("     cms.PSet(")
-        lines.append("         name = cms.string('%s')," % "STMET") 
-        lines.append("         nominal_fit_func = cms.PSet(")
-        lines.append("            FitfuncName   = cms.string('%s')," % "Exponential")
-        lines.append("            FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_nom_STMET'])
-        lines.append("            FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_nom_STMET'])
-        lines.append("            ),")
-        lines.append("         alternate_fit_funcs = cms.VPSet(")
-        lines.append("            cms.PSet(")
-        lines.append("                FitfuncName   = cms.string('%s')," % "LegendrePolynomial1")
-        lines.append("                FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_alt0_STMET'])
-        lines.append("                FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_alt0_STMET'])
-        lines.append("                ),")
-        lines.append("         )")
-        lines.append("     ),")
-        lines.append("     cms.PSet(")
-        lines.append("         name = cms.string('%s')," % "HT") 
-        lines.append("         nominal_fit_func = cms.PSet(")
-        lines.append("            FitfuncName   = cms.string('%s')," % "Exponential")
-        lines.append("            FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_nom_HT'])
-        lines.append("            FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_nom_HT'])
-        lines.append("            ),")
-        lines.append("         alternate_fit_funcs = cms.VPSet(")
-        lines.append("            cms.PSet(")
-        lines.append("                FitfuncName   = cms.string('%s')," % "LegendrePolynomial1")
-        lines.append("                FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_alt0_HT'])
-        lines.append("                FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_alt0_HT'])
-        lines.append("                ),")
-        lines.append("         )")
-        lines.append("     ),")
-        lines.append("     cms.PSet(")
-        lines.append("         name = cms.string('%s')," % "mTauTauVis") 
-        lines.append("         nominal_fit_func = cms.PSet(")
-        lines.append("            FitfuncName   = cms.string('%s')," % "Exponential")
-        lines.append("            FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_nom_mTauTauVis'])
-        lines.append("            FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_nom_mTauTauVis'])
-        lines.append("            ),")
-        lines.append("         alternate_fit_funcs = cms.VPSet(")
-        lines.append("            cms.PSet(")
-        lines.append("                FitfuncName   = cms.string('%s')," % "LegendrePolynomial3")
-        lines.append("                FitRange      = cms.vdouble(%s)," % jobOptions['fitrange_alt0_mTauTauVis'])
-        lines.append("                FitParameters = cms.vdouble(%s)," % jobOptions['fitparam_alt0_mTauTauVis'])
-        lines.append("                ),")
-        lines.append("         )")
-        lines.append("     ),")
-        lines.append(")")
-        create_cfg(self.cfgFile_addTailFits, jobOptions['cfgFile_modified'], lines)
-
 
     def createCfg_prep_dcard(self, jobOptions):
         """Fills the template of python configuration file for datacard preparation
