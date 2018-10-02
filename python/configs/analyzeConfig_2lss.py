@@ -439,6 +439,9 @@ class analyzeConfig_2lss(analyzeConfig):
                 self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s_%s.root" % \
                    (self.channel, process_name, lepton_selection_and_frWeight, lepton_charge_selection))
 
+                if self.isBDTtraining:
+                  self.targets.append(self.outputFile_hadd_stage1[key_hadd_stage1])
+
               if self.isBDTtraining or self.do_sync:
                 continue
 
