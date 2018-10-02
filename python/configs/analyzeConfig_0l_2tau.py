@@ -379,6 +379,9 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                 self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s_%s.root" % \
                     (self.channel, process_name, hadTau_selection_and_frWeight, hadTau_charge_selection))
 
+                if self.isBDTtraining:
+                  self.targets.append(self.outputFile_hadd_stage1[key_hadd_stage1])
+
             if self.isBDTtraining or self.do_sync:
               continue
 
