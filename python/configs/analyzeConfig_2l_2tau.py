@@ -204,7 +204,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     """
     self.lepton_and_hadTau_selections = [ "forBDTtraining" ]
     self.lepton_and_hadTau_frWeights  = [ "disabled" ]
-    super(analyzeConfig_1l_2tau, self).set_BDT_training(hadTau_selection_relaxed)
+    super(analyzeConfig_2l_2tau, self).set_BDT_training(hadTau_selection_relaxed)
 
   def createCfg_analyze(self, jobOptions, sample_info, lepton_and_hadTau_selection):
     """Create python configuration file for the analyze_2l_2tau executable (analysis code)
@@ -485,6 +485,9 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                     self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
                     self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s_%s_%s_%s.root" % \
                       (self.channel, process_name, lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
+
+                    if self.isBDTtraining:
+                      self.targets.append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
                 if self.isBDTtraining or self.do_sync:
                   continue
