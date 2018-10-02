@@ -8,6 +8,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // countLeptonGenMatches
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // countHadTauGenMatches
 
+#include <TMath.h> // TMath::Sqrt
+
 #include <numeric> // std::accumulate()
 
 double
@@ -149,6 +151,19 @@ compSTMEt(const std::vector<const RecoLepton *> & leptons,
   double stmet = compHT(leptons, hadTaus, jets) + met_p4.pt();
   return stmet;
 }
+
+double 
+comp_Smin(const Particle::LorentzVector& visP4, double metPx, double metPy)
+{
+  double visPt = visP4.pt();
+  double visMass = visP4.mass();
+  double visMass2 = visMass*visMass;
+  double visEt = TMath::Sqrt(visMass2 + visPt*visPt);
+  double metEt = TMath::Sqrt(metPx*metPx + metPy*metPy);
+  double Smin = TMath::Sqrt(visMass2 + 2.*(visEt*metEt - (visP4.px()*metPx + visP4.py()*metPy)));
+  return Smin;
+}
+
 
 std::vector<const RecoLepton *>
 mergeLeptonCollectionsNoSort(const std::vector<const RecoElectron *> & electrons,

@@ -905,6 +905,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     "Z-boson mass veto",
     "met LD > 30 GeV",
     "MEt filters",
+    "sel lepton-pair gen=rec charge match",
     "signal region veto",
   };
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
@@ -1742,6 +1743,23 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
     cutFlowTable.update("MEt filters", evtWeight);
     cutFlowHistManager->fillHistograms("MEt filters", evtWeight);
+
+    if (isMC) {
+      if((selLepton_lead->genLepton() && selLepton_lead->charge() != selLepton_lead->genLepton()->charge()) ||
+         (selLepton_sublead->genLepton() && selLepton_sublead->charge() != selLepton_sublead->genLepton()->charge())){
+        if(run_lumi_eventSelector)
+          {
+	    std::cout << "event " << eventInfo.str() << " FAILS lepton-par gen=rec charge matching\n"
+              "(leading lepton charge = " << selLepton_lead->charge() << " genlepton charge = " << selLepton_lead->genLepton()->charge()<< "; "
+              "subleading lepton charge = " << selLepton_sublead->charge() << " genlepton charge = " << selLepton_sublead->genLepton()->charge()<< "\n"
+              ;
+          }
+        continue;
+      }
+    }
+    cutFlowTable.update("sel lepton-pair gen=rec charge match", evtWeight);
+    cutFlowHistManager->fillHistograms("sel lepton-pair gen=rec charge match", evtWeight);
+
 
     bool failsSignalRegionVeto = false;
     if ( isMCClosure_e || isMCClosure_m || isMCClosure_t ) {

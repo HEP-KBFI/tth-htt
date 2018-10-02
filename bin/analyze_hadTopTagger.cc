@@ -105,8 +105,11 @@
 #include <numeric> // iota
 
 #include <iostream>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+#pragma GCC diagnostic pop
 using namespace boost::python;
 
 typedef math::PtEtaPhiMLorentzVector LV;
@@ -1298,8 +1301,8 @@ int main(int argc, char* argv[])
                   //std::cout<<"btag position = "<< btag_order[bjetCandidate] <<std::endl;
 
                   // debug gen-matching
-                  std::map<int, Particle::LorentzVector> genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
-                  std::map<int, Particle::LorentzVector> genVarAnti = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
+                  genVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
+                  genVarAnti = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
                   double minT = deltaR(selBJet, genVar[kGenTopB]) + std::min(deltaR(selWJet1, genVar[kGenTopWj1]),deltaR(selWJet1, genVar[kGenTopWj2])) + std::min(deltaR(selWJet2, genVar[kGenTopWj2]),deltaR(selWJet2, genVar[kGenTopWj1]));
                   double minAntiT = deltaR(selBJet, genVarAnti[kGenTopB]) + std::min(deltaR(selWJet1, genVarAnti[kGenTopWj1]),deltaR(selWJet1, genVarAnti[kGenTopWj2])) + std::min(deltaR(selWJet2, genVarAnti[kGenTopWj2]),deltaR(selWJet2, genVarAnti[kGenTopWj1]));
                   if ( minT < minAntiT ){

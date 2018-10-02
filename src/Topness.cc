@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Topness.h" // Topness
 
+#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
+
 #include <Math/Factory.h> // ROOT::Math::Factory
 #include <Math/Functor.h> // ROOT::Math::Functor
 #include <TMath.h> // TMath::Sqrt, TMath::Min(), TMath::Max(), TMath::IsNaN()
@@ -20,18 +22,30 @@ double ObjectiveFunctionAdapterMINUIT::operator()(const double* x) const
   return chi2;
 }
 
-Topness::Topness(int maxObjFunctionCalls)
-  : sigmaTop_(5.)
+Topness::Topness(modeType mode, int maxObjFunctionCalls)
+  : mode_(mode)
+  , sigmaTop_(5.)
   , sigmaW_(5.)
+  , numObjFunctionCalls_(0)
   , minimizer_(ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad"))
   , maxObjFunctionCalls_(maxObjFunctionCalls)
   , fitStatus_(-1)
   , logTopness_(1.e+3)
-{}
+  , numPermutations_(2)
+{
+  if ( !(mode_ == kPublishedChi2 || mode_ == kFixedChi2) ) {
+    throw cms::Exception("Topness")
+      << "Invalid Configuration parameter 'mode' = " << mode_ << " !!\n";
+  }
+  chi2_of_permutation_ = new double[numPermutations_];
+  fitStatus_of_permutation_ = new int[numPermutations_];
+}
 
 Topness::~Topness()
 {
   delete minimizer_;
+  delete [] chi2_of_permutation_;
+  delete [] fitStatus_of_permutation_;
 }
 
 void Topness::set_sigmaW(double sigmaW) 
@@ -100,6 +114,11 @@ namespace
 
 double Topness::operator()(const double* x) const
 {
+  //std::cout << "<Topness::operator() @ objFunctionCall #" << numObjFunctionCalls_ << ">" << std::endl;
+  //for ( int i = 0; i < 4; ++i ) {
+  //  std::cout << " x[" << i << "] = " << x[i] << std::endl;
+  //}
+
   if ( numObjFunctionCalls_ > maxObjFunctionCalls_ ) {
     return -1.;
   }
@@ -113,15 +132,22 @@ double Topness::operator()(const double* x) const
   double massW1 = compMassW(lepton1P4_, nu1Px, nu1Py, nu1Pz, nu1E);
 
   double nu2Px = metPx_ - nu1Px;
-  double nu2Py = metPx_ - nu1Py;
+  double nu2Py = metPy_ - nu1Py;
   double nu2Pz = x[3];
   double nu2E  = TMath::Sqrt(nu2Px*nu2Px + nu2Py*nu2Py + nu2Pz*nu2Pz);
 
   double massTop2 = compMassTop(lepton2P4_, bjet2P4_, nu2Px, nu2Py, nu2Pz, nu2E);
   double massW2 = compMassW(lepton2P4_, nu2Px, nu2Py, nu2Pz, nu2E);
   
-  double chi2 = square((massTop1 - mTop)/sigmaTop_) + square((massW1 - mW)/sigmaW_) 
-    + square((massTop2 - mTop)/sigmaTop_) + square((massW2 - mW)/sigmaW_);
+  double chi2 = -1.;
+  if ( mode_ == kPublishedChi2 ) {
+    chi2 = square((square(massTop1) - square(mTop))/square(sigmaTop_)) + square((square(massW1) - square(mW))/square(sigmaW_)) 
+      + square((square(massTop2) - square(mTop))/square(sigmaTop_)) + square((square(massW2) - square(mW))/square(sigmaW_));
+  } else if ( mode_ == kFixedChi2 ) {
+    chi2 = square((massTop1 - mTop)/sigmaTop_) + square((massW1 - mW)/sigmaW_) 
+      + square((massTop2 - mTop)/sigmaTop_) + square((massW2 - mW)/sigmaW_);
+  } else assert(0); 
+  //std::cout << "chi^2 = " << chi2 << std::endl;
   assert(!TMath::IsNaN(chi2));
 
   ++numObjFunctionCalls_;
@@ -144,10 +170,7 @@ void Topness::fit(const Particle::LorentzVector& lepton1P4,
 //       1 verbose
   minimizer_->SetPrintLevel(-1);
 
-  const int numPermutations = 2;
-  double chi2[numPermutations];
-  int fitStatus[numPermutations];
-  for ( int idxPermutation = 0; idxPermutation < numPermutations; ++idxPermutation ) {
+  for ( int idxPermutation = 0; idxPermutation < numPermutations_; ++idxPermutation ) {
 
 //--- set reconstructed momenta
     if        ( idxPermutation == 0 ) {
@@ -163,7 +186,7 @@ void Topness::fit(const Particle::LorentzVector& lepton1P4,
     metPy_       = metPy;
     
 //--- set interface to MINUIT
-    const ROOT::Math::Functor toMinimize(objectiveFunctionAdapterMINUIT_, 4);
+    ROOT::Math::Functor toMinimize(objectiveFunctionAdapterMINUIT_, 4);
     minimizer_->SetFunction(toMinimize); 
     minimizer_->SetLimitedVariable(0, "Nu1Px", 0., 0.1, -5.e+3, +5.e+3);
     minimizer_->SetLimitedVariable(1, "Nu1Py", 0., 0.1, -5.e+3, +5.e+3);
@@ -178,6 +201,7 @@ void Topness::fit(const Particle::LorentzVector& lepton1P4,
 
 //--- do the minimization  
     numObjFunctionCalls_ = 0;
+    gTopness = this;
     minimizer_->Minimize();
     
 //--- get Minimizer status code, check if solution is valid:
@@ -187,20 +211,25 @@ void Topness::fit(const Particle::LorentzVector& lepton1P4,
 //       3: Estimated distance to minimum (EDM) is above maximum
 //       4: Reached maximum number of function calls before reaching convergence
 //       5: Any other failure
-    fitStatus[idxPermutation] = minimizer_->Status();
-    
+    fitStatus_of_permutation_[idxPermutation] = minimizer_->Status();
+
     double minValue = minimizer_->MinValue();
-    if ( fitStatus[idxPermutation] == 0 && !TMath::IsNaN(minValue) ) {
-      chi2[idxPermutation] = minValue;
+    //std::cout << "permutation #" << idxPermutation << ": fitStatus = " << fitStatus_of_permutation_[idxPermutation] << ", min(chi^2) = " << minValue << std::endl;    
+    if ( fitStatus_of_permutation_[idxPermutation] == 0 && !TMath::IsNaN(minValue) ) {
+      chi2_of_permutation_[idxPermutation] = minValue;
     } else {
-      chi2[idxPermutation] = 1.e+3;
+      chi2_of_permutation_[idxPermutation] = 1.e+3;
     }
   }
 
-  double minChi2 = TMath::Min(chi2[0], chi2[1]);
-  if ( minChi2 < 1.e-3 ) minChi2 = 1.e-3;
-  fitStatus_ = TMath::Max(fitStatus[0], fitStatus[1]);
-  if ( minChi2 >= 0. && fitStatus_ == 0 ) {
+  fitStatus_ = TMath::Min(fitStatus_of_permutation_[0], fitStatus_of_permutation_[1]);
+  double minChi2 = -1.;
+  for ( int idxPermutation = 0; idxPermutation < numPermutations_; ++idxPermutation ) {
+    if ( fitStatus_of_permutation_[idxPermutation] == 0 && (chi2_of_permutation_[idxPermutation] < minChi2 || minChi2 == -1.) ) {
+      minChi2 = chi2_of_permutation_[idxPermutation];
+    }
+  }
+  if ( fitStatus_ == 0 && minChi2 > 0. ) {
     logTopness_ = TMath::Log10(minChi2);
   } else {
     logTopness_ = 1.e+3;

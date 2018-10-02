@@ -303,7 +303,7 @@ HistogramManager::update()
       const std::string sysShiftDown = Form("%sDown", sysShift.data());
 
       if(histograms_sysShifts_.find(process) != histograms_sysShifts_.end() &&
-	 histograms_sysShifts_.at(process).count(sysShiftUp) &&
+         histograms_sysShifts_.at(process).count(sysShiftUp) &&
          histograms_sysShifts_.at(process).count(sysShiftDown))
       {
         const double sysShift_value = shapeValues_and_Uncertainties_[sysShift].value_;
@@ -321,13 +321,13 @@ HistogramManager::update()
         if(histogram_sysShift)
         {
           const double absSysShift_value = TMath::Abs(sysShift_value);
-          TH1 * histogram_prefit = histograms_prefit_[process];
-          assert(histogram_prefit);
+          TH1 * histogram_prefit_central = histograms_prefit_[process];
+          assert(histogram_prefit_central);
 
           int numBins = histogram_postfit->GetNbinsX();
           for(int iBin = 1; iBin <= numBins; ++iBin)
           {
-            double binContent_central  = histogram_prefit->GetBinContent(iBin);
+            double binContent_central  = histogram_prefit_central->GetBinContent(iBin);
             double binContent_sysShift = histogram_sysShift->GetBinContent(iBin);
             double binContent_postfit  = histogram_postfit->GetBinContent(iBin);
 

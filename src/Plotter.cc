@@ -259,9 +259,9 @@ void Plotter::makePlots()
 	  histogramSignal_rebinned = histogramSignal_tmp;
 	}
 
-	std::vector<pdouble> keepBlinded = getBlindedRanges(histogramData_rebinned, histogramsBackground_rebinned, histogramSignal_rebinned);
+  std::vector<pdouble> keepBlinded_rebinned = getBlindedRanges(histogramData_rebinned, histogramsBackground_rebinned, histogramSignal_rebinned);
 	if ( processData_ != "" ) {
-	  if ( keepBlinded.size() >= 1 && applyAutoBlinding_ ) histogramData_blinded_rebinned = blindHistogram(histogramData_rebinned, keepBlinded);
+    if ( keepBlinded_rebinned.size() >= 1 && applyAutoBlinding_ ) histogramData_blinded_rebinned = blindHistogram(histogramData_rebinned, keepBlinded_rebinned);
 	  else histogramData_blinded_rebinned = (TH1*)histogramData_rebinned->Clone("rebinned_data");
 	}
 
