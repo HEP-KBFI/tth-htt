@@ -204,7 +204,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     """
     self.lepton_and_hadTau_selections = [ "forBDTtraining" ]
     self.lepton_and_hadTau_frWeights  = [ "disabled" ]
-    super(analyzeConfig_1l_2tau, self).set_BDT_training(hadTau_selection_relaxed)
+    super(analyzeConfig_2l_2tau, self).set_BDT_training(hadTau_selection_relaxed)
 
   def createCfg_analyze(self, jobOptions, sample_info, lepton_and_hadTau_selection):
     """Create python configuration file for the analyze_2l_2tau executable (analysis code)
