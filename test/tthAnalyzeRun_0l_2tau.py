@@ -84,6 +84,19 @@ elif mode == "forBDTtraining":
     hadTau_selection_relaxed = "dR03mvaLoose"
   elif era == "2017":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
+    from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
+
+    # [*] use stitched DY samples in BDT training
+    dy_samples = []
+    for sample_set in samples_to_stitch:
+      for sample_key, sample_value in sample_set.items():
+        if sample_key == 'inclusive':
+          dy_inclusive_samples = list(filter(lambda sample_name: sample_name.startswith('DY'), sample_value['samples']))
+          dy_samples.extend(dy_inclusive_samples)
+        else:
+          for sample_binned_value in sample_value:
+            dy_binned_samples = list(filter(lambda sample_name: sample_name.startswith('DY'), sample_binned_value['samples']))
+            dy_samples.extend(dy_binned_samples)
     for sample_name, sample_info in samples.items():
       if sample_name == 'sum_events': continue
       if sample_info["process_name_specific"] in [
@@ -91,6 +104,8 @@ elif mode == "forBDTtraining":
           ]:
         # Use PSweights samples only for BDT training
         sample_info["use_it"] = False
+      elif sample_info["process_name_specific"] in dy_samples:
+        sample_info["use_it"] = True # [*]
 
     hadTau_selection         = "dR03mvaLoose"
     hadTau_selection_relaxed = "dR03mvaVLoose"
@@ -182,7 +197,7 @@ if __name__ == '__main__':
       "EventCounter"             : {},
       "numJets"                  : {},
       "mvaOutput_0l_2tau_ttbar"  : {},
-      "mvaOutput_0l_2tau_HTT_tt" : {}, 
+      "mvaOutput_0l_2tau_HTT_tt" : {},
       "mvaOutput_0l_2tau_HTT_ttv": {},
       "mvaOutput_0l_2tau_HTT_sum": {},
       "mvaDiscr_0l_2tau_HTT"     : {},

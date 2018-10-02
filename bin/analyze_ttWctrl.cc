@@ -969,10 +969,7 @@ int main(int argc, char* argv[])
     double btagWeight = 1.;
     if ( isMC ) {
       evtWeight *= evtWeight_inclusive;
-      for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
-	    jet != selJets.end(); ++jet ) {
-	btagWeight *= (*jet)->BtagWeight();
-      }
+      btagWeight = get_BtagWeight(selJets);
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
 	std::cout << "lumiScale = " << lumiScale << std::endl;
@@ -1389,7 +1386,6 @@ int main(int argc, char* argv[])
       const double mbb            = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
       const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1000;
       const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
-      const double btagWeight     = get_BtagWeight(selJets);
 
       snm->read(eventInfo);
       snm->read(selLeptons);

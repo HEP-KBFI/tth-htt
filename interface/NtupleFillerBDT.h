@@ -171,10 +171,10 @@ public:
     if(! fill_assert_)
     {
       const std::vector<std::string> missing_float_keys = copy_map_keys(
-        float_map_, [this](const auto & key) { return ! float_map_.at(key).isFilled; }
+        float_map_, [this](const auto & key_) { return ! float_map_.at(key_).isFilled; }
       );
       const std::vector<std::string> missing_int_keys = copy_map_keys(
-        int_map_, [this](const auto & key) { return ! int_map_.at(key).isFilled; }
+        int_map_, [this](const auto & key_) { return ! int_map_.at(key_).isFilled; }
       );
       std::vector<std::string> missing_keys;
       std::copy(missing_float_keys.begin(), missing_float_keys.end(), std::back_inserter(missing_keys));

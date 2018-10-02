@@ -37,6 +37,7 @@ public:
                  double mvaOutput_2los_1tau_ttbar,
                  double mvaDiscr_2los_1tau,
                  double mTauTauVis,
+                 double mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var,
                  double evtWeight);
 
   const TH1 *
@@ -59,10 +60,12 @@ private:
 
   TH1 * histogram_mvaOutput_2los_1tau_ttV_;
   TH1 * histogram_mvaOutput_2los_1tau_ttbar_;
+  TH1 * histogram_mvaOutput_2los_1tau_SUM_;
   TH1 * histogram_mvaDiscr_2los_1tau_;
 
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_EventCounter_;
+  TH1 * histogram_mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var_;
 };
 
 #endif

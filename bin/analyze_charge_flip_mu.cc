@@ -513,14 +513,13 @@ int main(int argc, char* argv[])
   TEfficiency* gen_eff;
   std::map<std::string, TH2D*> histos_gen;
   if (isMC && central_or_shift == "central"){
-    TFileDirectory subD = fs.mkdir("gen_ratio");
-    TFileDirectory subD2 = subD.mkdir( process_string );
-    for ( vstring::const_iterator which = categories_charge_gen.begin(); 	which != categories_charge_gen.end(); ++which ) {
-      //TFileDirectory subDir = fs.mkdir( which->data() );
-      histos_gen[which->data()] = subD2.make<TH2D>( Form("pt_eta_%s", which->data()), "pt_eta", 3,  bins_pt, 2, bins_eta );
-      histos_gen[which->data()]->Sumw2();
+    TFileDirectory subD_ratio = fs.mkdir("gen_ratio");
+    TFileDirectory subD2 = subD_ratio.mkdir( process_string );
+    for ( vstring::const_iterator which_ = categories_charge_gen.begin(); which_ != categories_charge_gen.end(); ++which_ ) {
+      histos_gen[which_->data()] = subD2.make<TH2D>( Form("pt_eta_%s", which_->data()), "pt_eta", 3,  bins_pt, 2, bins_eta );
+      histos_gen[which_->data()]->Sumw2();
     }
-    gen_eff = subD.make<TEfficiency>(Form("pt_eta_%s", process_string.data()),"pt_eta;pT;#eta;charge_misID", 3,  bins_pt, 2, bins_eta);
+    gen_eff = subD_ratio.make<TEfficiency>(Form("pt_eta_%s", process_string.data()),"pt_eta;pT;#eta;charge_misID", 3,  bins_pt, 2, bins_eta);
     gen_eff->SetUseWeightedEvents();
     gen_eff->SetStatisticOption(TEfficiency::kFNormal);
   }

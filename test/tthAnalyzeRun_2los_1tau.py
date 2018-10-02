@@ -99,7 +99,7 @@ elif mode == "forBDTtraining":
     hadTau_selection_relaxed = "dR03mvaMedium"
   elif era == "2017":
     hadTau_selection         = "dR03mvaTight"
-    hadTau_selection_relaxed = "dR03mvaVLoose"
+    hadTau_selection_relaxed = "dR03mvaLoose"
   elif era == "2018":
     raise ValueError("Implement me!")
   else:
@@ -154,8 +154,10 @@ if __name__ == '__main__':
       "numJets"                   : {},
       "mvaDiscr_2lss"             : {},
       "mvaOutput_2los_1tau_ttbar" : {},
+      "mvaOutput_2los_1tau_SUM"   : {},
       "mvaDiscr_2los_1tau"        : {},
       "mTauTauVis"                : {},
+      "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var"  : {},
     },
     select_rle_output         = True,
     dry_run                   = dry_run,

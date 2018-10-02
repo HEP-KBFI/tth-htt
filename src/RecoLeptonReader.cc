@@ -6,12 +6,12 @@
 std::map<std::string, int> RecoLeptonReader::numInstances_;
 std::map<std::string, RecoLeptonReader *> RecoLeptonReader::instances_;
 
-RecoLeptonReader::RecoLeptonReader(bool readGenMatching)
-  : RecoLeptonReader("Lepton", readGenMatching)
+RecoLeptonReader::RecoLeptonReader(bool readGenMatching_b)
+  : RecoLeptonReader("Lepton", readGenMatching_b)
 {}
 
 RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
-                                   bool readGenMatching)
+                                   bool readGenMatching_b)
   : max_nLeptons_(64)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
@@ -19,7 +19,7 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   , genHadTauReader_(nullptr)
   , genPhotonReader_(nullptr)
   , genJetReader_(nullptr)
-  , readGenMatching_(readGenMatching)
+  , readGenMatching_(readGenMatching_b)
   , pt_(nullptr)
   , eta_(nullptr)
   , phi_(nullptr)

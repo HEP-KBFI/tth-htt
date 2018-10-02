@@ -864,9 +864,9 @@ int main(int argc, char* argv[])
 	  
 	  histogram_prob_charge_flip_gen->FillWeighted(selElectron_lead_charge != genElectron_lead_charge, evtWeight, genElectron_lead_p4.pt(), genElectron_lead_absEta);
 	  histogram_prob_charge_flip_gen->FillWeighted(selElectron_sublead_charge != genElectron_sublead_charge, evtWeight, genElectron_sublead_p4.pt(), genElectron_sublead_absEta);
-	  double selElectron_lead_absEta = std::fabs(selElectron_lead_p4.eta());
+    selElectron_lead_absEta = std::fabs(selElectron_lead_p4.eta());
 	  histogram_prob_charge_flip_gen_rec->FillWeighted(selElectron_lead_charge != genElectron_lead_charge, evtWeight, selElectron_lead_p4.pt(), selElectron_lead_absEta);
-	  double selElectron_sublead_absEta = std::fabs(selElectron_sublead_p4.eta());
+    selElectron_sublead_absEta = std::fabs(selElectron_sublead_p4.eta());
 	  histogram_prob_charge_flip_gen_rec->FillWeighted(selElectron_sublead_charge != genElectron_sublead_charge, evtWeight, selElectron_sublead_p4.pt(), selElectron_sublead_absEta);
 	  
 	  int idxBin_lead_gen = getBinIdx_pT_and_absEta(genElectron_lead_p4.pt(), genElectron_lead_absEta);

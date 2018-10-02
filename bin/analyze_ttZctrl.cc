@@ -1069,10 +1069,7 @@ int main(int argc, char* argv[])
     double leptonSF_weight = 1.;
     if ( isMC ) {
       evtWeight *= evtWeight_inclusive;
-      for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
-	    jet != selJets.end(); ++jet ) {
-	btagWeight *= (*jet)->BtagWeight();
-      }
+      btagWeight = get_BtagWeight(selJets);
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
 	std::cout << "lumiScale = " << lumiScale << std::endl;
@@ -1395,7 +1392,7 @@ int main(int argc, char* argv[])
     double mvaOutput_3l_ttbar = -1.;
     if(selLepton_third)
     {
-      std::map<std::string, double> mvaInputs_3l = {
+      mvaInputs_3l = std::map<std::string, double>({
         { "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", max_lep_eta    },
         { "MT_met_lep1",                                                    MT_met_lep1    },
         { "nJet25_Recl",                                                    nJet25_Recl    },
@@ -1405,7 +1402,7 @@ int main(int argc, char* argv[])
         { "LepGood_conePt[iF_Recl[2]]",                                     lep3_conePt    },
         { "avg_dr_jet",                                                     avg_dr_jet     },
         { "mhtJet25_Recl",                                                  mht_p4.pt()    },
-      };
+      });
       check_mvaInputs(mvaInputs_3l, eventInfo);
 
       mvaOutput_3l_ttV = mva_3l_ttV(mvaInputs_3l);
@@ -1489,7 +1486,6 @@ int main(int argc, char* argv[])
       const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1000;
       const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
       const double mindr_lep3_jet = selLepton_third ? comp_mindr_lep3_jet(*selLepton_sublead, selJets) : -1.;
-      const double btagWeight     = get_BtagWeight(selJets);
 
       snm->read(eventInfo);
       snm->read(selLeptons);

@@ -29,7 +29,8 @@ namespace topness
 class Topness
 {
  public:
-  Topness(int maxObjFunctionCalls = 10000);
+  enum modeType { kPublishedChi2, kFixedChi2 };
+  Topness(modeType mode = kPublishedChi2, int maxObjFunctionCalls = 10000);
   ~Topness();
 
   void set_sigmaW(double sigmaW);
@@ -55,6 +56,8 @@ class Topness
   double operator()(const double* x) const;
 
  private:
+  modeType mode_;
+
   Particle::LorentzVector lepton1P4_;
   Particle::LorentzVector lepton2P4_;
   Particle::LorentzVector bjet1P4_;
@@ -75,6 +78,10 @@ class Topness
   mutable int fitStatus_;
   mutable double logTopness_;
   //-----------------------------------------------------------------------------
+
+  const int numPermutations_;
+  double* chi2_of_permutation_;
+  int* fitStatus_of_permutation_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_Topness_h
