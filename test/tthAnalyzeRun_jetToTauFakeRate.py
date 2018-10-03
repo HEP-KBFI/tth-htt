@@ -58,7 +58,8 @@ else:
 if era == "2016":
   hadTau_selection_denominator = "dR03mvaLoose"
 elif era == "2017":
-  hadTau_selection_denominator = "dR03mvaVLoose"
+  #hadTau_selection_denominator = "dR03mvaVLoose"
+  hadTau_selection_denominator = "dR03mvaVVLoose"
 elif era == "2018":
   raise ValueError("Implement me!")
 else:

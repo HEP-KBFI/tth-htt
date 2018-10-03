@@ -212,10 +212,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
 
       is_mc = (sample_info["type"] == "mc")
-      lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
-      apply_genWeight = sample_info["apply_genWeight"] if (is_mc and "apply_genWeight" in sample_info.keys()) else False
       sample_category = sample_info["sample_category"]
-      triggers = sample_info["triggers"]
 
       for charge_selection in self.charge_selections:
         for central_or_shift in self.central_or_shifts:
