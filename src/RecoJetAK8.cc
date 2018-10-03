@@ -8,6 +8,7 @@ RecoJetAK8::RecoJetAK8(const GenJet & jet,
 			 Double_t tau2,
 			 Double_t tau3,
 			 Double_t tau4,
+		         Int_t jetId,
 			 Int_t idx)
   : RecoJetBase(jet, idx)
   , msoftdrop_(msoftdrop)
@@ -17,6 +18,7 @@ RecoJetAK8::RecoJetAK8(const GenJet & jet,
   , tau2_(tau2)
   , tau3_(tau3)
   , tau4_(tau4)
+  , jetId_(jetId)
 {}
 
 RecoJetAK8::~RecoJetAK8()
@@ -65,11 +67,18 @@ RecoJetAK8::tau4() const
   return tau4_;
 }
 
+Int_t
+RecoJetAK8::jetId() const
+{
+  return jetId_;
+}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const RecoJetAK8 & jet)
 {
   stream << static_cast<const GenJet &>(jet)             << ","
+            " jet ID = " << jet.jetId()                  << ","
             " msoftdrop = " << jet.msoftdrop()           << ","
             " tau1 = " << jet.tau1()                     << ","
             " tau2 = " << jet.tau2()                     << ","

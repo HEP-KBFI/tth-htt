@@ -56,7 +56,7 @@ RecoJetSelectorAK12::operator()(const RecoJetAK12 & jet) const
   ;
   if(debug_)
   {
-    std::cout << "<RecoJetSelector::operator()>:\n jet: " << jet << " "
+    std::cout << "<RecoJetSelectorAK12::operator()>:\n jet: " << jet << " "
                  "(" << (passes ? "passes" : "fails") << ")\n"
     ;
   }

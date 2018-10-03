@@ -2,7 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_RecoJetCollectionSelectorAK8_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h" // RecoJetAK8
 
 class RecoJetSelectorAK8
 {
@@ -42,4 +42,4 @@ protected:
 
 typedef ParticleCollectionSelector<RecoJetAK8, RecoJetSelectorAK8> RecoJetCollectionSelectorAK8;
 
-#endif // tthAnalysis_HiggsToTauTau_RecoJetCollectionSelector_h
+#endif // tthAnalysis_HiggsToTauTau_RecoJetCollectionSelectorAK8_h

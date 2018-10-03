@@ -265,7 +265,7 @@ RecoJetReader::read() const
           gInstance->jet_pt_systematics_.at(ptMassOption_)[idxJet],
           gInstance->jet_eta_[idxJet],
           gInstance->jet_phi_[idxJet],
-          gInstance->jet_mass_systematics_.at(ptMassOption_)[idxJet],
+          gInstance->jet_mass_systematics_.at(ptMassOption_)[idxJet]
         },
         gInstance->jet_charge_[idxJet],
         gInstance->jet_BtagCSV_[idxJet],

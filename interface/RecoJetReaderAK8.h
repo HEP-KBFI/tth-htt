@@ -57,6 +57,7 @@ protected:
   std::string branchName_tau2_;
   std::string branchName_tau3_;
   std::string branchName_tau4_;
+  std::string branchName_jetId_;
 
   UInt_t nJets_;
   Float_t * jet_pt_;
@@ -70,6 +71,7 @@ protected:
   Float_t * jet_tau2_;
   Float_t * jet_tau3_;
   Float_t * jet_tau4_;
+  Int_t * jet_jetId_;
 
   // CV: make sure that only one RecoJetReaderAK8 instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

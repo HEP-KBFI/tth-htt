@@ -125,7 +125,7 @@ RecoJetSelectorHTTv2::operator()(const RecoJetHTTv2 & jet) const
   ;
   if(debug_)
   {
-    std::cout << "<RecoJetSelector::operator()>:\n jet: " << jet << " "
+    std::cout << "<RecoJetSelectorHTTv2::operator()>:\n jet: " << jet << " "
                  "(" << (passes ? "passes" : "fails") << ")\n"
     ;
   }

@@ -31,6 +31,7 @@ RecoJetReaderAK8::RecoJetReaderAK8(int era,
   , jet_tau2_(nullptr)
   , jet_tau3_(nullptr)
   , jet_tau4_(nullptr)
+  , jet_jetId_(nullptr)
 {
   subjetReader_ = new RecoSubjetReaderAK8(era, branchName_subjet);
   setBranchNames();
@@ -56,6 +57,7 @@ RecoJetReaderAK8::~RecoJetReaderAK8()
     delete[] gInstance->jet_tau2_;
     delete[] gInstance->jet_tau3_;
     delete[] gInstance->jet_tau4_;
+    delete[] gInstance->jet_jetId_;
     instances_[branchName_obj_] = nullptr;
   }
 }
@@ -76,6 +78,7 @@ RecoJetReaderAK8::setBranchNames()
     branchName_tau2_ = Form("%s_%s", branchName_obj_.data(), "tau2");
     branchName_tau3_ = Form("%s_%s", branchName_obj_.data(), "tau3");
     branchName_tau4_ = Form("%s_%s", branchName_obj_.data(), "tau4");
+    branchName_jetId_ = Form("%s_%s", branchName_obj_.data(), "jetId");
     instances_[branchName_obj_] = this;
   }
   else
@@ -111,6 +114,7 @@ RecoJetReaderAK8::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_tau2_, branchName_tau2_);
     bai.setBranchAddress(jet_tau3_, branchName_tau3_);
     bai.setBranchAddress(jet_tau4_, branchName_tau4_);
+    bai.setBranchAddress(jet_jetId_, branchName_jetId_);
   }
 }
 
@@ -161,6 +165,7 @@ RecoJetReaderAK8::read() const
 	gInstance->jet_tau2_[idxJet],
 	gInstance->jet_tau3_[idxJet],
 	gInstance->jet_tau4_[idxJet],
+	gInstance->jet_jetId_[idxJet],  
         static_cast<Int_t>(idxJet)
       });
     } // idxJet
