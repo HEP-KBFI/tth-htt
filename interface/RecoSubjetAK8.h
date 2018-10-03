@@ -18,7 +18,8 @@ class RecoSubjetAK8
 public:
   RecoSubjetAK8() = default;
   RecoSubjetAK8(const GenJet & particle,
-		 Int_t idx);
+		Double_t BtagCSV,
+		Int_t idx);
 
   virtual ~RecoSubjetAK8();
 
@@ -26,7 +27,10 @@ public:
    * @brief Funtions to access data-members
    * @return Values of data-members
    */
+  Double_t BtagCSV() const;
 
+protected:
+  Double_t BtagCSV_; ///< CSV b-tagging discriminator value
 };
 
 std::ostream &

@@ -1,4 +1,4 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorAK8.h" // RecoJetSelectorAK12
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorAK8.h" // RecoJetSelectorAK8
 
 RecoJetSelectorAK8::RecoJetSelectorAK8(int era,
                                  int index,
@@ -55,7 +55,7 @@ RecoJetSelectorAK8::operator()(const RecoJetAK8 & jet) const
   ;
   if(debug_)
   {
-    std::cout << "<RecoJetSelector::operator()>:\n jet: " << jet << " "
+    std::cout << "<RecoJetSelectorAK8::operator()>:\n jet: " << jet << " "
                  "(" << (passes ? "passes" : "fails") << ")\n"
     ;
   }

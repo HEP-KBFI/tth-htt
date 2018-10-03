@@ -2,7 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_RecoJetCollectionSelectorAK12_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK12.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK12.h" // RecoJetAK12
 
 class RecoJetSelectorAK12
 {

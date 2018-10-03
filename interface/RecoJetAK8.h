@@ -28,6 +28,7 @@ public:
 	      Double_t tau2,
 	      Double_t tau3,
 	      Double_t tau4,
+	      Int_t jetId,
 	      Int_t idx);
 
   virtual ~RecoJetAK8();
@@ -43,8 +44,9 @@ public:
   Double_t tau2() const;
   Double_t tau3() const;
   Double_t tau4() const;
+  Int_t jetId() const;
 
-protected:
+protected: 
   Double_t msoftdrop_;
   std::shared_ptr<const RecoSubjetAK8> subJet1_;
   std::shared_ptr<const RecoSubjetAK8> subJet2_;
@@ -52,6 +54,7 @@ protected:
   Double_t tau2_;
   Double_t tau3_;
   Double_t tau4_;
+  Int_t jetId_;   ///< jet ID, as explained in https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017
 };
 
 std::ostream &
