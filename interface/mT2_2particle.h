@@ -37,16 +37,40 @@
 
 namespace mT2_2particle_namespace
 {
-  double comp_mT_2particle(double bPx, double bPy, double bMass, double cPx, double cPy, double cMass)
-  {
-    double bMass2 = bMass*bMass;
-    double bET = TMath::Sqrt(bMass2 + bPx*bPx + bPy*bPy);
-    double cMass2 = cMass*cMass;
-    double cET = TMath::Sqrt(cMass2 + cPx*cPx + cPy*cPy);
-    double mT2 = bMass2 + cMass2 + 2.*(bET*cET - (bPx*cPx + bPy*cPy));
-    return mT2;
-  }
+  class mt2Functor_2particle;
+}
 
+class mT2_2particle
+{
+ public:
+  /// constructor
+  mT2_2particle(int numSteps = 100);
+
+  /// destructor
+  ~mT2_2particle();
+
+  /// compute mT2 variable
+  void operator()(double b1Px, double b1Py, double b1Mass, 
+		  double b2Px, double b2Py, double b2Mass,
+		  double cSumPx, double cSumPy, double cMass);
+  
+  double get_min_mT2() const;
+  int get_min_step() const;
+
+  static double comp_mT(double bPx, double bPy, double bMass, double cPx, double cPy, double cMass);
+
+ protected:
+  ROOT::Math::Minimizer* minimizer_;
+  mT2_2particle_namespace::mt2Functor_2particle* mT2Functor_;
+  ROOT::Math::Functor* f_;
+  int numSteps_;
+  TRandom3 rnd_;
+  double min_mT2_;
+  int min_step_;
+};
+
+namespace mT2_2particle_namespace
+{
   class mt2Functor_2particle
   {
    public:
@@ -75,11 +99,11 @@ namespace mT2_2particle_namespace
 
       double c1Px  = TMath::Cos(c1Phi)*c1Pt;
       double c1Py  = TMath::Sin(c1Phi)*c1Pt;
-      double mT2_1 = comp_mT_2particle(b1Px_, b1Py_, b1Mass_, c1Px, c1Py, cMass_);
+      double mT2_1 = mT2_2particle::comp_mT(b1Px_, b1Py_, b1Mass_, c1Px, c1Py, cMass_);
 
       double c2Px  = cSumPx_ - c1Px; 
       double c2Py  = cSumPy_ - c1Py;
-      double mT2_2 = comp_mT_2particle(b2Px_, b2Py_, b2Mass_, c2Px, c2Py, cMass_);
+      double mT2_2 = mT2_2particle::comp_mT(b2Px_, b2Py_, b2Mass_, c2Px, c2Py, cMass_);
 
       return TMath::Sqrt(TMath::Max(mT2_1, mT2_2));
     }
@@ -95,32 +119,5 @@ namespace mT2_2particle_namespace
     double cMass_;
   };
 }
-
-class mT2_2particle
-{
- public:
-  /// constructor
-  mT2_2particle(int numSteps = 100);
-
-  /// destructor
-  ~mT2_2particle();
-
-  /// compute mT2 variable
-  void operator()(double b1Px, double b1Py, double b1Mass, 
-		  double b2Px, double b2Py, double b2Mass,
-		  double cSumPx, double cSumPy, double cMass);
-  
-  double get_min_mT2() const;
-  int get_min_step() const;
-
- protected:
-  ROOT::Math::Minimizer* minimizer_;
-  mT2_2particle_namespace::mt2Functor_2particle mT2Functor_;
-  ROOT::Math::Functor* f_;
-  int numSteps_;
-  TRandom3 rnd_;
-  double min_mT2_;
-  int min_step_;
-};
 
 #endif

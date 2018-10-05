@@ -42,6 +42,14 @@ private:
   TH1 * histogram_tau21_;
   TH1 * histogram_tau32_;
 
+  TH1 * histogram_subjet1_pt_;
+  TH1 * histogram_subjet1_eta_;
+  TH1 * histogram_subjet1_BtagCSV_;
+  TH1 * histogram_subjet2_pt_;
+  TH1 * histogram_subjet2_eta_;
+  TH1 * histogram_subjet2_BtagCSV_;
+  TH1 * histogram_dR_subjets_;
+
   std::vector<TH1 *> histograms_;
 
   int idx_; // flag to select leading or subleading jet (set idx to -1 to make plots for all jets)

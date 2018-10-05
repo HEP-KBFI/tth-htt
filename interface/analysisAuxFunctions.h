@@ -4,6 +4,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 #include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle::LorentzVector
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/TrigObj.h" // TrigObj
 
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
@@ -18,6 +20,7 @@
 class Particle;
 class RecoLepton;
 class RecoJet;
+class RecoJetAK8;
 class RecoHadTau;
 class RecoMuon;
 class RecoElectron;
@@ -140,6 +143,10 @@ bool
 isHigherCSV(const RecoJet * jet1,
             const RecoJet * jet2);
 
+bool
+isHigherCSV_ak8(const RecoJetAK8 * jet1,
+		const RecoJetAK8 * jet2);
+
 /**
  * @brief Auxiliary function for checking if leptons passing fake-able lepton selection
  *        pass tight lepton identification criteria also
@@ -226,20 +233,42 @@ compMEt_LD(const math::PtEtaPhiMLorentzVector & met_p4,
  * @brief Compute scalar HT observable
  */
 
+template <typename T>
 double
 compHT(const std::vector<const RecoLepton *> & leptons,
        const std::vector<const RecoHadTau *> & hadTaus,
-       const std::vector<const RecoJet *> & jets);
+       const std::vector<const T *> & jets)
+{
+  double ht = 0.;
+  for(const RecoLepton * lepton: leptons)
+  {
+    ht += lepton->pt();
+  }
+  for(const RecoHadTau * hadTau: hadTaus)
+  {
+    ht += hadTau->pt();
+  }
+  for(const T * jet: jets)
+  {
+    ht += jet->pt();
+  }
+  return ht;
+}
 
 /**
  * @brief Compute STMET observable (used in e.g. EXO-17-016 paper)
  */
 
+template <typename T>
 double
 compSTMEt(const std::vector<const RecoLepton *> & leptons,
 	  const std::vector<const RecoHadTau *> & hadTaus,
-	  const std::vector<const RecoJet *> & jets,
-	  const Particle::LorentzVector & met_p4);
+	  const std::vector<const T *> & jets,
+	  const Particle::LorentzVector & met_p4)
+{
+  double stmet = compHT(leptons, hadTaus, jets) + met_p4.pt();
+  return stmet;
+}
 
 /**
  * @brief Compute Smin (= mT) observable, as defined in the paper
