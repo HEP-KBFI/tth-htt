@@ -28,18 +28,42 @@
 
 namespace mT2_3particle_namespace
 {
-  double comp_mT_3particle(double aPx, double aPy, double aMass, double bPx, double bPy, double bMass, double cPx, double cPy, double cMass)
-  {
-    double aMass2 = aMass*aMass;
-    double aET = TMath::Sqrt(aMass2 + aPx*aPx + aPy*aPy);
-    double bMass2 = bMass*bMass;
-    double bET = TMath::Sqrt(bMass2 + bPx*bPx + bPy*bPy);
-    double cMass2 = cMass*cMass;
-    double cET = TMath::Sqrt(cMass2 + cPx*cPx + cPy*cPy);
-    double mT2 = aMass2 + bMass2 + cMass2 + 2.*(aET*bET - (aPx*bPx + aPy*bPy)) + 2.*(aET*cET - (aPx*cPx + aPy*cPy)) + 2.*(bET*cET - (bPx*cPx + bPy*cPy));
-    return mT2;
-  }
+  class mt2Functor_3particle;
+}
 
+class mT2_3particle
+{
+ public:
+  /// constructor
+  mT2_3particle(int numSteps = 100);
+
+  /// destructor
+  ~mT2_3particle();
+
+  /// compute mT2 variable
+  void operator()(double a1Px, double a1Py, double a1Mass, 
+		  double a2Px, double a2Py, double a2Mass,
+		  double b1Px, double b1Py, double b1Mass, 
+		  double b2Px, double b2Py, double b2Mass,
+		  double cSumPx, double cSumPy, double cMass);
+  
+  double get_min_mT2() const;
+  int get_min_step() const;
+
+  static double comp_mT(double aPx, double aPy, double aMass, double bPx, double bPy, double bMass, double cPx, double cPy, double cMass);
+
+ protected:
+  ROOT::Math::Minimizer* minimizer_;
+  mT2_3particle_namespace::mt2Functor_3particle* mT2Functor_;
+  ROOT::Math::Functor* f_;
+  int numSteps_;
+  TRandom3 rnd_;
+  double min_mT2_;
+  int min_step_;
+};
+
+namespace mT2_3particle_namespace
+{
   class mt2Functor_3particle
   {
    public:
@@ -80,11 +104,11 @@ namespace mT2_3particle_namespace
 
       double c1Px  = TMath::Cos(c1Phi)*c1Pt;
       double c1Py  = TMath::Sin(c1Phi)*c1Pt;
-      double mT2_1 = comp_mT_3particle(a1Px_, a1Py_, a1Mass_, b1Px_, b1Py_, b1Mass_, c1Px, c1Py, cMass_);
+      double mT2_1 = mT2_3particle::comp_mT(a1Px_, a1Py_, a1Mass_, b1Px_, b1Py_, b1Mass_, c1Px, c1Py, cMass_);
 
       double c2Px  = cSumPx_ - c1Px; 
       double c2Py  = cSumPy_ - c1Py;
-      double mT2_2 = comp_mT_3particle(a2Px_, a2Py_, a2Mass_, b2Px_, b2Py_, b2Mass_, c2Px, c2Py, cMass_);
+      double mT2_2 = mT2_3particle::comp_mT(a2Px_, a2Py_, a2Mass_, b2Px_, b2Py_, b2Mass_, c2Px, c2Py, cMass_);
 
       return TMath::Sqrt(TMath::Max(mT2_1, mT2_2));
     }
@@ -106,34 +130,5 @@ namespace mT2_3particle_namespace
     double cMass_;
   };
 }
-
-class mT2_3particle
-{
- public:
-  /// constructor
-  mT2_3particle(int numSteps = 100);
-
-  /// destructor
-  ~mT2_3particle();
-
-  /// compute mT2 variable
-  void operator()(double a1Px, double a1Py, double a1Mass, 
-		  double a2Px, double a2Py, double a2Mass,
-		  double b1Px, double b1Py, double b1Mass, 
-		  double b2Px, double b2Py, double b2Mass,
-		  double cSumPx, double cSumPy, double cMass);
-  
-  double get_min_mT2() const;
-  int get_min_step() const;
-
- protected:
-  ROOT::Math::Minimizer* minimizer_;
-  mT2_3particle_namespace::mt2Functor_3particle mT2Functor_;
-  ROOT::Math::Functor* f_;
-  int numSteps_;
-  TRandom3 rnd_;
-  double min_mT2_;
-  int min_step_;
-};
 
 #endif

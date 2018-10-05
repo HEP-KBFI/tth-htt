@@ -13,12 +13,12 @@ JetHistManager::JetHistManager(const edm::ParameterSet & cfg)
 void
 JetHistManager::bookHistograms(TFileDirectory & dir)
 {
-  histogram_pt_           = book1D(dir, "pt",           "pt",           40,  0.,  200.);
-  histogram_eta_          = book1D(dir, "eta",          "eta",          46, -2.3,  +2.3);
-  histogram_phi_          = book1D(dir, "phi",          "phi",          36, -TMath::Pi(), +TMath::Pi());
-  histogram_mass_         = book1D(dir, "mass",         "mass",         40,  0.,    2.);
-  histogram_BtagCSV_      = book1D(dir, "BtagCSV",      "BtagCSV",      40,  0.,    1.);
-  histogram_abs_genPdgId_ = book1D(dir, "abs_genPdgId", "abs_genPdgId", 22, -0.5, +21.5);
+  histogram_pt_           = book1D(dir, "pt",           "pt",            40,  0.,  200.);
+  histogram_eta_          = book1D(dir, "eta",          "eta",          100, -5.0,  +5.0);
+  histogram_phi_          = book1D(dir, "phi",          "phi",           36, -TMath::Pi(), +TMath::Pi());
+  histogram_mass_         = book1D(dir, "mass",         "mass",          40,  0.,    2.);
+  histogram_BtagCSV_      = book1D(dir, "BtagCSV",      "BtagCSV",       40,  0.,    1.);
+  histogram_abs_genPdgId_ = book1D(dir, "abs_genPdgId", "abs_genPdgId",  22, -0.5, +21.5);
 }
 
 void

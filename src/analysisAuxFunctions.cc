@@ -2,8 +2,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h" // RecoJetAK8
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // countLeptonGenMatches
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // countHadTauGenMatches
@@ -44,6 +44,19 @@ isHigherCSV(const RecoJet * jet1,
             const RecoJet * jet2)
 {
   return jet1->BtagCSV() > jet2->BtagCSV();
+}
+
+bool
+isHigherCSV_ak8(const RecoJetAK8 * jet1,
+		const RecoJetAK8 * jet2)
+{
+  double jet1BtagCSV = 0.;
+  if ( jet1->subJet1() ) jet1BtagCSV += jet1->subJet1()->BtagCSV();
+  if ( jet1->subJet2() ) jet1BtagCSV += jet1->subJet2()->BtagCSV();
+  double jet2BtagCSV = 0.;
+  if ( jet2->subJet1() ) jet2BtagCSV += jet2->subJet1()->BtagCSV();
+  if ( jet2->subJet2() ) jet2BtagCSV += jet2->subJet2()->BtagCSV();
+  return jet1BtagCSV > jet2BtagCSV;
 }
 
 int
@@ -119,37 +132,6 @@ compMEt_LD(const Particle::LorentzVector & met_p4,
            const Particle::LorentzVector & mht_p4)
 {
   return met_coef * met_p4.pt() + mht_coef * mht_p4.pt();
-}
-
-double
-compHT(const std::vector<const RecoLepton *> & leptons,
-       const std::vector<const RecoHadTau *> & hadTaus,
-       const std::vector<const RecoJet *> & jets)
-{
-  double ht = 0;
-  for(const RecoLepton * lepton: leptons)
-  {
-    ht += lepton->pt();
-  }
-  for(const RecoHadTau * hadTau: hadTaus)
-  {
-    ht += hadTau->pt();
-  }
-  for(const RecoJet * jet: jets)
-  {
-    ht += jet->pt();
-  }
-  return ht;
-}
-
-double
-compSTMEt(const std::vector<const RecoLepton *> & leptons,
-	  const std::vector<const RecoHadTau *> & hadTaus,
-	  const std::vector<const RecoJet *> & jets,
-	  const Particle::LorentzVector & met_p4)
-{
-  double stmet = compHT(leptons, hadTaus, jets) + met_p4.pt();
-  return stmet;
 }
 
 double 
