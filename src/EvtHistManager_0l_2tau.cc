@@ -29,6 +29,7 @@ EvtHistManager_0l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_mvaOutput_0l_2tau_HTT_tt_ = book1D(dir, "mvaOutput_0l_2tau_HTT_tt", "mvaOutput_0l_2tau_HTT_tt", 20, 0., 1.);
   histogram_mvaOutput_0l_2tau_HTT_ttv_ = book1D(dir, "mvaOutput_0l_2tau_HTT_ttv", "mvaOutput_0l_2tau_HTT_ttv", 20, 0., 1.);
   histogram_mvaOutput_0l_2tau_HTT_sum_ = book1D(dir, "mvaOutput_0l_2tau_HTT_sum", "mvaOutput_0l_2tau_HTT_sum", 20, 0., 1.);
+  histogram_mvaOutput_0l_2tau_HTT_sum_dy_ = book1D(dir, "mvaOutput_0l_2tau_HTT_sum_dy", "mvaOutput_0l_2tau_HTT_sum_dy", 20, 0., 1.);
   histogram_mvaDiscr_0l_2tau_HTT_ = book1D(dir, "mvaDiscr_0l_2tau_HTT", "mvaDiscr_0l_2tau_HTT", 10, 0., 10.);
   
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 40, 0., 200.);
@@ -48,6 +49,7 @@ EvtHistManager_0l_2tau::fillHistograms(int numElectrons,
 				       double mvaOutput_0l_2tau_HTT_tt,
 				       double mvaOutput_0l_2tau_HTT_ttv,
 				       double mvaOutput_0l_2tau_HTT_sum,
+				       double mvaOutput_0l_2tau_HTT_sum_dy,
 				       float mvaDiscr_0l_2tau_HTT,
                                        double mTauTauVis,
                                        double mTauTau,
@@ -69,6 +71,7 @@ EvtHistManager_0l_2tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mvaOutput_0l_2tau_HTT_tt_, mvaOutput_0l_2tau_HTT_tt, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_0l_2tau_HTT_ttv_, mvaOutput_0l_2tau_HTT_ttv, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_0l_2tau_HTT_sum_, mvaOutput_0l_2tau_HTT_sum, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_0l_2tau_HTT_sum_dy_, mvaOutput_0l_2tau_HTT_sum_dy, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaDiscr_0l_2tau_HTT_, mvaDiscr_0l_2tau_HTT, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis, evtWeight, evtWeightErr);
