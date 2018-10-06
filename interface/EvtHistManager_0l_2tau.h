@@ -34,6 +34,7 @@ public:
 		 double mvaOutput_0l_2tau_HTT_tt,
 		 double mvaOutput_0l_2tau_HTT_ttv,
 		 double mvaOutput_0l_2tau_HTT_sum,
+		 double mvaOutput_0l_2tau_HTT_sum_dy,
 		 float mvaDiscr_0l_2tau_HTT,
                  double mTauTauVis,
                  double mTauTau,
@@ -61,6 +62,7 @@ private:
   TH1 * histogram_mvaOutput_0l_2tau_HTT_tt_;
   TH1 * histogram_mvaOutput_0l_2tau_HTT_ttv_;
   TH1 * histogram_mvaOutput_0l_2tau_HTT_sum_;
+  TH1 * histogram_mvaOutput_0l_2tau_HTT_sum_dy_;
   TH1 * histogram_mvaDiscr_0l_2tau_HTT_;
 
   TH1 * histogram_mTauTauVis_;
