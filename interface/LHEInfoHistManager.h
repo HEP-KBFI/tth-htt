@@ -31,13 +31,9 @@ public:
                  double evtWeight = 1.);
 
 private:
-  TFileDirectory * dir_;
-
   TH1 * histogram_scaleWeights_;
   TH1 * histogram_pdfWeights_;
   TH1 * histogram_EventCounter_;
-
-  std::vector<TH1 *> histograms_;
 };
 
 #endif
