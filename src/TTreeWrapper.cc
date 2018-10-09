@@ -120,7 +120,7 @@ TTreeWrapper::hasNextEvent()
     // try to open the file
     if(currentFileIdx_ < fileCount_)
     {
-      std::cout << "Opening #" << currentFileIdx_ << " file " << fileNames_[currentFileIdx_] << '\n';
+      std::cout << "Opening #" << currentFileIdx_ << " file " << fileNames_[currentFileIdx_];
 #if 0
       currentFilePtr_ = TFileOpenWrapper::Open(fileNames_[currentFileIdx_].c_str(), "READ");
 #else
@@ -150,6 +150,7 @@ TTreeWrapper::hasNextEvent()
   {
     // attempt to read the TTree
     currentTreePtr_ = static_cast<TTree *>(currentFilePtr_ -> Get(treeName_.c_str()));
+    std::cout << " (" << currentTreePtr_->GetEntries() << " entries)\n";
 
     if(! currentTreePtr_)
     {
