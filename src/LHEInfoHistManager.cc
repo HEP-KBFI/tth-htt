@@ -14,7 +14,6 @@ LHEInfoHistManager::LHEInfoHistManager(const edm::ParameterSet& cfg)
 void
 LHEInfoHistManager::bookHistograms(TFileDirectory & dir)
 {
-  dir_ = &dir;
   histogram_scaleWeights_ = book1D(dir, "scaleWeights", "scaleWeights",   4, -0.5,   +3.5);
   histogram_pdfWeights_   = book1D(dir, "pdfWeights", "pdfWeights",     103, -0.5, +102.5);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter",   1, -0.5,   +0.5);
