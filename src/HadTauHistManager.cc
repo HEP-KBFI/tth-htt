@@ -13,14 +13,16 @@ HadTauHistManager::HadTauHistManager(const edm::ParameterSet& cfg)
 
 void HadTauHistManager::bookHistograms(TFileDirectory& dir)
 {
-  histogram_pt_     = book1D(dir, "pt",     "pt",     40,  0.,  200.);
-  histogram_eta_    = book1D(dir, "eta",    "eta",    46, -2.3,  +2.3);
-  histogram_phi_    = book1D(dir, "phi",    "phi",    36, -TMath::Pi(), +TMath::Pi());
-  histogram_mass_   = book1D(dir, "mass",   "mass",   40,  0.,    2.);
-  histogram_charge_ = book1D(dir, "charge", "charge",  3, -1.5,  +1.5);
-  histogram_dz_     = book1D(dir, "dz",     "dz",     40, -0.2,  +0.2);
+  histogram_pt_        = book1D(dir, "pt",        "pt",        40,  0.,  200.);
+  histogram_eta_       = book1D(dir, "eta",       "eta",       46, -2.3,  +2.3);
+  histogram_phi_       = book1D(dir, "phi",       "phi",       36, -TMath::Pi(), +TMath::Pi());
+  histogram_decayMode_ = book1D(dir, "decayMode", "decayMode", 12, -0.5, +11.5);
+  histogram_mass_      = book1D(dir, "mass",      "mass",      40,  0.,    2.);
+  histogram_charge_    = book1D(dir, "charge",    "charge",     3, -1.5,  +1.5);
+  histogram_dz_        = book1D(dir, "dz",        "dz",        40, -0.2,  +0.2);
+  histogram_dxy_       = book1D(dir, "dxy",       "dxy",       40, -0.1,  +0.1);
 
-  histogram_decayModeFinding_ = book1D(dir, "decayModeFinding", "decayModeFinding", 2, -0.5, +1.5);
+  histogram_decayModeFinding_ = book1D(dir, "decayModeFinding", "decayModeFinding", 2, -0.5, +1.5); 
   histogram_id_mva_dR03_      = book1D(dir, "id_mva_dR03",      "id_mva_dR03",      7, -0.5, +6.5);
   histogram_id_mva_dR05_      = book1D(dir, "id_mva_dR05",      "id_mva_dR05",      7, -0.5, +6.5);
   histogram_id_cut_dR03_      = book1D(dir, "id_cut_dR03",      "id_cut_dR03",      4, -0.5, +3.5);
@@ -38,12 +40,14 @@ HadTauHistManager::fillHistograms(const RecoHadTau & hadTau,
 {
   const double evtWeightErr = 0.;
 
-  fillWithOverFlow(histogram_pt_,     hadTau.pt(),     evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_eta_,    hadTau.eta(),    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_phi_,    hadTau.phi(),    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mass_,   hadTau.mass(),   evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_charge_, hadTau.charge(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_dz_,     hadTau.dz(),     evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_pt_,        hadTau.pt(),        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_eta_,       hadTau.eta(),       evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_phi_,       hadTau.phi(),       evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_decayMode_, hadTau.decayMode(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mass_,      hadTau.mass(),      evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_charge_,    hadTau.charge(),    evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_dz_,        hadTau.dz(),        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_dxy_,       hadTau.dxy(),       evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_decayModeFinding_, hadTau.decayModeFinding(), evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_id_mva_dR03_,      hadTau.id_mva_dR03(),      evtWeight, evtWeightErr);

@@ -23,6 +23,10 @@ double comp_MT_met_hadTau1(const Particle & hadTau, double met_pt, double met_ph
 double comp_MT_met_hadTau2(const Particle & hadTau, double met_pt, double met_phi);
 double comp_MT_met_hadTau3(const Particle & hadTau, double met_pt, double met_phi);
 
+double comp_pZeta(const Particle::LorentzVector & vis1P4, const Particle::LorentzVector & vis2P4, double metPx, double metPy);
+double comp_pZetaVis(const Particle::LorentzVector & vis1P4, const Particle::LorentzVector & vis2P4);
+double comp_pZetaComb(const Particle::LorentzVector & vis1P4, const Particle::LorentzVector & vis2P4, double metPx, double metPy);
+
 double comp_n_jet25_recl(const std::vector<const RecoJet *> & jets_cleaned);
 
 double comp_mindr_lep1_jet(const Particle & lepton, const std::vector<const RecoJet *> & jets_cleaned);

@@ -32,8 +32,14 @@ EvtHistManager_0l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_mvaOutput_0l_2tau_HTT_sum_dy_ = book1D(dir, "mvaOutput_0l_2tau_HTT_sum_dy", "mvaOutput_0l_2tau_HTT_sum_dy", 20, 0., 1.);
   histogram_mvaDiscr_0l_2tau_HTT_ = book1D(dir, "mvaDiscr_0l_2tau_HTT", "mvaDiscr_0l_2tau_HTT", 10, 0., 10.);
   
-  histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 40, 0., 200.);
-  histogram_mTauTau_    = book1D(dir, "mTauTau",    "mTauTau",    30, 0., 300.);
+  histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 40,    0.,   200.);
+  histogram_mTauTau_    = book1D(dir, "mTauTau",    "mTauTau",    30,    0.,   300.);
+  histogram_dzTauTau_   = book1D(dir, "dzTauTau",   "dzTauTau",   80,   -0.4,  +0.4);
+  histogram_Pzeta_      = book1D(dir, "Pzeta",      "Pzeta",      60, -150.,  +150.);
+  histogram_PzetaVis_   = book1D(dir, "PzetaVis",   "PzetaVis",   60, -150.,  +150.);
+  histogram_PzetaComb_  = book1D(dir, "PzetaComb",  "PzetaComb",  60, -150.,  +150.);
+  histogram_mT_tau1_    = book1D(dir, "mT_tau1",    "mT_tau1",    30,    0.,   150.);
+  histogram_mT_tau2_    = book1D(dir, "mT_tau2",    "mT_tau2",    30,    0.,   150.);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
@@ -41,7 +47,9 @@ EvtHistManager_0l_2tau::bookHistograms(TFileDirectory & dir)
 void
 EvtHistManager_0l_2tau::fillHistograms(int numElectrons,
                                        int numMuons,
-                                       int numHadTaus,
+                                       int numHadTaus, 
+				       const RecoHadTau & hadTau_lead, 
+				       const RecoHadTau & hadTau_sublead,   
                                        int numJets,
                                        int numBJets_loose,
                                        int numBJets_medium,
@@ -53,6 +61,11 @@ EvtHistManager_0l_2tau::fillHistograms(int numElectrons,
 				       float mvaDiscr_0l_2tau_HTT,
                                        double mTauTauVis,
                                        double mTauTau,
+				       double Pzeta, 
+				       double PzetaVis, 
+				       double PzetaComb,
+				       double mT_tau1, 
+				       double mT_tau2,
                                        double evtWeight)
 {
   const double evtWeightErr = 0.;
@@ -76,6 +89,13 @@ EvtHistManager_0l_2tau::fillHistograms(int numElectrons,
 
   fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mTauTau_,    mTauTau,    evtWeight, evtWeightErr);
+  double dzTauTau = hadTau_lead.dz() - hadTau_sublead.dz();
+  fillWithOverFlow(histogram_dzTauTau_,   dzTauTau,   evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_Pzeta_,      Pzeta,      evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_PzetaVis_,   PzetaVis,   evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_PzetaComb_,  PzetaComb,  evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mT_tau1_,    mT_tau1,    evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mT_tau2_,    mT_tau1,    evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

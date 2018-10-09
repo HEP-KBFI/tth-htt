@@ -12,6 +12,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+
 class EvtHistManager_0l_2tau
   : public HistManagerBase
 {
@@ -26,7 +28,7 @@ public:
   void
   fillHistograms(int numElectrons,
                  int numMuons,
-                 int numHadTaus,
+                 int numHadTaus, const RecoHadTau & hadTau_lead, const RecoHadTau & hadTau_sublead,
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
@@ -38,6 +40,9 @@ public:
 		 float mvaDiscr_0l_2tau_HTT,
                  double mTauTauVis,
                  double mTauTau,
+		 double Pzeta, double PzetaVis, double PzetaComb,
+		 double mT_tau1, 
+		 double mT_tau2,
                  double evtWeight);
 
   const TH1 *
@@ -66,7 +71,13 @@ private:
   TH1 * histogram_mvaDiscr_0l_2tau_HTT_;
 
   TH1 * histogram_mTauTauVis_;
-  TH1 * histogram_mTauTau_;
+  TH1 * histogram_mTauTau_;  
+  TH1 * histogram_dzTauTau_;
+  TH1 * histogram_Pzeta_;
+  TH1 * histogram_PzetaVis_;
+  TH1 * histogram_PzetaComb_;
+  TH1 * histogram_mT_tau1_;
+  TH1 * histogram_mT_tau2_;
 
   TH1 * histogram_EventCounter_;
 };
