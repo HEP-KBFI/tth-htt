@@ -754,7 +754,7 @@ int main(int argc, char* argv[])
     bdt_filler -> register_variable<float_type>(
       "mindr_tau1_jet", "mindr_tau2_jet", 
       "avg_dr_jet", "ptmiss", "htmiss", "tau1_mva", "tau2_mva", "tau1_pt", "tau2_pt",
-      "tau1_eta", "tau2_eta", "dr_taus", "mT_tau1", "mT_tau2", "mTauTauVis", "mTauTau",
+      "tau1_eta", "tau2_eta", "dr_taus", "mT_tau1", "mT_tau2", "Pzeta", "PzetaVis", "mTauTauVis", "mTauTau",
 
       "HTT_wKinFit_top1", "HTT_wKinFitNew_top1", "HTT_noKinFit_top1", "dr_HadTop1_tau_lead",
       "dr_HadTop1_tau_sublead", "dr_HadTop1_tautau", "HadTop1_pt", "HadTop1_eta",
@@ -1050,10 +1050,12 @@ int main(int argc, char* argv[])
     preselHistManager->BJets_medium_->fillHistograms(selBJets_medium, 1.);
     preselHistManager->met_->fillHistograms(met, mht_p4, met_LD, 1.);
     preselHistManager->metFilters_->fillHistograms(metFilters, 1.);
-    preselHistManager->evt_->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+    preselHistManager->evt_->fillHistograms(
+      preselElectrons.size(), preselMuons.size(), preselHadTaus.size(), *preselHadTau_lead, *preselHadTau_sublead, 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       -1., 0., 0., 0., 0., 0.,
-      mTauTauVis_presel, -1., 1.);
+      mTauTauVis_presel, -1., 
+      -1., -1., -1., -1., -1., 1.);
     preselHistManager->evtYield_->fillHistograms(eventInfo, 1.);
 
 //--- apply final event selection 
@@ -1443,7 +1445,12 @@ int main(int argc, char* argv[])
     svFitAlgo.addLogM_fixed(true, 5.);
     svFitAlgo.integrate(measuredTauLeptons, met.p4().px(), met.p4().py(), met.cov());
     //double mTauTau = -1.; // CV: temporarily comment-out the following line, to make code compile with "old" and "new" version of ClassicSVfit
-    double mTauTau = ( svFitAlgo.isValidSolution() ) ? static_cast<classic_svFit::HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getMass() : -1.;
+    double mTauTau   = ( svFitAlgo.isValidSolution() ) ? static_cast<classic_svFit::HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getMass() : -1.;
+    double mT_tau1   = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
+    double mT_tau2   = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
+    double pZeta     = comp_pZeta(selHadTau_lead -> p4(), selHadTau_sublead -> p4(), met.p4().px(), met.p4().py()); 
+    double pZetaVis  = comp_pZetaVis(selHadTau_lead -> p4(), selHadTau_sublead -> p4());
+    double pZetaComb = comp_pZetaComb(selHadTau_lead -> p4(), selHadTau_sublead -> p4(), met.p4().px(), met.p4().py());
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 1l_2tau category
     mvaInputs_ttbar["nJet"]                 = selJets.size();
@@ -1561,11 +1568,12 @@ int main(int argc, char* argv[])
     //selHistManager->mvaInputVariables_ttV_->fillHistograms(mvaInputs_ttV, evtWeight);
     //selHistManager->xgbInputVariables_ttbar_->fillHistograms(xgbInputs_ttbar, evtWeight);
     selHistManager->evt_->fillHistograms(
-      preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+      preselElectrons.size(), preselMuons.size(), selHadTaus.size(), *selHadTau_lead, *selHadTau_sublead, 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
       mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-      mTauTauVis, mTauTau, evtWeight);
+      mTauTauVis, mTauTau, 
+      pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, evtWeight);
     if ( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
       if(! decayModeStr.empty())
@@ -1573,7 +1581,7 @@ int main(int argc, char* argv[])
         selHistManager->evt_in_decayModes_[decayModeStr]->fillHistograms(
           preselElectrons.size(),
           preselMuons.size(),
-          selHadTaus.size(),
+          selHadTaus.size(), *selHadTau_lead, *selHadTau_sublead, 
           selJets.size(),
           selBJets_loose.size(),
           selBJets_medium.size(),
@@ -1585,7 +1593,12 @@ int main(int argc, char* argv[])
 	  mvaDiscr_0l_2tau_HTT,
           mTauTauVis,
           mTauTau,
-          evtWeight
+          pZeta, 
+	  pZetaVis, 
+	  pZetaComb,
+	  mT_tau1, 
+	  mT_tau2, 
+	  evtWeight
         );
       }
     }
@@ -1604,11 +1617,12 @@ int main(int argc, char* argv[])
     selHistManager->leadHadTau_in_categories_[category]->fillHistograms({ selHadTau_lead }, evtWeight);
     selHistManager->subleadHadTau_in_categories_[category]->fillHistograms({ selHadTau_sublead }, evtWeight);
     selHistManager->evt_in_categories_[category]->fillHistograms(
-      preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+      preselElectrons.size(), preselMuons.size(), selHadTaus.size(), *selHadTau_lead, *selHadTau_sublead,  
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
       mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-      mTauTauVis, mTauTau, evtWeight);
+      mTauTauVis, mTauTau, 
+      pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, evtWeight);
 
     if ( isMC ) {
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
@@ -1642,8 +1656,11 @@ int main(int argc, char* argv[])
           ("tau1_eta",       selHadTau_lead -> eta())
           ("tau2_eta",       selHadTau_sublead -> eta())
           ("dr_taus",        deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4()))
-          ("mT_tau1",        comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi()))
-          ("mT_tau2",        comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi()))
+          ("mT_tau1",        mT_tau1)
+          ("mT_tau2",        mT_tau2)
+	  ("pZeta",          pZeta)
+          ("pZetaVis",       pZetaVis)
+          ("pZetaComb",      pZetaComb)
           ("mTauTauVis",     mTauTauVis)
           ("mTauTau",        mTauTau)
           ("HTT_wKinFit_top1",                       max_mvaOutput_hadTopTaggerWithKinFit)

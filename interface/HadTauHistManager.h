@@ -35,10 +35,12 @@ private:
   TH1 * histogram_pt_;
   TH1 * histogram_eta_;
   TH1 * histogram_phi_;
+  TH1 * histogram_decayMode_;
   TH1 * histogram_mass_;
   TH1 * histogram_charge_;
-
   TH1 * histogram_dz_;
+  TH1 * histogram_dxy_;
+  
   TH1 * histogram_decayModeFinding_;
   TH1 * histogram_id_mva_dR03_;
   TH1 * histogram_id_mva_dR05_;
