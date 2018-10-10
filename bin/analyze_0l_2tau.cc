@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
 
   DYMCReweighting* dyReweighting = nullptr;
   if ( apply_DYMCReweighting ) {
-    dyReweighting = new DYMCReweighting(era, dyMCReweighting_option, true);
+    dyReweighting = new DYMCReweighting(era, dyMCReweighting_option);
   }
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;  
@@ -418,6 +418,7 @@ int main(int argc, char* argv[])
   GenParticleReader* genQuarkFromTopReader = new GenParticleReader(branchName_genQuarkFromTop);
 
   if ( isMC ) {
+    inputTree -> registerReader(genTauLeptonReader);
     inputTree -> registerReader(genTopQuarkReader);
     inputTree -> registerReader(genBJetReader);
     inputTree -> registerReader(genWBosonReader);
