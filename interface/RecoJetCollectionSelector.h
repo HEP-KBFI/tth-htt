@@ -34,6 +34,7 @@ public:
   operator()(const RecoJet & jet) const;
 
 protected:
+  int era_;
   Double_t min_pt_;     ///< lower cut threshold on pT
   Double_t max_absEta_; ///< upper cut threshold on absolute value of eta
   Int_t min_jetId_;     ///< lower cut threshold on jet ID value
