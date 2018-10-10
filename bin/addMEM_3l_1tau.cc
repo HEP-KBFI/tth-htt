@@ -190,19 +190,13 @@ int main(int argc,
   RecoHadTauCollectionSelectorLoose    preselHadTauSelector  (era);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
   RecoHadTauCollectionSelectorTight    tightHadTauSelector   (era);
-  if(! hadTauSelection_part2.empty())
-  {
-    if(hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose")
-    {
-      preselHadTauSelector.set(hadTauSelection_part2);
-      fakeableHadTauSelector.set(hadTauSelection_part2);
-    }
-    tightHadTauSelector.set(hadTauSelection_part2);
-  }
+  preselHadTauSelector.set_if_looser(hadTauSelection_part2);
   preselHadTauSelector.set_min_antiElectron(-1);
   preselHadTauSelector.set_min_antiMuon(-1);
+  fakeableHadTauSelector.set_if_looser(hadTauSelection_part2);
   fakeableHadTauSelector.set_min_antiElectron(-1);
   fakeableHadTauSelector.set_min_antiMuon(-1);
+  tightHadTauSelector.set(hadTauSelection_part2);
   tightHadTauSelector.set_min_antiElectron(-1);
   tightHadTauSelector.set_min_antiMuon(-1);
   // CV: lower thresholds on hadronic taus by 2 GeV

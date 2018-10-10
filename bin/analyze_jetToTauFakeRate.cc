@@ -453,10 +453,7 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
   preselHadTauSelector.set_min_id_cut_dR05(-1000);
-  if ( hadTauSelection_denominator == "dR03mvaVVLoose" || 
-       hadTauSelection_denominator == "dR03mvaVLoose"  ) {
-    preselHadTauSelector.set(hadTauSelection_denominator);
-  }
+  preselHadTauSelector.set_if_looser(hadTauSelection_denominator);
   preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);

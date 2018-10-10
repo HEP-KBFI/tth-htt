@@ -1,6 +1,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorBase.h" // RecoHadTauSelectorBase
 
+#include <FWCore/Utilities/interface/Parse.h> // edm::tokenize()
+
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_tau_id_wp_int()
+
+#include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
 RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
                                                int index,
@@ -22,6 +27,7 @@ RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
   , max_raw_cut_dR05_(1.e+6)
   , min_antiElectron_(-1000)
   , min_antiMuon_(-1000)
+  , mva_selection_(MVASelection::kNone)
 {}
 
 void
@@ -171,6 +177,11 @@ RecoHadTauSelectorBase::get_min_antiMuon() const
 void
 RecoHadTauSelectorBase::set(const std::string & cut)
 {
+  if(cut.empty())
+  {
+    return;
+  }
+
   set_min_id_mva_dR03(-1000);
   set_min_raw_mva_dR03(-1.e+6);
   set_min_id_mva_dR05(-1000);
@@ -179,18 +190,45 @@ RecoHadTauSelectorBase::set(const std::string & cut)
   set_max_raw_cut_dR03(1.e+6);
   set_min_id_cut_dR05(-1000);
   set_max_raw_cut_dR05(1.e+6);
-  if     (cut == "dR03mvaVVLoose") set_min_id_mva_dR03(1);
-  else if(cut == "dR03mvaVLoose" ) set_min_id_mva_dR03(2);
-  else if(cut == "dR03mvaLoose"  ) set_min_id_mva_dR03(3);
-  else if(cut == "dR03mvaMedium" ) set_min_id_mva_dR03(4);
-  else if(cut == "dR03mvaTight"  ) set_min_id_mva_dR03(5);
-  else if(cut == "dR03mvaVTight" ) set_min_id_mva_dR03(6);
-  else if(cut == "dR03mvaVVTight") set_min_id_mva_dR03(7);
-  else
+  mva_selection_ = MVASelection::kNone;
+
+  const std::vector<std::string> cut_parts = edm::tokenize(cut, "&");
+  assert(cut_parts.size() == 1 || cut_parts.size() == 2);
+
+  for(const std::string & cut_part: cut_parts)
   {
-    throw cmsException(this, __func__)
-      << "Invalid Configuration parameter 'cut' = " << cut;
+    const std::string wp = cut_part.substr(7);
+    const std::string mva_type = cut_part.substr(0, 7);
+    const int wp_int = get_tau_id_wp_int(wp);
+
+    if(mva_type == "dR03mva")
+    {
+      set_min_id_mva_dR03(wp_int);
+    }
+    else if(mva_type == "dR05mva")
+    {
+      set_min_id_mva_dR05(wp_int);
+    }
+    else
+    {
+      throw cmsException(this, __func__, __LINE__)
+          << "Invalid mva_type = " << mva_type
+      ;
+    }
   }
+
+  if(cut_parts.size() == 2)
+  {
+    if(std::find(cut.begin(), cut.end(), '&') != cut.end())
+    {
+      mva_selection_ = MVASelection::kOR;
+    }
+    else
+    {
+      assert(0);
+    }
+  }
+
   cut_ = cut;
 }
 
@@ -198,6 +236,95 @@ const std::string &
 RecoHadTauSelectorBase::get() const
 {
   return cut_;
+}
+
+bool
+RecoHadTauSelectorBase::set_if_looser(const std::string & cut)
+{
+  if(cut.empty())
+  {
+    return false;
+  }
+
+  // if the old cut is an OR of two WPs, then throw an error; otherwise:
+  // a) new cut is a single WP
+  //   i) the MVAs are different -> replace the MVA
+  //   ii) the MVAs are the same -> if the old MVA WP is strictly looser than the old WP, then replace it w/ the new WP
+  // b) the new cut consists of two MVA WPs
+  //   i) if the MVA WP from the new cut is strictly looser than the old WP, then replace it w/ the new WP and
+  //      OR it w/ the second provided WP
+  //   ii) if the MVA WP from the new cut is not strictly looser than the old WP, then just OR the old WP and new WP
+  const std::vector<std::string> cut_parts_old = edm::tokenize(cut_, "&");
+  if(cut_parts_old.size() != 1)
+  {
+    throw cmsException(this, __func__, __LINE__)
+        << "Can overwrite a single tau WP but got 2 of them: " << cut_parts_old[0] << " and " << cut_parts_old[1]
+     ;
+  }
+  const std::string mva_old = cut_.substr(0, 7);
+  const std::string wp_old  = cut_.substr(7);
+
+  const std::vector<std::string> cut_parts = edm::tokenize(cut, "&");
+  if(cut_parts.size() == 1)
+  {
+    const std::string cut_new = cut_parts[0];
+    const std::string mva_new = cut_new.substr(0, 7);
+    const std::string wp_new  = cut_new.substr(7);
+    if((mva_old == mva_new && get_tau_id_wp_int(wp_old) > get_tau_id_wp_int(wp_new)) ||
+       (mva_old != mva_new))
+    {
+      std::cout << "Changing tau ID WP from '" << cut_ << "' to '" << cut_new << "'\n";
+      set(cut_new);
+      return  true;
+    }
+    else
+    {
+      std::cout << "Not replacing ID WP '" << cut_ << "' w/ '" << cut_new << "' b/c the new WP is tighter\n";
+    }
+  }
+  else if(cut_parts.size() == 2)
+  {
+    std::string cut_to_replace, cut_to_keep;
+    for(const std::string & cut_new: cut_parts)
+    {
+      const std::string mva_new = cut_new.substr(0, 7);
+      const std::string wp_new  = cut_new.substr(7);
+
+      if(mva_old == mva_new)
+      {
+        if(get_tau_id_wp_int(wp_old) > get_tau_id_wp_int(wp_new))
+        {
+          cut_to_replace = cut_new;
+        }
+        else
+        {
+          cut_to_replace = cut_;
+        }
+      }
+      else
+      {
+        cut_to_keep = cut_new;
+      }
+    }
+    if(cut_to_replace.empty() || cut_to_keep.empty())
+    {
+      throw cmsException(this, __func__, __LINE__)
+          << "Unable to replace tau ID WP '" << cut_ << "' with '" << cut << '\''
+      ;
+    }
+    const std::string cut_new = cut_to_replace + "&" + cut_to_keep;
+    std::cout << "Changing tau ID WP from '" << cut_ << "' to '" << cut_new << "'\n";
+    set(cut_new);
+    return true;
+  }
+  else
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "More than 2 WPs: " << boost::algorithm::join(cut_parts, ", ") << " is " << cut_parts.size() << " WPs"
+    ;
+  }
+
+  return false;
 }
 
 bool
@@ -235,27 +362,47 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
     }
     return false;
   }
-  if(hadTau.id_mva_dR03() < min_id_mva_dR03_)
+
+  if(mva_selection_ == MVASelection::kOR)
   {
-    if(debug_)
+    if(hadTau.id_mva_dR03() < min_id_mva_dR03_ && hadTau.id_mva_dR05() < min_id_mva_dR05_)
     {
-      std::cout << "FAILS id_mva_dR03 >= " << min_id_mva_dR03_ << " cut\n";
+      if(debug_)
+      {
+        std::cout << "FAILS id_mva_dR03 >= " << min_id_mva_dR03_ << " || id_mva_dR05 >= " << min_id_mva_dR05_ << " cut\n";
+      }
+      return false;
     }
-    return false;
   }
+  else if(mva_selection_ == MVASelection::kNone)
+  {
+    if(hadTau.id_mva_dR03() < min_id_mva_dR03_)
+    {
+      if(debug_)
+      {
+        std::cout << "FAILS id_mva_dR03 >= " << min_id_mva_dR03_ << " cut\n";
+      }
+      return false;
+    }
+    if(hadTau.id_mva_dR05() < min_id_mva_dR05_)
+    {
+      if(debug_)
+      {
+        std::cout << "FAILS id_mva_dR05 >= " << min_id_mva_dR05_ << " cut\n";
+      }
+      return false;
+    }
+  }
+  else
+  {
+    assert(0);
+  }
+
   if(hadTau.raw_mva_dR03() < min_raw_mva_dR03_)
   {
     if(debug_)
     {
       std::cout << "FAILS raw_mva_dR03 >= " << min_raw_mva_dR03_ << "cut\n";
-    }
-    return false;
-  }
-  if(hadTau.id_mva_dR05() < min_id_mva_dR05_)
-  {
-    if(debug_)
-    {
-      std::cout << "FAILS id_mva_dR05 >= " << min_id_mva_dR05_ << " cut\n";
     }
     return false;
   }

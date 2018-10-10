@@ -310,15 +310,15 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
-  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
+  preselHadTauSelector.set_if_looser(hadTauSelection_part2);
   preselHadTauSelector.set_min_antiElectron(std::min(hadTauSelection_antiElectron_lead, hadTauSelection_antiElectron_sublead));
   preselHadTauSelector.set_min_antiMuon(std::min(hadTauSelection_antiMuon_lead, hadTauSelection_antiMuon_sublead));
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_lead(era, 0, isDEBUG);
-  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) fakeableHadTauSelector_lead.set(hadTauSelection_part2);
+  fakeableHadTauSelector_lead.set_if_looser(hadTauSelection_part2);
   fakeableHadTauSelector_lead.set_min_antiElectron(hadTauSelection_antiElectron_lead);
   fakeableHadTauSelector_lead.set_min_antiMuon(hadTauSelection_antiMuon_lead);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_sublead(era, 1, isDEBUG);
-  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) fakeableHadTauSelector_sublead.set(hadTauSelection_part2);
+  fakeableHadTauSelector_sublead.set_if_looser(hadTauSelection_part2);
   fakeableHadTauSelector_sublead.set_min_antiElectron(hadTauSelection_antiElectron_sublead);
   fakeableHadTauSelector_sublead.set_min_antiMuon(hadTauSelection_antiMuon_sublead);
   RecoHadTauCollectionSelectorTight tightHadTauSelector_lead(era, 0, isDEBUG);
