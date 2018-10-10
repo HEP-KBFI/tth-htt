@@ -79,6 +79,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2017.h"
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2018.h"
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_0l_2tau_trigger.h" // Data_to_MC_CorrectionInterface_0l_2tau_trigger
+#include "tthAnalysis/HiggsToTauTau/interface/DYMCReweighting.h" // DYMCReweighting
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
@@ -197,6 +198,7 @@ int main(int argc, char* argv[])
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
+  bool apply_DYMCReweighting = cfg_analyze.getParameter<bool>("apply_DYMCReweighting"); 
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
   edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
@@ -223,11 +225,12 @@ int main(int argc, char* argv[])
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
   checkOptionValidity(central_or_shift, isMC);
-  const int hadTauPt_option         = getHadTauPt_option  (central_or_shift);
-  const int jetToTauFakeRate_option = getJetToTauFR_option(central_or_shift);
-  const int lheScale_option         = getLHEscale_option  (central_or_shift);
-  const int jetBtagSF_option        = getBTagWeight_option(central_or_shift);
-  const PUsys puSys_option          = getPUsys_option     (central_or_shift);
+  const int hadTauPt_option         = getHadTauPt_option       (central_or_shift);
+  const int jetToTauFakeRate_option = getJetToTauFR_option     (central_or_shift);
+  const int lheScale_option         = getLHEscale_option       (central_or_shift);
+  const int jetBtagSF_option        = getBTagWeight_option     (central_or_shift);
+  const PUsys puSys_option          = getPUsys_option          (central_or_shift);
+  const int dyMCReweighting_option  = getDYMCReweighting_option(central_or_shift);
 
   const int met_option   = useNonNominal_jetmet ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
   const int jetPt_option = useNonNominal_jetmet ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
@@ -241,6 +244,11 @@ int main(int argc, char* argv[])
        " -> met_option                 = " << met_option                 << "\n"
        " -> jetPt_option               = " << jetPt_option               << '\n'
   ;
+
+  DYMCReweighting* dyReweighting = nullptr;
+  if ( apply_DYMCReweighting ) {
+    dyReweighting = new DYMCReweighting(era, dyMCReweighting_option, true);
+  }
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;  
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
@@ -293,6 +301,7 @@ int main(int argc, char* argv[])
   std::string branchName_genPhotons = cfg_analyze.getParameter<std::string>("branchName_genPhotons");
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
 
+  std::string branchName_genTauLeptons = cfg_analyze.getParameter<std::string>("branchName_genTauLeptons");
   std::string branchName_genTopQuarks = cfg_analyze.getParameter<std::string>("branchName_genTopQuarks");
   std::string branchName_genBJets = cfg_analyze.getParameter<std::string>("branchName_genBJets");
   std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
@@ -401,6 +410,7 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
 
+  GenParticleReader* genTauLeptonReader = new GenParticleReader(branchName_genTauLeptons);
   GenParticleReader* genTopQuarkReader = new GenParticleReader(branchName_genTopQuarks);
   GenParticleReader* genBJetReader = new GenParticleReader(branchName_genBJets);
   GenParticleReader* genWBosonReader = new GenParticleReader(branchName_genWBosons);
@@ -877,12 +887,14 @@ int main(int argc, char* argv[])
       }
     }
     
+    std::vector<GenParticle> genTauLeptons;
     std::vector<GenParticle> genTopQuarks;
     std::vector<GenParticle> genBJets;
     std::vector<GenParticle> genWBosons;
     std::vector<GenParticle> genWJets;
     std::vector<GenParticle> genQuarkFromTop;
     if ( isMC ) {
+      genTauLeptons = genTauLeptonReader->read();
       genTopQuarks = genTopQuarkReader->read();
       genBJets = genBJetReader->read();
       genWBosons = genWBosonReader->read();
@@ -1076,6 +1088,9 @@ int main(int argc, char* argv[])
     double btagWeight = 1.;
     if ( isMC ) {
       evtWeight *= evtWeight_inclusive;
+      if ( apply_DYMCReweighting ) {
+	evtWeight *= dyReweighting->getWeight(genTauLeptons);
+      }
       btagWeight = get_BtagWeight(selJets);
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
