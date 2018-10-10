@@ -28,7 +28,7 @@ public:
   void
   fillHistograms(int numElectrons,
                  int numMuons,
-                 int numHadTaus, const RecoHadTau & hadTau_lead, const RecoHadTau & hadTau_sublead,
+		 int numHadTaus, 
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
@@ -72,7 +72,6 @@ private:
 
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_mTauTau_;  
-  TH1 * histogram_dzTauTau_;
   TH1 * histogram_Pzeta_;
   TH1 * histogram_PzetaVis_;
   TH1 * histogram_PzetaComb_;
