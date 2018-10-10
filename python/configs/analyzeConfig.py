@@ -535,7 +535,7 @@ class analyzeConfig(object):
         if 'apply_genWeight' not in jobOptions:
           jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
         if 'apply_DYMCReweighting' not in jobOptions:
-          jobOptions['apply_DYMCReweighting'] = sample_info["apply_DYMCReweighting"] if is_mc and "apply_DYMCReweighting" in sample_info.keys() else False
+          jobOptions['apply_DYMCReweighting'] = sample_info["DYMCReweighting"] if (is_mc and "DYMCReweighting" in sample_info.keys()) else False
         if 'lumiScale' not in jobOptions:
           nof_events = -1
           if is_mc:
@@ -591,6 +591,7 @@ class analyzeConfig(object):
             'apply_hadTauGenMatching',
             'applyFakeRateWeights',
             'apply_genWeight',
+            'apply_DYMCReweighting',
             'selEventsFileName_output',
             'fillGenEvtHistograms',
             'selectBDT',
