@@ -120,7 +120,7 @@ TTreeWrapper::hasNextEvent()
     // try to open the file
     if(currentFileIdx_ < fileCount_)
     {
-      std::cout << "Opening #" << currentFileIdx_ << " file " << fileNames_[currentFileIdx_];
+      std::cout << "Opening #" << currentFileIdx_ << " file " << fileNames_[currentFileIdx_] << '\n';
 #if 0
       currentFilePtr_ = TFileOpenWrapper::Open(fileNames_[currentFileIdx_].c_str(), "READ");
 #else
@@ -150,7 +150,6 @@ TTreeWrapper::hasNextEvent()
   {
     // attempt to read the TTree
     currentTreePtr_ = static_cast<TTree *>(currentFilePtr_ -> Get(treeName_.c_str()));
-    std::cout << " (" << currentTreePtr_->GetEntries() << " entries)\n";
 
     if(! currentTreePtr_)
     {
@@ -171,7 +170,9 @@ TTreeWrapper::hasNextEvent()
     }
 
     // save the total number of events in this file
-    currentMaxEvents_ = currentTreePtr_ -> GetEntries();
+    const long long currentMaxEvents = currentTreePtr_ -> GetEntries();
+    std::cout << "The file " << fileNames_[currentFileIdx_] << " has " << currentMaxEvents << " entries\n";
+    currentMaxEvents_ = currentMaxEvents;
     cumulativeMaxEventCount_ += currentMaxEvents_;
   }
 
