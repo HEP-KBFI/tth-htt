@@ -56,6 +56,7 @@ process.analyze_0l_2tau = cms.PSet(
     central_or_shift = cms.string(''),
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
+    apply_DYreweighting = cms.bool(False),
     apply_hlt_filter = cms.bool(False),
     apply_met_filters = cms.bool(True),
     cfgMEtFilter = cms.PSet(),
@@ -79,6 +80,7 @@ process.analyze_0l_2tau = cms.PSet(
     branchName_genJets = cms.string('GenJet'),
     redoGenMatching = cms.bool(True),
 
+    branchName_genTauLeptons = cms.string('GenTau'),
     branchName_genTopQuarks = cms.string('GenTop'),
     branchName_genBJets = cms.string('GenBQuarkFromTop'),
     branchName_genWBosons = cms.string('GenVbosons'),
