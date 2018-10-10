@@ -46,6 +46,8 @@ public:
   void set(const std::string & cut);
   const std::string & get() const;
 
+  bool set_if_looser(const std::string & cut);
+
   /**
    * @brief Check if hadronic tau given as function argument passes nominal selection criteria defined in Section 3.5 of AN-2015/321
    * @return True if hadronic tau passes selection; false otherwise
@@ -55,6 +57,11 @@ public:
   friend class RecoHadTauCollectionSelectorBase;
 
 protected:
+  enum class MVASelection
+  {
+    kNone, kOR
+  };
+
   virtual void set_selection_flags(const RecoHadTau & hadTau) const = 0;
 
   bool set_selection_flags_;
@@ -74,6 +81,7 @@ protected:
   Int_t min_antiElectron_;        ///< lower cut threshold on discriminator against electrons
   Int_t min_antiMuon_;            ///< lower cut threshold on discriminator against muons
   std::string cut_;
+  MVASelection mva_selection_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoHadTauSelectorBase_h

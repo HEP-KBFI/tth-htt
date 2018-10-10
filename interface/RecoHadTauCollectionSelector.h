@@ -82,6 +82,12 @@ public:
     this->selector_.set(cut);
   }
 
+  bool
+  set_if_looser(const std::string & cut)
+  {
+    return this->selector_.set_if_looser(cut);
+  }
+
   void
   set_min_antiElectron(int min_antiElectron)
   {
