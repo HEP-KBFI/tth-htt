@@ -85,7 +85,7 @@ HistManagerBase::book2D(TFileDirectory & dir,
   {
     retVal->Sumw2();
   }
-  histograms_.push_back(retVal);
+  histograms_2d_.push_back(retVal);
   return retVal;
 }
 
@@ -105,7 +105,7 @@ HistManagerBase::book2D(TFileDirectory & dir,
   {
     retVal->Sumw2();
   }
-  histograms_.push_back(retVal);
+  histograms_2d_.push_back(retVal);
   return retVal;
 }
 
@@ -125,7 +125,7 @@ HistManagerBase::book2D(TFileDirectory & dir,
   {
     retVal->Sumw2();
   }
-  histograms_.push_back(retVal);
+  histograms_2d_.push_back(retVal);
   return retVal;
 }
 

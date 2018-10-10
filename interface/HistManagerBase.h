@@ -89,6 +89,7 @@ protected:
   std::string central_or_shift_;
 
   std::vector<TH1 *> histograms_;
+  std::vector<TH2 *> histograms_2d_;
 };
 
 edm::ParameterSet

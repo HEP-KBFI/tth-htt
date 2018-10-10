@@ -223,19 +223,11 @@ main(int argc,
   inputTree->registerReader(hadTauReader);
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
-  if(hadTauSelection_tauIdWP == "dR03mvaVLoose" ||
-     hadTauSelection_tauIdWP == "dR03mvaVVLoose" )
-  {
-    preselHadTauSelector.set(hadTauSelection_tauIdWP);
-  }
+  preselHadTauSelector.set_if_looser(hadTauSelection_tauIdWP);
   preselHadTauSelector.set_min_antiElectron(-1);
   preselHadTauSelector.set_min_antiMuon(-1);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
-  if(hadTauSelection_tauIdWP == "dR03mvaVLoose" ||
-     hadTauSelection_tauIdWP == "dR03mvaVVLoose" )
-  {
-    fakeableHadTauSelector.set(hadTauSelection_tauIdWP);
-  }
+  fakeableHadTauSelector.set_if_looser(hadTauSelection_tauIdWP);
   fakeableHadTauSelector.set_min_antiElectron(-1);
   fakeableHadTauSelector.set_min_antiMuon(-1);
 

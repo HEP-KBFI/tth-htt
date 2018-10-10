@@ -215,26 +215,15 @@ main(int argc,
   const RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
-  if(hadTauSelection_tauIDwp == "dR03mvaVLoose" ||
-     hadTauSelection_tauIDwp == "dR03mvaVVLoose" )
-  {
-    preselHadTauSelector.set(hadTauSelection_tauIDwp);
-  }
+  preselHadTauSelector.set_if_looser(hadTauSelection_tauIDwp);
   preselHadTauSelector.set_min_antiElectron(-1);
   preselHadTauSelector.set_min_antiMuon(-1);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
-  if(hadTauSelection_tauIDwp == "dR03mvaVLoose" ||
-     hadTauSelection_tauIDwp == "dR03mvaVVLoose" )
-  {
-    fakeableHadTauSelector.set(hadTauSelection_tauIDwp);
-  }
+  fakeableHadTauSelector.set_if_looser(hadTauSelection_tauIDwp);
   fakeableHadTauSelector.set_min_antiElectron(-1);
   fakeableHadTauSelector.set_min_antiMuon(-1);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era, -1, isDEBUG);
-  if(! hadTauSelection_tauIDwp.empty())
-  {
-    tightHadTauSelector.set(hadTauSelection_tauIDwp);
-  }
+  tightHadTauSelector.set(hadTauSelection_tauIDwp);
   tightHadTauSelector.set_min_antiElectron(-1);
   tightHadTauSelector.set_min_antiMuon(-1);
   // CV: lower thresholds on hadronic taus by 2 GeV 
@@ -243,7 +232,6 @@ main(int argc,
   preselHadTauSelector.set_min_pt(18.); 
   fakeableHadTauSelector.set_min_pt(18.);
   tightHadTauSelector.set_min_pt(18.);
-  std::cout << "hadTauSelection_tauIDwp = " << hadTauSelection_tauIDwp <<'\n';
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
@@ -379,7 +367,7 @@ main(int argc,
   memPermutationWriter
     .setLepSelection       (leptonSelection, kTight)
     .setHadTauSelection    (hadTauSelection, kTight)
-    .setHadTauWorkingPoints(hadTauSelection_tauIDwp) // up until Tight
+    .setHadTauWorkingPoints(hadTauSelection_tauIDwp)
   ;
   // add conditions for computing the nof MEM permutations in 2lss1tau and 3l1tau channels
   // the arguments are: the name of the channel, minimum number of leptons, minimum number of hadronic taus
@@ -674,7 +662,7 @@ main(int argc,
     {
 //--- build collections of generator level particles
       genLeptons = genLeptonReader->read();
-      for(const GenLepton genLepton: genLeptons)
+      for(const GenLepton & genLepton: genLeptons)
       {
         const int genLeptonType = getLeptonType(genLepton.pdgId());
         switch(genLeptonType)

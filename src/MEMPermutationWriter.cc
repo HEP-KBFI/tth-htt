@@ -9,6 +9,10 @@
 #include <TTree.h> // TTree
 
 #include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+#include <boost/algorithm/string/split.hpp> // boost::split()
+#pragma GCC diagnostic pop
 
 MEMPermutationWriter::~MEMPermutationWriter()
 {
@@ -53,15 +57,27 @@ MEMPermutationWriter::setHadTauSelection(int minHadTauSelection,
 MEMPermutationWriter &
 MEMPermutationWriter::setHadTauWorkingPoints(const std::string & minHadTauWorkingPoint)
 {
-  const bool use_dR03 = boost::starts_with(minHadTauWorkingPoint, "dR03");
-  const std::map<std::string, int> & tau_wps = use_dR03 ? id_mva_dr03_map : id_mva_dr05_map;
-  const int tau_min_selection = tau_wps.at(minHadTauWorkingPoint);
-  const int tau_max_selection = tau_wps.at(use_dR03 ? "dR03mvaTight" : "dR05isoTight");
-  for(const auto & kv: tau_wps)
+  std::vector<std::string> cut_parts;
+  boost::split(cut_parts, minHadTauWorkingPoint, [](char c) -> bool { return c == '&'; });
+  assert(cut_parts.size() == 1 || cut_parts.size() == 2);
+
+  std::map<std::string, int> cut_mvas;
+  for(const std::string & cut_part: cut_parts)
   {
-    if(kv.second >= tau_min_selection && kv.second <= tau_max_selection)
+    const std::string cut_mva = cut_part.substr(0, 7);
+    const std::string cut_wp_str = cut_part.substr(7);
+    const int cut_wp = get_tau_id_wp_int(cut_wp_str);
+    cut_mvas[cut_mva] = cut_wp;
+  }
+
+  const int tau_max_selection = get_tau_id_wp_int("VVTight");
+  for(const auto & kv: cut_mvas)
+  {
+    const int tau_min_selection = kv.second;
+    for(int tau_selection = tau_min_selection; tau_selection <= tau_max_selection; ++tau_selection)
     {
-      hadTauWorkingPoints_.push_back(kv.first);
+      const std::string hadTauWorkingPoint = kv.first + get_tau_id_wp_str(tau_selection);
+      hadTauWorkingPoints_.push_back(hadTauWorkingPoint);
     }
   }
   return *this;
