@@ -95,24 +95,11 @@ get_selection(const std::string & selectionString);
 int
 get_era(const std::string & eraString);
 
-//--- define the tau MVA ID WPs
-const std::map<std::string, int>
-id_mva_dr03_map = {
-  { "dR03mvaVVLoose", 1 }, // custom WP with 95% signal efficiency, computed in RecoHadTauReader
-  { "dR03mvaVLoose",  2 },
-  { "dR03mvaLoose",   3 },
-  { "dR03mvaMedium",  4 },
-  { "dR03mvaTight",   5 },
-  { "dR03mvaVTight",  6 },
-  { "dR03mvaVVTight", 7 }
-};
+int
+get_tau_id_wp_int(const std::string & wp_str);
 
-const std::map<std::string, int>
-id_mva_dr05_map = {
-  { "dR05isoLoose",  1 },
-  { "dR05isoMedium", 2 },
-  { "dR05isoTight",  3 }
-};
+std::string
+get_tau_id_wp_str(int wp_int);
 
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing pT

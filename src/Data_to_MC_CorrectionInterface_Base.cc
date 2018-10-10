@@ -4,6 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_tau_id_wp_int()
 
 #include <TString.h> // Form()
 #include <TFile.h> // TFile
@@ -88,19 +89,9 @@ Data_to_MC_CorrectionInterface_Base::~Data_to_MC_CorrectionInterface_Base()
 }
 
 void
-Data_to_MC_CorrectionInterface_Base::setHadTauSelection(const std::string& hadTauSelection)
+Data_to_MC_CorrectionInterface_Base::setHadTauSelection(const std::string & hadTauSelection)
 {
-  hadTauSelection_ = -1;
-  if     (hadTauSelection == "dR03mvaVVLoose") hadTauSelection_ = 1;
-  else if(hadTauSelection == "dR03mvaVLoose" ) hadTauSelection_ = 2;
-  else if(hadTauSelection == "dR03mvaLoose"  ) hadTauSelection_ = 3;
-  else if(hadTauSelection == "dR03mvaMedium" ) hadTauSelection_ = 4;
-  else if(hadTauSelection == "dR03mvaTight"  ) hadTauSelection_ = 5;
-  else if(hadTauSelection == "dR03mvaVTight" ) hadTauSelection_ = 6;
-  else if(hadTauSelection == "dR03mvaVVTight") hadTauSelection_ = 7;
-  else throw cmsException(this, __func__)
-         << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection
-       ;
+  hadTauSelection_ = get_tau_id_wp_int(hadTauSelection.substr(7));
 }
 
 void
