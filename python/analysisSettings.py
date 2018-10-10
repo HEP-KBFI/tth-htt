@@ -39,6 +39,8 @@ class systematics(object):
 
   PU = PU_().full
 
+  DYMCReweighting = [ "CMS_ttHl_DYMCReweightingUp", "CMS_ttHl_DYMCReweightingDown" ]
+
   class LHE(object):
 
     class TTH(object):
@@ -187,8 +189,8 @@ class systematics(object):
   an_chargeFlip_mu      =    central +  muon_E
   an_chargeFlip_mu_opts = [ "central", "muon_E" ]
 
-  an_common      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag +  FR_t +  lhe +  triggerSF +  PU
-  an_common_opts = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag", "FR_t", "lhe", "triggerSF", "PU" ]
+  an_common      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag +  FR_t +  lhe +  triggerSF +  PU +  DYMCReweighting
+  an_common_opts = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag", "FR_t", "lhe", "triggerSF", "PU", "DYMCReweighting" ]
   # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only if you plan to run compShapeSyst 1!
   an_extended      = an_common      +    FRe_shape +  FRm_shape
   an_extended_opts = an_common_opts + [ "FRe_shape", "FRm_shape" ]
@@ -198,8 +200,8 @@ class systematics(object):
 
   # Karl: for HH analysis only
   lhe_hh = LHE().full_hh
-  an_common_hh      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag +  FR_t +  lhe_hh +  triggerSF +  PU
-  an_common_opts_hh = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag", "FR_t", "lhe_hh", "triggerSF", "PU" ]
+  an_common_hh      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag +  FR_t +  lhe_hh +  triggerSF +  PU +  DYMCReweighting
+  an_common_opts_hh = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag", "FR_t", "lhe_hh", "triggerSF", "PU", "DYMCReweighting" ]
   an_extended_hh      = an_common_hh      +    FRe_shape +  FRm_shape
   an_extended_opts_hh = an_common_opts_hh + [ "FRe_shape", "FRm_shape" ]
 
