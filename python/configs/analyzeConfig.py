@@ -162,6 +162,19 @@ class analyzeConfig(object):
 
         self.lep_mva_wp = lep_mva_wp
         self.central_or_shifts = central_or_shifts
+        if not 'central' in self.central_or_shifts:
+            logging.warning('Running with systematic uncertainties, but without central value, is not supported --> adding central value.')
+            self.central_or_shifts = [ 'central' ]
+            self.central_or_shifts.extend(central_or_shifts)
+        #------------------------------------------------------------------------
+        # CV: make sure that 'central' is always first entry in self.central_or_shifts
+        #    (logic for building dependencies between analysis, 'hadd', and 'addBackgrounds' jobs in derived classes may abort with KeyError otherwise)
+        if len(self.central_or_shifts) > 1:
+            temp = [ 'central' ]
+            self.central_or_shifts.remove('central')
+            temp.extend(self.central_or_shifts)
+            self.central_or_shifts = temp
+        #------------------------------------------------------------------------
         self.max_files_per_job = max_files_per_job
         self.max_num_jobs = 100000
         self.era = era
