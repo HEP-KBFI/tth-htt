@@ -302,6 +302,7 @@ int main(int argc, char* argv[])
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
 
   std::string branchName_genTauLeptons = cfg_analyze.getParameter<std::string>("branchName_genTauLeptons");
+
   std::string branchName_genTopQuarks = cfg_analyze.getParameter<std::string>("branchName_genTopQuarks");
   std::string branchName_genBJets = cfg_analyze.getParameter<std::string>("branchName_genBJets");
   std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
@@ -410,7 +411,12 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
 
-  GenParticleReader* genTauLeptonReader = new GenParticleReader(branchName_genTauLeptons);
+  GenParticleReader* genTauLeptonReader = nullptr;
+  if ( isMC && apply_DYMCReweighting ) {
+    genTauLeptonReader = new GenParticleReader(branchName_genTauLeptons);
+    inputTree->registerReader(genTauLeptonReader);
+  }
+
   GenParticleReader* genTopQuarkReader = new GenParticleReader(branchName_genTopQuarks);
   GenParticleReader* genBJetReader = new GenParticleReader(branchName_genBJets);
   GenParticleReader* genWBosonReader = new GenParticleReader(branchName_genWBosons);
@@ -418,7 +424,6 @@ int main(int argc, char* argv[])
   GenParticleReader* genQuarkFromTopReader = new GenParticleReader(branchName_genQuarkFromTop);
 
   if ( isMC ) {
-    inputTree -> registerReader(genTauLeptonReader);
     inputTree -> registerReader(genTopQuarkReader);
     inputTree -> registerReader(genBJetReader);
     inputTree -> registerReader(genWBosonReader);
@@ -871,12 +876,18 @@ int main(int argc, char* argv[])
       }
     }
 
+    std::vector<GenParticle> genTauLeptons;
+    if ( isMC && apply_DYMCReweighting ) {
+      genTauLeptons = genTauLeptonReader->read();
+    }
+
     double evtWeight_inclusive = 1.;
     if(isMC)
     {
-      if(apply_genWeight)    evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(isMC_tH)            evtWeight_inclusive *= eventInfo.genWeight_tH;
-      if(eventWeightManager) evtWeight_inclusive *= eventWeightManager->getWeight();
+      if ( apply_genWeight       ) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if ( apply_DYMCReweighting ) evtWeight_inclusive *= dyReweighting->getWeight(genTauLeptons);
+      if ( isMC_tH               ) evtWeight_inclusive *= eventInfo.genWeight_tH;
+      if ( eventWeightManager    ) evtWeight_inclusive *= eventWeightManager->getWeight();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
@@ -888,14 +899,12 @@ int main(int argc, char* argv[])
       }
     }
     
-    std::vector<GenParticle> genTauLeptons;
     std::vector<GenParticle> genTopQuarks;
     std::vector<GenParticle> genBJets;
     std::vector<GenParticle> genWBosons;
     std::vector<GenParticle> genWJets;
     std::vector<GenParticle> genQuarkFromTop;
     if ( isMC ) {
-      genTauLeptons = genTauLeptonReader->read();
       genTopQuarks = genTopQuarkReader->read();
       genBJets = genBJetReader->read();
       genWBosons = genWBosonReader->read();
@@ -1089,9 +1098,6 @@ int main(int argc, char* argv[])
     double btagWeight = 1.;
     if ( isMC ) {
       evtWeight *= evtWeight_inclusive;
-      if ( apply_DYMCReweighting ) {
-	evtWeight *= dyReweighting->getWeight(genTauLeptons);
-      }
       btagWeight = get_BtagWeight(selJets);
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
