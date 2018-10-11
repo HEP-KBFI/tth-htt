@@ -293,7 +293,7 @@ class sbatchManager:
                     k = line_split_eq_spaces[i]
                     v = line_split_eq_spaces[i + 1]
                     line_dict[k[-1]] = ' '.join(v[:-1] if i != len(line_split_eq_spaces) - 2 else v)
-                if not 'JobId' in line.keys():
+                if not 'JobId' in line_dict.keys():
                     print("Skipping line = '%s'" % line)
                     continue
                 JobId = line_dict['JobId']
