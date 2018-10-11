@@ -144,6 +144,13 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.use_nonnominal = use_nonnominal
     self.select_rle_output = select_rle_output
     self.hlt_filter = hlt_filter
+    
+    self.categories = [
+      "0l_2tau", "0l_2tau_0bM_0j", "0l_2tau_1bM_0j", "0l_2tau_2bM_0j",
+      "0l_2tau_0bM_1j", "0l_2tau_1bM_1j", "0l_2tau_2bM_1j",
+      "0l_2tau_0bM_2j", "0l_2tau_1bM_2j", "0l_2tau_2bM_2j"
+      ]  ## N.B.: Inclusive category in a member of this list 
+    self.category_inclusive = "0l_2tau"
 
   def set_BDT_training(self, hadTau_selection_relaxed):
     """Run analysis with loose selection criteria for hadronic taus,
@@ -423,7 +430,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                       (self.channel, process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)),
                     'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s_%s_%s_%s_%s.log" % \
                       (self.channel, process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)),
-                    'categories' : [ getHistogramDir(hadTau_selection, hadTau_frWeight, hadTau_charge_selection) ],
+                    'categories' : [ getHistogramDir(hadTau_selection, hadTau_frWeight, hadTau_charge_selection) for category in self.categories],
                     'processes_input' : processes_input,
                     'process_output' : sample_category
                   }
@@ -463,7 +470,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                       (self.channel, process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)),
                     'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s_fakes_%s_%s_%s_%s.log" % \
                       (self.channel, process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)),
-                    'categories' : [ getHistogramDir(hadTau_selection, hadTau_frWeight, hadTau_charge_selection) ],
+                    'categories' : [ getHistogramDir(hadTau_selection, hadTau_frWeight, hadTau_charge_selection) for category in self.categories ],
                     'processes_input' : processes_input,
                     'process_output' : "%s_fake" % sample_category
                   }
@@ -510,7 +517,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
               (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection)),
             'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s_fakes_mc_%s_%s.log" % \
               (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection)),
-            'categories' : [ getHistogramDir(hadTau_selection, hadTau_frWeight, hadTau_charge_selection) ],
+            'categories' : [ getHistogramDir(hadTau_selection, hadTau_frWeight, hadTau_charge_selection) for category in self.categories ],
             'processes_input' : processes_input,
             'process_output' : "fakes_mc"
           }
@@ -553,93 +560,96 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       return self.num_jobs
 
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
-    for hadTau_charge_selection in self.hadTau_charge_selections:
-      key_addFakes_job = getKey("fakes_data", hadTau_charge_selection)
-      key_hadd_stage1_5 = getKey(get_hadTau_selection_and_frWeight("Fakeable", "enabled"), hadTau_charge_selection)
-      category_sideband = None
-      if self.applyFakeRateWeights == "2tau":
-        category_sideband = "0l_2tau_%s_Fakeable_wFakeRateWeights" % hadTau_charge_selection
-      else:
-        raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % self.applyFakeRateWeights)
-      self.jobOptions_addFakes[key_addFakes_job] = {
-        'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_%s_cfg.py" % \
-          (self.channel, hadTau_charge_selection)),
-        'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes_%s_%s.root" % \
-          (self.channel, hadTau_charge_selection)),
-        'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_%s.log" % \
-          (self.channel, hadTau_charge_selection)),
-        'category_signal' : "0l_2tau_%s_Tight" % hadTau_charge_selection,
-        'category_sideband' : category_sideband
-      }
-      self.createCfg_addFakes(self.jobOptions_addFakes[key_addFakes_job])
-      key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), hadTau_charge_selection)
-      self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
+    for category in self.categories:
+      for hadTau_charge_selection in self.hadTau_charge_selections:
+        key_addFakes_job = getKey("fakes_data", hadTau_charge_selection)
+        key_hadd_stage1_5 = getKey(get_hadTau_selection_and_frWeight("Fakeable", "enabled"), hadTau_charge_selection)
+        category_sideband = None
+        if self.applyFakeRateWeights == "2tau":
+          category_sideband = "0l_2tau_%s_Fakeable_wFakeRateWeights" % hadTau_charge_selection
+        else:
+          raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % self.applyFakeRateWeights)
+        self.jobOptions_addFakes[key_addFakes_job] = {
+          'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
+          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_%s_cfg.py" % \
+                                              (self.channel, hadTau_charge_selection)),
+          'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes_%s_%s.root" % \
+                                        (self.channel, hadTau_charge_selection)),
+          'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_%s.log" % \
+                                     (self.channel, hadTau_charge_selection)),
+          'category_signal' : "0l_2tau_%s_Tight" % hadTau_charge_selection,
+          'category_sideband' : category_sideband
+          }
+        self.createCfg_addFakes(self.jobOptions_addFakes[key_addFakes_job])
+        if category != self.category_inclusive:
+          key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), hadTau_charge_selection)
+          self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
 
     logging.info("Creating configuration files to run 'prepareDatacards'")
-    for histogramToFit in self.histograms_to_fit:
-      key_prep_dcard_job = getKey(histogramToFit, "OS")
-      key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
-      self.jobOptions_prep_dcard[key_prep_dcard_job] = {
-        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit)),
-        'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_%s.root" % (self.channel, histogramToFit)),
-        'histogramDir' : self.histogramDir_prep_dcard,
-        'histogramToFit' : histogramToFit,
-        'label' : None
-      }
-      self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
-
-      if "SS" in self.hadTau_charge_selections:
-        key_prep_dcard_job = getKey(histogramToFit, "SS")
-        key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")
+    for category in self.categories:
+      for histogramToFit in self.histograms_to_fit:
+        key_prep_dcard_job = getKey(histogramToFit, "OS")
+        key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_SS_%s_cfg.py" % (self.channel, histogramToFit)),
-          'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_SS_%s.root" % (self.channel, histogramToFit)),
-          'histogramDir' : self.histogramDir_prep_dcard_SS,
+          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit)),
+          'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_%s.root" % (self.channel, histogramToFit)),
+          'histogramDir' : self.histogramDir_prep_dcard,
           'histogramToFit' : histogramToFit,
-          'label' : 'SS'
+          'label' : None
         }
         self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
-      # add shape templates for the following systematic uncertainties:
-      #  - 'CMS_ttHl_Clos_norm_t'
-      #  - 'CMS_ttHl_Clos_shape_t'
-      for hadTau_charge_selection in self.hadTau_charge_selections:
-        key_prep_dcard_job = getKey(histogramToFit, hadTau_charge_selection)
-        key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), hadTau_charge_selection)
-        key_add_syst_fakerate_job = getKey(histogramToFit, hadTau_charge_selection)
-        self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job] = {
-          'inputFile' : self.jobOptions_prep_dcard[key_prep_dcard_job]['datacardFile'],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addSystFakeRates_%s_%s_%s_cfg.py" % (self.channel, hadTau_charge_selection, histogramToFit)),
-          'outputFile' : os.path.join(self.dirs[DKEY_DCRD], "addSystFakeRates_%s_%s_%s.root" % (self.channel, hadTau_charge_selection, histogramToFit)),
-          'category' : self.channel,
-          'histogramToFit' : histogramToFit,
-          'plots_outputFileName' : os.path.join(self.dirs[DKEY_PLOT], "addSystFakeRates.png")
-        }
-        histogramDir_nominal = None
-        if hadTau_charge_selection == "OS":
-          histogramDir_nominal = self.histogramDir_prep_dcard
-        elif hadTau_charge_selection == "SS":
-          histogramDir_nominal = self.histogramDir_prep_dcard_SS
-        else:
-          raise ValueError("Invalid parameter 'hadTau_charge_selection' = %s !!" % hadTau_charge_selection)
-        for hadTau_type in [ 't', ]:
-          hadTau_mcClosure = "Fakeable_mcClosure_%s" % hadTau_type
-          if hadTau_mcClosure not in self.hadTau_selections:
-            continue
-          hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_mcClosure, "enabled")
-          key_addBackgrounds_job_fakes = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
-          histogramDir_mcClosure = self.mcClosure_dir['%s_%s' % (hadTau_mcClosure, hadTau_charge_selection)]
-          self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job].update({
-            'add_Clos_%s' % hadTau_type : ("Fakeable_mcClosure_%s" % hadTau_type) in self.hadTau_selections,
-            'inputFile_nominal_%s' % hadTau_type : self.outputFile_hadd_stage2[key_hadd_stage2],
-            'histogramName_nominal_%s' % hadTau_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_nominal, histogramToFit),
-            'inputFile_mcClosure_%s' % hadTau_type : self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes]['outputFile'],
-            'histogramName_mcClosure_%s' % hadTau_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_mcClosure, histogramToFit)
-          })
-        self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job])
+        if "SS" in self.hadTau_charge_selections:
+          key_prep_dcard_job = getKey(histogramToFit, "SS")
+          key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")
+          self.jobOptions_prep_dcard[key_prep_dcard_job] = {
+            'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_SS_%s_cfg.py" % (self.channel, histogramToFit)),
+            'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_SS_%s.root" % (self.channel, histogramToFit)),
+            'histogramDir' : self.histogramDir_prep_dcard_SS,
+            'histogramToFit' : histogramToFit,
+            'label' : 'SS'
+          }
+          self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
+
+        # add shape templates for the following systematic uncertainties:
+        #  - 'CMS_ttHl_Clos_norm_t'
+        #  - 'CMS_ttHl_Clos_shape_t'
+        for hadTau_charge_selection in self.hadTau_charge_selections:
+          key_prep_dcard_job = getKey(histogramToFit, hadTau_charge_selection)
+          key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), hadTau_charge_selection)
+          key_add_syst_fakerate_job = getKey(histogramToFit, hadTau_charge_selection)
+          self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job] = {
+            'inputFile' : self.jobOptions_prep_dcard[key_prep_dcard_job]['datacardFile'],
+            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addSystFakeRates_%s_%s_%s_cfg.py" % (self.channel, hadTau_charge_selection, histogramToFit)),
+            'outputFile' : os.path.join(self.dirs[DKEY_DCRD], "addSystFakeRates_%s_%s_%s.root" % (self.channel, hadTau_charge_selection, histogramToFit)),
+            'category' : self.channel,
+            'histogramToFit' : histogramToFit,
+            'plots_outputFileName' : os.path.join(self.dirs[DKEY_PLOT], "addSystFakeRates.png")
+          }
+          histogramDir_nominal = None
+          if hadTau_charge_selection == "OS":
+            histogramDir_nominal = self.histogramDir_prep_dcard
+          elif hadTau_charge_selection == "SS":
+            histogramDir_nominal = self.histogramDir_prep_dcard_SS
+          else:
+            raise ValueError("Invalid parameter 'hadTau_charge_selection' = %s !!" % hadTau_charge_selection)
+          for hadTau_type in [ 't', ]:
+            hadTau_mcClosure = "Fakeable_mcClosure_%s" % hadTau_type
+            if hadTau_mcClosure not in self.hadTau_selections:
+              continue
+            hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_mcClosure, "enabled")
+            key_addBackgrounds_job_fakes = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
+            histogramDir_mcClosure = self.mcClosure_dir['%s_%s' % (hadTau_mcClosure, hadTau_charge_selection)]
+            self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job].update({
+                'add_Clos_%s' % hadTau_type : ("Fakeable_mcClosure_%s" % hadTau_type) in self.hadTau_selections,
+                'inputFile_nominal_%s' % hadTau_type : self.outputFile_hadd_stage2[key_hadd_stage2],
+                'histogramName_nominal_%s' % hadTau_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_nominal, histogramToFit),
+                'inputFile_mcClosure_%s' % hadTau_type : self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes]['outputFile'],
+                'histogramName_mcClosure_%s' % hadTau_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_mcClosure, histogramToFit)
+            })
+            self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job])
 
     logging.info("Creating configuration files to run 'makePlots'")
     key_makePlots_job = getKey("OS")
