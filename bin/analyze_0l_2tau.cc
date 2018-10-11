@@ -641,7 +641,10 @@ int main(int argc, char* argv[])
       Form("%s/sel/subleadHadTau", histogramDir.data()), central_or_shift));
     selHistManager->subleadHadTau_->bookHistograms(fs);
     vstring categories_tau = {
-      "0l_2tau_bloose", "0l_2tau_btight"
+      "0l_2tau_0bM_0j", "0l_2tau_1bM_0j", "0l_2tau_2bM_0j",
+      "0l_2tau_0bM_1j", "0l_2tau_1bM_1j", "0l_2tau_2bM_1j",
+      "0l_2tau_0bM_2j", "0l_2tau_1bM_2j", "0l_2tau_2bM_2j"
+      //"0l_2tau_bloose", "0l_2tau_btight"
     };
     for ( vstring::const_iterator category = categories_tau.begin();
           category != categories_tau.end(); ++category ) {
@@ -710,7 +713,10 @@ int main(int argc, char* argv[])
       }
     }
     vstring categories_evt = { 
-      "0l_2tau_bloose", "0l_2tau_btight"
+      "0l_2tau_0bM_0j", "0l_2tau_1bM_0j", "0l_2tau_2bM_0j", 
+      "0l_2tau_0bM_1j", "0l_2tau_1bM_1j", "0l_2tau_2bM_1j",
+      "0l_2tau_0bM_2j", "0l_2tau_1bM_2j", "0l_2tau_2bM_2j"
+      //"0l_2tau_bloose", "0l_2tau_btight"
     };
     for ( vstring::const_iterator category = categories_evt.begin();
           category != categories_evt.end(); ++category ) {
@@ -1625,7 +1631,7 @@ int main(int argc, char* argv[])
     selHistManager->weights_->fillHistograms("triggerWeight", triggerWeight);
     selHistManager->weights_->fillHistograms("hadTauEff", weight_hadTauEff);
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
-
+    /*
     std::string category;
     if   ( selBJets_medium.size() >= 1 ) category = "0l_2tau_btight"; 
     else                                 category = "0l_2tau_bloose";  
@@ -1639,6 +1645,36 @@ int main(int argc, char* argv[])
       mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
       mTauTauVis, mTauTau, 
       pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, evtWeight);
+    */
+    std::vector<std::string> categories;
+    if(selJets.size() >= 4){
+      if   ( selBJets_medium.size() >= 2 ) categories.push_back("0l_2tau_2bM_2j");
+      if   ( selBJets_medium.size() >= 1 ) categories.push_back("0l_2tau_1bM_2j");
+      else                                 categories.push_back("0l_2tau_0bM_2j");
+    }
+    if(selJets.size() >= 3){
+      if   ( selBJets_medium.size() >= 2 ) categories.push_back("0l_2tau_2bM_1j");
+      if   ( selBJets_medium.size() >= 1 ) categories.push_back("0l_2tau_1bM_1j");
+      else                                 categories.push_back("0l_2tau_0bM_1j");
+    }
+    if(selJets.size() >= 2){
+      if   ( selBJets_medium.size() >= 2 ) categories.push_back("0l_2tau_2bM_0j");
+      if   ( selBJets_medium.size() >= 1 ) categories.push_back("0l_2tau_1bM_0j");
+      else                                 categories.push_back("0l_2tau_0bM_0j");
+    }
+    for ( std::vector<std::string>::const_iterator category = categories.begin();
+          category != categories.end(); ++category ) {
+      selHistManager->hadTaus_in_categories_[*category]->fillHistograms({ selHadTau_lead, selHadTau_sublead }, evtWeight);
+      selHistManager->leadHadTau_in_categories_[*category]->fillHistograms({ selHadTau_lead }, evtWeight);
+      selHistManager->subleadHadTau_in_categories_[*category]->fillHistograms({ selHadTau_sublead }, evtWeight);
+      selHistManager->evt_in_categories_[*category]->fillHistograms(
+	preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
+	selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+	mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
+	mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
+	mTauTauVis, mTauTau,
+	pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, evtWeight);
+    }
 
     if ( isMC ) {
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
