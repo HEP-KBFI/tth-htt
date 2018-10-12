@@ -16615,6 +16615,43 @@ samples_2017["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-9
   ]),
 ])
 
+samples_2017["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "signal"),
+  ("process_name_specific",           "ttHToNonbb_M125_powheg_v2"),
+  ("nof_files",                       161),
+  ("nof_db_files",                    164),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 7966779),
+  ("nof_db_events",                   7966779),
+  ("fsize_local",                     21742755227), # 21.74GB, avg file size 135.05MB
+  ("fsize_db",                        494872891344), # 494.87GB, avg file size 3.02GB
+  ("use_it",                          False),
+  ("xsection",                        0.2118),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Sep26/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/NanoProduction_v2_2018Sep26_ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/180926_130343"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
 samples_2017["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "additional_signal_overlap"),
@@ -16837,6 +16874,80 @@ samples_2017["/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17MiniAOD-94X_
   ]),
 ])
 
+samples_2017["/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTZ"),
+  ("process_name_specific",           "TTZJets_LO_PU17"),
+  ("nof_files",                       197),
+  ("nof_db_files",                    211),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 9771320),
+  ("nof_db_events",                   9771320),
+  ("fsize_local",                     22778754721), # 22.78GB, avg file size 115.63MB
+  ("fsize_db",                        590969059649), # 590.97GB, avg file size 2.80GB
+  ("use_it",                          False),
+  ("xsection",                        0.8393),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Sep26/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/NanoProduction_v2_2018Sep26_ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8__RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11-v1/180926_123559"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v3/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTZ"),
+  ("process_name_specific",           "TTZJets_LO_PU17_ext"),
+  ("nof_files",                       172),
+  ("nof_db_files",                    199),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 8536618),
+  ("nof_db_events",                   8536618),
+  ("fsize_local",                     20073893915), # 20.07GB, avg file size 116.71MB
+  ("fsize_db",                        522473916483), # 522.47GB, avg file size 2.63GB
+  ("use_it",                          False),
+  ("xsection",                        0.8393),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Sep26/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/NanoProduction_v2_2018Sep26_ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v3/180926_123847"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
 samples_2017["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "TTW"),
@@ -16932,6 +17043,80 @@ samples_2017["/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17MiniAOD-94X_
     [
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Jun12/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/NanoProduction_v2_2018Jun12_ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180612_173510"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTW"),
+  ("process_name_specific",           "TTWJets_LO_PU17"),
+  ("nof_files",                       191),
+  ("nof_db_files",                    280),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 9425384),
+  ("nof_db_events",                   9425384),
+  ("fsize_local",                     22320765753), # 22.32GB, avg file size 116.86MB
+  ("fsize_db",                        577708152029), # 577.71GB, avg file size 2.06GB
+  ("use_it",                          False),
+  ("xsection",                        0.6008),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Sep26/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/NanoProduction_v2_2018Sep26_ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/180926_124109"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTW"),
+  ("process_name_specific",           "TTWJets_LO_PU17_ext"),
+  ("nof_files",                       130),
+  ("nof_db_files",                    132),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 6415920),
+  ("nof_db_events",                   6415920),
+  ("fsize_local",                     15188231030), # 15.19GB, avg file size 116.83MB
+  ("fsize_db",                        393195148836), # 393.20GB, avg file size 2.98GB
+  ("use_it",                          False),
+  ("xsection",                        0.6008),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Sep26/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/NanoProduction_v2_2018Sep26_ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/180926_124344"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18634,6 +18819,43 @@ samples_2017["/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8/Ru
     [
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Jun08/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8/NanoProduction_v2_2018Jun08_DYJetsToLL_M-50_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180608_190846"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "DYBBJetsToLL_M-50"),
+  ("nof_files",                       54),
+  ("nof_db_files",                    69),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 2691131),
+  ("nof_db_events",                   2691131),
+  ("fsize_local",                     4099666875), # 4.10GB, avg file size 75.92MB
+  ("fsize_db",                        131071704871), # 131.07GB, avg file size 1.90GB
+  ("use_it",                          True),
+  ("xsection",                        11.37),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Sep26/DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NanoProduction_v2_2018Sep26_DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11-v1/180928_113009"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21135,25 +21357,28 @@ samples_2017["sum_events"] = [
   [ 'GluGluHToZZTo4L',                                 'GluGluHToZZTo4L_ext1',                             ],
   [ 'DYJetsToLL_M50_HT200to400',                       'DYJetsToLL_M50_HT200to400_ext1',                   ],
   [ 'DY3JetsToLL_M-50',                                'DY3JetsToLL_M-50_ext1',                            ],
-  [ 'DYJetsToLL_M-4to50_HT-400to600',                  'DYJetsToLL_M-4to50_HT-400to600_ext1',              ],
+  [ 'TTGJets',                                         'TTGJets_ext1',                                     ],
   [ 'ZZTo4L',                                          'ZZTo4L_ext1',                                      ],
-  [ 'TTWJetsToLNu',                                    'TTWJetsToLNu_PSweights',                           ],
-  [ 'DYJetsToLL_M-4to50_HT-70to100',                   'DYJetsToLL_M-4to50_HT-70to100_ext1',               ],
   [ 'TTToHadronic',                                    'TTToHadronic_PSweights',                           ],
+  [ 'DYJetsToLL_M-4to50_HT-70to100',                   'DYJetsToLL_M-4to50_HT-70to100_ext1',               ],
+  [ 'TTWJetsToLNu',                                    'TTWJetsToLNu_PSweights',                           ],
   [ 'TTTo2L2Nu',                                       'TTTo2L2Nu_PSweights',                              ],
+  [ 'TTWJets_LO',                                      'TTWJets_LO_PU17',                                 'TTWJets_LO_PU17_ext',                              ],
   [ 'WpWpJJ_EWK_QCD',                                  'WpWpJJ_EWK_QCD_v14-v1',                            ],
   [ 'VHToNonbb_M125',                                  'VHToNonbb_M125_v14-v2',                            ],
   [ 'DYJetsToLL_M50_HT400to600',                       'DYJetsToLL_M50_HT400to600_ext1',                   ],
   [ 'ST_tWll',                                         'ST_tWll_v14-v1',                                   ],
+  [ 'TTZJets_LO',                                      'TTZJets_LO_PU17',                                 'TTZJets_LO_PU17_ext',                              ],
   [ 'DYJetsToLL_M-50_LO',                              'DYJetsToLL_M-50_LO_ext1',                          ],
   [ 'TTZToLL_M10',                                     'TTZToLL_M10_PSweights',                            ],
-  [ 'TTGJets',                                         'TTGJets_ext1',                                     ],
+  [ 'ttHToNonbb_M125_powheg',                          'ttHToNonbb_M125_powheg_v2',                        ],
   [ 'DY1JetsToLL_M-50',                                'DY1JetsToLL_M-50_ext1',                            ],
   [ 'ST_tW_top_5f_inclusiveDecays',                    'ST_tW_top_5f_inclusiveDecays_PSweights',           ],
   [ 'TTToSemiLeptonic',                                'TTToSemiLeptonic_PSweights',                       ],
   [ 'DY2JetsToLL_M-50',                                'DY2JetsToLL_M-50_ext1',                            ],
   [ 'WWToLNuQQ',                                       'WWToLNuQQ_ext1',                                   ],
   [ 'DYJetsToLL_M50_HT100to200',                       'DYJetsToLL_M50_HT100to200_ext1',                   ],
+  [ 'DYJetsToLL_M-4to50_HT-400to600',                  'DYJetsToLL_M-4to50_HT-400to600_ext1',              ],
   [ 'DYJetsToLL_M-50',                                 'DYJetsToLL_M-50_ext1',                             ],
   [ 'DYJetsToLL_M-4to50_HT-100to200',                  'DYJetsToLL_M-4to50_HT-100to200_ext1',              ],
 ]
