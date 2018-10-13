@@ -568,7 +568,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         key_hadd_stage1_5 = getKey(get_hadTau_selection_and_frWeight("Fakeable", "enabled"), hadTau_charge_selection)
         category_sideband = None
         if self.applyFakeRateWeights == "2tau":
-          category_sideband = "0l_2tau_%s_Fakeable_wFakeRateWeights" % hadTau_charge_selection
+          category_sideband = getHistogramDir(category, "Fakeable", "enabled", hadTau_charge_selection)
         else:
           raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % self.applyFakeRateWeights)
         self.jobOptions_addFakes[key_addFakes_job] = {
