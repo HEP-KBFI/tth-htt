@@ -74,49 +74,31 @@ namespace mT2_2particle_namespace
   class mt2Functor_2particle
   {
    public:
-    void set_b1(double b1Px, double b1Py, double b1Mass)
-    {
-      b1Px_   = b1Px;
-      b1Py_   = b1Py;
-      b1Mass_ = b1Mass;
-    }
-    void set_b2(double b2Px, double b2Py, double b2Mass)
-    {
-      b2Px_   = b2Px; 
-      b2Py_   = b2Py;
-      b2Mass_ = b2Mass;
-    }
-    void set_cSum(double cSumPx, double cSumPy, double cMass)
-    {
-      cSumPx_ = cSumPx;
-      cSumPy_ = cSumPy;
-      cMass_  = cMass;
-    }
     double operator()(const double* par)
     {
       double c1Pt   = par[0];
       double c1Phi  = par[1];
 
+      double b1Px   = par[2];
+      double b1Py   = par[3];
+      double b1Mass = par[4];
+      double b2Px   = par[5];
+      double b2Py   = par[6];
+      double b2Mass = par[7];
+      double cSumPx = par[8];
+      double cSumPy = par[9];
+      double cMass  = par[10];
+
       double c1Px  = TMath::Cos(c1Phi)*c1Pt;
       double c1Py  = TMath::Sin(c1Phi)*c1Pt;
-      double mT2_1 = mT2_2particle::comp_mT(b1Px_, b1Py_, b1Mass_, c1Px, c1Py, cMass_);
+      double mT2_1 = mT2_2particle::comp_mT(b1Px, b1Py, b1Mass, c1Px, c1Py, cMass);
 
-      double c2Px  = cSumPx_ - c1Px; 
-      double c2Py  = cSumPy_ - c1Py;
-      double mT2_2 = mT2_2particle::comp_mT(b2Px_, b2Py_, b2Mass_, c2Px, c2Py, cMass_);
+      double c2Px  = cSumPx - c1Px; 
+      double c2Py  = cSumPy - c1Py;
+      double mT2_2 = mT2_2particle::comp_mT(b2Px, b2Py, b2Mass, c2Px, c2Py, cMass);
 
       return TMath::Sqrt(TMath::Max(mT2_1, mT2_2));
     }
-   private:
-    double b1Px_;
-    double b1Py_;
-    double b1Mass_;
-    double b2Px_;
-    double b2Py_;
-    double b2Mass_;
-    double cSumPx_;
-    double cSumPy_;
-    double cMass_;
   };
 }
 
