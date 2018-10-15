@@ -74,6 +74,7 @@ private:
   TH1 * histogram_mTauTau_;  
   TH1 * histogram_Pzeta_;
   TH1 * histogram_PzetaVis_;
+  TH1 * histogram_PzetaMiss_;
   TH1 * histogram_PzetaComb_;
   TH1 * histogram_mT_tau1_;
   TH1 * histogram_mT_tau2_;

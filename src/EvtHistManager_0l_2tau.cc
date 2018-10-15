@@ -36,6 +36,7 @@ EvtHistManager_0l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_mTauTau_    = book1D(dir, "mTauTau",    "mTauTau",     30,    0.,   300.);
   histogram_Pzeta_      = book1D(dir, "Pzeta",      "Pzeta",      100, -500.,  +500.);
   histogram_PzetaVis_   = book1D(dir, "PzetaVis",   "PzetaVis",    50,    0.,   500.);
+  histogram_PzetaMiss_  = book1D(dir, "PzetaMiss",  "PzetaMiss",   50,    0.,   500.);
   histogram_PzetaComb_  = book1D(dir, "PzetaComb",  "PzetaComb",  100, -500.,  +500.);
   histogram_mT_tau1_    = book1D(dir, "mT_tau1",    "mT_tau1",     30,    0.,   150.);
   histogram_mT_tau2_    = book1D(dir, "mT_tau2",    "mT_tau2",     30,    0.,   150.);
@@ -67,12 +68,12 @@ EvtHistManager_0l_2tau::fillHistograms(int numElectrons,
 {
   const double evtWeightErr = 0.;
 
-  fillWithOverFlow(histogram_numElectrons_,    numElectrons,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numMuons_,        numMuons,        evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numHadTaus_,      numHadTaus,      evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numElectrons_,    numElectrons,     evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numMuons_,        numMuons,         evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numHadTaus_,      numHadTaus,       evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numJets_,         numJets,          evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,   evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium,  evtWeight, evtWeightErr);
   
   fillWithOverFlow2d(histogram_numBJets_loose_vs_numJets_,  numJets, numBJets_loose,  evtWeight, evtWeightErr);
   fillWithOverFlow2d(histogram_numBJets_medium_vs_numJets_, numJets, numBJets_medium, evtWeight, evtWeightErr);
@@ -84,13 +85,14 @@ EvtHistManager_0l_2tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mvaOutput_0l_2tau_HTT_sum_dy_, mvaOutput_0l_2tau_HTT_sum_dy, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaDiscr_0l_2tau_HTT_, mvaDiscr_0l_2tau_HTT, evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mTauTau_,    mTauTau,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_Pzeta_,      Pzeta,      evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_PzetaVis_,   PzetaVis,   evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_PzetaComb_,  PzetaComb,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mT_tau1_,    mT_tau1,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mT_tau2_,    mT_tau1,    evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mTauTauVis_,      mTauTauVis,       evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mTauTau_,         mTauTau,          evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_Pzeta_,           Pzeta,            evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_PzetaVis_,        PzetaVis,         evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_PzetaMiss_,       Pzeta - PzetaVis, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_PzetaComb_,       PzetaComb,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mT_tau1_,         mT_tau1,          evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mT_tau2_,         mT_tau1,          evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }
