@@ -41,5 +41,10 @@ process.makePlots.distributions.extend([
         histogramName = cms.string('sel/evt/$PROCESS/mTauTau'),
         xAxisTitle = cms.string('m_{#tau#tau} [GeV]'),
         yAxisTitle = cms.string('dN/dm_{#tau#tau} [1/GeV]')
+    ),
+    cms.PSet(
+        histogramName = cms.string('sel/met/$PROCESS/met_pt'),
+        xAxisTitle = cms.string('E_{T}^{miss} [GeV]'),
+        yAxisTitle = cms.string('dN/dE_{T}^{miss} [1/GeV]')
     )
 ])
