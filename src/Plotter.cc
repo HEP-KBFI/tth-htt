@@ -97,21 +97,28 @@ namespace
   std::vector<pdouble> getBlindedRanges(TH1* histogramData, std::vector<histogramEntryType*>& histogramsBackground, TH1* histogramSignal)
   {
     std::vector<pdouble> range;
-    TH1* histogramBackgroundSum = 0;
+    TH1* histogramBackgroundSum = nullptr;
     for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground.begin();
           histogramBackground_entry != histogramsBackground.end(); ++histogramBackground_entry ) {
       TH1* histogramBackground = (*histogramBackground_entry)->histogram_;
-      checkCompatibleBinning(histogramSignal, histogramBackground);
+      if      ( histogramData          ) checkCompatibleBinning(histogramData, histogramBackground);
+      else if ( histogramSignal        ) checkCompatibleBinning(histogramSignal, histogramBackground);
+      else if ( histogramBackgroundSum ) checkCompatibleBinning(histogramBackgroundSum, histogramBackground);
       if(!histogramBackgroundSum) histogramBackgroundSum = (TH1*) histogramBackground->Clone("histogramBackgroundSum");
       histogramBackgroundSum->Add(histogramBackground);
     }
     int numBins = histogramData->GetNbinsX();
     for ( int iBin = 1; iBin <= numBins; ++iBin ) {
-      double x = histogramData->GetBinCenter(iBin);
-      double w = histogramData->GetBinWidth(iBin);
-      double s = histogramSignal->GetBinContent(iBin);
+      TH1* histogramRef = nullptr;
+      if      ( histogramData   ) histogramRef = histogramData;
+      else if ( histogramSignal ) histogramRef = histogramSignal;
+      else                        histogramRef = histogramBackgroundSum;
+      assert(histogramRef);
+      double x = histogramRef->GetBinCenter(iBin);
+      double w = histogramRef->GetBinWidth(iBin);
+      double s = ( histogramSignal ) ? histogramSignal->GetBinContent(iBin) : 0.;
       double b = histogramBackgroundSum->GetBinContent(iBin);
-      if((s/sqrt(b+pow(0.09*b, 2))) >= 0.5){
+      if ( (s/sqrt(b + pow(0.09*b, 2))) >= 0.5 ){
 	double xmin = x - 0.5*w;
 	double xmax = x + 0.5*w;
 	range.push_back(pdouble(xmin, xmax));
@@ -181,7 +188,10 @@ void Plotter::makePlots()
 	else                             histogramBackgroundSum->Add(histogramBackground);
       }
 
-      TH1* histogramSignal = histogramManager_->getHistogramPrefit(processSignal_, true);
+      TH1* histogramSignal = nullptr;
+      if ( processSignal_ != "" ) {
+	histogramSignal = histogramManager_->getHistogramPrefit(processSignal_, true);
+      }
 
       std::vector<pdouble> keepBlinded = getBlindedRanges(histogramData, histogramsBackground, histogramSignal);
       TH1* histogramData_blinded = 0;
@@ -201,8 +211,11 @@ void Plotter::makePlots()
       std::string histogramNameData_rebinned = Form("%s_rebinned", histogramData->GetName());
       TH1* histogramData_rebinned = (TH1*)histogramData->Clone(histogramNameData_rebinned.data());
       std::vector<histogramEntryType*> histogramsBackground_rebinned = getHistogramsBackground_clone(histogramsBackground);
-      std::string histogramNameSignal_rebinned = Form("%s_rebinned_fixed", histogramSignal->GetName()); 
-      TH1* histogramSignal_rebinned = (TH1*)histogramSignal->Clone(histogramNameSignal_rebinned.data());
+      TH1* histogramSignal_rebinned = nullptr;
+      if ( processSignal_ != "" ) {
+	std::string histogramNameSignal_rebinned = Form("%s_rebinned_fixed", histogramSignal->GetName()); 
+	histogramSignal_rebinned = (TH1*)histogramSignal->Clone(histogramNameSignal_rebinned.data());
+      }
       std::string histogramNameBackgroundSum_rebinned = Form("%s_rebinned",histogramBackgroundSum->GetName());
       TH1* histogramBackgroundSum_rebinned = (TH1*)histogramBackgroundSum->Clone(histogramNameBackgroundSum_rebinned.data());
       TH1* histogramData_blinded_rebinned = 0;
@@ -230,14 +243,16 @@ void Plotter::makePlots()
 	    else apply_fixed_rebinning = 1;
 	  }
 	  histogramData_rebinned->Rebin(apply_fixed_rebinning);
-	  histogramSignal_rebinned->Rebin(apply_fixed_rebinning);
+	  if ( histogramSignal_rebinned ) {
+	    histogramSignal_rebinned->Rebin(apply_fixed_rebinning);
+	  }
 	  getHistogramsBackground_rebin(histogramsBackground_rebinned, apply_fixed_rebinning);
 	  histogramBackgroundSum_rebinned->Rebin(apply_fixed_rebinning); 
 	}
 
-	TH1* histogramData_tmp = 0;
+	TH1* histogramData_tmp = nullptr;
 	std::vector<histogramEntryType*> histogramsBackground_tmp;
-	TH1* histogramSignal_tmp = 0;
+	TH1* histogramSignal_tmp = nullptr;
 	if ( apply_automatic_rebinning_ ) {
 	  TArrayD histogramBinning;
 	  if ( (*distribution)->hasExplicitBinning() ){
@@ -246,7 +261,9 @@ void Plotter::makePlots()
 	    histogramBinning = getRebinnedBinning(histogramBackgroundSum_rebinned, minEvents_automatic_rebinning_);
 	  }
 	  histogramData_tmp = getRebinnedHistogram1d(histogramData_rebinned, 4, histogramBinning, true);
-	  histogramSignal_tmp = getRebinnedHistogram1d(histogramSignal_rebinned, 4, histogramBinning, true);
+	  if ( histogramSignal_rebinned ) {
+	    histogramSignal_tmp = getRebinnedHistogram1d(histogramSignal_rebinned, 4, histogramBinning, true);
+	  }
 	  for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground_rebinned.begin(); 
 		histogramBackground_entry != histogramsBackground_rebinned.end(); ++histogramBackground_entry ) {
 	    TH1* histogramBackground = (*histogramBackground_entry)->histogram_;
@@ -259,9 +276,9 @@ void Plotter::makePlots()
 	  histogramSignal_rebinned = histogramSignal_tmp;
 	}
 
-  std::vector<pdouble> keepBlinded_rebinned = getBlindedRanges(histogramData_rebinned, histogramsBackground_rebinned, histogramSignal_rebinned);
+	std::vector<pdouble> keepBlinded_rebinned = getBlindedRanges(histogramData_rebinned, histogramsBackground_rebinned, histogramSignal_rebinned);
 	if ( processData_ != "" ) {
-    if ( keepBlinded_rebinned.size() >= 1 && applyAutoBlinding_ ) histogramData_blinded_rebinned = blindHistogram(histogramData_rebinned, keepBlinded_rebinned);
+	  if ( keepBlinded_rebinned.size() >= 1 && applyAutoBlinding_ ) histogramData_blinded_rebinned = blindHistogram(histogramData_rebinned, keepBlinded_rebinned);
 	  else histogramData_blinded_rebinned = (TH1*)histogramData_rebinned->Clone("rebinned_data");
 	}
 
