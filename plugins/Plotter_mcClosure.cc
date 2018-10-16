@@ -401,7 +401,7 @@ void Plotter_mcClosure::makePlots()
 
       size_t idx = outputFileName_.find(".");
       std::string outputFileName_plot(outputFileName_, 0, idx);
-      outputFileName_plot.append(Form("_%s", (*distribution)->outputFileName_.data()));
+      outputFileName_plot.append(Form("_%s_%s", (*category)->signal_.data(), (*distribution)->outputFileName_.data()));
       if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName_, idx));
 	  
       makePlot_mcClosure(
