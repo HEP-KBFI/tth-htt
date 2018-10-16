@@ -28,14 +28,16 @@ Plotter_mcClosure::Plotter_mcClosure(const TFile* inputFile, const edm::Paramete
 
   edm::VParameterSet cfgDistributions = cfg.getParameter<edm::VParameterSet>("distributions");
   std::vector<plotEntryType*> distributions = readDistributions(cfgDistributions);
-  for ( std::vector<plotEntryType*>::iterator distribution = distributions.begin();
-	distribution != distributions.end(); ++distribution ) {
-    (*distribution)->legendSizeY_ = 0.17;
-  }
 
   edm::ParameterSet cfgNuisanceParameters = cfg.getParameter<edm::ParameterSet>("nuisanceParameters");
   histogramManager_ = new HistogramManager({}, process_sideband_, categoryNames_sideband_, cfgNuisanceParameters);
   showUncertainty_ = cfg.getParameter<bool>("showUncertainty");
+
+  legendTextSize_ = cfg.getParameter<double>("legendTextSize");
+  legendPosX_ = cfg.getParameter<double>("legendPosX");
+  legendPosY_ = cfg.getParameter<double>("legendPosY");
+  legendSizeX_ = cfg.getParameter<double>("legendSizeX");
+  legendSizeY_ = cfg.getParameter<double>("legendSizeY");
 
   std::string labelOnTop_string = cfg.getParameter<std::string>("labelOnTop");
   double intLumiData = cfg.getParameter<double>("intLumiData");
@@ -159,19 +161,28 @@ namespace
     legend->SetTextSize(legendTextSize);
 
     if ( !(yMin >= 0. && yMax > yMin) ) {
-      if ( useLogScale ) {
-	const double numOrdersOfMagnitude = 4.5;
-	yMax = compYmaxForClearance(histogramSignal_density, legendPosX, legendPosY, labelPosY, true, numOrdersOfMagnitude);
-	yMax = TMath::Max(yMax, compYmaxForClearance(histogramSideband_density, legendPosX, legendPosY, labelPosY, true, numOrdersOfMagnitude));
-	yMin = TMath::Power(10., -numOrdersOfMagnitude)*TMath::Max(1., yMax);
-      } else {
-	yMax = compYmaxForClearance(histogramSignal_density, legendPosX, legendPosY, labelPosY, false, -1.);
-	yMax = TMath::Max(yMax, compYmaxForClearance(histogramSideband_density, legendPosX, legendPosY, labelPosY, false, -1.));
-	yMin = 0.;
+      for ( int i = 0; i < 2; ++i ) {
+	TH1* histogram_i = nullptr;
+	if      ( i == 0 ) histogram_i = histogramSignal_density;
+	else if ( i == 1 ) histogram_i = histogramSideband_density;
+	else assert(0);
+	double numOrdersOfMagnitude;
+	if ( useLogScale ) numOrdersOfMagnitude = 4.5;
+	else numOrdersOfMagnitude = -1.;
+	if ( histogram_i ) {
+	  std::pair<double, double> yMin_and_yMax = compYmin_and_YmaxForClearance(histogram_i, legendPosX, legendPosY, labelPosY, useLogScale, numOrdersOfMagnitude);
+	  if ( yMin_and_yMax.second > yMax || i == 0 ) {
+	    yMin = yMin_and_yMax.first;
+	    yMax = yMin_and_yMax.second;
+	  }
+	} else if ( i == 0 ) {
+	  if ( useLogScale ) yMin = TMath::Power(10., -numOrdersOfMagnitude);
+	  else yMin = 0.;
+	  yMax = 1.;
+	}
       }
     }
-    std::cout << "yMin = " << yMin << ", yMax = " << yMax << std::endl;
-
+    
     histogramSignal_density->SetTitle("");
     histogramSignal_density->SetStats(false);
     histogramSignal_density->SetMaximum(yMax);
@@ -398,7 +409,7 @@ void Plotter_mcClosure::makePlots()
 	histogramSignal,
 	histogramSideband,
 	histogramUncertainty,
-	(*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
+	legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_, 
 	labelOnTop_,
 	extraLabels, 0.055, 0.185, 0.815 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
 	(*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
@@ -409,7 +420,7 @@ void Plotter_mcClosure::makePlots()
 	histogramSignal,
 	histogramSideband,
 	histogramUncertainty,
-	(*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
+	legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_, 
 	labelOnTop_,
 	extraLabels, 0.055, 0.185, 0.815 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
 	(*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
@@ -428,7 +439,7 @@ void Plotter_mcClosure::makePlots()
 	histogramSignal_normalized,
 	histogramSideband_normalized,
 	histogramUncertainty_normalized,
-	(*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
+	legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_, 
 	labelOnTop_,
 	extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
 	(*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
@@ -439,7 +450,7 @@ void Plotter_mcClosure::makePlots()
 	histogramSignal_normalized,
 	histogramSideband_normalized,
 	histogramUncertainty_normalized,
-	(*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
+	legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_, 
 	labelOnTop_,
 	extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
 	(*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 

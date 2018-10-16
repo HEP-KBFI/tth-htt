@@ -37,11 +37,6 @@ plotEntryType::plotEntryType(const edm::ParameterSet & cfg)
   , yAxisTitle_(cfg.getParameter<std::string>("yAxisTitle"))
   , yAxisOffset_( cfg.exists("yAxisOffset") ? cfg.getParameter<double>("yAxisOffset") : 1.15)
   , explicitBinning_( cfg.exists("explicitBinning") ? cfg.getParameter<std::vector<double>>("explicitBinning") : std::vector<double>() )
-  , legendTextSize_(0.050)
-  , legendPosX_(0.700)
-  , legendPosY_(0.510)
-  , legendSizeX_(0.230)
-  , legendSizeY_(0.420)
 {
   if(cfg.exists("keepBlinded"))
   {
@@ -452,20 +447,24 @@ divideHistogramByBinWidth(TH1 * histogram)
   return histogramDensity;
 }
 
-double
-compYmaxForClearance(TH1 * histogram,
-                     double legendPosX,
-                     double legendPosY,
-                     double labelPosY,
-                     bool useLogScale,
-                     double numOrdersOfMagnitude)
+std::pair<double, double>
+compYmin_and_YmaxForClearance(TH1 * histogram,
+			      double legendPosX,
+			      double legendPosY,
+			      double labelPosY,
+			      bool useLogScale,
+			      double numOrdersOfMagnitude)
 {
+  //std::cout << "<compYmaxForClearance>:" << std::endl;
+  //std::cout << " legendPos: x = " << legendPosX << ", y = " << legendPosY << std::endl;
+  //std::cout << " labelPos: x = " << labelPosY << std::endl;
   const TAxis * const xAxis = histogram->GetXaxis();
   const double xMin = xAxis->GetXmin();
   const double xMax = xAxis->GetXmax();
   const double dX = 0.05;
   const double dY = 0.05;
   const double x12 = xMin + (xMax - xMin) * legendPosX;
+  //std::cout << "x12 = " << x12 << std::endl;
   double maxBinContent1 = 0.;
   double maxBinContent2 = 0.;
 
@@ -488,33 +487,39 @@ compYmaxForClearance(TH1 * histogram,
       }
     }
   }
+  //std::cout << "maxBinContent1 = " << maxBinContent1 << ", maxBinContent2 = " << maxBinContent2 << std::endl;
 
+  double yMinForClearance = 0.;
   double yMaxForClearance = 0.;
   if(useLogScale)
   {
     const double maxBinContent = TMath::Max(maxBinContent1, maxBinContent2);
+    double logYmin = TMath::Log10(maxBinContent) - numOrdersOfMagnitude;
+    //std::cout << "logYmin = " << logYmin << std::endl;
 
     double logYmaxForClearance1 = 0.;
     if(maxBinContent1 > 0. && maxBinContent > 0.)
     {
-      logYmaxForClearance1 = (TMath::Log(maxBinContent1) - (TMath::Log(maxBinContent) - numOrdersOfMagnitude * TMath::Log(10.))) / (labelPosY - dY);
-      logYmaxForClearance1 += (TMath::Log(maxBinContent) - numOrdersOfMagnitude * TMath::Log(10.));
+      logYmaxForClearance1 = (TMath::Log10(maxBinContent1) - logYmin)/(labelPosY - dY);
     }
 
     double logYmaxForClearance2 = 0.;
     if(maxBinContent2 > 0. && maxBinContent > 0.)
     {
-      logYmaxForClearance2 = (TMath::Log(maxBinContent2) - (TMath::Log(maxBinContent) - numOrdersOfMagnitude * TMath::Log(10.))) / (legendPosY - dY);
-      logYmaxForClearance2 += (TMath::Log(maxBinContent) - numOrdersOfMagnitude*TMath::Log(10.));
+      logYmaxForClearance2 = (TMath::Log10(maxBinContent2) - logYmin)/(legendPosY - dY);      
     }
+    //std::cout << "logYmaxForClearance1 = " << logYmaxForClearance1 << ", logYmaxForClearance2 = " << logYmaxForClearance2 << std::endl;
     const double logYmaxForClearance = TMath::Max(logYmaxForClearance1, logYmaxForClearance2);
-    yMaxForClearance = TMath::Exp(logYmaxForClearance);
+    yMinForClearance = TMath::Power(10., logYmin);
+    yMaxForClearance = TMath::Power(10., logYmaxForClearance) + TMath::Power(10., logYmin);
   }
   else
   {
+    yMinForClearance = 0.;
     yMaxForClearance = TMath::Max(maxBinContent1 / (labelPosY - dY), maxBinContent2 / (legendPosY - dY));
   }
-  return yMaxForClearance;
+  //std::cout << "yMaxForClearance = " << yMaxForClearance << std::endl;
+  return std::pair<double, double>(yMinForClearance, yMaxForClearance);
 }
 
 std::vector<plotEntryType *>

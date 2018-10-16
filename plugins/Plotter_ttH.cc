@@ -231,17 +231,25 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
   legend->SetTextSize(legendTextSize);
 
   if ( !(yMin >= 0. && yMax > yMin) ) {
-    if ( useLogScale ) {
-      const double numOrdersOfMagnitude = 4.5;
-      if ( histogramData_density ) yMax = compYmaxForClearance(histogramData_density, legendPosX, legendPosY, labelPosY, true, numOrdersOfMagnitude);
-      else yMax = 1.;
-      yMax = TMath::Max(yMax, compYmaxForClearance(histogramSum_density, legendPosX, legendPosY, labelPosY, true, numOrdersOfMagnitude));
-      yMin = TMath::Power(10., -numOrdersOfMagnitude)*TMath::Max(1., yMax);
-    } else {
-      if ( histogramData_density ) yMax = compYmaxForClearance(histogramData_density, legendPosX, legendPosY, labelPosY, false, -1.);
-      else yMax = 1.;
-      yMax = TMath::Max(yMax, compYmaxForClearance(histogramSum_density, legendPosX, legendPosY, labelPosY, false, -1.));
-      yMin = 0.;
+    for ( int i = 0; i < 2; ++i ) {
+      TH1* histogram_i = nullptr;
+      if      ( i == 0 ) histogram_i = histogramData_density;
+      else if ( i == 1 ) histogram_i = histogramSum_density;
+      else assert(0);
+      double numOrdersOfMagnitude;
+      if ( useLogScale ) numOrdersOfMagnitude = 4.5;
+      else numOrdersOfMagnitude = -1.;
+      if ( histogram_i ) {
+	std::pair<double, double> yMin_and_yMax = compYmin_and_YmaxForClearance(histogram_i, legendPosX, legendPosY, labelPosY, useLogScale, numOrdersOfMagnitude);
+	if ( yMin_and_yMax.second > yMax || i == 0 ) {
+	  yMin = yMin_and_yMax.first;
+	  yMax = yMin_and_yMax.second;
+	}
+      } else if ( i == 0 ) {
+	if ( useLogScale ) yMin = TMath::Power(10., -numOrdersOfMagnitude);
+	else yMin = 0.;
+	yMax = 1.;
+      }
     }
   }
   
