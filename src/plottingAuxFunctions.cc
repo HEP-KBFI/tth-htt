@@ -136,7 +136,7 @@ HistogramManager::HistogramManager(const vstring & processesBackground,
     histogram_uncertainty_(nullptr)
 {
   processes_ = processesBackground;
-  processes_.push_back(processSignal);
+  if ( processSignal != "" ) processes_.push_back(processSignal);
 
   const edm::ParameterSet cfgNormalization = cfg.getParameter<edm::ParameterSet>("normalization");
   for(const std::string & process: processes_)
