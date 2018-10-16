@@ -44,6 +44,12 @@ Plotter::Plotter(const TFile* inputFile, const edm::ParameterSet& cfg)
   histogramManager_ = new HistogramManager(processesBackground_, processSignal_, categoryNames_, cfgNuisanceParameters);
   showUncertainty_ = cfg.getParameter<bool>("showUncertainty");
 
+  legendTextSize_ = cfg.getParameter<double>("legendTextSize");
+  legendPosX_ = cfg.getParameter<double>("legendPosX");
+  legendPosY_ = cfg.getParameter<double>("legendPosY");
+  legendSizeX_ = cfg.getParameter<double>("legendSizeX");
+  legendSizeY_ = cfg.getParameter<double>("legendSizeY");
+
   std::string labelOnTop_string = cfg.getParameter<std::string>("labelOnTop");
   double intLumiData = cfg.getParameter<double>("intLumiData");
   labelOnTop_ = Form(labelOnTop_string.data(), intLumiData);
@@ -302,7 +308,7 @@ void Plotter::makePlots()
 	histogramsBackground, 
 	histogramSignal, 
 	histogramUncertainty, 
-	(*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
+	legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_,
 	labelOnTop_,  
 	extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), 
 	(*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
@@ -316,7 +322,7 @@ void Plotter::makePlots()
 	histogramsBackground, 
 	histogramSignal, 
 	histogramUncertainty, 
-	(*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
+	legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_,
 	labelOnTop_,  
 	extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), 
 	(*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
@@ -332,7 +338,7 @@ void Plotter::makePlots()
 	  histogramsBackground_rebinned, 
 	  histogramSignal_rebinned, 
 	  histogramUncertainty_rebinned, 
-	  (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
+	  legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_,
 	  labelOnTop_,	
 	  extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), 
 	  (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
@@ -346,7 +352,7 @@ void Plotter::makePlots()
 	  histogramsBackground_rebinned, 
 	  histogramSignal_rebinned, 
 	  histogramUncertainty_rebinned, 
-	  (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
+	  legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_,
 	  labelOnTop_, 
 	  extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), 
 	  (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 

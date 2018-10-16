@@ -2,6 +2,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
+#include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // format_vdouble
+
 #include <TH2.h> // TH2
 
 #include <iostream> // std::cout
@@ -829,23 +831,13 @@ getRebinnedBinning(TH1 * histogram,
     }
   }
   assert(histogramBinning.size() >= 2);
+  std::cout << "binning = " << format_vdouble(histogramBinning) << "\n";
 
   TArrayD binning_tarray(histogramBinning.size());
   for(std::size_t idxBin = 0; idxBin < histogramBinning.size(); ++idxBin)
   {
     binning_tarray[idxBin] = histogramBinning[idxBin];
   }
-
-  std::cout << "binning = { ";
-  for(std::size_t binIdx = 0; binIdx < histogramBinning.size(); ++binIdx)
-  {
-    if(binIdx < (histogramBinning.size() - 1))
-    {
-      std::cout << ", ";
-    }
-    std::cout << histogramBinning[binIdx];
-  }
-  std::cout << " }\n";
   return binning_tarray;
 }
 

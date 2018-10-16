@@ -52,6 +52,12 @@ class Plotter_mcClosure : public PlotterPluginBase
   HistogramManager* histogramManager_;
   bool showUncertainty_;
 
+  double legendTextSize_;
+  double legendPosX_;
+  double legendPosY_;
+  double legendSizeX_;
+  double legendSizeY_;
+
   std::string labelOnTop_;
   
   std::string outputFileName_;

@@ -32,11 +32,6 @@ struct plotEntryType
   double yAxisOffset_;
   std::vector<std::pair<double, double>> keepBlinded_;
   std::vector<double> explicitBinning_;
-  double legendTextSize_;
-  double legendPosX_;
-  double legendPosY_;
-  double legendSizeX_;
-  double legendSizeY_; 
 
   bool
   hasExplicitBinning() const;
@@ -126,13 +121,13 @@ struct HistogramManager
 TH1 *
 divideHistogramByBinWidth(TH1* histogram);
 
-double
-compYmaxForClearance(TH1 * histogram,
-                     double legendPosX,
-                     double legendPosY,
-                     double labelPosY,
-                     bool useLogScale,
-                     double numOrdersOfMagnitude);
+std::pair<double, double>
+compYmin_and_YmaxForClearance(TH1 * histogram,
+			      double legendPosX,
+			      double legendPosY,
+			      double labelPosY,
+			      bool useLogScale,
+			      double numOrdersOfMagnitude);
 
 std::vector<plotEntryType *>
 readDistributions(const edm::VParameterSet & cfgDistributions);
