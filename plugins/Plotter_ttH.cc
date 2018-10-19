@@ -259,7 +259,8 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
     histogramData_blinded_density->SetMaximum(yMax);
     histogramData_blinded_density->SetMinimum(yMin);
     histogramData_blinded_density->SetMarkerStyle(20);
-    histogramData_blinded_density->SetMarkerSize(2);
+    int markerSize = ( histogramData_blinded_density->GetNbinsX() < 40 ) ? 2 : 1;
+    histogramData_blinded_density->SetMarkerSize(markerSize);
     histogramData_blinded_density->SetMarkerColor(kBlack);
     histogramData_blinded_density->SetLineColor(kBlack);
     legend->AddEntry(histogramData_blinded_density, "observed", "p");
