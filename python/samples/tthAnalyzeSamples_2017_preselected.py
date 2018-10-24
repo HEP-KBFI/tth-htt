@@ -15866,7 +15866,7 @@ samples_2017["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall1
   ("fsize_local",                     15131017), # 15.13MB, avg file size 15.13MB
   ("fsize_db",                        42622664498), # 42.62GB, avg file size 906.87MB
   ("use_it",                          True),
-  ("xsection",                        0.01212),
+  ("xsection",                        0.01297),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -15912,7 +15912,7 @@ samples_2017["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall1
   ("fsize_local",                     15844751), # 15.84MB, avg file size 15.84MB
   ("fsize_db",                        44846003614), # 44.85GB, avg file size 1.07GB
   ("use_it",                          True),
-  ("xsection",                        0.01212),
+  ("xsection",                        0.01297),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
