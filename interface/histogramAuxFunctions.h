@@ -140,4 +140,21 @@ TH1* compRatioHistogram(const std::string& ratioHistogramName, const TH1* numera
 
 void divideByBinWidth(TH1* histogram);
 
+struct histogramEntryType_private
+{
+  histogramEntryType_private(TH1* histogram, 
+		   bool isData)
+  : histogram_(histogram)
+  , isData_(isData)
+  {}
+
+  ~histogramEntryType_private()
+  {
+    //  delete histogram_;
+  }
+
+  TH1* histogram_;
+  bool isData_;
+};
+
 #endif // tthAnalysis_HiggsToTauTau_histogramAuxFunctions_h

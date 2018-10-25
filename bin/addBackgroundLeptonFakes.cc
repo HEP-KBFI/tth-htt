@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
 	      std::cout << " integral(Fakes) = " << histogramLeptonFakes->Integral() << std::endl;
 	    }
 
-            if(!disable_makeBinContentsPositive_forTailFit){ makeBinContentsPositive(histogramLeptonFakes, verbosity); }	  
+            if(!disable_makeBinContentsPositive_forTailFit){ makeBinContentsPositive(histogramLeptonFakes, false, verbosity); } // Treating histogramLeptonFakes as MC background	  
 
           }
 	}
