@@ -78,7 +78,7 @@ compIntegralErr(const TH1 * histogram,
                 bool includeOverflowBin);
 
 void
-makeBinContentsPositive(TH1 * histogram,
+makeBinContentsPositive(TH1 * histogram, bool isData,
                         int verbosity = 0);
 
 void
