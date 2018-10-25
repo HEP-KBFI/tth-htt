@@ -129,7 +129,7 @@ meta_dictionary["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISumme
   ("nof_db_events",         999800),
   ("nof_db_files",          23),
   ("fsize_db",              36259596782),
-  ("xsection",              0.01212),
+  ("xsection",              0.01297),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 36.26GB; nevents: 999.80k; release: 8_0_21; last modified: 2016-12-13 01:00:36"),
