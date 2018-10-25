@@ -190,7 +190,7 @@ int main(int argc, char* argv[])
 	    if ( verbosity ) {
 	      std::cout << " integral(Flips) = " << histogramLeptonFlips->Integral() << std::endl;
 	    }
-	    makeBinContentsPositive(histogramLeptonFlips, verbosity);	  
+	    makeBinContentsPositive(histogramLeptonFlips, false, verbosity); // Treating histogramLeptonFlips as MC background	  
           }
 	}
       }
