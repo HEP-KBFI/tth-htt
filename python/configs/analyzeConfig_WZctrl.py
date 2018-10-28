@@ -3,7 +3,7 @@ import re
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList, is_dymc_reweighting
 
 def get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight):
   lepton_selection_and_frWeight = lepton_selection
@@ -254,6 +254,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
               if central_or_shift in systematics.LHE().ttW and sample_category != "TTW":
                 continue
               if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
+                continue
+              if central_or_shift in systematics.DYMCReweighting and not is_dymc_reweighting(sample_name):
                 continue
 
               # build config files for executing analysis code

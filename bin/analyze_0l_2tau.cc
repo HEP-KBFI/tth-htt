@@ -1,4 +1,4 @@
-#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
+﻿#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 #include "PhysicsTools/FWLite/interface/TFileService.h" // fwlite::TFileService
@@ -242,11 +242,13 @@ int main(int argc, char* argv[])
        " -> lheScale_option            = " << lheScale_option            << "\n"
        " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
        " -> met_option                 = " << met_option                 << "\n"
-       " -> jetPt_option               = " << jetPt_option               << '\n'
+       " -> jetPt_option               = " << jetPt_option               << "\n"
+       " -> dyMCReweighting_option     = " << dyMCReweighting_option     << '\n'
   ;
 
-  DYMCReweighting* dyReweighting = nullptr;
-  if ( apply_DYMCReweighting ) {
+  DYMCReweighting * dyReweighting = nullptr;
+  if(apply_DYMCReweighting)
+  {
     dyReweighting = new DYMCReweighting(era, dyMCReweighting_option);
   }
 
@@ -883,22 +885,25 @@ int main(int argc, char* argv[])
     }
 
     std::vector<GenParticle> genTauLeptons;
-    if ( isMC && apply_DYMCReweighting ) {
+    if(isMC && apply_DYMCReweighting)
+    {
       genTauLeptons = genTauLeptonReader->read();
     }
 
     double evtWeight_inclusive = 1.;
     if(isMC)
     {
-      if ( apply_genWeight       ) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if ( apply_DYMCReweighting ) evtWeight_inclusive *= dyReweighting->getWeight(genTauLeptons);
-      if ( isMC_tH               ) evtWeight_inclusive *= eventInfo.genWeight_tH;
-      if ( eventWeightManager    ) evtWeight_inclusive *= eventWeightManager->getWeight();
+      if(apply_genWeight      ) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if(apply_DYMCReweighting) evtWeight_inclusive *= dyReweighting->getWeight(genTauLeptons);
+      if(isMC_tH              ) evtWeight_inclusive *= eventInfo.genWeight_tH;
+      if(eventWeightManager   ) evtWeight_inclusive *= eventWeightManager->getWeight();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
       evtWeight_inclusive *= lumiScale;
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      genEvtHistManager_beforeCuts->fillHistograms(
+            genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive
+      );
       if(eventWeightManager)
       {
         genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
