@@ -1,4 +1,4 @@
-#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
+﻿#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
@@ -182,8 +182,8 @@ int
 getDYMCReweighting_option(const std::string & central_or_shift)
 {
   int central_or_shift_int = kDYMCReweighting_central;
-  if     (central_or_shift == "CMS_ttHl_DYMCReweightingUp"   ) central_or_shift_int = kDYMCReweighting_shiftUp;
-  else if(central_or_shift == "CMS_ttHl_DYMCReweightingDown" ) central_or_shift_int = kDYMCReweighting_shiftDown;
+  if     (central_or_shift == "CMS_ttHl_DYMCReweightingUp"  ) central_or_shift_int = kDYMCReweighting_shiftUp;
+  else if(central_or_shift == "CMS_ttHl_DYMCReweightingDown") central_or_shift_int = kDYMCReweighting_shiftDown;
   return central_or_shift_int;
 }
 
