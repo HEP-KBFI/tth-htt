@@ -109,45 +109,6 @@ meta_dictionary["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFa
   ("comment",               "status: VALID; size: 44.85GB; nevents: 976.21k; release: 9_4_0_patch1; last modified: 2018-02-15 08:45:34"),
 ])
 
-meta_dictionary["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "NanoProduction_v2_2018Oct24_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1"),
-  ("sample_category",       "HTT"),
-  ("process_name_specific", "GluGluHToTauTau"),
-  ("nof_db_events",         2892030),
-  ("nof_db_files",          38),
-  ("fsize_db",              117011687965),
-  ("xsection",              3.0469),
-  ("use_it",                True),
-  ("genWeight",             True),
-  ("comment",               "status: VALID; size: 117.01GB; nevents: 2.89M; release: 9_4_6_patch1; last modified: 2018-04-19 22:34:43"),
-])
-
-meta_dictionary["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "NanoProduction_v2_2018Oct24_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1"),
-  ("sample_category",       "HTT"),
-  ("process_name_specific", "GluGluHToTauTau_ext1"),
-  ("nof_db_events",         9259000),
-  ("nof_db_files",          169),
-  ("fsize_db",              387946138466),
-  ("xsection",              3.0469),
-  ("use_it",                True),
-  ("genWeight",             True),
-  ("comment",               "status: VALID; size: 387.95GB; nevents: 9.26M; release: 9_4_7; last modified: 2018-10-19 11:01:45"),
-])
-
-meta_dictionary["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "NanoProduction_v2_2018Oct24_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1"),
-  ("sample_category",       "HTT"),
-  ("process_name_specific", "VBFHToTauTau"),
-  ("nof_db_events",         2975404),
-  ("nof_db_files",          43),
-  ("fsize_db",              131499935937),
-  ("xsection",              0.2372),
-  ("use_it",                True),
-  ("genWeight",             True),
-  ("comment",               "status: VALID; size: 131.50GB; nevents: 2.98M; release: 9_4_6_patch1; last modified: 2018-04-20 10:31:11"),
-])
-
 meta_dictionary["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] =  OD([
   ("crab_string",           "NanoProduction_v2_2018Apr26_TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1"),
   ("sample_category",       "TTZ"),
@@ -1851,6 +1812,45 @@ meta_dictionary["/TTTJ_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2
   ("comment",               "status: VALID; size: 13.62GB; nevents: 200.00k; release: 9_4_0_patch1; last modified: 2018-03-06 05:12:15"),
 ])
 
+meta_dictionary["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "NanoProduction_v2_2018Oct24_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1"),
+  ("sample_category",       "Rares"),
+  ("process_name_specific", "GluGluHToTauTau"),
+  ("nof_db_events",         2892030),
+  ("nof_db_files",          38),
+  ("fsize_db",              117011687965),
+  ("xsection",              3.0469),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 117.01GB; nevents: 2.89M; release: 9_4_6_patch1; last modified: 2018-04-19 22:34:43"),
+])
+
+meta_dictionary["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "NanoProduction_v2_2018Oct24_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1"),
+  ("sample_category",       "Rares"),
+  ("process_name_specific", "GluGluHToTauTau_ext1"),
+  ("nof_db_events",         9259000),
+  ("nof_db_files",          169),
+  ("fsize_db",              387946138466),
+  ("xsection",              3.0469),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 387.95GB; nevents: 9.26M; release: 9_4_7; last modified: 2018-10-19 11:01:45"),
+])
+
+meta_dictionary["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "NanoProduction_v2_2018Oct24_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1"),
+  ("sample_category",       "Rares"),
+  ("process_name_specific", "VBFHToTauTau"),
+  ("nof_db_events",         2975404),
+  ("nof_db_files",          43),
+  ("fsize_db",              131499935937),
+  ("xsection",              0.2372),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 131.50GB; nevents: 2.98M; release: 9_4_6_patch1; last modified: 2018-04-20 10:31:11"),
+])
+
 meta_dictionary["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] =  OD([
   ("crab_string",           "NanoProduction_v2_2018Jul17_VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2"),
   ("sample_category",       "VH"),
@@ -1946,13 +1946,12 @@ meta_dictionary["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-9
 # event statistics by sample category:
 # signal:                    27.53M
 # additional_signal_overlap: 1.91M
-# HTT:                       15.13M
 # TTZ:                       29.33M
 # TTW:                       25.66M
 # TTWW:                      200.00k
 # TT:                        463.53M
 # EWK:                       1.04G
 # QCD:                       414.13M
-# Rares:                     37.40M
+# Rares:                     52.53M
 # VH:                        10.67M
 
