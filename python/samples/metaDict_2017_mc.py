@@ -12,7 +12,6 @@ sum_events = {
   ("DY1JetsToLL_M-50", "DY1JetsToLL_M-50_ext1"),
   ("DY2JetsToLL_M-50", "DY2JetsToLL_M-50_ext1"),
   ("DY3JetsToLL_M-50", "DY3JetsToLL_M-50_ext1"),
-  ("DYJetsToLL_M-4to50_HT-70to100", "DYJetsToLL_M-4to50_HT-70to100_ext1"),
   ("DYJetsToLL_M-4to50_HT-100to200", "DYJetsToLL_M-4to50_HT-100to200_ext1"),
   ("DYJetsToLL_M-4to50_HT-200to400", "DYJetsToLL_M-4to50_HT-200to400_ext1"),
   ("DYJetsToLL_M-4to50_HT-400to600", "DYJetsToLL_M-4to50_HT-400to600_ext1"),
