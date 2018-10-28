@@ -114,4 +114,4 @@ def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, i
     createFile(makefileName, lines_makefile_with_header)
 
 def is_dymc_reweighting(dbs_name):
-  return dbs_name.startswith('/DY') and 'M-50' in dbs_name
+  return dbs_name.startswith('/DY') and 'M-50' in dbs_name and not dbs_name.startswith('/DYBB')
