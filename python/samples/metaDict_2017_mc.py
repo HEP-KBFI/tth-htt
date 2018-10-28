@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-10-28 16:48:39 with the following command:
+# file generated at 2018-10-29 00:07:38 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets_mc_2017.txt -m python/samples/metaDict_2017_mc.py -s ../NanoAOD/test/datasets_sum_2017.txt -c python/samples/sampleLocations_2017.txt
 
 meta_dictionary = OD()
@@ -305,7 +305,7 @@ meta_dictionary["/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/
 ])
 
 meta_dictionary["/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_ST_tW_antitop_5f_inclusiveDecays_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2"),
   ("sample_category",       "TT"),
   ("process_name_specific", "ST_tW_antitop_5f_inclusiveDecays_PSweights"),
   ("nof_db_events",         7971152),
@@ -981,7 +981,7 @@ meta_dictionary["/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17Mini
 ])
 
 meta_dictionary["/WWTo2L2Nu_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WWTo2L2Nu_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11_ext1-v1"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WWTo2L2Nu_PSweights"),
   ("nof_db_events",         2000000),
@@ -1020,7 +1020,7 @@ meta_dictionary["/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17Mini
 ])
 
 meta_dictionary["/WWToLNuQQ_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WWToLNuQQ_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WWToLNuQQ_PSweights"),
   ("nof_db_events",         8785360),
@@ -1033,7 +1033,7 @@ meta_dictionary["/WWToLNuQQ_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8/RunII
 ])
 
 meta_dictionary["/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WWTo1L1Nu2Q"),
   ("nof_db_events",         5054286),
@@ -1046,7 +1046,7 @@ meta_dictionary["/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17Mini
 ])
 
 meta_dictionary["/WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8__RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11-v1"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WWTo4Q"),
   ("nof_db_events",         2000000),
@@ -1059,7 +1059,7 @@ meta_dictionary["/WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
 ])
 
 meta_dictionary["/WWTo4Q_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WWTo4Q_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WWTo4Q_PSweights"),
   ("nof_db_events",         1976360),
@@ -1085,7 +1085,7 @@ meta_dictionary["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAOD
 ])
 
 meta_dictionary["/WZTo3LNu_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WZTo3LNu_13TeV-powheg-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WZTo3LNu_powheg"),
   ("nof_db_events",         976400),
@@ -1098,7 +1098,7 @@ meta_dictionary["/WZTo3LNu_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Ap
 ])
 
 meta_dictionary["/WZTo3LNu_0Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WZTo3LNu_0Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WZTo3LNu_0Jets_MLL-4to50"),
   ("nof_db_events",         488461),
@@ -1111,7 +1111,7 @@ meta_dictionary["/WZTo3LNu_0Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/Run
 ])
 
 meta_dictionary["/WZTo3LNu_0Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WZTo3LNu_0Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WZTo3LNu_0Jets_MLL-50"),
   ("nof_db_events",         473818),
@@ -1124,7 +1124,7 @@ meta_dictionary["/WZTo3LNu_0Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIF
 ])
 
 meta_dictionary["/WZTo3LNu_1Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WZTo3LNu_1Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WZTo3LNu_1Jets_MLL-4to50"),
   ("nof_db_events",         506673),
@@ -1137,7 +1137,7 @@ meta_dictionary["/WZTo3LNu_1Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/Run
 ])
 
 meta_dictionary["/WZTo3LNu_1Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WZTo3LNu_1Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WZTo3LNu_1Jets_MLL-50"),
   ("nof_db_events",         486727),
@@ -1150,7 +1150,7 @@ meta_dictionary["/WZTo3LNu_1Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIF
 ])
 
 meta_dictionary["/WZTo3LNu_2Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WZTo3LNu_2Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WZTo3LNu_2Jets_MLL-4to50"),
   ("nof_db_events",         1433913),
@@ -1163,7 +1163,7 @@ meta_dictionary["/WZTo3LNu_2Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/Run
 ])
 
 meta_dictionary["/WZTo3LNu_2Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WZTo3LNu_2Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WZTo3LNu_2Jets_MLL-50"),
   ("nof_db_events",         1835965),
@@ -1176,7 +1176,7 @@ meta_dictionary["/WZTo3LNu_2Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIF
 ])
 
 meta_dictionary["/WZTo3LNu_3Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WZTo3LNu_3Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WZTo3LNu_3Jets_MLL-4to50"),
   ("nof_db_events",         2069899),
@@ -1189,7 +1189,7 @@ meta_dictionary["/WZTo3LNu_3Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/Run
 ])
 
 meta_dictionary["/WZTo3LNu_3Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WZTo3LNu_3Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WZTo3LNu_3Jets_MLL-50"),
   ("nof_db_events",         1832414),
@@ -1202,7 +1202,7 @@ meta_dictionary["/WZTo3LNu_3Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIF
 ])
 
 meta_dictionary["/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WZTo2L2Q"),
   ("nof_db_events",         27582164),
@@ -1748,7 +1748,7 @@ meta_dictionary["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2
 ])
 
 meta_dictionary["/TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8__RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11-v1"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "TTTT_PSweights"),
   ("nof_db_events",         2321852),
@@ -1774,7 +1774,7 @@ meta_dictionary["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2
 ])
 
 meta_dictionary["/TTZH_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_TTZH_TuneCP5_13TeV-madgraph-pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "TTZH"),
   ("nof_db_events",         200000),
@@ -1800,7 +1800,7 @@ meta_dictionary["/TTTW_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2
 ])
 
 meta_dictionary["/TTTJ_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_TTTJ_TuneCP5_13TeV-madgraph-pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "TTTJ"),
   ("nof_db_events",         200000),
@@ -1878,7 +1878,7 @@ meta_dictionary["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-
 ])
 
 meta_dictionary["/ZHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_ZHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1"),
   ("sample_category",       "VH"),
   ("process_name_specific", "ZHToTauTau"),
   ("nof_db_events",         4940230),
@@ -1917,7 +1917,7 @@ meta_dictionary["/WpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniA
 ])
 
 meta_dictionary["/WWTo2L2Nu_DoubleScattering_13TeV-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_WWTo2L2Nu_DoubleScattering_13TeV-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "WWTo2L2Nu_DoubleScattering"),
   ("nof_db_events",         968000),
@@ -1950,8 +1950,8 @@ meta_dictionary["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-9
 # TTW:                       25.66M
 # TTWW:                      200.00k
 # TT:                        463.53M
-# EWK:                       1.04G
+# EWK:                       1.02G
 # QCD:                       414.13M
-# Rares:                     52.53M
+# Rares:                     52.52M
 # VH:                        10.67M
 
