@@ -50,6 +50,16 @@ process.makePlots = cms.PSet(
             xAxisTitle = cms.string("Run Period"),
             yAxisTitle = cms.string("Events / 1 fb^{-1}")
         ),
+        cms.PSet(
+            histogramName = cms.string('sel/met/$PROCESS/met_pt'),
+            xAxisTitle = cms.string('MET [GeV]'),
+            yAxisTitle = cms.string('dN/dMET [1/GeV]')
+        ),
+        cms.PSet(
+            histogramName=cms.string('sel/met/$PROCESS/mht_pt'),
+            xAxisTitle=cms.string('MHT [GeV]'),
+            yAxisTitle=cms.string('dN/dMHT [1/GeV]')
+        ),
     ),
 
     nuisanceParameters = cms.PSet(
