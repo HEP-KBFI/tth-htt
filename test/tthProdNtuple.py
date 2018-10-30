@@ -183,7 +183,7 @@ for sample_name, sample_entry in samples.items():
     sample_entry['use_it'] = True
   elif mode == 'forBDTtraining':
     sample_entry['use_it'] = not sample_entry['use_it']
-  elif mode == 'hh':
+  elif mode.startswith('hh'):
     sample_entry['use_it'] = sample_entry['process_name_specific'].startswith('signal') and \
                              'hh' in sample_entry['process_name_specific']
   elif 'sync' in mode or mode == 'all_except_forBDTtraining':
