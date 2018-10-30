@@ -182,7 +182,7 @@ if preselection:
       'minNumBJets_medium'        : -1,
       'maxNumBJets_loose'         : 1,
       'maxNumBJets_medium'        : 0,
-      'applyJetEtaCut'            : True,
+      'applyJetEtaCut'            : False,
     }
   else:
     preselection_cuts = {
@@ -194,7 +194,7 @@ if preselection:
       'minNumBJets_medium'         : 1,
       'maxNumBJets_loose'          : -1,
       'maxNumBJets_medium'         : -1,
-      'applyJetEtaCut'             : True,
+      'applyJetEtaCut'             : False,
     }
   leptonSelection = 'Fakeable'
   hadTauSelection = 'Fakeable'
@@ -208,7 +208,7 @@ else:
     'minNumBJets_medium'        : -1,
     'maxNumBJets_loose'         : -1,
     'maxNumBJets_medium'        : -1,
-    'applyJetEtaCut'            : True, # disable the cut for VBF HH->2b2W analysis
+    'applyJetEtaCut'            : True, # disable the cut for HH analysis
   }
   leptonSelection = 'Loose'
   hadTauSelection = 'Loose'
