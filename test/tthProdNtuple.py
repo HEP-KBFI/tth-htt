@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
-mode_choices = [ 'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh' ]
+mode_choices = [ 'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh', 'hh_bbww' ]
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -110,7 +110,7 @@ elif mode == 'hh':
       raise ValueError("Invalid era: %s" % era)
   else:
     if era == "2016":
-      from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2016_nanoAOD import samples_2016 as samples
+      from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2016_nanoAOD_hh import samples_2016 as samples
       pileup = os.path.join(
         os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_2016.root'
       )
@@ -120,9 +120,30 @@ elif mode == 'hh':
         os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_2017.root'
       )
     elif era == "2018":
-      from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
+      from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2018_nanoAOD_hh import samples_2018 as samples
       pileup = os.path.join(
         os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_2018.root'
+      )
+    else:
+      raise ValueError("Invalid era: %s" % era)
+elif mode == 'hh_bbww':
+  if preselection:
+    raise ValueError("Preselection not possible for %s mode" % mode)
+  else:
+    if era == "2016":
+      from hhAnalysis.bbww.samples.hhAnalyzeSamples_2016_nanoAOD_hh import samples_2016 as samples
+      pileup = os.path.join(
+        os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_2016.root'
+      )
+    elif era == "2017":
+      from hhAnalysis.bbww.samples.hhAnalyzeSamples_2017_nanoAOD_hh import samples_2017 as samples
+      pileup = os.path.join(
+        os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_2017.root'
+      )
+    elif era == "2018":
+      from hhAnalysis.bbww.samples.hhAnalyzeSamples_2018_nanoAOD_hh import samples_2018 as samples
+      pileup = os.path.join(
+        os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_2018.root'
       )
     else:
       raise ValueError("Invalid era: %s" % era)
@@ -208,7 +229,7 @@ else:
     'minNumBJets_medium'        : -1,
     'maxNumBJets_loose'         : -1,
     'maxNumBJets_medium'        : -1,
-    'applyJetEtaCut'            : True, # disable the cut for HH analysis
+    'applyJetEtaCut'            : (not mode.startswith('hh')), # disable the cut for HH analysis
   }
   leptonSelection = 'Loose'
   hadTauSelection = 'Loose'
