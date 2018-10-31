@@ -2,121 +2,132 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopKinFit.h" // HadTopKinFit
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
-#include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h" // XGBInterface
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle
+#include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_internal.h" // isGenMatchedJetTriplet
+#include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_geral.h" // kGenTop...
+#include "DataFormats/Math/interface/deltaR.h" // deltaR
+
 #include <TLorentzVector.h> // TLorentzVector
 
-HadTopTagger::HadTopTagger(
-  const std::string & mvaFileNameWithKinFit,
-  const std::string & mvaFileNameWithKinFitNew ,
-  const std::string & mvaFileNameNoKinFit
-)
-  : kinFit_(new HadTopKinFit())
-  , mva_hadTopTagger_xgb_withKinFit_(nullptr)
-  , mva_hadTopTagger_xgb_withKinFitNew_(nullptr)
-  , mva_hadTopTagger_xgb_NoKinFit_(nullptr)
+HadTopTagger::HadTopTagger(void)
+  : mva_xgb_HTT_CSVsort4rd_(nullptr)
+  , mva_hadTopTagger_multilep_(nullptr)
 {
-  mvaInputsWithKinFitSort = {
-    "CSV_b",
-    "qg_Wj2",
-    "pT_bWj1Wj2",
-    "m_Wj1Wj2",
-    "nllKinFit",
-    "pT_b_o_kinFit_pT_b",
-    "pT_Wj2"
-  };
-  mva_hadTopTagger_xgb_withKinFit_ = new TMVAInterface(
-    mvaFileNameWithKinFit, mvaInputsWithKinFitSort
-  );
-  mva_hadTopTagger_xgb_withKinFit_->enableBDTTransform();
 
-  ///*
-  mvaInputsWithKinFitSortNew =  {
-    "btagDisc", "qg_Wj1", "qg_Wj2",
-    "cosThetaWj1_restW", "m_Wj1Wj2",
-    "pT_Wj1", "pT_Wj2", "pT_bWj1Wj2", "nllKinFit"
-  };
-  mva_hadTopTagger_xgb_withKinFitNew_ = new XGBInterface(
-    mvaFileNameWithKinFitNew, mvaInputsWithKinFitSortNew
-  );
-  //*/
+  std::string mvaFileNameHTT_multilep = "tthAnalysis/HiggsToTauTau/data/multilep_BDTs_2018/resTop_xgb_csv_order_qgl.xml";
+  std::string mvaFileNameHTT_CSVsort4rd = "tthAnalysis/HiggsToTauTau/data/BDTs_2017MC_postPAS/HTT_HadTopTagger_2017_nomasscut_nvar17_resolved.xml";
 
-  ///*
-  mvaInputsNoKinFitSort =  {
-    "btagDisc", "qg_Wj1", "qg_Wj2",
-    "cosThetaWj1_restW", "m_Wj1Wj2",
-    "pT_Wj1", "pT_Wj2", "pT_bWj1Wj2"
+  mvaInputsHTT_multilepSort =  {
+    "var_b_pt", "var_b_mass", "var_b_csv",
+    "var_wj1_pt", "var_wj1_mass", "var_wj1_csv", "var_wj1_qgl",
+    "var_wj2_pt", "var_wj2_mass", "var_wj2_csv", "var_wj2_qgl",
+    "var_b_wj1_deltaR", "var_b_wj1_mass", "var_b_wj2_deltaR",
+    "var_b_wj2_mass", "var_wcand_deltaR", "var_wcand_mass", "var_b_wcand_deltaR", "var_topcand_mass"
   };
-  mva_hadTopTagger_xgb_NoKinFit_ = new XGBInterface(
-    mvaFileNameNoKinFit, mvaInputsNoKinFitSort
+  mva_hadTopTagger_multilep_ = new TMVAInterface(
+    mvaFileNameHTT_multilep, mvaInputsHTT_multilepSort
   );
-  //*/
+
+  mvaInputsHTTSort =  {
+    "btagDisc_b", "btagDisc_Wj1", "btagDisc_Wj2", "qg_Wj1", "qg_Wj2",
+    "m_Wj1Wj2_div_m_bWj1Wj2", "pT_Wj1Wj2", "dR_Wj1Wj2", "m_bWj1Wj2", "dR_bW", "m_bWj1", "m_bWj2",
+    "mass_Wj1", "pT_Wj2", "mass_Wj2", "pT_b", "mass_b"
+  };
+  mva_xgb_HTT_CSVsort4rd_ = new TMVAInterface(
+    mvaFileNameHTT_CSVsort4rd, mvaInputsHTTSort
+  );
+  mva_xgb_HTT_CSVsort4rd_->enableBDTTransform();
 }
 
 HadTopTagger::~HadTopTagger()
 {
-  delete kinFit_;
-  delete mva_hadTopTagger_xgb_withKinFit_;
-  delete mva_hadTopTagger_xgb_withKinFitNew_;
-  delete mva_hadTopTagger_xgb_NoKinFit_;
+  delete mva_hadTopTagger_multilep_;
+  delete mva_xgb_HTT_CSVsort4rd_;
 }
 
 std::map<int, double>
 HadTopTagger::operator()(const RecoJet & recBJet,
                          const RecoJet & recWJet1,
-                         const RecoJet & recWJet2)
+                         const RecoJet & recWJet2,
+                         bool & calculate_matching, bool & isGenMatched,
+                         double & genTopPt,
+                         std::map<int, Particle::LorentzVector> genVar, std::map<int, Particle::LorentzVector> genVarAnti,
+                         bool massCut = true
+                       )
 {
   std::map<int, double> result = {
-    { kXGB_with_kinFit,  -1. },
-    { kXGB_with_kinFitNew,  -1. },
-    { kXGB_no_kinFit,  -1. },
+    { kXGB_multilep,  -1. },
+    { kXGB_CSVsort4rd,  0. },
   };
 
   const Particle::LorentzVector p4_bWj1Wj2 = recBJet.p4() + recWJet1.p4() + recWJet2.p4();
   const Particle::LorentzVector p4_Wj1Wj2  = recWJet1.p4() + recWJet2.p4();
-  kinFit_->fit(recBJet.p4(), recWJet1.p4(), recWJet2.p4());
 
-  mvaInputsWithKinFit["CSV_b"]              = recBJet.BtagCSV();
-  mvaInputsWithKinFit["qg_Wj2"]             = recWJet2.QGDiscr();
-  mvaInputsWithKinFit["pT_bWj1Wj2"]         = p4_bWj1Wj2.pt();
-  mvaInputsWithKinFit["m_Wj1Wj2"]           = p4_Wj1Wj2.mass();
-  mvaInputsWithKinFit["nllKinFit"]          = kinFit_->nll();
-  mvaInputsWithKinFit["pT_b_o_kinFit_pT_b"] = recBJet.pt() / kinFit_->fittedBJet().pt();
-  mvaInputsWithKinFit["pT_Wj2"]             = recWJet2.pt();
-  const double HTT_WithKin_xgb = (*mva_hadTopTagger_xgb_withKinFit_)(mvaInputsWithKinFit);
-  result[kXGB_with_kinFit] = HTT_WithKin_xgb;
+  if ( calculate_matching ) {
+    // calculate matching
+    std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
+      recBJet.p4(), recWJet1.p4(), recWJet2.p4(),
+      genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
+      kGenTop
+    );
+    std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
+      recBJet.p4(), recWJet1.p4(), recWJet2.p4(),
+      genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2],
+      kGenAntiTop
+    );
+    if(genMatchingTop[kGenMatchedTriplet]) { genTopPt = genVar[kGenTop].pt(); }
+    if(genMatchingAntiTop[kGenMatchedTriplet]) { genTopPt = genVarAnti[kGenTop].pt(); }
+    isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
+  }
 
-  ///*
-  mvaInputsWithKinFitNew["btagDisc"]           = recBJet.BtagCSV();
-  mvaInputsWithKinFitNew["qg_Wj1"]             = recWJet2.QGDiscr();
-  mvaInputsWithKinFitNew["qg_Wj2"]             = recWJet2.QGDiscr();
-  TLorentzVector PWj1, PWj2;
-  PWj1.SetPtEtaPhiM(recWJet1.pt(), recWJet1.eta(), recWJet1.phi(), recWJet1.mass());
-  PWj2.SetPtEtaPhiM(recWJet2.pt(), recWJet2.eta(), recWJet2.phi(), recWJet2.mass());
-  const TLorentzVector PW = PWj1 + PWj2;
-  TLorentzVector PWj1boost = PWj1;
-  PWj1boost.Boost(-PW.BoostVector());
-  mvaInputsWithKinFitNew["cosThetaWj1_restW"]  = PWj1boost.CosTheta();
-  mvaInputsWithKinFitNew["m_Wj1Wj2"]           = p4_Wj1Wj2.mass();
-  mvaInputsWithKinFitNew["pT_Wj1"]             = recWJet1.pt();
-  mvaInputsWithKinFitNew["pT_Wj2"]             = recWJet2.pt();
-  mvaInputsWithKinFitNew["pT_bWj1Wj2"]         = p4_bWj1Wj2.pt();
-  mvaInputsWithKinFitNew["nllKinFit"]          = kinFit_->nll();
-  const double HTT_WithKin_xgbNew = (*mva_hadTopTagger_xgb_withKinFitNew_)(mvaInputsWithKinFitNew);
-  result[kXGB_with_kinFitNew] = HTT_WithKin_xgbNew;
-  //*/
+  mvaInputsHTT["btagDisc_b"]         = recBJet.BtagCSV();
+  mvaInputsHTT["btagDisc_Wj1"]       = recWJet1.BtagCSV();
+  mvaInputsHTT["btagDisc_Wj2"]       = recWJet2.BtagCSV();
+  mvaInputsHTT["qg_Wj1"]             = recWJet2.QGDiscr();
+  mvaInputsHTT["qg_Wj2"]             = recWJet2.QGDiscr();
+  mvaInputsHTT["m_Wj1Wj2_div_m_bWj1Wj2"]  = p4_Wj1Wj2.mass()/p4_bWj1Wj2.mass();
+  mvaInputsHTT["pT_Wj1Wj2"]          = p4_Wj1Wj2.pt();
+  mvaInputsHTT["dR_Wj1Wj2"]          = deltaR(recWJet1.p4(),recWJet2.p4());
+  mvaInputsHTT["m_bWj1Wj2"]          = p4_bWj1Wj2.mass();
+  mvaInputsHTT["dR_bW"]              = deltaR(recBJet.p4(), recWJet1.p4()+recWJet2.p4());
+  mvaInputsHTT["m_bWj1"]            = deltaR(recBJet.p4(), recWJet1.p4());
+  mvaInputsHTT["m_bWj2"]            = deltaR(recBJet.p4(), recWJet2.p4());
+  mvaInputsHTT["mass_Wj1"]           = recWJet1.mass();
+  mvaInputsHTT["pT_Wj2"]             = recWJet2.pt();
+  mvaInputsHTT["mass_Wj2"]           = recWJet2.mass();
+  mvaInputsHTT["pT_b"]               = recBJet.pt();
+  mvaInputsHTT["mass_b"]             = recBJet.mass();
+  const double HTT_CSVsort4rd = (*mva_xgb_HTT_CSVsort4rd_)(mvaInputsHTT);
+  result[kXGB_CSVsort4rd] = HTT_CSVsort4rd;
+  //std::cout << " HTT_CSVsort4rd " << HTT_CSVsort4rd << std::endl;
 
-  ///*
-  mvaInputsNoKinFit["btagDisc"]           = recBJet.BtagCSV();
-  mvaInputsNoKinFit["qg_Wj1"]             = recWJet2.QGDiscr();
-  mvaInputsNoKinFit["qg_Wj2"]             = recWJet2.QGDiscr();
-  mvaInputsNoKinFit["cosThetaWj1_restW"]  = PWj1boost.CosTheta();
-  mvaInputsNoKinFit["m_Wj1Wj2"]           = p4_Wj1Wj2.mass();
-  mvaInputsNoKinFit["pT_Wj1"]             = recWJet1.pt();
-  mvaInputsNoKinFit["pT_Wj2"]             = recWJet2.pt();
-  mvaInputsNoKinFit["pT_bWj1Wj2"]         = p4_bWj1Wj2.pt();
-  const double HTT_NoKin_xgb = (*mva_hadTopTagger_xgb_NoKinFit_)(mvaInputsNoKinFit);
-  result[kXGB_no_kinFit] = HTT_NoKin_xgb;
-  //*/
+  if ( massCut && !(p4_bWj1Wj2.mass() > 75. && p4_bWj1Wj2.mass() < 275.)) {
+    result[kXGB_multilep] = -1.;
+  } else {
+    ///*
+    mvaInputsHTT_multilep["var_b_pt"]             = recBJet.pt();
+    mvaInputsHTT_multilep["var_b_mass"]           = recBJet.p4().mass();
+    mvaInputsHTT_multilep["var_b_csv"]            = recBJet.BtagCSV();
+    mvaInputsHTT_multilep["var_wj1_pt"]           = recWJet1.pt();
+    mvaInputsHTT_multilep["var_wj1_mass"]         = recWJet1.p4().mass();
+    mvaInputsHTT_multilep["var_wj1_csv"]          = recWJet1.BtagCSV();
+    mvaInputsHTT_multilep["var_wj1_qgl"]          = recWJet1.QGDiscr();
+    mvaInputsHTT_multilep["var_wj2_pt"]           = recWJet2.pt();
+    mvaInputsHTT_multilep["var_wj2_mass"]         = recWJet2.p4().mass();
+    mvaInputsHTT_multilep["var_wj2_csv"]          = recWJet2.BtagCSV();
+    mvaInputsHTT_multilep["var_wj2_qgl"]          = recWJet2.QGDiscr();
+    mvaInputsHTT_multilep["var_b_wj1_deltaR"]     = deltaR(recBJet.p4(), recWJet1.p4());
+    mvaInputsHTT_multilep["var_b_wj1_mass"]       = (recBJet.p4()+recWJet1.p4()).mass();
+    mvaInputsHTT_multilep["var_b_wj2_deltaR"]     = deltaR(recBJet.p4(), recWJet2.p4());
+    mvaInputsHTT_multilep["var_b_wj2_mass"]       = (recBJet.p4()+recWJet2.p4()).mass();
+    mvaInputsHTT_multilep["var_wcand_deltaR"]     = deltaR(recWJet2.p4(), recWJet1.p4());
+    mvaInputsHTT_multilep["var_wcand_mass"]       = (recWJet2.p4()+recWJet1.p4()).mass();
+    mvaInputsHTT_multilep["var_b_wcand_deltaR"]   = deltaR(recBJet.p4(), recWJet1.p4()+recWJet2.p4());
+    mvaInputsHTT_multilep["var_topcand_mass"]     = (recBJet.p4()+ recWJet1.p4()+recWJet2.p4()).mass();
+    const double HTT_multilep = (*mva_hadTopTagger_multilep_)(mvaInputsHTT_multilep);
+    result[kXGB_multilep] = HTT_multilep;
+    //std::cout << " HTT_multilep " << HTT_multilep << std::endl;
+  }
 
   return result;
 }
@@ -124,11 +135,5 @@ HadTopTagger::operator()(const RecoJet & recBJet,
 const std::map<std::string, double> &
 HadTopTagger::mvaInputs() const
 {
-  return mvaInputsWithKinFit;
-}
-
-const HadTopKinFit *
-HadTopTagger::kinFit() const
-{
-  return kinFit_;
+  return mvaInputsHTT;
 }

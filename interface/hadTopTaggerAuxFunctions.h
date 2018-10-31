@@ -3,64 +3,11 @@
 
 #include <TString.h> // TString, Form
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
-
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 
-enum {
-  kGenMatchedBJet, kGenMatchedWJet1, kGenMatchedWJet2, kGenMatchedTriplet, kGenMatchedFatJet
-};
-
-enum {
-  kGenTop, kGenAntiTop
-};
-
-enum {
-  kGenTopVar, kGenTopB, kGenTopW, kGenTopWj1, kGenTopWj2
-};
+#include <map>
 
 TString stringTmp = "";
-
-std::map<int, bool>
-isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
-                       const Particle::LorentzVector & recWJet1,
-                       const Particle::LorentzVector & recWJet2,
-                       const Particle::LorentzVector  genTopQuarks,
-                       const Particle::LorentzVector  genBJetFromTop,
-                       const Particle::LorentzVector  genWBosons,
-                       const Particle::LorentzVector  genWJetFromTop_lead,
-                       const Particle::LorentzVector  genWJetFromTop_sublead,
-                       int mode,
-                       int TypeTop = 3,
-                       const Particle::LorentzVector  recFatJet = Particle::LorentzVector(0., 0., 0., 0.),
-		       bool isAnalysisModeGenStudy = false);
-
-std::map<int, bool>
-isGenMatchedJetTriplet_Method2(const Particle::LorentzVector & recBJet,
-                       const Particle::LorentzVector & recWJet1,
-                       const Particle::LorentzVector & recWJet2,
-                       const std::vector<GenParticle> & genTopQuarks,
-                       const std::vector<GenParticle> & genBJets,
-                       const std::vector<GenParticle> & genWBosons,
-                       const std::vector<GenParticle> & genWJets,
-                       int mode,
-                       double & genTopPt,
-		       int TypeTop = 3,
-		       const Particle::LorentzVector & recFatJet = Particle::LorentzVector(0., 0., 0., 0.),
-		       TString & sPrint = stringTmp);
-
-std::map<int, bool>
-isGenMatchedJetTriplet_Method3(const Particle::LorentzVector & recBJet,
-                       const Particle::LorentzVector & recWJet1,
-                       const Particle::LorentzVector & recWJet2,
-                       const std::vector<GenParticle> & genTopQuarks,
-                       const std::vector<GenParticle> & genBJets,
-                       const std::vector<GenParticle> & genWBosons,
-                       const std::vector<GenParticle> & genWJets,
-                       int mode,
-                       double & genTopPt,
-		       int TypeTop = 3,
-		       const Particle::LorentzVector & recFatJet = Particle::LorentzVector(0., 0., 0., 0.),
-		       TString & sPrint = stringTmp);
 
 std::map<int, Particle::LorentzVector>
 isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
