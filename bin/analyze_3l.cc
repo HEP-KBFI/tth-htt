@@ -555,11 +555,7 @@ int main(int argc, char* argv[])
     preselHistManager->evt_ = new EvtHistManager_3l(makeHistManager_cfg(process_and_genMatch,
       Form("%s/presel/evt", histogramDir.data()), era_string, central_or_shift));
     preselHistManager->evt_->bookHistograms(fs);
-<<<<<<< HEAD
     edm::ParameterSet cfg_EvtYieldHistManager_presel = makeHistManager_cfg(process_and_genMatch,
-=======
-    edm::ParameterSet cfg_EvtYieldHistManager_presel = makeHistManager_cfg(process_and_genMatch, 
->>>>>>> a114174282bc788fe935d91fb50a5c52ae5d9fb6
       Form("%s/presel/evtYield", histogramDir.data()), central_or_shift);
     cfg_EvtYieldHistManager_presel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
     cfg_EvtYieldHistManager_presel.addParameter<bool>("isMC", isMC);
@@ -664,11 +660,7 @@ int main(int argc, char* argv[])
 	}
       }
     }
-<<<<<<< HEAD
     edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
-=======
-    edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch, 
->>>>>>> a114174282bc788fe935d91fb50a5c52ae5d9fb6
       Form("%s/sel/evtYield", histogramDir.data()), central_or_shift);
     cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
     cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);

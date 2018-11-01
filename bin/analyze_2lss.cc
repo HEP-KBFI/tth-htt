@@ -747,14 +747,12 @@ int main(int argc, char* argv[])
       "Hj_tagger",
       "lumiScale", "genWeight", "evtWeight", "min(met_pt,400)",
       "mbb","ptbb", "mbb_loose","ptbb_loose",
-      "res-HTT_multilep", "res-HTT_CSVsort4rd",
-      "HadTop_pt_multilep", "HadTop_pt_CSVsort4rd",
-      "genTopPt_multilep", "genTopPt_CSVsort4rd"
+      "res-HTT_CSVsort4rd", "HadTop_pt_CSVsort4rd", "genTopPt_CSVsort4rd"
     );
     bdt_filler->register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "nLep",
       "lep1_isTight", "lep2_isTight", "failsTightChargeCut",
-      "hadtruth", "bWj1Wj2_isGenMatched_multilep", "bWj1Wj2_isGenMatched_CSVsort4rd"
+      "hadtruth", "bWj1Wj2_isGenMatched_CSVsort4rd"
     );
     bdt_filler->bookTree(fs);
   }
@@ -1603,10 +1601,6 @@ int main(int argc, char* argv[])
     }
 
     // resolved HTT
-    double max_mvaOutput_HTT_multilep = -1.;  // done with tmva ==> starts from -1.
-    bool max_truth_multilep = false;
-    double HadTop_pt_multilep = 0.;
-    double genTopPt_multilep = 0.;
 
     double max_mvaOutput_HTT_CSVsort4rd = 0.;
     bool max_truth_HTT_CSVsort4rd = false;
@@ -1626,7 +1620,7 @@ int main(int argc, char* argv[])
     if ( &(*selWJet2) == &(*selWJet1) ) continue;
     bool isGenMatched = false;
     double genTopPt_teste = 0.;
-    const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti, true );
+    const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti );
     // genTopPt_teste is filled with the result of gen-matching
     if ( isGenMatched ) hadtruth = true;
     // save genpt of all options
@@ -1642,15 +1636,6 @@ int main(int argc, char* argv[])
       Wj2_pt_CSVsort4rd_1 = (*selWJet2)->pt();
       b_pt_CSVsort4rd_1   = (*selBJet)->pt();
     }
-
-    if ((*selBJet)->BtagCSV() > (*selWJet1)->BtagCSV() && (*selBJet)->BtagCSV() > (*selWJet2)->BtagCSV() ) {
-      if ( bdtResult.at(kXGB_multilep) > max_mvaOutput_HTT_multilep ) {
-        max_truth_multilep = isGenMatched;
-        max_mvaOutput_HTT_multilep = bdtResult.at(kXGB_multilep);
-        HadTop_pt_multilep = HadTop_pt;
-        genTopPt_multilep = genTopPt_teste;
-      }
-    } // close if b candidate is the highest btagged one
 
     }
       }
@@ -1866,13 +1851,9 @@ int main(int argc, char* argv[])
           ("lep2_isTight",           int(selLepton_sublead -> isTight()))
 
           ("hadtruth",               hadtruth)
-          ("bWj1Wj2_isGenMatched_multilep",                    max_truth_multilep)
           ("bWj1Wj2_isGenMatched_CSVsort4rd",              max_truth_HTT_CSVsort4rd)
-          ("res-HTT_multilep",                       max_mvaOutput_HTT_multilep)
           ("res-HTT_CSVsort4rd",                 max_mvaOutput_HTT_CSVsort4rd)
-          ("HadTop_pt_multilep",              HadTop_pt_multilep)
           ("HadTop_pt_CSVsort4rd",            HadTop_pt_CSVsort4rd)
-          ("genTopPt_multilep",               genTopPt_multilep)
           ("genTopPt_CSVsort4rd",             genTopPt_CSVsort4rd)
 
           ("min(met_pt,400)",            std::min(met.pt(), (Double_t)400.))

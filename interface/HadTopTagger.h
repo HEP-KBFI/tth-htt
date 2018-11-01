@@ -8,7 +8,7 @@ class HadTopKinFit;
 class TMVAInterface;
 class XGBInterface;
 
-enum { kXGB_multilep, kXGB_CSVsort4rd };
+enum { kXGB_CSVsort4rd };
 
 class HadTopTagger
 {
@@ -27,18 +27,13 @@ public:
              const RecoJet & recWJet2,
              bool & calculate_matching, bool & isGenMatched,
              double & genTopPt,
-             std::map<int, Particle::LorentzVector> genVar, std::map<int, Particle::LorentzVector> genVarAnti,
-             bool massCut
+             std::map<int, Particle::LorentzVector> genVar, std::map<int, Particle::LorentzVector> genVarAnti
            );
 
   const std::map<std::string, double> &
   mvaInputs() const;
 
 protected:
-
-  std::map<std::string, double> mvaInputsHTT_multilep;
-  std::vector<std::string>      mvaInputsHTT_multilepSort;
-  TMVAInterface * mva_hadTopTagger_multilep_;
 
   std::map<std::string, double> mvaInputsHTT;
   std::vector<std::string>      mvaInputsHTTSort;
