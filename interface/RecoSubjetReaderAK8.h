@@ -15,7 +15,8 @@ class RecoSubjetReaderAK8
 public:
   RecoSubjetReaderAK8(int era);
   RecoSubjetReaderAK8(int era,
-		      const std::string & branchName_obj);
+		      const std::string & branchName_obj,
+		      bool readBtagCSV = true);
   ~RecoSubjetReaderAK8();
 
   /**
@@ -39,6 +40,7 @@ protected:
   setBranchNames();
 
   int era_;
+  bool readBtagCSV_;
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;

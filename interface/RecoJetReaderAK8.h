@@ -16,7 +16,8 @@ class RecoJetReaderAK8
 public:
   RecoJetReaderAK8(int era);
   RecoJetReaderAK8(int era,
-		    const std::string & branchName_jet, const std::string & branchName_subjet);
+		   const std::string & branchName_jet, const std::string & branchName_subjet,
+		   bool readBtagCSV = true);
   ~RecoJetReaderAK8();
 
   /**
