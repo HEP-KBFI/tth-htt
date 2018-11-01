@@ -22,6 +22,10 @@ public:
   std::vector<const T *> operator()(const std::vector<const T *> & particles,
                                     const std::vector<const Toverlap *> & overlaps) const
   {
+    if(debug_)
+    {
+      std::cout << "<ParticleCollectionCleaner::operator()>\n";
+    }
     std::vector<const T *> cleanedParticles;
     for(const T * particle: particles)
     {
@@ -36,7 +40,7 @@ public:
           {
             std::cout << "Removed:\n"                    << *particle
                       << "because it overlapped with:\n" << *overlap
-                      << "within "                       << dRoverlap
+                      << " within "                      << dRoverlap
                       << '\n'
             ;
           }
