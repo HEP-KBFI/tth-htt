@@ -6,3 +6,5 @@
 /hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Jul17
 /hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Aug06
 /hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Sep26
+/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Oct24
+/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Oct27

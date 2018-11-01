@@ -220,7 +220,7 @@ void processHistogram(
       if ( verbosity ) {
 	std::cout << " Den. integral(" << processLeptonFakes << ") = " << histogramFakeBg_den->Integral() << std::endl;
       }
-      makeBinContentsPositive(histogramFakeBg_den, verbosity);
+      makeBinContentsPositive(histogramFakeBg_den, false, verbosity); // Treating "Data - Sum(Bg MC)" histogram as a MC Shape template
       // histogramFakeBg_den->Write();      
       //--------
 
@@ -241,7 +241,7 @@ void processHistogram(
       if ( verbosity ) { 
 	std::cout << " Den. integral(" << processLeptonFakes << ") before scaling = " << histogramFakeBg_num->Integral() << std::endl;
       }
-      makeBinContentsPositive(histogramFakeBg_den, verbosity);
+      makeBinContentsPositive(histogramFakeBg_den, false, verbosity); // Treating "Data - Sum(Bg MC)" histogram as a MC Shape template 
 
       double integralData_num = compIntegral(histogramData_num, true, true);
       double integralPromptBg_num = 0.;
@@ -263,7 +263,7 @@ void processHistogram(
       if ( verbosity ) { 
 	std::cout << " Num. integral(" << processLeptonFakes << ") after scaling = " << histogramFakeBg_num->Integral() << std::endl;
       }
-      makeBinContentsPositive(histogramFakeBg_num, verbosity);
+      makeBinContentsPositive(histogramFakeBg_num, false, verbosity); // Treating "Data - Sum(Bg MC)" histogram as a MC Shape template 
       // histogramFakeBg_num->Write();
       //--------
 

@@ -241,8 +241,8 @@ int main(int argc, char* argv[])
 	histogram_shiftDown->SetBinError(idxBin, binError_shiftDown);
       }
 
-      makeBinContentsPositive(histogram_shiftUp);
-      makeBinContentsPositive(histogram_shiftDown);
+      makeBinContentsPositive(histogram_shiftUp, false, true);   // since we will be using this code only for MC 
+      makeBinContentsPositive(histogram_shiftDown, false, true); // since we will be using this code only for MC 
 
       delete inputFile_syst;
     }

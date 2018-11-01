@@ -78,7 +78,7 @@ compIntegralErr(const TH1 * histogram,
                 bool includeOverflowBin);
 
 void
-makeBinContentsPositive(TH1 * histogram,
+makeBinContentsPositive(TH1 * histogram, bool isData,
                         int verbosity = 0);
 
 void
@@ -139,5 +139,22 @@ getTArraDfromVector(const std::vector<double> & histogramBinning);
 TH1* compRatioHistogram(const std::string& ratioHistogramName, const TH1* numerator, const TH1* denominator);
 
 void divideByBinWidth(TH1* histogram);
+
+struct histogramEntryType_private
+{
+  histogramEntryType_private(TH1* histogram, 
+		   bool isData)
+  : histogram_(histogram)
+  , isData_(isData)
+  {}
+
+  ~histogramEntryType_private()
+  {
+    //  delete histogram_;
+  }
+
+  TH1* histogram_;
+  bool isData_;
+};
 
 #endif // tthAnalysis_HiggsToTauTau_histogramAuxFunctions_h

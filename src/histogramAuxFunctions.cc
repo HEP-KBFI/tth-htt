@@ -428,7 +428,7 @@ compIntegralErr(const TH1 * histogram,
 }
 
 void
-makeBinContentsPositive(TH1 * histogram,
+makeBinContentsPositive(TH1 * histogram, bool isData,
                         int verbosity)
 {
   if(verbosity)
@@ -491,7 +491,7 @@ makeBinContentsPositive(TH1 * histogram,
     }
     histogram->Scale(sf);
   }
-  else
+  else if ( !isData )
   {
     for(int iBin = initBin; iBin < endBin; ++iBin)
     {

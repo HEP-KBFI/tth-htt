@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthPileupProfile.py -v 2018May09 -e 2017 -m all
 
-mode_choices = [ 'all', 'sync', 'hh' ]
+mode_choices = [ 'all', 'sync', 'hh', 'hh_bbww' ]
 
 parser = tthAnalyzeParser(default_num_parallel_jobs = 40)
 parser.add_modes(mode_choices)
@@ -66,21 +66,30 @@ elif mode == 'all':
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
   else:
     raise ValueError("Invalid era: %s" % era)
-
-  for sample_name, sample_entry in samples.items():
-    if sample_name == 'sum_events': continue
-    sample_entry['use_it'] = True
 elif mode == 'hh':
   if era == "2016":
-    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2016_nanoAOD import samples_2016 as samples
+    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2016_nanoAOD_hh import samples_2016 as samples
   elif era == "2017":
     from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_nanoAOD_hh_merged import samples_2017 as samples
   elif era == "2018":
-    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
+    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2018_nanoAOD_hh import samples_2018 as samples
+  else:
+    raise ValueError("Invalid era: %s" % era)
+elif mode == 'hh_bbww':
+  if era == "2016":
+    from hhAnalysis.bbww.samples.hhAnalyzeSamples_2016_nanoAOD_hh import samples_2016 as samples
+  elif era == "2017":
+    from hhAnalysis.bbww.samples.hhAnalyzeSamples_2017_nanoAOD_hh import samples_2017 as samples
+  elif era == "2018":
+    from hhAnalysis.bbww.samples.hhAnalyzeSamples_2018_nanoAOD_hh import samples_2018 as samples
   else:
     raise ValueError("Invalid era: %s" % era)
 else:
   raise ValueError('Invalid mode: %s' % mode)
+
+for sample_name, sample_entry in samples.items():
+  if sample_name == 'sum_events': continue
+  sample_entry['use_it'] = True
 
 if __name__ == '__main__':
   logging.basicConfig(

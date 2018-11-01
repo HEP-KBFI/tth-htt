@@ -1,5 +1,5 @@
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version, record_software_state
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, is_dymc_reweighting
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
@@ -159,6 +159,9 @@ class analyzeConfig(object):
             samples[dbs_key]['nof_events'] = copy.deepcopy(nof_events)
 
         self.samples = copy.deepcopy(samples)
+        for sample_key, sample_info in self.samples.items():
+          if sample_key == 'sum_events': continue
+          sample_info["dbs_name"] = sample_key
 
         self.lep_mva_wp = lep_mva_wp
         self.central_or_shifts = central_or_shifts
@@ -289,8 +292,11 @@ class analyzeConfig(object):
             )
           assert(histogram_path != '' and branch_name_xaxis != '')
           # loop over the inclusive samples:
+          inclusive_samples_disabled = False
           for inclusive_sample in samples_to_stitch_entry['inclusive']['samples']:
             assert(inclusive_sample not in self.stitching_args)
+            if not self.samples[samples_lut[inclusive_sample]]['use_it']:
+              inclusive_samples_disabled = True
             self.stitching_args[inclusive_sample] = {
               'histogram_path'    : '%s/%s' % (inclusive_sample, histogram_path),
               'branch_name_xaxis' : branch_name_xaxis,
@@ -298,6 +304,13 @@ class analyzeConfig(object):
               'branch_type_xaxis' : get_branch_type(branch_name_xaxis),
               'branch_type_yaxis' : get_branch_type(branch_name_yaxis),
             }
+
+          if inclusive_samples_disabled:
+            if len(binning_vars) == 2:
+              histogram_path += "_wo_inclusive"
+            else:
+              # inclusive sample not used => no need for stitching weights
+              continue
           # loop over the binned samples
           for binning_key in binning_vars:
             for binned_samples in samples_to_stitch_entry[binning_key]:
@@ -377,7 +390,7 @@ class analyzeConfig(object):
         self.num_jobs['hadd'] = 0
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
-        
+
         self.leptonFakeRateWeight_inputFile = None
         self.leptonFakeRateWeight_histogramName_e = None
         self.leptonFakeRateWeight_histogramName_mu = None
@@ -548,7 +561,7 @@ class analyzeConfig(object):
         if 'apply_genWeight' not in jobOptions:
           jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
         if 'apply_DYMCReweighting' not in jobOptions:
-          jobOptions['apply_DYMCReweighting'] = sample_info["DYMCReweighting"] if (is_mc and "DYMCReweighting" in sample_info.keys()) else False
+          jobOptions['apply_DYMCReweighting'] = is_dymc_reweighting(sample_info["dbs_name"])
         if 'lumiScale' not in jobOptions:
           nof_events = -1
           if is_mc:

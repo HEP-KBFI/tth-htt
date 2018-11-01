@@ -2,74 +2,11 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_geral.h" // kGenTop...
 
 #include <algorithm> // std::sort()
 #include <numeric> // iota
-
-std::map<int, bool>
-isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
-                       const Particle::LorentzVector & recWJet1,
-                       const Particle::LorentzVector & recWJet2,
-                       const Particle::LorentzVector  genTopQuarks,
-                       const Particle::LorentzVector  genBJetFromTop,
-                       const Particle::LorentzVector  genWBosons,
-                       const Particle::LorentzVector  genWJetFromTop_lead,
-                       const Particle::LorentzVector  genWJetFromTop_sublead,
-                       int mode,
-		       int TypeTop,
-		       const Particle::LorentzVector  recFatJet,
-		       bool isAnalysisModeGenStudy)
-{
-  std::map<int, bool> genMatchFlags = {
-    { kGenMatchedBJet ,     false },
-    { kGenMatchedWJet1 ,    false },
-    { kGenMatchedWJet2 ,    false },
-    { kGenMatchedTriplet ,  false },
-    { kGenMatchedFatJet ,   false },
-  };
-
-  double jetGenMatchdRThrsh = 0.4;
-  double fatjetGenMatchdRThrsh = 0.4;
-  if (TypeTop==1) {fatjetGenMatchdRThrsh = 1.5; jetGenMatchdRThrsh = 0.3;}
-  if (TypeTop==2) {fatjetGenMatchdRThrsh = 1.2; jetGenMatchdRThrsh = 0.3;}
-
-  genMatchFlags[kGenMatchedBJet]    = deltaR(recBJet, genBJetFromTop) < jetGenMatchdRThrsh;
-  if ( !isAnalysisModeGenStudy) {
-    genMatchFlags[kGenMatchedWJet1]   =
-      (genWJetFromTop_lead.pt() > 0    && deltaR(recWJet1, genWJetFromTop_lead)    < jetGenMatchdRThrsh) ||
-      (genWJetFromTop_sublead.pt() > 0 && deltaR(recWJet1, genWJetFromTop_sublead) < jetGenMatchdRThrsh)
-      ;
-    genMatchFlags[kGenMatchedWJet2]   =
-      (genWJetFromTop_lead.pt() > 0    && deltaR(recWJet2, genWJetFromTop_lead)    < jetGenMatchdRThrsh) ||
-      (genWJetFromTop_sublead.pt() > 0 && deltaR(recWJet2, genWJetFromTop_sublead) < jetGenMatchdRThrsh)
-      ;
-  } else {
-    genMatchFlags[kGenMatchedWJet1]   =
-      (genWJetFromTop_lead.pt() > 0    && deltaR(recWJet1, genWJetFromTop_lead)    < jetGenMatchdRThrsh)
-      ;
-    genMatchFlags[kGenMatchedWJet2]   =
-      (genWJetFromTop_sublead.pt() > 0 && deltaR(recWJet2, genWJetFromTop_sublead) < jetGenMatchdRThrsh)
-      ;
-  }
-
-  
-  genMatchFlags[kGenMatchedTriplet] =
-    genMatchFlags[kGenMatchedBJet]  &&
-    genMatchFlags[kGenMatchedWJet1] &&
-    genMatchFlags[kGenMatchedWJet2]
-  ;
-
-  if (TypeTop==1) {
-    genMatchFlags[kGenMatchedFatJet] =
-      (recFatJet.pt() > 0. && recFatJet.mass() > 0.  && deltaR(recFatJet, genTopQuarks) < fatjetGenMatchdRThrsh);
-  } else if (TypeTop==2) {
-    genMatchFlags[kGenMatchedFatJet] =
-      (recFatJet.pt() > 0. && recFatJet.mass() > 0.  && deltaR(recFatJet, genWBosons) < fatjetGenMatchdRThrsh);
-  }
-  
-  return genMatchFlags;
-}
-
+#include <map>
 
 std::map<int, Particle::LorentzVector>
 isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
@@ -135,7 +72,7 @@ isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
 
   double mass_diff = 1000000.;
   const GenParticle * genWBosonFromTopFinal = nullptr;
-  //for(auto itW = genWBosons.cbegin(); itW != genWBosons.cend(); ++itW) 
+  //for(auto itW = genWBosons.cbegin(); itW != genWBosons.cend(); ++itW)
   for(auto itW = genWBosonsFromTop.cbegin(); itW != genWBosonsFromTop.cend(); ++itW) // Edit Siddhesh
   {
     const GenParticle * genWBosonFromTop = (*itW);
@@ -202,7 +139,7 @@ isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
   genMatchValues[kGenTopWj1].SetPxPyPzE(genWJetFromTop_lead->p4().x(), genWJetFromTop_lead->p4().y(), genWJetFromTop_lead->p4().z(), genWJetFromTop_lead->p4().energy());
   genMatchValues[kGenTopWj2].SetPxPyPzE(genWJetFromTop_sublead->p4().x(), genWJetFromTop_sublead->p4().y(), genWJetFromTop_sublead->p4().z(), genWJetFromTop_sublead->p4().energy());
 
-  
+
   return genMatchValues;
 
 }
@@ -223,17 +160,6 @@ getType(size_t sizeHTTv2, size_t sizeFatW, size_t sizeResolved){
   else if (sizeFatW >0) typeTop = 2;
   else if (sizeResolved >0) typeTop = 3;
   return typeTop;
-}
-
-//template <typename T>
-std::vector<size_t>
-sort_indexes(const std::vector<double> &v) {
-  // initialize original index locations
-  std::vector<size_t> idx(v.size());
-  iota(idx.begin(), idx.end(), 0);
-  // sort indexes based on comparing values in v
-  sort(idx.begin(), idx.end(), [&v](size_t i1, size_t i2) {return v[i1] > v[i2];});
-  return idx;
 }
 
 std::vector<double>

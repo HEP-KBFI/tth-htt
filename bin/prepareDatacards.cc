@@ -16,7 +16,7 @@ cfg_prepareDatacards
 #include "DataFormats/FWLite/interface/InputSource.h"
 #include "DataFormats/FWLite/interface/OutputFiles.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // compIntegral(), getTArraDfromVector()
+#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // compIntegral(), getTArraDfromVector(), histogramEntryType_private()
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
@@ -295,8 +295,8 @@ int main(int argc, char* argv[])
     TIter next(list);
     TKey* key = 0;
     TH1* histogramBackgroundSum = 0;
-    std::vector<TH1*> histogramsToRebin;
-    std::vector<TH1*> histogramsRebinned;
+    std::vector<histogramEntryType_private*>histogramsToRebin;
+    std::vector<histogramEntryType_private*>histogramsRebinned;
     while ( (key = dynamic_cast<TKey*>(next())) ) {
       TObject* object = key->ReadObj();
       TDirectory* subdir = dynamic_cast<TDirectory*>(object);
@@ -352,7 +352,8 @@ int main(int argc, char* argv[])
 	    if   ( !histogramBackgroundSum ) histogramBackgroundSum = (TH1*)histogram->Clone(Form("%s_BackgroundSum", category->input_.data()));
 	    else                             histogramBackgroundSum->Add(histogram);  	    
 	  }
-	  histogramsToRebin.push_back(histogram);
+          histogramEntryType_private* histogramEntry = new histogramEntryType_private(histogram, isData); 
+	  histogramsToRebin.push_back(histogramEntry);
 	}
       }
     }
@@ -363,10 +364,11 @@ int main(int argc, char* argv[])
       subsubdir_output->cd();
       // rebin histograms as the user requested
       TArrayD histogramBinning = getTArraDfromVector(explicitBinning);
-      for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
+      for ( std::vector<histogramEntryType_private*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
-        //getRebinnedHistogram1d(*histogram, 4, histogramBinning);
-	histogramsRebinned.push_back(getRebinnedHistogram1d(*histogram, 4, histogramBinning));
+        //getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning);
+	histogramEntryType_private* histogramEntry = new histogramEntryType_private(getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning), (bool)(*histogram)->isData_); 
+	histogramsRebinned.push_back(histogramEntry);
       }
     }
     if ( apply_automatic_rebinning &&(!apply_quantile_rebinning) && explicitBinning.empty()) {
@@ -375,10 +377,11 @@ int main(int argc, char* argv[])
       // rebin histograms to avoid bins with zero background
       assert(histogramBackgroundSum);
       TArrayD histogramBinning = getRebinnedBinning(histogramBackgroundSum, minEvents_automatic_rebinning);
-      for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
+      for ( std::vector<histogramEntryType_private*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
-	//getRebinnedHistogram1d(*histogram, 4, histogramBinning);
-	histogramsRebinned.push_back(getRebinnedHistogram1d(*histogram, 4, histogramBinning));
+	//getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning);
+	histogramEntryType_private* histogramEntry = new histogramEntryType_private(getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning), (bool)(*histogram)->isData_); 
+	histogramsRebinned.push_back(histogramEntry);
       }
     }
     if ( apply_quantile_rebinning && (!apply_automatic_rebinning) && explicitBinning.empty()) {
@@ -395,20 +398,21 @@ int main(int argc, char* argv[])
       TArrayD histogramBinning(nq+1);
       histogramBinning[0] = 0;
       for (Int_t i=0;i<nq;i++) histogramBinning[i+1] = yq[i];
-      for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
+      for ( std::vector<histogramEntryType_private*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
-	//getRebinnedHistogram1d(*histogram, 4, histogramBinning);
-	histogramsRebinned.push_back(getRebinnedHistogram1d(*histogram, 4, histogramBinning));
+	//getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning);
+	histogramEntryType_private* histogramEntry = new histogramEntryType_private(getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning), (bool)(*histogram)->isData_); 
+	histogramsRebinned.push_back(histogramEntry);
       }
     }
     if ( histogramToFit_makeBinContentsPositive ) {
-      for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
+      for ( std::vector<histogramEntryType_private*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
-	makeBinContentsPositive(*histogram, true);
+	makeBinContentsPositive((TH1*)(*histogram)->histogram_, (bool)(*histogram)->isData_, true);
       }
-      for ( std::vector<TH1*>::iterator histogram = histogramsRebinned.begin();
+      for ( std::vector<histogramEntryType_private*>::iterator histogram = histogramsRebinned.begin();
 	    histogram != histogramsRebinned.end(); ++histogram ) {
-	makeBinContentsPositive(*histogram, true);
+	makeBinContentsPositive((TH1*)(*histogram)->histogram_, (bool)(*histogram)->isData_, true);
       }
     }
     
