@@ -1539,6 +1539,7 @@ int main(int argc, char* argv[])
       }
       continue; // CV: avoid overlap with signal region
     }
+
     cutFlowTable.update("signal region veto", evtWeight);
     cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
 

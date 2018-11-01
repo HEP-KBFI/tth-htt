@@ -292,8 +292,11 @@ class analyzeConfig(object):
             )
           assert(histogram_path != '' and branch_name_xaxis != '')
           # loop over the inclusive samples:
+          inclusive_samples_disabled = False
           for inclusive_sample in samples_to_stitch_entry['inclusive']['samples']:
             assert(inclusive_sample not in self.stitching_args)
+            if not self.samples[samples_lut[inclusive_sample]]['use_it']:
+              inclusive_samples_disabled = True
             self.stitching_args[inclusive_sample] = {
               'histogram_path'    : '%s/%s' % (inclusive_sample, histogram_path),
               'branch_name_xaxis' : branch_name_xaxis,
@@ -301,6 +304,13 @@ class analyzeConfig(object):
               'branch_type_xaxis' : get_branch_type(branch_name_xaxis),
               'branch_type_yaxis' : get_branch_type(branch_name_yaxis),
             }
+
+          if inclusive_samples_disabled:
+            if len(binning_vars) == 2:
+              histogram_path += "_wo_inclusive"
+            else:
+              # inclusive sample not used => no need for stitching weights
+              continue
           # loop over the binned samples
           for binning_key in binning_vars:
             for binned_samples in samples_to_stitch_entry[binning_key]:
@@ -380,7 +390,7 @@ class analyzeConfig(object):
         self.num_jobs['hadd'] = 0
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
-        
+
         self.leptonFakeRateWeight_inputFile = None
         self.leptonFakeRateWeight_histogramName_e = None
         self.leptonFakeRateWeight_histogramName_mu = None

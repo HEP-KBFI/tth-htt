@@ -854,7 +854,6 @@ int main(int argc, char* argv[])
     );
     bdt_filler -> bookTree(fs);
   }
-
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;

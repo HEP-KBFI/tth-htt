@@ -280,7 +280,6 @@ int main(int argc, char* argv[])
   else if ( applyFakeRateWeights_string == "2tau"     ) applyFakeRateWeights = kFR_2tau;
   else throw cms::Exception("analyze_0l_2tau")
     << "Invalid Configuration parameter 'applyFakeRateWeights' = " << applyFakeRateWeights_string << " !!\n";
-
   bool selectBDT = cfg_analyze.getParameter<bool>("selectBDT");
 
   JetToTauFakeRateInterface* jetToTauFakeRateInterface = 0;
@@ -914,7 +913,6 @@ int main(int argc, char* argv[])
         genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
       }
     }
-
     std::vector<GenParticle> genTopQuarks;
     std::vector<GenParticle> genBJets;
     std::vector<GenParticle> genWBosons;
@@ -940,7 +938,6 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("trigger");
     cutFlowHistManager->fillHistograms("trigger", lumiScale);
-
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
     std::vector<RecoMuon> muons = muonReader->read();

@@ -1904,7 +1904,6 @@ int main(int argc, char* argv[])
           ("HadTop_pt_CSVsort4rd",            HadTop_pt_CSVsort4rd)
           ("genTopPt_multilep",               genTopPt_multilep)
           ("genTopPt_CSVsort4rd",             genTopPt_CSVsort4rd)
-
           ("dr_leps",              deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
           ("mTauTauVis" ,          mTauTauVis_sel)
           ("lep1_genLepPt",        ( selLepton_lead->genLepton() != 0 ) ? selLepton_lead->genLepton()->pt() : 0.)
