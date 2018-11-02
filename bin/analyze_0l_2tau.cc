@@ -561,6 +561,32 @@ int main(int argc, char* argv[])
   TFile * fmap = TFile::Open(mapFileName_fip.fullPath().c_str(), "read");
   TH2F * hTargetBinning = static_cast<TH2F *>(fmap->Get("hTargetBinning"));
 
+  // BDTs calculated by Xanda
+  std::string mvaFileName_XGB_Updated = "tthAnalysis/HiggsToTauTau/data/BDTs_2017MC_postPAS/0l_2tau_XGB_Updated_evtLevelSUM_TTH_20Var.xml";
+  std::vector<std::string> mvaInputVariables_XGB_Updated = {
+    "mindr_tau1_jet", "mindr_tau2_jet",
+    "avg_dr_jet", "ptmiss", "tau1_pt", "tau2_pt", "tau1_eta", "tau2_eta",
+    "dr_taus", "mT_tau1", "mT_tau2", "mTauTauVis", "mTauTau", "nJet",
+    "nBJetLoose", "nBJetMedium",
+    "res-HTT_CSVsort4rd_2", "res-HTT_CSVsort4rd", "HadTop_pt_CSVsort4rd_2", "HadTop_pt_CSVsort4rd"
+  };
+  TMVAInterface mva_XGB_Updated(mvaFileName_XGB_Updated, mvaInputVariables_XGB_Updated);
+  mva_XGB_Updated.enableBDTTransform();
+  std::map<std::string, double> mvaInputs_XGB_Updated;
+
+  std::string mvaFileName_XGB_Boosted_AK8 = "tthAnalysis/HiggsToTauTau/data/BDTs_2017MC_postPAS/0l_2tau_XGB_Boosted_AK8_evtLevelSUM_TTH_25Var.xml";
+  std::vector<std::string> mvaInputVariables_XGB_Boosted_AK8 = {
+    "mindr_tau1_jet", "mindr_tau2_jet",
+    "avg_dr_jet", "ptmiss", "tau1_pt", "tau2_pt", "tau1_eta", "tau2_eta",
+    "dr_taus", "mT_tau1", "mT_tau2", "mTauTauVis", "mTauTau", "nJet",
+    "nBJetLoose", "nBJetMedium",
+    "res-HTT_CSVsort4rd_2", "res-HTT_CSVsort4rd", "HadTop_pt_CSVsort4rd",
+    "resolved_and_semi_AK8", "boosted_and_semi_AK8", "minDR_HTTv2_lep", "minDR_AK8_lep", "HTT_boosted", "HTT_semi_boosted_fromAK8"
+  };
+  TMVAInterface mva_XGB_Boosted_AK8(mvaFileName_XGB_Boosted_AK8, mvaInputVariables_XGB_Boosted_AK8);
+  mva_XGB_Boosted_AK8.enableBDTTransform();
+  std::map<std::string, double> mvaInputs_XGB_Boosted_AK8;
+
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
 
@@ -1667,7 +1693,60 @@ int main(int argc, char* argv[])
     xgbInputs_dy["nJet"]                 = selJets.size();
     xgbInputs_dy["nBJetLoose"]           = selBJets_loose.size();
     xgbInputs_dy["nBJetMedium"]          = selBJets_medium.size();
-    double mvaOutput_0l_2tau_HTT_sum_dy = xgb_0l_2tau_sum_dy(xgbInputs_dy);
+    //double mvaOutput_0l_2tau_HTT_sum_dy = xgb_0l_2tau_sum_dy(xgbInputs_dy);
+
+    // --- BDTs calculated by Xanda
+    //mvaInputs_XGB_Boosted_AK8
+    mvaInputs_XGB_Boosted_AK8["mindr_tau1_jet"] = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
+    mvaInputs_XGB_Boosted_AK8["mindr_tau2_jet"] = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
+    mvaInputs_XGB_Boosted_AK8["avg_dr_jet"] = comp_avg_dr_jet(selJets);
+    mvaInputs_XGB_Boosted_AK8["ptmiss"] = met.pt();
+    mvaInputs_XGB_Boosted_AK8["tau1_pt"] = selHadTau_lead->pt();
+    mvaInputs_XGB_Boosted_AK8["tau2_pt"] = selHadTau_sublead->pt();
+    mvaInputs_XGB_Boosted_AK8["tau1_eta"] = selHadTau_lead->absEta();
+    mvaInputs_XGB_Boosted_AK8["tau2_eta"] = selHadTau_sublead->absEta();
+    mvaInputs_XGB_Boosted_AK8["dr_taus"] = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
+    mvaInputs_XGB_Boosted_AK8["mT_tau1"] = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
+    mvaInputs_XGB_Boosted_AK8["mT_tau2"] = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
+    mvaInputs_XGB_Boosted_AK8["mTauTauVis"] = mTauTauVis;
+    mvaInputs_XGB_Boosted_AK8["mTauTau"] = mTauTau;
+    mvaInputs_XGB_Boosted_AK8["nJet"] = selJets.size();
+    mvaInputs_XGB_Boosted_AK8["nBJetLoose"] = selBJets_loose.size();
+    mvaInputs_XGB_Boosted_AK8["nBJetMedium"] = selBJets_medium.size();
+    mvaInputs_XGB_Boosted_AK8["res-HTT_CSVsort4rd_2"] = max_mvaOutput_HTT_CSVsort4rd_2;
+    mvaInputs_XGB_Boosted_AK8["res-HTT_CSVsort4rd"] = max_mvaOutput_HTT_CSVsort4rd;
+    mvaInputs_XGB_Boosted_AK8["HadTop_pt_CSVsort4rd"] = HadTop_pt_CSVsort4rd;
+    mvaInputs_XGB_Boosted_AK8["resolved_and_semi_AK8"] = resolved_and_semi_AK8;
+    mvaInputs_XGB_Boosted_AK8["boosted_and_semi_AK8"] = boosted_and_semi_AK8;
+    mvaInputs_XGB_Boosted_AK8["minDR_HTTv2_lep"] = minDR_HTTv2_lep;
+    mvaInputs_XGB_Boosted_AK8["minDR_AK8_lep"] = minDR_AK8_lep;
+    mvaInputs_XGB_Boosted_AK8["HTT_boosted"] = HTT_boosted;
+    mvaInputs_XGB_Boosted_AK8["HTT_semi_boosted_fromAK8"] = HTT_semi_boosted_fromAK8;    double mva_Boosted_AK8 = mva_XGB_Boosted_AK8(mvaInputs_XGB_Boosted_AK8);
+    //std::cout<<" mva_Boosted_AK8 "<<mva_Boosted_AK8<<std::endl;
+
+    // mvaInputs_XGB_Updated
+    mvaInputs_XGB_Updated["mindr_tau1_jet"] = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
+    mvaInputs_XGB_Updated["mindr_tau2_jet"] = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
+    mvaInputs_XGB_Updated["avg_dr_jet"] = comp_avg_dr_jet(selJets);
+    mvaInputs_XGB_Updated["ptmiss"] = met.pt();
+    mvaInputs_XGB_Updated["tau1_pt"] = selHadTau_lead->pt();
+    mvaInputs_XGB_Updated["tau2_pt"] = selHadTau_sublead->pt();
+    mvaInputs_XGB_Updated["tau1_eta"] = selHadTau_lead->absEta();
+    mvaInputs_XGB_Updated["tau2_eta"] = selHadTau_sublead->absEta();
+    mvaInputs_XGB_Updated["dr_taus"] = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
+    mvaInputs_XGB_Updated["mT_tau1"] = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
+    mvaInputs_XGB_Updated["mT_tau2"] = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
+    mvaInputs_XGB_Updated["mTauTauVis"] = mTauTauVis;
+    mvaInputs_XGB_Updated["mTauTau"] = mTauTau;
+    mvaInputs_XGB_Updated["nJet"] = selJets.size();
+    mvaInputs_XGB_Updated["nBJetLoose"] = selBJets_loose.size();
+    mvaInputs_XGB_Updated["nBJetMedium"] = selBJets_medium.size();
+    mvaInputs_XGB_Updated["res-HTT_CSVsort4rd_2"] = max_mvaOutput_HTT_CSVsort4rd_2;
+    mvaInputs_XGB_Updated["res-HTT_CSVsort4rd"] = max_mvaOutput_HTT_CSVsort4rd;
+    mvaInputs_XGB_Updated["HadTop_pt_CSVsort4rd_2"] = HadTop_pt_CSVsort4rd_2;
+    mvaInputs_XGB_Updated["HadTop_pt_CSVsort4rd"] = HadTop_pt_CSVsort4rd;
+    double mva_Updated = mva_XGB_Updated(mvaInputs_XGB_Updated);
+    std::cout<<" mva_Updated "<<mva_Updated<<std::endl;
 
 //--- fill histograms with events passing final selection
     selHistManagerType* selHistManager = selHistManagers[idxSelHadTau_genMatch];
