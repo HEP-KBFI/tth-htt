@@ -14,7 +14,8 @@ RecoJetReaderAK8::RecoJetReaderAK8(int era)
 {}
 
 RecoJetReaderAK8::RecoJetReaderAK8(int era,
-				     const std::string & branchName_jet, const std::string & branchName_subjet)
+				   const std::string & branchName_jet, const std::string & branchName_subjet,
+				   bool readBtagCSV)
   : era_(era)
   , max_nJets_(32)
   , branchName_num_(Form("n%s", branchName_jet.data()))
@@ -33,7 +34,7 @@ RecoJetReaderAK8::RecoJetReaderAK8(int era,
   , jet_tau4_(nullptr)
   , jet_jetId_(nullptr)
 {
-  subjetReader_ = new RecoSubjetReaderAK8(era, branchName_subjet);
+  subjetReader_ = new RecoSubjetReaderAK8(era, branchName_subjet, readBtagCSV);
   setBranchNames();
 }
 
@@ -114,7 +115,7 @@ RecoJetReaderAK8::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_tau2_, branchName_tau2_);
     bai.setBranchAddress(jet_tau3_, branchName_tau3_);
     bai.setBranchAddress(jet_tau4_, branchName_tau4_);
-    bai.setBranchAddress(jet_jetId_, branchName_jetId_);
+    //bai.setBranchAddress(jet_jetId_, branchName_jetId_); // CV: commented-out for DEBUGging only !!
   }
 }
 
@@ -165,7 +166,8 @@ RecoJetReaderAK8::read() const
 	gInstance->jet_tau2_[idxJet],
 	gInstance->jet_tau3_[idxJet],
 	gInstance->jet_tau4_[idxJet],
-	gInstance->jet_jetId_[idxJet],  
+	//gInstance->jet_jetId_[idxJet], // CV: commented-out for DEBUGging only (instead set to hard-coded value of 2) !!  
+	2,
         static_cast<Int_t>(idxJet)
       });
     } // idxJet

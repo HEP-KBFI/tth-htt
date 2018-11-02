@@ -53,7 +53,12 @@ public:
   }
 
   Tsel &
-  getSelector()
+  getSelector() 
+  {
+    return selector_;
+  }
+  Tsel const &
+  getSelector() const
   {
     return selector_;
   }
