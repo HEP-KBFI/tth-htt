@@ -299,9 +299,9 @@ void Plotter::makePlots()
 
       size_t idx = outputFileName_.find(".");
       std::string outputFileName_plot(outputFileName_, 0, idx);
-      outputFileName_plot.append(Form("_%s_%s", (*category)->name_.data(), (*distribution)->outputFileName_.data()));
+      outputFileName_plot.append(TString(Form("_%s_%s", (*category)->name_.data(), (*distribution)->outputFileName_.data())).ReplaceAll("/", "_"));
       if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName_, idx));
-	  
+      	  
       makePlot(
         800, 900, 
 	histogramData, histogramData_blinded, 

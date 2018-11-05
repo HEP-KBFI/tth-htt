@@ -147,9 +147,14 @@ process.makePlots.distributions = cms.VPSet(
         yAxisTitle = cms.string("dN/dE_{T}^{miss} LD [1/GeV]")
     ),
     cms.PSet(
-        histogramName = cms.string("evt/$PROCESS/mLL"),
+        histogramName = cms.string("evt/$PROCESS/m_ll"),
         xAxisTitle = cms.string("m_{ll} [GeV]"),
         yAxisTitle = cms.string("dN/dm_{ll} [1/GeV]")
+    ),
+    cms.PSet(
+        histogramName = cms.string("evt/$PROCESS/m_bb"),
+        xAxisTitle = cms.string("m_{bb} [GeV]"),
+        yAxisTitle = cms.string("dN/dm_{bb} [1/GeV]")
     ),
     cms.PSet(
         histogramName = cms.string("evt/$PROCESS/mT_e"),
