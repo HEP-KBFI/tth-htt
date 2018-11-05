@@ -842,6 +842,7 @@ int main(int argc, char* argv[])
       "HTT_semi_boosted_fromAK8", "genTopPt_semi_boosted_fromAK8", "HadTop_pt_semi_boosted_fromAK8",
       "minDR_HTTv2_lep", "minDR_AK8_lep",
       "minDR_HTTv2subjets_lep", "minDR_AK8subjets_lep",
+      "mva_Boosted_AK8", "mva_Updated",
       "lumiScale", "genWeight", "evtWeight"
     );
     bdt_filler -> register_variable<int_type>(
@@ -1693,7 +1694,7 @@ int main(int argc, char* argv[])
     xgbInputs_dy["nJet"]                 = selJets.size();
     xgbInputs_dy["nBJetLoose"]           = selBJets_loose.size();
     xgbInputs_dy["nBJetMedium"]          = selBJets_medium.size();
-    //double mvaOutput_0l_2tau_HTT_sum_dy = xgb_0l_2tau_sum_dy(xgbInputs_dy);
+    double mvaOutput_0l_2tau_HTT_sum_dy = xgb_0l_2tau_sum_dy(xgbInputs_dy);
 
     // --- BDTs calculated by Xanda
     //mvaInputs_XGB_Boosted_AK8
@@ -1721,7 +1722,8 @@ int main(int argc, char* argv[])
     mvaInputs_XGB_Boosted_AK8["minDR_HTTv2_lep"] = minDR_HTTv2_lep;
     mvaInputs_XGB_Boosted_AK8["minDR_AK8_lep"] = minDR_AK8_lep;
     mvaInputs_XGB_Boosted_AK8["HTT_boosted"] = HTT_boosted;
-    mvaInputs_XGB_Boosted_AK8["HTT_semi_boosted_fromAK8"] = HTT_semi_boosted_fromAK8;    double mva_Boosted_AK8 = mva_XGB_Boosted_AK8(mvaInputs_XGB_Boosted_AK8);
+    mvaInputs_XGB_Boosted_AK8["HTT_semi_boosted_fromAK8"] = HTT_semi_boosted_fromAK8;
+    double mva_Boosted_AK8 = mva_XGB_Boosted_AK8(mvaInputs_XGB_Boosted_AK8);
     //std::cout<<" mva_Boosted_AK8 "<<mva_Boosted_AK8<<std::endl;
 
     // mvaInputs_XGB_Updated
@@ -1746,7 +1748,7 @@ int main(int argc, char* argv[])
     mvaInputs_XGB_Updated["HadTop_pt_CSVsort4rd_2"] = HadTop_pt_CSVsort4rd_2;
     mvaInputs_XGB_Updated["HadTop_pt_CSVsort4rd"] = HadTop_pt_CSVsort4rd;
     double mva_Updated = mva_XGB_Updated(mvaInputs_XGB_Updated);
-    std::cout<<" mva_Updated "<<mva_Updated<<std::endl;
+    //std::cout<<" mva_Updated "<<mva_Updated<<std::endl;
 
 //--- fill histograms with events passing final selection
     selHistManagerType* selHistManager = selHistManagers[idxSelHadTau_genMatch];
@@ -1934,6 +1936,9 @@ int main(int argc, char* argv[])
           ("genTopPt_boosted",            genTopPt_boosted)
           ("HadTop_pt_boosted",           HadTop_pt_boosted)
           ("hadtruth_boosted",               hadtruth_boosted)
+          // Xanda: I still did not added those to datacards making
+          ("mva_Boosted_AK8", mva_Boosted_AK8)
+          ("mva_Updated",     mva_Updated)
 
         .fill()
       ;
