@@ -562,6 +562,8 @@ class analyzeConfig(object):
           jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
         if 'apply_DYMCReweighting' not in jobOptions:
           jobOptions['apply_DYMCReweighting'] = is_dymc_reweighting(sample_info["dbs_name"])
+        if 'apply_DYMCNormScaleFactors' not in jobOptions:
+          jobOptions['apply_DYMCNormScaleFactors'] =  is_dymc_reweighting(sample_info["dbs_name"])
         if 'lumiScale' not in jobOptions:
           nof_events = -1
           if is_mc:
@@ -618,6 +620,7 @@ class analyzeConfig(object):
             'applyFakeRateWeights',
             'apply_genWeight',
             'apply_DYMCReweighting',
+            'apply_DYMCNormScaleFactors',
             'selEventsFileName_output',
             'fillGenEvtHistograms',
             'selectBDT',

@@ -91,6 +91,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2018.h"
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_0l_2tau_trigger.h" // Data_to_MC_CorrectionInterface_0l_2tau_trigger
 #include "tthAnalysis/HiggsToTauTau/interface/DYMCReweighting.h" // DYMCReweighting
+#include "tthAnalysis/HiggsToTauTau/interface/DYMCNormScaleFactors.h" // DYMCNormScaleFactors
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
@@ -212,6 +213,7 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_DYMCReweighting = cfg_analyze.getParameter<bool>("apply_DYMCReweighting");
+  bool apply_DYMCNormScaleFactors = cfg_analyze.getParameter<bool>("apply_DYMCNormScaleFactors");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
   edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
@@ -244,6 +246,7 @@ int main(int argc, char* argv[])
   const int jetBtagSF_option        = getBTagWeight_option     (central_or_shift);
   const PUsys puSys_option          = getPUsys_option          (central_or_shift);
   const int dyMCReweighting_option  = getDYMCReweighting_option(central_or_shift);
+  const int dyMCNormScaleFactors_option  = getDYMCNormScaleFactors_option(central_or_shift);
 
   const int met_option   = useNonNominal_jetmet ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
   const int jetPt_option = useNonNominal_jetmet ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
@@ -263,6 +266,10 @@ int main(int argc, char* argv[])
   if(apply_DYMCReweighting)
   {
     dyReweighting = new DYMCReweighting(era, dyMCReweighting_option);
+  }
+  DYMCNormScaleFactors* dyNormScaleFactors = nullptr;
+  if ( apply_DYMCNormScaleFactors ) {
+    dyNormScaleFactors = new DYMCNormScaleFactors(era, dyMCNormScaleFactors_option);
   }
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
@@ -443,7 +450,7 @@ int main(int argc, char* argv[])
   RecoJetCollectionCleanerAK8SubJets jetCleanerAK8SubJets(0.4, isDEBUG); //to clean against leptons and hadronic taus
 
   GenParticleReader* genTauLeptonReader = nullptr;
-  if ( isMC && apply_DYMCReweighting ) {
+  if ( isMC && (apply_DYMCReweighting || apply_DYMCNormScaleFactors)) {
     genTauLeptonReader = new GenParticleReader(branchName_genTauLeptons);
     inputTree->registerReader(genTauLeptonReader);
   }
@@ -945,7 +952,7 @@ int main(int argc, char* argv[])
     }
 
     std::vector<GenParticle> genTauLeptons;
-    if(isMC && apply_DYMCReweighting)
+    if(isMC && (apply_DYMCReweighting || apply_DYMCNormScaleFactors))
     {
       genTauLeptons = genTauLeptonReader->read();
     }
@@ -1160,7 +1167,7 @@ int main(int argc, char* argv[])
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       -1., 0., 0., 0., 0., 0.,
       mTauTauVis_presel, -1.,
-      -1., -1., -1., -1., -1., 1.);
+      -1., -1., -1., -1., -1., -1., -1., 1.);
     preselHistManager->evtYield_->fillHistograms(eventInfo, 1.);
 
 //--- apply final event selection
@@ -1180,6 +1187,7 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     double btagWeight = 1.;
     if ( isMC ) {
+      if ( apply_DYMCNormScaleFactors ) evtWeight_inclusive *= dyNormScaleFactors->getWeight(genTauLeptons, selJets.size(), selBJets_loose.size(), selBJets_medium.size());
       evtWeight *= evtWeight_inclusive;
       btagWeight = get_BtagWeight(selJets);
       evtWeight *= btagWeight;
@@ -1600,6 +1608,9 @@ int main(int argc, char* argv[])
     double pZetaVis  = comp_pZetaVis(selHadTau_lead -> p4(), selHadTau_sublead -> p4());
     double pZetaComb = comp_pZetaComb(selHadTau_lead -> p4(), selHadTau_sublead -> p4(), met.p4().px(), met.p4().py());
 
+    //compute di-b-jet mass
+    const double mbb             = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
+    const double mbb_loose       = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 1l_2tau category
     mvaInputs_ttbar["nJet"]                 = selJets.size();
     mvaInputs_ttbar["nBJetLoose"]           = selBJets_loose.size();
@@ -1693,7 +1704,7 @@ int main(int argc, char* argv[])
     xgbInputs_dy["nJet"]                 = selJets.size();
     xgbInputs_dy["nBJetLoose"]           = selBJets_loose.size();
     xgbInputs_dy["nBJetMedium"]          = selBJets_medium.size();
-    //double mvaOutput_0l_2tau_HTT_sum_dy = xgb_0l_2tau_sum_dy(xgbInputs_dy);
+    double mvaOutput_0l_2tau_HTT_sum_dy = xgb_0l_2tau_sum_dy(xgbInputs_dy);
 
     // --- BDTs calculated by Xanda
     //mvaInputs_XGB_Boosted_AK8
@@ -1774,7 +1785,7 @@ int main(int argc, char* argv[])
       mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
       mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
       mTauTauVis, mTauTau,
-      pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, evtWeight);
+      pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight);
     if ( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
       if(! decayModeStr.empty())
@@ -1799,6 +1810,8 @@ int main(int argc, char* argv[])
 	  pZetaComb,
 	  mT_tau1,
 	  mT_tau2,
+	  mbb,
+          mbb_loose,
 	  evtWeight
         );
       }
@@ -1823,7 +1836,7 @@ int main(int argc, char* argv[])
       mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
       mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
       mTauTauVis, mTauTau,
-      pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, evtWeight);
+      pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight);
     */
     std::vector<std::string> categories;
     if(selJets.size() >= 4){
@@ -1852,7 +1865,7 @@ int main(int argc, char* argv[])
 	mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
 	mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
 	mTauTauVis, mTauTau,
-	pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, evtWeight);
+	pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight);
     }
 
     if ( isMC ) {
@@ -1943,8 +1956,8 @@ int main(int argc, char* argv[])
     {
       const double avg_dr_jet      = comp_avg_dr_jet(selJets);
       const double max_dr_jet      = comp_max_dr_jet(selJets);
-      const double mbb             = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
-      const double mbb_loose       = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
+      //const double mbb             = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
+      //const double mbb_loose       = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
       const double mindr_tau1_jet  = std::min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
       const double mindr_tau2_jet  = std::min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
       const double min_dr_tau_jet  = std::min(mindr_tau1_jet, mindr_tau2_jet);
