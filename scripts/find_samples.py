@@ -207,6 +207,12 @@ def get_crab_string(dataset_name, paths):
     full_path = os.path.join(path, primary_name, requestName)
     if os.path.isdir(full_path):
       return requestName
+    # is a hack... I cannot explain where this magic number '152' comes from but it works
+    if len(requestName) > 152:
+      requestName = requestName[:152]
+    full_path = os.path.join(path, primary_name, requestName)
+    if os.path.isdir(full_path):
+      return requestName
   return ''
 
 def convert_date(date):
