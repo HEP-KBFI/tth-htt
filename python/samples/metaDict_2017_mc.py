@@ -40,7 +40,7 @@ sum_events = {
   ("WWTo2L2Nu_DoubleScattering", "WWTo2L2Nu_DoubleScattering_herwig"),
   ("WWTo2L2Nu", "WWTo2L2Nu_PSweights"),
   ("WWTo4Q", "WWTo4Q_PSweights"),
-  ("TTTT", "TTTT_PSweights"),
+#  ("TTTT", "TTTT_PSweights"),
   ("ttHToNonbb_M125_powheg", "ttHToNonbb_M125_powheg_ext1"),
 }
 
