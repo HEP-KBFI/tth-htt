@@ -606,8 +606,6 @@ class analyzeConfig(object):
             'electronSelection',
             'muonSelection',
             'lep_mva_cut',
-            'lep_mLL_veto',
-            'e_dR_cleaning',
             'chargeSumSelection',
             'histogramDir',
             'lumiScale',

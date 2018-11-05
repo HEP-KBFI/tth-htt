@@ -48,14 +48,6 @@ hlt_filter        = args.hlt_filter
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 lep_mva_wp        = args.lep_mva_wp
-lep_mLL_veto      = "ALL"  # current default values
-e_dR_cleaning     = 0.05
-#lep_mLL_veto      = "ALL"  # values for testing (1)
-#e_dR_cleaning     = 0.30
-#lep_mLL_veto      = "SFOS" # values for testing (2)
-#e_dR_cleaning     = 0.30
-#lep_mLL_veto      = "SF"   # values for testing (3)
-#e_dR_cleaning     = 0.30
 
 # Use the arguments
 central_or_shifts = []
@@ -296,8 +288,6 @@ if __name__ == '__main__':
     MEMbranch                 = MEMbranch,
     lepton_charge_selections  = lepton_charge_selections,
     lep_mva_wp                = lep_mva_wp,
-    lep_mLL_veto              = lep_mLL_veto,
-    e_dR_cleaning             = e_dR_cleaning,
     hadTau_selection          = hadTau_selection,
     hadTau_selection_veto     = hadTau_selection_veto,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of

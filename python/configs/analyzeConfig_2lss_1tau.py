@@ -45,8 +45,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         samples,
         MEMbranch,
         lep_mva_wp,
-        lep_mLL_veto,
-        e_dR_cleaning,
         lepton_charge_selections,
         hadTau_selection,
         hadTau_selection_veto,
@@ -101,9 +99,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       isDebug                   = isDebug,
       use_home                  = use_home,
     )
-
-    self.lep_mLL_veto = lep_mLL_veto
-    self.e_dR_cleaning = e_dR_cleaning
 
     self.MEMbranch = MEMbranch
 
@@ -233,9 +228,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     jobOptions['histogramDir'] = histogramDir
     if 'mcClosure' in lepton_and_hadTau_selection:
       self.mcClosure_dir['%s_%s_%s' % (lepton_and_hadTau_selection, jobOptions['leptonChargeSelection'], jobOptions['chargeSumSelection'] )] = histogramDir
-
-    jobOptions['lep_mLL_veto'] = self.lep_mLL_veto
-    jobOptions['e_dR_cleaning'] = self.e_dR_cleaning
 
     self.set_leptonFakeRateWeightHistogramNames(jobOptions['central_or_shift'], lepton_and_hadTau_selection)
     jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
