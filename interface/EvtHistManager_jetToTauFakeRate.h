@@ -30,7 +30,8 @@ public:
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
-                 double mLL,
+                 double m_ll,
+		 double m_bb,
                  double mT_e,
                  double mT_mu,
                  double evtWeight);
@@ -43,8 +44,8 @@ private:
   TH1 * histogram_numBJets_loose_;
   TH1 * histogram_numBJets_medium_;
 
-  TH1 * histogram_mLL_;
-
+  TH1 * histogram_m_ll_;
+  TH1 * histogram_m_bb_;
   TH1 * histogram_mT_e_;
   TH1 * histogram_mT_mu_;
 

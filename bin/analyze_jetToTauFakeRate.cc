@@ -866,7 +866,14 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("1 sel electron + 1 sel muon", evtWeight);
 
-    double mLL = (selLepton_lead->p4() + selLepton_sublead->p4()).mass();
+    double m_ll = (selLepton_lead->p4() + selLepton_sublead->p4()).mass();
+    double m_bb = -1.;
+    if ( selJets.size() >= 2 ) {
+      std::vector<const RecoJet*> selJets_sortedByBtag = selJets;
+      std::sort(selJets_sortedByBtag.begin(), selJets_sortedByBtag.end(), isHigherCSV);
+      assert(selJets_sortedByBtag.size() >= 2);
+      m_bb = (selJets_sortedByBtag[0]->p4() + selJets_sortedByBtag[1]->p4()).mass();
+    }
     double mT_e = ( selLepton_e ) ? comp_MT_met_lep1(*selLepton_e, met.pt(), met.phi()) : -1.;
     double mT_mu = ( selLepton_e ) ? comp_MT_met_lep1(*selLepton_mu, met.pt(), met.phi()) : -1.;
 
@@ -974,7 +981,7 @@ int main(int argc, char* argv[])
     selMEtFilterHistManager.fillHistograms(metFilters, evtWeight);
     selEvtHistManager.fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-      mLL, mT_e, mT_mu, 
+      m_ll, m_bb, mT_e, mT_mu, 
       evtWeight);
     selEvtYieldHistManager.fillHistograms(eventInfo, evtWeight);
 
@@ -1048,7 +1055,7 @@ int main(int argc, char* argv[])
       }
       (*denominator)->evtHistManager_->fillHistograms(selElectrons.size(), selMuons.size(), numHadTaus_denominator,
 	selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-	mLL, mT_e, mT_mu, 					      
+	m_ll, m_bb, mT_e, mT_mu, 					      
 	evtWeight_denominator);
     }
     
@@ -1066,7 +1073,7 @@ int main(int argc, char* argv[])
       }
       (*numerator)->evtHistManager_->fillHistograms(selElectrons.size(), selMuons.size(), numHadTaus_numerator,
 	selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-	mLL, mT_e, mT_mu, 
+	m_ll, m_bb, mT_e, mT_mu, 
 	evtWeight);
     }
 
