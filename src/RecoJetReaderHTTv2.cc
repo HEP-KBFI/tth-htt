@@ -14,7 +14,8 @@ RecoJetReaderHTTv2::RecoJetReaderHTTv2(int era)
 {}
 
 RecoJetReaderHTTv2::RecoJetReaderHTTv2(int era,
-				       const std::string & branchName_jet, const std::string & branchName_subjet)
+                                       const std::string & branchName_jet,
+                                       const std::string & branchName_subjet)
   : era_(era)
   , max_nJets_(32)
   , branchName_num_(Form("n%s", branchName_jet.data()))
@@ -98,7 +99,8 @@ RecoJetReaderHTTv2::setBranchNames()
         << "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
         << " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_
         << " does not match previous association 'branchName_num' = " << instances_[branchName_obj_]->branchName_num_
-        << " with 'branchName_obj' = " << instances_[branchName_obj_]->branchName_obj_ << " !!\n";
+        << " with 'branchName_obj' = " << instances_[branchName_obj_]->branchName_obj_
+      ;
     }
   }
   ++numInstances_[branchName_obj_];
@@ -132,12 +134,24 @@ RecoJetReaderHTTv2::setBranchAddresses(TTree * tree)
 
 namespace
 {
-  const RecoSubjetHTTv2* getSubjet(const std::vector<RecoSubjetHTTv2>& subjets, int idx)
+  const RecoSubjetHTTv2 *
+  getSubjet(const std::vector<RecoSubjetHTTv2> & subjets,
+            int idx)
   {
-    if ( idx == -1 ) return nullptr;
-    else if (idx >= 0 && idx < (int)subjets.size() ) return &subjets[idx];
-    else throw cmsException("<getSubjet>:")
-      << "Invalid subjet index = " << idx << ", given number of subjets = " << subjets.size() << " !!\n";
+    if(idx == -1)
+    {
+      return nullptr;
+    }
+    else if(idx >= 0 && idx < static_cast<int>(subjets.size()))
+    {
+      return &subjets[idx];
+    }
+    else
+    {
+      throw cmsException(__func__, __LINE__)
+        << "Invalid subjet index = " << idx << ", given number of subjets = " << subjets.size()
+      ;
+    }
   }
 }
 
@@ -151,8 +165,9 @@ RecoJetReaderHTTv2::read() const
   const UInt_t nJets = gInstance->nJets_;
   if(nJets > max_nJets_)
   {
-    throw cmsException(this)
-      << "Number of jets stored in Ntuple = " << nJets << ", exceeds max_nJets = " << max_nJets_ << " !!\n";
+    throw cmsException(this, __func__, __LINE__)
+      << "Number of jets stored in Ntuple = " << nJets << ", exceeds max_nJets = " << max_nJets_
+    ;
   }
 
   if(nJets > 0)
@@ -161,9 +176,9 @@ RecoJetReaderHTTv2::read() const
     std::vector<RecoSubjetHTTv2> subjets = subjetReader_->read();
     for(UInt_t idxJet = 0; idxJet < nJets; ++idxJet)
     {
-      const RecoSubjetHTTv2* subJet1 = getSubjet(subjets, gInstance->subjet_idx1_[idxJet]);
-      const RecoSubjetHTTv2* subJet2 = getSubjet(subjets, gInstance->subjet_idx2_[idxJet]);
-      const RecoSubjetHTTv2* subJet3 = getSubjet(subjets, gInstance->subjet_idx3_[idxJet]);
+      const RecoSubjetHTTv2 * subJet1 = getSubjet(subjets, gInstance->subjet_idx1_[idxJet]);
+      const RecoSubjetHTTv2 * subJet2 = getSubjet(subjets, gInstance->subjet_idx2_[idxJet]);
+      const RecoSubjetHTTv2 * subJet3 = getSubjet(subjets, gInstance->subjet_idx3_[idxJet]);
       jets.push_back({
         {
           gInstance->jet_pt_[idxJet],
@@ -171,17 +186,17 @@ RecoJetReaderHTTv2::read() const
           gInstance->jet_phi_[idxJet],
           gInstance->jet_mass_[idxJet]
         },
-	gInstance->jet_area_[idxJet],
-	( subJet1 != nullptr ) ? new RecoSubjetHTTv2(*subJet1) : nullptr,
-	( subJet2 != nullptr ) ? new RecoSubjetHTTv2(*subJet2) : nullptr,
-	( subJet3 != nullptr ) ? new RecoSubjetHTTv2(*subJet3) : nullptr,
-	gInstance->jet_fRec_[idxJet],
+        gInstance->jet_area_[idxJet],
+        subJet1 != nullptr ? new RecoSubjetHTTv2(*subJet1) : nullptr,
+        subJet2 != nullptr ? new RecoSubjetHTTv2(*subJet2) : nullptr,
+        subJet3 != nullptr ? new RecoSubjetHTTv2(*subJet3) : nullptr,
+        gInstance->jet_fRec_[idxJet],
         gInstance->jet_Ropt_[idxJet],
         gInstance->jet_RoptCalc_[idxJet],
-	gInstance->jet_ptForRoptCalc_[idxJet],
-	gInstance->jet_tau1_[idxJet],  
-	gInstance->jet_tau2_[idxJet],  
-	gInstance->jet_tau3_[idxJet],  
+        gInstance->jet_ptForRoptCalc_[idxJet],
+        gInstance->jet_tau1_[idxJet],
+        gInstance->jet_tau2_[idxJet],
+        gInstance->jet_tau3_[idxJet],
         static_cast<Int_t>(idxJet)
       });
     } // idxJet
