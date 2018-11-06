@@ -76,6 +76,8 @@ private:
   TH1 * histogram_evtWeightManager_1D_counter_;
   TH2 * histogram_evtWeightManager_2D_;
   TH2 * histogram_evtWeightManager_2D_counter_;
+
+  std::string central_or_shift_;
 };
 
 #endif
