@@ -566,6 +566,8 @@ class analyzeConfig(object):
           jobOptions['apply_DYMCReweighting'] = is_dymc_reweighting(sample_info["dbs_name"])
         if 'apply_DYMCNormScaleFactors' not in jobOptions:
           jobOptions['apply_DYMCNormScaleFactors'] =  is_dymc_reweighting(sample_info["dbs_name"])
+        if 'central_or_shift' not in jobOptions:
+          jobOptions['central_or_shift'] = 'central'
         if 'lumiScale' not in jobOptions:
           nof_events = -1
           if is_mc:

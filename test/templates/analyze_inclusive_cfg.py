@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
-
 import os
+
+from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
+from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_cfi import *
 
 process = cms.PSet()
 
