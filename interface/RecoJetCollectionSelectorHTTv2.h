@@ -8,8 +8,8 @@ class RecoJetSelectorHTTv2
 {
 public:
   explicit RecoJetSelectorHTTv2(int era,
-                           int index = -1,
-                           bool debug = false);
+                                int index = -1,
+                                bool debug = false);
   ~RecoJetSelectorHTTv2() {}
 
   /**

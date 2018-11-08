@@ -60,7 +60,7 @@ process.analyze_WZctrl = cms.PSet(
     muonSelection = cms.string(''),
     apply_leptonGenMatching = cms.bool(True),
 
-    hadTauSelection = cms.string(''),
+    hadTauSelection_veto = cms.string(''),
 
     applyFakeRateWeights = cms.string(""),
         leptonFakeRateWeight = cms.PSet(

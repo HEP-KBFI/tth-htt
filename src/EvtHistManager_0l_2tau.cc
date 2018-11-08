@@ -40,6 +40,8 @@ EvtHistManager_0l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_PzetaComb_  = book1D(dir, "PzetaComb",  "PzetaComb",  100, -500.,  +500.);
   histogram_mT_tau1_    = book1D(dir, "mT_tau1",    "mT_tau1",     30,    0.,   150.);
   histogram_mT_tau2_    = book1D(dir, "mT_tau2",    "mT_tau2",     30,    0.,   150.);
+  histogram_mbb_        = book1D(dir, "mbb",        "mbb",         20,    0.,   300.);
+  histogram_mbb_loose_  = book1D(dir, "mbb_loose",  "mbb_loose",   20,    0.,   300.);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
@@ -64,6 +66,8 @@ EvtHistManager_0l_2tau::fillHistograms(int numElectrons,
 				       double PzetaComb,
 				       double mT_tau1, 
 				       double mT_tau2,
+				       double mbb,
+				       double mbb_loose,
                                        double evtWeight)
 {
   const double evtWeightErr = 0.;
@@ -93,6 +97,8 @@ EvtHistManager_0l_2tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_PzetaComb_,       PzetaComb,        evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mT_tau1_,         mT_tau1,          evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mT_tau2_,         mT_tau1,          evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mbb_,             mbb,              evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mbb_loose_,       mbb_loose,        evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

@@ -118,7 +118,7 @@ if __name__ == '__main__':
     executable_analyze                    = "analyze_WZctrl",
     cfgFile_analyze                       = "analyze_WZctrl_cfg.py",
     samples                               = samples,
-    hadTauVeto_selection                  = tau_id_wp,
+    hadTauVeto_selection                  = hadTauVeto_selection,
     applyFakeRateWeights                  = "3lepton",
     central_or_shifts                     = central_or_shifts,
     max_files_per_job                     = files_per_job,

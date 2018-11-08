@@ -121,6 +121,12 @@ enum
   kDYMCReweighting_shiftUp, kDYMCReweighting_shiftDown 
 };
 
+enum
+{
+  kDYMCNormScaleFactors_central,
+  kDYMCNormScaleFactors_shiftUp, kDYMCNormScaleFactors_shiftDown
+};
+
 /**
  * @brief Return branchName to read weights that need to be applied, per jet, to MC events
  *       in order to correct for data/MC differences in b-tagging efficiency and mistag rates
@@ -168,6 +174,9 @@ getPUsys_option(const std::string & central_or_shift);
 
 int
 getDYMCReweighting_option(const std::string & central_or_shift);
+
+int
+getDYMCNormScaleFactors_option(const std::string & central_or_shift);
 
 void
 checkOptionValidity(const std::string & central_or_shift,

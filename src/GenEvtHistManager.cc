@@ -22,6 +22,7 @@ GenEvtHistManager::GenEvtHistManager(const edm::ParameterSet & cfg)
   , histogram_evtWeightManager_1D_counter_(nullptr)
   , histogram_evtWeightManager_2D_(nullptr)
   , histogram_evtWeightManager_2D_counter_(nullptr)
+  , central_or_shift_(cfg.getParameter<std::string>("central_or_shift"))
 {}
 
 // [*] https://github.com/CERN-PH-CMG/cmg-cmssw/blob/534b379810bf806c75837c4e3a8e2193275fe79e/PhysicsTools/Heppy/python/analyzers/objects/LeptonAnalyzer.py#L708
@@ -114,8 +115,18 @@ GenEvtHistManager::bookHistograms(TFileDirectory & dir,
     {
       histogram_evtWeightManager_1D_ = static_cast<TH1 *>(eventWeightManager->getHistogram_1D()->Clone());
       histogram_evtWeightManager_1D_->Reset();
+      histogram_evtWeightManager_1D_->SetName(Form(
+        "%s%s",
+        central_or_shift_.empty() || central_or_shift_ == "central" ? "" : Form("%s_", central_or_shift_.data()),
+        histogram_evtWeightManager_1D_->GetName()
+      ));
+      histogram_evtWeightManager_1D_->SetTitle(Form(
+        "%s%s",
+        central_or_shift_.empty() || central_or_shift_ == "central" ? "" : Form("%s_", central_or_shift_.data()),
+        histogram_evtWeightManager_1D_->GetTitle()
+      ));
       histogram_evtWeightManager_1D_counter_ = static_cast<TH1 *>(histogram_evtWeightManager_1D_->Clone());
-      histogram_evtWeightManager_1D_counter_->SetName(Form("%s_counter", histogram_evtWeightManager_1D_->GetName()));
+      histogram_evtWeightManager_1D_counter_->SetName(Form("%s_counter",  histogram_evtWeightManager_1D_->GetName()));
       histogram_evtWeightManager_1D_counter_->SetTitle(Form("%s_counter", histogram_evtWeightManager_1D_->GetTitle()));
       histograms_.push_back(histogram_evtWeightManager_1D_);
       histograms_.push_back(histogram_evtWeightManager_1D_counter_);
@@ -125,8 +136,18 @@ GenEvtHistManager::bookHistograms(TFileDirectory & dir,
     {
       histogram_evtWeightManager_2D_ = static_cast<TH2 *>(eventWeightManager->getHistogram_2D()->Clone());
       histogram_evtWeightManager_2D_->Reset();
+      histogram_evtWeightManager_2D_->SetName(Form(
+        "%s%s",
+        central_or_shift_.empty() || central_or_shift_ == "central" ? "" : Form("%s_", central_or_shift_.data()),
+        histogram_evtWeightManager_2D_->GetName()
+      ));
+      histogram_evtWeightManager_2D_->SetTitle(Form(
+        "%s%s",
+        central_or_shift_.empty() || central_or_shift_ == "central" ? "" : Form("%s_", central_or_shift_.data()),
+        histogram_evtWeightManager_2D_->GetTitle()
+      ));
       histogram_evtWeightManager_2D_counter_ = static_cast<TH2 *>(histogram_evtWeightManager_2D_->Clone());
-      histogram_evtWeightManager_2D_counter_->SetName(Form("%s_counter", histogram_evtWeightManager_2D_->GetName()));
+      histogram_evtWeightManager_2D_counter_->SetName(Form("%s_counter",  histogram_evtWeightManager_2D_->GetName()));
       histogram_evtWeightManager_2D_counter_->SetTitle(Form("%s_counter", histogram_evtWeightManager_2D_->GetTitle()));
       histograms_.push_back(histogram_evtWeightManager_2D_);
       histograms_.push_back(histogram_evtWeightManager_2D_counter_);

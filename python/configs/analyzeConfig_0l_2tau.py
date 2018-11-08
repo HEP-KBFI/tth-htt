@@ -303,6 +303,8 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   continue
                 if central_or_shift in systematics.DYMCReweighting and not is_dymc_reweighting(sample_name):
                   continue
+                if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):
+                  continue
 
                 logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (hadTau_selection_and_frWeight, central_or_shift))
 
@@ -485,6 +487,9 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
                   self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5_%s_%s_%s.root" % \
                     (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection))
+
+                  if self.isBDTtraining:
+                    self.targets.append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
             if self.isBDTtraining or self.do_sync:
               continue
