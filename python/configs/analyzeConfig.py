@@ -167,8 +167,7 @@ class analyzeConfig(object):
         self.central_or_shifts = central_or_shifts
         if not 'central' in self.central_or_shifts:
             logging.warning('Running with systematic uncertainties, but without central value, is not supported --> adding central value.')
-            self.central_or_shifts = [ 'central' ]
-            self.central_or_shifts.extend(central_or_shifts)
+            self.central_or_shifts.append('central')
         #------------------------------------------------------------------------
         # CV: make sure that 'central' is always first entry in self.central_or_shifts
         #    (logic for building dependencies between analysis, 'hadd', and 'addBackgrounds' jobs in derived classes may abort with KeyError otherwise)
