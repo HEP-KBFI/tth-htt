@@ -1,4 +1,5 @@
 import logging
+import re
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
@@ -61,7 +62,10 @@ class analyzeConfig_2los_1tau(analyzeConfig):
         executable_add_syst_dcard = "addSystDatacards",
         verbose                   = False,
         dry_run                   = False,
+        do_sync                   = False,
         isDebug                   = False,
+        rle_select                = '',
+        use_nonnominal            = False,
         hlt_filter                = False,
         use_home                  = True,
       ):
@@ -84,6 +88,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
       executable_prep_dcard     = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
+      do_sync                   = do_sync,
       verbose                   = verbose,
       dry_run                   = dry_run,
       isDebug                   = isDebug,
@@ -177,6 +182,8 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_2los_1tau_cfg.py") #TODO
 
     self.select_rle_output = select_rle_output
+    self.rle_select = rle_select
+    self.use_nonnominal = use_nonnominal
     self.hlt_filter = hlt_filter
 
   def set_BDT_training(self, hadTau_selection_relaxed):
@@ -254,7 +261,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
             continue
           lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
           key_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight)
-          for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
+          for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
             initDict(self.dirs, [ key_dir, dir_type ])
             if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
               self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
@@ -262,7 +269,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
             else:
               self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                 "_".join([ lepton_and_hadTau_selection_and_frWeight ]), process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_SYNC ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
@@ -284,6 +291,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
       inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job)
 
+    mcClosure_regex = re.compile('Fakeable_mcClosure_(?P<type>m|e|t)_wFakeRateWeights')
     for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
       lepton_selection = lepton_and_hadTau_selection
       hadTau_selection = lepton_and_hadTau_selection
@@ -361,6 +369,46 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                 logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
                 continue
 
+              syncOutput = ''
+              syncTree = ''
+              syncRequireGenMatching = False
+              if self.do_sync:
+                mcClosure_match = mcClosure_regex.match(lepton_and_hadTau_selection_and_frWeight)
+                if lepton_and_hadTau_selection_and_frWeight == 'Tight':
+                  syncOutput = os.path.join(
+                    self.dirs[key_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift)
+                  )
+                  syncTree = 'syncTree_%s_SR' % self.channel.replace('_', '').replace('os', 'OS')
+                  syncRequireGenMatching = True
+                elif lepton_and_hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights':
+                  syncOutput = os.path.join(
+                    self.dirs[key_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift)
+                  )
+                  syncTree = 'syncTree_%s_Fake' % self.channel.replace('_', '').replace('os', 'OS')
+                elif mcClosure_match:
+                  mcClosure_type = mcClosure_match.group('type')
+                  syncOutput = os.path.join(
+                    self.dirs[key_dir][DKEY_SYNC], '%s_%s_mcClosure_%s.root' % (self.channel, central_or_shift, mcClosure_type)
+                  )
+                  syncTree = 'syncTree_%s_mcClosure_%s' % (
+                    self.channel.replace('_', '').replace('os', 'OS'), mcClosure_type
+                  )
+                else:
+                  continue
+
+              if syncTree and central_or_shift != "central":
+                syncTree = os.path.join(central_or_shift, syncTree)
+
+              syncRLE = ''
+              if self.do_sync and self.rle_select:
+                syncRLE = self.rle_select % syncTree
+                if not os.path.isfile(syncRLE):
+                  logging.warning("Input RLE file for the sync is missing: %s; skipping the job" % syncRLE)
+                  continue
+
+              if syncOutput:
+                self.inputFiles_sync['sync'].append(syncOutput)
+
               cfg_key = getKey(self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, central_or_shift, jobId)
               cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
               histogramFile_path = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s.root" % key_analyze_job)
@@ -386,7 +434,12 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                 'applyFakeRateWeights'     : applyFakeRateWeights,
                 'central_or_shift'         : central_or_shift,
                 'selectBDT'                : self.isBDTtraining,
+                'syncOutput'               : syncOutput,
+                'syncTree'                 : syncTree,
+                'syncRLE'                  : syncRLE,
+                'syncRequireGenMatching'   : syncRequireGenMatching,
                 'apply_hlt_filter'         : self.hlt_filter,
+                'useNonNominal'            : self.use_nonnominal,
                 'fillGenEvtHistograms'     : True,
               }
               self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_and_hadTau_selection)
@@ -402,7 +455,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
               if self.isBDTtraining:
                 self.targets.append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
-          if self.isBDTtraining:
+          if self.isBDTtraining or self.do_sync:
             continue
 
           if is_mc:
@@ -561,7 +614,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                   self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5_%s_%s.root" % \
                     (self.channel, lepton_and_hadTau_selection_and_frWeight))
 
-          if self.isBDTtraining:
+          if self.isBDTtraining or self.do_sync:
             continue
 
           # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
@@ -572,7 +625,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
               self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
             self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
-        if self.isBDTtraining:
+        if self.isBDTtraining or self.do_sync:
           continue
 
         # sum fake background contributions for the total of all MC samples
@@ -636,15 +689,27 @@ class analyzeConfig_2los_1tau(analyzeConfig):
         self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \
           (self.channel, lepton_and_hadTau_selection_and_frWeight))
 
-    if self.isBDTtraining:
+    if self.isBDTtraining or self.do_sync:
       if self.is_sbatch:
         logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
         self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
-        self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+        if self.isBDTtraining:
+          self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+        elif self.do_sync:
+          self.createScript_sbatch_syncNtuple(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
       logging.info("Creating Makefile")
       lines_makefile = []
-      self.addToMakefile_analyze(lines_makefile)
-      self.addToMakefile_hadd_stage1(lines_makefile)
+      if self.isBDTtraining:
+        self.addToMakefile_analyze(lines_makefile)
+        self.addToMakefile_hadd_stage1(lines_makefile)
+      elif self.do_sync:
+        self.addToMakefile_syncNtuple(lines_makefile)
+        outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
+        self.outputFile_sync['sync'] = outputFile_sync_path
+        self.targets.append(outputFile_sync_path)
+        self.addToMakefile_hadd_sync(lines_makefile)
+      else:
+        raise ValueError("Internal logic error")
       self.createMakefile(lines_makefile)
       logging.info("Done")
       return self.num_jobs

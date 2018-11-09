@@ -87,6 +87,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h" // XGBInterface
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_geral.h" // isGenMatchedJetTriplet tags
+#include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 
@@ -242,6 +243,12 @@ int main(int argc, char* argv[])
   const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
+  const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
+  const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
+  const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  const bool sync_requireGenMatching = syncNtuple_cfg.getParameter<bool>("requireGenMatching");
+  const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
+
   const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
   const bool applyAdditionalEvtWeight = additionalEvtWeight.getParameter<bool>("apply");
   EvtWeightManager * eventWeightManager = nullptr;
@@ -355,6 +362,15 @@ int main(int argc, char* argv[])
   TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
 
   std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
+
+//--- prepare sync Ntuple
+  SyncNtupleManager * snm = nullptr;
+  if(do_sync)
+  {
+    snm = new SyncNtupleManager(syncNtuple_output, syncNtuple_tree);
+    snm->initializeBranches();
+    snm->initializeHLTBranches({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
+  }
 
 //--- declare event-level variables
   EventInfo eventInfo(isSignal, isMC, isMC_tH);
@@ -1316,9 +1332,10 @@ int main(int argc, char* argv[])
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
     double evtWeight = 1.;
+    double btagWeight = 1.;
     if ( isMC ) {
       evtWeight *= evtWeight_inclusive;
-      const double btagWeight = get_BtagWeight(selJets);
+      btagWeight = get_BtagWeight(selJets);
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
 	std::cout << "lumiScale = " << lumiScale << std::endl;
@@ -1330,44 +1347,48 @@ int main(int argc, char* argv[])
 
     double weight_data_to_MC_correction = 1.;
     double triggerWeight = 1.;
+    double leptonSF_weight = 1.;
+    double tauSF_weight = 1.;
     if ( isMC ) {
       dataToMCcorrectionInterface->setLeptons(
         selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->eta(),
-	selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->eta());
+        selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->eta());
 
 //--- apply data/MC corrections for trigger efficiency
       double sf_triggerEff = dataToMCcorrectionInterface->getSF_leptonTriggerEff();
       if ( isDEBUG ) {
-	std::cout << "sf_triggerEff = " << sf_triggerEff << std::endl;
+        std::cout << "sf_triggerEff = " << sf_triggerEff << std::endl;
       }
       triggerWeight *= sf_triggerEff;
       weight_data_to_MC_correction *= sf_triggerEff;
 
 //--- apply data/MC corrections for efficiencies for lepton to pass loose identification and isolation criteria
-      weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
+      leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
       if ( electronSelection == kFakeable && muonSelection == kFakeable ) {
-	weight_data_to_MC_correction = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
+        leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
       } else if ( electronSelection >= kFakeable && muonSelection >= kFakeable ) {
         // apply loose-to-tight lepton ID SFs if either of the following is true:
         // 1) both electron and muon selections are tight -> corresponds to SR
         // 2) electron selection is relaxed to fakeable and muon selection is kept as tight -> corresponds to MC closure w/ relaxed e selection
         // 3) muon selection is relaxed to fakeable and electron selection is kept as tight -> corresponds to MC closure w/ relaxed mu selection
         // we allow (2) and (3) so that the MC closure regions would more compatible w/ the SR (1) in comparison
-        weight_data_to_MC_correction = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge();
+        leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge();
       }
+      weight_data_to_MC_correction *= leptonSF_weight;
 
 //--- apply data/MC corrections for hadronic tau identification efficiency
 //    and for e->tau and mu->tau misidentification rates
       int selHadTau_genPdgId = getHadTau_genPdgId(selHadTau);
       dataToMCcorrectionInterface->setHadTaus(selHadTau_genPdgId, selHadTau->pt(), selHadTau->eta());
-      weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
-      weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_eToTauFakeRate();
-      weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_muToTauFakeRate();
+      tauSF_weight *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
+      tauSF_weight *= dataToMCcorrectionInterface->getSF_eToTauFakeRate();
+      tauSF_weight *= dataToMCcorrectionInterface->getSF_muToTauFakeRate();
+      weight_data_to_MC_correction *= tauSF_weight;
       if ( isDEBUG ) {
-	std::cout << "weight_data_to_MC_correction = " << weight_data_to_MC_correction << std::endl;
+        std::cout << "weight_data_to_MC_correction = " << weight_data_to_MC_correction << std::endl;
       }
 
       evtWeight *= weight_data_to_MC_correction;
@@ -1404,11 +1425,12 @@ int main(int argc, char* argv[])
 
       // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
       if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()) ) {
-	double weight_data_to_MC_correction_hadTau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
-	if ( isDEBUG ) {
-	  std::cout << "weight_data_to_MC_correction_hadTau = " << weight_data_to_MC_correction_hadTau << std::endl;
-	}
-	evtWeight *= weight_data_to_MC_correction_hadTau;
+        double weight_data_to_MC_correction_hadTau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
+        if ( isDEBUG ) {
+          std::cout << "weight_data_to_MC_correction_hadTau = " << weight_data_to_MC_correction_hadTau << std::endl;
+        }
+        tauSF_weight *= weight_data_to_MC_correction_hadTau;
+        evtWeight *= weight_data_to_MC_correction_hadTau;
       }
 
     // require exactly two leptons passing tight selection criteria, to avoid overlap with other channels
@@ -1853,6 +1875,10 @@ int main(int argc, char* argv[])
       (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
     }
 
+    const bool isGenMatched = isMC &&
+      ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
+    ;
+
     if ( bdt_filler ) {
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",              selLepton_lead -> pt())
@@ -1879,27 +1905,26 @@ int main(int argc, char* argv[])
           ("tau_mva",              selHadTau -> raw_mva_dR03())
           ("tau_pt",               selHadTau -> pt())
           ("tau_eta",              selHadTau -> eta())
-
           ("hadtruth",               hadtruth)
           ("bWj1Wj2_isGenMatched_CSVsort4rd",              max_truth_HTT_CSVsort4rd)
-          ("res-HTT_CSVsort4rd",                 max_mvaOutput_HTT_CSVsort4rd)
-          ("HadTop_pt_CSVsort4rd",            HadTop_pt_CSVsort4rd)
-          ("genTopPt_CSVsort4rd",             genTopPt_CSVsort4rd)
+          ("res-HTT_CSVsort4rd",   max_mvaOutput_HTT_CSVsort4rd)
+          ("HadTop_pt_CSVsort4rd", HadTop_pt_CSVsort4rd)
+          ("genTopPt_CSVsort4rd",  genTopPt_CSVsort4rd)
           ("dr_leps",              deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
           ("mTauTauVis" ,          mTauTauVis_sel)
           ("lep1_genLepPt",        ( selLepton_lead->genLepton() != 0 ) ? selLepton_lead->genLepton()->pt() : 0.)
           ("lep2_genLepPt",        ( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.)
           ("tau_genTauPt",         ( selHadTau->genHadTau() != 0 ) ? selHadTau->genHadTau()->pt() : 0.)
-          ("lep1_fake_prob", ( selLepton_lead->genLepton() != 0 ) ? 1.0 : prob_fake_lepton_lead )
-          ("lep2_fake_prob", ( selLepton_sublead->genLepton() != 0 ) ? 1.0 : prob_fake_lepton_sublead)
-          ("tau_fake_prob", ( selHadTau->genHadTau() != 0 || selHadTau->genLepton() != 0 ) ? 1.0 : prob_fake_hadTau )
+          ("lep1_fake_prob",       ( selLepton_lead->genLepton() != 0 ) ? 1.0 : prob_fake_lepton_lead )
+          ("lep2_fake_prob",       ( selLepton_sublead->genLepton() != 0 ) ? 1.0 : prob_fake_lepton_sublead)
+          ("tau_fake_prob",        ( selHadTau->genHadTau() != 0 || selHadTau->genLepton() != 0 ) ? 1.0 : prob_fake_hadTau )
           ("genWeight",            eventInfo.genWeight)
           ("evtWeight",            evtWeight)
           ("nJet",                 selJets.size())
           ("nBJetLoose",           selBJets_loose.size())
           ("nBJetMedium",          selBJets_medium.size())
-          ("nLep",                   selLeptons.size())
-          ("nTau",                   selHadTaus.size())
+          ("nLep",                 selLeptons.size())
+          ("nTau",                 selHadTaus.size())
           ("lep1_isTight",         int(selLepton_lead -> isTight()))
           ("lep1_charge",          selLepton_lead -> charge())
           ("lep1_tau_charge",      selLepton_lead -> charge()+selHadTau -> charge())
@@ -1907,25 +1932,160 @@ int main(int argc, char* argv[])
           ("lep2_charge",          selLepton_sublead -> charge())
           ("tau_isTight",          int(tightHadTauFilter(*selHadTau)))
           ("tau_charge",           selHadTau -> charge())
-          ("mbb",       selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : -1.  )
-          ("ptbb",       selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).pt() : -1.  )
-          ("b1_pt",       selBJets_medium.size()>0 ?  selBJets_medium[0]->pt() : -1. )
-          ("b2_pt",       selBJets_medium.size()>1 ?  selBJets_medium[1]->pt() : -1. )
-	  ("drbb",       selBJets_medium.size()>1 ? deltaR(selBJets_medium[0]->p4(), selBJets_medium[1]->p4()) : -1. )
-	  ("detabb",     selBJets_medium.size()>1 ? TMath::Abs(selBJets_medium[0]->eta() - selBJets_medium[1]->eta()) : -1. )
-          ("mbb_loose",       selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -1.  )
-          ("ptbb_loose",       selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).pt() : -1.  )
-   	  ("b1_loose_pt",       selBJets_loose.size()>0 ?  selBJets_loose[0]->pt() : -1. )
-          ("b2_loose_pt",       selBJets_loose.size()>1 ?  selBJets_loose[1]->pt() : -1. )
-	  ("drbb_loose",       selBJets_loose.size()>1 ? deltaR(selBJets_loose[0]->p4(), selBJets_loose[1]->p4()) : -1. )
-	  ("detabb_loose",     selBJets_loose.size()>1 ? TMath::Abs(selBJets_loose[0]->eta() - selBJets_loose[1]->eta()) : -1. )
+          ("mbb",                  selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : -1.  )
+          ("ptbb",                 selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).pt() : -1.  )
+          ("b1_pt",                selBJets_medium.size()>0 ?  selBJets_medium[0]->pt() : -1. )
+          ("b2_pt",                selBJets_medium.size()>1 ?  selBJets_medium[1]->pt() : -1. )
+          ("drbb",                 selBJets_medium.size()>1 ? deltaR(selBJets_medium[0]->p4(), selBJets_medium[1]->p4()) : -1. )
+          ("detabb",               selBJets_medium.size()>1 ? TMath::Abs(selBJets_medium[0]->eta() - selBJets_medium[1]->eta()) : -1. )
+          ("mbb_loose",            selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -1.  )
+          ("ptbb_loose",           selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).pt() : -1.  )
+          ("b1_loose_pt",          selBJets_loose.size()>0 ?  selBJets_loose[0]->pt() : -1. )
+          ("b2_loose_pt",          selBJets_loose.size()>1 ?  selBJets_loose[1]->pt() : -1. )
+          ("drbb_loose",           selBJets_loose.size()>1 ? deltaR(selBJets_loose[0]->p4(), selBJets_loose[1]->p4()) : -1. )
+          ("detabb_loose",         selBJets_loose.size()>1 ? TMath::Abs(selBJets_loose[0]->eta() - selBJets_loose[1]->eta()) : -1. )
         .fill()
       ;
+    }
+
+    if(snm)
+    {
+      const double dr_lep1_tau1    = deltaR(selLepton_lead->p4(), selHadTau->p4());
+      const double dr_lep2_tau1    = deltaR(selLepton_sublead->p4(), selHadTau->p4());
+      const double max_dr_jet      = comp_max_dr_jet(selJets);
+      const double mbb_loose       = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
+      const double avr_dr_lep_tau  = (dr_lep1_tau1 + dr_lep2_tau1) / 2;
+      const double max_dr_lep_tau  = std::max(dr_lep2_tau1, dr_lep1_tau1);
+      const double min_dr_lep_tau  = std::min(dr_lep2_tau1, dr_lep1_tau1);
+      const double mindr_lep1_jet  = comp_mindr_lep1_jet(*selLepton_lead, selJets);
+      const double mindr_lep2_jet  = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
+      const double min_dr_lep_jet  = std::min(mindr_lep1_jet, mindr_lep2_jet);
+      const double mindr_tau_jet   = comp_mindr_hadTau1_jet(*selHadTau, selJets);
+      const double avg_dr_jet      = comp_avg_dr_jet(selJets);
+      const double dr_leps         = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
+      const double max_lep_eta     = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
+      const double mT_lep1         = comp_MT_met_lep1(*selLepton_lead,    met.pt(), met.phi());
+      const double mT_lep2         = comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi());
+      const double mTauTauVis1_sel = (selLepton_lead->p4() + selHadTau->p4()).mass();
+      const double mTauTauVis2_sel = (selLepton_sublead->p4() + selHadTau->p4()).mass();
+      const double mbb             = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
+
+      snm->read(eventInfo);
+      snm->read(selLeptons);
+      snm->read(preselMuons,     fakeableMuons,     tightMuons);
+      snm->read(preselElectrons, fakeableElectrons, tightElectrons);
+      snm->read(preselHadTaus);
+      snm->read(selJets);
+
+      snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
+      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size());
+
+      snm->read(met.pt(),                               FloatVariableType::PFMET);
+      snm->read(met.phi(),                              FloatVariableType::PFMETphi);
+      snm->read(mht_p4.pt(),                            FloatVariableType::MHT);
+      snm->read(met_LD,                                 FloatVariableType::metLD);
+
+      snm->read(mindr_lep1_jet,                         FloatVariableType::mindr_lep1_jet);
+      snm->read(mindr_lep2_jet,                         FloatVariableType::mindr_lep2_jet);
+      // mindr_lep3_jet not filled
+      // mindr_lep4_jet not filled
+
+      snm->read(mindr_tau_jet,                          FloatVariableType::mindr_tau1_jet);
+      // mindr_tau2_jet not filled
+
+      snm->read(avg_dr_jet,                             FloatVariableType::avg_dr_jet);
+      snm->read(avr_dr_lep_tau,                         FloatVariableType::avr_dr_lep_tau);
+      snm->read(max_dr_jet,                             FloatVariableType::max_dr_jet);
+      snm->read(max_dr_lep_tau,                         FloatVariableType::max_dr_lep_tau);
+      snm->read(mindr_tau_jet,                          FloatVariableType::min_dr_tau_jet); // 1 tau
+      snm->read(min_dr_lep_tau,                         FloatVariableType::min_dr_lep_tau);
+      snm->read(min_dr_lep_jet,                         FloatVariableType::min_dr_lep_jet);
+
+      snm->read(dr_leps,                                FloatVariableType::dr_leps);
+      // dr_taus not filled
+
+      // dr_lep_tau_ss not filled
+      snm->read(dr_lep1_tau1,                           FloatVariableType::dr_lep1_tau1);
+      // dr_lep1_tau2 not filled
+      snm->read(dr_lep2_tau1,                           FloatVariableType::dr_lep2_tau1);
+      // dr_lep3_tau1 not filled
+      // dr_lep2_tau2 not filled
+
+      snm->read(max_lep_eta,                            FloatVariableType::max_lep_eta);
+
+      snm->read(mT_lep1,                                FloatVariableType::mT_met_lep1);
+      snm->read(mT_lep2,                                FloatVariableType::mT_met_lep2);
+      // mT_met_lep3 not filled
+      // mT_met_lep4 not filled
+
+      // mTauTauVis not filled
+      snm->read(mTauTauVis1_sel,                        FloatVariableType::mvis_l1tau);
+      snm->read(mTauTauVis2_sel,                        FloatVariableType::mvis_l2tau);
+
+      snm->read(mbb,                                    FloatVariableType::mbb);
+      snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
+
+      // cosThetaS_hadTau not filled
+      snm->read(max_mvaOutput_HTT_CSVsort4rd,           FloatVariableType::HTT);
+      snm->read(HadTop_pt_CSVsort4rd,                   FloatVariableType::HadTop_pt);
+      snm->read(mvaOutput_Hj_tagger,                    FloatVariableType::Hj_tagger);
+
+      // mvaOutput_plainKin_ttV not filled
+      // mvaOutput_plainKin_tt not filled
+      // mvaOutput_plainKin_1B_VT not filled
+      // mvaOutput_HTT_SUM_VT not filled
+
+      // mvaOutput_plainKin_SUM_VT not filled
+
+      snm->read(mvaOutput_2lss_ttV,                     FloatVariableType::mvaOutput_2lss_ttV);
+      snm->read(mvaOutput_2lss_ttbar,                   FloatVariableType::mvaOutput_2lss_tt);
+      // mvaOutput_2lss_1tau_plainKin_tt not filled
+      // mvaOutput_2lss_1tau_plainKin_ttV not filled
+      // mvaOutput_2lss_1tau_plainKin_1B_M not filled
+      // mvaOutput_2lss_1tau_plainKin_SUM_M not filled
+      // mvaOutput_2lss_1tau_HTT_SUM_M not filled
+      // mvaOutput_2lss_1tau_HTTMEM_SUM_M not filled
+
+      // mvaOutput_3l_ttV not filled
+      // mvaOutput_3l_ttbar not filled
+      // mvaOutput_plainKin_SUM_M not filled
+      // mvaOutput_plainKin_1B_M not filled
+
+      snm->read(weight_fakeRate,                        FloatVariableType::FR_weight);
+      snm->read(triggerWeight,                          FloatVariableType::triggerSF_weight);
+      snm->read(leptonSF_weight,                        FloatVariableType::leptonSF_weight);
+      snm->read(tauSF_weight,                           FloatVariableType::tauSF_weight);
+      snm->read(btagWeight,                             FloatVariableType::bTagSF_weight);
+      snm->read(eventInfo.pileupWeight,                 FloatVariableType::PU_weight);
+      snm->read(boost::math::sign(eventInfo.genWeight), FloatVariableType::MC_weight);
+
+      // memOutput_ttH not filled
+      // memOutput_ttZ not filled
+      // memOutput_ttZ_Zll not filled
+      // memOutput_tt not filled
+      // memOutput_type not filled
+      // memOutput_LR not filled
+
+      snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
+
+      if((sync_requireGenMatching && isGenMatched) || ! sync_requireGenMatching)
+      {
+        snm->fill();
+      }
+      else
+      {
+        snm->reset();
+      }
     }
 
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
+  }
+
+  if(snm)
+  {
+    snm->write();
   }
 
   std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
@@ -1987,6 +2147,7 @@ int main(int argc, char* argv[])
   delete eventWeightManager;
 
   delete inputTree;
+  delete snm;
 
   clock.Show("analyze_2los_1tau");
 
