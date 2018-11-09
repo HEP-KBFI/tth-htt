@@ -18,6 +18,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/addBackgroundsAuxFunctions.h" // getSubdirectories, getSubdirectoryNames
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 #include <TFile.h>
 #include <TH1.h>
@@ -50,7 +51,7 @@ int main(int argc, char* argv[])
     return EXIT_FAILURE;
   }
 
-  std::cout << "<addBackgrounds>:" << std::endl;
+  std::cout << "<addBackgrounds>:\n";
 
 //--- keep track of time it takes the macro to execute
   TBenchmark clock;
@@ -58,8 +59,8 @@ int main(int argc, char* argv[])
 
 //--- read python configuration parameters
   if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
-    throw cms::Exception("addBackgrounds")
-      << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
+    throw cmsException(__func__, __LINE__)
+      << "No ParameterSet 'process' found in configuration file = " << argv[1];
 
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
@@ -75,8 +76,7 @@ int main(int argc, char* argv[])
 
   fwlite::InputSource inputFiles(cfg);
   if ( !(inputFiles.files().size() == 1) )
-    throw cms::Exception("addBackgrounds")
-      << "Exactly one input file expected !!\n";
+    throw cmsException(__func__, __LINE__) << "Exactly one input file expected";
   TFile* inputFile = new TFile(inputFiles.files().front().data());
 
   fwlite::OutputFiles outputFile(cfg);
@@ -84,27 +84,27 @@ int main(int argc, char* argv[])
 
   if ( categories.size() == 0 ) categories = getSubdirectoryNames(inputFile);
 
-  for ( vstring::const_iterator category = categories.begin();
-        category != categories.end(); ++category ) {
+  for(const std::string & category: categories)
+  {
 
-    TDirectory* dir = getDirectory(inputFile, *category, true);
+    TDirectory* dir = getDirectory(inputFile, category, true);
     assert(dir);
 
-    std::cout << "processing category = " << (*category) << std::endl;
+    std::cout << "processing category = " << category << '\n';
 
     std::vector<const TDirectory*> subdirs_level1 = getSubdirectories(dir);
-    for ( std::vector<const TDirectory*>::iterator subdir_level1 = subdirs_level1.begin();
-          subdir_level1 != subdirs_level1.end(); ++subdir_level1 ) {
+    for(const TDirectory * subdir_level1: subdirs_level1)
+    {
 
-      std::vector<const TDirectory*> subdirs_level2 = getSubdirectories(*subdir_level1);
-      for ( std::vector<const TDirectory*>::iterator subdir_level2 = subdirs_level2.begin();
-          subdir_level2 != subdirs_level2.end(); ++subdir_level2 ) {
+      std::vector<const TDirectory*> subdirs_level2 = getSubdirectories(subdir_level1);
+      for(const TDirectory * subdir_level2: subdirs_level2)
+      {
 
-        std::cout << " processing directory = " << Form("%s/%s", (*subdir_level1)->GetName(), (*subdir_level2)->GetName()) << std::endl;
+        std::cout << " processing directory = " << Form("%s/%s", subdir_level1->GetName(), subdir_level2->GetName()) << '\n';
 
         std::string the_process_input = processes_input.front();
 
-        TDirectory* dir_input = dynamic_cast<TDirectory*>((const_cast<TDirectory*>(*subdir_level2))->Get(the_process_input.data()));
+        TDirectory * dir_input = dynamic_cast<TDirectory *>((const_cast<TDirectory *>(subdir_level2))->Get(the_process_input.data()));
         if ( !dir_input ) {
           if ( the_process_input.find("ttH_htt") != std::string::npos ||
                the_process_input.find("ttH_hww") != std::string::npos ||
@@ -113,16 +113,14 @@ int main(int argc, char* argv[])
                the_process_input.find("ttH_hmm") != std::string::npos  ) {
             continue;
           }
-          if ( std::string((*subdir_level2)->GetName()).find("genEvt")    != std::string::npos ||
-               std::string((*subdir_level2)->GetName()).find("lheInfo")   != std::string::npos ||
-               std::string((*subdir_level2)->GetName()).find("cutFlow")   != std::string::npos ||
-               std::string((*subdir_level2)->GetName()).find("evtntuple") != std::string::npos ) {
+          if ( std::string(subdir_level2->GetName()).find("genEvt")    != std::string::npos ||
+               std::string(subdir_level2->GetName()).find("lheInfo")   != std::string::npos ||
+               std::string(subdir_level2->GetName()).find("cutFlow")   != std::string::npos ||
+               std::string(subdir_level2->GetName()).find("evtntuple") != std::string::npos ) {
             continue;
           }
-          throw cms::Exception("addBackgrounds")
-            << "Failed to find subdirectory = " << the_process_input << " within directory = " << (*subdir_level2)->GetName() << " !!\n";
-          //std::cerr << "Failed to find subdirectory = " << the_process_input << " within directory = " << (*subdir_level2)->GetName() << " --> skipping !!" << std::endl;
-          //continue;
+          throw cmsException(__func__, __LINE__)
+            << "Failed to find subdirectory = " << the_process_input << " within directory = " << subdir_level2->GetName();
         }
         std::set<std::string> histograms;
         TList* list = dir_input->GetListOfKeys();
@@ -146,27 +144,43 @@ int main(int argc, char* argv[])
           }
         }
 
-        for ( std::set<std::string>::const_iterator histogram = histograms.begin();
-              histogram != histograms.end(); ++histogram ) {
-          for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
-                central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
-            std::vector<TH1*> histograms_input;
-            for ( vstring::const_iterator process_input = processes_input.begin();
-                  process_input != processes_input.end(); ++process_input ) {
-              bool enableException = ( (*central_or_shift) == "" || (*central_or_shift) == "central" ) ? true : false;
-              TH1* histogram_input = getHistogram(*subdir_level2, *process_input, *histogram, *central_or_shift, enableException);
-              if ( !histogram_input ) histogram_input = getHistogram(*subdir_level2, *process_input, *histogram, "", true);
+        for(const std::string & histogram: histograms)
+        {
+          for(const std::string & central_or_shift: central_or_shifts)
+          {
+            std::vector<TH1 *> histograms_input;
+            for(const std::string & process_input: processes_input)
+            {
+              bool enableException = (central_or_shift.empty() || central_or_shift == "central") ? true : false;
+              TH1 * histogram_input = getHistogram(subdir_level2, process_input, histogram, central_or_shift, enableException);
+              if (! histogram_input)
+              {
+                histogram_input = getHistogram(subdir_level2, process_input, histogram, "", true);
+              }
+              if(std::find(histograms_input.begin(), histograms_input.end(), histogram_input) != histograms_input.end())
+              {
+                throw cmsException(__func__, __LINE__)
+                  << "Attempting to add the same histogram twice: " << histogram_input->GetName() << " from " << process_input;
+              }
               histograms_input.push_back(histogram_input);
             }
 
-            std::string subdirName_output = Form("%s/%s/%s/%s", category->data(), (*subdir_level1)->GetName(), (*subdir_level2)->GetName(), process_output.data());
-            TDirectory* subdir_output = createSubdirectory_recursively(fs, subdirName_output);
+            std::string subdirName_output = Form(
+              "%s/%s/%s/%s", category.data(), subdir_level1->GetName(), subdir_level2->GetName(), process_output.data()
+            );
+            TDirectory * subdir_output = createSubdirectory_recursively(fs, subdirName_output);
             subdir_output->cd();
 
             std::string histogramName_output;
-            if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramName_output.append(*central_or_shift);
-            if ( histogramName_output.length() > 0 ) histogramName_output.append("_");
-            histogramName_output.append(*histogram);
+            if(! (central_or_shift.empty() || central_or_shift == "central"))
+            {
+              histogramName_output.append(central_or_shift);
+            }
+            if(histogramName_output.length() > 0)
+            {
+              histogramName_output.append("_");
+            }
+            histogramName_output.append(histogram);
             TH1 * tmp = addHistograms(histogramName_output, histograms_input);
             tmp->Write();
 
