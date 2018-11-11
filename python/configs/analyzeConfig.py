@@ -1083,7 +1083,7 @@ class analyzeConfig(object):
                 lines_makefile.append("%s: %s" % (outputFiles[key], sbatchTarget))
                 lines_makefile.append("\t%s" % ":") # CV: null command
                 lines_makefile.append("")
-            elif self.do_sync and self.is_makefile:
+            elif self.is_makefile:
                 lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))
                 lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
                 lines_makefile.append("\thadd -f %s %s" % (os.path.basename(outputFiles[key]), " ".join(inputFiles[key])))
