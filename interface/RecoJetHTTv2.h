@@ -6,7 +6,7 @@
  * Class to access information for jets reconstructed by hep-top-tagger (HTTv2) algorithm,
  * used for reconstruction of boosted hadronic tops
  *
- * \author Christian Veelken, Tallin
+ * \author Christian Veelken, Tallinn
  *
  */
 
@@ -21,18 +21,18 @@ class RecoJetHTTv2
 public:
   RecoJetHTTv2() = default;
   RecoJetHTTv2(const GenJet & particle,
-	       Double_t area,
-	       const RecoSubjetHTTv2* subJet1,
-	       const RecoSubjetHTTv2* subJet2,
-	       const RecoSubjetHTTv2* subJet3,
-	       Double_t fRec,
-	       Double_t Ropt,
-	       Double_t RoptCalc,
-	       Double_t ptForRoptCalc,
-	       Double_t tau1,
-	       Double_t tau2,
-	       Double_t tau3,
-	       Int_t idx);
+               Double_t area,
+               const RecoSubjetHTTv2 * subJet1,
+               const RecoSubjetHTTv2 * subJet2,
+               const RecoSubjetHTTv2 * subJet3,
+               Double_t fRec,
+               Double_t Ropt,
+               Double_t RoptCalc,
+               Double_t ptForRoptCalc,
+               Double_t tau1,
+               Double_t tau2,
+               Double_t tau3,
+               Int_t idx);
 
   virtual ~RecoJetHTTv2();
 
@@ -41,9 +41,9 @@ public:
    * @return Values of data-members
    */
   Double_t area() const;
-  const RecoSubjetHTTv2* subJet1() const;
-  const RecoSubjetHTTv2* subJet2() const;
-  const RecoSubjetHTTv2* subJet3() const;
+  const RecoSubjetHTTv2 * subJet1() const;
+  const RecoSubjetHTTv2 * subJet2() const;
+  const RecoSubjetHTTv2 * subJet3() const;
   Double_t fRec() const;
   Double_t Ropt() const;
   Double_t RoptCalc() const;

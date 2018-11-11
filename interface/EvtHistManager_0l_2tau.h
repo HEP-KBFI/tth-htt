@@ -43,6 +43,8 @@ public:
 		 double Pzeta, double PzetaVis, double PzetaComb,
 		 double mT_tau1, 
 		 double mT_tau2,
+		 double mbb,
+		 double mbb_loose,
                  double evtWeight);
 
   const TH1 *
@@ -78,6 +80,8 @@ private:
   TH1 * histogram_PzetaComb_;
   TH1 * histogram_mT_tau1_;
   TH1 * histogram_mT_tau2_;
+  TH1 * histogram_mbb_;
+  TH1 * histogram_mbb_loose_;
 
   TH1 * histogram_EventCounter_;
 };

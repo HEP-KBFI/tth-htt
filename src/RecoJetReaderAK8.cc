@@ -14,8 +14,8 @@ RecoJetReaderAK8::RecoJetReaderAK8(int era)
 {}
 
 RecoJetReaderAK8::RecoJetReaderAK8(int era,
-				   const std::string & branchName_jet, const std::string & branchName_subjet,
-				   bool readBtagCSV)
+                                   const std::string & branchName_jet, const std::string & branchName_subjet,
+                                   bool readBtagCSV)
   : era_(era)
   , max_nJets_(32)
   , branchName_num_(Form("n%s", branchName_jet.data()))
@@ -121,12 +121,23 @@ RecoJetReaderAK8::setBranchAddresses(TTree * tree)
 
 namespace
 {
-  const RecoSubjetAK8* getSubjet(const std::vector<RecoSubjetAK8>& subjets, int idx)
+  const RecoSubjetAK8 *
+  getSubjet(const std::vector<RecoSubjetAK8> & subjets,
+            int idx)
   {
-    if ( idx == -1 ) return nullptr;
-    else if (idx >= 0 && idx < (int)subjets.size() ) return &subjets[idx];
-    else throw cmsException("<getSubjet>:")
-      << "Invalid subjet index = " << idx << ", given number of subjets = " << subjets.size() << " !!\n";
+    if(idx == -1)
+    {
+      return nullptr;
+    }
+    else if(idx >= 0 && idx < (int)subjets.size())
+    {
+      return &subjets[idx];
+    }
+    else
+    {
+      throw cmsException(__func__, __LINE__)
+        << "Invalid subjet index = " << idx << ", given number of subjets = " << subjets.size() << " !!\n";
+    }
   }
 }
 
@@ -150,8 +161,8 @@ RecoJetReaderAK8::read() const
     std::vector<RecoSubjetAK8> subjets = subjetReader_->read();
     for(UInt_t idxJet = 0; idxJet < nJets; ++idxJet)
     {
-      const RecoSubjetAK8* subJet1 = getSubjet(subjets, gInstance->subjet_idx1_[idxJet]);
-      const RecoSubjetAK8* subJet2 = getSubjet(subjets, gInstance->subjet_idx2_[idxJet]);
+      const RecoSubjetAK8 * subJet1 = subjets.size() > 0 ? getSubjet(subjets, gInstance->subjet_idx1_[idxJet]) : nullptr;
+      const RecoSubjetAK8 * subJet2 = subjets.size() > 1 ? getSubjet(subjets, gInstance->subjet_idx2_[idxJet]) : nullptr;
       jets.push_back({
         {
           gInstance->jet_pt_[idxJet],
@@ -159,15 +170,15 @@ RecoJetReaderAK8::read() const
           gInstance->jet_phi_[idxJet],
           gInstance->jet_mass_[idxJet]
         },
-	gInstance->jet_msoftdrop_[idxJet],
+        gInstance->jet_msoftdrop_[idxJet],
         ( subJet1 != nullptr ) ? new RecoSubjetAK8(*subJet1) : nullptr,
-	( subJet2 != nullptr ) ? new RecoSubjetAK8(*subJet2) : nullptr,
-	gInstance->jet_tau1_[idxJet],
-	gInstance->jet_tau2_[idxJet],
-	gInstance->jet_tau3_[idxJet],
-	gInstance->jet_tau4_[idxJet],
-	//gInstance->jet_jetId_[idxJet], // CV: commented-out for DEBUGging only (instead set to hard-coded value of 2) !!  
-	2,
+        ( subJet2 != nullptr ) ? new RecoSubjetAK8(*subJet2) : nullptr,
+        gInstance->jet_tau1_[idxJet],
+        gInstance->jet_tau2_[idxJet],
+        gInstance->jet_tau3_[idxJet],
+        gInstance->jet_tau4_[idxJet],
+        //gInstance->jet_jetId_[idxJet], // CV: commented-out for DEBUGging only (instead set to hard-coded value of 2) !!
+        2,
         static_cast<Int_t>(idxJet)
       });
     } // idxJet

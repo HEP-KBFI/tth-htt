@@ -213,7 +213,7 @@ main(int argc,
   RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons, false);
   electronReader->readUncorrected(useNonNominal);
   inputTree->registerReader(electronReader);
-  const RecoElectronCollectionCleaner electronCleaner(0.05, isDEBUG);
+  const RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
   const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);

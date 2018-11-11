@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_2los_1tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -15,6 +15,8 @@ parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_preselect()
+parser.add_rle_select()
+parser.add_nonnominal()
 parser.add_tau_id_wp()
 parser.add_hlt_filter()
 parser.add_files_per_job()
@@ -38,6 +40,8 @@ running_method     = args.running_method
 mode              = args.mode
 systematics_label = args.systematics
 use_preselected   = args.use_preselected
+rle_select        = os.path.expanduser(args.rle_select)
+use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
 files_per_job     = args.files_per_job
 use_home          = args.use_home
@@ -49,6 +53,7 @@ for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
+do_sync = mode == 'sync'
 lumi = get_lumi(era)
 
 if mode == "default":
@@ -100,6 +105,46 @@ elif mode == "forBDTtraining":
   elif era == "2017":
     hadTau_selection         = "dR03mvaTight"
     hadTau_selection_relaxed = "dR03mvaLoose"
+  elif era == "2018":
+    raise ValueError("Implement me!")
+  else:
+    raise ValueError("Invalid era: %s" % era)
+
+  applyFakeRateWeights = "3L"
+elif mode == "sync":
+  if use_preselected:
+    if era == "2016":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_preselected_sync import samples_2016 as samples
+    elif era == "2017":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected_sync import samples_2017 as samples
+    elif era == "2018":
+      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_preselected_sync import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
+  else:
+    if use_nonnominal:
+      if era == "2016":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
+      elif era == "2017":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+      elif era == "2018":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
+      else:
+        raise ValueError("Invalid era: %s" % era)
+    else:
+      if era == "2016":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync_nom import samples_2016 as samples
+      elif era == "2017":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
+      elif era == "2018":
+        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync_nom import samples_2018 as samples
+      else:
+        raise ValueError("Invalid era: %s" % era)
+
+  if era == "2016":
+    hadTau_selection = "dR03mvaMedium"
+  elif era == "2017":
+    hadTau_selection = "dR03mvaLoose"
   elif era == "2018":
     raise ValueError("Implement me!")
   else:
@@ -161,7 +206,10 @@ if __name__ == '__main__':
     },
     select_rle_output         = True,
     dry_run                   = dry_run,
+    do_sync                   = do_sync,
     isDebug                   = debug,
+    rle_select                = rle_select,
+    use_nonnominal            = use_nonnominal,
     hlt_filter                = hlt_filter,
     use_home                  = use_home,
   )

@@ -12,8 +12,8 @@ RecoSubjetReaderAK8::RecoSubjetReaderAK8(int era)
 {}
 
 RecoSubjetReaderAK8::RecoSubjetReaderAK8(int era,
-					 const std::string & branchName_obj,
-					 bool readBtagCSV)
+                                         const std::string & branchName_obj,
+                                         bool readBtagCSV)
   : era_(era)
   , readBtagCSV_(readBtagCSV)
   , max_nJets_(88)
@@ -121,9 +121,9 @@ RecoSubjetReaderAK8::read() const
           gInstance->jet_pt_[idxJet],
           gInstance->jet_eta_[idxJet],
           gInstance->jet_phi_[idxJet],
-	  gInstance->jet_mass_[idxJet]
+          gInstance->jet_mass_[idxJet]
         },
-	( readBtagCSV_ ) ? gInstance->jet_BtagCSV_[idxJet] : -1.,    
+        ( readBtagCSV_ ) ? gInstance->jet_BtagCSV_[idxJet] : -1.,
         static_cast<Int_t>(idxJet)
       });
     } // idxJet

@@ -45,8 +45,6 @@ process.analyze_2lss_1tau = cms.PSet(
     electronSelection = cms.string(''),
     muonSelection = cms.string(''),
     lep_mva_cut = cms.double(1.),
-    lep_mLL_veto = cms.string(""),
-    e_dR_cleaning = cms.double(0.),
     apply_leptonGenMatching = cms.bool(True),
     leptonChargeSelection = cms.string(''),
 

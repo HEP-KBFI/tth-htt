@@ -16,7 +16,8 @@ class RecoJetReaderHTTv2
 public:
   RecoJetReaderHTTv2(int era);
   RecoJetReaderHTTv2(int era,
-		     const std::string & branchName_jet, const std::string & branchName_subjet);
+                     const std::string & branchName_jet,
+                     const std::string & branchName_subjet);
   ~RecoJetReaderHTTv2();
 
   /**
