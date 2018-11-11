@@ -1012,10 +1012,10 @@ int main(int argc, char* argv[])
     if ( !isMC && !isDEBUG ) {
       bool isTriggered_SingleElectron = isTriggered_1e || isTriggered_1e1tau;
       bool isTriggered_SingleMuon = isTriggered_1mu || isTriggered_1mu1tau;
-      bool isTriggered_Tau = isTriggered_1e1tau || isTriggered_1mu1tau;
+      //bool isTriggered_Tau = isTriggered_1e1tau || isTriggered_1mu1tau;
 
       bool selTrigger_SingleElectron = selTrigger_1e || selTrigger_1e1tau;
-      bool selTrigger_SingleMuon = selTrigger_1mu || selTrigger_1mu1tau;
+      //bool selTrigger_SingleMuon = selTrigger_1mu || selTrigger_1mu1tau;
       bool selTrigger_Tau = selTrigger_1e1tau || selTrigger_1mu1tau;
 
       if ( selTrigger_SingleElectron && isTriggered_SingleMuon ) {
