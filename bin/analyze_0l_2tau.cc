@@ -105,8 +105,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
-#include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
-#include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
+#include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h" // ClassicSVfit
+#include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h" // classic_svFit::MeasuredTauLepton
 #include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h"
 #include "TauAnalysis/ClassicSVfit/interface/svFitAuxFunctions.h"
 
