@@ -615,6 +615,7 @@ class analyzeConfig(object):
             'leptonChargeSelection',
             'hadTauChargeSelection',
             'hadTauSelection',
+            'apply_hadTauVeto',
             'hadTauSelection_veto',
             'apply_leptonGenMatching',
             'apply_hadTauGenMatching',
