@@ -25,8 +25,8 @@ enum {
   kGen_2l2f0g0j, kGen_2l1f0g0j, kGen_2l0f0g0j,
   kGen_1l1f1g0j, kGen_1l1f0g1j, kGen_1l0f1g0j, kGen_1l0f0g1j,
   kGen_0l0f2g0j, kGen_0l0f1g1j, kGen_0l0f0g2j
-}; // this is the new enum
-
+}; // this is the new enum, where generator-level matched leptons are split into charge flip and non-flip contributions 
+   // (needed for HH->2l+2tau channel)
 
 enum { 
   kGen_LeptonUndefined3, kGen_LeptonAll3, 
@@ -76,7 +76,6 @@ struct leptonChargeFlipGenMatchEntry
   int numGenMatchedPhotons_;
   int numGenMatchedJets_;
 };
-
 
 std::vector<leptonGenMatchEntry> getLeptonGenMatch_definitions_1lepton(bool apply_leptonGenMatching);
 std::vector<leptonGenMatchEntry> getLeptonGenMatch_definitions_2lepton(bool apply_leptonGenMatching);
