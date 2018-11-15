@@ -487,9 +487,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                       (self.channel, process_name, sample_category, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection))
                     outputFile = os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_%s_%s_%s_%s.root" % \
                       (self.channel, process_name, sample_category, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection))
-                  if genMatch_category == "conversions":
+                  elif genMatch_category == "conversions":
                     # sum conversion background contributions for each MC sample separately
-                    # input processes: TT2l1g0j,...
+                    # input processes: TT0l1g0j,...
                     # output processes: TT_conversions; ...
                     if sample_category in [ "signal" ]:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_conversions ]
@@ -771,7 +771,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
     if "Fakeable_mcClosure" in self.lepton_and_hadTau_selections: #TODO
-      key_makePlots_job = getKey("OS")
+      key_makePlots_job = getKey("Fakeable_mcClosure", "OS")
       key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
       self.jobOptions_make_plots[key_makePlots_job] = {
         'executable' : self.executable_make_plots_mcClosure,
