@@ -369,17 +369,17 @@ int main(int argc, char* argv[])
     return false;
   }();
 
-  const double maxAbsEta_lept = 2.1;
-  double minPt_ele = -1.;
-  double minPt_mu  = -1.;
+  const double maxAbsEta_lepton = 2.1;
+  double minPt_e  = -1.;
+  double minPt_mu = -1.;
   switch(era)
   {
-    case kEra_2016: minPt_ele = 25.; minPt_mu  = 20.; break; // AN2016_372_v14:331
-    case kEra_2017: minPt_ele = 30.; minPt_mu  = 25.; break;
+    case kEra_2016: minPt_e = 25.; minPt_mu  = 20.; break; // AN2016_372_v14:331
+    case kEra_2017: minPt_e = 30.; minPt_mu  = 25.; break;
     case kEra_2018: throw cmsException("analyze_1l_2tau", __LINE__) << "Implement me!";
     default:        throw cmsException("analyze_1l_2tau", __LINE__) << "Invalid era = " << era;
   }
-  assert(minPt_ele > 0. && minPt_mu > 0.);
+  assert(minPt_e > 0. && minPt_mu > 0.);
   const double minPt_hadTau_lead    = 30.;
   const double minPt_hadTau_sublead = 20.;
 
@@ -863,12 +863,12 @@ int main(int argc, char* argv[])
   const std::vector<std::string> cuts = {
     "run:ls:event selection",
     "trigger",
-    "1 presel lepton",
+    ">= 1 presel lepton",
     "presel lepton trigger match",
     ">= 2 presel taus",
     ">= 2 jets",
     ">= 2 loose b-jets || 1 medium b-jet (1)",
-    "1 sel lepton",
+    ">= 1 sel lepton",
     "<= 1 tight leptons",
     "fakeable lepton trigger match",
     ">= 2 sel taus",
@@ -876,8 +876,8 @@ int main(int argc, char* argv[])
     ">= 3 jets",
     ">= 2 loose b-jets || 1 medium b-jet (2)",
     "m(ll) > 12 GeV",
-    Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_ele, minPt_mu),
-    Form("sel lepton abs(eta) < %.1f", maxAbsEta_lept),
+    Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu),
+    Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton),
     Form("sel lead hadTau pT > %.0f GeV", minPt_hadTau_lead),
     Form("sel sublead hadTau pT > %.0f GeV", minPt_hadTau_sublead),
     "tau-pair OS/SS charge",
@@ -908,7 +908,7 @@ int main(int argc, char* argv[])
     {
       continue;
     }
-    cutFlowTable.update("run:ls:event selection");
+    cutFlowTable.update("run:ls:event selection", lumiScale);
     cutFlowHistManager->fillHistograms("run:ls:event selection", lumiScale);
 
     if ( isDEBUG ) {
@@ -981,13 +981,9 @@ int main(int argc, char* argv[])
     }
 
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
-    //std::cout << "isTriggered_1e = " << isTriggered_1e << std::endl;
     bool isTriggered_1e1tau = hltPaths_isTriggered(triggers_1e1tau, isDEBUG);
-    //std::cout << "isTriggered_1e1tau = " << isTriggered_1e1tau << std::endl;
     bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, isDEBUG);
-    //std::cout << "isTriggered_1mu = " << isTriggered_1mu << std::endl;
     bool isTriggered_1mu1tau = hltPaths_isTriggered(triggers_1mu1tau, isDEBUG);
-    //std::cout << "isTriggered_1mu1tau = " << isTriggered_1mu1tau << std::endl;
 
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_1e1tau = use_triggers_1e1tau && isTriggered_1e1tau;
@@ -1042,8 +1038,8 @@ int main(int argc, char* argv[])
 	}
       }
     }
-    cutFlowTable.update("trigger");
-    cutFlowHistManager->fillHistograms("trigger", lumiScale);
+    cutFlowTable.update("trigger", evtWeight_inclusive);
+    cutFlowHistManager->fillHistograms("trigger", evtWeight_inclusive);
 
     if ( (selTrigger_1mu     && !apply_offline_e_trigger_cuts_1mu)     ||
          (selTrigger_1mu1tau && !apply_offline_e_trigger_cuts_1mu1tau) ||
@@ -1198,8 +1194,8 @@ int main(int argc, char* argv[])
 //--- apply preselection
     // require exactly one lepton passing loose preselection criteria
     if ( !(preselLeptonsFull.size() >= 1) ) continue;
-    cutFlowTable.update(">= 1 presel lepton");
-    cutFlowHistManager->fillHistograms(">= 1 presel lepton", lumiScale);
+    cutFlowTable.update(">= 1 presel lepton", evtWeight_inclusive);
+    cutFlowHistManager->fillHistograms(">= 1 presel lepton", evtWeight_inclusive);
     const RecoLepton* preselLepton = preselLeptonsFull[0];
     const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton);
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
@@ -1219,15 +1215,15 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("presel lepton trigger match");
-    cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
+    cutFlowTable.update("presel lepton trigger match", evtWeight_inclusive);
+    cutFlowHistManager->fillHistograms("presel lepton trigger match", evtWeight_inclusive);
 
     // require presence of at least two hadronic taus passing loose preselection criteria
     // (do not veto events with more than two loosely selected hadronic tau candidates,
     //  as sample of hadronic tau candidates passing loose preselection criteria contains significant contamination from jets)
     if ( !(preselHadTausFull.size() >= 2) ) continue;
-    cutFlowTable.update(">= 2 presel taus");
-    cutFlowHistManager->fillHistograms(">= 2 presel taus", lumiScale);
+    cutFlowTable.update(">= 2 presel taus", evtWeight_inclusive);
+    cutFlowHistManager->fillHistograms(">= 2 presel taus", evtWeight_inclusive);
     const RecoHadTau* preselHadTau_lead = preselHadTausFull[0];
     const RecoHadTau* preselHadTau_sublead = preselHadTausFull[1];
     const hadTauGenMatchEntry& preselHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, preselHadTau_lead, preselHadTau_sublead);
@@ -1238,11 +1234,11 @@ int main(int argc, char* argv[])
 
     // apply requirement on jets (incl. b-tagged jets) on preselection level
     if ( !(selJets.size() >= 2) ) continue;
-    cutFlowTable.update(">= 2 jets");
-    cutFlowHistManager->fillHistograms(">= 2 jets", lumiScale);
+    cutFlowTable.update(">= 2 jets", evtWeight_inclusive);
+    cutFlowHistManager->fillHistograms(">= 2 jets", evtWeight_inclusive);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
-    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (1)");
-    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)", lumiScale);
+    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (1)", evtWeight_inclusive);
+    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)", evtWeight_inclusive);
 
 	//--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();
@@ -1271,14 +1267,14 @@ int main(int argc, char* argv[])
       selBJets_medium.size(),
       -1., -1.,  -1.,  -1., -1.,
       mTauTauVis_presel,
-      -1.
+      evtWeight_inclusive
     );
-    preselHistManager->evtYield_->fillHistograms(eventInfo, 1.);
+    preselHistManager->evtYield_->fillHistograms(eventInfo, evtWeight_inclusive);
 
 	//--- apply final event selection
     if ( !(selLeptons.size() >= 1) ) continue;
-    cutFlowTable.update(">= 1 sel lepton", lumiScale);
-    cutFlowHistManager->fillHistograms(">= 1 sel lepton", lumiScale);
+    cutFlowTable.update(">= 1 sel lepton", evtWeight_inclusive);
+    cutFlowHistManager->fillHistograms(">= 1 sel lepton", evtWeight_inclusive);
     const RecoLepton* selLepton = selLeptons[0];
     int selLepton_type = getLeptonType(selLepton->pdgId());
     const leptonGenMatchEntry& selLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, selLepton);
@@ -1525,7 +1521,7 @@ int main(int argc, char* argv[])
       std::cout << "evtWeight = " << evtWeight << std::endl;
     }
 
-    // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
+    // apply requirement on jets (incl. b-tagged jets) on level of final event selection
     if ( !(selJets.size() >= 3) )
     {
       if(run_lumi_eventSelector)
@@ -1567,7 +1563,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
     cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
 
-    const double minPt = selLepton->is_electron() ? minPt_ele : minPt_mu;
+    const double minPt = selLepton->is_electron() ? minPt_e : minPt_mu;
     if ( !(selLepton->cone_pt() > minPt) )
     {
       if(run_lumi_eventSelector || isDEBUG)
@@ -1576,19 +1572,19 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_ele, minPt_mu), evtWeight);
-    cutFlowHistManager->fillHistograms(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_ele, minPt_mu), evtWeight);
+    cutFlowTable.update(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu), evtWeight);
+    cutFlowHistManager->fillHistograms(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu), evtWeight);
 
-    if ( !(selLepton->absEta() < maxAbsEta_lept) )
+    if ( !(selLepton->absEta() < maxAbsEta_lepton) )
     {
       if(run_lumi_eventSelector || isDEBUG)
       {
-        std::cout << "event " << eventInfo.str() << " FAILS maxAbsEta = " << maxAbsEta_lept << " > cut on the selected lepton\n";
+        std::cout << "event " << eventInfo.str() << " FAILS maxAbsEta = " << maxAbsEta_lepton << " > cut on the selected lepton\n";
       }
       continue;
     }
-    cutFlowTable.update(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lept), evtWeight);
-    cutFlowHistManager->fillHistograms(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lept), evtWeight);
+    cutFlowTable.update(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton), evtWeight);
+    cutFlowHistManager->fillHistograms(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton), evtWeight);
 
     if ( !(selHadTau_lead->pt() > minPt_hadTau_lead) )
     {
@@ -1953,11 +1949,6 @@ int main(int argc, char* argv[])
     ;
 
     if ( bdt_filler ) {
-
-      double lep_genLepPt = (selLepton->genLepton() != 0)  ? selLepton->genLepton()->pt() : 0. ;
-      double tau1_genTauPt = (selHadTau_lead->genHadTau() != 0)  ? selHadTau_lead->genHadTau()->pt() : 0. ;
-      double tau2_genTauPt = (selHadTau_sublead->genHadTau() != 0) ? selHadTau_sublead->genHadTau()->pt() : 0. ;
-
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep_pt",                         selLepton->pt())
           ("lep_conePt",                     lep_conePt)
@@ -1995,9 +1986,9 @@ int main(int argc, char* argv[])
           ("HadTop_pt_CSVsort4rd",            HadTop_pt_CSVsort4rd)
           ("genTopPt_CSVsort4rd",             genTopPt_CSVsort4rd)
 
-          ("prob_fake_lepton",               lep_genLepPt > 0 ? 1.0 : prob_fake_lepton)
-          ("tau_fake_prob_lead",             tau1_genTauPt > 0 ? 1.0 : prob_fake_hadTau_lead)
-          ("tau_fake_prob_sublead",          tau2_genTauPt > 0 ? 1.0 : prob_fake_hadTau_sublead)
+          ("prob_fake_lepton",               (selLepton->genLepton() != 0) ? 1.0 : prob_fake_lepton)
+          ("tau_fake_prob_lead",             (selHadTau_lead->genHadTau() != 0) ? 1.0 : prob_fake_hadTau_lead)
+          ("tau_fake_prob_sublead",          (selHadTau_sublead->genHadTau() != 0) ? 1.0 : prob_fake_hadTau_sublead)
         .fill();
     }
 
