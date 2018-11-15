@@ -284,9 +284,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
        that is used as input for data-driven background estimation.
     """
     for chargeSumSelection in self.chargeSumSelections:
-      key_addFakes_job = getKey("fakes_data", "OS", chargeSumSelection)
-      self.addToMakefile_hadd(lines_makefile, { key_addFakes_job : self.inputFiles_hadd_stage1_6[key_addFakes_job] },
-                                              { key_addFakes_job : self.outputFile_hadd_stage1_6[key_addFakes_job] }, "stage1_6")
+      key_hadd_stage1_6 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS", chargeSumSelection)
+      self.addToMakefile_hadd(lines_makefile, { key_hadd_stage1_6 : self.inputFiles_hadd_stage1_6[key_hadd_stage1_6] },
+                                              { key_hadd_stage1_6 : self.outputFile_hadd_stage1_6[key_hadd_stage1_6] }, "stage1_6")
 
   def addToMakefile_addFlips(self, lines_makefile):
     if self.is_sbatch:
