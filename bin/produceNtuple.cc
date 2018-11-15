@@ -432,18 +432,8 @@ main(int argc,
   cutFlowTableType cutFlowTable;
   std::string currentFile;
 
-  while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
+  while(inputTree -> hasNextEvent(branchesToKeep_isInitialized) && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
-    if(inputTree -> canReport(reportEvery))
-    {
-      std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
-                << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
-                << (inputTree -> getProcessedFileCount() - 1)
-                << " (" << eventInfo
-                << ") file (" << selectedEntries << " Entries selected)\n";
-    }
-    ++analyzedEntries;
-
     // mark branches for copying (only done once per produceNtuple job, when processing first event)
     if(! branchesToKeep_isInitialized)
     {
@@ -461,9 +451,15 @@ main(int argc,
         }
       }
       branchesToKeep_isInitialized = true;
+
+      // now that the inputTree is properly initialized, read the event
+      if(! inputTree -> hasNextEvent(true))
+      {
+        break;
+      }
     }
 
-    // reinitialize addresses of all branches that are copied directly from input to output file 
+    // reinitialize addresses of all branches that are copied directly from input to output file
     // in case new input file has been opened
     if(inputTree->getCurrentFileName() != currentFile)
     {
@@ -473,6 +469,16 @@ main(int argc,
       }
       currentFile = inputTree->getCurrentFileName();
     }
+
+    if(inputTree -> canReport(reportEvery))
+    {
+      std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
+                << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
+                << (inputTree -> getProcessedFileCount() - 1)
+                << " (" << eventInfo
+                << ") file (" << selectedEntries << " Entries selected)\n";
+    }
+    ++analyzedEntries;
   
     cutFlowTable.update("read from file");
 
