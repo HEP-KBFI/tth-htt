@@ -26,15 +26,28 @@ enum
   kGen_HadTauUndefined2, kGen_HadTauAll2,
   kGen_2t0e0m0j, 
   kGen_1t1e0m0j, kGen_1t0e1m0j, kGen_1t0e0m1j,
-  kGen_0t2e0m0j, kGen_0t1e1m0j, kGen_0t0e2m0j, kGen_0t1e0m1j, kGen_0t0e1m1j, kGen_0t0e0m2j, kGen_1t0e0m2j, 
+  kGen_0t2e0m0j, kGen_0t1e1m0j, kGen_0t0e2m0j, kGen_0t1e0m1j, kGen_0t0e1m1j, kGen_0t0e0m2j
 };
+
+enum {
+  kGen_HadTauChargeFlipUndefined2, kGen_HadTauChargeFlipAll2,
+  kGen_2t0e0m2f0j, kGen_2t0e0m1f0j, kGen_2t0e0m0f0j, 
+  kGen_1t1e0m2f0j, kGen_1t1e0m1f0j, kGen_1t1e0m0f0j, 
+  kGen_1t0e1m2f0j, kGen_1t0e1m1f0j, kGen_1t0e1m0f0j, 
+  kGen_1t0e0m1f1j, kGen_1t0e0m0f1j,
+  kGen_0t2e0m2f0j, kGen_0t2e0m1f0j, kGen_0t2e0m0f0j, 
+  kGen_0t1e1m2f0j, kGen_0t1e1m1f0j, kGen_0t1e1m0f0j, 
+  kGen_0t0e2m2f0j, kGen_0t0e2m1f0j, kGen_0t0e2m0f0j, 
+  kGen_0t1e0m1f1j, kGen_0t1e0m0f1j, kGen_0t0e1m1f1j, kGen_0t0e1m0f1j, 
+  kGen_0t0e0m0f2j
+}; // this is the new enum, where generator-level matched hadronic tau decays (tau_h) are split into charge flip and non-flip contributions 
 
 enum
 {
   kGen_HadTauUndefined3, kGen_HadTauAll3,
   kGen_3t0e0m0j, 
-  kGen_2t1e0m0j, kGen_2t0e1m0j, kGen_2t0e0m1j,
-  kGen_1t2e0m0j, kGen_1t1e1m0j, kGen_1t0e2m0j, kGen_1t1e0m1j, kGen_1t0e1m1j, 
+  kGen_2t1e0m0j, kGen_2t0e1m0j, kGen_2t0e0m1j, 
+  kGen_1t2e0m0j, kGen_1t1e1m0j, kGen_1t0e2m0j, kGen_1t1e0m1j, kGen_1t0e1m1j, kGen_1t0e0m2j, 
   kGen_0t3e0m0j, kGen_0t2e1m0j, kGen_0t1e2m0j, kGen_0t0e3m0j, 
   kGen_0t2e0m1j, kGen_0t1e1m1j, kGen_0t0e2m1j, kGen_0t1e0m2j, kGen_0t0e1m2j, kGen_0t0e0m3j
 };
@@ -101,6 +114,8 @@ getHadTauGenMatch_definitions_4tau(bool apply_hadTauGenMatching);
 
 std::vector<hadTauChargeFlipGenMatchEntry>
 getHadTauChargeFlipGenMatch_definitions_1tau(bool apply_hadTauGenMatching);
+std::vector<hadTauChargeFlipGenMatchEntry>
+getHadTauChargeFlipGenMatch_definitions_2tau(bool apply_hadTauGenMatching);
 
 std::string
 getHadTauGenMatch_string(const std::vector<hadTauGenMatchEntry> & hadTauGenMatch_definitions,
@@ -141,11 +156,11 @@ getHadTauGenMatch(const std::vector<hadTauGenMatchEntry> & hadTauGenMatch_defini
 		  const RecoHadTau * hadTau_fourth = nullptr);
 
 const hadTauChargeFlipGenMatchEntry &
-getHadTauGenMatch(const std::vector<hadTauChargeFlipGenMatchEntry> & hadTauChargeFlipGenMatch_definitions,
-                  const RecoHadTau * hadTau_lead,
-                  const RecoHadTau * hadTau_sublead = nullptr,
-                  const RecoHadTau * hadTau_third = nullptr,
-		  const RecoHadTau * hadTau_fourth = nullptr);
+getHadTauChargeFlipGenMatch(const std::vector<hadTauChargeFlipGenMatchEntry> & hadTauChargeFlipGenMatch_definitions,
+			    const RecoHadTau * hadTau_lead,
+			    const RecoHadTau * hadTau_sublead = nullptr,
+			    const RecoHadTau * hadTau_third = nullptr,
+			    const RecoHadTau * hadTau_fourth = nullptr);
 
 std::ostream &
 operator<<(std::ostream & stream,

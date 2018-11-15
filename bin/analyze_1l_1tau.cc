@@ -220,7 +220,7 @@ int main(int argc, char* argv[])
   double lep_mva_cut = cfg_analyze.getParameter<double>("lep_mva_cut"); // CV: used for tight lepton selection only
 
   bool apply_leptonGenMatching = cfg_analyze.getParameter<bool>("apply_leptonGenMatching");
-  std::vector<leptonGenMatchEntry> leptonGenMatch_definitions = getLeptonGenMatch_definitions_1lepton(apply_leptonGenMatching);
+  std::vector<leptonChargeFlipGenMatchEntry> leptonGenMatch_definitions = getLeptonChargeFlipGenMatch_definitions_1lepton(apply_leptonGenMatching);
   std::cout << "leptonGenMatch_definitions:" << std::endl;
   std::cout << leptonGenMatch_definitions;
 
@@ -234,7 +234,7 @@ int main(int argc, char* argv[])
   std::string hadTauSelection_veto = cfg_analyze.getParameter<std::string>("hadTauSelection_veto");
 
   bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
-  std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(apply_hadTauGenMatching);
+  std::vector<hadTauChargeFlipGenMatchEntry> hadTauGenMatch_definitions = getHadTauChargeFlipGenMatch_definitions_1tau(apply_hadTauGenMatching);
   std::cout << "hadTauGenMatch_definitions:" << std::endl;
   std::cout << hadTauGenMatch_definitions;
 
@@ -650,9 +650,9 @@ int main(int argc, char* argv[])
   };
   typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
   std::map<int, int_to_selHistManagerMap> selHistManagers;
-  for ( std::vector<leptonGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
+  for ( std::vector<leptonChargeFlipGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
         leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {
-    for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
+    for ( std::vector<hadTauChargeFlipGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
           hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
 
       std::string process_and_genMatch = process_string;
@@ -703,7 +703,7 @@ int main(int argc, char* argv[])
         Form("%s/sel/electrons", histogramDir.data()), central_or_shift));
       selHistManager->electrons_->bookHistograms(fs);
       vstring categories_e = {
-        "1e_1tau", "1e_1tau_SS", "1e_1tau_OS"
+        "1e_1tau", "1e_1tau_SS", "1e_1tau_OS", "1e_1tau_OS_wChargeFlipWeights"
       };
       std::map<std::string, ElectronHistManager*> selElectronHistManager_category; // key = category
       for ( vstring::const_iterator category = categories_e.begin();
@@ -718,7 +718,7 @@ int main(int argc, char* argv[])
         Form("%s/sel/muons", histogramDir.data()), central_or_shift));
       selHistManager->muons_->bookHistograms(fs);
       vstring categories_mu = {
-        "1mu_1tau", "1mu_1tau_SS", "1mu_1tau_OS"
+        "1mu_1tau", "1mu_1tau_SS", "1mu_1tau_OS", "1mu_1tau_OS_wChargeFlipWeights"
       };
       for ( vstring::const_iterator category = categories_mu.begin();
             category != categories_mu.end(); ++category ) {
@@ -732,9 +732,10 @@ int main(int argc, char* argv[])
         Form("%s/sel/hadTaus", histogramDir.data()), central_or_shift));
       selHistManager->hadTaus_->bookHistograms(fs);
       vstring categories_tau = {
-	"1l_1tau",  "1l_1tau_SS",  "1l_1tau_OS",
-	"1e_1tau",  "1e_1tau_SS",  "1e_1tau_OS",
-	"1mu_1tau", "1mu_1tau_SS", "1mu_1tau_OS"
+	// CV: must *not* inclusive category, as histograms of same name already booked for selHistManager->hadTaus_ !!
+	            "1l_1tau_SS",  "1l_1tau_OS",  "1l_1tau_OS_wChargeFlipWeights",
+	"1e_1tau",  "1e_1tau_SS",  "1e_1tau_OS",  "1e_1tau_OS_wChargeFlipWeights",
+	"1mu_1tau", "1mu_1tau_SS", "1mu_1tau_OS", "1mu_1tau_OS_wChargeFlipWeights"
       };
       for ( vstring::const_iterator category = categories_tau.begin();
             category != categories_tau.end(); ++category ) {
@@ -797,7 +798,8 @@ int main(int argc, char* argv[])
         }
       }
       vstring categories_evt = {
-	"1l_1tau",  "1l_1tau_SS",  "1l_1tau_OS",  "1l_1tau_OS_wChargeFlipWeights",
+	// CV: must *not* inclusive category, as histograms of same name already booked for selHistManager->evt_ !!
+	            "1l_1tau_SS",  "1l_1tau_OS",  "1l_1tau_OS_wChargeFlipWeights",
 	"1e_1tau",  "1e_1tau_SS",  "1e_1tau_OS",  "1e_1tau_OS_wChargeFlipWeights",
 	"1mu_1tau", "1mu_1tau_SS", "1mu_1tau_OS", "1mu_1tau_OS_wChargeFlipWeights"
       };
@@ -1240,7 +1242,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 1 presel lepton", evtWeight_inclusive);
     cutFlowHistManager->fillHistograms(">= 1 presel lepton", evtWeight_inclusive);
     const RecoLepton* preselLepton = preselLeptonsFull[0];
-    const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton);
+    const leptonChargeFlipGenMatchEntry& preselLepton_genMatch = getLeptonChargeFlipGenMatch(leptonGenMatch_definitions, preselLepton);
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined1);
     //std::cout << "Selection applied" << std::endl;
@@ -1268,7 +1270,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 1 presel tau", evtWeight_inclusive);
     cutFlowHistManager->fillHistograms(">= 1 presel tau", evtWeight_inclusive);
     const RecoHadTau* preselHadTau = preselHadTausFull[0];
-    const hadTauGenMatchEntry& preselHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, preselHadTau);
+    const hadTauChargeFlipGenMatchEntry& preselHadTau_genMatch = getHadTauChargeFlipGenMatch(hadTauGenMatch_definitions, preselHadTau);
     int idxPreselHadTau_genMatch = preselHadTau_genMatch.idx_;
     assert(idxPreselHadTau_genMatch != kGen_HadTauUndefined1);
 
@@ -1317,7 +1319,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms(">= 1 sel lepton", evtWeight_inclusive);
     const RecoLepton* selLepton = selLeptons[0];
     int selLepton_type = getLeptonType(selLepton->pdgId());
-    const leptonGenMatchEntry& selLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, selLepton);
+    const leptonChargeFlipGenMatchEntry& selLepton_genMatch = getLeptonChargeFlipGenMatch(leptonGenMatch_definitions, selLepton);
     int idxSelLepton_genMatch = selLepton_genMatch.idx_;
     assert(idxSelLepton_genMatch != kGen_LeptonUndefined1);
 
@@ -1378,7 +1380,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 1 sel tau", evtWeight);
     cutFlowHistManager->fillHistograms(">= 1 sel tau", evtWeight);
     const RecoHadTau* selHadTau = selHadTaus[0];
-    const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau);
+    const hadTauChargeFlipGenMatchEntry& selHadTau_genMatch = getHadTauChargeFlipGenMatch(hadTauGenMatch_definitions, selHadTau);
     int idxSelHadTau_genMatch = selHadTau_genMatch.idx_;
     assert(idxSelHadTau_genMatch != kGen_HadTauUndefined1);
 
@@ -2345,9 +2347,9 @@ int main(int argc, char* argv[])
   std::cout << std::endl;
 
   std::cout << "sel. Entries by gen. matching:" << std::endl;
-  for ( std::vector<leptonGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
+  for ( std::vector<leptonChargeFlipGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
         leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {
-    for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
+    for ( std::vector<hadTauChargeFlipGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
           hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
 
       std::string process_and_genMatch = process_string;

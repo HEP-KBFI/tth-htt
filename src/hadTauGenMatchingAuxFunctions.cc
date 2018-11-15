@@ -54,6 +54,29 @@ getHadTauGenMatch_definitions_1tau(bool apply_hadTauGenMatching)
   return hadTauGenMatch_definitions;
 }
 
+std::vector<hadTauChargeFlipGenMatchEntry>
+getHadTauChargeFlipGenMatch_definitions_1tau(bool apply_hadTauGenMatching)
+{
+  std::vector<hadTauChargeFlipGenMatchEntry> hadTauChargeFlipGenMatch_definitions;
+  if(apply_hadTauGenMatching)
+  {
+    hadTauChargeFlipGenMatch_definitions = {
+      { "1t0e0m1f0j", kGen_1t0e0m1f0j, 1, 0, 0, 1, 0 },
+      { "1t0e0m0f0j", kGen_1t0e0m0f0j, 1, 0, 0, 0, 0 },
+      { "0t1e0m1f0j", kGen_0t1e0m1f0j, 0, 1, 0, 1, 0 },
+      { "0t1e0m0f0j", kGen_0t1e0m0f0j, 0, 1, 0, 0, 0 },
+      { "0t0e1m1f0j", kGen_0t0e1m1f0j, 0, 0, 1, 1, 0 },
+      { "0t0e1m0f0j", kGen_0t0e1m0f0j, 0, 0, 1, 0, 0 },
+      { "0t0e0m0f1j", kGen_0t0e0m0f1j, 0, 0, 0, 0, 1 }
+    };
+  }
+  else
+  {
+    hadTauChargeFlipGenMatch_definitions = { { "all", kGen_HadTauChargeFlipAll1, -1, -1, -1, -1, -1 } };
+  }
+  return hadTauChargeFlipGenMatch_definitions;
+}
+
 std::vector<hadTauGenMatchEntry>
 getHadTauGenMatch_definitions_2tau(bool apply_hadTauGenMatching)
 {
@@ -78,6 +101,47 @@ getHadTauGenMatch_definitions_2tau(bool apply_hadTauGenMatching)
     hadTauGenMatch_definitions = { { "all", kGen_HadTauAll2, -1, -1, -1, -1 } };
   }
   return hadTauGenMatch_definitions;
+}
+
+std::vector<hadTauChargeFlipGenMatchEntry>
+getHadTauChargeFlipGenMatch_definitions_2tau(bool apply_hadTauGenMatching)
+{
+  std::vector<hadTauChargeFlipGenMatchEntry> hadTauChargeFlipGenMatch_definitions;
+  if(apply_hadTauGenMatching)
+  {
+    hadTauChargeFlipGenMatch_definitions = {
+      { "2t0e0m2f0j", kGen_2t0e0m2f0j, 2, 0, 0, 2, 0 },
+      { "2t0e0m1f0j", kGen_2t0e0m1f0j, 2, 0, 0, 1, 0 },
+      { "2t0e0m0f0j", kGen_2t0e0m0f0j, 2, 0, 0, 0, 0 },
+      { "1t1e0m2f0j", kGen_1t1e0m2f0j, 1, 1, 0, 2, 0 },
+      { "1t1e0m1f0j", kGen_1t1e0m1f0j, 1, 1, 0, 1, 0 },
+      { "1t1e0m0f0j", kGen_1t1e0m0f0j, 1, 1, 0, 0, 0 },
+      { "1t0e1m2f0j", kGen_1t0e1m2f0j, 1, 0, 1, 2, 0 },
+      { "1t0e1m1f0j", kGen_1t0e1m1f0j, 1, 0, 1, 1, 0 },
+      { "1t0e1m0f0j", kGen_1t0e1m0f0j, 1, 0, 1, 0, 0 },
+      { "1t0e0m1f1j", kGen_1t0e0m1f1j, 1, 0, 0, 1, 1 },
+      { "1t0e0m0f1j", kGen_1t0e0m0f1j, 1, 0, 0, 0, 1 },
+      { "0t2e0m2f0j", kGen_0t2e0m2f0j, 0, 2, 0, 2, 0 },
+      { "0t2e0m1f0j", kGen_0t2e0m1f0j, 0, 2, 0, 1, 0 },
+      { "0t2e0m0f0j", kGen_0t2e0m0f0j, 0, 2, 0, 0, 0 },
+      { "0t1e1m2f0j", kGen_0t1e1m2f0j, 0, 1, 1, 2, 0 },
+      { "0t1e1m1f0j", kGen_0t1e1m1f0j, 0, 1, 1, 1, 0 },
+      { "0t1e1m0f0j", kGen_0t1e1m0f0j, 0, 1, 1, 0, 0 },
+      { "0t1e0m1f1j", kGen_0t1e0m1f1j, 0, 1, 0, 1, 1 },
+      { "0t1e0m0f1j", kGen_0t1e0m0f1j, 0, 1, 0, 0, 1 },
+      { "0t0e2m2f0j", kGen_0t0e2m2f0j, 0, 0, 2, 2, 0 },
+      { "0t0e2m1f0j", kGen_0t0e2m1f0j, 0, 0, 2, 1, 0 },
+      { "0t0e2m0f0j", kGen_0t0e2m0f0j, 0, 0, 2, 0, 0 },
+      { "0t0e1m1f1j", kGen_0t0e1m1f1j, 0, 0, 1, 1, 1 },
+      { "0t0e1m0f1j", kGen_0t0e1m0f1j, 0, 0, 1, 0, 1 },
+      { "0t0e0m0f2j", kGen_0t0e0m0f2j, 0, 0, 0, 0, 2 }
+    };
+  }
+  else
+  {
+    hadTauChargeFlipGenMatch_definitions = { { "all", kGen_HadTauChargeFlipAll2, -1, -1, -1, -1, -1 } };
+  }
+  return hadTauChargeFlipGenMatch_definitions;
 }
 
 std::vector<hadTauGenMatchEntry>
@@ -165,29 +229,6 @@ getHadTauGenMatch_definitions_4tau(bool apply_hadTauGenMatching)
     hadTauGenMatch_definitions = { { "all", kGen_HadTauAll4, -1, -1, -1, -1 } };
   }
   return hadTauGenMatch_definitions;
-}
-
-std::vector<hadTauChargeFlipGenMatchEntry>
-getHadTauChargeFlipGenMatch_definitions_1tau(bool apply_hadTauGenMatching)
-{
-  std::vector<hadTauChargeFlipGenMatchEntry> hadTauChargeFlipGenMatch_definitions;
-  if(apply_hadTauGenMatching)
-  {
-    hadTauChargeFlipGenMatch_definitions = {
-      { "1t0e0m0f0j", kGen_1t0e0m0f0j, 1, 0, 0, 0, 0 },
-      { "0t1e0m0f0j", kGen_0t1e0m0f0j, 0, 1, 0, 0, 0 },
-      { "0t0e1m0f0j", kGen_0t0e1m0f0j, 0, 0, 1, 0, 0 },
-      { "1t0e0m1f0j", kGen_1t0e0m1f0j, 1, 0, 0, 1, 0 },
-      { "0t1e0m1f0j", kGen_0t1e0m1f0j, 0, 1, 0, 1, 0 },
-      { "0t0e1m1f0j", kGen_0t0e1m1f0j, 0, 0, 1, 1, 0 },
-      { "0t0e0m0f1j", kGen_0t0e0m0f1j, 0, 0, 0, 0, 1 }
-    };
-  }
-  else
-  {
-    hadTauChargeFlipGenMatch_definitions = { { "all", kGen_HadTauChargeFlipAll1, -1, -1, -1, -1, -1 } };
-  }
-  return hadTauChargeFlipGenMatch_definitions;
 }
 
 std::string
