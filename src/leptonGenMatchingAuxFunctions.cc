@@ -61,7 +61,7 @@ getLeptonChargeFlipGenMatch_definitions_1lepton(bool apply_leptonGenMatching)
     leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l1f0g0j", kGen_1l1f0g0j, 1, 1, 0, 0)); 
     leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l0f0g0j", kGen_1l0f0g0j, 1, 0, 0, 0)); 
     leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f1g0j", kGen_0l0f1g0j, 0, 0, 1, 0)); 
-    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l1f0g1j", kGen_0l0f0g1j, 0, 0, 0, 1)); 
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f0g1j", kGen_0l0f0g1j, 0, 0, 0, 1)); 
   }
   else
   {
