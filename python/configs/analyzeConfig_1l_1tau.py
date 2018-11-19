@@ -174,8 +174,6 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     self.outputFile_hadd_stage1_6 = {}
     self.cfgFile_addFlips = os.path.join(self.template_dir, "addBackgroundLeptonFlips_cfg.py")
     self.jobOptions_addFlips = {}
-    ##self.histogramDir_prep_dcard = "1l_1tau_OS_Tight"
-    ##self.histogramDir_prep_dcard_SS = "1l_1tau_SS_Tight"
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_1l_1tau_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_1l_1tau_cfg.py") #TODO
 
@@ -800,19 +798,21 @@ class analyzeConfig_1l_1tau(analyzeConfig):
 
     logging.info("Creating configuration files to run 'addBackgroundFlips'")
     for chargeSumSelection in self.chargeSumSelections:
+      if not chargeSumSelection in [ "SS", "disabled" ]:
+        continue
       for category_signal in self.categories:
         if not category_signal.find("_SS") != -1:
           continue
-        key_addFlips_job = getKey(category, "flips_data", chargeSumSelection)
+        key_addFlips_job = getKey(category_signal, "flips_data", chargeSumSelection)
         key_hadd_stage1_6 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), chargeSumSelection)
         self.jobOptions_addFlips[key_addFlips_job] = {
           'inputFile' : self.outputFile_hadd_stage1_6[key_hadd_stage1_6],
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFlips_%s_%s_%s_cfg.py" % \
-            (self.channel, category, chargeSumSelection)),
+            (self.channel, category_signal, chargeSumSelection)),
           'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFlips_%s_%s_%s.root" % \
-            (self.channel, category, chargeSumSelection)),
+            (self.channel, category_signal, chargeSumSelection)),
           'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFlips_%s_%s_%s.log" % \
-            (self.channel, category, chargeSumSelection)),
+            (self.channel, category_signal, chargeSumSelection)),
           'category_signal' : "%s_Tight" % category_signal,
           'category_sideband' : "%s_Tight" % category_signal.replace("_SS", "_OS_wChargeFlipWeights")
         }
@@ -893,7 +893,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_%s_cfg.py" % (self.channel, category)),
           'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_%s.png" % (self.channel, category)),
-          'histogramDir' : self.histogramDir_prep_dcard,
+          'histogramDir' : getHistogramDir(self.category_inclusive, "Tight", "disabled", chargeSumSelection),
           'label' : label,
           'make_plots_backgrounds' : make_plots_backgrounds
         }
