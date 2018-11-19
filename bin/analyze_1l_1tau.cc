@@ -645,6 +645,7 @@ int main(int argc, char* argv[])
     EvtHistManager_1l_1tau* evt_;
     std::map<std::string, EvtHistManager_1l_1tau*> evt_in_decayModes_;
     std::map<std::string, EvtHistManager_1l_1tau*> evt_in_categories_;
+    std::map<std::string, std::map<std::string, EvtHistManager_1l_1tau*>> evt_in_categories_and_decayModes_;
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
@@ -656,9 +657,9 @@ int main(int argc, char* argv[])
           hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
 
       std::string process_and_genMatch = process_string;
-      if ( apply_leptonGenMatching ) process_and_genMatch += leptonGenMatch_definition->name_;
+      if ( apply_leptonGenMatching                            ) process_and_genMatch += leptonGenMatch_definition->name_;
       if ( apply_leptonGenMatching && apply_hadTauGenMatching ) process_and_genMatch += "&";
-      if ( apply_hadTauGenMatching ) process_and_genMatch += hadTauGenMatch_definition->name_;
+      if ( apply_hadTauGenMatching                            ) process_and_genMatch += hadTauGenMatch_definition->name_;
       int idxLepton = leptonGenMatch_definition->idx_;
       int idxHadTau = hadTauGenMatch_definition->idx_;
 
@@ -778,23 +779,16 @@ int main(int argc, char* argv[])
       selHistManager->evt_ = new EvtHistManager_1l_1tau(makeHistManager_cfg(process_and_genMatch,
        Form("%s/sel/evt", histogramDir.data()), central_or_shift));
       selHistManager->evt_->bookHistograms(fs);
-
       const vstring decayModes_evt = eventInfo.getDecayModes();
-      if(isSignal)
-      {
-        for(const std::string & decayMode_evt: decayModes_evt)
-        {
+      if ( isSignal ) {
+        for ( const std::string & decayMode_evt: decayModes_evt ) {
           std::string decayMode_and_genMatch = decayMode_evt;
-          if(apply_leptonGenMatching)                            decayMode_and_genMatch += leptonGenMatch_definition -> name_;
-          if(apply_leptonGenMatching && apply_hadTauGenMatching) decayMode_and_genMatch += "&";
-          if(apply_hadTauGenMatching)                            decayMode_and_genMatch += hadTauGenMatch_definition -> name_;
-
-          selHistManager -> evt_in_decayModes_[decayMode_evt] = new EvtHistManager_1l_1tau(makeHistManager_cfg(
-            decayMode_and_genMatch,
-            Form("%s/sel/evt", histogramDir.data()),
-            central_or_shift
-          ));
-          selHistManager -> evt_in_decayModes_[decayMode_evt] -> bookHistograms(fs);
+          if ( apply_leptonGenMatching                            ) decayMode_and_genMatch += leptonGenMatch_definition->name_;
+          if ( apply_leptonGenMatching && apply_hadTauGenMatching ) decayMode_and_genMatch += "&";
+          if ( apply_hadTauGenMatching                            ) decayMode_and_genMatch += hadTauGenMatch_definition->name_;
+          selHistManager -> evt_in_decayModes_[decayMode_evt] = new EvtHistManager_1l_1tau(makeHistManager_cfg(decayMode_and_genMatch,
+            Form("%s/sel/evt", histogramDir.data()), central_or_shift));
+          selHistManager->evt_in_decayModes_[decayMode_evt]->bookHistograms(fs);
         }
       }
       vstring categories_evt = {
@@ -810,6 +804,17 @@ int main(int argc, char* argv[])
         selHistManager->evt_in_categories_[*category] = new EvtHistManager_1l_1tau(makeHistManager_cfg(process_and_genMatch,
           Form("%s/sel/evt", histogramDir_category.Data()), central_or_shift));
         selHistManager->evt_in_categories_[*category]->bookHistograms(fs);
+	if ( isSignal ) {
+          for ( const std::string & decayMode_evt: decayModes_evt ) {
+	    std::string decayMode_and_genMatch = decayMode_evt;
+	    if ( apply_leptonGenMatching                            ) decayMode_and_genMatch += leptonGenMatch_definition->name_;
+	    if ( apply_leptonGenMatching && apply_hadTauGenMatching ) decayMode_and_genMatch += "&";
+	    if ( apply_hadTauGenMatching                            ) decayMode_and_genMatch += hadTauGenMatch_definition->name_;
+	    selHistManager->evt_in_categories_and_decayModes_[*category][decayMode_evt] = new EvtHistManager_1l_1tau(makeHistManager_cfg(decayMode_and_genMatch,
+              Form("%s/sel/evt", histogramDir_category.Data()), central_or_shift));
+            selHistManager->evt_in_categories_and_decayModes_[*category][decayMode_evt]->bookHistograms(fs);
+	  }
+	}
       }
       edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/evtYield", histogramDir.data()), central_or_shift);
@@ -2127,6 +2132,29 @@ int main(int argc, char* argv[])
 	  Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
 	  mbb, mbb_loose,
           evtWeight_category);
+      }
+      if ( selHistManager->evt_in_categories_and_decayModes_.find(*category) != selHistManager->evt_in_categories_and_decayModes_.end() ) {
+	if( isSignal ) {
+	  const std::string decayModeStr = eventInfo.getDecayModeString();
+	  if ( !decayModeStr.empty() ) {
+	    selHistManager->evt_in_categories_and_decayModes_[*category][decayModeStr]->fillHistograms(
+	      selElectrons.size(),
+	      selMuons.size(),
+	      selHadTaus.size(),
+	      selJets.size(),
+	      selBJets_loose.size(),
+	      selBJets_medium.size(),
+	      //mvaOutput_plainKin_ttV,
+	      //mvaOutput_plainKin_tt,
+	      //mvaOutput_plainKin_1B_VT,
+	      //mvaOutput_HTT_SUM_VT,
+	      //mvaOutput_plainKin_SUM_VT,
+	      mTauTauVis, mTauTau,
+	      Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
+	      mbb, mbb_loose,
+	      evtWeight_category);
+	  }
+	}
       }
     }
 
