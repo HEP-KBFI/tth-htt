@@ -192,7 +192,7 @@ public:
    *         3) any of the files does not contain a TTree with the given name.
    */
   bool
-  hasNextEvent();
+  hasNextEvent(bool getEntry = true);
 
   /**
    * @brief Returns pointer to TTree object in currently processed file

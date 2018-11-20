@@ -15,7 +15,7 @@ GenLepton::GenLepton(Double_t pt,
                      Double_t phi,
                      Double_t mass,
                      Int_t pdgId,
-                     Double_t charge)
+                     Int_t charge)
   : GenParticle(pt, eta, phi, mass, pdgId, charge)
 {}
 

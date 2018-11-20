@@ -64,37 +64,37 @@ if mode == "default":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
     from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
 
-    # [*] use binned DY samples in BDT training
-    dy_samples_inclusive = []
-    dy_samples_binned = []
-    for sample_set in samples_to_stitch:
-      for sample_key, sample_value in sample_set.items():
-        if sample_key == 'inclusive':
-          dy_inclusive_samples = list(filter(lambda sample_name: sample_name.startswith('DY'), sample_value['samples']))
-          dy_samples_inclusive.extend(dy_inclusive_samples)
-        else:
-          for sample_binned_value in sample_value:
-            dy_binned_samples = list(
-              filter(lambda sample_name: sample_name.startswith('DY'), sample_binned_value['samples']))
-            dy_samples_binned.extend(dy_binned_samples)
-
-    for sample_name, sample_info in samples.items():
-      if sample_name == 'sum_events': continue
-      if sample_info["process_name_specific"] in [
-            "TTTo2L2Nu_PSweights", "TTToSemiLeptonic_PSweights", "TTToHadronic_PSweights",
-          ]:
-        # Use non-PSweights samples for the analysis to estimate the irreducible ttbar background
-        sample_info["use_it"] = False
-      elif sample_info["process_name_specific"] in dy_samples_binned:
-        sample_info["use_it"] = False # [*]
-      elif sample_info["process_name_specific"] in dy_samples_inclusive:
-        sample_info["use_it"] = True  # [*]
-
     hadTau_selection = "dR03mvaMedium"
   elif era == "2018":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
   else:
     raise ValueError("Invalid era: %s" % era)
+
+  # [*] use binned DY samples in BDT training
+  dy_samples_inclusive = []
+  dy_samples_binned = []
+  for sample_set in samples_to_stitch:
+    for sample_key, sample_value in sample_set.items():
+      if sample_key == 'inclusive':
+        dy_inclusive_samples = list(filter(lambda sample_name: sample_name.startswith('DY'), sample_value['samples']))
+        dy_samples_inclusive.extend(dy_inclusive_samples)
+      else:
+        for sample_binned_value in sample_value:
+          dy_binned_samples = list(
+            filter(lambda sample_name: sample_name.startswith('DY'), sample_binned_value['samples']))
+          dy_samples_binned.extend(dy_binned_samples)
+
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if sample_info["process_name_specific"] in [
+      "TTTo2L2Nu_PSweights", "TTToSemiLeptonic_PSweights", "TTToHadronic_PSweights",
+    ]:
+      # Use non-PSweights samples for the analysis to estimate the irreducible ttbar background
+      sample_info["use_it"] = False
+    elif sample_info["process_name_specific"] in dy_samples_binned:
+      sample_info["use_it"] = False  # [*]
+    elif sample_info["process_name_specific"] in dy_samples_inclusive:
+      sample_info["use_it"] = True  # [*]
 
 elif mode == "forBDTtraining":
   if era == "2016":
@@ -106,37 +106,38 @@ elif mode == "forBDTtraining":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
     from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
 
-    # [*] use binned DY samples in BDT training
-    dy_samples_inclusive = []
-    dy_samples_binned = []
-    for sample_set in samples_to_stitch:
-      for sample_key, sample_value in sample_set.items():
-        if sample_key == 'inclusive':
-          dy_inclusive_samples = list(filter(lambda sample_name: sample_name.startswith('DY'), sample_value['samples']))
-          dy_samples_inclusive.extend(dy_inclusive_samples)
-        else:
-          for sample_binned_value in sample_value:
-            dy_binned_samples = list(filter(lambda sample_name: sample_name.startswith('DY'), sample_binned_value['samples']))
-            dy_samples_binned.extend(dy_binned_samples)
-
-    for sample_name, sample_info in samples.items():
-      if sample_name == 'sum_events': continue
-      if sample_info["process_name_specific"] in [
-            "TTTo2L2Nu", "TTToSemiLeptonic", "TTToHadronic",
-          ]:
-        # Use PSweights samples only for BDT training
-        sample_info["use_it"] = False
-      elif sample_info["process_name_specific"] in dy_samples_binned:
-        sample_info["use_it"] = True # [*]
-      elif sample_info["process_name_specific"] in dy_samples_inclusive:
-        sample_info["use_it"] = False  # [*]
-
     hadTau_selection         = "dR03mvaLoose"
     hadTau_selection_relaxed = "dR03mvaVLoose"
   elif era == "2018":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_BDT import samples_2018 as samples
   else:
     raise ValueError("Invalid era: %s" % era)
+
+  # [*] use binned DY samples in BDT training
+  dy_samples_inclusive = []
+  dy_samples_binned = []
+  for sample_set in samples_to_stitch:
+    for sample_key, sample_value in sample_set.items():
+      if sample_key == 'inclusive':
+        dy_inclusive_samples = list(filter(lambda sample_name: sample_name.startswith('DY'), sample_value['samples']))
+        dy_samples_inclusive.extend(dy_inclusive_samples)
+      else:
+        for sample_binned_value in sample_value:
+          dy_binned_samples = list(
+            filter(lambda sample_name: sample_name.startswith('DY'), sample_binned_value['samples']))
+          dy_samples_binned.extend(dy_binned_samples)
+
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if sample_info["process_name_specific"] in [
+      "TTTo2L2Nu", "TTToSemiLeptonic", "TTToHadronic",
+    ]:
+      # Use PSweights samples only for BDT training
+      sample_info["use_it"] = False
+    elif sample_info["process_name_specific"] in dy_samples_binned:
+      sample_info["use_it"] = True  # [*]
+    elif sample_info["process_name_specific"] in dy_samples_inclusive:
+      sample_info["use_it"] = False  # [*]
 
   hadTau_charge_selections = [ "OS" ]
 elif mode == "sync":

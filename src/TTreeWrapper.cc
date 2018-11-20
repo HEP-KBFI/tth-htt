@@ -112,7 +112,7 @@ TTreeWrapper::registerReader(ReaderBase * reader)
 }
 
 bool
-TTreeWrapper::hasNextEvent()
+TTreeWrapper::hasNextEvent(bool getEntry)
 {
   // check if we already have an open file
   if(! isOpen())
@@ -176,21 +176,25 @@ TTreeWrapper::hasNextEvent()
     cumulativeMaxEventCount_ += currentMaxEvents_;
   }
 
+  // if the TFile and TTree are already opened
   const bool belowMaxEvents = (maxEvents_ == -1 || currentMaxEventIdx_ < maxEvents_);
   if(currentEventIdx_ < currentMaxEvents_ && belowMaxEvents)
   {
-    // we still have some events to be read here
-    currentTreePtr_ -> GetEntry(currentEventIdx_);
-    ++currentEventIdx_;
-    ++currentMaxEventIdx_;
+    if(getEntry)
+    {
+      // we still have some events to be read here
+      currentTreePtr_ -> GetEntry(currentEventIdx_);
+      ++currentEventIdx_;
+      ++currentMaxEventIdx_;
+    }
   }
   else
   {
-    // we have to close the current file switch to a new one
+    // we have to close the current file and switch to a new one
     close();
     ++currentFileIdx_;
 
-    return belowMaxEvents ? hasNextEvent() : false;
+    return belowMaxEvents ? hasNextEvent(getEntry) : false;
   }
 
   return true;

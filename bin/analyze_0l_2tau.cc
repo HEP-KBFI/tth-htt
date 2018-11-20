@@ -56,14 +56,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorHTTv2.h" // RecoJetSelectorHTTv2
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderHTTv2.h" // RecoJetReaderHTTv2
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderAK12.h" // RecoJetReaderAK12
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderAK8.h" // RecoJetReaderAK8
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManagerHTTv2.h" // JetHistManagerHTTv2
-#include "tthAnalysis/HiggsToTauTau/interface/JetHistManagerAK12.h" // JetHistManagerAK12
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorAK12.h" // RecoJetSelectorAK12
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorAK8.h" // RecoJetSelectorAK8
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleanerSubJets.h" // RecoJetCollectionCleanerAK8SubJets
-
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterSelector.h" // MEtFilterSelector
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
@@ -103,11 +99,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
-
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
-#include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
-#include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
+
+#include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h" // ClassicSVfit
+#include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h" // classic_svFit::MeasuredTauLepton
 #include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h"
 #include "TauAnalysis/ClassicSVfit/interface/svFitAuxFunctions.h"
 
@@ -1066,7 +1062,7 @@ int main(int argc, char* argv[])
       printCollection("selJets",       selJets);
     }
 
-    //--- build collections of jets reconstructed by hep-top-tagger (HTTv2) algorithm
+//--- build collections of jets reconstructed by hep-top-tagger (HTTv2) algorithm
     std::vector<RecoJetHTTv2> jetsHTTv2 = jetReaderHTTv2->read();
     std::vector<const RecoJetHTTv2*> jet_ptrsHTTv2raw = convert_to_ptrs(jetsHTTv2);
     std::vector<const RecoJetHTTv2*> jet_ptrsHTTv2rawSel = jetSelectorHTTv2(jet_ptrsHTTv2raw, isHigherPt);
@@ -1307,7 +1303,7 @@ int main(int argc, char* argv[])
 
     double mTauTauVis = (selHadTau_lead->p4() + selHadTau_sublead->p4()).mass();
 
-    // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
+    // apply requirement on jets (incl. b-tagged jets) on level of final event selection
     if ( !(selJets.size() >= 4) ) continue;
     cutFlowTable.update(">= 4 jets", evtWeight);
     cutFlowHistManager->fillHistograms(">= 4 jets", evtWeight);
@@ -1349,7 +1345,7 @@ int main(int argc, char* argv[])
     {
       if(run_lumi_eventSelector || isDEBUG)
       {
-        std::cout << "event " << eventInfo.str() << " FAILS OS tau selection\n";
+        std::cout << "event " << eventInfo.str() << " FAILS OS tau-pair selection\n";
       }
       continue;
     }
@@ -1357,7 +1353,7 @@ int main(int argc, char* argv[])
     {
       if(run_lumi_eventSelector || isDEBUG)
       {
-        std::cout << "event " << eventInfo.str() << " FAILS SS tau selection\n";
+        std::cout << "event " << eventInfo.str() << " FAILS SS tau-pair selection\n";
       }
       continue;
     }

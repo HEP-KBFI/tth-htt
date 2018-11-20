@@ -52,14 +52,19 @@ process.makePlots = cms.PSet(
         ),
         cms.PSet(
             histogramName = cms.string('sel/met/$PROCESS/met_pt'),
-            xAxisTitle = cms.string('MET [GeV]'),
-            yAxisTitle = cms.string('dN/dMET [1/GeV]')
+            xAxisTitle = cms.string('E_{T}^{miss} [GeV]'),
+            yAxisTitle = cms.string('dN/dE_{T}^{miss} [1/GeV]')
         ),
         cms.PSet(
-            histogramName=cms.string('sel/met/$PROCESS/mht_pt'),
-            xAxisTitle=cms.string('MHT [GeV]'),
-            yAxisTitle=cms.string('dN/dMHT [1/GeV]')
+            histogramName = cms.string('sel/met/$PROCESS/mht_pt'),
+            xAxisTitle = cms.string('H_{T}^{miss} [GeV]'),
+            yAxisTitle = cms.string('dN/dH_{T}^{miss} [1/GeV]')
         ),
+        cms.PSet(
+            histogramName = cms.string('sel/met/$PROCESS/met_LD'),
+            xAxisTitle = cms.string('E_{T}^{miss}-LD [GeV]'),
+            yAxisTitle = cms.string('dN/dE_{T}^{miss}-LD [1/GeV]')
+        )
     ),
 
     nuisanceParameters = cms.PSet(

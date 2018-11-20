@@ -284,9 +284,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
        that is used as input for data-driven background estimation.
     """
     for chargeSumSelection in self.chargeSumSelections:
-      key_addFakes_job = getKey("fakes_data", "OS", chargeSumSelection)
-      self.addToMakefile_hadd(lines_makefile, { key_addFakes_job : self.inputFiles_hadd_stage1_6[key_addFakes_job] },
-                                              { key_addFakes_job : self.outputFile_hadd_stage1_6[key_addFakes_job] }, "stage1_6")
+      key_hadd_stage1_6 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS", chargeSumSelection)
+      self.addToMakefile_hadd(lines_makefile, { key_hadd_stage1_6 : self.inputFiles_hadd_stage1_6[key_hadd_stage1_6] },
+                                              { key_hadd_stage1_6 : self.outputFile_hadd_stage1_6[key_hadd_stage1_6] }, "stage1_6")
 
   def addToMakefile_addFlips(self, lines_makefile):
     if self.is_sbatch:
@@ -838,22 +838,23 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     # CV: add histograms in OS and SS regions,
     #     so that "fakes_data" background can be subtracted from OS control region used to estimate charge flip background
     for chargeSumSelection in self.chargeSumSelections:
+      key_hadd_stage1_6 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS", chargeSumSelection)
       key_addFakes_job = getKey("fakes_data", "OS", chargeSumSelection)
-      if key_addFakes_job not in self.inputFiles_hadd_stage1_6:
-        self.inputFiles_hadd_stage1_6[key_addFakes_job] = []
-      self.inputFiles_hadd_stage1_6[key_addFakes_job].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
+      if key_hadd_stage1_6 not in self.inputFiles_hadd_stage1_6:
+        self.inputFiles_hadd_stage1_6[key_hadd_stage1_6] = []
+      self.inputFiles_hadd_stage1_6[key_hadd_stage1_6].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
       key_hadd_stage1_5 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS", chargeSumSelection)
-      self.inputFiles_hadd_stage1_6[key_addFakes_job].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
-      self.outputFile_hadd_stage1_6[key_addFakes_job] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_6_%s_Tight_lepOS_sum%s.root" % \
+      self.inputFiles_hadd_stage1_6[key_hadd_stage1_6].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
+      self.outputFile_hadd_stage1_6[key_hadd_stage1_6] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_6_%s_Tight_lepOS_sum%s.root" % \
         (self.channel, chargeSumSelection))
     #--------------------------------------------------------------------------
 
     logging.info("Creating configuration files to run 'addBackgroundFlips'")
     for chargeSumSelection in self.chargeSumSelections:
       key_addFlips_job = getKey("flips_data", chargeSumSelection)
-      key_addFakes_job = getKey("fakes_data", "OS", chargeSumSelection)
+      key_hadd_stage1_6 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS", chargeSumSelection)
       self.jobOptions_addFlips[key_addFlips_job] = {
-        'inputFile' : self.outputFile_hadd_stage1_6[key_addFakes_job],
+        'inputFile' : self.outputFile_hadd_stage1_6[key_hadd_stage1_6],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFlips_%s_sum%s_cfg.py" % \
           (self.channel, chargeSumSelection)),
         'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFlips_%s_sum%s.root" % \

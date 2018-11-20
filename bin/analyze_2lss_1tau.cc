@@ -1643,7 +1643,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           if ( selLepton_sublead->charge()*selHadTau->charge() < 0 ) evtWeight *= prob_chargeMisId_sublead;
         } else assert(0);
       } else {
-        evtWeight *= ( prob_chargeMisId_lead + prob_chargeMisId_sublead);
+        evtWeight *= (prob_chargeMisId_lead + prob_chargeMisId_sublead);
       }
       // Karl: reject the event, if the applied probability of charge misidentification is 0;
       //       we assume that the event weight was not 0 before including the charge flip weights.

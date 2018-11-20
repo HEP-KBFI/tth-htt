@@ -52,6 +52,24 @@ getLeptonGenMatch_definitions_1lepton(bool apply_leptonGenMatching)
   return leptonGenMatch_definitions;
 }
 
+std::vector<leptonChargeFlipGenMatchEntry>
+getLeptonChargeFlipGenMatch_definitions_1lepton(bool apply_leptonGenMatching)
+{
+  std::vector<leptonChargeFlipGenMatchEntry> leptonChargeFlipGenMatch_definitions;
+  if(apply_leptonGenMatching)
+  {
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l1f0g0j", kGen_1l1f0g0j, 1, 1, 0, 0)); 
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l0f0g0j", kGen_1l0f0g0j, 1, 0, 0, 0)); 
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f1g0j", kGen_0l0f1g0j, 0, 0, 1, 0)); 
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f0g1j", kGen_0l0f0g1j, 0, 0, 0, 1)); 
+  }
+  else
+  {
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("all", kGen_LeptonChargeFlipAll1, -1, -1, -1, -1));
+  }
+  return leptonChargeFlipGenMatch_definitions;
+}
+
 std::vector<leptonGenMatchEntry>
 getLeptonGenMatch_definitions_2lepton(bool apply_leptonGenMatching)
 {
@@ -72,33 +90,29 @@ getLeptonGenMatch_definitions_2lepton(bool apply_leptonGenMatching)
   return leptonGenMatch_definitions;
 }
 
-
 std::vector<leptonChargeFlipGenMatchEntry>
 getLeptonChargeFlipGenMatch_definitions_2lepton(bool apply_leptonGenMatching)
 {
   std::vector<leptonChargeFlipGenMatchEntry> leptonChargeFlipGenMatch_definitions;
   if(apply_leptonGenMatching)
-    {
-      leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("2l2f0g0j", kGen_2l2f0g0j, 2, 2, 0, 0)); // 2 gen matched leptons, both flipped
-      leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("2l1f0g0j", kGen_2l1f0g0j, 2, 1, 0, 0)); // 2 gen matched leptons, one flipped
-      leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("2l0f0g0j", kGen_2l0f0g0j, 2, 0, 0, 0)); // 2 gen matched leptons, none flipped
-      leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l1f1g0j", kGen_1l1f1g0j, 1, 1, 1, 0)); // 1 gen matched lepton, flipped, the other matched to a photon
-      leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l1f0g1j", kGen_1l1f0g1j, 1, 1, 0, 1)); // 1 gen matched lepton, flipped, the other matched to a jet
-      leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l0f1g0j", kGen_1l0f1g0j, 1, 0, 1, 0)); // 1 gen matched lepton, not flipped, the other matched to a photon
-      leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l0f0g1j", kGen_1l0f0g1j, 1, 0, 0, 1)); // 1 gen matched lepton, not flipped, the other matched to a jet
-      leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f2g0j", kGen_0l0f2g0j, 0, 0, 2, 0)); // 0 gen matched leptons (both photons)
-      leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f1g1j", kGen_0l0f1g1j, 0, 0, 1, 1)); // 0 gen matched leptons (a photon and a jet)
-      leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f0g2j", kGen_0l0f0g2j, 0, 0, 0, 2)); // 0 gen matched leptons (both jets)
-    }
+  {
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("2l2f0g0j", kGen_2l2f0g0j, 2, 2, 0, 0)); // 2 gen matched leptons, both flipped
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("2l1f0g0j", kGen_2l1f0g0j, 2, 1, 0, 0)); // 2 gen matched leptons, one flipped
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("2l0f0g0j", kGen_2l0f0g0j, 2, 0, 0, 0)); // 2 gen matched leptons, none flipped
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l1f1g0j", kGen_1l1f1g0j, 1, 1, 1, 0)); // 1 gen matched lepton, flipped, the other matched to a photon
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l1f0g1j", kGen_1l1f0g1j, 1, 1, 0, 1)); // 1 gen matched lepton, flipped, the other matched to a jet
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l0f1g0j", kGen_1l0f1g0j, 1, 0, 1, 0)); // 1 gen matched lepton, not flipped, the other matched to a photon
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l0f0g1j", kGen_1l0f0g1j, 1, 0, 0, 1)); // 1 gen matched lepton, not flipped, the other matched to a jet
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f2g0j", kGen_0l0f2g0j, 0, 0, 2, 0)); // 0 gen matched leptons (both photons)
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f1g1j", kGen_0l0f1g1j, 0, 0, 1, 1)); // 0 gen matched leptons (a photon and a jet)
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f0g2j", kGen_0l0f0g2j, 0, 0, 0, 2)); // 0 gen matched leptons (both jets)
+  }
   else
-    {
-      leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("all", kGen_LeptonAll2, -1, -1, -1, -1));
-    }
+  {
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("all", kGen_LeptonChargeFlipAll2, -1, -1, -1, -1));
+  }
   return leptonChargeFlipGenMatch_definitions;
 }
-
-
-
 
 std::vector<leptonGenMatchEntry>
 getLeptonGenMatch_definitions_3lepton(bool apply_leptonGenMatching)
