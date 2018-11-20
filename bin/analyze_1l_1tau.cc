@@ -640,6 +640,7 @@ int main(int argc, char* argv[])
     JetHistManager* subleadBJet_loose_;
     JetHistManager* BJets_medium_;
     MEtHistManager* met_;
+    std::map<std::string, MEtHistManager*> met_in_categories_;
     MEtFilterHistManager* metFilters_;
     //MVAInputVarHistManager* mvaInputVariables_HTT_sum_;
     EvtHistManager_1l_1tau* evt_;
@@ -647,6 +648,7 @@ int main(int argc, char* argv[])
     std::map<std::string, EvtHistManager_1l_1tau*> evt_in_categories_;
     std::map<std::string, std::map<std::string, EvtHistManager_1l_1tau*>> evt_in_categories_and_decayModes_;
     EvtYieldHistManager* evtYield_;
+    std::map<std::string, EvtYieldHistManager*> evtYield_in_categories_;
     WeightHistManager* weights_;
   };
   typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
@@ -770,6 +772,20 @@ int main(int argc, char* argv[])
       selHistManager->met_ = new MEtHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/met", histogramDir.data()), central_or_shift));
       selHistManager->met_->bookHistograms(fs);
+      vstring categories_evt = {
+	// CV: must *not* inclusive category, as histograms of same name already booked for selHistManager->evt_ !!
+	            "1l_1tau_SS",  "1l_1tau_OS",  "1l_1tau_OS_wChargeFlipWeights",
+	"1e_1tau",  "1e_1tau_SS",  "1e_1tau_OS",  "1e_1tau_OS_wChargeFlipWeights",
+	"1mu_1tau", "1mu_1tau_SS", "1mu_1tau_OS", "1mu_1tau_OS_wChargeFlipWeights"
+      };
+      for ( vstring::const_iterator category = categories_evt.begin();
+            category != categories_evt.end(); ++category ) {
+        TString histogramDir_category = histogramDir.data();
+        histogramDir_category.ReplaceAll("1l_1tau", category->data());
+	selHistManager->met_in_categories_[*category] = new MEtHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/met", histogramDir_category.Data()), central_or_shift));
+        selHistManager->met_in_categories_[*category]->bookHistograms(fs);
+      }
       selHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/metFilters", histogramDir.data()), central_or_shift));
       selHistManager->metFilters_->bookHistograms(fs);
@@ -791,12 +807,6 @@ int main(int argc, char* argv[])
           selHistManager->evt_in_decayModes_[decayMode_evt]->bookHistograms(fs);
         }
       }
-      vstring categories_evt = {
-	// CV: must *not* inclusive category, as histograms of same name already booked for selHistManager->evt_ !!
-	            "1l_1tau_SS",  "1l_1tau_OS",  "1l_1tau_OS_wChargeFlipWeights",
-	"1e_1tau",  "1e_1tau_SS",  "1e_1tau_OS",  "1e_1tau_OS_wChargeFlipWeights",
-	"1mu_1tau", "1mu_1tau_SS", "1mu_1tau_OS", "1mu_1tau_OS_wChargeFlipWeights"
-      };
       for ( vstring::const_iterator category = categories_evt.begin();
             category != categories_evt.end(); ++category ) {
         TString histogramDir_category = histogramDir.data();
@@ -822,6 +832,17 @@ int main(int argc, char* argv[])
       cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);
       selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_sel);
       selHistManager->evtYield_->bookHistograms(fs);
+      for ( vstring::const_iterator category = categories_evt.begin();
+            category != categories_evt.end(); ++category ) {
+        TString histogramDir_category = histogramDir.data();
+        histogramDir_category.ReplaceAll("1l_1tau", category->data());
+	edm::ParameterSet cfg_EvtYieldHistManager_category = makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/evtYield", histogramDir_category.Data()), central_or_shift);
+	cfg_EvtYieldHistManager_category.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
+	cfg_EvtYieldHistManager_category.addParameter<bool>("isMC", isMC);
+	selHistManager->evtYield_in_categories_[*category] = new EvtYieldHistManager(cfg_EvtYieldHistManager_category);
+	selHistManager->evtYield_in_categories_[*category]->bookHistograms(fs);
+      }
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/weights", histogramDir.data()), central_or_shift));
       selHistManager->weights_->bookHistograms(fs,
@@ -2115,6 +2136,9 @@ int main(int argc, char* argv[])
       if ( selHistManager->hadTaus_in_categories_.find(*category) != selHistManager->hadTaus_in_categories_.end() ) {
 	selHistManager->hadTaus_in_categories_[*category]->fillHistograms(selHadTaus, evtWeight_category);
       }
+      if ( selHistManager->met_in_categories_.find(*category) != selHistManager->met_in_categories_.end() ) {
+        selHistManager->met_in_categories_[*category]->fillHistograms(met, mht_p4, met_LD, evtWeight);
+      }
       if ( selHistManager->evt_in_categories_.find(*category) != selHistManager->evt_in_categories_.end() ) {
         selHistManager->evt_in_categories_[*category]->fillHistograms(
           selElectrons.size(),
@@ -2155,6 +2179,9 @@ int main(int argc, char* argv[])
 	      evtWeight_category);
 	  }
 	}
+      }
+      if ( selHistManager->evtYield_in_categories_.find(*category) != selHistManager->evtYield_in_categories_.end() ) {
+	selHistManager->evtYield_in_categories_[*category]->fillHistograms(eventInfo, evtWeight);
       }
     }
 
