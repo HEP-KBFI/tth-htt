@@ -123,6 +123,7 @@ bool loopB = true;
 bool cleanLep = true;
 bool selInJets = true;
 size_t cutJetCombo = 20;
+bool doResolved = false;
 
 double square(double x)
 {
@@ -1094,7 +1095,8 @@ int main(int argc, char* argv[])
           //std::cout<<std::endl;
           //std::cout<<"btag ordering  ";
           //for (auto i: btag_order_selJets) std::cout << i << " ";
-          /*
+          ///*
+        if (doResolved) {
           //std::cout<<" typeTop = "<<typeTop<<" collectionSize "<< collectionSize <<std::endl;
           if (selJets.size() > 2) {
           std::vector<double> btag_disc = getBdiscr(selJets);
@@ -1244,7 +1246,8 @@ int main(int argc, char* argv[])
             }
           } // end typeTop == 3 loop
         } // end if has 3 jets
-        */
+      } // end doResolved
+        //*/
       //<< "Does not fall in any category " << " !!\n";
   //}
 
