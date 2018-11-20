@@ -6,14 +6,14 @@ from tthAnalysis.HiggsToTauTau.configs.makePlots_cfi import process
 
 process.makePlots.distributions.extend([
     cms.PSet(
-        histogramName = cms.string('sel/hadTau/$PROCESS/pt'),
+        histogramName = cms.string('sel/hadTaus/$PROCESS/pt'),
         xMin = cms.double(20.),
         xMax = cms.double(200.),
         xAxisTitle = cms.string('#tau_{h} p_{T} [GeV]'),
         yAxisTitle = cms.string('dN/dp_{T} [1/GeV]')
     ),
     cms.PSet(
-        histogramName = cms.string('sel/hadTau/$PROCESS/eta'),
+        histogramName = cms.string('sel/hadTaus/$PROCESS/eta'),
         xAxisTitle = cms.string('#tau_{h} #eta'),
         yAxisTitle = cms.string('dN/d#eta')
     ),
@@ -69,10 +69,5 @@ process.makePlots.distributions.extend([
         histogramName = cms.string('sel/evt/$PROCESS/mTauTau'),
         xAxisTitle = cms.string('m_{#tau#tau} [GeV]'),
         yAxisTitle = cms.string('dN/dm_{#tau#tau} [1/GeV]')
-    ),
-    cms.PSet(
-        histogramName = cms.string('sel/met/$PROCESS/met_pt'),
-        xAxisTitle = cms.string('E_{T}^{miss} [GeV]'),
-        yAxisTitle = cms.string('dN/dE_{T}^{miss} [1/GeV]')
     )
 ])
