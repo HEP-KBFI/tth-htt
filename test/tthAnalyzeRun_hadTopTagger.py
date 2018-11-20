@@ -28,17 +28,17 @@ running_method     = args.running_method
 
 # Additional arguments
 tau_id_wp     = args.tau_id_wp
-files_per_job = args.files_per_job
+files_per_job = 3 #args.files_per_job # HTT files are fat
 use_home      = args.use_home
 
 # Use the arguments
 hadTau_selection = "Tight|%s" % tau_id_wp
 lumi = get_lumi(era)
 
-if era == "2017":
+if era == "2016":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
 elif era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
 elif era == "2018":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
 else:
@@ -60,6 +60,7 @@ if __name__ == '__main__':
     executable_analyze = "analyze_hadTopTagger",
     cfgFile_analyze    = "analyze_hadTopTagger_cfg.py",
     samples            = samples,
+    channel            = "hadTopTagger",
     hadTau_selection   = hadTau_selection,
     max_files_per_job  = files_per_job,
     era                = era,
@@ -68,9 +69,10 @@ if __name__ == '__main__':
     check_output_files = check_output_files,
     running_method     = running_method,
     num_parallel_jobs  = num_parallel_jobs,
+    verbose            = False,
     dry_run            = dry_run,
     isDebug            = debug,
-    use_home           = use_home,
+    use_home           = use_home
   )
 
   job_statistics = analysis.create()
