@@ -876,12 +876,15 @@ class analyzeConfig_1l_1tau(analyzeConfig):
       if chargeSumSelection != "disabled":
         raise ValueError("Invalid Configuration parameter 'chargeSumSelection' = %s !!" % chargeSumSelection)
       for category in self.categories:
+        histogramDir = None
         label = None
         make_plots_backgrounds = None
         if category == "1l_1tau_SS":
-          label = "1l+1#tau_{h} SS"
+          histogramDir = getHistogramDir(self.category_inclusive, "Tight", "disabled", "SS")
+          label = "1l+1#tau_{h} SS"          
           make_plots_backgrounds = self.make_plots_backgrounds_SS
         elif category == "1l_1tau_OS":
+          histogramDir = getHistogramDir(self.category_inclusive, "Tight", "disabled", "OS")
           label = "1l+1#tau_{h} OS"
           make_plots_backgrounds = self.make_plots_backgrounds_OS
         else:
@@ -893,7 +896,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_%s_cfg.py" % (self.channel, category)),
           'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_%s.png" % (self.channel, category)),
-          'histogramDir' : getHistogramDir(self.category_inclusive, "Tight", "disabled", chargeSumSelection),
+          'histogramDir' : histogramDir,
           'label' : label,
           'make_plots_backgrounds' : make_plots_backgrounds
         }
