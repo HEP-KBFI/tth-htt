@@ -40,7 +40,7 @@ sum_events = {
   ("WWTo2L2Nu_DoubleScattering", "WWTo2L2Nu_DoubleScattering_herwig"),
   ("WWTo2L2Nu", "WWTo2L2Nu_PSweights"),
   ("WWTo4Q", "WWTo4Q_PSweights"),
-#  ("TTTT", "TTTT_PSweights"),
+  ("TTTT", "TTTT_PSweights"),
   ("ttHToNonbb_M125_powheg", "ttHToNonbb_M125_powheg_ext1"),
 }
 
@@ -1814,7 +1814,7 @@ meta_dictionary["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2
 ])
 
 meta_dictionary["/TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoProduction_v2_2018Oct27_TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8__RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11-v1"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "TTTT_PSweights"),
   ("nof_db_events",         2321852),
