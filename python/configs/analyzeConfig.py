@@ -549,7 +549,7 @@ class analyzeConfig(object):
             return central_or_shift
         return "central"
 
-    def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False):
+    def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False):
         process_string = 'process.analyze_%s' % self.channel
         current_function_name = inspect.stack()[0][3]
 
@@ -655,7 +655,7 @@ class analyzeConfig(object):
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
 
-        lines = [
+        if not isHTT : lines = [
             "# Filled in %s" % current_function_name,
             "process.fwliteInput.fileNames = cms.vstring(%s)"  % jobOptions['ntupleFiles'],
             "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
@@ -664,6 +664,14 @@ class analyzeConfig(object):
             "{}.{:<{len}} = cms.bool({})".format            (process_string, 'isDEBUG',                self.isDebug, len = max_option_len),
             "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era,     len = max_option_len),
             "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era,     len = max_option_len),
+        ]
+        else : lines = [
+            "# Filled in %s" % current_function_name,
+            "process.fwliteInput.fileNames = cms.vstring(%s)"  % jobOptions['ntupleFiles'],
+            "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
+            "{}.{:<{len}} = cms.string('{}')".format        (process_string, 'era',                    self.era,     len = max_option_len),
+            "{}.{:<{len}} = cms.bool({})".format            (process_string, 'redoGenMatching',       'False',       len = max_option_len),
+            "{}.{:<{len}} = cms.bool({})".format            (process_string, 'isDEBUG',                self.isDebug, len = max_option_len),
         ]
         for jobOptions_key in jobOptions_keys:
             if jobOptions_key not in jobOptions: continue # temporary?
