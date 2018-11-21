@@ -381,12 +381,8 @@ int main(int argc, char* argv[])
   std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
 
-  const bool selectBDT = [&cfg_analyze]() -> bool
-  {
-    if(cfg_analyze.exists("selectBDT"))
-      return cfg_analyze.getParameter<bool>("selectBDT");
-    return false;
-  }();
+  bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
+  //std::cout << "selectBDT = " << selectBDT << std::endl;
 
   const double maxAbsEta_lepton = 2.1;
   double minPt_e = -1.;
@@ -878,7 +874,7 @@ int main(int argc, char* argv[])
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
     );
-    bdt_filler -> register_variable<float_type>(
+    bdt_filler->register_variable<float_type>(
       "lep_pt", "lep_conePt", "lep_eta", "lep_tth_mva", "mindr_lep_jet", "mindr_tau_jet", 
       "avg_dr_jet", "ptmiss", "mT_lep", "mT_tau", "htmiss", "tau_mva", "tau_pt",
       "tau_eta", "dr_lep_tau",
@@ -893,7 +889,7 @@ int main(int argc, char* argv[])
       "lumiScale", "genWeight", "evtWeight", 
       "prob_fake_lepton", "prob_fake_hadTau"
     );
-    bdt_filler -> register_variable<int_type>(
+    bdt_filler->register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium",
       "charge_lep_tau",
       "nHTTv2", "N_jetAK8", "cleanedJets_fromAK8",
@@ -903,7 +899,7 @@ int main(int argc, char* argv[])
       "bWj1Wj2_isGenMatched_boosted", "bWj1Wj2_isGenMatched_semi_boosted_fromAK8",
       "resolved_and_semi_AK8", "boosted_and_semi_AK8", "resolved_and_boosted"      
     );
-    bdt_filler -> bookTree(fs);
+    bdt_filler->bookTree(fs);
   }
 
   int analyzedEntries = 0;
@@ -2204,7 +2200,7 @@ int main(int argc, char* argv[])
     ;
 
     if ( bdt_filler ) {
-      bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
+      bdt_filler->operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
 	  ("lep_pt",                                    lep_pt)
 	  ("lep_conePt",                                lep_conePt) 
 	  ("lep_eta",                                   lep_eta)
