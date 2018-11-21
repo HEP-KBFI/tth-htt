@@ -2137,7 +2137,7 @@ int main(int argc, char* argv[])
 	selHistManager->hadTaus_in_categories_[*category]->fillHistograms(selHadTaus, evtWeight_category);
       }
       if ( selHistManager->met_in_categories_.find(*category) != selHistManager->met_in_categories_.end() ) {
-        selHistManager->met_in_categories_[*category]->fillHistograms(met, mht_p4, met_LD, evtWeight);
+        selHistManager->met_in_categories_[*category]->fillHistograms(met, mht_p4, met_LD, evtWeight_category);
       }
       if ( selHistManager->evt_in_categories_.find(*category) != selHistManager->evt_in_categories_.end() ) {
         selHistManager->evt_in_categories_[*category]->fillHistograms(
@@ -2181,7 +2181,7 @@ int main(int argc, char* argv[])
 	}
       }
       if ( selHistManager->evtYield_in_categories_.find(*category) != selHistManager->evtYield_in_categories_.end() ) {
-	selHistManager->evtYield_in_categories_[*category]->fillHistograms(eventInfo, evtWeight);
+	selHistManager->evtYield_in_categories_[*category]->fillHistograms(eventInfo, evtWeight_category);
       }
     }
 
