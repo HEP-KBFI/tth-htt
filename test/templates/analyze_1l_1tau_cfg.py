@@ -75,7 +75,6 @@ process.analyze_1l_1tau = cms.PSet(
     apply_met_filters = cms.bool(True),
     cfgMEtFilter = cms.PSet(),
     apply_hadTauFakeRateSF = cms.bool(False),
-    isBDTtraining = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
     cfgEvtYieldHistManager = cms.PSet(),
