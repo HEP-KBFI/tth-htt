@@ -18,6 +18,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
         outputDir,
         executable_analyze,
         cfgFile_analyze,
+        channel,
         samples,
         hadTau_selection,
         max_files_per_job,
@@ -30,7 +31,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
         verbose  = False,
         dry_run  = False,
         isDebug  = False,
-        use_home = True,
+        use_home = True
       ):
     analyzeConfig.__init__(self,
       configDir          = configDir,
@@ -47,7 +48,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
       running_method     = running_method,
       num_parallel_jobs  = num_parallel_jobs,
       histograms_to_fit  = [],
-      trigger            = [],
+      triggers            = [],
       verbose            = verbose,
       dry_run            = dry_run,
       isDebug            = isDebug,
@@ -65,7 +66,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
     """
-    lines = super(analyzeConfig_hadTopTagger, self).createCfg_analyze(jobOptions, sample_info)
+    lines = super(analyzeConfig_hadTopTagger, self).createCfg_analyze(jobOptions, sample_info, [], False, True)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):
@@ -128,7 +129,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
 
         cfg_key = getKey(self.channel, process_name, jobId)
         cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
-        logFile_path = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%i.log" % cfg_key)
+        logFile_path = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s.log" % cfg_key)
         histogramFile_path = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s.root" % key_analyze_job)
 
         self.jobOptions_analyze[key_analyze_job] = {
