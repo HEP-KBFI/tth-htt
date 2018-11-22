@@ -540,13 +540,11 @@ int main(int argc, char* argv[])
         genTopMassFromWj = (genVar[kGenTopWj1]+genVar[kGenTopWj2]+genVar[kGenTopB]).mass();
         genWMassFromWj = (genVar[kGenTopWj1]+genVar[kGenTopWj2]).mass();
         genWMass = genVar[kGenTopW].mass();
-        //std::cout<<" mass W/T  "<< genVar[kGenTop].mass() << " "<< (genVar[kGenTopW]+genVar[kGenTopB]).mass() << " (" << genVar[kGenTopW].mass() <<") " << " (" << genWMassFromWj <<") " <<std::endl;
       } else if (genVarAnti[kGenTopWj1].px() > 0){
         genAntiTopMassFromW = (genVarAnti[kGenTopW]+genVarAnti[kGenTopB]).mass();
         genAntiTopMassFromWj = (genVarAnti[kGenTopWj1]+genVarAnti[kGenTopWj2]+genVarAnti[kGenTopB]).mass();
         genAntiWMassFromWj = (genVarAnti[kGenTopWj1]+genVarAnti[kGenTopWj2]).mass();
         genAntiWMass = genVarAnti[kGenTopW].mass();
-        //std::cout<<" mass anti W/T  "<< genVarAnti[kGenTop].mass() << " "<< (genVarAnti[kGenTopW]+genVarAnti[kGenTopB]).mass() << " (" << genVarAnti[kGenTopW].mass() <<") " << " (" << genAntiWMassFromWj <<") "  <<std::endl;
       }
     } else if (genQuarkFromTop.size() == 4) {
 
@@ -554,21 +552,15 @@ int main(int argc, char* argv[])
         genTopMassFromW = (genVar[kGenTopW]+genVar[kGenTopB]).mass();
         genTopMassFromWj = (genVar[kGenTopWj1]+genVar[kGenTopWj2]+genVar[kGenTopB]).mass();
         genWMassFromWj = (genVar[kGenTopWj1]+genVar[kGenTopWj2]).mass();
-        //std::cout<<" mass W/T  "<< genVar[kGenTop].mass() << " "<< (genVar[kGenTopW]+genVar[kGenTopB]).mass() << " (" << genVar[kGenTopW].mass() << ") " << " (" << genWMassFromWj << ") "  <<std::endl;
       }
 
       if ( genVarAnti[kGenTopWj1].px() > 0 ) {
         genAntiTopMassFromW = (genVarAnti[kGenTopW]+genVarAnti[kGenTopB]).mass();
         genAntiTopMassFromWj = (genVarAnti[kGenTopWj1]+genVarAnti[kGenTopWj2]+genVarAnti[kGenTopB]).mass();
         genAntiWMassFromWj = (genVarAnti[kGenTopWj1]+genVarAnti[kGenTopWj2]).mass();
-      //std::cout<<" mass anti W/T  "<< genVarAnti[kGenTop].mass() << " "<< (genVarAnti[kGenTopW]+genVarAnti[kGenTopB]).mass() << " (" << genVarAnti[kGenTopW].mass() << ") " << " (" << genAntiWMassFromWj << ") "<<std::endl;
       }
 
-    } //else std::cout<<" unusual genQuarkFromTop.size()  "<< genQuarkFromTop.size() <<std::endl;
-    if (genAntiTopMassFromWj > 0 && (genAntiWMassFromWj > 125.)) throw cms::Exception("analyze_hadTopTagger")
-      <<"            mass anti W/T  "<< genVarAnti[kGenTop].mass() << "                "<< (genVarAnti[kGenTopW]+genVarAnti[kGenTopB]).mass() << " " << genAntiTopMassFromWj << "      (" << genVarAnti[kGenTopW].mass() << ") " << " (" << genAntiWMassFromWj << ") " << genQuarkFromTop.size() << " !!\n";
-      //  mass anti W/T  171.5                171.697 137.421      (78.25)  (78.2831) 4 !!
-
+    }
 
     // to be used at analysis level
     int typeTop = -1; // 1 - FatTop; 2 - countFatAK8 ? countFatAK12; 3- countResolved;
