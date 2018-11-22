@@ -166,8 +166,8 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "VH" ]
 
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "conversions", "fakes_data", "fakes_mc", "flips_data", "flips_mc" ]
-    self.make_plots_backgrounds_SS = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "conversions", "fakes_data", "flips_data" ]
-    self.make_plots_backgrounds_OS = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "conversions", "fakes_data" ]
+    self.make_plots_backgrounds_SS = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "conversions", "fakes_data", "flips_data" ]
+    self.make_plots_backgrounds_OS = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "conversions", "fakes_data" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.inputFiles_hadd_stage1_6 = {}
@@ -353,7 +353,8 @@ class analyzeConfig_1l_1tau(analyzeConfig):
         hadTau_selection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
 
         if lepton_and_hadTau_selection == "forBDTtraining":
-          lepton_selection = "Tight"
+          electron_selection = "Tight"
+          muon_selection = "Tight"
           hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
         elif lepton_and_hadTau_selection == "Fakeable_mcClosure_e":
           electron_selection = "Fakeable"

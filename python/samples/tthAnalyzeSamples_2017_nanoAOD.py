@@ -21536,6 +21536,43 @@ samples_2017["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017
   ]),
 ])
 
+samples_2017["/TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "Rares"),
+  ("process_name_specific",           "TTTT_PSweights"),
+  ("nof_files",                       47),
+  ("nof_db_files",                    99),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 2121960),
+  ("nof_db_events",                   2321852),
+  ("fsize_local",                     7504563365), # 7.50GB, avg file size 159.67MB
+  ("fsize_db",                        179541478060), # 179.54GB, avg file size 1.81GB
+  ("use_it",                          True),
+  ("xsection",                        0.008213),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Oct27/TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/NanoProduction_v2_2018Oct27_TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8__RunIIFall17MiniAOD-PU2017_94X_mc2017_realistic_v11-v1/181027_235419"),
+        ("selection", "*"),
+        ("blacklist", [11, 19, 25, 37]),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
 samples_2017["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "Rares"),
@@ -22244,6 +22281,7 @@ samples_2017["sum_events"] = [
   [ 'DYJetsToLL_M-4to50_HT-200to400',                  'DYJetsToLL_M-4to50_HT-200to400_ext1',              ],
   [ 'GluGluHToZZTo4L',                                 'GluGluHToZZTo4L_ext1',                             ],
   [ 'DYJetsToLL_M50_HT200to400',                       'DYJetsToLL_M50_HT200to400_ext1',                   ],
+  [ 'TTTT',                                            'TTTT_PSweights',                                   ],
   [ 'DY3JetsToLL_M-50',                                'DY3JetsToLL_M-50_ext1',                            ],
   [ 'GluGluHToTauTau',                                 'GluGluHToTauTau_ext1',                             ],
   [ 'DY2JetsToLL_M-50',                                'DY2JetsToLL_M-50_ext1',                            ],
