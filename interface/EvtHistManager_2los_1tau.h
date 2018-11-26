@@ -38,6 +38,8 @@ public:
                  double mvaDiscr_2los_1tau,
                  double mTauTauVis,
                  double mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var,
+                 double mvaOutput_XGB_Updated,
+                 double mvaOutput_XGB_Boosted_AK8,
                  double evtWeight);
 
   const TH1 *
@@ -66,6 +68,9 @@ private:
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_EventCounter_;
   TH1 * histogram_mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var_;
+  TH1 * histogram_mvaOutput_XGB_Updated_;
+  TH1 * histogram_mvaOutput_XGB_Boosted_AK8_;
+
 };
 
 #endif
