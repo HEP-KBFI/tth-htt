@@ -353,7 +353,7 @@ int main(int argc, char* argv[])
   electronReader->readUncorrected(useNonNominal);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
-  RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
+  RecoElectronCollectionCleaner electronCleaner(0.05, isDEBUG);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
@@ -478,7 +478,7 @@ int main(int argc, char* argv[])
     preselHistManager->evt_ = new EvtHistManager_4l(makeHistManager_cfg(process_and_genMatch,
       Form("%s/presel/evt", histogramDir.data()), era_string, central_or_shift));
     preselHistManager->evt_->bookHistograms(fs);
-    edm::ParameterSet cfg_EvtYieldHistManager_presel = makeHistManager_cfg(process_and_genMatch, 
+    edm::ParameterSet cfg_EvtYieldHistManager_presel = makeHistManager_cfg(process_and_genMatch,
       Form("%s/presel/evtYield", histogramDir.data()), central_or_shift);
     cfg_EvtYieldHistManager_presel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
     cfg_EvtYieldHistManager_presel.addParameter<bool>("isMC", isMC);
@@ -530,7 +530,7 @@ int main(int argc, char* argv[])
       {
 	std::string decayMode_and_genMatch = decayMode_evt;
 	if ( apply_leptonGenMatching ) decayMode_and_genMatch += leptonGenMatch_definition -> name_;
-        
+
 	selHistManager -> evt_in_decayModes_[decayMode_evt] = new EvtHistManager_4l(makeHistManager_cfg(
           decayMode_and_genMatch,
 	  Form("%s/sel/evt", histogramDir.data()),
@@ -540,7 +540,7 @@ int main(int argc, char* argv[])
 	selHistManager -> evt_in_decayModes_[decayMode_evt] -> bookHistograms(fs);
       }
     }
-    edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch, 
+    edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/evtYield", histogramDir.data()), central_or_shift);
     cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
     cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);
@@ -581,9 +581,9 @@ int main(int argc, char* argv[])
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
     );
     bdt_filler -> register_variable<float_type>(
-      "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet", "mT_lep1", 
+      "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet", "mT_lep1",
       "lep2_pt", "lep2_conePt", "lep2_eta", "lep2_tth_mva", "mindr_lep2_jet", "mT_lep2",
-      "lep3_pt", "lep3_conePt", "lep3_eta", "lep3_tth_mva", "mindr_lep3_jet", "mT_lep3", 
+      "lep3_pt", "lep3_conePt", "lep3_eta", "lep3_tth_mva", "mindr_lep3_jet", "mT_lep3",
       "lep4_pt", "lep4_conePt", "lep4_eta", "lep4_tth_mva", "mindr_lep4_jet", "mT_lep4",
       "avg_dr_jet", "ptmiss",  "htmiss", "dr_leps",
       "lumiScale", "genWeight", "evtWeight",
@@ -1036,7 +1036,7 @@ int main(int argc, char* argv[])
     preselHistManager->met_->fillHistograms(met, mht_p4, met_LD, 1.);
     preselHistManager->metFilters_->fillHistograms(metFilters, 1.);
     preselHistManager->evt_->fillHistograms(
-      preselElectrons.size(), preselMuons.size(), 
+      preselElectrons.size(), preselMuons.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       1.);
     preselHistManager->evtYield_->fillHistograms(eventInfo, 1.);
@@ -1271,7 +1271,7 @@ int main(int argc, char* argv[])
     std::cout << "event " << eventInfo.str() << " FAILS lepton pT selection." << std::endl;
 	std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead
 		  << ", subleading selLepton pT = " << selLepton_sublead->pt() << ", minPt_sublead = " << minPt_sublead
-		  << ", third selLepton pT = " << selLepton_third->pt() << ", minPt_third = " << minPt_third 
+		  << ", third selLepton pT = " << selLepton_third->pt() << ", minPt_third = " << minPt_third
 		  << ", fourth selLepton pT = " << selLepton_fourth->pt() << ", minPt_fourth = " << minPt_fourth << ")" << std::endl;
       }
       continue;
@@ -1287,7 +1287,7 @@ int main(int argc, char* argv[])
     std::cout << "event " << eventInfo.str() << " FAILS lepton charge selection." << std::endl;
 	std::cout << " (leading selLepton charge = " << selLepton_lead->charge()
 		  << ", subleading selLepton charge = " << selLepton_sublead->charge()
-		  << ", third selLepton charge = " << selLepton_third->charge() 
+		  << ", third selLepton charge = " << selLepton_third->charge()
 		  << ", fourth selLepton charge = " << selLepton_fourth->charge() << ", chargeSumSelection = OS)" << std::endl;
       }
       continue;
@@ -1297,7 +1297,7 @@ int main(int argc, char* argv[])
     std::cout << "event " << eventInfo.str() << " FAILS lepton charge selection." << std::endl;
 	std::cout << " (leading selLepton charge = " << selLepton_lead->charge()
 		  << ", subleading selLepton charge = " << selLepton_sublead->charge()
-		  << ", third selLepton charge = " << selLepton_third->charge() 
+		  << ", third selLepton charge = " << selLepton_third->charge()
 		  << ", fourth selLepton charge = " << selLepton_fourth->charge() << ", chargeSumSelection = SS)" << std::endl;
       }
       continue;
@@ -1418,7 +1418,7 @@ int main(int argc, char* argv[])
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->evt_->fillHistograms(
-      selElectrons.size(), selMuons.size(), 
+      selElectrons.size(), selMuons.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       evtWeight);
     if(isSignal)
@@ -1504,7 +1504,7 @@ int main(int argc, char* argv[])
           ("lep4_eta",            selLepton_fourth -> eta())
           ("lep4_tth_mva",        selLepton_fourth -> mvaRawTTH())
           ("mindr_lep4_jet",      TMath::Min(10., comp_mindr_lep1_jet(*selLepton_fourth, selJets)))
-          ("mT_lep4",             comp_MT_met_lep1(*selLepton_fourth, met.pt(), met.phi()))	
+          ("mT_lep4",             comp_MT_met_lep1(*selLepton_fourth, met.pt(), met.phi()))
           ("avg_dr_jet",          comp_avg_dr_jet(selJets))
           ("ptmiss",              met.pt())
           ("htmiss",              mht_p4.pt())
