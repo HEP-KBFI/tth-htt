@@ -31,7 +31,7 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , DBdR03oldDMwLTEff95_(nullptr)
   , mvaOutput_normalization_DBdR03oldDMwLT_(nullptr)
   , era_(era)
-  , max_nHadTaus_(32)
+  , max_nHadTaus_(36)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , genLeptonReader_(nullptr)

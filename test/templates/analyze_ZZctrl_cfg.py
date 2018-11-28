@@ -16,7 +16,7 @@ process.fwliteOutput = cms.PSet(
     fileName = cms.string('')
 )
 
-process.analyze_ttZctrl = cms.PSet(
+process.analyze_ZZctrl = cms.PSet(
     treeName = cms.string('Events'),
 
     process = cms.string(''),
@@ -60,10 +60,10 @@ process.analyze_ttZctrl = cms.PSet(
     muonSelection = cms.string(''),
     apply_leptonGenMatching = cms.bool(True),
 
-    hadTauSelection_veto = cms.string(''),
+    chargeSumSelection = cms.string(''),
 
     applyFakeRateWeights = cms.string(""),
-        leptonFakeRateWeight = cms.PSet(
+    leptonFakeRateWeight = cms.PSet(
         inputFileName = cms.string(""),
         histogramName_e = cms.string(""),
         histogramName_mu = cms.string("")
@@ -71,7 +71,7 @@ process.analyze_ttZctrl = cms.PSet(
 
     minNumJets = cms.int32(2),
 
-    isMC = cms.bool(False),
+    isMC = cms.bool(True),
     central_or_shift = cms.string(''),
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
@@ -85,9 +85,9 @@ process.analyze_ttZctrl = cms.PSet(
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
-    branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
+    branchName_memOutput = cms.string(''),
 
     branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),
@@ -97,14 +97,15 @@ process.analyze_ttZctrl = cms.PSet(
 
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
-    useNonNominal = cms.bool(False),
-    isDEBUG = cms.bool(False),
+    selectBDT = cms.bool(False),
 
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
         requireGenMatching = cms.bool(False),
     ),
+    useNonNominal = cms.bool(False),
+    isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
 
     evtWeight = cms.PSet(
