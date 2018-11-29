@@ -44,6 +44,12 @@ Higgsness::Higgsness(modeType mode, int maxObjFunctionCalls)
   }
   chi2_of_permutation_ = new double[numPermutations_];
   fitStatus_of_permutation_ = new int[numPermutations_];
+
+//--- set verbosity level of minimizer
+//      -1 quiet (also suppresses all warnings)
+//       0 normal
+//       1 verbose
+  minimizer_->SetPrintLevel(-1);
 }
 
 Higgsness::~Higgsness()
@@ -74,9 +80,9 @@ void Higgsness::set_sigmaH_lep(double sigmaH_lep)
 namespace
 {
   double compMassHiggs_lep(const Particle::LorentzVector& lepton1P4,
-			   double nu1Px, double nu1Py, double nu1Pz, double nu1E,
-			   const Particle::LorentzVector& lepton2P4,
-			   double nu2Px, double nu2Py, double nu2Pz, double nu2E)
+                           double nu1Px, double nu1Py, double nu1Pz, double nu1E,
+                           const Particle::LorentzVector& lepton2P4,
+                           double nu2Px, double nu2Py, double nu2Pz, double nu2E)
   {
     double lepton1Px = lepton1P4.px();
     double lepton1Py = lepton1P4.py();
@@ -100,7 +106,7 @@ namespace
   }
 
   double compMassW(const Particle::LorentzVector& leptonP4,
-		   double nuPx, double nuPy, double nuPz, double nuE)
+                   double nuPx, double nuPy, double nuPz, double nuE)
   {
     double leptonPx = leptonP4.px();
     double leptonPy = leptonP4.py();
@@ -155,7 +161,7 @@ double Higgsness::operator()(const double* x) const
   //std::cout << "massW: onshell = " << massW_onshell << ", offshell = " << massW_offshell << std::endl;  
 
   //std::cout << " deltaLN11on = " << (square(massW_onshell) - square(mW))/square(sigmaW_onshell_)  << "," 
-  //	      << " deltaLN22off = " << (square(massW_offshell) - square(mW_offshell))/square(sigmaW_offshell_) << std::endl;
+  //              << " deltaLN22off = " << (square(massW_offshell) - square(mW_offshell))/square(sigmaW_offshell_) << std::endl;
 
   double chi2 = -1.;
   if ( mode_ == kPublishedChi2 ) {
@@ -174,17 +180,14 @@ double Higgsness::operator()(const double* x) const
 }
 
 void Higgsness::fit(const Particle::LorentzVector& lepton1P4,
-		    const Particle::LorentzVector& lepton2P4,
-		    double metPx, double metPy)
+                    const Particle::LorentzVector& lepton2P4,
+                    double metPx, double metPy)
 {
+  const auto currentIgnoreLevel = gErrorIgnoreLevel;
+  gErrorIgnoreLevel = kWarning;
+
 //--- clear minimizer
   minimizer_->Clear();
-
-//--- set verbosity level of minimizer
-//      -1 quiet (also suppresses all warnings)
-//       0 normal
-//       1 verbose
-  minimizer_->SetPrintLevel(-1);
 
   for ( int idxPermutation = 0; idxPermutation < numPermutations_; ++idxPermutation ) {
 
@@ -250,6 +253,8 @@ void Higgsness::fit(const Particle::LorentzVector& lepton1P4,
   } else {
     logHiggsness_ = 1.e+3;
   }
+
+  gErrorIgnoreLevel = currentIgnoreLevel;
 }
 
 bool Higgsness::isValidSolution() const
