@@ -22,9 +22,9 @@ public:
   addGenLeptonMatch(const std::vector<const Trec *> & recParticles,
                     const std::vector<GenLepton> & genLeptons,
                     double dRmax,
-                    double minPtRel = 0.25) const
+                    double maxDPtRel = 0.5) const
   {
-    return addGenMatch<GenLepton, GenLeptonLinker>(recParticles, genLeptons, dRmax, minPtRel, genLeptonLinker_);
+    return addGenMatch<GenLepton, GenLeptonLinker>(recParticles, genLeptons, dRmax, maxDPtRel, genLeptonLinker_);
   }
 
   /**
@@ -34,18 +34,18 @@ public:
   addGenHadTauMatch(const std::vector<const Trec *> & recParticles,
                     const std::vector<GenHadTau> & genHadTaus,
                     double dRmax,
-                    double minPtRel = 0.25) const
+                    double maxDPtRel = 0.5) const
   {
-    return addGenMatch<GenHadTau, GenHadTauLinker>(recParticles, genHadTaus, dRmax, minPtRel, genHadTauLinker_);
+    return addGenMatch<GenHadTau, GenHadTauLinker>(recParticles, genHadTaus, dRmax, maxDPtRel, genHadTauLinker_);
   }
 
   void
   addGenPhotonMatch(const std::vector<const Trec *> & recParticles,
                     const std::vector<GenPhoton> & genPhotons,
                     double dRmax,
-                    double minPtRel = 0.25) const
+                    double maxDPtRel = 0.5) const
   {
-    return addGenMatch<GenPhoton, GenPhotonLinker>(recParticles, genPhotons, dRmax, minPtRel, genPhotonLinker_);
+    return addGenMatch<GenPhoton, GenPhotonLinker>(recParticles, genPhotons, dRmax, maxDPtRel, genPhotonLinker_);
   }
 
   /**
@@ -55,9 +55,9 @@ public:
   addGenJetMatch(const std::vector<const Trec *> & recParticles,
                  const std::vector<GenJet> & genJets,
                  double dRmax,
-                 double minPtRel = 0.25) const
+                 double maxDPtRel = 0.5) const
   {
-    return addGenMatch<GenJet, GenJetLinker>(recParticles, genJets, dRmax, minPtRel, genJetLinker_);
+    return addGenMatch<GenJet, GenJetLinker>(recParticles, genJets, dRmax, maxDPtRel, genJetLinker_);
   }
 
 protected:
@@ -70,7 +70,7 @@ protected:
   addGenMatch(const std::vector<const Trec *> & recParticles,
               const std::vector<Tgen> & genParticles,
               double dRmax,
-              double minPtRel,
+              double maxDPtRel,
               const Tlinker & linker) const
   {
     for(const Trec * recParticle: recParticles)
@@ -88,7 +88,7 @@ protected:
         const double dR = deltaR(
           recParticle->eta(), recParticle->phi(), genParticle.eta(), genParticle.phi()
         );
-        const bool passesPtConstraint = genParticle.pt() / recParticle->pt() > minPtRel;
+        const bool passesPtConstraint = std::abs(recParticle->pt() - genParticle.pt()) / genParticle.pt() < maxDPtRel;
         if(dR < dRmax && dR < dR_bestMatch && passesPtConstraint && ! genParticle.isMatchedToReco())
         {
           bestMatch = const_cast<Tgen *>(&genParticle);
