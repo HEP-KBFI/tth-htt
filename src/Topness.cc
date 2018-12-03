@@ -39,6 +39,12 @@ Topness::Topness(modeType mode, int maxObjFunctionCalls)
   }
   chi2_of_permutation_ = new double[numPermutations_];
   fitStatus_of_permutation_ = new int[numPermutations_];
+
+//--- set verbosity level of minimizer
+//      -1 quiet (also suppresses all warnings)
+//       0 normal
+//       1 verbose
+  minimizer_->SetPrintLevel(-1);
 }
 
 Topness::~Topness()
@@ -63,8 +69,8 @@ void Topness::set_sigmaTop(double sigmaTop)
 namespace
 {
   double compMassTop(const Particle::LorentzVector& leptonP4,
-		     const Particle::LorentzVector& bjetP4,
-		     double nuPx, double nuPy, double nuPz, double nuE)
+                     const Particle::LorentzVector& bjetP4,
+                     double nuPx, double nuPy, double nuPz, double nuE)
   {
     double leptonPx = leptonP4.px();
     double leptonPy = leptonP4.py();
@@ -88,7 +94,7 @@ namespace
   }
 
   double compMassW(const Particle::LorentzVector& leptonP4,
-		   double nuPx, double nuPy, double nuPz, double nuE)
+                   double nuPx, double nuPy, double nuPz, double nuE)
   {
     double leptonPx = leptonP4.px();
     double leptonPy = leptonP4.py();
@@ -156,19 +162,16 @@ double Topness::operator()(const double* x) const
 }
 
 void Topness::fit(const Particle::LorentzVector& lepton1P4,
-		  const Particle::LorentzVector& lepton2P4,
-		  const Particle::LorentzVector& bjet1P4,
-		  const Particle::LorentzVector& bjet2P4,
-		  double metPx, double metPy)
+                  const Particle::LorentzVector& lepton2P4,
+                  const Particle::LorentzVector& bjet1P4,
+                  const Particle::LorentzVector& bjet2P4,
+                  double metPx, double metPy)
 {
+  const auto currentIgnoreLevel = gErrorIgnoreLevel;
+  gErrorIgnoreLevel = kWarning;
+
 //--- clear minimizer
   minimizer_->Clear();
-
-//--- set verbosity level of minimizer
-//      -1 quiet (also suppresses all warnings)
-//       0 normal
-//       1 verbose
-  minimizer_->SetPrintLevel(-1);
 
   for ( int idxPermutation = 0; idxPermutation < numPermutations_; ++idxPermutation ) {
 
@@ -234,6 +237,8 @@ void Topness::fit(const Particle::LorentzVector& lepton1P4,
   } else {
     logTopness_ = 1.e+3;
   }
+
+  gErrorIgnoreLevel = currentIgnoreLevel;
 }
 
 bool Topness::isValidSolution() const

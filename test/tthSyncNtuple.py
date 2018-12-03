@@ -68,7 +68,11 @@ from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 sys_choices     = systematics.an_inclusive_opts
 channel_choices = [
   '0l_2tau', '1l_2tau', '2lss', '2lss_1tau', '2los_1tau', '2l_2tau', '3l', '3l_1tau', '4l', 'inclusive',
+<<<<<<< HEAD
   'ttWctrl', 'ttZctrl', 'WZctrl','ZZctrl',
+=======
+  'ttWctrl', 'ttZctrl', 'WZctrl', 'ZZctrl',
+>>>>>>> 97f0eeed04ab1bb35253230a7b6d70ed8b00f670
 ]
 
 parser = tthAnalyzeParser()

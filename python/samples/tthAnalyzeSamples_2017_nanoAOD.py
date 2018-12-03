@@ -20892,7 +20892,7 @@ samples_2017["/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mini
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/NanoProduction_v2_2018Jun08/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/NanoProduction_v2_2018Jun08_QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180608_201802"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [38]),
       ]),
     ]
   ),

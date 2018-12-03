@@ -323,6 +323,8 @@ int main(int argc, char* argv[])
       "dR_bWj1", "dR_bWj2", "dR_Wj1Wj2", "dR_bW",
       "statusKinFit", "nllKinFit", "alphaKinFit", //"logPKinFit", "logPErrKinFit",
       "pT_bWj1Wj2", "pT_Wj1Wj2",
+      "atan_m13_div_m12","m23_div_m123","Rmin_square_one_plus_m13_div_m12_square",
+      "Rmax_square_one_plus_m13_div_m12_square",
       //*/
       "tau32Top", "massTop",
       "tau21W", "massW_SD",
@@ -481,6 +483,9 @@ int main(int argc, char* argv[])
     //  <<jet_ptrsHTTv2.size()<< " "<< jet_ptrsAK8.size() << " "<< jet_ptrsAK12.size() << " " << cleanedJets.size() << " " << selJets.size() << std::endl;
 
     Particle::LorentzVector unfittedHadTopP4, selBJet, selWJet1, selWJet2 ;
+    double m12=-1.,m23=-1.,m13=-1.,m123=-1.;
+    double m23_div_m123 = -1;
+
     bool isGenMatched = false;
 		bool fatjet_isGenMatched = false;
     bool b_isGenMatched = false;
@@ -677,6 +682,45 @@ int main(int argc, char* argv[])
             drb_wj2_gen = deltaR(genVar[kGenTopB], genVar[kGenTopWj2]);
             drwj1_wj2_gen = deltaR(genVar[kGenTopWj1], genVar[kGenTopWj2]);
             drW_gen = deltaR(selWJet1 + selWJet2 , genVar[kGenTopW]);
+            if(selBJet.pt()>selWJet1.pt() && selBJet.pt()>selWJet2.pt()){
+             if(selWJet1.pt()>selWJet2.pt()){
+                m12 = (selBJet + selWJet1).mass();
+                m23 = (selWJet1 + selWJet2).mass();
+                m13 = (selBJet + selWJet1).mass();
+             }
+             else{
+                m12 = (selBJet + selWJet2).mass();
+                m23 = (selWJet1 + selWJet2).mass();
+                m13 = (selBJet + selWJet2).mass();
+             }
+            }
+           else if(selWJet1.pt()>selBJet.pt() && selWJet1.pt()>selWJet2.pt()){
+             if(selBJet.pt()>selWJet2.pt()){
+                m12 = (selBJet + selWJet1).mass();
+                m23 = (selBJet + selWJet2).mass();
+                m13 = (selWJet2 + selWJet1).mass();
+             }
+             else{
+                m12 = (selWJet1 + selWJet2).mass();
+                m23 = (selBJet + selWJet2).mass();
+                m13 = (selBJet + selWJet1).mass();
+             }
+            }
+          else if(selWJet2.pt()>selBJet.pt() && selWJet2.pt()>selWJet1.pt()){
+             if(selBJet.pt()>selWJet1.pt()){
+                m12 = (selBJet + selWJet2).mass();
+                m23 = (selBJet + selWJet1).mass();
+                m13 = (selWJet2 + selWJet1).mass();
+             }
+             else{
+                m12 = (selWJet1 + selWJet2).mass();
+                m23 = (selBJet + selWJet1).mass();
+                m13 = (selBJet + selWJet2).mass();
+             }
+            }
+           m123 = (selBJet + selWJet1 + selWJet2).mass();
+           m23_div_m123 = 1.0*m23/m123;
+
           } else {
             genFatPtAll = genVarAnti[kGenTopVar].pt();
             genFatEtaAll = genVarAnti[kGenTopVar].eta();
@@ -696,6 +740,45 @@ int main(int argc, char* argv[])
             drb_wj2_gen = deltaR(genVarAnti[kGenTopB], genVar[kGenTopWj2]);
             drwj1_wj2_gen = deltaR(genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2]);
             drW_gen = deltaR(selWJet1 + selWJet2 , genVarAnti[kGenTopW]);
+	    if(selBJet.pt()>selWJet1.pt() && selBJet.pt()>selWJet2.pt()){
+             if(selWJet1.pt()>selWJet2.pt()){
+                m12 = (selBJet + selWJet1).mass();
+                m23 = (selWJet1 + selWJet2).mass();
+                m13 = (selBJet + selWJet1).mass();
+             }
+             else{
+                m12 = (selBJet + selWJet2).mass();
+                m23 = (selWJet1 + selWJet2).mass();
+                m13 = (selBJet + selWJet2).mass();
+             }
+            }
+           else if(selWJet1.pt()>selBJet.pt() && selWJet1.pt()>selWJet2.pt()){
+             if(selBJet.pt()>selWJet2.pt()){
+                m12 = (selBJet + selWJet1).mass();
+                m23 = (selBJet + selWJet2).mass();
+                m13 = (selWJet2 + selWJet1).mass();
+             }
+             else{
+                m12 = (selWJet1 + selWJet2).mass();
+                m23 = (selBJet + selWJet2).mass();
+                m13 = (selBJet + selWJet1).mass();
+             }
+            }
+          else if(selWJet2.pt()>selBJet.pt() && selWJet2.pt()>selWJet1.pt()){
+             if(selBJet.pt()>selWJet1.pt()){
+                m12 = (selBJet + selWJet2).mass();
+                m23 = (selBJet + selWJet1).mass();
+                m13 = (selWJet2 + selWJet1).mass();
+             }
+             else{
+                m12 = (selWJet1 + selWJet2).mass();
+                m23 = (selBJet + selWJet1).mass();
+                m13 = (selBJet + selWJet2).mass();
+             }
+            }
+	  m123 = (selBJet + selWJet1 + selWJet2).mass();
+          m23_div_m123 = 1.0*m23/m123;
+
           }
           if ( genFatPtAll > 200 && (genVarAnti[kGenTopB]+genVarAnti[kGenTopWj1]+genVarAnti[kGenTopWj2]).eta() < 2.4 && counter == 0 && drT_gen < 0.75) {
             countFatTopPt200++; counter++;
@@ -770,6 +853,10 @@ int main(int argc, char* argv[])
             ("genAntiWMassFromWj", genAntiWMassFromWj )
             ("genWMass", genWMass)
             ("genAntiWMass", genAntiWMass)
+            ("atan_m13_div_m12", atan(1.0*m13/m12))
+            ("m23_div_m123",m23_div_m123)
+            ("Rmin_square_one_plus_m13_div_m12_square",0.7*0.7*(1+1.0*(m13/m12)*(m13/m12)))
+            ("Rmax_square_one_plus_m13_div_m12_square",1.3*1.3*(1+1.0*(m13/m12)*(m13/m12)))
                 .fill();
           }
         } // end typeTop == 1 (HTTv2 loop)
@@ -996,6 +1083,7 @@ int main(int argc, char* argv[])
                   drb_wj2_gen = deltaR(genVar[kGenTopB], genVar[kGenTopWj2]);
                   drwj1_wj2_gen = deltaR(genVar[kGenTopWj1], genVar[kGenTopWj2]);
                   drW_gen = deltaR(unfittedHadTopP4 , genVar[kGenTopW]);
+
                 } else {
                   genFatPtAll = genVarAnti[kGenTopW].pt();
                   genFatEtaAll = genVarAnti[kGenTopW].pt();
@@ -1077,6 +1165,11 @@ int main(int argc, char* argv[])
                   ("genAntiWMassFromWj", genAntiWMassFromWj )
                   ("genWMass", genWMass)
                   ("genAntiWMass", genAntiWMass)
+		  ("atan_m13_div_m12", 1.)
+                  ("m23_div_m123",1.)
+                  ("Rmin_square_one_plus_m13_div_m12_square",1.)
+                  ("Rmax_square_one_plus_m13_div_m12_square",1.)
+
                       .fill();
                 }
               } //else { std::cout<<" type2 akt8 did not had subjets "<<std::endl; continue;}
