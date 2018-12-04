@@ -225,6 +225,28 @@ LHEInfoReader::getWeight_scale(int central_or_shift) const
 int
 LHEInfoReader::getNumWeights_pdf() const
 {
+  // If the # of PDF error sets is
+  // a) 33 -- PDF4LHC15_nnlo_30_pdfas (LHAID = 91400) (http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/PDF4LHC15_nnlo_30_pdfas.tar.gz)
+  //          mem=0 => alphas(MZ)=0.118 central value; mem=1-30 => PDF symmetric eigenvectors; mem=31 => alphas(MZ)=0.1165 central value; mem=32 => alphas(MZ)=0.1195
+  // b) 103
+  //    i) NNPDF31_nnlo_hessian_pdfas (LHAID = 306000) (http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/NNPDF31_nnlo_hessian_pdfas.tar.gz)
+  //       mem=0 central value => Alphas(MZ)=0.118; mem=1-100 => PDF eig.; mem=101 => central value Alphas(MZ)=0.116; mem=102 => central value Alphas(MZ)=0.120
+  //
+  //    ii) NNPDF30_nlo_nf_4_pdfas (LHAID = 292000) for some FXFX 80X samples (http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/NNPDF30_nlo_nf_4_pdfas.tar.gz)
+  //        mem=0 to mem=100 with alphas(MZ)=0.118, mem=0 => average on replicas 1-100; mem=1-100 => PDF replicas with  alphas(MZ)=0.118;
+  //        mem=101 => central value for alphas=0.117; mem=102 => central value for alphas=0.119; maximum number of active flavors NF=4
+  //
+  //    iii) NNPDF30_nlo_nf_5_pdfas (LHAID = 292200) for some FXFX 80X samples (http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/NNPDF30_nlo_nf_5_pdfas.tar.gz)
+  //         mem=0 to mem=100 with alphas(MZ)=0.118, mem=0 => average on replicas 1-100; mem=1-100 => PDF replicas with  alphas(MZ)=0.118;
+  //         mem=101 => central value for alphas=0.117; mem=102 => central value for alphas=0.119
+  // c) 101
+  //    i) NNPDF30_nlo_as_0118 (LHAID = 260000) for some 92X samples (http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/NNPDF30_nlo_as_0118.tar.gz)
+  //       alphas(MZ)=0.118. mem=0 => average on replicas; mem=1-100 => PDF replicas
+
+  //    ii) NNPDF30_lo_as_0130 (LHAID = 262000) for some MLM 80X samples (http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/NNPDF30_lo_as_0130.tar.gz)
+  //        alphas(MZ)=0.130. mem=0 => average on replicas; mem=1-100 => PDF replicas
+  //
+  // In order to find out which PDF error set the sample has, open the Ntuple, read the LHEPDFweight array branch and look for LHEID in the title of the branch.
   return has_LHE_weights_ ? pdf_nWeights_ : 1;
 }
 
