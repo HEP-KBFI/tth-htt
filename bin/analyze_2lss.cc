@@ -364,7 +364,7 @@ int main(int argc, char* argv[])
   RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
-  electronReader->readUncorrected(useNonNominal);
+  //electronReader->readUncorrected(useNonNominal);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.05, isDEBUG);
@@ -805,7 +805,6 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    //if (!( eventInfo.event == 16800461)) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1079,22 +1078,23 @@ int main(int argc, char* argv[])
 
 //--- match reconstructed to generator level particles
     if ( isMC && redoGenMatching ) {
-      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
-      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
+      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.3);
+      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.3);
       muonGenMatcher.addGenJetMatch(preselMuons, genJets, 0.2);
 
-      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.2);
-      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.2);
-      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons, 0.2);
+      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.3);
+      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.3);
+      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons, 0.3);
       electronGenMatcher.addGenJetMatch(preselElectrons, genJets, 0.2);
 
-      hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons, 0.2);
-      hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus, 0.2);
+      hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons, 0.3);
+      hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus, 0.3);
       hadTauGenMatcher.addGenJetMatch(selHadTaus, genJets, 0.2);
 
-      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons, 0.2);
-      jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.2);
+      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons, 0.3);
+      jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.3);
       jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
+
     }
 
 //--- apply preselection
@@ -1152,8 +1152,6 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    printCollection("selBJets_loose", selBJets_loose);
-    printCollection("selBJets_medium", selBJets_medium);
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (1)");
     cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)", lumiScale);
 
@@ -1490,7 +1488,7 @@ int main(int argc, char* argv[])
         std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto." << std::endl;
       }
       continue;
-    } else std::cout << "event " << eventInfo.str() << " NOT FAILS Z-boson veto. " << z_mass << " "<< z_window << " " << std::fabs(mass - z_mass) << std::endl;
+    }
     cutFlowTable.update("Z-boson mass veto", evtWeight);
     cutFlowHistManager->fillHistograms("Z-boson mass veto", evtWeight);
     if ( !(selLepton_lead->is_muon() || selLepton_sublead->is_muon() || met_LD >= 30.) ) {
@@ -1805,7 +1803,7 @@ int main(int argc, char* argv[])
     double prob_fake_lepton_sublead = 1.;
 
     const bool isGenMatched = isMC &&
-      ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
+      ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedLeptons_ == 2) || ! apply_leptonGenMatching)
     ;
 
     if ( bdt_filler ) {
@@ -2003,6 +2001,7 @@ int main(int argc, char* argv[])
 
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
+    printCollection("tightLeptons", tightLeptons);
     histogram_selectedEntries->Fill(0.);
   }
 

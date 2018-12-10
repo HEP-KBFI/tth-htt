@@ -663,7 +663,7 @@ int main(int argc, char* argv[])
   cutFlowTableType cutFlowTable;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
-    if (!( eventInfo.event == 18170306)) continue; // :
+    //if (!( eventInfo.event == 18170306)) continue; // :
     if(inputTree -> canReport(reportEvery))
     {
       std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
@@ -1285,6 +1285,8 @@ int main(int argc, char* argv[])
 
     bool isSFOS = false;
     double massSFOS = -1.;
+    double pt1 = -1.;
+    double pt2 = -1.;
     const RecoLepton* selLepton_extra = 0;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
     lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
@@ -1294,6 +1296,8 @@ int main(int argc, char* argv[])
 	  isSFOS = true;
 	  double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
 	  if ( std::fabs(mass - z_mass) < std::fabs(massSFOS - z_mass) ) {
+      pt1 = (*lepton1)->pt();
+      pt2 = (*lepton2)->pt();
 	    massSFOS = mass;
 	    if      ( !((*lepton1) == selLepton_lead    || (*lepton2) == selLepton_lead)    ) selLepton_extra = selLepton_lead;
 	    else if ( !((*lepton1) == selLepton_sublead || (*lepton2) == selLepton_sublead) ) selLepton_extra = selLepton_sublead;
@@ -1324,6 +1328,36 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("met LD", evtWeight);
+
+    bool failsHtoZZVeto = false;
+    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
+    lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
+      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
+      lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
+  if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // first pair of same flavor leptons of opposite charge
+    for ( std::vector<const RecoLepton*>::const_iterator lepton3 = preselLeptonsFull.begin();
+    lepton3 != preselLeptonsFull.end(); ++lepton3 ) {
+      if ( (*lepton3) == (*lepton1) || (*lepton3) == (*lepton2) ) continue;
+      for ( std::vector<const RecoLepton*>::const_iterator lepton4 = lepton3 + 1;
+      lepton4 != preselLeptonsFull.end(); ++lepton4 ) {
+        if ( (*lepton4) == (*lepton1) || (*lepton4) == (*lepton2) ) continue;
+        if ( (*lepton3)->pdgId() == -(*lepton4)->pdgId() ) { // second pair of same flavor leptons of opposite charge
+    double mass = ((*lepton1)->p4() + (*lepton2)->p4() + (*lepton3)->p4() + (*lepton4)->p4()).mass();
+    if ( mass < 140. ) failsHtoZZVeto = true;
+        }
+      }
+    }
+  }
+      }
+    }
+    if ( failsHtoZZVeto ) {
+      if ( run_lumi_eventSelector ) {
+    std::cout << "event " << eventInfo.str() << " FAILS H->ZZ*->4l veto." << std::endl;
+      }
+      continue;
+    }
+    cutFlowTable.update("H->ZZ*->4l veto", evtWeight);
+    //cutFlowHistManager->fillHistograms("H->ZZ*->4l veto", evtWeight);
 
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {
@@ -1493,7 +1527,7 @@ int main(int argc, char* argv[])
     if(snm)
     {
       const bool isGenMatched = isMC &&
-        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
+        ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedLeptons_ == 3) || ! apply_leptonGenMatching)
       ;
 
       const double dr_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
@@ -1631,6 +1665,20 @@ int main(int argc, char* argv[])
             << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")\n\n"
             << "cut-flow table" << std::endl;
   cutFlowTable.print(std::cout);
+  std::cout << std::endl;
+
+  std::cout << "sel. Entries by gen. matching:" << std::endl;
+  for ( std::vector<leptonGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
+	leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {
+
+    std::string process_and_genMatch = process_string;
+    if ( apply_leptonGenMatching ) process_and_genMatch += leptonGenMatch_definition->name_;
+
+    int idxLepton = leptonGenMatch_definition->idx_;
+
+    const TH1* histogram_EventCounter = selHistManagers[idxLepton]->evt_->getHistogram_EventCounter();
+    std::cout << " " << process_and_genMatch << " = " << histogram_EventCounter->GetEntries() << " (weighted = " << histogram_EventCounter->Integral() << ")" << std::endl;
+  }
   std::cout << std::endl;
 
   delete dataToMCcorrectionInterface;
