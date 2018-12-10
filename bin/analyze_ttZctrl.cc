@@ -1285,8 +1285,6 @@ int main(int argc, char* argv[])
 
     bool isSFOS = false;
     double massSFOS = -1.;
-    double pt1 = -1.;
-    double pt2 = -1.;
     const RecoLepton* selLepton_extra = 0;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
     lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
@@ -1296,8 +1294,6 @@ int main(int argc, char* argv[])
 	  isSFOS = true;
 	  double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
 	  if ( std::fabs(mass - z_mass) < std::fabs(massSFOS - z_mass) ) {
-      pt1 = (*lepton1)->pt();
-      pt2 = (*lepton2)->pt();
 	    massSFOS = mass;
 	    if      ( !((*lepton1) == selLepton_lead    || (*lepton2) == selLepton_lead)    ) selLepton_extra = selLepton_lead;
 	    else if ( !((*lepton1) == selLepton_sublead || (*lepton2) == selLepton_sublead) ) selLepton_extra = selLepton_sublead;
