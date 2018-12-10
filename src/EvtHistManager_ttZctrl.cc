@@ -9,6 +9,12 @@ EvtHistManager_ttZctrl::EvtHistManager_ttZctrl(const edm::ParameterSet & cfg)
   , era_(get_era(cfg.getParameter<std::string>("era")))
 {}
 
+const TH1 *
+EvtHistManager_ttZctrl::getHistogram_EventCounter() const
+{
+  return histogram_EventCounter_;
+}
+
 void
 EvtHistManager_ttZctrl::bookHistograms(TFileDirectory & dir)
 {
@@ -31,7 +37,7 @@ EvtHistManager_ttZctrl::bookHistograms(TFileDirectory & dir)
   histogram_mLL_             = book1D(dir, "mLL",             "mLL",             30, 60., 120.);
   histogram_mT_              = book1D(dir, "mT",              "mT",              40,  0., 200.);
   histogram_sumLeptonCharge_ = book1D(dir, "sumLeptonCharge", "sumLeptonCharge",  7, -3.,  +3.);
-  
+
   histogram_EventCounter_    = book1D(dir, "EventCounter",    "EventCounter",     1, -0.5, +0.5);
 }
 
@@ -74,6 +80,6 @@ EvtHistManager_ttZctrl::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mLL_,             mLL,             evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mT_,              mT,              evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_sumLeptonCharge_, sumLeptonCharge, evtWeight, evtWeightErr);
- 
+
   fillWithOverFlow(histogram_EventCounter_,    0.,              evtWeight, evtWeightErr);
 }
