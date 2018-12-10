@@ -10,7 +10,7 @@ std::map<std::string, int> LHEInfoReader::numInstances_;
 std::map<std::string, LHEInfoReader*> LHEInfoReader::instances_;
 
 LHEInfoReader::LHEInfoReader(bool has_LHE_weights)
-  : max_scale_nWeights_(9)
+  : max_scale_nWeights_(44)
   , branchName_scale_nWeights_("nLHEScaleWeight")
   , branchName_scale_weights_("LHEScaleWeight")
   , max_pdf_nWeights_(103)
@@ -98,20 +98,82 @@ LHEInfoReader::read() const
       << ", exceeds max_scale_nWeights_ = " << max_scale_nWeights_ << " !!\n";
   }
 
-  // Karl: nomenclature:
-  //    [0] is muR=0.5 muF=0.5 hdamp=mt=272.7225
-  //    [1] is muR=0.5 muF=1   hdamp=mt=272.7225
-  //    [2] is muR=0.5 muF=2   hdamp=mt=272.7225
-  //    [3] is muR=1   muF=0.5 hdamp=mt=272.7225
-  //    [4] is muR=1   muF=1   hdamp=mt=272.7225
-  //    [5] is muR=1   muF=2   hdamp=mt=272.7225
-  //    [6] is muR=2   muF=0.5 hdamp=mt=272.7225
-  //    [7] is muR=2   muF=1   hdamp=mt=272.7225
-  //    [8] is muR=2   muF=2   hdamp=mt=272.7225
-  weight_scale_yDown_ = gInstance->scale_weights_[1]; // muR=0.5 muF=1
-  weight_scale_xDown_ = gInstance->scale_weights_[3]; // muR=1   muF=0.5
-  weight_scale_xUp_   = gInstance->scale_weights_[5]; // muR=1   muF=2
-  weight_scale_yUp_   = gInstance->scale_weights_[7]; // muR=2   muF=1
+  // Karl: the nomenclature depends on the MG version used
+  // below MG ver 2.6:
+  //    [0] is muR=0.5 muF=0.5
+  //    [1] is muR=0.5 muF=1.0
+  //    [2] is muR=0.5 muF=2.0
+  //    [3] is muR=1.0 muF=0.5
+  //    [4] is muR=1.0 muF=1.0
+  //    [5] is muR=1.0 muF=2.0
+  //    [6] is muR=2.0 muF=0.5
+  //    [7] is muR=2.0 muF=1.0
+  //    [8] is muR=2.0 muF=2.0
+  if(gInstance->scale_nWeights_ == 9)
+  {
+    weight_scale_yDown_ = gInstance->scale_weights_[1]; // muR=0.5 muF=1.0
+    weight_scale_xDown_ = gInstance->scale_weights_[3]; // muR=1.0 muF=0.5
+    weight_scale_xUp_   = gInstance->scale_weights_[5]; // muR=1.0 muF=2.0
+    weight_scale_yUp_   = gInstance->scale_weights_[7]; // muR=2.0 muF=1.0
+  }
+  // MG ver 2.6 and above:
+  //    [0]  is muR=0.5 muF=0.5
+  //    [1]  is muR=0.5 muF=0.5 dyn_scale_choice=sum pt
+  //    [2]  is muR=0.5 muF=0.5 dyn_scale_choice=HT
+  //    [3]  is muR=0.5 muF=0.5 dyn_scale_choice=HT/2
+  //    [4]  is muR=0.5 muF=0.5 dyn_scale_choice=sqrts
+  //    [5]  is muR=0.5 muF=1.0
+  //    [6]  is muR=0.5 muF=1.0 dyn_scale_choice=sum pt
+  //    [7]  is muR=0.5 muF=1.0 dyn_scale_choice=HT
+  //    [8]  is muR=0.5 muF=1.0 dyn_scale_choice=HT/2
+  //    [9]  is muR=0.5 muF=1.0 dyn_scale_choice=sqrts
+  //    [10] is muR=0.5 muF=2.0
+  //    [11] is muR=0.5 muF=2.0 dyn_scale_choice=sum pt
+  //    [12] is muR=0.5 muF=2.0 dyn_scale_choice=HT
+  //    [13] is muR=0.5 muF=2.0 dyn_scale_choice=HT/2
+  //    [14] is muR=0.5 muF=2.0 dyn_scale_choice=sqrts
+  //    [15] is muR=1.0 muF=0.5
+  //    [16] is muR=1.0 muF=0.5 dyn_scale_choice=sum pt
+  //    [17] is muR=1.0 muF=0.5 dyn_scale_choice=HT
+  //    [18] is muR=1.0 muF=0.5 dyn_scale_choice=HT/2
+  //    [19] is muR=1.0 muF=0.5 dyn_scale_choice=sqrts
+  //    [20] is muR=1.0 muF=1.0 dyn_scale_choice=sum pt
+  //    [21] is muR=1.0 muF=1.0 dyn_scale_choice=HT
+  //    [22] is muR=1.0 muF=1.0 dyn_scale_choice=HT/2
+  //    [23] is muR=1.0 muF=1.0 dyn_scale_choice=sqrts
+  //    [24] is muR=1.0 muF=2.0
+  //    [25] is muR=1.0 muF=2.0 dyn_scale_choice=sum pt
+  //    [26] is muR=1.0 muF=2.0 dyn_scale_choice=HT
+  //    [27] is muR=1.0 muF=2.0 dyn_scale_choice=HT/2
+  //    [28] is muR=1.0 muF=2.0 dyn_scale_choice=sqrts
+  //    [29] is muR=2.0 muF=0.5
+  //    [30] is muR=2.0 muF=0.5 dyn_scale_choice=sum pt
+  //    [31] is muR=2.0 muF=0.5 dyn_scale_choice=HT
+  //    [32] is muR=2.0 muF=0.5 dyn_scale_choice=HT/2
+  //    [33] is muR=2.0 muF=0.5 dyn_scale_choice=sqrts
+  //    [34] is muR=2.0 muF=1.0
+  //    [35] is muR=2.0 muF=1.0 dyn_scale_choice=sum pt
+  //    [36] is muR=2.0 muF=1.0 dyn_scale_choice=HT
+  //    [37] is muR=2.0 muF=1.0 dyn_scale_choice=HT/2
+  //    [38] is muR=2.0 muF=1.0 dyn_scale_choice=sqrts
+  //    [39] is muR=2.0 muF=2.0
+  //    [40] is muR=2.0 muF=2.0 dyn_scale_choice=sum pt
+  //    [41] is muR=2.0 muF=2.0 dyn_scale_choice=HT
+  //    [42] is muR=2.0 muF=2.0 dyn_scale_choice=HT/2
+  //    [43] is muR=2.0 muF=2.0 dyn_scale_choice=sqrts
+  else if(gInstance->scale_nWeights_ == 44)
+  {
+    weight_scale_yDown_ = gInstance->scale_weights_[5];  // muR=0.5 muF=1.0
+    weight_scale_xDown_ = gInstance->scale_weights_[15]; // muR=1.0 muF=0.5
+    weight_scale_xUp_   = gInstance->scale_weights_[24]; // muR=1.0 muF=2.0
+    weight_scale_yUp_   = gInstance->scale_weights_[34]; // muR=2.0 muF=1.0
+  }
+  else
+  {
+    throw cmsException(this)
+      << "Unexpected number of LHE scale weights: " << gInstance->scale_nWeights_
+    ;
+  }
 
   if(gInstance->pdf_nWeights_ > max_pdf_nWeights_)
   {
@@ -163,6 +225,28 @@ LHEInfoReader::getWeight_scale(int central_or_shift) const
 int
 LHEInfoReader::getNumWeights_pdf() const
 {
+  // If the # of PDF error sets is
+  // a) 33 -- PDF4LHC15_nnlo_30_pdfas (LHAID = 91400) (http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/PDF4LHC15_nnlo_30_pdfas.tar.gz)
+  //          mem=0 => alphas(MZ)=0.118 central value; mem=1-30 => PDF symmetric eigenvectors; mem=31 => alphas(MZ)=0.1165 central value; mem=32 => alphas(MZ)=0.1195
+  // b) 103
+  //    i) NNPDF31_nnlo_hessian_pdfas (LHAID = 306000) (http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/NNPDF31_nnlo_hessian_pdfas.tar.gz)
+  //       mem=0 central value => Alphas(MZ)=0.118; mem=1-100 => PDF eig.; mem=101 => central value Alphas(MZ)=0.116; mem=102 => central value Alphas(MZ)=0.120
+  //
+  //    ii) NNPDF30_nlo_nf_4_pdfas (LHAID = 292000) for some FXFX 80X samples (http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/NNPDF30_nlo_nf_4_pdfas.tar.gz)
+  //        mem=0 to mem=100 with alphas(MZ)=0.118, mem=0 => average on replicas 1-100; mem=1-100 => PDF replicas with  alphas(MZ)=0.118;
+  //        mem=101 => central value for alphas=0.117; mem=102 => central value for alphas=0.119; maximum number of active flavors NF=4
+  //
+  //    iii) NNPDF30_nlo_nf_5_pdfas (LHAID = 292200) for some FXFX 80X samples (http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/NNPDF30_nlo_nf_5_pdfas.tar.gz)
+  //         mem=0 to mem=100 with alphas(MZ)=0.118, mem=0 => average on replicas 1-100; mem=1-100 => PDF replicas with  alphas(MZ)=0.118;
+  //         mem=101 => central value for alphas=0.117; mem=102 => central value for alphas=0.119
+  // c) 101
+  //    i) NNPDF30_nlo_as_0118 (LHAID = 260000) for some 92X samples (http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/NNPDF30_nlo_as_0118.tar.gz)
+  //       alphas(MZ)=0.118. mem=0 => average on replicas; mem=1-100 => PDF replicas
+
+  //    ii) NNPDF30_lo_as_0130 (LHAID = 262000) for some MLM 80X samples (http://www.hepforge.org/archive/lhapdf/pdfsets/6.2/NNPDF30_lo_as_0130.tar.gz)
+  //        alphas(MZ)=0.130. mem=0 => average on replicas; mem=1-100 => PDF replicas
+  //
+  // In order to find out which PDF error set the sample has, open the Ntuple, read the LHEPDFweight array branch and look for LHEID in the title of the branch.
   return has_LHE_weights_ ? pdf_nWeights_ : 1;
 }
 

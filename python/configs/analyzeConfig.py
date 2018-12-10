@@ -579,17 +579,45 @@ class analyzeConfig(object):
               nof_events = sample_info["nof_events"]['CountWeighted'][2] # PU weight down
               stitch_histogram_name = 'CountWeighted_2'
             elif central_or_shift in systematics.LHE().x1_up:
-              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][5] # muR=1   muF=2
-              stitch_histogram_name = 'CountWeightedLHEWeightScale_5'
+              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale'])
+              if nof_lhe_scale_weights == 9:
+                lhe_idx = 5
+              elif nof_lhe_scale_weights == 44:
+                lhe_idx = 24
+              else:
+                raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][lhe_idx] # muR=1   muF=2
+              stitch_histogram_name = 'CountWeightedLHEWeightScale_%d' % lhe_idx
             elif central_or_shift in systematics.LHE().y1_up:
-              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][7] # muR=2   muF=1
-              stitch_histogram_name = 'CountWeightedLHEWeightScale_7'
+              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale'])
+              if nof_lhe_scale_weights == 9:
+                lhe_idx = 7
+              elif nof_lhe_scale_weights == 44:
+                lhe_idx = 34
+              else:
+                raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][lhe_idx] # muR=2   muF=1
+              stitch_histogram_name = 'CountWeightedLHEWeightScale_%d' % lhe_idx
             elif central_or_shift in systematics.LHE().x1_down:
-              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][3] # muR=1   muF=0.5
-              stitch_histogram_name = 'CountWeightedLHEWeightScale_3'
+              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale'])
+              if nof_lhe_scale_weights == 9:
+                lhe_idx = 3
+              elif nof_lhe_scale_weights == 44:
+                lhe_idx = 15
+              else:
+                raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][lhe_idx] # muR=1   muF=0.5
+              stitch_histogram_name = 'CountWeightedLHEWeightScale_%d' % lhe_idx
             elif central_or_shift in systematics.LHE().y1_down:
-              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][1] # muR=0.5 muF=1
-              stitch_histogram_name = 'CountWeightedLHEWeightScale_1'
+              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale'])
+              if nof_lhe_scale_weights == 9:
+                lhe_idx = 1
+              elif nof_lhe_scale_weights == 44:
+                lhe_idx = 5
+              else:
+                raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][lhe_idx] # muR=0.5 muF=1
+              stitch_histogram_name = 'CountWeightedLHEWeightScale_%d' % lhe_idx
             else:
               nof_events = sample_info["nof_events"]['CountWeighted'][0] # PU weight central
               stitch_histogram_name = 'CountWeighted_0'
