@@ -406,7 +406,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
 
                     syncOutput = ''
                     syncTree = ''
-                    syncRequireGenMatching = False
+                    syncRequireGenMatching = True
                     mcClosure_match = mcClosure_regex.match(lepton_and_hadTau_selection_and_frWeight)
                     if self.do_sync:
                       if chargeSumSelection != 'OS':

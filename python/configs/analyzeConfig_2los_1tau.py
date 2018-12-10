@@ -371,7 +371,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
 
               syncOutput = ''
               syncTree = ''
-              syncRequireGenMatching = False
+              syncRequireGenMatching = True
               if self.do_sync:
                 mcClosure_match = mcClosure_regex.match(lepton_and_hadTau_selection_and_frWeight)
                 if lepton_and_hadTau_selection_and_frWeight == 'Tight':

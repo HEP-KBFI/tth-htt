@@ -421,7 +421,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
 
                 syncOutput = ''
                 syncTree = ''
-                syncRequireGenMatching = False
+                syncRequireGenMatching = True
                 mcClosure_match = mcClosure_regex.match(lepton_and_hadTau_selection_and_frWeight)
                 if self.do_sync:
                   if lepton_and_hadTau_selection_and_frWeight == 'Tight':
@@ -788,7 +788,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
       key_hadd_stage1_6 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), chargeSumSelection)
       if key_hadd_stage1_6 not in self.inputFiles_hadd_stage1_6:
         self.inputFiles_hadd_stage1_6[key_hadd_stage1_6] = []
-      for category in self.categories:      
+      for category in self.categories:
         key_addFakes_job = getKey(category, "fakes_data", chargeSumSelection)
         self.inputFiles_hadd_stage1_6[key_hadd_stage1_6].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
       key_hadd_stage1_5 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), chargeSumSelection)
@@ -882,7 +882,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
         make_plots_backgrounds = None
         if category == "1l_1tau_SS":
           histogramDir = getHistogramDir(self.category_inclusive, "Tight", "disabled", "SS")
-          label = "1l+1#tau_{h} SS"          
+          label = "1l+1#tau_{h} SS"
           make_plots_backgrounds = self.make_plots_backgrounds_SS
         elif category == "1l_1tau_OS":
           histogramDir = getHistogramDir(self.category_inclusive, "Tight", "disabled", "OS")

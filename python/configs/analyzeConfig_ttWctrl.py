@@ -115,7 +115,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       for lepton_genMatch in self.lepton_genMatches:
         if lepton_genMatch.endswith("0g0j"):
           self.lepton_genMatches_nonfakes.append(lepton_genMatch)
-        elif lepton_genMatch.endswith("0j"):
+        elif lepton_genMatch.endswith("0g0j"):
           self.lepton_genMatches_conversions.append(lepton_genMatch)
         else:
           self.lepton_genMatches_fakes.append(lepton_genMatch)
@@ -348,7 +348,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
 
                 syncOutput = ''
                 syncTree = ''
-                syncRequireGenMatching = False
+                syncRequireGenMatching = True
                 if self.do_sync:
                   mcClosure_match = mcClosure_regex.match(lepton_selection_and_frWeight)
                   if lepton_selection_and_frWeight == 'Tight':
@@ -750,4 +750,3 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     logging.info("Done")
 
     return self.num_jobs
-

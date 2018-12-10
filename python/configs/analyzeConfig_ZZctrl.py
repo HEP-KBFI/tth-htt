@@ -303,7 +303,7 @@ class analyzeConfig_ZZctrl(analyzeConfig):
 
                 syncOutput = ''
                 syncTree = ''
-                syncRequireGenMatching = False
+                syncRequireGenMatching = True
                 if self.do_sync:
                   if chargeSumSelection != 'OS':
                     continue
