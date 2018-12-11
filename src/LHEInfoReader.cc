@@ -5,6 +5,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kLHE_scale_*
 
 #include <cassert> // assert()
+#include <iostream> // std::cout
 
 std::map<std::string, int> LHEInfoReader::numInstances_;
 std::map<std::string, LHEInfoReader*> LHEInfoReader::instances_;
@@ -170,9 +171,12 @@ LHEInfoReader::read() const
   }
   else
   {
-    throw cmsException(this)
-      << "Unexpected number of LHE scale weights: " << gInstance->scale_nWeights_
-    ;
+    weight_scale_yDown_ = 1.; // muR=0.5 muF=1.0
+    weight_scale_xDown_ = 1.; // muR=1.0 muF=0.5
+    weight_scale_xUp_   = 1.; // muR=1.0 muF=2.0
+    weight_scale_yUp_   = 1.; // muR=2.0 muF=1.0
+    std::cerr << "Unexpected number of LHE scale weights: " << gInstance->scale_nWeights_ << '\n';
+    return;
   }
 
   if(gInstance->pdf_nWeights_ > max_pdf_nWeights_)
