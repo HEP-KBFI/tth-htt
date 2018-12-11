@@ -58,10 +58,10 @@ getLeptonChargeFlipGenMatch_definitions_1lepton(bool apply_leptonGenMatching)
   std::vector<leptonChargeFlipGenMatchEntry> leptonChargeFlipGenMatch_definitions;
   if(apply_leptonGenMatching)
   {
-    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l1f0g0j", kGen_1l1f0g0j, 1, 1, 0, 0)); 
-    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l0f0g0j", kGen_1l0f0g0j, 1, 0, 0, 0)); 
-    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f1g0j", kGen_0l0f1g0j, 0, 0, 1, 0)); 
-    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f0g1j", kGen_0l0f0g1j, 0, 0, 0, 1)); 
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l1f0g0j", kGen_1l1f0g0j, 1, 1, 0, 0));
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("1l0f0g0j", kGen_1l0f0g0j, 1, 0, 0, 0));
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f1g0j", kGen_0l0f1g0j, 0, 0, 1, 0));
+    leptonChargeFlipGenMatch_definitions.push_back(leptonChargeFlipGenMatchEntry("0l0f0g1j", kGen_0l0f0g1j, 0, 0, 0, 1));
   }
   else
   {
@@ -258,7 +258,7 @@ countLeptonGenMatches(const RecoLepton * lepton,
 		      int & numGenMatchedPhotons,
 		      int & numGenMatchedJets)
 {
-  if(lepton->genLepton() || lepton->genHadTau())
+  if(lepton->genLepton()) //  || lepton->genHadTau()
   {
     ++numGenMatchedLeptons;
   }
@@ -283,8 +283,8 @@ countLeptonChargeFlipGenMatches(const RecoLepton * lepton,
   {
     ++numGenMatchedLeptons;
     if(lepton->charge() != lepton->genLepton()->charge())
-      { 
-	++numChargeFlippedGenMatchedLeptons; 
+      {
+	++numChargeFlippedGenMatchedLeptons;
       }
   }
   else if(lepton->is_electron() && lepton->genPhoton() && lepton->genPhoton()->pt() > (0.50*lepton->pt()))
@@ -398,7 +398,7 @@ getLeptonChargeFlipGenMatch(const std::vector<leptonChargeFlipGenMatchEntry> & l
                   const RecoLepton * lepton_fourth)
 {
   int numGenMatchedLeptons = 0;
-  int numChargeFlippedGenMatchedLeptons = 0;  
+  int numChargeFlippedGenMatchedLeptons = 0;
   int numGenMatchedPhotons = 0;
   int numGenMatchedJets = 0;
 

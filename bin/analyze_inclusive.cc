@@ -213,7 +213,7 @@ main(int argc,
   RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons, false);
   electronReader->readUncorrected(useNonNominal);
   inputTree->registerReader(electronReader);
-  const RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
+  const RecoElectronCollectionCleaner electronCleaner(0.05, isDEBUG);
   const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
@@ -258,6 +258,8 @@ main(int argc,
                 << " (" << eventInfo
                 << ") file (" << selectedEntries << " Entries selected)\n";
     }
+    //if (!(eventInfo.run ==  1 && eventInfo.lumi ==  9909 &&  eventInfo.event == 16803200)) continue; // :
+    //if (!( eventInfo.event ==  13863835)) continue; // :
     ++analyzedEntries;
 
     if(run_lumi_eventSelector && ! (*run_lumi_eventSelector)(eventInfo))
@@ -336,9 +338,11 @@ main(int argc,
     // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     const std::vector<const RecoMuon *> cleanedMuons = muon_ptrs;
     const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector  (cleanedMuons, isHigherConePt);
-    const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons,  isHigherConePt);
+    const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(cleanedMuons,  isHigherConePt);
     const std::vector<const RecoMuon *> tightMuons    = tightMuonSelector   (preselMuons,  isHigherConePt);
     const std::vector<const RecoMuon *> selMuons = preselMuons;
+    printCollection("preselMuons", preselMuons);
+    printCollection("fakeableMuons", fakeableMuons);
 
     snm->read(preselMuons, fakeableMuons, tightMuons);
 
@@ -355,6 +359,7 @@ main(int argc,
     const std::vector<const RecoLepton *> preselLeptons   = mergeLeptonCollections(preselElectrons,   preselMuons,   isHigherConePt);
     const std::vector<const RecoLepton *> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherConePt);
     const std::vector<const RecoLepton *> selLeptons      = mergeLeptonCollections(selElectrons,      selMuons,      isHigherConePt);
+    //printCollection("fakeableMuons", fakeableMuons);
 
     snm->read(selLeptons);
 
@@ -364,6 +369,7 @@ main(int argc,
     const std::vector<const RecoHadTau *> preselHadTaus   = preselHadTauSelector  (cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> selHadTaus = preselHadTaus;
+    printCollection("preselHadTaus", preselHadTaus);
 
     snm->read(selHadTaus);
 
@@ -374,6 +380,8 @@ main(int argc,
     const std::vector<const RecoJet *> selJets         = jetSelector          (cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selBJets_loose  = jetSelectorBtagLoose (cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
+    printCollection("cleanedJets", cleanedJets);
+    printCollection("selJets", selJets);
 
     const double avg_dr_jet = comp_avg_dr_jet(selJets);
     const double max_dr_jet = comp_max_dr_jet(selJets);

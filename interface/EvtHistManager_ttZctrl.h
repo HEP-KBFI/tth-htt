@@ -40,6 +40,8 @@ public:
                  double mT,
                  int sumLeptonCharge,
                  double evtWeight);
+  const TH1 *
+    getHistogram_EventCounter() const;
 
 private:
   int era_;

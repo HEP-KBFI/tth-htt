@@ -364,10 +364,10 @@ int main(int argc, char* argv[])
   RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
-  electronReader->readUncorrected(useNonNominal);
+  //electronReader->readUncorrected(useNonNominal);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
-  RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
+  RecoElectronCollectionCleaner electronCleaner(0.05, isDEBUG);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
@@ -1030,6 +1030,7 @@ int main(int argc, char* argv[])
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
+    std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
     std::vector<const RecoHadTau*> selHadTaus = tightHadTauSelector(cleanedHadTaus, isHigherPt);
 
     if(isDEBUG || run_lumi_eventSelector)
@@ -1043,13 +1044,13 @@ int main(int argc, char* argv[])
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableLeptons);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableLeptonsFull, fakeableHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
     if(isDEBUG || run_lumi_eventSelector)
     {
-      printCollection("uncleanedJets", jet_ptrs);
+    //  printCollection("uncleanedJets", jet_ptrs);
       printCollection("selJets",       selJets);
     }
 
@@ -1077,22 +1078,23 @@ int main(int argc, char* argv[])
 
 //--- match reconstructed to generator level particles
     if ( isMC && redoGenMatching ) {
-      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
-      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
+      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.3);
+      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.3);
       muonGenMatcher.addGenJetMatch(preselMuons, genJets, 0.2);
 
-      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.2);
-      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.2);
-      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons, 0.2);
+      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.3);
+      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.3);
+      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons, 0.3);
       electronGenMatcher.addGenJetMatch(preselElectrons, genJets, 0.2);
 
-      hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons, 0.2);
-      hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus, 0.2);
+      hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons, 0.3);
+      hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus, 0.3);
       hadTauGenMatcher.addGenJetMatch(selHadTaus, genJets, 0.2);
 
-      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons, 0.2);
-      jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.2);
+      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons, 0.3);
+      jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.3);
       jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
+
     }
 
 //--- apply preselection
@@ -1349,6 +1351,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
 
     if ( selHadTaus.size() > 0 ) {
+      std::cout << "event " << eventInfo.str() << " FAILS selHadTaus veto." << std::endl;
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS selHadTaus veto." << std::endl;
 	printCollection("selHadTaus", selHadTaus);
@@ -1463,6 +1466,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("sel lepton-pair OS/SS charge", evtWeight);
 
     bool failsZbosonMassVeto = false;
+    /*
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
           lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
@@ -1473,6 +1477,12 @@ int main(int argc, char* argv[])
         }
       }
     }
+    */
+    // Sergio and Marco way
+    // Zee veto in 2lss categories <=> veto event if the two tight leptons are electrons with mZ-mee < 10
+    double mass = (selLepton_lead->p4() + selLepton_sublead->p4()).mass();
+    if ( selLepton_lead->is_electron() && selLepton_sublead->is_electron() && std::fabs(mass - z_mass) < z_window ) failsZbosonMassVeto = true;
+
     if ( failsZbosonMassVeto ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto." << std::endl;
@@ -1793,7 +1803,7 @@ int main(int argc, char* argv[])
     double prob_fake_lepton_sublead = 1.;
 
     const bool isGenMatched = isMC &&
-      ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching)
+      ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedLeptons_ == 2) || ! apply_leptonGenMatching)
     ;
 
     if ( bdt_filler ) {
@@ -1991,6 +2001,7 @@ int main(int argc, char* argv[])
 
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
+    printCollection("tightLeptons", tightLeptons);
     histogram_selectedEntries->Fill(0.);
   }
 

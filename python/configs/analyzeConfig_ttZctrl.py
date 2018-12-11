@@ -277,7 +277,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
 
               syncOutput = ''
               syncTree = ''
-              syncRequireGenMatching = False
+              syncRequireGenMatching = True
               if self.do_sync:
                 mcClosure_match = mcClosure_regex.match(lepton_selection_and_frWeight)
                 if lepton_selection_and_frWeight == 'Tight':
@@ -636,4 +636,3 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     logging.info("Done")
 
     return self.num_jobs
-

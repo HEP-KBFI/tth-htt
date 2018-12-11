@@ -182,6 +182,20 @@
   <use   name="boost"/>
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
+<bin file="analyze_ZZctrl.cc" name="analyze_ZZctrl">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <use   name="boost"/>
+  <Flags CXXFLAGS="-g -Wshadow -Werror"/>
+</bin>
 <bin file="analyze_inclusive.cc" name="analyze_inclusive">
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>

@@ -15,7 +15,7 @@ def get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight):
   return lepton_selection_and_frWeight
 
 def getHistogramDir(lepton_selection, lepton_frWeight, chargeSumSelection):
-  histogramDir = "4l_%s_%s" % (chargeSumSelection, lepton_selection)
+  histogramDir = "ZZctrl_%s_%s" % (chargeSumSelection, lepton_selection)
   if lepton_selection.find("Fakeable") != -1:
     if lepton_frWeight == "enabled":
       histogramDir += "_wFakeRateWeights"
@@ -23,12 +23,12 @@ def getHistogramDir(lepton_selection, lepton_frWeight, chargeSumSelection):
       histogramDir += "_woFakeRateWeights"
   return histogramDir
 
-class analyzeConfig_4l(analyzeConfig):
+class analyzeConfig_ZZctrl(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
 
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
 
-  Args specific to analyzeConfig_4l:
+  Args specific to analyzeConfig_ZZctrl:
     lepton_selection: either `Tight`, `Loose` or `Fakeable`
 
   See $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/analyzeConfig.py
@@ -71,7 +71,7 @@ class analyzeConfig_4l(analyzeConfig):
       configDir                 = configDir,
       outputDir                 = outputDir,
       executable_analyze        = executable_analyze,
-      channel                   = "4l",
+      channel                   = "ZZctrl",
       samples                   = samples,
       central_or_shifts         = central_or_shifts,
       max_files_per_job         = max_files_per_job,
@@ -135,11 +135,11 @@ class analyzeConfig_4l(analyzeConfig):
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
-    self.histogramDir_prep_dcard = "4l_OS_Tight"
-    self.histogramDir_prep_dcard_SS = "4l_SS_Tight"
+    self.histogramDir_prep_dcard = "ZZctrl_OS_Tight"
+    self.histogramDir_prep_dcard_SS = "ZZctrl_SS_Tight"
     self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "conversions", "fakes_data" ]
-    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_4l_cfg.py")
-    self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_4l_cfg.py") #TODO
+    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_ZZctrl_cfg.py")
+    self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_ZZctrl_cfg.py") #TODO
 
     self.select_rle_output = select_rle_output
     self.select_root_output = select_root_output
@@ -158,7 +158,7 @@ class analyzeConfig_4l(analyzeConfig):
     self.isBDTtraining     = True
 
   def createCfg_analyze(self, jobOptions, sample_info, lepton_selection):
-    """Create python configuration file for the analyze_4l executable (analysis code)
+    """Create python configuration file for the analyze_ZZctrl executable (analysis code)
 
     Args:
       inputFiles: list of input files (Ntuples)
@@ -166,7 +166,7 @@ class analyzeConfig_4l(analyzeConfig):
       process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, 'ttH_hzg', 'ttH_hmm', `ttH_hzz` or `ttH_htt`
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
-      central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_4l.cc
+      central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_ZZctrl.cc
     """
     lines = []
     lepton_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
@@ -179,7 +179,7 @@ class analyzeConfig_4l(analyzeConfig):
     jobOptions['leptonFakeRateWeight.histogramName_e'] = self.leptonFakeRateWeight_histogramName_e
     jobOptions['leptonFakeRateWeight.histogramName_mu'] = self.leptonFakeRateWeight_histogramName_mu
 
-    lines = super(analyzeConfig_4l, self).createCfg_analyze(jobOptions, sample_info)
+    lines = super(analyzeConfig_ZZctrl, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):
@@ -590,7 +590,7 @@ class analyzeConfig_4l(analyzeConfig):
     for chargeSumSelection in self.chargeSumSelections:
       key_addFakes_job = getKey("fakes_data", chargeSumSelection)
       key_hadd_stage1_5 = getKey(get_lepton_selection_and_frWeight("Fakeable", "enabled"), chargeSumSelection)
-      category_sideband = "4l_%s_Fakeable" % chargeSumSelection
+      category_sideband = "ZZctrl_%s_Fakeable" % chargeSumSelection
       self.jobOptions_addFakes[key_addFakes_job] = {
         'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_%s_cfg.py" % \
@@ -599,7 +599,7 @@ class analyzeConfig_4l(analyzeConfig):
           (self.channel, chargeSumSelection)),
         'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_%s.log" % \
           (self.channel, chargeSumSelection)),
-        'category_signal' : "4l_%s_Tight" % chargeSumSelection,
+        'category_signal' : "ZZctrl_%s_Tight" % chargeSumSelection,
         'category_sideband' : category_sideband
       }
       self.createCfg_addFakes(self.jobOptions_addFakes[key_addFakes_job])
@@ -682,7 +682,7 @@ class analyzeConfig_4l(analyzeConfig):
       'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
       'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
       'histogramDir' : self.histogramDir_prep_dcard,
-      'label' : "4l",
+      'label' : "ZZctrl",
       'make_plots_backgrounds' : self.make_plots_backgrounds
     }
     self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
@@ -695,7 +695,7 @@ class analyzeConfig_4l(analyzeConfig):
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_SS_cfg.py" % self.channel),
         'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_SS.png" % self.channel),
         'histogramDir' : self.histogramDir_prep_dcard_SS,
-        'label' : "4l SS",
+        'label' : "ZZctrl SS",
         'make_plots_backgrounds' : self.make_plots_backgrounds
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])

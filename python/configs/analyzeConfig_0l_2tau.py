@@ -146,12 +146,12 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.use_nonnominal = use_nonnominal
     self.select_rle_output = select_rle_output
     self.hlt_filter = hlt_filter
-    
+
     self.categories = [
       "0l_2tau", "0l_2tau_0bM_0j", "0l_2tau_1bM_0j", "0l_2tau_2bM_0j",
       "0l_2tau_0bM_1j", "0l_2tau_1bM_1j", "0l_2tau_2bM_1j",
       "0l_2tau_0bM_2j", "0l_2tau_1bM_2j", "0l_2tau_2bM_2j"
-      ]  ## N.B.: Inclusive category in a member of this list 
+      ]  ## N.B.: Inclusive category in a member of this list
     self.category_inclusive = "0l_2tau"
 
   def set_BDT_training(self, hadTau_selection_relaxed):
@@ -318,7 +318,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
 
                 syncOutput = ''
                 syncTree = ''
-                syncRequireGenMatching = False
+                syncRequireGenMatching = True
                 if self.do_sync:
                   if hadTau_charge_selection != 'OS':
                     continue

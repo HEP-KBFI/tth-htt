@@ -77,7 +77,7 @@ process.analyze_4l = cms.PSet(
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),
     apply_hlt_filter = cms.bool(False),
-    apply_met_filters = cms.bool(True),
+    apply_met_filters = cms.bool(False),
     cfgMEtFilter = cms.PSet(),
 
     fillGenEvtHistograms = cms.bool(False),
