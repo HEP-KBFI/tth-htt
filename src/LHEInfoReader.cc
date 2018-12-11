@@ -5,7 +5,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kLHE_scale_*
 
 #include <cassert> // assert()
-#include <iostream> // std::cout
+#include <iostream> // std::cerr
 
 std::map<std::string, int> LHEInfoReader::numInstances_;
 std::map<std::string, LHEInfoReader*> LHEInfoReader::instances_;
