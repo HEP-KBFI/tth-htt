@@ -194,8 +194,10 @@ def get_crab_string(dataset_name, paths):
       with open(path, 'r') as f:
         for line in f:
           path_candidate = line.rstrip('\n')
+          if not path_candidate:
+            continue
           if not os.path.isdir(path_candidate):
-            raise RuntimeError('Not a directory: %s' % path_candidate)
+            raise RuntimeError('Not a directory: %s (dataset_name = %s, paths = %s)' % (path_candidate, dataset_name, str(paths)))
           paths_.append(path_candidate)
     else:
       paths_.append(path)
