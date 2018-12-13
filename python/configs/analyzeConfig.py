@@ -1135,12 +1135,49 @@ class analyzeConfig(object):
                 lines_makefile.append("\t%s" % ":") # CV: null command
                 lines_makefile.append("")
             elif self.is_makefile:
-                lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))
-                lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
-                lines_makefile.append("\thadd -f %s %s" % (os.path.basename(outputFiles[key]), " ".join(inputFiles[key])))
-                lines_makefile.append("\tmv %s %s" % (os.path.basename(outputFiles[key]), outputFiles[key]))
-                lines_makefile.append("\tsleep 60")  # sleep 60 seconds for hadoop to catch up
-                lines_makefile.append("")
+                # CV: run "hierarchical" hadd procedure similar to procedure used when running hadd step on batch system,
+                #     cf. https://github.com/HEP-KBFI/tth-htt/blob/master/python/ClusterHistogramAggregator.py#L34-L107
+                #     in order to avoid that individual hadd jobs need to run on too many input files and hence consume a lot of computing time and memory
+                max_input_files_per_job = 5
+                level = 0
+                level_inputFiles = inputFiles[key]
+                final_outputFile = outputFiles[key]
+                while True:
+                    level_outputFiles = []
+                    hadd_job_inputFiles = {}
+                    hadd_job_outputFiles = {}
+                    jobId = 0
+                    while (jobId*max_input_files_per_job) < len(level_inputFiles):
+                        start_pos = jobId*max_input_files_per_job
+                        end_pos = start_pos + max_input_files_per_job
+                        hadd_job_inputFiles[jobId] = level_inputFiles[start_pos:end_pos]
+                        outputFile = None
+                        if len(level_inputFiles) <= max_input_files_per_job:
+                            # This is the last aggregation,
+                            # the output file produced by this hadd job will be the final one
+                            outputFile = final_outputFile
+                        else:
+                            # This is not the last aggregation,
+                            # this hadd job will produce a temporary output file
+                            outputFile = final_outputFile.replace(
+                              ".root",
+                              "_%s-%s.root" % (level, jobId)
+                            )
+                        level_outputFiles.append(outputFile)
+                        hadd_job_outputFiles[jobId] = outputFile
+                        jobId = jobId + 1
+                    for jobId in hadd_job_outputFiles.keys():
+                        lines_makefile.append("%s: %s" % (hadd_job_outputFiles[jobId], " ".join(hadd_job_inputFiles[jobId])))
+                        lines_makefile.append("\t%s %s" % ("rm -f", hadd_job_outputFiles[jobId]))
+                        lines_makefile.append("\thadd -f %s %s" % (os.path.basename(hadd_job_outputFiles[jobId]), " ".join(hadd_job_inputFiles[jobId])))
+                        lines_makefile.append("\tmv %s %s" % (os.path.basename(hadd_job_outputFiles[jobId]), hadd_job_outputFiles[jobId]))
+                        lines_makefile.append("\tsleep 60")  # sleep 60 seconds for hadoop to catch up
+                        lines_makefile.append("")                    
+                    level_inputFiles = level_outputFiles
+                    if len(level_inputFiles) <= 1:
+                        break
+                    self.filesToClean.extend(hadd_job_outputFiles.values())
+                    level = level + 1
             else:
                 lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))
                 lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
