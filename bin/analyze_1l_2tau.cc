@@ -431,7 +431,7 @@ int main(int argc, char* argv[])
   electronReader->readUncorrected(useNonNominal);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
-  RecoElectronCollectionCleaner electronCleaner(0.05, isDEBUG);
+  RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
@@ -1022,7 +1022,7 @@ int main(int argc, char* argv[])
         }
         continue;
       }
-      
+
       if ( era == kEra_2016 ) {
 	// CV: only needed for 2016 data-taking period,
 	//     as mu+tau (e+tau) cross trigger is stored in the same primary dataset as the single muon (single electron) trigger
