@@ -37,7 +37,7 @@ samples_to_stitch_2017 = [
   },
   {
     'inclusive' : {
-      'samples'   : [ 'WJetsToLNu' ],
+      'samples'   : [ 'WJetsToLNu', 'WJetsToLNu_ext' ],
       'LHE_Njets' : [ 0, 5 ],
       'LHE_HT'    : [ 0., 100000. ],
     },
