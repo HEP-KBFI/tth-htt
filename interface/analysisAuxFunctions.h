@@ -30,6 +30,8 @@ const double z_mass   = 91.1876;
 const double z_window = 10.;
 const double met_coef =  0.6;
 const double mht_coef =  0.4;
+const double w_mass   = 80.385;
+const double w_window = 10.;
 
 //--- declare data-taking periods
 enum
