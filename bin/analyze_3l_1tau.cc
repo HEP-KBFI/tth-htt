@@ -413,7 +413,7 @@ int main(int argc, char* argv[])
   electronReader->readUncorrected(useNonNominal);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
-  RecoElectronCollectionCleaner electronCleaner(0.05, isDEBUG);
+  RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
@@ -1634,9 +1634,20 @@ int main(int argc, char* argv[])
     cutFlowTable.update("Z-boson mass veto", evtWeight);
     cutFlowHistManager->fillHistograms("Z-boson mass veto", evtWeight);
 
+    bool isSameFlavor_OS_FO = false;
+    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = fakeableLeptons.begin();
+    lepton1 != fakeableLeptons.end(); ++lepton1 ) {
+      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
+      lepton2 != fakeableLeptons.end(); ++lepton2 ) {
+	if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // pair of same flavor leptons of opposite charge
+	  isSameFlavor_OS_FO = true;
+	}
+      }
+    }
+
     double met_LD_cut = 0.;
     if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
-    else if ( isSameFlavor_OS     ) met_LD_cut = 45.;
+    else if ( isSameFlavor_OS_FO     ) met_LD_cut = 45.;
     else                            met_LD_cut = 30.;
     if ( met_LD_cut > 0 && met_LD < met_LD_cut ) {
       if ( run_lumi_eventSelector ) {
