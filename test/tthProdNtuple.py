@@ -7,7 +7,9 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
-mode_choices = [ 'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh', 'hh_bbww', 'hh_bkg' ]
+mode_choices = [
+  'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh', 'hh_bbww', 'hh_bkg', 'hh_wjets'
+]
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -147,6 +149,17 @@ elif mode == 'hh_bbww':
       )
     else:
       raise ValueError("Invalid era: %s" % era)
+elif mode == 'hh_wjets':
+  if preselection:
+    raise ValueError("Preselection not possible for %s mode" % mode)
+  else:
+    if era == "2017":
+      from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_wjets_nanoAOD import samples_2017 as samples
+      pileup = os.path.join(
+        os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_wjets_2017.root'
+      )
+    else:
+      raise ValueError("Invalid era: %s" % era)
 else:
   if preselection:
     if era == "2016":
@@ -179,7 +192,7 @@ else:
 if 'sum_events' in samples:
   del samples['sum_events']
 for sample_name, sample_entry in samples.items():
-  if mode == 'all' or mode == 'hh_bkg':
+  if mode == 'all' or mode == 'hh_bkg' or mode == 'hh_wjets':
     sample_entry['use_it'] = True
   elif mode == 'forBDTtraining':
     sample_entry['use_it'] = not sample_entry['use_it']
