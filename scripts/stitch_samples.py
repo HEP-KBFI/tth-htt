@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
-from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
-from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+do_wjets = False
+
+if do_wjets:
+  from hhAnalysis.multilepton.samples.stitch_2017_wjets import samples_to_stitch_2017 as samples_to_stitch
+  from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_wjets import samples_2017 as samples
+else:
+  from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
 
 import ROOT
 import array
