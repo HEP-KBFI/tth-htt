@@ -98,6 +98,9 @@ elif mode == 'hh_bbww_sync':
   else:
     if era == "2017":
       from hhAnalysis.bbww.samples.hhAnalyzeSamples_2017_nanoAOD_sync import samples_2017 as samples
+      pileup = os.path.join(
+        os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_2017.root'
+      )
     else:
       raise ValueError("Invalid era: %s" % era)
 elif mode == 'hh':
