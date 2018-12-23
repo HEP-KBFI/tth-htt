@@ -8,7 +8,8 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 # E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
 mode_choices = [
-  'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh', 'hh_bbww', 'hh_bkg', 'hh_wjets'
+  'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh', 'hh_bbww', 'hh_bkg', 'hh_wjets',
+  'hh_bbww_sync',
 ]
 
 parser = tthAnalyzeParser()
@@ -89,6 +90,14 @@ elif mode == 'leptonFR_sync':
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_leptonFR_sync import samples_2017 as samples
     elif era == "2018":
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD_leptonFR_sync import samples_2018 as samples
+    else:
+      raise ValueError("Invalid era: %s" % era)
+elif mode == 'hh_bbww_sync':
+  if preselection:
+    raise ValueError("Preselection not possible in mode: %s" % mode)
+  else:
+    if era == "2017":
+      from hhAnalysis.bbww.samples.hhAnalyzeSamples_2017_nanoAOD_sync import samples_2017 as samples
     else:
       raise ValueError("Invalid era: %s" % era)
 elif mode == 'hh':
