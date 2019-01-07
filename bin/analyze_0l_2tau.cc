@@ -1703,7 +1703,7 @@ int main(int argc, char* argv[])
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
       mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-      mTauTauVis, mTauTau,
+      mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
       pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight);
     if ( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
@@ -1722,6 +1722,8 @@ int main(int argc, char* argv[])
 	  mvaOutput_0l_2tau_HTT_sum,
 	  mvaOutput_0l_2tau_HTT_sum_dy,
 	  mvaDiscr_0l_2tau_HTT,
+	  mva_Boosted_AK8,
+	  mva_Updated,
           mTauTauVis,
           mTauTau,
           pZeta,
@@ -1754,7 +1756,7 @@ int main(int argc, char* argv[])
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
       mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-      mTauTauVis, mTauTau,
+      mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
       pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight);
     */
     std::vector<std::string> categories;
@@ -1783,7 +1785,7 @@ int main(int argc, char* argv[])
 	selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
 	mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
 	mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-	mTauTauVis, mTauTau,
+	mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
 	pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight);
     }
 
