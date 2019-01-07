@@ -38,6 +38,8 @@ public:
 		 double mvaOutput_0l_2tau_HTT_sum,
 		 double mvaOutput_0l_2tau_HTT_sum_dy,
 		 float mvaDiscr_0l_2tau_HTT,
+		 double mva_Boosted_AK8, 
+		 double mva_Updated,
                  double mTauTauVis,
                  double mTauTau,
 		 double Pzeta, double PzetaVis, double PzetaComb,
@@ -71,6 +73,8 @@ private:
   TH1 * histogram_mvaOutput_0l_2tau_HTT_sum_;
   TH1 * histogram_mvaOutput_0l_2tau_HTT_sum_dy_;
   TH1 * histogram_mvaDiscr_0l_2tau_HTT_;
+  TH1 * histogram_mva_Boosted_AK8_;
+  TH1 * histogram_mva_Updated_;
 
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_mTauTau_;  
