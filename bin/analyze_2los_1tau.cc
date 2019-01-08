@@ -1290,17 +1290,6 @@ int main(int argc, char* argv[])
     Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, fakeableHadTaus, selJets);
     double met_LD = compMEt_LD(met.p4(), mht_p4);
 
-    const RecoLepton* preselLepton_OS = 0;
-    //const RecoLepton* preselLepton_SS = 0;
-    if ( preselLepton_lead->charge()*selHadTau->charge() < 0. ) {
-      preselLepton_OS = preselLepton_lead;
-      //preselLepton_SS = preselLepton_sublead;
-    } else if ( preselLepton_sublead->charge()*selHadTau->charge() < 0. ) {
-      preselLepton_OS = preselLepton_sublead;
-      //preselLepton_SS = preselLepton_lead;
-    }
-    double mTauTauVis_presel = ( preselLepton_OS ) ? (preselLepton_OS->p4() + selHadTau->p4()).mass() : -1.;
-
 //--- apply final event selection
     // require exactly two leptons passing tight selection criteria of final event selection
     if ( !(selLeptons.size() >= 2) ) {
