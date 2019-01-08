@@ -4,7 +4,19 @@
 
 EvtHistManager_jetToTauFakeRate::EvtHistManager_jetToTauFakeRate(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
-{}
+{
+  central_or_shiftOptions_["numElectrons"] = { "central" };
+  central_or_shiftOptions_["numMuons"] = { "central" };
+  central_or_shiftOptions_["numHadTaus"] = { "central" };
+  central_or_shiftOptions_["numJets"] = { "central" };
+  central_or_shiftOptions_["numBJets_loose"] = { "central" };
+  central_or_shiftOptions_["numBJets_medium"] = { "central" };
+  central_or_shiftOptions_["m_ll"] = { "central" };
+  central_or_shiftOptions_["m_bb"] = { "central" };
+  central_or_shiftOptions_["mT_e"] = { "central" };
+  central_or_shiftOptions_["mT_mu"] = { "central" };  
+  central_or_shiftOptions_["EventCounter"] = { "*" };
+}
 
 void
 EvtHistManager_jetToTauFakeRate::bookHistograms(TFileDirectory & dir)

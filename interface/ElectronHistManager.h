@@ -31,14 +31,20 @@ public:
   fillHistograms(const std::vector<const RecoElectron *> & electrons,
                  double evtWeight);
 
+  /// flag to book & fill either minimal (cone_pt, eta, phi) or full (incl. electron ID variables) set of histograms 
+  /// 
+  /// Note: use kOption_minimalHistograms whenever possible, to reduce memory consumption of hadd jobs
+  enum { kOption_undefined, kOption_allHistograms, kOption_minimalHistograms };
+
 private:
-  TH1 * histogram_pt_;
   TH1 * histogram_cone_pt_;
-  TH1 * histogram_assocJet_pt_;
   TH1 * histogram_eta_;
   TH1 * histogram_phi_;
-  TH1 * histogram_charge_;
+  TH1 * histogram_abs_genPdgId_;
 
+  TH1 * histogram_pt_;
+  TH1 * histogram_assocJet_pt_;
+  TH1 * histogram_charge_;
   TH1 * histogram_dxy_;
   TH1 * histogram_dz_;
   TH1 * histogram_relIso_;
@@ -54,10 +60,10 @@ private:
   TH1 * histogram_deltaPhi_;
   TH1 * histogram_OoEminusOoP_;
   TH1 * histogram_nLostHits_;
-  TH1 * histogram_passesConversionVeto_;
-
-  TH1 * histogram_abs_genPdgId_;
+  TH1 * histogram_passesConversionVeto_;  
   TH1 * histogram_gen_times_recCharge_;
+
+  int option_; // flag to book & fill either full or minimal set of histograms (to reduce memory consumption of hadd jobs)
 
   int idx_; // flag to select leading or subleading electron (set idx to -1 to make plots for all electrons)
 };

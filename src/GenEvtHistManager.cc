@@ -23,7 +23,19 @@ GenEvtHistManager::GenEvtHistManager(const edm::ParameterSet & cfg)
   , histogram_evtWeightManager_2D_(nullptr)
   , histogram_evtWeightManager_2D_counter_(nullptr)
   , central_or_shift_(cfg.getParameter<std::string>("central_or_shift"))
-{}
+{
+  central_or_shiftOptions_["numGenElectrons_withinAcc"] = { "central" };
+  central_or_shiftOptions_["numGenMuons_withinAcc"] = { "central" };
+  central_or_shiftOptions_["numGenLeptons_withinAcc"] = { "central" };
+  central_or_shiftOptions_["numGenPhotons_withinAcc"] = { "central" };
+  central_or_shiftOptions_["numGenElectronsAndPhotons_withinAcc"] = { "central" };
+  central_or_shiftOptions_["numGenHadTaus_withinAcc"] = { "central" };
+  central_or_shiftOptions_["numGenLeptonsAndHadTaus_withinAcc"] = { "central" };
+  central_or_shiftOptions_["numGenJets_withinAcc"] = { "central" };
+  central_or_shiftOptions_["numGenLeptonsAndHadTausAndJets_withinAcc"] = { "central" };  
+  central_or_shiftOptions_["lumiScale"] = { "central" };  
+  central_or_shiftOptions_["EventCounter"] = { "*" };
+}
 
 // [*] https://github.com/CERN-PH-CMG/cmg-cmssw/blob/534b379810bf806c75837c4e3a8e2193275fe79e/PhysicsTools/Heppy/python/analyzers/objects/LeptonAnalyzer.py#L708
 

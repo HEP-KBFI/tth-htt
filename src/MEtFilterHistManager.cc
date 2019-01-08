@@ -4,7 +4,9 @@
 
 MEtFilterHistManager::MEtFilterHistManager(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
-{}
+{
+  central_or_shiftOptions_["MEtFilterCounter"] = { "central" };
+}
 
 void
 MEtFilterHistManager::bookHistograms(TFileDirectory & dir)

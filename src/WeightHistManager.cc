@@ -15,6 +15,11 @@ WeightHistManager::WeightHistManager(const edm::ParameterSet & cfg)
   binningOptions_["hadTauEff"] = new binningOptionType("hadTauEff", 200, 0., 2.);
   binningOptions_["data_to_MC_correction"] = new binningOptionType("data_to_MC_correction", 200, 0., 2.);
   binningOptions_["fakeRate"] = new binningOptionType("fakeRate", 200,-1., +1.);
+
+  for(auto & kv: binningOptions_)
+  {
+    central_or_shiftOptions_[kv.second->histogramName_] = { "central" };
+  }
 }
 
 WeightHistManager::~WeightHistManager()

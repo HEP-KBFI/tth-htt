@@ -8,7 +8,9 @@
 
 TriggerHistManager::TriggerHistManager(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
-{}
+{
+  central_or_shiftOptions_["hltPathCounter"] = { "central" };
+}
 
 TriggerHistManager::~TriggerHistManager()
 {

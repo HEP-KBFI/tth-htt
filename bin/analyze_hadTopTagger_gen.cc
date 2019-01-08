@@ -1181,7 +1181,7 @@ int main(int argc, char* argv[])
   TH1* histogram_etaB = fs.make<TH1D>("etaB", "etaB", 100, -5.0, +5.0);
 
   histManager_jetsHTTv2 = new JetHistManagerHTTv2(makeHistManager_cfg(process_string,
-    Form("%s/sel/jetsHTTv2", histogramDir.data()), central_or_shift));
+    Form("%s/sel/jetsHTTv2", histogramDir.data()), era_string, central_or_shift));
   histManager_jetsHTTv2->bookHistograms(fs);
   histogram_HTTv2_W_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_W_ptRec_div_ptGen", "HTTv2_W_ptRec_div_ptGen", 200, 0., 2.);
   histogram_HTTv2_mW = fs.make<TH1D>("HTTv2_mW", "HTTv2_mW", 200, 0., 200.);
@@ -1202,10 +1202,10 @@ int main(int argc, char* argv[])
 
 
   JetHistManagerAK12* histManager_jetsAK12 = new JetHistManagerAK12(makeHistManager_cfg(process_string,
-    Form("%s/sel/jetsAK12", histogramDir.data()), central_or_shift));
+    Form("%s/sel/jetsAK12", histogramDir.data()), era_string, central_or_shift));
   histManager_jetsAK12->bookHistograms(fs);
   JetHistManagerAK12* histManager_jetsAK12_notHTTv2 = new JetHistManagerAK12(makeHistManager_cfg(process_string,
-    Form("%s/sel/jetsAK12_notHTTv2", histogramDir.data()), central_or_shift));
+    Form("%s/sel/jetsAK12_notHTTv2", histogramDir.data()), era_string, central_or_shift));
   histManager_jetsAK12_notHTTv2->bookHistograms(fs);
   TH1* histogram_AK12_W_ptRec_div_ptGen = fs.make<TH1D>("AK12_W_ptRec_div_ptGen", "AK12_W_ptRec_div_ptGen", 200, 0., 2.);
   TH1* histogram_AK12_mW = fs.make<TH1D>("AK12_mW", "AK12_mW", 200, 0., 200.);

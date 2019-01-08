@@ -4,7 +4,26 @@
 
 EvtHistManager_2l_2tau::EvtHistManager_2l_2tau(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)
-{}
+{
+  central_or_shiftOptions_["numElectrons"] = { "central" };
+  central_or_shiftOptions_["numMuons"] = { "central" };
+  central_or_shiftOptions_["numHadTaus"] = { "central" };
+  central_or_shiftOptions_["numJets"] = { "central" };
+  central_or_shiftOptions_["numBJets_loose"] = { "central" };
+  central_or_shiftOptions_["numBJets_medium"] = { "central" };
+  central_or_shiftOptions_["numBJets_loose_vs_numJets"] = { "central" };
+  central_or_shiftOptions_["numBJets_medium_vs_numJets"] = { "central" };
+  central_or_shiftOptions_["leptonPairCharge"] = { "central" };
+  central_or_shiftOptions_["hadTauPairCharge"] = { "central" };
+  central_or_shiftOptions_["mTauTauVis"] = { "central" };
+  central_or_shiftOptions_["EventCounter"] = { "*" };
+  central_or_shiftOptions_["mvaOutput_plainKin_tt"] = { "central" };
+  central_or_shiftOptions_["mvaOutput_plainKin_ttV"] = { "central" };
+  central_or_shiftOptions_["mvaOutput_plainKin_1B_VT"] = { "central" };
+  central_or_shiftOptions_["mvaOutput_plainKin_SUM_VT"] = { "central" };
+  central_or_shiftOptions_["mvaOutput_plainKin_SUM_VT_noRebin"] = { "central" };
+  central_or_shiftOptions_["mvaOutput_final"] = { "*" }; 
+}
 
 void
 EvtHistManager_2l_2tau::bookHistograms(TFileDirectory & dir)
@@ -16,13 +35,13 @@ EvtHistManager_2l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
   histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
 
-  histogram_numBJets_loose_vs_numJets_  = book2D(dir, "numBJets_loose_vs_numJets",  "numBJets_loose_vs_numJets",  8, -0.5, +7.5, 6, -0.5, +5.5);
-  histogram_numBJets_medium_vs_numJets_ = book2D(dir, "numBJets_medium_vs_numJets", "numBJets_medium_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
+  //histogram_numBJets_loose_vs_numJets_  = book2D(dir, "numBJets_loose_vs_numJets",  "numBJets_loose_vs_numJets",  8, -0.5, +7.5, 6, -0.5, +5.5);
+  //histogram_numBJets_medium_vs_numJets_ = book2D(dir, "numBJets_medium_vs_numJets", "numBJets_medium_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
 
   histogram_leptonPairCharge_ = book1D(dir, "leptonPairCharge", "leptonPairCharge", 5, -2.5, +2.5);
   histogram_hadTauPairCharge_ = book1D(dir, "hadTauPairCharge", "hadTauPairCharge", 5, -2.5, +2.5);
 
-  histogram_mTauTauVis_   = book1D(dir, "mTauTauVis",   "mTauTauVis",  40,   0.,  200.);
+  histogram_mTauTauVis_   = book1D(dir, "mTauTauVis",   "mTauTauVis",   40,  0.,  200.);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter",  1, -0.5,  +0.5);
 
   histogram_mvaOutput_plainKin_tt_             = book1D(dir, "mvaOutput_plainKin_tt",             "mvaOutput_plainKin_tt",             100, 0.0, 1.0);
@@ -32,7 +51,7 @@ EvtHistManager_2l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_mvaOutput_plainKin_SUM_VT_noRebin_ = book1D(dir, "mvaOutput_plainKin_SUM_VT_noRebin", "mvaOutput_plainKin_SUM_VT_noRebin", 100, 0.0, 1.0);
 
   Float_t binsx[5]  = { 0.0, 0.25, 0.50, 0.75, 1.0 };
-  histogram_final_  = book1D(dir, "mvaOutput_final",  "mvaOutput_final",  4, binsx);
+  histogram_final_ = book1D(dir, "mvaOutput_final",  "mvaOutput_final", 4, binsx);
 
 }
 
@@ -61,8 +80,8 @@ EvtHistManager_2l_2tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
 
-  fillWithOverFlow2d(histogram_numBJets_loose_vs_numJets_,  numJets, numBJets_loose,  evtWeight, evtWeightErr);
-  fillWithOverFlow2d(histogram_numBJets_medium_vs_numJets_, numJets, numBJets_medium, evtWeight, evtWeightErr);
+  //fillWithOverFlow2d(histogram_numBJets_loose_vs_numJets_,  numJets, numBJets_loose,  evtWeight, evtWeightErr);
+  //fillWithOverFlow2d(histogram_numBJets_medium_vs_numJets_, numJets, numBJets_medium, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_leptonPairCharge_, leptonPairCharge, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_hadTauPairCharge_, hadTauPairCharge, evtWeight, evtWeightErr);

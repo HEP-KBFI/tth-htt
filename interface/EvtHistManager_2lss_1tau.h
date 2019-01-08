@@ -32,7 +32,6 @@ class EvtHistManager_2lss_1tau
                  int numBJets_loose,
                  int numBJets_medium,
                  double evtWeight,
-                 //
                  double mvaOutput_2lss_ttV,
                  double mvaOutput_2lss_tt,
                  double mvaOutput_2lss_1tau_plainKin_tt,

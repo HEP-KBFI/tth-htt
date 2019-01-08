@@ -286,10 +286,10 @@ int main(int argc, char* argv[])
   std::string charge_and_leptonSelectionSS = Form("%s_%s", "SS", leptonSelection_string.data());
   std::string charge_and_leptonSelectionOS = Form("%s_%s", "OS", leptonSelection_string.data());
   MuonHistManager preselMuonHistManagerSS(makeHistManager_cfg(process_string,
-    Form("charge_flip_%s/presel/muons", charge_and_leptonSelectionSS.data()), central_or_shift.data()));
+    Form("charge_flip_%s/presel/muons", charge_and_leptonSelectionSS.data()), era_string, central_or_shift));
   preselMuonHistManagerSS.bookHistograms(fs);
   MuonHistManager preselMuonHistManagerOS(makeHistManager_cfg(process_string,
-    Form("charge_flip_%s/presel/muons", charge_and_leptonSelectionOS.data()), central_or_shift.data()));
+    Form("charge_flip_%s/presel/muons", charge_and_leptonSelectionOS.data()), era_string, central_or_shift));
   preselMuonHistManagerOS.bookHistograms(fs);
 
   struct selHistManagerType
@@ -316,19 +316,19 @@ int main(int argc, char* argv[])
 
       selHistManagerType* selHistManager = new selHistManagerType();
       //selHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
-      //  Form("%s/presel/electrons", histogramDir.data()), central_or_shift));
+      //  Form("%s/presel/electrons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
       //selHistManager->electrons_->bookHistograms(fs);
       selHistManager->muons_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
-	Form("%s/sel/muons", histogramDir.data()), central_or_shift));
+	Form("%s/sel/muons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
       selHistManager->muons_->bookHistograms(fs);
       selHistManager->jets_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch, 
-        Form("%s/sel/jets", histogramDir.data()), central_or_shift));
+        Form("%s/sel/jets", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
       selHistManager->jets_->bookHistograms(fs);
       selHistManager->BJets_loose_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch, 
-        Form("%s/sel/BJets_loose", histogramDir.data()), central_or_shift));
+        Form("%s/sel/BJets_loose", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
       selHistManager->BJets_loose_->bookHistograms(fs);
       selHistManager->BJets_medium_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch, 
-        Form("%s/sel/BJets_medium", histogramDir.data()), central_or_shift));
+        Form("%s/sel/BJets_medium", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
       selHistManager->BJets_medium_->bookHistograms(fs);
       /*selHistManager->evt_ = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/presel/evt", histogramDir.data()), era_string, central_or_shift));
@@ -529,13 +529,13 @@ int main(int argc, char* argv[])
   LHEInfoHistManager* lheInfoHistManager = 0;
   if ( isMC ) {
     genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
-      Form("charge_flip_%s/unbiased/genEvt", charge_and_leptonSelectionSS.data()), central_or_shift));
+      Form("charge_flip_%s/unbiased/genEvt", charge_and_leptonSelectionSS.data()), era_string, central_or_shift));
     genEvtHistManager_beforeCuts->bookHistograms(fs);
     genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
-      Form("charge_flip_%s/sel/genEvt", charge_and_leptonSelectionSS.data()), central_or_shift));
+      Form("charge_flip_%s/sel/genEvt", charge_and_leptonSelectionSS.data()), era_string, central_or_shift));
     genEvtHistManager_afterCuts->bookHistograms(fs);
     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
-      Form("charge_flip_%s/sel/lheInfo", charge_and_leptonSelectionSS.data()), central_or_shift));
+      Form("charge_flip_%s/sel/lheInfo", charge_and_leptonSelectionSS.data()), era_string, central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
 
     if(eventWeightManager)

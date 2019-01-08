@@ -10,7 +10,7 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["res-HTT_2016"]               = new binningOptionType("res-HTT_2016",               30,  0.,    1.);
   binningOptions_["avr_dr_lep_tau"]             = new binningOptionType("avr_dr_lep_tau",             30,  0.,    5.);
   binningOptions_["max_dr_lep_tau"]             = new binningOptionType("max_dr_lep_tau",             30,  0.,    5.);
-  binningOptions_["is_OS"]                      = new binningOptionType("is_OS",                      2,  0.,    2.);
+  binningOptions_["is_OS"]                      = new binningOptionType("is_OS",                       2,  0.,    2.);
   binningOptions_["dr_lep_tau_os"]              = new binningOptionType("dr_lep_tau_os",              50,  0.,    5.);
   binningOptions_["dr_lep_tau_ss"]              = new binningOptionType("dr_lep_tau_ss",              50,  0.,    5.);
   binningOptions_["dr_lep1_tau"]                = new binningOptionType("dr_lep1_tau",                50,  0.,    5.);
@@ -111,6 +111,11 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["TMath::Abs(tau2_eta)"]       = new binningOptionType("TMath::Abs(tau2_eta)",       50,  0.,   +2.5);
   binningOptions_["TMath::Max(TMath::Abs(lep1_eta),TMath::Abs(lep2_eta))"] = new binningOptionType("TMath::Max(TMath::Abs(lep1_eta),TMath::Abs(lep2_eta))", 50, 0., +2.5);
   binningOptions_["mvaOutput_hadTopTaggerWithKinFit"]                      = new binningOptionType("mvaOutput_hadTopTaggerWithKinFit",                      50, -1., 1.);
+
+  for(auto & kv: binningOptions_)
+  {
+    central_or_shiftOptions_[kv.second->histogramName_] = { "central" };
+  }
 }
 
 MVAInputVarHistManager::~MVAInputVarHistManager()

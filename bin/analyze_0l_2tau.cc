@@ -599,11 +599,8 @@ int main(int argc, char* argv[])
     ElectronHistManager* electrons_;
     MuonHistManager* muons_;
     HadTauHistManager* hadTaus_;
-    std::map<std::string, HadTauHistManager*> hadTaus_in_categories_;
     HadTauHistManager* leadHadTau_;
-    std::map<std::string, HadTauHistManager*> leadHadTau_in_categories_;
     HadTauHistManager* subleadHadTau_;
-    std::map<std::string, HadTauHistManager*> subleadHadTau_in_categories_;
     JetHistManager* jets_;
     JetHistManager* leadJet_;
     JetHistManager* subleadJet_;
@@ -633,40 +630,20 @@ int main(int argc, char* argv[])
 
     selHistManagerType* selHistManager = new selHistManagerType();
     selHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/electrons", histogramDir.data()), era_string, central_or_shift));
+      Form("%s/sel/electrons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
     selHistManager->electrons_->bookHistograms(fs);
     selHistManager->muons_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/muons", histogramDir.data()), era_string, central_or_shift));
+      Form("%s/sel/muons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
     selHistManager->muons_->bookHistograms(fs);
     selHistManager->hadTaus_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/hadTaus", histogramDir.data()), era_string, central_or_shift));
+      Form("%s/sel/hadTaus", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
     selHistManager->hadTaus_->bookHistograms(fs);
     selHistManager->leadHadTau_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/leadHadTau", histogramDir.data()), era_string, central_or_shift));
+      Form("%s/sel/leadHadTau", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 0));
     selHistManager->leadHadTau_->bookHistograms(fs);
     selHistManager->subleadHadTau_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/subleadHadTau", histogramDir.data()), era_string, central_or_shift));
+      Form("%s/sel/subleadHadTau", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 1));
     selHistManager->subleadHadTau_->bookHistograms(fs);
-    vstring categories_tau = {
-      "0l_2tau_0bM_0j", "0l_2tau_1bM_0j", "0l_2tau_2bM_0j",
-      "0l_2tau_0bM_1j", "0l_2tau_1bM_1j", "0l_2tau_2bM_1j",
-      "0l_2tau_0bM_2j", "0l_2tau_1bM_2j", "0l_2tau_2bM_2j"
-      //"0l_2tau_bloose", "0l_2tau_btight"
-    };
-    for ( vstring::const_iterator category = categories_tau.begin();
-          category != categories_tau.end(); ++category ) {
-      TString histogramDir_category = histogramDir.data();
-      histogramDir_category.ReplaceAll("0l_2tau", category->data());
-      selHistManager->hadTaus_in_categories_[*category] = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/hadTaus", histogramDir_category.Data()), era_string, central_or_shift, "allHistograms"));
-      selHistManager->hadTaus_in_categories_[*category]->bookHistograms(fs);
-      selHistManager->leadHadTau_in_categories_[*category] = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/leadHadTau", histogramDir_category.Data()), era_string, central_or_shift, "minimalHistograms"));
-      selHistManager->leadHadTau_in_categories_[*category]->bookHistograms(fs);
-      selHistManager->subleadHadTau_in_categories_[*category] = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/subleadHadTau", histogramDir_category.Data()), era_string, central_or_shift, "minimalHistograms"));
-      selHistManager->subleadHadTau_in_categories_[*category]->bookHistograms(fs);
-    }
     selHistManager->jets_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/jets", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
     selHistManager->jets_->bookHistograms(fs);
@@ -715,7 +692,7 @@ int main(int argc, char* argv[])
         if ( apply_hadTauGenMatching ) decayMode_and_genMatch += hadTauGenMatch_definition->name_;
 
         selHistManager->evt_in_decayModes_[*decayMode] = new EvtHistManager_0l_2tau(makeHistManager_cfg(decayMode_and_genMatch,
-          Form("%s/sel/evt", histogramDir.data()), central_or_shift));
+          Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
         selHistManager->evt_in_decayModes_[*decayMode]->bookHistograms(fs);
       }
     }
@@ -733,11 +710,11 @@ int main(int argc, char* argv[])
         Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
       selHistManager->evt_in_categories_[*category]->bookHistograms(fs);
     }
-    edm::ParameterSet cfg_EvtYieldHistManager = makeHistManager_cfg(process_and_genMatch,
+    edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/evtYield", histogramDir.data()), era_string, central_or_shift);
-    cfg_EvtYieldHistManager.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
-    cfg_EvtYieldHistManager.addParameter<bool>("isMC", isMC);
-    selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager);
+    cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
+    cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);
+    selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_sel);
     selHistManager->evtYield_->bookHistograms(fs);
     selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/weights", histogramDir.data()), era_string, central_or_shift));
@@ -1072,8 +1049,6 @@ int main(int argc, char* argv[])
     const hadTauGenMatchEntry& preselHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, preselHadTau_lead, preselHadTau_sublead);
     int idxPreselHadTau_genMatch = preselHadTau_genMatch.idx_;
     assert(idxPreselHadTau_genMatch != kGen_HadTauUndefined2);
-
-    double mTauTauVis_presel = (preselHadTau_lead->p4() + preselHadTau_sublead->p4()).mass();
 
     // apply requirement on jets (incl. b-tagged jets) on preselection level
     if ( !(selJets.size() >= 2) ) continue;
@@ -1748,9 +1723,6 @@ int main(int argc, char* argv[])
     std::string category;
     if   ( selBJets_medium.size() >= 1 ) category = "0l_2tau_btight";
     else                                 category = "0l_2tau_bloose";
-    selHistManager->hadTaus_in_categories_[category]->fillHistograms({ selHadTau_lead, selHadTau_sublead }, evtWeight);
-    selHistManager->leadHadTau_in_categories_[category]->fillHistograms({ selHadTau_lead }, evtWeight);
-    selHistManager->subleadHadTau_in_categories_[category]->fillHistograms({ selHadTau_sublead }, evtWeight);
     selHistManager->evt_in_categories_[category]->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
@@ -1777,9 +1749,6 @@ int main(int argc, char* argv[])
     }
     for ( std::vector<std::string>::const_iterator category = categories.begin();
           category != categories.end(); ++category ) {
-      selHistManager->hadTaus_in_categories_[*category]->fillHistograms({ selHadTau_lead, selHadTau_sublead }, evtWeight);
-      selHistManager->leadHadTau_in_categories_[*category]->fillHistograms({ selHadTau_lead }, evtWeight);
-      selHistManager->subleadHadTau_in_categories_[*category]->fillHistograms({ selHadTau_sublead }, evtWeight);
       selHistManager->evt_in_categories_[*category]->fillHistograms(
 	preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
 	selJets.size(), selBJets_loose.size(), selBJets_medium.size(),

@@ -1,5 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively()
 
 #include <TH2.h> // TH2D
@@ -54,14 +55,19 @@ HistManagerBase::book1D(TFileDirectory & dir,
                         int numBins,
                         double * binning)
 {
-  TDirectory * const subdir = createHistogramSubdirectory(dir);
-  subdir->cd();
-  TH1 * const retVal = new TH1D(getHistogramName(distribution).data(), title.data(), numBins, binning);
-  if(! retVal->GetSumw2N())
+  TH1 * retVal = nullptr;
+  bool doBookHistogram = checkOptionIsSelected(distribution);
+  if ( doBookHistogram ) 
   {
-    retVal->Sumw2();
+    TDirectory * const subdir = createHistogramSubdirectory(dir);
+    subdir->cd();
+    retVal = new TH1D(getHistogramName(distribution).data(), title.data(), numBins, binning);
+    if(! retVal->GetSumw2N())
+    {
+      retVal->Sumw2();
+    }
+    histograms_.push_back(retVal);
   }
-  histograms_.push_back(retVal);
   return retVal;
 }
 
@@ -76,16 +82,19 @@ HistManagerBase::book2D(TFileDirectory & dir,
                         double yMin,
                         double yMax)
 {
-  TDirectory * const subdir = createHistogramSubdirectory(dir);
-  subdir->cd();
-  TH2 * const retVal = new TH2D(
-    getHistogramName(distribution).data(), title.data(), numBinsX, xMin, xMax, numBinsY, yMin, yMax
-  );
-  if(! retVal->GetSumw2N())
+  TH2 * retVal = nullptr;
+  bool doBookHistogram = checkOptionIsSelected(distribution);
+  if ( doBookHistogram ) 
   {
-    retVal->Sumw2();
+    TDirectory * const subdir = createHistogramSubdirectory(dir);
+    subdir->cd();
+    retVal = new TH2D(getHistogramName(distribution).data(), title.data(), numBinsX, xMin, xMax, numBinsY, yMin, yMax);
+    if(! retVal->GetSumw2N())
+    {
+      retVal->Sumw2();
+    }
+    histograms_2d_.push_back(retVal);
   }
-  histograms_2d_.push_back(retVal);
   return retVal;
 }
 
@@ -98,14 +107,19 @@ HistManagerBase::book2D(TFileDirectory & dir,
                         int numBinsY,
                         float * binningY)
 {
-  TDirectory * const subdir = createHistogramSubdirectory(dir);
-  subdir->cd();
-  TH2 * const retVal = new TH2D(getHistogramName(distribution).data(), title.data(), numBinsX, binningX, numBinsY, binningY);
-  if(! retVal->GetSumw2N())
+  TH2 * retVal = nullptr;
+  bool doBookHistogram = checkOptionIsSelected(distribution);
+  if ( doBookHistogram ) 
   {
-    retVal->Sumw2();
+    TDirectory * const subdir = createHistogramSubdirectory(dir);
+    subdir->cd();
+    retVal = new TH2D(getHistogramName(distribution).data(), title.data(), numBinsX, binningX, numBinsY, binningY);
+    if(! retVal->GetSumw2N())
+    {
+      retVal->Sumw2();
+    }
+    histograms_2d_.push_back(retVal);
   }
-  histograms_2d_.push_back(retVal);
   return retVal;
 }
 
@@ -118,15 +132,45 @@ HistManagerBase::book2D(TFileDirectory & dir,
                         int numBinsY,
                         double * binningY)
 {
-  TDirectory * const subdir = createHistogramSubdirectory(dir);
-  subdir->cd();
-  TH2 * const retVal = new TH2D(getHistogramName(distribution).data(), title.data(), numBinsX, binningX, numBinsY, binningY);
-  if(! retVal->GetSumw2N())
+  TH2 * retVal = nullptr;
+  bool doBookHistogram = checkOptionIsSelected(distribution);
+  if ( doBookHistogram ) 
   {
-    retVal->Sumw2();
+    TDirectory * const subdir = createHistogramSubdirectory(dir);
+    subdir->cd();
+    retVal = new TH2D(getHistogramName(distribution).data(), title.data(), numBinsX, binningX, numBinsY, binningY);
+    if(! retVal->GetSumw2N())
+    {
+      retVal->Sumw2();
+    }
+    histograms_2d_.push_back(retVal);
   }
-  histograms_2d_.push_back(retVal);
   return retVal;
+}
+
+bool 
+HistManagerBase::checkOptionIsSelected(const std::string & distribution) const
+{
+  bool isSelected = false;
+  std::map<std::string, std::vector<std::string>>::const_iterator central_or_shiftOptions_iter = central_or_shiftOptions_.find(distribution);
+  if ( central_or_shiftOptions_iter != central_or_shiftOptions_.end() ) 
+  {
+    for ( std::vector<std::string>::const_iterator central_or_shiftOption = central_or_shiftOptions_iter->second.begin();
+	  central_or_shiftOption != central_or_shiftOptions_iter->second.end(); ++central_or_shiftOption ) {
+      if ( (*central_or_shiftOption) == "*" ) {
+	isSelected = true;
+	break;
+      }
+      if ( (((*central_or_shiftOption) == "central" || central_or_shiftOption->empty())) && (central_or_shift_ == "central" || central_or_shift_.empty()) ) {
+        isSelected = true;
+	break;
+      }
+    }
+  } else {
+    throw cmsException(this)
+      << "Failed to find distribution = '" << distribution << "' in histogramOptions !!\n";
+  }
+  return isSelected;
 }
 
 TDirectory *
@@ -160,19 +204,23 @@ HistManagerBase::getHistogramName(const std::string & distribution) const
  * @brief Build edm::ParameterSet needed to initialize HistManager classes
  * @param process MC or data sample
  *        category event category
+ *        era data-taking period
  *        central_or_shift "central" for nominal selection, other values for systematic uncertainties
+ *        option flag to book & fill either full or minimal set of histograms (to reduce memory consumption of hadd jobs)
  *        idx flag to make plots for all particles (idx=-1), for leading particle (idx=0) or for subleading particle (idx=1) only
  * @return edm::ParameterSet to be passed to constructor of all classes inheriting from HistManagerBase
  */
 edm::ParameterSet
 makeHistManager_cfg(const std::string & process,
                     const std::string & category,
+		    const std::string & era,
                     const std::string & central_or_shift,
                     int idx)
 {
   edm::ParameterSet cfg;
   cfg.addParameter<std::string>("process", process);
   cfg.addParameter<std::string>("category", category);
+  cfg.addParameter<std::string>("era", era);
   cfg.addParameter<std::string>("central_or_shift", central_or_shift);
   cfg.addParameter<int>("idx", idx);
   return cfg;
@@ -181,13 +229,12 @@ makeHistManager_cfg(const std::string & process,
 edm::ParameterSet
 makeHistManager_cfg(const std::string & process,
                     const std::string & category,
-                    const std::string & era,
+		    const std::string & era,
                     const std::string & central_or_shift,
+		    const std::string & option,
                     int idx)
 {
-  edm::ParameterSet cfg = makeHistManager_cfg(process, category, central_or_shift, idx);
-  cfg.addParameter<std::string>("era", era);
+  edm::ParameterSet cfg = makeHistManager_cfg(process, category, era, central_or_shift, idx);
+  cfg.addParameter<std::string>("option", option);
   return cfg;
 }
-
-
