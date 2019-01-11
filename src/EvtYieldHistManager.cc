@@ -166,6 +166,8 @@ EvtYieldHistManager::EvtYieldHistManager(const edm::ParameterSet & cfg)
   {
     throw cmsException(this) << "Invalid Configuration parameter 'runPeriods' !!";
   }
+  central_or_shiftOptions_["evtYield"] = { "*" };
+  central_or_shiftOptions_["luminosity"] = { "central" };
 }
 
 void
