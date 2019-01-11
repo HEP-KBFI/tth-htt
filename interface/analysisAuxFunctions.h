@@ -394,4 +394,11 @@ auto as_integer(Enumeration const value)
 int
 countTrigObjs_passingL1(const std::vector<TrigObj>& trigObjs, int Id, double min_l1pt, double min_l1pt_2 = -1.);
 
+/**
+ * @brief Check if a certain string is contained in a given vector of strings
+ */
+
+bool
+contains(const std::vector<std::string>& list_of_strings, const std::string& keyWord);
+
 #endif
