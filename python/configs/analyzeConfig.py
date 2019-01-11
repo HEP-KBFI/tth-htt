@@ -633,6 +633,7 @@ class analyzeConfig(object):
             'isMC',
             'hasLHE',
             'central_or_shift',
+            'evtCategories',
             'leptonSelection',
             'electronSelection',
             'muonSelection',
