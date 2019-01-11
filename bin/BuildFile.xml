@@ -533,7 +533,7 @@
   <use   name="root"/>
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
-<bin file="my_hadd.cc" name="my_hadd">
+<bin file="copyHistograms_recursively.cc" name="copyHistograms_recursively">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
