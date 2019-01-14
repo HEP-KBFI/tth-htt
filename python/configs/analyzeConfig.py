@@ -392,6 +392,7 @@ class analyzeConfig(object):
         self.num_jobs = {}
         self.num_jobs['analyze'] = 0
         self.num_jobs['hadd'] = 0
+        self.num_jobs['copyHistograms'] = 0
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
 
@@ -1051,8 +1052,9 @@ class analyzeConfig(object):
     def createScript_sbatch_analyze(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
-        self.num_jobs['analyze'] += self.createScript_sbatch(executable, sbatchFile, jobOptions,
-                                                             'cfgFile_modified', 'ntupleFiles', 'histogramFile', 'logFile')
+        self.num_jobs['analyze'] += self.createScript_sbatch(
+            executable, sbatchFile, jobOptions, 'cfgFile_modified', 'ntupleFiles', 'histogramFile',
+            'logFile')
 
     def createScript_sbatch_copyHistograms(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the 'copyHistograms' jobs to the batch system
@@ -1212,21 +1214,21 @@ class analyzeConfig(object):
     def addToMakefile_hadd_sync(self, lines_makefile):
         self.addToMakefile_hadd(lines_makefile, self.inputFiles_sync, self.outputFile_sync, "sync")
 
-    def addToMakefile_copyHistograms(self, lines_makefile, sbatchTarget, sbatchFile, jobOptions):
+    def addToMakefile_copyHistograms(self, lines_makefile):
         if self.is_sbatch:
-            lines_makefile.append("%s: %s" % (sbatchTarget, " ".join([ value['inputFile'] for value in jobOptions.values() ])))
-            lines_makefile.append("\t%s %s" % ("python", sbatchFile))
+            lines_makefile.append("sbatch_copyHistograms: %s" % " ".join([ jobOptions['inputFile'] for jobOptions in self.jobOptions_copyHistograms.values() ]))
+            lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_copyHistograms))
             lines_makefile.append("")
-        for value in jobOptions.values():
+        for jobOptions in self.jobOptions_copyHistograms.values():
             if self.is_makefile:
-                lines_makefile.append("%s: %s" % (value['outputFile'], value['inputFile']))
-                lines_makefile.append("\t%s %s &> %s" % (self.executable_copyHistograms, value['cfgFile_modified'], value['logFile']))
+                lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
+                lines_makefile.append("\t%s %s &> %s" % (self.executable_copyHistograms, jobOptions['cfgFile_modified'], jobOptions['logFile']))
                 lines_makefile.append("")
             elif self.is_sbatch:
-                lines_makefile.append("%s: %s" % (value['outputFile'], sbatchTarget))
+                lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_copyHistograms"))
                 lines_makefile.append("\t%s" % ":") # CV: null command
                 lines_makefile.append("")
-            self.filesToClean.append(value['outputFile'])
+            self.filesToClean.append(jobOptions['outputFile'])
 
     def addToMakefile_addBackgrounds(self, lines_makefile, sbatchTarget, sbatchFile, jobOptions):
         if self.is_sbatch:
