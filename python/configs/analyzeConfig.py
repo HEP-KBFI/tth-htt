@@ -1130,7 +1130,7 @@ class analyzeConfig(object):
                 lines_makefile.append("")
             self.filesToClean.append(jobOptions['syncOutput'])
 
-    def addToMakefile_hadd(self, lines_makefile, inputFiles, outputFiles, label):
+    def addToMakefile_hadd(self, lines_makefile, inputFiles, outputFiles, label, max_input_files_per_job = 5):
         scriptFiles = {}
         jobOptions = {}
         for key in outputFiles.keys():
@@ -1161,7 +1161,6 @@ class analyzeConfig(object):
                 # CV: run "hierarchical" hadd procedure similar to procedure used when running hadd step on batch system,
                 #     cf. https://github.com/HEP-KBFI/tth-htt/blob/master/python/ClusterHistogramAggregator.py#L34-L107
                 #     in order to avoid that individual hadd jobs need to run on too many input files and hence consume a lot of computing time and memory
-                max_input_files_per_job = 5
                 level = 0
                 level_inputFiles = inputFiles[key]
                 final_outputFile = outputFiles[key]
@@ -1246,11 +1245,11 @@ class analyzeConfig(object):
                 lines_makefile.append("")
             self.filesToClean.append(value['outputFile'])
 
-    def addToMakefile_hadd_stage1_5(self, lines_makefile):
+    def addToMakefile_hadd_stage1_5(self, lines_makefile, max_input_files_per_job = 5):
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
            that is used as input for data-driven background estimation.
         """
-        self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage1_5, self.outputFile_hadd_stage1_5, "stage1_5")
+        self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage1_5, self.outputFile_hadd_stage1_5, "stage1_5", max_input_files_per_job)
 
     def addToMakefile_addFakes(self, lines_makefile):
         if self.is_sbatch:
@@ -1274,10 +1273,10 @@ class analyzeConfig(object):
         self.addToMakefile_hadd_stage1_5(lines_makefile)
         self.addToMakefile_addFakes(lines_makefile)
 
-    def addToMakefile_hadd_stage2(self, lines_makefile):
+    def addToMakefile_hadd_stage2(self, lines_makefile, max_input_files_per_job = 5):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
         """
-        self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2, "stage2")
+        self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2, "stage2", max_input_files_per_job)
 
     def addToMakefile_prep_dcard(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the datacards.
