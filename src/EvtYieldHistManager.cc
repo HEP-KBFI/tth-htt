@@ -167,7 +167,7 @@ EvtYieldHistManager::EvtYieldHistManager(const edm::ParameterSet & cfg)
     throw cmsException(this) << "Invalid Configuration parameter 'runPeriods' !!";
   }
   central_or_shiftOptions_["evtYield"] = { "*" };
-  central_or_shiftOptions_["luminosity"] = { "central" };
+  central_or_shiftOptions_["luminosity"] = central_or_shiftOptions_["evtYield"]; // CV: central_or_shiftOptions for "evtYield" and "luminosity" histograms need to be identical !!
 }
 
 void
@@ -182,48 +182,51 @@ EvtYieldHistManager::bookHistograms(TFileDirectory & dir)
     binning.push_back(0.5*(runPeriods_[idxRunPeriod].lastRun() + runPeriods_[idxRunPeriod + 1].firstRun()));
   }
   binning.push_back(runPeriods_[numRunPeriods - 1].lastRun() + 0.5);
-
   histogram_evtYield_   = book1D(dir, "evtYield",   "evtYield",   numRunPeriods, binning.data());
   histogram_luminosity_ = book1D(dir, "luminosity", "luminosity", numRunPeriods, binning.data());
-
-  for(std::size_t idxRunPeriod = 0; idxRunPeriod < numRunPeriods; ++idxRunPeriod)
+  if ( histogram_evtYield_ && histogram_luminosity_ ) 
   {
-    const int idxBin = idxRunPeriod + 1;
-    histogram_evtYield_->GetXaxis()->SetBinLabel(idxBin, runPeriods_[idxRunPeriod].name().data());
-    histogram_luminosity_->SetBinContent(idxBin, runPeriods_[idxRunPeriod].luminosity());
-    histogram_luminosity_->GetXaxis()->SetBinLabel(idxBin, runPeriods_[idxRunPeriod].name().data());
-  }
-
-  if(isMC_)
-  {
-    histogram_rnd_ = new evtYieldHistManager::TRandomTH1(histogram_luminosity_);
+    for(std::size_t idxRunPeriod = 0; idxRunPeriod < numRunPeriods; ++idxRunPeriod)
+    {
+      const int idxBin = idxRunPeriod + 1;
+      histogram_evtYield_->GetXaxis()->SetBinLabel(idxBin, runPeriods_[idxRunPeriod].name().data());
+      histogram_luminosity_->SetBinContent(idxBin, runPeriods_[idxRunPeriod].luminosity());
+      histogram_luminosity_->GetXaxis()->SetBinLabel(idxBin, runPeriods_[idxRunPeriod].name().data());
+    }
+    if ( isMC_ )
+    {
+      histogram_rnd_ = new evtYieldHistManager::TRandomTH1(histogram_luminosity_);
+    }
   }
 }
 
 void
-EvtYieldHistManager:: fillHistograms(const EventInfo & eventInfo,
-                                     double evtWeight)
+EvtYieldHistManager::fillHistograms(const EventInfo & eventInfo,
+				    double evtWeight)
 {
-  int idxBin_run = -1;
-  double run = eventInfo.run;
-  if(isMC_)
+  if ( histogram_evtYield_ && histogram_luminosity_ ) 
   {
-    if(! (idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX()))
+    int idxBin_run = -1;
+    double run = eventInfo.run;
+    if ( isMC_ )
     {
-      run = histogram_rnd_->GetRandom(eventInfo.event);
+      if(! (idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX()))
+      {
+        run = histogram_rnd_->GetRandom(eventInfo.event);
+        idxBin_run = histogram_luminosity_->FindBin(run);
+      }
+    }
+    else
+    {
       idxBin_run = histogram_luminosity_->FindBin(run);
+      if(! (idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX()))
+      {
+        throw cmsException(this, __func__, __LINE__) << "No luminosity defined for run = " << run << " !!";
+      }
     }
+    assert(idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX());
+    const double luminosity = histogram_luminosity_->GetBinContent(idxBin_run);
+    assert(luminosity > 0.);
+    histogram_evtYield_->Fill(run, evtWeight / luminosity);
   }
-  else
-  {
-    idxBin_run = histogram_luminosity_->FindBin(run);
-    if(! (idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX()))
-    {
-      throw cmsException(this, __func__, __LINE__) << "No luminosity defined for run = " << run << " !!";
-    }
-  }
-  assert(idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX());
-  const double luminosity = histogram_luminosity_->GetBinContent(idxBin_run);
-  assert(luminosity > 0.);
-  histogram_evtYield_->Fill(run, evtWeight / luminosity);
 }
