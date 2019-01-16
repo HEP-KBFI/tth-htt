@@ -299,7 +299,7 @@ int main(int argc, char* argv[])
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type int_type;
   if ( selectBDT ) {
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
-       makeHistManager_cfg(process_string, Form("%s/evtntuple", histogramDir.data()), "central")
+       makeHistManager_cfg(process_string, Form("%s/evtntuple", histogramDir.data()), era_string, "central")
        );
     bdt_filler->register_variable<float_type>(
       ///* // computed by (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);

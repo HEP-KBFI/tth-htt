@@ -194,8 +194,10 @@ def get_crab_string(dataset_name, paths):
       with open(path, 'r') as f:
         for line in f:
           path_candidate = line.rstrip('\n')
+          if not path_candidate:
+            continue
           if not os.path.isdir(path_candidate):
-            raise RuntimeError('Not a directory: %s' % path_candidate)
+            raise RuntimeError('Not a directory: %s (dataset_name = %s, paths = %s)' % (path_candidate, dataset_name, str(paths)))
           paths_.append(path_candidate)
     else:
       paths_.append(path)
@@ -643,15 +645,18 @@ if __name__ == '__main__':
           if verbose:
             sys.stdout.write(" %s%s" % (das_key, (',' if das_key_idx != len(das_keys) - 1 else '\n')))
             sys.stdout.flush()
-          mc_query_str = DASGOCLIENT_QUERY_COMMON % (dataset, das_key) if das_key != 'release' \
-                         else DASGOCLIENT_QUERY_RELEASE % dataset
+          dataset_q = dataset
+          if dataset_q.split('/')[-1].startswith('part'):
+            dataset_q = '/'.join(dataset.split('/')[:-1])
+          mc_query_str = DASGOCLIENT_QUERY_COMMON % (dataset_q, das_key) if das_key != 'release' \
+                         else DASGOCLIENT_QUERY_RELEASE % dataset_q
           mc_query_out, mc_query_err = run_cmd(mc_query_str, do_not_log = True, return_stderr = True)
           if not mc_query_out or mc_query_err:
             # this may happen if a sample is in PRODUCTION stage and the dasgoclient script
             # returns nonsense; let's try again with status=*
             query_fail = False
             if das_key != 'release':
-              mc_query_str = DASGOCLIENT_QUERY_ANY_STATUS % (dataset, das_key)
+              mc_query_str = DASGOCLIENT_QUERY_ANY_STATUS % (dataset_q, das_key)
               mc_query_out, mc_query_err = run_cmd(mc_query_str, do_not_log = True, return_stderr = True)
               if not mc_query_out or mc_query_err:
                 query_fail = True
@@ -703,7 +708,7 @@ if __name__ == '__main__':
       entry['use_it'] = entry['dataset_access_type'] != 'INVALID' and entry['release_pass'] and \
                         entry['use_it']
       meta_dictionary_entries.append(jinja2.Template(METADICT_TEMPLATE_MC).render(
-        dataset_name    = entry['name'],
+        dataset_name    = dataset,
         nof_db_events   = entry['nevents'],
         nof_db_files    = entry['nfiles'],
         fsize_db        = entry['size'],

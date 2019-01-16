@@ -307,3 +307,15 @@ countTrigObjs_passingL1(const std::vector<TrigObj>& trigObjs, int Id, double min
   }
   return numSelTrigObjs;
 }
+
+bool
+contains(const std::vector<std::string>& list_of_strings, const std::string& keyWord)
+{
+  for ( std::vector<std::string>::const_iterator entry = list_of_strings.begin();
+	entry != list_of_strings.end(); ++entry ) {
+    if ( (*entry) == keyWord ) {
+      return true;
+    }
+  }
+  return false;
+}

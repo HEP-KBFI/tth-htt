@@ -323,10 +323,10 @@ int main(int argc, char* argv[])
   std::string charge_and_leptonSelectionSS = Form("%s_%s", "SS", leptonSelection_string.data());
   std::string charge_and_leptonSelectionOS = Form("%s_%s", "OS", leptonSelection_string.data());
   ElectronHistManager preselElectronHistManagerSS(makeHistManager_cfg(process_string,
-    Form("charge_flip_%s/presel/electrons", charge_and_leptonSelectionSS.data()), central_or_shift.data()));
+    Form("charge_flip_%s/presel/electrons", charge_and_leptonSelectionSS.data()), era_string, central_or_shift, "allHistograms"));
   preselElectronHistManagerSS.bookHistograms(fs);
   ElectronHistManager preselElectronHistManagerOS(makeHistManager_cfg(process_string,
-    Form("charge_flip_%s/presel/electrons", charge_and_leptonSelectionOS.data()), central_or_shift.data()));
+    Form("charge_flip_%s/presel/electrons", charge_and_leptonSelectionOS.data()), era_string, central_or_shift, "allHistograms"));
   preselElectronHistManagerOS.bookHistograms(fs);
 
   EvtHistManager_charge_flip evtHistManager(makeHistManager_cfg(process_string,
@@ -388,13 +388,13 @@ int main(int argc, char* argv[])
   LHEInfoHistManager* lheInfoHistManager = 0;
   if ( isMC ) {
     genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
-      Form("charge_flip_%s/unbiased/genEvt", charge_and_leptonSelectionSS.data()), central_or_shift));
+      Form("charge_flip_%s/unbiased/genEvt", charge_and_leptonSelectionSS.data()), era_string, central_or_shift));
     genEvtHistManager_beforeCuts->bookHistograms(fs);
     genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
-      Form("charge_flip_%s/sel/genEvt", charge_and_leptonSelectionSS.data()), central_or_shift));
+      Form("charge_flip_%s/sel/genEvt", charge_and_leptonSelectionSS.data()), era_string, central_or_shift));
     genEvtHistManager_afterCuts->bookHistograms(fs);
     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
-      Form("charge_flip_%s/sel/lheInfo", charge_and_leptonSelectionSS.data()), central_or_shift));
+      Form("charge_flip_%s/sel/lheInfo", charge_and_leptonSelectionSS.data()), era_string, central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
 
     if(eventWeightManager)
@@ -411,7 +411,7 @@ int main(int argc, char* argv[])
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   cutFlowTableType cutFlowTable;
   const edm::ParameterSet cutFlowTableCfg = makeHistManager_cfg(
-    process_string, Form("charge_flip_%s/sel/cutFlow", charge_and_leptonSelectionSS.data()), central_or_shift
+    process_string, Form("charge_flip_%s/sel/cutFlow", charge_and_leptonSelectionSS.data()), era_string, central_or_shift
   );
   const std::vector<std::string> cuts = {
     "run:ls:event selection",

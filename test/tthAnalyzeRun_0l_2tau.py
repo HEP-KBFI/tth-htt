@@ -87,7 +87,7 @@ if mode == "default":
   for sample_name, sample_info in samples.items():
     if sample_name == 'sum_events': continue
     if sample_info["process_name_specific"] in [
-      "TTTo2L2Nu_PSweights", "TTToSemiLeptonic_PSweights", "TTToHadronic_PSweights",
+      "TTTo2L2Nu_PSweights", "TTToSemiLeptonic_PSweights", "TTToHadronic_PSweights", "DYBBJetsToLL_M-50"
     ]:
       # Use non-PSweights samples for the analysis to estimate the irreducible ttbar background
       sample_info["use_it"] = False
@@ -226,6 +226,9 @@ if __name__ == '__main__':
       "mvaOutput_0l_2tau_HTT_ttv": {},
       "mvaOutput_0l_2tau_HTT_sum": {},
       "mvaDiscr_0l_2tau_HTT"     : {},
+      "mvaOutput_0l_2tau_HTT_sum_dy" : {},
+      "mva_Boosted_AK8"          : {},
+      "mva_Updated"              : {},
       "mTauTauVis"               : {},
       "mTauTau"                  : {},
     },

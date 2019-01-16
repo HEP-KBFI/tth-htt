@@ -30,6 +30,8 @@ const double z_mass   = 91.1876;
 const double z_window = 10.;
 const double met_coef =  0.6;
 const double mht_coef =  0.4;
+const double w_mass   = 80.385;
+const double w_window = 10.;
 
 //--- declare data-taking periods
 enum
@@ -391,5 +393,12 @@ auto as_integer(Enumeration const value)
  */
 int
 countTrigObjs_passingL1(const std::vector<TrigObj>& trigObjs, int Id, double min_l1pt, double min_l1pt_2 = -1.);
+
+/**
+ * @brief Check if a certain string is contained in a given vector of strings
+ */
+
+bool
+contains(const std::vector<std::string>& list_of_strings, const std::string& keyWord);
 
 #endif

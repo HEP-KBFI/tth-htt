@@ -78,6 +78,9 @@ protected:
          int numBinsY,
          double * binningY);
 
+  bool 
+  checkOptionIsSelected(const std::string &) const;
+
   TDirectory *
   createHistogramSubdirectory(TFileDirectory & dir);
 
@@ -88,6 +91,8 @@ protected:
   std::string category_;
   std::string central_or_shift_;
 
+  std::map<std::string, std::vector<std::string>> central_or_shiftOptions_; // key = histogramName, value = central_or_shift options for which histogram is to be booked & filled
+
   std::vector<TH1 *> histograms_;
   std::vector<TH2 *> histograms_2d_;
 };
@@ -95,14 +100,16 @@ protected:
 edm::ParameterSet
 makeHistManager_cfg(const std::string & process,
                     const std::string & category,
+		    const std::string & era,
                     const std::string & central_or_shift,
                     int idx = -1);
 
 edm::ParameterSet
 makeHistManager_cfg(const std::string & process,
                     const std::string & category,
-                    const std::string & era,
+		    const std::string & era,
                     const std::string & central_or_shift,
+		    const std::string & option,
                     int idx = -1);
 
 #endif // tthAnalysis_HiggsToTauTau_HistManagerBase_h

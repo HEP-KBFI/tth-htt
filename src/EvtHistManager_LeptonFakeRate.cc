@@ -4,7 +4,14 @@
 
 EvtHistManager_LeptonFakeRate::EvtHistManager_LeptonFakeRate(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
-{}
+{
+  central_or_shiftOptions_["mT_fix_L"] = { "*" };
+  central_or_shiftOptions_["mT_fix_L_num"] = { "*" };
+  central_or_shiftOptions_["mT_fix_L_den"] = { "*" };
+  central_or_shiftOptions_["mT_L"] = { "*" };
+  central_or_shiftOptions_["MET"] = { "*" };
+  central_or_shiftOptions_["EventCounter"] = { "*" };
+}
 
 void
 EvtHistManager_LeptonFakeRate::bookHistograms(TFileDirectory & dir)

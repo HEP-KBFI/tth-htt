@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-11-27 13:24:18 with the following command:
+# file generated at 2018-12-14 11:35:38 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017_post.txt -Z zeroes.txt -z zombies.txt -N samples_2017 -E 2017 -g tthAnalyzeSamples_2017.py -o python/samples -M
 
 samples_2017 = OD()
@@ -15849,7 +15849,7 @@ samples_2017["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2
   ("sample_category",                 "signal"),
   ("process_name_specific",           "ttHToNonbb_M125_powheg_ext1"),
   ("nof_files",                       16),
-  ("nof_db_files",                    355),
+  ("nof_db_files",                    267),
   ("nof_events",                      {
     'Count'                                  : [      7421390, ],
     'CountFullWeighted'                      : [      4177118,      4176923,      4177169, ],
@@ -15862,9 +15862,9 @@ samples_2017["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2
     'CountFullWeightedLHEWeightScaleNoPU'    : [      4432670,      4381415,      4360298,      4287583,      4179227,      4097097,      4041445,      3900119,      3788441, ],
   }),
   ("nof_tree_events",                 7421390),
-  ("nof_db_events",                   8241489),
+  ("nof_db_events",                   5499293),
   ("fsize_local",                     25536333794), # 25.54GB, avg file size 1.60GB
-  ("fsize_db",                        515822367934), # 515.82GB, avg file size 1.45GB
+  ("fsize_db",                        344665616083), # 344.67GB, avg file size 1.29GB
   ("use_it",                          False),
   ("xsection",                        0.2118),
   ("genWeight",                       True),
@@ -18653,7 +18653,7 @@ samples_2017["/DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Mi
 samples_2017["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu"),
+  ("process_name_specific",           "WJetsToLNu_deprecated"),
   ("nof_files",                       48),
   ("nof_db_files",                    382),
   ("nof_events",                      {
@@ -18669,8 +18669,54 @@ samples_2017["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-9
   }),
   ("nof_tree_events",                 23240598),
   ("nof_db_events",                   23240598),
-  ("fsize_local",                     22617736482), # 22.62GB, avg file size 471.20MB
+  ("fsize_local",                     22277179675), # 22.28GB, avg file size 464.11MB
   ("fsize_db",                        882645881655), # 882.65GB, avg file size 2.31GB
+  ("use_it",                          False),
+  ("xsection",                        61526.7),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Dec13_woPresel_nom_all/ntuples/WJetsToLNu_deprecated"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "WJetsToLNu"),
+  ("nof_files",                       68),
+  ("nof_db_files",                    514),
+  ("nof_events",                      {
+    'Count'                                  : [     33073306, ],
+    'CountFullWeighted'                      : [     33044404,     33044097,     33044370, ],
+    'CountWeighted'                          : [     33044404,     33044097,     33044370, ],
+    'CountFullWeightedNoPU'                  : [     33043732, ],
+    'CountWeightedNoPU'                      : [     33043732, ],
+    'CountWeightedLHEWeightScale'            : [     29082897,     33195626,     36880815,     28937659,     33044404,     36725775,     28819206,     32921003,     36599278, ],
+    'CountWeightedLHEWeightScaleNoPU'        : [     29082773,     33194984,     36880630,     28937511,     33043732,     36725563,     28819036,     32920347,     36599038, ],
+    'CountFullWeightedLHEWeightScale'        : [     29082897,     33195626,     36880815,     28937659,     33044404,     36725775,     28819206,     32921003,     36599278, ],
+    'CountFullWeightedLHEWeightScaleNoPU'    : [     29082773,     33194984,     36880630,     28937511,     33043732,     36725563,     28819036,     32920347,     36599038, ],
+  }),
+  ("nof_tree_events",                 33073306),
+  ("nof_db_events",                   33073306),
+  ("fsize_local",                     32085023738), # 32.09GB, avg file size 471.84MB
+  ("fsize_db",                        1301026785288), # 1.30TB, avg file size 2.53GB
   ("use_it",                          True),
   ("xsection",                        61526.7),
   ("genWeight",                       True),
@@ -18679,7 +18725,53 @@ samples_2017["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-9
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Nov24_woPresel_nom_all/ntuples/WJetsToLNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Dec13_woPresel_nom_all/ntuples/WJetsToLNu"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "WJetsToLNu_ext"),
+  ("nof_files",                       90),
+  ("nof_db_files",                    738),
+  ("nof_events",                      {
+    'Count'                                  : [     44627200, ],
+    'CountFullWeighted'                      : [     44586609,     44589720,     44581856, ],
+    'CountWeighted'                          : [     44586609,     44589720,     44581856, ],
+    'CountFullWeightedNoPU'                  : [     44587448, ],
+    'CountWeightedNoPU'                      : [     44587448, ],
+    'CountWeightedLHEWeightScale'            : [     39240225,     44789542,     49765273,     39045336,     44586609,     49557243,     38886396,     44421126,     49387509, ],
+    'CountWeightedLHEWeightScaleNoPU'        : [     39240468,     44790499,     49765081,     39045445,     44587448,     49556918,     38886398,     44421815,     49387076, ],
+    'CountFullWeightedLHEWeightScale'        : [     39240225,     44789542,     49765273,     39045336,     44586609,     49557243,     38886396,     44421126,     49387509, ],
+    'CountFullWeightedLHEWeightScaleNoPU'    : [     39240468,     44790499,     49765081,     39045445,     44587448,     49556918,     38886398,     44421815,     49387076, ],
+  }),
+  ("nof_tree_events",                 44627200),
+  ("nof_db_events",                   44627200),
+  ("fsize_local",                     42821364728), # 42.82GB, avg file size 475.79MB
+  ("fsize_db",                        1756207826672), # 1.76TB, avg file size 2.38GB
+  ("use_it",                          True),
+  ("xsection",                        61526.7),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Dec13_woPresel_nom_all/ntuples/WJetsToLNu_ext"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18699,7 +18791,7 @@ samples_2017["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-9
 samples_2017["/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
-  ("process_name_specific",           "W1JetsToLNu"),
+  ("process_name_specific",           "W1JetsToLNu_deprecated"),
   ("nof_files",                       63),
   ("nof_db_files",                    484),
   ("nof_events",                      {
@@ -18715,8 +18807,54 @@ samples_2017["/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   }),
   ("nof_tree_events",                 30003848),
   ("nof_db_events",                   30003848),
-  ("fsize_local",                     32608671269), # 32.61GB, avg file size 517.60MB
+  ("fsize_local",                     32949113093), # 32.95GB, avg file size 523.00MB
   ("fsize_db",                        1163663813409), # 1.16TB, avg file size 2.40GB
+  ("use_it",                          False),
+  ("xsection",                        9418.44),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Dec13_woPresel_nom_all/ntuples/W1JetsToLNu_deprecated"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "W1JetsToLNu"),
+  ("nof_files",                       110),
+  ("nof_db_files",                    801),
+  ("nof_events",                      {
+    'Count'                                  : [     54147812, ],
+    'CountFullWeighted'                      : [     54107900,     54108122,     54105188, ],
+    'CountWeighted'                          : [     54107900,     54108122,     54105188, ],
+    'CountFullWeightedNoPU'                  : [     54106926, ],
+    'CountWeightedNoPU'                      : [     54106926, ],
+    'CountWeightedLHEWeightScale'            : [     47235072,     54642328,     60876502,     46734439,     54107900,     60315369,     46324078,     53669747,     59855624, ],
+    'CountWeightedLHEWeightScaleNoPU'        : [     47235349,     54641361,     60876515,     46734772,     54106926,     60315442,     46324448,     53668966,     59855766, ],
+    'CountFullWeightedLHEWeightScale'        : [     47235072,     54642328,     60876502,     46734439,     54107900,     60315369,     46324078,     53669747,     59855624, ],
+    'CountFullWeightedLHEWeightScaleNoPU'    : [     47235349,     54641361,     60876515,     46734772,     54106926,     60315442,     46324448,     53668966,     59855766, ],
+  }),
+  ("nof_tree_events",                 54147812),
+  ("nof_db_events",                   54147812),
+  ("fsize_local",                     59079286025), # 59.08GB, avg file size 537.08MB
+  ("fsize_db",                        2175397601720), # 2.18TB, avg file size 2.72GB
   ("use_it",                          True),
   ("xsection",                        9418.44),
   ("genWeight",                       True),
@@ -18725,7 +18863,7 @@ samples_2017["/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Nov24_woPresel_nom_all/ntuples/W1JetsToLNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Dec13_woPresel_nom_all/ntuples/W1JetsToLNu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18745,7 +18883,7 @@ samples_2017["/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
 samples_2017["/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v3/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
-  ("process_name_specific",           "W2JetsToLNu"),
+  ("process_name_specific",           "W2JetsToLNu_deprecated"),
   ("nof_files",                       42),
   ("nof_db_files",                    312),
   ("nof_events",                      {
@@ -18761,8 +18899,54 @@ samples_2017["/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   }),
   ("nof_tree_events",                 19944844),
   ("nof_db_events",                   19944844),
-  ("fsize_local",                     25245501974), # 25.25GB, avg file size 601.08MB
+  ("fsize_local",                     26005407673), # 26.01GB, avg file size 619.18MB
   ("fsize_db",                        825217914289), # 825.22GB, avg file size 2.64GB
+  ("use_it",                          False),
+  ("xsection",                        3244.85),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Dec13_woPresel_nom_all/ntuples/W2JetsToLNu_deprecated"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v4/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "W2JetsToLNu"),
+  ("nof_files",                       42),
+  ("nof_db_files",                    157),
+  ("nof_events",                      {
+    'Count'                                  : [     19944844, ],
+    'CountFullWeighted'                      : [     19922031,     19924052,     19923974, ],
+    'CountWeighted'                          : [     19922031,     19924052,     19923974, ],
+    'CountFullWeightedNoPU'                  : [     19923310, ],
+    'CountWeightedNoPU'                      : [     19923310, ],
+    'CountWeightedLHEWeightScale'            : [     18822480,     20546717,     21784199,     18240269,     19922031,     21130561,     17764325,     19412002,     20596320, ],
+    'CountWeightedLHEWeightScaleNoPU'        : [     18822619,     20547719,     21784284,     18240447,     19923310,     21130676,     17764529,     19412933,     20596476, ],
+    'CountFullWeightedLHEWeightScale'        : [     18822480,     20546717,     21784199,     18240269,     19922031,     21130561,     17764325,     19412002,     20596320, ],
+    'CountFullWeightedLHEWeightScaleNoPU'    : [     18822619,     20547719,     21784284,     18240447,     19923310,     21130676,     17764529,     19412933,     20596476, ],
+  }),
+  ("nof_tree_events",                 19944844),
+  ("nof_db_events",                   6577492),
+  ("fsize_local",                     25245501974), # 25.25GB, avg file size 601.08MB
+  ("fsize_db",                        283312015249), # 283.31GB, avg file size 1.80GB
   ("use_it",                          True),
   ("xsection",                        3244.85),
   ("genWeight",                       True),
@@ -18791,7 +18975,7 @@ samples_2017["/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
 samples_2017["/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v3/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
-  ("process_name_specific",           "W3JetsToLNu"),
+  ("process_name_specific",           "W3JetsToLNu_deprecated"),
   ("nof_files",                       40),
   ("nof_db_files",                    305),
   ("nof_events",                      {
@@ -18807,8 +18991,54 @@ samples_2017["/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   }),
   ("nof_tree_events",                 19644745),
   ("nof_db_events",                   19644745),
-  ("fsize_local",                     28738692012), # 28.74GB, avg file size 718.47MB
+  ("fsize_local",                     28897702044), # 28.90GB, avg file size 722.44MB
   ("fsize_db",                        858873579148), # 858.87GB, avg file size 2.82GB
+  ("use_it",                          False),
+  ("xsection",                        1153.02),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Dec13_woPresel_nom_all/ntuples/W3JetsToLNu_deprecated"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "W3JetsToLNu"),
+  ("nof_files",                       40),
+  ("nof_db_files",                    250),
+  ("nof_events",                      {
+    'Count'                                  : [     19700377, ],
+    'CountFullWeighted'                      : [     19669796,     19669519,     19669596, ],
+    'CountWeighted'                          : [     19669796,     19669519,     19669596, ],
+    'CountFullWeightedNoPU'                  : [     19669693, ],
+    'CountWeightedNoPU'                      : [     19669693, ],
+    'CountWeightedLHEWeightScale'            : [     20032938,     20585420,     20774409,     19131852,     19669796,     19857600,     18398307,     18924035,     19111053, ],
+    'CountWeightedLHEWeightScaleNoPU'        : [     20032890,     20585206,     20774474,     19132010,     19669693,     19857866,     18398618,     18924291,     19111486, ],
+    'CountFullWeightedLHEWeightScale'        : [     20032938,     20585420,     20774409,     19131852,     19669796,     19857600,     18398307,     18924035,     19111053, ],
+    'CountFullWeightedLHEWeightScaleNoPU'    : [     20032890,     20585206,     20774474,     19132010,     19669693,     19857866,     18398618,     18924291,     19111486, ],
+  }),
+  ("nof_tree_events",                 19700377),
+  ("nof_db_events",                   19700377),
+  ("fsize_local",                     29332976955), # 29.33GB, avg file size 733.32MB
+  ("fsize_db",                        868954430671), # 868.95GB, avg file size 3.48GB
   ("use_it",                          True),
   ("xsection",                        1153.02),
   ("genWeight",                       True),
@@ -18817,7 +19047,7 @@ samples_2017["/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Nov24_woPresel_nom_all/ntuples/W3JetsToLNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Dec13_woPresel_nom_all/ntuples/W3JetsToLNu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18837,7 +19067,7 @@ samples_2017["/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
 samples_2017["/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
-  ("process_name_specific",           "W4JetsToLNu"),
+  ("process_name_specific",           "W4JetsToLNu_deprecated"),
   ("nof_files",                       23),
   ("nof_db_files",                    255),
   ("nof_events",                      {
@@ -18853,8 +19083,54 @@ samples_2017["/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   }),
   ("nof_tree_events",                 11285729),
   ("nof_db_events",                   11285729),
-  ("fsize_local",                     20537950377), # 20.54GB, avg file size 892.95MB
+  ("fsize_local",                     20730313507), # 20.73GB, avg file size 901.32MB
   ("fsize_db",                        536619066244), # 536.62GB, avg file size 2.10GB
+  ("use_it",                          False),
+  ("xsection",                        633.05),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Dec13_woPresel_nom_all/ntuples/W4JetsToLNu_deprecated"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "W4JetsToLNu"),
+  ("nof_files",                       23),
+  ("nof_db_files",                    186),
+  ("nof_events",                      {
+    'Count'                                  : [     11333705, ],
+    'CountFullWeighted'                      : [     11303319,     11304048,     11303150, ],
+    'CountWeighted'                          : [     11303319,     11304048,     11303150, ],
+    'CountFullWeightedNoPU'                  : [     11303425, ],
+    'CountWeightedNoPU'                      : [     11303425, ],
+    'CountWeightedLHEWeightScale'            : [     12469856,     12008586,     11504087,     11730385,     11303273,     10833405,     11136880,     10737040,     10294780, ],
+    'CountWeightedLHEWeightScaleNoPU'        : [     12470108,     12008798,     11504330,     11730445,     11303424,     10833491,     11136821,     10737119,     10294759, ],
+    'CountFullWeightedLHEWeightScale'        : [     12469856,     12008586,     11504087,     11730385,     11303273,     10833405,     11136880,     10737040,     10294780, ],
+    'CountFullWeightedLHEWeightScaleNoPU'    : [     12470108,     12008798,     11504330,     11730445,     11303424,     10833491,     11136821,     10737119,     10294759, ],
+  }),
+  ("nof_tree_events",                 11333705),
+  ("nof_db_events",                   11333705),
+  ("fsize_local",                     20907423455), # 20.91GB, avg file size 909.02MB
+  ("fsize_db",                        544171543197), # 544.17GB, avg file size 2.93GB
   ("use_it",                          True),
   ("xsection",                        633.05),
   ("genWeight",                       True),
@@ -18863,7 +19139,7 @@ samples_2017["/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Nov24_woPresel_nom_all/ntuples/W4JetsToLNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Dec13_woPresel_nom_all/ntuples/W4JetsToLNu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22784,6 +23060,7 @@ samples_2017["sum_events"] = [
   [ 'VHToNonbb_M125',                                  'VHToNonbb_M125_v14-v2',                            ],
   [ 'DYJetsToLL_M50_HT400to600',                       'DYJetsToLL_M50_HT400to600_ext1',                   ],
   [ 'DYJetsToLL_M-50_LO',                              'DYJetsToLL_M-50_LO_ext1',                          ],
+  [ 'WJetsToLNu',                                      'WJetsToLNu_ext',                                   ],
   [ 'TTZToLL_M10',                                     'TTZToLL_M10_PSweights',                            ],
   [ 'TTGJets',                                         'TTGJets_ext1',                                     ],
   [ 'ST_tW_top_5f_inclusiveDecays',                    'ST_tW_top_5f_inclusiveDecays_PSweights',           ],

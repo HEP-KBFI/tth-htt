@@ -352,6 +352,9 @@ class analyzeConfig(object):
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
         self.outputFile_hadd_stage1 = {}
+        self.cfgFile_copyHistograms = os.path.join(self.template_dir, "copyHistograms_cfg.py")
+        self.jobOptions_copyHistograms = {}
+        self.executable_copyHistograms = 'copyHistograms_recursively'
         self.cfgFile_addBackgrounds = os.path.join(self.template_dir, "addBackgrounds_cfg.py")
         self.jobOptions_addBackgrounds = {}
         self.jobOptions_addBackgrounds_sum = {}
@@ -389,6 +392,7 @@ class analyzeConfig(object):
         self.num_jobs = {}
         self.num_jobs['analyze'] = 0
         self.num_jobs['hadd'] = 0
+        self.num_jobs['copyHistograms'] = 0
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
 
@@ -633,6 +637,7 @@ class analyzeConfig(object):
             'isMC',
             'hasLHE',
             'central_or_shift',
+            'evtCategories',
             'leptonSelection',
             'electronSelection',
             'muonSelection',
@@ -787,6 +792,18 @@ class analyzeConfig(object):
 
         return lines
 
+    def createCfg_copyHistograms(self, jobOptions):
+        """Create python configuration file for the copyHistograms executable (split the ROOT files produced by hadd_stage1 into separate ROOT files, one for each event category)
+        
+           Args:
+             inputFiles: input file (the ROOT file produced by hadd_stage1)
+             outputFile: output file of the job
+        """
+        lines = []
+        lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
+        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
+        lines.append("process.addBackgrounds.categories = cms.vstring(%s)" % jobOptions['categories'])
+
     def createCfg_addBackgrounds(self, jobOptions):
         """Create python configuration file for the addBackgrounds executable (sum either all "fake" or all "non-fake" contributions)
 
@@ -797,7 +814,7 @@ class analyzeConfig(object):
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
-        lines.append("process.addBackgrounds.categories = cms.vstring(%s)" % jobOptions['categories'])
+        lines.append("process.addBackgrounds.categories = cms.vstring(%s)" % jobOptions['categories'])        
         lines.append("process.addBackgrounds.processes_input = cms.vstring(%s)" % jobOptions['processes_input'])
         lines.append("process.addBackgrounds.process_output = cms.string('%s')" % jobOptions['process_output'])
         if 'histogramsToCopy' in jobOptions.keys():
@@ -1025,7 +1042,7 @@ class analyzeConfig(object):
         return num_jobs
 
     def createScript_sbatch_syncNtuple(self, executable, sbatchFile, jobOptions):
-        """Creates the python script necessary to submit the analysis jobs to the batch system
+        """Creates the python script necessary to submit the syncNtuple production jobs to the batch system
         """
         self.num_jobs['analyze'] += self.createScript_sbatch(
             executable, sbatchFile, jobOptions, 'cfgFile_modified', 'ntupleFiles', 'syncOutput',
@@ -1035,16 +1052,22 @@ class analyzeConfig(object):
     def createScript_sbatch_analyze(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
-        self.num_jobs['analyze'] += self.createScript_sbatch(executable, sbatchFile, jobOptions,
-                                                             'cfgFile_modified', 'ntupleFiles', 'histogramFile', 'logFile')
+        self.num_jobs['analyze'] += self.createScript_sbatch(
+            executable, sbatchFile, jobOptions, 'cfgFile_modified', 'ntupleFiles', 'histogramFile',
+            'logFile')
+
+    def createScript_sbatch_copyHistograms(self, executable, sbatchFile, jobOptions):
+        """Creates the python script necessary to submit the 'copyHistograms' jobs to the batch system
+        """
+        self.num_jobs['copyHistograms'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 5000)
 
     def createScript_sbatch_addBackgrounds(self, executable, sbatchFile, jobOptions):
-        """Creates the python script necessary to submit the analysis jobs to the batch system
+        """Creates the python script necessary to submit the 'addBackgrounds' jobs to the batch system
         """
         self.num_jobs['addBackgrounds'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 5000)
 
     def createScript_sbatch_addFakes(self, executable, sbatchFile, jobOptions):
-        """Creates the python script necessary to submit the analysis jobs to the batch system
+        """Creates the python script necessary to submit the 'addBackgroundLeptonFakes' jobs to the batch system
         """
         self.num_jobs['addFakes'] += self.createScript_sbatch(executable, sbatchFile, jobOptions)
 
@@ -1107,7 +1130,7 @@ class analyzeConfig(object):
                 lines_makefile.append("")
             self.filesToClean.append(jobOptions['syncOutput'])
 
-    def addToMakefile_hadd(self, lines_makefile, inputFiles, outputFiles, label):
+    def addToMakefile_hadd(self, lines_makefile, inputFiles, outputFiles, label, max_input_files_per_job = 5):
         scriptFiles = {}
         jobOptions = {}
         for key in outputFiles.keys():
@@ -1138,7 +1161,6 @@ class analyzeConfig(object):
                 # CV: run "hierarchical" hadd procedure similar to procedure used when running hadd step on batch system,
                 #     cf. https://github.com/HEP-KBFI/tth-htt/blob/master/python/ClusterHistogramAggregator.py#L34-L107
                 #     in order to avoid that individual hadd jobs need to run on too many input files and hence consume a lot of computing time and memory
-                max_input_files_per_job = 5
                 level = 0
                 level_inputFiles = inputFiles[key]
                 final_outputFile = outputFiles[key]
@@ -1191,6 +1213,22 @@ class analyzeConfig(object):
     def addToMakefile_hadd_sync(self, lines_makefile):
         self.addToMakefile_hadd(lines_makefile, self.inputFiles_sync, self.outputFile_sync, "sync")
 
+    def addToMakefile_copyHistograms(self, lines_makefile):
+        if self.is_sbatch:
+            lines_makefile.append("sbatch_copyHistograms: %s" % " ".join([ jobOptions['inputFile'] for jobOptions in self.jobOptions_copyHistograms.values() ]))
+            lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_copyHistograms))
+            lines_makefile.append("")
+        for jobOptions in self.jobOptions_copyHistograms.values():
+            if self.is_makefile:
+                lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
+                lines_makefile.append("\t%s %s &> %s" % (self.executable_copyHistograms, jobOptions['cfgFile_modified'], jobOptions['logFile']))
+                lines_makefile.append("")
+            elif self.is_sbatch:
+                lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_copyHistograms"))
+                lines_makefile.append("\t%s" % ":") # CV: null command
+                lines_makefile.append("")
+            self.filesToClean.append(jobOptions['outputFile'])
+
     def addToMakefile_addBackgrounds(self, lines_makefile, sbatchTarget, sbatchFile, jobOptions):
         if self.is_sbatch:
             lines_makefile.append("%s: %s" % (sbatchTarget, " ".join([ value['inputFile'] for value in jobOptions.values() ])))
@@ -1207,11 +1245,11 @@ class analyzeConfig(object):
                 lines_makefile.append("")
             self.filesToClean.append(value['outputFile'])
 
-    def addToMakefile_hadd_stage1_5(self, lines_makefile):
+    def addToMakefile_hadd_stage1_5(self, lines_makefile, max_input_files_per_job = 5):
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
            that is used as input for data-driven background estimation.
         """
-        self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage1_5, self.outputFile_hadd_stage1_5, "stage1_5")
+        self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage1_5, self.outputFile_hadd_stage1_5, "stage1_5", max_input_files_per_job)
 
     def addToMakefile_addFakes(self, lines_makefile):
         if self.is_sbatch:
@@ -1235,10 +1273,10 @@ class analyzeConfig(object):
         self.addToMakefile_hadd_stage1_5(lines_makefile)
         self.addToMakefile_addFakes(lines_makefile)
 
-    def addToMakefile_hadd_stage2(self, lines_makefile):
+    def addToMakefile_hadd_stage2(self, lines_makefile, max_input_files_per_job = 5):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
         """
-        self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2, "stage2")
+        self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2, "stage2", max_input_files_per_job)
 
     def addToMakefile_prep_dcard(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the datacards.

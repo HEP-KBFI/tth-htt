@@ -102,10 +102,11 @@ const int hadTauSelection_antiMuon = -1; // not applied
 struct denominatorHistManagers
 {
   denominatorHistManagers(
-    const std::string& process, int era, bool isMC, const std::string& chargeSelection, 
+    const std::string& process, const std::string& era_string, bool isMC, const std::string& chargeSelection, 
     const std::string& hadTauSelection_denominator, double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
     : process_(process)
-    , era_(era)
+    , era_string_(era_string)
+    , era_(get_era(era_string))
     , isMC_(isMC)
     , chargeSelection_(chargeSelection)
     , hadTauSelection_denominator_(hadTauSelection_denominator)
@@ -148,41 +149,41 @@ struct denominatorHistManagers
     //std::cout << "<denominatorHistManagers::bookHistograms>:" << std::endl;
     //std::cout << " subdir = " << subdir_ << std::endl;
     jetHistManager_ = new JetHistManager(makeHistManager_cfg(process_, 
-      Form("%s/jets", subdir_.data()), central_or_shift_));
+      Form("%s/jets", subdir_.data()), era_string_, central_or_shift_, "minimalHistograms"));
     jetHistManager_->bookHistograms(dir);
     if ( isMC_ ) {
       std::string process_and_genMatchedHadTau = process_ + "t";
       jetHistManager_genHadTau_ = new JetHistManager(makeHistManager_cfg(process_and_genMatchedHadTau, 
-        Form("%s/jets", subdir_.data()), central_or_shift_));
+        Form("%s/jets", subdir_.data()), era_string_, central_or_shift_, "minimalHistograms"));
       jetHistManager_genHadTau_->bookHistograms(dir);
       std::string process_and_genMatchedLepton = process_ + "l";
       jetHistManager_genLepton_ = new JetHistManager(makeHistManager_cfg(process_and_genMatchedLepton, 
-        Form("%s/jets", subdir_.data()), central_or_shift_));
+        Form("%s/jets", subdir_.data()), era_string_, central_or_shift_, "minimalHistograms"));
       jetHistManager_genLepton_->bookHistograms(dir);
       std::string process_and_genMatchedJet = process_ + "j";
       jetHistManager_genJet_ = new JetHistManager(makeHistManager_cfg(process_and_genMatchedJet, 
-        Form("%s/jets", subdir_.data()), central_or_shift_));
+        Form("%s/jets", subdir_.data()), era_string_, central_or_shift_, "minimalHistograms"));
       jetHistManager_genJet_->bookHistograms(dir);
     }
     hadTauHistManager_ = new HadTauHistManager(makeHistManager_cfg(process_, 
-      Form("%s/hadTaus", subdir_.data()), central_or_shift_));
+      Form("%s/hadTaus", subdir_.data()), era_string_, central_or_shift_, "minimalHistograms"));
     hadTauHistManager_->bookHistograms(dir);
     if ( isMC_ ) {
       std::string process_and_genMatchedHadTau = process_ + "t";
       hadTauHistManager_genHadTau_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatchedHadTau, 
-        Form("%s/hadTaus", subdir_.data()), central_or_shift_));
+        Form("%s/hadTaus", subdir_.data()), era_string_, central_or_shift_, "minimalHistograms"));
       hadTauHistManager_genHadTau_->bookHistograms(dir);
       std::string process_and_genMatchedLepton = process_ + "l";
       hadTauHistManager_genLepton_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatchedLepton, 
-        Form("%s/hadTaus", subdir_.data()), central_or_shift_));
+        Form("%s/hadTaus", subdir_.data()), era_string_, central_or_shift_, "minimalHistograms"));
       hadTauHistManager_genLepton_->bookHistograms(dir);
       std::string process_and_genMatchedJet = process_ + "j";
       hadTauHistManager_genJet_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatchedJet, 
-        Form("%s/hadTaus", subdir_.data()), central_or_shift_));
+        Form("%s/hadTaus", subdir_.data()), era_string_, central_or_shift_, "minimalHistograms"));
       hadTauHistManager_genJet_->bookHistograms(dir);
     }
     evtHistManager_ = new EvtHistManager_jetToTauFakeRate(makeHistManager_cfg(process_, 
-      Form("%s/evt", subdir_.data()), central_or_shift_));
+      Form("%s/evt", subdir_.data()), era_string_, central_or_shift_));
     evtHistManager_->bookHistograms(dir);
   } 					 
   void fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight)					 
@@ -205,6 +206,7 @@ struct denominatorHistManagers
     }
   }			
   std::string process_;
+  std::string era_string_;
   int era_;
   bool isMC_;
   std::string chargeSelection_;
@@ -231,9 +233,9 @@ struct denominatorHistManagers
 struct numeratorSelector_and_HistManagers : public denominatorHistManagers
 {
   numeratorSelector_and_HistManagers(
-    const std::string& process, int era, bool isMC, const std::string& chargeSelection, 
+    const std::string& process, const std::string& era_string, bool isMC, const std::string& chargeSelection, 
     const std::string& hadTauSelection_denominator, const std::string& hadTauSelection_numerator, double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
-    : denominatorHistManagers(process, era, isMC, chargeSelection, hadTauSelection_denominator, minAbsEta, maxAbsEta, central_or_shift),
+    : denominatorHistManagers(process, era_string, isMC, chargeSelection, hadTauSelection_denominator, minAbsEta, maxAbsEta, central_or_shift),
       hadTauSelection_numerator_(hadTauSelection_numerator),
       tightHadTauSelector_(0)
   {
@@ -512,37 +514,37 @@ int main(int argc, char* argv[])
   }
 
   ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/electrons", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/electrons", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
   selElectronHistManager.bookHistograms(fs);
 
   MuonHistManager selMuonHistManager(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/muons", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/muons", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
   selMuonHistManager.bookHistograms(fs);
 
   HadTauHistManager selHadTauHistManager(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/hadTaus", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/hadTaus", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
   selHadTauHistManager.bookHistograms(fs);
   HadTauHistManager selHadTauHistManager_genHadTau(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/hadTaus_genHadTau", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/hadTaus_genHadTau", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
   selHadTauHistManager_genHadTau.bookHistograms(fs);
   HadTauHistManager selHadTauHistManager_genElectron(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/hadTaus_genElectron", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/hadTaus_genElectron", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
   selHadTauHistManager_genElectron.bookHistograms(fs);
   HadTauHistManager selHadTauHistManager_genMuon(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/hadTaus_genMuon", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/hadTaus_genMuon", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
   selHadTauHistManager_genMuon.bookHistograms(fs);
   HadTauHistManager selHadTauHistManager_genJet(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/hadTaus_genJet", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/hadTaus_genJet", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
   selHadTauHistManager_genJet.bookHistograms(fs);
 
   JetHistManager selJetHistManager(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/jets", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/jets", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
   selJetHistManager.bookHistograms(fs);
   JetHistManager selJetHistManager_lead(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/leadJet", chargeSelection_string.data()), central_or_shift, 0));
+    Form("jetToTauFakeRate_%s/leadJet", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms", 0));
   selJetHistManager_lead.bookHistograms(fs);
   JetHistManager selJetHistManager_sublead(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/subleadJet", chargeSelection_string.data()), central_or_shift, 1));
+    Form("jetToTauFakeRate_%s/subleadJet", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms", 1));
   selJetHistManager_sublead.bookHistograms(fs);
 
   std::vector<denominatorHistManagers*> denominators;
@@ -553,44 +555,44 @@ int main(int argc, char* argv[])
     double maxAbsEta = absEtaBins[idxEtaBin + 1];
 
     denominatorHistManagers* denominator = new denominatorHistManagers(
-      process_string, era, isMC, chargeSelection_string, hadTauSelection_denominator, minAbsEta, maxAbsEta, central_or_shift);
+      process_string, era_string, isMC, chargeSelection_string, hadTauSelection_denominator, minAbsEta, maxAbsEta, central_or_shift);
     denominator->bookHistograms(fs);
     denominators.push_back(denominator);
 
     for ( vstring::const_iterator hadTauSelection_numerator = hadTauSelections_numerator.begin();
 	  hadTauSelection_numerator != hadTauSelections_numerator.end(); ++hadTauSelection_numerator ) {
       numeratorSelector_and_HistManagers* numerator = new numeratorSelector_and_HistManagers(
-	process_string, era, isMC, chargeSelection_string, hadTauSelection_denominator, *hadTauSelection_numerator, minAbsEta, maxAbsEta, central_or_shift);
+	process_string, era_string, isMC, chargeSelection_string, hadTauSelection_denominator, *hadTauSelection_numerator, minAbsEta, maxAbsEta, central_or_shift);
       numerator->bookHistograms(fs);
       numerators.push_back(numerator);
     }
   }
 
   JetHistManager selBJet_looseHistManager(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/BJets_loose", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/BJets_loose", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
   selBJet_looseHistManager.bookHistograms(fs);
   JetHistManager selBJet_looseHistManager_lead(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/leadBJet_loose", chargeSelection_string.data()), central_or_shift, 0));
+    Form("jetToTauFakeRate_%s/leadBJet_loose", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms", 0));
   selBJet_looseHistManager_lead.bookHistograms(fs);
   JetHistManager selBJet_looseHistManager_sublead(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/subleadBJet_loose", chargeSelection_string.data()), central_or_shift, 1));
+    Form("jetToTauFakeRate_%s/subleadBJet_loose", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms", 1));
   selBJet_looseHistManager_sublead.bookHistograms(fs);
   JetHistManager selBJet_mediumHistManager(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/BJets_medium", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/BJets_medium", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
   selBJet_mediumHistManager.bookHistograms(fs);
 
   MEtHistManager selMEtHistManager(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/met", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/met", chargeSelection_string.data()), era_string, central_or_shift));
   selMEtHistManager.bookHistograms(fs);
   MEtFilterHistManager selMEtFilterHistManager(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/metFilters", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/metFilters", chargeSelection_string.data()), era_string, central_or_shift));
   selMEtFilterHistManager.bookHistograms(fs);
 
   EvtHistManager_jetToTauFakeRate selEvtHistManager(makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/evt", chargeSelection_string.data()), central_or_shift));
+    Form("jetToTauFakeRate_%s/evt", chargeSelection_string.data()), era_string, central_or_shift));
   selEvtHistManager.bookHistograms(fs);
   edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_string, 
-    Form("jetToTauFakeRate_%s/evtYield", chargeSelection_string.data()), central_or_shift);
+    Form("jetToTauFakeRate_%s/evtYield", chargeSelection_string.data()), era_string, central_or_shift);
   cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
   cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);
   EvtYieldHistManager selEvtYieldHistManager(cfg_EvtYieldHistManager_sel);
@@ -601,13 +603,13 @@ int main(int argc, char* argv[])
   LHEInfoHistManager* lheInfoHistManager = 0;
   if ( isMC ) {
     genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
-      Form("jetToTauFakeRate_%s/unbiased/genEvt", chargeSelection_string.data()), central_or_shift));
+      Form("jetToTauFakeRate_%s/unbiased/genEvt", chargeSelection_string.data()), era_string, central_or_shift));
     genEvtHistManager_beforeCuts->bookHistograms(fs);
     genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
-      Form("jetToTauFakeRate_%s/sel/genEvt", chargeSelection_string.data()), central_or_shift));
+      Form("jetToTauFakeRate_%s/sel/genEvt", chargeSelection_string.data()), era_string, central_or_shift));
     genEvtHistManager_afterCuts->bookHistograms(fs);
     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
-      Form("jetToTauFakeRate_%s/sel/lheInfo", chargeSelection_string.data()), central_or_shift));
+      Form("jetToTauFakeRate_%s/sel/lheInfo", chargeSelection_string.data()), era_string, central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
 
     if(eventWeightManager)

@@ -85,6 +85,7 @@ struct numerator_and_denominatorHistManagers
 {
   numerator_and_denominatorHistManagers(const std::string & process,
                                         bool isMC,
+					const std::string & era_string,
                                         const std::string & central_or_shift,
                                         const std::string & dir,
                                         int lepton_type,
@@ -95,6 +96,7 @@ struct numerator_and_denominatorHistManagers
                                         const std::string & subdir_suffix = "")
     : process_(process)
     , isMC_(isMC)
+    , era_string_(era_string)
     , central_or_shift_(central_or_shift)
     , lepton_type_(lepton_type)
     , minAbsEta_(minAbsEta)
@@ -188,7 +190,7 @@ struct numerator_and_denominatorHistManagers
 
     const auto mkCfg = [this](const std::string & process) -> edm::ParameterSet
     {
-      return makeHistManager_cfg(process, subdir_, central_or_shift_);
+      return makeHistManager_cfg(process, subdir_, era_string_, central_or_shift_, "minimalHistograms");
     };
 
     if(lepton_type_ == kElectron)
@@ -345,6 +347,7 @@ struct numerator_and_denominatorHistManagers
 private:
   std::string process_;
   bool isMC_;
+  std::string era_string_;
   std::string central_or_shift_;
 
   int lepton_type_;
@@ -668,7 +671,7 @@ main(int argc,
   inputTree->registerReader(metFilterReader);
 
 // --- Setting up the Met Filter Hist Manager ----
-  const edm::ParameterSet metFilterHistManagerCfg = makeHistManager_cfg(process_string, "LeptonFakeRate/met_filters", central_or_shift);
+  const edm::ParameterSet metFilterHistManagerCfg = makeHistManager_cfg(process_string, "LeptonFakeRate/met_filters", era_string, central_or_shift);
   MEtFilterHistManager * metFilterHistManager = new MEtFilterHistManager(metFilterHistManagerCfg);
   metFilterHistManager->bookHistograms(fs);
 
@@ -708,17 +711,17 @@ main(int argc,
   }
 
   const auto get_num_den_hist_managers =
-    [&process_string, isMC, &central_or_shift](const std::string & dir,
-                                               int lepton_type,
-                                               double minAbsEta = -1.,
-                                               double maxAbsEta = -1.,
-                                               double minPt = -1.,
-                                               double maxPt = -1.,
-                                               const std::string & subdir_suffix = "")
+    [&process_string, isMC, &era_string, &central_or_shift](const std::string & dir,
+							    int lepton_type,
+							    double minAbsEta = -1.,
+							    double maxAbsEta = -1.,
+							    double minPt = -1.,
+							    double maxPt = -1.,
+							    const std::string & subdir_suffix = "")
     -> numerator_and_denominatorHistManagers * const
   {
     return new numerator_and_denominatorHistManagers(
-      process_string, isMC, central_or_shift, Form("LeptonFakeRate/%s", dir.data()),
+      process_string, isMC, era_string, central_or_shift, Form("LeptonFakeRate/%s", dir.data()),
       lepton_type, minAbsEta, maxAbsEta, minPt, maxPt, subdir_suffix
     );
   };
@@ -849,10 +852,10 @@ main(int argc,
   LHEInfoHistManager * lheInfoHistManager          = nullptr;
   if(isMC)
   {
-    const auto getHistManagerCfg = [&process_string, &central_or_shift](const std::string & dir)
+    const auto getHistManagerCfg = [&process_string, &era_string, &central_or_shift](const std::string & dir)
       -> edm::ParameterSet
     {
-      return makeHistManager_cfg(process_string, Form("LeptonFakeRate/%s", dir.data()), central_or_shift);
+      return makeHistManager_cfg(process_string, Form("LeptonFakeRate/%s", dir.data()), era_string, central_or_shift);
     };
     genEvtHistManager_beforeCuts = new GenEvtHistManager(getHistManagerCfg("gen_unbiased/genEvt"));
     genEvtHistManager_beforeCuts->bookHistograms(fs);
