@@ -164,4 +164,8 @@ typedef ParticleCollectionGenMatcher<RecoHadTau> RecoHadTauCollectionGenMatcher;
 
 typedef ParticleCollectionGenMatcher<RecoJet> RecoJetCollectionGenMatcher;
 
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetBase.h" // CV: used for generator-level matching of subjets in boosted H->bb and boosted W->jj decays
+
+typedef ParticleCollectionGenMatcher<RecoJetBase> RecoJetBaseCollectionGenMatcher;
+
 #endif // tthAnalysis_HiggsToTauTau_ParticleCollectionGenMatcher_h
