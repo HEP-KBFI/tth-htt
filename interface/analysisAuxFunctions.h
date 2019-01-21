@@ -317,7 +317,7 @@ printCollection(const std::string & collection_name,
   std::cout << " (#" << collection_name << " = " << collection.size() << ")\n";
   for(std::size_t idx = 0; idx < collection.size(); ++idx)
   {
-    std::cout << collection_name << "  #" << idx << ":\n" << collection[idx];
+    std::cout << collection_name << " #" << idx << ": " << collection[idx] << "\n";
   }
 }
 
@@ -330,7 +330,7 @@ printCollection(const std::string & collection_name,
   std::cout << " (#" << collection_name << " = " << collection.size() << ")\n";
   for(std::size_t idx = 0; idx < collection.size(); ++idx)
   {
-    std::cout << collection_name << "  #" << idx << ":\n" << *(collection[idx]);
+    std::cout << collection_name << " #" << idx << ": " << *(collection[idx]) << "\n";
   }
 }
 
