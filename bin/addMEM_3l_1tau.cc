@@ -200,7 +200,7 @@ int main(int argc,
   tightHadTauSelector.set_min_antiElectron(-1);
   tightHadTauSelector.set_min_antiMuon(-1);
   // CV: lower thresholds on hadronic taus by 2 GeV
-  //     with respect to thresholds applied on analysis level (in analyze_2lss_1tau.cc)
+  //     with respect to thresholds applied on analysis level (in analyze_3l_1tau.cc)
   preselHadTauSelector.set_min_pt(18.);
   fakeableHadTauSelector.set_min_pt(18.);
   tightHadTauSelector.set_min_pt(18.);
@@ -308,7 +308,7 @@ int main(int argc,
       Form("n%s", branchName_memOutput_cos.data()), branchName_memOutput_cos
     );
     memWriter[central_or_shift]->setBranches(outputTree);
-    std::cout << "writing MEMOutput_2lss_1tau objects for systematic " << central_or_shift
+    std::cout << "writing MEMOutput_3l_1tau objects for systematic " << central_or_shift
               << " to branch = '" << branchName_memOutput_cos << "'\n";
   }
 
@@ -531,7 +531,7 @@ int main(int argc,
 
               if(isDEBUG)
               {
-                std::cout << "#memOutputs_2lss_1tau = " << memOutputs_3l_1tau[central_or_shift].size() << '\n';
+                std::cout << "#memOutputs_3l_1tau = " << memOutputs_3l_1tau[central_or_shift].size() << '\n';
               }
             } // central_or_shift
           } // selLepton_third_idx
