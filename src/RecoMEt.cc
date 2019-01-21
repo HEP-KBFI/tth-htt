@@ -21,6 +21,7 @@ RecoMEt::RecoMEt(Float_t pt,
   , covXY_(covXY)
   , covYY_(covYY)
   , p4_{default_.pt_, 0., default_.phi_, 0.}
+  , sumEt_(0.)
   , cov_(2,2)
 {
   update_cov();
@@ -33,6 +34,7 @@ RecoMEt::RecoMEt(const math::PtEtaPhiMLorentzVector & p4,
   , covXY_(static_cast<Float_t>(cov(0,1)))
   , covYY_(static_cast<Float_t>(cov(1,1)))
   , p4_(p4)
+  , sumEt_(0.)
   , cov_(cov)
 {}
 
@@ -47,6 +49,7 @@ RecoMEt::operator=(const RecoMEt & other)
   covXX_ = other.covXX_;
   covXY_ = other.covXY_;
   covYY_ = other.covYY_;
+  sumEt_ = other.sumEt_;
   update();
   return *this;
 }
@@ -85,6 +88,11 @@ RecoMEt::phi() const
   return static_cast<Double_t>(default_.phi_);
 }
 
+Double_t 
+RecoMEt::sumEt() const
+{
+  return static_cast<Double_t>(sumEt_);
+}
 Double_t
 RecoMEt::covXX() const
 {

@@ -54,6 +54,7 @@ protected:
 
   std::map<int, std::string> branchName_pt_;
   std::map<int, std::string> branchName_phi_;
+  std::string branchName_sumEt_;
   std::string branchName_covXX_;
   std::string branchName_covXY_;
   std::string branchName_covYY_;

@@ -33,6 +33,7 @@ RecoMEtWriter::setBranchNames()
     branchName_pt_[met_option]  = getBranchName_MEt(branchName_obj_, era_, met_option, true);
     branchName_phi_[met_option] = getBranchName_MEt(branchName_obj_, era_, met_option, false);
   }
+  branchName_sumEt_ = Form("%s_%s", branchName_obj_.data(), "sumEt");
   branchName_covXX_ = Form("%s_%s", branchName_obj_.data(), "covXX");
   branchName_covXY_ = Form("%s_%s", branchName_obj_.data(), "covXY");
   branchName_covYY_ = Form("%s_%s", branchName_obj_.data(), "covYY");
@@ -81,6 +82,7 @@ RecoMEtWriter::setBranches(TTree * tree)
       bai.setBranch(met_.systematics_[met_option].phi_, branchName_phi_[met_option]);
     }
   }
+  bai.setBranch(met_.sumEt_, branchName_sumEt_);
   bai.setBranch(met_.covXX_, branchName_covXX_);
   bai.setBranch(met_.covXY_, branchName_covXY_);
   bai.setBranch(met_.covYY_, branchName_covYY_);
