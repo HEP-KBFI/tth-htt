@@ -12,7 +12,7 @@ def createScript_sbatch(
     script_file_names,
     log_file_names    = None,
     working_dir       = None,
-    max_num_jobs      = 100000,
+    max_num_jobs      = 200000,
     cvmfs_error_log   = None,
     pool_id           = '',
     cmssw_base_dir    = None,
