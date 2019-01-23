@@ -178,7 +178,7 @@ class analyzeConfig(object):
             self.central_or_shifts = temp
         #------------------------------------------------------------------------
         self.max_files_per_job = max_files_per_job
-        self.max_num_jobs = 100000
+        self.max_num_jobs = 200000
         self.era = era
         self.use_lumi = use_lumi
         self.lumi = lumi
