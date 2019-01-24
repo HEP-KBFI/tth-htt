@@ -64,9 +64,6 @@ process.analyze_inclusive = cms.PSet(
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
 
-    cfgMEtFilter = cms.PSet(),
-    cfgEvtYieldHistManager = cms.PSet(),
-
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
     branchName_hadTaus = cms.string('Tau'),
@@ -81,16 +78,5 @@ process.analyze_inclusive = cms.PSet(
         tree = cms.string('syncTree'),
         output = cms.string('inclusive.root'),
         requireGenMatching = cms.bool(False),
-    ),
-    hasLHE = cms.bool(True),
-
-    evtWeight = cms.PSet(
-        apply = cms.bool(False),
-        histogramFile = cms.string(''),
-        histogramName = cms.string(''),
-        branchNameXaxis = cms.string(''),
-        branchNameYaxis = cms.string(''),
-        branchTypeXaxis = cms.string(''),
-        branchTypeYaxis = cms.string(''),
     ),
 )
