@@ -14,7 +14,8 @@ RecoJetReaderAK8::RecoJetReaderAK8(int era)
 {}
 
 RecoJetReaderAK8::RecoJetReaderAK8(int era,
-                                   const std::string & branchName_jet, const std::string & branchName_subjet,
+                                   const std::string & branchName_jet,
+                                   const std::string & branchName_subjet,
                                    bool readBtagCSV)
   : era_(era)
   , max_nJets_(32)
@@ -171,8 +172,8 @@ RecoJetReaderAK8::read() const
           gInstance->jet_mass_[idxJet]
         },
         gInstance->jet_msoftdrop_[idxJet],
-        ( subJet1 != nullptr ) ? new RecoSubjetAK8(*subJet1) : nullptr,
-        ( subJet2 != nullptr ) ? new RecoSubjetAK8(*subJet2) : nullptr,
+        subJet1 ? new RecoSubjetAK8(*subJet1) : nullptr,
+        subJet2 ? new RecoSubjetAK8(*subJet2) : nullptr,
         gInstance->jet_tau1_[idxJet],
         gInstance->jet_tau2_[idxJet],
         gInstance->jet_tau3_[idxJet],
