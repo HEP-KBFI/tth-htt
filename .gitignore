@@ -4,10 +4,9 @@ table.txt
 log.txt
 *.config
 *.creator
-*.creator.user
 *.files
 *.includes
-*.creator.user.3.2-pre1
+*.creator.user*
 .idea/
 .gdb_history
 *.o
