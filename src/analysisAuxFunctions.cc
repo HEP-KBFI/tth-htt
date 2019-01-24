@@ -7,6 +7,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // countLeptonGenMatches()
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // countHadTauGenMatches()
+#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 
 #include <TMath.h> // TMath::Sqrt
 
@@ -318,4 +319,15 @@ contains(const std::vector<std::string>& list_of_strings, const std::string& key
     }
   }
   return false;
+}
+
+std::string
+findFile(const std::string& fileName)
+{
+  LocalFileInPath inputFile(fileName);
+  if ( inputFile.fullPath().empty() ) {
+    std::cerr << "Error: Cannot find file = " << fileName;
+    assert(0);
+  }
+  return inputFile.fullPath();
 }

@@ -108,6 +108,7 @@ get_tau_id_wp_str(int wp_int);
  * @param Given pair of leptons
  * @return True, if first lepton has higher pT; false if second lepton has higher pT
  */
+
 bool
 isHigherPt(const Particle * particle1,
            const Particle * particle2);
@@ -400,5 +401,12 @@ countTrigObjs_passingL1(const std::vector<TrigObj>& trigObjs, int Id, double min
 
 bool
 contains(const std::vector<std::string>& list_of_strings, const std::string& keyWord);
+
+/**
+ * @brief Find file using FileInPatch mechanism
+ */
+
+std::string
+findFile(const std::string& fileName);
 
 #endif
