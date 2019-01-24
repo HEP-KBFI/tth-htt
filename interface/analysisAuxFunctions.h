@@ -310,6 +310,23 @@ mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
 }
 
 template <typename T,
+          typename = typename std::enable_if<std::is_base_of<Particle, T>::value>::type>
+std::vector<const T *>
+subtractCollections(const std::vector<const T *> & minuend,
+                    const std::vector<const T *> & subtrahend)
+{
+  std::vector<const T *> difference;
+  for(const T * element: minuend)
+  {
+    if(std::find(subtrahend.cbegin(), subtrahend.cend(), element) == subtrahend.cend())
+    {
+      difference.push_back(element);
+    }
+  }
+  return difference;
+}
+
+template <typename T,
           typename = typename std::enable_if<! std::is_pointer<T>::value>>
 void
 printCollection(const std::string & collection_name,
