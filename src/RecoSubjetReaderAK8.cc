@@ -123,7 +123,7 @@ RecoSubjetReaderAK8::read() const
           gInstance->jet_phi_[idxJet],
           gInstance->jet_mass_[idxJet]
         },
-        ( readBtagCSV_ ) ? gInstance->jet_BtagCSV_[idxJet] : -1.,
+        readBtagCSV_ ? gInstance->jet_BtagCSV_[idxJet] : -1.,
         static_cast<Int_t>(idxJet)
       });
     } // idxJet
