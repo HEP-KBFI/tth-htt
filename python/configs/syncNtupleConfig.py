@@ -64,14 +64,15 @@ class syncNtupleConfig:
         tau_id_wp,
         use_home,
         systematics_label,
+        project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau'),
+        file_pattern = 'tthAnalyzeRun_%s.py',
       ):
 
     self.running_method     = running_method
     self.dry_run            = dry_run
     self.check_output_files = check_output_files
     self.use_home           = use_home
-    project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau')
-    executable_pattern = os.path.join(project_dir, 'test', 'tthAnalyzeRun_%s.py')
+    executable_pattern = os.path.join(project_dir, 'test', file_pattern)
 
     self.hadd_script_dir_path = os.path.join(config_dir, DKEY_SCRIPTS, DKEY_SYNC)
     self.hadd_log_dir_path    = os.path.join(config_dir, DKEY_LOGS,    DKEY_SYNC,)
@@ -122,7 +123,7 @@ class syncNtupleConfig:
       channel_errlog   = os.path.join(config_dir, 'stderr_sync_%s.log' % channel)
       channel_outlog, channel_errlog = get_log_version((channel_outlog, channel_errlog))
 
-      cmd_args = common_args if channel != 'inclusive' else inclusive_args
+      cmd_args = common_args if 'inclusive' not in channel else inclusive_args
       if tau_id_wp and 'tau' in channel:
         additional_args += " -w %s" % tau_id_wp
 
