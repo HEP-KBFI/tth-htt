@@ -34,11 +34,21 @@ protected:
          int numBins,
          double min,
          double max);
-
+  TH1 *
+  book1D(TFileDirectory & dir,
+         const std::string & distribution,
+         int numBins,
+         double min,
+         double max);
   TH1 *
   book1D(TFileDirectory & dir,
          const std::string & distribution,
          const std::string & title,
+         int numBins,
+         float * binning);
+  TH1 *
+  book1D(TFileDirectory & dir,
+         const std::string & distribution,
          int numBins,
          float * binning);
 
@@ -48,11 +58,25 @@ protected:
          const std::string & title,
          int numBins,
          double * binning);
+  TH1 *
+  book1D(TFileDirectory & dir,
+         const std::string & distribution,
+         int numBins,
+         double * binning);
 
   TH2 *
   book2D(TFileDirectory & dir,
          const std::string & distribution,
          const std::string & title,
+         int numBinsX,
+         double xMin,
+         double xMax,
+         int numBinsY,
+         double yMin,
+         double yMax);
+  TH2 *
+  book2D(TFileDirectory & dir,
+         const std::string & distribution,
          int numBinsX,
          double xMin,
          double xMax,
@@ -68,11 +92,25 @@ protected:
          float * binningX,
          int numBinsY,
          float * binningY);
+  TH2 *
+  book2D(TFileDirectory & dir,
+         const std::string & distribution,
+         int numBinsX,
+         float * binningX,
+         int numBinsY,
+         float * binningY);
 
   TH2 *
   book2D(TFileDirectory & dir,
          const std::string & distribution,
          const std::string & title,
+         int numBinsX,
+         double * binningX,
+         int numBinsY,
+         double * binningY);
+  TH2 *
+  book2D(TFileDirectory & dir,
+         const std::string & distribution,
          int numBinsX,
          double * binningX,
          int numBinsY,

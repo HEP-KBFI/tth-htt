@@ -33,6 +33,17 @@ HistManagerBase::book1D(TFileDirectory & dir,
 TH1 *
 HistManagerBase::book1D(TFileDirectory & dir,
                         const std::string & distribution,
+                        int numBins,
+                        double min,
+                        double max)
+{
+  return this->book1D(dir, distribution, distribution, numBins, min, max);
+}
+
+
+TH1 *
+HistManagerBase::book1D(TFileDirectory & dir,
+                        const std::string & distribution,
                         const std::string & title,
                         int numBins,
                         float * binning)
@@ -46,6 +57,15 @@ HistManagerBase::book1D(TFileDirectory & dir,
   }
   histograms_.push_back(retVal);
   return retVal;
+}
+
+TH1 *
+HistManagerBase::book1D(TFileDirectory & dir,
+                        const std::string & distribution,
+                        int numBins,
+                        float * binning)
+{
+  return this->book1D(dir, distribution, distribution, numBins, binning);
 }
 
 TH1 *
@@ -69,6 +89,15 @@ HistManagerBase::book1D(TFileDirectory & dir,
     histograms_.push_back(retVal);
   }
   return retVal;
+}
+
+TH1 *
+HistManagerBase::book1D(TFileDirectory & dir,
+                        const std::string & distribution,
+                        int numBins,
+                        double * binning)
+{
+  return this->book1D(dir, distribution, distribution, numBins, binning);
 }
 
 TH2 *
@@ -101,6 +130,19 @@ HistManagerBase::book2D(TFileDirectory & dir,
 TH2 *
 HistManagerBase::book2D(TFileDirectory & dir,
                         const std::string & distribution,
+                        int numBinsX,
+                        double xMin,
+                        double xMax,
+                        int numBinsY,
+                        double yMin,
+                        double yMax)
+{
+  return this->book2D(dir, distribution, distribution, numBinsX, xMin, xMax, numBinsY, yMin, yMax);
+}
+
+TH2 *
+HistManagerBase::book2D(TFileDirectory & dir,
+                        const std::string & distribution,
                         const std::string & title,
                         int numBinsX,
                         float * binningX,
@@ -126,6 +168,17 @@ HistManagerBase::book2D(TFileDirectory & dir,
 TH2 *
 HistManagerBase::book2D(TFileDirectory & dir,
                         const std::string & distribution,
+                        int numBinsX,
+                        float * binningX,
+                        int numBinsY,
+                        float * binningY)
+{
+  return this->book2D(dir, distribution, numBinsX, binningX, numBinsY, binningY);
+}
+
+TH2 *
+HistManagerBase::book2D(TFileDirectory & dir,
+                        const std::string & distribution,
                         const std::string & title,
                         int numBinsX,
                         double * binningX,
@@ -146,6 +199,17 @@ HistManagerBase::book2D(TFileDirectory & dir,
     histograms_2d_.push_back(retVal);
   }
   return retVal;
+}
+
+TH2 *
+HistManagerBase::book2D(TFileDirectory & dir,
+                        const std::string & distribution,
+                        int numBinsX,
+                        double * binningX,
+                        int numBinsY,
+                        double * binningY)
+{
+  return this->book2D(dir, distribution, numBinsX, binningX, numBinsY, binningY);
 }
 
 bool 
