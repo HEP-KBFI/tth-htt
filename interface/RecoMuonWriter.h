@@ -36,7 +36,7 @@ public:
 
 protected:
  /**
-   * @brief Initialize names of branches to be read from tree
+   * @brief Initialize names of branches to be written to tree
    */
   void
   setBranchNames();
