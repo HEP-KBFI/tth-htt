@@ -116,7 +116,7 @@ RecoJetReaderAK8::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_tau2_, branchName_tau2_);
     bai.setBranchAddress(jet_tau3_, branchName_tau3_);
     bai.setBranchAddress(jet_tau4_, branchName_tau4_);
-    //bai.setBranchAddress(jet_jetId_, branchName_jetId_); // CV: commented-out for DEBUGging only !!
+    bai.setBranchAddress(jet_jetId_, branchName_jetId_);
   }
 }
 
