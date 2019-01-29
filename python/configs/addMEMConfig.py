@@ -77,9 +77,7 @@ class addMEMConfig:
         self.hadTauSelection = hadTauSelection
         self.hadTauDefinition = self.hadTauSelection.split('|')[0]
         self.hadTauWorkingPoint = self.hadTauSelection.split('|')[1]
-        self.maxPermutations_branchName = "maxPermutations_addMEM_%s_lep%s_tau%s_%s" % (
-            self.channel, self.leptonSelection, self.hadTauDefinition, self.hadTauWorkingPoint,
-        )
+        self.maxPermutations_branchName = None
         self.lowIntegrationPoints = lowIntegrationPoints
         logging.info(
             "Using %s number of integration points" % ("low" if self.lowIntegrationPoints else "full")
