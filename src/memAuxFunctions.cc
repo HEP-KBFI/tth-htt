@@ -9,10 +9,20 @@ get_memBranchName(const std::string & identifier,
                   const std::string & hadTauSelection,
                   const std::string & hadTauWorkingPoint)
 {
-  return Form(
-    "%s_%s_lep%s_tau%s_%s",
-    identifier.data(), channel.data(), lepSelection.data(), hadTauSelection.data(), hadTauWorkingPoint.data()
-  );
+  if ( hadTauSelection != "" )
+  {
+    return Form(
+      "%s_%s_lep%s_tau%s_%s",
+      identifier.data(), channel.data(), lepSelection.data(), hadTauSelection.data(), hadTauWorkingPoint.data()
+    );
+  }
+  else 
+  {
+    return Form(
+      "%s_%s_lep%s",
+      identifier.data(), channel.data(), lepSelection.data()
+    );
+  }
 }
 
 std::string
