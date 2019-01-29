@@ -164,9 +164,19 @@ MEMPermutationWriter::setBranchNames(TTree * tree,
         branches_[channel][leptonSelection_idx][hadTauSelection_idx] = {};
         for(const std::string & hadTauWorkingPoint: hadTauWorkingPoints_)
         {
-          const std::string maxPermutations_addMEM_str = get_memPermutationBranchName(
-            channel, leptonSelection_str, hadTauSelection_str, hadTauWorkingPoint
-          );
+	  std::string maxPermutations_addMEM_str;
+	  if ( minHadTauSelection_ > 0 ) 
+	  {
+            maxPermutations_addMEM_str = get_memPermutationBranchName(
+              channel, leptonSelection_str, hadTauSelection_str, hadTauWorkingPoint
+            );
+	  }
+	  else 
+	  {
+	    maxPermutations_addMEM_str = get_memPermutationBranchName(
+              channel, leptonSelection_str, "", ""
+            );
+	  }
           branches_[channel][leptonSelection_idx][hadTauSelection_idx][hadTauWorkingPoint] = 0;
           tree -> Branch(
             maxPermutations_addMEM_str.c_str(),
