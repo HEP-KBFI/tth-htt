@@ -20,7 +20,7 @@ public:
   ~RecoSubjetReaderAK8();
 
   /**
-   * @brief Call tree->SetBranchAddress for all RecoSubjetHTTv2 branches
+   * @brief Call tree->SetBranchAddress for all RecoSubjetAK8 branches
    */
   void
   setBranchAddresses(TTree * tree) override;
