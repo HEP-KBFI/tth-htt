@@ -16,7 +16,7 @@ public:
   ~MEMOutputReader_2lss_1tau();
 
   /**
-   * @brief Call tree->SetBranchAddress for all GenParticle branches
+   * @brief Call tree->SetBranchAddress for all MEMOutput_2lss_1tau branches
    */
   void
   setBranchAddresses(TTree * tree) override;
@@ -86,5 +86,5 @@ protected:
   static std::map<std::string, MEMOutputReader_2lss_1tau *> instances_;
 };
 
-#endif // tthAnalysis_HiggsToTauTau_GenParticleReader_h
+#endif // tthAnalysis_HiggsToTauTau_MEMOutputReader_2lss_1tau_h
 
