@@ -374,6 +374,7 @@ main(int argc,
   memPermutationWriter
     .addCondition("2lss_1tau", 2, 1)
     .addCondition("3l_1tau",   3, 1)
+    .addCondition("hh_bb2l",   3, 0) // CV: HH->bbWW dilepton channel
   ;
   memPermutationWriter.setBranchNames(outputTree, era, true);
 
