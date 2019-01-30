@@ -209,6 +209,10 @@ copyBranches_vectorType(TTree * inputTree,
       {
         outputTree_branch = new branchEntryTypeVIVI(branch_nElements, max_nElements, branchName, "I", branchName, "I");
       }
+      else if(branchType == "UInt_t")
+      {
+        outputTree_branch = new branchEntryTypeVUIVUI(branch_nElements, max_nElements, branchName, "i", branchName, "i");
+      }
       else if(branchType == "UChar_t")
       {
         outputTree_branch = new branchEntryTypeVCVC(branch_nElements, max_nElements, branchName, "b", branchName, "b");
