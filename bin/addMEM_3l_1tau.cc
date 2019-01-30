@@ -275,18 +275,22 @@ int main(int argc,
       Form("drop %s", eventInfoWriter->getBranchName_run().data()),
       Form("drop %s", eventInfoWriter->getBranchName_lumi().data()),
       Form("drop %s", eventInfoWriter->getBranchName_event().data()),
-      Form("drop n%s*", branchName_muons.data()),
+      Form("drop n%s", branchName_muons.data()),
+      Form("drop n%s_*", branchName_muons.data()),
       Form("drop %s_*", branchName_muons.data()),
-      Form("drop n%s*", branchName_electrons.data()),
+      Form("drop n%s", branchName_electrons.data()),
+      Form("drop n%s_*", branchName_electrons.data()),
       Form("drop %s_*", branchName_electrons.data()),
-      Form("drop n%s*", branchName_hadTaus.data()),
+      Form("drop n%s", branchName_hadTaus.data()),
+      Form("drop n%s_*", branchName_hadTaus.data()),
       Form("drop %s_*", branchName_hadTaus.data()),
-      Form("drop n%s*", branchName_jets.data()),
+      Form("drop n%s", branchName_jets.data()),
+      Form("drop n%s_*", branchName_jets.data()),
       Form("drop %s_*", branchName_jets.data()),
-      Form("drop *%s*", branchName_met.data()),
+      Form("drop %s_*", branchName_met.data())
     };
     std::vector<outputCommandEntry> outputCommands = getOutputCommands(outputCommands_string);
-    std::map<std::string, bool>     isBranchToKeep = getBranchesToKeep(inputTree, outputCommands);
+    std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree, outputCommands);
     copyBranches_singleType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
     copyBranches_vectorType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
   }
