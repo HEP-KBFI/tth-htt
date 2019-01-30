@@ -51,10 +51,14 @@ class addMEMConfig_3l_1tau(addMEMConfig):
       pool_id                  = pool_id,
     )
 
+    self.template_dir = os.path.join(
+      os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'test', 'templates'
+    )
+    logging.info("Templates directory is: {templateDir}".format(templateDir = self.template_dir))
+    self.cfgFile_addMEM_original = os.path.join(self.template_dir, "addMEM_3l_1tau_cfg.py")
     self.maxPermutations_branchName = "maxPermutations_addMEM_%s_lep%s_tau%s_%s" % (
       self.channel, self.leptonSelection, self.hadTauDefinition, self.hadTauWorkingPoint,
     )
-    self.cfgFile_addMEM_original = os.path.join(self.template_dir, "addMEM_3l_1tau_cfg.py")
     self.isDebug = isDebug
     self.central_or_shift = central_or_shift
 

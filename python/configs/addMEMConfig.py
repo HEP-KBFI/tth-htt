@@ -101,10 +101,6 @@ class addMEMConfig:
 
         self.workingDir = os.getcwd()
         logging.info("Working directory is: {workingDir}".format(workingDir = self.workingDir))
-        self.template_dir = os.path.join(
-            os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'test', 'templates'
-        )
-        logging.info("Templates directory is: {templateDir}".format(templateDir = self.template_dir))
 
         for dirPath in [self.outputDir, self.cfgDir]:
           create_if_not_exists(dirPath)
@@ -128,6 +124,7 @@ class addMEMConfig:
         self.hadd_records = {}
         self.filesToClean = []
 
+        del self.samples['sum_events']
         for sample_name, sample_info in self.samples.items():
             if not sample_info["use_it"] or \
                 sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
