@@ -374,7 +374,9 @@ main(int argc,
   memPermutationWriter
     .addCondition("2lss_1tau", 2, 1)
     .addCondition("3l_1tau",   3, 1)
-    .addCondition("hh_bb2l",   3, 0) // CV: HH->bbWW dilepton channel
+    .addCondition("3l",        3, 0)
+    .addCondition("hh_bb2l",   2, 0) // CV: HH->bbWW dilepton channel
+    .addCondition("hh_bb1l",   1, 0) // CV: HH->bbWW single lepton channel
   ;
   memPermutationWriter.setBranchNames(outputTree, era, true);
 
