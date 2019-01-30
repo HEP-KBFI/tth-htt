@@ -1,5 +1,5 @@
 
-samples_to_stitch_2017 = [
+samples_to_stitch_DYJets_2017 = [
   {
     'inclusive' : {
       'samples'   : [ 'DYJetsToLL_M-50_LO', 'DYJetsToLL_M-50_LO_ext1' ],
@@ -34,7 +34,10 @@ samples_to_stitch_2017 = [
       { 'value' : [ 400.,    600. ], 'samples' : [ 'DYJetsToLL_M-4to50_HT-400to600', 'DYJetsToLL_M-4to50_HT-400to600_ext1' ] },
       { 'value' : [ 600., 100000. ], 'samples' : [ 'DYJetsToLL_M-4to50_HT-600toInf',                                       ] },
     ],
-  },
+  }
+]
+
+samples_to_stitch_WJets_2017 = [
   {
     'inclusive' : {
       'samples'   : [ 'WJetsToLNu', 'WJetsToLNu_ext' ],
@@ -102,6 +105,10 @@ samples_to_stitch_2017 = [
     ],
   },
 ]
+
+samples_to_stitch_2017 = []
+samples_to_stitch_2017.extend(samples_to_stitch_DYJets_2017)
+samples_to_stitch_2017.extend(samples_to_stitch_WJets_2017)
 
 def get_branch_type(branch_name):
   if not branch_name:
