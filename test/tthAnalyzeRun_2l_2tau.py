@@ -65,7 +65,7 @@ if mode == "default":
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_preselected import samples_2016 as samples
     elif era == "2017":
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017 as samples
-    elif era == "2019":
+    elif era == "2018":
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_preselected import samples_2018 as samples
     else:
       raise ValueError("Invalid era: %s" % era)
