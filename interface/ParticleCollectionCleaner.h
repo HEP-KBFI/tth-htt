@@ -78,6 +78,10 @@ typedef ParticleCollectionCleaner<RecoElectron> RecoElectronCollectionCleaner;
 
 typedef ParticleCollectionCleaner<RecoMuon> RecoMuonCollectionCleaner;
 
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h"
+
+typedef ParticleCollectionCleaner<GenLepton> GenLeptonCollectionCleaner;
+
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"
 
 typedef ParticleCollectionCleaner<RecoHadTau> RecoHadTauCollectionCleaner;
@@ -85,6 +89,10 @@ typedef ParticleCollectionCleaner<RecoHadTau> RecoHadTauCollectionCleaner;
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
 
 typedef ParticleCollectionCleaner<RecoJet> RecoJetCollectionCleaner;
+
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h"
+
+typedef ParticleCollectionCleaner<GenJet> GenJetCollectionCleaner;
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h"
 

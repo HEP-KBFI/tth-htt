@@ -24,6 +24,18 @@ GenLepton::GenLepton(const math::PtEtaPhiMLorentzVector & p4,
   : GenParticle(p4, pdgId, -pdgId / std::abs(pdgId))
 {}
 
+bool
+GenLepton::is_electron() const
+{
+  return (std::abs(pdgId_) == 11);
+}
+
+bool
+GenLepton::is_muon() const
+{
+  return (std::abs(pdgId_) == 13);
+}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const GenLepton & lepton)

@@ -23,6 +23,20 @@ public:
             Int_t pdgId);
 
   virtual ~GenLepton() {}
+
+  /**
+   * @brief Checks whether a given lepton is an electron by its PDG id
+   * @return True if it is an electron; false otherwise
+   */
+  virtual bool
+  is_electron() const;
+
+  /**
+   * @brief Checks whether a given lepton is a muon by its PDG id
+   * @return True if it is a muon; false otherwise
+   */
+  virtual bool
+  is_muon() const;
 };
 
 std::ostream &
