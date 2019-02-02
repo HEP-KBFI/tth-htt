@@ -240,7 +240,9 @@ class analyzeConfig(object):
             # loop over the inclusive samples
             inclusive_samples = []
             for inclusive_sample in samples_to_stitch_entry['inclusive']['samples']:
-              assert(inclusive_sample in samples_lut)
+              if inclusive_sample not in samples_lut:
+                logging.error("Stitched inclusive sample %s not found in the sample dictionary" % inclusive_sample)
+                continue
               if not self.samples[samples_lut[inclusive_sample]]['use_it']:
                 logging.warning('Sample {} not enabled'.format(inclusive_sample))
                 continue
@@ -253,7 +255,9 @@ class analyzeConfig(object):
                 for binned_sample in binned_samples['samples']:
                   # if at least one sample is not enabled, disable all other samples that
                   # are binned by the same variable
-                  assert(binned_sample in samples_lut)
+                  if binned_sample not in samples_lut:
+                    logging.error("Stitched binned sample %s not found in the sample dictionary" % binned_sample)
+                    continue
                   if not self.samples[samples_lut[binned_sample]]['use_it']:
                     logging.warning('Sample %s not used' % binned_sample)
                   all_present[binning_key] &= self.samples[samples_lut[binned_sample]]['use_it']
@@ -297,6 +301,8 @@ class analyzeConfig(object):
             inclusive_samples_disabled = False
             for inclusive_sample in samples_to_stitch_entry['inclusive']['samples']:
               assert(inclusive_sample not in self.stitching_args)
+              if inclusive_sample not in samples_lut:
+                continue
               if not self.samples[samples_lut[inclusive_sample]]['use_it']:
                 inclusive_samples_disabled = True
               self.stitching_args[inclusive_sample] = {
