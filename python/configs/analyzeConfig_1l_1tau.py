@@ -395,7 +395,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
               for jobId in inputFileList.keys():
                 if central_or_shift != "central":
                   isFR_shape_shift = (central_or_shift in systematics.FR_all)
-                  if not (lepton_and_hadTau_selection == "Fakeable" and isFR_shape_shift) or lepton_and_hadTau_selection == "Tight":
+                  if not ((lepton_and_hadTau_selection == "Fakeable" and isFR_shape_shift) or lepton_and_hadTau_selection == "Tight"):
                     continue
                   if not is_mc and not isFR_shape_shift:
                     continue
