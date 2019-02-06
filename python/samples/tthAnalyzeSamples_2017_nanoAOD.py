@@ -22313,6 +22313,80 @@ samples_2017["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-94X_
   ]),
 ])
 
+samples_2017["/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "tHq"),
+  ("process_name_specific",           "THQ_ctcvcp"),
+  ("nof_files",                       223),
+  ("nof_db_files",                    258),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 9726994),
+  ("nof_db_events",                   9918994),
+  ("fsize_local",                     23629650053), # 23.63GB, avg file size 105.96MB
+  ("fsize_db",                        569542482347), # 569.54GB, avg file size 2.21GB
+  ("use_it",                          False),
+  ("xsection",                        0.07096),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/acarvalh/2019Feb04b/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/2019Feb04b_THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190204_130954"),
+        ("selection", "*"),
+        ("blacklist", [133, 134, 152, 216]),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "tHW"),
+  ("process_name_specific",           "THW_ctcvcp"),
+  ("nof_files",                       106),
+  ("nof_db_files",                    172),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 4289999),
+  ("nof_db_events",                   4719999),
+  ("fsize_local",                     12452228891), # 12.45GB, avg file size 117.47MB
+  ("fsize_db",                        308444472684), # 308.44GB, avg file size 1.79GB
+  ("use_it",                          False),
+  ("xsection",                        0.01561),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/acarvalh/2019Feb04b/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/2019Feb04b_THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190204_131239"),
+        ("selection", "*"),
+        ("blacklist", [8, 9, 20, 24, 40, 83, 84, 85, 88]),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
 samples_2017["/THQ_4f_Hincl_13TeV_madgraph_pythia8_Fall17/private/USER"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "tHq"),
