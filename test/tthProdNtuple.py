@@ -254,7 +254,7 @@ else:
     'minNumBJets_medium'        : -1,
     'maxNumBJets_loose'         : -1,
     'maxNumBJets_medium'        : -1,
-    'applyJetEtaCut'            : (not mode.startswith('hh')), # disable the cut for HH analysis
+    'applyJetEtaCut'            : False,
   }
   leptonSelection = 'Loose'
   hadTauSelection = 'Loose'
