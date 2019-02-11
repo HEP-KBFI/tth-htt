@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-12-14 11:35:38 with the following command:
+# file generated at 2019-02-06 08:47:02 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017_post.txt -Z zeroes.txt -z zombies.txt -N samples_2017 -E 2017 -g tthAnalyzeSamples_2017.py -o python/samples -M
 
 samples_2017 = OD()
@@ -22796,6 +22796,98 @@ samples_2017["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-94X_
     [
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2018Nov24_woPresel_nom_all/ntuples/WWTo2L2Nu_DoubleScattering_herwig"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "tHq"),
+  ("process_name_specific",           "THQ_ctcvcp"),
+  ("nof_files",                       22),
+  ("nof_db_files",                    258),
+  ("nof_events",                      {
+    'Count'                                  : [      9726994, ],
+    'CountFullWeighted'                      : [       697700,       697602,       697884, ],
+    'CountWeighted'                          : [       697700,       697602,       697884, ],
+    'CountFullWeightedNoPU'                  : [       697636, ],
+    'CountWeightedNoPU'                      : [       697636, ],
+    'CountWeightedLHEWeightScale'            : [       884410,       798452,       725806,       772878,       697693,       634198,       687219,       620335,       563857, ],
+    'CountWeightedLHEWeightScaleNoPU'        : [       884307,       798381,       725759,       772785,       697631,       634154,       687135,       620275,       563817, ],
+    'CountFullWeightedLHEWeightScale'        : [       884410,       798452,       725806,       772878,       697693,       634198,       687219,       620335,       563857, ],
+    'CountFullWeightedLHEWeightScaleNoPU'    : [       884307,       798381,       725759,       772785,       697631,       634154,       687135,       620275,       563817, ],
+  }),
+  ("nof_tree_events",                 9726994),
+  ("nof_db_events",                   9918994),
+  ("fsize_local",                     29334904363), # 29.33GB, avg file size 1.33GB
+  ("fsize_db",                        569542482347), # 569.54GB, avg file size 2.21GB
+  ("use_it",                          False),
+  ("xsection",                        0.07096),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Feb05_woPresel_nom_all/ntuples/THQ_ctcvcp"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_from_superset",           [
+    # not computed
+  ]),
+  ("missing_hlt_paths",               [
+
+  ]),
+  ("hlt_paths",               [
+    # not computed
+  ]),
+])
+
+samples_2017["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "tHW"),
+  ("process_name_specific",           "THW_ctcvcp"),
+  ("nof_files",                       10),
+  ("nof_db_files",                    172),
+  ("nof_events",                      {
+    'Count'                                  : [      4289999, ],
+    'CountFullWeighted'                      : [       473212,       473185,       473201, ],
+    'CountWeighted'                          : [       473212,       473185,       473201, ],
+    'CountFullWeightedNoPU'                  : [       473027, ],
+    'CountWeightedNoPU'                      : [       473027, ],
+    'CountWeightedLHEWeightScale'            : [       453625,       538313,       585661,       398757,       473212,       514822,       355987,       422451,       459602, ],
+    'CountWeightedLHEWeightScaleNoPU'        : [       453444,       538103,       585436,       398597,       473027,       514624,       355844,       422285,       459426, ],
+    'CountFullWeightedLHEWeightScale'        : [       453625,       538313,       585661,       398757,       473212,       514822,       355987,       422451,       459602, ],
+    'CountFullWeightedLHEWeightScaleNoPU'    : [       453444,       538103,       585436,       398597,       473027,       514624,       355844,       422285,       459426, ],
+  }),
+  ("nof_tree_events",                 4289999),
+  ("nof_db_events",                   4719999),
+  ("fsize_local",                     15732932469), # 15.73GB, avg file size 1.57GB
+  ("fsize_db",                        308444472684), # 308.44GB, avg file size 1.79GB
+  ("use_it",                          False),
+  ("xsection",                        0.01561),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Feb05_woPresel_nom_all/ntuples/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),

@@ -729,6 +729,8 @@ class analyzeConfig(object):
             jobOptions_expr = ""
             if type(jobOptions_val) == bool:
                 jobOptions_expr = "cms.bool(%s)"
+            elif type(jobOptions_val) == int:
+                jobOptions_expr = "cms.int32(%s)"
             elif type(jobOptions_val) == float:
                 jobOptions_expr = "cms.double(%s)"
             elif type(jobOptions_val) == str:
