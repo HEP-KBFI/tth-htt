@@ -547,7 +547,8 @@ class analyzeConfig(object):
             if self.era == "2016":
                 self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
             elif self.era == "2017":
-                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
+#                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
             elif self.era == "2018":
                 raise ValueError("Implement me!")
             else:
@@ -728,6 +729,8 @@ class analyzeConfig(object):
             jobOptions_expr = ""
             if type(jobOptions_val) == bool:
                 jobOptions_expr = "cms.bool(%s)"
+            elif type(jobOptions_val) == int:
+                jobOptions_expr = "cms.int32(%s)"
             elif type(jobOptions_val) == float:
                 jobOptions_expr = "cms.double(%s)"
             elif type(jobOptions_val) == str:
