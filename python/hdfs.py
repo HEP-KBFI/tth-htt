@@ -148,9 +148,6 @@ class _hdfs:
     self.lib = ctypes.cdll.LoadLibrary(lib_path)
     self.lib.hdfsListDirectory.restype = ctypes.POINTER(_hdfs.hdfsFileInfo)
     self.lib.hdfsGetPathInfo.restype   = ctypes.POINTER(_hdfs.hdfsFileInfo)
-    self.lib.hdfsGetDefaultBlockSize   = ctypes.c_int64
-    self.lib.hdfsGetCapacity           = ctypes.c_int64
-    self.lib.hdfsGetUsed               = ctypes.c_int64
     self.lib.hdfsDelete                = ctypes.c_int32
     self.lib.hdfsCreateDirectory       = ctypes.c_int32
     self.lib.hdfsChown                 = ctypes.c_int32
@@ -218,15 +215,6 @@ class _hdfs:
       if return_objs:
         raise hdfsException("Cannot return HDFS objects for path: %s" % path)
       return os.listdir(path)
-
-  def get_default_block_size(self):
-    return self.lib.hdfsGetDefaultBlockSize(self.fs)
-
-  def get_capacity(self):
-    return self.lib.hdfsGetCapacity(self.fs)
-
-  def get_used(self):
-    return self.lib.hdfsGetUsed(self.fs)
 
   def exists(self, path):
     is_local = path.startswith('/hdfs')
@@ -303,11 +291,11 @@ class _hdfs:
         return -1
       return 0
     elif is_local_src and not is_local_dst:
-      return self.lib.hdfsCopy(self.lfs, src_defused, self.fs, dst_defused)
+      return self.lib.hdfsCopy(self.lfs, src_defused, self.fs, dst_defused).value
     elif not is_local_src and is_local_dst:
-      return self.lib.hdfsCopy(self.fs, src_defused, self.lfs, dst_defused)
+      return self.lib.hdfsCopy(self.fs, src_defused, self.lfs, dst_defused).value
     elif not is_local_src and not is_local_dst:
-      return self.lib.hdfsCopy(self.fs, src_defused, self.fs, dst_defused)
+      return self.lib.hdfsCopy(self.fs, src_defused, self.fs, dst_defused).value
     else:
       raise RuntimeError("Impossible error")
 
@@ -323,18 +311,18 @@ class _hdfs:
         return -1
       return 0
     elif is_local_src and not is_local_dst:
-      return self.lib.hdfsMove(self.lfs, src_defused, self.fs, dst_defused)
+      return self.lib.hdfsMove(self.lfs, src_defused, self.fs, dst_defused).value
     elif not is_local_src and is_local_dst:
-      return self.lib.hdfsMove(self.fs, src_defused, self.lfs, dst_defused)
+      return self.lib.hdfsMove(self.fs, src_defused, self.lfs, dst_defused).value
     elif not is_local_src and not is_local_dst:
-      return self.lib.hdfsRename(self.fs, src_defused, dst_defused)
+      return self.lib.hdfsRename(self.fs, src_defused, dst_defused).value
     else:
       raise RuntimeError("Impossible error")
 
   def remove(self, path):
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
-      return self.lib.hdfsDelete(self.fs, path_defused)
+      return self.lib.hdfsDelete(self.fs, path_defused).value
     else:
       try:
         shutil.rmtree(path)
@@ -345,7 +333,7 @@ class _hdfs:
   def mkdirs(self, path):
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
-      return self.lib.hdfsCreateDirectory(self.fs, path_defused)
+      return self.lib.hdfsCreateDirectory(self.fs, path_defused).value
     else:
       try:
         os.makedirs(path)
@@ -358,7 +346,7 @@ class _hdfs:
       raise hdfsException("Missing owner and group name")
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
-      return self.lib.hdfsChown(self.fs, path_defused, owner, group)
+      return self.lib.hdfsChown(self.fs, path_defused, owner, group).value
     else:
       uid = pwd.getpwnam(owner).pw_uid
       gid = grp.getgrnam(group).gr_gid
@@ -372,9 +360,10 @@ class _hdfs:
     if not (0 <= int(permissions) <= 777):
       raise hdfsException("Invalid permission code: %s" % str(permissions))
     permissions_oct = int(str(permissions), 8)
+
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
-      return self.lib.hdfsChmod(self.fs, path_defused, permissions_oct)
+      return self.lib.hdfsChmod(self.fs, path_defused, permissions_oct).value
     else:
       try:
         os.chmod(path, permissions_oct)
