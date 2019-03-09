@@ -162,7 +162,7 @@ class sbatchManager:
         self.max_pool_id_length = 256
         if not pool_id:
             raise ValueError("Parameter 'pool_id' not specified!")
-        if len(pool_id) > self.max_pool_id_length:
+        if len(str(pool_id)) > self.max_pool_id_length:
             raise ValueError(
                 "Parameter 'pool_id' exceeds maximum length of %i characters!" % self.max_pool_id_length
             )
@@ -347,9 +347,18 @@ class sbatchManager:
         # Is a valid job ID
         return job_id
 
-    def submitJob(self, inputFiles, executable, command_line_parameter, outputFilePath, outputFiles,
-                  scriptFile, logFile = None, skipIfOutputFileExists = False,
-                  job_template_file = 'sbatch-node.sh.template', nof_submissions = 0):
+    def submitJob(self,
+            inputFiles,
+            executable,
+            command_line_parameter,
+            outputFilePath,
+            outputFiles,
+            scriptFile,
+            logFile                = None,
+            skipIfOutputFileExists = False,
+            job_template_file      = 'sbatch-node.sh.template',
+            nof_submissions        = 0,
+          ):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
         """
 

@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager, sbatchManagerRuntimeError
-import os, unittest, shutil, uuid
+
+import os
+import unittest
+import shutil
+import uuid
 
 '''Tests sbatchManager submission and failure detection with a set of jobs
 
@@ -27,8 +31,6 @@ then the tests passed.
 
 # use a directory which is universally available by cluster nodes and able to support writing in append mode, i.e. /home
 testDir = os.path.expanduser('~/test_bulk_sbatch')
-if os.path.isdir(testDir):
-  raise ValueError("Directory '%s' already exists; pick another" % testDir)
 
 class SbatchBulkTestCase(unittest.TestCase):
 
@@ -50,13 +52,14 @@ class SbatchBulkTestCase(unittest.TestCase):
       },
       'negative': {
         'name': 'dummy_negative_%d',
-        'cmd': 'python -c raise "ValueError(\"123\")"',
+        'cmd': 'python -c raise "ValueError(\'123\')"',
       },
     }
 
   def setUp(self):
     self.manager = sbatchManager(pool_id = self.pool_id, verbose = self.verbose)
     self.manager.setWorkingDir(self.workingDir)
+    self.manager.setLogFileDir(testDir)
     self.manager.queue          = self.queue
     self.manager.poll_interval  = self.poll_interval
     self.manager.log_completion = self.log_completion
@@ -68,7 +71,14 @@ class SbatchBulkTestCase(unittest.TestCase):
   def testPositive(self):
     testArgs = self.testArguments['positive']
     for i in range(1, self.nof_jobs + 1):
-      self.manager.submit_job_version2(testArgs['name'] % i, testArgs['cmd'], testDir)
+      self.manager.submitJob(
+        inputFiles             = [],
+        executable             = testArgs['cmd'],
+        command_line_parameter = "",
+        outputFilePath         = "",
+        outputFiles            = [],
+        scriptFile             = os.path.join(testDir, testArgs['name'] % i),
+      )
     try:
       # true positive
       self.manager.waitForJobs()
@@ -79,10 +89,25 @@ class SbatchBulkTestCase(unittest.TestCase):
   def testNegative(self):
     testArgs = self.testArguments['positive']
     for i in range(1, self.nof_jobs):
+      self.manager.submitJob(
+        inputFiles             = [],
+        executable             = testArgs['cmd'],
+        command_line_parameter = "",
+        outputFilePath         = "",
+        outputFiles            = [],
+        scriptFile             = os.path.join(testDir, testArgs['name'] % i),
+      )
       self.manager.submit_job_version2(testArgs['name'] % i, testArgs['cmd'], testDir)
     # fail the last job
     testArgs = self.testArguments['negative']
-    self.manager.submit_job_version2(testArgs['name'] % self.nof_jobs, testArgs['cmd'], testDir)
+    self.manager.submitJob(
+      inputFiles             = [],
+      executable             = testArgs['cmd'],
+      command_line_parameter = "",
+      outputFilePath         = "",
+      outputFiles            = [],
+      scriptFile             = os.path.join(testDir, testArgs['name'] % self.nof_jobs),
+    )
     # if passes, true negative; otherwise true positive
     self.assertRaises(sbatchManagerRuntimeError, self.manager.waitForJobs)
 
@@ -91,6 +116,9 @@ def suite():
   testSuite = unittest.TestSuite()
   testSuite.addTest(unittest.makeSuite(SbatchBulkTestCase))
   return testSuite
+
+if not os.path.isdir(testDir):
+  os.makedirs(testDir)
 
 suite_instance = suite()
 runner = unittest.TextTestRunner()
