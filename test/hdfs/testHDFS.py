@@ -15,9 +15,8 @@ from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 dir_str = os.path.join('/hdfs/local/%s' % getpass.getuser())
 dir_obj = hdfs.get_path_info(dir_str)
-print(dir_obj.__dict__)
 
-dirs = hdfs.list_directory(dir_str)
+dirs = hdfs.list_dir(dir_str, True)
 for d in dirs:
   print(d.name)
 

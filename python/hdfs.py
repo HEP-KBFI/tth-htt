@@ -9,13 +9,7 @@ import pwd
 import grp
 import shutil
 
-#NOTE works only when the following is done:
-# /usr/lib/hadoop/libexec/hadoop-config.sh
-# export CLASSPATH=`hadoop classpath --glob`
-# for j in $(ls /usr/lib/hadoop/client/*.jar); do export CLASSPATH=$CLASSPATH:$j; done
-#
 #TODO
-# - set necessary environment variables at runtime
 # - implement unit tests
 
 try:
@@ -91,12 +85,70 @@ class _hdfs:
     self.nn = nn
     self.port = port
 
-    self.lib_path = "/usr/lib64/libhdfs.so"
-    if not os.path.isfile(self.lib_path):
-      raise _hdfs.hdfsException("No such file: %s" % self.lib_path)
+    logging.debug("Setting environment variables")
 
-    logging.debug("Loading {lib}".format(lib = self.lib_path))
-    self.lib = ctypes.cdll.LoadLibrary(self.lib_path)
+    hadoop_prefix = '/usr/lib/hadoop'
+    library_path  = os.path.join(hadoop_prefix, 'lib/native')
+    log_dir       = os.path.join(hadoop_prefix, 'logs')
+    log_file      = 'hadoop.log'
+    home_dir      = hadoop_prefix
+    policy_file   = 'hadoop-policy.xml'
+
+    id_str          = ''
+    log_level       = 'INFO'
+    preferIPv4Stack = True
+
+    heapsize         = 20480
+    memsize          = 2048
+    cachesize        = 512
+    malloc_arena_max = 4
+
+    # source /usr/lib/hadoop/libexec/hadoop-config.sh && unset HADOOP_HDFS_HOME
+    os.environ['LIBHDFS_OPTS']     = '-Xmx{}m'.format(heapsize)
+    os.environ['HADOOP_CONF_DIR']  = '/etc/hadoop/conf'
+    os.environ['MALLOC_ARENA_MAX'] = str(malloc_arena_max)
+    os.environ['HADOOP_HEAPSIZE']  = str(heapsize)
+    os.environ['HADOOP_PREFIX']    = '/usr/lib/hadoop'
+    os.environ['HADOOP_OPTS']      = '-Xms{}m '.format(memsize)                           + \
+                                     '-XX:ReservedCodeCacheSize={}m '.format(cachesize)   + \
+                                     '-Dhadoop.log.dir={} '.format(log_dir)               + \
+                                     '-Dhadoop.log.file={} '.format(log_file)             + \
+                                     '-Dhadoop.home.dir={} '.format(home_dir)             + \
+                                     '-Dhadoop.id.str={} '.format(id_str)                 + \
+                                     '-Dhadoop.root.logger={},console '.format(log_level) + \
+                                     '-Dhadoop.policy.file={} '.format(policy_file)       + \
+                                     '-Djava.library.path={} '.format(library_path)       + \
+                                     '-Djava.net.preferIPv4Stack={}'.format('true' if preferIPv4Stack else 'false')
+    if not os.environ['LD_LIBRARY_PATH'].endswith(':'):
+      os.environ['LD_LIBRARY_PATH'] += ':'
+    os.environ['LD_LIBRARY_PATH'] += library_path
+
+    # hadoop classpath --glob
+    classpath = [
+      "/etc/hadoop/conf",
+      "/usr/lib/hadoop",
+      "/usr/lib/hadoop/lib",
+      "/usr/lib/hadoop-hdfs",
+      "/usr/lib/hadoop-hdfs/lib",
+    ]
+    client_library = "/usr/lib/hadoop/client"
+    classpath.extend(
+      map(
+        lambda jarfile: os.path.join(client_library, jarfile),
+        filter(
+          lambda filename: filename.endswith('.jar'),
+          os.listdir(client_library)
+        )
+      )
+    )
+    os.environ['CLASSPATH'] = ':'.join(classpath)
+
+    lib_path = "/usr/lib64/libhdfs.so"
+    if not os.path.isfile(lib_path):
+      raise _hdfs.hdfsException("No such file: %s" % lib_path)
+
+    logging.debug("Loading {lib}".format(lib = lib_path))
+    self.lib = ctypes.cdll.LoadLibrary(lib_path)
     self.lib.hdfsListDirectory.restype = ctypes.POINTER(_hdfs.hdfsFileInfo)
     self.lib.hdfsGetPathInfo.restype   = ctypes.POINTER(_hdfs.hdfsFileInfo)
     self.lib.hdfsGetDefaultBlockSize   = ctypes.c_int64
@@ -145,7 +197,7 @@ class _hdfs:
     self.lib.hdfsFreeFileInfo(path_info, 1)
     return path_obj
 
-  def list_dir(self, path):
+  def list_dir(self, path, return_objs = False):
     if path.startswith('/hdfs'):
       path_obj = self.get_path_info(path) if type(path) == str else path
       nof_entries = ctypes.c_int()
@@ -158,11 +210,13 @@ class _hdfs:
         void_p  = ctypes.cast(dir_ptr, ctypes.c_voidp).value + idx * self.hdfsFileInfo_size
         cur_ptr = ctypes.cast(void_p, ctypes.POINTER(_hdfs.hdfsFileInfo))
         path_obj = _hdfs.info(cur_ptr)
-        entries.append(path_obj.name)
+        entries.append(path_obj if return_objs else path_obj.name)
       self.lib.hdfsFreeFileInfo(dir_ptr, nof_entries)
 
       return entries
     else:
+      if return_objs:
+        raise _hdfs.hdfsException("Cannot return HDFS objects for path: %s" % path)
       return os.listdir(path)
 
   def get_default_block_size(self):
