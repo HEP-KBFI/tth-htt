@@ -30,18 +30,14 @@ public:
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
-                 //double mvaOutput_plainKin_ttV,
-                 //double mvaOutput_plainKin_tt,
-                 //double mvaOutput_plainKin_1B_VT,
-                 //double mvaOutput_HTT_SUM_VT,
-                 //double mvaOutput_plainKin_SUM_VT,
                  double mTauTauVis,
-		 double mTauTau,
-		 double Pzeta, double PzetaVis, double PzetaComb,
-		 double mT_lep, 
-		 double mT_tau,
-		 double mbb,
-		 double mbb_loose,
+                 double mTauTau,
+                 double Pzeta, double PzetaVis, double PzetaComb,
+                 double mT_lep, 
+                 double mT_tau,
+                 double mbb,
+                 double mbb_loose,
+                 double mvaOutput_1l_1tau_16_variables,
                  double evtWeight);
 
   const TH1 *
@@ -61,15 +57,6 @@ public:
   TH2 * histogram_numBJets_loose_vs_numJets_;
   TH2 * histogram_numBJets_medium_vs_numJets_;
 
-  //TH1 * histogram_mvaOutput_plainKin_ttV_;
-  //TH1 * histogram_mvaOutput_plainKin_tt_;
-  //TH1 * histogram_mvaOutput_plainKin_1B_VT_;
-  //TH1 * histogram_mvaOutput_HTT_SUM_VT_;
-  //TH1 * histogram_mvaOutput_HTT_SUM_VT_noRebin_;
-  //TH1 * histogram_mvaOutput_plainKin_SUM_VT_;
-  //TH1 * histogram_mvaOutput_plainKin_SUM_VT_noRebin_;
-  //TH1 * histogram_final_;
-
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_mTauTau_;  
   TH1 * histogram_Pzeta_;
@@ -80,7 +67,7 @@ public:
   TH1 * histogram_mT_tau_;
   TH1 * histogram_mbb_;
   TH1 * histogram_mbb_loose_;
-
+  TH1 * histogram_mvaOutput_1l_1tau_16_variables_;
   TH1 * histogram_EventCounter_;
 };
 
