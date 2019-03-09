@@ -9,8 +9,11 @@ import pwd
 import grp
 import shutil
 
-#TODO
-# - implement unit tests
+class hdfsException(Exception):
+  pass
+
+class NoSuchPathException(Exception):
+  pass
 
 try:
   from urllib.parse import urlparse
@@ -20,12 +23,6 @@ except ImportError:
 class _hdfs:
   _instance = None
   _tz = None
-  
-  class hdfsException(Exception):
-    pass
-
-  class NoSuchPathException(Exception):
-    pass
 
   @staticmethod
   def defuse(path):
@@ -34,7 +31,7 @@ class _hdfs:
   @staticmethod
   def normalize_path(path):
     if not path.startswith("hdfs://"):
-      raise _hdfs.hdfsException("Invalid path: %s" % path)
+      raise hdfsException("Invalid path: %s" % path)
 
     path_url = urlparse(path)
     path_normalized = path_url.scheme + '://' + path_url.path
@@ -145,7 +142,7 @@ class _hdfs:
 
     lib_path = "/usr/lib64/libhdfs.so"
     if not os.path.isfile(lib_path):
-      raise _hdfs.hdfsException("No such file: %s" % lib_path)
+      raise hdfsException("No such file: %s" % lib_path)
 
     logging.debug("Loading {lib}".format(lib = lib_path))
     self.lib = ctypes.cdll.LoadLibrary(lib_path)
@@ -165,7 +162,7 @@ class _hdfs:
     logging.debug("Building HDFS interface")
     self.bld = self.lib.hdfsNewBuilder()
     if not self.bld:
-      raise _hdfs.hdfsException("Could not create new HDFS interface")
+      raise hdfsException("Could not create new HDFS interface")
     self.lib.hdfsBuilderSetNameNode(self.bld, self.nn)
     self.lib.hdfsBuilderSetNameNodePort(self.bld, self.port)
 
@@ -176,22 +173,25 @@ class _hdfs:
     logging.debug("Connecting to the HDFS interface")
     self.fs = self.lib.hdfsBuilderConnect(self.bld)
     if not self.fs:
-      raise _hdfs.hdfsException(
+      raise hdfsException(
         "Could not connect to the HDFS interface (nn = '%s', port = %d)" % (self.nn, self.port)
       )
 
     logging.debug("Interfacing to the local file system")
     self.lfs = self.lib.hdfsBuilderConnect(self.lbld)
     if not self.lfs:
-      raise _hdfs.hdfsException("Could not create interface to local file system")
+      raise hdfsException("Could not create interface to local file system")
 
-  def get_path_info(self, path):
+  def get_path_info(self, path, fail = True):
     if not path.startswith('/hdfs'):
-      raise _hdfs.hdfsException("Invalid path: %s" % path)
+      raise hdfsException("Invalid path: %s" % path)
     normalized_path = re.sub('^/hdfs', '', path)
     path_info = self.lib.hdfsGetPathInfo(self.fs, normalized_path)
     if not path_info:
-      raise _hdfs.NoSuchPathException(path)
+      if fail:
+        raise NoSuchPathException(path)
+      else:
+        return None
 
     path_obj = _hdfs.info(path_info)
     self.lib.hdfsFreeFileInfo(path_info, 1)
@@ -203,7 +203,7 @@ class _hdfs:
       nof_entries = ctypes.c_int()
       dir_ptr = self.lib.hdfsListDirectory(self.fs, path_obj.url, ctypes.byref(nof_entries))
       if not dir_ptr:
-        raise _hdfs.NoSuchPathException(path)
+        raise NoSuchPathException(path)
 
       entries = []
       for idx in range(nof_entries.value):
@@ -216,7 +216,7 @@ class _hdfs:
       return entries
     else:
       if return_objs:
-        raise _hdfs.hdfsException("Cannot return HDFS objects for path: %s" % path)
+        raise hdfsException("Cannot return HDFS objects for path: %s" % path)
       return os.listdir(path)
 
   def get_default_block_size(self):
@@ -237,15 +237,15 @@ class _hdfs:
 
   def isfile(self, path):
     if path.startswith('/hdfs'):
-      path_obj = self.get_path_info(path)
-      return path_obj.isfile()
+      path_obj = self.get_path_info(path, fail = False)
+      return path_obj.isfile() if path_obj else False
     else:
       return os.path.isfile(path)
 
   def isdir(self, path):
     if path.startswith('/hdfs'):
-      path_obj = self.get_path_info(path)
-      return path_obj.isdir()
+      path_obj = self.get_path_info(path, fail = False)
+      return path_obj.isdir() if path_obj else False
     else:
       return os.path.isdir(path)
 
@@ -355,7 +355,7 @@ class _hdfs:
 
   def chown(self, path, owner = "", group = ""):
     if not owner and not group:
-      raise _hdfs.hdfsException("Missing owner and group name")
+      raise hdfsException("Missing owner and group name")
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
       return self.lib.hdfsChown(self.fs, path_defused, owner, group)
@@ -370,7 +370,7 @@ class _hdfs:
 
   def chmod(self, path, permissions):
     if not (0 <= int(permissions) <= 777):
-      raise _hdfs.hdfsException("Invalid permission code: %s" % str(permissions))
+      raise hdfsException("Invalid permission code: %s" % str(permissions))
     permissions_oct = int(str(permissions), 8)
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
