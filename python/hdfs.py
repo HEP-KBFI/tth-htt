@@ -282,7 +282,7 @@ class _hdfs:
       path_obj = self.get_path_info(path)
       return path_obj.group
     else:
-      return grp.getgrgid(os.stat(path)[stat.ST_UID]).gr_name
+      return grp.getgrgid(os.stat(path)[stat.ST_GID]).gr_name
 
   def getpermissions(self, path):
     if path.startswith('/hdfs'):
