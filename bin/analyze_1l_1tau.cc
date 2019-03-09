@@ -552,7 +552,21 @@ int main(int argc, char* argv[])
   HadTopTagger_boosted* hadTopTagger_boosted = new HadTopTagger_boosted();
   HadTopTagger_semi_boosted_AK8* hadTopTagger_semi_boosted_fromAK8 = new HadTopTagger_semi_boosted_AK8();
 
+//std::cout<<"stage1"<<std::endl;
 //--- initialize eventlevel BDTs
+std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauTau/data/1l_1tau_XGB_noHTT_evtLevelSUM_TTH_21Var.pkl";
+  std::vector<std::string> mvaInputVariables_1l_1tau_evtLevelSUM_TTH_16VarSort ={
+   "mindr_lep_jet", "mindr_tau_jet", "avg_dr_jet", "mT_lep",
+   "htmiss", "tau_pt", "tau_eta",
+   "dr_lep_tau", "costS", "mTauTauVis", "PzetaComb",
+   "res-HTT_CSVsort4rd", "res-HTT_CSVsort4rd_2", "HadTop_pt_CSVsort4rd", //"HTT_boosted", 
+   "nBJetMedium", "HadTop_pt_boosted", "mTauTau", "nJet", "lep_pt", "charge_lep_tau", "mbb_loose"
+};
+  XGBInterface mva_1l_1tau_evtLevelSUM_TTH_16Var(
+    mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var, mvaInputVariables_1l_1tau_evtLevelSUM_TTH_16VarSort
+  );
+  std::map<std::string, double> mvaInputs_1l_1tau_evtLevelSUM_TTH_16VarSort;
+//std::cout<<"stage1_1"<<std::endl;
 /*
   std::string mvaFileName_plainKin_ttV ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_1tau_XGB_plainKin_evtLevelTTV_TTH_13Var.xml";
   std::vector<std::string> mvaInputVariables_plainKin_ttVSort={
@@ -601,7 +615,7 @@ int main(int argc, char* argv[])
  */
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
-
+//std::cout<<"stage1_1_1"<<std::endl;
 //--- declare histograms
   struct selHistManagerType
   {
@@ -626,6 +640,7 @@ int main(int argc, char* argv[])
     std::map<std::string, EvtYieldHistManager*> evtYield_in_categories_;
     WeightHistManager* weights_;
   };
+//std::cout<<"stage_1_1_2"<<std::endl;
   typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
   std::map<int, int_to_selHistManagerMap> selHistManagers;
   for ( std::vector<leptonChargeFlipGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
@@ -639,44 +654,56 @@ int main(int argc, char* argv[])
       if ( apply_hadTauGenMatching                            ) process_and_genMatch += hadTauGenMatch_definition->name_;
       int idxLepton = leptonGenMatch_definition->idx_;
       int idxHadTau = hadTauGenMatch_definition->idx_;
-
+//std::cout<<"stage_1_1_3"<<std::endl;
       selHistManagerType* selHistManager = new selHistManagerType();
       selHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/electrons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
       selHistManager->electrons_->bookHistograms(fs);
+//std::cout<<"stage_1_1_3_1"<<std::endl;
       selHistManager->muons_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/muons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
       selHistManager->muons_->bookHistograms(fs);
+//std::cout<<"stage_1_1_3_2"<<std::endl;
       selHistManager->hadTaus_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/hadTaus", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
       selHistManager->hadTaus_->bookHistograms(fs);
+//std::cout<<"stage_1_1_3_3"<<std::endl;
       selHistManager->jets_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/jets", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
       selHistManager->jets_->bookHistograms(fs);
+//std::cout<<"stage_1_1_3_4"<<std::endl;
       selHistManager->leadJet_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/leadJet", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 0));
       selHistManager->leadJet_->bookHistograms(fs);
+//std::cout<<"stage_1_1_3_5"<<std::endl;
       selHistManager->subleadJet_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/subleadJet", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 1));
       selHistManager->subleadJet_->bookHistograms(fs);
+//std::cout<<"stage_1_1_3_6"<<std::endl;
       selHistManager->BJets_loose_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/BJets_loose", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
       selHistManager->BJets_loose_->bookHistograms(fs);
+//std::cout<<"stage_1_1_3_7"<<std::endl;
       selHistManager->leadBJet_loose_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/leadBJet_loose", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 0));
       selHistManager->leadBJet_loose_->bookHistograms(fs);
+//std::cout<<"stage_1_1_3_8"<<std::endl;
       selHistManager->subleadBJet_loose_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/subleadBJet_loose", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 1));
       selHistManager->subleadBJet_loose_->bookHistograms(fs);
+//std::cout<<"stage_1_1_3_9"<<std::endl;
       selHistManager->BJets_medium_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/BJets_medium", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
       selHistManager->BJets_medium_->bookHistograms(fs);
+//std::cout<<"stage_1_1_3_10"<<std::endl;
       selHistManager->met_ = new MEtHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/met", histogramDir.data()), era_string, central_or_shift));
-      selHistManager->met_->bookHistograms(fs);      
+      selHistManager->met_->bookHistograms(fs);     
+//std::cout<<"stage_1_1_4"<<std::endl; 
       selHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/metFilters", histogramDir.data()), era_string, central_or_shift));
       selHistManager->metFilters_->bookHistograms(fs);
+//std::cout<<"stage_1_1_4"<<std::endl;
       //selHistManager->mvaInputVariables_HTT_sum_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
       //  Form("%s/sel/mvaInputs_HTT_sum", histogramDir.data()), central_or_shift));
       //selHistManager->mvaInputVariables_HTT_sum_->bookHistograms(fs, mvaInputVariables_HTT_sumSort);
@@ -684,6 +711,7 @@ int main(int argc, char* argv[])
        Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
       selHistManager->evt_->bookHistograms(fs);
       const vstring decayModes_evt = eventInfo.getDecayModes();
+//std::cout<<"stage_1_1_4"<<std::endl;
       if ( isSignal ) {
         for ( const std::string & decayMode_evt: decayModes_evt ) {
           std::string decayMode_and_genMatch = decayMode_evt;
@@ -695,6 +723,7 @@ int main(int argc, char* argv[])
           selHistManager->evt_in_decayModes_[decayMode_evt]->bookHistograms(fs);
         }
       }
+//std::cout<<"stage1_2"<<std::endl;
       vstring categories_evt = {
 	// CV: must *not* inclusive category, as histograms of same name already booked for selHistManager->evt_ !!
 	            "1l_1tau_SS",  "1l_1tau_OS",  "1l_1tau_OS_wChargeFlipWeights",
@@ -720,6 +749,7 @@ int main(int argc, char* argv[])
 	  }
 	}
       }
+//std::cout<<"stage1_4"<<std::endl;
       edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/evtYield", histogramDir.data()), era_string, central_or_shift);
       cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
@@ -744,6 +774,8 @@ int main(int argc, char* argv[])
       selHistManagers[idxLepton][idxHadTau] = selHistManager;
     }
   }
+
+//std::cout<<"stage2"<<std::endl;
   GenEvtHistManager* genEvtHistManager_beforeCuts = 0;
   GenEvtHistManager* genEvtHistManager_afterCuts = 0;
   LHEInfoHistManager* lheInfoHistManager = 0;
@@ -785,7 +817,7 @@ int main(int argc, char* argv[])
       "minDR_HTTv2_lep", "minDR_AK8_lep",
       "minDR_HTTv2subjets_lep", "minDR_AK8subjets_lep",
       "lumiScale", "genWeight", "evtWeight", 
-      "prob_fake_lepton", "prob_fake_hadTau"
+      "prob_fake_lepton", "prob_fake_hadTau","mbb","mbb_loose"
     );
     bdt_filler->register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium",
@@ -949,6 +981,7 @@ int main(int argc, char* argv[])
       continue;
     }
 
+//std::cout<<"stage3"<<std::endl;
 //--- Rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
 //    the ranking of the triggers is as follows: 1mu || 1mu1tau, 1e || 1e1tau
 // CV: This logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets.
@@ -1156,6 +1189,7 @@ int main(int argc, char* argv[])
       jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
     }
 
+//std::cout<<"stage4"<<std::endl;
 //--- apply preselection
     // require exactly one lepton passing loose preselection criteria
     if ( !(preselLeptonsFull.size() >= 1) ) continue;
@@ -1371,6 +1405,7 @@ int main(int argc, char* argv[])
       weight_leptonEff *= sf_leptonEff;
       weight_data_to_MC_correction *= sf_leptonEff;
 
+//std::cout<<"stage5"<<std::endl;
 //--- apply data/MC corrections for hadronic tau identification efficiency
 //    and for e->tau and mu->tau misidentification rates
       double sf_hadTauEff = 1.;
@@ -1574,6 +1609,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("signal region veto", evtWeight);
     cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
 
+//std::cout<<"stage6"<<std::endl;
 //--- compute output of hadronic top tagger BDT
     // it returns the gen-triplets organized in top/anti-top
     bool calculate_matching = isMC && selectBDT && !applyAdditionalEvtWeight; // DY has not matching info
@@ -1761,6 +1797,7 @@ int main(int argc, char* argv[])
     if (genTopPt_CSVsort4rd == genTopPt_semi_boosted_fromAK8)  resolved_and_semi_AK8 = true;
     if (genTopPt_semi_boosted_fromAK8 == genTopPt_boosted)  boosted_and_semi_AK8 = true;
 
+//std::cout<<"stage7"<<std::endl;
 //--- reconstruct mass of lepton+tau using SVfit algorithm
 //
 //    NOTE: SVfit needs to be run after all event selection cuts are applied,
@@ -1900,6 +1937,32 @@ int main(int argc, char* argv[])
     const double mvaOutput_plainKin_SUM_VT = mva_plainKin_sum_VT(mvaInputsplainKin_sum);
  */
 
+  const std::map<std::string, double> mvaInputVariables_mva_XGB_1l_1tau_16_variables{
+   {"mindr_lep_jet",    std::min(10., comp_mindr_lep1_jet(*selLepton, selJets))},
+   {"mindr_tau_jet",    TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets))},
+   {"avg_dr_jet",       comp_avg_dr_jet(selJets)},
+   {"mT_lep",           comp_MT_met_lep1(*selLepton, met.pt(), met.phi())},
+   {"htmiss",           mht_p4.pt()},
+   {"tau_mva",          selHadTau->raw_mva_dR03()},
+   {"tau_pt",           selHadTau->pt()},
+   {"tau_eta",          selHadTau->absEta()},
+   {"dr_lep_tau",       deltaR(selLepton->p4(), selHadTau->p4())},
+   {"costS",            comp_cosThetaS(selLepton->p4(), selHadTau->p4())},
+   {"mTauTauVis",       (selLepton->p4() + selHadTau->p4()).mass()},
+   {"PzetaComb",        comp_pZetaComb(selLepton->p4(), selHadTau->p4(), met.p4().px(), met.p4().py())},
+   {"res-HTT_CSVsort4rd",  max_mvaOutput_HTT_CSVsort4rd},
+   {"res-HTT_CSVsort4rd_2",  max_mvaOutput_HTT_CSVsort4rd_2},
+   {"HadTop_pt_CSVsort4rd",  HadTop_pt_CSVsort4rd},
+   {"nBJetMedium",       selBJets_medium.size()},
+   {"HadTop_pt_boosted", HadTop_pt_boosted},
+   {"mTauTau",		mTauTau},
+   {"nJet",		selJets.size()},
+   {"lep_pt",		lep_pt},
+   {"charge_lep_tau",   selLepton->charge() + selHadTau->charge()},
+   {"mbb_loose",	mbb_loose}
+};
+  const double mvaOutput_1l_1tau_16_variables = mva_1l_1tau_evtLevelSUM_TTH_16Var(mvaInputVariables_mva_XGB_1l_1tau_16_variables);
+
 //--- fill histograms with events passing final selection
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
@@ -1930,8 +1993,9 @@ int main(int argc, char* argv[])
       //mvaOutput_plainKin_SUM_VT,
       mTauTauVis, mTauTau,
       Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
-      mbb, mbb_loose,
-      evtWeight);
+      mbb, mbb_loose,mvaOutput_1l_1tau_16_variables,
+      evtWeight
+	);
     if( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
       if ( !decayModeStr.empty() ) {
@@ -1950,9 +2014,12 @@ int main(int argc, char* argv[])
 	  mTauTauVis, mTauTau,
 	  Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
 	  mbb, mbb_loose,
-          evtWeight);
+	  mvaOutput_1l_1tau_16_variables,
+          evtWeight
+	);
       }
     }
+//std::cout<<"stage8"<<std::endl;
     selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
     selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
     selHistManager->weights_->fillHistograms("pileupWeight", eventInfo.pileupWeight);
@@ -1961,7 +2028,6 @@ int main(int argc, char* argv[])
     selHistManager->weights_->fillHistograms("leptonEff", weight_leptonEff);
     selHistManager->weights_->fillHistograms("hadTauEff", weight_hadTauEff);
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
-
     std::vector<std::string> categories;
     categories.push_back("1l_1tau");
     if ( isCharge_SS ) {
@@ -2011,6 +2077,7 @@ int main(int argc, char* argv[])
 	  mTauTauVis, mTauTau,
 	  Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
 	  mbb, mbb_loose,
+	  mvaOutput_1l_1tau_16_variables,
           evtWeight_category);
       }
       if ( selHistManager->evt_in_categories_and_decayModes_.find(*category) != selHistManager->evt_in_categories_and_decayModes_.end() ) {
@@ -2032,6 +2099,7 @@ int main(int argc, char* argv[])
 	      mTauTauVis, mTauTau,
 	      Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
 	      mbb, mbb_loose,
+	      mvaOutput_1l_1tau_16_variables,
 	      evtWeight_category);
 	  }
 	}
@@ -2121,6 +2189,8 @@ int main(int argc, char* argv[])
 	  ("resolved_and_semi_AK8",                     resolved_and_semi_AK8)
 	  ("boosted_and_semi_AK8",                      boosted_and_semi_AK8)
 	  ("resolved_and_boosted",                      resolved_and_boosted)          
+	  ("mbb",					mbb)
+	  ("mbb_loose",					mbb_loose)
         .fill();
     }
 
