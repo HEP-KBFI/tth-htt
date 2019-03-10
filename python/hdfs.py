@@ -383,6 +383,9 @@ class _hdfs:
       return 0
 
   def chown(self, path, owner = "", group = ""):
+    if not self.exists(path):
+      raise NoSuchPathException(path)
+
     if not owner and not group:
       raise hdfsException("Missing owner and group name")
 
@@ -390,20 +393,33 @@ class _hdfs:
       path_defused = re.sub('^/hdfs', '', path)
       return self.lib.hdfsChown(self.fs, path_defused, owner, group)
     else:
-      uid = pwd.getpwnam(owner).pw_uid
-      gid = grp.getgrnam(group).gr_gid
       try:
+        uid = pwd.getpwnam(owner).pw_uid
+        gid = grp.getgrnam(group).gr_gid
         os.chown(path, uid, gid)
+      except KeyError:
+        return -1
       except IOError:
         return -1
       return 0
 
   def chmod(self, path, permissions):
+    if not self.exists(path):
+      raise NoSuchPathException(path)
+
     if not (0 <= int(permissions) <= 777):
       raise hdfsException("Invalid permission code: %s" % str(permissions))
     permissions_oct = int(str(permissions), 8)
 
     if path.startswith('/hdfs'):
+      if permissions_oct & 0111 != 0:
+        logging.error(
+          "Cannot set executable rights to files that reside on /hdfs => setting it from {} to {} for {}".format(
+            permissions,
+            int(oct(permissions_oct ^ 0111)[-3:]),
+            path,
+          )
+        )
       path_defused = re.sub('^/hdfs', '', path)
       return self.lib.hdfsChmod(self.fs, path_defused, permissions_oct)
     else:

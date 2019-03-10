@@ -10,6 +10,7 @@ import sys
 import unittest
 import time
 import datetime
+import stat
 
 logging.basicConfig(
   stream = sys.stdout,
@@ -38,9 +39,10 @@ class HDFSTestCase(unittest.TestCase):
     cls.userHDFSsubDir = os.path.join(cls.userHDFSmainDir, subdirName)
     cls.userHomeSubDir = os.path.join(cls.userHomeMainDir, subdirName)
 
-    nonExistingUserName = "thisUserDoesNotExist"
-    cls.nonExistingHDFSdir = os.path.join('/hdfs/local', nonExistingUserName)
-    cls.nonExistingHomeDir = os.path.join('/home',       nonExistingUserName)
+    cls.nonExistingGroupName = "thisGroupDoesNotExist"
+    cls.nonExistingUserName = "thisUserDoesNotExist"
+    cls.nonExistingHDFSdir = os.path.join('/hdfs/local', cls.nonExistingUserName)
+    cls.nonExistingHomeDir = os.path.join('/home',       cls.nonExistingUserName)
 
     fileBaseName = 'hdfstest.txt'
     cls.userHDFSfile = os.path.join(cls.userHDFSdir, fileBaseName)
@@ -199,6 +201,37 @@ class HDFSTestCase(unittest.TestCase):
     self.assertEqual(hdfs.mkdirs(self.userHDFSsubDir), 0)
     self.assertEqual(hdfs.mkdirs(self.userHomeSubDir), 0)
 
+  def testChownFail(self):
+    self.assertRaises(hdfsException, lambda: hdfs.chown(self.userHomeFile, "", ""))
+    self.assertRaises(hdfsException, lambda: hdfs.chown(self.userHDFSfile, "", ""))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.chown(self.nonExistingHomeFile, self.userName, self.groupName))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.chown(self.nonExistingHDFSfile, self.userName, self.groupName))
+    self.assertEqual(hdfs.chown(self.userHomeFile, self.nonExistingUserName, ""), -1)
+    self.assertEqual(hdfs.chown(self.userHDFSfile, self.nonExistingUserName, ""), -1)
+    self.assertEqual(hdfs.chown(self.userHomeFile, "", self.nonExistingGroupName), -1)
+    self.assertEqual(hdfs.chown(self.userHDFSfile, "", self.nonExistingGroupName), -1)
+
+  def testChown(self):
+    self.assertEqual(hdfs.chown(self.userHomeFile, self.userName, self.groupName), 0)
+    self.assertEqual(hdfs.chown(self.userHDFSfile, self.userName, self.groupName), 0)
+
+  def testChmodFail(self):
+    chmod_invalid = 1234
+    chmod_new     = 777
+    self.assertRaises(hdfsException, lambda: hdfs.chmod(self.userHomeFile, chmod_invalid))
+    self.assertRaises(hdfsException, lambda: hdfs.chmod(self.userHDFSfile, chmod_invalid))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.chmod(self.nonExistingHomeFile, chmod_new))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.chmod(self.nonExistingHDFSfile, chmod_new))
+
+  def testChmod(self):
+    chmod_new = 777
+    self.assertEqual(hdfs.chmod(self.userHomeFile, chmod_new), 0)
+    self.assertEqual(hdfs.chmod(self.userHDFSfile, chmod_new), 0)
+    userHomeFilePermissions = int(oct(os.stat(self.userHomeFile)[stat.ST_MODE])[-3:])
+    userHDFSfilePermissions = int(oct(os.stat(self.userHDFSfile)[stat.ST_MODE])[-3:])
+    self.assertEqual(userHDFSfilePermissions, int(oct(int(str(chmod_new), 8) ^ 0111)[-3:]))
+    self.assertEqual(userHomeFilePermissions, chmod_new)
+
   def testCopy(self):
     self.assertEqual(hdfs.copy(self.userHDFSfile, self.userHDFSfileCopy), 0)
     self.assertEqual(hdfs.copy(self.userHomeFile, self.userHomeFileCopy), 0)
@@ -255,12 +288,6 @@ class HDFSTestCase(unittest.TestCase):
     self.assertEqual(hdfs.remove(self.userHDFSfile), 0)
     self.assertEqual(hdfs.remove(self.userHomeFile), 0)
 
-  def testChown(self):
-    pass
-
-  def testChmod(self):
-    pass
-
 def suite():
   testSuite = unittest.TestSuite()
   tests = [
@@ -287,6 +314,10 @@ def suite():
     "testListDirObjects",
     "testMkdirsFail",
     "testMkdirs",
+    "testChown",
+    "testChownFail",
+    "testChmod",
+    "testChmodFail",
     "testCopy",
     "testCopyFail",
     "testMoveFail",
