@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Author: Karl Ehatäht
 
 import os.path
 import getpass
@@ -6,6 +9,7 @@ import logging
 import sys
 import unittest
 import time
+import datetime
 
 logging.basicConfig(
   stream = sys.stdout,
@@ -21,9 +25,10 @@ class HDFSTestCase(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    userName = getpass.getuser()
-    cls.userHDFSdir = os.path.join('/hdfs/local', userName)
-    cls.userHomeDir = os.path.join('/home',       userName)
+    cls.groupName = "HEPUsers"
+    cls.userName = getpass.getuser()
+    cls.userHDFSdir = os.path.join('/hdfs/local', cls.userName)
+    cls.userHomeDir = os.path.join('/home',       cls.userName)
 
     nonExistingUserName = "thisUserDoesNotExist"
     cls.nonExistingHDFSdir = os.path.join('/hdfs/local', nonExistingUserName)
@@ -40,10 +45,19 @@ class HDFSTestCase(unittest.TestCase):
     cls.fileSize = len(text)
     with open(cls.userHDFSfile, 'w') as f:
       f.write(text)
+    # wait for 10 seconds so that the file would finally enter the hadoop file system
+    time.sleep(10)
+
     with open(cls.userHomeFile, 'w') as f:
       f.write(text)
 
-    cls.delay = 10
+    # set file access and modification times explicitly
+    atime_ut  = int(time.mktime(datetime.datetime.now().timetuple()))
+    mtime_ut  = atime_ut - 10
+    cls.atime = datetime.datetime.fromtimestamp(atime_ut, hdfs._tz)
+    cls.mtime = datetime.datetime.fromtimestamp(mtime_ut, hdfs._tz)
+    os.utime(cls.userHDFSfile, (atime_ut, mtime_ut))
+    os.utime(cls.userHomeFile, (atime_ut, mtime_ut))
 
   @classmethod
   def tearDownClass(cls):
@@ -75,9 +89,6 @@ class HDFSTestCase(unittest.TestCase):
     self.assertFalse(hdfs.isfile(self.nonExistingHomeFile))
 
   def testFileSize(self):
-    # wait for 5 seconds so that the file would finally enter the hadoop file system
-    time.sleep(self.delay)
-
     fileSizeHDFS = hdfs.getsize(self.userHDFSfile)
     fileSizeHome = hdfs.getsize(self.userHomeFile)
     self.assertEqual(fileSizeHDFS, self.fileSize)
@@ -86,6 +97,46 @@ class HDFSTestCase(unittest.TestCase):
   def testFileSizeFail(self):
     self.assertRaises(NoSuchPathException, lambda: hdfs.getsize(self.nonExistingHDFSfile))
     self.assertRaises(OSError,             lambda: hdfs.getsize(self.nonExistingHomeFile))
+
+  def testAccessTime(self):
+    fileAccessTimeHDFS = hdfs.getatime(self.userHDFSfile)
+    fileAccessTimeHome = hdfs.getatime(self.userHomeFile)
+    self.assertNotEqual(fileAccessTimeHDFS, None)
+    self.assertNotEqual(fileAccessTimeHome, None)
+    self.assertEqual(fileAccessTimeHDFS - self.atime, datetime.timedelta(0))
+    self.assertEqual(fileAccessTimeHome - self.atime, datetime.timedelta(0))
+
+  def testAccessTimeFail(self):
+    self.assertRaises(NoSuchPathException, lambda: hdfs.getatime(self.nonExistingHDFSfile))
+    self.assertRaises(OSError,             lambda: hdfs.getatime(self.nonExistingHomeFile))
+
+  def testModificationTime(self):
+    fileModificationTimeHDFS = hdfs.getmtime(self.userHDFSfile)
+    fileModificationTimeHome = hdfs.getmtime(self.userHomeFile)
+    self.assertNotEqual(fileModificationTimeHDFS, None)
+    self.assertNotEqual(fileModificationTimeHome, None)
+    self.assertEqual(fileModificationTimeHDFS - self.mtime, datetime.timedelta(0))
+    self.assertEqual(fileModificationTimeHome - self.mtime, datetime.timedelta(0))
+
+  def testModificationTimeFail(self):
+    self.assertRaises(NoSuchPathException, lambda: hdfs.getmtime(self.nonExistingHDFSfile))
+    self.assertRaises(OSError,             lambda: hdfs.getmtime(self.nonExistingHomeFile))
+
+  def testOwner(self):
+    self.assertEqual(hdfs.getowner(self.userHDFSfile), self.userName)
+    self.assertEqual(hdfs.getowner(self.userHomeFile), self.userName)
+
+  def testOwnerFail(self):
+    self.assertRaises(NoSuchPathException, lambda: hdfs.getowner(self.nonExistingHDFSfile))
+    self.assertRaises(OSError,             lambda: hdfs.getowner(self.nonExistingHomeFile))
+
+  def testGroup(self):
+    self.assertEqual(hdfs.getgroup(self.userHDFSfile), self.groupName)
+    self.assertEqual(hdfs.getgroup(self.userHomeFile), self.groupName)
+
+  def testGroupFail(self):
+    self.assertRaises(NoSuchPathException, lambda: hdfs.getgroup(self.nonExistingHDFSfile))
+    self.assertRaises(OSError,             lambda: hdfs.getgroup(self.nonExistingHomeFile))
 
 def suite():
   testSuite = unittest.TestSuite()
@@ -98,6 +149,14 @@ def suite():
     "testIsNotFile",
     "testFileSize",
     "testFileSizeFail",
+    "testAccessTime",
+    "testAccessTimeFail",
+    "testModificationTime",
+    "testModificationTimeFail",
+    "testOwner",
+    "testOwnerFail",
+    "testGroup",
+    "testGroupFail",
   ]
   for test in tests:
     testSuite.addTest(HDFSTestCase(test))

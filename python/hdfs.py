@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+# Author: Karl Ehatäht
+
 import ctypes
 import logging
 import re
@@ -182,6 +186,7 @@ class _hdfs:
   def get_path_info(self, path, fail = True):
     if not path.startswith('/hdfs'):
       raise hdfsException("Invalid path: %s" % path)
+
     normalized_path = re.sub('^/hdfs', '', path)
     path_info = self.lib.hdfsGetPathInfo(self.fs, normalized_path)
     if not path_info:
@@ -284,6 +289,7 @@ class _hdfs:
     is_local_dst = not dst.startswith('/hdfs')
     src_defused = re.sub('^/hdfs', '', src)
     dst_defused = re.sub('^/hdfs', '', dst)
+
     if is_local_src and is_local_dst:
       try:
         shutil.copy(src_defused, dst_defused)
@@ -304,6 +310,7 @@ class _hdfs:
     is_local_dst = not dst.startswith('/hdfs')
     src_defused = re.sub('^/hdfs', '', src)
     dst_defused = re.sub('^/hdfs', '', dst)
+
     if is_local_src and is_local_dst:
       try:
         shutil.move(src_defused, dst_defused)
@@ -344,6 +351,7 @@ class _hdfs:
   def chown(self, path, owner = "", group = ""):
     if not owner and not group:
       raise hdfsException("Missing owner and group name")
+
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
       return self.lib.hdfsChown(self.fs, path_defused, owner, group).value
