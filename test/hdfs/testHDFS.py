@@ -30,6 +30,10 @@ class HDFSTestCase(unittest.TestCase):
     cls.userHDFSdir = os.path.join('/hdfs/local', cls.userName)
     cls.userHomeDir = os.path.join('/home',       cls.userName)
 
+    subdirName = 'hdfstest/subdir'
+    cls.userHDFSsubDir = os.path.join(cls.userHDFSdir, subdirName)
+    cls.userHomeSubDir = os.path.join(cls.userHomeDir, subdirName)
+
     nonExistingUserName = "thisUserDoesNotExist"
     cls.nonExistingHDFSdir = os.path.join('/hdfs/local', nonExistingUserName)
     cls.nonExistingHomeDir = os.path.join('/home',       nonExistingUserName)
@@ -63,6 +67,11 @@ class HDFSTestCase(unittest.TestCase):
     permissions_oct = int(str(cls.permissions), 8)
     os.chmod(cls.userHDFSfile, permissions_oct)
     os.chmod(cls.userHomeFile, permissions_oct)
+
+    cls.userHDFSfileCopy = cls.userHDFSfile + '.copy'
+    cls.userHomeFileCopy = cls.userHomeFile + '.copy'
+    cls.userHDFSfileCopy2 = cls.userHDFSfileCopy + '2'
+    cls.userHomeFileCopy2 = cls.userHomeFileCopy + '2'
 
   @classmethod
   def tearDownClass(cls):
@@ -169,16 +178,32 @@ class HDFSTestCase(unittest.TestCase):
     self.assertEqual(dirListHDFSobjs, dirListHDFSposix)
     self.assertRaises(hdfsException, lambda: hdfs.listdir(self.userHomeDir, return_objs = True))
 
+  def testMkdirsFail(self):
+    self.assertEqual(hdfs.mkdirs(self.nonExistingHDFSdir), -1)
+    self.assertEqual(hdfs.mkdirs(self.nonExistingHomeDir), -1)
+    self.assertEqual(hdfs.mkdirs(self.userHDFSfile), -1)
+    self.assertEqual(hdfs.mkdirs(self.userHomeFile), -1)
+
+  def testMkdirs(self):
+    self.assertEqual(hdfs.mkdirs(self.userHDFSsubDir), 0)
+    self.assertEqual(hdfs.mkdirs(self.userHomeSubDir), 0)
+
+  def testCopyFail(self):
+    self.assertEqual(hdfs.copy(self.nonExistingHDFSfile, self.userHDFSfileCopy), -1)
+    self.assertEqual(hdfs.copy(self.nonExistingHomeFile, self.userHDFSfileCopy), -1)
+    self.assertEqual(hdfs.copy(self.nonExistingHDFSfile, self.userHomeFileCopy), -1)
+    self.assertEqual(hdfs.copy(self.nonExistingHomeFile, self.userHomeFileCopy), -1)
+
   def testCopy(self):
-    pass
+    self.assertEqual(hdfs.copy(self.userHDFSfile, self.userHDFSfileCopy), 0)
+    self.assertEqual(hdfs.copy(self.userHomeFile, self.userHomeFileCopy), 0)
+    self.assertEqual(hdfs.copy(self.userHomeFile, self.userHDFSfileCopy2), 0)
+    self.assertEqual(hdfs.copy(self.userHDFSfile, self.userHomeFileCopy2), 0)
 
   def testMove(self):
     pass
 
   def testRemove(self):
-    pass
-
-  def testMkdirs(self):
     pass
 
   def testChown(self):
@@ -211,6 +236,10 @@ def suite():
     "testListDir",
     "testListDirFail",
     "testListDirObjects",
+    "testMkdirsFail",
+    "testMkdirs",
+    "testCopyFail",
+    "testCopy",
   ]
   for test in tests:
     testSuite.addTest(HDFSTestCase(test))

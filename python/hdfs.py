@@ -12,6 +12,7 @@ import stat
 import pwd
 import grp
 import shutil
+import errno
 
 class hdfsException(Exception):
   pass
@@ -294,15 +295,15 @@ class _hdfs:
     if is_local_src and is_local_dst:
       try:
         shutil.copy(src_defused, dst_defused)
-      except OSError:
+      except IOError:
         return -1
       return 0
     elif is_local_src and not is_local_dst:
-      return self.lib.hdfsCopy(self.lfs, src_defused, self.fs, dst_defused).value
+      return self.lib.hdfsCopy(self.lfs, src_defused, self.fs, dst_defused)
     elif not is_local_src and is_local_dst:
-      return self.lib.hdfsCopy(self.fs, src_defused, self.lfs, dst_defused).value
+      return self.lib.hdfsCopy(self.fs, src_defused, self.lfs, dst_defused)
     elif not is_local_src and not is_local_dst:
-      return self.lib.hdfsCopy(self.fs, src_defused, self.fs, dst_defused).value
+      return self.lib.hdfsCopy(self.fs, src_defused, self.fs, dst_defused)
     else:
       raise RuntimeError("Impossible error")
 
@@ -315,37 +316,45 @@ class _hdfs:
     if is_local_src and is_local_dst:
       try:
         shutil.move(src_defused, dst_defused)
-      except OSError:
+      except IOError:
         return -1
       return 0
     elif is_local_src and not is_local_dst:
-      return self.lib.hdfsMove(self.lfs, src_defused, self.fs, dst_defused).value
+      return self.lib.hdfsMove(self.lfs, src_defused, self.fs, dst_defused)
     elif not is_local_src and is_local_dst:
-      return self.lib.hdfsMove(self.fs, src_defused, self.lfs, dst_defused).value
+      return self.lib.hdfsMove(self.fs, src_defused, self.lfs, dst_defused)
     elif not is_local_src and not is_local_dst:
-      return self.lib.hdfsRename(self.fs, src_defused, dst_defused).value
+      return self.lib.hdfsRename(self.fs, src_defused, dst_defused)
     else:
       raise RuntimeError("Impossible error")
 
   def remove(self, path):
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
-      return self.lib.hdfsDelete(self.fs, path_defused).value
+      return self.lib.hdfsDelete(self.fs, path_defused)
     else:
       try:
         shutil.rmtree(path)
-      except OSError:
+      except IOError:
         return -1
       return 0
 
   def mkdirs(self, path):
+    if self.isfile(path):
+      return -1
+
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
-      return self.lib.hdfsCreateDirectory(self.fs, path_defused).value
+      # the function returns 0 if the directory was successfully created or if it already exists
+      return self.lib.hdfsCreateDirectory(self.fs, path_defused)
     else:
       try:
         os.makedirs(path)
-      except OSError:
+      except OSError, e:
+        # directory already exists -> pretend that is succeeded as is the case for hdfsCreateDirectory()
+        if e.errno != errno.EEXIST:
+          return -1
+      except:
         return -1
       return 0
 
@@ -355,13 +364,13 @@ class _hdfs:
 
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
-      return self.lib.hdfsChown(self.fs, path_defused, owner, group).value
+      return self.lib.hdfsChown(self.fs, path_defused, owner, group)
     else:
       uid = pwd.getpwnam(owner).pw_uid
       gid = grp.getgrnam(group).gr_gid
       try:
         os.chown(path, uid, gid)
-      except OSError:
+      except IOError:
         return -1
       return 0
 
@@ -372,11 +381,11 @@ class _hdfs:
 
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
-      return self.lib.hdfsChmod(self.fs, path_defused, permissions_oct).value
+      return self.lib.hdfsChmod(self.fs, path_defused, permissions_oct)
     else:
       try:
         os.chmod(path, permissions_oct)
-      except OSError:
+      except IOError:
         return -1
       return 0
 
