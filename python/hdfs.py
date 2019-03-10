@@ -263,7 +263,7 @@ class _hdfs:
     else:
       return int(oct(os.stat(path)[stat.ST_MODE])[-3:])
   
-  def list_dir(self, path, return_objs = False):
+  def listdir(self, path, return_objs = False):
     if path.startswith('/hdfs'):
       path_obj = self.get_path_info(path) if type(path) == str else path
       nof_entries = ctypes.c_int()
@@ -283,7 +283,7 @@ class _hdfs:
     else:
       if return_objs:
         raise hdfsException("Cannot return HDFS objects for path: %s" % path)
-      return os.listdir(path)
+      return list(map(lambda entry: os.path.join(path, entry), os.listdir(path)))
 
   def copy(self, src, dst):
     is_local_src = not src.startswith('/hdfs')

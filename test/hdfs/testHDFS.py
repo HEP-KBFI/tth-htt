@@ -16,7 +16,7 @@ logging.basicConfig(
   level  = logging.DEBUG,
   format = '%(asctime)s - %(levelname)s: %(message)s',
 )
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs, NoSuchPathException
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs, hdfsException, NoSuchPathException
 
 class HDFSTestCase(unittest.TestCase):
 
@@ -151,6 +151,42 @@ class HDFSTestCase(unittest.TestCase):
     self.assertRaises(NoSuchPathException, lambda: hdfs.getpermissions(self.nonExistingHDFSfile))
     self.assertRaises(OSError,             lambda: hdfs.getpermissions(self.nonExistingHomeFile))
 
+  def testListDir(self):
+    dirListHDFS = set(hdfs.listdir(self.userHDFSdir, return_objs = False))
+    dirListHome = set(hdfs.listdir(self.userHomeDir, return_objs = False))
+    dirListHDFSposix = set(map(lambda path: os.path.join(self.userHDFSdir, path), os.listdir(self.userHDFSdir)))
+    dirListHomePosix = set(map(lambda path: os.path.join(self.userHomeDir, path), os.listdir(self.userHomeDir)))
+    self.assertEqual(dirListHDFS, dirListHDFSposix)
+    self.assertEqual(dirListHome, dirListHomePosix)
+
+  def testListDirFail(self):
+    self.assertRaises(NoSuchPathException, lambda: hdfs.listdir(self.nonExistingHDFSdir, return_objs = False))
+    self.assertRaises(OSError,             lambda: hdfs.listdir(self.nonExistingHomeDir, return_objs = False))
+
+  def testListDirObjects(self):
+    dirListHDFSobjs  = set(map(lambda obj: obj.name, hdfs.listdir(self.userHDFSdir, return_objs = True)))
+    dirListHDFSposix = set(map(lambda path: os.path.join(self.userHDFSdir, path), os.listdir(self.userHDFSdir)))
+    self.assertEqual(dirListHDFSobjs, dirListHDFSposix)
+    self.assertRaises(hdfsException, lambda: hdfs.listdir(self.userHomeDir, return_objs = True))
+
+  def testCopy(self):
+    pass
+
+  def testMove(self):
+    pass
+
+  def testRemove(self):
+    pass
+
+  def testMkdirs(self):
+    pass
+
+  def testChown(self):
+    pass
+
+  def testChmod(self):
+    pass
+
 def suite():
   testSuite = unittest.TestSuite()
   tests = [
@@ -172,6 +208,9 @@ def suite():
     "testGroupFail",
     "testPermissions",
     "testPermissionsFail",
+    "testListDir",
+    "testListDirFail",
+    "testListDirObjects",
   ]
   for test in tests:
     testSuite.addTest(HDFSTestCase(test))
