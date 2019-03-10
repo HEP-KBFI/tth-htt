@@ -59,6 +59,11 @@ class HDFSTestCase(unittest.TestCase):
     os.utime(cls.userHDFSfile, (atime_ut, mtime_ut))
     os.utime(cls.userHomeFile, (atime_ut, mtime_ut))
 
+    cls.permissions = 666
+    permissions_oct = int(str(cls.permissions), 8)
+    os.chmod(cls.userHDFSfile, permissions_oct)
+    os.chmod(cls.userHomeFile, permissions_oct)
+
   @classmethod
   def tearDownClass(cls):
     os.remove(cls.userHDFSfile)
@@ -138,6 +143,14 @@ class HDFSTestCase(unittest.TestCase):
     self.assertRaises(NoSuchPathException, lambda: hdfs.getgroup(self.nonExistingHDFSfile))
     self.assertRaises(OSError,             lambda: hdfs.getgroup(self.nonExistingHomeFile))
 
+  def testPermissions(self):
+    self.assertEqual(hdfs.getpermissions(self.userHDFSfile), self.permissions)
+    self.assertEqual(hdfs.getpermissions(self.userHomeFile), self.permissions)
+
+  def testPermissionsFail(self):
+    self.assertRaises(NoSuchPathException, lambda: hdfs.getpermissions(self.nonExistingHDFSfile))
+    self.assertRaises(OSError,             lambda: hdfs.getpermissions(self.nonExistingHomeFile))
+
 def suite():
   testSuite = unittest.TestSuite()
   tests = [
@@ -157,6 +170,8 @@ def suite():
     "testOwnerFail",
     "testGroup",
     "testGroupFail",
+    "testPermissions",
+    "testPermissionsFail",
   ]
   for test in tests:
     testSuite.addTest(HDFSTestCase(test))

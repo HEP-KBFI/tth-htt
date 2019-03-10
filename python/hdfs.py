@@ -150,15 +150,16 @@ class _hdfs:
 
     logging.debug("Loading {lib}".format(lib = lib_path))
     self.lib = ctypes.cdll.LoadLibrary(lib_path)
-    self.lib.hdfsListDirectory.restype = ctypes.POINTER(_hdfs.hdfsFileInfo)
-    self.lib.hdfsGetPathInfo.restype   = ctypes.POINTER(_hdfs.hdfsFileInfo)
-    self.lib.hdfsDelete                = ctypes.c_int32
-    self.lib.hdfsCreateDirectory       = ctypes.c_int32
-    self.lib.hdfsChown                 = ctypes.c_int32
-    self.lib.hdfsChmod                 = ctypes.c_int32
-    self.lib.hdfsMove                  = ctypes.c_int32
-    self.lib.hdfsCopy                  = ctypes.c_int32
-    self.hdfsFileInfo_size             = ctypes.sizeof(_hdfs.hdfsFileInfo)
+    self.lib.hdfsListDirectory.restype   = ctypes.POINTER(_hdfs.hdfsFileInfo)
+    self.lib.hdfsGetPathInfo.restype     = ctypes.POINTER(_hdfs.hdfsFileInfo)
+    self.lib.hdfsExists.restype          = ctypes.c_int32
+    self.lib.hdfsDelete.restype          = ctypes.c_int32
+    self.lib.hdfsCreateDirectory.restype = ctypes.c_int32
+    self.lib.hdfsChown.restype           = ctypes.c_int32
+    self.lib.hdfsChmod.restype           = ctypes.c_int32
+    self.lib.hdfsMove.restype            = ctypes.c_int32
+    self.lib.hdfsCopy.restype            = ctypes.c_int32
+    self.hdfsFileInfo_size               = ctypes.sizeof(_hdfs.hdfsFileInfo)
 
     logging.debug("Building HDFS interface")
     self.bld = self.lib.hdfsNewBuilder()
@@ -198,28 +199,6 @@ class _hdfs:
     path_obj = _hdfs.info(path_info)
     self.lib.hdfsFreeFileInfo(path_info, 1)
     return path_obj
-
-  def list_dir(self, path, return_objs = False):
-    if path.startswith('/hdfs'):
-      path_obj = self.get_path_info(path) if type(path) == str else path
-      nof_entries = ctypes.c_int()
-      dir_ptr = self.lib.hdfsListDirectory(self.fs, path_obj.url, ctypes.byref(nof_entries))
-      if not dir_ptr:
-        raise NoSuchPathException(path)
-
-      entries = []
-      for idx in range(nof_entries.value):
-        void_p  = ctypes.cast(dir_ptr, ctypes.c_voidp).value + idx * self.hdfsFileInfo_size
-        cur_ptr = ctypes.cast(void_p, ctypes.POINTER(_hdfs.hdfsFileInfo))
-        path_obj = _hdfs.info(cur_ptr)
-        entries.append(path_obj if return_objs else path_obj.name)
-      self.lib.hdfsFreeFileInfo(dir_ptr, nof_entries)
-
-      return entries
-    else:
-      if return_objs:
-        raise hdfsException("Cannot return HDFS objects for path: %s" % path)
-      return os.listdir(path)
 
   def exists(self, path):
     is_local = path.startswith('/hdfs')
@@ -280,9 +259,31 @@ class _hdfs:
   def getpermissions(self, path):
     if path.startswith('/hdfs'):
       path_obj = self.get_path_info(path)
-      return path_obj.permissions
+      return int(oct(path_obj.permissions)[-3:])
     else:
       return int(oct(os.stat(path)[stat.ST_MODE])[-3:])
+  
+  def list_dir(self, path, return_objs = False):
+    if path.startswith('/hdfs'):
+      path_obj = self.get_path_info(path) if type(path) == str else path
+      nof_entries = ctypes.c_int()
+      dir_ptr = self.lib.hdfsListDirectory(self.fs, path_obj.url, ctypes.byref(nof_entries))
+      if not dir_ptr:
+        raise NoSuchPathException(path)
+
+      entries = []
+      for idx in range(nof_entries.value):
+        void_p  = ctypes.cast(dir_ptr, ctypes.c_voidp).value + idx * self.hdfsFileInfo_size
+        cur_ptr = ctypes.cast(void_p, ctypes.POINTER(_hdfs.hdfsFileInfo))
+        path_obj = _hdfs.info(cur_ptr)
+        entries.append(path_obj if return_objs else path_obj.name)
+      self.lib.hdfsFreeFileInfo(dir_ptr, nof_entries)
+
+      return entries
+    else:
+      if return_objs:
+        raise hdfsException("Cannot return HDFS objects for path: %s" % path)
+      return os.listdir(path)
 
   def copy(self, src, dst):
     is_local_src = not src.startswith('/hdfs')
