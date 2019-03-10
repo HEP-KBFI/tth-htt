@@ -30,9 +30,13 @@ class HDFSTestCase(unittest.TestCase):
     cls.userHDFSdir = os.path.join('/hdfs/local', cls.userName)
     cls.userHomeDir = os.path.join('/home',       cls.userName)
 
-    subdirName = 'hdfstest/subdir'
-    cls.userHDFSsubDir = os.path.join(cls.userHDFSdir, subdirName)
-    cls.userHomeSubDir = os.path.join(cls.userHomeDir, subdirName)
+    mainDirName = 'hdfstest'
+    cls.userHDFSmainDir = os.path.join(cls.userHDFSdir, mainDirName)
+    cls.userHomeMainDir = os.path.join(cls.userHomeDir, mainDirName)
+
+    subdirName = 'subdir'
+    cls.userHDFSsubDir = os.path.join(cls.userHDFSmainDir, subdirName)
+    cls.userHomeSubDir = os.path.join(cls.userHomeMainDir, subdirName)
 
     nonExistingUserName = "thisUserDoesNotExist"
     cls.nonExistingHDFSdir = os.path.join('/hdfs/local', nonExistingUserName)
@@ -72,11 +76,18 @@ class HDFSTestCase(unittest.TestCase):
     cls.userHomeFileCopy = cls.userHomeFile + '.copy'
     cls.userHDFSfileCopy2 = cls.userHDFSfileCopy + '2'
     cls.userHomeFileCopy2 = cls.userHomeFileCopy + '2'
+    cls.userHDFSsubDirFile = os.path.join(cls.userHDFSsubDir, fileBaseName)
+    cls.userHomeSubDirFile = os.path.join(cls.userHomeSubDir, fileBaseName)
+    cls.userHDFSsubDir2 = cls.userHDFSsubDir + '2'
+    cls.userHomeSubDir2 = cls.userHomeSubDir + '2'
+    cls.userHDFSsubDir3 = cls.userHDFSsubDir + '3'
+    cls.userHomeSubDir3 = cls.userHomeSubDir + '3'
+    cls.userHDFSsubDir4 = cls.userHDFSsubDir + '4'
+    cls.userHomeSubDir4 = cls.userHomeSubDir + '4'
 
   @classmethod
   def tearDownClass(cls):
-    os.remove(cls.userHDFSfile)
-    os.remove(cls.userHomeFile)
+    pass
 
   def testFileExists(self):
     self.assertTrue(hdfs.exists(self.userHDFSdir))
@@ -181,30 +192,68 @@ class HDFSTestCase(unittest.TestCase):
   def testMkdirsFail(self):
     self.assertEqual(hdfs.mkdirs(self.nonExistingHDFSdir), -1)
     self.assertEqual(hdfs.mkdirs(self.nonExistingHomeDir), -1)
-    self.assertEqual(hdfs.mkdirs(self.userHDFSfile), -1)
-    self.assertEqual(hdfs.mkdirs(self.userHomeFile), -1)
+    self.assertRaises(hdfsException, lambda: hdfs.mkdirs(self.userHDFSfile))
+    self.assertRaises(hdfsException, lambda: hdfs.mkdirs(self.userHomeFile))
 
   def testMkdirs(self):
     self.assertEqual(hdfs.mkdirs(self.userHDFSsubDir), 0)
     self.assertEqual(hdfs.mkdirs(self.userHomeSubDir), 0)
-
-  def testCopyFail(self):
-    self.assertEqual(hdfs.copy(self.nonExistingHDFSfile, self.userHDFSfileCopy), -1)
-    self.assertEqual(hdfs.copy(self.nonExistingHomeFile, self.userHDFSfileCopy), -1)
-    self.assertEqual(hdfs.copy(self.nonExistingHDFSfile, self.userHomeFileCopy), -1)
-    self.assertEqual(hdfs.copy(self.nonExistingHomeFile, self.userHomeFileCopy), -1)
 
   def testCopy(self):
     self.assertEqual(hdfs.copy(self.userHDFSfile, self.userHDFSfileCopy), 0)
     self.assertEqual(hdfs.copy(self.userHomeFile, self.userHomeFileCopy), 0)
     self.assertEqual(hdfs.copy(self.userHomeFile, self.userHDFSfileCopy2), 0)
     self.assertEqual(hdfs.copy(self.userHDFSfile, self.userHomeFileCopy2), 0)
+    self.assertEqual(hdfs.copy(self.userHDFSsubDir, self.userHDFSsubDir2, overwrite = True), 0)
+    self.assertEqual(hdfs.copy(self.userHomeSubDir, self.userHomeSubDir2, overwrite = True), 0)
+    self.assertEqual(hdfs.copy(self.userHDFSsubDir, self.userHomeSubDir3, overwrite = True), 0)
+    self.assertEqual(hdfs.copy(self.userHomeSubDir, self.userHDFSsubDir3, overwrite = True), 0)
+
+  def testCopyFail(self):
+    self.assertRaises(NoSuchPathException, lambda: hdfs.copy(self.nonExistingHDFSfile, self.userHDFSfileCopy))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.copy(self.nonExistingHomeFile, self.userHDFSfileCopy))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.copy(self.nonExistingHDFSfile, self.userHomeFileCopy))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.copy(self.nonExistingHomeFile, self.userHomeFileCopy))
+    self.assertRaises(hdfsException, lambda: hdfs.copy(self.userHDFSsubDir, self.userHDFSsubDir2, overwrite = False))
+    self.assertRaises(hdfsException, lambda: hdfs.copy(self.userHomeSubDir, self.userHomeSubDir2, overwrite = False))
+    self.assertRaises(hdfsException, lambda: hdfs.copy(self.userHDFSsubDir, self.userHomeSubDir3, overwrite = False))
+    self.assertRaises(hdfsException, lambda: hdfs.copy(self.userHomeSubDir, self.userHDFSsubDir3, overwrite = False))
+
+  def testMoveFail(self):
+    self.assertEqual(hdfs.move(self.userHDFSfile, self.nonExistingHDFSfile), -1)
+    self.assertEqual(hdfs.move(self.userHomeFile, self.nonExistingHDFSfile), -1)
+    self.assertEqual(hdfs.move(self.userHDFSfile, self.nonExistingHomeFile), -1)
+    self.assertEqual(hdfs.move(self.userHomeFile, self.nonExistingHomeFile), -1)
+    self.assertRaises(NoSuchPathException, lambda: hdfs.move(self.nonExistingHDFSfile, self.nonExistingHDFSfile))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.move(self.nonExistingHDFSfile, self.userHDFSfile))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.move(self.nonExistingHDFSfile, self.userHomeFile))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.move(self.nonExistingHomeFile, self.nonExistingHDFSfile))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.move(self.nonExistingHomeFile, self.userHDFSfile))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.move(self.nonExistingHomeFile, self.userHomeFile))
 
   def testMove(self):
-    pass
+    self.assertEqual(hdfs.move(self.userHDFSfileCopy, self.userHDFSsubDirFile), 0)
+    self.assertEqual(hdfs.move(self.userHomeFileCopy, self.userHomeSubDirFile), 0)
+    self.assertEqual(hdfs.move(self.userHDFSfileCopy2, self.userHomeSubDirFile), 0)
+    self.assertEqual(hdfs.move(self.userHomeFileCopy2, self.userHDFSsubDirFile), 0)
+    self.assertEqual(hdfs.move(self.userHDFSsubDir2, self.userHDFSsubDir), 0)
+    self.assertEqual(hdfs.move(self.userHomeSubDir2, self.userHomeSubDir), 0)
+    self.assertEqual(hdfs.move(self.userHDFSsubDir3, self.userHomeSubDir), 0)
+    self.assertEqual(hdfs.move(self.userHomeSubDir3, self.userHDFSsubDir), 0)
+
+  def testRemoveFail(self):
+    self.assertRaises(NoSuchPathException, lambda: hdfs.remove(self.nonExistingHDFSfile))
+    self.assertRaises(NoSuchPathException, lambda: hdfs.remove(self.nonExistingHomeFile))
+    self.assertEqual(hdfs.remove(self.userHDFSsubDir, recursive = False), -1)
+    self.assertEqual(hdfs.remove(self.userHomeSubDir, recursive = False), -1)
 
   def testRemove(self):
-    pass
+    self.assertEqual(hdfs.remove(self.userHDFSsubDir, recursive = True), 0)
+    self.assertEqual(hdfs.remove(self.userHomeSubDir, recursive = True), 0)
+    self.assertEqual(hdfs.remove(self.userHDFSmainDir), 0)
+    self.assertEqual(hdfs.remove(self.userHomeMainDir), 0)
+    self.assertEqual(hdfs.remove(self.userHDFSfile), 0)
+    self.assertEqual(hdfs.remove(self.userHomeFile), 0)
 
   def testChown(self):
     pass
@@ -238,8 +287,12 @@ def suite():
     "testListDirObjects",
     "testMkdirsFail",
     "testMkdirs",
-    "testCopyFail",
     "testCopy",
+    "testCopyFail",
+    "testMoveFail",
+    "testMove",
+    "testRemoveFail",
+    "testRemove",
   ]
   for test in tests:
     testSuite.addTest(HDFSTestCase(test))

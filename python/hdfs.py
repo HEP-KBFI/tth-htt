@@ -286,7 +286,16 @@ class _hdfs:
         raise hdfsException("Cannot return HDFS objects for path: %s" % path)
       return list(map(lambda entry: os.path.join(path, entry), os.listdir(path)))
 
-  def copy(self, src, dst):
+  def copy(self, src, dst, overwrite = True):
+    if not self.exists(src):
+      raise NoSuchPathException(dst)
+
+    if self.isdir(dst):
+      if overwrite:
+        self.remove(dst)
+      else:
+        raise hdfsException("Destination '%s' is a directory but overwriting disabled" % dst)
+
     is_local_src = not src.startswith('/hdfs')
     is_local_dst = not dst.startswith('/hdfs')
     src_defused = re.sub('^/hdfs', '', src)
@@ -294,8 +303,11 @@ class _hdfs:
 
     if is_local_src and is_local_dst:
       try:
-        shutil.copy(src_defused, dst_defused)
-      except IOError:
+        if self.isdir(src_defused):
+          shutil.copytree(src_defused, dst_defused)
+        else:
+          shutil.copy2(src_defused, dst_defused)
+      except OSError:
         return -1
       return 0
     elif is_local_src and not is_local_dst:
@@ -308,6 +320,9 @@ class _hdfs:
       raise RuntimeError("Impossible error")
 
   def move(self, src, dst):
+    if not self.exists(src):
+      raise NoSuchPathException(src)
+
     is_local_src = not src.startswith('/hdfs')
     is_local_dst = not dst.startswith('/hdfs')
     src_defused = re.sub('^/hdfs', '', src)
@@ -328,20 +343,29 @@ class _hdfs:
     else:
       raise RuntimeError("Impossible error")
 
-  def remove(self, path):
+  def remove(self, path, recursive = True):
+    if not self.exists(path):
+      raise NoSuchPathException(path)
+
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
-      return self.lib.hdfsDelete(self.fs, path_defused)
+      return self.lib.hdfsDelete(self.fs, path_defused, int(recursive))
     else:
       try:
-        shutil.rmtree(path)
-      except IOError:
+        if self.isdir(path):
+          if recursive:
+            shutil.rmtree(path)
+          else:
+            os.rmdir(path)
+        else:
+          os.remove(path)
+      except OSError:
         return -1
       return 0
 
   def mkdirs(self, path):
     if self.isfile(path):
-      return -1
+      raise hdfsException("Cannot create directory since the requested path is a file: %s" % path)
 
     if path.startswith('/hdfs'):
       path_defused = re.sub('^/hdfs', '', path)
