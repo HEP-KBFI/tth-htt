@@ -121,6 +121,7 @@ class _hdfs:
       self.name        = re.sub('^hdfs://', '/hdfs', self.url)
       self.lastMod     = _hdfs.get_dt(hdfsFileInfoObject.contents.mLastMod)
       self.size        = hdfsFileInfoObject.contents.mSize
+      self.replication = hdfsFileInfoObject.contents.mReplication
       self.owner       = hdfsFileInfoObject.contents.mOwner
       self.group       = hdfsFileInfoObject.contents.mGroup
       self.permissions = hdfsFileInfoObject.contents.mPermissions
