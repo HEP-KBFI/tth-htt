@@ -32,9 +32,6 @@
 #TODO: add support for eos and XRD protocols
 #TODO: disentangle the computation of era-based integrated luminosity and DAS queries on data samples
 
-#NB! ROOT must be imported BEFORE hdfs module
-import ROOT
-
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size, create_if_not_exists
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
@@ -51,6 +48,9 @@ import ast
 import getpass
 import multiprocessing
 import signal
+
+import ROOT
+ROOT.gSystem.ResetSignals()
 
 class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
   def _split_lines(self, text, width):
