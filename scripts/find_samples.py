@@ -473,7 +473,7 @@ if __name__ == '__main__':
   )
   parser.add_argument('-C', '--custom-strings',
     type = str, nargs = '+', dest = 'custom_strings', metavar = 'str', default = [], required = False,
-    help = 'R|Custom string(s) a dataset name must contain',
+    help = 'R|Custom string(s) a dataset name must (^+) or must not (^x) contain',
   )
   parser.add_argument('-t', '--tmp-dir',
     type = str, dest = 'tmp_dir', metavar = 'path', required = False,
@@ -542,6 +542,20 @@ if __name__ == '__main__':
   custom_strings = args.custom_strings
   lumi_pool = None
 
+  custom_strings_allowed  = list(filter(lambda custom_string: custom_string.startswith('+'), custom_strings))
+  custom_strings_rejected = list(filter(lambda custom_string: custom_string.startswith('x'), custom_strings))
+  assert(not (set(custom_strings_allowed) & set(custom_strings_rejected)))
+  custom_strings_uncategorized = list(set(custom_strings) - set(custom_strings_allowed) - set(custom_strings_rejected))
+  if custom_strings_uncategorized:
+    raise ValueError(
+      "Found unspecified strings the DAS name should or should not contain: %s" % \
+      ', '.join(custom_strings_uncategorized)
+    )
+  custom_strings_allowed  = list(map(lambda custom_string: custom_string[1:], custom_strings_allowed))
+  custom_strings_rejected = list(map(lambda custom_string: custom_string[1:], custom_strings_rejected))
+  print("Requiring DAS names to contain one of these strings:     %s" % ', '.join(custom_strings_allowed))
+  print("Requiring DAS names to not contain one of these strings: %s" % ', '.join(custom_strings_rejected))
+
   if sum_events_file and not os.path.isfile(sum_events_file):
     raise ValueError('No such file: %s' % sum_events_file)
 
@@ -604,7 +618,11 @@ if __name__ == '__main__':
 
         if not MC_REGEX.match(das_name) and not PRIVATE_REGEX.match(das_name):
           raise ValueError("Error: line '%s' does not correspond to proper DBS name" % das_name)
-        if custom_strings and not any(map(lambda custom_string: custom_string in das_name, custom_strings)):
+
+        if custom_strings and (\
+            not any(map(lambda custom_string: custom_string in das_name, custom_strings_allowed)) or \
+                any(map(lambda custom_string: custom_string in das_name, custom_strings_rejected))   \
+            ):
           continue
         das_query_results[das_name] = {
           'sample_category' : sample_category,
@@ -781,7 +799,10 @@ if __name__ == '__main__':
       collection_match = collection_regex.match(data_sample)
       if not collection_match:
         continue
-      if custom_strings and not any(map(lambda custom_string: custom_string in data_sample, custom_strings)):
+      if custom_strings and (\
+          not any(map(lambda custom_string: custom_string in data_sample, custom_strings_allowed)) or \
+              any(map(lambda custom_string: custom_string in data_sample, custom_strings_rejected))   \
+          ):
         continue
       primary_dataset    = collection_match.group(PDS_KEY)
       aqcuisition_period = collection_match.group(AQC_KEY)
