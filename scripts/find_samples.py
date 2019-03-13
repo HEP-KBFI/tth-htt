@@ -32,7 +32,11 @@
 #TODO: add support for eos and XRD protocols
 #TODO: disentangle the computation of era-based integrated luminosity and DAS queries on data samples
 
+#NB! ROOT must be imported BEFORE hdfs module
+import ROOT
+
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size, create_if_not_exists
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import re
 import datetime
@@ -47,7 +51,6 @@ import ast
 import getpass
 import multiprocessing
 import signal
-import ROOT
 
 class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
   def _split_lines(self, text, width):
@@ -196,7 +199,7 @@ def get_crab_string(dataset_name, paths):
           path_candidate = line.rstrip('\n')
           if not path_candidate:
             continue
-          if not os.path.isdir(path_candidate):
+          if not hdfs.isdir(path_candidate):
             raise RuntimeError('Not a directory: %s (dataset_name = %s, paths = %s)' % (path_candidate, dataset_name, str(paths)))
           paths_.append(path_candidate)
     else:
@@ -207,13 +210,13 @@ def get_crab_string(dataset_name, paths):
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
     primary_name = dataset_name.split('/')[1]
     full_path = os.path.join(path, primary_name, requestName)
-    if os.path.isdir(full_path):
+    if hdfs.isdir(full_path):
       return requestName
     # is a hack... I cannot explain where this magic number '152' comes from but it works
     if len(requestName) > 152:
       requestName = requestName[:152]
     full_path = os.path.join(path, primary_name, requestName)
-    if os.path.isdir(full_path):
+    if hdfs.isdir(full_path):
       return requestName
   return ''
 
