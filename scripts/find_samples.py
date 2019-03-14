@@ -756,6 +756,8 @@ if __name__ == '__main__':
     if sum_events_file:
       with open(sum_events_file, 'r') as sum_events_file_ptr:
         for line in sum_events_file_ptr:
+          if line.startswith('#'):
+            continue
           line_split = line.rstrip('\n').split()
           if line_split:
             sum_events_flattened.append(line_split)
