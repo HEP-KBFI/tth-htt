@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-03-13 04:55:15 with the following command:
-# find_samples.py -V -m python/samples/metaDict_2018_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2018_17Sep18.txt -p SingleElectron SingleMuon DoubleEG DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_314472-325175_13TeV_EarlyReReco2018ABC_Collisions18_JSON.txt -v 10_2_4_patch1 -r 2018 -C +17Sep2018
+# file generated at 2019-03-14 15:34:45 with the following command:
+# find_samples.py -V -m python/samples/metaDict_2018_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2018_17Sep18.txt -p SingleElectron SingleMuon DoubleEG DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt -v 10_2_4_patch1 -r 2018 -C +17Sep2018 +Run2018D-PromptReco
 
 meta_dictionary = OD()
 
@@ -50,6 +50,21 @@ meta_dictionary["/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
   ("comment",               "status: VALID; size: 3.65TB; nevents: 110.03M; release: 10_2_4_patch1; last modified: 2018-10-10 07:01:43"),
 ])
 
+meta_dictionary["/SingleMuon/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "SingleMuon_Run2018D_PromptReco_v2"),
+  ("nof_db_events",         506717754),
+  ("nof_db_files",          5533),
+  ("fsize_db",              17033911936949),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+  ("run_range",             [320500, 325175]),
+  ("golden_run_range",      [320673, 325172]),
+  ("comment",               "status: VALID; size: 17.03TB; nevents: 506.72M; release: 10_2_1,10_2_5_patch1; last modified: 2018-08-01 16:17:08"),
+])
+
 meta_dictionary["/DoubleMuon/Run2018A-17Sep2018-v2/MINIAOD"] =  OD([
   ("crab_string",           ""),
   ("sample_category",       "data_obs"),
@@ -93,6 +108,21 @@ meta_dictionary["/DoubleMuon/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
   ("run_range",             [319337, 320065]),
   ("golden_run_range",      [319337, 320065]),
   ("comment",               "status: VALID; size: 1.37TB; nevents: 34.57M; release: 10_2_4_patch1; last modified: 2018-10-29 11:52:00"),
+])
+
+meta_dictionary["/DoubleMuon/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleMuon_Run2018D_PromptReco_v2"),
+  ("nof_db_events",         169225355),
+  ("nof_db_files",          2353),
+  ("fsize_db",              6064326232889),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+  ("run_range",             [320500, 325175]),
+  ("golden_run_range",      [320673, 325172]),
+  ("comment",               "status: VALID; size: 6.06TB; nevents: 169.23M; release: 10_2_1,10_2_5_patch1; last modified: 2018-08-02 03:29:41"),
 ])
 
 meta_dictionary["/MuonEG/Run2018A-17Sep2018-v1/MINIAOD"] =  OD([
@@ -140,6 +170,21 @@ meta_dictionary["/MuonEG/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
   ("comment",               "status: VALID; size: 700.75GB; nevents: 15.65M; release: 10_2_4_patch1; last modified: 2019-01-23 05:46:20"),
 ])
 
+meta_dictionary["/MuonEG/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "MuonEG_Run2018D_PromptReco_v2"),
+  ("nof_db_events",         71962991),
+  ("nof_db_files",          1373),
+  ("fsize_db",              2962155247807),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+  ("run_range",             [320500, 325175]),
+  ("golden_run_range",      [320673, 325172]),
+  ("comment",               "status: VALID; size: 2.96TB; nevents: 71.96M; release: 10_2_1,10_2_5_patch1; last modified: 2018-08-02 04:37:51"),
+])
+
 meta_dictionary["/Tau/Run2018A-17Sep2018-v1/MINIAOD"] =  OD([
   ("crab_string",           ""),
   ("sample_category",       "data_obs"),
@@ -183,5 +228,20 @@ meta_dictionary["/Tau/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
   ("run_range",             [319337, 320065]),
   ("golden_run_range",      [319337, 320065]),
   ("comment",               "status: VALID; size: 1.27TB; nevents: 31.97M; release: 10_2_4_patch1; last modified: 2018-10-22 12:02:05"),
+])
+
+meta_dictionary["/Tau/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2018D_PromptReco_v2"),
+  ("nof_db_events",         167889795),
+  ("nof_db_files",          2372),
+  ("fsize_db",              6001276268600),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+  ("run_range",             [320497, 325175]),
+  ("golden_run_range",      [320673, 325172]),
+  ("comment",               "status: VALID; size: 6.00TB; nevents: 167.89M; release: 10_2_1,10_2_5_patch1; last modified: 2018-08-01 10:55:12"),
 ])
 
