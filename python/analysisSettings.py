@@ -1,12 +1,18 @@
 # Integrated luminosity
 
-# Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/756030a1229b9ad037c4ef59f8755537508114e9/test/datasets_data_2016_v1.txt#L50
-# Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/688.html
+# Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/dde7a1e5640f7a66ad635cb6f618dd1119bc1244/test/datasets/txt/datasets_data_2016_17Jul18.txt#L50
+# Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/688.html & PAS LUM-17-001
 lumi_2016 = 35.922e+3 # 1/pb (uncertainty: 2.5%)
 
-# Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/4564463eed45251a4fd274ed754b1a37bae8e98e/test/datasets_data_2017_v2.txt#L33
-# Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/761/1.html
+# Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/dde7a1e5640f7a66ad635cb6f618dd1119bc1244/test/datasets/txt/datasets_data_2017_31Mar18.txt#L38
+# Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/761/1.html & PAS LUM-17-004
 lumi_2017 = 41.529e+3 # 1/pb (uncertainty: 2.3%)
+
+# Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/dde7a1e5640f7a66ad635cb6f618dd1119bc1244/test/datasets/txt/datasets_data_2018_17Sep18.txt#L24
+# Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/860.html & PAS LUM-18-002
+lumi_2018 = 59.741e+3 # 1/pb (uncertainty: 2.5%)
+
+# Reproduced
 
 def get_lumi(era):
   if era == "2016":
@@ -14,7 +20,7 @@ def get_lumi(era):
   elif era == "2017":
     return lumi_2017
   elif era == "2018":
-    raise ValueError("Implement me!")
+    return lumi_2018
   else:
     raise ValueError("Invalid era: %s" % era)
 
