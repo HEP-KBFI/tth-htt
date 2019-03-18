@@ -62,7 +62,7 @@ while read LINE; do
     break;
   fi
 
-  if [ ! -f "$LINE" ]; then
+  if [[ ! -f "$LINE" ]] && [[ ! $LINE =~ ^root://cms-xrd-global.cern.ch ]]; then
     echo "Input file $LINE does not exist";
     exit 6;
   fi
