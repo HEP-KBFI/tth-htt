@@ -45,16 +45,17 @@ if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   exit 2;
 fi
 
-NANO_MODULES_DATA="absIso,tauIDLog_$ERA,jetSubstructureObservablesHTTv2,trigObjMatcher"
-NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,puWeight$ERA($PILEUP;$PROCESS_NAME),jetmetUncertainties$ERA"
+NANO_MODULES_DATA="absIso,tauIDLog,jetSubstructureObservablesHTTv2,trigObjMatcher"
+NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,puWeight${ERA}($PILEUP;$SAMPLE_NAME),\
+jetmetUncertainties${ERA},btagSF_deep_${ERA},btagSF_deepFlav_${ERA}"
+
 if [ "$ERA" = "2016" ]; then
   NANO_MODULES_DATA="$NANO_MODULES_DATA,egammaId"
-  NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_$ERA,egammaId,flagTypeConverter";
+  NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_${ERA},egammaId";
 elif [ "$ERA" == "2017" ]; then
-  NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_deep_$ERA";
+  NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_${ERA}";
 elif [ "$ERA" == "2018" ]; then
-  echo "Implement me!";
-  exit 3;
+  :
 else
   echo "Invalid era = '$ERA'";
   exit 3;
@@ -78,13 +79,13 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
     test_exit_code $?
     echo "Removing useless branches: $F_i -> $F_ii"
     if [ "$IS_MC" == "True" ]; then
-      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "countHistogramAll_$ERA" \
-                       -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt                   \
+      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules countHistogramAll \
+                       -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt            \
                        . $F_i
     else
-      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "countHistogramAll_$ERA" \
-                       -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt                   \
-                       -J $GOLDEN_JSON                                                                     \
+      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules countHistogramAll \
+                       -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt            \
+                       -J $GOLDEN_JSON                                                              \
                        . $F_i
     fi
     test_exit_code $?
