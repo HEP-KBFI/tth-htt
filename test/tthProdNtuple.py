@@ -55,6 +55,10 @@ golden_json_2017 = os.path.join(
   os.environ['CMSSW_BASE'], 'src/tthAnalysis/NanoAOD/data',
   'Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt'
 )
+golden_json_2018 = os.path.join(
+  os.environ['CMSSW_BASE'], 'src/tthAnalysis/NanoAOD/data',
+  'Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt'
+)
 
 # Use the arguments
 version = "%s_w%sPresel_%s_%s" % (
@@ -80,6 +84,9 @@ if mode == 'sync':
       from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD_sync import samples_2018 as samples
     else:
       raise ValueError("Invalid era: %s" % era)
+  pileup       = os.path.join(
+    os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s_sync.root' % era
+  )
 elif mode == 'leptonFR_sync':
   if preselection:
     raise ValueError("Does not make sense to apply preselection to Ntuples used in lepton FR sync")
@@ -197,7 +204,7 @@ if era == "2016":
 elif era == "2017":
   golden_json = golden_json_2017
 elif era == "2018":
-  raise ValueError("Implement me!")
+  golden_json = golden_json_2018
 else:
   raise ValueError("Invalid era: %s" % era)
 
