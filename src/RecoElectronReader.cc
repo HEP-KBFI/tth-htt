@@ -67,14 +67,12 @@ RecoElectronReader::setBranchNames()
 {
   if (numInstances_[branchName_obj_] == 0)
   {
+    // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations?rev=12#Fall17v2
+    // "we consider these the best possible IDs right now with the best signal"
+    // "can use for 2016 if you want to use a consistent ID for all years"
+    const std::string mvaString = RecoElectron::useNoIso ? "mvaFall17V2noIso" : "mvaFall17V2Iso";
+
     branchName_eCorr_ = Form("%s_%s", branchName_obj_.data(), "eCorr");
-    std::string mvaString;
-    switch(era_)
-    {
-      case kEra_2016: mvaString = "mvaSpring16";                                              break;
-      case kEra_2017: mvaString = RecoElectron::useNoIso ? "mvaFall17noIso" : "mvaFall17Iso"; break;
-      default:        throw cmsException(this, __func__, __LINE__) << "Invalid era: " << era_;
-    }
     branchName_mvaRaw_POG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
     branchName_mvaID_POG_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WPL", mvaString.data()));
     branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "sieie");

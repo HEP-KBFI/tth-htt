@@ -33,8 +33,6 @@ HadTauHistManager::HadTauHistManager(const edm::ParameterSet& cfg)
   central_or_shiftOptions_["decayModeFinding"] = { "central" };
   central_or_shiftOptions_["id_mva_dR03"] = { "central" };
   central_or_shiftOptions_["id_mva_dR05"] = { "central" };
-  central_or_shiftOptions_["id_cut_dR03"] = { "central" };
-  central_or_shiftOptions_["id_cut_dR05"] = { "central" };
   central_or_shiftOptions_["antiElectron"] = { "central" };
   central_or_shiftOptions_["antiMuon"] = { "central" };
 }
@@ -55,8 +53,6 @@ void HadTauHistManager::bookHistograms(TFileDirectory& dir)
     histogram_decayModeFinding_ = book1D(dir, "decayModeFinding", "decayModeFinding", 2, -0.5, +1.5); 
     histogram_id_mva_dR03_      = book1D(dir, "id_mva_dR03",      "id_mva_dR03",      7, -0.5, +6.5);
     histogram_id_mva_dR05_      = book1D(dir, "id_mva_dR05",      "id_mva_dR05",      7, -0.5, +6.5);
-    histogram_id_cut_dR03_      = book1D(dir, "id_cut_dR03",      "id_cut_dR03",      4, -0.5, +3.5);
-    histogram_id_cut_dR05_      = book1D(dir, "id_cut_dR05",      "id_cut_dR05",      4, -0.5, +3.5);
     histogram_antiElectron_     = book1D(dir, "antiElectron",     "antiElectron",     6, -0.5, +5.5);
     histogram_antiMuon_         = book1D(dir, "antiMuon",         "antiMuon",         3, -0.5, +2.5);
   }
@@ -89,8 +85,6 @@ HadTauHistManager::fillHistograms(const RecoHadTau & hadTau,
     fillWithOverFlow(histogram_decayModeFinding_, hadTau.decayModeFinding(), evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_id_mva_dR03_,      hadTau.id_mva_dR03(),      evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_id_mva_dR05_,      hadTau.id_mva_dR05(),      evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_id_cut_dR03_,      hadTau.id_cut_dR03(),      evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_id_cut_dR05_,      hadTau.id_cut_dR05(),      evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_antiElectron_,     hadTau.antiElectron(),     evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_antiMuon_,         hadTau.antiMuon(),         evtWeight, evtWeightErr);
   }

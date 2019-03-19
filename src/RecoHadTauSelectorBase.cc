@@ -21,10 +21,6 @@ RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
   , min_raw_mva_dR03_(-1.e+6)
   , min_id_mva_dR05_(-1000)
   , min_raw_mva_dR05_(-1.e+6)
-  , min_id_cut_dR03_(-1000)
-  , max_raw_cut_dR03_(1.e+6)
-  , min_id_cut_dR05_(-1000)
-  , max_raw_cut_dR05_(1.e+6)
   , min_antiElectron_(-1000)
   , min_antiMuon_(-1000)
   , mva_selection_(MVASelection::kNone)
@@ -78,30 +74,6 @@ RecoHadTauSelectorBase::set_min_raw_mva_dR05(double min_raw_mva_dR05)
   min_raw_mva_dR05_ = min_raw_mva_dR05;
 }
 
-void
-RecoHadTauSelectorBase::set_min_id_cut_dR03(int min_id_cut_dR03)
-{
-  min_id_cut_dR03_ = min_id_cut_dR03;
-}
-
-void
-RecoHadTauSelectorBase::set_max_raw_cut_dR03(double max_raw_cut_dR03)
-{
-  max_raw_cut_dR03_ = max_raw_cut_dR03;
-}
-
-void
-RecoHadTauSelectorBase::set_min_id_cut_dR05(int min_id_cut_dR05)
-{
-  min_id_cut_dR05_ = min_id_cut_dR05;
-}
-
-void
-RecoHadTauSelectorBase::set_max_raw_cut_dR05(double max_raw_cut_dR05)
-{
-  max_raw_cut_dR05_ = max_raw_cut_dR05;
-}
-
 int
 RecoHadTauSelectorBase::get_min_id_mva_dR03() const
 {
@@ -124,30 +96,6 @@ double
 RecoHadTauSelectorBase::get_min_raw_mva_dR05() const
 {
   return min_raw_mva_dR05_;
-}
-
-int
-RecoHadTauSelectorBase::get_min_id_cut_dR03() const
-{
-  return min_id_cut_dR03_;
-}
-
-double
-RecoHadTauSelectorBase::get_max_raw_cut_dR03() const
-{
-  return max_raw_cut_dR03_;
-}
-
-int
-RecoHadTauSelectorBase::get_min_id_cut_dR05() const
-{
-  return min_id_cut_dR05_;
-}
-
-double
-RecoHadTauSelectorBase::get_max_raw_cut_dR05() const
-{
-  return max_raw_cut_dR05_;
 }
 
 void
@@ -186,10 +134,6 @@ RecoHadTauSelectorBase::set(const std::string & cut)
   set_min_raw_mva_dR03(-1.e+6);
   set_min_id_mva_dR05(-1000);
   set_min_raw_mva_dR05(-1.e+6);
-  set_min_id_cut_dR03(-1000);
-  set_max_raw_cut_dR03(1.e+6);
-  set_min_id_cut_dR05(-1000);
-  set_max_raw_cut_dR05(1.e+6);
   mva_selection_ = MVASelection::kNone;
 
   const std::vector<std::string> cut_parts = edm::tokenize(cut, "&");
@@ -411,38 +355,6 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
     if(debug_)
     {
       std::cout << "FAILS raw_mva_dR05 >= " << min_raw_mva_dR05_ << " cut\n";
-    }
-    return false;
-  }
-  if(hadTau.id_cut_dR03() < min_id_cut_dR03_)
-  {
-    if(debug_)
-    {
-      std::cout << "FAILS id_cut_dR03 >= " << min_id_cut_dR03_ << " cut\n";
-    }
-    return false;
-  }
-  if(hadTau.raw_cut_dR03() > max_raw_cut_dR03_)
-  {
-    if(debug_)
-    {
-      std::cout << "FAILS raw_cut_dR03 <= " << max_raw_cut_dR03_ << " cut\n";
-    }
-    return false;
-  }
-  if(hadTau.id_cut_dR05() < min_id_cut_dR05_)
-  {
-    if(debug_)
-    {
-      std::cout << "FAILS id_cut_dR05 >= " << min_id_cut_dR05_ << " cut\n";
-    }
-    return false;
-  }
-  if(hadTau.raw_cut_dR05() > max_raw_cut_dR05_)
-  {
-    if(debug_)
-    {
-      std::cout << "FAILS raw_cut_dR05 <= " << max_raw_cut_dR05_ << " cut\n";
     }
     return false;
   }

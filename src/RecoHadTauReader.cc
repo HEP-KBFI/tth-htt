@@ -53,9 +53,6 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , hadTau_rawMVA_dR03_(nullptr)
   , hadTau_idMVA_dR05_(nullptr)
   , hadTau_rawMVA_dR05_(nullptr)
-  , hadTau_idCombIso_dR03_(nullptr)
-  , hadTau_rawCombIso_dR03_(nullptr)
-  , hadTau_idCombIso_dR05_(nullptr)
   , hadTau_idAgainstElec_(nullptr)
   , hadTau_idAgainstMu_(nullptr)
   , hadTau_filterBits_(nullptr)
@@ -116,10 +113,6 @@ RecoHadTauReader::~RecoHadTauReader()
     delete[] gInstance->hadTau_rawMVA_dR03_;
     delete[] gInstance->hadTau_idMVA_dR05_;
     delete[] gInstance->hadTau_rawMVA_dR05_;
-    delete[] gInstance->hadTau_idCombIso_dR03_;
-    delete[] gInstance->hadTau_rawCombIso_dR03_;
-    delete[] gInstance->hadTau_idCombIso_dR05_;
-    delete[] gInstance->hadTau_rawCombIso_dR05_;
     delete[] gInstance->hadTau_idAgainstElec_;
     delete[] gInstance->hadTau_idAgainstMu_;
     delete[] gInstance->hadTau_charge_;
@@ -158,6 +151,9 @@ RecoHadTauReader::setBranchNames()
 {
   if(numInstances_[branchName_obj_] == 0)
   {
+    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV?rev=62#Isolation
+    const std::string mvaString = "MVAoldDMdR032017v2";
+
     branchName_pt_ = Form("%s_%s", branchName_obj_.data(), "pt");
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
@@ -168,23 +164,10 @@ RecoHadTauReader::setBranchNames()
     branchName_decayMode_ = Form("%s_%s", branchName_obj_.data(), "decayMode");
     branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
     branchName_idDecayModeNewDMs_ = Form("%s_%s", branchName_obj_.data(), "idDecayModeNewDMs");
-    std::string mvaString;
-    switch(era_)
-    {
-      case kEra_2016: mvaString = "MVAoldDMdR03";       break;
-      case kEra_2017: mvaString = "MVAoldDMdR032017v2"; break;
-      case kEra_2018: throw cmsException(this, __func__, __LINE__) << "Implement me!";
-      default: throw cmsException(this, __func__, __LINE__) << "Invalid era = " << era_;
-    }
-    assert(! mvaString.empty());
     branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), Form("id%s_log", mvaString.data()));
     branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), Form("raw%s", mvaString.data()));
     branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM_log");
     branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDM");
-    branchName_idCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "idCI3hitdR03");
-    branchName_isoCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hitdR03");
-    branchName_idCombIso_dR05_ = Form("%s_%s", branchName_obj_.data(), "idCI3hit");
-    branchName_isoCombIso_dR05_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hit");
     branchName_idAgainstElec_ = Form("%s_%s", branchName_obj_.data(), "idAntiEle_log");
     branchName_idAgainstMu_ = Form("%s_%s", branchName_obj_.data(), "idAntiMu_log");
     branchName_filterBits_ = Form("%s_%s", branchName_obj_.data(), "filterBits");
@@ -231,10 +214,6 @@ RecoHadTauReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_rawMVA_dR03_, branchName_rawMVA_dR03_);
     bai.setBranchAddress(hadTau_idMVA_dR05_, branchName_idMVA_dR05_);
     bai.setBranchAddress(hadTau_rawMVA_dR05_, branchName_rawMVA_dR05_);
-    bai.setBranchAddress(hadTau_idCombIso_dR03_, "", -1);
-    bai.setBranchAddress(hadTau_rawCombIso_dR03_, "", -1.);
-    bai.setBranchAddress(hadTau_idCombIso_dR05_, "", -1);
-    bai.setBranchAddress(hadTau_rawCombIso_dR05_, "", -1.);
     bai.setBranchAddress(hadTau_idAgainstElec_, branchName_idAgainstElec_);
     bai.setBranchAddress(hadTau_idAgainstMu_, branchName_idAgainstMu_);
     bai.setBranchAddress(hadTau_filterBits_, branchName_filterBits_);
@@ -309,10 +288,6 @@ RecoHadTauReader::read() const
         gInstance->hadTau_rawMVA_dR03_[idxHadTau],
         gInstance->hadTau_idMVA_dR05_[idxHadTau],
         gInstance->hadTau_rawMVA_dR05_[idxHadTau],
-        gInstance->hadTau_idCombIso_dR03_[idxHadTau],
-        gInstance->hadTau_rawCombIso_dR03_[idxHadTau],
-        gInstance->hadTau_idCombIso_dR05_[idxHadTau],
-        gInstance->hadTau_rawCombIso_dR05_[idxHadTau],
         gInstance->hadTau_idAgainstElec_[idxHadTau],
         gInstance->hadTau_idAgainstMu_[idxHadTau],
         gInstance->hadTau_filterBits_[idxHadTau]

@@ -24,10 +24,6 @@ public:
              Double_t raw_mva_dR03,
              Int_t id_mva_dR05,
              Double_t raw_mva_dR05,
-             Int_t id_cut_dR03,
-             Double_t raw_cut_dR03,
-             Int_t id_cut_dR05,
-             Double_t raw_cut_dR05,
              Int_t antiElectron,
              Int_t antiMuon,
              UInt_t filterBits);
@@ -61,10 +57,6 @@ public:
   Double_t raw_mva_dR03() const;
   Int_t id_mva_dR05() const;
   Double_t raw_mva_dR05() const;
-  Int_t id_cut_dR03() const;
-  Double_t raw_cut_dR03() const;
-  Int_t id_cut_dR05() const;
-  Double_t raw_cut_dR05() const;
   Int_t antiElectron() const;
   Int_t antiMuon() const;
   UInt_t filterBits() const;
@@ -91,10 +83,6 @@ protected:
   Double_t raw_mva_dR03_;      ///< raw output of MVA-based tau id computed with dR=0.3 isolation cone
   Int_t id_mva_dR05_;          ///< MVA-based tau id computed with dR=0.5 isolation cone
   Double_t raw_mva_dR05_;      ///< raw output of MVA-based tau id computed with dR=0.5 isolation cone
-  Int_t id_cut_dR03_;          ///< cut-based tau id computed with dR=0.3 isolation cone
-  Double_t raw_cut_dR03_;      ///< raw isolation pT-sum of cut-based tau id computed with dR=0.3 isolation cone
-  Int_t id_cut_dR05_;          ///< cut-based tau id computed with dR=0.5 isolation cone
-  Double_t raw_cut_dR05_;      ///< raw isolation pT-sum of cut-based tau id computed with dR=0.5 isolation cone
   Int_t antiElectron_;         ///< discriminator against electrons
   Int_t antiMuon_;             ///< discriminator against muons
   UInt_t filterBits_;          ///< bitmask of matching with trigger objects

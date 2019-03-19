@@ -53,30 +53,6 @@ public:
   }
 
   void
-  set_min_id_cut_dR03(int min_id_cut_dR03)
-  {
-    this->selector_.set_min_id_cut_dR03(min_id_cut_dR03);
-  }
-
-  void
-  set_max_raw_cut_dR03(double max_raw_cut_dR03)
-  {
-    this->selector_.set_max_raw_cut_dR03(max_raw_cut_dR03);
-  }
-
-  void
-  set_min_id_cut_dR05(int min_id_cut_dR05)
-  {
-    this->selector_.set_min_id_cut_dR05(min_id_cut_dR05);
-  }
-
-  void
-  set_max_raw_cut_dR05(double max_raw_cut_dR05)
-  {
-    this->selector_.set_max_raw_cut_dR05(max_raw_cut_dR05);
-  }
-
-  void
   set(const std::string & cut)
   {
     this->selector_.set(cut);

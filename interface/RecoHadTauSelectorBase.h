@@ -22,21 +22,11 @@ public:
   void set_min_raw_mva_dR03(double min_raw_mva_dR03);
   void set_min_id_mva_dR05(int min_id_mva_dR05);
   void set_min_raw_mva_dR05(double min_raw_mva_dR05);
-  
-  void set_min_id_cut_dR03(int min_id_cut_dR03);
-  void set_max_raw_cut_dR03(double max_raw_cut_dR03);
-  void set_min_id_cut_dR05(int min_id_cut_dR05);
-  void set_max_raw_cut_dR05(double max_raw_cut_dR05);
 
   int    get_min_id_mva_dR03() const;
   double get_min_raw_mva_dR03() const;
   int    get_min_id_mva_dR05() const;
   double get_min_raw_mva_dR05() const;
-
-  int    get_min_id_cut_dR03() const;
-  double get_max_raw_cut_dR03() const;
-  int    get_min_id_cut_dR05() const;
-  double get_max_raw_cut_dR05() const;
 
   void set_min_antiElectron(int min_antiElectron);
   void set_min_antiMuon    (int min_antiMuon);
@@ -74,10 +64,6 @@ protected:
   Double_t min_raw_mva_dR03_;     ///< lower cut threshold on raw output of MVA-based tau id computed with dR=0.3 isolation cone
   Int_t min_id_mva_dR05_;         ///< lower cut threshold on MVA-based tau id computed with dR=0.5 isolation cone
   Double_t min_raw_mva_dR05_;     ///< lower cut threshold on raw output of MVA-based tau id computed with dR=0.5 isolation cone
-  Int_t min_id_cut_dR03_;         ///< lower cut threshold on cut-based tau id computed with dR=0.3 isolation cone
-  Double_t max_raw_cut_dR03_;     ///< upper cut threshold on raw isolation pT-sum of cut-based tau id computed with dR=0.3 isolation cone
-  Int_t min_id_cut_dR05_;         ///< lower cut threshold on cut-based tau id computed with dR=0.5 isolation cone
-  Double_t max_raw_cut_dR05_;     ///< upper cut threshold on raw isolation pT-sum of cut-based tau id computed with dR=0.5 isolation cone
   Int_t min_antiElectron_;        ///< lower cut threshold on discriminator against electrons
   Int_t min_antiMuon_;            ///< lower cut threshold on discriminator against muons
   std::string cut_;

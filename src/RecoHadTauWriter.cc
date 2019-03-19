@@ -38,10 +38,6 @@ RecoHadTauWriter::RecoHadTauWriter(int era,
   , hadTau_rawMVA_dR03_(nullptr)
   , hadTau_idMVA_dR05_(nullptr)
   , hadTau_rawMVA_dR05_(nullptr)
-  , hadTau_idCombIso_dR03_(nullptr)
-  , hadTau_rawCombIso_dR03_(nullptr)
-  , hadTau_idCombIso_dR05_(nullptr)
-  , hadTau_rawCombIso_dR05_(nullptr)
   , hadTau_idAgainstElec_(nullptr)
   , hadTau_idAgainstMu_(nullptr)
   , hadTau_filterBits_(nullptr)
@@ -70,10 +66,6 @@ RecoHadTauWriter::~RecoHadTauWriter()
   delete[] hadTau_rawMVA_dR03_;
   delete[] hadTau_idMVA_dR05_;
   delete[] hadTau_rawMVA_dR05_;
-  delete[] hadTau_idCombIso_dR03_;
-  delete[] hadTau_rawCombIso_dR03_;
-  delete[] hadTau_idCombIso_dR05_;
-  delete[] hadTau_rawCombIso_dR05_;
   delete[] hadTau_idAgainstElec_;
   delete[] hadTau_idAgainstMu_;
   delete[] hadTau_charge_;
@@ -105,10 +97,6 @@ void RecoHadTauWriter::setBranchNames()
   branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), Form("raw%s", mvaString.data()));
   branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM_log");
   branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDM");
-  branchName_idCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "idCI3hitdR03");
-  branchName_rawCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hitdR03");
-  branchName_idCombIso_dR05_ = Form("%s_%s", branchName_obj_.data(), "idCI3hit");
-  branchName_rawCombIso_dR05_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hit"); 
   branchName_idAgainstElec_ = Form("%s_%s", branchName_obj_.data(), "idAntiEle_log");
   branchName_idAgainstMu_ = Form("%s_%s", branchName_obj_.data(), "idAntiMu_log");
   branchName_filterBits_ = Form("%s_%s", branchName_obj_.data(), "filterBits");
@@ -135,10 +123,6 @@ void RecoHadTauWriter::setBranches(TTree * tree)
   bai.setBranch(hadTau_rawMVA_dR03_, branchName_rawMVA_dR03_);
   bai.setBranch(hadTau_idMVA_dR05_, branchName_idMVA_dR05_);
   bai.setBranch(hadTau_rawMVA_dR05_, branchName_rawMVA_dR05_);
-  bai.setBranch(hadTau_idCombIso_dR03_, branchName_idCombIso_dR03_);
-  bai.setBranch(hadTau_rawCombIso_dR03_, branchName_rawCombIso_dR03_);
-  bai.setBranch(hadTau_idCombIso_dR05_, branchName_idCombIso_dR05_);
-  bai.setBranch(hadTau_rawCombIso_dR05_, branchName_rawCombIso_dR05_);
   bai.setBranch(hadTau_idAgainstElec_, branchName_idAgainstElec_);
   bai.setBranch(hadTau_idAgainstMu_, branchName_idAgainstMu_);
   bai.setBranch(hadTau_filterBits_, branchName_filterBits_);
@@ -174,10 +158,6 @@ void RecoHadTauWriter::write(const std::vector<const RecoHadTau *> & hadTaus)
     hadTau_rawMVA_dR03_[idxHadTau] = hadTau->raw_mva_dR03();
     hadTau_idMVA_dR05_[idxHadTau] = hadTau->id_mva_dR05();
     hadTau_rawMVA_dR05_[idxHadTau] = hadTau->raw_mva_dR05();
-    hadTau_idCombIso_dR03_[idxHadTau] = hadTau->id_cut_dR03();
-    hadTau_rawCombIso_dR03_[idxHadTau] = hadTau->raw_cut_dR03();
-    hadTau_idCombIso_dR05_[idxHadTau] = hadTau->id_cut_dR05();
-    hadTau_rawCombIso_dR05_[idxHadTau] = hadTau->raw_cut_dR05();
     hadTau_idAgainstElec_[idxHadTau] = hadTau->antiElectron();
     hadTau_idAgainstMu_[idxHadTau] = hadTau->antiMuon();
     hadTau_filterBits_[idxHadTau] = hadTau->filterBits();

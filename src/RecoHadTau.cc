@@ -13,10 +13,6 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
                        Double_t raw_mva_dR03,
                        Int_t id_mva_dR05,
                        Double_t raw_mva_dR05,
-                       Int_t id_cut_dR03,
-                       Double_t raw_cut_dR03,
-                       Int_t id_cut_dR05,
-                       Double_t raw_cut_dR05,
                        Int_t antiElectron,
                        Int_t antiMuon,
                        UInt_t filterBits)
@@ -30,10 +26,6 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
   , raw_mva_dR03_(raw_mva_dR03)
   , id_mva_dR05_(id_mva_dR05)
   , raw_mva_dR05_(raw_mva_dR05)
-  , id_cut_dR03_(id_cut_dR03)
-  , raw_cut_dR03_(raw_cut_dR03)
-  , id_cut_dR05_(id_cut_dR05)
-  , raw_cut_dR05_(raw_cut_dR05)
   , antiElectron_(antiElectron)
   , antiMuon_(antiMuon)
   , filterBits_(filterBits)
@@ -136,30 +128,6 @@ Double_t
 RecoHadTau::raw_mva_dR05() const
 {
   return raw_mva_dR05_;
-}
-
-Int_t
-RecoHadTau::id_cut_dR03() const
-{
-  return id_cut_dR03_;
-}
-
-Double_t
-RecoHadTau::raw_cut_dR03() const
-{
-  return raw_cut_dR03_;
-}
-
-Int_t
-RecoHadTau::id_cut_dR05() const
-{
-  return id_cut_dR05_;
-}
-
-Double_t
-RecoHadTau::raw_cut_dR05() const
-{
-  return raw_cut_dR05_;
 }
 
 Int_t

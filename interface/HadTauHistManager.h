@@ -50,8 +50,6 @@ private:
   TH1 * histogram_decayModeFinding_;
   TH1 * histogram_id_mva_dR03_;
   TH1 * histogram_id_mva_dR05_;
-  TH1 * histogram_id_cut_dR03_;
-  TH1 * histogram_id_cut_dR05_;
   TH1 * histogram_antiElectron_;
   TH1 * histogram_antiMuon_;
 

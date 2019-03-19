@@ -374,13 +374,6 @@ private:
   Int_t * tau_decayMode;
   Int_t * tau_decayModeFindingOldDMs;
   Int_t * tau_decayModeFindingNewDMs;
-  Float_t * tau_byCombinedIsolationDeltaBetaCorr3Hits;
-  Int_t * tau_byLooseCombinedIsolationDeltaBetaCorr3Hits;
-  Int_t * tau_byMediumCombinedIsolationDeltaBetaCorr3Hits;
-  Int_t * tau_byTightCombinedIsolationDeltaBetaCorr3Hits;
-  Int_t * tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03;
-  Int_t * tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03;
-  Int_t * tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03;
   Int_t * tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT;
   Int_t * tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT;
   Int_t * tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT;

@@ -93,15 +93,6 @@ OBJECTS_MAP['tau']['branch_names'] = COMMON_BRANCH_NAMES | {
   'byVTightIsolationMVArun2v1DBdR03oldDMwLT',
   'rawMVArun2v1DBdR03oldDMwLT',
 
-  'byCombinedIsolationDeltaBetaCorr3Hits',
-  'byLooseCombinedIsolationDeltaBetaCorr3Hits',
-  'byMediumCombinedIsolationDeltaBetaCorr3Hits',
-  'byTightCombinedIsolationDeltaBetaCorr3Hits',
-
-  'byLooseCombinedIsolationDeltaBetaCorr3HitsdR03',
-  'byMediumCombinedIsolationDeltaBetaCorr3HitsdR03',
-  'byTightCombinedIsolationDeltaBetaCorr3HitsdR03',
-
   'againstMuonLoose3', 'againstMuonTight3',
 
   'againstElectronVLooseMVA6', 'againstElectronLooseMVA6',
