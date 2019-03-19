@@ -12,6 +12,8 @@ lumi_2017 = 41.529e+3 # 1/pb (uncertainty: 2.3%)
 # Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/860.html & PAS LUM-18-002
 lumi_2018 = 59.741e+3 # 1/pb (uncertainty: 2.5%)
 
+#TODO review HLT trigger paths again
+
 # Reproduced
 
 def get_lumi(era):
@@ -359,7 +361,48 @@ class Triggers(object):
       }
 
     elif era == "2018":
-      raise ValueError("Implement me!")
+      self.triggers_analysis = {
+        '3mu' : {
+          'HLT_TripleMu_10_5_5_DZ',
+          'HLT_TripleMu_12_10_5',
+        },
+        '1e2mu' : {
+          'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ',
+        },
+        '2e1mu' : {
+          'HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ',
+        },
+        '3e' : {
+        },
+        '2mu' : {
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8',
+        },
+        '1e1mu' : {
+          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ',
+          'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ',
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
+        },
+        '2e' : {
+          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL',
+        },
+        '1mu' : {
+          'HLT_IsoMu24',
+        },
+        '1e' : {
+          'HLT_Ele32_WPTight_Gsf',
+        },
+        '1mu1tau' : { # stored in SingleMuon dataset?
+          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1',
+        },
+        '1e1tau' : { # stored in SingleElectron dataset?
+          'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
+        },
+        '2tau' : { # stored in Tau dataset
+        },
+      }
+      
+      self.triggers_leptonFR = {
+      }
     else:
       raise ValueError("Invalid era: %s" % era)
 
