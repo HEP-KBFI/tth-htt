@@ -96,12 +96,26 @@ class Version:
         raise ValueError("Unparsable version: '%s'" % version)
 
   def passes(self, other):
-    if self.major >= other.major and self.minor >= other.minor and self.subminor >= other.subminor \
-      and self.is_pre_or_patch >= other.is_pre_or_patch:
-      if self.is_pre_or_patch == other.is_pre_or_patch:
-        return self.pre_or_patch_version >= other.pre_or_patch_version
+    if self.major > other.major:
       return True
-    return False
+    elif self.major < other.major:
+      return False
+    else:
+      if self.minor > other.minor:
+        return True
+      elif self.minor < other.minor:
+        return False
+      else:
+        if self.subminor > other.subminor:
+          return True
+        elif self.subminor < other.subminor:
+          return False
+        else:
+          if self.is_pre_or_patch >= other.is_pre_or_patch:
+            if self.is_pre_or_patch == other.is_pre_or_patch:
+              return self.pre_or_patch_version >= other.pre_or_patch_version
+            return True
+          return False
 
 METADICT_HEADER = '''from collections import OrderedDict as OD
 
