@@ -11,6 +11,7 @@ RecoHadTauSelectorTight::RecoHadTauSelectorTight(int era,
 { 
   min_pt_                 = 20.;
   max_absEta_             = 2.3;
+  max_dxy_                = 1000.;
   max_dz_                 = 0.2;
   apply_decayModeFinding_ = true;
   min_antiElectron_       = -1000;
@@ -18,9 +19,9 @@ RecoHadTauSelectorTight::RecoHadTauSelectorTight(int era,
   set("dR03mvaLoose");
   switch(era)
   {
-    case kEra_2016: set("dR03mvaTight"); break; // or maybe set it to dR03mvaMedium??
+    case kEra_2016:
+    case kEra_2018:
     case kEra_2017: set("dR03mvaLoose"); break;
-    case kEra_2018: throw cmsException(this) << "Implement me!";
     default: throw cmsException(this) << "Invalid era = " << era;
   }
 }

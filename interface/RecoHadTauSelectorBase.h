@@ -58,6 +58,7 @@ protected:
   bool debug_;                    ///< enable printout for debugging purposes
   Double_t min_pt_;               ///< lower cut threshold on pT
   Double_t max_absEta_;           ///< upper cut threshold on absolute value of eta
+  Double_t max_dxy_;              ///< upper cut threshold on d_{xy}, distance on the xy plane w.r.t PV
   Double_t max_dz_;               ///< upper cut threshold on d_{z}, distance on the z axis w.r.t PV
   Bool_t apply_decayModeFinding_; ///< lower cut threshold on decayModeFinding discriminator
   Int_t min_id_mva_dR03_;         ///< lower cut threshold on MVA-based tau id computed with dR=0.3 isolation cone

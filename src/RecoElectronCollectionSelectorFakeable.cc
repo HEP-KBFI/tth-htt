@@ -25,25 +25,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   switch(era_)
   {
     case kEra_2016:
-    {
-// CV: use original lepton pT instead of mixing lepton pT and cone_pT, as discussed on slide 2 of
-//     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
-      min_cone_pt_ = -1.e+3;
-      min_lepton_pt_ = 10.;
-      binning_absEta_ = { 0.8, 1.479 };
-      min_pt_trig_ = 30.;
-      max_sigmaEtaEta_trig_ = { 0.011, 0.011, 0.030 };
-      max_HoE_trig_ = { 0.10, 0.10, 0.07 };
-      max_deltaEta_trig_ = { 0.01, 0.01, 0.008 };
-      max_deltaPhi_trig_ = { 0.04, 0.04, 0.07 };
-      min_OoEminusOoP_trig_ = -0.05;
-      max_OoEminusOoP_trig_ = { 0.010, 0.010, 0.005 };
-      binning_mvaTTH_ = { 0.75 };
-      min_jetPtRatio_ = { 0.30, -1.e+3 };
-      min_mvaIDraw_ = { -1.e+3, -1.e+3 };
-      max_jetBtagCSV_ = { BtagWP_CSV_2016.at(BtagWP::kLoose), BtagWP_CSV_2016.at(BtagWP::kMedium) };
-      break;
-    }
+    case kEra_2018:
     case kEra_2017:
     {
       min_cone_pt_ = 10.; // F
@@ -61,10 +43,6 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
       min_mvaIDraw_ = { 0.50, -1.e+3 }; // F; [*]
       max_jetBtagCSV_ = { 0.07, BtagWP_deepCSV_2017.at(BtagWP::kMedium) }; // F; [*]
       break;
-    }
-    case kEra_2018:
-    {
-      throw cmsException(this) << "Implement me!";
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
@@ -231,9 +209,9 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   double pt = -1.e+3;
   switch(era_)
   {
-    case kEra_2016: pt = electron.pt();      break;
+    case kEra_2016:
+    case kEra_2018:
     case kEra_2017: pt = electron.cone_pt(); break;
-    case kEra_2018: throw cmsException(this, __func__, __LINE__) << "Implement me!";
     default: throw cmsException(this, __func__, __LINE__) << "Invalid era = " << era_;
   }
   assert(pt > 0.);

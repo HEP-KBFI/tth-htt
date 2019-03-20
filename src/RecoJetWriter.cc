@@ -41,9 +41,9 @@ RecoJetWriter::RecoJetWriter(int era,
 {
   switch(era_)
   {
-    case kEra_2016: branchName_btag_ = "CSVV2"; break;
+    case kEra_2016:
+    case kEra_2018:
     case kEra_2017: branchName_btag_ = "DeepB"; break;
-    case kEra_2018: throw cmsException(this) << "Implement me!";
     default: throw cmsException(this) << "Invalid era = " << era_;
   }
   assert(! branchName_btag_.empty());

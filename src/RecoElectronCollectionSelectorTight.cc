@@ -25,20 +25,7 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   switch(era_)
   {
     case kEra_2016:
-    {
-      min_pt_ = 10.;
-      binning_absEta_ = { 0.8, 1.479 };
-      min_pt_trig_ = 30.;
-      max_sigmaEtaEta_trig_ = { 0.011, 0.011, 0.030 };
-      max_HoE_trig_ = { 0.10, 0.10, 0.07 };
-      max_deltaEta_trig_ = { 0.01, 0.01, 0.008 };
-      max_deltaPhi_trig_ = { 0.04, 0.04, 0.07 };
-      min_OoEminusOoP_trig_ = -0.05;
-      max_OoEminusOoP_trig_ = { 0.010, 0.010, 0.005 };
-      min_mvaTTH_ = 0.75;
-      max_jetBtagCSV_ = BtagWP_CSV_2016.at(BtagWP::kMedium);
-      break;
-    }
+    case kEra_2018:
     case kEra_2017:
     {
       min_pt_ = 7.; // F
@@ -53,10 +40,6 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
       min_mvaTTH_ = 0.90; // Table 7 in AN2017_029_v5
       max_jetBtagCSV_ = BtagWP_deepCSV_2017.at(BtagWP::kMedium); // F
       break;
-    }
-    case kEra_2018:
-    {
-      throw cmsException(this) << "Implement me!";
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }

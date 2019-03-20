@@ -23,17 +23,7 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
   switch(era_)
   {
     case kEra_2016:
-    {
-// CV: use original lepton pT instead of mixing lepton pT and cone_pT, as discussed on slide 2 of
-//     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
-      min_cone_pt_ = -1.e+3;
-      min_lepton_pt_ = 10.;
-      binning_mvaTTH_ = { 0.75 };
-      min_jetPtRatio_ = { 0.30, -1.e+3 };
-      min_segmentCompatibility_ = { -1.e+3, -1.e+3 }; // F
-      max_jetBtagCSV_ = { BtagWP_CSV_2016.at(BtagWP::kLoose), BtagWP_CSV_2016.at(BtagWP::kMedium) };
-      break;
-    }
+    case kEra_2018:
     case kEra_2017:
     {
       min_cone_pt_ = 10.; // F
@@ -43,10 +33,6 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
       min_segmentCompatibility_ = { 0.3, -1.e+3 }; // F
       max_jetBtagCSV_ = { 0.07, BtagWP_deepCSV_2017.at(BtagWP::kMedium) };  // F; [*]
       break;
-    }
-    case kEra_2018:
-    {
-      throw cmsException(this) << "Implement me!";
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }

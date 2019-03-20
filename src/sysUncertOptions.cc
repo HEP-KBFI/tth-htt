@@ -1,4 +1,4 @@
-﻿#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
@@ -221,9 +221,9 @@ getBranchName_bTagWeight(const std::string & default_collectionName,
   std::map<int, std::string> branchNames_bTagWeight; //TODO make static?
   switch(era)
   {
-    case kEra_2016: branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_csvv2_shape", default_collectionName.data());   break;
-    case kEra_2017: branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_deepcsv_shape", default_collectionName.data()); break;
-    case kEra_2018: throw cmsException(__func__, __LINE__) << "Implement me!";
+    case kEra_2016:
+    case kEra_2018:
+    case kEra_2017: branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_deepjet_shape", default_collectionName.data()); break;
     default: throw cmsException(__func__, __LINE__) << "Invalid era = " << era;
   }
   branchNames_bTagWeight[kBtag_hfUp]         = branchNames_bTagWeight[kBtag_central] + "_up_hf";
@@ -255,7 +255,7 @@ getBranchName_jetPtMass(const std::string & default_collectionName,
                         bool isPt)
 {
   std::map<int, std::string> branchNames_sys; // make static?
-  if(era == kEra_2016 || era == kEra_2017)
+  if(era == kEra_2016 || era == kEra_2017 || era == kEra_2018)
   {
     branchNames_sys[kJet_central_nonNominal] = Form(
       "%s_%s", default_collectionName.data(), isPt ? "pt" : "mass"
@@ -265,10 +265,6 @@ getBranchName_jetPtMass(const std::string & default_collectionName,
     branchNames_sys[kJet_jesDown] = branchNames_sys[kJet_central_nonNominal] + "_jesTotalDown";
     branchNames_sys[kJet_jerUp]   = branchNames_sys[kJet_central_nonNominal] + "_jerUp";
     branchNames_sys[kJet_jerDown] = branchNames_sys[kJet_central_nonNominal] + "_jerDown";
-  }
-  else if(era == kEra_2018)
-  {
-    throw cmsException(__func__, __LINE__) << "Implement me!";
   }
   else
   {
@@ -285,7 +281,7 @@ getBranchName_MEt(const std::string & default_branchName,
                   bool isPt)
 {
   std::map<int, std::string> branchNames_sys; // make static?
-  if(era == kEra_2016 || era == kEra_2017)
+  if(era == kEra_2016 || era == kEra_2017 || era == kEra_2018)
   {
     branchNames_sys[kMEt_central_nonNominal] = Form(
       "%s_%s", default_branchName.data(), isPt ? "pt" : "phi"
@@ -297,10 +293,6 @@ getBranchName_MEt(const std::string & default_branchName,
     branchNames_sys[kMEt_shifted_JetResDown]        = branchNames_sys[kMEt_central_nonNominal] + "_jerDown";
     branchNames_sys[kMEt_shifted_UnclusteredEnUp]   = branchNames_sys[kMEt_central_nonNominal] + "_unclustEnUp";
     branchNames_sys[kMEt_shifted_UnclusteredEnDown] = branchNames_sys[kMEt_central_nonNominal] + "_unclustEnDown";
-  }
-  else if(era == kEra_2018)
-  {
-    throw cmsException(__func__, __LINE__) << "Implement me!";
   }
   else
   {

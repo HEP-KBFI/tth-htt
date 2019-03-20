@@ -15,7 +15,7 @@ RecoSubjetWriterAK8::RecoSubjetWriterAK8(int era,
 
 RecoSubjetWriterAK8::RecoSubjetWriterAK8(int era,
                                          const std::string & branchName_num,
-					 const std::string & branchName_obj)
+                                         const std::string & branchName_obj)
   : era_(era)
   , max_nJets_(88)
   , branchName_num_(branchName_num)
@@ -28,9 +28,9 @@ RecoSubjetWriterAK8::RecoSubjetWriterAK8(int era,
 {
   switch(era_)
     {
-    case kEra_2016: branchName_btag_ = "CSVV2"; break;
+    case kEra_2016:
+    case kEra_2018:
     case kEra_2017: branchName_btag_ = "DeepB"; break;
-    case kEra_2018: throw cmsException(this) << "Implement me!";
     default: throw cmsException(this) << "Invalid era = " << era_;
   }
   assert(! branchName_btag_.empty());

@@ -4,8 +4,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
 GenLeptonSelector::GenLeptonSelector(int era,
-				     int index,
-				     bool debug)
+                                     int index,
+                                     bool debug)
   : era_(era)
   , max_absEta_muon_(2.4)
   , max_absEta_electron_(2.5)
@@ -14,20 +14,12 @@ GenLeptonSelector::GenLeptonSelector(int era,
   switch ( era_ )
   {
     case kEra_2016:
-    {
-      min_pt_muon_ = 10.;
-      min_pt_electron_ = 10.;
-      break;
-    }
+    case kEra_2018:
     case kEra_2017:
     {
       min_pt_muon_ = 5.;
       min_pt_electron_ = 7.;
       break;
-    }
-    case kEra_2018:
-    {
-      throw cmsException(this) << "Implement me!";
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }

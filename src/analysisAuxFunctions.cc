@@ -19,9 +19,9 @@ get_BtagWP(int era,
 {
   switch(era)
   {
-    case kEra_2016: return BtagWP_CSV_2016.at(wp);
-    case kEra_2017: return BtagWP_deepCSV_2017.at(wp);
-    case kEra_2018: throw cmsException(__func__, __LINE__) << "Implement me!";
+    case kEra_2016: return BtagWP_deepJet_2016.at(wp);
+    case kEra_2017: return BtagWP_deepJet_2017.at(wp);
+    case kEra_2018: return BtagWP_deepJet_2018.at(wp);
     default: throw cmsException(__func__, __LINE__) << "Invalid era = " << era;
   }
 }
