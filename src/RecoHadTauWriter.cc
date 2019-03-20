@@ -74,6 +74,8 @@ RecoHadTauWriter::~RecoHadTauWriter()
 
 void RecoHadTauWriter::setBranchNames()
 {
+  const std::string mvaString = "MVAoldDMdR032017v2";
+
   branchName_pt_ = Form("%s_%s", branchName_obj_.data(), "pt");
   branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
   branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
@@ -84,15 +86,6 @@ void RecoHadTauWriter::setBranchNames()
   branchName_decayMode_ = Form("%s_%s", branchName_obj_.data(), "decayMode");
   branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
   branchName_idDecayModeNewDMs_ = Form("%s_%s", branchName_obj_.data(), "idDecayModeNewDMs");
-  std::string mvaString;
-  switch(era_)
-  {
-    case kEra_2016: mvaString = "MVAoldDMdR03";       break;
-    case kEra_2017: mvaString = "MVAoldDMdR032017v2"; break;
-    case kEra_2018: throw cmsException(this, __func__, __LINE__) << "Implement me!";
-    default: throw cmsException(this, __func__, __LINE__) << "Invalid era = " << era_;
-  }
-  assert(! mvaString.empty());
   branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), Form("id%s_log", mvaString.data()));
   branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), Form("raw%s", mvaString.data()));
   branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM_log");
