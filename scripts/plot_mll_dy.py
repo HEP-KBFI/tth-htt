@@ -12,6 +12,8 @@ import os
 import imp
 import array
 
+ROOT.gSystem.ResetSignals()
+
 def load_dict(path, name):
   if not os.path.isfile(path):
     logging.error("No such dictionary file: {dict_path}".format(dict_path = path))

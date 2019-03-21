@@ -3,6 +3,8 @@
 import sys
 import ROOT
 
+ROOT.gSystem.ResetSignals()
+
 def get_events_count(root_file):
     f = ROOT.TFile(root_file)
     count = f.Get("analyzedEntries")

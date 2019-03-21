@@ -8,6 +8,7 @@ import argparse
 import os
 
 ROOT.gROOT.SetBatch(True)
+ROOT.gSystem.ResetSignals()
 
 def positive_int_type(value):
   try:

@@ -9,6 +9,8 @@ import os
 import ROOT
 import array
 
+ROOT.gSystem.ResetSignals()
+
 def project(input_file, output_file, binnings):
   if not os.path.isfile(input_file):
     raise RuntimeError('No such file: %s' % input_file)

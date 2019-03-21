@@ -6,6 +6,8 @@ import collections
 import numpy as np
 import os
 
+ROOT.gSystem.ResetSignals()
+
 plot_dir = ''
 apply_mll_cut = True
 

@@ -14,6 +14,8 @@ import array
 import itertools
 import copy
 
+ROOT.gSystem.ResetSignals()
+
 def comp_weights_1(f, samples_to_stitch, split_var, apply_sf = True):
   inclusive_samples  = samples_to_stitch['inclusive']['samples']
   inclusive_binning  = samples_to_stitch['inclusive'][split_var]

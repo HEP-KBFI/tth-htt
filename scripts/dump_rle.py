@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 
-import logging, argparse, os, sys, ROOT, array
+import logging
+import argparse
+import os
+import sys
+import ROOT
+import array
+
+ROOT.gSystem.ResetSignals()
 
 def dump_rle(input_file, output_file, tree_name = 'Events',
              run_br = 'run', lumi_br = 'luminosityBlock', event_br = 'event'):

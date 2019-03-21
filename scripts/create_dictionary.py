@@ -20,6 +20,8 @@ import datetime
 import math
 import errno
 
+ROOT.gSystem.ResetSignals()
+
 HISTOGRAM_COUNT                           = 'Count'
 HISTOGRAM_COUNTWEIGHTED                   = 'CountWeighted'
 HISTOGRAM_COUNTWEIGHTED_NOPU              = 'CountWeightedNoPU'
