@@ -130,9 +130,6 @@ run_wrapped_executable() {
     echo "Copying output files: {{ outputFiles }}"
     for OUTPUT_FILE in $OUTPUT_FILES
     do
-      # Create metadata file for output histogram in the job directory
-      #python $SCRIPTS_DIR/create_histogram_metadata.py $OUTPUT_FILE
-
       # Check that input histograms are equal to output histogram
       python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_equal.py $OUTPUT_FILE {{ inputFiles }}
       EXIT_CODE=$?
