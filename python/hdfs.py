@@ -615,9 +615,11 @@ class _hdfs:
       try:
         os.makedirs(path)
       except OSError, e:
-        # Directory already exists -> pretend that is succeeded as is the case for hdfsCreateDirectory()
         if e.errno != errno.EEXIST:
           return -1
+        else:
+          # Directory already exists -> pretend that is succeeded as is the case for hdfsCreateDirectory()
+          return 0
       except:
         return -1
       else:
