@@ -1,7 +1,20 @@
 #!/usr/bin/env python
 
-import logging, argparse, os, sys, getpass, jinja2, subprocess, stat, re, io, ROOT
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+
+import logging
+import argparse
+import os
+import sys
+import getpass
+import jinja2
+import subprocess
+import stat
+import re
+import io
+import ROOT
+
+ROOT.gSystem.ResetSignals()
 
 dumPy = """#!/usr/bin/env python
 

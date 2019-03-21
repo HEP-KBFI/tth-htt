@@ -211,7 +211,7 @@ class analyzeConfig(object):
         self.triggers = triggers
         self.triggerTable = Triggers(self.era)
         self.do_sync = do_sync
-
+        
         samples_to_stitch = []
         if self.era == '2016':
           pass
@@ -224,7 +224,6 @@ class analyzeConfig(object):
           raise ValueError('Implement me!')
         else:
           raise ValueError('Invalid era: %s' % self.era)
-
         # we do not need to stitch anything when running the analysis on the sync Ntuple
         self.stitching_args = {}
         if not self.do_sync:

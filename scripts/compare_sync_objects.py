@@ -22,6 +22,8 @@ import re
 import ROOT
 import sys
 
+ROOT.gSystem.ResetSignals()
+
 # Mapping between ROOT data types and python's array data types
 TYPE_MAP = {
   'Int_t'     : 'i',

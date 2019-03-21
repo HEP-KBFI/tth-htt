@@ -24,6 +24,8 @@ import prettytable
 import csv
 import subprocess
 
+ROOT.gSystem.ResetSignals()
+
 def get_venn(sets, select_idxs, reject_idxs):
   assert(select_idxs)
   select = sets[select_idxs[0]]

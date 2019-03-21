@@ -7,6 +7,7 @@ import os
 import logging
 import uuid
 import ROOT
+ROOT.gSystem.ResetSignals()
 
 DKEY_CFGS       = "cfgs"
 DKEY_NTUPLES    = "ntuples"

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import re
 
 inputFile_ref = 'e_den_Giovanni.txt'

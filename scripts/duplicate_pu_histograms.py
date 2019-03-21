@@ -7,6 +7,8 @@ import argparse
 import os
 import ROOT
 
+ROOT.gSystem.ResetSignals()
+
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
     if text.startswith('R|'):

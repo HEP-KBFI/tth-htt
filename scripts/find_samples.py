@@ -48,8 +48,8 @@ import ast
 import getpass
 import multiprocessing
 import signal
-
 import ROOT
+
 ROOT.gSystem.ResetSignals()
 
 class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):

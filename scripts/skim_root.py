@@ -1,8 +1,21 @@
 #!/usr/bin/env python
 
-import argparse, sys, logging, os, subprocess, ROOT, re, shutil, array, time, getpass
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
 from dump_rle_parallel import dump_rle_parallel
+
+import argparse
+import sys
+import logging
+import os
+import subprocess
+import ROOT
+import re
+import shutil
+import array
+import time
+import getpass
+
+ROOT.gSystem.ResetSignals()
 
 '''The script copies a subset of an Ntuple, given RLE numbers, sample name and output file name
 
