@@ -181,6 +181,7 @@ class _hdfs:
     # Unfortunately, it not possible to completely suppress JVM stack trace in case the call to a Java library throws
     # an exception. Tried both '-XX:-StackTraceInThrowable' and '-XX:MaxJavaStackTraceDepth=0' in both 'HADOOP_OPTS'
     # and 'JAVA_TOOL_OPTIONS' environment variables but to no avail.
+    os.environ['JAVA_HOME']        = ''
     os.environ['LIBHDFS_OPTS']     = '-Xmx{}m'.format(heapsize)
     os.environ['HADOOP_CONF_DIR']  = '/etc/hadoop/conf'
     os.environ['MALLOC_ARENA_MAX'] = str(malloc_arena_max)
