@@ -22,7 +22,8 @@ def append_to_key(key, part):
 def getKey(*args):
     key = ""
     for part in args:
-        key = append_to_key(key, part)
+        if part != "":
+            key = append_to_key(key, part)
     return key
 
 def create_cfg(cfg_file_original, cfg_file_modified, lines):
