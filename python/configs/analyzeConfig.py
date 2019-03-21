@@ -211,7 +211,7 @@ class analyzeConfig(object):
         self.triggers = triggers
         self.triggerTable = Triggers(self.era)
         self.do_sync = do_sync
-
+        print "break-point 1 reached"
         samples_to_stitch = []
         if self.era == '2016':
           pass
@@ -219,12 +219,14 @@ class analyzeConfig(object):
           from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
           from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import get_branch_type
           self.stitched_weights = "tthAnalysis/HiggsToTauTau/data/stitched_weights_2017.root"
+          print "break-point 1.1 reached"
           assert (hdfs.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.stitched_weights)))
+          print "break-point 1.2 reached"
         elif self.era == '2018':
           raise ValueError('Implement me!')
         else:
           raise ValueError('Invalid era: %s' % self.era)
-
+        print "break-point 1.3 reached"
         # we do not need to stitch anything when running the analysis on the sync Ntuple
         self.stitching_args = {}
         if not self.do_sync:
@@ -332,7 +334,7 @@ class analyzeConfig(object):
                     'branch_type_xaxis' : get_branch_type(branch_name_xaxis),
                     'branch_type_yaxis' : get_branch_type(branch_name_yaxis),
                   }
-
+        print "break-point 1.4 reached"
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)
         if template_dir:
@@ -342,10 +344,11 @@ class analyzeConfig(object):
                 os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'test', 'templates'
             )
         logging.info("Templates directory is: %s" % self.template_dir)
-
+        print "break-point 1.5 reached"
         create_if_not_exists(self.configDir)
+        print "break-point 1.5.1 reached"
         create_if_not_exists(self.outputDir)
-
+        print "break-point 1.6 reached"
         self.stdout_file_path = os.path.join(self.configDir, "stdout_%s.log" % self.channel)
         self.stderr_file_path = os.path.join(self.configDir, "stderr_%s.log" % self.channel)
         self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_%s.log" % self.channel)
@@ -431,9 +434,10 @@ class analyzeConfig(object):
             raise ValueError('Implement me!')
         else:
             raise ValueError('Invalid era: %s' % self.era)
+        print "break-point 2 reached"
         if not hdfs.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
             raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
-
+        print "break-point 3 reached"
         self.hadTau_selection_relaxed = None
         if self.era == '2016':
             self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"

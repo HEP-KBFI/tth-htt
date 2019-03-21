@@ -47,6 +47,7 @@ def create_if_not_exists(dir_fullpath):
   Args:
     dir_fullpath: full path to the directory
   """
+  print("create_if_not_exists: dir_fullpath = '%s'" % dir_fullpath)
   if hdfs.mkdirs(dir_fullpath) != 0:
     raise RuntimeError("Unable to create directory %s" % dir_fullpath)
 
