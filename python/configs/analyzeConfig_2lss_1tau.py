@@ -315,7 +315,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
     """
-    print "break-point -1 reached"  
+
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
@@ -348,7 +348,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
-    print "break-point 0 reached"  
+
     numDirectories = len(self.dirs.keys())
     logging.info("Creating directory structure (numDirectories = %i)..." % numDirectories)  
     numDirectories_created = 0;
@@ -361,14 +361,14 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       numDirectories_created = numDirectories_created + 1
       if (numDirectories_created % (numDirectories / 100)) == 0:
         logging.info(" ...%i%% completed." % (numDirectories_created / (numDirectories / 100)))
-    print "break-point 1 reached"  
+
     inputFileLists = {}
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
       inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job)
-    print "break-point 2 reached"  
+
     mcClosure_regex = re.compile('Fakeable_mcClosure_(?P<type>m|e|t)_wFakeRateWeights')
     for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
       lepton_selection = lepton_and_hadTau_selection
