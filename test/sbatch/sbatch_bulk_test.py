@@ -57,7 +57,7 @@ class SbatchBulkTestCase(unittest.TestCase):
     }
 
   def setUp(self):
-    self.manager = sbatchManager(pool_id = self.pool_id, verbose = self.verbose)
+    self.manager = sbatchManager(pool_id = self.pool_id, verbose = self.verbose, max_num_submittedJobs = 50)
     self.manager.setWorkingDir(self.workingDir)
     self.manager.setLogFileDir(testDir)
     self.manager.queue          = self.queue
@@ -77,7 +77,7 @@ class SbatchBulkTestCase(unittest.TestCase):
         command_line_parameter = "",
         outputFilePath         = "",
         outputFiles            = [],
-        scriptFile             = os.path.join(testDir, testArgs['name'] % i),
+        scriptFile             = os.path.join(testDir, testArgs['name'] % i + ".sh"),
       )
     try:
       # true positive
@@ -95,9 +95,9 @@ class SbatchBulkTestCase(unittest.TestCase):
         command_line_parameter = "",
         outputFilePath         = "",
         outputFiles            = [],
-        scriptFile             = os.path.join(testDir, testArgs['name'] % i),
+        scriptFile             = os.path.join(testDir, testArgs['name'] % i + ".sh"),
       )
-      self.manager.submit_job_version2(testArgs['name'] % i, testArgs['cmd'], testDir)
+      #self.manager.submit_job_version2(testArgs['name'] % i, testArgs['cmd'], testDir)
     # fail the last job
     testArgs = self.testArguments['negative']
     self.manager.submitJob(
@@ -106,11 +106,10 @@ class SbatchBulkTestCase(unittest.TestCase):
       command_line_parameter = "",
       outputFilePath         = "",
       outputFiles            = [],
-      scriptFile             = os.path.join(testDir, testArgs['name'] % self.nof_jobs),
+      scriptFile             = os.path.join(testDir, testArgs['name'] % self.nof_jobs + ".sh"),
     )
     # if passes, true negative; otherwise true positive
     self.assertRaises(sbatchManagerRuntimeError, self.manager.waitForJobs)
-
 
 def suite():
   testSuite = unittest.TestSuite()
