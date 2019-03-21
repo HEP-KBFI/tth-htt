@@ -177,7 +177,7 @@ class sbatchManager:
         self.queue             = queue_environ if queue_environ else "small"
         self.poll_interval     = 30
         self.queuedJobs        = []
-        self.max_num_submittedJobs = max_num_submittedJobs
+        self.maxSubmittedJobs  = max_num_submittedJobs
         self.submittedJobs     = {}
         self.analysisName      = "tthAnalysis"
         self.user              = getpass.getuser()
@@ -396,7 +396,7 @@ class sbatchManager:
             raise ValueError("Please call 'setWorkingDir' before calling 'submitJob' !!")
 
         if not self.cmssw_base_dir:
-            print("cmssw_base_dir not set, setting it to '%s'" % os.environ.get('CMSSW_BASE'))
+            logging.warning("cmssw_base_dir not set, setting it to '%s'" % os.environ.get('CMSSW_BASE'))
             self.cmssw_base_dir = os.environ.get('CMSSW_BASE')
 
         job_dir = self.get_job_dir()
@@ -506,7 +506,9 @@ class sbatchManager:
 
         # Initially, all jobs are marked as submitted so we have to go through all jobs and check their exit codes
         # even if some of them have already finished
-        jobIds_set = set([ job_id for job_id in self.submittedJobs if self.submittedJobs[job_id]['status'] == Status.submitted])
+        jobIds_set = set([
+            job_id for job_id in self.submittedJobs if self.submittedJobs[job_id]['status'] == Status.submitted
+        ])
         nofJobs_left = len(jobIds_set) + len(self.queuedJobs)
         while nofJobs_left > 0:
             # Get the list of jobs submitted to batch system and convert their jobIds to a set
@@ -525,14 +527,22 @@ class sbatchManager:
             if poll_result != '':
                 polled_ids = set(poll_result.split(delimiter))
 
-            # Check if number of jobs submitted to batch system is below max_num_submittedJobs;
+            # Check if number of jobs submitted to batch system is below maxSubmittedJobs;
             # if it is, take jobs from queuedJobs list and submit them,
-            # until a total of max_num_submittedJobs is submitted to batch system
-            nofJobs_toSubmit = min(len(self.queuedJobs), self.max_num_submittedJobs - len(polled_ids))
+            # until a total of maxSubmittedJobs is submitted to batch system
+            nofJobs_toSubmit = min(len(self.queuedJobs), self.maxSubmittedJobs - len(polled_ids))
             if nofJobs_toSubmit > 0:
-                print("Jobs: submitted = %i, in queue = %i --> submitting the next %i jobs." % (len(polled_ids), len(self.queuedJobs), nofJobs_toSubmit))
+                logging.debug(
+                    "Jobs: submitted = {}, in queue = {} --> submitting the next {} jobs.".format(
+                        len(polled_ids), len(self.queuedJobs), nofJobs_toSubmit
+                    )
+                )
             else:
-                print("Jobs: submitted = %i, in queue = %i --> waiting for submitted jobs to finish processing." % (len(polled_ids), len(self.queuedJobs)))
+                logging.debug(
+                    "Jobs: submitted = {}, in queue = {} --> waiting for submitted jobs to finish processing.".format(
+                        len(polled_ids), len(self.queuedJobs)
+                    )
+                )
             for i in range(0, nofJobs_toSubmit):
                 # randomly submit a job from the queue
                 two_pow_sixteen = 65536
@@ -667,7 +677,9 @@ class sbatchManager:
                             # Job completed just fine
                             self.submittedJobs[job_id]['status'] = Status.completed
 
-            jobIds_set = set([ job_id for job_id in self.submittedJobs if self.submittedJobs[job_id]['status'] == Status.submitted])
+            jobIds_set = set([
+                job_id for job_id in self.submittedJobs if self.submittedJobs[job_id]['status'] == Status.submitted
+            ])
             nofJobs_left = len(jobIds_set) + len(self.queuedJobs)
             if nofJobs_left > 0:
                 two_pow_sixteen = 65536
