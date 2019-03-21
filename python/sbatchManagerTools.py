@@ -12,7 +12,7 @@ def createScript_sbatch(
     script_file_names,
     log_file_names    = None,
     working_dir       = None,
-    max_num_jobs      = 200000,
+    max_num_jobs      = -1,
     cvmfs_error_log   = None,
     pool_id           = '',
     cmssw_base_dir    = None,
@@ -91,7 +91,7 @@ def generate_sbatch_lines(
         log_file_name = None
         if log_file_names:
             log_file_name = log_file_names[key_file]
-        if num_jobs <= max_num_jobs:
+        if num_jobs <= max_num_jobs or max_num_jobs <= 0:
             sbatch_line = generate_sbatch_line(
                 executable = executable,
                 command_line_parameter = command_line_parameter,
@@ -107,7 +107,7 @@ def generate_sbatch_lines(
             if sbatch_line:
                 lines_sbatch.append(sbatch_line)
                 num_jobs = num_jobs + 1
-    if num_jobs > max_num_jobs:
+    if max_num_jobs > 0 and num_jobs > max_num_jobs:
         logging.warning(
           "number of jobs = %i exceeds limit of %i --> skipping submission of %i jobs !!" % \
           (num_jobs, max_num_jobs, num_jobs - max_num_jobs)

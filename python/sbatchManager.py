@@ -41,6 +41,7 @@ class sbatchManagerValidationError(sbatchManagerError):
 # Define Status
 
 class Status:
+  in_queue    = 0
   submitted   = 1
   completed   = 2
   running     = 3
@@ -155,9 +156,10 @@ class sbatchManager:
             pool_id = '',
             verbose = False,
             dry_run = False,
-            use_home = True,
+            use_home = True,                 
             max_resubmissions = 6,
             min_file_size = 20000,
+            max_num_submittedJobs = 5000 
           ):
         self.max_pool_id_length = 256
         if not pool_id:
@@ -174,7 +176,9 @@ class sbatchManager:
         verbose_environ = os.environ.get('SBATCH_VERBOSE')
         self.queue             = queue_environ if queue_environ else "small"
         self.poll_interval     = 30
-        self.jobIds            = {}
+        self.queuedJobs        = []
+        self.maxSubmittedJobs  = max_num_submittedJobs
+        self.submittedJobs     = {}
         self.analysisName      = "tthAnalysis"
         self.user              = getpass.getuser()
         self.pool_id           = pool_id
@@ -334,6 +338,7 @@ class sbatchManager:
             # Fails if stdout returned by the last line is empty
             logging.warning("Caught an error: '%s'; resubmitting %i-th time" % (cmd_outerr[1], current_retry))
             current_retry += 1
+            logging.debug("sleeping for %i seconds." % 60)
             time.sleep(60) # Let's wait for 60 seconds until the next resubmission
 
         # The job ID must be a number, so.. we have to check if it really is one
@@ -342,7 +347,7 @@ class sbatchManager:
         except ValueError:
           raise ValueError("job_id = '%s' NaN; sbatch stdout = '%s'; sbatch stderr = '%s'" % \
                             (job_id, cmd_outerr[0], cmd_outerr[1]))
-        if job_id in self.jobIds:
+        if job_id in self.submittedJobs:
             raise RuntimeError("Same job ID: %s" % job_id)
         # Is a valid job ID
         return job_id
@@ -391,7 +396,7 @@ class sbatchManager:
             raise ValueError("Please call 'setWorkingDir' before calling 'submitJob' !!")
 
         if not self.cmssw_base_dir:
-            print("cmssw_base_dir not set, setting it to '%s'" % os.environ.get('CMSSW_BASE'))
+            logging.warning("cmssw_base_dir not set, setting it to '%s'" % os.environ.get('CMSSW_BASE'))
             self.cmssw_base_dir = os.environ.get('CMSSW_BASE')
 
         job_dir = self.get_job_dir()
@@ -442,8 +447,9 @@ class sbatchManager:
             return
 
         nof_submissions += 1
-        self.jobIds[self.submit(sbatch_command)] = {
-            'status'          : Status.submitted,
+        job = {
+            'sbatch_command'  : sbatch_command,
+            'status'          : Status.in_queue,
             'log_wrap'        : wrapper_log_file,
             'log_exec'        : executable_log_file,
             'args'            : (
@@ -453,6 +459,7 @@ class sbatchManager:
             'nof_submissions' : nof_submissions,
             'outputFiles'     : outputFiles_fullpath,
         }
+        self.queuedJobs.append(job)
 
     def get_job_dir(self):
         if self.use_home:
@@ -485,7 +492,7 @@ class sbatchManager:
         # 2) grep {{comment}}
         #       Filter the jobs by the comment which must be unique per sbatchManager instance at all times
         # 3) awk '{print $1}'
-        #       Filter only the jobs IDs out
+        #       Filter only the jobIds out
         # 4) sed ':a;N;$!ba;s/\\n/{{delimiter}}/g'
         #       Place all job IDs to one line, delimited by {{delimiter}} (otherwise the logs are hard to read)
         command_template = "squeue -h -u {{user}} -o '%i %{{ pool_id_length }}k' | grep {{comment}} | awk '{print $1}' | " \
@@ -499,10 +506,12 @@ class sbatchManager:
 
         # Initially, all jobs are marked as submitted so we have to go through all jobs and check their exit codes
         # even if some of them have already finished
-        jobIds_set = set([ id_ for id_ in self.jobIds if self.jobIds[id_]['status'] == Status.submitted])
-        nofJobs_left = len(jobIds_set)
+        jobIds_set = set([
+            job_id for job_id in self.submittedJobs if self.submittedJobs[job_id]['status'] == Status.submitted
+        ])
+        nofJobs_left = len(jobIds_set) + len(self.queuedJobs)
         while nofJobs_left > 0:
-            # Get the list of running jobs and convert them to a set
+            # Get the list of jobs submitted to batch system and convert their jobIds to a set
             poll_result, poll_result_err = '', ''
             while True:
                 poll_result, poll_result_err = run_cmd(command, do_not_log = False, return_stderr = True)
@@ -512,8 +521,40 @@ class sbatchManager:
                     break
                 # sleep a minute and then try again
                 # in principle we could limit the number of retries, but hopefully that's not necessary
+                logging.debug("sleeping for %i seconds." % 60)
                 time.sleep(60)
-            polled_ids = set(poll_result.split(delimiter))
+            polled_ids = set()
+            if poll_result != '':
+                polled_ids = set(poll_result.split(delimiter))
+
+            # Check if number of jobs submitted to batch system is below maxSubmittedJobs;
+            # if it is, take jobs from queuedJobs list and submit them,
+            # until a total of maxSubmittedJobs is submitted to batch system
+            nofJobs_toSubmit = min(len(self.queuedJobs), self.maxSubmittedJobs - len(polled_ids))
+            if nofJobs_toSubmit > 0:
+                logging.debug(
+                    "Jobs: submitted = {}, in queue = {} --> submitting the next {} jobs.".format(
+                        len(polled_ids), len(self.queuedJobs), nofJobs_toSubmit
+                    )
+                )
+            else:
+                logging.debug(
+                    "Jobs: submitted = {}, in queue = {} --> waiting for submitted jobs to finish processing.".format(
+                        len(polled_ids), len(self.queuedJobs)
+                    )
+                )
+            for i in range(0, nofJobs_toSubmit):
+                # randomly submit a job from the queue
+                two_pow_sixteen = 65536
+                random.seed((abs(hash(uuid.uuid4()))) % two_pow_sixteen)
+                max_idx = len(self.queuedJobs) - 1
+                random_idx = random.randint(0, max_idx)
+                job = self.queuedJobs.pop(random_idx)
+                job['status'] = Status.submitted
+                job_id = self.submit(job['sbatch_command'])
+                self.submittedJobs[job_id] = job
+
+            # Now check status of jobs submitted to batch system:
             # Subtract the list of running jobs from the list of all submitted jobs -- the result is a list of
             # jobs that have finished already
             finished_ids = list(jobIds_set - polled_ids)
@@ -532,18 +573,18 @@ class sbatchManager:
                 for finished_ids_chunk in finished_ids_chunks:
                     completion = self.check_job_completion(finished_ids_chunk)
                     completed_jobs, running_jobs, failed_jobs = [], [], []
-                    for id_, details in completion.iteritems():
+                    for job_id, details in completion.iteritems():
                       if details.status == Status.completed:
-                        completed_jobs.append(id_)
+                        completed_jobs.append(job_id)
                       elif details.status == Status.running:
-                        running_jobs.append(id_)
+                        running_jobs.append(job_id)
                       else:
-                        failed_jobs.append(id_)
+                        failed_jobs.append(job_id)
                     # If there are any failed jobs, throw
                     if failed_jobs:
 
                         failed_jobs_str = ','.join(failed_jobs)
-                        errors          = [completion[id_].status for id_ in failed_jobs]
+                        errors          = [completion[job_id].status for job_id in failed_jobs]
                         logging.error("Job(s) w/ ID(s) {jobIds} finished with errors: {reasons}".format(
                             jobIds  = failed_jobs_str,
                             reasons = ', '.join(map(Status.toString, errors)),
@@ -553,19 +594,19 @@ class sbatchManager:
                         # and the second column lists the exit code, the derived exit code, the status
                         # and the classification of the failed job
                         logging.error("Error table:")
-                        for id_ in failed_jobs:
+                        for job_id in failed_jobs:
                             sys.stderr.write("{jobId} {exitCode} {derivedExitCode} {state} {status}\n".format(
-                                jobId           = id_,
-                                exitCode        = completion[id_].exit_code,
-                                derivedExitCode = completion[id_].derived_exit_code,
-                                state           = completion[id_].state,
-                                status          = Status.toString(completion[id_].status),
+                                jobId           = job_id,
+                                exitCode        = completion[job_id].exit_code,
+                                derivedExitCode = completion[job_id].derived_exit_code,
+                                state           = completion[job_id].state,
+                                status          = Status.toString(completion[job_id].status),
                             ))
 
                         sys.stderr.write('%s\n' % text_line)
                         for failed_job in failed_jobs:
                             for log in zip(['wrapper', 'executable'], ['log_wrap', 'log_exec']):
-                                logfile = self.jobIds[failed_job][log[1]]
+                                logfile = self.submittedJobs[failed_job][log[1]]
                                 if os.path.isfile(logfile):
                                     logfile_contents = open(logfile, 'r').read()
                                 else:
@@ -579,7 +620,7 @@ class sbatchManager:
                                   )
                                 )
 
-                            if self.jobIds[failed_job]['nof_submissions'] < self.max_resubmissions and \
+                            if self.submittedJobs[failed_job]['nof_submissions'] < self.max_resubmissions and \
                                completion[failed_job].status == Status.io_error:
                                 # The job is eligible for resubmission if the job hasn't been resubmitted more
                                 # than a preset limit of resubmissions AND if the job failed due to I/O errors
@@ -587,15 +628,15 @@ class sbatchManager:
                                     "Job w/ ID {id} and arguments {args} FAILED because: {reason} "
                                     "-> resubmission attempt #{attempt}".format(
                                         id      = failed_job,
-                                        args    = self.jobIds[failed_job]['args'],
+                                        args    = self.submittedJobs[failed_job]['args'],
                                         reason  = Status.toString(completion[failed_job].status),
-                                        attempt = self.jobIds[failed_job]['nof_submissions'],
+                                        attempt = self.submittedJobs[failed_job]['nof_submissions'],
                                     )
                                 )
-                                self.submitJob(*self.jobIds[failed_job]['args'])
+                                self.submitJob(*self.submittedJobs[failed_job]['args'])
                                 # The old ID must be deleted, b/c otherwise it would be used to compare against
                                 # squeue output and we would resubmit the failed job ad infinitum
-                                del self.jobIds[failed_job]
+                                del self.submittedJobs[failed_job]
                             else:
                                 # We've exceeded the maximum number of resubmissions -> fail the workflow
                                 raise Status.raiseError(completion[failed_job].status)
@@ -606,43 +647,46 @@ class sbatchManager:
                         ))
                     # Mark successfully finished jobs as completed so that won't request their status code again
                     # Otherwise they will be still at ,,submitted'' state
-                    for id_ in completed_jobs:
+                    for job_id in completed_jobs:
                         if not all(map(
                             lambda outputFile: is_file_ok(
                                 outputFile, validate_outputs = True, min_file_size = self.min_file_size
                             ),
-                            self.jobIds[id_]['outputFiles']
+                            self.submittedJobs[job_id]['outputFiles']
                           )):
-                            if self.jobIds[id_]['nof_submissions'] < self.max_resubmissions:
+                            if self.submittedJobs[job_id]['nof_submissions'] < self.max_resubmissions:
                                 logging.warning(
                                     "Job w/ ID {id} and arguments {args} FAILED to produce a valid output file "
                                     "-> resubmission attempt #{attempt}".format(
-                                        id      = id_,
-                                        args    = self.jobIds[id_]['args'],
-                                        attempt = self.jobIds[id_]['nof_submissions'],
+                                        id      = job_id,
+                                        args    = self.submittedJobs[job_id]['args'],
+                                        attempt = self.submittedJobs[job_id]['nof_submissions'],
                                     )
                                 )
-                                self.submitJob(*self.jobIds[id_]['args'])
-                                del self.jobIds[id_]
+                                self.submitJob(*self.submittedJobs[job_id]['args'])
+                                del self.submittedJobs[job_id]
                             else:
                                 raise ValueError(
                                     "Job w/ ID {id} FAILED because it repeatedly produces bogus output "
                                     "file {output} yet the job still exits w/o any errors".format(
-                                        id     = id_,
-                                        output = ', '.join(self.jobIds[id_]['outputFiles']),
+                                        id     = job_id,
+                                        output = ', '.join(self.submittedJobs[job_id]['outputFiles']),
                                     )
                                 )
                         else:
                             # Job completed just fine
-                            self.jobIds[id_]['status'] = Status.completed
+                            self.submittedJobs[job_id]['status'] = Status.completed
 
-            jobIds_set = set([ id_ for id_ in self.jobIds if self.jobIds[id_]['status'] == Status.submitted])
-            nofJobs_left = len(jobIds_set)
+            jobIds_set = set([
+                job_id for job_id in self.submittedJobs if self.submittedJobs[job_id]['status'] == Status.submitted
+            ])
+            nofJobs_left = len(jobIds_set) + len(self.queuedJobs)
             if nofJobs_left > 0:
                 two_pow_sixteen = 65536
                 random.seed((abs(hash(uuid.uuid4()))) % two_pow_sixteen)
                 max_delay = 300
                 random_delay = random.randint(0, max_delay)
+                logging.debug("sleeping for %i seconds." % random_delay)
                 time.sleep(self.poll_interval + random_delay)
             else:
                 break
