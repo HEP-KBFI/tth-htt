@@ -14,7 +14,7 @@
 # doesn't match to the expected nof entries.
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 
 import argparse
 import os
@@ -265,16 +265,9 @@ def plot(input_files, output_files, title, expected_neff, mode):
   for line in lines:
     line.Delete()
 
-class SmartFormatter(argparse.HelpFormatter):
-  def _split_lines(self, text, width):
-    if text.startswith('R|'):
-      return text[2:].splitlines()
-    return argparse.HelpFormatter._split_lines(self, text, width)
-
 parser = argparse.ArgumentParser(
     formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35)
 )
-
 parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', required = False, choices = [ '2017' ], default = '2017',
   help = 'R|Path to the sample dictionary',

@@ -3,7 +3,7 @@
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 
 import argparse
 import os.path
@@ -762,12 +762,6 @@ def round_sign(x, sign_digits = 6):
   return round(x, max(int(abs(math.floor(math.log10(x)))) + sign_digits, 0))
 
 if __name__ == '__main__':
-  class SmartFormatter(argparse.HelpFormatter):
-    def _split_lines(self, text, width):
-      if text.startswith('R|'):
-        return text[2:].splitlines()
-      return argparse.HelpFormatter._split_lines(self, text, width)
-
   parser = argparse.ArgumentParser(
     formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35))
   parser.add_argument('-m', '--meta-dictionary', dest = 'meta_dictionary', metavar = 'file',

@@ -1,4 +1,4 @@
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 
 import argparse
 import datetime
@@ -55,12 +55,6 @@ def filter_samples(sample, condition, force = False):
     logging.info('%s sample %s' % (logging_str, sample_entry[ALLOWED_CONDITION_KEYS['name']]))
 
   return sample
-
-class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
-  def _split_lines(self, text, width):
-    if text.startswith('R|'):
-      return text[2:].splitlines()
-    return argparse.ArgumentDefaultsHelpFormatter._split_lines(self, text, width)
 
 class tthAnalyzeParser(argparse.ArgumentParser):
   def __init__(

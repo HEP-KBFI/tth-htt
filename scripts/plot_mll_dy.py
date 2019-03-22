@@ -2,7 +2,7 @@
 
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, create_if_not_exists
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 
 from DataFormats.FWLite import Events, Handle
 
@@ -24,12 +24,6 @@ def load_dict(path, name):
     sys.exit(1)
   samples = getattr(imp_dict, name)
   return samples
-
-class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
-  def _split_lines(self, text, width):
-    if text.startswith('R|'):
-      return text[2:].splitlines()
-    return argparse.ArgumentDefaultsHelpFormatter._split_lines(self, text, width)
 
 def plot(input_files, output_files, title, legend):
   handle_lhe = Handle('LHEEventProduct')

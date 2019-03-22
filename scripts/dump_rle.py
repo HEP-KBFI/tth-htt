@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 
 import argparse
 import os
@@ -58,12 +58,6 @@ def check_dir(dirname, use_force):
   return True
 
 if __name__ == '__main__':
-  class SmartFormatter(argparse.HelpFormatter):
-    def _split_lines(self, text, width):
-      if text.startswith('R|'):
-        return text[2:].splitlines()
-      return argparse.HelpFormatter._split_lines(self, text, width)
-
   parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 40))
   group = parser.add_mutually_exclusive_group()
   group.add_argument('-i', '--input', metavar = 'input', required = False, type = str, default = '',

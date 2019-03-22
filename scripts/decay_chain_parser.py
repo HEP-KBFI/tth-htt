@@ -226,7 +226,7 @@ Disclaimer: the program is tested with only ttHJetToNonbb_M125, TTZToLLNuNu_M-10
 
 ################################################### IMPORTS ###################################################
 
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 
 import argparse
 import sys
@@ -1404,13 +1404,6 @@ def print_aggregate(agg, hypothesis, output_filename, nof_events_total, secondar
 ################################################# MAIN PROGRAM ################################################
 
 if __name__ == '__main__':
-  # set the help description width to 45 characters
-  class SmartFormatter(argparse.HelpFormatter):
-    def _split_lines(self, text, width):
-      if text.startswith('R|'):
-        return text[2:].splitlines()
-      return argparse.HelpFormatter._split_lines(self, text, width)
-
   parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45))
   parser.add_argument('-o', '--output', metavar = 'file', required = False, type = str, default = '',
                       help = 'R|Output file')

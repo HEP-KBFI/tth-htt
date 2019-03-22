@@ -2,7 +2,7 @@
 
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 
 import argparse
 import os
@@ -413,12 +413,6 @@ def validate(output_dir, verbose = False):
   return
 
 if __name__ == '__main__':
-  class SmartFormatter(argparse.HelpFormatter):
-    def _split_lines(self, text, width):
-      if text.startswith('R|'):
-        return text[2:].splitlines()
-      return argparse.HelpFormatter._split_lines(self, text, width)
-
   parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 40))
   parser.add_argument('-o', '--output-dir', metavar = 'directory', required = False, type = str, default = '',
                       help = 'R|Directory where the list of RLE numbers will be saved')
