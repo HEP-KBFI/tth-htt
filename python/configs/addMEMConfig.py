@@ -7,6 +7,7 @@ from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_had
 import os
 import logging
 import ROOT
+ROOT.gSystem.ResetSignals()
 import array
 import uuid
 

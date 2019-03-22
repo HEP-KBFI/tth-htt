@@ -9,6 +9,7 @@ import os
 import logging
 import uuid
 import ROOT
+ROOT.gSystem.ResetSignals()
 
 DEPENDENCIES = [
     "", # CMSSW_BASE/src

@@ -20,6 +20,8 @@ import logging
 import ROOT
 import math
 
+ROOT.gSystem.ResetSignals()
+
 # the first entry in each array must be inclusive
 samples_to_sum_2017 = [
   [

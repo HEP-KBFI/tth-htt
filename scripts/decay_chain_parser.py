@@ -226,7 +226,16 @@ Disclaimer: the program is tested with only ttHJetToNonbb_M125, TTZToLLNuNu_M-10
 
 ################################################### IMPORTS ###################################################
 
-import argparse, logging, sys, subprocess, os, re, jinja2, codecs, copy, itertools
+import argparse
+import logging
+import sys
+import subprocess
+import os
+import re
+import jinja2
+import codecs
+import copy
+import itertools
 
 try:
   __import__('imp').find_module('tthAnalysis')
