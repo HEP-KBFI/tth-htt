@@ -34,6 +34,7 @@
 
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size, create_if_not_exists
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+from tthAnalysis.HiggsToTauTau.common import ROOT
 
 import re
 import datetime
@@ -48,9 +49,6 @@ import ast
 import getpass
 import multiprocessing
 import signal
-import ROOT
-
-ROOT.gSystem.ResetSignals()
 
 class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
   def _split_lines(self, text, width):

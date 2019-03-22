@@ -2,6 +2,7 @@
 
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
+from tthAnalysis.HiggsToTauTau.common import ROOT
 
 import argparse
 import os.path
@@ -19,8 +20,6 @@ import shutil
 import datetime
 import math
 import errno
-
-ROOT.gSystem.ResetSignals()
 
 HISTOGRAM_COUNT                           = 'Count'
 HISTOGRAM_COUNTWEIGHTED                   = 'CountWeighted'

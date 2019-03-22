@@ -1,7 +1,6 @@
-import os, jinja2, ROOT, logging
+import os, jinja2, logging
 
-ROOT.gSystem.ResetSignals()
-
+from tthAnalysis.HiggsToTauTau.common import ROOT
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import createFile
 

@@ -2,12 +2,10 @@
 
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
 from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_wjets_nanoAOD import samples_2017 as samples_hh
+from tthAnalysis.HiggsToTauTau.common import ROOT
 
 import argparse
 import os
-import ROOT
-
-ROOT.gSystem.ResetSignals()
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):

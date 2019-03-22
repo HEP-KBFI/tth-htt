@@ -35,17 +35,15 @@ NB! The input file you provide can work only for a single MC sample or multiple 
 '''
 
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017 as samples
+from tthAnalysis.HiggsToTauTau.common import ROOT
 
 import logging
 import argparse
 import os
 import sys
 import re
-import ROOT
 import array
 import subprocess
-
-ROOT.gSystem.ResetSignals()
 
 def is_dict_full(d):
   '''Checks whether all values in a given dictionary are present

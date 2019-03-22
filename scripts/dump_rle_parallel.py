@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+from tthAnalysis.HiggsToTauTau.common import ROOT
 
 import logging
 import argparse
@@ -12,9 +13,6 @@ import subprocess
 import stat
 import re
 import io
-import ROOT
-
-ROOT.gSystem.ResetSignals()
 
 dumPy = """#!/usr/bin/env python
 

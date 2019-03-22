@@ -1,18 +1,16 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, create_if_not_exists
+from tthAnalysis.HiggsToTauTau.common import ROOT
 
 from DataFormats.FWLite import Events, Handle
 
-import ROOT
 import argparse
 import logging
 import sys
 import os
 import imp
 import array
-
-ROOT.gSystem.ResetSignals()
 
 def load_dict(path, name):
   if not os.path.isfile(path):

@@ -19,6 +19,8 @@ logging.basicConfig(
 )
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs, hdfsException, NoSuchPathException
 
+from tthAnalysis.HiggsToTauTau.common import ROOT # unused
+
 class HDFSTestCase(unittest.TestCase):
 
   def __init__(self, *args, **kwargs):

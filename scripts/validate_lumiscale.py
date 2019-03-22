@@ -13,14 +13,13 @@
 # in the number of files or histograms that cover the same phase space, or if the number of entries
 # doesn't match to the expected nof entries.
 
+from tthAnalysis.HiggsToTauTau.common import ROOT
+
 import argparse
 import os
 import sys
 import logging
-import ROOT
 import math
-
-ROOT.gSystem.ResetSignals()
 
 # the first entry in each array must be inclusive
 samples_to_sum_2017 = [
