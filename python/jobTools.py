@@ -1,12 +1,11 @@
-import logging
 import os
 import subprocess
 import sys
 import math
 import stat
-import errno
 import shutil
 
+from tthAnalysis.HiggsToTauTau.logger import logging
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 def query_yes_no(question, default = "yes"):

@@ -1,9 +1,14 @@
 #!/usr/bin/env python
-import os, logging, sys, getpass
+
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_inclusive import analyzeConfig_inclusive
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
+from tthAnalysis.HiggsToTauTau.logger import logging
+
+import os
+import sys
+import getpass
 
 # E.g. to run: ./tthAnalyzeRun_inclusive.py -v 2017Dec13 -e 2017 -o syncTree
 
@@ -93,12 +98,6 @@ else:
   raise ValueError("Invalid era: %s" % era)
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s',
-  )
-
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
 

@@ -3,14 +3,13 @@
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
 from tthAnalysis.HiggsToTauTau.common import ROOT
+from tthAnalysis.HiggsToTauTau.logger import logging
 
 import argparse
 import os.path
 import sys
-import logging
 import imp
 import jinja2
-import ROOT
 import re
 import ctypes
 import copy
@@ -763,12 +762,6 @@ def round_sign(x, sign_digits = 6):
   return round(x, max(int(abs(math.floor(math.log10(x)))) + sign_digits, 0))
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s'
-  )
-
   class SmartFormatter(argparse.HelpFormatter):
     def _split_lines(self, text, width):
       if text.startswith('R|'):

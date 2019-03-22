@@ -2,8 +2,8 @@
 
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
 from tthAnalysis.HiggsToTauTau.common import ROOT
+from tthAnalysis.HiggsToTauTau.logger import logging
 
-import logging
 import argparse
 import os
 import sys
@@ -413,12 +413,6 @@ def validate(output_dir, verbose = False):
   return
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s'
-  )
-
   class SmartFormatter(argparse.HelpFormatter):
     def _split_lines(self, text, width):
       if text.startswith('R|'):

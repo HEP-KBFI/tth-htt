@@ -1,4 +1,8 @@
-import argparse, datetime, re, logging
+from tthAnalysis.HiggsToTauTau.logger import logging
+
+import argparse
+import datetime
+import re
 
 ALLOWED_CONDITION_KEYS = {
   'name' : 'process_name_specific',

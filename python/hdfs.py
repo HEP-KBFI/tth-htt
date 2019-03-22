@@ -2,8 +2,9 @@
 
 # Author: Karl Ehatäht
 
+from tthAnalysis.HiggsToTauTau.logger import logging
+
 import ctypes
-import logging
 import re
 import os
 import datetime

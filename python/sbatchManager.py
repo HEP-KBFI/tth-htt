@@ -1,7 +1,16 @@
-import codecs, getpass, jinja2, logging, os, time, datetime, sys, random, uuid
-
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import is_file_ok
+from tthAnalysis.HiggsToTauTau.logger import logging
+
+import codecs
+import getpass
+import jinja2
+import os
+import time
+import datetime
+import sys
+import random
+import uuid
 
 # Template for wrapper that is ran on cluster node
 
@@ -193,11 +202,8 @@ class sbatchManager:
         self.min_file_size     = min_file_size
 
         verbose = bool(verbose_environ) if verbose_environ else verbose
-        logging.basicConfig(
-            stream = sys.stdout,
-            level  = logging.DEBUG if verbose else logging.INFO,
-            format = '[%(filename)s:%(funcName)s] %(asctime)s - %(levelname)s: %(message)s',
-        )
+        if verbose:
+            self.unmute()
 
     def setWorkingDir(self, workingDir):
         """Set path to CMSSW area in which jobs are executed

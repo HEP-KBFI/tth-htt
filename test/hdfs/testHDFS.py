@@ -5,18 +5,14 @@
 
 import os.path
 import getpass
-import logging
-import sys
 import unittest
 import time
 import datetime
 import stat
 
-logging.basicConfig(
-  stream = sys.stdout,
-  level  = logging.DEBUG,
-  format = '%(asctime)s - %(levelname)s: %(message)s',
-)
+from tthAnalysis.HiggsToTauTau.logger import logging
+logging.getLogger().setLevel(logging.DEBUG)
+
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs, hdfsException, NoSuchPathException
 
 from tthAnalysis.HiggsToTauTau.common import ROOT # unused

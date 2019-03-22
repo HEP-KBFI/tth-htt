@@ -226,8 +226,9 @@ Disclaimer: the program is tested with only ttHJetToNonbb_M125, TTZToLLNuNu_M-10
 
 ################################################### IMPORTS ###################################################
 
+from tthAnalysis.HiggsToTauTau.logger import logging
+
 import argparse
-import logging
 import sys
 import subprocess
 import os
@@ -1403,12 +1404,6 @@ def print_aggregate(agg, hypothesis, output_filename, nof_events_total, secondar
 ################################################# MAIN PROGRAM ################################################
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s'
-  )
-
   # set the help description width to 45 characters
   class SmartFormatter(argparse.HelpFormatter):
     def _split_lines(self, text, width):

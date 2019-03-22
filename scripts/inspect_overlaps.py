@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
+from tthAnalysis.HiggsToTauTau.logger import logging
+
 import os
-import sys
 import copy
-import logging
 
 CHANNEL_OPTIONS = {
   '0l_2tau' : {
@@ -90,12 +90,6 @@ CHANNEL_OPTIONS = {
 cfg_options = {
   '2l_2tau' : '/hdfs/local/karl/ttHAnalysis/2017/2018Jun26',
 }
-
-logging.basicConfig(
-  stream = sys.stdout,
-  level  = logging.DEBUG,
-  format = '%(asctime)s - %(levelname)s: %(message)s',
-)
 
 rles = {}
 for channel in cfg_options:

@@ -14,11 +14,10 @@
 # doesn't match to the expected nof entries.
 
 from tthAnalysis.HiggsToTauTau.common import ROOT
+from tthAnalysis.HiggsToTauTau.logger import logging
 
 import argparse
 import os
-import sys
-import logging
 import math
 
 # the first entry in each array must be inclusive
@@ -309,11 +308,7 @@ parser.add_argument('-v', '--verbose',
 
 args = parser.parse_args()
 
-logging.basicConfig(
-  stream = sys.stdout,
-  level  = logging.DEBUG if args.verbose else logging.INFO,
-  format = '%(asctime)s - %(levelname)s: %(message)s'
-)
+logging.getLogger().setLevel(logging.DEBUG if args.verbose else logging.INFO)
 
 pattern = args.input
 if '{sample_name}' not in pattern:

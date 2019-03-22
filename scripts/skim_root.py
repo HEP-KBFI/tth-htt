@@ -2,11 +2,11 @@
 
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
 from tthAnalysis.HiggsToTauTau.common import ROOT
+from tthAnalysis.HiggsToTauTau.logger import logging
 from dump_rle_parallel import dump_rle_parallel
 
 import argparse
 import sys
-import logging
 import os
 import subprocess
 import re
@@ -185,12 +185,6 @@ def positive_int(i):
   return i_int
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(funcName)s():%(lineno)s - %(levelname)s: %(message)s'
-  )
-
   class SmartFormatter(argparse.HelpFormatter):
     def _split_lines(self, text, width):
       if text.startswith('R|'):

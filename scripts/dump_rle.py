@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.common import ROOT
+from tthAnalysis.HiggsToTauTau.logger import logging
 
-import logging
 import argparse
 import os
 import sys
@@ -58,12 +58,6 @@ def check_dir(dirname, use_force):
   return True
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s'
-  )
-
   class SmartFormatter(argparse.HelpFormatter):
     def _split_lines(self, text, width):
       if text.startswith('R|'):

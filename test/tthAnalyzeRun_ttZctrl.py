@@ -1,10 +1,14 @@
 #!/usr/bin/env python
-import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_ttZctrl import analyzeConfig_ttZctrl
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
+from tthAnalysis.HiggsToTauTau.logger import logging
+
+import os
+import sys
+import getpass
 
 # E.g.: ./tthAnalyzeRun_ttZctrl.py -v 2017Dec13 -e 2017
 
@@ -102,12 +106,6 @@ else:
   raise ValueError("Invalid era: %s" % era)
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s'
-  )
-
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
     ', '.join(central_or_shifts)

@@ -2,11 +2,11 @@
 
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, create_if_not_exists
 from tthAnalysis.HiggsToTauTau.common import ROOT
+from tthAnalysis.HiggsToTauTau.logger import logging
 
 from DataFormats.FWLite import Events, Handle
 
 import argparse
-import logging
 import sys
 import os
 import imp
@@ -116,12 +116,6 @@ if __name__ == '__main__':
     help = 'R|Verbose output',
   )
   args = parser.parse_args()
-
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.DEBUG if args.verbose else logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s',
-  )
 
   samples = load_dict(args.dictionary, args.sample_name)
 

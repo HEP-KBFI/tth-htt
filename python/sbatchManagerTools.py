@@ -1,8 +1,10 @@
-import os, jinja2, logging
-
 from tthAnalysis.HiggsToTauTau.common import ROOT
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import createFile
+from tthAnalysis.HiggsToTauTau.logger import logging
+
+import os
+import jinja2
 
 def createScript_sbatch(
     sbatch_script_file_name,
