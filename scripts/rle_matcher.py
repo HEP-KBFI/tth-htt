@@ -35,8 +35,8 @@ NB! The input file you provide can work only for a single MC sample or multiple 
 '''
 
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017 as samples
-from tthAnalysis.HiggsToTauTau.common import ROOT
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import argparse
 import os

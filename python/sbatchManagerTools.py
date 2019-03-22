@@ -1,7 +1,7 @@
-from tthAnalysis.HiggsToTauTau.common import ROOT
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import createFile
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import os
 import jinja2

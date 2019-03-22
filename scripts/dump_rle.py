@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from tthAnalysis.HiggsToTauTau.common import ROOT
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import argparse
 import os

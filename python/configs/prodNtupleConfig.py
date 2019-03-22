@@ -2,8 +2,8 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, ge
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
-from tthAnalysis.HiggsToTauTau.common import ROOT
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import os
 import uuid

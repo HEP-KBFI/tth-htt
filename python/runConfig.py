@@ -1,4 +1,4 @@
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import argparse
 import datetime

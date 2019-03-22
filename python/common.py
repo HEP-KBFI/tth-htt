@@ -1,6 +1,8 @@
 import sys
-argv = sys.argv
-sys.argv = []
-import ROOT
-ROOT.gSystem.ResetSignals()
-sys.argv = argv
+import logging
+
+logging.basicConfig(
+  stream = sys.stdout,
+  level  = logging.INFO,
+  format = '%(asctime)s - %(levelname)s: %(message)s',
+)

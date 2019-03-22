@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, create_if_not_exists
-from tthAnalysis.HiggsToTauTau.common import ROOT
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging
 
 from DataFormats.FWLite import Events, Handle
 

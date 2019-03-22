@@ -3,7 +3,7 @@
 from tthAnalysis.HiggsToTauTau.configs.prodNtupleConfig import prodNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import os
 import sys

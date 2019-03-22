@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.addMEMConfig_3l_1tau import addMEMConfig_
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import os
 import getpass

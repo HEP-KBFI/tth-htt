@@ -3,7 +3,7 @@
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
 from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
-from tthAnalysis.HiggsToTauTau.common import ROOT
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 
 import itertools
 import os

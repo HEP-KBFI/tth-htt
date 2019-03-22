@@ -1,7 +1,7 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import DKEY_SCRIPTS, DKEY_LOGS, DKEY_SYNC
 from tthAnalysis.HiggsToTauTau.jobTools import get_log_version, run_cmd, create_if_not_exists, record_software_state
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import os
 import jinja2

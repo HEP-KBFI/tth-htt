@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import os
 import copy

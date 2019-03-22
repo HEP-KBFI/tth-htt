@@ -2,7 +2,7 @@
 
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
 from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_wjets_nanoAOD import samples_2017 as samples_hh
-from tthAnalysis.HiggsToTauTau.common import ROOT
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 
 import argparse
 import os

@@ -5,7 +5,7 @@ from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as 
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import os
 import uuid

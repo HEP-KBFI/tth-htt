@@ -34,7 +34,7 @@
 
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size, create_if_not_exists
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
-from tthAnalysis.HiggsToTauTau.common import ROOT
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 
 import re
 import datetime

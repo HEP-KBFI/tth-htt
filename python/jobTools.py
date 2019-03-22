@@ -5,7 +5,7 @@ import math
 import stat
 import shutil
 
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.common import logging
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 def query_yes_no(question, default = "yes"):

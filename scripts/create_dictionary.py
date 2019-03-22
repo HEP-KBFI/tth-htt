@@ -2,8 +2,8 @@
 
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
-from tthAnalysis.HiggsToTauTau.common import ROOT
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import argparse
 import os.path

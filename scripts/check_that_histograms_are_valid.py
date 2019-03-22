@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from tthAnalysis.HiggsToTauTau.common import ROOT
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 import os
 import sys
 import time

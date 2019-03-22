@@ -2,7 +2,7 @@
 
 # Author: Karl Ehatäht
 
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import ctypes
 import re

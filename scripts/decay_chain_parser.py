@@ -226,7 +226,7 @@ Disclaimer: the program is tested with only ttHJetToNonbb_M125, TTZToLLNuNu_M-10
 
 ################################################### IMPORTS ###################################################
 
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import argparse
 import sys

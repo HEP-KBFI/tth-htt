@@ -10,12 +10,12 @@ import time
 import datetime
 import stat
 
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.common import logging
 logging.getLogger().setLevel(logging.DEBUG)
 
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs, hdfsException, NoSuchPathException
 
-from tthAnalysis.HiggsToTauTau.common import ROOT # unused
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT # unused
 
 class HDFSTestCase(unittest.TestCase):
 

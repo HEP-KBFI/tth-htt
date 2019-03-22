@@ -62,7 +62,6 @@ from tthAnalysis.HiggsToTauTau.configs.syncNtupleConfig import syncNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
-from tthAnalysis.HiggsToTauTau.logger import logging
 
 import os
 import sys

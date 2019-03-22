@@ -1,6 +1,6 @@
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import is_file_ok
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import codecs
 import getpass

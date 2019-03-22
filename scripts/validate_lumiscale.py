@@ -13,8 +13,8 @@
 # in the number of files or histograms that cover the same phase space, or if the number of entries
 # doesn't match to the expected nof entries.
 
-from tthAnalysis.HiggsToTauTau.common import ROOT
-from tthAnalysis.HiggsToTauTau.logger import logging
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import argparse
 import os
