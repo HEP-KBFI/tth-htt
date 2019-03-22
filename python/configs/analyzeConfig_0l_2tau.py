@@ -218,21 +218,27 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       process_name = sample_info["process_name_specific"]
+      logging.info("Building dictionaries for sample %s..." % process_name)
       for hadTau_selection in self.hadTau_selections:
         for hadTau_frWeight in self.hadTau_frWeights:
           if hadTau_frWeight == "enabled" and not hadTau_selection.startswith("Fakeable"):
             continue
           hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
           for hadTau_charge_selection in self.hadTau_charge_selections:
-            key_dir = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
-            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
-              initDict(self.dirs, [ key_dir, dir_type ])
-              if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
-                self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
-                  "_".join([ hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name)
-              else:
-                self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-                  "_".join([ hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name)
+            central_or_shifts_extended = [ "" ]
+            central_or_shifts_extended.extend(self.central_or_shifts)
+            for central_or_shift_or_dummy in central_or_shifts_extended:
+              process_name_extended = [ process_name, "hadd", "addBackgrounds" ]
+              for process_name_or_dummy in process_name_extended:
+                key_dir = getKey(process_name_or_dummy, hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift_or_dummy)
+                for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
+                  initDict(self.dirs, [ key_dir, dir_type ])
+                  if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
+                    self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
+                      "_".join([ hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name_or_dummy, central_or_shift_or_dummy)
+                  else:
+                    self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
+                      "_".join([ hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name_or_dummy, central_or_shift_or_dummy)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_SYNC ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
@@ -240,12 +246,19 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
 
+    numDirectories = len(self.dirs.keys())
+    logging.info("Creating directory structure (numDirectories = %i)" % numDirectories)
+    numDirectories_created = 0;
     for key in self.dirs.keys():
       if type(self.dirs[key]) == dict:
         for dir_type in self.dirs[key].keys():
           create_if_not_exists(self.dirs[key][dir_type])
       else:
         create_if_not_exists(self.dirs[key])
+      numDirectories_created = numDirectories_created + 1
+      if (numDirectories_created % (numDirectories / 100)) == 0:
+        logging.info(" %i%% completed" % (numDirectories_created / (numDirectories / 100)))
+    logging.info("done.")
 
     inputFileLists = {}
     for sample_name, sample_info in self.samples.items():
@@ -309,8 +322,9 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                 logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (hadTau_selection_and_frWeight, central_or_shift))
 
                 # build config files for executing analysis code
-                key_dir = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
-                key_analyze_job = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift, jobId)
+                key_analyze_dir = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift)
+                analyze_job_tuple = (process_name, hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift, jobId)
+                key_analyze_job = getKey(*analyze_job_tuple)
                 ntupleFiles = inputFileList[jobId]
                 if len(ntupleFiles) == 0:
                   logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
@@ -334,29 +348,22 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                     syncTree = 'syncTree_%s_mcClosure_t' % self.channel.replace('_', '')
                   else:
                     continue
-
                 if syncTree and central_or_shift != "central":
                   syncTree = os.path.join(central_or_shift, syncTree)
-
                 syncRLE = ''
                 if self.do_sync and self.rle_select:
                   syncRLE = self.rle_select % syncTree
                   if not os.path.isfile(syncRLE):
                     logging.warning("Input RLE file for the sync is missing: %s; skipping the job" % syncRLE)
                     continue
-
                 if syncOutput:
                   self.inputFiles_sync['sync'].append(syncOutput)
 
-                cfg_key = getKey(
-                  self.channel, process_name, hadTau_selection_and_frWeight,
-                  hadTau_charge_selection, central_or_shift, jobId
-                )
-                cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
-                logFile_path = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s.log" % cfg_key)
-                rleOutputFile_path = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s.txt" % cfg_key) \
+                cfgFile_modified_path = os.path.join(self.dirs[key_analyze_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%i_cfg.py" % analyze_job_tuple)
+                logFile_path = os.path.join(self.dirs[key_analyze_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%i.log" % analyze_job_tuple)
+                rleOutputFile_path = os.path.join(self.dirs[key_analyze_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%i.txt" % analyze_job_tuple) \
                                      if self.select_rle_output else ""
-                histogramFile_path = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s.root" % key_analyze_job)
+                histogramFile_path = os.path.join(self.dirs[key_analyze_dir][DKEY_HIST], "analyze_%s_%s_%s_%s_%i.root" % analyze_job_tuple)
                 applyFakeRateWeights = self.applyFakeRateWeights \
                   if self.isBDTtraining or hadTau_selection.find("Tight") == -1 \
                   else "disabled"
@@ -385,15 +392,17 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, hadTau_selection)
 
                 # initialize input and output file names for hadd_stage1
-                key_hadd_stage1 = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
-                if not key_hadd_stage1 in self.inputFiles_hadd_stage1:
-                  self.inputFiles_hadd_stage1[key_hadd_stage1] = []
-                self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
-                self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s_%s.root" % \
-                    (self.channel, process_name, hadTau_selection_and_frWeight, hadTau_charge_selection))
+                key_hadd_stage1_dir = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
+                hadd_stage1_job_tuple = (process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
+                key_hadd_stage1_job = getKey(*hadd_stage1_job_tuple)
+                if not key_hadd_stage1_job in self.inputFiles_hadd_stage1:
+                  self.inputFiles_hadd_stage1[key_hadd_stage1_job] = []
+                self.inputFiles_hadd_stage1[key_hadd_stage1_job].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
+                self.outputFile_hadd_stage1[key_hadd_stage1_job] = os.path.join(self.dirs[key_hadd_stage1_dir][DKEY_HIST],
+                                                                                "hadd_stage1_%s_%s_%s.root" % hadd_stage1_job_tuple)
 
                 if self.isBDTtraining:
-                  self.targets.append(self.outputFile_hadd_stage1[key_hadd_stage1])
+                  self.targets.append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
 
             if self.isBDTtraining or self.do_sync:
               continue
@@ -405,102 +414,90 @@ class analyzeConfig_0l_2tau(analyzeConfig):
               if is_signal:
                 sample_categories = [ "signal", "ttH", "ttH_htt", "ttH_hww", "ttH_hzz", "ttH_hmm", "ttH_hzg" ]
               for sample_category in sample_categories:
-                # sum non-fake contributions for each MC sample separately
-                # input processes: TT2t0e0m0j, TT1t1e0m0j, TT1t0e1m0j", TT0t2e0m0j, TT0t1e1m0j, TT0t0e2m0j; TTW2t0e0m0j,...
-                # output processes: TT; ...
-                key_hadd_stage1 = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
-                key_addBackgrounds_job = getKey(process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)
-                processes_input = None
-                if sample_category in [ "signal" ]:
-                  hadTau_genMatches = []
-                  hadTau_genMatches.extend(self.hadTau_genMatches_nonfakes)
-                  hadTau_genMatches.extend(self.hadTau_genMatches_fakes)
-                  processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in hadTau_genMatches ]
-                elif sample_category in [ "ttH" ]:
-                  processes_input = []
-                  processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
-                  processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
-                  processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
-                  processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
-                  processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
-                else:
-                  processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_nonfakes ]
-                if processes_input:
-                  self.jobOptions_addBackgrounds[key_addBackgrounds_job] = {
-                    'inputFile' : self.outputFile_hadd_stage1[key_hadd_stage1],
-                    'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_%s_%s_%s_%s_cfg.py" % \
-                      (self.channel, process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)),
-                    'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_%s_%s_%s_%s.root" % \
-                      (self.channel, process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)),
-                    'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s_%s_%s_%s_%s.log" % \
-                      (self.channel, process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)),
-                    'categories' : [ getHistogramDir(category, hadTau_selection, hadTau_frWeight, hadTau_charge_selection) for category in self.categories],
-                    'processes_input' : processes_input,
-                    'process_output' : sample_category
-                  }
-                  self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds[key_addBackgrounds_job])
+                # sum non-fake and fake contributions for each MC sample separately
+                genMatch_categories = [ "nonfake", "fake" ]
 
-                  # initialize input and output file names for hadd_stage1_5
-                  key_hadd_stage1_5 = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
-                  if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
-                    self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
-                  self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
-                  self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5_%s_%s_%s.root" % \
-                    (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection))
+                for genMatch_category in genMatch_categories:
+                  key_hadd_stage1_job = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
+                  key_addBackgrounds_dir = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
+                  addBackgrounds_job_tuple = None
+                  processes_input = None
+                  process_output = None
+                  cfgFile_modified = None
+                  outputFile = None
+                  if genMatch_category == "nonfake":
+                    # sum non-fake contributions for each MC sample separately
+                    # input processes: TT2t0e0m0j, TT1t1e0m0j, TT1t0e1m0j", TT0t2e0m0j, TT0t1e1m0j, TT0t0e2m0j; TTW2t0e0m0j,...
+                    # output processes: TT; ...
+                    if sample_category in [ "signal" ]:
+                      hadTau_genMatches = []
+                      hadTau_genMatches.extend(self.hadTau_genMatches_nonfakes)
+                      hadTau_genMatches.extend(self.hadTau_genMatches_fakes)
+                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in hadTau_genMatches ]
+                    elif sample_category in [ "ttH" ]:
+                      processes_input = []
+                      processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
+                      processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
+                      processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
+                      processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
+                      processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
+                    else:
+                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_nonfakes ]
+                    process_output = sample_category                     
+                    addBackgrounds_job_tuple = (process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)
+                  elif genMatch_category == "fake":
+                    # sum fake contributions for each MC sample separately
+                    # input processes: TT1t0e0m1j, TT0t1e0m1j, TT0t0e1m1j, TT0t0e0m2j; TTW1t0e0m1j,...
+                    # output processes: TT_fake; ...
+                    if sample_category in [ "signal" ]:
+                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
+                    elif sample_category in [ "ttH" ]:
+                      processes_input = []
+                      processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
+                      processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
+                      processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
+                      processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
+                      processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
+                    else:
+                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
+                    process_output = "%s_fake" % sample_category
+                    addBackgrounds_job_tuple = (process_name, "%s_fake" % sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)
+                  if processes_input:
+                    logging.info(" ...for genMatch option = '%s'" % genMatch_category)
+                    key_addBackgrounds_job = getKey(*addBackgrounds_job_tuple)
+                    cfgFile_modified = os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_%s_%s_cfg.py" % addBackgrounds_job_tuple)
+                    outputFile = os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackgrounds_%s_%s_%s_%s.root" % addBackgrounds_job_tuple)
+                    self.jobOptions_addBackgrounds[key_addBackgrounds_job] = {
+                      'inputFile' : self.outputFile_hadd_stage1[key_hadd_stage1_job],
+                      'cfgFile_modified' : cfgFile_modified,
+                      'outputFile' : outputFile,
+                      'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], os.path.basename(cfgFile_modified).replace("_cfg.py", ".log")),
+                      'categories' : [ getHistogramDir(category, hadTau_selection, hadTau_frWeight, hadTau_charge_selection) for category in self.categories],
+                      'processes_input' : processes_input,
+                      'process_output' : process_output
+                    }
+                    self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds[key_addBackgrounds_job])
 
-                # sum fake contributions for each MC sample separately
-                # input processes: TT1t0e0m1j, TT0t1e0m1j, TT0t0e1m1j, TT0t0e0m2j; TTW1t0e0m1j,...
-                # output processes: TT_fake; ...
-                key_hadd_stage1 = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
-                key_addBackgrounds_job = getKey(process_name, "%s_fake" % sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)
-                processes_input = None
-                if sample_category in [ "signal" ]:
-                  processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
-                elif sample_category in [ "ttH" ]:
-                  processes_input = []
-                  processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
-                  processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
-                  processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
-                  processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
-                  processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
-                else:
-                  processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
-                if processes_input:
-                  self.jobOptions_addBackgrounds[key_addBackgrounds_job] = {
-                    'inputFile' : self.outputFile_hadd_stage1[key_hadd_stage1],
-                    'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_fakes_%s_%s_%s_%s_cfg.py" % \
-                      (self.channel, process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)),
-                    'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_fakes_%s_%s_%s_%s.root" % \
-                      (self.channel, process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)),
-                    'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s_fakes_%s_%s_%s_%s.log" % \
-                      (self.channel, process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)),
-                    'categories' : [ getHistogramDir(category, hadTau_selection, hadTau_frWeight, hadTau_charge_selection) for category in self.categories ],
-                    'processes_input' : processes_input,
-                    'process_output' : "%s_fake" % sample_category
-                  }
-                  self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds[key_addBackgrounds_job])
-
-                  # initialize input and output file names for hadd_stage1_5
-                  key_hadd_stage1_5 = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
-                  if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
-                    self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
-                  self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
-                  self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5_%s_%s_%s.root" % \
-                    (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection))
-
-                  if self.isBDTtraining:
-                    self.targets.append(self.outputFile_hadd_stage1[key_hadd_stage1])
+                    # initialize input and output file names for hadd_stage1_5
+                    key_hadd_stage1_5_dir = getKey("hadd", hadTau_selection_and_frWeight, hadTau_charge_selection)
+                    hadd_stage1_5_job_tuple = (hadTau_selection_and_frWeight, hadTau_charge_selection)
+                    key_hadd_stage1_5_job = getKey(*hadd_stage1_5_job_tuple)
+                    if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
+                      self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
+                    self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
+                    self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job] = os.path.join(self.dirs[key_hadd_stage1_5_dir][DKEY_HIST],
+                                                                                        "hadd_stage1_5_%s_%s.root" % hadd_stage1_5_job_tuple)
 
             if self.isBDTtraining or self.do_sync:
               continue
 
             # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
             if not is_mc:
-              key_hadd_stage1 = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
-              key_hadd_stage1_5 = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
-              if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
-                self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
-              self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
+              key_hadd_stage1_job = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
+              key_hadd_stage1_5_job = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
+              if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
+                self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
+              self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
 
           if self.isBDTtraining or self.do_sync:
             continue
@@ -508,38 +505,38 @@ class analyzeConfig_0l_2tau(analyzeConfig):
           # sum fake contributions for the total of all MC sample
           # input processes: TT1t0e0m1j, TT0t1e0m1j, TT0t0e1m1j, TT0t0e0m2j; TTW1t0e0m1j,...
           # output process: fakes_mc
-          key_addBackgrounds_job = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
-          key_hadd_stage1_5 = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
+          key_hadd_stage1_5_job = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
+          key_addBackgrounds_dir = getKey("addBackgrounds", hadTau_selection_and_frWeight, hadTau_charge_selection)
+          addBackgrounds_job_fakes_tuple = ("fakes_mc", hadTau_selection_and_frWeight, hadTau_charge_selection)
+          key_addBackgrounds_job_fakes = getKey(*addBackgrounds_job_fakes_tuple)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend([ "signal" ])
           processes_input = []
           for sample_category in sample_categories:
             processes_input.append("%s_fake" % sample_category)
-          self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job] = {
-            'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
-            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_fakes_mc_%s_%s_cfg.py" % \
-              (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection)),
-            'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_fakes_mc_%s_%s.root" % \
-              (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection)),
-            'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s_fakes_mc_%s_%s.log" % \
-              (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection)),
+          self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
+            'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
+            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_%s_%s_cfg.py" % addBackgrounds_job_fakes_tuple),
+            'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_%s_%s.root" % addBackgrounds_job_fakes_tuple),
+            'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s_%s_%s.log" % addBackgrounds_job_fakes_tuple),
             'categories' : [ getHistogramDir(category, hadTau_selection, hadTau_frWeight, hadTau_charge_selection) for category in self.categories ],
             'processes_input' : processes_input,
             'process_output' : "fakes_mc"
           }
-          self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job])
+          self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes])
 
           # initialize input and output file names for hadd_stage2
-          key_hadd_stage2 = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
-          if not key_hadd_stage2 in self.inputFiles_hadd_stage2:
-            self.inputFiles_hadd_stage2[key_hadd_stage2] = []
+          key_hadd_stage1_5_job = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
+          key_hadd_stage2_dir = getKey("hadd", hadTau_selection_and_frWeight, hadTau_charge_selection)
+          hadd_stage2_job_tuple = (hadTau_selection_and_frWeight, hadTau_charge_selection)
+          key_hadd_stage2_job = getKey(*hadd_stage2_job_tuple)
+          if not key_hadd_stage2_job in self.inputFiles_hadd_stage2:
+            self.inputFiles_hadd_stage2[key_hadd_stage2_job] = []
           if hadTau_selection == "Tight":
-            self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job]['outputFile'])
-          key_hadd_stage1_5 = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
-          self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
-          self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s_%s.root" % \
-            (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection))
+            self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes]['outputFile'])
+          self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job])
+          self.outputFile_hadd_stage2[key_hadd_stage2_job] = os.path.join(self.dirs[key_hadd_stage2_dir][DKEY_HIST], "hadd_stage2_%s_%s.root" % hadd_stage2_job_tuple)
 
     if self.isBDTtraining or self.do_sync:
       if self.is_sbatch:
@@ -569,37 +566,36 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
     for category in self.categories:
       for hadTau_charge_selection in self.hadTau_charge_selections:
-        key_addFakes_job = getKey(category, "fakes_data", hadTau_charge_selection)
-        key_hadd_stage1_5 = getKey(get_hadTau_selection_and_frWeight("Fakeable", "enabled"), hadTau_charge_selection)
+        key_hadd_stage1_5_job = getKey(get_hadTau_selection_and_frWeight("Fakeable", "enabled"), hadTau_charge_selection)
+        addFakes_job_tuple = (category, hadTau_charge_selection)
+        key_addFakes_job = getKey("fakes_data", *addFakes_job_tuple)
         category_sideband = None
         if self.applyFakeRateWeights == "2tau":
           category_sideband = getHistogramDir(category, "Fakeable", "enabled", hadTau_charge_selection)
         else:
           raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % self.applyFakeRateWeights)
         self.jobOptions_addFakes[key_addFakes_job] = {
-          'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_%s_%s_cfg.py" % \
-                                              (self.channel, category, hadTau_charge_selection)),
-          'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes_%s_%s_%s.root" % \
-                                        (self.channel, category, hadTau_charge_selection)),
-          'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_%s_%s.log" % \
-                                     (self.channel, category, hadTau_charge_selection)),
+          'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
+          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_%s_cfg.py" % addFakes_job_tuple),
+          'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes_%s_%s.root" % addFakes_job_tuple),
+          'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_%s.log" % addFakes_job_tuple),
           'category_signal' : getHistogramDir(category, "Tight", "disabled", hadTau_charge_selection),
           'category_sideband' : category_sideband
           }
         self.createCfg_addFakes(self.jobOptions_addFakes[key_addFakes_job])
-        key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), hadTau_charge_selection)
-        self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
+        key_hadd_stage2_job = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), hadTau_charge_selection)
+        self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
 
     logging.info("Creating configuration files to run 'prepareDatacards'")
     for category in self.categories:
       for histogramToFit in self.histograms_to_fit:
-        key_prep_dcard_job = getKey(category, histogramToFit, "OS")
-        key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
+        key_hadd_stage2_job = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
+        prep_dcard_job_tuple = (self.channel, category, histogramToFit)
+        key_prep_dcard_job = getKey(category, histogramToFit, "OS")        
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
-          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_%s_cfg.py" % (self.channel, category, histogramToFit)),
-          'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_%s_%s.root" % (self.channel, category, histogramToFit)),
+          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
+          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_%s_cfg.py" % prep_dcard_job_tuple),
+          'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_%s_%s.root" % prep_dcard_job_tuple),
           'histogramDir' : getHistogramDir(category, "Tight", "disabled", "OS"),
           'histogramToFit' : histogramToFit,
           'label' : None
@@ -607,12 +603,13 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
         if "SS" in self.hadTau_charge_selections:
+          key_hadd_stage2_job = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")
+          prep_dcard_job_tuple = (self.channel, category, histogramToFit)
           key_prep_dcard_job = getKey(category, histogramToFit, "SS")
-          key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")
           self.jobOptions_prep_dcard[key_prep_dcard_job] = {
-            'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_SS_%s_cfg.py" % (self.channel, category, histogramToFit)),
-            'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_%s_SS_%s.root" % (self.channel, category, histogramToFit)),
+            'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
+            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_SS_%s_cfg.py" % prep_dcard_job_tuple),
+            'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_%s_SS_%s.root" % prep_dcard_job_tuple),
             'histogramDir' : getHistogramDir(category, "Tight", "disabled", "SS"),
             'histogramToFit' : histogramToFit,
             'label' : 'SS'
@@ -624,12 +621,13 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         #  - 'CMS_ttHl_Clos_shape_t'
         for hadTau_charge_selection in self.hadTau_charge_selections:
           key_prep_dcard_job = getKey(category, histogramToFit, hadTau_charge_selection)
-          key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), hadTau_charge_selection)
-          key_add_syst_fakerate_job = getKey(histogramToFit, hadTau_charge_selection)
+          key_hadd_stage2_job = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), hadTau_charge_selection)
+          add_syst_fakerate_job_tuple = (self.channel, category, histogramToFit, hadTau_charge_selection)
+          key_add_syst_fakerate_job = getKey(category, histogramToFit, hadTau_charge_selection)
           self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job] = {
             'inputFile' : self.jobOptions_prep_dcard[key_prep_dcard_job]['datacardFile'],
-            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addSystFakeRates_%s_%s_%s_%s_cfg.py" % (self.channel, category, hadTau_charge_selection, histogramToFit)),
-            'outputFile' : os.path.join(self.dirs[DKEY_DCRD], "addSystFakeRates_%s_%s_%s_%s.root" % (self.channel, category, hadTau_charge_selection, histogramToFit)),
+            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addSystFakeRates_%s_%s_%s_%s_cfg.py" % add_syst_fakerate_job_tuple),
+            'outputFile' : os.path.join(self.dirs[DKEY_DCRD], "addSystFakeRates_%s_%s_%s_%s.root" % add_syst_fakerate_job_tuple),
             'category' : self.channel,
             'histogramToFit' : histogramToFit,
             'plots_outputFileName' : os.path.join(self.dirs[DKEY_PLOT], "addSystFakeRates.png")
@@ -646,11 +644,11 @@ class analyzeConfig_0l_2tau(analyzeConfig):
             if hadTau_mcClosure not in self.hadTau_selections:
               continue
             hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_mcClosure, "enabled")
-            key_addBackgrounds_job_fakes = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
+            key_addBackgrounds_job_fakes = getKey("fakes_mc", hadTau_selection_and_frWeight, hadTau_charge_selection)
             histogramDir_mcClosure = self.mcClosure_dir['%s_%s' % (hadTau_mcClosure, hadTau_charge_selection)]
             self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job].update({
                 'add_Clos_%s' % hadTau_type : ("Fakeable_mcClosure_%s" % hadTau_type) in self.hadTau_selections,
-                'inputFile_nominal_%s' % hadTau_type : self.outputFile_hadd_stage2[key_hadd_stage2],
+                'inputFile_nominal_%s' % hadTau_type : self.outputFile_hadd_stage2[key_hadd_stage2_job],
                 'histogramName_nominal_%s' % hadTau_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_nominal, histogramToFit),
                 'inputFile_mcClosure_%s' % hadTau_type : self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes]['outputFile'],
                 'histogramName_mcClosure_%s' % hadTau_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_mcClosure, histogramToFit)
@@ -658,11 +656,11 @@ class analyzeConfig_0l_2tau(analyzeConfig):
             self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job])
 
     logging.info("Creating configuration files to run 'makePlots'")
+    key_hadd_stage2_job = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
     key_makePlots_job = getKey("OS")
-    key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
     self.jobOptions_make_plots[key_makePlots_job] = {
       'executable' : self.executable_make_plots,
-      'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+      'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
       'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
       'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
       'histogramDir' : getHistogramDir(self.category_inclusive, "Tight", "disabled", "OS"),
@@ -671,11 +669,11 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     }
     self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
     if "SS" in self.hadTau_charge_selections:
+      key_hadd_stage2_job = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")
       key_makePlots_job = getKey("SS")
-      key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")
       self.jobOptions_make_plots[key_makePlots_job] = {
         'executable' : self.executable_make_plots,
-        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_SS_cfg.py" % self.channel),
         'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_SS.png" % self.channel),
         'histogramDir' : getHistogramDir(self.category_inclusive, "Tight", "disabled", "SS"),
@@ -684,11 +682,11 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
     if "Fakeable_mcClosure" in self.hadTau_selections: #TODO
-      key_makePlots_job = getKey("OS")
-      key_hadd_stage2 = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
+      key_hadd_stage2_job = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
+      key_makePlots_job = getKey("OS")      
       self.jobOptions_make_plots[key_makePlots_job] = {
         'executable' : self.executable_make_plots_mcClosure,
-        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_mcClosure_%s_cfg.py" % self.channel),
         'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_mcClosure_%s.png" % self.channel)
       }
@@ -718,6 +716,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
 
-    logging.info("Done")
+    logging.info("Done.")
 
     return self.num_jobs
