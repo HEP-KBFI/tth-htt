@@ -349,19 +349,19 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
 
-##     numDirectories = len(self.dirs.keys())
-##     logging.info("Creating directory structure (numDirectories = %i)" % numDirectories)
-##     numDirectories_created = 0;
-##     for key in self.dirs.keys():
-##       if type(self.dirs[key]) == dict:
-##         for dir_type in self.dirs[key].keys():
-##           create_if_not_exists(self.dirs[key][dir_type])
-##       else:
-##         create_if_not_exists(self.dirs[key])
-##       numDirectories_created = numDirectories_created + 1
-##       if (numDirectories_created % (numDirectories / 100)) == 0:
-##         logging.info(" %i%% completed" % (numDirectories_created / (numDirectories / 100)))
-##     logging.info("done.")
+    numDirectories = len(self.dirs.keys())
+    logging.info("Creating directory structure (numDirectories = %i)" % numDirectories)
+    numDirectories_created = 0;
+    for key in self.dirs.keys():
+      if type(self.dirs[key]) == dict:
+        for dir_type in self.dirs[key].keys():
+          create_if_not_exists(self.dirs[key][dir_type])
+      else:
+        create_if_not_exists(self.dirs[key])
+      numDirectories_created = numDirectories_created + 1
+      if (numDirectories_created % (numDirectories / 100)) == 0:
+        logging.info(" %i%% completed" % (numDirectories_created / (numDirectories / 100)))
+    logging.info("done.")
 
     inputFileLists = {}
     for sample_name, sample_info in self.samples.items():
@@ -572,7 +572,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     key_hadd_stage1_job = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
                     key_addBackgrounds_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
                     addBackgrounds_job_tuple = None
-                    key_addBackgrounds_job = None
                     processes_input = None
                     process_output = None
                     cfgFile_modified = None
@@ -983,6 +982,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
 
-    logging.info("Done")
+    logging.info("Done.")
 
     return self.num_jobs
