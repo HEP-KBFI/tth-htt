@@ -1,9 +1,13 @@
 #!/usr/bin/env python
-import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.configs.puHistogramConfig import puHistogramConfig, validate_pu
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
+from tthAnalysis.HiggsToTauTau.common import logging
+
+import os
+import sys
+import getpass
 
 # E.g.: ./tthPileupProfile.py -v 2018May09 -e 2017 -m all
 
@@ -92,12 +96,6 @@ for sample_name, sample_entry in samples.items():
   sample_entry['use_it'] = True
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s'
-  )
-
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
   if 'sum_events' in samples:

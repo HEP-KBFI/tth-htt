@@ -1,10 +1,13 @@
 #!/usr/bin/env python
-import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.configs.addMEMConfig_3l_1tau import addMEMConfig_3l_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
+from tthAnalysis.HiggsToTauTau.common import logging
+
+import os
+import getpass
 
 sys_choices          = [ 'full' ] + systematics.an_addMEM_opts
 mode_choices         = [ 'default', 'bdt', 'sync' ]
@@ -128,12 +131,6 @@ else:
   raise ValueError("Invalid mode: %s" % mode)
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.DEBUG,
-    format = '%(asctime)s - %(levelname)s: %(message)s'
-  )
-
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
     ', '.join(central_or_shifts)

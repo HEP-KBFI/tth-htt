@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-import sys
 import ROOT
-
-ROOT.gSystem.ResetSignals()
+import sys
 
 def get_events_count(root_file):
     f = ROOT.TFile(root_file)

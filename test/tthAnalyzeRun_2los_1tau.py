@@ -1,9 +1,14 @@
 #!/usr/bin/env python
-import os, logging, sys, getpass
+
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_2los_1tau import analyzeConfig_2los_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
+from tthAnalysis.HiggsToTauTau.common import logging
+
+import os
+import sys
+import getpass
 
 # E.g.: ./tthAnalyzeRun_2los_1tau.py -v 2017Dec13 -m default -e 2017
 
@@ -155,12 +160,6 @@ else:
   raise ValueError("Invalid mode: %s" % mode)
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s',
-  )
-
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
     ', '.join(central_or_shifts)

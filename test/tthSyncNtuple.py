@@ -58,12 +58,14 @@
 # The final target of this master Makefile hadd-s the individual outputs of each sync Ntuple job
 # together.
 
-import os, logging, sys, getpass
-
 from tthAnalysis.HiggsToTauTau.configs.syncNtupleConfig import syncNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
+
+import os
+import sys
+import getpass
 
 sys_choices     = systematics.an_inclusive_opts
 channel_choices = [
@@ -126,12 +128,6 @@ for systematic_label in systematics_label:
       raise ValueError('Invalid option for systematic uncertainty: %s' % systematic_label)
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s',
-  )
-
   analysis = syncNtupleConfig(
     config_dir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", args.era, args.version),
     output_dir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", args.era, args.version),

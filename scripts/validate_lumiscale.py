@@ -13,14 +13,12 @@
 # in the number of files or histograms that cover the same phase space, or if the number of entries
 # doesn't match to the expected nof entries.
 
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
+
 import argparse
 import os
-import sys
-import logging
-import ROOT
 import math
-
-ROOT.gSystem.ResetSignals()
 
 # the first entry in each array must be inclusive
 samples_to_sum_2017 = [
@@ -267,16 +265,9 @@ def plot(input_files, output_files, title, expected_neff, mode):
   for line in lines:
     line.Delete()
 
-class SmartFormatter(argparse.HelpFormatter):
-  def _split_lines(self, text, width):
-    if text.startswith('R|'):
-      return text[2:].splitlines()
-    return argparse.HelpFormatter._split_lines(self, text, width)
-
 parser = argparse.ArgumentParser(
     formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35)
 )
-
 parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', required = False, choices = [ '2017' ], default = '2017',
   help = 'R|Path to the sample dictionary',
@@ -310,11 +301,7 @@ parser.add_argument('-v', '--verbose',
 
 args = parser.parse_args()
 
-logging.basicConfig(
-  stream = sys.stdout,
-  level  = logging.DEBUG if args.verbose else logging.INFO,
-  format = '%(asctime)s - %(levelname)s: %(message)s'
-)
+logging.getLogger().setLevel(logging.DEBUG if args.verbose else logging.INFO)
 
 pattern = args.input
 if '{sample_name}' not in pattern:

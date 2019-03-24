@@ -1,18 +1,16 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, create_if_not_exists
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 
 from DataFormats.FWLite import Events, Handle
 
-import ROOT
 import argparse
-import logging
 import sys
 import os
 import imp
 import array
-
-ROOT.gSystem.ResetSignals()
 
 def load_dict(path, name):
   if not os.path.isfile(path):
@@ -26,12 +24,6 @@ def load_dict(path, name):
     sys.exit(1)
   samples = getattr(imp_dict, name)
   return samples
-
-class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
-  def _split_lines(self, text, width):
-    if text.startswith('R|'):
-      return text[2:].splitlines()
-    return argparse.ArgumentDefaultsHelpFormatter._split_lines(self, text, width)
 
 def plot(input_files, output_files, title, legend):
   handle_lhe = Handle('LHEEventProduct')
@@ -118,12 +110,6 @@ if __name__ == '__main__':
     help = 'R|Verbose output',
   )
   args = parser.parse_args()
-
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.DEBUG if args.verbose else logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s',
-  )
 
   samples = load_dict(args.dictionary, args.sample_name)
 

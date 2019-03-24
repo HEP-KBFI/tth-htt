@@ -2,18 +2,11 @@
 
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
 from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_wjets_nanoAOD import samples_2017 as samples_hh
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import SmartFormatter
 
 import argparse
 import os
-import ROOT
-
-ROOT.gSystem.ResetSignals()
-
-class SmartFormatter(argparse.HelpFormatter):
-  def _split_lines(self, text, width):
-    if text.startswith('R|'):
-      return text[2:].splitlines()
-    return argparse.HelpFormatter._split_lines(self, text, width)
 
 parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35))
 parser.add_argument(

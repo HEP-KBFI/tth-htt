@@ -1,9 +1,10 @@
-import os, jinja2, ROOT, logging
-
-ROOT.gSystem.ResetSignals()
-
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import createFile
+from tthAnalysis.HiggsToTauTau.common import logging
+
+import os
+import jinja2
 
 def createScript_sbatch(
     sbatch_script_file_name,

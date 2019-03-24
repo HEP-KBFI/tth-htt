@@ -1,9 +1,10 @@
-import logging
-import re
-
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList, is_dymc_reweighting
+from tthAnalysis.HiggsToTauTau.common import logging
+
+import sys
+import re
 
 def get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight):
   lepton_and_hadTau_selection_and_frWeight = lepton_and_hadTau_selection
@@ -349,19 +350,29 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
 
-##     numDirectories = len(self.dirs.keys())
-##     logging.info("Creating directory structure (numDirectories = %i)" % numDirectories)
-##     numDirectories_created = 0;
-##     for key in self.dirs.keys():
-##       if type(self.dirs[key]) == dict:
-##         for dir_type in self.dirs[key].keys():
-##           create_if_not_exists(self.dirs[key][dir_type])
-##       else:
-##         create_if_not_exists(self.dirs[key])
-##       numDirectories_created = numDirectories_created + 1
-##       if (numDirectories_created % (numDirectories / 100)) == 0:
-##         logging.info(" %i%% completed" % (numDirectories_created / (numDirectories / 100)))
-##     logging.info("done.")
+    numDirectories = 0
+    for key in self.dirs.keys():
+      if type(self.dirs[key]) == dict:
+        numDirectories += len(self.dirs[key])
+      else:
+        numDirectories += 1
+    logging.info("Creating directory structure (numDirectories = %i)" % numDirectories)
+    numDirectories_created = 0
+    numDirectories_percent = 0
+    for key in self.dirs.keys():
+      if type(self.dirs[key]) == dict:
+        for dir_type in self.dirs[key].keys():
+          create_if_not_exists(self.dirs[key][dir_type])
+        numDirectories_created += len(self.dirs[key])
+      else:
+        create_if_not_exists(self.dirs[key])
+        numDirectories_created += 1
+
+      numDirectories_created_percent = int(numDirectories_created * 100. / numDirectories)
+      if numDirectories_created_percent > numDirectories_percent:
+        numDirectories_percent = numDirectories_created_percent
+        logging.info(" %i%% completed" % numDirectories_percent)
+    logging.info("done.")
 
     inputFileLists = {}
     for sample_name, sample_info in self.samples.items():
@@ -572,7 +583,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     key_hadd_stage1_job = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
                     key_addBackgrounds_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
                     addBackgrounds_job_tuple = None
-                    key_addBackgrounds_job = None
                     processes_input = None
                     process_output = None
                     cfgFile_modified = None
@@ -983,6 +993,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
 
-    logging.info("Done")
+    logging.info("Done.")
 
     return self.num_jobs

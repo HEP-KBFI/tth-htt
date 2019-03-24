@@ -35,17 +35,15 @@ NB! The input file you provide can work only for a single MC sample or multiple 
 '''
 
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017 as samples
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 
-import logging
 import argparse
 import os
 import sys
 import re
-import ROOT
 import array
 import subprocess
-
-ROOT.gSystem.ResetSignals()
 
 def is_dict_full(d):
   '''Checks whether all values in a given dictionary are present
@@ -58,18 +56,6 @@ def is_dict_full(d):
   return len(filter(lambda x: x == '', d.values())) == 0
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s'
-  )
-
-  class SmartFormatter(argparse.HelpFormatter):
-    def _split_lines(self, text, width):
-      if text.startswith('R|'):
-        return text[2:].splitlines()
-      return argparse.HelpFormatter._split_lines(self, text, width)
-
   parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 40))
   parser.add_argument('-s', '--sample-name', metavar = 'name', required = True, type = str,
                       help = 'R|Sample name (may be a regex)')

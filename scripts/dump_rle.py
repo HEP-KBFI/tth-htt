@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
-import logging
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
+
 import argparse
 import os
 import sys
-import ROOT
 import array
-
-ROOT.gSystem.ResetSignals()
 
 def dump_rle(input_file, output_file, tree_name = 'Events',
              run_br = 'run', lumi_br = 'luminosityBlock', event_br = 'event'):
@@ -59,18 +58,6 @@ def check_dir(dirname, use_force):
   return True
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s'
-  )
-
-  class SmartFormatter(argparse.HelpFormatter):
-    def _split_lines(self, text, width):
-      if text.startswith('R|'):
-        return text[2:].splitlines()
-      return argparse.HelpFormatter._split_lines(self, text, width)
-
   parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 40))
   group = parser.add_mutually_exclusive_group()
   group.add_argument('-i', '--input', metavar = 'input', required = False, type = str, default = '',
