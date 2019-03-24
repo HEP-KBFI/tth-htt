@@ -38,6 +38,7 @@ RecoJetWriter::RecoJetWriter(int era,
   , jet_BtagWeight_(nullptr)
   , jet_QGDiscr_(nullptr)
   , jet_jetId_(nullptr)
+  , jet_puId_(nullptr)
 {
   switch(era_)
   {
@@ -68,6 +69,7 @@ RecoJetWriter::~RecoJetWriter()
   delete[] jet_pullPhi_;
   delete[] jet_pullMag_;
   delete[] jet_jetId_;
+  delete[] jet_puId_;
   for(auto & kv: jet_pt_systematics_)
   {
     delete[] kv.second;
@@ -99,6 +101,7 @@ RecoJetWriter::setBranchNames()
   branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
   branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
   branchName_jetId_ = Form("%s_%s", branchName_obj_.data(), "jetId");
+  branchName_puId_ = Form("%s_%s", branchName_obj_.data(), "puId");
   branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central);
   for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
   {
@@ -176,6 +179,7 @@ RecoJetWriter::setBranches(TTree * tree)
   bai.setBranch(jet_pullPhi_, branchName_pullPhi_);
   bai.setBranch(jet_pullMag_, branchName_pullMag_);
   bai.setBranch(jet_jetId_, branchName_jetId_);
+  bai.setBranch(jet_puId_, branchName_puId_);
   if(write_BtagWeight_systematics_)
   {
     for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
@@ -254,6 +258,7 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
     jet_pullPhi_[idxJet] = jet->pullPhi();
     jet_pullMag_[idxJet] = jet->pullMag();
     jet_jetId_[idxJet] = jet->jetId();
+    jet_puId_[idxJet] = jet->puId();
     if(write_BtagWeight_systematics_)
     {
       for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)

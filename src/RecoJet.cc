@@ -12,6 +12,7 @@ RecoJet::RecoJet(const GenJet & jet,
                  Double_t pullPhi,
                  Double_t pullMag,
                  Int_t jetId,
+                 Int_t puId,
                  Int_t idx)
   : RecoJetBase(jet, idx)
   , charge_(charge)
@@ -22,6 +23,7 @@ RecoJet::RecoJet(const GenJet & jet,
   , pullPhi_(pullPhi)
   , pullMag_(pullMag)
   , jetId_(jetId)
+  , puId_(puId)
 {}
 
 RecoJet::~RecoJet()
@@ -75,6 +77,12 @@ RecoJet::jetId() const
   return jetId_;
 }
 
+Int_t
+RecoJet::puId() const
+{
+  return puId_;
+}
+
 Double_t
 RecoJet::maxPt() const
 {
@@ -97,6 +105,7 @@ operator<<(std::ostream & stream,
             " charge = " << jet.charge()             << ","
             " CSV = "    << jet.BtagCSV()            << ","
             " jet ID = " << jet.jetId()              << ","
+            " PU ID = "  << jet.puId()               << ","
             "\n"
             " gen. matching:";
   stream << ",\n  lepton = " << jet.genLepton();
