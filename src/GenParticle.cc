@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle, Particle
 
 GenParticle::GenParticle()
-  : GenParticle(0., 0., 0., 0., 0, 0)
+  : GenParticle(0., 0., 0., 0., 0, 0, -1, -1)
 {}
 
 GenParticle::GenParticle(Double_t pt,
@@ -9,32 +9,36 @@ GenParticle::GenParticle(Double_t pt,
                          Double_t phi,
                          Double_t mass,
                          Int_t pdgId,
-                         Int_t charge)
-  : Particle(pt, eta, phi, mass)
-  , pdgId_(pdgId)
-  , charge_(charge)
+                         Int_t charge,
+                         Int_t status,
+                         Int_t statusFlags)
+  : ChargedParticle(pt, eta, phi, mass, pdgId, charge)
+  , status_(status)
+  , statusFlags_(statusFlags)
   , isMatchedToReco_(false)
 {}
 
 GenParticle::GenParticle(const math::PtEtaPhiMLorentzVector & p4,
                          Int_t pdgId,
-                         Int_t charge)
-  : Particle(p4)
-  , pdgId_(pdgId)
-  , charge_(charge)
+                         Int_t charge,
+                         Int_t status,
+                         Int_t statusFlags)
+  : ChargedParticle(p4, pdgId, charge)
+  , status_(status)
+  , statusFlags_(statusFlags)
   , isMatchedToReco_(false)
 {}
 
 Int_t
-GenParticle::pdgId() const
+GenParticle::status() const
 {
-  return pdgId_;
+  return status_;
 }
 
 Int_t
-GenParticle::charge() const
+GenParticle::statusFlags() const
 {
-  return charge_;
+  return statusFlags_;
 }
 
 void
@@ -49,13 +53,19 @@ GenParticle::isMatchedToReco() const
   return isMatchedToReco_;
 }
 
+bool
+GenParticle::checkStatusFlag(StatusFlag statusFlag) const
+{
+  return statusFlags_ < 0 ? false : statusFlags_ & (1 << static_cast<int>(statusFlag));
+}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const GenParticle & particle)
 {
-  stream << static_cast<const Particle &>(particle) << ","
-            " pdgId = "   << particle.pdgId()
-         << " (charge = " << particle.charge() << ')'
+  stream << static_cast<const ChargedParticle &>(particle) << ","
+            " status = "      << particle.status()         << ","
+            " statusFlags = " << particle.statusFlags()
   ;
   return stream;
 }

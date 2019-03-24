@@ -47,6 +47,8 @@ protected:
   std::string branchName_particle_mass_;
   std::string branchName_particle_pdgId_;
   std::string branchName_particle_charge_;
+  std::string branchName_particle_status_;
+  std::string branchName_particle_statusFlags_;
 
   UInt_t nParticles_;
   Float_t * particle_pt_;
@@ -55,6 +57,8 @@ protected:
   Float_t * particle_mass_;
   Int_t * particle_pdgId_;
   Int_t * particle_charge_;
+  Int_t * particle_status_;
+  Int_t * particle_statusFlags_;
 
   // CV: make sure that only one GenParticleReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

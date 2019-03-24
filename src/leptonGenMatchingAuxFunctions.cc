@@ -2,6 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhoton.h" // GenPhoton
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 #include <iostream> // std::ostream

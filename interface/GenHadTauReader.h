@@ -47,6 +47,7 @@ protected:
   std::string branchName_phi_;
   std::string branchName_mass_;
   std::string branchName_charge_;
+  std::string branchName_status_;
 
   UInt_t nHadTaus_;
   Float_t * hadTau_pt_;
@@ -54,6 +55,7 @@ protected:
   Float_t * hadTau_phi_;
   Float_t * hadTau_mass_;
   Int_t * hadTau_charge_;
+  Int_t * hadTau_status_;
 
   // CV: make sure that only one GenHadTauReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

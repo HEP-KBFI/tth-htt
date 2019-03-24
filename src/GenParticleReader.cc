@@ -20,6 +20,8 @@ GenParticleReader::GenParticleReader(const std::string & branchName_particles)
   , particle_mass_(nullptr)
   , particle_pdgId_(nullptr)
   , particle_charge_(nullptr)
+  , particle_status_(nullptr)
+  , particle_statusFlags_(nullptr)
 {
   setBranchNames();
 }
@@ -39,6 +41,8 @@ GenParticleReader::~GenParticleReader()
     delete[] gInstance->particle_mass_;
     delete[] gInstance->particle_pdgId_;
     delete[] gInstance->particle_charge_;
+    delete[] gInstance->particle_status_;
+    delete[] gInstance->particle_statusFlags_;
     instances_[branchName_particles_] = nullptr;
   }
 }
@@ -54,6 +58,8 @@ GenParticleReader::setBranchNames()
     branchName_particle_mass_ = Form("%s_%s", branchName_particles_.data(), "mass");
     branchName_particle_pdgId_ = Form("%s_%s", branchName_particles_.data(), "pdgId");
     branchName_particle_charge_ = Form("%s_%s", branchName_particles_.data(), "charge");
+    branchName_particle_status_ = Form("%s_%s", branchName_particles_.data(), "status");
+    branchName_particle_statusFlags_ = Form("%s_%s", branchName_particles_.data(), "statusFlags");
     instances_[branchName_particles_] = this;
   }
   else
@@ -86,6 +92,8 @@ GenParticleReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(particle_mass_, branchName_particle_mass_);
     bai.setBranchAddress(particle_pdgId_, branchName_particle_pdgId_);
     bai.setBranchAddress(particle_charge_, branchName_particle_charge_);
+    bai.setBranchAddress(particle_status_, branchName_particle_status_);
+    bai.setBranchAddress(particle_statusFlags_, branchName_particle_statusFlags_);
   }
 }
 
@@ -114,7 +122,9 @@ GenParticleReader::read() const
         gInstance->particle_phi_[idxParticle],
         gInstance->particle_mass_[idxParticle],
         gInstance->particle_pdgId_[idxParticle],
-        gInstance->particle_charge_[idxParticle]
+        gInstance->particle_charge_[idxParticle],
+        gInstance->particle_status_[idxParticle],
+        gInstance->particle_statusFlags_[idxParticle],
       });
     }
   } 

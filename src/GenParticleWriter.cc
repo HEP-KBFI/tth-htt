@@ -17,8 +17,10 @@ GenParticleWriter::GenParticleWriter(const std::string & branchName_num,
   , particle_eta_(nullptr)
   , particle_phi_(nullptr)
   , particle_mass_(nullptr)
-  , particle_charge_(nullptr)
   , particle_pdgId_(nullptr)
+  , particle_charge_(nullptr)
+  , particle_status_(nullptr)
+  , particle_statusFlags_(nullptr)
 {
   setBranchNames();
 }
@@ -29,8 +31,10 @@ GenParticleWriter::~GenParticleWriter()
   delete[] particle_eta_;
   delete[] particle_phi_;
   delete[] particle_mass_;
-  delete[] particle_charge_;
   delete[] particle_pdgId_;
+  delete[] particle_charge_;
+  delete[] particle_status_;
+  delete[] particle_statusFlags_;
 }
 
 void GenParticleWriter::setBranchNames()
@@ -39,8 +43,10 @@ void GenParticleWriter::setBranchNames()
   branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
   branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
   branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
-  branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
   branchName_pdgId_ = Form("%s_%s", branchName_obj_.data(), "pdgId");
+  branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
+  branchName_status_ = Form("%s_%s", branchName_obj_.data(), "status");
+  branchName_statusFlags_ = Form("%s_%s", branchName_obj_.data(), "statusFlags");
 }
 
 void GenParticleWriter::setBranches(TTree * tree)
@@ -51,8 +57,10 @@ void GenParticleWriter::setBranches(TTree * tree)
   bai.setBranch(particle_eta_, branchName_eta_);
   bai.setBranch(particle_phi_, branchName_phi_);
   bai.setBranch(particle_mass_, branchName_mass_);
-  bai.setBranch(particle_charge_, branchName_charge_);
   bai.setBranch(particle_pdgId_, branchName_pdgId_);
+  bai.setBranch(particle_charge_, branchName_charge_);
+  bai.setBranch(particle_status_, branchName_status_);
+  bai.setBranch(particle_statusFlags_, branchName_statusFlags_);
 }
 
 void GenParticleWriter::write(const std::vector<GenParticle> & particles)
@@ -65,7 +73,9 @@ void GenParticleWriter::write(const std::vector<GenParticle> & particles)
     particle_eta_[idxParticle] = particle.eta();
     particle_phi_[idxParticle] = particle.phi();
     particle_mass_[idxParticle] = particle.mass();
-    particle_charge_[idxParticle] = particle.charge();
     particle_pdgId_[idxParticle] = particle.pdgId();
+    particle_charge_[idxParticle] = particle.charge();
+    particle_status_[idxParticle] = particle.status();
+    particle_statusFlags_[idxParticle] = particle.statusFlags();
   }
 }

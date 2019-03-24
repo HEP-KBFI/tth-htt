@@ -48,6 +48,8 @@ protected:
   std::string branchName_promptLepton_phi_;
   std::string branchName_promptLepton_mass_;
   std::string branchName_promptLepton_pdgId_;
+  std::string branchName_promptLepton_status_;
+  std::string branchName_promptLepton_statusFlags_;
 
   UInt_t nPromptLeptons_;
   Float_t * promptLepton_pt_;
@@ -55,6 +57,8 @@ protected:
   Float_t * promptLepton_phi_;
   Float_t * promptLepton_mass_;
   Int_t * promptLepton_pdgId_;
+  Int_t * promptLepton_status_;
+  Int_t * promptLepton_statusFlags_;
 
   // CV: make sure that only one GenLeptonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

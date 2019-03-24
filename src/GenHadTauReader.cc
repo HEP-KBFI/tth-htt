@@ -20,6 +20,7 @@ GenHadTauReader::GenHadTauReader(const std::string & branchName_obj,
   , hadTau_phi_(nullptr)
   , hadTau_mass_(nullptr)
   , hadTau_charge_(nullptr)
+  , hadTau_status_(nullptr)
 {
   setBranchNames();
 }
@@ -37,6 +38,7 @@ GenHadTauReader::~GenHadTauReader()
     delete[] gInstance->hadTau_phi_;
     delete[] gInstance->hadTau_mass_;
     delete[] gInstance->hadTau_charge_;
+    delete[] gInstance->hadTau_status_;
     instances_[branchName_obj_] = nullptr;
   }
 }
@@ -51,6 +53,7 @@ GenHadTauReader::setBranchNames()
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
     branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
     branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
+    branchName_status_ = Form("%s_%s", branchName_obj_.data(), "status");
     instances_[branchName_obj_] = this;
   }
   else
@@ -79,6 +82,7 @@ GenHadTauReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_phi_, branchName_phi_);
     bai.setBranchAddress(hadTau_mass_, branchName_mass_);
     bai.setBranchAddress(hadTau_charge_, branchName_charge_);
+    bai.setBranchAddress(hadTau_status_, branchName_status_);
   }
 }
 
@@ -107,7 +111,8 @@ GenHadTauReader::read() const
         gInstance->hadTau_eta_[idxHadTau],
         gInstance->hadTau_phi_[idxHadTau],
         gInstance->hadTau_mass_[idxHadTau],
-        gInstance->hadTau_charge_[idxHadTau]
+        gInstance->hadTau_charge_[idxHadTau],
+        gInstance->hadTau_status_[idxHadTau],
       });
     }
   }

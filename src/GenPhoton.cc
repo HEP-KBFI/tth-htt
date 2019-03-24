@@ -4,8 +4,10 @@ GenPhoton::GenPhoton(Double_t pt,
                      Double_t eta,
                      Double_t phi,
                      Double_t mass,
-                     Int_t pdgId)
-  : GenParticle(pt, eta, phi, mass, pdgId, 0)
+                     Int_t pdgId,
+                     Int_t status,
+                     Int_t statusFlags)
+  : GenParticle(pt, eta, phi, mass, pdgId, 0, status, statusFlags)
 {}
 
 std::ostream &

@@ -12,15 +12,21 @@ public:
             Double_t eta,
             Double_t phi,
             Double_t mass,
-            Int_t pdgId);
+            Int_t pdgId,
+            Int_t status,
+            Int_t statusFlags);
   GenLepton(Double_t pt,
             Double_t eta,
             Double_t phi,
             Double_t mass,
             Int_t pdgId,
-            Int_t charge);
+            Int_t charge,
+            Int_t status,
+            Int_t statusFlags);
   GenLepton(const math::PtEtaPhiMLorentzVector & p4,
-            Int_t pdgId);
+            Int_t pdgId,
+            Int_t status,
+            Int_t statusFlags);
 
   virtual ~GenLepton() {}
 

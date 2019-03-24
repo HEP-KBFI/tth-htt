@@ -2,6 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow()
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 
 #include <TMath.h> // TMath::Pi()
 

@@ -12,7 +12,9 @@ public:
             Double_t eta,
             Double_t phi,
             Double_t mass,
-            Int_t pdgId);
+            Int_t pdgId,
+            Int_t status,
+            Int_t statusFlags);
 
   virtual ~GenPhoton() {}
 };

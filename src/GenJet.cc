@@ -12,7 +12,7 @@ GenJet::GenJet(Double_t pt,
                Double_t phi,
                Double_t mass,
                Int_t pdgId)
-  : GenParticle(pt, eta, phi, mass, pdgId, 0)
+  : GenParticle(pt, eta, phi, mass, pdgId, 0, -1, -1)
 {}
 
 std::ostream &

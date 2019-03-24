@@ -418,7 +418,7 @@ struct GenParticleFiller
   }
 
   void
-  setValues(const GenParticle & lepton)
+  setValues(const ChargedParticle & lepton)
   {
     ParticleFiller<FloatType>::setValues(static_cast<const Particle &>(lepton));
     charge_.setValue(lepton.charge());

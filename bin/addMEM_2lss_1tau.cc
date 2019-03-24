@@ -531,8 +531,8 @@ int main(int argc,
                   std::cout << "computing MEM for " << eventInfo
                             << " (idxPermutation = " << idxPermutation << "):\n"
                                "inputs:\n"
-                            << " leading lepton:     " << *(static_cast<const GenLepton *>(selLepton_lead))
-                            << " subleading lepton:  " << *(static_cast<const GenLepton *>(selLepton_sublead))
+                            << " leading lepton:     " << *(static_cast<const ChargedParticle *>(selLepton_lead))
+                            << " subleading lepton:  " << *(static_cast<const ChargedParticle *>(selLepton_sublead))
                             << " hadTau (charge = :"   << selHadTau -> charge() << ") "
                                                        << *(static_cast<const Particle *>(selHadTau))
                             << " MET:                " << met_mem << '\n';

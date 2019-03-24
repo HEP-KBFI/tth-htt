@@ -43,16 +43,20 @@ protected:
   std::string branchName_eta_;
   std::string branchName_phi_;
   std::string branchName_mass_;
-  std::string branchName_charge_;
   std::string branchName_pdgId_;
+  std::string branchName_charge_;
+  std::string branchName_status_;
+  std::string branchName_statusFlags_;
 
   UInt_t nParticles_;
   Float_t * particle_pt_;
   Float_t * particle_eta_;
   Float_t * particle_phi_;
   Float_t * particle_mass_;
-  Int_t * particle_charge_;
   Int_t * particle_pdgId_;
+  Int_t * particle_charge_;
+  Int_t * particle_status_;
+  Int_t * particle_statusFlags_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_GenParticleWriter_h

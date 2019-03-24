@@ -1,9 +1,10 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton, GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton, ChargedParticle
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhoton.h" // GenPhoton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
-RecoLepton::RecoLepton(const GenLepton & lepton,
+RecoLepton::RecoLepton(const ChargedParticle & lepton,
                        Double_t dxy,
                        Double_t dz,
                        Double_t relIso,
@@ -17,9 +18,8 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
                        Double_t jetBtagCSV,
                        Int_t    jetNDauChargedMVASel,
                        Int_t    tightCharge,
-                       Int_t    charge,
                        UInt_t   filterBits)
-  : GenLepton(lepton)
+  : ChargedParticle(lepton)
   , dxy_(dxy)
   , dz_(dz)
   , relIso_(relIso)
@@ -33,7 +33,6 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
   , jetBtagCSV_(jetBtagCSV)
   , jetNDauChargedMVASel_(jetNDauChargedMVASel)
   , tightCharge_(tightCharge)
-  , charge_(charge)
   , filterBits_(filterBits)
   , assocJet_pt_(jetPtRatio_ > 1.e-3 ? 0.90 * pt_ / jetPtRatio_ : pt_)
   , assocJet_p4_(assocJet_pt_, eta_, phi_, mass_)
@@ -228,12 +227,6 @@ RecoLepton::tightCharge() const
   return tightCharge_;
 }
 
-Int_t
-RecoLepton::charge() const
-{
-  return charge_;
-}
-
 UInt_t
 RecoLepton::filterBits() const
 {
@@ -298,7 +291,7 @@ std::ostream &
 operator<<(std::ostream & stream,
            const RecoLepton & lepton)
 {
-  stream << static_cast<const GenLepton &>(lepton)        << ",\n"
+  stream << static_cast<const ChargedParticle &>(lepton)  << ",\n"
             " cone_pT = "       << lepton.cone_pt()       << ","
             " dxy = "           << lepton.dxy()           << ","
             " dz = "            << lepton.dz()            << ",\n"

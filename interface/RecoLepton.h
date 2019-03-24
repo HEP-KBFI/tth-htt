@@ -1,9 +1,10 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoLepton_h
 #define tthAnalysis_HiggsToTauTau_RecoLepton_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/ChargedParticle.h" // ChargedParticle
 
 // forward declarations
+class GenLepton;
 class GenHadTau;
 class GenPhoton;
 class GenJet;
@@ -11,11 +12,11 @@ class GenJet;
 #include <memory> // std::shared_ptr<>
 
 class RecoLepton
-  : public GenLepton
+  : public ChargedParticle
 {
 public:
   RecoLepton() = default;
-  RecoLepton(const GenLepton & lepton,
+  RecoLepton(const ChargedParticle & lepton,
              Double_t dxy,
              Double_t dz,
              Double_t relIso,
@@ -29,7 +30,6 @@ public:
              Double_t jetBtagCSV,
              Int_t    jetNDauChargedMVASel,
              Int_t    tightCharge,
-             Int_t    charge,
              UInt_t   filterBits);
 
   virtual ~RecoLepton();
@@ -131,7 +131,6 @@ public:
   Double_t jetBtagCSV() const;
   Int_t jetNDauChargedMVASel() const;
   Int_t tightCharge() const;
-  Int_t charge() const;
   UInt_t filterBits() const;
 
   const GenLepton * genLepton() const;
@@ -161,7 +160,6 @@ protected:
   Double_t jetBtagCSV_;         ///< CSV b-tagging discriminator value of nearby jet
   Int_t jetNDauChargedMVASel_;  ///< number of charged constituents in the nearest jet
   Int_t tightCharge_;           ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
-  Int_t charge_;                ///< lepton charge
   UInt_t filterBits_;           ///< bitmask of matching with trigger objects
 
   Double_t assocJet_pt_;

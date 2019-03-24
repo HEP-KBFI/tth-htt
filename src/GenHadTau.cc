@@ -4,8 +4,9 @@ GenHadTau::GenHadTau(Double_t pt,
                      Double_t eta,
                      Double_t phi,
                      Double_t mass,
-                     Int_t charge)
-  : GenParticle(pt, eta, phi, mass, 0, charge)
+                     Int_t charge,
+                     Int_t status)
+  : GenParticle(pt, eta, phi, mass, 0, charge, status, -1)
 {}
 
 std::ostream &
@@ -13,7 +14,8 @@ operator<<(std::ostream & stream,
            const GenHadTau & hadTau)
 {
   stream << static_cast<const Particle &>(hadTau) << ","
-            " charge = " << hadTau.charge()
+            " charge = " << hadTau.charge()       << ","
+            " status = " << hadTau.status()
   ;
   return stream;
 }

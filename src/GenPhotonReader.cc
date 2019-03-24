@@ -20,6 +20,8 @@ GenPhotonReader::GenPhotonReader(const std::string & branchName_obj,
   , photon_phi_(nullptr)
   , photon_mass_(nullptr)
   , photon_pdgId_(nullptr)
+  , photon_status_(nullptr)
+  , photon_statusFlags_(nullptr)
 {
   setBranchNames();
 }
@@ -37,6 +39,8 @@ GenPhotonReader::~GenPhotonReader()
     delete[] gInstance->photon_phi_;
     delete[] gInstance->photon_mass_;
     delete[] gInstance->photon_pdgId_;
+    delete[] gInstance->photon_status_;
+    delete[] gInstance->photon_statusFlags_;
     instances_[branchName_obj_] = nullptr;
   }
 }
@@ -51,6 +55,8 @@ GenPhotonReader::setBranchNames()
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
     branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
     branchName_pdgId_ = Form("%s_%s", branchName_obj_.data(), "pdgId");
+    branchName_status_ = Form("%s_%s", branchName_obj_.data(), "status");
+    branchName_statusFlags_ = Form("%s_%s", branchName_obj_.data(), "statusFlags");
     instances_[branchName_obj_] = this;
   }
   else
@@ -79,6 +85,8 @@ GenPhotonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(photon_phi_, branchName_phi_);
     bai.setBranchAddress(photon_mass_, branchName_mass_);
     bai.setBranchAddress(photon_pdgId_, branchName_pdgId_);
+    bai.setBranchAddress(photon_status_, branchName_status_);
+    bai.setBranchAddress(photon_statusFlags_, branchName_statusFlags_);
   }
 }
 
@@ -109,6 +117,8 @@ GenPhotonReader::read() const
         gInstance->photon_phi_[idxPhoton],
         gInstance->photon_mass_[idxPhoton],
         gInstance->photon_pdgId_[idxPhoton],
+        gInstance->photon_status_[idxPhoton],
+        gInstance->photon_statusFlags_[idxPhoton],
       });
     }
   }

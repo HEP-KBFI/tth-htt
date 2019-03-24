@@ -47,6 +47,8 @@ protected:
   std::string branchName_phi_;
   std::string branchName_mass_;
   std::string branchName_pdgId_;
+  std::string branchName_status_;
+  std::string branchName_statusFlags_;
 
   UInt_t nPhotons_;
   Float_t * photon_pt_;
@@ -54,6 +56,8 @@ protected:
   Float_t * photon_phi_;
   Float_t * photon_mass_;
   Int_t * photon_pdgId_;
+  Int_t * photon_status_;
+  Int_t * photon_statusFlags_;
 
   // CV: make sure that only one GenPhotonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

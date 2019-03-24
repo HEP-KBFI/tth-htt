@@ -20,6 +20,8 @@ GenLeptonReader::GenLeptonReader(const std::string & branchName_promptLeptons,
   , promptLepton_phi_(nullptr)
   , promptLepton_mass_(nullptr)
   , promptLepton_pdgId_(nullptr)
+  , promptLepton_status_(nullptr)
+  , promptLepton_statusFlags_(nullptr)
 {
   setBranchNames();
 }
@@ -37,6 +39,8 @@ GenLeptonReader::~GenLeptonReader()
     delete[] gInstance->promptLepton_phi_;
     delete[] gInstance->promptLepton_mass_;
     delete[] gInstance->promptLepton_pdgId_;
+    delete[] gInstance->promptLepton_status_;
+    delete[] gInstance->promptLepton_statusFlags_;
     instances_[branchName_promptLeptons_] = nullptr;
   }
 }
@@ -51,6 +55,8 @@ GenLeptonReader::setBranchNames()
     branchName_promptLepton_phi_ = Form("%s_%s", branchName_promptLeptons_.data(), "phi");
     branchName_promptLepton_mass_ = Form("%s_%s", branchName_promptLeptons_.data(), "mass");
     branchName_promptLepton_pdgId_ = Form("%s_%s", branchName_promptLeptons_.data(), "pdgId");
+    branchName_promptLepton_status_ = Form("%s_%s", branchName_promptLeptons_.data(), "status");
+    branchName_promptLepton_statusFlags_ = Form("%s_%s", branchName_promptLeptons_.data(), "statusFlags");
     instances_[branchName_promptLeptons_] = this;
   }
   else
@@ -84,6 +90,8 @@ GenLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(promptLepton_phi_, branchName_promptLepton_phi_);
     bai.setBranchAddress(promptLepton_mass_, branchName_promptLepton_mass_);
     bai.setBranchAddress(promptLepton_pdgId_, branchName_promptLepton_pdgId_);
+    bai.setBranchAddress(promptLepton_status_, branchName_promptLepton_status_);
+    bai.setBranchAddress(promptLepton_statusFlags_, branchName_promptLepton_statusFlags_);
   }
 }
 
@@ -112,7 +120,9 @@ GenLeptonReader::read() const
         gInstance->promptLepton_eta_[idxLepton],
         gInstance->promptLepton_phi_[idxLepton],
         gInstance->promptLepton_mass_[idxLepton],
-        gInstance->promptLepton_pdgId_[idxLepton]
+        gInstance->promptLepton_pdgId_[idxLepton],
+        gInstance->promptLepton_status_[idxLepton],
+        gInstance->promptLepton_statusFlags_[idxLepton],
       });
     }
   }
