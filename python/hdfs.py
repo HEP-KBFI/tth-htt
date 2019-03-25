@@ -2,8 +2,9 @@
 
 # Author: Karl Ehatäht
 
+from tthAnalysis.HiggsToTauTau.common import logging
+
 import ctypes
-import logging
 import re
 import os
 import datetime
@@ -146,7 +147,7 @@ class _hdfs:
       '''
       return self.kind == 'D'
 
-  def __init__(self, nn = "default", port = 0):
+  def __init__(self, nn = "hdfs-nn", port = 9000):
     '''Set up runtime parameters for performing direct queries to HDFS
     :param nn:   Name of the name node
     :param port: HDFS service port
@@ -261,6 +262,9 @@ class _hdfs:
     if not self.lfs:
       raise hdfsException("Could not create interface to local file system")
 
+  def _address(self, path):
+    return 'hdfs://{nn}:{port}/{path}'.format(nn = self.nn, port = self.port, path = _hdfs.defuse(path))
+
   def get_path_info(self, path, fail = True):
     '''Returns a dynamically-allocated _hdfs.info object that contains information about the given path
     :param path: The path of the file or directory
@@ -275,7 +279,7 @@ class _hdfs:
     if not path.startswith('/hdfs'):
       raise hdfsException("Invalid path: %s" % path)
 
-    path_info = self.lib.hdfsGetPathInfo(self.fs, _hdfs.defuse(path))
+    path_info = self.lib.hdfsGetPathInfo(self.fs, self._address(path))
     if not path_info:
       if fail:
         raise NoSuchPathException(path)
@@ -296,9 +300,9 @@ class _hdfs:
 
     See more: https://mapr.com/docs/51/DevelopmentGuide/hdfsExists.html
     '''
-    is_local = path.startswith('/hdfs')
-    if is_local:
-      return self.lib.hdfsExists(self.fs, _hdfs.defuse(path)) == 0
+    is_hdfs = path.startswith('/hdfs')
+    if is_hdfs:
+      return self.lib.hdfsExists(self.fs, self._address(path)) == 0
     else:
       return os.path.exists(path)
 
@@ -482,7 +486,7 @@ class _hdfs:
       raise NoSuchPathException(path)
 
     if path.startswith('/hdfs'):
-      return self.lib.hdfsDelete(self.fs, _hdfs.defuse(path), int(recursive))
+      return self.lib.hdfsDelete(self.fs, self._address(path), int(recursive))
     else:
       try:
         if self.isdir(path):
@@ -532,22 +536,22 @@ class _hdfs:
 
     is_local_src = not src.startswith('/hdfs')
     is_local_dst = not dst.startswith('/hdfs')
-    src_defused = _hdfs.defuse(src)
-    dst_defused = _hdfs.defuse(dst)
+    src_defused = self._address(src)
+    dst_defused = self._address(dst)
 
     if is_local_src and is_local_dst:
       try:
-        if self.isdir(src_defused):
-          shutil.copytree(src_defused, dst_defused)
+        if self.isdir(src):
+          shutil.copytree(src, dst)
         else:
-          shutil.copy2(src_defused, dst_defused)
+          shutil.copy2(src, dst)
       except OSError:
         return -1
       return 0
     elif is_local_src and not is_local_dst:
-      return self.lib.hdfsCopy(self.lfs, src_defused, self.fs, dst_defused)
+      return self.lib.hdfsCopy(self.lfs, src, self.fs, dst_defused)
     elif not is_local_src and is_local_dst:
-      return self.lib.hdfsCopy(self.fs, src_defused, self.lfs, dst_defused)
+      return self.lib.hdfsCopy(self.fs, src_defused, self.lfs, dst)
     elif not is_local_src and not is_local_dst:
       return self.lib.hdfsCopy(self.fs, src_defused, self.fs, dst_defused)
     else:
@@ -573,19 +577,19 @@ class _hdfs:
 
     is_local_src = not src.startswith('/hdfs')
     is_local_dst = not dst.startswith('/hdfs')
-    src_defused = _hdfs.defuse(src)
-    dst_defused = _hdfs.defuse(dst)
+    src_defused = self._address(src)
+    dst_defused = self._address(dst)
 
     if is_local_src and is_local_dst:
       try:
-        shutil.move(src_defused, dst_defused)
+        shutil.move(src, dst)
       except IOError:
         return -1
       return 0
     elif is_local_src and not is_local_dst:
-      return self.lib.hdfsMove(self.lfs, src_defused, self.fs, dst_defused)
+      return self.lib.hdfsMove(self.lfs, src, self.fs, dst_defused)
     elif not is_local_src and is_local_dst:
-      return self.lib.hdfsMove(self.fs, src_defused, self.lfs, dst_defused)
+      return self.lib.hdfsMove(self.fs, src_defused, self.lfs, dst)
     elif not is_local_src and not is_local_dst:
       return self.lib.hdfsRename(self.fs, src_defused, dst_defused)
     else:
@@ -611,7 +615,7 @@ class _hdfs:
 
     if path.startswith('/hdfs'):
       # The function returns 0 if the directory was successfully created or if it already exists
-      return self.lib.hdfsCreateDirectory(self.fs, _hdfs.defuse(path))
+      return self.lib.hdfsCreateDirectory(self.fs, self._address(path))
     else:
       try:
         os.makedirs(path)
@@ -649,7 +653,7 @@ class _hdfs:
       raise hdfsException("Missing owner and group name")
 
     if path.startswith('/hdfs'):
-      return self.lib.hdfsChown(self.fs, _hdfs.defuse(path), owner, group)
+      return self.lib.hdfsChown(self.fs, self._address(path), owner, group)
     else:
       try:
         uid = pwd.getpwnam(owner).pw_uid
@@ -695,7 +699,7 @@ class _hdfs:
             path,
           )
         )
-      return self.lib.hdfsChmod(self.fs, _hdfs.defuse(path), permissions_oct)
+      return self.lib.hdfsChmod(self.fs, self._address(path), permissions_oct)
     else:
       try:
         os.chmod(path, permissions_oct)

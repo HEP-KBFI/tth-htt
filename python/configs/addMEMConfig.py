@@ -3,11 +3,10 @@ from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging
 
 import os
-import logging
-import ROOT
-ROOT.gSystem.ResetSignals()
 import array
 import uuid
 

@@ -9,12 +9,11 @@ if do_wjets:
 else:
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
 
-import ROOT
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+
 import array
 import itertools
 import copy
-
-ROOT.gSystem.ResetSignals()
 
 def comp_weights_1(f, samples_to_stitch, split_var, apply_sf = True):
   inclusive_samples  = samples_to_stitch['inclusive']['samples']

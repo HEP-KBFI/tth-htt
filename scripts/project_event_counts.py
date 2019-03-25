@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
-import ROOT
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+
 import array
 import collections
 import numpy as np
 import os
-
-ROOT.gSystem.ResetSignals()
 
 plot_dir = ''
 apply_mll_cut = True

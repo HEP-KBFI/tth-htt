@@ -1,21 +1,19 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 from dump_rle_parallel import dump_rle_parallel
 
 import argparse
 import sys
-import logging
 import os
 import subprocess
-import ROOT
 import re
 import shutil
 import array
 import time
 import getpass
-
-ROOT.gSystem.ResetSignals()
 
 '''The script copies a subset of an Ntuple, given RLE numbers, sample name and output file name
 
@@ -187,18 +185,6 @@ def positive_int(i):
   return i_int
 
 if __name__ == '__main__':
-  logging.basicConfig(
-    stream = sys.stdout,
-    level  = logging.INFO,
-    format = '%(asctime)s - %(funcName)s():%(lineno)s - %(levelname)s: %(message)s'
-  )
-
-  class SmartFormatter(argparse.HelpFormatter):
-    def _split_lines(self, text, width):
-      if text.startswith('R|'):
-        return text[2:].splitlines()
-      return argparse.HelpFormatter._split_lines(self, text, width)
-
   parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45))
   group = parser.add_mutually_exclusive_group()
   parser.add_argument('-i', '--input', metavar = 'file', required = True, type = str, default = '',

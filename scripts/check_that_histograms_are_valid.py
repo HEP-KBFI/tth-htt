@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 import os
 import sys
-import ROOT
 import time
-
-ROOT.gSystem.ResetSignals()
 
 def main():
     input_files = sys.argv[1:len(sys.argv)]
