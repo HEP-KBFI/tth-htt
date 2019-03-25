@@ -47,7 +47,7 @@ process.produceNtuple = cms.PSet(
     branchNames_triggers = cms.vstring(),
 
     isMC = cms.bool(True),
-    readGenMatching = cms.bool(False),
+    redoGenMatching = cms.bool(False),
 
     selEventsFileName_input = cms.string(''),
 
