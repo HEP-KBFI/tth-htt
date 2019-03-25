@@ -387,7 +387,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (lepton_and_hadTau_selection_and_frWeight, central_or_shift))
 
                 # build config files for executing analysis code
-                key_analyze_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+                key_analyze_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, central_or_shift)
                 analyze_job_tuple = (process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, central_or_shift, jobId)
                 key_analyze_job = getKey(*analyze_job_tuple)
                 ntupleFiles = inputFileList[jobId]
