@@ -110,9 +110,6 @@ class analyzeConfig(object):
         self.executable_analyze = executable_analyze
         self.channel = channel
 
-        # CV: enable logging.info() output
-        logging.getLogger().setLevel(logging.INFO)
-
         # sum the event counts for samples which cover the same phase space only if
         # there are multiple such samples
         event_sums = copy.deepcopy(samples['sum_events'])
