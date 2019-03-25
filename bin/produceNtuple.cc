@@ -686,22 +686,22 @@ main(int argc,
       genJets = genJetReader->read();
 
 //--- match reconstructed to generator level particles
-      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
-      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
-      muonGenMatcher.addGenJetMatch   (preselMuons, genJets,    0.2);
+      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons);
+      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
+      muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
 
-      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.2);
-      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.2);
-      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons, 0.2);
-      electronGenMatcher.addGenJetMatch   (preselElectrons, genJets,    0.2);
+      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons);
+      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
+      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
+      electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
 
-      hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons, 0.2);
-      hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus, 0.2);
-      hadTauGenMatcher.addGenJetMatch   (selHadTaus, genJets,    0.2);
+      hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons);
+      hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus);
+      hadTauGenMatcher.addGenJetMatch   (selHadTaus, genJets);
 
-      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons, 0.2);
-      jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.2);
-      jetGenMatcher.addGenJetMatch   (selJets, genJets,    0.2);
+      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons);
+      jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus);
+      jetGenMatcher.addGenJetMatch   (selJets, genJets);
     }
 
     memPermutationWriter.write(

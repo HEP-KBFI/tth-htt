@@ -1171,22 +1171,22 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 
 //--- match reconstructed to generator level particles
     if ( isMC && redoGenMatching ) {
-      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
-      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
-      muonGenMatcher.addGenJetMatch(preselMuons, genJets, 0.2);
+      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons);
+      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
+      muonGenMatcher.addGenJetMatch(preselMuons, genJets);
 
-      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.2);
-      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.2);
-      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons, 0.2);
-      electronGenMatcher.addGenJetMatch(preselElectrons, genJets, 0.2);
+      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons);
+      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
+      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
+      electronGenMatcher.addGenJetMatch(preselElectrons, genJets);
 
-      hadTauGenMatcher.addGenLeptonMatch(preselHadTausFull, genLeptons, 0.2);
-      hadTauGenMatcher.addGenHadTauMatch(preselHadTausFull, genHadTaus, 0.2);
-      hadTauGenMatcher.addGenJetMatch(preselHadTausFull, genJets, 0.2);
+      hadTauGenMatcher.addGenLeptonMatch(preselHadTausFull, genLeptons);
+      hadTauGenMatcher.addGenHadTauMatch(preselHadTausFull, genHadTaus);
+      hadTauGenMatcher.addGenJetMatch(preselHadTausFull, genJets);
 
-      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons, 0.2);
-      jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.2);
-      jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
+      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons);
+      jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus);
+      jetGenMatcher.addGenJetMatch(selJets, genJets);
     }
 
 //std::cout<<"stage4"<<std::endl;

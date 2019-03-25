@@ -1056,18 +1056,18 @@ main(int argc,
 //--- match reconstructed to generator level particles
     if(isMC && redoGenMatching)
     {
-      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
-      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
-      muonGenMatcher.addGenJetMatch   (preselMuons, genJets,    0.2);
+      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons);
+      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
+      muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
 
-      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.2);
-      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.2);
-      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons, 0.2);
-      electronGenMatcher.addGenJetMatch   (preselElectrons, genJets,    0.2);
+      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons);
+      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
+      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
+      electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
 
-      jetGenMatcher.addGenLeptonMatch(selJets_dR07, genLeptons, 0.2);
-      jetGenMatcher.addGenHadTauMatch(selJets_dR07, genHadTaus, 0.2);
-      jetGenMatcher.addGenJetMatch   (selJets_dR07, genJets,    0.2);
+      jetGenMatcher.addGenLeptonMatch(selJets_dR07, genLeptons);
+      jetGenMatcher.addGenHadTauMatch(selJets_dR07, genHadTaus);
+      jetGenMatcher.addGenJetMatch   (selJets_dR07, genJets);
     }
 
     if(run_lumi_eventSelector)
