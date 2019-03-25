@@ -14,6 +14,7 @@ GenParticleReader::GenParticleReader(const std::string & branchName_particles)
   : max_nParticles_(32)
   , branchName_nParticles_(Form("n%s", branchName_particles.data()))
   , branchName_particles_(branchName_particles)
+  , readGenPartFlav_(false)
   , particle_pt_(nullptr)
   , particle_eta_(nullptr)
   , particle_phi_(nullptr)
@@ -22,6 +23,7 @@ GenParticleReader::GenParticleReader(const std::string & branchName_particles)
   , particle_charge_(nullptr)
   , particle_status_(nullptr)
   , particle_statusFlags_(nullptr)
+  , particle_genPartFlav_(nullptr)
 {
   setBranchNames();
 }
@@ -43,8 +45,15 @@ GenParticleReader::~GenParticleReader()
     delete[] gInstance->particle_charge_;
     delete[] gInstance->particle_status_;
     delete[] gInstance->particle_statusFlags_;
+    delete[] gInstance->particle_genPartFlav_;
     instances_[branchName_particles_] = nullptr;
   }
+}
+
+void
+GenParticleReader::readGenPartFlav(bool flag)
+{
+  readGenPartFlav_ = flag;
 }
 
 void
@@ -60,6 +69,7 @@ GenParticleReader::setBranchNames()
     branchName_particle_charge_ = Form("%s_%s", branchName_particles_.data(), "charge");
     branchName_particle_status_ = Form("%s_%s", branchName_particles_.data(), "status");
     branchName_particle_statusFlags_ = Form("%s_%s", branchName_particles_.data(), "statusFlags");
+    branchName_particle_genPartFlav_ = Form("%s_%s", branchName_particles_.data(), "genPartFlav");
     instances_[branchName_particles_] = this;
   }
   else
@@ -93,6 +103,7 @@ GenParticleReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(particle_pdgId_, branchName_particle_pdgId_);
     bai.setBranchAddress(particle_charge_, branchName_particle_charge_);
     bai.setBranchAddress(particle_status_, branchName_particle_status_);
+    bai.setBranchAddress(particle_genPartFlav_, readGenPartFlav_ ? branchName_particle_genPartFlav_ : "");
     bai.setBranchAddress(particle_statusFlags_, branchName_particle_statusFlags_);
   }
 }
@@ -125,6 +136,7 @@ GenParticleReader::read() const
         gInstance->particle_charge_[idxParticle],
         gInstance->particle_status_[idxParticle],
         gInstance->particle_statusFlags_[idxParticle],
+        gInstance->particle_genPartFlav_[idxParticle],
       });
     }
   } 

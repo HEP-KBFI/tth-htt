@@ -22,18 +22,21 @@ public:
   /**
    * @brief Call tree->Branch for all GenParticle branches
    */
-  void setBranches(TTree * tree);
+  void
+  setBranches(TTree * tree);
 
   /**
    * @brief Write collection of GenParticle objects to tree
    */
-  void write(const std::vector<GenParticle> & particles);
+  void
+  write(const std::vector<GenParticle> & particles);
 
 protected:
  /**
    * @brief Initialize names of branches to be written to tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   const unsigned int max_nParticles_;
   std::string branchName_num_;
@@ -47,6 +50,7 @@ protected:
   std::string branchName_charge_;
   std::string branchName_status_;
   std::string branchName_statusFlags_;
+  std::string branchName_genPartFlav_;
 
   UInt_t nParticles_;
   Float_t * particle_pt_;
@@ -57,6 +61,7 @@ protected:
   Int_t * particle_charge_;
   Int_t * particle_status_;
   Int_t * particle_statusFlags_;
+  UChar_t * particle_genPartFlav_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_GenParticleWriter_h

@@ -21,6 +21,7 @@ GenParticleWriter::GenParticleWriter(const std::string & branchName_num,
   , particle_charge_(nullptr)
   , particle_status_(nullptr)
   , particle_statusFlags_(nullptr)
+  , particle_genPartFlav_(nullptr)
 {
   setBranchNames();
 }
@@ -35,6 +36,7 @@ GenParticleWriter::~GenParticleWriter()
   delete[] particle_charge_;
   delete[] particle_status_;
   delete[] particle_statusFlags_;
+  delete[] particle_genPartFlav_;
 }
 
 void GenParticleWriter::setBranchNames()
@@ -47,6 +49,7 @@ void GenParticleWriter::setBranchNames()
   branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
   branchName_status_ = Form("%s_%s", branchName_obj_.data(), "status");
   branchName_statusFlags_ = Form("%s_%s", branchName_obj_.data(), "statusFlags");
+  branchName_genPartFlav_ = Form("%s_%s", branchName_obj_.data(), "genPartFlav");
 }
 
 void GenParticleWriter::setBranches(TTree * tree)
@@ -61,6 +64,7 @@ void GenParticleWriter::setBranches(TTree * tree)
   bai.setBranch(particle_charge_, branchName_charge_);
   bai.setBranch(particle_status_, branchName_status_);
   bai.setBranch(particle_statusFlags_, branchName_statusFlags_);
+  bai.setBranch(particle_genPartFlav_, branchName_genPartFlav_);
 }
 
 void GenParticleWriter::write(const std::vector<GenParticle> & particles)
@@ -77,5 +81,6 @@ void GenParticleWriter::write(const std::vector<GenParticle> & particles)
     particle_charge_[idxParticle] = particle.charge();
     particle_status_[idxParticle] = particle.status();
     particle_statusFlags_[idxParticle] = particle.statusFlags();
+    particle_genPartFlav_[idxParticle] = particle.genPartFlav();
   }
 }

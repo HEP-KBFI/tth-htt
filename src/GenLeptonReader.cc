@@ -15,6 +15,7 @@ GenLeptonReader::GenLeptonReader(const std::string & branchName_promptLeptons,
   : max_nPromptLeptons_(max_nPromptLeptons)
   , branchName_nPromptLeptons_(Form("n%s", branchName_promptLeptons.data()))
   , branchName_promptLeptons_(branchName_promptLeptons)
+  , readGenPartFlav_(false)
   , promptLepton_pt_(nullptr)
   , promptLepton_eta_(nullptr)
   , promptLepton_phi_(nullptr)
@@ -22,6 +23,7 @@ GenLeptonReader::GenLeptonReader(const std::string & branchName_promptLeptons,
   , promptLepton_pdgId_(nullptr)
   , promptLepton_status_(nullptr)
   , promptLepton_statusFlags_(nullptr)
+  , promptLepton_genPartFlav_(nullptr)
 {
   setBranchNames();
 }
@@ -41,8 +43,15 @@ GenLeptonReader::~GenLeptonReader()
     delete[] gInstance->promptLepton_pdgId_;
     delete[] gInstance->promptLepton_status_;
     delete[] gInstance->promptLepton_statusFlags_;
+    delete[] gInstance->promptLepton_genPartFlav_;
     instances_[branchName_promptLeptons_] = nullptr;
   }
+}
+
+void
+GenLeptonReader::readGenPartFlav(bool flag)
+{
+  readGenPartFlav_ = flag;
 }
 
 void
@@ -57,6 +66,7 @@ GenLeptonReader::setBranchNames()
     branchName_promptLepton_pdgId_ = Form("%s_%s", branchName_promptLeptons_.data(), "pdgId");
     branchName_promptLepton_status_ = Form("%s_%s", branchName_promptLeptons_.data(), "status");
     branchName_promptLepton_statusFlags_ = Form("%s_%s", branchName_promptLeptons_.data(), "statusFlags");
+    branchName_promptLepton_genPartFlav_ = Form("%s_%s", branchName_promptLeptons_.data(), "genPartFlav");
     instances_[branchName_promptLeptons_] = this;
   }
   else
@@ -92,6 +102,7 @@ GenLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(promptLepton_pdgId_, branchName_promptLepton_pdgId_);
     bai.setBranchAddress(promptLepton_status_, branchName_promptLepton_status_);
     bai.setBranchAddress(promptLepton_statusFlags_, branchName_promptLepton_statusFlags_);
+    bai.setBranchAddress(promptLepton_genPartFlav_, readGenPartFlav_ ? branchName_promptLepton_genPartFlav_ : "");
   }
 }
 
@@ -123,6 +134,7 @@ GenLeptonReader::read() const
         gInstance->promptLepton_pdgId_[idxLepton],
         gInstance->promptLepton_status_[idxLepton],
         gInstance->promptLepton_statusFlags_[idxLepton],
+        gInstance->promptLepton_genPartFlav_[idxLepton],
       });
     }
   }

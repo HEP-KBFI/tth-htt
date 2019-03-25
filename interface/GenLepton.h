@@ -14,7 +14,8 @@ public:
             Double_t mass,
             Int_t pdgId,
             Int_t status,
-            Int_t statusFlags);
+            Int_t statusFlags,
+            UChar_t genPartFlav);
   GenLepton(Double_t pt,
             Double_t eta,
             Double_t phi,
@@ -22,11 +23,13 @@ public:
             Int_t pdgId,
             Int_t charge,
             Int_t status,
-            Int_t statusFlags);
+            Int_t statusFlags,
+            UChar_t genPartFlav);
   GenLepton(const math::PtEtaPhiMLorentzVector & p4,
             Int_t pdgId,
             Int_t status,
-            Int_t statusFlags);
+            Int_t statusFlags,
+            UChar_t genPartFlav);
 
   virtual ~GenLepton() {}
 

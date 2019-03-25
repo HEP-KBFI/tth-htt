@@ -14,7 +14,8 @@ public:
             Double_t mass,
             Int_t pdgId,
             Int_t status,
-            Int_t statusFlags);
+            Int_t statusFlags,
+            UChar_t genPartFlav);
 
   virtual ~GenPhoton() {}
 };

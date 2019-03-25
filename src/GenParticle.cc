@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle, Particle
 
 GenParticle::GenParticle()
-  : GenParticle(0., 0., 0., 0., 0, 0, -1, -1)
+  : GenParticle(0., 0., 0., 0., 0, 0, -1, -1, 0)
 {}
 
 GenParticle::GenParticle(Double_t pt,
@@ -11,10 +11,12 @@ GenParticle::GenParticle(Double_t pt,
                          Int_t pdgId,
                          Int_t charge,
                          Int_t status,
-                         Int_t statusFlags)
+                         Int_t statusFlags,
+                         UChar_t genPartFlav)
   : ChargedParticle(pt, eta, phi, mass, pdgId, charge)
   , status_(status)
   , statusFlags_(statusFlags)
+  , genPartFlav_(genPartFlav)
   , isMatchedToReco_(false)
 {}
 
@@ -22,10 +24,12 @@ GenParticle::GenParticle(const math::PtEtaPhiMLorentzVector & p4,
                          Int_t pdgId,
                          Int_t charge,
                          Int_t status,
-                         Int_t statusFlags)
+                         Int_t statusFlags,
+                         UChar_t genPartFlav)
   : ChargedParticle(p4, pdgId, charge)
   , status_(status)
   , statusFlags_(statusFlags)
+  , genPartFlav_(genPartFlav)
   , isMatchedToReco_(false)
 {}
 
@@ -39,6 +43,12 @@ Int_t
 GenParticle::statusFlags() const
 {
   return statusFlags_;
+}
+
+UChar_t
+GenParticle::genPartFlav() const
+{
+  return genPartFlav_;
 }
 
 void
@@ -65,7 +75,8 @@ operator<<(std::ostream & stream,
 {
   stream << static_cast<const ChargedParticle &>(particle) << ","
             " status = "      << particle.status()         << ","
-            " statusFlags = " << particle.statusFlags()
+            " statusFlags = " << particle.statusFlags()    << ","
+            " genPartFlav = " << particle.genPartFlav()
   ;
   return stream;
 }

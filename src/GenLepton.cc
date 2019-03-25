@@ -8,8 +8,9 @@ GenLepton::GenLepton(Double_t pt,
                      Double_t mass,
                      Int_t pdgId,
                      Int_t status,
-                     Int_t statusFlags)
-  : GenLepton(pt, eta, phi, mass, pdgId, -boost::math::sign(pdgId), status, statusFlags)
+                     Int_t statusFlags,
+                     UChar_t genPartFlav)
+  : GenLepton(pt, eta, phi, mass, pdgId, -boost::math::sign(pdgId), status, statusFlags, genPartFlav)
 {}
 
 GenLepton::GenLepton(Double_t pt,
@@ -19,15 +20,17 @@ GenLepton::GenLepton(Double_t pt,
                      Int_t pdgId,
                      Int_t charge,
                      Int_t status,
-                     Int_t statusFlags)
-  : GenParticle(pt, eta, phi, mass, pdgId, charge, status, statusFlags)
+                     Int_t statusFlags,
+                     UChar_t genPartFlav)
+  : GenParticle(pt, eta, phi, mass, pdgId, charge, status, statusFlags, genPartFlav)
 {}
 
 GenLepton::GenLepton(const math::PtEtaPhiMLorentzVector & p4,
                      Int_t pdgId,
                      Int_t status,
-                     Int_t statusFlags)
-  : GenParticle(p4, pdgId, -pdgId / std::abs(pdgId), status, statusFlags)
+                     Int_t statusFlags,
+                     UChar_t genPartFlav)
+  : GenParticle(p4, pdgId, -pdgId / std::abs(pdgId), status, statusFlags, genPartFlav)
 {}
 
 bool
