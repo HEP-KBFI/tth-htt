@@ -357,8 +357,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       else:
         numDirectories += 1
     logging.info("Creating directory structure (numDirectories = %i)" % numDirectories)
-    numDirectories_created = 0
-    numDirectories_percent = 0
+    numDirectories_created = 0;
+    frac = 1
     for key in self.dirs.keys():
       if type(self.dirs[key]) == dict:
         for dir_type in self.dirs[key].keys():
@@ -366,13 +366,11 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         numDirectories_created += len(self.dirs[key])
       else:
         create_if_not_exists(self.dirs[key])
-        numDirectories_created += 1
-
-      numDirectories_created_percent = int(numDirectories_created * 100. / numDirectories)
-      if numDirectories_created_percent > numDirectories_percent:
-        numDirectories_percent = numDirectories_created_percent
-        logging.info(" %i%% completed" % numDirectories_percent)
-    logging.info("done.")
+        numDirectories_created = numDirectories_created + 1
+      if numDirectories_created >= (frac*numDirectories/100):
+        logging.info(" %i%% completed" % frac)
+        frac = frac + 1
+    logging.info("Done.")
 
     inputFileLists = {}
     for sample_name, sample_info in self.samples.items():
@@ -585,8 +583,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     addBackgrounds_job_tuple = None
                     processes_input = None
                     process_output = None
-                    cfgFile_modified = None
-                    outputFile = None
                     if genMatch_category == "nonfake":
                       # sum non-fake contributions for each MC sample separately
                       # input processes: TT2l0g0j; ...
@@ -776,7 +772,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
               self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes]['outputFile'])
               self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_conversions]['outputFile'])            
             self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job])
-            self.outputFile_hadd_stage2[key_hadd_stage2_job] = os.path.join(self.dirs[key_hadd_stage2_dir][DKEY_HIST], "hadd_stage2_%s_lep%s_sum%s.root" % hadd_stage2_job_tuple)
+            self.outputFile_hadd_stage2[key_hadd_stage2_job] = os.path.join(self.dirs[key_hadd_stage2_dir][DKEY_HIST],
+                                                                            "hadd_stage2_%s_lep%s_sum%s.root" % hadd_stage2_job_tuple)
 
     if self.isBDTtraining or self.do_sync:
       if self.is_sbatch:
@@ -800,7 +797,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       else:
         raise ValueError("Internal logic error")
       self.createMakefile(lines_makefile)
-      logging.info("Done")
+      logging.info("Done.")
       return self.num_jobs
 
     logging.info("Creating configuration files to run 'addBackgroundFakes'")

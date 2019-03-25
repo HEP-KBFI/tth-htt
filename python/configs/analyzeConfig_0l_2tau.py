@@ -252,8 +252,8 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       else:
         numDirectories += 1
     logging.info("Creating directory structure (numDirectories = %i)" % numDirectories)
-    numDirectories_created = 0
-    numDirectories_percent = 0
+    numDirectories_created = 0;
+    frac = 1
     for key in self.dirs.keys():
       if type(self.dirs[key]) == dict:
         for dir_type in self.dirs[key].keys():
@@ -261,13 +261,11 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         numDirectories_created += len(self.dirs[key])
       else:
         create_if_not_exists(self.dirs[key])
-        numDirectories_created += 1
-
-      numDirectories_created_percent = int(numDirectories_created * 100. / numDirectories)
-      if numDirectories_created_percent > numDirectories_percent:
-        numDirectories_percent = numDirectories_created_percent
-        logging.info(" %i%% completed" % numDirectories_percent)
-    logging.info("done.")
+        numDirectories_created = numDirectories_created + 1
+      if numDirectories_created >= (frac*numDirectories/100):
+        logging.info(" %i%% completed" % frac)
+        frac = frac + 1
+    logging.info("Done.")
 
     inputFileLists = {}
     for sample_name, sample_info in self.samples.items():
@@ -346,14 +344,14 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   if hadTau_charge_selection != 'OS':
                     continue
                   if hadTau_selection_and_frWeight == 'Tight':
-                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift))
+                    syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift))
                     syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
                     syncRequireGenMatching = True
                   elif hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights':
-                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
+                    syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
                   elif hadTau_selection_and_frWeight == "Fakeable_mcClosure_t_wFakeRateWeights":
-                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s_mcClosure_t.root' % (self.channel, central_or_shift))
+                    syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_mcClosure_t.root' % (self.channel, central_or_shift))
                     syncTree = 'syncTree_%s_mcClosure_t' % self.channel.replace('_', '')
                   else:
                     continue
@@ -432,8 +430,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   addBackgrounds_job_tuple = None
                   processes_input = None
                   process_output = None
-                  cfgFile_modified = None
-                  outputFile = None
                   if genMatch_category == "nonfake":
                     # sum non-fake contributions for each MC sample separately
                     # input processes: TT2t0e0m0j, TT1t1e0m0j, TT1t0e1m0j", TT0t2e0m0j, TT0t1e1m0j, TT0t0e2m0j; TTW2t0e0m0j,...
@@ -569,7 +565,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       else:
         raise ValueError("Internal logic error")
       self.createMakefile(lines_makefile)
-      logging.info("Done")
+      logging.info("Done.")
       return self.num_jobs
 
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
