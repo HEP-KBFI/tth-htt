@@ -56,6 +56,8 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , hadTau_idAgainstElec_(nullptr)
   , hadTau_idAgainstMu_(nullptr)
   , hadTau_filterBits_(nullptr)
+  , hadTau_genMatchIdx_(nullptr)
+  , hadTau_genJetMatchIdx_(nullptr)
 {
   if(readGenMatching_)
   {
@@ -117,6 +119,8 @@ RecoHadTauReader::~RecoHadTauReader()
     delete[] gInstance->hadTau_idAgainstMu_;
     delete[] gInstance->hadTau_charge_;
     delete[] gInstance->hadTau_filterBits_;
+    delete[] gInstance->hadTau_genMatchIdx_;
+    delete[] gInstance->hadTau_genJetMatchIdx_;
 
     instances_.erase(branchName_obj_);
   }
@@ -171,6 +175,8 @@ RecoHadTauReader::setBranchNames()
     branchName_idAgainstElec_ = Form("%s_%s", branchName_obj_.data(), "idAntiEle_log");
     branchName_idAgainstMu_ = Form("%s_%s", branchName_obj_.data(), "idAntiMu_log");
     branchName_filterBits_ = Form("%s_%s", branchName_obj_.data(), "filterBits");
+    branchName_genMatchIdx_ = Form("%s_%s", branchName_obj_.data(), "genMatchIdx");
+    branchName_genJetMatchIdx_ = Form("%s_%s", branchName_obj_.data(), "genJetMatchIdx");
     instances_[branchName_obj_] = this;
   }
   else
@@ -217,6 +223,8 @@ RecoHadTauReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_idAgainstElec_, branchName_idAgainstElec_);
     bai.setBranchAddress(hadTau_idAgainstMu_, branchName_idAgainstMu_);
     bai.setBranchAddress(hadTau_filterBits_, branchName_filterBits_);
+    bai.setBranchAddress(hadTau_genMatchIdx_, branchName_genMatchIdx_);
+    bai.setBranchAddress(hadTau_genJetMatchIdx_, branchName_genJetMatchIdx_);
   }
 }
 
@@ -290,7 +298,9 @@ RecoHadTauReader::read() const
         gInstance->hadTau_rawMVA_dR05_[idxHadTau],
         gInstance->hadTau_idAgainstElec_[idxHadTau],
         gInstance->hadTau_idAgainstMu_[idxHadTau],
-        gInstance->hadTau_filterBits_[idxHadTau]
+        gInstance->hadTau_filterBits_[idxHadTau],
+        gInstance->hadTau_genMatchIdx_[idxHadTau],
+        gInstance->hadTau_genJetMatchIdx_[idxHadTau],
       });
     }
     readGenMatching(hadTaus);

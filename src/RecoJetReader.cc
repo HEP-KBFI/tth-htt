@@ -45,6 +45,7 @@ RecoJetReader::RecoJetReader(int era,
   , jet_pullMag_(nullptr)
   , jet_jetId_(nullptr)
   , jet_puId_(nullptr)
+  , jet_genJetMatchIdx_(nullptr)
 {
   switch(era_)
   {
@@ -85,6 +86,7 @@ RecoJetReader::~RecoJetReader()
     delete[] gInstance->jet_pullMag_;
     delete[] gInstance->jet_jetId_;
     delete[] gInstance->jet_puId_;
+    delete[] gInstance->jet_genJetMatchIdx_;
     for(auto & kv: gInstance->jet_pt_systematics_)
     {
       delete[] kv.second;
@@ -178,6 +180,7 @@ RecoJetReader::setBranchNames()
     branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
     branchName_jetId_ = Form("%s_%s", branchName_obj_.data(), "jetId");
     branchName_puId_ = Form("%s_%s", branchName_obj_.data(), "puId");
+    branchName_genJetMatchIdx_ = Form("%s_%s", branchName_obj_.data(), "genJetMatchIdx");
     instances_[branchName_obj_] = this;
   }
   else
@@ -241,6 +244,7 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_pullMag_, branchName_pullMag_);
     bai.setBranchAddress(jet_jetId_, branchName_jetId_);
     bai.setBranchAddress(jet_puId_, branchName_puId_);
+    bai.setBranchAddress(jet_genJetMatchIdx_, branchName_genJetMatchIdx_);
   }
 }
 
@@ -280,6 +284,7 @@ RecoJetReader::read() const
         gInstance->jet_pullMag_[idxJet],
         gInstance->jet_jetId_[idxJet],
         gInstance->jet_puId_[idxJet],
+        gInstance->jet_genJetMatchIdx_[idxJet],
         static_cast<Int_t>(idxJet),
       });
 

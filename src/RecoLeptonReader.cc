@@ -40,6 +40,8 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   , tightCharge_(nullptr)
   , charge_(nullptr)
   , filterBits_(nullptr)
+  , genMatchIdx_(nullptr)
+  , genJetMatchIdx_(nullptr)
 {
   if(readGenMatching_)
   {
@@ -84,6 +86,8 @@ RecoLeptonReader::~RecoLeptonReader()
     delete[] gInstance->tightCharge_;
     delete[] gInstance->charge_;
     delete[] gInstance->filterBits_;
+    delete[] gInstance->genMatchIdx_;
+    delete[] gInstance->genJetMatchIdx_;
     instances_[branchName_obj_] = nullptr;
   }
 }
@@ -113,6 +117,8 @@ RecoLeptonReader::setBranchNames()
     branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
     branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
     branchName_filterBits_ = Form("%s_%s", branchName_obj_.data(), "filterBits");
+    branchName_genMatchIdx_ = Form("%s_%s", branchName_obj_.data(), "genMatchIdx");
+    branchName_genJetMatchIdx_ = Form("%s_%s", branchName_obj_.data(), "genJetMatchIdx");
     instances_[branchName_obj_] = this;
   }
   else
@@ -163,5 +169,7 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(tightCharge_, branchName_tightCharge_);
     bai.setBranchAddress(charge_, branchName_charge_);
     bai.setBranchAddress(filterBits_, branchName_filterBits_);
+    bai.setBranchAddress(genMatchIdx_, branchName_genMatchIdx_);
+    bai.setBranchAddress(genJetMatchIdx_, branchName_genJetMatchIdx_);
   }
 }

@@ -26,7 +26,9 @@ public:
              Double_t raw_mva_dR05,
              Int_t antiElectron,
              Int_t antiMuon,
-             UInt_t filterBits);
+             UInt_t filterBits,
+             Int_t genMatchIdx,
+             Int_t genJetMatchIdx);
 
   virtual ~RecoHadTau();
 
@@ -60,6 +62,8 @@ public:
   Int_t antiElectron() const;
   Int_t antiMuon() const;
   UInt_t filterBits() const;
+  Int_t genMatchIdx() const;
+  Int_t genJetMatchIdx() const;
 
   const GenLepton * genLepton() const;
   const GenHadTau * genHadTau() const;
@@ -86,6 +90,8 @@ protected:
   Int_t antiElectron_;         ///< discriminator against electrons
   Int_t antiMuon_;             ///< discriminator against muons
   UInt_t filterBits_;          ///< bitmask of matching with trigger objects
+  Int_t genMatchIdx_;          ///< index to matched gen particle
+  Int_t genJetMatchIdx_;       ///< index to matched gen jet
 
 //--- matching to generator level particles
   std::shared_ptr<const GenLepton> genLepton_;

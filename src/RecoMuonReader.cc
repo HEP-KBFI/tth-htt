@@ -134,6 +134,8 @@ RecoMuonReader::read() const
             gLeptonReader->jetNDauChargedMVASel_[idxLepton],
             gLeptonReader->tightCharge_[idxLepton],
             gLeptonReader->filterBits_[idxLepton],
+            gLeptonReader->genMatchIdx_[idxLepton],
+            gLeptonReader->genJetMatchIdx_[idxLepton],
           },
           true, // Karl: all muon objects pass Muon POG's loose definition at the nanoAOD prodction level
           gMuonReader->mediumIdPOG_[idxLepton],

@@ -13,6 +13,7 @@ RecoJet::RecoJet(const GenJet & jet,
                  Double_t pullMag,
                  Int_t jetId,
                  Int_t puId,
+                 Int_t genJetMatchIdx,
                  Int_t idx)
   : RecoJetBase(jet, idx)
   , charge_(charge)
@@ -24,6 +25,7 @@ RecoJet::RecoJet(const GenJet & jet,
   , pullMag_(pullMag)
   , jetId_(jetId)
   , puId_(puId)
+  , genJetMatchIdx_(genJetMatchIdx)
 {}
 
 RecoJet::~RecoJet()
@@ -81,6 +83,12 @@ Int_t
 RecoJet::puId() const
 {
   return puId_;
+}
+
+Int_t
+RecoJet::genJetMatchIdx() const
+{
+  return genJetMatchIdx_;
 }
 
 Double_t

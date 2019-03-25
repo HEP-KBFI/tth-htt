@@ -30,7 +30,9 @@ public:
              Double_t jetBtagCSV,
              Int_t    jetNDauChargedMVASel,
              Int_t    tightCharge,
-             UInt_t   filterBits);
+             UInt_t   filterBits,
+             Int_t    genMatchIdx,
+             Int_t    genJetMatchIdx);
 
   virtual ~RecoLepton();
 
@@ -132,6 +134,8 @@ public:
   Int_t jetNDauChargedMVASel() const;
   Int_t tightCharge() const;
   UInt_t filterBits() const;
+  Int_t genMatchIdx() const;
+  Int_t genJetMatchIdx() const;
 
   const GenLepton * genLepton() const;
   const GenHadTau * genHadTau() const;
@@ -161,6 +165,8 @@ protected:
   Int_t jetNDauChargedMVASel_;  ///< number of charged constituents in the nearest jet
   Int_t tightCharge_;           ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
   UInt_t filterBits_;           ///< bitmask of matching with trigger objects
+  Int_t genMatchIdx_;           ///< index to matched gen particle
+  Int_t genJetMatchIdx_;        ///< index to matched gen jet
 
   Double_t assocJet_pt_;
   Particle::LorentzVector assocJet_p4_;

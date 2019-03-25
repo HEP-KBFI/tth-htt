@@ -105,6 +105,8 @@ protected:
   std::string branchName_tightCharge_;
   std::string branchName_charge_;
   std::string branchName_filterBits_;
+  std::string branchName_genMatchIdx_;
+  std::string branchName_genJetMatchIdx_;
 
   UInt_t nLeptons_;
   Float_t * pt_;
@@ -127,6 +129,8 @@ protected:
   Int_t * tightCharge_;
   Int_t * charge_;
   UInt_t * filterBits_;
+  Int_t * genMatchIdx_;
+  Int_t * genJetMatchIdx_;
 
   // CV: make sure that only one RecoLeptonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

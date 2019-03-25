@@ -15,7 +15,9 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
                        Double_t raw_mva_dR05,
                        Int_t antiElectron,
                        Int_t antiMuon,
-                       UInt_t filterBits)
+                       UInt_t filterBits,
+                       Int_t genMatchIdx,
+                       Int_t genJetMatchIdx)
   : GenHadTau(particle)
   , dxy_(dxy)
   , dz_(dz)
@@ -29,6 +31,8 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
   , antiElectron_(antiElectron)
   , antiMuon_(antiMuon)
   , filterBits_(filterBits)
+  , genMatchIdx_(genMatchIdx)
+  , genJetMatchIdx_(genJetMatchIdx)
   , genLepton_(nullptr)
   , genHadTau_(nullptr)
   , genJet_(nullptr)
@@ -146,6 +150,18 @@ UInt_t
 RecoHadTau::filterBits() const
 {
   return filterBits_;
+}
+
+Int_t
+RecoHadTau::genMatchIdx() const
+{
+  return genMatchIdx_;
+}
+
+Int_t
+RecoHadTau::genJetMatchIdx() const
+{
+  return genJetMatchIdx_;
 }
 
 const GenLepton *

@@ -181,6 +181,8 @@ RecoElectronReader::read() const
             gLeptonReader->jetNDauChargedMVASel_[idxLepton],
             gLeptonReader->tightCharge_[idxLepton],
             gLeptonReader->filterBits_[idxLepton],
+            gLeptonReader->genMatchIdx_[idxLepton],
+            gLeptonReader->genJetMatchIdx_[idxLepton],
           },
           gElectronReader->eCorr_[idxLepton],
           gElectronReader->mvaRaw_POG_[idxLepton],
