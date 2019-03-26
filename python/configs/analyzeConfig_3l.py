@@ -237,7 +237,7 @@ class analyzeConfig_3l(analyzeConfig):
       else:
         create_if_not_exists(self.dirs[key])
         numDirectories_created = numDirectories_created + 1
-      if numDirectories_created >= (frac*numDirectories/100):
+      while 100*numDirectories_created >= frac*numDirectories:
         logging.info(" %i%% completed" % frac)
         frac = frac + 1
     logging.info("Done.")
@@ -319,7 +319,7 @@ class analyzeConfig_3l(analyzeConfig):
                   continue
                 rootOutputFile = ""
                 if self.select_root_output:
-                  rootOutputFile = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%i.root" % \
+                  rootOutputFile = os.path.join(self.dirs[key_analyze_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%i.root" % \
                     (self.channel, process_name, lepton_selection_and_frWeight, chargeSumSelection, central_or_shift, jobId))
                   key_file_woJobId = getKey(process_name, lepton_selection_and_frWeight, chargeSumSelection, central_or_shift)
                   if key_file_woJobId not in self.rootOutputAux:
@@ -609,14 +609,13 @@ class analyzeConfig_3l(analyzeConfig):
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
     for chargeSumSelection in self.chargeSumSelections:
       key_hadd_stage1_5_job = getKey(get_lepton_selection_and_frWeight("Fakeable", "enabled"), chargeSumSelection)
-      addFakes_job_tuple = (chargeSumSelection)
-      key_addFakes_job = getKey("fakes_data", *addFakes_job_tuple)
+      key_addFakes_job = getKey("fakes_data", chargeSumSelection)
       category_sideband = "3l_%s_Fakeable" % chargeSumSelection
       self.jobOptions_addFakes[key_addFakes_job] = {
         'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_cfg.py" % addFakes_job_tuple),
-        'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes_%s.root" % addFakes_job_tuple),
-        'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s.log" % addFakes_job_tuple),
+        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_cfg.py" % chargeSumSelection),
+        'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes_%s.root" % chargeSumSelection),
+        'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s.log" % chargeSumSelection),
         'category_signal' : "3l_%s_Tight" % chargeSumSelection,
         'category_sideband' : category_sideband
       }

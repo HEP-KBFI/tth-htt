@@ -366,7 +366,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       else:
         create_if_not_exists(self.dirs[key])
         numDirectories_created = numDirectories_created + 1
-      if numDirectories_created >= (frac*numDirectories/100):
+      while 100*numDirectories_created >= frac*numDirectories:
         logging.info(" %i%% completed" % frac)
         frac = frac + 1
     logging.info("Done.")
