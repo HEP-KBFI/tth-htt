@@ -55,7 +55,7 @@ public:
   friend class RecoJetWriter;
 
 protected:
-  Double_t charge_;      ///< jet charge, computed according to JME-13-006
+  Double_t jetCharge_;      ///< jet charge, computed according to JME-13-006
   Double_t BtagCSV_;     ///< CSV b-tagging discriminator value
   Double_t BtagWeight_;  ///< weight for data/MC correction of b-tagging efficiency and mistag rate
   Double_t QGDiscr_;     ///< quark/gluon discriminator

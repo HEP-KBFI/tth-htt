@@ -16,7 +16,7 @@ RecoJet::RecoJet(const GenJet & jet,
                  Int_t genJetMatchIdx,
                  Int_t idx)
   : RecoJetBase(jet, idx)
-  , charge_(charge)
+  , jetCharge_(charge)
   , BtagCSV_(BtagCSV)
   , BtagWeight_(BtagWeight)
   , QGDiscr_(QGDiscr)
@@ -34,7 +34,7 @@ RecoJet::~RecoJet()
 Double_t
 RecoJet::charge() const
 {
-  return charge_;
+  return jetCharge_;
 }
 
 Double_t
