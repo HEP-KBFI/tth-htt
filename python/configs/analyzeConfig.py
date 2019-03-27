@@ -813,6 +813,7 @@ class analyzeConfig(object):
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
         lines.append("process.addBackgrounds.categories = cms.vstring(%s)" % jobOptions['categories'])
+        create_cfg(self.cfgFile_copyHistograms, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_addBackgrounds(self, jobOptions):
         """Create python configuration file for the addBackgrounds executable (sum either all "fake" or all "non-fake" contributions)
@@ -1205,7 +1206,7 @@ class analyzeConfig(object):
     def addToMakefile_hadd_sync(self, lines_makefile, make_target = "phony_hadd_sync", make_dependency = "phony_analyze"):
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_sync, self.outputFile_sync)
 
-    def addToMakefile_copyHistograms(self, lines_makefile, make_target, make_dependency):
+    def addToMakefile_copyHistograms(self, lines_makefile, make_target = "phony_copyHistograms", make_dependency = "phony_hadd_stage1"):
         if not make_target in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         lines_makefile.append("%s: %s" % (make_target, make_dependency))
@@ -1269,21 +1270,27 @@ class analyzeConfig(object):
         for job in self.jobOptions_addFlips.values():
             self.filesToClean.append(job['outputFile'])
 
-    def addToMakefile_backgrounds_from_data(self, lines_makefile):
-        self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds", "phony_hadd_stage1", self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
+    def addToMakefile_backgrounds_from_data(self, lines_makefile, make_target = "phony_addFakes", make_dependency = "phony_hadd_stage1"):
+        self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds", make_dependency, self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_addBackgrounds", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
         self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds_sum")
         self.addToMakefile_addFakes(lines_makefile, "phony_addFakes", "phony_hadd_stage1_5")
-        self.make_dependency_hadd_stage2 = "phony_addFakes"
+        if make_target != "phony_addFakes":
+            lines_makefile.append("%s: %s" % (make_target, "phony_addFakes"))
+            lines_makefile.append("")
+        self.make_dependency_hadd_stage2 = make_target
 
-    def addToMakefile_backgrounds_from_data_withFlips(self, lines_makefile):
+    def addToMakefile_backgrounds_from_data_withFlips(self, lines_makefile, make_target = "phony_addFlips", make_dependency = "phony_hadd_stage1"):
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds", "phony_hadd_stage1", self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_addBackgrounds", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
         self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds_sum")
         self.addToMakefile_addFakes(lines_makefile, "phony_addFakes", "phony_hadd_stage1_5")
         self.addToMakefile_hadd_stage1_6(lines_makefile, "phony_hadd_stage1_6", "phony_addFakes")
         self.addToMakefile_addFlips(lines_makefile, "phony_addFlips", "phony_hadd_stage1_6")
-        self.make_dependency_hadd_stage2 = "phony_addFlips"
+        if make_target != "phony_addFlips":
+            lines_makefile.append("%s: %s" % (make_target, "phony_addFlips"))
+            lines_makefile.append("")
+        self.make_dependency_hadd_stage2 = make_target
 
     def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, max_input_files_per_job = 5):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
