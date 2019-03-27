@@ -75,13 +75,18 @@ class analyzeConfig_inclusive(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       process_name = sample_info["process_name_specific"]
-      key_dir = getKey(process_name)
-      for dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
-        initDict(self.dirs, [ key_dir, dir_type ])
-        if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
-          self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, process_name)
-        else:
-          self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name)
+      central_or_shifts_extended = [ "" ]
+      central_or_shifts_extended.extend(self.central_or_shifts)
+      for central_or_shift_or_dummy in central_or_shifts_extended:
+        process_name_extended = [ process_name, "hadd", "addBackgrounds" ]
+        for process_name_or_dummy in process_name_extended:
+          key_dir = getKey(process_name_or_dummy, central_or_shift_or_dummy)
+          for dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
+            initDict(self.dirs, [ key_dir, dir_type ])
+            if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
+              self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, process_name_or_dummy, central_or_shift_or_dummy)
+            else:
+              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name_or_dummy, central_or_shift_or_dummy)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_SYNC, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HADD_RT ]:
@@ -89,12 +94,27 @@ class analyzeConfig_inclusive(analyzeConfig):
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
 
+    numDirectories = 0
+    for key in self.dirs.keys():
+      if type(self.dirs[key]) == dict:
+        numDirectories += len(self.dirs[key])
+      else:
+        numDirectories += 1
+    logging.info("Creating directory structure (numDirectories = %i)" % numDirectories)
+    numDirectories_created = 0;
+    frac = 1
     for key in self.dirs.keys():
       if type(self.dirs[key]) == dict:
         for dir_type in self.dirs[key].keys():
           create_if_not_exists(self.dirs[key][dir_type])
+        numDirectories_created += len(self.dirs[key])
       else:
         create_if_not_exists(self.dirs[key])
+        numDirectories_created = numDirectories_created + 1
+      while 100*numDirectories_created >= frac*numDirectories:
+        logging.info(" %i%% completed" % frac)
+        frac = frac + 1
+    logging.info("Done.")
 
     inputFileLists = {}
     for sample_name, sample_info in self.samples.items():
@@ -116,20 +136,20 @@ class analyzeConfig_inclusive(analyzeConfig):
         for central_or_shift in self.central_or_shifts:
           logging.info(" ... for systematic uncertainty %s" % central_or_shift)
 
-          key_dir = getKey(process_name)
-          key_analyze_job = getKey(process_name, central_or_shift, jobId)
+          key_analyze_dir = getKey(process_name, central_or_shift)
+          analyze_job_tuple = (process_name, central_or_shift, jobId)
+          key_analyze_job = getKey(*analyze_job_tuple)
           ntupleFiles = inputFileList[jobId]
           if len(ntupleFiles) == 0:
             print("Warning: no ntupleFiles --> skipping job !!")
             continue
 
-          syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_%s.root' % (self.channel, central_or_shift))
+          syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s.root' % (self.channel, central_or_shift))
           syncOutputTree = self.output_tree if central_or_shift == "central" else os.path.join(central_or_shift, self.output_tree)
           self.inputFiles_sync['sync'].append(syncOutput)
 
-          cfg_key = getKey(self.channel, process_name, central_or_shift, jobId)
-          cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
-          logFile_path = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s.log" % cfg_key)
+          cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%i_cfg.py" % analyze_job_tuple)
+          logFile_path = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%i.log" % analyze_job_tuple)
 
           self.jobOptions_analyze[key_analyze_job] = {
             'ntupleFiles'             : ntupleFiles,
@@ -155,5 +175,5 @@ class analyzeConfig_inclusive(analyzeConfig):
     self.targets.append(outputFile_sync_path)
     self.addToMakefile_hadd_sync(lines_makefile)
     self.createMakefile(lines_makefile)
-    logging.info("Done")
+    logging.info("Done.")
     return self.num_jobs

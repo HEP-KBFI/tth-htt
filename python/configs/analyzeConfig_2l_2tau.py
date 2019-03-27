@@ -325,7 +325,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       else:
         create_if_not_exists(self.dirs[key])
         numDirectories_created = numDirectories_created + 1
-      if numDirectories_created >= (frac*numDirectories/100):
+      while 100*numDirectories_created >= frac*numDirectories:
         logging.info(" %i%% completed" % frac)
         frac = frac + 1
     logging.info("Done.")
@@ -457,6 +457,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                         continue
                     if syncOutput:
                       self.inputFiles_sync['sync'].append(syncOutput)
+                      
                     cfgFile_modified_path = os.path.join(self.dirs[key_analyze_dir][DKEY_CFGS], "analyze_%s_lep%s_tau%s_%s_sum%s_%s_%i_cfg.py" % analyze_job_tuple)
                     logFile_path = os.path.join(self.dirs[key_analyze_dir][DKEY_LOGS], "analyze_%s_lep%s_tau%s_%s_sum%s_%s_%i.log" % analyze_job_tuple)
                     rleOutputFile_path = os.path.join(self.dirs[key_analyze_dir][DKEY_RLES], "rle_%s_lep%s_tau%s_%s_sum%s_%s_%i.txt" % analyze_job_tuple) \

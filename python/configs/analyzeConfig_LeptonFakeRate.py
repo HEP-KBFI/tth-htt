@@ -270,7 +270,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     logging.info("jobOptions['cfgFile_modified'] => %s" % jobOptions['cfgFile_modified'])
     create_cfg(self.cfgFile_addBackgrounds_LeptonFakeRate, jobOptions['cfgFile_modified'], lines)
 
-
   def createCfg_addBackgrounds_Convs_LeptonFakeRate(self, jobOptions):
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
@@ -349,8 +348,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.addToMakefile_hadd_stage1_5(lines_makefile)
     self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_Convs_LeptonFakeRate", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
 
-
-
   def addToMakefile_combine(self, lines_makefile):
     jobOptions = self.jobOptions_combine
     lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
@@ -383,13 +380,18 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       process_name = sample_info["process_name_specific"]
-      key_dir = getKey(process_name)
-      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
-        initDict(self.dirs, [ key_dir, dir_type ])
-        if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
-          self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, process_name)
-        else:
-          self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name)
+      central_or_shifts_extended = [ "" ]
+      central_or_shifts_extended.extend(self.central_or_shifts)
+      for central_or_shift_or_dummy in central_or_shifts_extended:
+        process_name_extended = [ process_name, "hadd", "addBackgrounds" ]
+        for process_name_or_dummy in process_name_extended:
+          key_dir = getKey(process_name_or_dummy, central_or_shift_or_dummy)
+          for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
+            initDict(self.dirs, [ key_dir, dir_type ])
+            if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
+              self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, process_name_or_dummy, central_or_shift_or_dummy)
+            else:
+              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name_or_dummy, central_or_shift_or_dummy)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_COMBINE_OUTPUT ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_HADD_RT, DKEY_PLOT, DKEY_COMBINE_OUTPUT ]:
@@ -397,12 +399,27 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
 
+    numDirectories = 0
+    for key in self.dirs.keys():
+      if type(self.dirs[key]) == dict:
+        numDirectories += len(self.dirs[key])
+      else:
+        numDirectories += 1
+    logging.info("Creating directory structure (numDirectories = %i)" % numDirectories)
+    numDirectories_created = 0;
+    frac = 1
     for key in self.dirs.keys():
       if type(self.dirs[key]) == dict:
         for dir_type in self.dirs[key].keys():
           create_if_not_exists(self.dirs[key][dir_type])
+        numDirectories_created += len(self.dirs[key])
       else:
         create_if_not_exists(self.dirs[key])
+        numDirectories_created = numDirectories_created + 1
+      while 100*numDirectories_created >= frac*numDirectories:
+        logging.info(" %i%% completed" % frac)
+        frac = frac + 1
+    logging.info("Done.")
 
     inputFileLists = {}
     for sample_name, sample_info in self.samples.items():
@@ -436,9 +453,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
             continue
 
-          key_dir = getKey(process_name)
-          key_analyze_job = getKey(process_name, central_or_shift, jobId)
-
+          key_analyze_dir = getKey(process_name, central_or_shift)
+          analyze_job_tuple = getKey(process_name, central_or_shift, jobId)
+          key_analyze_job = getKey(*analyze_job_tuple)
           ntupleFiles = inputFileList[jobId]
           if len(ntupleFiles) == 0:
             logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
@@ -453,12 +470,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             jobId            = jobId,
           )) if self.select_rle_output else ""
 
-          cfg_key = getKey(self.channel, process_name, central_or_shift, jobId)
-          histo_key = getKey(process_name,  central_or_shift, jobId)
-          cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_cfg.py" % cfg_key)
-          logFile_path          = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s.log" % cfg_key)
-          histogramFile_path    = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s.root" % histo_key)
-
+          cfgFile_modified_path = os.path.join(self.dirs[key_analyze_dir][DKEY_CFGS], "analyze_%s_%s_%i_cfg.py" % analyze_job_tuple)
+          logFile_path          = os.path.join(self.dirs[key_analyze_dir][DKEY_LOGS], "analyze_%s_%s_%i.log" % analyze_job_tuple)
+          histogramFile_path    = os.path.join(self.dirs[key_analyze_dir][DKEY_HIST], "analyze_%s_%s_%i.root" % analyze_job_tuple)
           self.jobOptions_analyze[key_analyze_job] = {
             'ntupleFiles'              : ntupleFiles,
             'cfgFile_modified'         : cfgFile_modified_path,
@@ -478,25 +492,30 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
           # initialize input and output file names for hadd_stage1
-          key_hadd_stage1 = getKey(process_name)
-          if not key_hadd_stage1 in self.inputFiles_hadd_stage1:
-            self.inputFiles_hadd_stage1[key_hadd_stage1] = []
-          self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
-          self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s.root" % \
-            (self.channel, process_name))
+          key_hadd_stage1_dir = getKey(process_name)
+          key_hadd_stage1_job = getKey(process_name)
+          if not key_hadd_stage1_job in self.inputFiles_hadd_stage1:
+            self.inputFiles_hadd_stage1[key_hadd_stage1_job] = []
+          self.inputFiles_hadd_stage1[key_hadd_stage1_job].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
+          self.outputFile_hadd_stage1[key_hadd_stage1_job] = os.path.join(self.dirs[key_hadd_stage1_dir][DKEY_HIST],
+                                                                          "hadd_stage1_%s.root" % process_name)
 
-    # initialize input and output file names for hadd_stage1_5
-    key_hadd_stage1_5 = getKey('')
-    if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
-      self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
-    for key_hadd_stage1 in self.outputFile_hadd_stage1.keys():
-      self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
-    self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5.root" )
+      # initialize input and output file names for hadd_stage1_5
+      key_hadd_stage1_job = getKey(process_name)
+      key_hadd_stage1_5_dir = getKey("hadd")
+      key_hadd_stage1_5_job = getKey('')
+      if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
+        self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
+      for key_hadd_stage1 in self.outputFile_hadd_stage1.keys():
+        self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
+      self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job] = os.path.join(self.dirs[key_hadd_stage1_5_dir][DKEY_HIST], "hadd_stage1_5.root" )
 
     # sum fake contributions for the total of all MC samples
     # input processes: TTj,... ## HERE !!
     # output process: fakes_mc
-    key_addBackgrounds_job = getKey('')
+    key_hadd_stage1_5_job = getKey('')
+    key_addBackgrounds_dir = getKey("addBackgrounds")
+    key_addBackgrounds_job = getKey("fakes_mc")
     sample_categories = []
     sample_categories.extend(self.nonfake_backgrounds)
     sample_categories.extend([ "signal" ])
@@ -504,10 +523,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     for sample_category in sample_categories:
       processes_input.append("%sj" % sample_category)
       self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job] = {
-        'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_fakes_mc_cfg.py"),
-        'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_fakes_mc.root"),
-        'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_fakes_mc.log"),
+        'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
+        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_cfg.py" % "fakes_mc"),
+        'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s.root" % "fakes_mc"),
+        'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s.log" % "fakes_mc"),
         'categories' : [
           "LeptonFakeRate/numerator/electrons_tight",
           "LeptonFakeRate/denominator/electrons_fakeable",
@@ -524,7 +543,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     # create configuration files to run 'addBackgrounds_LeptonFakeRate'
     key_addBackgrounds_job = getKey('')
     self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job] = {
-      'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
+      'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
       'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], os.path.basename(self.cfgFile_addBackgrounds_LeptonFakeRate)),
       'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackground_LeptonFakeRate.root"),
       'logFile' : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(self.cfgFile_addBackgrounds_LeptonFakeRate.replace("_cfg.py", ".log")) ),
@@ -534,7 +553,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     # create configuration files to run 'addBackgrounds_Convs_LeptonFakeRate'
     key_addBackgrounds_job = getKey('')
     self.jobOptions_addBackgrounds_Convs_LeptonFakeRate[key_addBackgrounds_job] = {
-      'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
+      'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
       'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], os.path.basename(self.cfgFile_addBackgrounds_Convs_LeptonFakeRate)),
       'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackground_Convs_LeptonFakeRate.root"),
       'logFile' : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(self.cfgFile_addBackgrounds_Convs_LeptonFakeRate.replace("_cfg.py", ".log")) ),
@@ -543,15 +562,16 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
 
     # initialize input and output file names for hadd_stage2
-    key_hadd_stage2 = getKey('')
-    if not key_hadd_stage2 in self.inputFiles_hadd_stage2:
-      self.inputFiles_hadd_stage2[key_hadd_stage2] = []
+    key_hadd_stage2_dir = getKey("hadd")
+    key_hadd_stage2_job = getKey('')
+    if not key_hadd_stage2_job in self.inputFiles_hadd_stage2:
+      self.inputFiles_hadd_stage2[key_hadd_stage2_job] = []
     # CV: hadd_stage_1_5 output file does not need to be added as input for hadd_stage_2,
     #     as addBackgrounds_LeptonFakeRate output file contains all histograms except fakes_mc
-    self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job]['outputFile'])
-    self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'])
-    self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_Convs_LeptonFakeRate[key_addBackgrounds_job]['outputFile'])
-    self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2.root")
+    self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job]['outputFile'])
+    self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'])
+    self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_Convs_LeptonFakeRate[key_addBackgrounds_job]['outputFile'])
+    self.outputFile_hadd_stage2[key_hadd_stage2_job] = os.path.join(self.dirs[key_hadd_stage2_dir][DKEY_HIST], "hadd_stage2.root")
 
     # We need to generate the eta and pt bins for electrons and muons
     lepton_bins = {}
@@ -643,8 +663,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         key_prep_dcard_job = getKey(histogramToFit)
         datacard = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit))
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
-          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % (histogramToFit)),
+          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
+          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % histogramToFit),
           'datacardFile' : datacard,
           'histogramDir' : (self.histogramDir_prep_dcard),
           'histogramToFit' : histogramToFit,
@@ -804,7 +824,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.addToMakefile_comp_LeptonFakeRate(lines_makefile)
     self.createMakefile(lines_makefile)
 
-    logging.info("Done")
+    logging.info("Done.")
 
     return self.num_jobs
 

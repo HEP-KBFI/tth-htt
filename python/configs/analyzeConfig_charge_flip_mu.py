@@ -45,7 +45,8 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
       check_output_files = check_output_files,
       running_method     = running_method,
       num_parallel_jobs  = num_parallel_jobs,
-      histograms_to_fit  = histograms_to_fit,
+      histograms_to_fit  = histograms_to_fit,                     
+      triggers           = [ '1mu', '2mu' ],                     
       verbose            = verbose,
       dry_run            = dry_run,
       isDebug            = isDebug,
@@ -57,25 +58,7 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
 
     self.lepton_selections = lepton_selections
 
-    #self.hadTau_selection = hadTau_selection
-
-    for sample_name, sample_info in self.samples.items():
-      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
-        continue
-      process_name = sample_info["process_name_specific"]
-      for lepton_selection in self.lepton_selections:
-          key_dir = getKey(sample_name, lepton_selection)
-          for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_RLES  ]:
-            initDict(self.dirs, [ key_dir, dir_type ])
-            if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
-              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-                "_".join([ lepton_selection ]), process_name)
-            else:
-              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-                "_".join([ lepton_selection ]), process_name)
-    ##print "self.dirs = ", self.dirs
-
-    self.cfgFile_analyze_original = os.path.join(self.template_dir, "analyze_charge_flip_cfg.py")
+    self.cfgFile_analyze_original = os.path.join(self.template_dir, "analyze_charge_flip_mu_cfg.py")
     self.cfgFile_prep_dcard_original = os.path.join(self.template_dir, "prepareDatacards_cfg.py")
     #self.histogramDir_prep_dcard = "charge_flip_SS_Tight"
     self.select_rle_output = select_rle_output
@@ -110,8 +93,6 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
     lines.append("process.prepareDatacards.sysShifts = cms.vstring(%s)" % systematics.muon_E)
     create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
-
-
 
   def create(self):
     return analyzeConfig_charge_flip.create(self)
