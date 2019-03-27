@@ -464,16 +464,23 @@ main(int argc,
     .setHadTauSelection    (hadTauSelection, kTight)
     .setHadTauWorkingPoints(hadTauSelection_tauIDwp)
   ;
+  MEMPermutationWriter memPermutationWriter_hh;
+  memPermutationWriter_hh
+    .setLepSelection       (leptonSelection, kTight)
+  ;
+
   // add conditions for computing the nof MEM permutations in 2lss1tau and 3l1tau channels
   // the arguments are: the name of the channel, minimum number of leptons, minimum number of hadronic taus
   memPermutationWriter
     .addCondition("2lss_1tau", 2, 1)
     .addCondition("3l_1tau",   3, 1)
-    .addCondition("3l",        3, 0)
-    .addCondition("hh_bb2l",   2, 0) // CV: HH->bbWW dilepton channel
-    .addCondition("hh_bb1l",   1, 0) // CV: HH->bbWW single lepton channel
+  ;
+  memPermutationWriter_hh
+    .addCondition("hh_bb2l", 2, 0)
+    .addCondition("hh_bb1l", 1, 0)
   ;
   memPermutationWriter.setBranchNames(outputTree, era, true);
+  memPermutationWriter_hh.setBranchNames(outputTree, era, true);
 
   std::vector<std::string> outputCommands_string = {
     "keep *",
@@ -875,6 +882,9 @@ main(int argc,
     }
 
     memPermutationWriter.write(
+      {{preselLeptons, fakeableLeptons, tightLeptons}}, {{selBJets_loose, selBJets_medium}}, cleanedHadTaus
+    );
+    memPermutationWriter_hh.write(
       {{preselLeptons, fakeableLeptons, tightLeptons}}, {{selBJets_loose, selBJets_medium}}, cleanedHadTaus
     );
 

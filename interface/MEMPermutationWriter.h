@@ -71,6 +71,7 @@ private:
 
   std::map<std::string, MEMPremutationCondition> conditions_;
   std::map<std::string, std::map<int, std::map<int, std::map<std::string, int>>>> branches_;
+  std::map<std::string, std::map<int, int>> branches_noTaus_;
   std::map<std::string, RecoHadTauCollectionSelectorLoose *>    hadTauSelectorsLoose_;
   std::map<std::string, RecoHadTauCollectionSelectorFakeable *> hadTauSelectorsFakeable_;
   std::map<std::string, RecoHadTauCollectionSelectorTight *>    hadTauSelectorsTight_;
