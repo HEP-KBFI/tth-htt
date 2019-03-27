@@ -60,7 +60,18 @@ process.produceNtuple = cms.PSet(
 
     selEventsFileName_input = cms.string(''),
 
-    drop_branches = cms.vstring(),
+    drop_branches = cms.vstring(
+        '*GenPart*',
+        '*SoftActivityJet*',
+        '*IsoTrack*',
+        '*OtherPV*',
+        'nSV',
+        'SV*',
+        '*GenDressedLepton*',
+        'CaloMET_*',
+        'nPhoton',
+        'Photon_*',
+    ),
     copy_histograms = cms.vstring(
         "Count",
         "CountPosWeight",

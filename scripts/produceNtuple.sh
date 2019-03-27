@@ -80,11 +80,9 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
     echo "Removing useless branches: $F_i -> $F_ii"
     if [ "$IS_MC" == "True" ]; then
       nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules countHistogramAll \
-                       -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt            \
                        . $F_i
     else
       nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules countHistogramAll \
-                       -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt            \
                        -J $GOLDEN_JSON                                                              \
                        . $F_i
     fi

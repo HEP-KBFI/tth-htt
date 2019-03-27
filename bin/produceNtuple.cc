@@ -477,8 +477,6 @@ main(int argc,
 
   std::vector<std::string> outputCommands_string = {
     "keep *",
-    "drop nPhoton",
-    "drop Photon_*",
     Form("drop %s", eventInfoWriter.getBranchName_run().data()),
     Form("drop %s", eventInfoWriter.getBranchName_lumi().data()),
     Form("drop %s", eventInfoWriter.getBranchName_event().data()),
