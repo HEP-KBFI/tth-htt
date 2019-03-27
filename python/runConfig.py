@@ -60,7 +60,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
   def __init__(
     self,
     era_choices = ('2016', '2017', '2018'),
-    default_num_parallel_jobs = 25,
+    default_num_parallel_jobs = 16,
     max_help_position = 45,
     isAddMEM = False,
   ):
