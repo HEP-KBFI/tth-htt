@@ -11,6 +11,10 @@ GenPhoton::GenPhoton(Double_t pt,
   : GenParticle(pt, eta, phi, mass, pdgId, 0, status, statusFlags, genPartFlav)
 {}
 
+GenPhoton::GenPhoton(const GenParticle & genParticle)
+  : GenParticle(genParticle)
+{}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const GenPhoton & genPhoton)

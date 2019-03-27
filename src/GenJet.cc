@@ -15,6 +15,10 @@ GenJet::GenJet(Double_t pt,
   : GenParticle(pt, eta, phi, mass, pdgId, 0, -1, -1)
 {}
 
+GenJet::GenJet(const GenParticle & genParticle)
+  : GenParticle(genParticle)
+{}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const GenJet & genJet)

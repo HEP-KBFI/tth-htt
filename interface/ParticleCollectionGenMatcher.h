@@ -7,6 +7,19 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h"
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhoton.h"
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h"
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"
+#include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
+
+#include <algorithm> // std::find()
+
+enum class GenParticleType
+{
+  kGenElectron,
+  kGenMuon,
+  kGenPhoton,
+  kGenAnyLepton,
+  kGenAny,
+};
 
 template <typename Trec>
 class ParticleCollectionGenMatcher
@@ -25,6 +38,18 @@ public:
                     double maxDPtRel = 0.5) const
   {
     return addGenMatch<GenLepton, GenLeptonLinker>(recParticles, genLeptons, dRmax, maxDPtRel, genLeptonLinker_);
+  }
+
+  void
+  addGenLeptonMatchByIndex(const std::vector<const Trec *> & recParticles,
+                           const std::vector<GenParticle> & genParticles,
+                           GenParticleType genParticleType) const
+  {
+    if(genParticleType == GenParticleType::kGenPhoton)
+    {
+      throw cmsException(this, __func__, __LINE__) << "Cannot match to gen photons in this function";
+    }
+    return addGenMatchByIndex<GenLeptonLinker>(recParticles, genParticles, genLeptonLinker_, genParticleType);
   }
 
   /**
@@ -48,6 +73,13 @@ public:
     return addGenMatch<GenPhoton, GenPhotonLinker>(recParticles, genPhotons, dRmax, maxDPtRel, genPhotonLinker_);
   }
 
+  void
+  addGenPhotonMatchByIndex(const std::vector<const Trec *> & recParticles,
+                           const std::vector<GenParticle> & genParticles) const
+  {
+    return addGenMatchByIndex<GenPhotonLinker>(recParticles, genParticles, genPhotonLinker_, GenParticleType::kGenPhoton);
+  }
+
   /**
    * @brief Match reconstructed particles to generator level jets by dR
    */
@@ -58,6 +90,13 @@ public:
                  double maxDPtRel = 0.5) const
   {
     return addGenMatch<GenJet, GenJetLinker>(recParticles, genJets, dRmax, maxDPtRel, genJetLinker_);
+  }
+
+  void
+  addGenJetMatchByIndex(const std::vector<const Trec *> & recParticles,
+                        const std::vector<GenParticle> & genJets) const
+  {
+    return addGenMatchByIndex<GenJetLinker>(recParticles, genJets, genJetLinker_, GenParticleType::kGenAny);
   }
 
 protected:
@@ -106,11 +145,80 @@ protected:
     }
   }
 
+  template <typename Tlinker,
+            typename Tgen = GenParticle>
+  void
+  addGenMatchByIndex(const std::vector<const Trec *> & recParticles,
+                     const std::vector<Tgen> & genParticles,
+                     const Tlinker & linker,
+                     GenParticleType genParticleType) const
+  {
+    const int genParticleSize = genParticles.size();
+    for(const Trec * recParticle: recParticles)
+    {
+      if(recParticle->hasAnyGenMatch())
+      {
+        // the reco particle has already been matched to a gen particle
+        continue;
+      }
+
+      // reco objects store two types of indices -- ones that represent the indices of gen particles that are matched
+      // to the reco particles, and the others that represent the indices of gen jets that are also matched to the reco
+      // particles; based on the type of linking we can decide which type of indices we should look at
+      int genMatchIdx = -1;
+      if constexpr(std::is_same<Tlinker, GenJetLinker>::value)
+      {
+        genMatchIdx = recParticle->genJetMatchIdx();
+      }
+      else
+      {
+        genMatchIdx = recParticle->genMatchIdx();
+      }
+
+      if(genMatchIdx >= 0)
+      {
+        if(genMatchIdx >= genParticleSize)
+        {
+          throw cmsException(this, __func__, __LINE__)
+            << "Expected gen matching index = " << genMatchIdx << " but gen collection has size of " << genParticleSize
+          ;
+        }
+        Tgen * genMatch = const_cast<Tgen *>(&genParticles.at(genMatchIdx));
+
+        std::vector<unsigned int> genAbsPdgIds;
+        switch(genParticleType)
+        {
+          case GenParticleType::kGenElectron:  genAbsPdgIds = { 11 };     break;
+          case GenParticleType::kGenMuon:      genAbsPdgIds = { 13 };     break;
+          case GenParticleType::kGenAnyLepton: genAbsPdgIds = { 11, 13 }; break;
+          case GenParticleType::kGenPhoton:    genAbsPdgIds = { 22 };     break;
+          case GenParticleType::kGenAny:                                 break;
+        }
+
+        if(genAbsPdgIds.empty() ||
+            (! genAbsPdgIds.empty() &&
+             std::find(genAbsPdgIds.begin(), genAbsPdgIds.end(), std::abs(genMatch->pdgId())) != genAbsPdgIds.end())
+           )
+        {
+          Trec * recParticle_nonconst = const_cast<Trec *>(recParticle);
+          linker(*recParticle_nonconst, genMatch);
+        }
+      }
+    }
+  }
+
   struct GenLeptonLinker
   {
     void
     operator()(Trec & recParticle,
                const GenLepton * genLepton) const
+    {
+      recParticle.set_genLepton(new GenLepton(*genLepton));
+    }
+
+    void
+    operator()(Trec & recParticle,
+               const GenParticle * genLepton) const
     {
       recParticle.set_genLepton(new GenLepton(*genLepton));
     }
@@ -134,6 +242,12 @@ protected:
     {
       recParticle.set_genPhoton(new GenPhoton(*genPhoton));
     }
+
+    void operator()(Trec & recParticle,
+                    const GenParticle * genPhoton) const
+    {
+      recParticle.set_genPhoton(new GenPhoton(*genPhoton));
+    }
   };
   GenPhotonLinker genPhotonLinker_;
 
@@ -141,6 +255,12 @@ protected:
   {
     void operator()(Trec & recParticle,
                     const GenJet * genJet) const
+    {
+      recParticle.set_genJet(new GenJet(*genJet));
+    }
+
+    void operator()(Trec & recParticle,
+                    const GenParticle * genJet) const
     {
       recParticle.set_genJet(new GenJet(*genJet));
     }

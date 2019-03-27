@@ -33,6 +33,10 @@ GenLepton::GenLepton(const math::PtEtaPhiMLorentzVector & p4,
   : GenParticle(p4, pdgId, -pdgId / std::abs(pdgId), status, statusFlags, genPartFlav)
 {}
 
+GenLepton::GenLepton(const GenParticle & genParticle)
+  : GenParticle(genParticle)
+{}
+
 bool
 GenLepton::is_electron() const
 {

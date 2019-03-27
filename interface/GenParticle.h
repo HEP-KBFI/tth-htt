@@ -27,6 +27,7 @@ class GenParticle
 {
 public:
   GenParticle();
+  GenParticle(const GenParticle & genParticle);
   GenParticle(Double_t pt,
               Double_t eta,
               Double_t phi,

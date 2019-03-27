@@ -7,6 +7,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
@@ -129,6 +130,14 @@ main(int argc,
   const std::string branchName_genPhotons = cfg_produceNtuple.getParameter<std::string>("branchName_genPhotons");
   const std::string branchName_genJets    = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
 
+  const std::string branchName_muonGenMatch        = cfg_produceNtuple.getParameter<std::string>("branchName_muonGenMatch");
+  const std::string branchName_muonGenJetMatch     = cfg_produceNtuple.getParameter<std::string>("branchName_muonGenJetMatch");
+  const std::string branchName_electronGenMatch    = cfg_produceNtuple.getParameter<std::string>("branchName_electronGenMatch");
+  const std::string branchName_electronGenJetMatch = cfg_produceNtuple.getParameter<std::string>("branchName_electronGenJetMatch");
+  const std::string branchName_hadTauGenMatch      = cfg_produceNtuple.getParameter<std::string>("branchName_hadTauGenMatch");
+  const std::string branchName_hadTauGenJetMatch   = cfg_produceNtuple.getParameter<std::string>("branchName_hadTauGenJetMatch");
+  const std::string branchName_jetGenJetMatch      = cfg_produceNtuple.getParameter<std::string>("branchName_jetGenJetMatch");
+
   const vstring branchNames_triggers = cfg_produceNtuple.getParameter<vstring>("branchNames_triggers");
   const std::vector<hltPath *> triggers = create_hltPaths(branchNames_triggers, "triggers");
 
@@ -144,6 +153,7 @@ main(int argc,
   
   const bool isMC                 = cfg_produceNtuple.getParameter<bool>("isMC");
   const bool redoGenMatching      = cfg_produceNtuple.getParameter<bool>("redoGenMatching");
+  const bool genMatchingByIndex   = cfg_produceNtuple.getParameter<bool>("genMatchingByIndex");
   const bool isDEBUG              = cfg_produceNtuple.getParameter<bool>("isDEBUG");
   const bool useNonNominal        = cfg_produceNtuple.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
@@ -275,17 +285,60 @@ main(int argc,
   GenHadTauReader * genHadTauReader = nullptr;
   GenPhotonReader * genPhotonReader = nullptr;
   GenJetReader * genJetReader = nullptr;
+
+  GenParticleReader * genMatchToMuonReader = nullptr;
+  GenParticleReader * genJetMatchToMuonReader = nullptr;
+  GenParticleReader * genMatchToElectronReader = nullptr;
+  GenParticleReader * genJetMatchToElectronReader = nullptr;
+  GenParticleReader * genMatchToHadTauReader = nullptr;
+  GenParticleReader * genJetMatchToHadTauReader = nullptr;
+  GenParticleReader * genJetMatchToJetReader = nullptr;
+
   if(isMC && ! readGenObjects)
   {
     genLeptonReader = new GenLeptonReader(branchName_genLeptons);
     inputTree -> registerReader(genLeptonReader);
     genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
     inputTree -> registerReader(genHadTauReader);
-    genPhotonReader = new GenPhotonReader(branchName_genPhotons);
-    inputTree -> registerReader(genPhotonReader);
-    genJetReader = new GenJetReader(branchName_genJets);
-    genJetReader->read_partonFlavour();
-    inputTree -> registerReader(genJetReader);
+
+    if(genMatchingByIndex)
+    {
+      genMatchToMuonReader = new GenParticleReader(branchName_muonGenMatch);
+      genMatchToMuonReader -> readGenPartFlav(true);
+      inputTree -> registerReader(genMatchToMuonReader);
+
+      genJetMatchToMuonReader = new GenParticleReader(branchName_muonGenJetMatch);
+      genJetMatchToMuonReader -> readGenPartFlav(true);
+      inputTree -> registerReader(genJetMatchToMuonReader);
+
+      genMatchToElectronReader = new GenParticleReader(branchName_electronGenMatch);
+      genMatchToElectronReader -> readGenPartFlav(true);
+      inputTree -> registerReader(genMatchToElectronReader);
+
+      genJetMatchToElectronReader = new GenParticleReader(branchName_electronGenJetMatch);
+      genJetMatchToElectronReader -> readGenPartFlav(true);
+      inputTree -> registerReader(genJetMatchToElectronReader);
+
+      genMatchToHadTauReader = new GenParticleReader(branchName_hadTauGenMatch);
+      genMatchToHadTauReader -> readGenPartFlav(true);
+      inputTree -> registerReader(genMatchToHadTauReader);
+
+      genJetMatchToHadTauReader = new GenParticleReader(branchName_hadTauGenJetMatch);
+      genJetMatchToHadTauReader -> readGenPartFlav(true);
+      inputTree -> registerReader(genJetMatchToHadTauReader);
+
+      genJetMatchToJetReader = new GenParticleReader(branchName_jetGenJetMatch);
+      genJetMatchToJetReader -> readGenPartFlav(true);
+      inputTree -> registerReader(genJetMatchToJetReader);
+    }
+    else
+    {
+      genPhotonReader = new GenPhotonReader(branchName_genPhotons);
+      inputTree -> registerReader(genPhotonReader);
+      genJetReader = new GenJetReader(branchName_genJets);
+      genJetReader->read_partonFlavour();
+      inputTree -> registerReader(genJetReader);
+    }
   }
 
   std::string outputTreeName = treeName;
@@ -343,6 +396,15 @@ main(int argc,
   GenParticleWriter * genHadTauWriter = nullptr;
   GenParticleWriter * genPhotonWriter = nullptr;
   GenParticleWriter * genJetWriter = nullptr;
+
+  GenParticleWriter * genMatchToMuonWriter = nullptr;
+  GenParticleWriter * genJetMatchToMuonWriter = nullptr;
+  GenParticleWriter * genMatchToElectronWriter = nullptr;
+  GenParticleWriter * genJetMatchToElectronWriter = nullptr;
+  GenParticleWriter * genMatchToHadTauWriter = nullptr;
+  GenParticleWriter * genJetMatchToHadTauWriter = nullptr;
+  GenParticleWriter * genJetMatchToJetWriter = nullptr;
+
   if(isMC && ! readGenObjects)
   {
     genLeptonWriter = new GenParticleWriter(branchName_genLeptons);
@@ -353,13 +415,46 @@ main(int argc,
     genHadTauWriter->setBranches(outputTree);
     std::cout << "writing GenHadTau objects to branch = '" << branchName_genHadTaus << "'\n";
 
-    genPhotonWriter = new GenParticleWriter(branchName_genPhotons);
-    genPhotonWriter->setBranches(outputTree);
-    std::cout << "writing GenPhoton objects to branch = '" << branchName_genPhotons << "'\n";
+    if(genMatchingByIndex)
+    {
+      genMatchToMuonWriter = new GenParticleWriter(branchName_muonGenMatch);
+      genMatchToMuonWriter->setBranches(outputTree);
+      std::cout << "writing gen particles matched to muons to branch = '" << branchName_muonGenMatch << "'\n";
 
-    genJetWriter = new GenParticleWriter(branchName_genJets);
-    genJetWriter->setBranches(outputTree);
-    std::cout << "writing GenJet objects to branch = '" << branchName_genJets << "'\n";
+      genJetMatchToMuonWriter = new GenParticleWriter(branchName_muonGenJetMatch);
+      genJetMatchToMuonWriter->setBranches(outputTree);
+      std::cout << "writing gen jets matched to muons to branch = '" << branchName_muonGenJetMatch << "'\n";
+
+      genMatchToElectronWriter = new GenParticleWriter(branchName_electronGenMatch);
+      genMatchToElectronWriter->setBranches(outputTree);
+      std::cout << "writing gen particles matched to electrons to branch = '" << branchName_electronGenMatch << "'\n";
+
+      genJetMatchToElectronWriter = new GenParticleWriter(branchName_electronGenJetMatch);
+      genJetMatchToElectronWriter->setBranches(outputTree);
+      std::cout << "writing gen jets matched to electrons to branch = '" << branchName_electronGenJetMatch << "'\n";
+
+      genMatchToHadTauWriter = new GenParticleWriter(branchName_hadTauGenMatch);
+      genMatchToHadTauWriter->setBranches(outputTree);
+      std::cout << "writing gen particles matched to hadronic taus to branch = '" << branchName_hadTauGenMatch << "'\n";
+
+      genJetMatchToHadTauWriter = new GenParticleWriter(branchName_hadTauGenJetMatch);
+      genJetMatchToHadTauWriter->setBranches(outputTree);
+      std::cout << "writing gen jets matched to hadronic taus to branch = '" << branchName_hadTauGenJetMatch << "'\n";
+
+      genJetMatchToJetWriter = new GenParticleWriter(branchName_jetGenJetMatch);
+      genJetMatchToJetWriter->setBranches(outputTree);
+      std::cout << "writing gen jets matched to jets to branch = '" << branchName_jetGenJetMatch << "'\n";
+    }
+    else
+    {
+      genPhotonWriter = new GenParticleWriter(branchName_genPhotons);
+      genPhotonWriter->setBranches(outputTree);
+      std::cout << "writing GenPhoton objects to branch = '" << branchName_genPhotons << "'\n";
+
+      genJetWriter = new GenParticleWriter(branchName_genJets);
+      genJetWriter->setBranches(outputTree);
+      std::cout << "writing GenJet objects to branch = '" << branchName_genJets << "'\n";
+    }
   }
 
   // define the writer class for the nof MEM permutations
@@ -410,20 +505,55 @@ main(int argc,
 
   if(isMC && ! readGenObjects)
   {
-    const std::vector<std::string> outputCommands_genParticles_string = {
+    const std::vector<std::string> outputCommands_genParticles_string_invariant = {
       Form("drop n%s", branchName_genLeptons.data()),
       Form("drop %s_*", branchName_genLeptons.data()),
       Form("drop n%s", branchName_genHadTaus.data()),
       Form("drop %s_*", branchName_genHadTaus.data()),
-      Form("drop n%s", branchName_genPhotons.data()),
-      Form("drop %s_*", branchName_genPhotons.data()),
-      Form("drop n%s", branchName_genJets.data()),
-      Form("drop %s_*", branchName_genJets.data()),
     };
+
+    std::vector<std::string> outputCommands_genParticles_string;
+    if(genMatchingByIndex)
+    {
+      outputCommands_genParticles_string = {
+        Form("drop n%s", branchName_muonGenMatch.data()),
+        Form("drop %s_*", branchName_muonGenMatch.data()),
+        Form("drop n%s", branchName_muonGenJetMatch.data()),
+        Form("drop %s_*", branchName_muonGenJetMatch.data()),
+        Form("drop n%s", branchName_electronGenMatch.data()),
+        Form("drop %s_*", branchName_electronGenMatch.data()),
+        Form("drop n%s", branchName_electronGenJetMatch.data()),
+        Form("drop %s_*", branchName_electronGenJetMatch.data()),
+        Form("drop n%s", branchName_hadTauGenMatch.data()),
+        Form("drop %s_*", branchName_hadTauGenMatch.data()),
+        Form("drop n%s", branchName_hadTauGenJetMatch.data()),
+        Form("drop %s_*", branchName_hadTauGenJetMatch.data()),
+        Form("drop n%s", branchName_jetGenJetMatch.data()),
+        Form("drop %s_*", branchName_jetGenJetMatch.data()),
+      };
+    }
+    else
+    {
+      outputCommands_genParticles_string = {
+        Form("drop n%s", branchName_genPhotons.data()),
+        Form("drop %s_*", branchName_genPhotons.data()),
+        Form("drop n%s", branchName_genJets.data()),
+        Form("drop %s_*", branchName_genJets.data()),
+        "keep *Gen*Match*",
+      };
+    };
+    std::copy(
+      outputCommands_genParticles_string_invariant.begin(), outputCommands_genParticles_string_invariant.end(),
+      std::back_inserter(outputCommands_genParticles_string)
+    );
     std::copy(
       outputCommands_genParticles_string.begin(), outputCommands_genParticles_string.end(),
       std::back_inserter(outputCommands_string)
     );
+  }
+  else
+  {
+    outputCommands_string.push_back("keep *Gen*Match*");
   }
 
   std::vector<outputCommandEntry> outputCommands = getOutputCommands(outputCommands_string);
@@ -661,47 +791,89 @@ main(int argc,
       minNumBJets_loose, maxNumBJets_loose, minNumBJets_medium, maxNumBJets_medium
     ));
 
-    std::vector<GenLepton> genLeptons;
-    std::vector<GenLepton> genElectrons;
-    std::vector<GenLepton> genMuons;
-    std::vector<GenHadTau> genHadTaus;
-    std::vector<GenPhoton> genPhotons;
-    std::vector<GenJet> genJets;
     if(isMC && ! readGenObjects)
     {
-//--- build collections of generator level particles
-      genLeptons = genLeptonReader->read();
-      for(const GenLepton & genLepton: genLeptons)
-      {
-        const int genLeptonType = getLeptonType(genLepton.pdgId());
-        switch(genLeptonType)
-        {
-          case kElectron: genElectrons.push_back(genLepton); break;
-          case kMuon:     genMuons.push_back(genLepton);     break;
-          default: assert(0);
-        }
-      }
-      genHadTaus = genHadTauReader->read();
-      genPhotons = genPhotonReader->read();
-      genJets = genJetReader->read();
+      const std::vector<GenLepton> genLeptons = genLeptonReader->read();;
+      const std::vector<GenHadTau> genHadTaus = genHadTauReader->read();
 
-//--- match reconstructed to generator level particles
-      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons);
-      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
-      muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
+      genLeptonWriter->write(convert_to_GenParticle(genLeptons));
+      genHadTauWriter->write(convert_to_GenParticle(genHadTaus));
 
-      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons);
+      // matching to gen had taus possible only by dR-matching
+      muonGenMatcher.addGenHadTauMatch    (preselMuons, genHadTaus);
       electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
-      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
-      electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
+      hadTauGenMatcher.addGenHadTauMatch  (selHadTaus, genHadTaus);
+      jetGenMatcher.addGenHadTauMatch     (selJets, genHadTaus);
 
-      hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons);
-      hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus);
-      hadTauGenMatcher.addGenJetMatch   (selHadTaus, genJets);
-
+      // reco jets can be matched to gen leptons only by dR-matching
       jetGenMatcher.addGenLeptonMatch(selJets, genLeptons);
-      jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus);
-      jetGenMatcher.addGenJetMatch   (selJets, genJets);
+
+      if(genMatchingByIndex)
+      {
+        const std::vector<GenParticle> muonGenMatch        = genMatchToMuonReader->read();
+        const std::vector<GenParticle> muonGenJetMatch     = genJetMatchToMuonReader->read();
+        const std::vector<GenParticle> electronGenMatch    = genMatchToElectronReader->read();
+        const std::vector<GenParticle> electronGenJetMatch = genJetMatchToElectronReader->read();
+        const std::vector<GenParticle> hadTauGenMatch      = genMatchToHadTauReader->read();
+        const std::vector<GenParticle> hadTauGenJetMatch   = genJetMatchToHadTauReader->read();
+        const std::vector<GenParticle> jetGenJetMatch      = genJetMatchToJetReader->read();
+
+        genMatchToMuonWriter        -> write(muonGenMatch);
+        genJetMatchToMuonWriter     -> write(muonGenJetMatch);
+        genMatchToElectronWriter    -> write(electronGenMatch);
+        genJetMatchToElectronWriter -> write(electronGenJetMatch);
+        genMatchToHadTauWriter      -> write(hadTauGenMatch);
+        genJetMatchToHadTauWriter   -> write(hadTauGenJetMatch);
+        genJetMatchToJetWriter      -> write(jetGenJetMatch);
+
+        // match reconstructed to generator level particles by indices
+        muonGenMatcher.addGenLeptonMatchByIndex(preselMuons, muonGenMatch, GenParticleType::kGenMuon);
+        muonGenMatcher.addGenJetMatchByIndex   (preselMuons, muonGenJetMatch);
+
+        electronGenMatcher.addGenLeptonMatchByIndex(preselElectrons, electronGenMatch, GenParticleType::kGenElectron);
+        electronGenMatcher.addGenPhotonMatchByIndex(preselElectrons, electronGenMatch);
+        electronGenMatcher.addGenJetMatchByIndex   (preselElectrons, electronGenJetMatch);
+
+        hadTauGenMatcher.addGenLeptonMatchByIndex(selHadTaus, hadTauGenMatch, GenParticleType::kGenAnyLepton);
+        hadTauGenMatcher.addGenJetMatchByIndex   (selHadTaus, hadTauGenJetMatch);
+
+        jetGenMatcher.addGenJetMatchByIndex(selJets, jetGenJetMatch);
+      }
+      else
+      {
+        const std::vector<GenPhoton> genPhotons = genPhotonReader->read();
+        const std::vector<GenJet> genJets = genJetReader->read();
+
+        genPhotonWriter->write(convert_to_GenParticle(genPhotons));
+        genJetWriter   ->write(convert_to_GenParticle(genJets));
+
+        std::vector<GenLepton> genElectrons;
+        std::vector<GenLepton> genMuons;
+
+        for(const GenLepton & genLepton: genLeptons)
+        {
+          const int genLeptonType = getLeptonType(genLepton.pdgId());
+          switch(genLeptonType)
+          {
+            case kElectron: genElectrons.push_back(genLepton); break;
+            case kMuon:     genMuons.push_back(genLepton);     break;
+            default: assert(0);
+          }
+        }
+
+        // match reconstructed to generator level particles by dR-matching
+        muonGenMatcher.addGenLeptonMatch(preselMuons, genMuons);
+        muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
+
+        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons);
+        electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
+        electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
+
+        hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons);
+        hadTauGenMatcher.addGenJetMatch   (selHadTaus, genJets);
+
+        jetGenMatcher.addGenJetMatch(selJets, genJets);
+      }
     }
 
     memPermutationWriter.write(
@@ -715,14 +887,6 @@ main(int argc,
     hadTauWriter->write(preselHadTaus);
     jetWriter->write(selJets);
     metWriter->write(met);
-
-    if(isMC && ! readGenObjects)
-    {
-      genLeptonWriter->write(convert_to_GenParticle(genLeptons));
-      genHadTauWriter->write(convert_to_GenParticle(genHadTaus));
-      genPhotonWriter->write(convert_to_GenParticle(genPhotons));
-      genJetWriter   ->write(convert_to_GenParticle(genJets));
-    }
 
     for(const auto & branchEntry: branchesToKeep)
     {

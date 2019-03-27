@@ -30,6 +30,7 @@ public:
             Int_t status,
             Int_t statusFlags,
             UChar_t genPartFlav);
+  GenLepton(const GenParticle & genParticle);
 
   virtual ~GenLepton() {}
 

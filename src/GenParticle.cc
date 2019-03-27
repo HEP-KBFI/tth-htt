@@ -4,6 +4,20 @@ GenParticle::GenParticle()
   : GenParticle(0., 0., 0., 0., 0, 0, -1, -1, 0)
 {}
 
+GenParticle::GenParticle(const GenParticle & genParticle)
+  : GenParticle(
+      genParticle.pt_
+    , genParticle.eta_
+    , genParticle.phi_
+    , genParticle.mass_
+    , genParticle.pdgId_
+    , genParticle.charge_
+    , genParticle.status_
+    , genParticle.statusFlags_
+    , genParticle.genPartFlav_
+  )
+{}
+
 GenParticle::GenParticle(Double_t pt,
                          Double_t eta,
                          Double_t phi,
@@ -73,10 +87,10 @@ std::ostream &
 operator<<(std::ostream & stream,
            const GenParticle & particle)
 {
-  stream << static_cast<const ChargedParticle &>(particle) << ","
-            " status = "      << particle.status()         << ","
-            " statusFlags = " << particle.statusFlags()    << ","
-            " genPartFlav = " << particle.genPartFlav()
+  stream << static_cast<const ChargedParticle &>(particle)                << ","
+            " status = "      << particle.status()                        << ","
+            " statusFlags = " << particle.statusFlags()                   << ","
+            " genPartFlav = " << static_cast<int>(particle.genPartFlav())
   ;
   return stream;
 }
