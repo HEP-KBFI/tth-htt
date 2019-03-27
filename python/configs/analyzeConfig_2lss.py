@@ -190,58 +190,6 @@ class analyzeConfig_2lss(analyzeConfig):
     lines = super(analyzeConfig_2lss, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
-  def createCfg_addFlips(self, jobOptions):
-    """Create python configuration file for the addBackgroundLeptonFlips executable (data-driven estimation of 'Flips' backgrounds)
-
-       Args:
-         inputFiles: input file (the ROOT file produced by hadd_stage1)
-         outputFile: output file of the job
-    """
-    lines = []
-    lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
-    lines.append("process.addBackgroundLeptonFlips.categories = cms.VPSet(")
-    lines.append("    cms.PSet(")
-    lines.append("        signal = cms.string('%s')," % jobOptions['category_signal'])
-    lines.append("        sideband = cms.string('%s')" % jobOptions['category_sideband'])
-    lines.append("    )")
-    lines.append(")")
-    processesToSubtract = [ "fakes_data" ]
-    processesToSubtract.extend([ "%s_conversion" % nonfake_background for nonfake_background in self.nonfake_backgrounds ])
-    lines.append("process.addBackgroundLeptonFlips.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
-    lines.append("process.addBackgroundLeptonFlips.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
-    create_cfg(self.cfgFile_addFlips, jobOptions['cfgFile_modified'], lines)
-
-  def addToMakefile_hadd_stage1_6(self, lines_makefile):
-    """Adds the commands to Makefile that are necessary for building the intermediate histogram file
-       that is used as input for data-driven background estimation.
-    """
-    self.addToMakefile_hadd(lines_makefile, { 'all' : self.inputFiles_hadd_stage1_6 }, { 'all' : self.outputFile_hadd_stage1_6 }, "stage1_6")
-
-  def addToMakefile_addFlips(self, lines_makefile):
-    if self.is_sbatch:
-      lines_makefile.append("sbatch_addFlips: %s" % " ".join([ jobOptions['inputFile'] for jobOptions in self.jobOptions_addFlips.values() ]))
-      lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addFlips))
-      lines_makefile.append("")
-    for jobOptions in self.jobOptions_addFlips.values():
-      if self.is_makefile:
-        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
-        lines_makefile.append("\t%s %s &> %s" % (self.executable_addFlips, jobOptions['cfgFile_modified'], jobOptions['logFile']))
-        lines_makefile.append("")
-      elif self.is_sbatch:
-        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_addFlips"))
-        lines_makefile.append("\t%s" % ":") # CV: null command
-        lines_makefile.append("")
-      self.filesToClean.append(jobOptions['outputFile'])
-
-  def addToMakefile_backgrounds_from_data(self, lines_makefile):
-    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds", self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
-    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_sum", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
-    self.addToMakefile_hadd_stage1_5(lines_makefile)
-    self.addToMakefile_addFakes(lines_makefile)
-    self.addToMakefile_hadd_stage1_6(lines_makefile)
-    self.addToMakefile_addFlips(lines_makefile)
-
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
     """
@@ -819,7 +767,7 @@ class analyzeConfig_2lss(analyzeConfig):
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_backgrounds_from_data(lines_makefile)
+    self.addToMakefile_backgrounds_from_data_withFlips(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_add_syst_fakerate(lines_makefile)
