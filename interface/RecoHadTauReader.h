@@ -96,7 +96,6 @@ protected:
   std::string branchName_idAgainstMu_;
   std::string branchName_filterBits_;
   std::string branchName_genMatchIdx_;
-  std::string branchName_genJetMatchIdx_;
 
   int hadTauPt_option_;
 
@@ -119,7 +118,6 @@ protected:
   Int_t * hadTau_idAgainstMu_;
   UInt_t * hadTau_filterBits_;
   Int_t * hadTau_genMatchIdx_;
-  Int_t * hadTau_genJetMatchIdx_;
 
   // CV: make sure that only one RecoHadronicTauReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

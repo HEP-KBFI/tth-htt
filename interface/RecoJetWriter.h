@@ -88,7 +88,7 @@ protected:
   std::string branchName_pullMag_;
   std::string branchName_jetId_;
   std::string branchName_puId_;
-  std::string branchName_genJetMatchIdx_;
+  std::string branchName_genMatchIdx_;
   std::map<int, std::string> branchNames_pt_systematics_;
   std::map<int, std::string> branchNames_mass_systematics_;
   std::map<int, std::string> branchNames_BtagWeight_systematics_;
@@ -105,7 +105,7 @@ protected:
   Float_t * jet_pullMag_;
   Int_t * jet_jetId_;
   Int_t * jet_puId_;
-  Int_t * jet_genJetMatchIdx_;
+  Int_t * jet_genMatchIdx_;
   std::map<int, Float_t *> jet_pt_systematics_;
   std::map<int, Float_t *> jet_mass_systematics_;
   std::map<int, Float_t *> jet_BtagWeights_systematics_;

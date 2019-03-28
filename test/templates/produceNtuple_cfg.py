@@ -40,13 +40,10 @@ process.produceNtuple = cms.PSet(
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genJets    = cms.string('GenJet'),
 
-    branchName_muonGenMatch        = cms.string('MuonGenMatch'),
-    branchName_muonGenJetMatch     = cms.string('MuonGenJetMatch'),
-    branchName_electronGenMatch    = cms.string('ElectronGenMatch'),
-    branchName_electronGenJetMatch = cms.string('ElectronGenJetMatch'),
-    branchName_hadTauGenMatch      = cms.string('TauGenMatch'),
-    branchName_hadTauGenJetMatch   = cms.string('TauGenJetMatch'),
-    branchName_jetGenJetMatch      = cms.string('JetGenJetMatch'),
+    branchName_muonGenMatch     = cms.string('MuonGenMatch'),
+    branchName_electronGenMatch = cms.string('ElectronGenMatch'),
+    branchName_hadTauGenMatch   = cms.string('TauGenMatch'),
+    branchName_jetGenMatch      = cms.string('JetGenMatch'),
 
     # Define trigger branches that are always written to the output file, even if they do not exist in the input file.
     # This logic simplifies the configuration of analysis jobs to handle the case

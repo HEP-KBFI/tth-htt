@@ -29,7 +29,7 @@ public:
           Double_t pullMag,
           Int_t jetId,
           Int_t puId,
-          Int_t genJetMatchIdx,
+          Int_t genMatchIdx,
           Int_t idx);
 
   virtual ~RecoJet();
@@ -47,7 +47,7 @@ public:
   Double_t pullMag() const;
   Int_t jetId() const;
   Int_t puId() const;
-  Int_t genJetMatchIdx() const;
+  Int_t genMatchIdx() const;
 
   Double_t maxPt() const;
 
@@ -55,16 +55,16 @@ public:
   friend class RecoJetWriter;
 
 protected:
-  Double_t jetCharge_;      ///< jet charge, computed according to JME-13-006
-  Double_t BtagCSV_;     ///< CSV b-tagging discriminator value
-  Double_t BtagWeight_;  ///< weight for data/MC correction of b-tagging efficiency and mistag rate
-  Double_t QGDiscr_;     ///< quark/gluon discriminator
-  Double_t pullEta_;     ///< eta component of pull vector, computed according to arXiv:1001.5027
-  Double_t pullPhi_;     ///< phi component of pull vector, computed according to arXiv:1001.5027
-  Double_t pullMag_;     ///< magnitude of pull vector, computed according to arXiv:1001.5027
-  Int_t jetId_;          ///< jet ID, as explained in https://twiki.cern.ch/twiki/bin/view/CMS/JetID
-  Int_t puId_;           ///< pileup jet ID, as explained in https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-  Int_t genJetMatchIdx_; ///< index to gen jet
+  Double_t jetCharge_;  ///< jet charge, computed according to JME-13-006
+  Double_t BtagCSV_;    ///< CSV b-tagging discriminator value
+  Double_t BtagWeight_; ///< weight for data/MC correction of b-tagging efficiency and mistag rate
+  Double_t QGDiscr_;    ///< quark/gluon discriminator
+  Double_t pullEta_;    ///< eta component of pull vector, computed according to arXiv:1001.5027
+  Double_t pullPhi_;    ///< phi component of pull vector, computed according to arXiv:1001.5027
+  Double_t pullMag_;    ///< magnitude of pull vector, computed according to arXiv:1001.5027
+  Int_t jetId_;         ///< jet ID, as explained in https://twiki.cern.ch/twiki/bin/view/CMS/JetID
+  Int_t puId_;          ///< pileup jet ID, as explained in https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
+  Int_t genMatchIdx_;   ///< index to gen jet
 
   //---------------------------------------------------------
   // CV: needed by RecoJetWriter

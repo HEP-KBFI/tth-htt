@@ -162,18 +162,7 @@ protected:
         continue;
       }
 
-      // reco objects store two types of indices -- ones that represent the indices of gen particles that are matched
-      // to the reco particles, and the others that represent the indices of gen jets that are also matched to the reco
-      // particles; based on the type of linking we can decide which type of indices we should look at
-      int genMatchIdx = -1;
-      if constexpr(std::is_same<Tlinker, GenJetLinker>::value)
-      {
-        genMatchIdx = recParticle->genJetMatchIdx();
-      }
-      else
-      {
-        genMatchIdx = recParticle->genMatchIdx();
-      }
+      const int genMatchIdx = recParticle->genMatchIdx();
 
       if(genMatchIdx >= 0)
       {

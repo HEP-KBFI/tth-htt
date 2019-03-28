@@ -72,7 +72,6 @@ protected:
   std::string branchName_idAgainstMu_;
   std::string branchName_filterBits_;
   std::string branchName_genMatchIdx_;
-  std::string branchName_genJetMatchIdx_;
 
   UInt_t nHadTaus_;
   Float_t * hadTau_pt_;
@@ -93,7 +92,6 @@ protected:
   Int_t * hadTau_idAgainstMu_;
   UInt_t * hadTau_filterBits_;
   Int_t * hadTau_genMatchIdx_;
-  Int_t * hadTau_genJetMatchIdx_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoHadTauWriter_h

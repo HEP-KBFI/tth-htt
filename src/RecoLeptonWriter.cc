@@ -36,7 +36,6 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   , charge_(nullptr)
   , filterBits_(nullptr)
   , genMatchIdx_(nullptr)
-  , genJetMatchIdx_(nullptr)
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nLeptons_);
   genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()), max_nLeptons_);
@@ -72,7 +71,6 @@ RecoLeptonWriter::~RecoLeptonWriter()
   delete[] charge_;
   delete[] filterBits_;
   delete[] genMatchIdx_;
-  delete[] genJetMatchIdx_;
 }
 
 void RecoLeptonWriter::setBranchNames()
@@ -98,7 +96,6 @@ void RecoLeptonWriter::setBranchNames()
   branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
   branchName_filterBits_ = Form("%s_%s", branchName_obj_.data(), "filterBits");
   branchName_genMatchIdx_ = Form("%s_%s", branchName_obj_.data(), "genMatchIdx");
-  branchName_genJetMatchIdx_ = Form("%s_%s", branchName_obj_.data(), "genJetMatchIdx");
 }
 
 void RecoLeptonWriter::setBranches(TTree * tree)
@@ -130,5 +127,4 @@ void RecoLeptonWriter::setBranches(TTree * tree)
   bai.setBranch(charge_, branchName_charge_);
   bai.setBranch(filterBits_, branchName_filterBits_);
   bai.setBranch(genMatchIdx_, branchName_genMatchIdx_);
-  bai.setBranch(genJetMatchIdx_, branchName_genJetMatchIdx_);
 }
