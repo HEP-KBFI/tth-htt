@@ -41,7 +41,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
       binning_mvaTTH_ = { 0.90 }; // F; Table 7 in AN2017_029_v5
       min_jetPtRatio_ = { 0.60, -1.e+3 }; // F; [*]
       min_mvaIDraw_ = { 0.50, -1.e+3 }; // F; [*]
-      max_jetBtagCSV_ = { 0.07, BtagWP_deepCSV_2017.at(BtagWP::kMedium) }; // F; [*]
+      max_jetBtagCSV_ = { 0.07, get_BtagWP(kEra_2017, BtagWP::kMedium) }; // F; [*]
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;

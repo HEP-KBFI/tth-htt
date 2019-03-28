@@ -1,11 +1,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h" // RecoJetReader
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Btag
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kBtag_*
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // getBranchName_bTagWeight(), getBranchName_jetPtMass()
 
@@ -24,6 +24,8 @@ RecoJetReader::RecoJetReader(int era,
                              bool readGenMatching)
   : era_(era)
   , isMC_(isMC)
+  , btag_(Btag::kDeepJet)
+  , btag_central_or_shift_(kBtag_central)
   , max_nJets_(256)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
@@ -37,8 +39,6 @@ RecoJetReader::RecoJetReader(int era,
   , jet_eta_(nullptr)
   , jet_phi_(nullptr)
   , jet_charge_(nullptr)
-  , jet_BtagCSV_(nullptr)
-  , jet_BtagWeight_(nullptr)
   , jet_QGDiscr_(nullptr)
   , jet_pullEta_(nullptr)
   , jet_pullPhi_(nullptr)
@@ -47,14 +47,6 @@ RecoJetReader::RecoJetReader(int era,
   , jet_puId_(nullptr)
   , jet_genMatchIdx_(nullptr)
 {
-  switch(era_)
-  {
-    case kEra_2016:
-    case kEra_2018:
-    case kEra_2017: branchName_btag_ = "DeepB"; break;
-    default: throw cmsException(this) << "Invalid era = " << era_;
-  }
-  assert(! branchName_btag_.empty());
   if(readGenMatching_)
   {
     genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_obj_.data()), max_nJets_);
@@ -78,8 +70,6 @@ RecoJetReader::~RecoJetReader()
     delete[] gInstance->jet_eta_;
     delete[] gInstance->jet_phi_;
     delete[] gInstance->jet_charge_;
-    delete[] gInstance->jet_BtagCSV_;
-    delete[] gInstance->jet_BtagWeight_;
     delete[] gInstance->jet_QGDiscr_;
     delete[] gInstance->jet_pullEta_;
     delete[] gInstance->jet_pullPhi_;
@@ -95,9 +85,16 @@ RecoJetReader::~RecoJetReader()
     {
       delete[] kv.second;
     }
-    for(auto & kv: gInstance->jet_BtagWeights_systematics_)
+    for(auto & kv: gInstance->jet_BtagCSVs_)
     {
       delete[] kv.second;
+    }
+    for(auto & kv: gInstance->jet_BtagWeights_systematics_)
+    {
+      for(auto & kw: kv.second)
+      {
+        delete[] kw.second;
+      }
     }
     instances_[branchName_obj_] = nullptr;
   }
@@ -124,9 +121,8 @@ RecoJetReader::setBranchName_BtagWeight(int central_or_shift)
       << "No systematic uncertainties on b-tagging SFs available for data"
     ;
   }
-  branchName_BtagWeight_ = getBranchName_bTagWeight(
-    branchName_obj_, era_, central_or_shift
-  );
+  assert(central_or_shift >= kBtag_central && central_or_shift <= kBtag_jesDown);
+  btag_central_or_shift_ = central_or_shift;
 }
 
 void
@@ -166,14 +162,31 @@ RecoJetReader::setBranchNames()
       branchNames_mass_systematics_[idxShift] = getBranchName_jetPtMass(branchName_obj_, era_, idxShift, false);
     }
     branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
-    branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("btag%s", branchName_btag_.data()));
-    branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
-    branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central);
-    for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+
+    for(const auto & kv: BtagWP_map.at(era_))
     {
-      branchNames_BtagWeight_systematics_[idxShift] = getBranchName_bTagWeight(
-        branchName_obj_, era_, idxShift
-      );
+      std::string btagName;
+      switch(kv.first)
+      {
+        case Btag::kDeepCSV: btagName = "DeepB";     break;
+        case Btag::kDeepJet: btagName = "DeepFlavB"; break;
+        case Btag::kCSVv2:   btagName = "CSVV2";     break;
+      }
+      assert(! btagName.empty());
+      branchNames_btag_[kv.first] = Form("%s_btag%s", branchName_obj_.data(), btagName.data());
+    }
+    assert(! branchNames_btag_.empty());
+
+    branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
+    for(auto & kv: BtagWP_map.at(era_))
+    {
+      branchNames_BtagWeight_systematics_[kv.first] = {};
+      for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
+      {
+        branchNames_BtagWeight_systematics_[kv.first][idxShift] = getBranchName_bTagWeight(
+          kv.first, branchName_obj_, idxShift
+        );
+      }
     }
     branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
     branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
@@ -227,14 +240,16 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_eta_, branchName_eta_);
     bai.setBranchAddress(jet_phi_, branchName_phi_);
     bai.setBranchAddress(jet_charge_, branchName_jetCharge_);
-    bai.setBranchAddress(jet_BtagCSV_, branchName_BtagCSV_);
-    bai.setBranchAddress(jet_BtagWeight_, isMC_ ? branchName_BtagWeight_ : "", 1.);
-    if(read_BtagWeight_systematics_)
+    for(const auto & kv: branchNames_btag_)
     {
-      for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+      bai.setBranchAddress(jet_BtagCSVs_[kv.first], kv.second);
+    }
+    for(const auto & kv: branchNames_BtagWeight_systematics_)
+    {
+      for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
       {
         bai.setBranchAddress(
-          jet_BtagWeights_systematics_[idxShift], isMC_ ? branchNames_BtagWeight_systematics_[idxShift] : "", 1.
+          jet_BtagWeights_systematics_[kv.first][idxShift], isMC_ ? branchNames_BtagWeight_systematics_[kv.first][idxShift] : "", 1.
         );
       }
     }
@@ -276,8 +291,8 @@ RecoJetReader::read() const
           gInstance->jet_mass_systematics_.at(ptMassOption_)[idxJet]
         },
         gInstance->jet_charge_[idxJet],
-        gInstance->jet_BtagCSV_[idxJet],
-        gInstance->jet_BtagWeight_[idxJet],
+        gInstance->jet_BtagCSVs_.at(btag_)[idxJet],
+        gInstance->jet_BtagWeights_systematics_.at(btag_).at(btag_central_or_shift_)[idxJet],
         gInstance->jet_QGDiscr_[idxJet],
         gInstance->jet_pullEta_[idxJet],
         gInstance->jet_pullPhi_[idxJet],
@@ -292,14 +307,22 @@ RecoJetReader::read() const
 
       if(read_BtagWeight_systematics_)
       {
-        for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+        for(const auto & kv: jet_BtagWeights_systematics_)
         {
-          if(jet_BtagWeights_systematics_.count(idxShift))
+          for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
           {
-            jet.BtagWeight_systematics_[idxShift] = gInstance->jet_BtagWeights_systematics_.at(idxShift)[idxJet];
-          }
-        } // idxShift
+            if(jet_BtagWeights_systematics_.at(kv.first).count(idxShift))
+            {
+              jet.BtagWeight_systematics_[kv.first][idxShift] = gInstance->jet_BtagWeights_systematics_.at(kv.first).at(idxShift)[idxJet];
+            }
+          } // idxShift
+        } // jet_BtagWeights_systematics_
       } // read_BtagWeight_systematics_
+
+      for(const auto & kv: jet_BtagCSVs_)
+      {
+        jet.BtagCSVs_[kv.first] = gInstance->jet_BtagCSVs_.at(kv.first)[idxJet];
+      }
 
       if(read_ptMass_systematics_)
       {

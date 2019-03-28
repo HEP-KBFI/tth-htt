@@ -214,17 +214,16 @@ checkOptionValidity(const std::string & central_or_shift,
 }
 
 std::string
-getBranchName_bTagWeight(const std::string & default_collectionName,
-                         int era,
+getBranchName_bTagWeight(Btag btag,
+                         const std::string & default_collectionName,
                          int central_or_shift)
 {
-  std::map<int, std::string> branchNames_bTagWeight; //TODO make static?
-  switch(era)
+  std::map<int, std::string> branchNames_bTagWeight;
+  switch(btag)
   {
-    case kEra_2016:
-    case kEra_2018:
-    case kEra_2017: branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_deepjet_shape", default_collectionName.data()); break;
-    default: throw cmsException(__func__, __LINE__) << "Invalid era = " << era;
+    case Btag::kDeepJet: branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_deepjet_shape", default_collectionName.data()); break;
+    case Btag::kDeepCSV: branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_deepcsv_shape", default_collectionName.data()); break;
+    case Btag::kCSVv2:   branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_csvv2_shape", default_collectionName.data());   break;
   }
   branchNames_bTagWeight[kBtag_hfUp]         = branchNames_bTagWeight[kBtag_central] + "_up_hf";
   branchNames_bTagWeight[kBtag_hfDown]       = branchNames_bTagWeight[kBtag_central] + "_down_hf";

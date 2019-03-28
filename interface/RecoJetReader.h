@@ -12,6 +12,8 @@ class GenLeptonReader;
 class GenHadTauReader;
 class GenJetReader;
 
+enum class Btag;
+
 class RecoJetReader
   : public ReaderBase
 {
@@ -23,7 +25,7 @@ public:
                 bool isMC,
                 const std::string & branchName_obj,
                 bool readGenMatching = false);
-  ~RecoJetReader();
+  ~RecoJetReader() override;
 
   void
   setPtMass_central_or_shift(int central_or_shift);
@@ -36,6 +38,9 @@ public:
 
   void
   read_ptMass_systematics(bool flag);
+
+  void
+  read_Btag(Btag btag);
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoJet branches
@@ -59,10 +64,11 @@ protected:
 
   int era_;
   bool isMC_;
+  Btag btag_;
+  int btag_central_or_shift_;
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
-  std::string branchName_btag_;
 
   /**
    * @brief Read branches containing information on matching of RecoJet objects
@@ -80,8 +86,6 @@ protected:
   std::string branchName_eta_;
   std::string branchName_phi_;
   std::string branchName_jetCharge_;
-  std::string branchName_BtagCSV_;
-  std::string branchName_BtagWeight_;
   std::string branchName_QGDiscr_;
   std::string branchName_pullEta_;
   std::string branchName_pullPhi_;
@@ -92,7 +96,8 @@ protected:
 
   std::map<int, std::string> branchNames_pt_systematics_;
   std::map<int, std::string> branchNames_mass_systematics_;
-  std::map<int, std::string> branchNames_BtagWeight_systematics_;
+  std::map<Btag, std::string> branchNames_btag_;
+  std::map<Btag, std::map<int, std::string>> branchNames_BtagWeight_systematics_;
 
   bool read_ptMass_systematics_;
   bool read_BtagWeight_systematics_;
@@ -102,8 +107,6 @@ protected:
   Float_t * jet_eta_;
   Float_t * jet_phi_;
   Float_t * jet_charge_;
-  Float_t * jet_BtagCSV_;
-  Float_t * jet_BtagWeight_;
   Float_t * jet_QGDiscr_;
   Float_t * jet_pullEta_;
   Float_t * jet_pullPhi_;
@@ -114,7 +117,8 @@ protected:
 
   std::map<int, Float_t *> jet_pt_systematics_;
   std::map<int, Float_t *> jet_mass_systematics_;
-  std::map<int, Float_t *> jet_BtagWeights_systematics_; // CV: needed by RecoJetWriter
+  std::map<Btag, Float_t *> jet_BtagCSVs_;
+  std::map<Btag, std::map<int, Float_t *>> jet_BtagWeights_systematics_;
 
   // CV: make sure that only one RecoJetReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

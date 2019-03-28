@@ -39,6 +39,11 @@ enum
   kEra_undefined, kEra_2016, kEra_2017, kEra_2018
 };
 
+enum class Btag
+{
+  kDeepJet, kDeepCSV, kCSVv2
+};
+
 //--- declare selection criteria for leptons and hadronic taus
 enum { kLoose, kFakeable, kTight };
 
@@ -46,68 +51,83 @@ enum { kLoose, kFakeable, kTight };
 
 enum class BtagWP { kLoose, kMedium, kTight };
 
+const std::map<int, std::map<Btag, std::map<BtagWP, double>>> BtagWP_map = {
+  {
+    kEra_2016, {
+//--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
+      {
+        Btag::kDeepJet, {
+          { BtagWP::kLoose,  0.0614 },
+          { BtagWP::kMedium, 0.3093 },
+          { BtagWP::kTight,  0.7221 },
+        },
+      },
+//--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
+      {
+        Btag::kDeepCSV, {
+          { BtagWP::kLoose,  0.2217 },
+          { BtagWP::kMedium, 0.6321 },
+          { BtagWP::kTight,  0.8953 },
+        }
+      },
 //--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
-const std::map<BtagWP, double> BtagWP_CSV_2016 =
-{
-  { BtagWP::kLoose,  0.5426 },
-  { BtagWP::kMedium, 0.8484 },
-  { BtagWP::kTight,  0.9535 },
-};
-
-//--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
-const std::map<BtagWP, double> BtagWP_deepCSV_2016 =
-{
-  { BtagWP::kLoose,  0.2217 },
-  { BtagWP::kMedium, 0.6321 },
-  { BtagWP::kTight,  0.8953 },
-};
-
-//--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
-const std::map<BtagWP, double> BtagWP_deepJet_2016 =
-{
-  { BtagWP::kLoose,  0.0614 },
-  { BtagWP::kMedium, 0.3093 },
-  { BtagWP::kTight,  0.7221 },
-};
-
+      {
+        Btag::kCSVv2, {
+          { BtagWP::kLoose,  0.5426 },
+          { BtagWP::kMedium, 0.8484 },
+          { BtagWP::kTight,  0.9535 },
+        },
+      },
+    },
+  },
+  {
+    kEra_2017, {
 //--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
-const std::map<BtagWP, double> BtagWP_CSVv2_2017 =
-{
-  { BtagWP::kLoose,  0.5803 },
-  { BtagWP::kMedium, 0.8838 },
-  { BtagWP::kTight,  0.9693 },
-};
-
+      {
+        Btag::kDeepJet, {
+          { BtagWP::kLoose,  0.0521 },
+          { BtagWP::kMedium, 0.3033 },
+          { BtagWP::kTight,  0.7489 },
+        },
+      },
 //--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
-const std::map<BtagWP, double> BtagWP_deepCSV_2017 =
-{
-  { BtagWP::kLoose,  0.1522 },
-  { BtagWP::kMedium, 0.4941 },
-  { BtagWP::kTight,  0.8001 },
-};
-
+      {
+        Btag::kDeepCSV, {
+          { BtagWP::kLoose,  0.1522 },
+          { BtagWP::kMedium, 0.4941 },
+          { BtagWP::kTight,  0.8001 },
+        },
+      },
 //--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
-const std::map<BtagWP, double> BtagWP_deepJet_2017 =
-{
-  { BtagWP::kLoose,  0.0521 },
-  { BtagWP::kMedium, 0.3033 },
-  { BtagWP::kTight,  0.7489 },
-};
-
+      {
+        Btag::kCSVv2, {
+          { BtagWP::kLoose,  0.5803 },
+          { BtagWP::kMedium, 0.8838 },
+          { BtagWP::kTight,  0.9693 },
+        },
+      },
+    },
+  },
+  {
+    kEra_2018, {
 //--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
-const std::map<BtagWP, double> BtagWP_deepCSV_2018 =
-{
-  { BtagWP::kLoose,  0.1241 },
-  { BtagWP::kMedium, 0.4184 },
-  { BtagWP::kTight,  0.7527 },
-};
-
+      {
+        Btag::kDeepJet, {
+          { BtagWP::kLoose,  0.0494 },
+          { BtagWP::kMedium, 0.2770 },
+          { BtagWP::kTight,  0.7264 },
+        },
+      },
 //--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
-const std::map<BtagWP, double> BtagWP_deepJet_2018 =
-{
-  { BtagWP::kLoose,  0.0494 },
-  { BtagWP::kMedium, 0.2770 },
-  { BtagWP::kTight,  0.7264 },
+      {
+        Btag::kDeepCSV, {
+          { BtagWP::kLoose,  0.1241 },
+          { BtagWP::kMedium, 0.4184 },
+          { BtagWP::kTight,  0.7527 },
+        },
+      },
+    },
+  },
 };
 
 double

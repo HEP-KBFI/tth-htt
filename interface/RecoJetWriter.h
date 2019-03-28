@@ -12,6 +12,8 @@ class TTree;
 class RecoJet;
 class GenParticleWriter;
 
+enum class Btag;
+
 class RecoJetWriter
 {
 public:
@@ -70,7 +72,7 @@ protected:
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
-  std::string branchName_btag_;
+  std::map<Btag, std::string> branchNames_btag_;
 
   GenParticleWriter * genLeptonWriter_;
   GenParticleWriter * genHadTauWriter_;
@@ -80,8 +82,6 @@ protected:
   std::string branchName_eta_;
   std::string branchName_phi_;
   std::string branchName_jetCharge_;
-  std::string branchName_BtagCSV_;
-  std::string branchName_BtagWeight_;
   std::string branchName_QGDiscr_;
   std::string branchName_pullEta_;
   std::string branchName_pullPhi_;
@@ -91,14 +91,12 @@ protected:
   std::string branchName_genMatchIdx_;
   std::map<int, std::string> branchNames_pt_systematics_;
   std::map<int, std::string> branchNames_mass_systematics_;
-  std::map<int, std::string> branchNames_BtagWeight_systematics_;
+  std::map<Btag, std::map<int, std::string>> branchNames_BtagWeight_systematics_;
 
   UInt_t nJets_;
   Float_t * jet_eta_;
   Float_t * jet_phi_;
   Float_t * jet_charge_;
-  Float_t * jet_BtagCSV_;
-  Float_t * jet_BtagWeight_;
   Float_t * jet_QGDiscr_;
   Float_t * jet_pullEta_;
   Float_t * jet_pullPhi_;
@@ -108,7 +106,8 @@ protected:
   Int_t * jet_genMatchIdx_;
   std::map<int, Float_t *> jet_pt_systematics_;
   std::map<int, Float_t *> jet_mass_systematics_;
-  std::map<int, Float_t *> jet_BtagWeights_systematics_;
+  std::map<Btag, Float_t *> jet_BtagCSVs_;
+  std::map<Btag, std::map<int, Float_t *>> jet_BtagWeights_systematics_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoJetWriter_h

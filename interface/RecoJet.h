@@ -14,6 +14,8 @@
 
 #include <map> // std::map<,>
 
+enum class Btag;
+
 class RecoJet
   : public RecoJetBase
 {
@@ -68,7 +70,8 @@ protected:
 
   //---------------------------------------------------------
   // CV: needed by RecoJetWriter
-  std::map<int, Double_t> BtagWeight_systematics_;
+  std::map<Btag, std::map<int, Double_t>> BtagWeight_systematics_;
+  std::map<Btag, Double_t> BtagCSVs_;
   std::map<int, Double_t> pt_systematics_;
   std::map<int, Double_t> mass_systematics_;
   //---------------------------------------------------------

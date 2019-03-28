@@ -3,6 +3,8 @@
 
 #include <string> // std::string
 
+enum class Btag;
+
 //--- declare systematic uncertainties on data/MC corrections for
 //    b-tagging efficiency and mistag rates
 enum
@@ -183,8 +185,8 @@ checkOptionValidity(const std::string & central_or_shift,
                     bool isMC);
 
 std::string
-getBranchName_bTagWeight(const std::string & default_collectionName,
-                         int era,
+getBranchName_bTagWeight(Btag btag,
+                         const std::string & default_collectionName,
                          int central_or_shift);
 
 /**

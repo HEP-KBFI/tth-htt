@@ -34,20 +34,11 @@ RecoJetWriter::RecoJetWriter(int era,
   , genJetWriter_(nullptr)
   , jet_eta_(nullptr)
   , jet_phi_(nullptr)
-  , jet_BtagCSV_(nullptr)
-  , jet_BtagWeight_(nullptr)
   , jet_QGDiscr_(nullptr)
   , jet_jetId_(nullptr)
   , jet_puId_(nullptr)
+  , jet_genMatchIdx_(nullptr)
 {
-  switch(era_)
-  {
-    case kEra_2016:
-    case kEra_2018:
-    case kEra_2017: branchName_btag_ = "DeepB"; break;
-    default: throw cmsException(this) << "Invalid era = " << era_;
-  }
-  assert(! branchName_btag_.empty());
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nJets_);
   genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()), max_nJets_);
   genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()), max_nJets_);
@@ -62,14 +53,13 @@ RecoJetWriter::~RecoJetWriter()
   delete[] jet_eta_;
   delete[] jet_phi_;
   delete[] jet_charge_;
-  delete[] jet_BtagCSV_;
-  delete[] jet_BtagWeight_;
   delete[] jet_QGDiscr_;
   delete[] jet_pullEta_;
   delete[] jet_pullPhi_;
   delete[] jet_pullMag_;
   delete[] jet_jetId_;
   delete[] jet_puId_;
+  delete[] jet_genMatchIdx_;
   for(auto & kv: jet_pt_systematics_)
   {
     delete[] kv.second;
@@ -78,9 +68,16 @@ RecoJetWriter::~RecoJetWriter()
   {
     delete[] kv.second;
   }
-  for(auto & kv: jet_BtagWeights_systematics_)
+  for(auto & kv: jet_BtagCSVs_)
   {
     delete[] kv.second;
+  }
+  for(auto & kv: jet_BtagWeights_systematics_)
+  {
+    for(auto & kw: kv.second)
+    {
+      delete[] kw.second;
+    }
   }
 }
 
@@ -95,19 +92,34 @@ RecoJetWriter::setBranchNames()
   branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
   branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
   branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
-  branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("btag%s", branchName_btag_.data()));
+  for(const auto & kv: BtagWP_map.at(era_))
+  {
+    std::string btagName;
+    switch(kv.first)
+    {
+      case Btag::kDeepCSV: btagName = "DeepB";     break;
+      case Btag::kDeepJet: btagName = "DeepFlavB"; break;
+      case Btag::kCSVv2:   btagName = "CSVV2";     break;
+    }
+    assert(! btagName.empty());
+    branchNames_btag_[kv.first] = Form("%s_btag%s", branchName_obj_.data(), btagName.data());
+  }
+  assert(! branchNames_btag_.empty());
   branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
   branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
   branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
   branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
   branchName_jetId_ = Form("%s_%s", branchName_obj_.data(), "jetId");
   branchName_puId_ = Form("%s_%s", branchName_obj_.data(), "puId");
-  branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central);
-  for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+  branchName_genMatchIdx_ = Form("%s_%s", branchName_obj_.data(), "genMatchIdx");
+  for(auto & kv: BtagWP_map.at(era_))
   {
-    branchNames_BtagWeight_systematics_[idxShift] = getBranchName_bTagWeight(
-      branchName_obj_, era_, idxShift
-    );
+    for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
+    {
+      branchNames_BtagWeight_systematics_[kv.first][idxShift] = getBranchName_bTagWeight(
+        kv.first, branchName_obj_, idxShift
+      );
+    }
   }
 }
 
@@ -173,18 +185,25 @@ RecoJetWriter::setBranches(TTree * tree)
   bai.setBranch(jet_eta_, branchName_eta_);
   bai.setBranch(jet_phi_, branchName_phi_);
   bai.setBranch(jet_charge_, branchName_jetCharge_);
-  bai.setBranch(jet_BtagCSV_, branchName_BtagCSV_);
-  bai.setBranch(jet_BtagWeight_, branchName_BtagWeight_);
   bai.setBranch(jet_pullEta_, branchName_pullEta_);
   bai.setBranch(jet_pullPhi_, branchName_pullPhi_);
   bai.setBranch(jet_pullMag_, branchName_pullMag_);
   bai.setBranch(jet_jetId_, branchName_jetId_);
   bai.setBranch(jet_puId_, branchName_puId_);
+  bai.setBranch(jet_genMatchIdx_, branchName_genMatchIdx_);
+  for(const auto & kv: branchNames_btag_)
+  {
+    bai.setBranch(jet_BtagCSVs_[kv.first], kv.second);
+  }
   if(write_BtagWeight_systematics_)
   {
-    for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+    for(const auto & kv: branchNames_BtagWeight_systematics_)
     {
-      bai.setBranch(jet_BtagWeights_systematics_[idxShift], branchNames_BtagWeight_systematics_[idxShift]);
+      jet_BtagWeights_systematics_[kv.first] = {};
+      for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
+      {
+        bai.setBranch(jet_BtagWeights_systematics_[kv.first][idxShift], branchNames_BtagWeight_systematics_[kv.first][idxShift]);
+      }
     }
   }
   bai.setBranch(jet_QGDiscr_, branchName_QGDiscr_);
@@ -252,26 +271,33 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
     jet_eta_[idxJet] = jet->eta();
     jet_phi_[idxJet] = jet->phi();
     jet_charge_[idxJet] = jet->charge();
-    jet_BtagCSV_[idxJet] = jet->BtagCSV();
-    jet_BtagWeight_[idxJet] = jet->BtagWeight();
+    for(const auto & kv: branchNames_btag_)
+    {
+      jet_BtagCSVs_[kv.first][idxJet] = jet->BtagCSVs_.at(kv.first);
+    }
     jet_pullEta_[idxJet] = jet->pullEta();
     jet_pullPhi_[idxJet] = jet->pullPhi();
     jet_pullMag_[idxJet] = jet->pullMag();
     jet_jetId_[idxJet] = jet->jetId();
     jet_puId_[idxJet] = jet->puId();
+    jet_genMatchIdx_[idxJet] = jet->genMatchIdx();
     if(write_BtagWeight_systematics_)
     {
-      for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+      for(const auto & kv: branchNames_BtagWeight_systematics_)
       {
-        if(jet->BtagWeight_systematics_.count(idxShift))
+        for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
         {
-          jet_BtagWeights_systematics_[idxShift][idxJet] = jet->BtagWeight_systematics_.at(idxShift);
-        }
-        else
-        {
-          throw cmsException(this, __func__, __LINE__)
-            << "Jet #" << idxJet << " is missing b-tagging weight #" << idxShift
-          ;
+          if(jet->BtagWeight_systematics_.at(kv.first).count(idxShift))
+          {
+            jet_BtagWeights_systematics_[kv.first][idxShift][idxJet] = jet->BtagWeight_systematics_.at(kv.first).at(idxShift);
+          }
+          else
+          {
+            throw cmsException(this, __func__, __LINE__)
+              << "Jet #" << idxJet << " is missing b-tagging weight #" << idxShift
+              << " for b-tagging algorithm " << static_cast<int>(kv.first)
+            ;
+          }
         }
       }
     }
