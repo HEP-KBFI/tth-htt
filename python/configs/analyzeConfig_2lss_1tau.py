@@ -787,12 +787,13 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     for chargeSumSelection in self.chargeSumSelections:
       key_hadd_stage1_5_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS", chargeSumSelection)
       key_addFakes_job = getKey("fakes_data", "OS", chargeSumSelection)
+      key_hadd_stage1_6_dir = getKey("hadd", get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS", chargeSumSelection)
       key_hadd_stage1_6_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS", chargeSumSelection)
       if key_hadd_stage1_6_job not in self.inputFiles_hadd_stage1_6:
         self.inputFiles_hadd_stage1_6[key_hadd_stage1_6_job] = []
       self.inputFiles_hadd_stage1_6[key_hadd_stage1_6_job].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
       self.inputFiles_hadd_stage1_6[key_hadd_stage1_6_job].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job])
-      self.outputFile_hadd_stage1_6[key_hadd_stage1_6_job] = os.path.join(self.dirs[DKEY_HIST], "hadd_stage1_6_Tight_lepOS_sum%s.root" % chargeSumSelection)
+      self.outputFile_hadd_stage1_6[key_hadd_stage1_6_job] = os.path.join(self.dirs[key_hadd_stage1_6_dir][DKEY_HIST], "hadd_stage1_6_Tight_lepOS_sum%s.root" % chargeSumSelection)
     #--------------------------------------------------------------------------
 
     logging.info("Creating configuration files to run 'addBackgroundFlips'")

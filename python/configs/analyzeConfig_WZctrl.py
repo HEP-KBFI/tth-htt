@@ -178,8 +178,9 @@ class analyzeConfig_WZctrl(analyzeConfig):
           lepton_selection_and_frWeight = get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight)
           central_or_shifts_extended = [ "" ]
           central_or_shifts_extended.extend(self.central_or_shifts)
+          central_or_shifts_extended.extend([ "hadd", "addBackgrounds" ])
           for central_or_shift_or_dummy in central_or_shifts_extended:
-            process_name_extended = [ process_name, "hadd", "addBackgrounds" ]
+            process_name_extended = [ process_name, "hadd" ]
             for process_name_or_dummy in process_name_extended:
               key_dir = getKey(process_name_or_dummy, lepton_selection_and_frWeight, central_or_shift_or_dummy)
               for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_RLES, DKEY_SYNC ]:
@@ -190,6 +191,14 @@ class analyzeConfig_WZctrl(analyzeConfig):
                 else:
                   self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                     "_".join([ lepton_selection_and_frWeight ]), process_name_or_dummy, central_or_shift_or_dummy)
+    for subdirectory in [ "addBackgrounds", "addBackgroundLeptonFakes", "prepareDatacards", "addSystFakeRates", "makePlots" ]:
+      key_dir = getKey(subdirectory)
+      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_DCRD, DKEY_PLOT ]:
+        initDict(self.dirs, [ key_dir, dir_type ])
+        if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
+          self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)
+        else:
+          self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, subdirectory)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_SYNC ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
@@ -366,7 +375,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
               genMatch_categories = [ "nonfake", "conversions", "fake" ]
               for genMatch_category in genMatch_categories:
                 key_hadd_stage1_job = getKey(process_name, lepton_selection_and_frWeight)
-                key_addBackgrounds_dir = getKey(process_name, lepton_selection_and_frWeight)
+                key_addBackgrounds_dir = getKey(process_name, lepton_selection_and_frWeight, "addBackgrounds")
                 addBackgrounds_job_tuple = None
                 processes_input = None
                 process_output = None
@@ -467,7 +476,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
         # input processes: TT2l0g1j, TT1l1g1j, TT1l0g2j, TT0l3j, TT0l3j, TT0l3j, TT0l3j; ...
         # output process: fakes_mc
         key_hadd_stage1_5_job = getKey(lepton_selection_and_frWeight)
-        key_addBackgrounds_dir = getKey("addBackgrounds", lepton_selection_and_frWeight)
+        key_addBackgrounds_dir = getKey("addBackgrounds")
         addBackgrounds_job_fakes_tuple = ("fakes_mc", lepton_selection_and_frWeight)
         key_addBackgrounds_job_fakes = getKey(*addBackgrounds_job_fakes_tuple)
         sample_categories = []
@@ -478,9 +487,9 @@ class analyzeConfig_WZctrl(analyzeConfig):
           processes_input.append("%s_fake" % sample_category)
         self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
           'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_%s_cfg.py" % addBackgrounds_job_fakes_tuple),
-          'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_%s.root" % addBackgrounds_job_fakes_tuple),
-          'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s_%s.log" % addBackgrounds_job_fakes_tuple),
+          'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_cfg.py" % addBackgrounds_job_fakes_tuple),
+          'outputFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackgrounds_%s_%s.root" % addBackgrounds_job_fakes_tuple),
+          'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], "addBackgrounds_%s_%s.log" % addBackgrounds_job_fakes_tuple),
           'categories' : [ getHistogramDir(lepton_selection, lepton_frWeight) ],
           'processes_input' : processes_input,
           'process_output' : "fakes_mc"
@@ -500,9 +509,9 @@ class analyzeConfig_WZctrl(analyzeConfig):
           processes_input.append("%s_conversion" % sample_category)
         self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_conversions] = {
           'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_%s_cfg.py" % addBackgrounds_job_conversions_tuple),
-          'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_%s.root" % addBackgrounds_job_conversions_tuple),
-          'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s_%s.log" % addBackgrounds_job_conversions_tuple),
+          'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_cfg.py" % addBackgrounds_job_conversions_tuple),
+          'outputFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackgrounds_%s_%s.root" % addBackgrounds_job_conversions_tuple),
+          'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], "addBackgrounds_%s_%s.log" % addBackgrounds_job_conversions_tuple),
           'categories' : [ getHistogramDir(lepton_selection, lepton_frWeight) ],
           'processes_input' : processes_input,
           'process_output' : "conversions"
@@ -557,34 +566,35 @@ class analyzeConfig_WZctrl(analyzeConfig):
     logging.info("Creating configuration files to run 'prepareDatacards'")
     for histogramToFit in self.histograms_to_fit:
       key_hadd_stage2_job = getKey(get_lepton_selection_and_frWeight("Tight", "disabled"))
+      key_prep_dcard_dir = getKey("prepareDatacards")
       prep_dcard_job_tuple = (self.channel, histogramToFit)
       key_prep_dcard_job = getKey(histogramToFit)
       self.jobOptions_prep_dcard[key_prep_dcard_job] = {
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_cfg.py" % prep_dcard_job_tuple),
-        'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_%s.root" % prep_dcard_job_tuple),
+        'cfgFile_modified' : os.path.join(self.dirs[key_prep_dcard_dir][DKEY_CFGS], "prepareDatacards_%s_%s_cfg.py" % prep_dcard_job_tuple),
+        'datacardFile' : os.path.join(self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_%s_%s.root" % prep_dcard_job_tuple),
         'histogramDir' : self.histogramDir_prep_dcard,
         'histogramToFit' : histogramToFit,
         'label' : None
       }
       self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
-      add_syst_fakerate_job_tuple = (self.channel, histogramToFit)      
-      key_add_syst_fakerate_job = getKey(histogramToFit)
-      self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job] = {
-        'inputFile' : self.jobOptions_prep_dcard[key_prep_dcard_job]['datacardFile'],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addSystFakeRates_%s_%s_cfg.py" % add_syst_fakerate_job_tuple),
-        'outputFile' : os.path.join(self.dirs[DKEY_DCRD], "addSystFakeRates_%s_%s.root" % add_syst_fakerate_job_tuple),
-        'category' : self.channel,
-        'histogramToFit' : histogramToFit,
-        'plots_outputFileName' : os.path.join(self.dirs[DKEY_PLOT], "addSystFakeRates.png")
-      }
-
       # add shape templates for the following systematic uncertainties:
       #  - 'CMS_ttHl_Clos_norm_e'
       #  - 'CMS_ttHl_Clos_shape_e'
       #  - 'CMS_ttHl_Clos_norm_m'
       #  - 'CMS_ttHl_Clos_shape_m'
+      key_add_syst_fakerate_dir = getKey("addSystFakeRates")
+      add_syst_fakerate_job_tuple = (self.channel, histogramToFit)      
+      key_add_syst_fakerate_job = getKey(histogramToFit)
+      self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job] = {
+        'inputFile' : self.jobOptions_prep_dcard[key_prep_dcard_job]['datacardFile'],
+        'cfgFile_modified' : os.path.join(self.dirs[key_add_syst_fakerate_dir][DKEY_CFGS], "addSystFakeRates_%s_%s_cfg.py" % add_syst_fakerate_job_tuple),
+        'outputFile' : os.path.join(self.dirs[key_add_syst_fakerate_dir][DKEY_DCRD], "addSystFakeRates_%s_%s.root" % add_syst_fakerate_job_tuple),
+        'category' : self.channel,
+        'histogramToFit' : histogramToFit,
+        'plots_outputFileName' : os.path.join(self.dirs[key_add_syst_fakerate_dir][DKEY_PLOT], "addSystFakeRates.png")
+      }
       histogramDir_nominal = self.histogramDir_prep_dcard
       for lepton_type in ['e', 'm']:
         lepton_mcClosure = "Fakeable_mcClosure_%s" % lepton_type
@@ -604,12 +614,13 @@ class analyzeConfig_WZctrl(analyzeConfig):
 
     logging.info("Creating configuration files to run 'makePlots'")
     key_hadd_stage2_job = getKey(get_lepton_selection_and_frWeight("Tight", "disabled"))
+    key_makePlots_dir = getKey("makePlots")
     key_makePlots_job = getKey('')    
     self.jobOptions_make_plots[key_makePlots_job] = {
       'executable' : self.executable_make_plots,
       'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
-      'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
-      'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
+      'cfgFile_modified' : os.path.join(self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
+      'outputFile' : os.path.join(self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s.png" % self.channel),
       'histogramDir' : self.histogramDir_prep_dcard,
       'label' : "WZ control region",
       'make_plots_backgrounds' : self.make_plots_backgrounds

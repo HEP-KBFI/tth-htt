@@ -739,6 +739,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     #     so that "fakes_data" background can be subtracted from OS control region used to estimate charge flip background
     for chargeSumSelection in self.chargeSumSelections:        
       key_hadd_stage1_5_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), chargeSumSelection)
+      key_hadd_stage1_6_dir = getKey("hadd", get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), chargeSumSelection)
       key_hadd_stage1_6_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), chargeSumSelection)
       if key_hadd_stage1_6_job not in self.inputFiles_hadd_stage1_6:
         self.inputFiles_hadd_stage1_6[key_hadd_stage1_6_job] = []
@@ -746,7 +747,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
         key_addFakes_job = getKey("fakes_data", category, chargeSumSelection)
         self.inputFiles_hadd_stage1_6[key_hadd_stage1_6_job].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])     
       self.inputFiles_hadd_stage1_6[key_hadd_stage1_6_job].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job])
-      self.outputFile_hadd_stage1_6[key_hadd_stage1_6_job] = os.path.join(self.dirs[DKEY_HIST], "hadd_stage1_6_Tight_%s.root" % chargeSumSelection)
+      self.outputFile_hadd_stage1_6[key_hadd_stage1_6_job] = os.path.join(self.dirs[key_hadd_stage1_6_dir][DKEY_HIST], "hadd_stage1_6_Tight_%s.root" % chargeSumSelection)
     #--------------------------------------------------------------------------
 
     logging.info("Creating configuration files to run 'addBackgroundFlips'")

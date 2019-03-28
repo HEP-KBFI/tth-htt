@@ -241,12 +241,6 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     lines = super(analyzeConfig_2los_1tau, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
-  def addToMakefile_backgrounds_from_data(self, lines_makefile):
-    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds", self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
-    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_sum", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
-    self.addToMakefile_hadd_stage1_5(lines_makefile)
-    self.addToMakefile_addFakes(lines_makefile)
-
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
     """
@@ -262,8 +256,9 @@ class analyzeConfig_2los_1tau(analyzeConfig):
           lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
           central_or_shifts_extended = [ "" ]
           central_or_shifts_extended.extend(self.central_or_shifts)
+          central_or_shifts_extended.extend([ "hadd", "addBackgrounds" ])
           for central_or_shift_or_dummy in central_or_shifts_extended:
-            process_name_extended = [ process_name, "hadd", "addBackgrounds" ]
+            process_name_extended = [ process_name, "hadd" ]
             for process_name_or_dummy in process_name_extended:
               key_dir = getKey(process_name_or_dummy, lepton_and_hadTau_selection_and_frWeight, central_or_shift_or_dummy)
               for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
@@ -274,6 +269,14 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                 else:
                   self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                     "_".join([ lepton_and_hadTau_selection_and_frWeight ]), process_name_or_dummy, central_or_shift_or_dummy)
+    for subdirectory in [ "addBackgrounds", "addBackgroundLeptonFakes", "prepareDatacards", "addSystFakeRates", "makePlots" ]:
+      key_dir = getKey(subdirectory)
+      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_DCRD, DKEY_PLOT ]:
+        initDict(self.dirs, [ key_dir, dir_type ])
+        if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
+          self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)
+        else:
+          self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, subdirectory)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_SYNC ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
@@ -494,7 +497,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
 
               for genMatch_category in genMatch_categories:
                 key_hadd_stage1_job = getKey(process_name, lepton_and_hadTau_selection_and_frWeight)
-                key_addBackgrounds_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight)
+                key_addBackgrounds_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, "addBackgrounds")
                 addBackgrounds_job_tuple = None
                 processes_input = None
                 process_output = None
@@ -714,6 +717,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
 
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
     key_hadd_stage1_5_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Fakeable", "enabled"))
+    key_addFakes_dir = getKey("addBackgroundLeptonFakes")
     key_addFakes_job = getKey("fakes_data")    
     category_sideband = None
     if self.applyFakeRateWeights == "2lepton":
@@ -726,9 +730,9 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % self.applyFakeRateWeights)
     self.jobOptions_addFakes[key_addFakes_job] = {
       'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
-      'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_cfg.py"),
-      'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes.root"),
-      'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes.log"),
+      'cfgFile_modified' : os.path.join(self.dirs[key_addFakes_dir][DKEY_CFGS], "addBackgroundLeptonFakes_cfg.py"),
+      'outputFile' : os.path.join(self.dirs[key_addFakes_dir][DKEY_HIST], "addBackgroundLeptonFakes.root"),
+      'logFile' : os.path.join(self.dirs[key_addFakes_dir][DKEY_LOGS], "addBackgroundLeptonFakes.log"),
       'category_signal' : "2los_1tau_Tight",
       'category_sideband' : category_sideband
     }
@@ -753,12 +757,13 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       self.prep_dcard_signals = processesToCopy
     for histogramToFit in self.histograms_to_fit:
       key_hadd_stage2_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"))
+      key_prep_dcard_dir = getKey("prepareDatacards")
       prep_dcard_job_tuple = (self.channel, histogramToFit)      
       key_prep_dcard_job = getKey(histogramToFit)
       self.jobOptions_prep_dcard[key_prep_dcard_job] = {
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_cfg.py" % prep_dcard_job_tuple),
-        'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_%s.root" % prep_dcard_job_tuple),
+        'cfgFile_modified' : os.path.join(self.dirs[key_prep_dcard_dir][DKEY_CFGS], "prepareDatacards_%s_%s_cfg.py" % prep_dcard_job_tuple),
+        'datacardFile' : os.path.join(self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_%s_%s.root" % prep_dcard_job_tuple),
         'histogramDir' : self.histogramDir_prep_dcard,
         'histogramToFit' : histogramToFit,
         'label' : None
@@ -774,15 +779,16 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       #  - 'CMS_ttHl_Clos_shape_t'
       key_prep_dcard_job = getKey(histogramToFit)
       key_hadd_stage2_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"))
+      key_add_syst_fakerate_dir = getKey("addSystFakeRates")
       add_syst_fakerate_job_tuple = (self.channel, histogramToFit)      
       key_add_syst_fakerate_job = getKey(histogramToFit)
       self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job] = {
         'inputFile' : self.jobOptions_prep_dcard[key_prep_dcard_job]['datacardFile'],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addSystFakeRates_%s_%s_cfg.py" % add_syst_fakerate_job_tuple),
-        'outputFile' : os.path.join(self.dirs[DKEY_DCRD], "addSystFakeRates_%s_%s.root" % add_syst_fakerate_job_tuple),
+        'cfgFile_modified' : os.path.join(self.dirs[key_add_syst_fakerate_dir][DKEY_CFGS], "addSystFakeRates_%s_%s_cfg.py" % add_syst_fakerate_job_tuple),
+        'outputFile' : os.path.join(self.dirs[key_add_syst_fakerate_dir][DKEY_DCRD], "addSystFakeRates_%s_%s.root" % add_syst_fakerate_job_tuple),
         'category' : self.channel,
         'histogramToFit' : histogramToFit,
-        'plots_outputFileName' : os.path.join(self.dirs[DKEY_PLOT], "addSystFakeRates.png")
+        'plots_outputFileName' : os.path.join(self.dirs[key_add_syst_fakerate_dir][DKEY_PLOT], "addSystFakeRates.png")
       }
       histogramDir_nominal = self.histogramDir_prep_dcard
       for lepton_and_hadTau_type in [ 'e', 'm', 't' ]:
@@ -803,12 +809,13 @@ class analyzeConfig_2los_1tau(analyzeConfig):
 
       logging.info("Creating configuration files to run 'makePlots'")
       key_hadd_stage2_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"))
+      key_makePlots_dir = getKey("makePlots")
       key_makePlots_job = getKey("OS")      
       self.jobOptions_make_plots[key_makePlots_job] = {
         'executable' : self.executable_make_plots,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
-        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
+        'cfgFile_modified' : os.path.join(self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
+        'outputFile' : os.path.join(self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s.png" % self.channel),
         'histogramDir' : self.histogramDir_prep_dcard,
         'label' : "2lOS+2#tau_{h}",
         'make_plots_backgrounds' : self.make_plots_backgrounds
@@ -820,8 +827,8 @@ class analyzeConfig_2los_1tau(analyzeConfig):
         self.jobOptions_make_plots[key_makePlots_job] = {
           'executable' : self.executable_make_plots_mcClosure,
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_mcClosure_%s_cfg.py" % self.channel),
-          'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_mcClosure_%s.png" % self.channel),
+          'cfgFile_modified' : os.path.join(self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_mcClosure_%s_cfg.py" % self.channel),
+          'outputFile' : os.path.join(self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_mcClosure_%s.png" % self.channel),
           'histogramDir_signal' : self.histogramDir_prep_dcard,
           'histogramDir_sideband' : self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights")
         }

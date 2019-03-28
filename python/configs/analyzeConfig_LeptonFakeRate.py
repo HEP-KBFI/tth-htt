@@ -382,8 +382,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       process_name = sample_info["process_name_specific"]
       central_or_shifts_extended = [ "" ]
       central_or_shifts_extended.extend(self.central_or_shifts)
+      central_or_shifts_extended.extend([ "hadd", "addBackgrounds" ])
       for central_or_shift_or_dummy in central_or_shifts_extended:
-        process_name_extended = [ process_name, "hadd", "addBackgrounds" ]
+        process_name_extended = [ process_name, "hadd" ]
         for process_name_or_dummy in process_name_extended:
           key_dir = getKey(process_name_or_dummy, central_or_shift_or_dummy)
           for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
@@ -392,6 +393,14 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
               self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, process_name_or_dummy, central_or_shift_or_dummy)
             else:
               self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name_or_dummy, central_or_shift_or_dummy)
+    for subdirectory in [ "addBackgrounds", "prepareDatacards" ]:
+      key_dir = getKey(subdirectory)
+      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_DCRD, DKEY_PLOT ]:
+        initDict(self.dirs, [ key_dir, dir_type ])
+        if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
+          self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)
+        else:
+          self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, subdirectory)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_COMBINE_OUTPUT ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_HADD_RT, DKEY_PLOT, DKEY_COMBINE_OUTPUT ]:
@@ -524,9 +533,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       processes_input.append("%sj" % sample_category)
       self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job] = {
         'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_cfg.py" % "fakes_mc"),
-        'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s.root" % "fakes_mc"),
-        'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s.log" % "fakes_mc"),
+        'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_cfg.py" % "fakes_mc"),
+        'outputFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackgrounds_%s.root" % "fakes_mc"),
+        'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], "addBackgrounds_%s.log" % "fakes_mc"),
         'categories' : [
           "LeptonFakeRate/numerator/electrons_tight",
           "LeptonFakeRate/denominator/electrons_fakeable",
@@ -544,9 +553,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     key_addBackgrounds_job = getKey('')
     self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job] = {
       'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
-      'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], os.path.basename(self.cfgFile_addBackgrounds_LeptonFakeRate)),
-      'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackground_LeptonFakeRate.root"),
-      'logFile' : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(self.cfgFile_addBackgrounds_LeptonFakeRate.replace("_cfg.py", ".log")) ),
+      'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], os.path.basename(self.cfgFile_addBackgrounds_LeptonFakeRate)),
+      'outputFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackground_LeptonFakeRate.root"),
+      'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], os.path.basename(self.cfgFile_addBackgrounds_LeptonFakeRate.replace("_cfg.py", ".log")) ),
     }
     self.createCfg_addBackgrounds_LeptonFakeRate(self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job])
 
@@ -554,9 +563,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     key_addBackgrounds_job = getKey('')
     self.jobOptions_addBackgrounds_Convs_LeptonFakeRate[key_addBackgrounds_job] = {
       'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
-      'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], os.path.basename(self.cfgFile_addBackgrounds_Convs_LeptonFakeRate)),
-      'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackground_Convs_LeptonFakeRate.root"),
-      'logFile' : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(self.cfgFile_addBackgrounds_Convs_LeptonFakeRate.replace("_cfg.py", ".log")) ),
+      'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], os.path.basename(self.cfgFile_addBackgrounds_Convs_LeptonFakeRate)),
+      'outputFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackground_Convs_LeptonFakeRate.root"),
+      'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], os.path.basename(self.cfgFile_addBackgrounds_Convs_LeptonFakeRate.replace("_cfg.py", ".log")) ),
     }
     self.createCfg_addBackgrounds_Convs_LeptonFakeRate(self.jobOptions_addBackgrounds_Convs_LeptonFakeRate[key_addBackgrounds_job])
 
@@ -660,11 +669,12 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       self.prep_dcard_processesToCopy = processesToCopy
       datacards = []
       for histogramToFit in self.histograms_to_fit:
+        key_prep_dcard_dir = getKey("prepareDatacards")
         key_prep_dcard_job = getKey(histogramToFit)
-        datacard = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit))
+        datacard = os.path.join(self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit))
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % histogramToFit),
+          'cfgFile_modified' : os.path.join(self.dirs[key_prep_dcard_dir][DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % histogramToFit),
           'datacardFile' : datacard,
           'histogramDir' : (self.histogramDir_prep_dcard),
           'histogramToFit' : histogramToFit,
