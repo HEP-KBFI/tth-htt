@@ -34,12 +34,6 @@ public:
   setBranchName_BtagWeight(int central_or_shift);
 
   void
-  read_BtagWeight_systematics(bool flag);
-
-  void
-  read_ptMass_systematics(bool flag);
-
-  void
   read_Btag(Btag btag);
 
   /**
@@ -99,8 +93,6 @@ protected:
   std::map<Btag, std::string> branchNames_btag_;
   std::map<Btag, std::map<int, std::string>> branchNames_BtagWeight_systematics_;
 
-  bool read_ptMass_systematics_;
-  bool read_BtagWeight_systematics_;
   int ptMassOption_;
 
   UInt_t nJets_;

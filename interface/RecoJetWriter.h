@@ -31,12 +31,6 @@ public:
   void
   setPtMass_central_or_shift(int central_or_shift);
 
-  void
-  write_ptMass_systematics(bool flag);
-
-  void
-  write_BtagWeight_systematics(bool flag);
-
   /**
    * @brief Call tree->Branch for all RecoJet branches
    */
@@ -66,8 +60,6 @@ protected:
   int era_;
   bool isMC_;
   int ptMassOption_;
-  bool write_ptMass_systematics_;
-  bool write_BtagWeight_systematics_;
 
   const unsigned int max_nJets_;
   std::string branchName_num_;

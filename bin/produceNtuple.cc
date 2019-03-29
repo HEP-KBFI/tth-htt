@@ -242,8 +242,6 @@ main(int argc,
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
-  jetReader->read_ptMass_systematics(isMC);
-  jetReader->read_BtagWeight_systematics(isMC);
   inputTree -> registerReader(jetReader);
   const RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetSelector jetSelector(era);
@@ -363,8 +361,6 @@ main(int argc,
 
   RecoJetWriter * const jetWriter = new RecoJetWriter(era, isMC, branchName_jets);
   jetWriter->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
-  jetWriter->write_ptMass_systematics(isMC);
-  jetWriter->write_BtagWeight_systematics(isMC);
   jetWriter->setBranches(outputTree);
   std::cout << "writing RecoJet objects to branch = '" << branchName_jets << "'\n";
 

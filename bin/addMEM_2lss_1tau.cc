@@ -223,8 +223,6 @@ int main(int argc,
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
   //     to allow systematic uncertainty on JEC to be estimated on analysis level
   jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
-  jetReader->read_ptMass_systematics(isMC);
-  jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
   const RecoJetCollectionCleaner jetCleaner(0.4);
   const RecoJetCollectionSelector jetSelector(era);
@@ -276,8 +274,6 @@ int main(int argc,
     hadTauWriter->setBranches(outputTree);
     jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
     jetWriter->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
-    jetWriter->write_ptMass_systematics(isMC);
-    jetWriter->write_BtagWeight_systematics(isMC);
     jetWriter->setBranches(outputTree);
     metWriter = new RecoMEtWriter(era, isMC, branchName_met);
     metWriter->setPtPhi_central_or_shift(useNonNominal_jetmet ? kMEt_central_nonNominal : kMEt_central);

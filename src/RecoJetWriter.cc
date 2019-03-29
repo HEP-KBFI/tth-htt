@@ -24,8 +24,6 @@ RecoJetWriter::RecoJetWriter(int era,
   : era_(era)
   , isMC_(isMC)
   , ptMassOption_(isMC_ ? kJet_central : kJet_central_nonNominal)
-  , write_ptMass_systematics_(false)
-  , write_BtagWeight_systematics_(false)
   , max_nJets_(256)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
@@ -136,30 +134,6 @@ RecoJetWriter::setPtMass_central_or_shift(int central_or_shift)
 }
 
 void
-RecoJetWriter::write_ptMass_systematics(bool flag)
-{
-  if(! isMC_ && flag)
-  {
-    throw cmsException(this, __func__, __LINE__)
-      << "Cannot write jet pT & mass systematics in data"
-    ;
-  }
-  write_ptMass_systematics_ = flag;
-}
-
-void
-RecoJetWriter::write_BtagWeight_systematics(bool flag)
-{
-  if(! isMC_ && flag)
-  {
-    throw cmsException(this, __func__, __LINE__)
-      << "Cannot write jet b-tagging systematics in data"
-    ;
-  }
-  write_BtagWeight_systematics_ = flag;
-}
-
-void
 RecoJetWriter::setBranches(TTree * tree)
 {
   genLeptonWriter_->setBranches(tree);
@@ -170,7 +144,7 @@ RecoJetWriter::setBranches(TTree * tree)
   bai.setBranch(nJets_, branchName_num_);
   bai.setBranch(jet_pt_systematics_[ptMassOption_], branchNames_pt_systematics_[ptMassOption_]);
   bai.setBranch(jet_mass_systematics_[ptMassOption_], branchNames_mass_systematics_[ptMassOption_]);
-  if(write_ptMass_systematics_)
+  if(isMC_)
   {
     for(int idxShift = kJet_central_nonNominal; idxShift <= kJet_jerDown; ++idxShift)
     {
@@ -195,7 +169,7 @@ RecoJetWriter::setBranches(TTree * tree)
   {
     bai.setBranch(jet_BtagCSVs_[kv.first], kv.second);
   }
-  if(write_BtagWeight_systematics_)
+  if(isMC_)
   {
     for(const auto & kv: branchNames_BtagWeight_systematics_)
     {
@@ -238,7 +212,7 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
     jet_pt_systematics_[ptMassOption_][idxJet]   = jet->pt_systematics_.at(ptMassOption_);
     jet_mass_systematics_[ptMassOption_][idxJet] = jet->mass_systematics_.at(ptMassOption_);
 
-    if(write_ptMass_systematics_)
+    if(isMC_)
     {
       for(int idxShift = kJet_central_nonNominal; idxShift <= kJet_jerDown; ++idxShift)
       {
@@ -281,7 +255,7 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
     jet_jetId_[idxJet] = jet->jetId();
     jet_puId_[idxJet] = jet->puId();
     jet_genMatchIdx_[idxJet] = jet->genMatchIdx();
-    if(write_BtagWeight_systematics_)
+    if(isMC_)
     {
       for(const auto & kv: branchNames_BtagWeight_systematics_)
       {
