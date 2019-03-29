@@ -42,6 +42,7 @@ public:
    */
   Double_t charge() const;
   Double_t BtagCSV() const;
+  Double_t BtagCSV(Btag btag) const;
   Double_t BtagWeight() const;
   Double_t QGDiscr() const;
   Double_t pullEta() const;

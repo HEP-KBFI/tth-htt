@@ -2,6 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 RecoJet::RecoJet(const GenJet & jet,
                  Double_t charge,
@@ -41,6 +42,18 @@ Double_t
 RecoJet::BtagCSV() const
 {
   return BtagCSV_;
+}
+
+Double_t
+RecoJet::BtagCSV(Btag btag) const
+{
+  if(! BtagCSVs_.count(btag))
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "No such b-tagging score available: " << static_cast<int>(btag)
+    ;
+  }
+  return BtagCSVs_.at(btag);
 }
 
 Double_t
