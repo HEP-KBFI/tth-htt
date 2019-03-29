@@ -172,8 +172,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       for charge_selection in self.charge_selections:
         central_or_shifts_extended = [ "" ]
         central_or_shifts_extended.extend(self.central_or_shifts)
+        central_or_shifts_extended.extend([ "hadd" ])
         for central_or_shift_or_dummy in central_or_shifts_extended:
-          process_name_extended = [ process_name, "hadd", "addBackgrounds" ]
+          process_name_extended = [ process_name, "hadd" ]
           for process_name_or_dummy in process_name_extended:
             key_dir = getKey(process_name_or_dummy, charge_selection, central_or_shift_or_dummy)
             for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
@@ -184,6 +185,14 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               else:
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                   "_".join([ charge_selection ]), process_name_or_dummy, central_or_shift_or_dummy)
+    for subdirectory in [ "comp_jetToTauFakeRate", "makePlots" ]:
+      key_dir = getKey(subdirectory)
+      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_DCRD, DKEY_PLOT ]:
+        initDict(self.dirs, [ key_dir, dir_type ])
+        if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
+          self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)
+        else:
+          self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, subdirectory)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
@@ -301,6 +310,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     logging.info("Creating configuration files for executing 'comp_jetToTauFakeRate'")
     for charge_selection in self.charge_selections:
       key_hadd_stage2_job = getKey(charge_selection)
+      key_comp_jetToTauFakeRate_dir = getKey("comp_jetToTauFakeRate")
       key_comp_jetToTauFakeRate_job = getKey(charge_selection)
       self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job] = {
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
@@ -314,7 +324,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         'tightRegion' : "jetToTauFakeRate_%s/numerator/" % charge_selection,
         'absEtaBins' : self.absEtaBins,
         'ptBins' : self.ptBins,
-        'plots_outputFileName' : os.path.join(self.dirs[DKEY_PLOT], "comp_jetToTauFakeRate.png")
+        'plots_outputFileName' : os.path.join(self.dirs[key_comp_jetToTauFakeRate_dir][DKEY_PLOT], "comp_jetToTauFakeRate.png")
       }
       self.createCfg_comp_jetToTauFakeRate(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job])
       self.targets.append(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job]['outputFile'])
@@ -322,14 +332,15 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     logging.info("Creating configuration files to run 'makePlots'")
     for charge_selection in self.charge_selections:
       key_hadd_stage2_job = getKey(charge_selection)
+      key_makePlots_dir = getKey("makePlots")
       key_makePlots_job = getKey(charge_selection)      
       self.jobOptions_make_plots[key_makePlots_job] = {
         'executable' : self.executable_make_plots,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
         'cfgFile_modified' : os.path.join(
-          self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
+          self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
         'outputFile' : os.path.join(
-          self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
+          self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s.png" % self.channel),
         'histogramDir' : "jetToTauFakeRate_%s" % charge_selection,
         'label' : None,
         'make_plots_backgrounds' : [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ],
@@ -343,9 +354,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           'executable' : self.executable_make_plots,
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
           'cfgFile_modified' : os.path.join(
-            self.dirs[DKEY_CFGS], "makePlots_%s_%s_denominator_%s_cfg.py" % (self.channel, charge_selection, absEtaBin)),
+            self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_%s_denominator_%s_cfg.py" % (self.channel, charge_selection, absEtaBin)),
           'outputFile' : os.path.join(
-            self.dirs[DKEY_PLOT], "makePlots_%s_%s_denominator_%s.png" % (self.channel, charge_selection, absEtaBin)),
+            self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_%s_denominator_%s.png" % (self.channel, charge_selection, absEtaBin)),
           'histogramDir' : "jetToTauFakeRate_%s/denominator/%s" % (charge_selection, absEtaBin),
           'label' : None,
           'make_plots_backgrounds' : [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ],
@@ -358,9 +369,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
             'executable' : self.executable_make_plots,
             'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
             'cfgFile_modified' : os.path.join(
-              self.dirs[DKEY_CFGS], "makePlots_%s_%s_numerator_%s_%s_cfg.py" % (self.channel, charge_selection, hadTau_selection_numerator, absEtaBin)),
+              self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_%s_numerator_%s_%s_cfg.py" % (self.channel, charge_selection, hadTau_selection_numerator, absEtaBin)),
             'outputFile' : os.path.join(
-              self.dirs[DKEY_PLOT], "makePlots_%s_%s_numerator_%s_%s.png" % (self.channel, charge_selection, hadTau_selection_numerator, absEtaBin)),
+              self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_%s_numerator_%s_%s.png" % (self.channel, charge_selection, hadTau_selection_numerator, absEtaBin)),
             'histogramDir' : "jetToTauFakeRate_%s/numerator/%s/%s" % (charge_selection, hadTau_selection_numerator, absEtaBin),
             'label' : None,
             'make_plots_backgrounds' : [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ],

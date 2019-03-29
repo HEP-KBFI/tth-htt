@@ -77,8 +77,9 @@ class analyzeConfig_inclusive(analyzeConfig):
       process_name = sample_info["process_name_specific"]
       central_or_shifts_extended = [ "" ]
       central_or_shifts_extended.extend(self.central_or_shifts)
+      central_or_shifts_extended.extend([ "hadd", "addBackgrounds" ])
       for central_or_shift_or_dummy in central_or_shifts_extended:
-        process_name_extended = [ process_name, "hadd", "addBackgrounds" ]
+        process_name_extended = [ process_name, "hadd" ]
         for process_name_or_dummy in process_name_extended:
           key_dir = getKey(process_name_or_dummy, central_or_shift_or_dummy)
           for dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
