@@ -77,7 +77,7 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
     echo "Adding new branches: $F -> $F_i"
     nano_postproc.py -s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $NANO_MODULES . $F
     test_exit_code $?
-    echo "Removing useless branches: $F_i -> $F_ii"
+    echo "Creating counter histograms: $F_i -> $F_ii"
     if [ "$IS_MC" == "True" ]; then
       nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules countHistogramAll \
                        . $F_i
