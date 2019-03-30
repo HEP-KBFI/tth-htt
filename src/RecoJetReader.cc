@@ -281,11 +281,11 @@ RecoJetReader::read() const
 
       if(isMC_)
       {
-        for(const auto & kv: jet_BtagWeights_systematics_)
+        for(const auto & kv: gInstance->jet_BtagWeights_systematics_)
         {
           for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
           {
-            if(jet_BtagWeights_systematics_.at(kv.first).count(idxShift))
+            if(gInstance->jet_BtagWeights_systematics_.at(kv.first).count(idxShift))
             {
               jet.BtagWeight_systematics_[kv.first][idxShift] = gInstance->jet_BtagWeights_systematics_.at(kv.first).at(idxShift)[idxJet];
             }
@@ -293,7 +293,7 @@ RecoJetReader::read() const
         } // jet_BtagWeights_systematics_
       } // isMC_
 
-      for(const auto & kv: jet_BtagCSVs_)
+      for(const auto & kv: gInstance->jet_BtagCSVs_)
       {
         jet.BtagCSVs_[kv.first] = gInstance->jet_BtagCSVs_.at(kv.first)[idxJet];
       }
