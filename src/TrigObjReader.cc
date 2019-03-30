@@ -114,7 +114,7 @@ TrigObjReader::read() const
     for(UInt_t idxTrigObj = 0; idxTrigObj < nTrigObjs; ++idxTrigObj)
     {
       trigObjs.push_back({
-	gInstance->trigObj_pt_[idxTrigObj],
+        gInstance->trigObj_pt_[idxTrigObj],
         gInstance->trigObj_eta_[idxTrigObj],
         gInstance->trigObj_phi_[idxTrigObj],
         gInstance->trigObj_filterBits_[idxTrigObj],

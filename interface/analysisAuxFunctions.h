@@ -47,6 +47,32 @@ enum class Btag
 //--- declare selection criteria for leptons and hadronic taus
 enum { kLoose, kFakeable, kTight };
 
+//--- declare tau ID discriminators
+
+enum class TauID {
+  MVAnewDM2017v2, MVAoldDM, MVAoldDMdR032017v2, MVAoldDM2017v1, MVAoldDM2017v2,
+  DeepTau2017v1VSe, DeepTau2017v1VSmu, DeepTau2017v1VSjet, DpfTau2016v0VSall
+};
+
+const std::map<TauID, int> TauID_levels = {
+  { TauID::MVAnewDM2017v2,     7 }, // VVLoose  - 1, VVTight - 7
+  { TauID::MVAoldDM,           6 }, // VLoose   - 1, VVTight - 7
+  { TauID::MVAoldDMdR032017v2, 7 }, // VVLoose  - 1, VVTight - 7
+  { TauID::MVAoldDM2017v1,     7 }, // VVLoose  - 1, VVTight - 7
+  { TauID::MVAoldDM2017v2,     7 }, // VVLoose  - 1, VVTight - 7
+  { TauID::DeepTau2017v1VSe,   8 }, // VVVLoose - 1, VVTight - 7
+  { TauID::DeepTau2017v1VSmu,  8 }, // VVVLoose - 1, VVTight - 7
+  { TauID::DeepTau2017v1VSjet, 8 }, // VVVLoose - 1, VVTight - 7
+  { TauID::DpfTau2016v0VSall,  1 }, // Tight    - 1
+};
+
+const std::map<int, std::vector<std::string>> TauID_level_strings = {
+  { 1, {                                                     "Tight" } },
+  { 6, {                        "VLoose", "Loose", "Medium", "Tight", "VTight", "VVTight" } },
+  { 7, {             "VVLoose", "VLoose", "Loose", "Medium", "Tight", "VTight", "VVTight" } },
+  { 8, { "VVVLoose", "VVLoose", "VLoose", "Loose", "Medium", "Tight", "VTight", "VVTight" } },
+};
+
 //--- declare b-tagging working points
 
 enum class BtagWP { kLoose, kMedium, kTight };
@@ -160,8 +186,16 @@ get_era(const std::string & eraString);
 int
 get_tau_id_wp_int(const std::string & wp_str);
 
+int
+get_tau_id_wp_int(TauID tauID,
+                  const std::string & wp_str);
+
 std::string
 get_tau_id_wp_str(int wp_int);
+
+std::string
+get_tau_id_wp_str(TauID tauID,
+                  int wp_int);
 
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing pT
@@ -195,7 +229,7 @@ isHigherCSV(const RecoJet * jet1,
 
 bool
 isHigherCSV_ak8(const RecoJetAK8 * jet1,
-		const RecoJetAK8 * jet2);
+                const RecoJetAK8 * jet2);
 
 /**
  * @brief Auxiliary function for checking if leptons passing fake-able lepton selection
@@ -312,9 +346,9 @@ compHT(const std::vector<const RecoLepton *> & leptons,
 template <typename T>
 double
 compSTMEt(const std::vector<const RecoLepton *> & leptons,
-	  const std::vector<const RecoHadTau *> & hadTaus,
-	  const std::vector<const T *> & jets,
-	  const Particle::LorentzVector & met_p4)
+          const std::vector<const RecoHadTau *> & hadTaus,
+          const std::vector<const T *> & jets,
+          const Particle::LorentzVector & met_p4)
 {
   double stmet = compHT(leptons, hadTaus, jets) + met_p4.pt();
   return stmet;
@@ -322,11 +356,13 @@ compSTMEt(const std::vector<const RecoLepton *> & leptons,
 
 /**
  * @brief Compute Smin (= mT) observable, as defined in the paper
-          "Measuring the triple Higgs self-interaction at the Large Hadron Collider"; J.H. Kim, K. Kong, K.T. Matchev, M. Park; arXiv: 1807.11498
+ *        "Measuring the triple Higgs self-interaction at the Large Hadron Collider";
+ *        J.H. Kim, K. Kong, K.T. Matchev, M. Park; arXiv: 1807.11498
  */
-
 double 
-comp_Smin(const Particle::LorentzVector& visP4, double metPx, double metPy);
+comp_Smin(const Particle::LorentzVector & visP4,
+          double metPx,
+          double metPy);
 
 /**
  * @brief Set flags indicating whether or not lepton passes loose, fakeable and/or tight selection criteria
@@ -431,7 +467,7 @@ countHighPtObjects(const std::vector<T*>& objects, double pTmin)
 {
   int numHighPtObjects = 0;
   for ( typename std::vector<T*>::const_iterator object = objects.begin();
-	object != objects.end(); ++object ) {
+        object != objects.end(); ++object ) {
     if ( (*object)->pt() > pTmin ) ++numHighPtObjects;
   }
   return numHighPtObjects;
@@ -470,20 +506,23 @@ auto as_integer(Enumeration const value)
  * @return Number of trigger objects passing selection
  */
 int
-countTrigObjs_passingL1(const std::vector<TrigObj>& trigObjs, int Id, double min_l1pt, double min_l1pt_2 = -1.);
+countTrigObjs_passingL1(const std::vector<TrigObj> & trigObjs,
+                        int Id,
+                        double min_l1pt,
+                        double min_l1pt_2 = -1.);
 
 /**
  * @brief Check if a certain string is contained in a given vector of strings
  */
-
 bool
-contains(const std::vector<std::string>& list_of_strings, const std::string& keyWord);
+contains(const std::vector<std::string> & list_of_strings,
+         const std::string & keyWord);
 
 /**
  * @brief Find file using FileInPatch mechanism
  */
 
 std::string
-findFile(const std::string& fileName);
+findFile(const std::string & fileName);
 
 #endif

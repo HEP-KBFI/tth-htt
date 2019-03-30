@@ -1,12 +1,12 @@
 #ifndef tthAnalysis_HiggsToTauTau_TrigObj_h
 #define tthAnalysis_HiggsToTauTau_TrigObj_h
 
-/** \class TrigObj
+/** @class TrigObj
  *
  * Class to access information for "trigger objects" 
  * (HLT filter objects with associated L1 information)
  *
- * \author Christian Veelken, Tallinn
+ * @author Christian Veelken, Tallinn
  *
  */
 
@@ -18,13 +18,13 @@ class TrigObj
 public:
   TrigObj();
   TrigObj(Double_t pt,
-	  Double_t eta,
-	  Double_t phi,
-	  Int_t filterBits,
-	  Int_t id,
-	  Double_t l1pt,
-	  Double_t l1pt_2,
-	  Int_t l1iso);
+          Double_t eta,
+          Double_t phi,
+          Int_t filterBits,
+          Int_t id,
+          Double_t l1pt,
+          Double_t l1pt_2,
+          Int_t l1iso);
 
   virtual ~TrigObj();
 

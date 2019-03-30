@@ -5,13 +5,13 @@ TrigObj::TrigObj()
 {}
 
 TrigObj::TrigObj(Double_t pt,
-		 Double_t eta,
-		 Double_t phi,
-		 Int_t filterBits,
-		 Int_t id,
-		 Double_t l1pt,
-		 Double_t l1pt_2,
-		 Int_t l1iso)
+                 Double_t eta,
+                 Double_t phi,
+                 Int_t filterBits,
+                 Int_t id,
+                 Double_t l1pt,
+                 Double_t l1pt_2,
+                 Int_t l1iso)
   : pt_(pt)
   , eta_(eta)
   , phi_(phi)
@@ -89,7 +89,8 @@ operator<<(std::ostream & stream,
             " phi = "             << trigObj.phi()        << ","
             " HLT filter bits = " << trigObj.filterBits() << ","
             " Id = "              << trigObj.id()         << ","
-            " L1 pT: 1st seed = " << trigObj.l1pt()       << ", 2nd seed = " << trigObj.l1pt_2() << ","
+            " L1 pT: 1st seed = " << trigObj.l1pt()       << ","
+            " 2nd seed = "        << trigObj.l1pt_2()     << ","
             " L1 isolation =    " << trigObj.l1iso()      << '\n';
   return stream;
 }

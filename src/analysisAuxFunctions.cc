@@ -44,14 +44,14 @@ isHigherCSV(const RecoJet * jet1,
 
 bool
 isHigherCSV_ak8(const RecoJetAK8 * jet1,
-		const RecoJetAK8 * jet2)
+                const RecoJetAK8 * jet2)
 {
   double jet1BtagCSV = 0.;
-  if ( jet1->subJet1() ) jet1BtagCSV += jet1->subJet1()->BtagCSV();
-  if ( jet1->subJet2() ) jet1BtagCSV += jet1->subJet2()->BtagCSV();
+  if(jet1->subJet1()) jet1BtagCSV += jet1->subJet1()->BtagCSV();
+  if(jet1->subJet2()) jet1BtagCSV += jet1->subJet2()->BtagCSV();
   double jet2BtagCSV = 0.;
-  if ( jet2->subJet1() ) jet2BtagCSV += jet2->subJet1()->BtagCSV();
-  if ( jet2->subJet2() ) jet2BtagCSV += jet2->subJet2()->BtagCSV();
+  if(jet2->subJet1()) jet2BtagCSV += jet2->subJet1()->BtagCSV();
+  if(jet2->subJet2()) jet2BtagCSV += jet2->subJet2()->BtagCSV();
   return jet1BtagCSV > jet2BtagCSV;
 }
 
@@ -102,6 +102,24 @@ get_tau_id_wp_int(const std::string & wp_str)
   return wp_int;
 }
 
+int
+get_tau_id_wp_int(TauID tauID,
+                  const std::string & wp_str)
+{
+  assert(TauID_levels.count(tauID));
+  const int nof_levels = TauID_levels.at(tauID);
+  assert(TauID_level_strings.count(nof_levels));
+  const std::vector<std::string> & levels = TauID_level_strings.at(nof_levels);
+  const auto wp_str_it = std::find(levels.begin(), levels.end(), wp_str);
+  if(wp_str_it == levels.end())
+  {
+    throw cmsException(__func__, __LINE__)
+      << "Invalid tau ID string requested for tau ID " << as_integer(tauID) << ": " << wp_str
+    ;
+  }
+  return static_cast<int>(std::distance(levels.begin(), wp_str_it)) + 1;
+}
+
 std::string
 get_tau_id_wp_str(int wp_int)
 {
@@ -115,6 +133,24 @@ get_tau_id_wp_str(int wp_int)
   else throw cmsException(__func__, __LINE__)
          << "Invalid argument 'wp_int' = " << wp_int
        ;
+}
+
+std::string
+get_tau_id_wp_str(TauID tauID,
+                  int wp_int)
+{
+  assert(TauID_levels.count(tauID));
+  const int nof_levels = TauID_levels.at(tauID);
+  if(wp_int < 1 || wp_int > nof_levels)
+  {
+    throw cmsException(__func__, __LINE__)
+      << "Invalid level requested for tau ID " << as_integer(tauID) << ": " << wp_int
+    ;
+  }
+  assert(TauID_level_strings.count(nof_levels));
+  const std::vector<std::string> & levels = TauID_level_strings.at(nof_levels);
+  assert(static_cast<int>(levels.size()) == nof_levels);
+  return levels.at(wp_int - 1);
 }
 
 int
@@ -166,14 +202,16 @@ compMEt_LD(const Particle::LorentzVector & met_p4,
 }
 
 double 
-comp_Smin(const Particle::LorentzVector& visP4, double metPx, double metPy)
+comp_Smin(const Particle::LorentzVector & visP4,
+          double metPx,
+          double metPy)
 {
-  double visPt = visP4.pt();
-  double visMass = visP4.mass();
-  double visMass2 = visMass*visMass;
-  double visEt = TMath::Sqrt(visMass2 + visPt*visPt);
-  double metEt = TMath::Sqrt(metPx*metPx + metPy*metPy);
-  double Smin = TMath::Sqrt(visMass2 + 2.*(visEt*metEt - (visP4.px()*metPx + visP4.py()*metPy)));
+  const double visPt = visP4.pt();
+  const double visMass = visP4.mass();
+  const double visMass2 = visMass * visMass;
+  const double visEt = std::sqrt(visMass2 + visPt * visPt);
+  const double metEt = std::sqrt(metPx * metPx + metPy * metPy);
+  const double Smin = std::sqrt(visMass2 + 2. * (visEt * metEt - (visP4.px() * metPx + visP4.py() * metPy)));
   return Smin;
 }
 
@@ -235,10 +273,11 @@ countFakeElectrons(const std::vector<const RecoLepton *> & leptons)
   int numGenMatchedLeptons = 0;
   int numGenMatchedPhotons = 0;
   int numGenMatchedJets = 0;
-  for ( std::vector<const RecoLepton *>::const_iterator lepton = leptons.begin();
-	lepton != leptons.end(); ++ lepton ) {
-    if ( (*lepton)->is_electron() ) {
-      countLeptonGenMatches(*lepton, numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedJets);
+  for(const RecoLepton * const lepton: leptons)
+  {
+    if(lepton->is_electron())
+    {
+      countLeptonGenMatches(lepton, numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedJets);
     }
   }
   return numGenMatchedJets;
@@ -250,10 +289,11 @@ countFakeMuons(const std::vector<const RecoLepton *> & leptons)
   int numGenMatchedLeptons = 0;
   int numGenMatchedPhotons = 0;
   int numGenMatchedJets = 0;
-  for ( std::vector<const RecoLepton *>::const_iterator lepton = leptons.begin();
-	lepton != leptons.end(); ++lepton ) {
-    if ( (*lepton)->is_muon() ) {
-      countLeptonGenMatches(*lepton, numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedJets);
+  for(const RecoLepton * const lepton: leptons)
+  {
+    if(lepton->is_muon())
+    {
+      countLeptonGenMatches(lepton, numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedJets);
     }
   }
   return numGenMatchedJets;
@@ -266,9 +306,9 @@ countFakeHadTaus(const std::vector<const RecoHadTau *> & hadTaus)
   int numGenMatchedElectrons = 0;
   int numGenMatchedMuons = 0;
   int numGenMatchedJets = 0;
-  for ( std::vector<const RecoHadTau *>::const_iterator hadTau = hadTaus.begin();
-	hadTau != hadTaus.end(); ++hadTau ) {
-    countHadTauGenMatches(*hadTau, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons, numGenMatchedJets);
+  for(const RecoHadTau * const hadTau: hadTaus)
+  {
+    countHadTauGenMatches(hadTau, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons, numGenMatchedJets);
   }
   return numGenMatchedJets;
 }
@@ -292,37 +332,43 @@ nCombinationsK(int n,
 }
 
 int
-countTrigObjs_passingL1(const std::vector<TrigObj>& trigObjs, int Id, double min_l1pt, double min_l1pt_2)
+countTrigObjs_passingL1(const std::vector<TrigObj> & trigObjs,
+                        int Id,
+                        double min_l1pt,
+                        double min_l1pt_2)
 {
-  int numSelTrigObjs = 0;
-  for ( std::vector<TrigObj>::const_iterator trigObj = trigObjs.begin();
-	trigObj != trigObjs.end(); ++trigObj ) {
-    if ( trigObj->id() == Id && trigObj->l1pt() > min_l1pt && (trigObj->l1pt_2() > min_l1pt_2 || min_l1pt_2 == -1.) ) {
-      ++numSelTrigObjs;
+  return std::count_if(
+    trigObjs.begin(), trigObjs.end(),
+    [Id, min_l1pt, min_l1pt_2](const TrigObj & trigObj) -> bool
+    {
+      return
+        trigObj.id() == Id                 &&
+        trigObj.l1pt() > min_l1pt          &&
+        (
+          trigObj.l1pt_2() > min_l1pt_2 ||
+          min_l1pt_2 == -1.
+        )
+      ;
     }
-  }
-  return numSelTrigObjs;
+  );
 }
 
 bool
-contains(const std::vector<std::string>& list_of_strings, const std::string& keyWord)
+contains(const std::vector<std::string> & list_of_strings,
+         const std::string & keyWord)
 {
-  for ( std::vector<std::string>::const_iterator entry = list_of_strings.begin();
-	entry != list_of_strings.end(); ++entry ) {
-    if ( (*entry) == keyWord ) {
-      return true;
-    }
-  }
-  return false;
+  return std::find(list_of_strings.begin(), list_of_strings.end(), keyWord) != list_of_strings.end();
 }
 
 std::string
-findFile(const std::string& fileName)
+findFile(const std::string & fileName)
 {
-  LocalFileInPath inputFile(fileName);
-  if ( inputFile.fullPath().empty() ) {
-    std::cerr << "Error: Cannot find file = " << fileName;
-    assert(0);
+  const LocalFileInPath inputFile(fileName);
+  if(inputFile.fullPath().empty())
+  {
+    throw cmsException(__func__, __LINE__)
+      << "Cannot find file = " << fileName
+    ;
   }
   return inputFile.fullPath();
 }
