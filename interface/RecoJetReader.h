@@ -58,8 +58,6 @@ protected:
 
   int era_;
   bool isMC_;
-  Btag btag_;
-  int btag_central_or_shift_;
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
@@ -93,6 +91,8 @@ protected:
   std::map<Btag, std::string> branchNames_btag_;
   std::map<Btag, std::map<int, std::string>> branchNames_BtagWeight_systematics_;
 
+  Btag btag_;
+  int btag_central_or_shift_;
   int ptMassOption_;
 
   UInt_t nJets_;
