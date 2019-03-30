@@ -3,6 +3,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
 
+enum class TauID;
+
 template<typename T>
 class RecoHadTauCollectionSelector
   : public ParticleCollectionSelector<RecoHadTau, T>
@@ -29,27 +31,17 @@ public:
   }
 
   void
-  set_min_id_mva_dR03(int min_id_mva_dR03)
+  set_min_id_mva(TauID tauId,
+                 int min_id_mva)
   {
-    this->selector_.set_min_id_mva_dR03(min_id_mva_dR03);
+    this->selector_.set_min_id_mva(tauId, min_id_mva);
   }
 
   void
-  set_min_raw_mva_dR03(double min_raw_mva_dR03)
+  set_min_raw_mva(TauID tauId,
+                  double min_raw_mva)
   {
-    this->selector_.set_min_raw_mva_dR03(min_raw_mva_dR03);
-  }
-
-  void
-  set_min_id_mva_dR05(int min_id_mva_dR05)
-  {
-    this->selector_.set_min_id_mva_dR05(min_id_mva_dR05);
-  }
-
-  void
-  set_min_raw_mva_dR05(double min_raw_mva_dR05)
-  {
-    this->selector_.set_min_raw_mva_dR05(min_raw_mva_dR05);
+    this->selector_.set_min_raw_mva(tauId, min_raw_mva);
   }
 
   void

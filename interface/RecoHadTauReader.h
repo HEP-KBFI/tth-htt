@@ -29,6 +29,9 @@ public:
   void
   setHadTauPt_central_or_shift(int hadTauPt_option);
 
+  void
+  set_default_tauID(TauID tauId);
+
   /**
    * @brief Call tree->SetBranchAddress for all RecoHadTau branches
    */
@@ -43,16 +46,6 @@ public:
   read() const;
 
 protected:
-  /**
-   * @brief Compute "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0.3 isolation cone,
-   *        used to enhance background event statistics for training of event-level MVAs that separate ttH signal from backgrounds
-   */
-  void
-  readDBdR03oldDMwLTEff95();
-
-  TFile * tauIdMVArun2dR03DB_wpFile_;
-  TGraphAsymmErrors * DBdR03oldDMwLTEff95_;
-  TFormula * mvaOutput_normalization_DBdR03oldDMwLT_;
 
   /**
    * @brief Initialize names of branches to be read from tree
@@ -88,15 +81,15 @@ protected:
   std::string branchName_decayMode_;
   std::string branchName_idDecayMode_;
   std::string branchName_idDecayModeNewDMs_;
-  std::string branchName_idMVA_dR03_;
-  std::string branchName_rawMVA_dR03_;
-  std::string branchName_idMVA_dR05_;
-  std::string branchName_rawMVA_dR05_;
   std::string branchName_idAgainstElec_;
   std::string branchName_idAgainstMu_;
   std::string branchName_filterBits_;
   std::string branchName_genMatchIdx_;
 
+  std::map<TauID, std::string> branchNames_idMVA_;
+  std::map<TauID, std::string> branchNames_rawMVA_;
+
+  TauID tauID_;
   int hadTauPt_option_;
 
   UInt_t nHadTaus_;
@@ -110,14 +103,13 @@ protected:
   Int_t * hadTau_decayMode_;
   Bool_t * hadTau_idDecayMode_;
   Bool_t * hadTau_idDecayModeNewDMs_;
-  Int_t * hadTau_idMVA_dR03_;
-  Float_t * hadTau_rawMVA_dR03_;
-  Int_t * hadTau_idMVA_dR05_;
-  Float_t * hadTau_rawMVA_dR05_;
   Int_t * hadTau_idAgainstElec_;
   Int_t * hadTau_idAgainstMu_;
   UInt_t * hadTau_filterBits_;
   Int_t * hadTau_genMatchIdx_;
+
+  std::map<TauID, Int_t *> hadTau_idMVAs_;
+  std::map<TauID, Float_t *> hadTau_rawMVAs_;
 
   // CV: make sure that only one RecoHadronicTauReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

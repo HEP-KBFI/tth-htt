@@ -4,10 +4,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 
 #include <memory> // std::shared_ptr<>
+#include <map> // std::map<,>
 
 // forward declarations
 class GenLepton;
 class GenJet;
+
+enum class TauID;
 
 class RecoHadTau
   : public GenHadTau
@@ -20,10 +23,8 @@ public:
              Int_t decayMode,
              Bool_t decayModeFinding,
              Bool_t decayModeFindingNew,
-             Int_t id_mva_dR03,
-             Double_t raw_mva_dR03,
-             Int_t id_mva_dR05,
-             Double_t raw_mva_dR05,
+             Int_t id_mva,
+             Double_t raw_mva,
              Int_t antiElectron,
              Int_t antiMuon,
              UInt_t filterBits,
@@ -54,10 +55,10 @@ public:
   Int_t decayMode() const;
   Bool_t decayModeFinding() const;
   Bool_t decayModeFindingNew() const;
-  Int_t id_mva_dR03() const;
-  Double_t raw_mva_dR03() const;
-  Int_t id_mva_dR05() const;
-  Double_t raw_mva_dR05() const;
+  Int_t id_mva() const;
+  Double_t raw_mva() const;
+  Int_t id_mva(TauID tauID) const;
+  Double_t raw_mva(TauID tauID) const;
   Int_t antiElectron() const;
   Int_t antiMuon() const;
   UInt_t filterBits() const;
@@ -74,6 +75,9 @@ public:
   bool isFakeable() const;
   bool isTight() const;
 
+  friend class RecoHadTauReader;
+  friend class RecoHadTauWriter;
+
 protected:
   Int_t charge_;
   Double_t dxy_;               ///< d_{xy}, distance in the transverse plane w.r.t PV
@@ -81,10 +85,8 @@ protected:
   Int_t decayMode_;            ///< tau decay mode (5x(nof charged pions - 1) - (nof neutral pions))
   Bool_t decayModeFinding_;    ///< decayModeFinding discriminator
   Bool_t decayModeFindingNew_; ///< new decayModeFinding discriminator
-  Int_t id_mva_dR03_;          ///< MVA-based tau id computed with dR=0.3 isolation cone
-  Double_t raw_mva_dR03_;      ///< raw output of MVA-based tau id computed with dR=0.3 isolation cone
-  Int_t id_mva_dR05_;          ///< MVA-based tau id computed with dR=0.5 isolation cone
-  Double_t raw_mva_dR05_;      ///< raw output of MVA-based tau id computed with dR=0.5 isolation cone
+  Int_t id_mva_;               ///< MVA-based tau id
+  Double_t raw_mva_;           ///< raw output of MVA-based tau id
   Int_t antiElectron_;         ///< discriminator against electrons
   Int_t antiMuon_;             ///< discriminator against muons
   UInt_t filterBits_;          ///< bitmask of matching with trigger objects
@@ -99,6 +101,10 @@ protected:
   mutable bool isLoose_;
   mutable bool isFakeable_;
   mutable bool isTight_;
+
+//--- all tau IDs and their raw values
+  std::map<TauID, int> tauID_ids_;
+  std::map<TauID, Double_t> tauID_raws_;
 };
 
 std::ostream &

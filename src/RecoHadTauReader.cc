@@ -27,10 +27,7 @@ RecoHadTauReader::RecoHadTauReader(int era,
 RecoHadTauReader::RecoHadTauReader(int era,
                                    const std::string & branchName_obj,
                                    bool readGenMatching)
-  : tauIdMVArun2dR03DB_wpFile_(nullptr)
-  , DBdR03oldDMwLTEff95_(nullptr)
-  , mvaOutput_normalization_DBdR03oldDMwLT_(nullptr)
-  , era_(era)
+  : era_(era)
   , max_nHadTaus_(36)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
@@ -38,6 +35,7 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , genHadTauReader_(nullptr)
   , genJetReader_(nullptr)
   , readGenMatching_(readGenMatching)
+  , tauID_(TauID::MVAoldDMdR032017v2)
   , hadTauPt_option_(kHadTauPt_central)
   , hadTau_pt_(nullptr)
   , hadTau_eta_(nullptr)
@@ -49,10 +47,6 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , hadTau_decayMode_(nullptr)
   , hadTau_idDecayMode_(nullptr)
   , hadTau_idDecayModeNewDMs_(nullptr)
-  , hadTau_idMVA_dR03_(nullptr)
-  , hadTau_rawMVA_dR03_(nullptr)
-  , hadTau_idMVA_dR05_(nullptr)
-  , hadTau_rawMVA_dR05_(nullptr)
   , hadTau_idAgainstElec_(nullptr)
   , hadTau_idAgainstMu_(nullptr)
   , hadTau_filterBits_(nullptr)
@@ -65,10 +59,6 @@ RecoHadTauReader::RecoHadTauReader(int era,
     genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_obj_.data()), max_nHadTaus_);
   }
   setBranchNames();
-  if(era == kEra_2016)
-  {
-    readDBdR03oldDMwLTEff95();
-  }
 }
 
 RecoHadTauReader::~RecoHadTauReader()
@@ -79,21 +69,6 @@ RecoHadTauReader::~RecoHadTauReader()
   if(numInstances_[branchName_obj_] == 0)
   {
     numInstances_.erase(branchName_obj_);
-
-    if(era_ == kEra_2016)
-    {
-      int numInstances_total = 0;
-      for(const auto & it: numInstances_)
-      {
-        numInstances_total += it.second;
-      }
-      if(numInstances_total == 0)
-      {
-        RecoHadTauReader * const gInstance = instances_.begin()->second;
-        assert(gInstance);
-        delete gInstance->tauIdMVArun2dR03DB_wpFile_;
-      }
-    }
 
     RecoHadTauReader * const gInstance = instances_[branchName_obj_];
     assert(gInstance);
@@ -110,36 +85,23 @@ RecoHadTauReader::~RecoHadTauReader()
     delete[] gInstance->hadTau_decayMode_;
     delete[] gInstance->hadTau_idDecayMode_;
     delete[] gInstance->hadTau_idDecayModeNewDMs_;
-    delete[] gInstance->hadTau_idMVA_dR03_;
-    delete[] gInstance->hadTau_rawMVA_dR03_;
-    delete[] gInstance->hadTau_idMVA_dR05_;
-    delete[] gInstance->hadTau_rawMVA_dR05_;
     delete[] gInstance->hadTau_idAgainstElec_;
     delete[] gInstance->hadTau_idAgainstMu_;
     delete[] gInstance->hadTau_charge_;
     delete[] gInstance->hadTau_filterBits_;
     delete[] gInstance->hadTau_genMatchIdx_;
 
+    for(auto & kv: gInstance->hadTau_idMVAs_)
+    {
+      delete[] kv.second;
+    }
+    for(auto & kv: gInstance->hadTau_rawMVAs_)
+    {
+      delete[] kv.second;
+    }
+
     instances_.erase(branchName_obj_);
   }
-}
-
-void
-RecoHadTauReader::readDBdR03oldDMwLTEff95()
-{
-  RecoHadTauReader * gInstance = instances_.begin()->second;
-  assert(gInstance);
-  if(! gInstance->tauIdMVArun2dR03DB_wpFile_)
-  {
-    const LocalFileInPath tauIdMVArun2dR03DB_wpFilePath = LocalFileInPath(
-      "tthAnalysis/HiggsToTauTau/data/wpDiscriminationByIsolationMVARun2v1_DBdR03oldDMwLT.root"
-    );
-    gInstance->tauIdMVArun2dR03DB_wpFile_ = new TFile(tauIdMVArun2dR03DB_wpFilePath.fullPath().c_str(), "read");
-  }
-  DBdR03oldDMwLTEff95_ = dynamic_cast<TGraphAsymmErrors *>(gInstance->tauIdMVArun2dR03DB_wpFile_->Get("DBdR03oldDMwLTEff95"));
-  mvaOutput_normalization_DBdR03oldDMwLT_ = dynamic_cast<TFormula *>(
-    gInstance->tauIdMVArun2dR03DB_wpFile_->Get("mvaOutput_normalization_DBdR03oldDMwLT")
-  );
 }
 
 void
@@ -149,13 +111,16 @@ RecoHadTauReader::setHadTauPt_central_or_shift(int hadTauPt_option)
 }
 
 void
+RecoHadTauReader::set_default_tauID(TauID tauId)
+{
+  tauID_ = tauId;
+}
+
+void
 RecoHadTauReader::setBranchNames()
 {
   if(numInstances_[branchName_obj_] == 0)
   {
-    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV?rev=62#Isolation
-    const std::string mvaString = "MVAoldDMdR032017v2";
-
     branchName_pt_ = Form("%s_%s", branchName_obj_.data(), "pt");
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
@@ -166,10 +131,12 @@ RecoHadTauReader::setBranchNames()
     branchName_decayMode_ = Form("%s_%s", branchName_obj_.data(), "decayMode");
     branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
     branchName_idDecayModeNewDMs_ = Form("%s_%s", branchName_obj_.data(), "idDecayModeNewDMs");
-    branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), Form("id%s_log", mvaString.data()));
-    branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), Form("raw%s", mvaString.data()));
-    branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM_log");
-    branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDM");
+    for(const auto & kv: TauID_levels)
+    {
+      const std::string & mvaString = TauID_names.at(kv.first);
+      branchNames_idMVA_[kv.first]  = Form("%s_%s", branchName_obj_.data(), Form("id%s_log", mvaString.data()));
+      branchNames_rawMVA_[kv.first] = Form("%s_%s", branchName_obj_.data(), Form("raw%s", mvaString.data()));
+    }
     branchName_idAgainstElec_ = Form("%s_%s", branchName_obj_.data(), "idAntiEle_log");
     branchName_idAgainstMu_ = Form("%s_%s", branchName_obj_.data(), "idAntiMu_log");
     branchName_filterBits_ = Form("%s_%s", branchName_obj_.data(), "filterBits");
@@ -213,10 +180,11 @@ RecoHadTauReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_decayMode_, branchName_decayMode_);
     bai.setBranchAddress(hadTau_idDecayMode_, branchName_idDecayMode_);
     bai.setBranchAddress(hadTau_idDecayModeNewDMs_, branchName_idDecayModeNewDMs_);
-    bai.setBranchAddress(hadTau_idMVA_dR03_, branchName_idMVA_dR03_);
-    bai.setBranchAddress(hadTau_rawMVA_dR03_, branchName_rawMVA_dR03_);
-    bai.setBranchAddress(hadTau_idMVA_dR05_, branchName_idMVA_dR05_);
-    bai.setBranchAddress(hadTau_rawMVA_dR05_, branchName_rawMVA_dR05_);
+    for(const auto & kv: TauID_levels)
+    {
+      bai.setBranchAddress(hadTau_idMVAs_[kv.first], branchNames_idMVA_[kv.first]);
+      bai.setBranchAddress(hadTau_rawMVAs_[kv.first], branchNames_rawMVA_[kv.first]);
+    }
     bai.setBranchAddress(hadTau_idAgainstElec_, branchName_idAgainstElec_);
     bai.setBranchAddress(hadTau_idAgainstMu_, branchName_idAgainstMu_);
     bai.setBranchAddress(hadTau_filterBits_, branchName_filterBits_);
@@ -253,28 +221,6 @@ RecoHadTauReader::read() const
         default: throw cmsException(this) << "Invalid tau ES option: " << hadTauPt_option_;
       }
 
-      Int_t hadTau_idMVA_dR03 = hadTau_idMVA_dR03_[idxHadTau];
-      if(era_ == kEra_2016)
-      {
-        if(hadTau_idMVA_dR03 >= 1)
-        {
-          hadTau_idMVA_dR03 += 1;
-        }
-        else
-        {
-          assert(DBdR03oldDMwLTEff95_ && mvaOutput_normalization_DBdR03oldDMwLT_);
-          if(mvaOutput_normalization_DBdR03oldDMwLT_->Eval(gInstance->hadTau_rawMVA_dR03_[idxHadTau]) >
-             DBdR03oldDMwLTEff95_->Eval(gInstance->hadTau_pt_[idxHadTau]))
-          {
-            hadTau_idMVA_dR03 = 1;
-          }
-          else
-          {
-            hadTau_idMVA_dR03 = 0;
-          }
-        }
-      }
-
       hadTaus.push_back({
         {
           hadTau_pt,
@@ -288,15 +234,24 @@ RecoHadTauReader::read() const
         gInstance->hadTau_decayMode_[idxHadTau],
         gInstance->hadTau_idDecayMode_[idxHadTau],
         gInstance->hadTau_idDecayModeNewDMs_[idxHadTau],
-        hadTau_idMVA_dR03,
-        gInstance->hadTau_rawMVA_dR03_[idxHadTau],
-        gInstance->hadTau_idMVA_dR05_[idxHadTau],
-        gInstance->hadTau_rawMVA_dR05_[idxHadTau],
+        gInstance->hadTau_idMVAs_.at(tauID_)[idxHadTau],
+        gInstance->hadTau_rawMVAs_.at(tauID_)[idxHadTau],
         gInstance->hadTau_idAgainstElec_[idxHadTau],
         gInstance->hadTau_idAgainstMu_[idxHadTau],
         gInstance->hadTau_filterBits_[idxHadTau],
         gInstance->hadTau_genMatchIdx_[idxHadTau],
       });
+
+      RecoHadTau & hadTau = hadTaus.back();
+
+      for(const auto & kv: gInstance->hadTau_idMVAs_)
+      {
+        hadTau.tauID_ids_[kv.first] = gInstance->hadTau_idMVAs_.at(kv.first)[idxHadTau];
+      }
+      for(const auto & kv: gInstance->hadTau_rawMVAs_)
+      {
+        hadTau.tauID_raws_[kv.first] = gInstance->hadTau_rawMVAs_.at(kv.first)[idxHadTau];
+      }
     }
     readGenMatching(hadTaus);
   }

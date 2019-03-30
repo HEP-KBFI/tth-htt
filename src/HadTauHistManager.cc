@@ -31,8 +31,7 @@ HadTauHistManager::HadTauHistManager(const edm::ParameterSet& cfg)
   central_or_shiftOptions_["dz"] = { "central" };
   central_or_shiftOptions_["dxy"] = { "central" };
   central_or_shiftOptions_["decayModeFinding"] = { "central" };
-  central_or_shiftOptions_["id_mva_dR03"] = { "central" };
-  central_or_shiftOptions_["id_mva_dR05"] = { "central" };
+  central_or_shiftOptions_["id_mva"] = { "central" };
   central_or_shiftOptions_["antiElectron"] = { "central" };
   central_or_shiftOptions_["antiMuon"] = { "central" };
 }
@@ -50,9 +49,8 @@ void HadTauHistManager::bookHistograms(TFileDirectory& dir)
     histogram_charge_           = book1D(dir, "charge",           "charge",           3, -1.5,  +1.5);
     histogram_dz_               = book1D(dir, "dz",               "dz",              40, -0.2,  +0.2);
     histogram_dxy_              = book1D(dir, "dxy",              "dxy",             40, -0.1,  +0.1);
-    histogram_decayModeFinding_ = book1D(dir, "decayModeFinding", "decayModeFinding", 2, -0.5, +1.5); 
-    histogram_id_mva_dR03_      = book1D(dir, "id_mva_dR03",      "id_mva_dR03",      7, -0.5, +6.5);
-    histogram_id_mva_dR05_      = book1D(dir, "id_mva_dR05",      "id_mva_dR05",      7, -0.5, +6.5);
+    histogram_decayModeFinding_ = book1D(dir, "decayModeFinding", "decayModeFinding", 2, -0.5, +1.5);
+    histogram_id_mva_           = book1D(dir, "id_mva",          "id_mva",            9, -0.5, +8.5);
     histogram_antiElectron_     = book1D(dir, "antiElectron",     "antiElectron",     6, -0.5, +5.5);
     histogram_antiMuon_         = book1D(dir, "antiMuon",         "antiMuon",         3, -0.5, +2.5);
   }
@@ -83,8 +81,7 @@ HadTauHistManager::fillHistograms(const RecoHadTau & hadTau,
     fillWithOverFlow(histogram_dz_,               hadTau.dz(),               evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_dxy_,              hadTau.dxy(),              evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_decayModeFinding_, hadTau.decayModeFinding(), evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_id_mva_dR03_,      hadTau.id_mva_dR03(),      evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_id_mva_dR05_,      hadTau.id_mva_dR05(),      evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_id_mva_,           hadTau.id_mva(),           evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_antiElectron_,     hadTau.antiElectron(),     evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_antiMuon_,         hadTau.antiMuon(),         evtWeight, evtWeightErr);
   }

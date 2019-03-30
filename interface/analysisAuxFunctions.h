@@ -73,6 +73,18 @@ const std::map<int, std::vector<std::string>> TauID_level_strings = {
   { 8, { "VVVLoose", "VVLoose", "VLoose", "Loose", "Medium", "Tight", "VTight", "VVTight" } },
 };
 
+const std::map<TauID, std::string> TauID_names = {
+  { TauID::MVAnewDM2017v2,     "MVAnewDM2017v2"     },
+  { TauID::MVAoldDM,           "MVAoldDM"           },
+  { TauID::MVAoldDMdR032017v2, "MVAoldDMdR032017v2" },
+  { TauID::MVAoldDM2017v1,     "MVAoldDM2017v1"     },
+  { TauID::MVAoldDM2017v2,     "MVAoldDM2017v2"     },
+  { TauID::DeepTau2017v1VSe,   "DeepTau2017v1VSe"   },
+  { TauID::DeepTau2017v1VSmu,  "DeepTau2017v1VSmu"  },
+  { TauID::DeepTau2017v1VSjet, "DeepTau2017v1VSjet" },
+  { TauID::DpfTau2016v0VSall,  "DpfTau2016v0VSall"  },
+};
+
 //--- declare b-tagging working points
 
 enum class BtagWP { kLoose, kMedium, kTight };
@@ -173,7 +185,7 @@ selectObjects(int objectSelection,
     case kLoose:    return preselObjects;
     case kFakeable: return fakeableObjects;
     case kTight:    return tightObjects;
-    default:        throw cmsException(__func__) << "Invalid selection: " << objectSelection;
+    default:        throw cmsException(__func__, __LINE__) << "Invalid selection: " << objectSelection;
   }
 }
 

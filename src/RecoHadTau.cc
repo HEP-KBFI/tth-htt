@@ -2,6 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // TauID, as_integer(), cmsException()
 
 RecoHadTau::RecoHadTau(const GenHadTau & particle,
                        Double_t dxy,
@@ -9,10 +10,8 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
                        Int_t decayMode,
                        Bool_t decayModeFinding,
                        Bool_t decayModeFindingNew,
-                       Int_t id_mva_dR03,
-                       Double_t raw_mva_dR03,
-                       Int_t id_mva_dR05,
-                       Double_t raw_mva_dR05,
+                       Int_t id_mva,
+                       Double_t raw_mva,
                        Int_t antiElectron,
                        Int_t antiMuon,
                        UInt_t filterBits,
@@ -23,10 +22,8 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
   , decayMode_(decayMode)
   , decayModeFinding_(decayModeFinding)
   , decayModeFindingNew_(decayModeFindingNew)
-  , id_mva_dR03_(id_mva_dR03)
-  , raw_mva_dR03_(raw_mva_dR03)
-  , id_mva_dR05_(id_mva_dR05)
-  , raw_mva_dR05_(raw_mva_dR05)
+  , id_mva_(id_mva)
+  , raw_mva_(raw_mva)
   , antiElectron_(antiElectron)
   , antiMuon_(antiMuon)
   , filterBits_(filterBits)
@@ -109,27 +106,39 @@ RecoHadTau::decayModeFindingNew() const
 }
 
 Int_t
-RecoHadTau::id_mva_dR03() const
+RecoHadTau::id_mva() const
 {
-  return id_mva_dR03_;
+  return id_mva_;
 }
 
 Double_t
-RecoHadTau::raw_mva_dR03() const
+RecoHadTau::raw_mva() const
 {
-  return raw_mva_dR03_;
+  return raw_mva_;
 }
 
 Int_t
-RecoHadTau::id_mva_dR05() const
+RecoHadTau::id_mva(TauID tauId) const
 {
-  return id_mva_dR05_;
+  if(! tauID_ids_.count(tauId))
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "No such tau ID = " << as_integer(tauId)
+    ;
+  }
+  return tauID_ids_.at(tauId);
 }
 
 Double_t
-RecoHadTau::raw_mva_dR05() const
+RecoHadTau::raw_mva(TauID tauId) const
 {
-  return raw_mva_dR05_;
+  if(! tauID_raws_.count(tauId))
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "No such tau ID = " << as_integer(tauId)
+    ;
+  }
+  return tauID_raws_.at(tauId);
 }
 
 Int_t
@@ -210,8 +219,8 @@ operator<<(std::ostream & stream,
 {
   stream << static_cast<const GenHadTau &>(hadTau)               << ",\n"
             " decayModeFinding = " << hadTau.decayModeFinding()  << ","
-            " id_mva_dR03 = "      << hadTau.id_mva_dR03()       <<
-            " (raw = "             << hadTau.raw_mva_dR03()      << "),\n"
+            " id_mva      = "      << hadTau.id_mva()            <<
+            " (raw = "             << hadTau.raw_mva()           << "),\n"
             " antiElectron = "     << hadTau.antiElectron()      << ","
             " antiMuon = "         << hadTau.antiMuon()          << ",\n"
             " is loose/fakeable/tight = " << hadTau.isLoose()    << '/'

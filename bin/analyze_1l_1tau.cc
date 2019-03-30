@@ -1841,7 +1841,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     const double mT_lep        = comp_MT_met_lep1(*selLepton, met.pt(), met.phi());
     const double mT_tau        = comp_MT_met_hadTau1(*selHadTau, met.pt(), met.phi());
     const double htmiss        = mht_p4.pt();
-    const double tau_mva       = selHadTau->raw_mva_dR03();
+    const double tau_mva       = selHadTau->raw_mva();
     const double tau_pt        = selHadTau->pt();
     const double tau_eta       = selHadTau->absEta();
     const double dr_lep_tau    = deltaR(selLepton->p4(), selHadTau->p4());
@@ -1943,7 +1943,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
    {"avg_dr_jet",       comp_avg_dr_jet(selJets)},
    {"mT_lep",           comp_MT_met_lep1(*selLepton, met.pt(), met.phi())},
    {"htmiss",           mht_p4.pt()},
-   {"tau_mva",          selHadTau->raw_mva_dR03()},
+   {"tau_mva",          selHadTau->raw_mva()},
    {"tau_pt",           selHadTau->pt()},
    {"tau_eta",          selHadTau->absEta()},
    {"dr_lep_tau",       deltaR(selLepton->p4(), selHadTau->p4())},

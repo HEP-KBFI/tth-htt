@@ -285,11 +285,13 @@ SyncNtupleManager::initializeBranches()
     tau_decayMode,                                       "decayMode",
     tau_decayModeFindingOldDMs,                          "decayModeFindingOldDMs",
     tau_decayModeFindingNewDMs,                          "decayModeFindingNewDMs",
+    tau_byVVLooseIsolationMVArun2v1DBdR03oldDMwLT,       "byVVLooseIsolationMVArun2v1DBdR03oldDMwLT",
     tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT,        "byVLooseIsolationMVArun2v1DBdR03oldDMwLT",
     tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT,         "byLooseIsolationMVArun2v1DBdR03oldDMwLT",
     tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT,        "byMediumIsolationMVArun2v1DBdR03oldDMwLT",
     tau_byTightIsolationMVArun2v1DBdR03oldDMwLT,         "byTightIsolationMVArun2v1DBdR03oldDMwLT",
     tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT,        "byVTightIsolationMVArun2v1DBdR03oldDMwLT",
+    tau_byVVTightIsolationMVArun2v1DBdR03oldDMwLT,       "byVVTightIsolationMVArun2v1DBdR03oldDMwLT",
     tau_rawMVArun2v1DBdR03oldDMwLT,                      "rawMVArun2v1DBdR03oldDMwLT",
     tau_againstMuonLoose3,                               "againstMuonLoose3",
     tau_againstMuonTight3,                               "againstMuonTight3",
@@ -493,13 +495,15 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
     tau_decayModeFindingOldDMs[i] = hadtau -> decayModeFinding();
     tau_decayModeFindingNewDMs[i] = hadtau -> decayModeFindingNew();
 
-    const Int_t idMVArun2dR03 = hadtau -> id_mva_dR03();
+    const Int_t idMVArun2dR03 = hadtau -> id_mva(TauID::MVAnewDM2017v2);
+    tau_byVVLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 1 ? 1 : 0;
     tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 2 ? 1 : 0;
     tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 3 ? 1 : 0;
     tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 4 ? 1 : 0;
     tau_byTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 5 ? 1 : 0;
     tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 6 ? 1 : 0;
-    tau_rawMVArun2v1DBdR03oldDMwLT[i] = hadtau -> raw_mva_dR03();
+    tau_byVVTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 7 ? 1 : 0;
+    tau_rawMVArun2v1DBdR03oldDMwLT[i] = hadtau -> raw_mva();
 
     const Int_t idAntiMu = hadtau -> antiMuon();
     tau_againstMuonLoose3[i] = idAntiMu >= 1 ? 1 : 0;
@@ -670,11 +674,13 @@ SyncNtupleManager::reset()
     tau_decayMode,
     tau_decayModeFindingOldDMs,
     tau_decayModeFindingNewDMs,
+    tau_byVVLooseIsolationMVArun2v1DBdR03oldDMwLT,
     tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT,
     tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT,
     tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT,
     tau_byTightIsolationMVArun2v1DBdR03oldDMwLT,
     tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT,
+    tau_byVVTightIsolationMVArun2v1DBdR03oldDMwLT,
     tau_rawMVArun2v1DBdR03oldDMwLT,
     tau_againstMuonLoose3,
     tau_againstMuonTight3,

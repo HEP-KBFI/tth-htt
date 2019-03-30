@@ -129,7 +129,8 @@ protected:
   std::string category_;
   std::string central_or_shift_;
 
-  std::map<std::string, std::vector<std::string>> central_or_shiftOptions_; // key = histogramName, value = central_or_shift options for which histogram is to be booked & filled
+  // key = histogramName, value = central_or_shift options for which histogram is to be booked & filled
+  std::map<std::string, std::vector<std::string>> central_or_shiftOptions_;
 
   std::vector<TH1 *> histograms_;
   std::vector<TH2 *> histograms_2d_;

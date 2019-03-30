@@ -5,11 +5,14 @@
 
 #include <string> // std::string
 #include <vector> // std::vector<>
+#include <map> // std::map<,>
 
 // forward declarations
 class TTree;
 class RecoHadTau;
 class GenParticleWriter;
+
+enum class TauID;
 
 class RecoHadTauWriter
 {
@@ -64,14 +67,13 @@ protected:
   std::string branchName_decayMode_;
   std::string branchName_idDecayMode_;
   std::string branchName_idDecayModeNewDMs_;
-  std::string branchName_idMVA_dR03_;
-  std::string branchName_rawMVA_dR03_;
-  std::string branchName_idMVA_dR05_;
-  std::string branchName_rawMVA_dR05_;
   std::string branchName_idAgainstElec_;
   std::string branchName_idAgainstMu_;
   std::string branchName_filterBits_;
   std::string branchName_genMatchIdx_;
+
+  std::map<TauID, std::string> branchNames_idMVA_;
+  std::map<TauID, std::string> branchNames_rawMVA_;
 
   UInt_t nHadTaus_;
   Float_t * hadTau_pt_;
@@ -84,14 +86,13 @@ protected:
   Int_t * hadTau_decayMode_;
   Bool_t * hadTau_idDecayMode_;
   Bool_t * hadTau_idDecayModeNewDMs_;
-  Int_t * hadTau_idMVA_dR03_;
-  Float_t * hadTau_rawMVA_dR03_;
-  Int_t * hadTau_idMVA_dR05_;
-  Float_t * hadTau_rawMVA_dR05_;
   Int_t * hadTau_idAgainstElec_;
   Int_t * hadTau_idAgainstMu_;
   UInt_t * hadTau_filterBits_;
   Int_t * hadTau_genMatchIdx_;
+
+  std::map<TauID, Int_t *> hadTau_idMVAs_;
+  std::map<TauID, Float_t *> hadTau_rawMVAs_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoHadTauWriter_h

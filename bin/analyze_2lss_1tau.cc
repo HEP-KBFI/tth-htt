@@ -2062,7 +2062,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           ("nJet25_Recl",                    nJet25_Recl)
           ("ptmiss",                         ptmiss)
           ("htmiss",                         mht_p4.pt())
-          ("tau_mva",                        selHadTau->raw_mva_dR03())
+          ("tau_mva",                        selHadTau->raw_mva())
           ("tau_pt",                         selHadTau->pt())
           ("tau_eta",                        selHadTau->absEta())
           ("dr_leps",                        dr_leps)
