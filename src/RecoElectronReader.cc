@@ -118,7 +118,7 @@ RecoElectronReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(OoEminusOoP_, branchName_OoEminusOoP_);
     bai.setBranchAddress(lostHits_, branchName_lostHits_);
     bai.setBranchAddress(conversionVeto_, branchName_conversionVeto_);
-    bai.setBranchAddress(cutbasedID_HLT_, ""); // no safe HLT selection, yet
+    bai.setBranchAddress(cutbasedID_HLT_, era_ == kEra_2016 ? branchName_cutbasedID_HLT_ : "");
   }
 }
 
@@ -142,7 +142,8 @@ RecoElectronReader::read() const
   {
     throw cmsException(this)
       << "Number of leptons stored in Ntuple = " << nLeptons << ", exceeds max_nLeptons = "
-      << leptonReader_->max_nLeptons_ << " !!\n";
+      << leptonReader_->max_nLeptons_
+    ;
   }
 
   if (nLeptons > 0)
@@ -193,7 +194,7 @@ RecoElectronReader::read() const
           gElectronReader->OoEminusOoP_[idxLepton],
           gElectronReader->lostHits_[idxLepton],
           gElectronReader->conversionVeto_[idxLepton],
-          gElectronReader->cutbasedID_HLT_[idxLepton]
+          gElectronReader->cutbasedID_HLT_[idxLepton],
         });
       }
     }
