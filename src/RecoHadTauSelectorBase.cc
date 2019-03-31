@@ -191,8 +191,8 @@ RecoHadTauSelectorBase::set_if_looser(const std::string & cut)
 
   if(cut_ != cut_new)
   {
-    set(cut_new);
     std::cout << "Changed tau ID WP from '" << cut_ << "' to '" << cut_new << "'\n";
+    set(cut_new);
     return true;
   }
 
