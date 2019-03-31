@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_ParticleCollectionCleaner_h
 #define tthAnalysis_HiggsToTauTau_ParticleCollectionCleaner_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // get_human_line()
+
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 
 template <typename T>
@@ -19,12 +21,13 @@ public:
    * @return Collection of non-overlapping particles
    */
   template <typename Toverlap>
-  std::vector<const T *> operator()(const std::vector<const T *> & particles,
-                                    const std::vector<const Toverlap *> & overlaps) const
+  std::vector<const T *>
+  operator()(const std::vector<const T *> & particles,
+             const std::vector<const Toverlap *> & overlaps) const
   {
     if(debug_)
     {
-      std::cout << "<ParticleCollectionCleaner::operator()>\n";
+      std::cout << get_human_line(this, __func__, __LINE__) << '\n';
     }
     std::vector<const T *> cleanedParticles;
     for(const T * particle: particles)
@@ -57,9 +60,10 @@ public:
 
   template <typename Toverlap,
             typename... Args>
-  std::vector<const T *> operator()(const std::vector<const T *> & particles,
-                                    const std::vector<const Toverlap *> & overlaps,
-                                    Args... args) const
+  std::vector<const T *>
+  operator()(const std::vector<const T *> & particles,
+             const std::vector<const Toverlap *> & overlaps,
+             Args... args) const
   {
     std::vector<const T *> cleanedParticles = (*this)(particles, overlaps);
     return (*this)(cleanedParticles, args...);
@@ -105,5 +109,7 @@ typedef ParticleCollectionCleaner<RecoJetAK12> RecoJetCollectionCleanerAK12;
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h"
 
 typedef ParticleCollectionCleaner<RecoJetAK8> RecoJetCollectionCleanerAK8;
+
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionCleanerByIndex.h"
 
 #endif // tthAnalysis_HiggsToTauTau_ParticleCollectionCleaner_h
