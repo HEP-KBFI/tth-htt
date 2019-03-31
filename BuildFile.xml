@@ -4,7 +4,7 @@
 <use   name="DataFormats/Math"/>
 <use   name="ttH_Htautau_MEM_Analysis/MEMAlgo"/>
 <use   name="tthAnalysis/tthMEM"/>
-<use   name="tthAnalysis/TauTriggerSFs2017"/>
+<use   name="TauAnalysisTools/TauTriggerSFs"/>
 <use   name="root"/>
 <use   name="roottmva"/>
 <use   name="boost" />

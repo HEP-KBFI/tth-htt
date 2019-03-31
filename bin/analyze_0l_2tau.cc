@@ -1114,8 +1114,8 @@ int main(int argc, char* argv[])
       else if(era == kEra_2017)
       {
         dataToMCcorrectionInterface_0l_2tau_trigger->setHadTaus(
-          selHadTau_lead->pt(),    selHadTau_lead->eta(),    selHadTau_lead->phi(),
-          selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->phi()
+          selHadTau_lead->pt(),    selHadTau_lead->eta(),    selHadTau_lead->phi(),    selHadTau_lead->decayMode(),
+          selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->phi(), selHadTau_sublead->decayMode()
         );
       }
       else if(era == kEra_2018)

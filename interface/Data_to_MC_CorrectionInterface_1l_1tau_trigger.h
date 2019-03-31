@@ -5,6 +5,7 @@
 
 // forwad declarations
 class TauTriggerSFs2017;
+enum class TriggerSFsys;
 
 class Data_to_MC_CorrectionInterface_1l_1tau_trigger
 {
@@ -31,7 +32,7 @@ public:
              double lepton_eta);
 
   void
-  setHadTaus(double hadTau_pt, double hadTau_eta, double hadTau_phi);
+  setHadTaus(double hadTau_pt, double hadTau_eta, double hadTau_phi, int hadTau_decayMode);
 
   void
   setHadTaus(int hadTau_genPdgId, double hadTau_pt, double hadTau_eta, int hadTau_decayMode);
@@ -74,7 +75,8 @@ protected:
   vLutWrapperBase effTrigger_1m1tau_tauLeg_mc_gentau_;
   vLutWrapperBase effTrigger_1m1tau_tauLeg_mc_faketau_;
 
-  TauTriggerSFs2017 * effTrigger_tauLeg_;
+  TauTriggerSFs2017 * effTrigger_1m1tau_;
+  TauTriggerSFs2017 * effTrigger_1e1tau_;
   //-----------------------------------------------------------------------------
 
   std::map<std::string, TFile *> inputFiles_;
@@ -82,7 +84,7 @@ protected:
   int era_;
   std::string hadTauSelection_;
   bool isDEBUG_;
-  int triggerSF_option_;
+  TriggerSFsys triggerSF_option_;
 
   bool isTriggered_1e_;
   bool isTriggered_1e1tau_;

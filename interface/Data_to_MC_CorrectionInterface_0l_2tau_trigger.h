@@ -5,6 +5,7 @@
 
 // forwad declarations
 class TauTriggerSFs2017;
+enum class TriggerSFsys;
 
 class Data_to_MC_CorrectionInterface_0l_2tau_trigger
 {
@@ -23,8 +24,8 @@ public:
   // set hadTau pT, eta and decay mode
   // (to be called once per event, before calling any of the getSF.. functions)
   void
-  setHadTaus(double hadTau1_pt, double hadTau1_eta, double hadTau1_phi,
-             double hadTau2_pt, double hadTau2_eta, double hadTau2_phi);
+  setHadTaus(double hadTau1_pt, double hadTau1_eta, double hadTau1_phi, int hadTau1_decayMode,
+             double hadTau2_pt, double hadTau2_eta, double hadTau2_phi, int hadTau2_decayMode);
   void
   setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta, int hadTau1_decayMode,
              int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta, int hadTau2_decayMode);
@@ -62,7 +63,7 @@ protected:
   int era_;
   std::string hadTauSelection_;
   bool isDEBUG_;
-  int triggerSF_option_;
+  TriggerSFsys triggerSF_option_;
 
   bool isTriggered_2tau_;
 
