@@ -16,6 +16,9 @@
 #include <algorithm> // std::copy_n()
 #include <type_traits> // std::underlying_type<>
 
+#define TAU_WP_SEPARATOR   "&"
+#define TAU_WP_SEPARATOR_C '&'
+
 // forward declarations
 class Particle;
 class RecoLepton;
@@ -83,6 +86,14 @@ const std::map<TauID, std::string> TauID_names = {
   { TauID::DeepTau2017v1VSmu,  "DeepTau2017v1VSmu"  },
   { TauID::DeepTau2017v1VSjet, "DeepTau2017v1VSjet" },
   { TauID::DpfTau2016v0VSall,  "DpfTau2016v0VSall"  },
+};
+
+const std::map<std::string, TauID> TauID_PyMap = {
+  { "dR03mva", TauID::MVAoldDMdR032017v2 },
+  { "dR05mva", TauID::MVAoldDM2017v2     },
+  { "deepVSj", TauID::DeepTau2017v1VSjet },
+  { "deepVSe", TauID::DeepTau2017v1VSe   },
+  { "deepVSm", TauID::DeepTau2017v1VSmu  },
 };
 
 //--- declare b-tagging working points

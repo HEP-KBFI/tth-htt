@@ -58,25 +58,22 @@ MEMPermutationWriter &
 MEMPermutationWriter::setHadTauWorkingPoints(const std::string & minHadTauWorkingPoint)
 {
   std::vector<std::string> cut_parts;
-  boost::split(cut_parts, minHadTauWorkingPoint, [](char c) -> bool { return c == '&'; });
-  assert(cut_parts.size() == 1 || cut_parts.size() == 2);
+  boost::split(cut_parts, minHadTauWorkingPoint, [](char c) -> bool { return c == TAU_WP_SEPARATOR_C; });
+  assert(cut_parts.size());
 
   std::map<std::string, int> cut_mvas;
   for(const std::string & cut_part: cut_parts)
   {
     const std::string cut_mva = cut_part.substr(0, 7);
+    const TauID tauId = TauID_PyMap.at(cut_mva);
     const std::string cut_wp_str = cut_part.substr(7);
-    const int cut_wp = get_tau_id_wp_int(cut_wp_str);
-    cut_mvas[cut_mva] = cut_wp;
-  }
 
-  const int tau_max_selection = get_tau_id_wp_int("VVTight");
-  for(const auto & kv: cut_mvas)
-  {
-    const int tau_min_selection = kv.second;
+    const int tau_min_selection = get_tau_id_wp_int(tauId, cut_wp_str);
+    const int tau_max_selection = TauID_levels.at(tauId);
+
     for(int tau_selection = tau_min_selection; tau_selection <= tau_max_selection; ++tau_selection)
     {
-      const std::string hadTauWorkingPoint = kv.first + get_tau_id_wp_str(tau_selection);
+      const std::string hadTauWorkingPoint = cut_mva + get_tau_id_wp_str(tauId, tau_selection);
       hadTauWorkingPoints_.push_back(hadTauWorkingPoint);
     }
   }

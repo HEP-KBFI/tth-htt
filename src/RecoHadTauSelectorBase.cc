@@ -7,17 +7,6 @@
 
 #include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
-#define TAU_WP_SEPARATOR "&"
-
-// NB! the identifier must be exactly 7 characters long (see the set() and set_if_looser() functions)
-const std::map<std::string, TauID> RecoHadTauSelectorBase::pymap_tauId_ = {
-  { "dR03mva", TauID::MVAoldDMdR032017v2 },
-  { "dR05mva", TauID::MVAoldDM2017v2     },
-  { "deepVSj", TauID::DeepTau2017v1VSjet },
-  { "deepVSe", TauID::DeepTau2017v1VSe   },
-  { "deepVSm", TauID::DeepTau2017v1VSmu  },
-};
-
 RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
                                                int index,
                                                bool debug,
@@ -126,13 +115,13 @@ RecoHadTauSelectorBase::set(const std::string & cut)
   for(const std::string & cut_part: cut_parts)
   {
     const std::string mva_type = cut_part.substr(0, 7);
-    if(! pymap_tauId_.count(mva_type))
+    if(! TauID_PyMap.count(mva_type))
     {
       throw cmsException(this, __func__, __LINE__)
         << "Unrecognizable tau discriminator '" << mva_type << "' found in string: " << cut
       ;
     }
-    const TauID tauId = pymap_tauId_.at(mva_type);
+    const TauID tauId = TauID_PyMap.at(mva_type);
     const std::string wp = cut_part.substr(7);
     const int wp_int = get_tau_id_wp_int(tauId, wp);
     set_min_id_mva(tauId, wp_int);
@@ -166,7 +155,7 @@ RecoHadTauSelectorBase::set_if_looser(const std::string & cut)
      ;
   }
   const std::string mva_old = cut_.substr(0, 7);
-  const TauID tauId_old = pymap_tauId_.at(mva_old);
+  const TauID tauId_old = TauID_PyMap.at(mva_old);
   const std::string wp_old  = cut_.substr(7);
   const int wp_int_old = get_tau_id_wp_int(tauId_old, wp_old);
 
@@ -175,7 +164,7 @@ RecoHadTauSelectorBase::set_if_looser(const std::string & cut)
   for(const std::string & cut_part: cut_parts)
   {
     const std::string mva_new = cut_part.substr(0, 7);
-    const TauID tauId_new = pymap_tauId_.at(mva_new);
+    const TauID tauId_new = TauID_PyMap.at(mva_new);
 
     std::string cut_part_new = cut_part;
     if(tauId_new == tauId_old)
@@ -268,7 +257,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
       std::cout << "FAILS id_mva cuts: ";
       for(std::size_t min_id_mva_idx = 0; min_id_mva_idx < min_id_mva_cuts.size(); ++min_id_mva_idx)
       {
-        TauID tauId = min_id_mva_cuts[min_id_mva_idx];
+        const TauID tauId = min_id_mva_cuts[min_id_mva_idx];
         std::cout << "id" << TauID_names.at(tauId) << " (= " << hadTau.id_mva(tauId) << ") >= " << min_id_mva_.at(tauId);
         if(min_id_mva_idx < min_id_mva_cuts.size() - 1)
         {
@@ -305,7 +294,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
       std::cout << "FAILS raw_mva cuts: ";
       for(std::size_t min_raw_mva_idx = 0; min_raw_mva_idx < min_raw_mva_cuts.size(); ++min_raw_mva_idx)
       {
-        TauID tauId = min_raw_mva_cuts[min_raw_mva_idx];
+        const TauID tauId = min_raw_mva_cuts[min_raw_mva_idx];
         std::cout << "raw" << TauID_names.at(tauId) << " (= " << hadTau.raw_mva(tauId) << ") >= " << min_raw_mva_.at(tauId);
         if(min_raw_mva_idx < min_raw_mva_cuts.size() - 1)
         {
