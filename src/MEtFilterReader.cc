@@ -51,19 +51,17 @@ MEtFilterReader::setBranchAddresses(TTree * tree)
     {
       const MEtFilterFlag flag_enum = static_cast<MEtFilterFlag>(flag);
       std::string metFilterFlagString = getMEtFilterFlagString(flag_enum);
-      if(era_ == kEra_2016)
+      if(flag == MEtFilterFlag::ecalBadCalibFilterV2)
       {
-        if(flag == MEtFilterFlag::BadChargedCandidateFilter ||
-           flag == MEtFilterFlag::BadPFMuonFilter)
+        if(era_ == kEra_2016)
         {
-          metFilterFlagString += "_bool";
-        }
-        else if(flag == MEtFilterFlag::BadChargedCandidateSummer16Filter ||
-                flag == MEtFilterFlag::BadPFMuonSummer16Filter           ||
-                flag == MEtFilterFlag::ecalBadCalibFilter                 )
-        {
-          // branch not present in 2016 Ntuples?
+          // not present in 2016
           continue;
+        }
+        else
+        {
+          // this may or may not be an issue
+          //metFilterFlagString += "_bool";
         }
       }
       bai.setBranchAddress(metFilter_->getFlagRef(flag_enum), metFilterFlagString);
