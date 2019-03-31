@@ -45,7 +45,7 @@ if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   exit 2;
 fi
 
-NANO_MODULES_DATA="absIso,tauIDLog,jetSubstructureObservablesHTTv2,trigObjMatcher"
+NANO_MODULES_DATA="absIso,tauIDLog,jetSubstructureObservablesHTTv2,trigObjMatcher,jetIdx"
 NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,genMatchCollection,\
 puWeight${ERA}($PILEUP;$PROCESS_NAME),jetmetUncertainties${ERA},btagSF_deep_${ERA},btagSF_deepFlav_${ERA}"
 
@@ -53,8 +53,10 @@ if [ "$ERA" = "2016" ]; then
   NANO_MODULES_DATA="$NANO_MODULES_DATA,egammaId"
   NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_${ERA},egammaId";
 elif [ "$ERA" == "2017" ]; then
+  NANO_MODULES_DATA="$NANO_MODULES_DATA,flagTypeConverter";
   NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_${ERA},flagTypeConverter";
 elif [ "$ERA" == "2018" ]; then
+  NANO_MODULES_DATA="$NANO_MODULES_DATA,flagTypeConverter";
   NANO_MODULES_MC="$NANO_MODULES_MC,flagTypeConverter";
 else
   echo "Invalid era = '$ERA'";

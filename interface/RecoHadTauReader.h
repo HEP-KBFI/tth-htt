@@ -84,6 +84,7 @@ protected:
   std::string branchName_idAgainstElec_;
   std::string branchName_idAgainstMu_;
   std::string branchName_filterBits_;
+  std::string branchName_jetIdx_;
   std::string branchName_genMatchIdx_;
 
   std::map<TauID, std::string> branchNames_idMVA_;
@@ -106,6 +107,7 @@ protected:
   Int_t * hadTau_idAgainstElec_;
   Int_t * hadTau_idAgainstMu_;
   UInt_t * hadTau_filterBits_;
+  Int_t * hadTau_jetIdx_;
   Int_t * hadTau_genMatchIdx_;
 
   std::map<TauID, Int_t *> hadTau_idMVAs_;

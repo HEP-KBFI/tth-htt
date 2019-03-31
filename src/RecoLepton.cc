@@ -19,6 +19,7 @@ RecoLepton::RecoLepton(const ChargedParticle & lepton,
                        Int_t    jetNDauChargedMVASel,
                        Int_t    tightCharge,
                        UInt_t   filterBits,
+                       Int_t    jetIdx,
                        Int_t    genMatchIdx)
   : ChargedParticle(lepton)
   , dxy_(dxy)
@@ -34,6 +35,7 @@ RecoLepton::RecoLepton(const ChargedParticle & lepton,
   , jetNDauChargedMVASel_(jetNDauChargedMVASel)
   , tightCharge_(tightCharge)
   , filterBits_(filterBits)
+  , jetIdx_(jetIdx)
   , genMatchIdx_(genMatchIdx)
   , assocJet_pt_(jetPtRatio_ > 1.e-3 ? 0.90 * pt_ / jetPtRatio_ : pt_)
   , assocJet_p4_(assocJet_pt_, eta_, phi_, mass_)
@@ -244,6 +246,12 @@ UInt_t
 RecoLepton::filterBits() const
 {
   return filterBits_;
+}
+
+Int_t
+RecoLepton::jetIdx() const
+{
+  return jetIdx_;
 }
 
 Int_t

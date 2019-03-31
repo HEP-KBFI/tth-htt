@@ -15,6 +15,7 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
                        Int_t antiElectron,
                        Int_t antiMuon,
                        UInt_t filterBits,
+                       Int_t jetIdx,
                        Int_t genMatchIdx)
   : GenHadTau(particle)
   , dxy_(dxy)
@@ -27,6 +28,7 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
   , antiElectron_(antiElectron)
   , antiMuon_(antiMuon)
   , filterBits_(filterBits)
+  , jetIdx_(jetIdx)
   , genMatchIdx_(genMatchIdx)
   , genLepton_(nullptr)
   , genHadTau_(nullptr)
@@ -157,6 +159,12 @@ UInt_t
 RecoHadTau::filterBits() const
 {
   return filterBits_;
+}
+
+Int_t
+RecoHadTau::jetIdx() const
+{
+  return jetIdx_;
 }
 
 Int_t

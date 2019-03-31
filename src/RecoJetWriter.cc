@@ -35,6 +35,7 @@ RecoJetWriter::RecoJetWriter(int era,
   , jet_QGDiscr_(nullptr)
   , jet_jetId_(nullptr)
   , jet_puId_(nullptr)
+  , jet_jetIdx_(nullptr)
   , jet_genMatchIdx_(nullptr)
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nJets_);
@@ -57,6 +58,7 @@ RecoJetWriter::~RecoJetWriter()
   delete[] jet_pullMag_;
   delete[] jet_jetId_;
   delete[] jet_puId_;
+  delete[] jet_jetIdx_;
   delete[] jet_genMatchIdx_;
   for(auto & kv: jet_pt_systematics_)
   {
@@ -109,6 +111,7 @@ RecoJetWriter::setBranchNames()
   branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
   branchName_jetId_ = Form("%s_%s", branchName_obj_.data(), "jetId");
   branchName_puId_ = Form("%s_%s", branchName_obj_.data(), "puId");
+  branchName_jetIdx_ = Form("%s_%s", branchName_obj_.data(), "jetIdx");
   branchName_genMatchIdx_ = Form("%s_%s", branchName_obj_.data(), "genMatchIdx");
   for(auto & kv: BtagWP_map.at(era_))
   {
@@ -164,6 +167,7 @@ RecoJetWriter::setBranches(TTree * tree)
   bai.setBranch(jet_pullMag_, branchName_pullMag_);
   bai.setBranch(jet_jetId_, branchName_jetId_);
   bai.setBranch(jet_puId_, branchName_puId_);
+  bai.setBranch(jet_jetIdx_, branchName_jetIdx_);
   bai.setBranch(jet_genMatchIdx_, branchName_genMatchIdx_);
   for(const auto & kv: branchNames_btag_)
   {
@@ -254,6 +258,7 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
     jet_pullMag_[idxJet] = jet->pullMag();
     jet_jetId_[idxJet] = jet->jetId();
     jet_puId_[idxJet] = jet->puId();
+    jet_jetIdx_[idxJet] = jet->idx();
     jet_genMatchIdx_[idxJet] = jet->genMatchIdx();
     if(isMC_)
     {
