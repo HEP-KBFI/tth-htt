@@ -3,6 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhoton.h" // GenPhoton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // cmsException(), as_integer()
 
 RecoLepton::RecoLepton(const ChargedParticle & lepton,
                        Double_t dxy,
@@ -15,7 +16,6 @@ RecoLepton::RecoLepton(const ChargedParticle & lepton,
                        Double_t mvaRawTTH,
                        Double_t jetPtRatio,
                        Double_t jetPtRel,
-                       Double_t jetBtagCSV,
                        Int_t    jetNDauChargedMVASel,
                        Int_t    tightCharge,
                        UInt_t   filterBits,
@@ -31,7 +31,6 @@ RecoLepton::RecoLepton(const ChargedParticle & lepton,
   , mvaRawTTH_(mvaRawTTH)
   , jetPtRatio_(jetPtRatio)
   , jetPtRel_(jetPtRel)
-  , jetBtagCSV_(jetBtagCSV)
   , jetNDauChargedMVASel_(jetNDauChargedMVASel)
   , tightCharge_(tightCharge)
   , filterBits_(filterBits)
@@ -214,7 +213,19 @@ RecoLepton::jetPtRel() const
 Double_t
 RecoLepton::jetBtagCSV() const
 {
-  return jetBtagCSV_;
+  return jetBtagCSV(Btag::kDeepCSV);
+}
+
+Double_t
+RecoLepton::jetBtagCSV(Btag btag) const
+{
+  if(! jetBtagCSVs_.count(btag))
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "b-tagging discriminator not available: " << as_integer(btag)
+    ;
+  }
+  return jetBtagCSVs_.at(btag);
 }
 
 Int_t
@@ -307,7 +318,6 @@ operator<<(std::ostream & stream,
             " relIso = "        << lepton.relIso()        << ","
             " pfRelIso04All = " << lepton.pfRelIso04All() << ",\n"
             " tightCharge = "   << lepton.tightCharge()   << ","
-            " jetBtagCSV = "    << lepton.jetBtagCSV()    << ","
             " jetPtRatio = "    << lepton.jetPtRatio()    << ",\n"
             " jetPtRel = "      << lepton.jetPtRel()      << ","
             " mvaRawTTH = "     << lepton.mvaRawTTH()     << ",\n"

@@ -9,9 +9,11 @@
 
 #include <string> // std::string
 #include <vector> // std::vector<>
+#include <map> // std::map<,>
 
 // forward declaration
 class TTree;
+enum class Btag;
 
 class RecoLeptonWriter
 {
@@ -54,7 +56,10 @@ public:
       mvaRawTTH_[idxLepton] = lepton->mvaRawTTH();
       jetPtRatio_[idxLepton] = lepton->jetPtRatio();
       jetPtRel_[idxLepton] = lepton->jetPtRel();
-      jetBtagCSV_[idxLepton] = lepton->jetBtagCSV();
+      for(const auto & kv: branchNames_jetBtagCSV_)
+      {
+        jetBtagCSVs_[kv.first][idxLepton] = lepton->jetBtagCSV(kv.first);
+      }
       jetNDauChargedMVASel_[idxLepton] = lepton->jetNDauChargedMVASel();
       tightCharge_[idxLepton] = lepton->tightCharge();
       charge_[idxLepton] = lepton->charge();
@@ -136,12 +141,13 @@ protected:
   std::string branchName_mvaRawTTH_;
   std::string branchName_jetPtRatio_;
   std::string branchName_jetPtRel_;
-  std::string branchName_jetBtagCSV_;
   std::string branchName_jetNDauChargedMVASel_;
   std::string branchName_tightCharge_;
   std::string branchName_charge_;
   std::string branchName_filterBits_;
   std::string branchName_genMatchIdx_;
+
+  std::map<Btag, std::string> branchNames_jetBtagCSV_;
 
   UInt_t nLeptons_;
   Float_t * pt_;
@@ -159,12 +165,13 @@ protected:
   Float_t * mvaRawTTH_;
   Float_t * jetPtRatio_;
   Float_t * jetPtRel_;
-  Float_t * jetBtagCSV_;
   Int_t * jetNDauChargedMVASel_;
   Int_t * tightCharge_;
   Int_t * charge_;
   UInt_t * filterBits_;
   Int_t * genMatchIdx_;
+
+  std::map<Btag, Float_t *> jetBtagCSVs_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoLeptonWriter_h

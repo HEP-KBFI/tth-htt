@@ -109,7 +109,6 @@ RecoMuonReader::read() const
         // Karl: For *some* leptons that don't have an associated jet,
         //       the deepCSV score is nan (and not -1) for an unknown reason.
         //       Adding a safeguard for these instances.
-        const double jetBtagCSV = gLeptonReader->jetBtagCSV_[idxLepton];
         muons.push_back(RecoMuon({
           {
             {
@@ -130,7 +129,6 @@ RecoMuonReader::read() const
             gLeptonReader->mvaRawTTH_[idxLepton],
             gLeptonReader->jetPtRatio_[idxLepton],
             gLeptonReader->jetPtRel_[idxLepton],
-            std::isnan(jetBtagCSV) ? -1. : jetBtagCSV,
             gLeptonReader->jetNDauChargedMVASel_[idxLepton],
             gLeptonReader->tightCharge_[idxLepton],
             gLeptonReader->filterBits_[idxLepton],
@@ -141,6 +139,13 @@ RecoMuonReader::read() const
           gMuonReader->segmentCompatibility_[idxLepton],
           gMuonReader->ptErr_[idxLepton]
         }));
+
+        RecoMuon & muon = muons.back();
+        for(const auto & kv: gLeptonReader->jetBtagCSVs_)
+        {
+          const double val = kv.second[idxLepton];
+          muon.jetBtagCSVs_[kv.first] = std::isnan(val) ? -2. : val;
+        }
       }
     }
     gLeptonReader->readGenMatching(muons);

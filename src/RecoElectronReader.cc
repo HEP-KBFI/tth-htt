@@ -153,10 +153,6 @@ RecoElectronReader::read() const
     {
       if(std::abs(gLeptonReader->pdgId_[idxLepton]) == 11)
       {
-        // Karl: For *some* leptons that don't have an associated jet,
-        //       the deepCSV score is nan (and not -1) for an unknown reason.
-        //       Adding a safeguard for these instances.
-        const double jetBtagCSV = gLeptonReader->jetBtagCSV_[idxLepton];
         const double ptCorr = readUncorrected_ ? gElectronReader->eCorr_[idxLepton] : 1.;
         electrons.push_back({
           {
@@ -178,7 +174,6 @@ RecoElectronReader::read() const
             gLeptonReader->mvaRawTTH_[idxLepton],
             gLeptonReader->jetPtRatio_[idxLepton],
             gLeptonReader->jetPtRel_[idxLepton],
-            std::isnan(jetBtagCSV) ? -1. : jetBtagCSV,
             gLeptonReader->jetNDauChargedMVASel_[idxLepton],
             gLeptonReader->tightCharge_[idxLepton],
             gLeptonReader->filterBits_[idxLepton],
@@ -196,6 +191,13 @@ RecoElectronReader::read() const
           gElectronReader->conversionVeto_[idxLepton],
           gElectronReader->cutbasedID_HLT_[idxLepton],
         });
+
+        RecoElectron & electron = electrons.back();
+        for(const auto & kv: gLeptonReader->jetBtagCSVs_)
+        {
+          const double val = kv.second[idxLepton];
+          electron.jetBtagCSVs_[kv.first] = std::isnan(val) ? -2. : val;
+        }
       }
     }
     gLeptonReader->readGenMatching(electrons);

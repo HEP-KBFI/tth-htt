@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Btag, cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> RecoLeptonReader::numInstances_;
@@ -35,7 +35,6 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   , mvaRawTTH_(nullptr)
   , jetPtRatio_(nullptr)
   , jetPtRel_(nullptr)
-  , jetBtagCSV_(nullptr)
   , jetNDauChargedMVASel_(nullptr)
   , tightCharge_(nullptr)
   , charge_(nullptr)
@@ -80,12 +79,17 @@ RecoLeptonReader::~RecoLeptonReader()
     delete[] gInstance->mvaRawTTH_;
     delete[] gInstance->jetPtRatio_;
     delete[] gInstance->jetPtRel_;
-    delete[] gInstance->jetBtagCSV_;
     delete[] gInstance->jetNDauChargedMVASel_;
     delete[] gInstance->tightCharge_;
     delete[] gInstance->charge_;
     delete[] gInstance->filterBits_;
     delete[] gInstance->genMatchIdx_;
+
+    for(auto & kv: gInstance->jetBtagCSVs_)
+    {
+      delete[] kv.second;
+    }
+
     instances_[branchName_obj_] = nullptr;
   }
 }
@@ -111,7 +115,17 @@ RecoLeptonReader::setBranchNames()
     branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
     branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "jetPtRelv2");
     branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
-    branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBTagDeepCSV");
+    for(Btag btag: { Btag::kCSVv2, Btag::kDeepCSV }) // TODO: add kDeepJet
+    {
+      std::string btag_str = "";
+      switch(btag)
+      {
+        case Btag::kCSVv2:   btag_str = "CSV"; break;
+        case Btag::kDeepCSV: btag_str = "DeepCSV"; break;
+        case Btag::kDeepJet: btag_str = "DeepJet"; break;
+      }
+      branchNames_jetBtagCSV_[btag] = Form("%s_jetBTag%s", branchName_obj_.data(), btag_str.data());
+    }
     branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
     branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
     branchName_filterBits_ = Form("%s_%s", branchName_obj_.data(), "filterBits");
@@ -161,7 +175,10 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(mvaRawTTH_, branchName_mvaRawTTH_);
     bai.setBranchAddress(jetPtRatio_, branchName_jetPtRatio_);
     bai.setBranchAddress(jetPtRel_, branchName_jetPtRel_, -1.);
-    bai.setBranchAddress(jetBtagCSV_, branchName_jetBtagCSV_);
+    for(const auto & kv: branchNames_jetBtagCSV_)
+    {
+      bai.setBranchAddress(jetBtagCSVs_[kv.first], kv.second);
+    }
     bai.setBranchAddress(jetNDauChargedMVASel_, branchName_jetNDauChargedMVASel_, -1);
     bai.setBranchAddress(tightCharge_, branchName_tightCharge_);
     bai.setBranchAddress(charge_, branchName_charge_);

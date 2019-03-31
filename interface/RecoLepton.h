@@ -3,13 +3,16 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/ChargedParticle.h" // ChargedParticle
 
+#include <memory> // std::shared_ptr<>
+#include <map> // std::map<,>
+
 // forward declarations
 class GenLepton;
 class GenHadTau;
 class GenPhoton;
 class GenJet;
 
-#include <memory> // std::shared_ptr<>
+enum class Btag;
 
 class RecoLepton
   : public ChargedParticle
@@ -27,7 +30,6 @@ public:
              Double_t mvaRawTTH,
              Double_t jetPtRatio,
              Double_t jetPtRel,
-             Double_t jetBtagCSV,
              Int_t    jetNDauChargedMVASel,
              Int_t    tightCharge,
              UInt_t   filterBits,
@@ -130,6 +132,7 @@ public:
   Double_t jetPtRatio() const;
   Double_t jetPtRel() const;
   Double_t jetBtagCSV() const;
+  Double_t jetBtagCSV(Btag btag) const;
   Int_t jetNDauChargedMVASel() const;
   Int_t tightCharge() const;
   UInt_t filterBits() const;
@@ -147,23 +150,27 @@ public:
   bool isFakeable() const;
   bool isTight() const;
 
+  friend class RecoMuonReader;
+  friend class RecoElectronReader;
+
 protected:
 //--- common observables for electrons and muons
   Double_t dxy_;                ///< d_{xy}, distance in the transverse plane w.r.t PV
   Double_t dz_;                 ///< d_{z}, distance on the z axis w.r.t PV
   Double_t relIso_;             ///< relative mini-isolation
-  Double_t pfRelIso04All_; ///< PF relative isolation dR=0.3, charged component
+  Double_t pfRelIso04All_;      ///< PF relative isolation dR=0.3, charged component
   Double_t miniIsoCharged_;     ///< absolute charged mini-isolation
   Double_t miniIsoNeutral_;     ///< absolute neutral mini-isolation (PU corrected)
   Double_t sip3d_;              ///< significance of IP
   Double_t mvaRawTTH_;          ///< raw output of lepton MVA of ttH multilepton analysis
   Double_t jetPtRatio_;         ///< ratio of lepton pT to pT of nearby jet
   Double_t jetPtRel_;           ///< perpendicular component of the distance vector between lepton and its jet pT vectors
-  Double_t jetBtagCSV_;         ///< CSV b-tagging discriminator value of nearby jet
   Int_t jetNDauChargedMVASel_;  ///< number of charged constituents in the nearest jet
   Int_t tightCharge_;           ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
   UInt_t filterBits_;           ///< bitmask of matching with trigger objects
   Int_t genMatchIdx_;           ///< index to matched gen particle
+
+  std::map<Btag, Double_t> jetBtagCSVs_; ///< CSV b-tagging discriminator values of nearby jet
 
   Double_t assocJet_pt_;
   Particle::LorentzVector assocJet_p4_;

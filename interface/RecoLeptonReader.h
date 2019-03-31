@@ -7,6 +7,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 
+enum class Btag;
+
 class RecoLeptonReader
   : public ReaderBase
 {
@@ -100,12 +102,13 @@ protected:
   std::string branchName_mvaRawTTH_;
   std::string branchName_jetPtRatio_;
   std::string branchName_jetPtRel_;
-  std::string branchName_jetBtagCSV_;
   std::string branchName_jetNDauChargedMVASel_;
   std::string branchName_tightCharge_;
   std::string branchName_charge_;
   std::string branchName_filterBits_;
   std::string branchName_genMatchIdx_;
+
+  std::map<Btag, std::string> branchNames_jetBtagCSV_;
 
   UInt_t nLeptons_;
   Float_t * pt_;
@@ -123,12 +126,13 @@ protected:
   Float_t * mvaRawTTH_;
   Float_t * jetPtRatio_;
   Float_t * jetPtRel_;
-  Float_t * jetBtagCSV_;
   Int_t * jetNDauChargedMVASel_;
   Int_t * tightCharge_;
   Int_t * charge_;
   UInt_t * filterBits_;
   Int_t * genMatchIdx_;
+
+  std::map<Btag, Float_t *> jetBtagCSVs_;
 
   // CV: make sure that only one RecoLeptonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
