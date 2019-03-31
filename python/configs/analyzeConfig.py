@@ -413,7 +413,7 @@ class analyzeConfig(object):
             self.lep_mva_wp = "075"
 
         if self.lep_mva_wp == "090":
-            if self.era not in [ "2017" ]:
+            if self.era not in [ "2016", "2017" ]:
               raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
             self.lep_mva_cut = 0.90
         elif self.lep_mva_wp == "075":
