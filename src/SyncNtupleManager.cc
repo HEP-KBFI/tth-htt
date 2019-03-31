@@ -25,6 +25,7 @@ SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
   , nof_eles(2)
   , nof_taus(2)
   , nof_jets(4)
+  , nof_fwdJets(4)
 {
   std::string outputDirName_;
   std::string outputTreeName_ = outputTreeName;
@@ -69,11 +70,12 @@ SyncNtupleManager::~SyncNtupleManager()
 void
 SyncNtupleManager::initializeBranches()
 {
-  const char * lstr = "lep";
-  const char * mstr = "mu";
-  const char * estr = "ele";
-  const char * tstr = "tau";
-  const char * jstr = "jet";
+  const char * lstr  = "lep";
+  const char * mstr  = "mu";
+  const char * estr  = "ele";
+  const char * tstr  = "tau";
+  const char * jstr  = "jet";
+  const char * jfstr = "jetFwd";
 
   const std::string n_sel_lep_str         = Form("n_%s",             lstr);
   const std::string n_presel_mu_str       = Form("n_presel_%s",      mstr);
@@ -84,6 +86,7 @@ SyncNtupleManager::initializeBranches()
   const std::string n_mvasel_ele_str      = Form("n_mvasel_%s",      estr);
   const std::string n_presel_tau_str      = Form("n_presel_%s",      tstr);
   const std::string n_presel_jet_str      = Form("n_presel_%s",      jstr);
+  const std::string n_presel_fwdJet_str   = Form("n_presel_%s",      jfstr);
 
   setBranches(
     nEvent,            "nEvent",
@@ -98,6 +101,7 @@ SyncNtupleManager::initializeBranches()
     n_mvasel_ele,      n_mvasel_ele_str,
     n_presel_tau,      n_presel_tau_str,
     n_presel_jet,      n_presel_jet_str,
+    n_presel_fwdJet,   n_presel_fwdJet_str,
 
 //--- MET/MHT
     floatMap[FloatVariableType::PFMET],                    "PFMET",
@@ -319,6 +323,14 @@ SyncNtupleManager::initializeBranches()
     jet_QGdiscr, "QGdiscr"
   );
 
+  setBranches(
+    jfstr, nof_fwdJets,
+    jetFwd_pt,  "pt",
+    jetFwd_eta, "eta",
+    jetFwd_phi, "phi",
+    jetFwd_E,   "E"
+  );
+
   reset();
 }
 
@@ -536,24 +548,41 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
 }
 
 void
-SyncNtupleManager::read(const std::vector<const RecoJet *> & jets)
+SyncNtupleManager::read(const std::vector<const RecoJet *> & jets,
+                        bool isFwd)
 {
-  n_presel_jet = jets.size();
-  const Int_t nof_iterations = std::min(n_presel_jet, nof_jets);
-  for(Int_t i = 0; i < nof_iterations; ++i)
+  if(isFwd)
   {
-    const RecoJet * const jet = jets[i];
-    jet_pt[i] = jet -> pt();
-    jet_eta[i] = jet -> eta();
-    jet_phi[i] = jet -> phi();
-    jet_E[i] = (jet -> p4()).E();
-    if(jet -> hasBtag(Btag::kCSVv2))
+    n_presel_fwdJet = jets.size();
+    const Int_t nof_iterations = std::min(n_presel_fwdJet, nof_fwdJets);
+    for(Int_t i = 0; i < nof_iterations; ++i)
     {
-      jet_CSV[i] = jet -> BtagCSV(Btag::kCSVv2);
+      const RecoJet * const jet = jets[i];
+      jetFwd_pt[i] = jet -> pt();
+      jetFwd_eta[i] = jet -> eta();
+      jetFwd_phi[i] = jet -> phi();
+      jetFwd_E[i] = (jet -> p4()).E();
     }
-    jet_DeepCSV[i] = jet -> BtagCSV(Btag::kDeepCSV);
-    jet_DeepJet[i] = jet -> BtagCSV(Btag::kDeepJet);
-    jet_QGdiscr[i] = jet -> QGDiscr();
+  }
+  else
+  {
+    n_presel_jet = jets.size();
+    const Int_t nof_iterations = std::min(n_presel_jet, nof_jets);
+    for(Int_t i = 0; i < nof_iterations; ++i)
+    {
+      const RecoJet * const jet = jets[i];
+      jet_pt[i] = jet -> pt();
+      jet_eta[i] = jet -> eta();
+      jet_phi[i] = jet -> phi();
+      jet_E[i] = (jet -> p4()).E();
+      if(jet -> hasBtag(Btag::kCSVv2))
+      {
+        jet_CSV[i] = jet -> BtagCSV(Btag::kCSVv2);
+      }
+      jet_DeepCSV[i] = jet -> BtagCSV(Btag::kDeepCSV);
+      jet_DeepJet[i] = jet -> BtagCSV(Btag::kDeepJet);
+      jet_QGdiscr[i] = jet -> QGDiscr();
+    }
   }
 }
 
@@ -601,7 +630,8 @@ SyncNtupleManager::reset()
     n_fakeablesel_ele,
     n_mvasel_ele,
     n_presel_tau,
-    n_presel_jet
+    n_presel_jet,
+    n_presel_fwdJet
   );
 
   isGenMatched = false;
@@ -731,6 +761,14 @@ SyncNtupleManager::reset()
     jet_DeepCSV,
     jet_DeepJet,
     jet_QGdiscr
+  );
+
+  reset(
+    nof_fwdJets,
+    jetFwd_pt,
+    jetFwd_eta,
+    jetFwd_phi,
+    jetFwd_E
   );
 
   for(auto & kv: hltMap)

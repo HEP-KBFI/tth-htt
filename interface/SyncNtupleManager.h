@@ -134,7 +134,8 @@ public:
             const std::vector<const RecoElectron *> & fakeable_electrons,
             const std::vector<const RecoElectron *> & tight_electrons);
   void read(const std::vector<const RecoHadTau *> & hadtaus);
-  void read(const std::vector<const RecoJet *> & jets);
+  void read(const std::vector<const RecoJet *> & jets,
+            bool isFwd = false);
   void read(Float_t value,
             FloatVariableType type);
   void read(const std::vector<std::vector<hltPath *>> & hltPaths);
@@ -281,6 +282,7 @@ private:
   const Int_t nof_eles;
   const Int_t nof_taus;
   const Int_t nof_jets;
+  const Int_t nof_fwdJets;
 
   Long64_t nEvent;
   Int_t ls;
@@ -295,6 +297,7 @@ private:
   Int_t n_mvasel_ele;
   Int_t n_presel_tau;
   Int_t n_presel_jet;
+  Int_t n_presel_fwdJet;
 
   Bool_t isGenMatched; ///< flag to indicate whether lepton(s) + tau(s) are all gen matched
   Int_t ntags;         ///< number of medium b-tagged jets
@@ -405,6 +408,11 @@ private:
   Float_t * jet_DeepCSV;
   Float_t * jet_DeepJet;
   Float_t * jet_QGdiscr;
+
+  Float_t * jetFwd_pt;
+  Float_t * jetFwd_eta;
+  Float_t * jetFwd_phi;
+  Float_t * jetFwd_E;
 
   std::map<std::string, Int_t> hltMap;
 
