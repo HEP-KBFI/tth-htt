@@ -54,6 +54,8 @@ public:
 
   Double_t maxPt() const;
 
+  bool hasBtag(Btag btag) const;
+
   friend class RecoJetReader;
   friend class RecoJetWriter;
 

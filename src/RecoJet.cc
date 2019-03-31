@@ -119,6 +119,12 @@ RecoJet::maxPt() const
   return max_Pt;
 }
 
+bool
+RecoJet::hasBtag(Btag btag) const
+{
+  return BtagCSVs_.count(btag);
+}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const RecoJet & jet)
