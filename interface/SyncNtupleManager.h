@@ -322,6 +322,8 @@ private:
   Float_t * mu_jetPtRel;
   Float_t * mu_jetPtRatio;
   Float_t * mu_jetCSV;
+  Float_t * mu_jetDeepCSV;
+  Float_t * mu_jetDeepJet;
   Float_t * mu_sip3D;
   Float_t * mu_dxyAbs;
   Float_t * mu_dxy;
@@ -332,6 +334,7 @@ private:
   Float_t * mu_dpt_div_pt;
   Bool_t * mu_isfakeablesel;
   Bool_t * mu_ismvasel;
+  Bool_t * mu_isGenMatched;
 
   Float_t * ele_pt;
   Float_t * ele_conept;
@@ -347,6 +350,8 @@ private:
   Float_t * ele_jetPtRel;
   Float_t * ele_jetPtRatio;
   Float_t * ele_jetCSV;
+  Float_t * ele_jetDeepCSV;
+  Float_t * ele_jetDeepJet;
   Float_t * ele_sip3D;
   Float_t * ele_dxyAbs;
   Float_t * ele_dxy;
@@ -363,6 +368,7 @@ private:
   Float_t * ele_OoEminusOoP;
   Bool_t * ele_isfakeablesel;
   Bool_t * ele_ismvasel;
+  Bool_t * ele_isGenMatched;
 
   Float_t * tau_pt;
   Float_t * tau_eta;
@@ -389,12 +395,16 @@ private:
   Int_t * tau_againstElectronMediumMVA6;
   Int_t * tau_againstElectronTightMVA6;
   Int_t * tau_againstElectronVTightMVA6;
+  Bool_t * tau_isGenMatched;
 
   Float_t * jet_pt;
   Float_t * jet_eta;
   Float_t * jet_phi;
   Float_t * jet_E;
   Float_t * jet_CSV;
+  Float_t * jet_DeepCSV;
+  Float_t * jet_DeepJet;
+  Float_t * jet_QGdiscr;
 
   std::map<std::string, Int_t> hltMap;
 

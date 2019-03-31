@@ -236,7 +236,8 @@ SyncNtupleManager::initializeBranches()
     mu_mediumID,             "mediumID",
     mu_dpt_div_pt,           "dpt_div_pt",
     mu_isfakeablesel,        "isfakeablesel",
-    mu_ismvasel,             "ismvasel"
+    mu_ismvasel,             "ismvasel",
+    mu_isGenMatched,         "isGenMatched"
   );
 
   setBranches(
@@ -255,6 +256,8 @@ SyncNtupleManager::initializeBranches()
     ele_jetPtRel,             "jetPtRel",
     ele_jetPtRatio,           "jetPtRatio",
     ele_jetCSV,               "jetCSV",
+    ele_jetDeepCSV,           "jetDeepCSV",
+    ele_jetDeepJet,           "jetDeepJet",
     ele_sip3D,                "sip3D",
     ele_dxyAbs,               "dxyAbs",
     ele_dxy,                  "dxy",
@@ -270,45 +273,50 @@ SyncNtupleManager::initializeBranches()
     ele_deltaPhi,             "deltaPhi",
     ele_OoEminusOoP,          "OoEminusOoP",
     ele_isfakeablesel,        "isfakeablesel",
-    ele_ismvasel,             "ismvasel"
+    ele_ismvasel,             "ismvasel",
+    ele_isGenMatched,         "isGenMatched"
   );
 
   setBranches(
     tstr, nof_taus,
-    tau_pt,                                              "pt",
-    tau_eta,                                             "eta",
-    tau_phi,                                             "phi",
-    tau_E,                                               "E",
-    tau_charge,                                          "charge",
-    tau_dxy,                                             "dxy",
-    tau_dz,                                              "dz",
-    tau_decayMode,                                       "decayMode",
-    tau_decayModeFindingOldDMs,                          "decayModeFindingOldDMs",
-    tau_decayModeFindingNewDMs,                          "decayModeFindingNewDMs",
-    tau_byVVLooseIsolationMVArun2v1DBdR03oldDMwLT,       "byVVLooseIsolationMVArun2v1DBdR03oldDMwLT",
-    tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT,        "byVLooseIsolationMVArun2v1DBdR03oldDMwLT",
-    tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT,         "byLooseIsolationMVArun2v1DBdR03oldDMwLT",
-    tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT,        "byMediumIsolationMVArun2v1DBdR03oldDMwLT",
-    tau_byTightIsolationMVArun2v1DBdR03oldDMwLT,         "byTightIsolationMVArun2v1DBdR03oldDMwLT",
-    tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT,        "byVTightIsolationMVArun2v1DBdR03oldDMwLT",
-    tau_byVVTightIsolationMVArun2v1DBdR03oldDMwLT,       "byVVTightIsolationMVArun2v1DBdR03oldDMwLT",
-    tau_rawMVArun2v1DBdR03oldDMwLT,                      "rawMVArun2v1DBdR03oldDMwLT",
-    tau_againstMuonLoose3,                               "againstMuonLoose3",
-    tau_againstMuonTight3,                               "againstMuonTight3",
-    tau_againstElectronVLooseMVA6,                       "againstElectronVLooseMVA6",
-    tau_againstElectronLooseMVA6,                        "againstElectronLooseMVA6",
-    tau_againstElectronMediumMVA6,                       "againstElectronMediumMVA6",
-    tau_againstElectronTightMVA6,                        "againstElectronTightMVA6",
-    tau_againstElectronVTightMVA6,                       "againstElectronVTightMVA6"
+    tau_pt,                                        "pt",
+    tau_eta,                                       "eta",
+    tau_phi,                                       "phi",
+    tau_E,                                         "E",
+    tau_charge,                                    "charge",
+    tau_dxy,                                       "dxy",
+    tau_dz,                                        "dz",
+    tau_decayMode,                                 "decayMode",
+    tau_decayModeFindingOldDMs,                    "decayModeFindingOldDMs",
+    tau_decayModeFindingNewDMs,                    "decayModeFindingNewDMs",
+    tau_byVVLooseIsolationMVArun2v1DBdR03oldDMwLT, "byVVLooseIsolationMVArun2v1DBdR03oldDMwLT",
+    tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT,  "byVLooseIsolationMVArun2v1DBdR03oldDMwLT",
+    tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT,   "byLooseIsolationMVArun2v1DBdR03oldDMwLT",
+    tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT,  "byMediumIsolationMVArun2v1DBdR03oldDMwLT",
+    tau_byTightIsolationMVArun2v1DBdR03oldDMwLT,   "byTightIsolationMVArun2v1DBdR03oldDMwLT",
+    tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT,  "byVTightIsolationMVArun2v1DBdR03oldDMwLT",
+    tau_byVVTightIsolationMVArun2v1DBdR03oldDMwLT, "byVVTightIsolationMVArun2v1DBdR03oldDMwLT",
+    tau_rawMVArun2v1DBdR03oldDMwLT,                "rawMVArun2v1DBdR03oldDMwLT",
+    tau_againstMuonLoose3,                         "againstMuonLoose3",
+    tau_againstMuonTight3,                         "againstMuonTight3",
+    tau_againstElectronVLooseMVA6,                 "againstElectronVLooseMVA6",
+    tau_againstElectronLooseMVA6,                  "againstElectronLooseMVA6",
+    tau_againstElectronMediumMVA6,                 "againstElectronMediumMVA6",
+    tau_againstElectronTightMVA6,                  "againstElectronTightMVA6",
+    tau_againstElectronVTightMVA6,                 "againstElectronVTightMVA6",
+    tau_isGenMatched,                              "isGenMatched"
   );
 
   setBranches(
     jstr, nof_jets,
-    jet_pt,           "pt",
-    jet_eta,          "eta",
-    jet_phi,          "phi",
-    jet_E,            "E",
-    jet_CSV,          "CSV"
+    jet_pt,      "pt",
+    jet_eta,     "eta",
+    jet_phi,     "phi",
+    jet_E,       "E",
+    jet_CSV,     "CSV",
+    jet_DeepCSV, "DeepCSV",
+    jet_DeepJet, "DeepJet",
+    jet_QGdiscr, "QGdiscr"
   );
 
   reset();
@@ -382,7 +390,9 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
     mu_jetNDauChargedMVASel[i] = muon -> jetNDauChargedMVASel();
     mu_jetPtRel[i] = muon -> jetPtRel();
     mu_jetPtRatio[i] = muon -> jetPtRatio();
-    mu_jetCSV[i] = muon -> jetBtagCSV();
+    mu_jetCSV[i] = muon -> jetBtagCSV(Btag::kCSVv2);
+    mu_jetDeepCSV[i] = muon -> jetBtagCSV(Btag::kDeepCSV);
+//    mu_jetDeepJet[i] = muon -> jetBtagCSV(Btag::kDeepJet);
     mu_sip3D[i] = muon -> sip3d();
     mu_dxyAbs[i] = std::fabs(muon -> dxy());
     mu_dxy[i] = muon -> dxy();
@@ -410,6 +420,8 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
         break;
       }
     }
+
+    mu_isGenMatched[i] = muon -> isGenMatched();
   }
 }
 
@@ -439,7 +451,9 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
     ele_jetNDauChargedMVASel[i] = electron -> jetNDauChargedMVASel();
     ele_jetPtRel[i] = electron -> jetPtRel();
     ele_jetPtRatio[i] = electron -> jetPtRatio();
-    ele_jetCSV[i] = electron -> jetBtagCSV();
+    ele_jetCSV[i] = electron -> jetBtagCSV(Btag::kCSVv2);
+    ele_jetDeepCSV[i] = electron -> jetBtagCSV(Btag::kDeepCSV);
+//    ele_jetDeepJet[i] = electron -> jetBtagCSV(Btag::kDeepJet);
     ele_sip3D[i] = electron -> sip3d();
     ele_dxyAbs[i] = std::fabs(electron -> dxy());
     ele_dxy[i] = electron -> dxy();
@@ -473,6 +487,8 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
         break;
       }
     }
+
+    ele_isGenMatched[i] = electron -> isGenMatched();
   }
 }
 
@@ -515,6 +531,7 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
     tau_againstElectronMediumMVA6[i] = idAntiErun2 >= 3 ? 1 : 0;
     tau_againstElectronTightMVA6[i] = idAntiErun2 >= 4 ? 1 : 0;
     tau_againstElectronVTightMVA6[i] = idAntiErun2 >= 5 ? 1 : 0;
+    tau_isGenMatched[i] = hadtau -> isGenMatched();
   }
 }
 
@@ -530,7 +547,13 @@ SyncNtupleManager::read(const std::vector<const RecoJet *> & jets)
     jet_eta[i] = jet -> eta();
     jet_phi[i] = jet -> phi();
     jet_E[i] = (jet -> p4()).E();
-    jet_CSV[i] = std::max(jet -> BtagCSV(), 0.);
+    if(jet -> hasBtag(Btag::kCSVv2))
+    {
+      jet_CSV[i] = jet -> BtagCSV(Btag::kCSVv2);
+    }
+    jet_DeepCSV[i] = jet -> BtagCSV(Btag::kDeepCSV);
+    jet_DeepJet[i] = jet -> BtagCSV(Btag::kDeepJet);
+    jet_QGdiscr[i] = jet -> QGDiscr();
   }
 }
 
@@ -616,6 +639,8 @@ SyncNtupleManager::reset()
     mu_jetPtRel,
     mu_jetPtRatio,
     mu_jetCSV,
+    mu_jetDeepCSV,
+    mu_jetDeepJet,
     mu_sip3D,
     mu_dxy,
     mu_dxyAbs,
@@ -625,7 +650,8 @@ SyncNtupleManager::reset()
     mu_mediumID,
     mu_dpt_div_pt,
     mu_isfakeablesel,
-    mu_ismvasel
+    mu_ismvasel,
+    mu_isGenMatched
   );
 
   reset(
@@ -644,6 +670,8 @@ SyncNtupleManager::reset()
     ele_jetPtRel,
     ele_jetPtRatio,
     ele_jetCSV,
+    ele_jetDeepCSV,
+    ele_jetDeepJet,
     ele_sip3D,
     ele_dxy,
     ele_dxyAbs,
@@ -659,7 +687,8 @@ SyncNtupleManager::reset()
     ele_deltaPhi,
     ele_OoEminusOoP,
     ele_isfakeablesel,
-    ele_ismvasel
+    ele_ismvasel,
+    ele_isGenMatched
   );
 
   reset(
@@ -688,7 +717,8 @@ SyncNtupleManager::reset()
     tau_againstElectronLooseMVA6,
     tau_againstElectronMediumMVA6,
     tau_againstElectronTightMVA6,
-    tau_againstElectronVTightMVA6
+    tau_againstElectronVTightMVA6,
+    tau_isGenMatched
   );
 
   reset(
@@ -697,7 +727,10 @@ SyncNtupleManager::reset()
     jet_eta,
     jet_phi,
     jet_E,
-    jet_CSV
+    jet_CSV,
+    jet_DeepCSV,
+    jet_DeepJet,
+    jet_QGdiscr
   );
 
   for(auto & kv: hltMap)
