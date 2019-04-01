@@ -54,10 +54,11 @@ PLACEHOLDER = -9999
 # - when investigating a particular problem, there's no need to fire up the documentation page in
 #   order to search for the correct branch names; instead, the user can copy the name from this file
 OBJECTS_MAP = collections.OrderedDict()
-OBJECTS_MAP['mu']  = { 'n' : 2, 'human_name' : 'muon'     }
-OBJECTS_MAP['ele'] = { 'n' : 2, 'human_name' : 'electron' }
-OBJECTS_MAP['tau'] = { 'n' : 2, 'human_name' : 'tau'      }
-OBJECTS_MAP['jet'] = { 'n' : 4, 'human_name' : 'jet'      }
+OBJECTS_MAP['mu']     = { 'n' : 2, 'human_name' : 'muon'        }
+OBJECTS_MAP['ele']    = { 'n' : 2, 'human_name' : 'electron'    }
+OBJECTS_MAP['tau']    = { 'n' : 2, 'human_name' : 'tau'         }
+OBJECTS_MAP['jet']    = { 'n' : 4, 'human_name' : 'jet'         }
+OBJECTS_MAP['jetFwd'] = { 'n' : 4, 'human_name' : 'forward jet' }
 
 # For counting the number of preselected objects
 PRESELECTION_COUNTER_BRANCHES = [ 'n_presel_%s' % object_prefix for object_prefix in OBJECTS_MAP ]
@@ -100,6 +101,8 @@ OBJECTS_MAP['tau']['branch_names'] = COMMON_BRANCH_NAMES | {
 }
 
 OBJECTS_MAP['jet']['branch_names'] = COMMON_BRANCH_NAMES | { 'CSV', }
+
+OBJECTS_MAP['jetFwd']['branch_names'] = COMMON_BRANCH_NAMES
 
 LEADING_TYPES = [ 'leading', 'subleading', 'third', 'fourth' ]
 
