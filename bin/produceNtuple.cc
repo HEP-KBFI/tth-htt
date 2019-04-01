@@ -130,9 +130,9 @@ main(int argc,
   const std::string branchName_genPhotons = cfg_produceNtuple.getParameter<std::string>("branchName_genPhotons");
   const std::string branchName_genJets    = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
 
-  const std::string branchName_muonGenMatch        = cfg_produceNtuple.getParameter<std::string>("branchName_muonGenMatch");
-  const std::string branchName_electronGenMatch    = cfg_produceNtuple.getParameter<std::string>("branchName_electronGenMatch");
-  const std::string branchName_hadTauGenMatch      = cfg_produceNtuple.getParameter<std::string>("branchName_hadTauGenMatch");
+  const std::string branchName_muonGenMatch     = cfg_produceNtuple.getParameter<std::string>("branchName_muonGenMatch");
+  const std::string branchName_electronGenMatch = cfg_produceNtuple.getParameter<std::string>("branchName_electronGenMatch");
+  const std::string branchName_hadTauGenMatch   = cfg_produceNtuple.getParameter<std::string>("branchName_hadTauGenMatch");
   const std::string branchName_jetGenMatch      = cfg_produceNtuple.getParameter<std::string>("branchName_jetGenMatch");
 
   const vstring branchNames_triggers = cfg_produceNtuple.getParameter<vstring>("branchNames_triggers");
