@@ -711,7 +711,7 @@ class analyzeConfig(object):
             "process.fwliteInput.fileNames = cms.vstring(%s)"  % jobOptions['ntupleFiles'],
             "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
             "{}.{:<{len}} = cms.string('{}')".format        (process_string, 'era',                    self.era,     len = max_option_len),
-            "{}.{:<{len}} = cms.bool({})".format            (process_string, 'redoGenMatching',       'True',       len = max_option_len),
+            "{}.{:<{len}} = cms.bool({})".format            (process_string, 'redoGenMatching',       'False',       len = max_option_len),
             "{}.{:<{len}} = cms.bool({})".format            (process_string, 'isDEBUG',                self.isDebug, len = max_option_len),
             "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era,     len = max_option_len),
             "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era,     len = max_option_len),

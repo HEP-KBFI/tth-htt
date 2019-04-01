@@ -8,6 +8,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs()
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // Reco*CollectionCleaner
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // Reco*CollectionGenMatcher
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
@@ -27,6 +28,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
+#include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 #include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
@@ -140,6 +146,11 @@ main(int argc,
   const bool useNonNominal      = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
+  const bool redoGenMatching    = cfg_analyze.getParameter<bool>("redoGenMatching");
+  const bool genMatchingByIndex = cfg_analyze.getParameter<bool>("genMatchingByIndex");
+  const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
+  const bool readGenObjects     = isMC && ! redoGenMatching;
+
   checkOptionValidity(central_or_shift, isMC);
   const int hadTauPt_option            = getHadTauPt_option     (central_or_shift);
   const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift);
@@ -149,11 +160,20 @@ main(int argc,
 
   const bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
 
-  const std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
-  const std::string branchName_muons     = cfg_analyze.getParameter<std::string>("branchName_muons");
-  const std::string branchName_hadTaus   = cfg_analyze.getParameter<std::string>("branchName_hadTaus");
-  const std::string branchName_jets      = cfg_analyze.getParameter<std::string>("branchName_jets");
-  const std::string branchName_met       = cfg_analyze.getParameter<std::string>("branchName_met");
+  const std::string branchName_electrons  = cfg_analyze.getParameter<std::string>("branchName_electrons");
+  const std::string branchName_muons      = cfg_analyze.getParameter<std::string>("branchName_muons");
+  const std::string branchName_hadTaus    = cfg_analyze.getParameter<std::string>("branchName_hadTaus");
+  const std::string branchName_jets       = cfg_analyze.getParameter<std::string>("branchName_jets");
+  const std::string branchName_met        = cfg_analyze.getParameter<std::string>("branchName_met");
+  const std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
+  const std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
+  const std::string branchName_genPhotons = cfg_analyze.getParameter<std::string>("branchName_genPhotons");
+  const std::string branchName_genJets    = cfg_analyze.getParameter<std::string>("branchName_genJets");
+
+  const std::string branchName_muonGenMatch     = cfg_analyze.getParameter<std::string>("branchName_muonGenMatch");
+  const std::string branchName_electronGenMatch = cfg_analyze.getParameter<std::string>("branchName_electronGenMatch");
+  const std::string branchName_hadTauGenMatch   = cfg_analyze.getParameter<std::string>("branchName_hadTauGenMatch");
+  const std::string branchName_jetGenMatch      = cfg_analyze.getParameter<std::string>("branchName_jetGenMatch");
 
   const std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << '\n';
@@ -205,23 +225,26 @@ main(int argc,
   inputTree -> registerReader(&hltPathReader_instance);
 
 //--- declare particle collections
-  RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons, false);
+  RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
   inputTree->registerReader(muonReader);
+  const RecoMuonCollectionGenMatcher muonGenMatcher;
   const RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
 
-  RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons, false);
+  RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
   electronReader->readUncorrected(useNonNominal);
   inputTree->registerReader(electronReader);
+  const RecoElectronCollectionGenMatcher electronGenMatcher;
   const RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
   const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
 
-  RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, false);
+  RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
   hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
   inputTree->registerReader(hadTauReader);
+  const RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
   preselHadTauSelector.set_if_looser(hadTauSelection_tauIdWP);
@@ -232,11 +255,13 @@ main(int argc,
   fakeableHadTauSelector.set_min_antiElectron(-1);
   fakeableHadTauSelector.set_min_antiMuon(-1);
 
-  RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, false);
+  RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jetBtagSF_option);
   inputTree->registerReader(jetReader);
+  const RecoJetCollectionGenMatcher jetGenMatcher;
   const RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
+  const RecoJetCollectionCleanerByIndex jetCleanerByIndex(isDEBUG);
   const RecoJetCollectionSelector jetSelector(era, -1, isDEBUG);
   const RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
   const RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
@@ -246,6 +271,50 @@ main(int argc,
   RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
   metReader->setMEt_central_or_shift(met_option);
   inputTree->registerReader(metReader);
+
+  GenLeptonReader * genLeptonReader = nullptr;
+  GenHadTauReader * genHadTauReader = nullptr;
+  GenPhotonReader * genPhotonReader = nullptr;
+  GenJetReader * genJetReader = nullptr;
+
+  GenParticleReader * genMatchToMuonReader     = nullptr;
+  GenParticleReader * genMatchToElectronReader = nullptr;
+  GenParticleReader * genMatchToHadTauReader   = nullptr;;
+  GenParticleReader * genMatchToJetReader      = nullptr;
+
+  if(isMC && ! readGenObjects)
+  {
+    genLeptonReader = new GenLeptonReader(branchName_genLeptons);
+    inputTree -> registerReader(genLeptonReader);
+    genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
+    inputTree -> registerReader(genHadTauReader);
+    genJetReader = new GenJetReader(branchName_genJets);
+    inputTree -> registerReader(genJetReader);
+
+    if(genMatchingByIndex)
+    {
+      genMatchToMuonReader = new GenParticleReader(branchName_muonGenMatch);
+      genMatchToMuonReader -> readGenPartFlav(true);
+      inputTree -> registerReader(genMatchToMuonReader);
+
+      genMatchToElectronReader = new GenParticleReader(branchName_electronGenMatch);
+      genMatchToElectronReader -> readGenPartFlav(true);
+      inputTree -> registerReader(genMatchToElectronReader);
+
+      genMatchToHadTauReader = new GenParticleReader(branchName_hadTauGenMatch);
+      genMatchToHadTauReader -> readGenPartFlav(true);
+      inputTree -> registerReader(genMatchToHadTauReader);
+
+      genMatchToJetReader = new GenParticleReader(branchName_jetGenMatch);
+      genMatchToJetReader -> readGenPartFlav(true);
+      inputTree -> registerReader(genMatchToJetReader);
+    }
+    else
+    {
+      genPhotonReader = new GenPhotonReader(branchName_genPhotons);
+      inputTree -> registerReader(genPhotonReader);
+    }
+  }
 
   int analyzedEntries = 0;
   int selectedEntries = 0;
@@ -260,8 +329,6 @@ main(int argc,
                 << " (" << eventInfo
                 << ") file (" << selectedEntries << " Entries selected)\n";
     }
-    //if (!(eventInfo.run ==  1 && eventInfo.lumi ==  9909 &&  eventInfo.event == 16803200)) continue; // :
-    //if (!( eventInfo.event ==  13863835)) continue; // :
     ++analyzedEntries;
 
     if(run_lumi_eventSelector && ! (*run_lumi_eventSelector)(eventInfo))
@@ -344,8 +411,6 @@ main(int argc,
     const std::vector<const RecoMuon *> tightMuons    = tightMuonSelector   (preselMuons,  isHigherConePt);
     const std::vector<const RecoMuon *> selMuons = preselMuons;
 
-    snm->read(preselMuons, fakeableMuons, tightMuons);
-
     const std::vector<RecoElectron> electrons = electronReader->read();
     const std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
     const std::vector<const RecoElectron *> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
@@ -354,13 +419,9 @@ main(int argc,
     const std::vector<const RecoElectron *> tightElectrons    = tightElectronSelector   (preselElectrons,  isHigherConePt);
     const std::vector<const RecoElectron *> selElectrons = preselElectrons;
 
-    snm->read(preselElectrons, fakeableElectrons, tightElectrons);
-
     const std::vector<const RecoLepton *> preselLeptons   = mergeLeptonCollections(preselElectrons,   preselMuons,   isHigherConePt);
     const std::vector<const RecoLepton *> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherConePt);
     const std::vector<const RecoLepton *> selLeptons      = mergeLeptonCollections(selElectrons,      selMuons,      isHigherConePt);
-
-    snm->read(selLeptons);
 
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau *> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -369,16 +430,91 @@ main(int argc,
     const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> selHadTaus = preselHadTaus;
 
-    snm->read(selHadTaus);
-
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet *> jet_ptrs = convert_to_ptrs(jets);
-    const std::vector<const RecoJet *> cleanedJets = jetCleaner(jet_ptrs, fakeableLeptons, preselHadTaus);
+    const std::vector<const RecoJet *> cleanedJets = jetCleaningByIndex ?
+      jetCleanerByIndex(jet_ptrs, fakeableLeptons, preselHadTaus)       :
+      jetCleaner       (jet_ptrs, fakeableLeptons, preselHadTaus)
+    ;
     const std::vector<const RecoJet *> selJets         = jetSelector          (cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selBJets_loose  = jetSelectorBtagLoose (cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selJetsForward  = jetSelectorForward   (jet_ptrs,    isHigherPt);
+
+    if(isMC && ! readGenObjects)
+    {
+      const std::vector<GenLepton> genLeptons = genLeptonReader->read();;
+      const std::vector<GenHadTau> genHadTaus = genHadTauReader->read();
+      const std::vector<GenJet>    genJets    = genJetReader->read();
+
+      // matching to gen had taus possible only by dR-matching
+      muonGenMatcher.addGenHadTauMatch    (preselMuons, genHadTaus);
+      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
+      hadTauGenMatcher.addGenHadTauMatch  (selHadTaus, genHadTaus);
+      jetGenMatcher.addGenHadTauMatch     (selJets, genHadTaus);
+
+      // matching reco leptons and had taus to gen jets possible only by dR-matching
+      muonGenMatcher.addGenJetMatch    (preselMuons, genJets);
+      electronGenMatcher.addGenJetMatch(preselElectrons, genJets);
+      hadTauGenMatcher.addGenJetMatch  (selHadTaus, genJets);
+
+      // reco jets can be matched to gen leptons only by dR-matching
+      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons);
+
+      if(genMatchingByIndex)
+      {
+        const std::vector<GenParticle> muonGenMatch     = genMatchToMuonReader->read();
+        const std::vector<GenParticle> electronGenMatch = genMatchToElectronReader->read();
+        const std::vector<GenParticle> hadTauGenMatch   = genMatchToHadTauReader->read();
+        const std::vector<GenParticle> jetGenMatch      = genMatchToJetReader->read();
+
+        // match reconstructed to generator level particles by indices
+        muonGenMatcher.addGenLeptonMatchByIndex(preselMuons, muonGenMatch, GenParticleType::kGenMuon);
+
+        electronGenMatcher.addGenLeptonMatchByIndex(preselElectrons, electronGenMatch, GenParticleType::kGenElectron);
+        electronGenMatcher.addGenPhotonMatchByIndex(preselElectrons, electronGenMatch);
+
+        hadTauGenMatcher.addGenLeptonMatchByIndex(selHadTaus, hadTauGenMatch, GenParticleType::kGenAnyLepton);
+
+        jetGenMatcher.addGenJetMatchByIndex(selJets, jetGenMatch);
+      }
+      else
+      {
+        const std::vector<GenPhoton> genPhotons = genPhotonReader->read();
+
+        std::vector<GenLepton> genElectrons;
+        std::vector<GenLepton> genMuons;
+
+        for(const GenLepton & genLepton: genLeptons)
+        {
+          const int genLeptonType = getLeptonType(genLepton.pdgId());
+          switch(genLeptonType)
+          {
+            case kElectron: genElectrons.push_back(genLepton); break;
+            case kMuon:     genMuons.push_back(genLepton);     break;
+            default: assert(0);
+          }
+        }
+
+        // match reconstructed to generator level particles by dR-matching
+        muonGenMatcher.addGenLeptonMatch(preselMuons, genMuons);
+
+        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons);
+        electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
+
+        hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons);
+
+        jetGenMatcher.addGenJetMatch(selJets, genJets);
+      }
+    }
+
+    snm->read(preselMuons, fakeableMuons, tightMuons);
+    snm->read(preselElectrons, fakeableElectrons, tightElectrons);
+    snm->read(selLeptons);
+    snm->read(selHadTaus);
+    snm->read(selJets, false);
+    snm->read(selJetsForward, true);
 
     const double avg_dr_jet = comp_avg_dr_jet(selJets);
     const double max_dr_jet = comp_max_dr_jet(selJets);
@@ -386,15 +522,12 @@ main(int argc,
     const double mbb_loose  = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
     const double btagWeight = get_BtagWeight(selJets);
 
-    snm->read(selJets, false);
     snm->read(avg_dr_jet, FloatVariableType::avg_dr_jet);
     snm->read(max_dr_jet, FloatVariableType::max_dr_jet);
     snm->read(btagWeight, FloatVariableType::bTagSF_weight);
     snm->read(mbb,        FloatVariableType::mbb);
     snm->read(mbb_loose,  FloatVariableType::mbb_loose);
     snm->read(false, selBJets_medium.size(), selBJets_loose.size());
-
-    snm->read(selJetsForward, true);
 
 //--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();

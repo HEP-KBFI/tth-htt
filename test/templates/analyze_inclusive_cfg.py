@@ -59,16 +59,29 @@ process.analyze_inclusive = cms.PSet(
     apply_offline_e_trigger_cuts_1mu1tau = cms.bool(True),
     apply_offline_e_trigger_cuts_1e1tau = cms.bool(True),
 
-    hadTauSelection_tauIdWP = cms.string('dR03mvaMedium'),
+    hadTauSelection_tauIdWP = cms.string('dR03mvaVLoose'),
 
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
 
-    branchName_electrons = cms.string('Electron'),
-    branchName_muons = cms.string('Muon'),
-    branchName_hadTaus = cms.string('Tau'),
-    branchName_jets = cms.string('Jet'),
-    branchName_met = cms.string('MET'),
+    branchName_electrons  = cms.string('Electron'),
+    branchName_muons      = cms.string('Muon'),
+    branchName_hadTaus    = cms.string('Tau'),
+    branchName_jets       = cms.string('Jet'),
+    branchName_met        = cms.string('MET'),
+    branchName_genLeptons = cms.string('GenLep'),
+    branchName_genPhotons = cms.string('GenPhoton'),
+    branchName_genHadTaus = cms.string('GenVisTau'),
+    branchName_genJets    = cms.string('GenJet'),
+
+    branchName_muonGenMatch     = cms.string('MuonGenMatch'),
+    branchName_electronGenMatch = cms.string('ElectronGenMatch'),
+    branchName_hadTauGenMatch   = cms.string('TauGenMatch'),
+    branchName_jetGenMatch      = cms.string('JetGenMatch'),
+
+    redoGenMatching    = cms.bool(False),
+    genMatchingByIndex = cms.bool(True),
+    jetCleaningByIndex = cms.bool(True),
 
     selEventsFileName_input = cms.string(''),
     isDEBUG = cms.bool(False),
