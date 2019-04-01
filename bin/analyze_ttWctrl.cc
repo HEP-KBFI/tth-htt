@@ -51,6 +51,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorForward.h" // RecoJetSelectorForward
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterSelector.h" // MEtFilterSelector
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
@@ -373,6 +374,7 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelector jetSelector(era);
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
+  const RecoJetCollectionSelectorForward jetSelectorForward(era, -1, isDEBUG);
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
@@ -779,6 +781,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
+    const std::vector<const RecoJet *> selJetsForward = jetSelectorForward(jet_ptrs, isHigherPt);
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     if ( isMC && redoGenMatching && !fillGenEvtHistograms ) {
@@ -1333,6 +1336,7 @@ int main(int argc, char* argv[])
       const double mbb            = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
       const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1000;
       const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
+      const int nLightJet         = selJets.size() - selBJets_loose.size() + selJetsForward.size();
 
       snm->read(eventInfo);
       snm->read(selLeptons);
@@ -1341,7 +1345,7 @@ int main(int argc, char* argv[])
       snm->read(selJets);
 
       snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
-      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size());
+      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet);
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);

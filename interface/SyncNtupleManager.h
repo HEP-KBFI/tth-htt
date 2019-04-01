@@ -139,7 +139,7 @@ public:
   void read(Float_t value,
             FloatVariableType type);
   void read(const std::vector<std::vector<hltPath *>> & hltPaths);
-  void read(bool is_genMatched, int n_tags, int n_tags_loose);
+  void read(bool is_genMatched, int n_tags, int n_tags_loose, int n_jets_light);
   void fill();
   void write();
   void reset();
@@ -302,6 +302,7 @@ private:
   Bool_t isGenMatched; ///< flag to indicate whether lepton(s) + tau(s) are all gen matched
   Int_t ntags;         ///< number of medium b-tagged jets
   Int_t ntags_loose;   ///< number of loose b-tagged jets
+  Int_t njets_light;   ///< number of light jets (central jets not passing loose b-tag requirement + forward jets)
 
   Float_t * lep_pt;
   Float_t * lep_conePt;

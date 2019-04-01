@@ -51,6 +51,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorForward.h" // RecoJetSelectorForward
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterSelector.h" // MEtFilterSelector
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
@@ -405,6 +406,7 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelector jetSelector(era, -1, isDEBUG);
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
+  const RecoJetCollectionSelectorForward jetSelectorForward(era, -1, isDEBUG);
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
@@ -997,6 +999,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
+    const std::vector<const RecoJet *> selJetsForward = jetSelectorForward(jet_ptrs, isHigherPt);
     if(isDEBUG || run_lumi_eventSelector)
     {
       //printCollection("uncleanedJets", jet_ptrs);
@@ -1717,6 +1720,7 @@ int main(int argc, char* argv[])
       const double min_dr_lep_jet    = std::min({ mindr_lep1_jet, mindr_lep2_jet, mindr_lep3_jet });
       const double dr_leps           = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
       const double max_lep_eta       = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
+      const int nLightJet            = selJets.size() - selBJets_loose.size() + selJetsForward.size();
 
       snm->read(eventInfo);
       snm->read(selLeptons);
@@ -1728,7 +1732,7 @@ int main(int argc, char* argv[])
         triggers_1e, triggers_1mu, triggers_2e, triggers_1e1mu, triggers_2mu,
         triggers_3e, triggers_2e1mu, triggers_1e2mu, triggers_3mu
       });
-      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size());
+      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet);
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);

@@ -53,6 +53,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorForward.h" // RecoJetSelectorForward
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterSelector.h" // MEtFilterSelector
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
@@ -451,6 +452,7 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelector jetSelector(era);
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
+  const RecoJetCollectionSelectorForward jetSelectorForward(era, -1, isDEBUG);
 
   RecoJetReaderHTTv2* jetReaderHTTv2 = new RecoJetReaderHTTv2(era, branchName_jetsHTTv2, branchName_subjetsHTTv2);
   inputTree -> registerReader(jetReaderHTTv2);
@@ -1148,6 +1150,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
+    const std::vector<const RecoJet *> selJetsForward = jetSelectorForward(jet_ptrs, isHigherPt);
     if(isDEBUG || run_lumi_eventSelector)
     {
       printCollection("uncleanedJets", jet_ptrs);
@@ -2146,6 +2149,7 @@ int main(int argc, char* argv[])
       const double mTauTauVis1_sel = (selLepton_lead->p4() + selHadTau->p4()).mass();
       const double mTauTauVis2_sel = (selLepton_sublead->p4() + selHadTau->p4()).mass();
       const double mbb             = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
+      const int nLightJet          = selJets.size() - selBJets_loose.size() + selJetsForward.size();
 
       snm->read(eventInfo);
       snm->read(selLeptons);
@@ -2155,7 +2159,7 @@ int main(int argc, char* argv[])
       snm->read(selJets);
 
       snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
-      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size());
+      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet);
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);

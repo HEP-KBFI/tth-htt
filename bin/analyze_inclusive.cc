@@ -521,13 +521,14 @@ main(int argc,
     const double mbb        = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
     const double mbb_loose  = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
     const double btagWeight = get_BtagWeight(selJets);
+    const int nLightJet = selJets.size() - selBJets_loose.size() + selJetsForward.size();
 
     snm->read(avg_dr_jet, FloatVariableType::avg_dr_jet);
     snm->read(max_dr_jet, FloatVariableType::max_dr_jet);
     snm->read(btagWeight, FloatVariableType::bTagSF_weight);
     snm->read(mbb,        FloatVariableType::mbb);
     snm->read(mbb_loose,  FloatVariableType::mbb_loose);
-    snm->read(false, selBJets_medium.size(), selBJets_loose.size());
+    snm->read(false, selBJets_medium.size(), selBJets_loose.size(), nLightJet);
 
 //--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();

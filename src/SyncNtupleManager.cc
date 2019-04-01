@@ -159,6 +159,7 @@ SyncNtupleManager::initializeBranches()
 
     ntags,                                                 "nBJetMedium",
     ntags_loose,                                           "nBJetLoose",
+    njets_light,                                           "nLightJet",
 
 //--- Additional event-level MVA output variables
     floatMap[FloatVariableType::mvaOutput_plainKin_ttV],   "mvaOutput_plainKin_ttV",
@@ -610,11 +611,13 @@ SyncNtupleManager::read(const std::vector<std::vector<hltPath *>> & hltPaths)
 void
 SyncNtupleManager::read(bool is_genMatched,
                         int n_tags,
-                        int n_tags_loose)
+                        int n_tags_loose,
+                        int n_jets_light)
 {
   isGenMatched = is_genMatched;
   ntags        = n_tags;
   ntags_loose  = n_tags_loose;
+  njets_light  = n_jets_light;
 }
 
 void
@@ -633,12 +636,12 @@ SyncNtupleManager::reset()
     n_mvasel_ele,
     n_presel_tau,
     n_presel_jet,
-    n_presel_fwdJet
+    n_presel_fwdJet,
+    isGenMatched,
+    ntags,
+    ntags_loose,
+    njets_light
   );
-
-  isGenMatched = false;
-  ntags        = placeholder_value;
-  ntags_loose  = placeholder_value;
 
   for(auto & kv: floatMap)
   {
