@@ -99,8 +99,11 @@ RecoJetSelectorForward::operator()(const RecoJet & jet) const
   // CV: Ignore jets with 2.65 < |eta| < 3.139 and pT < 50 GeV when selecting jets in 2017 data and MC,
   //     in order to reduce effect of noise in ECAL endcap,
   //     cf. slide 13 of presentation by Alexei Raspereza in HTT meeting on October 10th 2018
-  //    (https://indico.cern.ch/event/762837/contributions/3172618/attachments/1731302/2798220/Recoils_20181010.pdf )
-  if ( era_ == kEra_2017 && jet.pt() < 60. && jet.absEta() > 2.7 && jet.absEta() < 3. ) {
+  //    https://indico.cern.ch/event/762837/contributions/3172618/attachments/1731302/2798220/Recoils_20181010.pdf
+  if(jet.pt() < 60.     &&
+     jet.absEta() > 2.7 &&
+     jet.absEta() < 3.   )
+  {
     if(debug_)
     {
       std::cout << "FAILS EE noise cut, introduced for 2017 analysis\n";
