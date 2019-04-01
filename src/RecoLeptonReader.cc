@@ -117,7 +117,7 @@ RecoLeptonReader::setBranchNames()
     branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
     branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "jetPtRelv2");
     branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
-    for(Btag btag: { Btag::kCSVv2, Btag::kDeepCSV }) // TODO: add kDeepJet
+    for(Btag btag: { Btag::kCSVv2, Btag::kDeepCSV, Btag::kDeepJet })
     {
       std::string btag_str = "";
       switch(btag)

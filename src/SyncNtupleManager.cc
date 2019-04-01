@@ -406,7 +406,7 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
     mu_jetPtRatio[i] = muon -> jetPtRatio();
     mu_jetCSV[i] = muon -> jetBtagCSV(Btag::kCSVv2);
     mu_jetDeepCSV[i] = muon -> jetBtagCSV(Btag::kDeepCSV);
-//    mu_jetDeepJet[i] = muon -> jetBtagCSV(Btag::kDeepJet);
+    mu_jetDeepJet[i] = muon -> jetBtagCSV(Btag::kDeepJet);
     mu_sip3D[i] = muon -> sip3d();
     mu_dxyAbs[i] = std::fabs(muon -> dxy());
     mu_dxy[i] = muon -> dxy();
@@ -467,7 +467,7 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
     ele_jetPtRatio[i] = electron -> jetPtRatio();
     ele_jetCSV[i] = electron -> jetBtagCSV(Btag::kCSVv2);
     ele_jetDeepCSV[i] = electron -> jetBtagCSV(Btag::kDeepCSV);
-//    ele_jetDeepJet[i] = electron -> jetBtagCSV(Btag::kDeepJet);
+    ele_jetDeepJet[i] = electron -> jetBtagCSV(Btag::kDeepJet);
     ele_sip3D[i] = electron -> sip3d();
     ele_dxyAbs[i] = std::fabs(electron -> dxy());
     ele_dxy[i] = electron -> dxy();
