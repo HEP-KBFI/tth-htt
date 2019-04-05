@@ -5,7 +5,7 @@ import os
 import unittest
 import shutil
 import uuid
-
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 '''Tests sbatchManager submission and failure detection with single jobs
 
 The aim of this test is to verify that sbatchManager works with minimal working units (read: that it works at all).
@@ -100,12 +100,12 @@ def suite():
   testSuite.addTest(unittest.makeSuite(SbatchTestCase))
   return testSuite
 
-if not os.path.isdir(testDir):
-  os.makedirs(testDir)
+if not hdfs.isdir(testDir):
+  hdfs.mkdirs(testDir)
 
 suite_instance = suite()
 runner = unittest.TextTestRunner()
 runner.run(suite_instance)
 
-if os.path.isdir(testDir):
+if hdfs.isdir(testDir):
   shutil.rmtree(testDir)

@@ -21,7 +21,7 @@ import os
 import re
 import ROOT
 import sys
-
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 # Mapping between ROOT data types and python's array data types
 TYPE_MAP = {
   'Int_t'     : 'i',
@@ -758,7 +758,7 @@ def positive_int_type(value):
 
 def get_stats(filenames, object_tree_name, count_objects):
   for filename in filenames:
-    if not os.path.isfile(filename):
+    if not hdfs.isfile(filename):
       raise ValueError('No such file: %s' % filename)
     root_file = ROOT.TFile.Open(filename, 'read')
     if not root_file:
@@ -929,11 +929,11 @@ logging.basicConfig(
 
 # Check if the output directory for the plots exists; if it doesn't, then create it if
 # the user has provided a relevant command line flag for this action
-if enable_plot and not os.path.isdir(plot_output_dir):
+if enable_plot and not hdfs.isdir(plot_output_dir):
   if plot_force:
     logging.debug('Directory %s does not exist; attempting to create it')
     try:
-      os.makedirs(plot_output_dir)
+      hdfs.mkdirs(plot_output_dir)
     except IOError as reason:
       raise ValueError('Could not create directory %s because: %s' % (plot_output_dir, reason))
   else:
@@ -947,7 +947,7 @@ if len(args.rle) == 1:
   else:
     # The user may gave provided a path to the file containing run, lumi and event numbers,
     # one per line; let's make sure that the file actually exists
-    if not os.path.isfile(args.rle[0]):
+    if not hdfs.isfile(args.rle[0]):
       raise ValueError('No such file: %s' % args.rle[0])
     with open(args.rle[0], 'r') as rle_f:
       for line in rle_f:
@@ -973,7 +973,7 @@ else:
   rle_selection = args.rle
 
 for filename in [filename_ref, filename_test]:
-  if not os.path.isfile(filename):
+  if not hdfs.isfile(filename):
     raise ValueError('No such file: %s' % filename)
 
 # Initialize TFile pointers; if the provided file names aren't ROOT files, the pointers

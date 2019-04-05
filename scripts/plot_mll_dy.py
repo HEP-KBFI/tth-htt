@@ -11,9 +11,9 @@ import sys
 import os
 import imp
 import array
-
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 def load_dict(path, name):
-  if not os.path.isfile(path):
+  if not hdfs.isfile(path):
     logging.error("No such dictionary file: {dict_path}".format(dict_path = path))
     sys.exit(1)
   imp_dict = imp.load_source('', path)
@@ -135,11 +135,11 @@ if __name__ == '__main__':
       (min_voms_proxy_timeleft_hours, min_voms_proxy_timeleft_hours + 1)
     )
 
-  if not os.path.isdir(args.output_dir):
+  if not hdfs.isdir(args.output_dir):
     if not args.force:
       raise ValueError('Use -f/--force to create output dir %s' % args.output_dir)
     else:
-      os.makedirs(args.output_dir)
+      hdfs.mkdirs(args.output_dir)
 
   # Let's get the list of DY samples
   dy_samples = { dbs_name : [] for dbs_name in samples if dbs_name.startswith('/DY') }

@@ -38,6 +38,7 @@ public:
                  double mvaDiscr_2los_1tau,
                  double mTauTauVis,
                  double mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var,
+		 double mvaOutput_2los_1tau_evtLevelTT_TTH_20Var,
                  double mvaOutput_XGB_Updated,
                  double mvaOutput_XGB_Boosted_AK8,
                  double evtWeight);
@@ -53,8 +54,8 @@ private:
   TH1 * histogram_numBJets_loose_;
   TH1 * histogram_numBJets_medium_;
 
-  TH2 * histogram_numBJets_loose_vs_numJets_;  // CV: used to check loss in signal efficiency in case events with high jet and b-jet multiplicity are vetoed
-  TH2 * histogram_numBJets_medium_vs_numJets_; //     to avoid overlap with ttH, H->bb analysis (alternative: ttH, H->bb analysis adds hadronic tau veto)
+  //TH2 * histogram_numBJets_loose_vs_numJets_;  // CV: used to check loss in signal efficiency in case events with high jet and b-jet multiplicity are vetoed
+  //TH2 * histogram_numBJets_medium_vs_numJets_; //     to avoid overlap with ttH, H->bb analysis (alternative: ttH, H->bb analysis adds hadronic tau veto)
 
   TH1 * histogram_mvaOutput_2lss_ttV_;
   TH1 * histogram_mvaOutput_2lss_ttbar_;
@@ -68,6 +69,7 @@ private:
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_EventCounter_;
   TH1 * histogram_mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var_;
+   TH1 * histogram_mvaOutput_2los_1tau_evtLevelTT_TTH_20Var_;
   TH1 * histogram_mvaOutput_XGB_Updated_;
   TH1 * histogram_mvaOutput_XGB_Boosted_AK8_;
 

@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 import os
 import sys
 import time
-
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 def main():
     input_files = sys.argv[1:len(sys.argv)]
 
@@ -31,7 +31,7 @@ def check_that_histogram_is_valid(input_file):
 def check_that_histogram_exists(input_file):
     print("<check_that_histogram_exists>: input file = '%s'" % input_file)
 
-    if not os.path.isfile(input_file):
+    if not hdfs.isfile(input_file):
         print("ERROR: Input file '%s' does not exist !!" % input_file)
         sys.exit(1)
 
@@ -39,7 +39,7 @@ def check_that_histogram_exists(input_file):
 def check_that_histogram_is_big_enough(input_file):
     print("<check_that_histogram_is_big_enough>: input file = '%s'" % input_file)
     
-    filesize = os.path.getsize(input_file)
+    filesize = hdfs.getsize(input_file)
 
     if filesize < 5:
         print("ERROR: Input file '%s' has too small size (%s bytes)" % (input_file, filesize))

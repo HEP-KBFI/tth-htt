@@ -23,7 +23,7 @@ import collections
 import prettytable
 import csv
 import subprocess
-
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 def get_venn(sets, select_idxs, reject_idxs):
   assert(select_idxs)
   select = sets[select_idxs[0]]
@@ -135,15 +135,15 @@ logging.basicConfig(
 
 # Check if the input files actually exist
 for input_fn in input_fns:
-  if not os.path.isfile(input_fn):
+  if not hdfs.isfile(input_fn):
     raise ValueError('Input file %s does not exist' % input_fn)
-if not os.path.isdir(output_dir):
+if not hdfs.isdir(output_dir):
   if not force:
     raise ValueError('Output directory %s does not exist (use -f/--force to create it)' % output_dir)
   else:
     try:
       logging.debug("Creating directory: %s" % output_dir)
-      os.makedirs(output_dir)
+      hdfs.mkdirs(output_dir)
     except IOError as err:
       raise ValueError('Unable to create directory %s because: %s' % (output_dir, err))
 
