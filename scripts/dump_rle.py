@@ -7,7 +7,7 @@ import argparse
 import os
 import sys
 import array
-
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 def dump_rle(input_file, output_file, tree_name = 'Events',
              run_br = 'run', lumi_br = 'luminosityBlock', event_br = 'event'):
   with open(output_file, 'w') as f:
@@ -31,13 +31,13 @@ def dump_rle(input_file, output_file, tree_name = 'Events',
     f.write("{rle_lines}\n".format(rle_lines='\n'.join(rle_i_arr)))
 
   logging.debug("Wrote {nof_bytes} kB to {filename}".format(
-    nof_bytes = os.path.getsize(output_file) / 1000,
+    nof_bytes = hdfs.getsize(output_file) / 1000,
     filename  = output_file,
   ))
   return
 
 def check_dir(dirname, use_force):
-  if not os.path.isdir(dirname):
+  if not hdfs.isdir(dirname):
     if not use_force:
       logging.error("Directory '{output_dir}' does not exist".format(
         output_dir = dirname,
@@ -48,7 +48,7 @@ def check_dir(dirname, use_force):
         output_dir = dirname,
       ))
       try:
-        os.makedirs(dirname)
+        hdfs.mkdirs(dirname)
       except IOError as err:
         logging.error("Caught an error while creating directory '{output_dir}': {reason}".format(
           output_dir = dirname,
@@ -89,7 +89,7 @@ if __name__ == '__main__':
   if args.input:
 
     input_file = args.input
-    if not os.path.isfile(input_file):
+    if not hdfs.isfile(input_file):
       logging.error("No such file: {input_filename}".format(input_filename = input_file))
       sys.exit(1)
 
@@ -133,15 +133,15 @@ if __name__ == '__main__':
       ))
 
       output_dir_parent = os.path.join(output_dir, sample_name)
-      if not os.path.isdir(output_dir_parent):
-        os.makedirs(output_dir_parent)
+      if not hdfs.isdir(output_dir_parent):
+        hdfs.mkdirs(output_dir_parent)
 
-      for sample_subdir_basename in os.listdir(sample_path):
+      for sample_subdir_basename in hdfs.listdir(sample_path):
         sample_subdir = os.path.join(sample_path, sample_subdir_basename)
 
-        for rootfile_basename in os.listdir(sample_subdir):
+        for rootfile_basename in hdfs.listdir(sample_subdir):
           rootfile = os.path.join(sample_subdir, rootfile_basename)
-          if not os.path.isfile(rootfile):
+          if not hdfs.isfile(rootfile):
             continue
           logging.debug("Dumping RLE numbers for file '{rootfile_name}'".format(
             rootfile_name = rootfile,
@@ -149,7 +149,7 @@ if __name__ == '__main__':
 
           rootfile_idx = idx(rootfile_basename)
           outfile_idx = os.path.join(output_dir_parent, "{i}.txt".format(i = rootfile_idx))
-          if os.path.isfile(outfile_idx):
+          if hdfs.isfile(outfile_idx):
             logging.warning("Whoops, file already exists; skipping that")
             continue
 

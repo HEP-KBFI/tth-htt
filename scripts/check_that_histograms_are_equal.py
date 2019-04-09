@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 import ROOT
 import sys
 

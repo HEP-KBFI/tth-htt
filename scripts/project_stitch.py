@@ -8,9 +8,9 @@ from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 import itertools
 import os
 import array
-
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 def project(input_file, output_file, binnings):
-  if not os.path.isfile(input_file):
+  if not hdfs.isfile(input_file):
     raise RuntimeError('No such file: %s' % input_file)
   root_file = ROOT.TFile.Open(input_file, 'read')
   if not root_file:

@@ -5,25 +5,28 @@
 EvtHistManager_2los_1tau::EvtHistManager_2los_1tau(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
 {
+
   central_or_shiftOptions_["numElectrons"] = { "central" };
   central_or_shiftOptions_["numMuons"] = { "central" };
   central_or_shiftOptions_["numHadTaus"] = { "central" };
   central_or_shiftOptions_["numJets"] = { "central" };
   central_or_shiftOptions_["numBJets_loose"] = { "central" };
   central_or_shiftOptions_["numBJets_medium"] = { "central" };
-  central_or_shiftOptions_["numBJets_loose_vs_numJets"] = { "central" };
-  central_or_shiftOptions_["numBJets_medium_vs_numJets"] = { "central" };
+  //central_or_shiftOptions_["numBJets_loose_vs_numJets"] = { "central" };
+  //central_or_shiftOptions_["numBJets_medium_vs_numJets"] = { "central" };
   central_or_shiftOptions_["mvaOutput_2lss_ttV"] = { "central" };
   central_or_shiftOptions_["mvaOutput_2lss_ttbar"] = { "central" };
   central_or_shiftOptions_["mvaDiscr_2lss"] = { "central" };
   central_or_shiftOptions_["mvaOutput_2los_1tau_ttV"] = { "central" };
   central_or_shiftOptions_["mvaOutput_2los_1tau_ttbar"] = { "central" };
   central_or_shiftOptions_["mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var"] = { "*" };
+  central_or_shiftOptions_["mvaOutput_2los_1tau_evtLevelTT_TTH_20Var"] = { "*" };
   central_or_shiftOptions_["mvaOutput_XGB_Updated"] = { "*" };
   central_or_shiftOptions_["mvaOutput_XGB_Boosted_AK8"] = { "*" };
   central_or_shiftOptions_["mvaDiscr_2los_1tau"] = { "*" };
   central_or_shiftOptions_["mTauTauVis"] = { "central" };
   central_or_shiftOptions_["EventCounter"] = { "*" };
+
 }
 
 const TH1 *
@@ -51,7 +54,14 @@ EvtHistManager_2los_1tau::bookHistograms(TFileDirectory & dir)
 
   histogram_mvaOutput_2los_1tau_ttV_   = book1D(dir, "mvaOutput_2los_1tau_ttV",   "mvaOutput_2los_1tau_ttV",   40, -1., +1.);
   histogram_mvaOutput_2los_1tau_ttbar_ = book1D(dir, "mvaOutput_2los_1tau_ttbar", "mvaOutput_2los_1tau_ttbar", 40, -1., +1.);
-  histogram_mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var_ = book1D(dir, "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var", "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var", 20, 0., +1.);
+  histogram_mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var_ = book1D(dir, "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var", "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var", 100, 0., +1.);
+  histogram_mvaOutput_2los_1tau_evtLevelTT_TTH_20Var_ = book1D(dir, "mvaOutput_2los_1tau_evtLevelTT_TTH_20Var", "mvaOutput_2los_1tau_evtLevelTT_TTH_20Var", 100, 0., +1.);
+
+  histogram_mvaOutput_2los_1tau_evtLevelTT_TTH_20Var_ = book1D(dir, "mvaOutput_XGB_Updated", "mvaOutput_XGB_Updated", 100, 0., +1.);
+
+  histogram_mvaOutput_2los_1tau_evtLevelTT_TTH_20Var_ = book1D(dir, "mvaOutput_XGB_Boosted_AK8", "mvaOutput_XGB_Boosted_AK8", 100, 0., +1.);
+
+
   histogram_mvaOutput_XGB_Updated_ = book1D(dir, "mvaOutput_XGB_Updated", "mvaOutput_XGB_Updated", 100, 0., +1.);
   histogram_mvaOutput_XGB_Boosted_AK8_ = book1D(dir, "mvaOutput_XGB_Boosted_AK8", "mvaOutput_XGB_Boosted_AK8", 100, 0., +1.);
 
@@ -76,6 +86,7 @@ EvtHistManager_2los_1tau::fillHistograms(int numElectrons,
                                          double mvaDiscr_2los_1tau,
                                          double mTauTauVis,
                                          double mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var,
+					 double mvaOutput_2los_1tau_evtLevelTT_TTH_20Var,
                                          double mvaOutput_XGB_Updated,
                                          double mvaOutput_XGB_Boosted_AK8,
                                          double evtWeight)
@@ -101,6 +112,7 @@ EvtHistManager_2los_1tau::fillHistograms(int numElectrons,
 
   fillWithOverFlow(histogram_mvaDiscr_2los_1tau_,        mvaDiscr_2los_1tau,        evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var_,        mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_2los_1tau_evtLevelTT_TTH_20Var_,        mvaOutput_2los_1tau_evtLevelTT_TTH_20Var,        evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_XGB_Updated_,        mvaOutput_XGB_Updated,        evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_XGB_Boosted_AK8_,        mvaOutput_XGB_Boosted_AK8,        evtWeight, evtWeightErr);
 
