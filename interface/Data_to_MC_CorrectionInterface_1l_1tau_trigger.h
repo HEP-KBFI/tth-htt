@@ -2,8 +2,9 @@
 #define tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_1l_1tau_trigger_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // TriggerSFsys
 
-// forwad declarations
+// forward declarations
 class TauTriggerSFs2017;
 
 class Data_to_MC_CorrectionInterface_1l_1tau_trigger
@@ -29,9 +30,6 @@ public:
   setLeptons(int lepton_type,
              double lepton_pt,
              double lepton_eta);
-
-  void
-  setHadTaus(double hadTau_pt, double hadTau_eta, double hadTau_phi);
 
   void
   setHadTaus(int hadTau_genPdgId, double hadTau_pt, double hadTau_eta, int hadTau_decayMode);
@@ -74,7 +72,8 @@ protected:
   vLutWrapperBase effTrigger_1m1tau_tauLeg_mc_gentau_;
   vLutWrapperBase effTrigger_1m1tau_tauLeg_mc_faketau_;
 
-  TauTriggerSFs2017 * effTrigger_tauLeg_;
+  TauTriggerSFs2017 * effTrigger_1e1tau_tauLeg_;
+  TauTriggerSFs2017 * effTrigger_1m1tau_tauLeg_;
   //-----------------------------------------------------------------------------
 
   std::map<std::string, TFile *> inputFiles_;
@@ -82,7 +81,7 @@ protected:
   int era_;
   std::string hadTauSelection_;
   bool isDEBUG_;
-  int triggerSF_option_;
+  TriggerSFsys triggerSF_option_;
 
   bool isTriggered_1e_;
   bool isTriggered_1e1tau_;

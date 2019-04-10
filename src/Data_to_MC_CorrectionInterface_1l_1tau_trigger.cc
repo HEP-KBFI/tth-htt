@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_1l_1tau_trigger.h"
 
-#include "tthAnalysis/TauTriggerSFs2017/interface/TauTriggerSFs2017.h"
+#include "TauAnalysisTools/TauTriggerSFs/interface/TauTriggerSFs2017.h" // TauTriggerSFs2017
+
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
@@ -15,11 +16,12 @@
 #include <cassert> // assert()
 
 Data_to_MC_CorrectionInterface_1l_1tau_trigger::Data_to_MC_CorrectionInterface_1l_1tau_trigger(const edm::ParameterSet & cfg)
-  : effTrigger_tauLeg_(nullptr)
+  : effTrigger_1e1tau_tauLeg_(nullptr)
+  , effTrigger_1m1tau_tauLeg_(nullptr)
   , era_(get_era(cfg.getParameter<std::string>("era")))
   , hadTauSelection_(cfg.getParameter<std::string>("hadTauSelection"))
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
-  , triggerSF_option_(TauTriggerSFs2017::kCentral)
+  , triggerSF_option_(TriggerSFsys::central)
   , lepton_type_(-1)
   , lepton_pt_(0.)
   , lepton_eta_(0.)
@@ -30,15 +32,7 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::Data_to_MC_CorrectionInterface_1
   , hadTau_decayMode_(0)
 {
   const std::string central_or_shift = cfg.getParameter<std::string>("central_or_shift");
-  const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift);
-  switch(triggerSF_option)
-  {
-    // applies to only e+tau and mu+tau legs
-    case TriggerSFsys::central:   triggerSF_option_ = TauTriggerSFs2017::kCentral;  break;
-    case TriggerSFsys::shiftUp:   triggerSF_option_ = TauTriggerSFs2017::kStatUp;   break;
-    case TriggerSFsys::shiftDown: triggerSF_option_ = TauTriggerSFs2017::kStatDown; break;
-    default: throw cmsException(this) << "Invalid triggerSF option = " << static_cast<int>(triggerSF_option);
-  }
+  triggerSF_option_ = getTriggerSF_option(central_or_shift); // applies only to tau legs of e+tau and mu+tau cross-triggers
 
   if(era_ == kEra_2016)
   {
@@ -335,13 +329,10 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::Data_to_MC_CorrectionInterface_1
       ));
     }
 
-    const LocalFileInPath inputFileName_tauLeg("tthAnalysis/TauTriggerSFs2017/data/tauTriggerEfficiencies2017_New.root");
-    const LocalFileInPath inputFileName_tauLeg_old("tthAnalysis/TauTriggerSFs2017/data/tauTriggerEfficiencies2017.root");
+    const LocalFileInPath inputFileName_tauLeg("tthAnalysis/TauTriggerSFs/data/tauTriggerEfficiencies2017.root");
     const std::string hadTauSelection_TauTriggerSFs2017 = aux::get_hadTauSelection_TauTriggerSFs2017(hadTauSelection_);
-    const std::string wpType = "dR0p3"; // or "MVA"
-    effTrigger_tauLeg_ = new TauTriggerSFs2017(
-          inputFileName_tauLeg.fullPath().data(), inputFileName_tauLeg_old.fullPath().data(), hadTauSelection_TauTriggerSFs2017, wpType
-    );
+    effTrigger_1e1tau_tauLeg_ = new TauTriggerSFs2017(inputFileName_tauLeg.fullPath().data(), "etau", "2017", hadTauSelection_TauTriggerSFs2017);
+    effTrigger_1m1tau_tauLeg_ = new TauTriggerSFs2017(inputFileName_tauLeg.fullPath().data(), "mutau", "2017", hadTauSelection_TauTriggerSFs2017);
   }
   else if(era_ == kEra_2018)
   {
@@ -379,7 +370,8 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::~Data_to_MC_CorrectionInterface_
   }
   else if(era_ == kEra_2017)
   {
-    delete effTrigger_tauLeg_;
+    delete effTrigger_1e1tau_tauLeg_;
+    delete effTrigger_1m1tau_tauLeg_;
   }
 }
 
@@ -403,14 +395,6 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::setLeptons(int lepton_type,
   lepton_type_ = lepton_type;
   lepton_pt_   = lepton_pt;
   lepton_eta_  = lepton_eta;
-}
-
-void
-Data_to_MC_CorrectionInterface_1l_1tau_trigger::setHadTaus(double hadTau_pt, double hadTau_eta, double hadTau_phi)
-{
-  hadTau_pt_  = hadTau_pt;
-  hadTau_eta_ = hadTau_eta;
-  hadTau_phi_ = hadTau_phi;
 }
 
 void
@@ -524,8 +508,8 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::getSF_triggerEff() const
       eff_1l1tau_tauLeg_data = 0.;
       eff_1l1tau_tauLeg_mc = 0.;
       if ( TMath::Abs(hadTau_eta_) <= 2.1 ) {
-        eff_1l1tau_tauLeg_data = effTrigger_tauLeg_->getETauEfficiencyData(hadTau_pt_, hadTau_eta_, hadTau_phi_, triggerSF_option_);
-        eff_1l1tau_tauLeg_mc   = effTrigger_tauLeg_->getETauEfficiencyMC(hadTau_pt_, hadTau_eta_, hadTau_phi_, triggerSF_option_);
+	eff_1l1tau_tauLeg_data = aux::getTauTriggerEfficiencyData_2017(effTrigger_1e1tau_tauLeg_, hadTau_pt_, hadTau_eta_, hadTau_phi_, hadTau_decayMode_, triggerSF_option_);
+	eff_1l1tau_tauLeg_mc = aux::getTauTriggerEfficiencyMC_2017(effTrigger_1e1tau_tauLeg_, hadTau_pt_, hadTau_eta_, hadTau_phi_, hadTau_decayMode_, triggerSF_option_);
       }
       
       isTriggered_1l     = isTriggered_1e_;
@@ -545,8 +529,8 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::getSF_triggerEff() const
       eff_1l1tau_tauLeg_data = 0.;
       eff_1l1tau_tauLeg_mc = 0.;
       if ( TMath::Abs(hadTau_eta_) <= 2.1 ) {
-        eff_1l1tau_tauLeg_data = effTrigger_tauLeg_->getMuTauEfficiencyData(hadTau_pt_, hadTau_eta_, hadTau_phi_, triggerSF_option_);
-        eff_1l1tau_tauLeg_mc = effTrigger_tauLeg_->getMuTauEfficiencyMC(hadTau_pt_, hadTau_eta_, hadTau_phi_, triggerSF_option_);
+        eff_1l1tau_tauLeg_data = aux::getTauTriggerEfficiencyData_2017(effTrigger_1m1tau_tauLeg_, hadTau_pt_, hadTau_eta_, hadTau_phi_, hadTau_decayMode_, triggerSF_option_);
+	eff_1l1tau_tauLeg_mc = aux::getTauTriggerEfficiencyMC_2017(effTrigger_1m1tau_tauLeg_, hadTau_pt_, hadTau_eta_, hadTau_phi_, hadTau_decayMode_, triggerSF_option_);
       }
       
       isTriggered_1l     = isTriggered_1m_;

@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_0l_2tau_trigger.h"
 
-#include "tthAnalysis/TauTriggerSFs2017/interface/TauTriggerSFs2017.h"
+#include "TauAnalysisTools/TauTriggerSFs/interface/TauTriggerSFs2017.h" // TauTriggerSFs2017
+
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
@@ -20,7 +21,7 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0
   , era_(get_era(cfg.getParameter<std::string>("era")))
   , hadTauSelection_(cfg.getParameter<std::string>("hadTauSelection"))
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
-  , triggerSF_option_(TauTriggerSFs2017::kCentral)
+  , triggerSF_option_(TriggerSFsys::central)
   , hadTau1_genPdgId_(0)
   , hadTau1_pt_(0.)
   , hadTau1_eta_(0.)
@@ -33,15 +34,7 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0
   , hadTau2_decayMode_(0)
 {
   const std::string central_or_shift = cfg.getParameter<std::string>("central_or_shift");
-  const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift);
-  switch(triggerSF_option)
-  {
-    // applies to only e+tau and mu+tau legs
-    case TriggerSFsys::central:   triggerSF_option_ = TauTriggerSFs2017::kCentral;  break;
-    case TriggerSFsys::shiftUp:   triggerSF_option_ = TauTriggerSFs2017::kStatUp;   break;
-    case TriggerSFsys::shiftDown: triggerSF_option_ = TauTriggerSFs2017::kStatDown; break;
-    default: throw cmsException(this) << "Invalid triggerSF option = " << static_cast<int>(triggerSF_option);
-  }
+  triggerSF_option_ = getTriggerSF_option(central_or_shift); 
 
   if(era_ == kEra_2016)
   {
@@ -82,13 +75,9 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0
   }
   else if(era_ == kEra_2017)
   {
-    const LocalFileInPath inputFileName_tauLeg("tthAnalysis/TauTriggerSFs2017/data/tauTriggerEfficiencies2017_New.root");
-    const LocalFileInPath inputFileName_tauLeg_old("tthAnalysis/TauTriggerSFs2017/data/tauTriggerEfficiencies2017.root");
+    const LocalFileInPath inputFileName_tauLeg("tthAnalysis/TauTriggerSFs/data/tauTriggerEfficiencies2017.root");    
     const std::string hadTauSelection_TauTriggerSFs2017 = aux::get_hadTauSelection_TauTriggerSFs2017(hadTauSelection_);
-    const std::string wpType = "dR0p3"; // or "MVA"
-    effTrigger_tauLeg_ = new TauTriggerSFs2017(
-          inputFileName_tauLeg.fullPath().data(), inputFileName_tauLeg_old.fullPath().data(), hadTauSelection_TauTriggerSFs2017, wpType
-    );
+    effTrigger_tauLeg_ = new TauTriggerSFs2017(inputFileName_tauLeg.fullPath().data(), "ditau", "2017", hadTauSelection_TauTriggerSFs2017);
   }
   else if(era_ == kEra_2018)
   {
@@ -119,19 +108,6 @@ void
 Data_to_MC_CorrectionInterface_0l_2tau_trigger::setTriggerBits(bool isTriggered_2tau)
 {
   isTriggered_2tau_ = isTriggered_2tau;
-}
-
-void
-Data_to_MC_CorrectionInterface_0l_2tau_trigger::setHadTaus(double hadTau1_pt, double hadTau1_eta, double hadTau1_phi,
-                                                           double hadTau2_pt, double hadTau2_eta, double hadTau2_phi)
-{
-  hadTau1_pt_  = hadTau1_pt;
-  hadTau1_eta_ = hadTau1_eta;
-  hadTau1_phi_ = hadTau1_phi;
-
-  hadTau2_pt_  = hadTau2_pt;
-  hadTau2_eta_ = hadTau2_eta;
-  hadTau2_phi_ = hadTau2_phi;
 }
 
 void
@@ -198,16 +174,15 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff() const
   {
     if(std::fabs(hadTau1_eta_) <= 2.1)
     {
-      eff_2tau_tauLeg1_data = effTrigger_tauLeg_->getDiTauEfficiencyData(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, triggerSF_option_);
-      eff_2tau_tauLeg1_mc   = effTrigger_tauLeg_->getDiTauEfficiencyMC(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, triggerSF_option_);
+      eff_2tau_tauLeg1_data = aux::getTauTriggerEfficiencyData_2017(effTrigger_tauLeg_, hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, hadTau1_decayMode_, triggerSF_option_);
+      eff_2tau_tauLeg1_mc = aux::getTauTriggerEfficiencyMC_2017(effTrigger_tauLeg_, hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, hadTau1_decayMode_, triggerSF_option_);
     }
 
     if(std::fabs(hadTau2_eta_) <= 2.1)
     {
-      eff_2tau_tauLeg2_data = effTrigger_tauLeg_->getDiTauEfficiencyData(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, triggerSF_option_);
-      eff_2tau_tauLeg2_mc   = effTrigger_tauLeg_->getDiTauEfficiencyMC(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, triggerSF_option_);
+      eff_2tau_tauLeg2_data = aux::getTauTriggerEfficiencyData_2017(effTrigger_tauLeg_, hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, hadTau2_decayMode_, triggerSF_option_);
+      eff_2tau_tauLeg2_mc = aux::getTauTriggerEfficiencyMC_2017(effTrigger_tauLeg_, hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, hadTau2_decayMode_, triggerSF_option_);
     }
-
   }
   else if(era_ == kEra_2018)
   {

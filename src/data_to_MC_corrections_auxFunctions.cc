@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h"
 
+#include "TauAnalysisTools/TauTriggerSFs/interface/TauTriggerSFs2017.h" // TauTriggerSFs2017
+
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
@@ -133,5 +135,31 @@ namespace aux
     }
     const double sf = get_from_lut(corrections.at(hadTau_decayMode), hadTau_pt, hadTau_eta, isDEBUG);
     return sf;
+  }
+
+  double 
+  getTauTriggerEfficiencyData_2017(const TauTriggerSFs2017* effTrigger_tauLeg, 
+				   double hadTau_pt, double hadTau_eta, double hadTau_phi, double hadTau_decayMode, 
+				   TriggerSFsys triggerSF_option)
+  {
+    double eff = 1.;
+    if      ( triggerSF_option == TriggerSFsys::central   ) eff = effTrigger_tauLeg->getTriggerEfficiencyData(hadTau_pt, hadTau_eta, hadTau_phi, hadTau_decayMode);
+    else if ( triggerSF_option == TriggerSFsys::shiftUp   ) eff = effTrigger_tauLeg->getTriggerEfficiencyDataUncertUp(hadTau_pt, hadTau_eta, hadTau_phi, hadTau_decayMode);
+    else if ( triggerSF_option == TriggerSFsys::shiftDown ) eff = effTrigger_tauLeg->getTriggerEfficiencyDataUncertDown(hadTau_pt, hadTau_eta, hadTau_phi, hadTau_decayMode);
+    else assert(0);
+    return eff;
+  }
+
+  double 
+  getTauTriggerEfficiencyMC_2017(const TauTriggerSFs2017* effTrigger_tauLeg, 
+				 double hadTau_pt, double hadTau_eta, double hadTau_phi, double hadTau_decayMode, 
+				 TriggerSFsys triggerSF_option)
+  {
+    double eff = 1.;
+    if      ( triggerSF_option == TriggerSFsys::central   ) eff = effTrigger_tauLeg->getTriggerEfficiencyMC(hadTau_pt, hadTau_eta, hadTau_phi, hadTau_decayMode);
+    else if ( triggerSF_option == TriggerSFsys::shiftUp   ) eff = effTrigger_tauLeg->getTriggerEfficiencyMCUncertUp(hadTau_pt, hadTau_eta, hadTau_phi, hadTau_decayMode);
+    else if ( triggerSF_option == TriggerSFsys::shiftDown ) eff = effTrigger_tauLeg->getTriggerEfficiencyMCUncertDown(hadTau_pt, hadTau_eta, hadTau_phi, hadTau_decayMode);
+    else assert(0);
+    return eff;
   }
 }
