@@ -13,7 +13,7 @@ import subprocess
 import stat
 import re
 import io
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 dumPy = """#!/usr/bin/env python
 
 import ROOT, logging, sys, shutil, os, array
@@ -78,12 +78,12 @@ def create_dir_if_not_exist(d):
     True, if the directory was created
     False, otherwise
   '''
-  if not hdfs.isdir(d):
+  if not os.path.isdir(d):
     logging.debug("Directory '{dir_name}' doesn't exist, attempting to create it".format(
       dir_name = d,
     ))
     try:
-      hdfs.mkdirs(d)
+      os.makedirs(d)
     except IOError:
       logging.error("Could not create the directory")
       return False
@@ -130,7 +130,7 @@ def bake_job(sh_script_path, rle_branchNames, treeName, py_script_path, sh_args,
 
   def chmod_x(f):
     st = os.stat(f)
-    hdfs.chmod(f, st.st_mode | stat.S_IEXEC)
+    os.chmod(f, st.st_mode | stat.S_IEXEC)
 
   with open(sh_script_path, 'w') as sh_script:
     sh_script.write(jinja2.Template(dumpSh).render(
@@ -192,7 +192,7 @@ def dump_rle_parallel(output_dir, rle_branchNames, treeName, nof_files = 100, fo
   if verbose:
     logging.getLogger().setLevel(logging.DEBUG)
 
-  if not hdfs.isdir(output_dir):
+  if not os.path.isdir(output_dir):
     if not force:
       logging.error("Directory '{output_dir}' does not exist".format(
         output_dir = output_dir,
@@ -234,13 +234,13 @@ def dump_rle_parallel(output_dir, rle_branchNames, treeName, nof_files = 100, fo
     ))
 
     output_dir_parent = os.path.join(output_dir, sample_name)
-    if not hdfs.isdir(output_dir_parent):
-      hdfs.mkdirs(output_dir_parent)
+    if not os.path.isdir(output_dir_parent):
+      os.makedirs(output_dir_parent)
 
-    for sample_subdir_basename in hdfs.listdir(sample_path):
+    for sample_subdir_basename in os.listdir(sample_path):
       sample_subdir = os.path.join(sample_path, sample_subdir_basename)
 
-      for rootfile_basename in hdfs.listdir(sample_subdir):
+      for rootfile_basename in os.listdir(sample_subdir):
         tree_match = tree_pattern.match(rootfile_basename)
         if not tree_match:
           continue
@@ -314,14 +314,14 @@ def validate(output_dir, verbose = False):
     for s_key, s_value in samples.iteritems():
       sample_name = s_value['process_name_specific']
       sample_dir = os.path.join(output_dir, sample_name)
-      if hdfs.isdir(sample_dir):
+      if os.path.isdir(sample_dir):
         logging.debug("Found sample directory {sample_dir}".format(sample_dir = sample_dir))
 
         #NB! assume that there are no secondary paths in the dictionary (hence index 0!)
         sample_path_dict = s_value['local_paths'][0]
         sample_path      = sample_path_dict['path']
         blacklist        = sample_path_dict['blacklist']
-        for sample_subdir in hdfs.listdir(sample_path):
+        for sample_subdir in os.listdir(sample_path):
           sample_subpath_idx = -1
           try:
             sample_subpath_idx = int(sample_subdir)
@@ -332,9 +332,9 @@ def validate(output_dir, verbose = False):
           sample_subpath = os.path.join(sample_path, sample_subdir)
           logging.debug("Processing sample subdirectory {sample_subpath}".format(sample_subpath = sample_subpath))
 
-          for sample_file in hdfs.listdir(sample_subpath):
+          for sample_file in os.listdir(sample_subpath):
             sample_file_fullpath = os.path.join(sample_subpath, sample_file)
-            if not sample_file.endswith('.root') or not hdfs.isfile(sample_file_fullpath):
+            if not sample_file.endswith('.root') or not os.path.isfile(sample_file_fullpath):
               continue
 
             root_file_regex_match = root_file_regex.search(sample_file)
@@ -346,7 +346,7 @@ def validate(output_dir, verbose = False):
             expected_rle_file          = os.path.join(sample_dir, expected_rle_file_basename)
             file_dict_entry            = (expected_rle_file, sample_file_fullpath)
             if root_file_idx in blacklist:
-              if hdfs.isfile(expected_rle_file):
+              if os.path.isfile(expected_rle_file):
                 logging.warning('Found RLE file {rle_file} (corresponding to blacklisted {root_file}) '
                                 'which you ought to delete'.format(
                   rle_file  = expected_rle_file,
@@ -355,7 +355,7 @@ def validate(output_dir, verbose = False):
               file_dict['excess'].append(file_dict_entry)
               continue
 
-            if not hdfs.isfile(expected_rle_file):
+            if not os.path.isfile(expected_rle_file):
               logging.warning('Missing RLE file {rle_file} (corresponding to {root_file})'.format(
                 rle_file  = expected_rle_file,
                 root_file = sample_file_fullpath,
@@ -363,7 +363,7 @@ def validate(output_dir, verbose = False):
               file_dict['missing'].append(file_dict_entry)
               continue
             nof_rle_events = raw_linecount(expected_rle_file)
-            if nof_rle_events == 1 and hdfs.getsize(expected_rle_file) == 1:
+            if nof_rle_events == 1 and os.path.getsize(expected_rle_file) == 1:
               # the RLE file contains only a newline, hence no events
               nof_rle_events = 0
 

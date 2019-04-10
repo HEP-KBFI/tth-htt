@@ -6,7 +6,7 @@
 import ROOT
 import argparse
 import os
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 ROOT.gROOT.SetBatch(True)
 
 def positive_int_type(value):
@@ -66,16 +66,16 @@ grid            = args.grid
 use_log         = args.log
 force           = args.force
 
-if not hdfs.isfile(input_filename):
+if not os.path.isfile(input_filename):
   raise ValueError('No such file: %s' % input_filename)
 
 output_directory = os.path.realpath(os.path.dirname(output_filename))
-if not hdfs.isdir(output_directory):
+if not os.path.isdir(output_directory):
   if not force:
     raise ValueError('Directory %s does not exist; use -f/--force to create it' % output_directory)
   else:
     try:
-      hdfs.mkdirs(output_directory)
+      os.path.mkdirs(output_directory)
     except OSError as err:
       raise ValueError('Could not create directory %s because: %s' % (output_directory, err))
 

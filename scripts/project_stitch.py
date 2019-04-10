@@ -4,11 +4,12 @@ from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import sam
 from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import itertools
 import os
 import array
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 def project(input_file, output_file, binnings):
   if not hdfs.isfile(input_file):
     raise RuntimeError('No such file: %s' % input_file)

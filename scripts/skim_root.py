@@ -3,6 +3,8 @@
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 from dump_rle_parallel import dump_rle_parallel
 
 import argparse
@@ -14,7 +16,7 @@ import shutil
 import array
 import time
 import getpass
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 '''The script copies a subset of an Ntuple, given RLE numbers, sample name and output file name
 
 NOTE: If the user has RLE numbers of all Ntuples already stored somewhere (likely created w/ dump_rle_parallel.py),

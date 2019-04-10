@@ -227,7 +227,6 @@ Disclaimer: the program is tested with only ttHJetToNonbb_M125, TTZToLLNuNu_M-10
 ################################################### IMPORTS ###################################################
 
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 import argparse
 import sys
 import subprocess
@@ -265,7 +264,7 @@ def run_cmd(cmd_str):
   return cmd_stdout
 
 def read_rles(input):
-  if not hdfs.isfile(input):
+  if not os.path.isfile(input):
     logging.error("No such file: {file}".format(file = input))
 
   logging.debug("Reading RLE numbers from {rle_input}".format(rle_input = input))
@@ -1441,17 +1440,17 @@ if __name__ == '__main__':
   if args.verbose:
     logging.getLogger().setLevel(logging.DEBUG)
 
-  if not hdfs.isfile(args.input):
+  if not os.path.isfile(args.input):
     logging.error("No such file {filename}".format(filename = args.input))
     sys.exit(1)
 
   if args.generate:
     # create cmsRun job from python template
 
-    if not hdfs.isdir(os.path.dirname(args.output)):
+    if not os.path.isdir(os.path.dirname(args.output)):
       if args.force:
         try:
-          hdfs.mkdirs(os.path.dirname(args.output))
+          os.path.mkdirs(os.path.dirname(args.output))
         except IOError:
           logging.error("Could not create directory {dir_name}".format(dir_name=os.path.dirname(args.output)))
           sys.exit(1)
@@ -1460,7 +1459,7 @@ if __name__ == '__main__':
           filename = args.output)
         )
 
-    if not hdfs.isfile(args.cli):
+    if not os.path.isfile(args.cli):
       logging.error("No such file: {filename}".format(filename = args.cli))
       sys.exit(1)
 
@@ -1560,10 +1559,10 @@ if __name__ == '__main__':
   elif args.parse:
     # here we perform parsing on the file that was produced by running the code in the last step
 
-    if not hdfs.isdir(os.path.dirname(args.output)):
+    if not os.path.isdir(os.path.dirname(args.output)):
       if args.force:
         try:
-          hdfs.mkdirs(os.path.dirname(args.output))
+          os.path.mkdirs(os.path.dirname(args.output))
         except IOError:
           logging.error("Could not create directory {dir_name}".format(dir_name = os.path.dirname(args.output)))
           sys.exit(1)
@@ -1640,7 +1639,7 @@ if __name__ == '__main__':
     if args.secondary_output:
       if not args.statistics:
         logging.warning("Using -r/--secondary-output makes sense only with -s/--statistics")
-      if not hdfs.isdir(args.secondary_output):
+      if not os.path.isdir(args.secondary_output):
         logging.warning("No such directory: {output_dir}".format(output_dir = args.secondary_output))
         if not args.force:
           logging.error("Use the -f/--force to create missing output directory {output_dir}".format(
@@ -1649,7 +1648,7 @@ if __name__ == '__main__':
           sys.exit(1)
         else:
           try:
-            hdfs.mkdirs(args.secondary_output)
+            os.path.mkdirs(args.secondary_output)
           except IOError as err:
             logging.error("Could not create directory {output_dir} for the following reasons: {reasons}".format(
               output_dir = args.secondary_output,
