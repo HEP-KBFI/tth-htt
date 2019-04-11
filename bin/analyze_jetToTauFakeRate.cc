@@ -87,9 +87,9 @@
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
 
-typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
+typedef std::vector<int> vint;
 
 //const int hadTauSelection_antiElectron = 1; // vLoose
 //const int hadTauSelection_antiMuon = 1; // Loose
@@ -103,7 +103,7 @@ struct denominatorHistManagers
 {
   denominatorHistManagers(
     const std::string& process, const std::string& era_string, bool isMC, const std::string& chargeSelection, 
-    const std::string& hadTauSelection_denominator, double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
+    const std::string& hadTauSelection_denominator, double minAbsEta, double maxAbsEta, int decayMode, const std::string& central_or_shift)
     : process_(process)
     , era_string_(era_string)
     , era_(get_era(era_string))
@@ -112,6 +112,7 @@ struct denominatorHistManagers
     , hadTauSelection_denominator_(hadTauSelection_denominator)
     , minAbsEta_(minAbsEta)
     , maxAbsEta_(maxAbsEta)
+    , decayMode_(decayMode)
     , central_or_shift_(central_or_shift)
     , jetHistManager_(0)
     , jetHistManager_genHadTau_(0)
@@ -126,6 +127,7 @@ struct denominatorHistManagers
   {
     std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);
     subdir_ = Form("jetToTauFakeRate_%s/denominator/%s", chargeSelection_.data(), etaBin.data());
+    if ( decayMode != -1 ) subdir_.append(Form("_dm%i", decayMode));
     fakeableHadTauSelector_ = new RecoHadTauSelectorFakeable(era_);
     fakeableHadTauSelector_->set(hadTauSelection_denominator);
     fakeableHadTauSelector_->set_min_antiElectron(hadTauSelection_antiElectron);
@@ -146,8 +148,6 @@ struct denominatorHistManagers
   }
   void bookHistograms(TFileDirectory& dir)
   {
-    //std::cout << "<denominatorHistManagers::bookHistograms>:" << std::endl;
-    //std::cout << " subdir = " << subdir_ << std::endl;
     jetHistManager_ = new JetHistManager(makeHistManager_cfg(process_, 
       Form("%s/jets", subdir_.data()), era_string_, central_or_shift_, "minimalHistograms"));
     jetHistManager_->bookHistograms(dir);
@@ -188,7 +188,13 @@ struct denominatorHistManagers
   } 					 
   void fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight)					 
   {
-    if ( jet.absEta() > minAbsEta_ && jet.absEta() < maxAbsEta_ ) {
+    bool isSelected_decayMode = false;
+    if ( decayMode_ ==  -1                             ) isSelected_decayMode = true;
+    if ( decayMode_ ==   0 && hadTau.decayMode() ==  0 ) isSelected_decayMode = true;
+    if ( decayMode_ ==   1 && hadTau.decayMode() ==  1 ) isSelected_decayMode = true;
+    if ( decayMode_ ==   1 && hadTau.decayMode() ==  2 ) isSelected_decayMode = true;
+    if ( decayMode_ ==  10 && hadTau.decayMode() == 10 ) isSelected_decayMode = true;
+    if ( jet.absEta() > minAbsEta_ && jet.absEta() < maxAbsEta_ && isSelected_decayMode ) {
       jetHistManager_->fillHistograms(jet, evtWeight);
       if ( isMC_ ) {
 	if      ( jet.genHadTau() ) jetHistManager_genHadTau_->fillHistograms(jet, evtWeight);
@@ -196,7 +202,7 @@ struct denominatorHistManagers
 	else                        jetHistManager_genJet_->fillHistograms(jet, evtWeight);
       }
     }
-    if ( hadTau.absEta() > minAbsEta_ && hadTau.absEta() < maxAbsEta_ ) {
+    if ( hadTau.absEta() > minAbsEta_ && hadTau.absEta() < maxAbsEta_ && isSelected_decayMode ) {
       hadTauHistManager_->fillHistograms(hadTau, evtWeight);
       if ( isMC_ ) {
 	if      ( hadTau.genHadTau() ) hadTauHistManager_genHadTau_->fillHistograms(hadTau, evtWeight);
@@ -213,6 +219,7 @@ struct denominatorHistManagers
   std::string hadTauSelection_denominator_;
   double minAbsEta_;
   double maxAbsEta_;
+  int decayMode_; // set to -1 to select all hadronic taus
   std::string central_or_shift_;
   std::string subdir_;
   JetHistManager* jetHistManager_;
@@ -234,13 +241,14 @@ struct numeratorSelector_and_HistManagers : public denominatorHistManagers
 {
   numeratorSelector_and_HistManagers(
     const std::string& process, const std::string& era_string, bool isMC, const std::string& chargeSelection, 
-    const std::string& hadTauSelection_denominator, const std::string& hadTauSelection_numerator, double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
-    : denominatorHistManagers(process, era_string, isMC, chargeSelection, hadTauSelection_denominator, minAbsEta, maxAbsEta, central_or_shift),
+    const std::string& hadTauSelection_denominator, const std::string& hadTauSelection_numerator, double minAbsEta, double maxAbsEta, int decayMode, const std::string& central_or_shift)
+    : denominatorHistManagers(process, era_string, isMC, chargeSelection, hadTauSelection_denominator, minAbsEta, maxAbsEta, decayMode, central_or_shift),
       hadTauSelection_numerator_(hadTauSelection_numerator),
       tightHadTauSelector_(0)
   {
     std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);    
     subdir_ = Form("jetToTauFakeRate_%s/numerator/%s/%s", chargeSelection_.data(), hadTauSelection_numerator_.data(), etaBin.data());
+    if ( decayMode != -1 ) subdir_.append(Form("_dm%i", decayMode));
     tightHadTauSelector_ = new RecoHadTauSelectorTight(era_);
     tightHadTauSelector_->set(hadTauSelection_numerator);
     tightHadTauSelector_->set_min_antiElectron(hadTauSelection_antiElectron);
@@ -252,8 +260,6 @@ struct numeratorSelector_and_HistManagers : public denominatorHistManagers
   }
   void bookHistograms(TFileDirectory& dir)
   {
-    //std::cout << "<numeratorSelector_and_HistManagers::bookHistograms>:" << std::endl;
-    //std::cout << " subdir = " << subdir_ << std::endl;
     denominatorHistManagers::bookHistograms(dir);
   } 		
   void fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight)					 
@@ -337,7 +343,10 @@ int main(int argc, char* argv[])
   vdouble absEtaBins = cfg_analyze.getParameter<vdouble>("absEtaBins");
   if ( absEtaBins.size() < 2 ) throw cms::Exception("analyze_jetToTauFakeRate") 
     << "Invalid Configuration parameter 'absEtaBins' !!\n";
-
+  vint decayModes = cfg_analyze.getParameter<vint>("decaModes");
+  if ( decayModes.size() < 1 ) throw cms::Exception("analyze_jetToTauFakeRate") 
+    << "Invalid Configuration parameter 'decayModes' !!\n";
+  
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
   bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
@@ -553,18 +562,22 @@ int main(int argc, char* argv[])
   for ( int idxEtaBin = 0; idxEtaBin < numEtaBins; ++idxEtaBin ) {
     double minAbsEta = absEtaBins[idxEtaBin];
     double maxAbsEta = absEtaBins[idxEtaBin + 1];
+    for ( vint::const_iterator decayMode = decayModes.begin();
+	  decayMode != decayModes.end(); ++decayMode ) {
+      denominatorHistManagers* denominator = new denominatorHistManagers(
+        process_string, era_string, isMC, chargeSelection_string, hadTauSelection_denominator, 
+	minAbsEta, maxAbsEta, *decayMode, central_or_shift);
+      denominator->bookHistograms(fs);
+      denominators.push_back(denominator);
 
-    denominatorHistManagers* denominator = new denominatorHistManagers(
-      process_string, era_string, isMC, chargeSelection_string, hadTauSelection_denominator, minAbsEta, maxAbsEta, central_or_shift);
-    denominator->bookHistograms(fs);
-    denominators.push_back(denominator);
-
-    for ( vstring::const_iterator hadTauSelection_numerator = hadTauSelections_numerator.begin();
-	  hadTauSelection_numerator != hadTauSelections_numerator.end(); ++hadTauSelection_numerator ) {
-      numeratorSelector_and_HistManagers* numerator = new numeratorSelector_and_HistManagers(
-	process_string, era_string, isMC, chargeSelection_string, hadTauSelection_denominator, *hadTauSelection_numerator, minAbsEta, maxAbsEta, central_or_shift);
-      numerator->bookHistograms(fs);
-      numerators.push_back(numerator);
+      for ( vstring::const_iterator hadTauSelection_numerator = hadTauSelections_numerator.begin();
+	    hadTauSelection_numerator != hadTauSelections_numerator.end(); ++hadTauSelection_numerator ) {
+        numeratorSelector_and_HistManagers* numerator = new numeratorSelector_and_HistManagers(
+	  process_string, era_string, isMC, chargeSelection_string, hadTauSelection_denominator, *hadTauSelection_numerator, 
+	  minAbsEta, maxAbsEta, *decayMode, central_or_shift);
+        numerator->bookHistograms(fs);
+        numerators.push_back(numerator);
+      }
     }
   }
 

@@ -62,8 +62,8 @@ else:
 if era == "2016":
   hadTau_selection_denominator = "dR03mvaLoose"
 elif era == "2017":
-  hadTau_selection_denominator = "dR03mvaVLoose"
-  #hadTau_selection_denominator = "dR03mvaVVLoose" # CV: 'dR03mvaVVLoose' discriminator requires new Ntuple production, as 'dR03mvaVLoose' discriminator required in prodNtuple step
+  #hadTau_selection_denominator = "dR03mvaVLoose"
+  hadTau_selection_denominator = "dR03mvaVVLoose" # CV: 'dR03mvaVVLoose' discriminator requires new Ntuple production, as 'dR03mvaVLoose' discriminator required in prodNtuple step
 elif era == "2018":
   raise ValueError("Implement me!")
 else:
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     jet_maxAbsEta                    = 2.3,
     hadTau_selection_denominator     = hadTau_selection_denominator,
     hadTau_selections_numerator      = [
-      #"dR03mvaVLoose",
+      "dR03mvaVLoose",
       "dR03mvaLoose",
       "dR03mvaMedium",
       "dR03mvaTight",
@@ -115,6 +115,7 @@ if __name__ == '__main__':
     ],
     absEtaBins                       = [ -1., 1.479, 9.9 ],
     ptBins                           = [ 20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200. ],
+    decayModes                       = [ -1, 0, 1, 10 ],
     central_or_shifts                = central_or_shifts,
     max_files_per_job                = files_per_job,
     era                              = era,

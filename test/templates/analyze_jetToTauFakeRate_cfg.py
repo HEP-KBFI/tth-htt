@@ -45,6 +45,7 @@ process.analyze_jetToTauFakeRate = cms.PSet(
     hadTauSelections_numerator = cms.vstring(),
 
     absEtaBins = cms.vdouble(),
+    decayModes = cms.vint32(),
 
     isMC = cms.bool(False),
     central_or_shift = cms.string(''),
