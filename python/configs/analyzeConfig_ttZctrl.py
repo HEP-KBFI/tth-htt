@@ -182,6 +182,8 @@ class analyzeConfig_ttZctrl(analyzeConfig):
           for central_or_shift_or_dummy in central_or_shifts_extended:
             process_name_extended = [ process_name, "hadd" ]
             for process_name_or_dummy in process_name_extended:
+              if central_or_shift_or_dummy in [ "hadd", "addBackgrounds" ] and process_name_or_dummy in [ "hadd" ]:
+                continue
               key_dir = getKey(process_name_or_dummy, lepton_selection_and_frWeight, central_or_shift_or_dummy)
               for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_RLES, DKEY_SYNC ]:
                 initDict(self.dirs, [ key_dir, dir_type ])

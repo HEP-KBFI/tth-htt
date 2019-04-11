@@ -180,6 +180,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         for central_or_shift_or_dummy in central_or_shifts_extended:
           process_name_extended = [ process_name, "hadd" ]
           for process_name_or_dummy in process_name_extended:
+            if central_or_shift_or_dummy in [ "hadd" ] and process_name_or_dummy in [ "hadd" ]:
+              continue
             key_dir = getKey(process_name_or_dummy, charge_selection, central_or_shift_or_dummy)
             for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
               initDict(self.dirs, [ key_dir, dir_type ])
@@ -394,7 +396,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_hadd_stage2(lines_makefile)
+    self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = "phony_hadd_stage1")
     self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
