@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.common import SmartFormatter
 
 import argparse
 import os
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35))
 parser.add_argument(
   '-i', '--input', dest = 'input', metavar = 'file', required = False, type = str,
@@ -24,10 +24,10 @@ args = parser.parse_args()
 src_file = args.input
 dst_file = args.output
 
-if not hdfs.isfile(src_file):
+if not os.path.isfile(src_file):
   raise ValueError('No such file: %s' % src_file)
 dst_file_dir = os.path.dirname(dst_file)
-if not hdfs.isdir(dst_file_dir):
+if not os.path.isdir(dst_file_dir):
   raise ValueError('Directory %s does not exist' % dst_file_dir)
 
 sample_mapping = {}

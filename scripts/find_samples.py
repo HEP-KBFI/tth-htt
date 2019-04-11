@@ -36,7 +36,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size, create_if_no
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import SmartFormatter
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 import re
 import datetime
 import collections
@@ -376,8 +376,7 @@ def scan_private(dataset_private_path):
     'nevents'                : 0,
     'last_modification_date' : 0,
   }
-  for filename in hdfs.listdir(dataset_private_path):
-    dataset_private_file = os.path.join(dataset_private_path, filename)
+  for dataset_private_file in hdfs.listdir(dataset_private_path):
     nof_events = get_nof_events(dataset_private_file)
     if nof_events < 0:
       # Not a valid ROOT file
@@ -385,7 +384,7 @@ def scan_private(dataset_private_path):
     fs_results['size'] += hdfs.getsize(dataset_private_file)
     fs_results['nevents'] += nof_events
     fs_results['nfiles'] += 1
-    current_mtime = int(os.stat(dataset_private_file).st_mtime)
+    current_mtime = int(hdfs.getmtime(dataset_private_file).timestamp())
     if current_mtime > fs_results['last_modification_date']:
       fs_results['last_modification_date'] = current_mtime
   # Convert the results to strings

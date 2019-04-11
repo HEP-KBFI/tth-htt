@@ -24,8 +24,10 @@
 #
 # Option -o and flag -v in Example #1 are applicable here as well.
 
-from DataFormats.FWLite import Events, Handle
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
+from DataFormats.FWLite import Events, Handle
+
 import collections
 import os
 import math
@@ -58,7 +60,7 @@ def get_filelist(basedir):
     raise ValueError('Cannot access files on %s because: %s' % (basedir, err))
   else:
     logging.debug('Trying local file system on %s' % basedir)
-    return map(lambda filename: os.path.join(basedir, filename), hdfs.listdir(basedir))
+    return hdfs.listdir(basedir)
 
 def exists(filename):
   if filename.startswith('/eos'):
@@ -129,10 +131,8 @@ for output_filename in output_filenames:
   if not hdfs.isdir(output_dir):
     logging.debug('Directory %s does not exist' % output_dir)
     if args.force:
-      try:
-        hdfs.mkdirs(output_dir)
-      except OSError as err:
-        raise ValueError('Could not create directory %s because: %s' % (output_dir, err))
+      if hdfs.mkdirs(output_dir) != 0:
+        raise ValueError('Unable to create directory %s' % output_dir)
     else:
       raise ValueError('Use -f/--force to create the output directory %s' % output_dir)
 

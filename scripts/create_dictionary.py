@@ -19,7 +19,7 @@ import shutil
 import datetime
 import math
 import errno
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 HISTOGRAM_COUNT                           = 'Count'
 HISTOGRAM_COUNTWEIGHTED                   = 'CountWeighted'
 HISTOGRAM_COUNTWEIGHTED_NOPU              = 'CountWeightedNoPU'
@@ -63,8 +63,8 @@ class nohdfs:
   class info:
     def __init__(self, name_fuse):
       self.name_fuse     = name_fuse
-      self.kind          = 'F' if hdfs.isfile(self.name_fuse) else 'D'
-      self.size          = hdfs.getsize(name_fuse)
+      self.kind          = 'F' if os.path.isfile(self.name_fuse) else 'D'
+      self.size          = os.path.getsize(name_fuse)
       self.basename      = os.path.basename(self.name_fuse)
       self.depth         = len(self.name_fuse.split(os.path.sep)) - 1
       self.sparent_depth = -1
@@ -88,17 +88,17 @@ class nohdfs:
     pass
 
   def get_path_info(self, path):
-    if not hdfs.exists(path):
+    if not os.path.exists(path):
       raise hdfsException("No such path: %s" % path)
     return nohdfs.info(path)
 
   def get_dir_entries(self, path_obj):
-    if not hdfs.isdir(path_obj.name_fuse):
+    if not os.path.isdir(path_obj.name_fuse):
       raise hdfsException("No such path: %s" % path_obj.name_fuse)
     entries = []
     try:
       entries = [
-        nohdfs.info(os.path.join(path_obj.name_fuse, entry)) for entry in hdfs.listdir(path_obj.name_fuse)
+        nohdfs.info(os.path.join(path_obj.name_fuse, entry)) for entry in os.listdir(path_obj.name_fuse)
       ]
     except OSError as err:
       if err.errno == errno.EAGAIN:
@@ -147,7 +147,7 @@ class hdfs:
 
   def __init__(self):
     self.lib_path = "/usr/lib64/libhdfs.so"
-    if not hdfs.isfile(self.lib_path):
+    if not os.path.isfile(self.lib_path):
       raise hdfsException("No such file: %s" % self.lib_path)
 
     logging.debug("Loading {lib}".format(lib = self.lib_path))
@@ -198,7 +198,7 @@ class FileTracker:
     self.corrupted_files = []
 
 def load_dict(path, name):
-  if not hdfs.isfile(path):
+  if not os.path.isfile(path):
     logging.error("No such dictionary file: {dict_path}".format(dict_path = path))
     sys.exit(1)
   imp_dict = imp.load_source('', path)
@@ -744,9 +744,9 @@ def obtain_paths(hdfs_system, input_path):
       else:
         paths = input_path
     else:
-      if not hdfs.exists(path):
+      if not os.path.exists(path):
         raise ValueError("No such file: {path}".format(path = path))
-      if hdfs.isfile(path):
+      if os.path.isfile(path):
         with open(path, 'r') as f:
           for line in f:
             line_stripped = line.rstrip('\n').rstrip(os.path.sep)
@@ -827,17 +827,17 @@ if __name__ == '__main__':
   if args.verbose:
     logging.getLogger().setLevel(logging.DEBUG)
 
-  if not hdfs.isdir(args.output_directory):
+  if not os.path.isdir(args.output_directory):
     if not args.force:
       raise parser.error("Directory %s does not exist (use -F/--force to create it)" % args.output_directory)
     else:
-      hdfs.mkdirs(args.output_directory)
+      os.makedirs(args.output_directory)
 
-  if args.generate_jobs and not hdfs.isdir(args.generate_jobs):
+  if args.generate_jobs and not os.path.isdir(args.generate_jobs):
     if not args.force:
       raise parser.error("Directory %s does not exist" % args.generate_jobs)
     else:
-      hdfs.mkdirs(args.generate_jobs)
+      os.makedirs(args.generate_jobs)
 
   if (args.file_idx < 0 or not args.filter) and args.check_every_event:
     raise parser.error("Checking all files for data corruption is extremely slow! "
@@ -1039,7 +1039,7 @@ if __name__ == '__main__':
 
     # cat the dictionary
     for dict_file in to_cat['dicts']:
-      if not hdfs.exists(dict_file):
+      if not os.path.exists(dict_file):
         raise ValueError("Missing temporary dictionary: %s" % dict_file)
       with open(dict_file, 'r') as f:
         output += '\n'.join(map(lambda line: line.rstrip('\n'), f.readlines()))
@@ -1049,7 +1049,7 @@ if __name__ == '__main__':
       if key not in to_cat:
         continue
       for faulty_list_file in to_cat[key]:
-        if hdfs.exists(faulty_list_file):
+        if os.path.exists(faulty_list_file):
           with open(faulty_list_file, 'r') as f:
             lines = map(lambda line: line.rstrip('\n'), f.readlines())
             if key == '-z':

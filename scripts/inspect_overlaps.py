@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import os
 import copy
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 CHANNEL_OPTIONS = {
   '0l_2tau' : {
     'SR'           : 'Tight_OS',
@@ -104,13 +105,13 @@ for channel in cfg_options:
       continue
     logging.info('Inspecting region {}'.format(region_name))
     rles[channel][region_name] = {}
-    for sample_name in hdfs.listdir(region_path):
+    for sample_path in hdfs.listdir(region_path):
+      sample_name = os.path.basename(sample_path)
       if sample_name != 'ttHJetToNonbb_M125_amcatnlo': continue
       logging.info('Inspecting sample {}'.format(sample_name))
-      sample_path = os.path.join(region_path, sample_name)
       rles[channel][region_name][sample_name] = {}
-      for rle_file in hdfs.listdir(sample_path):
-        rle_file_path = os.path.join(sample_path, rle_file)
+      for rle_file_path in hdfs.listdir(sample_path):
+        rle_file = os.path.basename(rle_file_path)
         sys_option = ''
         if 'central' in rle_file:
           sys_option = 'central'

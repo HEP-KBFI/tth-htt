@@ -38,6 +38,7 @@ from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 import argparse
 import os
 import sys
@@ -211,11 +212,9 @@ if __name__ == '__main__':
     else:
       # instead of forming a list of files let's loop over the subfolders and the files therein instead
       logging.debug('Looping over the files in {sample_path}'.format(sample_path = sample_path))
-      for subdir_basename in hdfs.listdir(sample_path):
-        subdir = os.path.join(sample_path, subdir_basename)
+      for subdir in hdfs.listdir(sample_path):
         logging.debug('Found subdirectory {subdir}'.format(subdir = subdir))
-        for rootfile_basename in hdfs.listdir(subdir):
-          rootfile = os.path.join(subdir, rootfile_basename)
+        for rootfile in hdfs.listdir(subdir):
           logging.debug("Processing file '{rootfile}'".format(
             rootfile = rootfile,
           ))

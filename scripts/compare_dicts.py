@@ -5,9 +5,9 @@ import os
 import sys
 import logging
 import imp
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 def load_dict(path, name):
-  if not hdfs.isfile(path):
+  if not os.path.isfile(path):
     logging.error("No such dictionary file: {dict_path}".format(dict_path = path))
     sys.exit(1)
   imp_dict = imp.load_source('', path)

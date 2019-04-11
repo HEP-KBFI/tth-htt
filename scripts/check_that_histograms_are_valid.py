@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-import os
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 import sys
 import time
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 def main():
     input_files = sys.argv[1:len(sys.argv)]
 
