@@ -81,7 +81,6 @@ public:
   friend class RecoHadTauWriter;
 
 protected:
-  Int_t charge_;
   Double_t dxy_;               ///< d_{xy}, distance in the transverse plane w.r.t PV
   Double_t dz_;                ///< d_{z}, distance on the z axis w.r.t PV
   Int_t decayMode_;            ///< tau decay mode (5x(nof charged pions - 1) - (nof neutral pions))

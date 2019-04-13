@@ -405,9 +405,9 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
     mu_jetNDauChargedMVASel[i] = muon -> jetNDauChargedMVASel();
     mu_jetPtRel[i] = muon -> jetPtRel();
     mu_jetPtRatio[i] = muon -> jetPtRatio();
-    mu_jetCSV[i] = muon -> jetBtagCSV(Btag::kCSVv2);
-    mu_jetDeepCSV[i] = muon -> jetBtagCSV(Btag::kDeepCSV);
-    mu_jetDeepJet[i] = muon -> jetBtagCSV(Btag::kDeepJet);
+    mu_jetCSV[i] = std::max(0., muon -> jetBtagCSV(Btag::kCSVv2));
+    mu_jetDeepCSV[i] = std::max(0., muon -> jetBtagCSV(Btag::kDeepCSV));
+    mu_jetDeepJet[i] = std::max(0., muon -> jetBtagCSV(Btag::kDeepJet));
     mu_sip3D[i] = muon -> sip3d();
     mu_dxyAbs[i] = std::fabs(muon -> dxy());
     mu_dxy[i] = muon -> dxy();
@@ -466,9 +466,9 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
     ele_jetNDauChargedMVASel[i] = electron -> jetNDauChargedMVASel();
     ele_jetPtRel[i] = electron -> jetPtRel();
     ele_jetPtRatio[i] = electron -> jetPtRatio();
-    ele_jetCSV[i] = electron -> jetBtagCSV(Btag::kCSVv2);
-    ele_jetDeepCSV[i] = electron -> jetBtagCSV(Btag::kDeepCSV);
-    ele_jetDeepJet[i] = electron -> jetBtagCSV(Btag::kDeepJet);
+    ele_jetCSV[i] = std::max(0., electron -> jetBtagCSV(Btag::kCSVv2));
+    ele_jetDeepCSV[i] = std::max(0., electron -> jetBtagCSV(Btag::kDeepCSV));
+    ele_jetDeepJet[i] = std::max(0., electron -> jetBtagCSV(Btag::kDeepJet));
     ele_sip3D[i] = electron -> sip3d();
     ele_dxyAbs[i] = std::fabs(electron -> dxy());
     ele_dxy[i] = electron -> dxy();
@@ -526,7 +526,7 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
     tau_decayModeFindingOldDMs[i] = hadtau -> decayModeFinding();
     tau_decayModeFindingNewDMs[i] = hadtau -> decayModeFindingNew();
 
-    const Int_t idMVArun2dR03 = hadtau -> id_mva(TauID::MVAnewDM2017v2);
+    const Int_t idMVArun2dR03 = hadtau -> id_mva();
     tau_byVVLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 1 ? 1 : 0;
     tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 2 ? 1 : 0;
     tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 3 ? 1 : 0;
