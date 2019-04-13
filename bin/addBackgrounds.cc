@@ -110,7 +110,8 @@ int main(int argc, char* argv[])
                the_process_input.find("ttH_hww") != std::string::npos ||
                the_process_input.find("ttH_hzz") != std::string::npos ||
                the_process_input.find("ttH_hzg") != std::string::npos ||
-               the_process_input.find("ttH_hmm") != std::string::npos  ) {
+               the_process_input.find("ttH_hmm") != std::string::npos ||
+	       the_process_input.find("ttH_hbb") != std::string::npos ) {
             continue;
           }
           if ( std::string(subdir_level2->GetName()).find("genEvt")    != std::string::npos ||

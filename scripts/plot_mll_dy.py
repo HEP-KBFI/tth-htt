@@ -139,7 +139,7 @@ if __name__ == '__main__':
     if not args.force:
       raise ValueError('Use -f/--force to create output dir %s' % args.output_dir)
     else:
-      os.makedirs(args.output_dir)
+      os.path.mkdirs(args.output_dir)
 
   # Let's get the list of DY samples
   dy_samples = { dbs_name : [] for dbs_name in samples if dbs_name.startswith('/DY') }

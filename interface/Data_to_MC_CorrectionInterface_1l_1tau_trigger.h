@@ -3,7 +3,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
 
-// forwad declarations
+// forward declarations
 class TauTriggerSFs2017;
 enum class TriggerSFsys;
 
@@ -75,8 +75,8 @@ protected:
   vLutWrapperBase effTrigger_1m1tau_tauLeg_mc_gentau_;
   vLutWrapperBase effTrigger_1m1tau_tauLeg_mc_faketau_;
 
-  TauTriggerSFs2017 * effTrigger_1m1tau_;
-  TauTriggerSFs2017 * effTrigger_1e1tau_;
+  TauTriggerSFs2017 * effTrigger_1e1tau_tauLeg_;
+  TauTriggerSFs2017 * effTrigger_1m1tau_tauLeg_;
   //-----------------------------------------------------------------------------
 
   std::map<std::string, TFile *> inputFiles_;

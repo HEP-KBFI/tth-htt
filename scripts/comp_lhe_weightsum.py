@@ -24,6 +24,8 @@
 #
 # Option -o and flag -v in Example #1 are applicable here as well.
 
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 from DataFormats.FWLite import Events, Handle
 
 import collections
@@ -58,7 +60,7 @@ def get_filelist(basedir):
     raise ValueError('Cannot access files on %s because: %s' % (basedir, err))
   else:
     logging.debug('Trying local file system on %s' % basedir)
-    return map(lambda filename: os.path.join(basedir, filename), os.listdir(basedir))
+    return hdfs.listdir(basedir)
 
 def exists(filename):
   if filename.startswith('/eos'):
@@ -78,7 +80,7 @@ def exists(filename):
       raise ValueError('Cannot access file %s on eos because: %s' % (filename, err))
   else:
     logging.debug('Trying local file system on %s' % filename)
-    return os.path.isfile(filename)
+    return hdfs.isfile(filename)
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -126,13 +128,11 @@ if output_filenames:
 
 for output_filename in output_filenames:
   output_dir = os.path.dirname(output_filename)
-  if not os.path.isdir(output_dir):
+  if not hdfs.isdir(output_dir):
     logging.debug('Directory %s does not exist' % output_dir)
     if args.force:
-      try:
-        os.makedirs(output_dir)
-      except OSError as err:
-        raise ValueError('Could not create directory %s because: %s' % (output_dir, err))
+      if hdfs.mkdirs(output_dir) != 0:
+        raise ValueError('Unable to create directory %s' % output_dir)
     else:
       raise ValueError('Use -f/--force to create the output directory %s' % output_dir)
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import os
 import copy
@@ -95,22 +96,22 @@ rles = {}
 for channel in cfg_options:
   logging.info('Inspecting channel {}'.format(channel))
   base_path = os.path.join(cfg_options[channel], 'output_rle', channel)
-  if not os.path.isdir(base_path):
+  if not hdfs.isdir(base_path):
     raise ValueError('No such directory: %s' % base_path)
   rles[channel] = {}
   for region_name, region in CHANNEL_OPTIONS[channel].items():
     region_path = os.path.join(base_path, region)
-    if not os.path.isdir(region_path):
+    if not hdfs.isdir(region_path):
       continue
     logging.info('Inspecting region {}'.format(region_name))
     rles[channel][region_name] = {}
-    for sample_name in os.listdir(region_path):
+    for sample_path in hdfs.listdir(region_path):
+      sample_name = os.path.basename(sample_path)
       if sample_name != 'ttHJetToNonbb_M125_amcatnlo': continue
       logging.info('Inspecting sample {}'.format(sample_name))
-      sample_path = os.path.join(region_path, sample_name)
       rles[channel][region_name][sample_name] = {}
-      for rle_file in os.listdir(sample_path):
-        rle_file_path = os.path.join(sample_path, rle_file)
+      for rle_file_path in hdfs.listdir(sample_path):
+        rle_file = os.path.basename(rle_file_path)
         sys_option = ''
         if 'central' in rle_file:
           sys_option = 'central'

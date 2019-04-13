@@ -205,7 +205,6 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff() const
       eff_2tau_tauLeg2_data = (effTrigger_tauLeg_->*getTriggerEfficiencyDataFunc)(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, hadTau2_decayMode_);
       eff_2tau_tauLeg2_mc   = (effTrigger_tauLeg_->*getTriggerEfficiencyMCFunc)  (hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, hadTau2_decayMode_);
     }
-
   }
   else if(era_ == kEra_2018)
   {

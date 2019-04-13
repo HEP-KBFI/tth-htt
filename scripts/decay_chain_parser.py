@@ -227,7 +227,6 @@ Disclaimer: the program is tested with only ttHJetToNonbb_M125, TTZToLLNuNu_M-10
 ################################################### IMPORTS ###################################################
 
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
-
 import argparse
 import sys
 import subprocess
@@ -1451,7 +1450,7 @@ if __name__ == '__main__':
     if not os.path.isdir(os.path.dirname(args.output)):
       if args.force:
         try:
-          os.makedirs(os.path.dirname(args.output))
+          os.path.mkdirs(os.path.dirname(args.output))
         except IOError:
           logging.error("Could not create directory {dir_name}".format(dir_name=os.path.dirname(args.output)))
           sys.exit(1)
@@ -1563,7 +1562,7 @@ if __name__ == '__main__':
     if not os.path.isdir(os.path.dirname(args.output)):
       if args.force:
         try:
-          os.makedirs(os.path.dirname(args.output))
+          os.path.mkdirs(os.path.dirname(args.output))
         except IOError:
           logging.error("Could not create directory {dir_name}".format(dir_name = os.path.dirname(args.output)))
           sys.exit(1)
@@ -1649,7 +1648,7 @@ if __name__ == '__main__':
           sys.exit(1)
         else:
           try:
-            os.makedirs(args.secondary_output)
+            os.path.mkdirs(args.secondary_output)
           except IOError as err:
             logging.error("Could not create directory {output_dir} for the following reasons: {reasons}".format(
               output_dir = args.secondary_output,

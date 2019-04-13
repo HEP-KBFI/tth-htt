@@ -3,7 +3,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
 
-// forwad declarations
+// forward declarations
 class TauTriggerSFs2017;
 enum class TriggerSFsys;
 

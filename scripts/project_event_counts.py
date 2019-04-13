@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-
+import ROOT
 import array
 import collections
 import numpy as np
@@ -11,7 +10,7 @@ plot_dir = ''
 apply_mll_cut = True
 
 if plot_dir and not os.path.isdir(plot_dir):
-  os.makedirs(plot_dir)
+  os.path.mkdirs(plot_dir)
 
 if True:
   x_var = 'LHE_HT'
@@ -272,7 +271,7 @@ for sample_key, sample_info in samples.items():
     fns = [ os.path.join(fp, '%04d' % (idx // 1000), 'tree_%d.root' % idx) for idx in range(1, nof_files + 1) ]
     output_dir = os.path.join(output_dir_base, sample_name)
     if not os.path.isdir(output_dir):
-      os.makedirs(output_dir)
+      os.path.mkdirs(output_dir)
     for fn in fns:
       fn_base = os.path.basename(fn).replace('tree', 'hist')
       fn_out = os.path.join(output_dir, fn_base)

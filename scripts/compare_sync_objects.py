@@ -927,7 +927,7 @@ if enable_plot and not os.path.isdir(plot_output_dir):
   if plot_force:
     logging.debug('Directory %s does not exist; attempting to create it')
     try:
-      os.makedirs(plot_output_dir)
+      os.path.mkdirs(plot_output_dir)
     except IOError as reason:
       raise ValueError('Could not create directory %s because: %s' % (plot_output_dir, reason))
   else:
