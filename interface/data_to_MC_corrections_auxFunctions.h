@@ -1,8 +1,6 @@
 #ifndef DATA_TO_MC_CORRECTIONS_AUXFUNCTIONS_H
 #define DATA_TO_MC_CORRECTIONS_AUXFUNCTIONS_H
 
-#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // TriggerSFsys::central, TriggerSFsys::shiftUp, TriggerSFsys::shiftDown
-
 #include <string> // std::string
 #include <cmath> // std::min(), std::max()
 #include <vector> // std::vector<>
@@ -10,7 +8,6 @@
 
 // forward declarations
 class lutWrapperBase;
-class TauTriggerSFs2017;
 
 namespace aux
 {
@@ -49,15 +46,6 @@ namespace aux
   {
     return std::min(eff_data / std::max(1.e-6, eff_mc), 1.e+1);
   }
-
-  double 
-  getTauTriggerEfficiencyData_2017(const TauTriggerSFs2017* effTrigger_tauLeg, 
-				   double hadTau_pt, double hadTau_eta, double hadTau_phi, double hadTau_decayMode, 
-				   TriggerSFsys triggerSF_option);
-  double 
-  getTauTriggerEfficiencyMC_2017(const TauTriggerSFs2017* effTrigger_tauLeg, 
-				 double hadTau_pt, double hadTau_eta, double hadTau_phi, double hadTau_decayMode, 
-				 TriggerSFsys triggerSF_option);
 }
 
 #endif // DATA_TO_MC_CORRECTIONS_AUXFUNCTIONS_H
