@@ -31,6 +31,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         hadTau_selections_numerator,
         absEtaBins,
         ptBins,
+        decayModes,
         central_or_shifts,
         max_files_per_job,
         era,
@@ -81,6 +82,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
     self.absEtaBins = absEtaBins
     self.ptBins = ptBins
+    self.decayModes = decayModes
 
     self.executable_comp_jetToTauFakeRate = executable_comp_jetToTauFakeRate
 
@@ -111,6 +113,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       'hadTauSelection_denominator',
       'hadTauSelections_numerator',
       'absEtaBins',
+      'decayModes'
     ]
 
     lines = super(analyzeConfig_jetToTauFakeRate, self).createCfg_analyze(jobOptions, sample_info, additionalJobOptions)
@@ -142,6 +145,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       lines.append("process.comp_jetToTauFakeRate.processMC = cms.string('TTj')")
       lines.append("process.comp_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
       lines.append("process.comp_jetToTauFakeRate.ptBins = cms.vdouble(%s)" % jobOptions['ptBins'])
+      lines.append("process.comp_jetToTauFakeRate.decayModes = cms.vint32(%s)" % jobOptions['decayModes'])
       lines.append("process.comp_jetToTauFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
       create_cfg(self.cfgFile_comp_jetToTauFakeRate, jobOptions['cfgFile_modified'], lines)
 
@@ -176,6 +180,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         for central_or_shift_or_dummy in central_or_shifts_extended:
           process_name_extended = [ process_name, "hadd" ]
           for process_name_or_dummy in process_name_extended:
+            if central_or_shift_or_dummy in [ "hadd" ] and process_name_or_dummy in [ "hadd" ]:
+              continue
             key_dir = getKey(process_name_or_dummy, charge_selection, central_or_shift_or_dummy)
             for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
               initDict(self.dirs, [ key_dir, dir_type ])
@@ -324,6 +330,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         'tightRegion' : "jetToTauFakeRate_%s/numerator/" % charge_selection,
         'absEtaBins' : self.absEtaBins,
         'ptBins' : self.ptBins,
+        'decayModes' : self.decayModes,
         'plots_outputFileName' : os.path.join(self.dirs[key_comp_jetToTauFakeRate_dir][DKEY_PLOT], "comp_jetToTauFakeRate.png")
       }
       self.createCfg_comp_jetToTauFakeRate(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job])
@@ -389,7 +396,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_hadd_stage2(lines_makefile)
+    self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = "phony_hadd_stage1")
     self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)

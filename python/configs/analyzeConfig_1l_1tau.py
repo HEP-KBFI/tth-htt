@@ -260,7 +260,9 @@ class analyzeConfig_1l_1tau(analyzeConfig):
             central_or_shifts_extended.extend([ "hadd", "addBackgrounds" ])
             for central_or_shift_or_dummy in central_or_shifts_extended:              
               process_name_extended = [ process_name, "hadd" ]
-              for process_name_or_dummy in process_name_extended:            
+              for process_name_or_dummy in process_name_extended:
+                if central_or_shift_or_dummy in [ "hadd", "addBackgrounds" ] and process_name_or_dummy in [ "hadd" ]:
+                  continue
                 key_dir = getKey(process_name_or_dummy, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, central_or_shift_or_dummy)
                 for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
                   initDict(self.dirs, [ key_dir, dir_type ])

@@ -737,7 +737,9 @@ class analyzeConfig(object):
             elif type(jobOptions_val) == str:
                 jobOptions_expr = "cms.string('%s')"
             elif type(jobOptions_val) == list:
-                if all(map(lambda x: type(x) == float, jobOptions_val)):
+                if all(map(lambda x: type(x) == int, jobOptions_val)):
+                    jobOptions_expr = "cms.vint32(%s)"
+                elif all(map(lambda x: type(x) == float, jobOptions_val)):
                     jobOptions_expr = "cms.vdouble(%s)"
                 elif all(map(lambda x: type(x) == str, jobOptions_val)):
                     jobOptions_expr = "cms.vstring(%s)"

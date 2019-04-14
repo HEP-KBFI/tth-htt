@@ -77,17 +77,15 @@ class analyzeConfig_inclusive(analyzeConfig):
       process_name = sample_info["process_name_specific"]
       central_or_shifts_extended = [ "" ]
       central_or_shifts_extended.extend(self.central_or_shifts)
-      central_or_shifts_extended.extend([ "hadd", "addBackgrounds" ])
+      central_or_shifts_extended.extend([ "hadd" ])
       for central_or_shift_or_dummy in central_or_shifts_extended:
-        process_name_extended = [ process_name, "hadd" ]
-        for process_name_or_dummy in process_name_extended:
-          key_dir = getKey(process_name_or_dummy, central_or_shift_or_dummy)
-          for dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
-            initDict(self.dirs, [ key_dir, dir_type ])
-            if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
-              self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, process_name_or_dummy, central_or_shift_or_dummy)
-            else:
-              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name_or_dummy, central_or_shift_or_dummy)
+        key_dir = getKey(process_name, central_or_shift_or_dummy)
+        for dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
+          initDict(self.dirs, [ key_dir, dir_type ])
+          if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
+            self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, process_name, central_or_shift_or_dummy)
+          else:
+            self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name, central_or_shift_or_dummy)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_SYNC, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HADD_RT ]:
@@ -149,8 +147,8 @@ class analyzeConfig_inclusive(analyzeConfig):
           syncOutputTree = self.output_tree if central_or_shift == "central" else os.path.join(central_or_shift, self.output_tree)
           self.inputFiles_sync['sync'].append(syncOutput)
 
-          cfgFile_modified_path = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%i_cfg.py" % analyze_job_tuple)
-          logFile_path = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%i.log" % analyze_job_tuple)
+          cfgFile_modified_path = os.path.join(self.dirs[key_analyze_dir][DKEY_CFGS], "analyze_%s_%s_%i_cfg.py" % analyze_job_tuple)
+          logFile_path = os.path.join(self.dirs[key_analyze_dir][DKEY_LOGS], "analyze_%s_%s_%i.log" % analyze_job_tuple)
 
           self.jobOptions_analyze[key_analyze_job] = {
             'ntupleFiles'             : ntupleFiles,
