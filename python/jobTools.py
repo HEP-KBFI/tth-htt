@@ -38,7 +38,7 @@ def add_chmodX(fullpath):
     fullpath: full path of the file to give execution rights (effectively chmod +x'es the thing)
   """
   st = os.stat(fullpath)
-  hdfs.chmod(fullpath, st.st_mode | stat.S_IEXEC)
+  os.chmod(fullpath, st.st_mode | stat.S_IEXEC)
 
 def create_if_not_exists(dir_fullpath):
   """Creates a given directory if it doesn't exist yet
