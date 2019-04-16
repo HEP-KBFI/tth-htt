@@ -2,6 +2,7 @@
 #define DATA_TO_MC_CORRECTIONS_AUXFUNCTIONS_H
 
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // TriggerSFsys::central, TriggerSFsys::shiftUp, TriggerSFsys::shiftDown
+#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
 
 #include <string> // std::string
 #include <cmath> // std::min(), std::max()
@@ -11,6 +12,7 @@
 // forward declarations
 class lutWrapperBase;
 class TauTriggerSFs2017;
+class TFile;
 
 namespace aux
 {
@@ -49,6 +51,41 @@ namespace aux
   {
     return std::min(eff_data / std::max(1.e-6, eff_mc), 1.e+1);
   }
+
+  //-------------------------------------------------------------------------------------------------
+  void 
+  loadTriggerEff_1e_2017(vLutWrapperBase& effTrigger_1e_data, vLutWrapperBase& effTrigger_1e_mc, 
+			 std::map<std::string, TFile *>& inputFiles);
+
+  void
+  loadTriggerEff_1e_1tau_lepLeg_2017(vLutWrapperBase& effTrigger_1e1tau_lepLeg_data, vLutWrapperBase& effTrigger_1e1tau_lepLeg_mc, 
+				     std::map<std::string, TFile *>& inputFiles);
+
+  void 
+  loadTriggerEff_1m_2017(vLutWrapperBase& effTrigger_1m_data, vLutWrapperBase& effTrigger_1m_mc, 
+			 std::map<std::string, TFile *>& inputFiles);
+ 
+  void
+  loadTriggerEff_1m_1tau_lepLeg_2017(vLutWrapperBase& effTrigger_1m1tau_lepLeg_data, vLutWrapperBase& effTrigger_1m1tau_lepLeg_mc, 
+				     std::map<std::string, TFile *>& inputFiles);
+
+  void 
+  loadTriggerEff_1e_2018(vLutWrapperBase& effTrigger_1e_data, vLutWrapperBase& effTrigger_1e_mc, 
+			 std::map<std::string, TFile *>& inputFiles);
+
+  void
+  loadTriggerEff_1e_1tau_lepLeg_2018(vLutWrapperBase& effTrigger_1e1tau_lepLeg_data, vLutWrapperBase& effTrigger_1e1tau_lepLeg_mc, 
+				     std::map<std::string, TFile *>& inputFiles);
+
+  void 
+  loadTriggerEff_1m_2018(vLutWrapperBase& effTrigger_1m_data, vLutWrapperBase& effTrigger_1m_mc, 
+			 std::map<std::string, TFile *>& inputFiles);
+ 
+  void
+  loadTriggerEff_1m_1tau_lepLeg_2018(vLutWrapperBase& effTrigger_1m1tau_lepLeg_data, vLutWrapperBase& effTrigger_1m1tau_lepLeg_mc, 
+				     std::map<std::string, TFile *>& inputFiles);
+  //-------------------------------------------------------------------------------------------------
+
 
   double 
   getTauTriggerEfficiencyData_2017(const TauTriggerSFs2017* effTrigger_tauLeg, 
