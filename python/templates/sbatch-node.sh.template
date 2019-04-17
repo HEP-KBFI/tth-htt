@@ -70,6 +70,58 @@ run_wrapped_executable() {
     echo "Sleeping for $RANDOM_SLEEP seconds"
     sleep $RANDOM_SLEEP
 
+    # change cp, stat and ls commands in case the output directory is on /hdfs
+    OUTPUT_DIR="{{ outputDir }}"
+    if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hdfs 2>/dev/null) ) ]]; then
+      cp_cmd="hdfs dfs -copyFromLocal";
+      st_cmd="hdfs dfs -stat '%b'"
+      ls_cmd="hdfs dfs -ls"
+      ls_cmd_mult=$ls_cmd
+      ls_cmd_sfx=""
+      OUTPUT_DIR=${OUTPUT_DIR#/hdfs}
+    else
+      cp_cmd=cp;
+      st_cmd="stat --printf='%s'"
+      ls_cmd="ls -l"
+      ls_cmd_mult="ls -d -1"
+      ls_cmd_sfx="*"
+    fi
+    cp_cmd="$cp_cmd -f"
+
+    # if all output files already exist, quit the job and return 0
+    OUTPUT_FILES="{{ outputFiles }}"
+    OUTPUT_FILES_EXIST=true
+    if [ $(echo "$OUTPUT_FILES" | wc -w) -ge 1 ]; then
+      OUTPUT_DIR_FILES=$($ls_cmd_mult $OUTPUT_DIR/$ls_cmd_sfx 2>/dev/null | grep $OUTPUT_DIR | awk '{print $NF}')
+
+      for OUTPUT_FILE in $OUTPUT_FILES; do
+        OUTPUT_FILE_FULLPATH=${OUTPUT_DIR}/${OUTPUT_FILE}
+        OUTPUT_FILE_GREP=$(echo "$OUTPUT_DIR_FILES" | grep $OUTPUT_FILE_FULLPATH | wc -l)
+        if [ $OUTPUT_FILE_GREP -ne 1 ]; then
+          echo "File $OUTPUT_FILE_FULLPATH does not exists -> running the job";
+          OUTPUT_FILES_EXIST=false;
+          break;
+        else
+          echo "File $OUTPUT_FILE_FULLPATH exists";
+        fi
+      done
+    else
+      OUTPUT_FILE=$OUTPUT_FILES
+      OUTPUT_FILE_FULLPATH=${OUTPUT_DIR}/${OUTPUT_FILE}
+      OUTPUT_FILE_GREP=$($ls_cmd $OUTPUT_FILE_FULLPATH 2>/dev/null | grep $OUTPUT_FILE_FULLPATH | wc -l)
+      if [ $OUTPUT_FILE_GREP -ne 1 ]; then
+        echo "File $OUTPUT_FILE_FULLPATH does not exists -> running the job";
+        OUTPUT_FILES_EXIST=false;
+      else
+        echo "File $OUTPUT_FILE_FULLPATH exists";
+      fi
+    fi
+
+    if [ $OUTPUT_FILES_EXIST = true ]; then
+      EXIT_CODE=0
+      return $EXIT_CODE;
+    fi
+
     echo "Create job directory: mkdir -p $JOB_DIR"
     mkdir -p $JOB_DIR
 
@@ -118,21 +170,8 @@ run_wrapped_executable() {
     echo "Listing of current directory:"
     ls -l
 
-    OUTPUT_FILES="{{ outputFiles }}"
     echo "Copying output files: {{ outputFiles }}"
-    for OUTPUT_FILE in $OUTPUT_FILES
-    do
-      OUTPUT_DIR="{{ outputDir }}"
-      if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hadoop) ) ]]; then
-        cp_cmd="hadoop fs -copyFromLocal";
-        st_cmd="hadoop fs -stat '%b'"
-        OUTPUT_DIR=${OUTPUT_DIR#/hdfs}
-      else
-        cp_cmd=cp;
-        st_cmd="stat --printf='%s'"
-      fi
-      cp_cmd="$cp_cmd -f"
-
+    for OUTPUT_FILE in $OUTPUT_FILES; do
       OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
       if [ -n "$OUTPUT_FILE_SIZE" ] && [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
         echo "$cp_cmd $OUTPUT_FILE $OUTPUT_DIR/$OUTPUT_FILE"
