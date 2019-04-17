@@ -288,6 +288,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               'hadTauSelection_denominator' : self.hadTau_selection_denominator,
               'hadTauSelections_numerator'  : self.hadTau_selections_numerator,
               'absEtaBins'                  : self.absEtaBins,
+              'decayModes'                  : self.decayModes,
               'central_or_shift'            : central_or_shift,
               'apply_hlt_filter'            : self.hlt_filter,
             }

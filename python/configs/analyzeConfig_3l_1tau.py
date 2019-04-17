@@ -494,9 +494,6 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 self.outputFile_hadd_stage1[key_hadd_stage1_job] = os.path.join(self.dirs[key_hadd_stage1_dir][DKEY_HIST],
                                                                                 "hadd_stage1_%s_%s_%s.root" % hadd_stage1_job_tuple)
 
-                if self.isBDTtraining:
-                  self.targets.append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
-
             if self.isBDTtraining or self.do_sync:
               continue
 
@@ -735,6 +732,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
         self.addToMakefile_hadd_sync(lines_makefile)
       else:
         raise ValueError("Internal logic error")
+      self.targets.extend(self.phoniesToAdd)
       self.createMakefile(lines_makefile)
       logging.info("Done.")
       return self.num_jobs
