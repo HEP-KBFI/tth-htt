@@ -286,7 +286,6 @@ class Triggers(object):
         }
       }
     elif era == "2017":
-
       self.triggers_analysis = {
         '3mu' : {
           'HLT_TripleMu_12_10_5',
@@ -359,49 +358,77 @@ class Triggers(object):
           'HLT_Mu8',
         }
       }
-
     elif era == "2018":
       self.triggers_analysis = {
         '3mu' : {
-          'HLT_TripleMu_10_5_5_DZ',
-          'HLT_TripleMu_12_10_5',
+#         #'HLT_TripleMu_10_5_5_DZ',
+          'HLT_TripleMu_12_10_5', # L=58.873/fb
         },
         '1e2mu' : {
-          'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ',
+          'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ', # L=58.873/fb
         },
         '2e1mu' : {
-          'HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ',
+          #'HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ',
+          'HLT_Mu8_DiEle12_CaloIdL_TrackIdL', # L=58.873/fb
         },
         '3e' : {
+          'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL', # L=53.747/fb
         },
         '2mu' : {
-          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8',
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # L=58.873/fb
         },
         '1e1mu' : {
-          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ',
-          'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ',
-          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
+          #'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=58.873/fb
+          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=58.873/fb
+          'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=58.873/fb
         },
         '2e' : {
-          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL',
+          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # L=58.873/fb
+          #'HLT_DoubleEle25_CaloIdL_MW', # L=58872.7 (used by H->ZZ->4 lepton analysis, but why ?)
         },
         '1mu' : {
-          'HLT_IsoMu24',
+          'HLT_IsoMu24', # L=58.865/fb
+          'HLT_IsoMu27', # L=58.873/fb
         },
         '1e' : {
-          'HLT_Ele32_WPTight_Gsf',
+          'HLT_Ele32_WPTight_Gsf', # L=58.873/fb
+          #'HLT_Ele35_WPTight_Gsf', # L=58.873/fb (used by Alexei, but why ?)
         },
-        '1mu1tau' : { # stored in SingleMuon dataset?
-          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1',
+        # CV: tau trigger paths taken from slide 12 of presentation given by Hale Sert at HTT workshop in April 2019
+        #    (https://indico.cern.ch/event/803335/contributions/3359970/attachments/1829789/2996369/TriggerStatus_HTTworkshop_hsert.pdf)
+        '1mu1tau' : { # stored in SingleMuon dataset
+          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1', # L=17.046/fb
+          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTauHPS27_eta2p1_CrossL1', # L=58.873/fb
         },
         '1e1tau' : { # stored in SingleElectron dataset?
           'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
         },
         '2tau' : { # stored in Tau dataset
+          'HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg', # L=17.046/fb
+          'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg', # L=17.046/fb
+          'HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg', # L=17.046/fb
+          'HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg', # L=58.873/fb
         },
       }
-      
+
       self.triggers_leptonFR = {
+        '1e' : {
+          'HLT_Ele8_CaloIdM_TrackIdM_PFJet30', # L=6.348/pb 
+          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30', # L=38.408/pb
+          'HLT_Ele23_CaloIdM_TrackIdM_PFJet30', # L=38.421/pb
+        },
+        '1mu' : {
+          'HLT_Mu27', # L=123.845/pb
+          'HLT_Mu20', # L=54.499/pb
+          #'HLT_Mu8',
+          'HLT_Mu3_PFJet40', # L=2.659/pb
+        },
+        '2e' : set(),
+        '2mu' : {
+          'HLT_Mu17', # L=45.121/pb
+          'HLT_Mu8', # L=8.509/pb
+        }
       }
     else:
       raise ValueError("Invalid era: %s" % era)

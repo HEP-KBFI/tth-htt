@@ -4,6 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 #include <TString.h> // Form()
+#include <TFile.h> // TFile
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 
@@ -135,4 +136,243 @@ namespace aux
     return sf;
   }
 
+  void 
+  loadTriggerEff_1e_2017(vLutWrapperBase & effTrigger_1e_data,
+                         vLutWrapperBase & effTrigger_1e_mc,
+                         std::map<std::string, TFile *> & inputFiles)
+  {
+    const std::vector<double> etaBinEdges_1e = { -1., 1.48, 2.1 };
+    assert(etaBinEdges_1e.size() > 0);
+    const std::size_t numEtaBins_1e = etaBinEdges_1e.size() - 1;
+
+    for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1e; ++idxEtaBin)
+    {
+      const double etaMin = etaBinEdges_1e[idxEtaBin];
+      const double etaMax = etaBinEdges_1e[idxEtaBin + 1];
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+
+      effTrigger_1e_data.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_Ele32orEle35_eff.root",
+        Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+      effTrigger_1e_mc.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_Ele32orEle35_eff.root",
+        Form("ZMassEta%s_MC", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+    }
+  }
+
+  void
+  loadTriggerEff_1e_1tau_lepLeg_2017(vLutWrapperBase & effTrigger_1e1tau_lepLeg_data,
+                                     vLutWrapperBase & effTrigger_1e1tau_lepLeg_mc,
+                                     std::map<std::string, TFile *> & inputFiles)
+  {
+    const std::vector<double> etaBinEdges_1e_1tau_lepLeg = { -1., 1.48, 2.1 };
+    assert(etaBinEdges_1e_1tau_lepLeg.size() > 0);
+    const std::size_t numEtaBins_1e_1tau_lepLeg = etaBinEdges_1e_1tau_lepLeg.size() - 1;
+
+    for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1e_1tau_lepLeg; ++idxEtaBin)
+    {
+      const double etaMin = etaBinEdges_1e_1tau_lepLeg[idxEtaBin];
+      const double etaMax = etaBinEdges_1e_1tau_lepLeg[idxEtaBin + 1];
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+
+      effTrigger_1e1tau_lepLeg_data.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_EleTau_Ele24_eff.root",
+        Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+      effTrigger_1e1tau_lepLeg_mc.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_EleTau_Ele24_eff.root",
+        Form("ZMassEta%s_MC", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+    }
+  }
+
+  void 
+  loadTriggerEff_1m_2017(vLutWrapperBase & effTrigger_1m_data,
+                         vLutWrapperBase & effTrigger_1m_mc,
+                         std::map<std::string, TFile *> & inputFiles)
+  {
+    const std::vector<double> etaBinEdges_1m = { -1., 0.9, 1.2, 2.1 };
+    assert(etaBinEdges_1m.size() > 0);
+    const std::size_t numEtaBins_1m = etaBinEdges_1m.size() - 1;
+
+    for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1m; ++idxEtaBin)
+    {
+      const double etaMin = etaBinEdges_1m[idxEtaBin];
+      const double etaMax = etaBinEdges_1m[idxEtaBin + 1];
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+
+      effTrigger_1m_data.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_IsoMu24orIsoMu27_eff.root",
+        Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+      effTrigger_1m_mc.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_IsoMu24orIsoMu27_eff.root",
+        Form("ZMassEta%s_MC", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+    }
+  }
+ 
+  void
+  loadTriggerEff_1m_1tau_lepLeg_2017(vLutWrapperBase & effTrigger_1m1tau_lepLeg_data,
+                                     vLutWrapperBase & effTrigger_1m1tau_lepLeg_mc,
+                                     std::map<std::string, TFile *> & inputFiles)
+  {
+    const std::vector<double> etaBinEdges_1m1tau_lepLeg = { -1., 0.9, 1.2, 2.1 };
+    assert(etaBinEdges_1m1tau_lepLeg.size() > 0);
+    const std::size_t numEtaBins_1m1tau_lepLeg = etaBinEdges_1m1tau_lepLeg.size() - 1;
+
+    for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1m1tau_lepLeg; ++idxEtaBin)
+    {
+      const double etaMin = etaBinEdges_1m1tau_lepLeg[idxEtaBin];
+      const double etaMax = etaBinEdges_1m1tau_lepLeg[idxEtaBin + 1];
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+
+      effTrigger_1m1tau_lepLeg_data.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_MuTau_IsoMu20_eff.root",
+        Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+      effTrigger_1m1tau_lepLeg_mc.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_MuTau_IsoMu20_eff.root",
+        Form("ZMassEta%s_MC", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+    }
+  }
+
+  void 
+  loadTriggerEff_1e_2018(vLutWrapperBase & effTrigger_1e_data,
+                         vLutWrapperBase & effTrigger_1e_mc,
+                         std::map<std::string, TFile *> & inputFiles)
+  {
+    const std::vector<double> etaBinEdges_1e = { -1., 1.0, 1.48, 1.65, 2.1 };
+    assert(etaBinEdges_1e.size() > 0);
+    const std::size_t numEtaBins_1e = etaBinEdges_1e.size() - 1;
+
+    for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1e; ++idxEtaBin)
+    {
+      const double etaMin = etaBinEdges_1e[idxEtaBin];
+      const double etaMax = etaBinEdges_1e[idxEtaBin + 1];
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+
+      effTrigger_1e_data.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Electron_Run2018_Ele32orEle35.root",
+        Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+      effTrigger_1e_mc.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Electron_Run2018_Ele32orEle35.root",
+        Form("ZMassEta%s_MC", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+    }
+  }
+
+  void
+  loadTriggerEff_1e_1tau_lepLeg_2018(vLutWrapperBase & effTrigger_1e1tau_lepLeg_data,
+                                     vLutWrapperBase & effTrigger_1e1tau_lepLeg_mc,
+                                     std::map<std::string, TFile *> & inputFiles)
+  {
+    const std::vector<double> etaBinEdges_1e_1tau_lepLeg = { -1., 1.0, 1.48, 1.65, 2.1 };
+    assert(etaBinEdges_1e_1tau_lepLeg.size() > 0);
+    const std::size_t numEtaBins_1e_1tau_lepLeg = etaBinEdges_1e_1tau_lepLeg.size() - 1;
+
+    for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1e_1tau_lepLeg; ++idxEtaBin)
+    {
+      const double etaMin = etaBinEdges_1e_1tau_lepLeg[idxEtaBin];
+      const double etaMax = etaBinEdges_1e_1tau_lepLeg[idxEtaBin + 1];
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+
+      effTrigger_1e1tau_lepLeg_data.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Electron_Run2018_Ele24.root",
+        Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+      effTrigger_1e1tau_lepLeg_mc.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Electron_Run2018_Ele24.root",
+        Form("ZMassEta%s_MC", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+    }
+  }
+
+  void 
+  loadTriggerEff_1m_2018(vLutWrapperBase & effTrigger_1m_data,
+                         vLutWrapperBase & effTrigger_1m_mc,
+                         std::map<std::string, TFile *> & inputFiles)
+  {
+    const std::vector<double> etaBinEdges_1m = { -1., 0.9, 1.2, 2.1 };
+    assert(etaBinEdges_1m.size() > 0);
+    const std::size_t numEtaBins_1m = etaBinEdges_1m.size() - 1;
+
+    for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1m; ++idxEtaBin)
+    {
+      const double etaMin = etaBinEdges_1m[idxEtaBin];
+      const double etaMax = etaBinEdges_1m[idxEtaBin + 1];
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+
+      effTrigger_1m_data.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Muon_Run2018_IsoMu24orIsoMu27.root",
+        Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+      effTrigger_1m_mc.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Muon_Run2018_IsoMu24orIsoMu27.root",
+        Form("ZMassEta%s_MC", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+    }
+  }
+ 
+  void
+  loadTriggerEff_1m_1tau_lepLeg_2018(vLutWrapperBase & effTrigger_1m1tau_lepLeg_data,
+                                     vLutWrapperBase & effTrigger_1m1tau_lepLeg_mc,
+                                     std::map<std::string, TFile *> & inputFiles)
+  {
+    const std::vector<double> etaBinEdges_1m1tau_lepLeg = { -1., 0.9, 1.2, 2.1 };
+    assert(etaBinEdges_1m1tau_lepLeg.size() > 0);
+    const std::size_t numEtaBins_1m1tau_lepLeg = etaBinEdges_1m1tau_lepLeg.size() - 1;
+
+    for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1m1tau_lepLeg; ++idxEtaBin)
+    {
+      const double etaMin = etaBinEdges_1m1tau_lepLeg[idxEtaBin];
+      const double etaMax = etaBinEdges_1m1tau_lepLeg[idxEtaBin + 1];
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+
+      effTrigger_1m1tau_lepLeg_data.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Muon_Run2018_IsoMu20.root",
+        Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+      effTrigger_1m1tau_lepLeg_mc.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Muon_Run2018_IsoMu20.root",
+        Form("ZMassEta%s_MC", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+    }
+  }
 }

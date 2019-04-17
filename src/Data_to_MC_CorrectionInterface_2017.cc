@@ -4,7 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // as_integer()
 
-#include <cmath> // std::sqrt()
+#include <cmath> // std::fabs(), std::sqrt()
 
 Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const edm::ParameterSet & cfg)
   : Data_to_MC_CorrectionInterface_Base(cfg)
@@ -155,7 +155,7 @@ Data_to_MC_CorrectionInterface_2017::getSF_hadTauID_and_Iso() const
       // CV: take data/MC (SF) measured for MVA-based tau ID with dR = 0.5 from
       //       https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events ("Measured SF 2017")
       //     as the SF for MVA-based tau ID with dR = 0.3 have not been measured yet.
-      if     (hadTauSelection_ == 1) { sf *= 0.88; sfErr += square(0.03); } // take SF for dR03mvaVLoose, as SF for dR03mvaVVLoose has not been measured yet
+      if     (hadTauSelection_ == 1) { sf *= 0.89; sfErr += square(0.03); } // dR03mvaVVLoose
       else if(hadTauSelection_ == 2) { sf *= 0.88; sfErr += square(0.03); } // dR03mvaVLoose
       else if(hadTauSelection_ == 3) { sf *= 0.89; sfErr += square(0.03); } // dR03mvaLoose
       else if(hadTauSelection_ == 4) { sf *= 0.89; sfErr += square(0.03); } // dR03mvaMedium
