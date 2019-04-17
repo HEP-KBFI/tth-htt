@@ -5,7 +5,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // TriggerSFsys, getTriggerSF_option()
-#include "tthAnalysis/HiggsToTauTau/interface/TauTriggerSFs2017Helper.h" // getTriggerFuncMC(), getTriggerFuncData()
 
 #include "TauAnalysisTools/TauTriggerSFs/interface/TauTriggerSFs2017.h" // TauTriggerSFs2017
 
@@ -102,7 +101,7 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
         default: assert(0);
       }
 
-      const std::string hadTauSelectionLabel = aux::getHadTauSelectionLabel(hadTauSelection_);
+      const std::string hadTauSelectionLabel = aux::getHadTauSelectionLabel_2016(hadTauSelection_);
       const std::vector<int> hadTauDecayModes_1e1tau_tauLeg = { 0, 1, 2, 10 };
 
       for(int hadTauDecayMode: hadTauDecayModes_1e1tau_tauLeg)
@@ -203,7 +202,7 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
         case 1: etaBinLabel = "endcap"; break;
         default: assert(0);
       }
-      const std::string hadTauSelectionLabel = aux::getHadTauSelectionLabel(hadTauSelection_);
+      const std::string hadTauSelectionLabel = aux::getHadTauSelectionLabel_2016(hadTauSelection_);
       effTrigger_1m1tau_tauLeg_data_gentau_.push_back(new lutWrapperTGraph(
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/trigger_sf_mt.root",
@@ -243,7 +242,7 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
     aux::loadTriggerEff_1m_1tau_lepLeg_2017(effTrigger_1m1tau_lepLeg_data_, effTrigger_1m1tau_lepLeg_mc_, inputFiles_);
 
     const LocalFileInPath inputFileName_tauLeg("TauAnalysisTools/TauTriggerSFs/data/tauTriggerEfficiencies2017.root");
-    const std::string hadTauSelection_TauTriggerSFs2017 = aux::get_hadTauSelection_TauTriggerSFs2017(hadTauSelection_);
+    const std::string hadTauSelection_TauTriggerSFs2017 = aux::getHadTauSelectionLabel_2017(hadTauSelection_);
     const std::string wpType = "MVAv2";
     const std::string year = "2017";
     effTrigger_1m1tau_tauLeg_ = new TauTriggerSFs2017(
@@ -262,10 +261,7 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
     aux::loadTriggerEff_1m_1tau_lepLeg_2018(effTrigger_1m1tau_lepLeg_data_, effTrigger_1m1tau_lepLeg_mc_, inputFiles_);
 
     // CV: tau leg efficiency for 2018 data not available from Tau POG yet (as of 2019/04/16)
-    //const LocalFileInPath inputFileName_tauLeg("tthAnalysis/TauTriggerSFs/data/tauTriggerEfficiencies2018.root");
-    //const std::string hadTauSelection_TauTriggerSFs2018 = aux::get_hadTauSelection_TauTriggerSFs2018(hadTauSelection_);
-    //effTrigger_1e1tau_tauLeg_ = new TauTriggerSFs2017(inputFileName_tauLeg.fullPath().data(), "etau", "2018", hadTauSelection_TauTriggerSFs2018);
-    //effTrigger_1m1tau_tauLeg_ = new TauTriggerSFs2017(inputFileName_tauLeg.fullPath().data(), "mutau", "2018", hadTauSelection_TauTriggerSFs2018);
+    throw cmsException(this) << "Implement me!";
   }
   else
   {
@@ -297,7 +293,7 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::~Data_to_MC_CorrectionInterface_
     aux::clearCollection(effTrigger_1m1tau_tauLeg_mc_gentau_);
     aux::clearCollection(effTrigger_1m1tau_tauLeg_mc_faketau_);
   }
-  else if(era_ == kEra_2017 || era_ == kEra_2018)
+  else if(era_ == kEra_2017)
   {
     delete effTrigger_1e1tau_tauLeg_;
     delete effTrigger_1m1tau_tauLeg_;
@@ -467,10 +463,10 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
       assert(0);
     }
   }
-  else if(era_ == kEra_2017 || era_ == kEra_2018)
+  else if(era_ == kEra_2017)
   {
-    const auto getTriggerEfficiencyDataFunc = getTriggerFuncData(triggerSF_option_);
-    const auto getTriggerEfficiencyMCFunc   = getTriggerFuncMC(triggerSF_option_);
+    const auto getTriggerEfficiencyDataFunc = aux::getTriggerFuncData(triggerSF_option_);
+    const auto getTriggerEfficiencyMCFunc   = aux::getTriggerFuncMC(triggerSF_option_);
     assert(getTriggerEfficiencyDataFunc);
     assert(getTriggerEfficiencyMCFunc);
 

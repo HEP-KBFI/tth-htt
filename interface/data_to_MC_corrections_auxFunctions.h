@@ -10,6 +10,10 @@
 
 // forward declarations
 class TFile;
+class TauTriggerSFs2017;
+enum class TriggerSFsys;
+
+typedef double (TauTriggerSFs2017::*getTriggerEfficiencyFunc)(double, double, double, int);
 
 namespace aux
 {
@@ -21,10 +25,10 @@ namespace aux
   getHadTauIdxLabel(int idx);
 
   std::string
-  getHadTauSelectionLabel(const std::string & hadTauSelection);
+  getHadTauSelectionLabel_2016(const std::string & hadTauSelection);
 
   std::string
-  get_hadTauSelection_TauTriggerSFs2017(const std::string & hadTauSelection);
+  getHadTauSelectionLabel_2017(const std::string & hadTauSelection);
 
   std::string
   getHadTauDecayModeLabel(int hadTauDecayMode);
@@ -60,14 +64,13 @@ namespace aux
                                      std::map<std::string, TFile *> & inputFiles);
 
   void 
-  loadTriggerEff_1m_2017(vLutWrapperBase& effTrigger_1m_data,
-                         vLutWrapperBase& effTrigger_1m_mc,
+  loadTriggerEff_1m_2017(vLutWrapperBase & effTrigger_1m_data,
+                         vLutWrapperBase & effTrigger_1m_mc,
                          std::map<std::string, TFile *> & inputFiles);
  
   void
-  loadTriggerEff_1m_1tau_lepLeg_2017(vLutWrapperBase & 
-                                     effTrigger_1m1tau_lepLeg_data,
-                                     vLutWrapperBase& effTrigger_1m1tau_lepLeg_mc,
+  loadTriggerEff_1m_1tau_lepLeg_2017(vLutWrapperBase & effTrigger_1m1tau_lepLeg_data,
+                                     vLutWrapperBase & effTrigger_1m1tau_lepLeg_mc,
                                      std::map<std::string, TFile *> & inputFiles);
 
   void 
@@ -76,19 +79,25 @@ namespace aux
                          std::map<std::string, TFile *> & inputFiles);
 
   void
-  loadTriggerEff_1e_1tau_lepLeg_2018(vLutWrapperBase& effTrigger_1e1tau_lepLeg_data,
-                                     vLutWrapperBase& effTrigger_1e1tau_lepLeg_mc,
+  loadTriggerEff_1e_1tau_lepLeg_2018(vLutWrapperBase & effTrigger_1e1tau_lepLeg_data,
+                                     vLutWrapperBase & effTrigger_1e1tau_lepLeg_mc,
                                      std::map<std::string, TFile *> & inputFiles);
 
   void 
-  loadTriggerEff_1m_2018(vLutWrapperBase& effTrigger_1m_data,
-                         vLutWrapperBase& effTrigger_1m_mc,
+  loadTriggerEff_1m_2018(vLutWrapperBase & effTrigger_1m_data,
+                         vLutWrapperBase & effTrigger_1m_mc,
                          std::map<std::string, TFile *> & inputFiles);
  
   void
   loadTriggerEff_1m_1tau_lepLeg_2018(vLutWrapperBase & effTrigger_1m1tau_lepLeg_data,
-                                     vLutWrapperBase& effTrigger_1m1tau_lepLeg_mc,
-                                     std::map<std::string, TFile *>& inputFiles);
+                                     vLutWrapperBase & effTrigger_1m1tau_lepLeg_mc,
+                                     std::map<std::string, TFile *> & inputFiles);
+
+  getTriggerEfficiencyFunc
+  getTriggerFuncMC(TriggerSFsys triggerSF_option);
+
+  getTriggerEfficiencyFunc
+  getTriggerFuncData(TriggerSFsys triggerSF_option);
 }
 
 #endif // DATA_TO_MC_CORRECTIONS_AUXFUNCTIONS_H

@@ -2,9 +2,9 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // TriggerSFsys
 
-#include <TString.h> // Form()
-#include <TFile.h> // TFile
+#include "TauAnalysisTools/TauTriggerSFs/interface/TauTriggerSFs2017.h" // TauTriggerSFs2017
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 
@@ -53,7 +53,7 @@ namespace aux
   }
 
   std::string
-  getHadTauSelectionLabel(const std::string & hadTauSelection)
+  getHadTauSelectionLabel_2016(const std::string & hadTauSelection)
   {
     std::string hadTauSelectionLabel;
     if     (hadTauSelection == "dR03mvaVVLoose") hadTauSelectionLabel = "VLooseIso"; // CV: custom WP for which no trigger efficiency turn-on curve has been measured
@@ -69,7 +69,7 @@ namespace aux
   }
 
   std::string
-  get_hadTauSelection_TauTriggerSFs2017(const std::string & hadTauSelection)
+  getHadTauSelectionLabel_2017(const std::string & hadTauSelection)
   {
     std::string hadTauSelection_TauTriggerSFs2017;
     if     (hadTauSelection == "dR03mvaVVLoose") hadTauSelection_TauTriggerSFs2017 = "vloose"; // not measured for VVLoose
@@ -374,5 +374,29 @@ namespace aux
         lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
+  }
+
+  getTriggerEfficiencyFunc
+  getTriggerFuncMC(TriggerSFsys triggerSF_option)
+  {
+    switch(triggerSF_option)
+    {
+      case TriggerSFsys::central:   return &TauTriggerSFs2017::getTriggerEfficiencyMC;           break;
+      case TriggerSFsys::shiftUp:   return &TauTriggerSFs2017::getTriggerEfficiencyMCUncertUp;   break;
+      case TriggerSFsys::shiftDown: return &TauTriggerSFs2017::getTriggerEfficiencyMCUncertDown; break;
+    }
+    return nullptr;
+  }
+
+  getTriggerEfficiencyFunc
+  getTriggerFuncData(TriggerSFsys triggerSF_option)
+  {
+    switch(triggerSF_option)
+    {
+      case TriggerSFsys::central:   return &TauTriggerSFs2017::getTriggerEfficiencyData;           break;
+      case TriggerSFsys::shiftUp:   return &TauTriggerSFs2017::getTriggerEfficiencyDataUncertUp;   break;
+      case TriggerSFsys::shiftDown: return &TauTriggerSFs2017::getTriggerEfficiencyDataUncertDown; break;
+    }
+    return nullptr;
   }
 }
