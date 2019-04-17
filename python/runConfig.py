@@ -59,10 +59,10 @@ def filter_samples(sample, condition, force = False):
 class tthAnalyzeParser(argparse.ArgumentParser):
   def __init__(
     self,
-    era_choices = ('2016', '2017', '2018'),
+    era_choices               = ('2016', '2017', '2018'),
     default_num_parallel_jobs = 16,
-    max_help_position = 45,
-    isAddMEM = False,
+    max_help_position         = 45,
+    isAddMEM                  = False,
   ):
     super(tthAnalyzeParser, self).__init__(
       formatter_class = lambda prog: SmartFormatter(prog, max_help_position = max_help_position)
@@ -113,6 +113,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       dest = 'debug', action = 'store_true', default = False,
       help = 'R|Enable debugging flag in the analysis',
     )
+    
 
   def add_files_per_job(self, files_per_job = 20):
     self.add_argument('-j', '--files-per-job',
@@ -180,6 +181,13 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       type = str, dest = 'lep_mva_wp', metavar = 'lepton MVA WP', default = default_wp, required = False,
       choices = [ '075', '090' ],
       help = 'R|Lepton MVA WP',
+    )
+
+  def add_jet_cleaning(self, default_jet_cleaning = 'by_index'):
+    self.add_argument('-q', '--jet-cleaning',
+      type = str, dest = 'jet_cleaning', metavar = 'method', default = default_jet_cleaning, required = False,
+      choices = [ 'by_index', 'by_dr' ],
+      help = 'R|Jet cleaning method',
     )
 
   @staticmethod

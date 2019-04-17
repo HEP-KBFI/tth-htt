@@ -104,6 +104,7 @@ process.analyze_2los_1tau = cms.PSet(
     branchName_genQuarkFromTop = cms.string('GenQuarkFromTop'),
 
     redoGenMatching = cms.bool(True),
+    jetCleaningByIndex = cms.bool(True),
 
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),

@@ -16,6 +16,7 @@ parser = tthAnalyzeParser()
 parser.add_tau_id_wp('dR03mvaLoose')
 parser.add_files_per_job()
 parser.add_use_home()
+parser.add_jet_cleaning()
 args = parser.parse_args()
 
 # Common arguments
@@ -34,10 +35,12 @@ running_method     = args.running_method
 tau_id_wp     = args.tau_id_wp
 files_per_job = 3 #args.files_per_job # HTT files are fat
 use_home      = args.use_home
+jet_cleaning  = args.jet_cleaning
 
 # Use the arguments
 hadTau_selection = "Tight|%s" % tau_id_wp
 lumi = get_lumi(era)
+jet_cleaning_by_index = (jet_cleaning == 'by_index')
 
 if era == "2016":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
@@ -53,24 +56,25 @@ if __name__ == '__main__':
     samples = filter_samples(samples, sample_filter)
 
   analysis = analyzeConfig_hadTopTagger(
-    configDir          = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
-    outputDir          = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
-    executable_analyze = "analyze_hadTopTagger",
-    cfgFile_analyze    = "analyze_hadTopTagger_cfg.py",
-    samples            = samples,
-    channel            = "hadTopTagger",
-    hadTau_selection   = hadTau_selection,
-    max_files_per_job  = files_per_job,
-    era                = era,
-    use_lumi           = True,
-    lumi               = lumi,
-    check_output_files = check_output_files,
-    running_method     = running_method,
-    num_parallel_jobs  = num_parallel_jobs,
-    verbose            = False,
-    dry_run            = dry_run,
-    isDebug            = debug,
-    use_home           = use_home
+    configDir             = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
+    outputDir             = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
+    executable_analyze    = "analyze_hadTopTagger",
+    cfgFile_analyze       = "analyze_hadTopTagger_cfg.py",
+    samples               = samples,
+    jet_cleaning_by_index = jet_cleaning_by_index,
+    channel               = "hadTopTagger",
+    hadTau_selection      = hadTau_selection,
+    max_files_per_job     = files_per_job,
+    era                   = era,
+    use_lumi              = True,
+    lumi                  = lumi,
+    check_output_files    = check_output_files,
+    running_method        = running_method,
+    num_parallel_jobs     = num_parallel_jobs,
+    verbose               = False,
+    dry_run               = dry_run,
+    isDebug               = debug,
+    use_home              = use_home
   )
 
   job_statistics = analysis.create()

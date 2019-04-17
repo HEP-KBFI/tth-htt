@@ -55,6 +55,7 @@ class addMEMConfig:
             leptonSelection,
             hadTauSelection,
             lowIntegrationPoints,
+            jet_cleaning_by_index,
             dry_run,
             use_nonnominal,
             use_home,
@@ -79,6 +80,7 @@ class addMEMConfig:
         self.hadTauWorkingPoint = self.hadTauSelection.split('|')[1]
         self.maxPermutations_branchName = None
         self.lowIntegrationPoints = lowIntegrationPoints
+        self.jet_cleaning_by_index = jet_cleaning_by_index
         logging.info(
             "Using %s number of integration points" % ("low" if self.lowIntegrationPoints else "full")
         )

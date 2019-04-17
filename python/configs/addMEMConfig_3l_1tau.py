@@ -22,6 +22,7 @@ class addMEMConfig_3l_1tau(addMEMConfig):
         num_parallel_jobs,
         lowIntegrationPoints,
         isDebug,
+        jet_cleaning_by_index,
         central_or_shift,
         dry_run,
         use_nonnominal,
@@ -44,6 +45,7 @@ class addMEMConfig_3l_1tau(addMEMConfig):
       leptonSelection          = leptonSelection,
       hadTauSelection          = hadTauSelection,
       lowIntegrationPoints     = lowIntegrationPoints,
+      jet_cleaning_by_index    = jet_cleaning_by_index,
       dry_run                  = dry_run,
       use_nonnominal           = use_nonnominal,
       use_home                 = use_home,
@@ -97,5 +99,6 @@ class addMEMConfig_3l_1tau(addMEMConfig):
     lines.append("process.addMEM_3l_1tau.central_or_shift = cms.vstring(%s)" % self.central_or_shift)
     lines.append("process.addMEM_3l_1tau.dryRun = cms.bool(%s)" % self.dry_run)
     lines.append("process.addMEM_3l_1tau.use_nonnominal = cms.bool(%s)" % self.use_nonnominal)
+    lines.append("process.addMEM_3l_1tau.jetCleaningByIndex = cms.bool(%s)" % self.jet_cleaning_by_index)
 
     create_cfg(self.cfgFile_addMEM_original, cfgFile_modified, lines)

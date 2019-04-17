@@ -54,6 +54,7 @@ process.analyze_charge_flip = cms.PSet(
     branchName_genPhotons = cms.string('GenPhoton'),
     branchName_genJets = cms.string('GenJet'),
     redoGenMatching = cms.bool(True),
+    jetCleaningByIndex = cms.bool(True),
 
     fillGenEvtHistograms = cms.bool(False),
 

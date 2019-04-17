@@ -135,6 +135,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         ptBins_mu,
         lep_mva_wp,
         fillGenEvtHistograms,
+        jet_cleaning_by_index,
         central_or_shifts,
         numerator_histogram,
         denominator_histogram,

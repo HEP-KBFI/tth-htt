@@ -461,6 +461,7 @@ main(int argc,
   const double lumiScale          = process_string != "data_obs" ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   const bool apply_genWeight      = cfg_analyze.getParameter<bool>("apply_genWeight");
   const bool fillGenEvtHistograms = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
+  const bool jetCleaningByIndex   = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   const bool redoGenMatching      = cfg_analyze.getParameter<bool>("redoGenMatching");
   const bool readGenObjects       = isMC && ! redoGenMatching;
   const bool isDEBUG              = cfg_analyze.getParameter<bool>("isDEBUG");
@@ -652,8 +653,9 @@ main(int argc,
   jetReader->setBranchName_BtagWeight(jetBtagSF_option);
   inputTree->registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
-  RecoJetCollectionCleaner jetCleaner_dR04(0.4);
-  RecoJetCollectionCleaner jetCleaner_dR07(0.7); // Christian's suggestion
+  RecoJetCollectionCleaner jetCleaner_dR04(0.4, isDEBUG);
+  RecoJetCollectionCleanerByIndex jetCleanerByIndex(isDEBUG);
+  RecoJetCollectionCleaner jetCleaner_dR07(0.7, isDEBUG); // Christian's suggestion
   RecoJetCollectionSelector jetSelector(era);
   jetSelector.getSelector().set_min_pt(30.); // Setting the min. pt of the jets for Lepton FR analysis
   jetSelector.getSelector().set_max_absEta(2.4); // Setting the max. |eta| of the jets for Lepton FR analysis
@@ -1014,7 +1016,10 @@ main(int argc,
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet *> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet *> cleanedJets_dR04 = jetCleaner_dR04(jet_ptrs, fakeableMuons, fakeableElectrons); // changed from presel to be in sync with the analysis channels
+    std::vector<const RecoJet *> cleanedJets_dR04 = jetCleaningByIndex ?
+      jetCleanerByIndex(jet_ptrs, fakeableMuons, fakeableElectrons) :
+      jetCleaner_dR04  (jet_ptrs, fakeableMuons, fakeableElectrons)
+    ; // changed from presel to be in sync with the analysis channels
     std::vector<const RecoJet *> selBJets_loose_dR04 = jetSelectorBtagLoose(cleanedJets_dR04);
     std::vector<const RecoJet *> selJets_dR04 = jetSelector(cleanedJets_dR04);
     std::vector<const RecoJet *> cleanedJets_dR07 = jetCleaner_dR07(jet_ptrs, fakeableMuons, fakeableElectrons); // changed from presel to be in sync with the analysis channels

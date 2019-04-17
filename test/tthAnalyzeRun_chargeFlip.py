@@ -20,6 +20,7 @@ parser = tthAnalyzeParser()
 parser.add_sys(sys_choices, default_choice = 'full')
 parser.add_files_per_job()
 parser.add_use_home()
+parser.add_jet_cleaning()
 args = parser.parse_args()
 
 # Common arguments
@@ -38,6 +39,7 @@ running_method     = args.running_method
 systematics_label = args.systematics
 files_per_job     = args.files_per_job
 use_home          = args.use_home
+jet_cleaning      = args.jet_cleaning
 
 # Use the arguments
 central_or_shifts = []
@@ -46,6 +48,7 @@ for systematic_label in systematics_label:
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
 lumi = get_lumi(era)
+jet_cleaning_by_index = (jet_cleaning == 'by_index')
 
 if era == "2016":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
@@ -88,24 +91,25 @@ if __name__ == '__main__':
   analysis = analyzeConfig_charge_flip(
     configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
     outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
-    executable_analyze = "analyze_charge_flip",
-    samples            = samples,
-    lepton_selections  = [ "Tight" ],
-    central_or_shifts  = central_or_shifts,
-    max_files_per_job  = files_per_job,
-    era                = era,
-    use_lumi           = True,
-    lumi               = lumi,
-    check_output_files = check_output_files,
-    running_method     = running_method,
-    num_parallel_jobs  = num_parallel_jobs,
-    histograms_to_fit  = {
+    executable_analyze    = "analyze_charge_flip",
+    samples               = samples,
+    lepton_selections     = [ "Tight" ],
+    jet_cleaning_by_index = jet_cleaning_by_index,
+    central_or_shifts     = central_or_shifts,
+    max_files_per_job     = files_per_job,
+    era                   = era,
+    use_lumi              = True,
+    lumi                  = lumi,
+    check_output_files    = check_output_files,
+    running_method        = running_method,
+    num_parallel_jobs     = num_parallel_jobs,
+    histograms_to_fit     = {
       "mass_ll" : {},
     },
-    select_rle_output  = False,
-    dry_run            = dry_run,
-    isDebug            = debug,
-    use_home           = use_home,
+    select_rle_output     = False,
+    dry_run               = dry_run,
+    isDebug               = debug,
+    use_home              = use_home,
   )
 
   job_statistics = analysis.create()

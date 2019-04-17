@@ -50,6 +50,7 @@ process.addMEM_2lss_1tau = cms.PSet(
     selEventsFileName_input = cms.string(''),
     isDEBUG = cms.bool(False),
     readGenObjects = cms.bool(True),
+    jetCleaningByIndex = cms.bool(True),
     isForBDTtraining = cms.bool(False),
 
     central_or_shift = cms.vstring(),

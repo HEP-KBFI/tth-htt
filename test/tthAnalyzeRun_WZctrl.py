@@ -21,6 +21,7 @@ parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_files_per_job()
 parser.add_use_home()
+parser.add_jet_cleaning()
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_hlt_filter()
@@ -46,6 +47,7 @@ use_home          = args.use_home
 rle_select        = os.path.expanduser(args.rle_select)
 use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
+jet_cleaning      = args.jet_cleaning
 
 # Use the arguments
 central_or_shifts = []
@@ -55,6 +57,7 @@ for systematic_label in systematics_label:
       central_or_shifts.append(central_or_shift)
 do_sync = mode.startswith('sync')
 lumi = get_lumi(era)
+jet_cleaning_by_index = (jet_cleaning == 'by_index')
 
 if mode == 'default':
   if era == "2016":
@@ -118,6 +121,7 @@ if __name__ == '__main__':
     samples                               = samples,
     hadTauVeto_selection                  = hadTauVeto_selection,
     applyFakeRateWeights                  = "3lepton",
+    jet_cleaning_by_index                 = jet_cleaning_by_index,
     central_or_shifts                     = central_or_shifts,
     max_files_per_job                     = files_per_job,
     era                                   = era,

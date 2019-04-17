@@ -96,6 +96,7 @@ int main(int argc,
   const bool lowIntegrationPoints           = cfg_addMEM.getParameter<bool>("lowIntegrationPoints");
   const bool copy_all_branches              = cfg_addMEM.getParameter<bool>("copy_all_branches");
   const bool readGenObjects                 = cfg_addMEM.getParameter<bool>("readGenObjects");
+  const bool jetCleaningByIndex             = cfg_addMEM.getParameter<bool>("jetCleaningByIndex");
   const bool useNonNominal                  = cfg_addMEM.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet           = useNonNominal || ! isMC;
 
@@ -224,7 +225,8 @@ int main(int argc,
   //     to allow systematic uncertainty on JEC to be estimated on analysis level
   jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
   jetReader->setBranchAddresses(inputTree);
-  const RecoJetCollectionCleaner jetCleaner(0.4);
+  const RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
+  const RecoJetCollectionCleanerByIndex jetCleanerByIndex(isDEBUG);
   const RecoJetCollectionSelector jetSelector(era);
 
 //--- declare missing transverse energy
@@ -510,9 +512,10 @@ int main(int argc,
             {
               const std::vector<const RecoLepton*> selLeptons_forCleaning = { selLepton_lead, selLepton_sublead };
               const std::vector<const RecoHadTau *> selHadTaus_forCleaning = { selHadTau };
-              const std::vector<const RecoJet *> selJets_mem_cleaned = jetCleaner(
-                selJets_mem, selLeptons_forCleaning, selHadTaus_forCleaning
-              );
+              const std::vector<const RecoJet *> selJets_mem_cleaned = jetCleaningByIndex ?
+                jetCleanerByIndex(selJets_mem, selLeptons_forCleaning, selHadTaus_forCleaning) :
+                jetCleaner       (selJets_mem, selLeptons_forCleaning, selHadTaus_forCleaning)
+              ;
               std::cout << "Cleaned jets:\n";
               for(const RecoJet * jet_mem: selJets_mem_cleaned)
               {

@@ -64,6 +64,7 @@ class syncNtupleConfig:
         tau_id_wp,
         use_home,
         systematics_label,
+        jet_cleaning,
         project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau'),
         file_pattern = 'tthAnalyzeRun_%s.py',
       ):
@@ -83,8 +84,8 @@ class syncNtupleConfig:
     final_output_dir = os.path.join(output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)
 
-    common_args = "-m %s -v %s -e %s -J 5 -s %s" % \
-      ('sync_wMEM' if with_mem else 'sync',  version, era, ' '.join(systematics_label))
+    common_args = "-m %s -v %s -e %s -J 5 -s %s -q %s" % \
+      ('sync_wMEM' if with_mem else 'sync',  version, era, ' '.join(systematics_label), jet_cleaning)
     additional_args = " -A"
     if self.dry_run:
       additional_args += " -d"

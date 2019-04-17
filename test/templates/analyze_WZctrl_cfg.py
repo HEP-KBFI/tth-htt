@@ -94,6 +94,7 @@ process.analyze_WZctrl = cms.PSet(
     branchName_genPhotons = cms.string('GenPhoton'),
     branchName_genJets = cms.string('GenJet'),
     redoGenMatching = cms.bool(True),
+    jetCleaningByIndex = cms.bool(True),
 
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),

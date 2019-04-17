@@ -81,6 +81,7 @@ class analyzeConfig(object):
           executable_analyze,
           channel,
           samples,
+          jet_cleaning_by_index,
           central_or_shifts,
           max_files_per_job,
           era,
@@ -178,6 +179,7 @@ class analyzeConfig(object):
             temp.extend(self.central_or_shifts)
             self.central_or_shifts = temp
         #------------------------------------------------------------------------
+        self.jet_cleaning_by_index = jet_cleaning_by_index
         self.max_files_per_job = max_files_per_job
         self.max_num_jobs = -1
         self.era = era
@@ -571,6 +573,8 @@ class analyzeConfig(object):
           jobOptions['process'] = sample_info["sample_category"]
         if 'isMC' not in jobOptions:
           jobOptions['isMC'] = is_mc
+        if 'jetCleaningByIndex' not in jobOptions:
+          jobOptions['jetCleaningByIndex'] = self.jet_cleaning_by_index
         if 'apply_genWeight' not in jobOptions:
           jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
         if 'apply_DYMCReweighting' not in jobOptions:
@@ -692,6 +696,7 @@ class analyzeConfig(object):
             'hadTauFakeRateWeight.third.graphName',
             'hadTauFakeRateWeight.fourth.graphName',
             'apply_hadTauFakeRateSF',
+            'jetCleaningByIndex',
         ]
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))

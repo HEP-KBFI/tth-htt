@@ -103,6 +103,7 @@ process.analyze_1l_2tau = cms.PSet(
     branchName_genPhotons = cms.string('GenPhoton'),
     branchName_genJets = cms.string('GenJet'),
     redoGenMatching = cms.bool(True),
+    jetCleaningByIndex = cms.bool(True),
 
     branchName_genTopQuarks = cms.string('GenTop'),
     branchName_genBJets = cms.string('GenBQuarkFromTop'),

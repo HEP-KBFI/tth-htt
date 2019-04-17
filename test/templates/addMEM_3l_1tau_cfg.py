@@ -51,6 +51,7 @@ process.addMEM_3l_1tau = cms.PSet(
     selEventsFileName_input = cms.string(''),
     isDEBUG = cms.bool(False),
     readGenObjects = cms.bool(True),
+    jetCleaningByIndex = cms.bool(True),
 
     central_or_shift = cms.vstring(),
     useNonNominal = cms.bool(False),

@@ -20,6 +20,7 @@ parser.add_sys(sys_choices)
 parser.add_nonnominal()
 parser.add_tau_id_wp()
 parser.add_use_home(False)
+parser.add_jet_cleaning()
 parser.add_argument('-n', '--max-mem-integrations',
   type = int, dest = 'max_mem_integrations', metavar = 'integer', default = max_mem_integrations,
   required = False,
@@ -44,6 +45,7 @@ mode              = args.mode
 systematics_label = args.systematics
 use_nonnominal    = args.original_central
 use_home          = args.use_home
+jet_cleaning      = args.jet_cleaning
 
 # Custom arguments
 integration_points   = args.integration_points
@@ -56,6 +58,7 @@ for systematic_label in systematics_label:
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
 version = "%s_%s_%s" % (version, mode, 'nonNom' if use_nonnominal else 'nom')
+jet_cleaning_by_index = (jet_cleaning == 'by_index')
 
 if mode == 'default':
   if era == "2016":
@@ -161,6 +164,7 @@ if __name__ == '__main__':
     hadTauSelection          = hadTauSelectionAndWP,
     lowIntegrationPoints     = False, # has no effect in 3l1tau MEM, the nof integration points fixed
     isDebug                  = debug,
+    jet_cleaning_by_index    = jet_cleaning_by_index,
     central_or_shift         = central_or_shifts,
     dry_run                  = dry_run,
     use_nonnominal           = use_nonnominal,

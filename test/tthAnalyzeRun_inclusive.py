@@ -21,6 +21,7 @@ parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_tau_id_wp()
 parser.add_use_home()
+parser.add_jet_cleaning()
 parser.add_argument('-o', '--output-tree',
   type = str, dest = 'output_tree', metavar = 'name', default = 'syncTree', required = False,
   help = 'R|Output TTree name',
@@ -47,6 +48,7 @@ systematics_label = args.systematics
 use_nonnominal    = args.original_central
 tau_id_wp         = args.tau_id_wp
 use_home          = args.use_home
+jet_cleaning      = args.jet_cleaning
 
 # Custom arguments
 output_tree = args.output_tree
@@ -58,6 +60,7 @@ for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
+jet_cleaning_by_index = (jet_cleaning == 'by_index')
 
 if with_mem:
   if era == "2016":
@@ -131,6 +134,7 @@ if __name__ == '__main__':
     isDebug                 = debug,
     rle_select              = rle_select,
     hadTauSelection_tauIdWP = hadTau_selection,
+    jet_cleaning_by_index   = jet_cleaning_by_index,
     central_or_shifts       = central_or_shifts,
     use_nonnominal          = use_nonnominal,
     use_home                = use_home,

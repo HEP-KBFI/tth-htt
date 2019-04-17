@@ -85,6 +85,7 @@ process.analyze_2lss = cms.PSet(
     branchName_jetsAK8 = cms.string('FatJet'),
     branchName_subjetsAK8 = cms.string('SubJet'),
     redoGenMatching = cms.bool(True),
+    jetCleaningByIndex = cms.bool(True),
 
     branchName_genTopQuarks = cms.string('GenTop'),
     branchName_genBJets = cms.string('GenBQuarkFromTop'),

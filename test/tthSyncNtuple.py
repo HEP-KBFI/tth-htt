@@ -79,6 +79,7 @@ parser.add_nonnominal()
 parser.add_hlt_filter()
 parser.add_tau_id_wp()
 parser.add_use_home()
+parser.add_jet_cleaning()
 parser.add_sys(sys_choices)
 parser.add_argument('-c', '--channels',
   type = str, nargs = '+', dest = 'channels', metavar = 'channel', choices = channel_choices,
@@ -115,6 +116,7 @@ tau_id_wp         = args.tau_id_wp
 use_home          = args.use_home
 hlt_filter        = args.hlt_filter
 systematics_label = args.systematics
+jet_cleaning      = args.jet_cleaning
 
 # Custom arguments
 channels = args.channels
@@ -146,6 +148,7 @@ if __name__ == '__main__':
     tau_id_wp          = tau_id_wp,
     use_home           = use_home,
     systematics_label  = systematics_label,
+    jet_cleaning       = jet_cleaning,
   )
 
   job_statistics = analysis.create()
