@@ -97,15 +97,14 @@ process.analyze_ZZctrl = cms.PSet(
 
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
-    selectBDT = cms.bool(False),
-
+    useNonNominal = cms.bool(False),
+    isDEBUG = cms.bool(False),
+    
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
         requireGenMatching = cms.bool(False),
     ),
-    useNonNominal = cms.bool(False),
-    isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
 
     evtWeight = cms.PSet(
