@@ -186,15 +186,25 @@ double
 Data_to_MC_CorrectionInterface_2016::getSF_hadTauID_and_Iso() const
 {
   double sf = 1.;
+  double sfErr = 0.;
+  const auto square = [](double value) -> double { return value * value; };
   for(std::size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau)
   {
     if(hadTau_genPdgId_[idxHadTau] == 15)
     {
-      // CV: take data/MC correction to be equal to 0.95 for all WPs, following Tau POG recommendation for 2016 data,
-      //     cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
-      sf *= 0.95;
+      // CV: take data/MC (SF) measured for MVA-based tau ID with dR = 0.5 from
+      //       https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events ("2016 ReminiAOD")
+      //     as the SF for MVA-based tau ID with dR = 0.3 have not been measured yet.
+      if     (hadTauSelection_ == 1) { sf *= 0.90; sfErr += square(0.03); } // dR03mvaVVLoose
+      else if(hadTauSelection_ == 2) { sf *= 0.90; sfErr += square(0.03); } // dR03mvaVLoose
+      else if(hadTauSelection_ == 3) { sf *= 0.86; sfErr += square(0.02); } // dR03mvaLoose
+      else if(hadTauSelection_ == 4) { sf *= 0.88; sfErr += square(0.02); } // dR03mvaMedium
+      else if(hadTauSelection_ == 5) { sf *= 0.87; sfErr += square(0.02); } // dR03mvaTight
+      else if(hadTauSelection_ == 6) { sf *= 0.86; sfErr += square(0.02); } // dR03mvaVTight
+      else if(hadTauSelection_ == 7) { sf *= 0.86; sfErr += square(0.02); } // dR03mvaVVTight
     }
   }
+  sfErr = std::sqrt(sfErr);
   return sf;
 }
 
@@ -218,32 +228,32 @@ Data_to_MC_CorrectionInterface_2016::getSF_eToTauFakeRate() const
         {
           case 1: // vLoose
           {
-            if(hadTau_absEta < 1.479) { sf_tmp = 1.02; sfErr = 0.05; }
-            else                      { sf_tmp = 1.11; sfErr = 0.05; }
+            if(hadTau_absEta < 1.479) { sf_tmp = 1.21; sfErr = 0.06; }
+            else                      { sf_tmp = 1.38; sfErr = 0.04; }
             break;
           }
           case 2: // Loose
           {
-            if(hadTau_absEta < 1.479) { sf_tmp = 1.14; sfErr = 0.04; }
-            else                      { sf_tmp = 1.09; sfErr = 0.05; }
+            if(hadTau_absEta < 1.479) { sf_tmp = 1.32; sfErr = 0.03; }
+            else                      { sf_tmp = 1.38; sfErr = 0.04; }
             break;
           }
           case 3: // Medium
           {
-            if(hadTau_absEta < 1.479) { sf_tmp = 1.50; sfErr = 0.13; }
-            else                      { sf_tmp = 1.06; sfErr = 0.18; }
+            if(hadTau_absEta < 1.479) { sf_tmp = 1.32; sfErr = 0.07; }
+            else                      { sf_tmp = 1.53; sfErr = 0.13; }
             break;
           }
           case 4: // Tight
           {
-            if(hadTau_absEta < 1.479) { sf_tmp = 1.80; sfErr = 0.23; }
-            else                      { sf_tmp = 1.30; sfErr = 0.42; }
+            if(hadTau_absEta < 1.479) { sf_tmp = 1.40; sfErr = 0.12; }
+            else                      { sf_tmp = 1.90; sfErr = 0.30; }
             break;
           }
           case 5: // vTight
           {
-            if(hadTau_absEta < 1.479) { sf_tmp = 1.89; sfErr = 0.35; }
-            else                      { sf_tmp = 1.69; sfErr = 0.68; }
+            if(hadTau_absEta < 1.479) { sf_tmp = 1.21; sfErr = 0.17; }
+            else                      { sf_tmp = 1.97; sfErr = 0.45; }
             break;
           }
           default: throw cmsException(this, __func__, __LINE__)
@@ -289,20 +299,20 @@ Data_to_MC_CorrectionInterface_2016::getSF_muToTauFakeRate() const
         {
           case 1: // Loose
           {
-            if     (hadTau_absEta < 0.4) { sf_tmp = 1.15; sfErr = 0.05; }
-            else if(hadTau_absEta < 0.8) { sf_tmp = 1.15; sfErr = 0.05; }
-            else if(hadTau_absEta < 1.2) { sf_tmp = 1.18; sfErr = 0.05; }
-            else if(hadTau_absEta < 1.7) { sf_tmp = 1.20; sfErr = 0.20; }
-            else if(hadTau_absEta < 2.3) { sf_tmp = 1.30; sfErr = 0.30; }
+            if     (hadTau_absEta < 0.4) { sf_tmp = 1.15; sfErr = 0.04; }
+            else if(hadTau_absEta < 0.8) { sf_tmp = 1.16; sfErr = 0.03; }
+            else if(hadTau_absEta < 1.2) { sf_tmp = 1.21; sfErr = 0.04; }
+            else if(hadTau_absEta < 1.7) { sf_tmp = 1.50; sfErr = 0.10; }
+            else if(hadTau_absEta < 2.3) { sf_tmp = 2.80; sfErr = 0.20; }
             break;
           }
           case 2: // Tight
           {
-            if     (hadTau_absEta < 0.4) { sf_tmp = 1.50; sfErr = 0.10; }
-            else if(hadTau_absEta < 0.8) { sf_tmp = 1.40; sfErr = 0.10; }
-            else if(hadTau_absEta < 1.2) { sf_tmp = 1.21; sfErr = 0.06; }
-            else if(hadTau_absEta < 1.7) { sf_tmp = 2.60; sfErr = 0.90; }
-            else if(hadTau_absEta < 1.7) { sf_tmp = 2.10; sfErr = 0.90; }
+            if     (hadTau_absEta < 0.4) { sf_tmp = 1.40; sfErr = 0.07; }
+            else if(hadTau_absEta < 0.8) { sf_tmp = 1.72; sfErr = 0.03; }
+            else if(hadTau_absEta < 1.2) { sf_tmp = 1.26; sfErr = 0.02; }
+            else if(hadTau_absEta < 1.7) { sf_tmp = 2.60; sfErr = 0.50; }
+            else if(hadTau_absEta < 1.7) { sf_tmp = 2.30; sfErr = 0.40; }
             break;
           }
           default: throw cmsException(__func__, __LINE__)
