@@ -150,16 +150,6 @@ class analyzeConfig_ZZctrl(analyzeConfig):
     self.use_nonnominal = use_nonnominal
     self.hlt_filter = hlt_filter
 
-    self.isBDTtraining = False
-
-  def set_BDT_training(self):
-    """Run analysis with loose selection criteria for leptons,
-       for the purpose of preparing event list files for BDT training.
-    """
-    self.lepton_selections = [ "forBDTtraining" ]
-    self.lepton_frWeights  = [ "disabled" ]
-    self.isBDTtraining     = True
-
   def createCfg_analyze(self, jobOptions, sample_info, lepton_selection):
     """Create python configuration file for the analyze_ZZctrl executable (analysis code)
 
@@ -385,7 +375,6 @@ class analyzeConfig_ZZctrl(analyzeConfig):
                   'chargeSumSelection'       : chargeSumSelection,
                   'applyFakeRateWeights'     : self.applyFakeRateWeights if not lepton_selection == "Tight" else "disabled",
                   'central_or_shift'         : central_or_shift,
-                  'selectBDT'                : self.isBDTtraining,
                   'syncOutput'               : syncOutput,
                   'syncTree'                 : syncTree,
                   'syncRLE'                  : syncRLE,
@@ -404,12 +393,6 @@ class analyzeConfig_ZZctrl(analyzeConfig):
                 self.inputFiles_hadd_stage1[key_hadd_stage1_job].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
                 self.outputFile_hadd_stage1[key_hadd_stage1_job] = os.path.join(self.dirs[key_hadd_stage1_dir][DKEY_HIST],
                                                                                 "hadd_stage1_%s_%s_%s.root" % hadd_stage1_job_tuple)
-
-                if self.isBDTtraining:
-                  self.targets.append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
-
-            if self.isBDTtraining or self.do_sync:
-              continue
 
             if is_mc:
               logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
@@ -511,9 +494,6 @@ class analyzeConfig_ZZctrl(analyzeConfig):
                     self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job] = os.path.join(self.dirs[key_hadd_stage1_5_dir][DKEY_HIST],
                                                                                         "hadd_stage1_5_%s_%s.root" % hadd_stage1_5_tuple )
 
-            if self.isBDTtraining or self.do_sync:
-              continue
-
             # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
             if not is_mc:
               key_hadd_stage1_job = getKey(process_name, lepton_selection_and_frWeight, chargeSumSelection)
@@ -521,9 +501,6 @@ class analyzeConfig_ZZctrl(analyzeConfig):
               if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
                 self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
               self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
-
-          if self.isBDTtraining or self.do_sync:
-            continue
 
           # sum fake background contributions for the total of all MC sample
           # input processes: TT3l0g1j, TT2l1g1j, TT1l2g1j, TT0l3g1j, TT0l2g2j,...
@@ -585,27 +562,18 @@ class analyzeConfig_ZZctrl(analyzeConfig):
           self.outputFile_hadd_stage2[key_hadd_stage2_job] = os.path.join(self.dirs[key_hadd_stage2_dir][DKEY_HIST],
                                                                           "hadd_stage2_%s_%s.root" % hadd_stage2_job_tuple)
 
-    if self.isBDTtraining or self.do_sync:
+    if self.do_sync:
       if self.is_sbatch:
         logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
         self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
-        if self.isBDTtraining:
-          self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
-        elif self.do_sync:
-          self.createScript_sbatch_syncNtuple(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+        self.createScript_sbatch_syncNtuple(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
       logging.info("Creating Makefile")
       lines_makefile = []
-      if self.isBDTtraining:
-        self.addToMakefile_analyze(lines_makefile)
-        self.addToMakefile_hadd_stage1(lines_makefile)
-      elif self.do_sync:
-        self.addToMakefile_syncNtuple(lines_makefile)
-        outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
-        self.outputFile_sync['sync'] = outputFile_sync_path
-        self.targets.append(outputFile_sync_path)
-        self.addToMakefile_hadd_sync(lines_makefile)
-      else:
-        raise ValueError("Internal logic error")
+      self.addToMakefile_syncNtuple(lines_makefile)
+      outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
+      self.outputFile_sync['sync'] = outputFile_sync_path
+      self.targets.append(outputFile_sync_path)
+      self.addToMakefile_hadd_sync(lines_makefile)
       self.createMakefile(lines_makefile)
       logging.info("Done.")
       return self.num_jobs

@@ -343,7 +343,7 @@ int main(int argc, char* argv[])
   vdouble absEtaBins = cfg_analyze.getParameter<vdouble>("absEtaBins");
   if ( absEtaBins.size() < 2 ) throw cms::Exception("analyze_jetToTauFakeRate") 
     << "Invalid Configuration parameter 'absEtaBins' !!\n";
-  vint decayModes = cfg_analyze.getParameter<vint>("decaModes");
+  vint decayModes = cfg_analyze.getParameter<vint>("decayModes");
   if ( decayModes.size() < 1 ) throw cms::Exception("analyze_jetToTauFakeRate") 
     << "Invalid Configuration parameter 'decayModes' !!\n";
   
