@@ -72,7 +72,7 @@ run_wrapped_executable() {
 
     # change cp, stat and ls commands in case the output directory is on /hdfs
     OUTPUT_DIR="{{ outputDir }}"
-    if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hdfs 2>/dev/null) ) ]]; then
+    if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hdfs) ) ]]; then
       cp_cmd="hdfs dfs -copyFromLocal";
       st_cmd="hdfs dfs -stat '%b'"
       ls_cmd="hdfs dfs -ls"
@@ -92,7 +92,7 @@ run_wrapped_executable() {
     OUTPUT_FILES="{{ outputFiles }}"
     OUTPUT_FILES_EXIST=true
     if [ $(echo "$OUTPUT_FILES" | wc -w) -ne 1 ]; then
-      OUTPUT_DIR_FILES=$($ls_cmd_mult $OUTPUT_DIR/$ls_cmd_sfx 2>/dev/null | grep $OUTPUT_DIR | awk '{print $NF}')
+      OUTPUT_DIR_FILES=$($ls_cmd_mult $OUTPUT_DIR/$ls_cmd_sfx | grep $OUTPUT_DIR | awk '{print $NF}')
 
       for OUTPUT_FILE in $OUTPUT_FILES; do
         OUTPUT_FILE_FULLPATH=${OUTPUT_DIR}/${OUTPUT_FILE}
@@ -108,7 +108,7 @@ run_wrapped_executable() {
     else
       OUTPUT_FILE=$OUTPUT_FILES
       OUTPUT_FILE_FULLPATH=${OUTPUT_DIR}/${OUTPUT_FILE}
-      OUTPUT_FILE_GREP=$($ls_cmd $OUTPUT_FILE_FULLPATH 2>/dev/null | grep $OUTPUT_FILE_FULLPATH | wc -l)
+      OUTPUT_FILE_GREP=$($ls_cmd $OUTPUT_FILE_FULLPATH | grep $OUTPUT_FILE_FULLPATH | wc -l)
       if [ $OUTPUT_FILE_GREP -ne 1 ]; then
         echo "File $OUTPUT_FILE_FULLPATH does not exists -> running the job";
         OUTPUT_FILES_EXIST=false;
