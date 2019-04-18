@@ -198,4 +198,4 @@ def record_software_state(txtfile_cfg, txtfile_out, dependencies):
     txtfileptr.write('\n'.join(results))
     txtfileptr.write('\n')
   if txtfile_cfg != txtfile_out:
-    shutil.copy(txtfile_cfg, txtfile_out)
+    hdfs.copy(txtfile_cfg, txtfile_out)
