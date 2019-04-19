@@ -72,6 +72,7 @@ process.analyze_2los_1tau = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),
+    apply_l1PreFireWeight = cms.bool(True),
     apply_hlt_filter = cms.bool(False),
     apply_met_filters = cms.bool(True),
     cfgMEtFilter = cms.PSet(),

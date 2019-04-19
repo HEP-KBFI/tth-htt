@@ -178,6 +178,16 @@ getPUsys_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+
+L1PreFiringWeightSys
+getL1PreFiringWeightSys_option(const std::string & central_or_shift)
+{
+  L1PreFiringWeightSys central_or_shift_int = L1PreFiringWeightSys::nominal;
+  if     (central_or_shift == "CMS_ttHl_l1PreFireUp")   central_or_shift_int = L1PreFiringWeightSys::up;
+  else if(central_or_shift == "CMS_ttHl_l1PreFireDown") central_or_shift_int = L1PreFiringWeightSys::down;
+  return central_or_shift_int;
+}
+
 int
 getDYMCReweighting_option(const std::string & central_or_shift)
 {

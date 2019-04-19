@@ -117,7 +117,12 @@ enum class PUsys
   up, down,
 };
 
-enum 
+enum class L1PreFiringWeightSys
+{
+  nominal, up, down
+};
+
+enum
 {
   kDYMCReweighting_central,
   kDYMCReweighting_shiftUp, kDYMCReweighting_shiftDown 
@@ -173,6 +178,9 @@ getJetToLeptonFR_option(const std::string & central_or_shift);
 
 PUsys
 getPUsys_option(const std::string & central_or_shift);
+
+L1PreFiringWeightSys
+getL1PreFiringWeightSys_option(const std::string & central_or_shift);
 
 int
 getDYMCReweighting_option(const std::string & central_or_shift);

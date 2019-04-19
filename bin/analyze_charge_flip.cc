@@ -64,6 +64,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h" // LeptonFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h" // JetToTauFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L, getWeight_3L
+#include "tthAnalysis/HiggsToTauTau/interface/L1PreFiringWeightReader.h" // L1PreFiringWeightReader
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
@@ -165,6 +166,7 @@ int main(int argc, char* argv[])
   bool isCentral = ( central_or_shift == "central" ) ? true : false;
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
+  bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
 
   const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
   const bool applyAdditionalEvtWeight = additionalEvtWeight.getParameter<bool>("apply");
@@ -175,18 +177,20 @@ int main(int argc, char* argv[])
   }
   
   checkOptionValidity(central_or_shift, isMC);
-  const int electronPt_option          = getElectronPt_option   (central_or_shift);
-  const int jetPt_option               = getJet_option          (central_or_shift, isMC);
-  const int jetToLeptonFakeRate_option = getJetToLeptonFR_option(central_or_shift);
-  const int lheScale_option            = getLHEscale_option     (central_or_shift);
-  const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift);
+  const int electronPt_option                 = getElectronPt_option          (central_or_shift);
+  const int jetPt_option                      = getJet_option                 (central_or_shift, isMC);
+  const int jetToLeptonFakeRate_option        = getJetToLeptonFR_option       (central_or_shift);
+  const int lheScale_option                   = getLHEscale_option            (central_or_shift);
+  const int jetBtagSF_option                  = getBTagWeight_option          (central_or_shift);
+  const L1PreFiringWeightSys l1PreFire_option = getL1PreFiringWeightSys_option(central_or_shift);
 
   std::cout
-    << "central_or_shift = "               << central_or_shift           << "\n"
-       " -> jetToLeptonFakeRate_option = " << jetToLeptonFakeRate_option << "\n"
-       " -> lheScale_option            = " << lheScale_option            << "\n"
-       " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
-       " -> jetPt_option               = " << jetPt_option               << '\n'
+    << "central_or_shift = "               << central_or_shift             << "\n"
+       " -> jetToLeptonFakeRate_option = " << jetToLeptonFakeRate_option   << "\n"
+       " -> lheScale_option            = " << lheScale_option              << "\n"
+       " -> jetBtagSF_option           = " << jetBtagSF_option             << "\n"
+       " -> jetPt_option               = " << jetPt_option                 << "\n"
+       " -> l1PreFire_option           = " << as_integer(l1PreFire_option) << '\n'
   ;
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
@@ -267,6 +271,13 @@ int main(int argc, char* argv[])
   if(eventWeightManager)
   {
     inputTree->registerReader(eventWeightManager);
+  }
+
+  L1PreFiringWeightReader * l1PreFiringWeightReader = nullptr;
+  if(apply_l1PreFireWeight)
+  {
+    l1PreFiringWeightReader = new L1PreFiringWeightReader(era, l1PreFire_option);
+    inputTree->registerReader(l1PreFiringWeightReader);
   }
 
 //--- declare particle collections
@@ -504,9 +515,10 @@ int main(int argc, char* argv[])
     double evtWeight_inclusive = 1.;
     if(isMC)
     {
-      if(apply_genWeight)    evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(isMC_tH)            evtWeight_inclusive *= eventInfo.genWeight_tH;
-      if(eventWeightManager) evtWeight_inclusive *= eventWeightManager->getWeight();
+      if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if(isMC_tH)                 evtWeight_inclusive *= eventInfo.genWeight_tH;
+      if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
+      if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
@@ -977,6 +989,7 @@ int main(int argc, char* argv[])
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;
   delete lheInfoHistManager;
+  delete l1PreFiringWeightReader;
   delete eventWeightManager;
 
   hltPaths_delete(triggers_1e);

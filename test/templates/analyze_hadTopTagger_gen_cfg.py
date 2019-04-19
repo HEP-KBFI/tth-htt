@@ -54,6 +54,7 @@ process.analyze_hadTopTagger_gen = cms.PSet(
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
+    apply_l1PreFireWeight = cms.bool(True),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False),
 

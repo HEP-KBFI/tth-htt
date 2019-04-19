@@ -89,6 +89,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_0l_2tau_trigger.h" // Data_to_MC_CorrectionInterface_0l_2tau_trigger
 #include "tthAnalysis/HiggsToTauTau/interface/DYMCReweighting.h" // DYMCReweighting
 #include "tthAnalysis/HiggsToTauTau/interface/DYMCNormScaleFactors.h" // DYMCNormScaleFactors
+#include "tthAnalysis/HiggsToTauTau/interface/L1PreFiringWeightReader.h" // L1PreFiringWeightReader
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
@@ -211,6 +212,7 @@ int main(int argc, char* argv[])
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_DYMCReweighting = cfg_analyze.getParameter<bool>("apply_DYMCReweighting");
   bool apply_DYMCNormScaleFactors = cfg_analyze.getParameter<bool>("apply_DYMCNormScaleFactors");
+  bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
   edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
@@ -238,26 +240,30 @@ int main(int argc, char* argv[])
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
   checkOptionValidity(central_or_shift, isMC);
-  const int hadTauPt_option         = getHadTauPt_option       (central_or_shift);
-  const int jetToTauFakeRate_option = getJetToTauFR_option     (central_or_shift);
-  const int lheScale_option         = getLHEscale_option       (central_or_shift);
-  const int jetBtagSF_option        = getBTagWeight_option     (central_or_shift);
-  const PUsys puSys_option          = getPUsys_option          (central_or_shift);
-  const int dyMCReweighting_option  = getDYMCReweighting_option(central_or_shift);
-  const int dyMCNormScaleFactors_option  = getDYMCNormScaleFactors_option(central_or_shift);
+  const int hadTauPt_option                   = getHadTauPt_option            (central_or_shift);
+  const int jetToTauFakeRate_option           = getJetToTauFR_option          (central_or_shift);
+  const int lheScale_option                   = getLHEscale_option            (central_or_shift);
+  const int jetBtagSF_option                  = getBTagWeight_option          (central_or_shift);
+  const PUsys puSys_option                    = getPUsys_option               (central_or_shift);
+  const int dyMCReweighting_option            = getDYMCReweighting_option     (central_or_shift);
+  const int dyMCNormScaleFactors_option       = getDYMCNormScaleFactors_option(central_or_shift);
+  const L1PreFiringWeightSys l1PreFire_option = getL1PreFiringWeightSys_option(central_or_shift);
 
   const int met_option   = useNonNominal_jetmet ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
   const int jetPt_option = useNonNominal_jetmet ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
 
   std::cout
-    << "central_or_shift = "               << central_or_shift           << "\n"
-       " -> hadTauPt_option            = " << hadTauPt_option            << "\n"
-       " -> jetToTauFakeRate_option    = " << jetToTauFakeRate_option    << "\n"
-       " -> lheScale_option            = " << lheScale_option            << "\n"
-       " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
-       " -> met_option                 = " << met_option                 << "\n"
-       " -> jetPt_option               = " << jetPt_option               << "\n"
-       " -> dyMCReweighting_option     = " << dyMCReweighting_option     << '\n'
+    << "central_or_shift = "                << central_or_shift             << "\n"
+       " -> hadTauPt_option             = " << hadTauPt_option              << "\n"
+       " -> jetToTauFakeRate_option     = " << jetToTauFakeRate_option      << "\n"
+       " -> lheScale_option             = " << lheScale_option              << "\n"
+       " -> jetBtagSF_option            = " << jetBtagSF_option             << "\n"
+       " -> met_option                  = " << met_option                   << "\n"
+       " -> jetPt_option                = " << jetPt_option                 << "\n"
+       " -> puSys_option                = " << as_integer(puSys_option)     << "\n"
+       " -> dyMCReweighting_option      = " << dyMCReweighting_option       << "\n"
+       " -> dyMCNormScaleFactors_option = " << dyMCNormScaleFactors_option  << "\n"
+       " -> l1PreFire_option            = " << as_integer(l1PreFire_option) << '\n'
   ;
 
   DYMCReweighting * dyReweighting = nullptr;
@@ -265,8 +271,9 @@ int main(int argc, char* argv[])
   {
     dyReweighting = new DYMCReweighting(era, dyMCReweighting_option);
   }
-  DYMCNormScaleFactors* dyNormScaleFactors = nullptr;
-  if ( apply_DYMCNormScaleFactors ) {
+  DYMCNormScaleFactors * dyNormScaleFactors = nullptr;
+  if(apply_DYMCNormScaleFactors)
+  {
     dyNormScaleFactors = new DYMCNormScaleFactors(era, dyMCNormScaleFactors_option);
   }
 
@@ -388,6 +395,13 @@ int main(int argc, char* argv[])
   if(eventWeightManager)
   {
     inputTree->registerReader(eventWeightManager);
+  }
+
+  L1PreFiringWeightReader * l1PreFiringWeightReader = nullptr;
+  if(apply_l1PreFireWeight)
+  {
+    l1PreFiringWeightReader = new L1PreFiringWeightReader(era, l1PreFire_option);
+    inputTree->registerReader(l1PreFiringWeightReader);
   }
 
 //--- declare particle collections
@@ -918,10 +932,11 @@ int main(int argc, char* argv[])
     double evtWeight_inclusive = 1.;
     if(isMC)
     {
-      if(apply_genWeight      ) evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(apply_DYMCReweighting) evtWeight_inclusive *= dyReweighting->getWeight(genTauLeptons);
-      if(isMC_tH              ) evtWeight_inclusive *= eventInfo.genWeight_tH;
-      if(eventWeightManager   ) evtWeight_inclusive *= eventWeightManager->getWeight();
+      if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if(apply_DYMCReweighting)   evtWeight_inclusive *= dyReweighting->getWeight(genTauLeptons);
+      if(isMC_tH)                 evtWeight_inclusive *= eventInfo.genWeight_tH;
+      if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
+      if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
@@ -934,6 +949,7 @@ int main(int argc, char* argv[])
         genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
       }
     }
+
     std::vector<GenParticle> genTopQuarks;
     std::vector<GenParticle> genBJets;
     std::vector<GenParticle> genWBosons;
@@ -2098,6 +2114,7 @@ int main(int argc, char* argv[])
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;
   delete lheInfoHistManager;
+  delete l1PreFiringWeightReader;
   delete cutFlowHistManager;
   delete eventWeightManager;
 

@@ -175,11 +175,14 @@ class analyzeConfig(object):
         # CV: make sure that 'central' is always first entry in self.central_or_shifts
         #    (logic for building dependencies between analysis, 'hadd', and 'addBackgrounds' jobs in derived classes may abort with KeyError otherwise)
         if len(self.central_or_shifts) > 1:
-            temp = [ 'central' ]
             self.central_or_shifts.remove('central')
-            temp.extend(self.central_or_shifts)
-            self.central_or_shifts = temp
+            self.central_or_shifts = [ 'central' ] + self.central_or_shifts
         #------------------------------------------------------------------------
+        if (set(systematics.L1PreFiring) & set(self.central_or_shifts)) == set(systematics.L1PreFiring) and self.era == "2018":
+          logging.warning('Removing systematics from {} era:'.format(self.era, ', '.join(systematics.L1PreFiring)))
+          for central_or_shift in systematics.L1PreFiring:
+            self.central_or_shifts.remove(central_or_shift)
+
         self.jet_cleaning_by_index = jet_cleaning_by_index
         self.gen_matching_by_index = gen_matching_by_index
         self.max_files_per_job = max_files_per_job
@@ -585,6 +588,8 @@ class analyzeConfig(object):
           jobOptions['apply_DYMCReweighting'] = is_dymc_reweighting(sample_info["dbs_name"])
         if 'apply_DYMCNormScaleFactors' not in jobOptions:
           jobOptions['apply_DYMCNormScaleFactors'] =  is_dymc_reweighting(sample_info["dbs_name"])
+        if 'apply_l1PreFireWeight' not in jobOptions:
+          jobOptions['apply_l1PreFireWeight'] = self.era != "2018"
         if 'central_or_shift' not in jobOptions:
           jobOptions['central_or_shift'] = 'central'
         if 'lumiScale' not in jobOptions:
