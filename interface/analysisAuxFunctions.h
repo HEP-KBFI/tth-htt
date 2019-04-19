@@ -54,7 +54,6 @@ enum { kLoose, kFakeable, kTight };
 
 enum class TauID {
   MVAnewDM2017v2, MVAoldDM, MVAoldDMdR032017v2, MVAoldDM2017v1, MVAoldDM2017v2,
-  DeepTau2017v1VSe, DeepTau2017v1VSmu, DeepTau2017v1VSjet, DpfTau2016v0VSall
 };
 
 const std::map<TauID, int> TauID_levels = {
@@ -63,10 +62,6 @@ const std::map<TauID, int> TauID_levels = {
   { TauID::MVAoldDMdR032017v2, 7 }, // VVLoose  - 1, VVTight - 7
   { TauID::MVAoldDM2017v1,     7 }, // VVLoose  - 1, VVTight - 7
   { TauID::MVAoldDM2017v2,     7 }, // VVLoose  - 1, VVTight - 7
-  { TauID::DeepTau2017v1VSe,   8 }, // VVVLoose - 1, VVTight - 7
-  { TauID::DeepTau2017v1VSmu,  8 }, // VVVLoose - 1, VVTight - 7
-  { TauID::DeepTau2017v1VSjet, 8 }, // VVVLoose - 1, VVTight - 7
-  { TauID::DpfTau2016v0VSall,  1 }, // Tight    - 1
 };
 
 const std::map<int, std::vector<std::string>> TauID_level_strings = {
@@ -82,18 +77,12 @@ const std::map<TauID, std::string> TauID_names = {
   { TauID::MVAoldDMdR032017v2, "MVAoldDMdR032017v2" },
   { TauID::MVAoldDM2017v1,     "MVAoldDM2017v1"     },
   { TauID::MVAoldDM2017v2,     "MVAoldDM2017v2"     },
-  { TauID::DeepTau2017v1VSe,   "DeepTau2017v1VSe"   },
-  { TauID::DeepTau2017v1VSmu,  "DeepTau2017v1VSmu"  },
-  { TauID::DeepTau2017v1VSjet, "DeepTau2017v1VSjet" },
-  { TauID::DpfTau2016v0VSall,  "DpfTau2016v0VSall"  },
 };
 
+// NB! must be exactly 7 characters!
 const std::map<std::string, TauID> TauID_PyMap = {
   { "dR03mva", TauID::MVAoldDMdR032017v2 },
   { "dR05mva", TauID::MVAoldDM2017v2     },
-  { "deepVSj", TauID::DeepTau2017v1VSjet },
-  { "deepVSe", TauID::DeepTau2017v1VSe   },
-  { "deepVSm", TauID::DeepTau2017v1VSmu  },
 };
 
 //--- declare b-tagging working points
