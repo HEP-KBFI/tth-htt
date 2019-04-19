@@ -82,6 +82,7 @@ class analyzeConfig(object):
           channel,
           samples,
           jet_cleaning_by_index,
+          gen_matching_by_index,
           central_or_shifts,
           max_files_per_job,
           era,
@@ -180,6 +181,7 @@ class analyzeConfig(object):
             self.central_or_shifts = temp
         #------------------------------------------------------------------------
         self.jet_cleaning_by_index = jet_cleaning_by_index
+        self.gen_matching_by_index = gen_matching_by_index
         self.max_files_per_job = max_files_per_job
         self.max_num_jobs = -1
         self.era = era
@@ -575,6 +577,8 @@ class analyzeConfig(object):
           jobOptions['isMC'] = is_mc
         if 'jetCleaningByIndex' not in jobOptions:
           jobOptions['jetCleaningByIndex'] = self.jet_cleaning_by_index
+        if 'genMatchingByIndex' not in jobOptions:
+          jobOptions['genMatchingByIndex'] = self.gen_matching_by_index
         if 'apply_genWeight' not in jobOptions:
           jobOptions['apply_genWeight'] = sample_info["genWeight"] if is_mc else False
         if 'apply_DYMCReweighting' not in jobOptions:

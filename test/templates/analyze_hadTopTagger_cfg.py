@@ -77,7 +77,9 @@ process.analyze_hadTopTagger = cms.PSet(
     branchName_met = cms.string('MET'),
 
     branchName_genJets = cms.string('GenJet'),
+    branchName_jetGenMatch      = cms.string('JetGenMatch'),
     redoGenMatching = cms.bool(True),
+    genMatchingByIndex = cms.bool(True),
     jetCleaningByIndex = cms.bool(True),
 
     branchName_genTopQuarks = cms.string('GenTop'),

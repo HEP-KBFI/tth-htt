@@ -22,6 +22,7 @@ parser.add_nonnominal()
 parser.add_tau_id_wp('dR03mvaVVLoose&dR05mvaVVLoose')
 parser.add_files_per_job(10)
 parser.add_use_home(False)
+parser.add_gen_matching()
 parser.add_argument('-p', '--enable-preselection',
   dest = 'enable_preselection', action = 'store_true', default = False,
   help = 'R|Enable preselection (read this script for the list of cuts)',
@@ -39,6 +40,7 @@ debug              = args.debug
 sample_filter      = args.filter
 num_parallel_jobs  = args.num_parallel_jobs
 running_method     = args.running_method
+gen_matching       = args.gen_matching
 
 # Additional arguments
 mode           = args.mode
@@ -68,6 +70,7 @@ golden_json_2018 = os.path.join(
 version = "%s_w%sPresel_%s_%s" % (
   version, ("" if preselection else "o"), "nonNom" if use_nonnominal else "nom", mode
 )
+gen_matching_by_index = (gen_matching == 'by_index')
 
 if mode == 'sync':
   if preselection:
@@ -296,6 +299,7 @@ if __name__ == '__main__':
     golden_json           = golden_json,
     dry_run               = dry_run,
     isDebug               = debug,
+    gen_matching_by_index = gen_matching_by_index,
     use_nonnominal        = use_nonnominal,
     use_home              = use_home,
     skip_tools_step       = preselection,

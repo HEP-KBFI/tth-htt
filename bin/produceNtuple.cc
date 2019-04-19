@@ -283,7 +283,7 @@ main(int argc,
 
   GenParticleReader * genMatchToMuonReader     = nullptr;
   GenParticleReader * genMatchToElectronReader = nullptr;
-  GenParticleReader * genMatchToHadTauReader   = nullptr;;
+  GenParticleReader * genMatchToHadTauReader   = nullptr;
   GenParticleReader * genMatchToJetReader      = nullptr;
 
   if(isMC && ! readGenObjects)
@@ -755,7 +755,7 @@ main(int argc,
 
     if(isMC && ! readGenObjects)
     {
-      const std::vector<GenLepton> genLeptons = genLeptonReader->read();;
+      const std::vector<GenLepton> genLeptons = genLeptonReader->read();
       const std::vector<GenHadTau> genHadTaus = genHadTauReader->read();
       const std::vector<GenJet>    genJets    = genJetReader->read();
 

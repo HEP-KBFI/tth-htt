@@ -27,6 +27,7 @@ parser.add_lep_mva_wp()
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
+parser.add_gen_matching()
 args = parser.parse_args()
 
 # Common arguments
@@ -48,6 +49,7 @@ lep_mva_wp        = args.lep_mva_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
+gen_matching      = args.gen_matching
 
 # Use the arguments
 central_or_shifts = []
@@ -57,6 +59,7 @@ for systematic_label in systematics_label:
       central_or_shifts.append(central_or_shift)
 lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
+gen_matching_by_index = (gen_matching == 'by_index')
 
 if mode == 'default':
   if era == "2016":
@@ -118,6 +121,7 @@ if __name__ == '__main__':
     lep_mva_wp                               = lep_mva_wp,
     fillGenEvtHistograms                     = False,
     jet_cleaning_by_index                    = jet_cleaning_by_index,
+    gen_matching_by_index                    = gen_matching_by_index,
     central_or_shifts                        = central_or_shifts,
     numerator_histogram                      = ("mT_fix_L_num",     "m_{T}^{fix,num}"), # or ("pt", "p_{T}"),
     denominator_histogram                    = ("mT_fix_L_den",     "m_{T}^{fix,den}"), # or ("EventCounter", "Number of events"),

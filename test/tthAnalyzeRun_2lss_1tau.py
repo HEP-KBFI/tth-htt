@@ -29,6 +29,7 @@ parser.add_hlt_filter()
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
+parser.add_gen_matching()
 parser.add_lep_mva_wp()
 args = parser.parse_args()
 
@@ -55,6 +56,7 @@ files_per_job     = args.files_per_job
 use_home          = args.use_home
 lep_mva_wp        = args.lep_mva_wp
 jet_cleaning      = args.jet_cleaning
+gen_matching      = args.gen_matching
 
 # Use the arguments
 central_or_shifts = []
@@ -65,6 +67,7 @@ for systematic_label in systematics_label:
 do_sync = mode.startswith('sync')
 lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
+gen_matching_by_index = (gen_matching == 'by_index')
 
 MEMbranch                = ''
 lepton_charge_selections = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
@@ -297,6 +300,7 @@ if __name__ == '__main__':
     applyFakeRateWeights      = applyFakeRateWeights,
     chargeSumSelections       = chargeSumSelections,
     jet_cleaning_by_index     = jet_cleaning_by_index,
+    gen_matching_by_index     = gen_matching_by_index,
     central_or_shifts         = central_or_shifts,
     max_files_per_job         = files_per_job,
     era                       = era,

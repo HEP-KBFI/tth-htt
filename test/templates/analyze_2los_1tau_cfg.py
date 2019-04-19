@@ -90,6 +90,10 @@ process.analyze_2los_1tau = cms.PSet(
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genPhotons = cms.string('GenPhoton'),
     branchName_genJets = cms.string('GenJet'),
+    branchName_muonGenMatch     = cms.string('MuonGenMatch'),
+    branchName_electronGenMatch = cms.string('ElectronGenMatch'),
+    branchName_hadTauGenMatch   = cms.string('TauGenMatch'),
+    branchName_jetGenMatch      = cms.string('JetGenMatch'),
     branchName_jetsHTTv2 = cms.string('HTTV2'),
     branchName_subjetsHTTv2 = cms.string('HTTV2Subjets'),
     branchName_jetsAK12 = cms.string('FatJetAK12'),
@@ -104,6 +108,7 @@ process.analyze_2los_1tau = cms.PSet(
     branchName_genQuarkFromTop = cms.string('GenQuarkFromTop'),
 
     redoGenMatching = cms.bool(True),
+    genMatchingByIndex = cms.bool(True),
     jetCleaningByIndex = cms.bool(True),
 
     selEventsFileName_input = cms.string(''),

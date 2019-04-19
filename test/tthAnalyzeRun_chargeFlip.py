@@ -21,6 +21,7 @@ parser.add_sys(sys_choices, default_choice = 'full')
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
+parser.add_gen_matching()
 args = parser.parse_args()
 
 # Common arguments
@@ -40,6 +41,7 @@ systematics_label = args.systematics
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
+gen_matching      = args.gen_matching
 
 # Use the arguments
 central_or_shifts = []
@@ -49,6 +51,7 @@ for systematic_label in systematics_label:
       central_or_shifts.append(central_or_shift)
 lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
+gen_matching_by_index = (gen_matching == 'by_index')
 
 if era == "2016":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
@@ -95,6 +98,7 @@ if __name__ == '__main__':
     samples               = samples,
     lepton_selections     = [ "Tight" ],
     jet_cleaning_by_index = jet_cleaning_by_index,
+    gen_matching_by_index = gen_matching_by_index,
     central_or_shifts     = central_or_shifts,
     max_files_per_job     = files_per_job,
     era                   = era,

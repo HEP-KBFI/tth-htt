@@ -189,6 +189,13 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       choices = [ 'by_index', 'by_dr' ],
       help = 'R|Jet cleaning method',
     )
+  
+  def add_gen_matching(self, default_gen_matching = 'by_index'):
+    self.add_argument('-g', '--gen-matching',
+      type = str, dest = 'gen_matching', metavar = 'method', default = default_gen_matching, required = False,
+      choices = [ 'by_index', 'by_dr' ],
+      help = 'R|Method of gen matching',
+    )
 
   @staticmethod
   def cat(choices):

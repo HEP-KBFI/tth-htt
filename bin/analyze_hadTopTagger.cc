@@ -197,6 +197,7 @@ int main(int argc, char* argv[])
   std::string branchName_subjetsAK8 = cfg_analyze.getParameter<std::string>("branchName_subjetsAK8");
   std::string branchName_met = cfg_analyze.getParameter<std::string>("branchName_met");
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
+  std::string branchName_jetGenMatch = cfg_analyze.getParameter<std::string>("branchName_jetGenMatch");
   std::string branchName_genTopQuarks = cfg_analyze.getParameter<std::string>("branchName_genTopQuarks");
   std::string branchName_genBJets = cfg_analyze.getParameter<std::string>("branchName_genBJets");
   std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
@@ -205,6 +206,7 @@ int main(int argc, char* argv[])
 
   bool redoGenMatching = false; //cfg_analyze.getParameter<bool>("redoGenMatching");
   const bool readGenObjects = isMC && !redoGenMatching;
+  const bool genMatchingByIndex = cfg_analyze.getParameter<bool>("genMatchingByIndex");
 
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
@@ -266,14 +268,22 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelectorAK8 jetSelectorAK8(era);
 
 //--- declare generator level information
-  GenJetReader* genJetReader = 0;
-  LHEInfoReader* lheInfoReader = 0;
-  if ( isMC ) {
-      if ( branchName_genJets != "" ) {
-        genJetReader = new GenJetReader(branchName_genJets);
-        inputTree -> registerReader(genJetReader);
-      }
-    //}
+  GenJetReader * genJetReader = nullptr;
+  LHEInfoReader * lheInfoReader = nullptr;
+
+  GenParticleReader * genMatchToJetReader      = nullptr;
+  if(isMC)
+  {
+    genJetReader = new GenJetReader(branchName_genJets);
+    inputTree -> registerReader(genJetReader);
+
+    if(genMatchingByIndex)
+    {
+      genMatchToJetReader = new GenParticleReader(branchName_jetGenMatch);
+      genMatchToJetReader -> readGenPartFlav(false);
+      inputTree -> registerReader(genMatchToJetReader);
+    }
+
     lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree -> registerReader(lheInfoReader);
   }
@@ -448,15 +458,25 @@ int main(int argc, char* argv[])
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     std::vector<GenJet> genJets;
-    if ( isMC && redoGenMatching ) {
-      if ( genJetReader ) {
-				genJets = genJetReader->read();
-      }
+    std::vector<GenParticle> jetGenMatch;
+    if(isMC && redoGenMatching)
+    {
+      if(genJetReader) genJets = genJetReader->read();
+
+      if(genMatchToJetReader) jetGenMatch = genMatchToJetReader->read();
     }
 
 //--- match reconstructed to generator level particles
-    if ( isMC && redoGenMatching ) {
-      jetGenMatcher.addGenJetMatch(selJets, genJets, 0.4);
+    if(isMC && redoGenMatching)
+    {
+      if(genMatchingByIndex)
+      {
+        jetGenMatcher.addGenJetMatchByIndex(selJets, jetGenMatch);
+      }
+      else
+      {
+        jetGenMatcher.addGenJetMatch(selJets, genJets, 0.4);
+      }
     }
 
     if ( isMC ) {

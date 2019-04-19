@@ -17,6 +17,7 @@ parser.add_tau_id_wp('dR03mvaLoose')
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
+parser.add_gen_matching()
 args = parser.parse_args()
 
 # Common arguments
@@ -36,11 +37,13 @@ tau_id_wp     = args.tau_id_wp
 files_per_job = 3 #args.files_per_job # HTT files are fat
 use_home      = args.use_home
 jet_cleaning  = args.jet_cleaning
+gen_matching      = args.gen_matching
 
 # Use the arguments
 hadTau_selection = "Tight|%s" % tau_id_wp
 lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
+gen_matching_by_index = (gen_matching == 'by_index')
 
 if era == "2016":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
@@ -62,6 +65,7 @@ if __name__ == '__main__':
     cfgFile_analyze       = "analyze_hadTopTagger_cfg.py",
     samples               = samples,
     jet_cleaning_by_index = jet_cleaning_by_index,
+    gen_matching_by_index = gen_matching_by_index,
     channel               = "hadTopTagger",
     hadTau_selection      = hadTau_selection,
     max_files_per_job     = files_per_job,

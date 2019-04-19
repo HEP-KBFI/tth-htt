@@ -279,7 +279,7 @@ main(int argc,
 
   GenParticleReader * genMatchToMuonReader     = nullptr;
   GenParticleReader * genMatchToElectronReader = nullptr;
-  GenParticleReader * genMatchToHadTauReader   = nullptr;;
+  GenParticleReader * genMatchToHadTauReader   = nullptr;
   GenParticleReader * genMatchToJetReader      = nullptr;
 
   if(isMC && ! readGenObjects)

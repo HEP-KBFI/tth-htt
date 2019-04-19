@@ -109,7 +109,12 @@ process.analyze_3l_1tau = cms.PSet(
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genPhotons = cms.string('GenPhoton'),
     branchName_genJets = cms.string('GenJet'),
+    branchName_muonGenMatch     = cms.string('MuonGenMatch'),
+    branchName_electronGenMatch = cms.string('ElectronGenMatch'),
+    branchName_hadTauGenMatch   = cms.string('TauGenMatch'),
+    branchName_jetGenMatch      = cms.string('JetGenMatch'),
     redoGenMatching = cms.bool(True),
+    genMatchingByIndex = cms.bool(True),
     jetCleaningByIndex = cms.bool(True),
 
     selEventsFileName_input = cms.string(''),

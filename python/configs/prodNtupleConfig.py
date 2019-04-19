@@ -58,6 +58,7 @@ class prodNtupleConfig:
              golden_json,
              dry_run,
              isDebug,
+             gen_matching_by_index,
              use_nonnominal,
              use_home,
              skip_tools_step,
@@ -78,6 +79,7 @@ class prodNtupleConfig:
         self.verbose               = verbose
         self.dry_run               = dry_run
         self.isDebug               = isDebug
+        self.gen_matching_by_index = gen_matching_by_index
         self.use_nonnominal        = use_nonnominal
         self.use_home              = use_home
         self.pileup                = pileup
@@ -183,6 +185,7 @@ class prodNtupleConfig:
             "process.produceNtuple.random_seed               = cms.uint32(%i)"   % jobOptions['random_seed'],
             "process.produceNtuple.isDEBUG                   = cms.bool(%s)"     % self.isDebug,
             "process.produceNtuple.useNonNominal             = cms.bool(%s)"     % self.use_nonnominal,
+            "process.produceNtuple.genMatchingByIndex        = cms.bool(%s)"     % self.gen_matching_by_index,
             "process.produceNtuple.branchNames_triggers      = cms.vstring(%s)"  % jobOptions['triggers'],
             "process.fwliteInput.fileNames                   = cms.vstring(%s)"  % inputFiles_prepended,
             "executable      = 'produceNtuple'",

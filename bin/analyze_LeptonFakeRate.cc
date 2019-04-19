@@ -6,6 +6,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterReader.h" // MEtFilterReader
@@ -463,6 +464,7 @@ main(int argc,
   const bool fillGenEvtHistograms = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
   const bool jetCleaningByIndex   = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   const bool redoGenMatching      = cfg_analyze.getParameter<bool>("redoGenMatching");
+  const bool genMatchingByIndex   = cfg_analyze.getParameter<bool>("genMatchingByIndex");
   const bool readGenObjects       = isMC && ! redoGenMatching;
   const bool isDEBUG              = cfg_analyze.getParameter<bool>("isDEBUG");
   const bool apply_met_filters    = cfg_analyze.getParameter<bool>("apply_met_filters");
@@ -549,6 +551,10 @@ main(int argc,
   const std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
   const std::string branchName_genPhotons = cfg_analyze.getParameter<std::string>("branchName_genPhotons");
   const std::string branchName_genJets    = cfg_analyze.getParameter<std::string>("branchName_genJets");
+
+  const std::string branchName_muonGenMatch     = cfg_analyze.getParameter<std::string>("branchName_muonGenMatch");
+  const std::string branchName_electronGenMatch = cfg_analyze.getParameter<std::string>("branchName_electronGenMatch");
+  const std::string branchName_jetGenMatch      = cfg_analyze.getParameter<std::string>("branchName_jetGenMatch");
 
   const edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
   const MEtFilterSelector metFilterSelector(cfgMEtFilter, isMC);
@@ -683,29 +689,39 @@ main(int argc,
   GenJetReader * genJetReader       = nullptr;
   GenPhotonReader * genPhotonReader = nullptr;
   LHEInfoReader * lheInfoReader     = nullptr;
+
+  GenParticleReader * genMatchToMuonReader     = nullptr;
+  GenParticleReader * genMatchToElectronReader = nullptr;
+  GenParticleReader * genMatchToJetReader      = nullptr;
   if(isMC)
   {
     if(! readGenObjects)
     {
-      if(! branchName_genLeptons.empty())
+      genLeptonReader = new GenLeptonReader(branchName_genLeptons);
+      inputTree->registerReader(genLeptonReader);
+      genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
+      inputTree->registerReader(genHadTauReader);
+      genJetReader = new GenJetReader(branchName_genJets);
+      inputTree->registerReader(genJetReader);
+
+      if(genMatchingByIndex)
       {
-        genLeptonReader = new GenLeptonReader(branchName_genLeptons);
-        inputTree->registerReader(genLeptonReader);
+        genMatchToMuonReader = new GenParticleReader(branchName_muonGenMatch);
+        genMatchToMuonReader -> readGenPartFlav(false);
+        inputTree -> registerReader(genMatchToMuonReader);
+
+        genMatchToElectronReader = new GenParticleReader(branchName_electronGenMatch);
+        genMatchToElectronReader -> readGenPartFlav(false);
+        inputTree -> registerReader(genMatchToElectronReader);
+
+        genMatchToJetReader = new GenParticleReader(branchName_jetGenMatch);
+        genMatchToJetReader -> readGenPartFlav(false);
+        inputTree -> registerReader(genMatchToJetReader);
       }
-      if(! branchName_genHadTaus.empty())
-      {
-        genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
-        inputTree->registerReader(genHadTauReader);
-      }
-      if(! branchName_genPhotons.empty())
+      else
       {
         genPhotonReader = new GenPhotonReader(branchName_genPhotons);
         inputTree->registerReader(genPhotonReader);
-      }
-      if(! branchName_genJets.empty())
-      {
-        genJetReader = new GenJetReader(branchName_genJets);
-        inputTree->registerReader(genJetReader);
       }
     }
     lheInfoReader = new LHEInfoReader(hasLHE);
@@ -714,12 +730,12 @@ main(int argc,
 
   const auto get_num_den_hist_managers =
     [&process_string, isMC, &era_string, &central_or_shift](const std::string & dir,
-							    int lepton_type,
-							    double minAbsEta = -1.,
-							    double maxAbsEta = -1.,
-							    double minPt = -1.,
-							    double maxPt = -1.,
-							    const std::string & subdir_suffix = "")
+                                                            int lepton_type,
+                                                            double minAbsEta = -1.,
+                                                            double maxAbsEta = -1.,
+                                                            double minPt = -1.,
+                                                            double maxPt = -1.,
+                                                            const std::string & subdir_suffix = "")
     -> numerator_and_denominatorHistManagers * const
   {
     return new numerator_and_denominatorHistManagers(
@@ -948,6 +964,10 @@ main(int argc,
     std::vector<GenHadTau> genHadTaus;
     std::vector<GenPhoton> genPhotons;
     std::vector<GenJet> genJets;
+
+    std::vector<GenParticle> muonGenMatch;
+    std::vector<GenParticle> electronGenMatch;
+    std::vector<GenParticle> jetGenMatch;
     if(isMC && fillGenEvtHistograms)
     {
       if(genLeptonReader)
@@ -964,18 +984,13 @@ main(int argc,
           }
         }
       }
-      if(genHadTauReader)
-      {
-        genHadTaus = genHadTauReader->read();
-      }
-      if(genPhotonReader)
-      {
-        genPhotons = genPhotonReader->read();
-      }
-      if(genJetReader)
-      {
-        genJets = genJetReader->read();
-      }
+      if(genHadTauReader) genHadTaus = genHadTauReader->read();
+      if(genPhotonReader) genPhotons = genPhotonReader->read();
+      if(genJetReader)    genJets = genJetReader->read();
+
+      if(genMatchToMuonReader)     muonGenMatch = genMatchToMuonReader->read();
+      if(genMatchToElectronReader) electronGenMatch = genMatchToElectronReader->read();
+      if(genMatchToJetReader)      jetGenMatch = genMatchToJetReader->read();
     }
   
 //--- fill generator level histograms (before cuts)
@@ -1044,35 +1059,50 @@ main(int argc,
           }
         }
       }
-      if(genHadTauReader)
-      {
-        genHadTaus = genHadTauReader->read();
-      }
-      if(genPhotonReader)
-      {
-        genPhotons = genPhotonReader->read();
-      }
-      if(genJetReader)
-      {
-        genJets = genJetReader->read();
-      }
+      if(genHadTauReader) genHadTaus = genHadTauReader->read();
+      if(genPhotonReader) genPhotons = genPhotonReader->read();
+      if(genJetReader)    genJets = genJetReader->read();
+
+      if(genMatchToMuonReader)     muonGenMatch = genMatchToMuonReader->read();
+      if(genMatchToElectronReader) electronGenMatch = genMatchToElectronReader->read();
+      if(genMatchToJetReader)      jetGenMatch = genMatchToJetReader->read();
     }
   
 //--- match reconstructed to generator level particles
     if(isMC && redoGenMatching)
     {
-      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons);
-      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
-      muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
-
-      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons);
+      // matching to gen had taus possible only by dR-matching
+      muonGenMatcher.addGenHadTauMatch    (preselMuons, genHadTaus);
       electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
-      electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
-      electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
+      jetGenMatcher.addGenHadTauMatch     (selJets_dR07, genHadTaus);
 
+      // matching reco leptons and had taus to gen jets possible only by dR-matching
+      muonGenMatcher.addGenJetMatch    (preselMuons, genJets);
+      electronGenMatcher.addGenJetMatch(preselElectrons, genJets);
+
+      // reco jets can be matched to gen leptons only by dR-matching
       jetGenMatcher.addGenLeptonMatch(selJets_dR07, genLeptons);
-      jetGenMatcher.addGenHadTauMatch(selJets_dR07, genHadTaus);
-      jetGenMatcher.addGenJetMatch   (selJets_dR07, genJets);
+
+      if(genMatchingByIndex)
+      {
+        // match reconstructed to generator level particles by indices
+        muonGenMatcher.addGenLeptonMatchByIndex(preselMuons, muonGenMatch, GenParticleType::kGenMuon);
+
+        electronGenMatcher.addGenLeptonMatchByIndex(preselElectrons, electronGenMatch, GenParticleType::kGenElectron);
+        electronGenMatcher.addGenPhotonMatchByIndex(preselElectrons, electronGenMatch);
+
+        jetGenMatcher.addGenJetMatchByIndex(selJets_dR07, jetGenMatch);
+      }
+      else
+      {
+        // match reconstructed to generator level particles by dR-matching
+        muonGenMatcher.addGenLeptonMatch(preselMuons, genMuons);
+
+        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons);
+        electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
+
+        jetGenMatcher.addGenJetMatch(selJets_dR07, genJets);
+      }
     }
 
     if(run_lumi_eventSelector)
@@ -1514,39 +1544,6 @@ main(int argc,
         if(writeTo_selEventsFileOut)
         {
           *(outputFiles["e"]["num"]) << eventInfo.str() <<  '\n';
-
-             // " lep pt() " << preselElectron.pt() <<
-             // " eta " << preselElectron.eta() <<
-             // " phi "  << preselElectron.phi() <<
-             // " mva " << preselElectron.mvaRawTTH() <<
-             // " ptRatio " << preselElectron.jetPtRatio() <<
-             // " deltaEta " << preselElectron.deltaEta() <<
-             // " deltaPhi " << preselElectron.deltaPhi() <<
-             // " away jet pt " << sel_Jet_pt_e <<
-             // " eta " << sel_Jet_eta_e <<
-             // " met pt " << met.pt() <<
-             // " phi " << met.phi() <<
-             // " HLT passed " <<  hltpath_passed <<
-             // " " << hltpath_trigger_bit <<
-
-
-             // " lep cone_pt() " << preselElectron.cone_pt() <<
-             // " lep assocJet_pt() " << preselElectron.assocJet_pt() <<
-             // " lep dxy() " << preselElectron.dxy() <<
-             // " lep dz() " << preselElectron.dz() <<
-             // " lep sip3d() " << preselElectron.sip3d() <<
-             // " lep relIso() " << preselElectron.relIso() <<
-             // " lep pfRelIso04All() " << preselElectron.pfRelIso04All() <<
-             // " lep miniIsoNeutral() " << preselElectron.miniIsoNeutral() <<
-             // " lep miniIsoCharged() " << preselElectron.miniIsoCharged() <<
-
-             // " e mvaRaw_POG() " << preselElectron.mvaRaw_POG() <<
-             // " e sigmaEtaEta() " << preselElectron.sigmaEtaEta() <<
-             // " e HoE() " << preselElectron.HoE() <<
-             // " e OoEminusOoP() " << preselElectron.OoEminusOoP() <<
-             // " e nLostHits() " << preselElectron.nLostHits() <<
-             // " e passesConversionVeto() " << preselElectron.passesConversionVeto() << '\n';
-
         }
       }
 
@@ -1580,37 +1577,6 @@ main(int argc,
         if(writeTo_selEventsFileOut)
         {
           *(outputFiles["e"]["den"]) << eventInfo.str() << '\n';
-          //  " lep pt() " << preselElectron.pt() <<
-          //  " eta " << preselElectron.eta() <<
-          //  " phi "  << preselElectron.phi() <<
-          //  " mva " << preselElectron.mvaRawTTH() <<
-          //  " ptRatio " << preselElectron.jetPtRatio() <<
-          //  " deltaEta " << preselElectron.deltaEta() <<
-          //  " deltaPhi " << preselElectron.deltaPhi() <<
-          //  " away jet pt " << sel_Jet_pt_e <<
-          //  " eta " << sel_Jet_eta_e <<
-          //  " met pt " << met.pt() <<
-          //  " phi " << met.phi() <<
-          //  " HLT passed " <<  hltpath_passed <<
-          //  " " << hltpath_trigger_bit <<
-
-          //  " lep cone_pt() " << preselElectron.cone_pt() <<
-          //  " lep assocJet_pt() " << preselElectron.assocJet_pt() <<
-          //  " lep dxy() " << preselElectron.dxy() <<
-          //  " lep dz() " << preselElectron.dz() <<
-          //  " lep sip3d() " << preselElectron.sip3d() <<
-          //  " lep relIso() " << preselElectron.relIso() <<
-          //  " lep pfRelIso04All() " << preselElectron.pfRelIso04All() <<
-          //  " lep miniIsoNeutral() " << preselElectron.miniIsoNeutral() <<
-          //  " lep miniIsoCharged() " << preselElectron.miniIsoCharged() <<
-
-          // " e mvaRaw_POG() " << preselElectron.mvaRaw_POG() <<
-          // " e sigmaEtaEta() " << preselElectron.sigmaEtaEta() <<
-          // " e HoE() " << preselElectron.HoE() <<
-          // " e OoEminusOoP() " << preselElectron.OoEminusOoP() <<
-          // " e nLostHits() " << preselElectron.nLostHits() <<
-          // " e passesConversionVeto() " << preselElectron.passesConversionVeto() << '\n';
-
         }
       }
 
