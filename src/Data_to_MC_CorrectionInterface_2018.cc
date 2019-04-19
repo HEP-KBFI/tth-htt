@@ -43,7 +43,7 @@ Data_to_MC_CorrectionInterface_2018::getSF_hadTauID_and_Iso() const
     if(hadTau_genPdgId_[idxHadTau] == 15)
     {
       // CV: take data/MC (SF) measured for MVA-based tau ID with dR = 0.5 from
-      //       https://indico.cern.ch/event/803335/contributions/3359969/attachments/1829820/2996253/TauPOG_HTT_workshop_20190415_v0.pdf
+      //       https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events ("2018")
       //     as the SF for MVA-based tau ID with dR = 0.3 have not been measured yet.
       if     (hadTauSelection_ == 1) { sf *= 0.86; sfErr += square(0.04); } // dR03mvaVVLoose
       else if(hadTauSelection_ == 2) { sf *= 0.90; sfErr += square(0.03); } // dR03mvaVLoose

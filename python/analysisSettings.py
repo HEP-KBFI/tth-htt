@@ -234,12 +234,16 @@ class Triggers(object):
         '2mu' : {
           'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ',
           'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ',
+          'HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ'
         },
         '1e1mu' : {
-          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',
+          'HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL', 
           'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL',
+          'HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',
         },
         '2e' : {
+          'HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
           'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
         },
         '1mu' : {
@@ -255,15 +259,14 @@ class Triggers(object):
           'HLT_Ele27_WPTight_Gsf',
           'HLT_Ele25_eta2p1_WPTight_Gsf',
           'HLT_Ele27_eta2p1_WPLoose_Gsf',
-#          'HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded',
         },
         '1mu1tau' : {
           'HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1',
         },
         '1e1tau' : {
           'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30',
-#          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1',
-#          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20',
+          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1',
+          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20',
         },
         '2tau' : {
           'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg',
