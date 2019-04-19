@@ -701,6 +701,7 @@ class analyzeConfig(object):
             'hadTauFakeRateWeight.fourth.graphName',
             'apply_hadTauFakeRateSF',
             'jetCleaningByIndex',
+            'genMatchingByIndex',
         ]
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
