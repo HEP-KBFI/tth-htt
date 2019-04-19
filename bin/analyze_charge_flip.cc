@@ -620,29 +620,27 @@ int main(int argc, char* argv[])
 //--- match reconstructed to generator level particles
     if(isMC && redoGenMatching)
     {
-      // matching to gen had taus possible only by dR-matching
-      muonGenMatcher.addGenHadTauMatch    (preselMuons, genHadTaus);
-      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
-
-      // matching reco leptons and had taus to gen jets possible only by dR-matching
-      muonGenMatcher.addGenJetMatch    (preselMuons, genJets);
-      electronGenMatcher.addGenJetMatch(preselElectrons, genJets);
-
       if(genMatchingByIndex)
       {
-        // match reconstructed to generator level particles by indices
         muonGenMatcher.addGenLeptonMatchByIndex(preselMuons, muonGenMatch, GenParticleType::kGenMuon);
+        muonGenMatcher.addGenHadTauMatch       (preselMuons, genHadTaus);
+        muonGenMatcher.addGenJetMatch          (preselMuons, genJets);
 
         electronGenMatcher.addGenLeptonMatchByIndex(preselElectrons, electronGenMatch, GenParticleType::kGenElectron);
         electronGenMatcher.addGenPhotonMatchByIndex(preselElectrons, electronGenMatch);
+        electronGenMatcher.addGenHadTauMatch       (preselElectrons, genHadTaus);
+        electronGenMatcher.addGenJetMatch          (preselElectrons, genJets);
       }
       else
       {
-        // match reconstructed to generator level particles by dR-matching
         muonGenMatcher.addGenLeptonMatch(preselMuons, genMuons);
+        muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
+        muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
 
         electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons);
         electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
+        electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
+        electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
       }
     }
 

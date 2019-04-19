@@ -448,20 +448,6 @@ main(int argc,
       const std::vector<GenHadTau> genHadTaus = genHadTauReader->read();
       const std::vector<GenJet>    genJets    = genJetReader->read();
 
-      // matching to gen had taus possible only by dR-matching
-      muonGenMatcher.addGenHadTauMatch    (preselMuons, genHadTaus);
-      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
-      hadTauGenMatcher.addGenHadTauMatch  (selHadTaus, genHadTaus);
-      jetGenMatcher.addGenHadTauMatch     (selJets, genHadTaus);
-
-      // matching reco leptons and had taus to gen jets possible only by dR-matching
-      muonGenMatcher.addGenJetMatch    (preselMuons, genJets);
-      electronGenMatcher.addGenJetMatch(preselElectrons, genJets);
-      hadTauGenMatcher.addGenJetMatch  (selHadTaus, genJets);
-
-      // reco jets can be matched to gen leptons only by dR-matching
-      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons);
-
       if(genMatchingByIndex)
       {
         const std::vector<GenParticle> muonGenMatch     = genMatchToMuonReader->read();
@@ -469,14 +455,21 @@ main(int argc,
         const std::vector<GenParticle> hadTauGenMatch   = genMatchToHadTauReader->read();
         const std::vector<GenParticle> jetGenMatch      = genMatchToJetReader->read();
 
-        // match reconstructed to generator level particles by indices
         muonGenMatcher.addGenLeptonMatchByIndex(preselMuons, muonGenMatch, GenParticleType::kGenMuon);
+        muonGenMatcher.addGenHadTauMatch       (preselMuons, genHadTaus);
+        muonGenMatcher.addGenJetMatch          (preselMuons, genJets);
 
         electronGenMatcher.addGenLeptonMatchByIndex(preselElectrons, electronGenMatch, GenParticleType::kGenElectron);
         electronGenMatcher.addGenPhotonMatchByIndex(preselElectrons, electronGenMatch);
+        electronGenMatcher.addGenHadTauMatch       (preselElectrons, genHadTaus);
+        electronGenMatcher.addGenJetMatch          (preselElectrons, genJets);
 
         hadTauGenMatcher.addGenLeptonMatchByIndex(selHadTaus, hadTauGenMatch, GenParticleType::kGenAnyLepton);
+        hadTauGenMatcher.addGenHadTauMatch       (selHadTaus, genHadTaus);
+        hadTauGenMatcher.addGenJetMatch          (selHadTaus, genJets);
 
+        jetGenMatcher.addGenLeptonMatch    (selJets, genLeptons);
+        jetGenMatcher.addGenHadTauMatch    (selJets, genHadTaus);
         jetGenMatcher.addGenJetMatchByIndex(selJets, jetGenMatch);
       }
       else
@@ -497,15 +490,22 @@ main(int argc,
           }
         }
 
-        // match reconstructed to generator level particles by dR-matching
         muonGenMatcher.addGenLeptonMatch(preselMuons, genMuons);
+        muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
+        muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
 
         electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons);
         electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
+        electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
+        electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
 
         hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons);
+        hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus);
+        hadTauGenMatcher.addGenJetMatch   (selHadTaus, genJets);
 
-        jetGenMatcher.addGenJetMatch(selJets, genJets);
+        jetGenMatcher.addGenLeptonMatch(selJets, genLeptons);
+        jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus);
+        jetGenMatcher.addGenJetMatch   (selJets, genJets);
       }
     }
 
