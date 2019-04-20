@@ -117,16 +117,19 @@ class _hdfs:
             we are supposed to convert the UNIX time of the last access time into a datetime object we will set it to
             None type in case the last access time is missing.
       '''
-      self.kind        = chr(hdfsFileInfoObject.contents.mKind)
-      self.url         = _hdfs.normalize_path(hdfsFileInfoObject.contents.mName)
-      self.name        = re.sub('^hdfs://', '/hdfs', self.url)
-      self.lastMod     = _hdfs.get_dt(hdfsFileInfoObject.contents.mLastMod)
-      self.size        = hdfsFileInfoObject.contents.mSize
-      self.replication = hdfsFileInfoObject.contents.mReplication
-      self.owner       = hdfsFileInfoObject.contents.mOwner
-      self.group       = hdfsFileInfoObject.contents.mGroup
-      self.permissions = hdfsFileInfoObject.contents.mPermissions
-      self.lastAccess  = hdfsFileInfoObject.contents.mLastAccess
+      self.kind          = chr(hdfsFileInfoObject.contents.mKind)
+      self.url           = _hdfs.normalize_path(hdfsFileInfoObject.contents.mName)
+      self.name          = re.sub('^hdfs://', '/hdfs', self.url)
+      self.basename      = os.path.basename(self.name)
+      self.depth         = self.name.count('/')
+      self.lastMod       = _hdfs.get_dt(hdfsFileInfoObject.contents.mLastMod)
+      self.size          = hdfsFileInfoObject.contents.mSize
+      self.replication   = hdfsFileInfoObject.contents.mReplication
+      self.owner         = hdfsFileInfoObject.contents.mOwner
+      self.group         = hdfsFileInfoObject.contents.mGroup
+      self.permissions   = hdfsFileInfoObject.contents.mPermissions
+      self.lastAccess    = hdfsFileInfoObject.contents.mLastAccess
+      self.sparent_depth = -1
 
       if self.lastAccess:
         self.lastAccess = datetime.datetime.fromtimestamp(self.lastAccess, _hdfs._tz)
@@ -146,6 +149,12 @@ class _hdfs:
                False otherwise
       '''
       return self.kind == 'D'
+
+    def __str__(self):
+      return self.name
+
+    def __repr__(self):
+      return self.name
 
   def __init__(self, nn = "hdfs-nn", port = 9000):
     '''Set up runtime parameters for performing direct queries to HDFS
