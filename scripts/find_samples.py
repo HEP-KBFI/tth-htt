@@ -8,11 +8,10 @@
 # To summarize, in order to find integrated luminosity of datasets, triggers, and whatnot, direct
 # access to CERN servers is needed. These numbers can be gathered from off-site servers as well,
 # but this requires the off-site user to set up a python environment called brilconda (a derivative
-# of anaconda framework that supports BRIL tools) and maintain a live ssh session while calling any
-# of the BRIL tools. The second component is the normtag file, which is enables to use calibration
-# information / apply correction functions on the measured instantaneous luminosity, which of course
-# depends on the choice of the luminometer. The recommended normtag for 2017 data is
-# normtag_PHYSICS.json: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiLUM
+# of anaconda framework that supports BRIL tools). The second component is the normtag file, which
+# is enables to use calibration information / apply correction functions on the measured instantaneous
+# luminosity, which of course depends on the choice of the luminometer. The recommended normtag for
+# 2017 data is normtag_PHYSICS.json: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiLUM
 #
 # At the time of writing this comment, both ReReco and PromptReco golden JSONs w/ normtag_PHYSICS.json
 # reproduce the same results as reported in https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/761.html:
@@ -333,7 +332,7 @@ def get_integrated_lumi(dataset_name, data_golden, brilcalc_path, normtag, units
     with open(tmp_filename, 'w') as f:
       f.write(json.dumps(data_golden))
 
-  brilcalc_cmd = '{brilcalc_path} lumi -c offsite -i {golden_json} {normtag} -u {units} --output-style=csv'.format(
+  brilcalc_cmd = '{brilcalc_path} lumi -c web -i {golden_json} {normtag} -u {units} --output-style=csv'.format(
     brilcalc_path = brilcalc_path,
     golden_json   = tmp_filename,
     normtag       = '--normtag %s' % normtag if normtag else '',
