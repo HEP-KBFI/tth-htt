@@ -404,7 +404,7 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
     mu_pfRelIso04All[i] = muon -> pfRelIso04All();
     mu_jetNDauChargedMVASel[i] = muon -> jetNDauChargedMVASel();
     mu_jetPtRel[i] = muon -> jetPtRel();
-    mu_jetPtRatio[i] = muon -> jetPtRatio();
+    mu_jetPtRatio[i] = std::max(muon -> jetPtRatio(), 1.5);
     mu_jetCSV[i] = std::max(0., muon -> jetBtagCSV(Btag::kCSVv2));
     mu_jetDeepCSV[i] = std::max(0., muon -> jetBtagCSV(Btag::kDeepCSV));
     mu_jetDeepJet[i] = std::max(0., muon -> jetBtagCSV(Btag::kDeepJet));
@@ -465,7 +465,7 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
     ele_pfRelIso04All[i] = electron -> pfRelIso04All();
     ele_jetNDauChargedMVASel[i] = electron -> jetNDauChargedMVASel();
     ele_jetPtRel[i] = electron -> jetPtRel();
-    ele_jetPtRatio[i] = electron -> jetPtRatio();
+    ele_jetPtRatio[i] = std::max(electron -> jetPtRatio(), 1.5);
     ele_jetCSV[i] = std::max(0., electron -> jetBtagCSV(Btag::kCSVv2));
     ele_jetDeepCSV[i] = std::max(0., electron -> jetBtagCSV(Btag::kDeepCSV));
     ele_jetDeepJet[i] = std::max(0., electron -> jetBtagCSV(Btag::kDeepJet));
