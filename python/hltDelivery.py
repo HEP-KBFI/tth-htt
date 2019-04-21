@@ -6,7 +6,6 @@ import re
 import multiprocessing
 import signal
 import psutil
-import sys
 
 HLT_SUFFIX = re.compile(r'(.*_v\*$)|(.*_v[0-9]+)$')
 DATASET    = re.compile(r'^/.*/Run(?P<year>[\d]{4})(?P<era>[ABCDEFGH]{1}).*/MINIAOD$')
@@ -69,7 +68,7 @@ def process_hlt(hlt_path, golden_json, brilcalc_path, normtag, units):
         pass
 
   dict_entry = {
-    'runs' : runs,
+    'runs'      : runs,
     'delivered' : delivered,
     'recorded'  : recorded,
     'paths'     : hlt_paths,
@@ -95,7 +94,6 @@ def parse_data(data_file):
     raise ValueError("No such file: %s" % data_file)
 
   runs = {}
-  read_runs = 0
   golden_json = ""
   normtag = ""
   tot_delivered_all, tot_recorded_all = 0., 0.
@@ -105,47 +103,43 @@ def parse_data(data_file):
       line_stripped = line.rstrip('\n')
       if not line_stripped:
         continue
-      if line_stripped.startswith("# DAS name"):
-        read_runs = 1
-      else:
-        line_split = line_stripped.split()
 
-        if read_runs > 0:
-          dataset_match = DATASET.match(line_split[0])
-          if not dataset_match:
-            raise RuntimeError("Invalid line in file %s: %s" % (data_file, line_stripped))
-          run_era = dataset_match.group('era')
-          run_start, run_end = line_split[1].split('-')
-          tot_delivered = float(line_split[3])
-          tot_recorded = float(line_split[4])
-          if run_era not in runs:
-            runs[run_era] = {
-              'run_start'     : run_start,
-              'run_end'       : run_end,
-              'tot_delivered' : tot_delivered,
-              'tot_recorded'  : tot_recorded,
-            }
-          runs[run_era]['run_start']     = min(runs[run_era]['run_start'],     run_start)
-          runs[run_era]['run_end']       = max(runs[run_era]['run_end'],       run_end)
-          runs[run_era]['tot_delivered'] = max(runs[run_era]['tot_delivered'], tot_delivered)
-          runs[run_era]['tot_recorded']  = max(runs[run_era]['tot_recorded'],  tot_recorded)
-        else:
-          if line_stripped.startswith("# file generated"):
-            read_runs = -1
-          elif line_stripped.startswith("# golden JSON"):
-            golden_json = line_split[3]
-          elif line_stripped.startswith("# normtag"):
-            normtag = line_split[2]
-          elif line_stripped.startswith("# totdelivered"):
-            tot_delivered_all = float(line_split[2])
-            if not units:
-              units = re.match('totdelivered\((?P<units>.*)\)', line_split[1]).group('units')
-          elif line_stripped.startswith("# totrecorded"):
-            tot_recorded_all = float(line_split[2])
-            if not units:
-              units = re.match('totrecorded\((?P<units>.*)\)', line_split[1]).group('units')
-          else:
-            continue
+      line_split = line_stripped.split()
+      if line_stripped.startswith('/'):
+        dataset_match = DATASET.match(line_split[0])
+        if not dataset_match:
+          raise RuntimeError("Invalid line in file %s: %s" % (data_file, line_stripped))
+        run_era = dataset_match.group('era')
+        run_split = line_split[1].split('-')
+        run_start = int(run_split[0])
+        run_end = int(run_split[1])
+        tot_delivered = float(line_split[3])
+        tot_recorded = float(line_split[4])
+        if run_era not in runs:
+          runs[run_era] = {
+            'run_start'     : run_start,
+            'run_end'       : run_end,
+            'tot_delivered' : tot_delivered,
+            'tot_recorded'  : tot_recorded,
+          }
+        runs[run_era]['run_start']     = min(runs[run_era]['run_start'],     run_start)
+        runs[run_era]['run_end']       = max(runs[run_era]['run_end'],       run_end)
+        runs[run_era]['tot_delivered'] = max(runs[run_era]['tot_delivered'], tot_delivered)
+        runs[run_era]['tot_recorded']  = max(runs[run_era]['tot_recorded'],  tot_recorded)
+      elif line_stripped.startswith("# golden JSON"):
+        golden_json = line_split[3]
+      elif line_stripped.startswith("# normtag"):
+        normtag = line_split[2]
+      elif line_stripped.startswith("# totdelivered"):
+        tot_delivered_all = float(line_split[2])
+        if not units:
+          units = re.match('totdelivered\((?P<units>.*)\)', line_split[1]).group('units')
+      elif line_stripped.startswith("# totrecorded"):
+        tot_recorded_all = float(line_split[2])
+        if not units:
+          units = re.match('totrecorded\((?P<units>.*)\)', line_split[1]).group('units')
+      else:
+        continue
 
   data = {
     'runs'         : runs,
@@ -153,11 +147,13 @@ def parse_data(data_file):
     'normtag'      : normtag,
     'totdelivered' : tot_delivered_all,
     'totrecorded'  : tot_recorded_all,
+    'units'        : units,
   }
 
   return data
 
 def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
+
   assert (all(map(lambda hlt_path: hlt_path.startswith('HLT'), hlt_paths_in)))
   hlt_paths = {hlt_path: hlt_version(hlt_path) for hlt_path in hlt_paths_in}
 
@@ -180,8 +176,6 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
   else:
     data = None
 
-  sys.exit(1)
-
   # prepare the jobs
   pool_size = 12
   pool = multiprocessing.Pool(pool_size, handle_worker)
@@ -200,9 +194,51 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
   # parse trigger_results
   for hlt_path in hlt_paths:
     dict_entry = trigger_results[hlt_paths[hlt_path]]
-    print("HLT path: {} nrun = {} totdelivered = {} totrecorded = {} (units = {})".format(
+
+    if data_file:
+      present_eras = []
+      for run in dict_entry['runs']:
+        for era in data['runs']:
+          if data['runs'][era]['run_start'] <= run <= data['runs'][era]['run_end'] and era not in present_eras:
+            present_eras.append(era)
+      all_eras = [ era for era in data['runs'] ]
+      missing_eras = list(sorted(list(set(all_eras) - set(present_eras))))
+
+      expected_recording = data['totrecorded']
+      expected_delivery  = data['totdelivered']
+      if missing_eras:
+        expected_recording = sum([ data['runs'][era]['tot_recorded']  for era in data['runs'] ])
+        expected_delivery  = sum([ data['runs'][era]['tot_delivered'] for era in data['runs'] ])
+
+      data_units = data['units']
+      unit_factor = 1000**(LUMI_UNITS.index(units) - LUMI_UNITS.index(data_units))
+      expected_recording *= unit_factor
+      expected_delivery  *= unit_factor
+
+      prescale_recording = expected_recording / dict_entry['recorded']
+      prescale_delivery  = expected_delivery  / dict_entry['delivered']
+
+      prescale_recording_int = int(prescale_recording)
+      prescale_delivery_int  = int(prescale_delivery)
+
+      if prescale_delivery_int == 1:
+        prescale_msg = "NOT prescaled"
+      else:
+        prescale_msg = "prescale factor %.1f (%.1f from recorded)" % (prescale_delivery, prescale_recording)
+      prescale_msg += " (expected %.1f delivery, %.1f recorded; units = %s)" % (
+        expected_delivery, expected_recording, units
+      )
+
+    print("\{} nrun = {} totdelivered = {} totrecorded = {} (units = {})".format(
       hlt_path, len(dict_entry['runs']), dict_entry['delivered'], dict_entry['recorded'], units,
     ))
+    if data_file:
+      print("t{} present in eras: {} (missing in {} eras) => {}".format(
+        hlt_path,
+        ", ".join(present_eras),
+        ", ".join(missing_eras) if missing_eras else "none of the",
+        prescale_msg,
+      ))
     for hlt_dict in dict_entry['paths']:
       print("\t{} nfill = {} nrun = {} ncms = {} totdelivered = {} totrecorded = {}".format(
         hlt_dict['hltpath'], hlt_dict['nfill'], hlt_dict['nrun'], hlt_dict['ncms'], hlt_dict['totdelivered'],
