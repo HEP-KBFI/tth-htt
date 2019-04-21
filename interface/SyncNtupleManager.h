@@ -309,8 +309,8 @@ private:
   Float_t * lep_eta;
   Float_t * lep_phi;
   Int_t * lep_pdgId;
-  Bool_t * lep_isfakeablesel;
-  Bool_t * lep_ismvasel;
+  Int_t * lep_isfakeablesel;
+  Int_t * lep_ismvasel;
 
   Float_t * mu_pt;
   Float_t * mu_conept;
@@ -334,11 +334,11 @@ private:
   Float_t * mu_dz;
   Float_t * mu_segmentCompatibility;
   Float_t * mu_leptonMVA;
-  Bool_t * mu_mediumID;
+  Int_t * mu_mediumID;
   Float_t * mu_dpt_div_pt;
-  Bool_t * mu_isfakeablesel;
-  Bool_t * mu_ismvasel;
-  Bool_t * mu_isGenMatched;
+  Int_t * mu_isfakeablesel;
+  Int_t * mu_ismvasel;
+  Int_t * mu_isGenMatched;
 
   Float_t * ele_pt;
   Float_t * ele_conept;
@@ -362,17 +362,17 @@ private:
   Float_t * ele_dz;
   Float_t * ele_ntMVAeleID;
   Float_t * ele_leptonMVA;
-  Bool_t * ele_isChargeConsistent;
-  Bool_t * ele_passesConversionVeto;
+  Int_t * ele_isChargeConsistent;
+  Int_t * ele_passesConversionVeto;
   Int_t * ele_nMissingHits;
   Float_t * ele_sigmaEtaEta;
   Float_t * ele_HoE;
   Float_t * ele_deltaEta;
   Float_t * ele_deltaPhi;
   Float_t * ele_OoEminusOoP;
-  Bool_t * ele_isfakeablesel;
-  Bool_t * ele_ismvasel;
-  Bool_t * ele_isGenMatched;
+  Int_t * ele_isfakeablesel;
+  Int_t * ele_ismvasel;
+  Int_t * ele_isGenMatched;
 
   Float_t * tau_pt;
   Float_t * tau_eta;
@@ -399,7 +399,7 @@ private:
   Int_t * tau_againstElectronMediumMVA6;
   Int_t * tau_againstElectronTightMVA6;
   Int_t * tau_againstElectronVTightMVA6;
-  Bool_t * tau_isGenMatched;
+  Int_t * tau_isGenMatched;
 
   Float_t * jet_pt;
   Float_t * jet_eta;
