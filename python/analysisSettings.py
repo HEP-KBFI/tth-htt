@@ -445,6 +445,6 @@ class Triggers(object):
       if trigger_name in self.triggers_leptonFR:
         self.triggers_all[trigger_name].update(self.triggers_leptonFR[trigger_name])
 
-    self.triggers_analysis_flat = { trigger for triggers in self.triggers_analysis for trigger in triggers }
-    self.triggers_leptonFR_flat = { trigger for triggers in self.triggers_leptonFR for trigger in triggers }
+    self.triggers_analysis_flat = { trigger for triggers in self.triggers_analysis for trigger in self.triggers_analysis[triggers] }
+    self.triggers_leptonFR_flat = { trigger for triggers in self.triggers_leptonFR for trigger in self.triggers_leptonFR[triggers] }
     self.triggers_flat          = self.triggers_analysis_flat | self.triggers_leptonFR_flat
