@@ -5,9 +5,12 @@ import os.path
 import re
 import multiprocessing
 import signal
-import sys
+import psutil
 
 HLT_SUFFIX = re.compile(r'(.*_v\*$)|(.*_v[0-9]+)$')
+LUMI_UNITS = [ '/fb', '/pb', '/nb', '/ub' ]
+
+trigger_results = {}
 
 def hlt_version(hlt_path):
   if not HLT_SUFFIX.match(hlt_path):
@@ -71,55 +74,52 @@ def process_hlt(hlt_path, golden_json, brilcalc_path, normtag, units):
   }
   return hlt_path, dict_entry
 
-trigger_results = {}
-
 def get_trigger_results(results):
   trigger_results[results[0]] = results[1]
 
-def run_brilcalc(inputs_arg, json, normtag, units, brilcalc_path):
+parent_id = os.getpid()
+def handle_worker():
+  def sig_int(signal_num, frame):
+    parent = psutil.Process(parent_id)
+    for child in parent.children():
+      if child.pid != os.getpid():
+        child.kill()
+    parent.kill()
+    psutil.Process(os.getpid()).kill()
+  signal.signal(signal.SIGINT, sig_int)
+
+def parse_data(data_file):
+  #TODO implement
+  return None
+
+def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
+  assert (all(map(lambda hlt_path: hlt_path.startswith('HLT'), hlt_paths_in)))
+  hlt_paths = {hlt_path: hlt_version(hlt_path) for hlt_path in hlt_paths_in}
+
   for input_file in (json, normtag):
     if input_file and not os.path.isfile(input_file):
       raise ValueError("No such file: %s" % input_file)
   if not os.path.isfile(brilcalc_path):
     raise ValueError("No such file: %s" % brilcalc_path)
 
-  hlt_paths = []
-  for input_arg in inputs_arg:
-    if input_arg.startswith('HLT'):
-      hlt_paths.append(input_arg)
-    else:
-      if not os.path.isfile(input_arg):
-        raise ValueError("No such file: %s" % input_arg)
-      with open(input_arg, 'r') as input_file:
-        for line in input_file:
-          line_stripped = line.rstrip('\n')
-          if not line_stripped:
-            # empty line
-            continue
-          if not line_stripped.startswith('HLT'):
-            raise RuntimeError("Invalid HLT path: %s" % line_stripped)
-          hlt_paths.append(line_stripped)
-  assert(all(map(lambda hlt_path: hlt_path.startswith('HLT'), hlt_paths)))
-  hlt_paths = { hlt_path : hlt_version(hlt_path) for hlt_path in hlt_paths }
+  if data_file:
+    if not os.path.isfile(data_file):
+      raise ValueError("No such file: %s" % data_file)
+    data = parse_data(data_file)
+  else:
+    data = None
 
   # prepare the jobs
-  original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
   pool_size = 12
-  pool = lumi_pool = multiprocessing.Pool(pool_size)
-  signal.signal(signal.SIGINT, original_sigint_handler)
+  pool = multiprocessing.Pool(pool_size, handle_worker)
 
   logging.debug("Constructing pool for {} HLT paths".format(len(hlt_paths)))
   for hlt_path in hlt_paths:
-    try:
-      pool.apply_async(
-        process_hlt,
-        args     = (hlt_paths[hlt_path], json, brilcalc_path, normtag, units),
-        callback = get_trigger_results,
-      )
-    except KeyboardInterrupt:
-      lumi_pool.terminate()
-      sys.exit(1)
-
+    pool.apply_async(
+      process_hlt,
+      args     = (hlt_paths[hlt_path], json, brilcalc_path, normtag, units),
+      callback = get_trigger_results,
+    )
   pool.close()
   pool.join()
   logging.debug("Pool finished")
@@ -135,5 +135,3 @@ def run_brilcalc(inputs_arg, json, normtag, units, brilcalc_path):
         hlt_dict['hltpath'], hlt_dict['nfill'], hlt_dict['nrun'], hlt_dict['ncms'], hlt_dict['totdelivered'],
         hlt_dict['totrecorded'],
       ))
-
-  # end

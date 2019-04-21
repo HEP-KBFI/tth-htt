@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 
+# Example:
+# hlt_delivery.py -i HLT_IsoMu24 HLT_IsoMu27 \
+#   -j $CMSSW_BASE/src/tthAnalysis/NanoAOD/data/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt \
+#   -p $CMSSW_BASE/src/tthAnalysis/NanoAOD/test/datasets/txt/datasets_data_2016_17Jul18.txt -v
+#
+# Or, you can pass a file containing the list of HLT paths to option -i/--input
+# Option -p/--prescale is optional (as is the option -j/--json, but it's strongly suggested)
+
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
-from tthAnalysis.HiggsToTauTau.hltDelivery import run_brilcalc
+from tthAnalysis.HiggsToTauTau.hltDelivery import run_brilcalc, LUMI_UNITS
 
 import argparse
 import os.path
-
-LUMI_UNITS = [ '/fb', '/pb', '/nb', '/ub' ]
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(
@@ -34,6 +40,10 @@ if __name__ == '__main__':
     default = os.path.expanduser('~/brilconda/bin/brilcalc'),
     help = 'R|Location of brilcalc',
   )
+  parser.add_argument('-p', '--prescale',
+    type = str, dest = 'prescale', metavar = 'file', required = False, default = '',
+    help = 'R|File containing run ranges and integrated luminosities per acquisition era and primary dataset type',
+  )
   parser.add_argument('-v', '--verbose',
     dest = 'verbose', action = 'store_true', default = False, required = False,
     help = 'R|Verbose output',
@@ -43,4 +53,21 @@ if __name__ == '__main__':
   if args.verbose:
     logging.getLogger().setLevel(logging.DEBUG)
 
-  run_brilcalc(args.input, args.json, args.normtag, args.units, args.brilcalc_path)
+  hlt_paths = []
+  for input_arg in args.input:
+    if input_arg.startswith('HLT'):
+      hlt_paths.append(input_arg)
+    else:
+      if not os.path.isfile(input_arg):
+        raise ValueError("No such file: %s" % input_arg)
+      with open(input_arg, 'r') as input_file:
+        for line in input_file:
+          line_stripped = line.rstrip('\n')
+          if not line_stripped:
+            # empty line
+            continue
+          if not line_stripped.startswith('HLT'):
+            raise RuntimeError("Invalid HLT path: %s" % line_stripped)
+          hlt_paths.append(line_stripped)
+
+  run_brilcalc(hlt_paths, args.json, args.normtag, args.units, args.brilcalc_path, args.prescale)
