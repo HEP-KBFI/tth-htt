@@ -228,7 +228,7 @@ class analyzeConfig(object):
           self.stitched_weights = "tthAnalysis/HiggsToTauTau/data/stitched_weights_2017.root"
           assert (hdfs.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.stitched_weights)))
         elif self.era == '2018':
-          raise ValueError('Implement me!')
+          pass
         else:
           raise ValueError('Invalid era: %s' % self.era)
         # we do not need to stitch anything when running the analysis on the sync Ntuple
@@ -420,7 +420,7 @@ class analyzeConfig(object):
             self.lep_mva_wp = "075"
 
         if self.lep_mva_wp == "090":
-            if self.era not in [ "2016", "2017" ]:
+            if self.era not in [ "2016", "2017", "2018" ]:
               raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
             self.lep_mva_cut = 0.90
         elif self.lep_mva_wp == "075":
@@ -435,7 +435,7 @@ class analyzeConfig(object):
         elif self.era == '2017':
             self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva%s_2017_CERN_2018May29.root" % self.lep_mva_wp
         elif self.era == '2018':
-            raise ValueError('Implement me!')
+            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva%s_2017_CERN_2018May29.root" % self.lep_mva_wp
         else:
             raise ValueError('Invalid era: %s' % self.era)
         if not hdfs.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
@@ -447,7 +447,7 @@ class analyzeConfig(object):
         elif self.era == '2017':
             self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
         elif self.era == '2018':
-            raise ValueError('Implement me!')
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
         else:
             raise ValueError('Invalid era: %s' % self.era)
         self.isBDTtraining = False
