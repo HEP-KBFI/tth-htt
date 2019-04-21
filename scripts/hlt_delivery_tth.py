@@ -2,7 +2,7 @@
 
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 from tthAnalysis.HiggsToTauTau.hltDelivery import run_brilcalc, LUMI_UNITS
-from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, get_lumi
+from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
 
 import argparse
 import os

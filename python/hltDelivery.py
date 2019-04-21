@@ -6,8 +6,10 @@ import re
 import multiprocessing
 import signal
 import psutil
+import sys
 
 HLT_SUFFIX = re.compile(r'(.*_v\*$)|(.*_v[0-9]+)$')
+DATASET    = re.compile(r'^/.*/Run(?P<year>[\d]{4})(?P<era>[ABCDEFGH]{1}).*/MINIAOD$')
 LUMI_UNITS = [ '/fb', '/pb', '/nb', '/ub' ]
 
 trigger_results = {}
@@ -89,8 +91,71 @@ def handle_worker():
   signal.signal(signal.SIGINT, sig_int)
 
 def parse_data(data_file):
-  #TODO implement
-  return None
+  if not os.path.isfile(data_file):
+    raise ValueError("No such file: %s" % data_file)
+
+  runs = {}
+  read_runs = 0
+  golden_json = ""
+  normtag = ""
+  tot_delivered_all, tot_recorded_all = 0., 0.
+  units = ""
+  with open(data_file, 'r') as data:
+    for line in data:
+      line_stripped = line.rstrip('\n')
+      if not line_stripped:
+        continue
+      if line_stripped.startswith("# DAS name"):
+        read_runs = 1
+      else:
+        line_split = line_stripped.split()
+
+        if read_runs > 0:
+          dataset_match = DATASET.match(line_split[0])
+          if not dataset_match:
+            raise RuntimeError("Invalid line in file %s: %s" % (data_file, line_stripped))
+          run_era = dataset_match.group('era')
+          run_start, run_end = line_split[1].split('-')
+          tot_delivered = float(line_split[3])
+          tot_recorded = float(line_split[4])
+          if run_era not in runs:
+            runs[run_era] = {
+              'run_start'     : run_start,
+              'run_end'       : run_end,
+              'tot_delivered' : tot_delivered,
+              'tot_recorded'  : tot_recorded,
+            }
+          runs[run_era]['run_start']     = min(runs[run_era]['run_start'],     run_start)
+          runs[run_era]['run_end']       = max(runs[run_era]['run_end'],       run_end)
+          runs[run_era]['tot_delivered'] = max(runs[run_era]['tot_delivered'], tot_delivered)
+          runs[run_era]['tot_recorded']  = max(runs[run_era]['tot_recorded'],  tot_recorded)
+        else:
+          if line_stripped.startswith("# file generated"):
+            read_runs = -1
+          elif line_stripped.startswith("# golden JSON"):
+            golden_json = line_split[3]
+          elif line_stripped.startswith("# normtag"):
+            normtag = line_split[2]
+          elif line_stripped.startswith("# totdelivered"):
+            tot_delivered_all = float(line_split[2])
+            if not units:
+              units = re.match('totdelivered\((?P<units>.*)\)', line_split[1]).group('units')
+          elif line_stripped.startswith("# totrecorded"):
+            tot_recorded_all = float(line_split[2])
+            if not units:
+              units = re.match('totrecorded\((?P<units>.*)\)', line_split[1]).group('units')
+          else:
+            continue
+
+  data = {
+    'runs'         : runs,
+    'json'         : golden_json,
+    'normtag'      : normtag,
+    'totdelivered' : tot_delivered_all,
+    'totrecorded'  : tot_recorded_all,
+  }
+
+  return data
 
 def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
   assert (all(map(lambda hlt_path: hlt_path.startswith('HLT'), hlt_paths_in)))
@@ -103,11 +168,19 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
     raise ValueError("No such file: %s" % brilcalc_path)
 
   if data_file:
-    if not os.path.isfile(data_file):
-      raise ValueError("No such file: %s" % data_file)
     data = parse_data(data_file)
+    if data['normtag'] != os.path.basename(normtag):
+      logging.warning("File {} is generated with normtag '{}' but requested using normtag '{}'".format(
+        data_file, data['normtag'], normtag
+      ))
+    if data['json'] != os.path.basename(json):
+      logging.warning("File {} is generated with JSON '{}' but requested using JSON '{}'".format(
+        data_file, data['json'], json
+      ))
   else:
     data = None
+
+  sys.exit(1)
 
   # prepare the jobs
   pool_size = 12
