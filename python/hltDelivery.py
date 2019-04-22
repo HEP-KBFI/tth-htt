@@ -229,7 +229,7 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
         expected_delivery, expected_recording, units
       )
 
-    print("\{} nrun = {} totdelivered = {} totrecorded = {} (units = {})".format(
+    print("{} nrun = {} totdelivered = {} totrecorded = {} (units = {})".format(
       hlt_path, len(dict_entry['runs']), dict_entry['delivered'], dict_entry['recorded'], units,
     ))
     if data_file:
