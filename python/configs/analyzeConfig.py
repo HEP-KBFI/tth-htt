@@ -1189,7 +1189,7 @@ class analyzeConfig(object):
                 if idxKey*numBatches >= idxBatch*numOutputFiles:
                     if idxKey > 0:
                         lines_makefile.append("")
-                    make_target_batch = "%s_%i" % (make_target, idxBatch)
+                    make_target_batch = "%s_part%i" % (make_target, idxBatch)
                     lines_makefile.append("%s: %s" % (make_target_batch, make_dependency))
                     make_target_batches.append(make_target_batch)
                     idxBatch = idxBatch + 1
