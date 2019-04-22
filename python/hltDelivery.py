@@ -233,7 +233,7 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
       hlt_path, len(dict_entry['runs']), dict_entry['delivered'], dict_entry['recorded'], units,
     ))
     if data_file:
-      print("t{} present in eras: {} (missing in {} eras) => {}".format(
+      print("{} present in eras: {} (missing in {} eras) => {}".format(
         hlt_path,
         ", ".join(present_eras),
         ", ".join(missing_eras) if missing_eras else "none of the",
