@@ -13,7 +13,7 @@ class TFile;
 class TauTriggerSFs2017;
 enum class TriggerSFsys;
 
-typedef double (TauTriggerSFs2017::*getTriggerEfficiencyFunc)(double, double, double, int);
+typedef double (TauTriggerSFs2017::*getTriggerEfficiencyFunc)(double, double, double, int) const;
 
 namespace aux
 {
