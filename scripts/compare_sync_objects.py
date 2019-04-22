@@ -70,8 +70,8 @@ COMMON_BRANCH_NAMES = { 'pt', 'eta', 'phi', 'E', }
 # Common to both electrons and muons
 LEPTON_BRANCH_NAMES = COMMON_BRANCH_NAMES | {
   'charge', 'dxy', 'dz', 'miniRelIso', 'miniIsoCharged', 'miniIsoNeutral', 'PFRelIso04',
-  'jetNDauChargedMVASel', 'jetPtRel', 'jetPtRatio', 'jetCSV', 'sip3D', 'dxyAbs',
-  'isfakeablesel', 'ismvasel', 'leptonMVA', 'conept',
+  'jetNDauChargedMVASel', 'jetPtRel', 'jetPtRatio', 'jetCSV', 'jetDeepCSV', 'jetDeepJet',
+  'sip3D', 'dxyAbs', 'isfakeablesel', 'ismvasel', 'leptonMVA', 'conept',
 }
 
 OBJECTS_MAP['mu']['branch_names'] = LEPTON_BRANCH_NAMES | {
@@ -100,7 +100,7 @@ OBJECTS_MAP['tau']['branch_names'] = COMMON_BRANCH_NAMES | {
   'againstElectronMediumMVA6', 'againstElectronTightMVA6',
 }
 
-OBJECTS_MAP['jet']['branch_names'] = COMMON_BRANCH_NAMES | { 'CSV', }
+OBJECTS_MAP['jet']['branch_names'] = COMMON_BRANCH_NAMES | { 'CSV', 'DeepCSV', 'DeepJet' }
 
 OBJECTS_MAP['jetFwd']['branch_names'] = COMMON_BRANCH_NAMES
 
@@ -552,7 +552,7 @@ def get_rles(tree, branches, event_branch_names_list):
   rles = collections.OrderedDict()
   for event_idx in range(nof_entries):
     tree.GetEntry(event_idx)
-    rle = ':'.join(map(lambda branch_name: str(branches[branch_name][0]), event_branch_names_list))
+    rle = ':'.join(map(lambda branch_name: str(int(branches[branch_name][0])), event_branch_names_list))
     rles[rle] = event_idx
   return rles
 
