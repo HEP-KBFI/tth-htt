@@ -243,7 +243,7 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
       assert(0);
   }
 
-  const double & numerator = result.weight_ttH_;
+  const double numerator = result.weight_ttH_;
   const double denominator = result.weight_ttH_ + k_ttZ*result.weight_ttZ_ + k_ttZ_Zll*result.weight_ttZ_Zll_ + k_tt*result.weight_tt_;
   if(denominator > 0.)
   {
@@ -279,6 +279,7 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
     result.errorFlag_ttbar_LR_ = 1;
     result.ttbar_LR_           = -1.;
   }
+
   result.cpuTime_  = clock_->GetCpuTime("<MEMInterface_2lss_1tau::operator()>");
   result.realTime_ = clock_->GetRealTime("<MEMInterface_2lss_1tau::operator()>");
 
