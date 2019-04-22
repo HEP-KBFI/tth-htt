@@ -63,7 +63,7 @@ RecoJetSelectorBtagLoose::RecoJetSelectorBtagLoose(int era,
                                                    bool debug)
   : RecoJetSelectorBtag(era, index, debug)
 {
-  min_BtagCSV_ = get_BtagWP(era_, BtagWP::kLoose);
+  min_BtagCSV_ = get_BtagWP(era_, Btag::kDeepJet, BtagWP::kLoose);
 }
 
 RecoJetSelectorBtagMedium::RecoJetSelectorBtagMedium(int era,
@@ -71,7 +71,7 @@ RecoJetSelectorBtagMedium::RecoJetSelectorBtagMedium(int era,
                                                      bool debug)
   : RecoJetSelectorBtag(era, index, debug)
 {
-  min_BtagCSV_ = get_BtagWP(era_, BtagWP::kMedium);
+  min_BtagCSV_ = get_BtagWP(era_, Btag::kDeepJet, BtagWP::kMedium);
 }
 
 bool

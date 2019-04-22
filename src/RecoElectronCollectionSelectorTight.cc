@@ -38,7 +38,7 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
       min_OoEminusOoP_trig_ = -0.04; // F
       max_OoEminusOoP_trig_ = { +1.e+3, +1.e+3 }; // F
       min_mvaTTH_ = 0.90; // Table 7 in AN2017_029_v5
-      max_jetBtagCSV_ = get_BtagWP(kEra_2017, BtagWP::kMedium); // F
+      max_jetBtagCSV_ = get_BtagWP(kEra_2017, Btag::kDeepCSV, BtagWP::kMedium); // F
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;

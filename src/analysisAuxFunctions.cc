@@ -16,9 +16,10 @@
 
 double
 get_BtagWP(int era,
+           Btag btag,
            BtagWP wp)
 {
-  return BtagWP_map.at(era).at(Btag::kDeepJet).at(wp);
+  return BtagWP_map.at(era).at(btag).at(wp);
 }
 
 bool

@@ -170,6 +170,7 @@ const std::map<int, std::map<Btag, std::map<BtagWP, double>>> BtagWP_map = {
 
 double
 get_BtagWP(int era,
+           Btag btag,
            BtagWP wp);
 
 //--- selector class
