@@ -207,8 +207,8 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
       expected_recording = data['totrecorded']
       expected_delivery  = data['totdelivered']
       if missing_eras:
-        expected_recording = sum([ data['runs'][era]['tot_recorded']  for era in data['runs'] ])
-        expected_delivery  = sum([ data['runs'][era]['tot_delivered'] for era in data['runs'] ])
+        expected_recording = sum([ data['runs'][era]['tot_recorded']  for era in present_eras ])
+        expected_delivery  = sum([ data['runs'][era]['tot_delivered'] for era in present_eras ])
 
       data_units = data['units']
       unit_factor = 1000**(LUMI_UNITS.index(units) - LUMI_UNITS.index(data_units))
