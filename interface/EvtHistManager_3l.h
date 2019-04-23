@@ -12,6 +12,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
+#include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l.h" // MEMOutput_3l
+
 class EvtHistManager_3l
   : public HistManagerBase
 {
@@ -33,6 +35,7 @@ class EvtHistManager_3l
                  double mvaOutput_3l_ttV,
                  double mvaOutput_3l_ttbar,
                  double mvaDiscr_3l,
+		 const MEMOutput_3l * memOutput_3l,
                  double evtWeight);
 
   const TH1 *
@@ -56,6 +59,14 @@ class EvtHistManager_3l
   TH1 * histogram_mvaOutput_3l_ttV_;
   TH1 * histogram_mvaOutput_3l_ttbar_;
   TH1 * histogram_mvaDiscr_3l_;
+
+  TH1 * histogram_memOutput_isValid_;
+  TH1 * histogram_memOutput_errorFlag_;
+  TH1 * histogram_memOutput_logWeight_ttH_;
+  TH1 * histogram_memOutput_logWeight_tt_;
+  TH1 * histogram_memOutput_LR_;
+  TH1 * histogram_mem_logCPUTime_;
+  TH1 * histogram_mem_logRealTime_;
 
   TH1 * histogram_EventCounter_;
 };

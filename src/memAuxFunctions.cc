@@ -5,6 +5,14 @@
 std::string
 get_memBranchName(const std::string & identifier,
                   const std::string & channel,
+                  const std::string & lepSelection)
+{
+  return get_memBranchName(identifier, channel, lepSelection, "", "");
+}
+
+std::string
+get_memBranchName(const std::string & identifier,
+                  const std::string & channel,
                   const std::string & lepSelection,
                   const std::string & hadTauSelection,
                   const std::string & hadTauWorkingPoint)
@@ -27,11 +35,26 @@ get_memBranchName(const std::string & identifier,
 
 std::string
 get_memObjectBranchName(const std::string & channel,
+                        const std::string & lepSelection)
+{
+  return get_memObjectBranchName(channel, lepSelection, "", "");
+}
+
+std::string
+get_memObjectBranchName(const std::string & channel,
                         const std::string & lepSelection,
                         const std::string & hadTauSelection,
                         const std::string & hadTauWorkingPoint)
 {
   return get_memBranchName("memObjects", channel, lepSelection, hadTauSelection, hadTauWorkingPoint);
+}
+
+
+std::string
+get_memPermutationBranchName(const std::string & channel,
+                             const std::string & lepSelection)
+{
+  return get_memPermutationBranchName(channel, lepSelection, "", "");
 }
 
 std::string

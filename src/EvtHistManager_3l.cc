@@ -19,6 +19,13 @@ EvtHistManager_3l::EvtHistManager_3l(const edm::ParameterSet & cfg)
   central_or_shiftOptions_["mvaOutput_3l_ttV"] = { "central" };
   central_or_shiftOptions_["mvaOutput_3l_ttbar"] = { "central" };
   central_or_shiftOptions_["mvaDiscr_3l"] = { "*" };
+  central_or_shiftOptions_["memOutput_isValid"] = { "central" };
+  central_or_shiftOptions_["memOutput_errorFlag"] = { "central" };
+  central_or_shiftOptions_["memOutput_logWeight_ttH"] = { "central" };
+  central_or_shiftOptions_["memOutput_logWeight_tt"] = { "central" };
+  central_or_shiftOptions_["memOutput_LR"] = { "central" };
+  central_or_shiftOptions_["mem_logCPUTime"] = { "central" };
+  central_or_shiftOptions_["mem_logRealTime"] = { "central" };
   central_or_shiftOptions_["EventCounter"] = { "*" };
 }
 
@@ -45,6 +52,14 @@ EvtHistManager_3l::bookHistograms(TFileDirectory & dir)
   histogram_mvaOutput_3l_ttbar_ = book1D(dir, "mvaOutput_3l_ttbar", "mvaOutput_3l_ttbar", 40, -1., +1.);
   histogram_mvaDiscr_3l_        = book1D(dir, "mvaDiscr_3l",        "mvaDiscr_3l",         5,  0.5, 5.5);
 
+  histogram_memOutput_isValid_           = book1D(dir, "memOutput_isValid",           "memOutput_isValid",             3,  -1.5, +1.5);
+  histogram_memOutput_errorFlag_         = book1D(dir, "memOutput_errorFlag",         "memOutput_errorFlag",           2,  -0.5, +1.5);
+  histogram_memOutput_logWeight_ttH_     = book1D(dir, "memOutput_logWeight_ttH",     "memOutput_logWeight_ttH",     100, -20., +20.);
+  histogram_memOutput_logWeight_tt_      = book1D(dir, "memOutput_logWeight_tt",      "memOutput_logWeight_tt",      100, -20., +20.);
+  histogram_memOutput_LR_                = book1D(dir, "memOutput_LR",                "memOutput_LR",                 40,   0.,   1.);
+  histogram_mem_logCPUTime_              = book1D(dir, "mem_logCPUTime",              "mem_logCPUTime",              400, -20., +20.);
+  histogram_mem_logRealTime_             = book1D(dir, "mem_logRealTime",             "mem_logRealTime",             400, -20., +20.);
+
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
@@ -58,6 +73,7 @@ EvtHistManager_3l::fillHistograms(int numElectrons,
                                   double mvaOutput_3l_ttV,
                                   double mvaOutput_3l_ttbar,
                                   double mvaDiscr_3l,
+				  const MEMOutput_3l * memOutput_3l,
                                   double evtWeight)
 {
   const double evtWeightErr = 0.;
@@ -75,6 +91,30 @@ EvtHistManager_3l::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mvaOutput_3l_ttV_,   mvaOutput_3l_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_3l_ttbar_, mvaOutput_3l_ttbar, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaDiscr_3l_,        mvaDiscr_3l,        evtWeight, evtWeightErr);
+
+  if(memOutput_3l)
+  {
+    fillWithOverFlow(histogram_memOutput_isValid_, memOutput_3l->isValid(), evtWeight, evtWeightErr);
+
+    if(memOutput_3l->isValid())
+    {
+      fillWithOverFlow(histogram_memOutput_errorFlag_, memOutput_3l->errorFlag(), evtWeight, evtWeightErr);
+
+      if(memOutput_3l->errorFlag() == 0)
+      {
+        fillWithOverFlow(histogram_memOutput_logWeight_ttH_,     getLogWeight(memOutput_3l->weight_ttH()), evtWeight, evtWeightErr);
+        fillWithOverFlow(histogram_memOutput_logWeight_tt_,      getLogWeight(memOutput_3l->weight_tt()), evtWeight, evtWeightErr);
+        fillWithOverFlow(histogram_memOutput_LR_,                memOutput_3l->LR(), evtWeight, evtWeightErr);
+
+        fillWithOverFlow(histogram_mem_logCPUTime_,  std::log(std::max(1.e-21f, memOutput_3l->cpuTime())),  evtWeight, evtWeightErr);
+        fillWithOverFlow(histogram_mem_logRealTime_, std::log(std::max(1.e-21f, memOutput_3l->realTime())), evtWeight, evtWeightErr);
+      }
+    }
+  }
+  else
+  {
+    fillWithOverFlow(histogram_memOutput_isValid_, -1, evtWeight, evtWeightErr);
+  }
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

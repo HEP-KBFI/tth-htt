@@ -19,6 +19,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
+#include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l.h" // MEMOutput_3l
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions.h" // check_mvaInputs, get_mvaInputVariables
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 3l category
@@ -30,6 +31,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h" // RecoJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterReader.h" // MEtFilterReader
+#include "tthAnalysis/HiggsToTauTau/interface/MEMOutputReader_3l.h" // MEMOutputReader_3l
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
@@ -309,6 +311,7 @@ int main(int argc, char* argv[])
   std::string branchName_hadTaus = cfg_analyze.getParameter<std::string>("branchName_hadTaus");
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
   std::string branchName_met = cfg_analyze.getParameter<std::string>("branchName_met");
+  std::string branchName_memOutput = cfg_analyze.getParameter<std::string>("branchName_memOutput");
 
   std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
   std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
@@ -435,6 +438,13 @@ int main(int argc, char* argv[])
   MEtFilter metFilters;
   MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilters, era);
   inputTree -> registerReader(metFilterReader);
+
+//--- declare likelihoods for signal/background hypotheses, obtained by matrix element method
+  MEMOutputReader_3l* memReader = 0;
+  if ( branchName_memOutput != "" ) {
+    memReader = new MEMOutputReader_3l(Form("n%s", branchName_memOutput.data()), branchName_memOutput);
+    inputTree -> registerReader(memReader);
+  }
 
   GenLeptonReader * genLeptonReader = nullptr;
   GenHadTauReader * genHadTauReader = nullptr;
@@ -680,6 +690,7 @@ int main(int argc, char* argv[])
       "lep3_pt", "lep3_conePt", "lep3_eta", "lep3_tth_mva", "mindr_lep3_jet", "mT_lep3",
       "avg_dr_jet", "ptmiss",  "htmiss", "dr_leps",
       "lumiScale", "genWeight", "evtWeight",
+      "memOutput_isValid", "memOutput_errorFlag", "memOutput_ttH", "memOutput_tt", "memOutput_LR",
       "lep1_genLepPt", "lep2_genLepPt", "lep3_genLepPt",
       "lep1_fake_prob", "lep2_fake_prob", "lep3_fake_prob",
       "lep1_frWeight", "lep2_frWeight", "lep3_frWeight",
@@ -1547,6 +1558,64 @@ int main(int argc, char* argv[])
     cutFlowTable.update("signal region veto", evtWeight);
     cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
 
+    MEMOutput_3l memOutput_3l_matched;
+    if(memReader)
+    {
+      const std::vector<MEMOutput_3l> memOutputs_3l = memReader->read();
+      for(const MEMOutput_3l & memOutput_3l: memOutputs_3l)
+      {
+        const double selLepton_lead_dR = deltaR(
+          selLepton_lead -> eta(),            selLepton_lead -> phi(),
+          memOutput_3l.leadLepton_eta_, memOutput_3l.leadLepton_phi_
+        );
+        if(selLepton_lead_dR > 1.e-2)
+          continue;
+        const double selLepton_sublead_dR = deltaR(
+          selLepton_sublead -> eta(),            selLepton_sublead -> phi(),
+          memOutput_3l.subleadLepton_eta_, memOutput_3l.subleadLepton_phi_
+        );
+        if(selLepton_sublead_dR > 1.e-2)
+          continue;
+        const double selLepton_third_dR = deltaR(
+          selLepton_third -> eta(),            selLepton_third -> phi(),
+          memOutput_3l.thirdLepton_eta_, memOutput_3l.thirdLepton_phi_
+        );
+        if(selLepton_third_dR > 1.e-2)
+          continue;
+        memOutput_3l_matched = memOutput_3l;
+        break;
+      }
+      if ( ! memOutput_3l_matched.is_initialized() ) {
+        std::cout << "Warning in " << eventInfo << '\n';
+        std::cout << "No MEMOutput_3l object found for:" << '\n'
+                  << "\tselLepton_lead: pT = " << selLepton_lead -> pt()
+                  << ", eta = "                << selLepton_lead -> eta()
+                  << ", phi = "                << selLepton_lead -> phi()
+                  << ", pdgId = "              << selLepton_lead -> pdgId() << '\n'
+                  << "\tselLepton_sublead: pT = " << selLepton_sublead -> pt()
+                  << ", eta = "                   << selLepton_sublead -> eta()
+                  << ", phi = "                   << selLepton_sublead -> phi()
+                  << ", pdgId = "                 << selLepton_sublead -> pdgId() << '\n'
+                  << "\tselLepton_third: pT = " << selLepton_third -> pt()
+                  << ", eta = "                 << selLepton_third -> eta()
+                  << ", phi = "                 << selLepton_third -> phi()
+                  << ", pdgId = "               << selLepton_third -> pdgId() << '\n';
+      }
+      if ( memOutputs_3l.size() ) {
+        for ( unsigned mem_idx = 0; mem_idx < memOutputs_3l.size(); ++mem_idx ) {
+          std::cout << "\t#" << mem_idx << " mem object;\n"
+                    << "\t\tlead lepton eta = " << memOutputs_3l[mem_idx].leadLepton_eta_
+                    << "; phi = "               << memOutputs_3l[mem_idx].leadLepton_phi_ << '\n'
+                    << "\t\tsublead lepton eta = " << memOutputs_3l[mem_idx].subleadLepton_eta_
+                    << "; phi = "                  << memOutputs_3l[mem_idx].subleadLepton_phi_ << '\n'
+                    << "\t\tthird lepton eta = " << memOutputs_3l[mem_idx].thirdLepton_eta_
+                    << "; phi = "                << memOutputs_3l[mem_idx].thirdLepton_phi_ << '\n';
+	}
+      } else {
+        std::cout << "No MEM objects whatsoever\n";
+      }
+    }
+
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 3l category of ttH multilepton analysis
     const double lep1_conePt = comp_lep1_conePt(*selLepton_lead);
@@ -1609,6 +1678,7 @@ int main(int argc, char* argv[])
       selElectrons.size(), selMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
+      memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
       evtWeight);
     EvtHistManager_3l* selHistManager_evt_category = selHistManager->evt_in_categories_[category];
     if ( selHistManager_evt_category ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
@@ -1616,6 +1686,7 @@ int main(int argc, char* argv[])
       selElectrons.size(), selMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
+      memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
       evtWeight);
     }
     if(isSignal)
@@ -1633,6 +1704,7 @@ int main(int argc, char* argv[])
           mvaOutput_3l_ttV,
           mvaOutput_3l_ttbar,
           mvaDiscr_3l,
+	  memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
           evtWeight
         );
   EvtHistManager_3l* selHistManager_evt_category_decMode = selHistManager->evt_in_categories_and_decayModes_[category][decayModeStr];
@@ -1647,6 +1719,7 @@ int main(int argc, char* argv[])
 	    mvaOutput_3l_ttV,
 	    mvaOutput_3l_ttbar,
 	    mvaDiscr_3l,
+	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
 	    evtWeight
 	  );
 	}
@@ -1741,6 +1814,11 @@ int main(int argc, char* argv[])
           ("mvaOutput_3l_ttV",    mvaOutput_3l_ttV)
           ("mvaOutput_3l_ttbar",  mvaOutput_3l_ttbar)
           ("mvaDiscr_3l",         mvaDiscr_3l)
+	  ("memOutput_isValid",   memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.isValid() : -1.)
+	  ("memOutput_errorFlag", memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.errorFlag() : -1.)
+	  ("memOutput_ttH",       memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttH() : -1.)
+	  ("memOutput_tt",        memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_tt() : -1.)
+	  ("memOutput_LR",        memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.LR() : -1.)
           ("lumiScale",           lumiScale)
           ("genWeight",           eventInfo.genWeight)
           ("evtWeight",           evtWeight)

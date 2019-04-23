@@ -435,11 +435,12 @@ main(int argc,
   // the arguments are: the name of the channel, minimum number of leptons, minimum number of hadronic taus
   memPermutationWriter
     .addCondition("2lss_1tau", 2, 1)
+    .addCondition("3l",        3, 0)
     .addCondition("3l_1tau",   3, 1)
   ;
   memPermutationWriter_hh
-    .addCondition("hh_bb2l", 2, 0)
-    .addCondition("hh_bb1l", 1, 0)
+    .addCondition("hh_bb2l",   2, 0)
+    .addCondition("hh_bb1l",   1, 0)
   ;
   memPermutationWriter.setBranchNames(outputTree, era, true);
   memPermutationWriter_hh.setBranchNames(outputTree, era, true);
