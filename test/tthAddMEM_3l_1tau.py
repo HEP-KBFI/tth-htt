@@ -162,7 +162,6 @@ if __name__ == '__main__':
     num_parallel_jobs        = num_parallel_jobs,
     leptonSelection          = leptonSelection,
     hadTauSelection          = hadTauSelectionAndWP,
-    lowIntegrationPoints     = False, # has no effect in 3l1tau MEM, the nof integration points fixed
     isDebug                  = debug,
     jet_cleaning_by_index    = jet_cleaning_by_index,
     central_or_shift         = central_or_shifts,

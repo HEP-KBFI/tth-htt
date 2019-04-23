@@ -48,7 +48,6 @@ use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 
 # Custom arguments
-integration_points   = args.integration_points
 max_mem_integrations = args.max_mem_integrations
 
 # Use the arguments
@@ -129,7 +128,6 @@ if __name__ == '__main__':
     max_mem_integrations     = max_mem_integrations, # use -1 if you don't want to limit the nof MEM integrations
     num_parallel_jobs        = num_parallel_jobs,
     leptonSelection          = leptonSelection,
-    lowIntegrationPoints     = False, # has no effect in 3l1tau MEM, the nof integration points fixed
     isDebug                  = debug,
     jet_cleaning_by_index    = jet_cleaning_by_index,
     central_or_shift         = central_or_shifts,
