@@ -12,7 +12,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
-#include "tthAnalysis/HiggsToTauTau/interface/MEMInterface_3l_1tau.h" // MEMOutput_3l_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l_1tau.h" // MEMOutput_3l_1tau
 
 class EvtHistManager_3l_1tau
   : public HistManagerBase
