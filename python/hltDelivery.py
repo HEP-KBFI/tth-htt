@@ -207,8 +207,8 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
       expected_recording = data['totrecorded']
       expected_delivery  = data['totdelivered']
       if missing_eras:
-        expected_recording = sum([ data['runs'][era]['tot_recorded']  for era in data['runs'] ])
-        expected_delivery  = sum([ data['runs'][era]['tot_delivered'] for era in data['runs'] ])
+        expected_recording = sum([ data['runs'][era]['tot_recorded']  for era in present_eras ])
+        expected_delivery  = sum([ data['runs'][era]['tot_delivered'] for era in present_eras ])
 
       data_units = data['units']
       unit_factor = 1000**(LUMI_UNITS.index(units) - LUMI_UNITS.index(data_units))
@@ -229,11 +229,11 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
         expected_delivery, expected_recording, units
       )
 
-    print("\{} nrun = {} totdelivered = {} totrecorded = {} (units = {})".format(
+    print("{} nrun = {} totdelivered = {} totrecorded = {} (units = {})".format(
       hlt_path, len(dict_entry['runs']), dict_entry['delivered'], dict_entry['recorded'], units,
     ))
     if data_file:
-      print("t{} present in eras: {} (missing in {} eras) => {}".format(
+      print("{} present in eras: {} (missing in {} eras) => {}".format(
         hlt_path,
         ", ".join(present_eras),
         ", ".join(missing_eras) if missing_eras else "none of the",
