@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-04-01 01:08:02 with the following command:
+# file generated at 2019-04-24 15:49:59 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2016_RunIISummer16MiniAODv3.txt -m python/samples/metaDict_2016_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2016_RunIISummer16MiniAODv3.txt
 
 meta_dictionary = OD()
@@ -15,7 +15,6 @@ sum_events = {
   ("TTJets_SingleLeptFromTbar", "TTJets_SingleLeptFromTbar_ext1"),
   ("WGToLNuG_ext1", "WGToLNuG_ext2", "WGToLNuG_ext3"),
   ("TTGJets", "TTGJets_ext1"),
-  ("ZH_HToBB_ZToLL", "ZH_HToBB_ZToLL_ext1"),
   ("DYJetsToLL_M-10to50_amcatnloFXFX", "DYJetsToLL_M-10to50_amcatnloFXFX_ext1"),
   ("DYJetsToLL_M-5to50_HT-100to200", "DYJetsToLL_M-5to50_HT-100to200_ext1"),
   ("DYJetsToLL_M-5to50_HT-200to400", "DYJetsToLL_M-5to50_HT-200to400_ext1"),
@@ -764,19 +763,6 @@ meta_dictionary["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer1
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 36.26GB; nevents: 1.01M; release: 9_4_9; last modified: 2018-11-26 07:06:05"),
-])
-
-meta_dictionary["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
-  ("sample_category",       "VH"),
-  ("process_name_specific", "ZH_HToBB_ZToLL"),
-  ("nof_db_events",         333100),
-  ("nof_db_files",          5),
-  ("fsize_db",              13321398844),
-  ("xsection",              0.05198),
-  ("use_it",                True),
-  ("genWeight",             True),
-  ("comment",               "status: PRODUCTION; size: 13.32GB; nevents: 333.10k; release: 9_4_9; last modified: 2018-12-04 11:11:20"),
 ])
 
 meta_dictionary["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] =  OD([

@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-04-01 02:03:57 with the following command:
+# file generated at 2019-04-24 17:14:13 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2017_RunIIFall17MiniAODv2.txt -m python/samples/metaDict_2017_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2017_RunIIFall17MiniAODv2.txt
 
 meta_dictionary = OD()
@@ -90,13 +90,13 @@ meta_dictionary["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAO
   ("crab_string",           ""),
   ("sample_category",       "signal"),
   ("process_name_specific", "ttHToNonbb_M125_powheg_ext1"),
-  ("nof_db_events",         8241489),
-  ("nof_db_files",          355),
-  ("fsize_db",              515822367934),
+  ("nof_db_events",         5499293),
+  ("nof_db_files",          267),
+  ("fsize_db",              344665616083),
   ("xsection",              0.2118),
   ("use_it",                False),
   ("genWeight",             True),
-  ("comment",               "status: VALID; size: 515.82GB; nevents: 8.24M; release: 9_4_6_patch1; last modified: 2019-01-18 18:55:27"),
+  ("comment",               "status: VALID; size: 344.67GB; nevents: 5.50M; release: 9_4_6_patch1; last modified: 2019-01-18 18:55:27"),
 ])
 
 meta_dictionary["/ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
@@ -597,13 +597,13 @@ meta_dictionary["/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017
   ("crab_string",           ""),
   ("sample_category",       "Rares"),
   ("process_name_specific", "WZZ"),
-  ("nof_db_events",         274600),
-  ("nof_db_files",          6),
-  ("fsize_db",              13673412888),
+  ("nof_db_events",         250000),
+  ("nof_db_files",          5),
+  ("fsize_db",              12371966638),
   ("xsection",              0.05565),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: VALID; size: 13.67GB; nevents: 274.60k; release: 9_4_6_patch1,9_4_7; last modified: 2018-04-20 00:28:06"),
+  ("comment",               "status: VALID; size: 12.37GB; nevents: 250.00k; release: 9_4_6_patch1,9_4_7; last modified: 2018-04-20 00:28:06"),
 ])
 
 meta_dictionary["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] =  OD([
@@ -2155,7 +2155,7 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall
 
 
 # event statistics by sample category:
-# signal:                    44.04M
+# signal:                    41.30M
 # tHq:                       9.92M
 # tHW:                       4.72M
 # additional_signal_overlap: 965.20k
@@ -2163,7 +2163,7 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall
 # TTW:                       25.74M
 # TTWW:                      200.00k
 # TT:                        962.46M
-# Rares:                     90.79M
+# Rares:                     90.77M
 # VH:                        10.67M
 # EWK:                       1.17G
 # QCD:                       373.90M
