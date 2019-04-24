@@ -1038,7 +1038,7 @@ int main(int argc, char* argv[])
     const std::vector<const RecoJet *> selJetsForward = jetSelectorForward(jet_ptrs, isHigherPt);
     if(isDEBUG || run_lumi_eventSelector)
     {
-    //  printCollection("uncleanedJets", jet_ptrs);
+      printCollection("uncleanedJets", jet_ptrs);
       printCollection("selJets",       selJets);
     }
 
@@ -1345,10 +1345,9 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
 
     if ( selHadTaus.size() > 0 ) {
-      std::cout << "event " << eventInfo.str() << " FAILS selHadTaus veto." << std::endl;
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selHadTaus veto." << std::endl;
-	printCollection("selHadTaus", selHadTaus);
+        std::cout << "event " << eventInfo.str() << " FAILS selHadTaus veto." << std::endl;
+        printCollection("selHadTaus", selHadTaus);
       }
       continue;
     }
