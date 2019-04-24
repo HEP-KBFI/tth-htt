@@ -221,72 +221,72 @@ class Triggers(object):
     if era == "2016":
       self.triggers_analysis = {
         '3mu' : {
-          'HLT_TripleMu_12_10_5',
+          'HLT_TripleMu_12_10_5', # L=35.918/fb; present in all eras; unprescaled
         },
         '1e2mu' : {
-          'HLT_DiMu9_Ele9_CaloIdL_TrackIdL',
+          'HLT_DiMu9_Ele9_CaloIdL_TrackIdL', # L=35.918/fb; present in all eras; unprescaled
         },
         '2e1mu' : {
-          'HLT_Mu8_DiEle12_CaloIdL_TrackIdL',
+          'HLT_Mu8_DiEle12_CaloIdL_TrackIdL', # L=35.918/fb; present in all eras; unprescaled
         },
         '3e' : {
-          'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL',
+          'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL', # L=35.918/fb; present in all eras; unprescaled
         },
         '2mu' : {
-          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ',
-          'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ',
-          'HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ'
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # L=35.918/fb; present in all eras; unprescaled
+          'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ', # L=35.918/fb; present in all eras; unprescaled
+          'HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ' # L=8650.63/fb; present in H, missing in B, C, D, E, F, G; unprescaled
         },
         '1e1mu' : {
-          'HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL', 
-          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL',
-          'HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',
-          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',
+          'HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL', # L=24.975/fb; present in all eras; unprescaled?
+          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL', # L=27.267/fb; present in B, C, D, E, F, G, missing in H; unprescaled?
+          'HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=24.975/fb; present in all eras; unprescaled?
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=29.598/fb; present in all eras; unprescaled?
         },
         '2e' : {
-          'HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
-          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
+          'HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=24.978/fb; present in all eras; unprescaled?
+          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=35.918/fb; present in all eras; unprescaled
         },
         '1mu' : {
-          'HLT_IsoMu22',
-          'HLT_IsoTkMu22',
-          'HLT_IsoMu22_eta2p1',
-          'HLT_IsoTkMu22_eta2p1',
-          'HLT_IsoMu24',
-          'HLT_IsoTkMu24',
+          'HLT_IsoMu22', # L=28.564/fb; present in all eras; unprescaled?
+          'HLT_IsoTkMu22', # L=28.564/fb; present in all eras; unprescaled?
+          'HLT_IsoMu22_eta2p1', # L=33.182/fb; present in all eras; unprescaled
+          'HLT_IsoTkMu22_eta2p1', # L=33.182/fb; present in all eras; unprescaled
+          'HLT_IsoMu24', # L=35.918/fb; present in all eras; unprescaled
+          'HLT_IsoTkMu24', # L=35.918/fb; present in all eras; unprescaled
         },
         '1e' : {
-          'HLT_Ele25_WPTight_Gsf',
-          'HLT_Ele27_WPTight_Gsf',
-          'HLT_Ele25_eta2p1_WPTight_Gsf',
-          'HLT_Ele27_eta2p1_WPLoose_Gsf',
+          'HLT_Ele25_WPTight_Gsf', # L=24.978/fb; present in all eras; unprescaled?
+          'HLT_Ele27_WPTight_Gsf', # L=35.918/fb; present in all eras; unprescaled
+          'HLT_Ele25_eta2p1_WPTight_Gsf', # L=35.918/fb; present in all eras; unprescaled
+          'HLT_Ele27_eta2p1_WPLoose_Gsf', # L=27.303/fb; present in all eras; unprescaled?
         },
         '1mu1tau' : {
-          'HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1',
+          'HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1', # L=35.918/fb; present in all eras; unprescaled
         },
         '1e1tau' : {
-          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30',
-          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1',
-          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20',
+          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30', # L=22.883/fb; present in E, F, G, H; missing in B, C, D; unprescaled
+          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1', # L=17.640/fb; present in B, C, D, E, F, missing in G, H; unprescaled
+          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20', # L=17.144/fb; present in B, C, D, E, F, missing in G, H; unprescaled
         },
         '2tau' : {
-          'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg',
-          'HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg',
+          'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg', # L=27.267/fb; present in B, C, D, E, F, G, missing in H; unprescaled
+          'HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg', # L=8650.63/pb; present in H, missing in B, C, D, E, F, G; unprescaled
         },
       }
       self.triggers_leptonFR = {
         '1e' : set(),
         '1mu': {
-          'HLT_Mu27',
+          'HLT_Mu27', # L=250.508/pb; present in all eras; prescale factor 143.0 (143.4 from recorded)
         },
         '2e' : {
-          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30',
-          'HLT_Ele12_CaloIdM_TrackIdM_PFJet30',
+          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30', # L=62.761/pb; present in all eras; prescale factor 573.4 (572.4 from recorded)
+          'HLT_Ele12_CaloIdM_TrackIdM_PFJet30', # L=17.714/pb; present in all eras; prescale factor 2032.1 (2027.9 from recorded)
         },
         '2mu': {
-          'HLT_Mu17',
-          'HLT_Mu8',
-          'HLT_Mu3_PFJet40',
+          'HLT_Mu17', # L=282.781/pb; present in all eras; prescale factor 127.4 (127.0 from recorded)
+          'HLT_Mu8', # L=3.937/pb; present in all eras; prescale factor 9081.0 (9123.1 from recorded)
+          'HLT_Mu3_PFJet40', # L=7.408/pb; present in all eras; prescale factor 4863.2 (4849.0 from recorded)
         }
       }
     elif era == "2017":
