@@ -615,7 +615,6 @@ class analyzeConfig_2lss(analyzeConfig):
         self.addToMakefile_syncNtuple(lines_makefile)
         outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
         self.outputFile_sync['sync'] = outputFile_sync_path
-        self.targets.append(outputFile_sync_path)
         self.addToMakefile_hadd_sync(lines_makefile)
       else:
         raise ValueError("Internal logic error")
