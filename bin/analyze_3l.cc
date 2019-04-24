@@ -962,9 +962,9 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> tightMuons = tightMuonSelector(fakeableMuons, isHigherConePt);
     if(isDEBUG || run_lumi_eventSelector)
     {
-      //printCollection("preselMuons",   preselMuons);
-      //printCollection("fakeableMuons", fakeableMuons);
-      //printCollection("tightMuons",    tightMuons);
+      printCollection("preselMuons",   preselMuons);
+      printCollection("fakeableMuons", fakeableMuons);
+      printCollection("tightMuons",    tightMuons);
     }
 
     std::vector<RecoElectron> electrons = electronReader->read();
@@ -975,9 +975,9 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(fakeableElectrons, isHigherConePt);
     if(isDEBUG || run_lumi_eventSelector)
     {
-      //printCollection("preselElectrons",   preselElectrons);
-      //printCollection("fakeableElectrons", fakeableElectrons);
-      //printCollection("tightElectrons",    tightElectrons);
+      printCollection("preselElectrons",   preselElectrons);
+      printCollection("fakeableElectrons", fakeableElectrons);
+      printCollection("tightElectrons",    tightElectrons);
     }
 
     std::vector<const RecoLepton*> preselLeptonsFull = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
@@ -1018,10 +1018,10 @@ int main(int argc, char* argv[])
 
     if(isDEBUG || run_lumi_eventSelector)
     {
-      //printCollection("selMuons", selMuons);
-      //printCollection("selElectrons", selElectrons);
-      //printCollection("selLeptons", selLeptons);
-      //printCollection("selHadTaus", selHadTaus);
+      printCollection("selMuons", selMuons);
+      printCollection("selElectrons", selElectrons);
+      printCollection("selLeptons", selLeptons);
+      printCollection("selHadTaus", selHadTaus);
     }
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
@@ -1037,8 +1037,8 @@ int main(int argc, char* argv[])
     const std::vector<const RecoJet *> selJetsForward = jetSelectorForward(jet_ptrs, isHigherPt);
     if(isDEBUG || run_lumi_eventSelector)
     {
-      //printCollection("uncleanedJets", jet_ptrs);
-      //printCollection("selJets",       selJets);
+      printCollection("uncleanedJets", jet_ptrs);
+      printCollection("selJets",       selJets);
     }
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
@@ -1115,8 +1115,8 @@ int main(int argc, char* argv[])
     // require exactly three leptons passing loose preselection criteria to avoid overlap with 4l category
     if ( !(preselLeptonsFull.size() >= 3) ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS preselLeptons selection." << std::endl;
-  //printCollection("preselLeptons", preselLeptonsFull);
+        std::cout << "event " << eventInfo.str() << " FAILS preselLeptons selection." << std::endl;
+        printCollection("preselLeptons", preselLeptonsFull);
       }
       continue;
     }
@@ -1156,8 +1156,8 @@ int main(int argc, char* argv[])
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     if ( !((int)selJets.size() >= minNumJets) ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selJets selection = " << (int)selJets.size() << std::endl;
-  //printCollection("selJets", selJets);
+        std::cout << "event " << eventInfo.str() << " FAILS selJets selection = " << (int)selJets.size() << std::endl;
+        printCollection("selJets", selJets);
       }
       continue;
     }
@@ -1165,10 +1165,10 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms(">= N jets (1)", lumiScale);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
-	//printCollection("selJets", selJets);
-	//printCollection("selBJets_loose", selBJets_loose);
-	//printCollection("selBJets_medium", selBJets_medium);
+        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
+        printCollection("selJets", selJets);
+        printCollection("selBJets_loose", selBJets_loose);
+        printCollection("selBJets_medium", selBJets_medium);
       }
       continue;
     }
@@ -1184,9 +1184,9 @@ int main(int argc, char* argv[])
     // require exactly three leptons passing tight selection criteria of final event selection
     if ( !(selLeptons.size() >= 3) ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selLeptons selection." << std::endl;
-	//printCollection("selLeptons", selLeptons);
-	//printCollection("preselLeptons", preselLeptons);
+        std::cout << "event " << eventInfo.str() << " FAILS selLeptons selection." << std::endl;
+        printCollection("selLeptons", selLeptons);
+        printCollection("preselLeptons", preselLeptons);
       }
       continue;
     }
@@ -1204,8 +1204,8 @@ int main(int argc, char* argv[])
     if ( isDEBUG ) {
       std::cout << "selLepton_genMatch = " << getLeptonGenMatch_string(leptonGenMatch_definitions, idxSelLepton_genMatch) << std::endl;
       if ( idxSelLepton_genMatch != kGen_3l0g0j ) {
-	std::cout << "--> CHECK!" << std::endl;
-	//printCollection("selLeptons", selLeptons);
+        std::cout << "--> CHECK!" << std::endl;
+        printCollection("selLeptons", selLeptons);
       }
     }
 
@@ -1299,7 +1299,7 @@ int main(int argc, char* argv[])
     if ( !(tightLeptonsFull.size() <= 3) ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS tightLeptons selection.\n";
-        //printCollection("tightLeptonsFull", tightLeptonsFull);
+        printCollection("tightLeptonsFull", tightLeptonsFull);
       }
       continue;
     }
@@ -1357,8 +1357,8 @@ int main(int argc, char* argv[])
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
     if ( !((int)selJets.size() >= minNumJets) ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selJets selection -- " << (int)selJets.size() << std::endl;
-	//printCollection("selJets", selJets);
+        std::cout << "event " << eventInfo.str() << " FAILS selJets selection -- " << (int)selJets.size() << std::endl;
+        printCollection("selJets", selJets);
       }
       continue;
     }
@@ -1367,9 +1367,9 @@ int main(int argc, char* argv[])
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1)) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
-	//printCollection("selJets", selJets);
-	//printCollection("selBJets_loose", selBJets_loose);
-	//printCollection("selBJets_medium", selBJets_medium);
+        printCollection("selJets", selJets);
+        printCollection("selBJets_loose", selBJets_loose);
+        printCollection("selBJets_medium", selBJets_medium);
       }
       continue;
     }
@@ -1378,8 +1378,8 @@ int main(int argc, char* argv[])
 
     if ( selHadTaus.size() > 0 ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selHadTaus veto." << std::endl;
-	//printCollection("selHadTaus", selHadTaus);
+        std::cout << "event " << eventInfo.str() << " FAILS selHadTaus veto." << std::endl;
+        printCollection("selHadTaus", selHadTaus);
       }
       continue;
     }
@@ -1548,10 +1548,10 @@ int main(int argc, char* argv[])
     }
     if ( failsSignalRegionVeto ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event " << eventInfo.str() << " FAILS overlap w/ the SR: "
-	             "# tight leptons = " << tightLeptons.size() << " >= 3\n"
+        std::cout << "event " << eventInfo.str() << " FAILS overlap w/ the SR: "
+                     "# tight leptons = " << tightLeptons.size() << " >= 3\n"
         ;
-	//printCollection("tightLeptons", tightLeptons);
+        printCollection("tightLeptons", tightLeptons);
       }
       continue; // CV: avoid overlap with signal region
     }
