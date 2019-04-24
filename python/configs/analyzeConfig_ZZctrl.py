@@ -396,6 +396,8 @@ class analyzeConfig_ZZctrl(analyzeConfig):
                 self.outputFile_hadd_stage1[key_hadd_stage1_job] = os.path.join(self.dirs[key_hadd_stage1_dir][DKEY_HIST],
                                                                                 "hadd_stage1_%s_%s_%s.root" % hadd_stage1_job_tuple)
 
+            if self.do_sync: continue
+
             if is_mc:
               logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
 
@@ -503,6 +505,8 @@ class analyzeConfig_ZZctrl(analyzeConfig):
               if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
                 self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
               self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
+
+          if self.do_sync: continue
 
           # sum fake background contributions for the total of all MC sample
           # input processes: TT3l0g1j, TT2l1g1j, TT1l2g1j, TT0l3g1j, TT0l2g2j,...
