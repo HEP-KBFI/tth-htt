@@ -365,73 +365,73 @@ class Triggers(object):
     elif era == "2018":
       self.triggers_analysis = {
         '3mu' : {
-#         #'HLT_TripleMu_10_5_5_DZ',
-          'HLT_TripleMu_12_10_5', # L=58.873/fb
+#         #'HLT_TripleMu_10_5_5_DZ', # L=59.735/fb; present in all eras; unprescaled
+          'HLT_TripleMu_12_10_5', # L=59.735/fb; present in all eras; unprescaled
         },
         '1e2mu' : {
-          'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ', # L=58.873/fb
+          'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ', # L=59.735/fb; present in all eras; unprescaled
         },
         '2e1mu' : {
-          #'HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ',
-          'HLT_Mu8_DiEle12_CaloIdL_TrackIdL', # L=58.873/fb
+          #'HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ', # L=59.735/fb; present in all eras; unprescaled
+          'HLT_Mu8_DiEle12_CaloIdL_TrackIdL', # L=59.735/fb; present in all eras; unprescaled
         },
         '3e' : {
-          'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL', # L=53.747/fb
+          'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL', # L=54.444/fb; present in all eras; unprescaled
         },
         '2mu' : {
-          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # L=58.873/fb
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # L=59.735/fb; present in all eras; unprescaled
         },
         '1e1mu' : {
-          #'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
-          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=58.873/fb
-          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=58.873/fb
-          'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=58.873/fb
+          #'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=59.735/fb; present in all eras; unprescaled
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=59.735/fb; present in all eras; unprescaled
+          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=59.735/fb; present in all eras; unprescaled
+          'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=59.735/fb; present in all eras; unprescaled
         },
         '2e' : {
-          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # L=58.873/fb
-          #'HLT_DoubleEle25_CaloIdL_MW', # L=58872.7 (used by H->ZZ->4 lepton analysis, but why ?)
+          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # L=59.735/fb; present in all eras; unprescaled
+          #'HLT_DoubleEle25_CaloIdL_MW', # L=59.735/fb; present in all eras; unprescaled (used by H->ZZ->4 lepton analysis, but why ?)
         },
         '1mu' : {
-          'HLT_IsoMu24', # L=58.865/fb
-          'HLT_IsoMu27', # L=58.873/fb
+          'HLT_IsoMu24', # L=59.727/fb; present in all eras; unprescaled
+          'HLT_IsoMu27', # L=59.735/fb; present in all eras; unprescaled
         },
         '1e' : {
-          'HLT_Ele32_WPTight_Gsf', # L=58.873/fb
-          #'HLT_Ele35_WPTight_Gsf', # L=58.873/fb (used by Alexei, but why ?)
+          'HLT_Ele32_WPTight_Gsf', # L=59.735/fb; present in all eras; unprescaled
+          #'HLT_Ele35_WPTight_Gsf', # L=59.735; present in all eras; unprescaled (used by Alexei, but why ?)
         },
         # CV: tau trigger paths taken from slide 12 of presentation given by Hale Sert at HTT workshop in April 2019
         #    (https://indico.cern.ch/event/803335/contributions/3359970/attachments/1829789/2996369/TriggerStatus_HTTworkshop_hsert.pdf)
         '1mu1tau' : { # stored in SingleMuon dataset
-          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1', # L=17.046/fb
-          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTauHPS27_eta2p1_CrossL1', # L=58.873/fb
+          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled
+          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTauHPS27_eta2p1_CrossL1', # L=59.735/fb; present in all eras; unprescaled
         },
         '1e1tau' : { # stored in SingleElectron dataset?
-          'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
+          'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled
+          #'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTauHPS27_eta2p1_CrossL1', # L=59.735/fb; present in all eras; unprescaled
         },
         '2tau' : { # stored in Tau dataset
-          'HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg', # L=17.046/fb
-          'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg', # L=17.046/fb
-          'HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg', # L=17.046/fb
-          'HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg', # L=58.873/fb
+          'HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled
+          'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled
+          'HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled
+          'HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg', # L=59.735/fb; present in all eras; unprescaled
         },
       }
 
       self.triggers_leptonFR = {
         '1e' : {
-          'HLT_Ele8_CaloIdM_TrackIdM_PFJet30', # L=6.348/pb 
-          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30', # L=38.408/pb
-          'HLT_Ele23_CaloIdM_TrackIdM_PFJet30', # L=38.421/pb
+          'HLT_Ele8_CaloIdM_TrackIdM_PFJet30', # L=6.411/pb; present in all eras; prescale factor 9325.6 (9318.5 from recorded)
+          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30', # L=38.861/pb; present in all eras; prescale factor 1538.9 (1537.3 from recorded)
+          'HLT_Ele23_CaloIdM_TrackIdM_PFJet30', # L=38.875/pb; present in all eras; prescale factor 1538.4 (1536.7 from recorded)
         },
         '1mu' : {
-          'HLT_Mu27', # L=123.845/pb
-          'HLT_Mu20', # L=54.499/pb
-          #'HLT_Mu8',
-          'HLT_Mu3_PFJet40', # L=2.659/pb
+          'HLT_Mu27', # L=125.783/pb; present in all eras; prescale factor 464.6 (475.0 from recorded)
+          'HLT_Mu20', # L=55.273/pb; present in all eras; prescale factor 1082.1 (1080.8 from recorded)
+          'HLT_Mu3_PFJet40', # L=2.695/pb; present in all eras; prescale factor 22182.4 (22160.5 from recorded)
         },
         '2e' : set(),
         '2mu' : {
-          'HLT_Mu17', # L=45.121/pb
-          'HLT_Mu8', # L=8.509/pb
+          'HLT_Mu17', # L=45.781/pb; present in all eras; prescale factor 1307.1 (1304.9 from recorded)
+          'HLT_Mu8', # L=8.546/pb; present in all eras; prescale factor 6981.9 (6990.5 from recorded)
         }
       }
     else:
