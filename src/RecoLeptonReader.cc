@@ -29,8 +29,8 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   , dz_(nullptr)
   , relIso_all_(nullptr)
   , pfRelIso04_all_(nullptr)
-  , absIso_chg_(nullptr)
-  , absIso_neu_(nullptr)
+  , relIso_chg_(nullptr)
+  , relIso_neu_(nullptr)
   , sip3d_(nullptr)
   , mvaRawTTH_(nullptr)
   , jetPtRatio_(nullptr)
@@ -74,8 +74,8 @@ RecoLeptonReader::~RecoLeptonReader()
     delete[] gInstance->dz_;
     delete[] gInstance->relIso_all_;
     delete[] gInstance->pfRelIso04_all_;
-    delete[] gInstance->absIso_chg_;
-    delete[] gInstance->absIso_neu_;
+    delete[] gInstance->relIso_chg_;
+    delete[] gInstance->relIso_neu_;
     delete[] gInstance->sip3d_;
     delete[] gInstance->mvaRawTTH_;
     delete[] gInstance->jetPtRatio_;
@@ -110,8 +110,8 @@ RecoLeptonReader::setBranchNames()
     branchName_dz_ = Form("%s_%s", branchName_obj_.data(), "dz");
     branchName_relIso_all_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_all");
     branchName_pfRelIso04_all_ = Form("%s_%s", branchName_obj_.data(), "pfRelIso04_all");
-    branchName_absIso_chg_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_chg");
-    branchName_absIso_neu_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_neu");
+    branchName_relIso_chg_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_chg");
+    branchName_relIso_neu_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_neu");
     branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
     branchName_mvaRawTTH_ = Form("%s_%s", branchName_obj_.data(), "mvaTTH");
     branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
@@ -172,8 +172,8 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(dz_, branchName_dz_);
     bai.setBranchAddress(pfRelIso04_all_, branchName_pfRelIso04_all_);
     bai.setBranchAddress(relIso_all_, branchName_relIso_all_);
-    bai.setBranchAddress(absIso_chg_, branchName_absIso_chg_);
-    bai.setBranchAddress(absIso_neu_, branchName_absIso_neu_);
+    bai.setBranchAddress(relIso_chg_, branchName_relIso_chg_);
+    bai.setBranchAddress(relIso_neu_, branchName_relIso_neu_);
     bai.setBranchAddress(sip3d_, branchName_sip3d_);
     bai.setBranchAddress(mvaRawTTH_, branchName_mvaRawTTH_);
     bai.setBranchAddress(jetPtRatio_, branchName_jetPtRatio_);

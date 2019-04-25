@@ -24,8 +24,8 @@ public:
              Double_t dz,
              Double_t relIso,
              Double_t pfRelIso04All,
-             Double_t miniIsoCharged,
-             Double_t miniIsoNeutral,
+             Double_t miniRelIsoCharged,
+             Double_t miniRelIsoNeutral,
              Double_t sip3d,
              Double_t mvaRawTTH,
              Double_t jetPtRatio,
@@ -126,8 +126,8 @@ public:
   Double_t dz() const;
   Double_t relIso() const;
   Double_t pfRelIso04All() const;
-  Double_t miniIsoCharged() const;
-  Double_t miniIsoNeutral() const;
+  Double_t miniRelIsoCharged() const;
+  Double_t miniRelIsoNeutral() const;
   Double_t sip3d() const;
   Double_t mvaRawTTH() const;
   Double_t jetPtRatio() const;
@@ -161,8 +161,8 @@ protected:
   Double_t dz_;                 ///< d_{z}, distance on the z axis w.r.t PV
   Double_t relIso_;             ///< relative mini-isolation
   Double_t pfRelIso04All_;      ///< PF relative isolation dR=0.3, charged component
-  Double_t miniIsoCharged_;     ///< absolute charged mini-isolation
-  Double_t miniIsoNeutral_;     ///< absolute neutral mini-isolation (PU corrected)
+  Double_t miniRelIsoCharged_;  ///< relative charged mini-isolation
+  Double_t miniRelIsoNeutral_;  ///< relative neutral mini-isolation (PU corrected)
   Double_t sip3d_;              ///< significance of IP
   Double_t mvaRawTTH_;          ///< raw output of lepton MVA of ttH multilepton analysis
   Double_t jetPtRatio_;         ///< ratio of lepton pT to pT of nearby jet

@@ -25,8 +25,8 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   , dz_(nullptr)
   , relIso_all_(nullptr)
   , pfRelIso04_all_(nullptr)
-  , absIso_chg_(nullptr)
-  , absIso_neu_(nullptr)
+  , relIso_chg_(nullptr)
+  , relIso_neu_(nullptr)
   , sip3d_(nullptr)
   , mvaRawTTH_(nullptr)
   , jetPtRatio_(nullptr)
@@ -60,8 +60,8 @@ RecoLeptonWriter::~RecoLeptonWriter()
   delete[] dz_;
   delete[] relIso_all_;
   delete[] pfRelIso04_all_;
-  delete[] absIso_chg_;
-  delete[] absIso_neu_;
+  delete[] relIso_chg_;
+  delete[] relIso_neu_;
   delete[] sip3d_;
   delete[] mvaRawTTH_;
   delete[] jetPtRatio_;
@@ -90,8 +90,8 @@ void RecoLeptonWriter::setBranchNames()
   branchName_dz_ = Form("%s_%s", branchName_obj_.data(), "dz");
   branchName_relIso_all_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_all");
   branchName_pfRelIso04_all_ = Form("%s_%s", branchName_obj_.data(), "pfRelIso04_all");
-  branchName_absIso_chg_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_chg");
-  branchName_absIso_neu_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_neu");
+  branchName_relIso_chg_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_chg");
+  branchName_relIso_neu_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_neu");
   branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
   branchName_mvaRawTTH_ = Form("%s_%s", branchName_obj_.data(), "mvaTTH");
   branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
@@ -132,8 +132,8 @@ void RecoLeptonWriter::setBranches(TTree * tree)
   bai.setBranch(dz_, branchName_dz_);
   bai.setBranch(relIso_all_, branchName_relIso_all_);
   bai.setBranch(pfRelIso04_all_, branchName_pfRelIso04_all_);
-  bai.setBranch(absIso_chg_, branchName_absIso_chg_);
-  bai.setBranch(absIso_neu_, branchName_absIso_neu_);
+  bai.setBranch(relIso_chg_, branchName_relIso_chg_);
+  bai.setBranch(relIso_neu_, branchName_relIso_neu_);
   bai.setBranch(sip3d_, branchName_sip3d_);
   bai.setBranch(mvaRawTTH_, branchName_mvaRawTTH_);
   bai.setBranch(jetPtRatio_, branchName_jetPtRatio_);
