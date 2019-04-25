@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-04-21 13:29:42 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2018_sync.py -p /hdfs/local/karl/sync_ntuples/2018/nanoAODproduction/2019Apr21 -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_nanoAOD_sync.py -M
+# file generated at 2019-04-25 12:56:06 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2018_sync.py -p /hdfs/local/karl/sync_ntuples/2018/nanoAODproduction/2019Apr25 -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_nanoAOD_sync.py -M
 
 samples_2018 = OD()
 samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] = OD([
@@ -14,7 +14,7 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   }),
   ("nof_tree_events",                 63000),
   ("nof_db_events",                   7525991),
-  ("fsize_local",                     198383561), # 198.38MB, avg file size 198.38MB
+  ("fsize_local",                     198397477), # 198.40MB, avg file size 198.40MB
   ("fsize_db",                        469867184231), # 469.87GB, avg file size 2.10GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -24,7 +24,7 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/sync_ntuples/2018/nanoAODproduction/2019Apr21/ttHToNonbb_M125_powheg"),
+        ("path",      "/hdfs/local/karl/sync_ntuples/2018/nanoAODproduction/2019Apr25/ttHToNonbb_M125_powheg"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
