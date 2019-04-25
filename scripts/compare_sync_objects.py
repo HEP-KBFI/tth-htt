@@ -1102,14 +1102,14 @@ for rle in rle_loop:
   if not evt.mu1.is_matched:
     continue
 
-  if not (evt.mu1.ref.isfakeablesel == 1 and evt.mu1.test.isfakeablesel == 0):
+#  if not (evt.mu1.ref.isfakeablesel == 1 and evt.mu1.test.isfakeablesel == 0):
+#    continue
+
+  if abs(evt.mu1.diff.leptonMVA) < 1e-2:
     continue
 
-  if abs(evt.mu1.diff.leptonMVA) > 1e-3:
-    continue
-
-  if abs(evt.mu1.diff.conept) < 1e-2:
-    continue
+#  if abs(evt.mu1.diff.conept) < 1e-2:
+#    continue
 
 #  if abs(evt.mu1.diff.leptonMVA) > 1e-3:
 #    continue
