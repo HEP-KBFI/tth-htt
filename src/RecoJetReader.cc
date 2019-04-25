@@ -261,6 +261,7 @@ RecoJetReader::read() const
     jets.reserve(nJets);
     for(UInt_t idxJet = 0; idxJet < nJets; ++idxJet)
     {
+      const double qgl = std::isnan(gInstance->jet_QGDiscr_[idxJet]) ? 0. : gInstance->jet_QGDiscr_[idxJet];
       jets.push_back({
         {
           gInstance->jet_pt_systematics_.at(ptMassOption_)[idxJet],
@@ -271,7 +272,7 @@ RecoJetReader::read() const
         gInstance->jet_charge_[idxJet],
         gInstance->jet_BtagCSVs_.at(btag_)[idxJet],
         gInstance->jet_BtagWeights_systematics_.at(btag_).at(btag_central_or_shift_)[idxJet],
-        gInstance->jet_QGDiscr_[idxJet],
+        qgl,
         gInstance->jet_pullEta_[idxJet],
         gInstance->jet_pullPhi_[idxJet],
         gInstance->jet_pullMag_[idxJet],
