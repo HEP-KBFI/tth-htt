@@ -103,7 +103,7 @@ RecoMEtReader::setBranchAddresses(TTree * tree)
         bai.setBranchAddress(met_.systematics_[met_option].phi_, branchName_phi_[met_option]);
       }
     }
-    //bai.setBranchAddress(met_.sumEt_, branchName_sumEt_); CV: temporarily commented-out, as "sumEt" branch is not present in current Ntuples (requires to rerun prodNtuple step)
+    bai.setBranchAddress(met_.sumEt_, branchName_sumEt_);
     bai.setBranchAddress(met_.covXX_, branchName_covXX_);
     bai.setBranchAddress(met_.covXY_, branchName_covXY_);
     bai.setBranchAddress(met_.covYY_, branchName_covYY_);
