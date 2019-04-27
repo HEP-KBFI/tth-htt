@@ -622,7 +622,7 @@ int main(int argc, char* argv[])
       Form("%s/sel/mvaInputs_2lss", histogramDir.data()), era_string, central_or_shift));
     selHistManager->mvaInputVariables_2lss_->bookHistograms(fs, mvaInputVariables_2lss);
     selHistManager->evt_ = new EvtHistManager_2lss(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/evt", histogramDir.data()), era_string, era_string, central_or_shift));
+      Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
     selHistManager->evt_->bookHistograms(fs);
     vstring categories_evt = {
       "ee_neg", "ee_pos",

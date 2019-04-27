@@ -702,7 +702,7 @@ int main(int argc, char* argv[])
         Form("%s/sel/mvaInputs_HTT_sum", histogramDir.data()), era_string, central_or_shift));
       selHistManager->mvaInputVariables_HTT_sum_->bookHistograms(fs, mvaInputVariables_HTT_sumSort);
       selHistManager->evt_ = new EvtHistManager_1l_2tau(makeHistManager_cfg(process_and_genMatch,
-       Form("%s/sel/evt", histogramDir.data()), era_string, era_string, central_or_shift));
+       Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
       selHistManager->evt_->bookHistograms(fs);
 
       const vstring decayModes_evt = eventInfo.getDecayModes();
