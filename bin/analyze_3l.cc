@@ -1707,8 +1707,10 @@ int main(int argc, char* argv[])
 	  memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
           evtWeight
         );
-  EvtHistManager_3l* selHistManager_evt_category_decMode = selHistManager->evt_in_categories_and_decayModes_[category][decayModeStr];
-  if ( selHistManager_evt_category_decMode ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
+        std::string decayMode_and_genMatch = decayModeStr;
+        if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
+        EvtHistManager_3l* selHistManager_evt_category_decMode = selHistManager->evt_in_categories_and_decayModes_[category][decayMode_and_genMatch];
+        if ( selHistManager_evt_category_decMode ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
           selHistManager_evt_category_decMode->fillHistograms(
 	    selElectrons.size(),
             selMuons.size(),

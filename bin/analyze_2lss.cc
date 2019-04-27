@@ -655,13 +655,13 @@ int main(int argc, char* argv[])
 	      category != categories_evt.end(); ++category ) {
 	  TString histogramDir_category = histogramDir.data();
 	  histogramDir_category.ReplaceAll("2lss", Form("2lss_%s", category->data()));
-          selHistManager -> evt_in_categories_and_decayModes_[*category][decayMode_evt] = new EvtHistManager_2lss(makeHistManager_cfg(
+          selHistManager -> evt_in_categories_and_decayModes_[*category][decayMode_and_genMatch] = new EvtHistManager_2lss(makeHistManager_cfg(
             decayMode_and_genMatch,
 	    Form("%s/sel/evt", histogramDir_category.Data()),
 	    era_string,
 	    central_or_shift
           ));
-	  selHistManager -> evt_in_categories_and_decayModes_[*category][decayMode_evt] -> bookHistograms(fs);
+          selHistManager -> evt_in_categories_and_decayModes_[*category][decayMode_and_genMatch] -> bookHistograms(fs);
 	}
       }
     }
@@ -1744,24 +1744,26 @@ int main(int argc, char* argv[])
           mvaOutput_Hj_tagger,
           mvaOutput_Hj_tagger
         );
-  EvtHistManager_2lss* selHistManager_evt_category_decMode = selHistManager->evt_in_categories_and_decayModes_[category][decayModeStr];
-  if ( selHistManager_evt_category_decMode ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
+      std::string decayMode_and_genMatch = decayModeStr;
+      if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
+      EvtHistManager_2lss* selHistManager_evt_category_decMode = selHistManager->evt_in_categories_and_decayModes_[category][decayMode_and_genMatch];
+      if ( selHistManager_evt_category_decMode ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
           selHistManager_evt_category_decMode->fillHistograms(
             selElectrons.size(),
-	    selMuons.size(),
-	    selHadTaus.size(),
-	    selJets.size(),
-	    selBJets_loose.size(),
-	    selBJets_medium.size(),
-	    evtWeight,
-	    //
-	    mvaOutput_2lss_ttV,
-	    mvaOutput_2lss_ttbar,
-	    mvaDiscr_2lss,
-	    mvaOutput_Hj_tagger,
-	    mvaOutput_Hj_tagger
+            selMuons.size(),
+            selHadTaus.size(),
+            selJets.size(),
+            selBJets_loose.size(),
+            selBJets_medium.size(),
+            evtWeight,
+            //
+            mvaOutput_2lss_ttV,
+            mvaOutput_2lss_ttbar,
+            mvaDiscr_2lss,
+            mvaOutput_Hj_tagger,
+            mvaOutput_Hj_tagger
           );
-	}
+        }
       }
     }
     selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);

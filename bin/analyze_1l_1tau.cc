@@ -703,24 +703,27 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 	"1e_1tau",  "1e_1tau_SS",  "1e_1tau_OS",  "1e_1tau_OS_wChargeFlipWeights",
 	"1mu_1tau", "1mu_1tau_SS", "1mu_1tau_OS", "1mu_1tau_OS_wChargeFlipWeights"
       };
-      for ( vstring::const_iterator category = categories_evt.begin();
-            category != categories_evt.end(); ++category ) {
+      for(const std::string & category: categories_evt)
+      {
+        selHistManager->evt_in_categories_and_decayModes_[category] = {};
         TString histogramDir_category = histogramDir.data();
-        histogramDir_category.ReplaceAll("1l_1tau", category->data());
-        selHistManager->evt_in_categories_[*category] = new EvtHistManager_1l_1tau(makeHistManager_cfg(process_and_genMatch,
+        histogramDir_category.ReplaceAll("1l_1tau", category.data());
+
+        selHistManager->evt_in_categories_[category] = new EvtHistManager_1l_1tau(makeHistManager_cfg(process_and_genMatch,
           Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
-        selHistManager->evt_in_categories_[*category]->bookHistograms(fs);
-	if ( isSignal ) {
+        selHistManager->evt_in_categories_[category]->bookHistograms(fs);
+
+        if ( isSignal ) {
           for ( const std::string & decayMode_evt: decayModes_evt ) {
-	    std::string decayMode_and_genMatch = decayMode_evt;
-	    if ( apply_leptonGenMatching                            ) decayMode_and_genMatch += leptonGenMatch_definition->name_;
-	    if ( apply_leptonGenMatching && apply_hadTauGenMatching ) decayMode_and_genMatch += "&";
-	    if ( apply_hadTauGenMatching                            ) decayMode_and_genMatch += hadTauGenMatch_definition->name_;
-	    selHistManager->evt_in_categories_and_decayModes_[*category][decayMode_evt] = new EvtHistManager_1l_1tau(makeHistManager_cfg(decayMode_and_genMatch,
+            std::string decayMode_and_genMatch = decayMode_evt;
+            if ( apply_leptonGenMatching                            ) decayMode_and_genMatch += leptonGenMatch_definition->name_;
+            if ( apply_leptonGenMatching && apply_hadTauGenMatching ) decayMode_and_genMatch += "&";
+            if ( apply_hadTauGenMatching                            ) decayMode_and_genMatch += hadTauGenMatch_definition->name_;
+            selHistManager->evt_in_categories_and_decayModes_[category][decayMode_and_genMatch] = new EvtHistManager_1l_1tau(makeHistManager_cfg(decayMode_and_genMatch,
               Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
-            selHistManager->evt_in_categories_and_decayModes_[*category][decayMode_evt]->bookHistograms(fs);
-	  }
-	}
+            selHistManager->evt_in_categories_and_decayModes_[category][decayMode_and_genMatch]->bookHistograms(fs);
+          }
+        }
       }
       edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/evtYield", histogramDir.data()), era_string, central_or_shift);
@@ -736,8 +739,8 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
           Form("%s/sel/evtYield", histogramDir_category.Data()), era_string, central_or_shift);
 	cfg_EvtYieldHistManager_category.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
 	cfg_EvtYieldHistManager_category.addParameter<bool>("isMC", isMC);
-	selHistManager->evtYield_in_categories_[*category] = new EvtYieldHistManager(cfg_EvtYieldHistManager_category);
-	selHistManager->evtYield_in_categories_[*category]->bookHistograms(fs);
+        selHistManager->evtYield_in_categories_[*category] = new EvtYieldHistManager(cfg_EvtYieldHistManager_category);
+        selHistManager->evtYield_in_categories_[*category]->bookHistograms(fs);
       }
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/weights", histogramDir.data()), era_string, central_or_shift));
@@ -2059,59 +2062,64 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 	categories.push_back("1mu_1tau_OS_wChargeFlipWeights");
       }
     }
-    for ( std::vector<std::string>::const_iterator category = categories.begin();
-          category != categories.end(); ++category ) {
+    for(const std::string & category: categories)
+    {
       double evtWeight_category = evtWeight;
-      if ( category->find("_wChargeFlipWeights") != std::string::npos ) {
+      if ( category.find("_wChargeFlipWeights") != std::string::npos ) {
 	double prob_chargeMisId_lepton = prob_chargeMisId(selLepton_type, selLepton->pt(), selLepton->eta());
 	double prob_chargeMisId_tau = 0.01; // CV: not implemented yet; take "guessed" value for now
 	evtWeight_category *= (prob_chargeMisId_lepton + prob_chargeMisId_tau);
       }
-      if ( selHistManager->evt_in_categories_.find(*category) != selHistManager->evt_in_categories_.end() ) {
-        selHistManager->evt_in_categories_[*category]->fillHistograms(
+      if(selHistManager->evt_in_categories_.count(category))
+      {
+        selHistManager->evt_in_categories_[category]->fillHistograms(
           selElectrons.size(),
           selMuons.size(),
           selHadTaus.size(),
           selJets.size(),
           selBJets_loose.size(),
           selBJets_medium.size(),
-          //mvaOutput_plainKin_ttV,
-          //mvaOutput_plainKin_tt,
-          //mvaOutput_plainKin_1B_VT,
-          //mvaOutput_HTT_SUM_VT,
-          //mvaOutput_plainKin_SUM_VT,
-	  mTauTauVis, mTauTau,
-	  Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
-	  mbb, mbb_loose,
-	  mvaOutput_1l_1tau_16_variables,
-          evtWeight_category);
+          mTauTauVis, mTauTau,
+          Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
+          mbb, mbb_loose,
+          mvaOutput_1l_1tau_16_variables,
+          evtWeight_category
+        );
       }
-      if ( selHistManager->evt_in_categories_and_decayModes_.find(*category) != selHistManager->evt_in_categories_and_decayModes_.end() ) {
-	if( isSignal ) {
-	  const std::string decayModeStr = eventInfo.getDecayModeString();
-	  if ( !decayModeStr.empty() ) {
-	    selHistManager->evt_in_categories_and_decayModes_[*category][decayModeStr]->fillHistograms(
-	      selElectrons.size(),
-	      selMuons.size(),
-	      selHadTaus.size(),
-	      selJets.size(),
-	      selBJets_loose.size(),
-	      selBJets_medium.size(),
-	      //mvaOutput_plainKin_ttV,
-	      //mvaOutput_plainKin_tt,
-	      //mvaOutput_plainKin_1B_VT,
-	      //mvaOutput_HTT_SUM_VT,
-	      //mvaOutput_plainKin_SUM_VT,
-	      mTauTauVis, mTauTau,
-	      Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
-	      mbb, mbb_loose,
-	      mvaOutput_1l_1tau_16_variables,
-	      evtWeight_category);
-	  }
-	}
+      if(selHistManager->evt_in_categories_and_decayModes_.count(category))
+      {
+        if( isSignal ) {
+          std::string decayModeStr = eventInfo.getDecayModeString();
+          if ( !decayModeStr.empty() ) {
+            if(apply_leptonGenMatching)
+            {
+              decayModeStr += selLepton_genMatch.name_;
+            }
+            if(apply_leptonGenMatching && apply_hadTauGenMatching)
+            {
+              decayModeStr += "&";
+            }
+            if(apply_hadTauGenMatching)
+            {
+              decayModeStr += selHadTau_genMatch.name_;
+            }
+            selHistManager->evt_in_categories_and_decayModes_[category][decayModeStr]->fillHistograms(
+              selElectrons.size(),
+              selMuons.size(),
+              selHadTaus.size(),
+              selJets.size(),
+              selBJets_loose.size(),
+              selBJets_medium.size(),
+              mTauTauVis, mTauTau,
+              Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
+              mbb, mbb_loose,
+              mvaOutput_1l_1tau_16_variables,
+              evtWeight_category);
+          }
+        }
       }
-      if ( selHistManager->evtYield_in_categories_.find(*category) != selHistManager->evtYield_in_categories_.end() ) {
-	selHistManager->evtYield_in_categories_[*category]->fillHistograms(eventInfo, evtWeight_category);
+      if ( selHistManager->evtYield_in_categories_.find(category) != selHistManager->evtYield_in_categories_.end() ) {
+        selHistManager->evtYield_in_categories_[category]->fillHistograms(eventInfo, evtWeight_category);
       }
     }
 
