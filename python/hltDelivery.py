@@ -206,9 +206,6 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
 
       expected_recording = data['totrecorded']
       expected_delivery  = data['totdelivered']
-      if missing_eras:
-        expected_recording = sum([ data['runs'][era]['tot_recorded']  for era in present_eras ])
-        expected_delivery  = sum([ data['runs'][era]['tot_delivered'] for era in present_eras ])
 
       data_units = data['units']
       unit_factor = 1000**(LUMI_UNITS.index(units) - LUMI_UNITS.index(data_units))
@@ -218,15 +215,12 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
       prescale_recording = expected_recording / dict_entry['recorded']
       prescale_delivery  = expected_delivery  / dict_entry['delivered']
 
-      prescale_recording_int = int(prescale_recording)
-      prescale_delivery_int  = int(prescale_delivery)
-
-      if prescale_delivery_int == 1:
+      if int(prescale_recording) == 1:
         prescale_msg = "NOT prescaled"
       else:
-        prescale_msg = "prescale factor %.1f (%.1f from recorded)" % (prescale_delivery, prescale_recording)
-      prescale_msg += " (expected %.1f delivery, %.1f recorded; units = %s)" % (
-        expected_delivery, expected_recording, units
+        prescale_msg = "prescale factor %.1f (%.1f from delivery)" % (prescale_recording, prescale_delivery)
+      prescale_msg += " (expected %.1f recorded, %.1f delivery; units = %s)" % (
+        expected_recording, expected_delivery, units
       )
 
     print("{} nrun = {} totdelivered = {} totrecorded = {} (units = {})".format(
