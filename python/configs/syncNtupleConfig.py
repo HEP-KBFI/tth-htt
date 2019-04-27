@@ -29,8 +29,12 @@ all: {{ output_file }}
 \t{{ hadd_script }} &> {{ hadd_wrapper_log }}
 \t{{ additional_cmds }}
 
+run:{% for channel_output, channel_cmd in channel_info.items() %}
+\t{{ channel_cmd['create'] }}
+{%- endfor %}
+
 {% for channel_output, channel_cmd in channel_info.items() %}
-{{ channel_output }}:
+{{ channel_output }}: run
 \trm -f {{ channel_output }}
 \t{{ channel_cmd['run'] }}
 {% endfor %}
@@ -85,9 +89,9 @@ class syncNtupleConfig:
     final_output_dir = os.path.join(output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)
 
-    common_args = "-m %s -v %s -e %s -J 5 -s %s -q %s -g %s -y %s" % \
+    common_args = "-m %s -v %s -e %s -s %s -q %s -g %s -y %s" % \
       ('sync_wMEM' if with_mem else 'sync',  version, era, ' '.join(systematics_label), jet_cleaning, gen_matching, use_home)
-    additional_args = " -A"
+    additional_args = " -E"
     if self.dry_run:
       additional_args += " -d"
     if check_output_files:
@@ -121,18 +125,24 @@ class syncNtupleConfig:
       channel_makefile = os.path.join(config_dir, 'Makefile_%s' % channel)
       channel_outlog   = os.path.join(config_dir, 'stdout_sync_%s.log' % channel)
       channel_errlog   = os.path.join(config_dir, 'stderr_sync_%s.log' % channel)
-      channel_outlog, channel_errlog = get_log_version((channel_outlog, channel_errlog))
+      channel_outlog_create = os.path.join(config_dir, 'stdout_sync_create_%s.log' % channel)
+      channel_errlog_create = os.path.join(config_dir, 'stderr_sync_create_%s.log' % channel)
+      channel_outlog, channel_errlog, channel_outlog_create, channel_errlog_create = get_log_version((
+        channel_outlog, channel_errlog, channel_outlog_create, channel_errlog_create
+      ))
 
       cmd_args = common_args if 'inclusive' not in channel else inclusive_args
       if tau_id_wp and 'tau' in channel:
         additional_args += " -w %s" % tau_id_wp
 
-      channel_cmd_run = '%s %s 2>%s 1>%s' % \
-                        (channel_script, cmd_args, channel_errlog, channel_outlog)
-      channel_cmd_clean = 'make -f %s clean' % channel_makefile
+      channel_cmd_create = '%s %s 2>%s 1>%s' % \
+                           (channel_script, cmd_args, channel_errlog_create, channel_outlog_create)
+      channel_cmd_run   = '$(MAKE) -j 5 -f %s all 2>%s 1>%s' % (channel_makefile, channel_errlog, channel_outlog)
+      channel_cmd_clean = '$(MAKE)      -f %s clean' % channel_makefile
       self.channel_info[input_file] = {
-        'run'   : channel_cmd_run,
-        'clean' : channel_cmd_clean,
+        'create' : channel_cmd_create,
+        'run'    : channel_cmd_run,
+        'clean'  : channel_cmd_clean,
       }
 
     self.stdout_file_path = os.path.join(config_dir, "stdout_sync.log")
