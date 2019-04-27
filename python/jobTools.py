@@ -108,7 +108,7 @@ def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None,
             return_stderr = False):
   """Runs given commands and logs stdout and stderr to files
   """
-  max_tries = 3
+  max_tries = 5
   tries = 0
   while True:
     try:
@@ -116,7 +116,7 @@ def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None,
       p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
       break
     except OSError, e:
-      if e.errno != 13 or tries > max_tries:
+      if e.errno != 11 or tries > max_tries:
         raise
       else:
         time.sleep(5)
