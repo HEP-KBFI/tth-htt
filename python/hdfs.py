@@ -186,6 +186,7 @@ class _hdfs:
     memsize          = 64
     cachesize        = 64
     malloc_arena_max = 4
+    gc_threads       = 1
 
     # source /usr/lib/hadoop/libexec/hadoop-config.sh && unset HADOOP_HDFS_HOME
     # Unfortunately, it not possible to completely suppress JVM stack trace in case the call to a Java library throws
@@ -199,7 +200,7 @@ class _hdfs:
     os.environ['HADOOP_PREFIX']    = '/usr/lib/hadoop'
     os.environ['HADOOP_OPTS']      = '-Xms{}m '.format(memsize)                           + \
                                      '-XX:ReservedCodeCacheSize={}m '.format(cachesize)   + \
-                                     '-XX:ParallelGCThreads=1 '                           + \
+                                     '-XX:ParallelGCThreads={} '.format(gc_threads)       + \
                                      '-Dhadoop.log.dir={} '.format(log_dir)               + \
                                      '-Dhadoop.log.file={} '.format(log_file)             + \
                                      '-Dhadoop.home.dir={} '.format(home_dir)             + \
