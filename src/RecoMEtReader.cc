@@ -73,7 +73,7 @@ RecoMEtReader::setBranchNames()
       branchName_pt_[met_option]  = getBranchName_MEt(branchName_obj_, era_, met_option, true);
       branchName_phi_[met_option] = getBranchName_MEt(branchName_obj_, era_, met_option, false);
     }
-    branchName_sumEt_ = Form("%s_%s", branchName_sumEt_.data(), "sumEt");
+    branchName_sumEt_ = Form("%s_%s", branchName_obj_.data(), "sumEt");
     branchName_covXX_ = Form("%s_%s", branchName_cov_.data(), "covXX");
     branchName_covXY_ = Form("%s_%s", branchName_cov_.data(), "covXY");
     branchName_covYY_ = Form("%s_%s", branchName_cov_.data(), "covYY");
