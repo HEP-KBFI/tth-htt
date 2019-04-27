@@ -85,8 +85,8 @@ class syncNtupleConfig:
     final_output_dir = os.path.join(output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)
 
-    common_args = "-m %s -v %s -e %s -J 5 -s %s -q %s -g %s" % \
-      ('sync_wMEM' if with_mem else 'sync',  version, era, ' '.join(systematics_label), jet_cleaning, gen_matching)
+    common_args = "-m %s -v %s -e %s -J 5 -s %s -q %s -g %s -y %s" % \
+      ('sync_wMEM' if with_mem else 'sync',  version, era, ' '.join(systematics_label), jet_cleaning, gen_matching, use_home)
     additional_args = " -A"
     if self.dry_run:
       additional_args += " -d"
@@ -98,8 +98,6 @@ class syncNtupleConfig:
       additional_args += " -S '%s'" % rle_select
     if use_nonnominal:
       additional_args += " -O"
-    if use_home:
-      additional_args += " -y"
     if hlt_filter:
       additional_args += " -H"
     if self.running_method:
