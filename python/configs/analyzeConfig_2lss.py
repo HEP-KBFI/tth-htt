@@ -362,7 +362,7 @@ class analyzeConfig_2lss(analyzeConfig):
                   elif lepton_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and lepton_charge_selection == 'SS':
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '').replace('ss', 'SS')
-                  elif mcClosure_match and lepton_charge_selection == 'SS':
+                  elif mcClosure_match and lepton_charge_selection == 'SS' and 0 > 1: ## Xanda:  FIXME
                     mcClosure_type = mcClosure_match.group('type')
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_mcClosure_%s.root' % (self.channel, central_or_shift, mcClosure_type))
                     syncTree = 'syncTree_%s_mcClosure_%s' % (self.channel.replace('_', '').replace('ss', 'SS'), mcClosure_type)
@@ -594,7 +594,7 @@ class analyzeConfig_2lss(analyzeConfig):
             self.inputFiles_hadd_stage2[key_hadd_stage2_job] = []
           if lepton_selection == "Tight":
             self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes]['outputFile'])
-            self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_conversions]['outputFile'])          
+            self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_conversions]['outputFile'])
           self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job])
           self.outputFile_hadd_stage2[key_hadd_stage2_job] = os.path.join(self.dirs[key_hadd_stage2_dir][DKEY_HIST],
                                                                           "hadd_stage2_%s_%s.root" % hadd_stage2_job_tuple)
@@ -744,7 +744,7 @@ class analyzeConfig_2lss(analyzeConfig):
         if "flips_data" in make_plots_backgrounds:
           make_plots_backgrounds.remove("flips_data")
         key_hadd_stage2_job = getKey(get_lepton_selection_and_frWeight("Tight", "disabled"), "OS")
-        key_makePlots_job = getKey("OS")        
+        key_makePlots_job = getKey("OS")
         self.jobOptions_make_plots[key_makePlots_job] = {
           'executable' : self.executable_make_plots,
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
@@ -757,7 +757,7 @@ class analyzeConfig_2lss(analyzeConfig):
         self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
       if "Fakeable_mcClosure" in self.lepton_selections: #TODO
         key_hadd_stage2_job = getKey(get_lepton_selection_and_frWeight("Tight", "disabled"), "SS")
-        key_makePlots_job = getKey("SS")        
+        key_makePlots_job = getKey("SS")
         self.jobOptions_make_plots[key_makePlots_job] = {
           'executable' : self.executable_make_plots_mcClosure,
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],

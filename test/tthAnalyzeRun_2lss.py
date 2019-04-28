@@ -170,6 +170,7 @@ if __name__ == '__main__':
       "mvaOutput_2lss_ttV"   : {},
       "mvaOutput_2lss_ttbar" : {},
       "mvaDiscr_2lss"        : {},
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4"        : {},
     },
     select_rle_output         = True,
     dry_run                   = dry_run,
