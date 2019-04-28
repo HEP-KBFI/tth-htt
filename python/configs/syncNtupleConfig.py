@@ -7,7 +7,7 @@ import os
 import jinja2
 import uuid
 import sys
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 DEPENDENCIES = [
     "",  # CMSSW_BASE/src
     "tthAnalysis/HiggsToTauTau",
@@ -203,7 +203,7 @@ class syncNtupleConfig:
     record_software_state(self.sw_ver_file_cfg, self.sw_ver_file_out, DEPENDENCIES)
     target = 'all'
     if clean:
-      if not hdfs.isfile(self.makefile_path):
+      if not os.path.isfile(self.makefile_path):
         logging.error(
           "The makefile %s is missing and therefore it's not possible to clean anything; "
           "run sync Ntuple production first!" % self.makefile_path
