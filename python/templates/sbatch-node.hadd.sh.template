@@ -47,8 +47,8 @@ run_failure_wrapped_executable() {
         fi
     fi
 
-    echo "Delete job directory: rm -r $JOB_DIR"
-    rm -r $JOB_DIR
+    echo "Delete job directory: rm -rf $JOB_DIR"
+    rm -rf $JOB_DIR
 
     return $EXIT_CODE
 }

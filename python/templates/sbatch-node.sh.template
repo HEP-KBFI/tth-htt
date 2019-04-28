@@ -46,6 +46,10 @@ run_failure_wrapped_executable() {
             echo "Maximum tries reached, will not try to resubmit any more. GL & HF"
         fi
     fi
+
+    echo "Delete job directory: rm -rf $JOB_DIR"
+    rm -rf $JOB_DIR
+
     return $EXIT_CODE
 }
 
