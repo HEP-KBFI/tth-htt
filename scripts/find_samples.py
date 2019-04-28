@@ -49,6 +49,7 @@ import ast
 import getpass
 import multiprocessing
 import signal
+import shutil
 
 class Version:
   def __init__(self, version):
@@ -360,8 +361,8 @@ def get_integrated_lumi(dataset_name, data_golden, brilcalc_path, normtag, units
 
   # Cleanup
   if data_golden:
-    if hdfs.isfile(tmp_filename):
-      hdfs.remove(tmp_filename)
+    if os.path.isfile(tmp_filename):
+      shutil.remove(tmp_filename)
 
   return dataset_name, results
 
@@ -536,7 +537,7 @@ if __name__ == '__main__':
   )
 
   lumimask_location = args.golden_json
-  if not hdfs.isfile(lumimask_location):
+  if not os.path.isfile(lumimask_location):
     raise ValueError("No such file: %s" % lumimask_location)
   golden_runlumi = get_golden_runlumi(lumimask_location)
 
@@ -564,18 +565,18 @@ if __name__ == '__main__':
   print("Requiring DAS names to contain one of these strings:     %s" % ', '.join(custom_strings_allowed))
   print("Requiring DAS names to not contain one of these strings: %s" % ', '.join(custom_strings_rejected))
 
-  if sum_events_file and not hdfs.isfile(sum_events_file):
+  if sum_events_file and not os.path.isfile(sum_events_file):
     raise ValueError('No such file: %s' % sum_events_file)
 
   if compute_lumi:
     # Check if the brilconda package has been installed
-    if not hdfs.isfile(brilcalc_path):
+    if not os.path.isfile(brilcalc_path):
       raise ValueError("brilcalc not available in %s" % brilcalc_path)
 
     # Check if the user requested to run with normtag or not; if the user has requested to
     # use a normtag, then we have to make sure that the normtag is available
     if normtag_path:
-      if not hdfs.isfile(normtag_path):
+      if not os.path.isfile(normtag_path):
         raise ValueError("normtag not found in %s" % normtag_path)
 
     # Create the temporary directory only when it's needed

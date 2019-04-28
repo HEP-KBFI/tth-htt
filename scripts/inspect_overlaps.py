@@ -12,6 +12,13 @@ CHANNEL_OPTIONS = {
     'Fake AR'      : 'Fakeable_wFakeRateWeights_OS',
     'MC closure t' : 'Fakeable_mcClosure_t_wFakeRateWeights_OS',
   },
+  '1l_1tau' : {
+    'SR'           : 'Tight_disabled',
+    'Fake AR'      : 'Fakeable_wFakeRateWeights_disabled',
+    'MC closure e' : 'Fakeable_mcClosure_e_wFakeRateWeights_disabled',
+    'MC closure m' : 'Fakeable_mcClosure_m_wFakeRateWeights_disabled',
+    'MC closure t' : 'Fakeable_mcClosure_t_wFakeRateWeights_disabled',
+  },
   '1l_2tau' : {
     'SR'           : 'Tight_OS',
     'Fake AR'      : 'Fakeable_wFakeRateWeights_OS',
@@ -86,6 +93,12 @@ CHANNEL_OPTIONS = {
     'MC closure e' : 'Fakeable_mcClosure_e_wFakeRateWeights',
     'MC closure m' : 'Fakeable_mcClosure_m_wFakeRateWeights',
   },
+  'ZZctrl' : {
+    'SR'           : 'Tight_OS',
+    'Fake AR'      : 'Fakeable_wFakeRateWeights_OS',
+    'MC closure e' : 'Fakeable_mcClosure_e_wFakeRateWeights_OS',
+    'MC closure m' : 'Fakeable_mcClosure_m_wFakeRateWeights_OS',
+  },
 }
 
 cfg_options = {
@@ -144,6 +157,3 @@ for channel in cfg_options:
             sys_option_outer, sys_option_inner, len(outer_set & inner_set),
             len(outer_set - inner_set), len(inner_set - outer_set), sys_option_outer, sys_option_inner
           ))
-
-
-

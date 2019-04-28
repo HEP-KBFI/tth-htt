@@ -3,6 +3,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import createFile
 from tthAnalysis.HiggsToTauTau.common import logging
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 import os
 import jinja2
 
@@ -177,7 +178,7 @@ def generate_sbatch_line(
     if is_file_ok(output_file_name, validate_outputs, min_file_size):
       return None
 
-    if log_file_name and hdfs.exists(log_file_name):
+    if log_file_name and os.path.exists(log_file_name):
         time           = None
         hostname       = None
         is_cvmfs_error = False
