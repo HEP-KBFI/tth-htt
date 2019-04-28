@@ -25,7 +25,6 @@ SHELL := /bin/bash
 all: {{ output_file }}
 
 {{ output_file }}:{% for channel_output in channel_info %} {{channel_output}}{% endfor %}
-\trm -f {{ output_file }}
 \t{{ hadd_script }} &> {{ hadd_wrapper_log }}
 \t{{ additional_cmds }}
 
@@ -35,7 +34,6 @@ run:{% for channel_output, channel_cmd in channel_info.items() %}
 
 {% for channel_output, channel_cmd in channel_info.items() %}
 {{ channel_output }}: run
-\trm -f {{ channel_output }}
 \t{{ channel_cmd['run'] }}
 {% endfor %}
 
