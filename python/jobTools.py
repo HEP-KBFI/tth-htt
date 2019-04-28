@@ -3,7 +3,7 @@ import subprocess
 import sys
 import math
 import stat
-import shutil
+import time
 
 from tthAnalysis.HiggsToTauTau.common import logging
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
@@ -108,8 +108,19 @@ def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None,
             return_stderr = False):
   """Runs given commands and logs stdout and stderr to files
   """
-  #print "<run_cmd>: executing command = '%s'" % command
-  p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+  max_tries = 5
+  tries = 0
+  while True:
+    try:
+      tries += 1
+      p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+      break
+    except OSError, e:
+      if e.errno != 11 or tries > max_tries:
+        raise
+      else:
+        time.sleep(5)
+
   stdout, stderr = p.communicate()
   # Remove trailing newline
   stdout = stdout.rstrip('\n')

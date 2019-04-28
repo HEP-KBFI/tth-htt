@@ -69,7 +69,7 @@ import getpass
 
 sys_choices     = systematics.an_inclusive_opts
 channel_choices = [
-  '0l_2tau', '1l_2tau', '2lss', '2lss_1tau', '2los_1tau', '2l_2tau', '3l', '3l_1tau', '4l', 'inclusive',
+  '0l_2tau', '1l_1tau', '1l_2tau', '2lss', '2lss_1tau', '2los_1tau', '2l_2tau', '3l', '3l_1tau', '4l', 'inclusive',
   'ttWctrl', 'ttZctrl', 'WZctrl','ZZctrl',
 ]
 

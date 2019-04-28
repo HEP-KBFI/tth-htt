@@ -4,7 +4,8 @@ from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import re
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+import os.path
+
 def get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight):
   lepton_and_hadTau_selection_and_frWeight = lepton_and_hadTau_selection
   if lepton_and_hadTau_selection.startswith("Fakeable"):
@@ -429,7 +430,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
               syncRLE = ''
               if self.do_sync and self.rle_select:
                 syncRLE = self.rle_select % syncTree
-                if not hdfs.isfile(syncRLE):
+                if not os.path.isfile(syncRLE):
                   logging.warning("Input RLE file for the sync is missing: %s; skipping the job" % syncRLE)
                   continue
               if syncOutput:

@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.common import logging
 import jinja2
 import codecs
 import os
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 jinja_template_dir = os.path.join(
   os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'python', 'templates'
 )
@@ -187,8 +187,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     )
 
     self.cmssw_base_dir_combine = cmssw_base_dir_combine
-    if not hdfs.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \
-       not hdfs.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')):
+    if not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \
+       not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')):
       raise ValueError('CMSSW path for combine not valid: %s' % self.cmssw_base_dir_combine)
 
     self.use_QCD_fromMC = use_QCD_fromMC

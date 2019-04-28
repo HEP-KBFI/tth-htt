@@ -2,7 +2,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 from tthAnalysis.HiggsToTauTau.common import logging
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 import os.path
 
 class analyzeConfig_inclusive(analyzeConfig):
@@ -61,7 +61,7 @@ class analyzeConfig_inclusive(analyzeConfig):
     self.hadTauSelection_tauIdWP = hadTauSelection_tauIdWP
     self.use_nonnominal = use_nonnominal
 
-    if self.rle_select and not hdfs.isfile(self.rle_select):
+    if self.rle_select and not os.path.isfile(self.rle_select):
       raise ValueError('Input RLE file for the sync is missing: %s' % self.rle_select)
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)

@@ -9,7 +9,7 @@ from tthAnalysis.HiggsToTauTau.common import logging
 
 import os
 import uuid
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 DEPENDENCIES = [
     "", # CMSSW_BASE/src
     "tthAnalysis/HiggsToTauTau",
@@ -29,7 +29,7 @@ MAKEFILE_TARGET = "sbatch_puProfile"
 
 def validate_pu(output_file, samples):
     error_code = 0
-    if not hdfs.isfile(output_file):
+    if not os.path.isfile(output_file):
         logging.error('File {} does not exist'.format(output_file))
         return 1
     histogram_file = ROOT.TFile.Open(output_file, 'read')
@@ -414,7 +414,7 @@ class puHistogramConfig:
             outputFile = os.path.join(
                 self.dirs[key_dir][DKEY_HISTO], "%s.root" % process_name
             )
-            if hdfs.isfile(outputFile) and tools_is_file_ok(outputFile, min_file_size = 2000):
+            if os.path.isfile(outputFile) and tools_is_file_ok(outputFile, min_file_size = 2000):
                 logging.info('File {} already exists --> skipping job'.format(outputFile))
                 continue
 

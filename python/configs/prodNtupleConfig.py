@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_crea
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 import os
 import uuid
 
@@ -87,11 +87,11 @@ class prodNtupleConfig:
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
 
-        if not hdfs.isfile(self.pileup):
+        if not os.path.isfile(self.pileup):
             raise ValueError('No such file: %s' % self.pileup)
         self.pileup_histograms = get_pileup_histograms(self.pileup)
 
-        if not hdfs.isfile(self.golden_json):
+        if not os.path.isfile(self.golden_json):
             raise ValueError('No such file: %s' % self.golden_json)
 
         self.running_method    = running_method
