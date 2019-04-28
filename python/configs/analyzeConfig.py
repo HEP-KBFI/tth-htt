@@ -1208,7 +1208,9 @@ class analyzeConfig(object):
                     lines_makefile.append("%s: %s" % (make_target_batch, make_dependency))
                     make_target_batches.append(make_target_batch)
                     idxBatch = idxBatch + 1
-                lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
+                # do not remove the output file -> maybe it's valid
+                # the sbatch job checks the existance of the file anyways
+                #lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
                 scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]))   
                 lines_makefile.append("\t%s %s" % ("python", scriptFile))
             lines_makefile.append("")
