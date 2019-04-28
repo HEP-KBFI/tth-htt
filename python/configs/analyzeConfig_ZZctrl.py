@@ -580,6 +580,7 @@ class analyzeConfig_ZZctrl(analyzeConfig):
       outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
       self.outputFile_sync['sync'] = outputFile_sync_path
       self.addToMakefile_hadd_sync(lines_makefile)
+      self.targets.extend(self.phoniesToAdd)
       self.createMakefile(lines_makefile)
       logging.info("Done.")
       return self.num_jobs
