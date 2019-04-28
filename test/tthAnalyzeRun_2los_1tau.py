@@ -160,6 +160,16 @@ elif mode == "sync":
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
+# To avoid overlap w/ 2l+2tau SR
+if era == "2016":
+  hadTau_selection_veto = "dR03mvaVTight"
+elif era == "2017":
+  hadTau_selection_veto = "dR03mvaMedium"
+elif era == "2018":
+  raise ValueError("Implement me!")
+else:
+  raise ValueError("Invalid era: %s" % era)
+
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
@@ -189,6 +199,7 @@ if __name__ == '__main__':
     samples                   = samples,
     lep_mva_wp                = lep_mva_wp,
     hadTau_selection          = hadTau_selection,
+    hadTau_selection_veto     = hadTau_selection_veto,
     applyFakeRateWeights      = applyFakeRateWeights,
     jet_cleaning_by_index     = jet_cleaning_by_index,
     gen_matching_by_index     = gen_matching_by_index,

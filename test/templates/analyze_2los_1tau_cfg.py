@@ -48,6 +48,7 @@ process.analyze_2los_1tau = cms.PSet(
     apply_leptonGenMatching = cms.bool(True),
 
     hadTauSelection = cms.string(''),
+    hadTauSelection_veto = cms.string(''),
     apply_hadTauGenMatching = cms.bool(True),
 
     applyFakeRateWeights = cms.string(""),

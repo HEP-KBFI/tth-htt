@@ -46,6 +46,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
         samples,
         lep_mva_wp,
         hadTau_selection,
+        hadTau_selection_veto,
         applyFakeRateWeights,
         jet_cleaning_by_index,
         gen_matching_by_index,
@@ -103,6 +104,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]
     self.lepton_and_hadTau_frWeights = [ "enabled", "disabled" ]
     self.hadTau_selection_part2 = hadTau_selection
+    self.hadTau_selection_veto = hadTau_selection_veto
     self.applyFakeRateWeights = applyFakeRateWeights
     run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
     if self.era != '2017':
@@ -456,6 +458,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                 'lep_mva_cut'              : self.lep_mva_cut,
                 'apply_leptonGenMatching'  : self.apply_leptonGenMatching,
                 'hadTauSelection'          :  hadTau_selection,
+                'hadTauSelection_veto'     : self.hadTau_selection_veto,
                 'apply_hadTauGenMatching'  : self.apply_hadTauGenMatching,
                 'applyFakeRateWeights'     : applyFakeRateWeights,
                 'central_or_shift'         : central_or_shift,
