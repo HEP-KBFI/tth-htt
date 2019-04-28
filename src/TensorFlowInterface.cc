@@ -8,71 +8,98 @@
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
 #pragma GCC diagnostic pop
 
-//#include "tensorflow/core/util/memmapped_file_system.h"
+//#include <tensorflow/core/util/memmapped_file_system.h>
 
-#include <boost/filesystem.hpp> // boost::filesystem::
-#include "boost/algorithm/string.hpp"
-
-#include <fstream> // std::ifstream
-#include <streambuf> // std::istreambuf_iterator<>()
-
-bool isDEBUG = false;
+#include <boost/algorithm/string.hpp> // boost::contains()
 
 TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName,
-                             const std::vector<std::string> & mvaInputVariables,
-                             const std::vector<std::string> classes,
-                             std::vector<double> mvaInputVariables_mean,
-                             std::vector<double> mvaInputVariables_var
-                           )
-  : session_(nullptr)
-  , mvaInputVariables_(mvaInputVariables)
+                                         const std::vector<std::string> & mvaInputVariables,
+                                         const std::vector<std::string> classes,
+                                         const std::vector<double> & mvaInputVariables_mean,
+                                         const std::vector<double> & mvaInputVariables_var)
+  : mvaFileName_(LocalFileInPath(mvaFileName).fullPath())
+  , graphDef_(nullptr)
+  , session_(nullptr)
   , classes_(classes)
+  , n_input_layer(0)
+  , n_output_layer(0)
+  , mvaInputVariables_(mvaInputVariables)
+  , mvaInputVariables_mean_(mvaInputVariables_mean)
+  , mvaInputVariables_var_(mvaInputVariables_var)
+  , isDEBUG_(false)
 {
   // loading the model
   tensorflow::SessionOptions options;
   tensorflow::setThreading(options, 1, "no_threads");
-  const LocalFileInPath mvaFileName_fip(mvaFileName);
-  mvaFileName_ = mvaFileName_fip.fullPath();
+
   graphDef_ = tensorflow::loadGraphDef(mvaFileName_);
   session_ = tensorflow::createSession(graphDef_);
-  std::cout << "Loaded: " << mvaFileName_ <<"\n";
-
-  mvaInputVariables_mean_ = mvaInputVariables_mean;
-  mvaInputVariables_var_ = mvaInputVariables_var;
+  std::cout << "Loaded: " << mvaFileName_ << '\n';
 
   // getting elements to evaluate -- the number of the input/output layer deppends of how the model was exported
   int shape_variables = 0;
-  for (int ii = 0; ii < graphDef_->node_size(); ii++) {
-    //input_layer_name  = graphDef_->node(graphDef_->node_size() - 1).name();
-    input_layer_name  = graphDef_->node(ii).name();
-    bool is_input = boost::contains(input_layer_name, "_input");
-    if (is_input) {
-      n_input_layer = ii;
-      if (isDEBUG) std::cout << "read input layer "<< input_layer_name << " " << n_input_layer << std::endl;
-      const auto& shape = graphDef_->node(ii).attr().at("shape").shape();
-      if (isDEBUG) std::cout << "read input layer shape  " << shape.dim_size() << std::endl;
-      shape_variables = int(shape.dim(1).size());
-      if (isDEBUG) std::cout << "read input layer shape length "<< shape_variables << std::endl;
+  for(int idx_node = 0; idx_node < graphDef_->node_size(); idx_node++)
+  {
+    input_layer_name  = graphDef_->node(idx_node).name();
+    const bool is_input = boost::contains(input_layer_name, "_input");
+    if(is_input)
+    {
+      n_input_layer = idx_node;
+      if(isDEBUG_)
+      {
+        std::cout << "read input layer "<< input_layer_name << " " << n_input_layer << '\n';
+      }
+
+      const auto & shape = graphDef_->node(idx_node).attr().at("shape").shape();
+      if(isDEBUG_)
+      {
+        std::cout << "read input layer shape  " << shape.dim_size() << '\n';
+      }
+
+      shape_variables = static_cast<int>(shape.dim(1).size());
+      if(isDEBUG_)
+      {
+        std::cout << "read input layer shape length "<< shape_variables << '\n';
+      }
       break;
     }
   }
-  if( shape_variables != int(mvaInputVariables_.size()) ) throw cms::Exception("TensorFlowInterface") << "number of classes declared ("<< int(mvaInputVariables_.size()) << ") does not match the expected inputs for the given version (" << shape_variables <<")";
 
-  //int shape_classes = 0;
-  for (int ii = 0; ii < graphDef_->node_size(); ii++) {
-    output_layer_name  = graphDef_->node(ii).name();
-    bool is_output = boost::contains(output_layer_name, "/Softmax");
-    if (is_output) {
-      n_output_layer = ii;
-      if (isDEBUG) std::cout << "read output layer "<< output_layer_name << " " << ii << std::endl;
-      //const auto& shape = graphDef_->node(ii-1).attr().at("shape").shape();
-      //std::cout << "read output layer shape  " << shape.dim_size() << std::endl;
-      //shape_classes = int(shape.dim(0).size());
+  if(shape_variables != static_cast<int>(mvaInputVariables_.size()))
+  {
+    throw cmsException(this)
+      << "number of classes declared ("<< mvaInputVariables_.size() << ") does not match the expected inputs for "
+         "the given version (" << shape_variables << ')'
+    ;
+  }
+
+//  int shape_classes = 0;
+  for (int idx_node = 0; idx_node < graphDef_->node_size(); idx_node++)
+  {
+    output_layer_name  = graphDef_->node(idx_node).name();
+    const bool is_output = boost::contains(output_layer_name, "/Softmax");
+    if(is_output)
+    {
+      n_output_layer = idx_node;
+      if(isDEBUG_)
+      {
+        std::cout << "read output layer "<< output_layer_name << " " << idx_node << '\n';
+      }
+
+//      const auto & shape = graphDef_->node(idx_node-1).attr().at("shape").shape();
+//      std::cout << "read output layer shape  " << shape.dim_size() << '\n';
+//      shape_classes = static_cast<int>(shape.dim(0).size());
       break;
     }
   }
-  //if(shape_classes != int(classes_.size())) throw cms::Exception("TensorFlowInterface") << "number of classes declared ("<< int(classes_.size()) << ") does not match the expected inputs for the given version (" << shape_classes <<")";
 
+//  if(shape_classes != static_cast<int>(classes_.size()))
+//  {
+//    throw cmsException(this)
+//      << "number of classes declared (" << classes_.size() << ") does not match the expected inputs for the given "
+//         "version (" << shape_classes << ')'
+//    ;
+//  }
 }
 
 TensorFlowInterface::~TensorFlowInterface()
@@ -87,45 +114,80 @@ std::map<std::string, double>
 TensorFlowInterface::operator()(const std::map<std::string, double> & mvaInputs) const
 {
 
-  const int NumberOfInputs = mvaInputVariables_.size();
-  tensorflow::Tensor inputs(tensorflow::DT_FLOAT, { 1, NumberOfInputs});
+  const int nofInputs = mvaInputVariables_.size();
+  tensorflow::Tensor inputs(tensorflow::DT_FLOAT, { 1, nofInputs});
+
   // the order of input variables should be the same as during the training
-  for (int i = 0; i < NumberOfInputs; i++) {
-    if(mvaInputs.count(mvaInputVariables_[i]))
+  for(int idx_input = 0; idx_input < nofInputs; ++idx_input)
+  {
+    if(mvaInputs.count(mvaInputVariables_[idx_input]))
     {
-      if ( mvaInputVariables_mean_.size() > 0) {
-      inputs.matrix<float>()(0, i) = (
-        float(mvaInputs.at(mvaInputVariables_[i])) - mvaInputVariables_mean_[i]
-      )/mvaInputVariables_var_[i];
-      if ( isDEBUG ) std::cout << mvaInputVariables_[i]
-      << " = " << mvaInputs.at(mvaInputVariables_[i])
-      << " = " << mvaInputVariables_mean_[i]
-      << " = " << mvaInputVariables_var_[i]
-      << std::endl;
-    } else {
-      inputs.matrix<float>()(0, i) = float(mvaInputs.at(mvaInputVariables_[i]));
-      if (isDEBUG) std::cout << mvaInputVariables_[i]  << " = " << mvaInputs.at(mvaInputVariables_[i]) << std::endl;
-    }
+      if(! mvaInputVariables_mean_.empty())
+      {
+        inputs.matrix<float>()(0, idx_input) = (
+            static_cast<float>(mvaInputs.at(mvaInputVariables_[idx_input])) - mvaInputVariables_mean_[idx_input]
+          ) / mvaInputVariables_var_[idx_input];
+
+        if(isDEBUG_)
+        {
+          std::cout << mvaInputVariables_[idx_input]
+            << " = " << mvaInputs.at(mvaInputVariables_[idx_input])
+            << " = " << mvaInputVariables_mean_[idx_input]
+            << " = " << mvaInputVariables_var_[idx_input]
+            << '\n'
+          ;
+        }
+      }
+      else
+      {
+        inputs.matrix<float>()(0, idx_input) = static_cast<float>(mvaInputs.at(mvaInputVariables_[idx_input]));
+        if(isDEBUG_)
+        {
+          std::cout << mvaInputVariables_[idx_input]  << " = " << mvaInputs.at(mvaInputVariables_[idx_input]) << '\n';
+        }
+      }
     }
     else
     {
-      throw cms::Exception("TensorFlowInterface::operator()")
-        << "Missing value for MVA input variable = '" << mvaInputVariables_[i] << "' !!\n";
+      throw cmsException(this, __func__, __LINE__)
+        << "Missing value for MVA input variable = '" << mvaInputVariables_[idx_input] << '\''
+      ;
     }
   }
 
   // evaluation
-  int node_count = graphDef_->node_size();
-  if (isDEBUG) for (int i = 0; i < node_count; i++)
+  const int node_count = graphDef_->node_size();
+  if (isDEBUG_)
   {
-          auto n = graphDef_->node(i);
-          std::cout<<"Names : "<< n.name() <<std::endl;
+    for (int idx_node = 0; idx_node < node_count; ++idx_node)
+    {
+      const auto node = graphDef_->node(idx_node);
+      std::cout << "Names : " << node.name() << '\n';
+    }
   }
+
   std::vector<tensorflow::Tensor> outputs;
-  if (isDEBUG) std::cout << "start run "<< graphDef_->node(n_input_layer).name() << " " << graphDef_->node(n_output_layer).name()<< std::endl;
-  tensorflow::run(session_, { { graphDef_->node(n_input_layer).name(), inputs } }, {graphDef_->node(n_output_layer).name() }, &outputs);
+  if(isDEBUG_)
+  {
+    std::cout
+      << "start run " << graphDef_->node(n_input_layer).name()
+      << " "          << graphDef_->node(n_output_layer).name()
+      << '\n'
+    ;
+  }
+  tensorflow::run(
+    session_,
+    { { graphDef_->node(n_input_layer).name(), inputs } },
+    { graphDef_->node(n_output_layer).name() },
+    &outputs
+  );
+
   // store the output
   std::map<std::string, double> mvaOutputs;
-  for (unsigned int i = 0; i < classes_.size(); i++) mvaOutputs[classes_[i]] = outputs[0].matrix<float>()(0, i);
+  for(unsigned int idx_class = 0; idx_class < classes_.size(); idx_class++)
+  {
+    mvaOutputs[classes_[idx_class]] = outputs[0].matrix<float>()(0, idx_class);
+  }
+
   return mvaOutputs;
 }
