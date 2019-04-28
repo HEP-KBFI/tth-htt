@@ -2,7 +2,13 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wshadow"
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
+#pragma GCC diagnostic pop
+
 //#include "tensorflow/core/util/memmapped_file_system.h"
 
 #include <boost/filesystem.hpp> // boost::filesystem::
