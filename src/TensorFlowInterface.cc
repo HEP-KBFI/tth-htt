@@ -4,7 +4,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #pragma GCC diagnostic ignored "-Wshadow"
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
 #pragma GCC diagnostic pop
