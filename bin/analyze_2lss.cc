@@ -589,7 +589,7 @@ int main(int argc, char* argv[])
     std::map<std::string, EvtHistManager_2lss*> evt_in_decayModes_;
 
     std::map<std::string, std::map<std::string, EvtHistManager_2lss*>> evt_in_categories_and_decayModes_; // key = category, decayMode
-    std::map<std::string, EvtHistManager_2lss*> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_;
+    std::map<std::string, std::map<std::string, EvtHistManager_2lss*>> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_;
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
@@ -672,8 +672,7 @@ int main(int argc, char* argv[])
       "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_em_bl",
       "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_em_bt",
       "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bl",
-      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bt",
-      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_no_cat"
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bt"
      };
     for ( vstring::const_iterator category = categories_evt.begin();
 	    category != categories_evt.end(); ++category ) {
@@ -723,13 +722,13 @@ int main(int argc, char* argv[])
   category != categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4.end(); ++category ) {
     TString histogramDir_category = histogramDir.data();
     histogramDir_category.ReplaceAll("2lss",  category->data());
-    selHistManager -> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[*category+decayMode_evt] = new EvtHistManager_2lss(makeHistManager_cfg(
+    selHistManager -> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[*category][decayMode_evt] = new EvtHistManager_2lss(makeHistManager_cfg(
       decayMode_and_genMatch,
       Form("%s/sel/evt", histogramDir_category.Data()),
       era_string,
       central_or_shift
     ));
-    selHistManager -> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[*category+decayMode_evt] -> bookHistograms(fs);
+    selHistManager -> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[*category][decayMode_evt] -> bookHistograms(fs);
   }
 
       }
@@ -1386,7 +1385,9 @@ int main(int argc, char* argv[])
     // Xanda: It is written like this to be easier to add the tH-selection if we decide to
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
-    if ( !(ttH_like || ttW_like) ) {
+    bool passEvents = ttH_like || ttW_like;
+    if(do_sync) passEvents = ttH_like;
+    if ( !(passEvents) ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS Hadronic selection." << std::endl;
 	printCollection("selJets", selJets);
@@ -1930,7 +1931,7 @@ int main(int argc, char* argv[])
           );
 	}
 
-  EvtHistManager_2lss* selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes = selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[category_2lss_ttH_tH_4cat_onlyTHQ_v4+decayModeStr];
+  EvtHistManager_2lss* selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes = selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[category_2lss_ttH_tH_4cat_onlyTHQ_v4][decayModeStr];
   if ( selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
       selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes->fillHistograms(
         selElectrons.size(),
