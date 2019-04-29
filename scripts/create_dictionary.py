@@ -19,15 +19,25 @@ import shutil
 import datetime
 import math
 
-HISTOGRAM_COUNT                           = 'Count'
-HISTOGRAM_COUNTWEIGHTED                   = 'CountWeighted'
-HISTOGRAM_COUNTWEIGHTED_NOPU              = 'CountWeightedNoPU'
-HISTOGRAM_COUNTFULLWEIGHTED               = 'CountFullWeighted'
-HISTOGRAM_COUNTFULLWEIGHTED_NOPU          = 'CountFullWeightedNoPU'
-HISTOGRAM_COUNTWEIGHTED_LHESCALE          = 'CountWeightedLHEWeightScale'
-HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU     = 'CountWeightedLHEWeightScaleNoPU'
-HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE      = 'CountFullWeightedLHEWeightScale'
-HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU = 'CountFullWeightedLHEWeightScaleNoPU'
+HISTOGRAM_COUNT                                         = 'Count'
+HISTOGRAM_COUNTWEIGHTED                                 = 'CountWeighted'
+HISTOGRAM_COUNTWEIGHTED_L1PREFIRE_NOM                   = 'CountWeightedL1PrefireNom'
+HISTOGRAM_COUNTWEIGHTED_L1PREFIRE                       = 'CountWeightedL1Prefire'
+HISTOGRAM_COUNTWEIGHTED_NOPU                            = 'CountWeightedNoPU'
+HISTOGRAM_COUNTWEIGHTED_NOPU_L1PREFIRE_NOM              = 'CountWeightedNoPUL1PrefireNom'
+HISTOGRAM_COUNTFULLWEIGHTED                             = 'CountFullWeighted'
+HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE_NOM               = 'CountFullWeightedL1PrefireNom'
+HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE                   = 'CountFullWeightedL1Prefire'
+HISTOGRAM_COUNTFULLWEIGHTED_NOPU                        = 'CountFullWeightedNoPU'
+HISTOGRAM_COUNTFULLWEIGHTED_NOPU_L1PREFIRE_NOM          = 'CountFullWeightedNoPUL1PrefireNom'
+HISTOGRAM_COUNTWEIGHTED_LHESCALE                        = 'CountWeightedLHEWeightScale'
+HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM          = 'CountWeightedLHEWeightScaleL1PrefireNom'
+HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU                   = 'CountWeightedLHEWeightScaleNoPU'
+HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM     = 'CountWeightedLHEWeightScaleNoPUL1PrefireNom'
+HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE                    = 'CountFullWeightedLHEWeightScale'
+HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM      = 'CountFullWeightedLHEWeightScaleL1PrefireNom'
+HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU               = 'CountFullWeightedLHEWeightScaleNoPU'
+HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM = 'CountFullWeightedLHEWeightScaleNoPUL1PrefireNom'
 EVENTS_TREE                               = 'Events'
 
 HISTOGRAM_COUNT_KEY = 'histogram_count'
@@ -442,6 +452,19 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
       HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE      : -1,
       HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU : -1,
     })
+    if era in [ 2016, 2017 ]:
+      histogram_names.update({
+        HISTOGRAM_COUNTWEIGHTED_L1PREFIRE_NOM                   : -1,
+        HISTOGRAM_COUNTWEIGHTED_L1PREFIRE                       : -1,
+        HISTOGRAM_COUNTWEIGHTED_NOPU_L1PREFIRE_NOM              : -1,
+        HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE_NOM               : -1,
+        HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE                   : -1,
+        HISTOGRAM_COUNTFULLWEIGHTED_NOPU_L1PREFIRE_NOM          : -1,
+        HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM          : -1,
+        HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM     : -1,
+        HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM      : -1,
+        HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM : -1,
+      })
 
   indices = {}
   for entry in entries_valid:
