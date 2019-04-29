@@ -102,15 +102,6 @@ elif mode == 'sync':
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
-if era == "2016":
-  hadTauVeto_selection = "dR03mvaMedium"
-elif era == "2017":
-  hadTauVeto_selection = "dR03mvaLoose"
-elif era == "2018":
-  pass
-else:
-  raise ValueError("Invalid era: %s" % era)
-
 if __name__ == '__main__':
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
@@ -126,7 +117,7 @@ if __name__ == '__main__':
     executable_analyze                    = "analyze_ttZctrl",
     cfgFile_analyze                       = "analyze_ttZctrl_cfg.py",
     samples                               = samples,
-    hadTauVeto_selection                  = hadTauVeto_selection,
+    hadTauVeto_selection                  = "dR03mvaLoose",
     applyFakeRateWeights                  = "3lepton",
     jet_cleaning_by_index                 = jet_cleaning_by_index,
     gen_matching_by_index                 = gen_matching_by_index,

@@ -87,16 +87,8 @@ if mode == "default":
     else:
       raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    hadTau_selection = "dR03mvaVTight"
-  elif era == "2017":
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection = "dR03mvaMedium"
 
-  applyFakeRateWeights = "2L"
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -112,18 +104,9 @@ elif mode == "forBDTtraining":
 
   # CV: check if BDT training statistics is sufficient with nominal tau ID working point
   #     before relaxing tau ID working point
-  if era == "2016":
-    hadTau_selection         = "dR03mvaTight"
-    hadTau_selection_relaxed = "dR03mvaTight" 
-  elif era == "2017":
-    hadTau_selection         = "dR03mvaLoose"
-    hadTau_selection_relaxed = "dR03mvaLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection         = "dR03mvaLoose"
+  hadTau_selection_relaxed = "dR03mvaLoose"
 
-  applyFakeRateWeights = "2L"
 elif mode == "sync":
   if use_preselected:
     if era == "2016":
@@ -154,28 +137,10 @@ elif mode == "sync":
       else:
         raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    hadTau_selection = "dR03mvaVTight"
-  elif era == "2017":
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection = "dR03mvaMedium"
 
-  applyFakeRateWeights = "2L"
 else:
   raise ValueError("Invalid mode: %s" % mode)
-
-# To avoid overlap w/ 1l+2tau SR
-if era == "2016":
-  hadTau_selection_veto = "dR03mvaVTight"
-elif era == "2017":
-  hadTau_selection_veto = "dR03mvaMedium"
-elif era == "2018":
-  raise ValueError("Implement me!")
-else:
-  raise ValueError("Invalid era: %s" % era)
 
 if __name__ == '__main__':
   logging.info(
@@ -200,9 +165,9 @@ if __name__ == '__main__':
     samples                               = samples,
     lep_mva_wp                            = lep_mva_wp,
     hadTau_selection                      = hadTau_selection,
-    hadTau_selection_veto                 = hadTau_selection_veto,
+    hadTau_selection_veto                 = "dR03mvaMedium", # To avoid overlap w/ 1l+2tau SR
     chargeSumSelections                   = [ "disabled" ], # CV: setting chargeSumSelections to 'disabled' will run OS and SS lepton+tau charge selections as separate categories
-    applyFakeRateWeights                  = applyFakeRateWeights,
+    applyFakeRateWeights                  = "2L",
     jet_cleaning_by_index                 = jet_cleaning_by_index,
     gen_matching_by_index                 = gen_matching_by_index,
     central_or_shifts                     = central_or_shifts,

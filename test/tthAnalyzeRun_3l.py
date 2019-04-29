@@ -115,15 +115,6 @@ elif mode == "sync":
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
-if era == "2016":
-  hadTauVeto_selection = "dR03mvaMedium"
-elif era == "2017":
-  hadTauVeto_selection = "dR03mvaLoose"
-elif era == "2018":
-  pass
-else:
-  raise ValueError("Invalid era: %s" % era)
-
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
   if sample_name.startswith('/Tau/Run'):
@@ -145,7 +136,7 @@ if __name__ == '__main__':
     cfgFile_analyze                       = "analyze_3l_cfg.py",
     samples                               = samples,
     MEMbranch                             = None, # CV: MEM not implemented for 3l channel yet
-    hadTauVeto_selection                  = hadTauVeto_selection, # veto events containing taus that pass tau ID WP applied in 3l+1tau channel,
+    hadTauVeto_selection                  = "dR03mvaLoose", # veto events containing taus that pass tau ID WP applied in 3l+1tau channel,
     applyFakeRateWeights                  = "3lepton",
     chargeSumSelections                   = chargeSumSelections,
     jet_cleaning_by_index                 = jet_cleaning_by_index,

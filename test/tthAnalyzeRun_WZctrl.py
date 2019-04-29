@@ -93,15 +93,6 @@ elif mode == 'sync':
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
-if era == "2016":
-  hadTauVeto_selection = "dR03mvaMedium"
-elif era == "2017":
-  hadTauVeto_selection = "dR03mvaLoose"
-elif era == "2018":
-  pass
-else:
-  raise ValueError("Invalid era: %s" % era)
-
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
   if sample_info["process_name_specific"].startswith("WZTo3LNu"):
@@ -122,7 +113,7 @@ if __name__ == '__main__':
     executable_analyze                    = "analyze_WZctrl",
     cfgFile_analyze                       = "analyze_WZctrl_cfg.py",
     samples                               = samples,
-    hadTauVeto_selection                  = hadTauVeto_selection,
+    hadTauVeto_selection                  = "dR03mvaLoose",
     applyFakeRateWeights                  = "3lepton",
     jet_cleaning_by_index                 = jet_cleaning_by_index,
     gen_matching_by_index                 = gen_matching_by_index,

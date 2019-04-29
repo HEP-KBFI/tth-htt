@@ -90,16 +90,8 @@ if mode == "default":
     else:
       raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    hadTau_selection = "dR03mvaVTight"
-  elif era == "2017":
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection = "dR03mvaMedium"
 
-  applyFakeRateWeights = "3L"
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -113,19 +105,10 @@ elif mode == "forBDTtraining":
     else:
       raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    hadTau_selection         = "dR03mvaTight"
-    hadTau_selection_relaxed = "dR03mvaMedium"
-  elif era == "2017":
-    hadTau_selection         = "dR03mvaLoose"
-    hadTau_selection_relaxed = "dR03mvaVLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
-
-  applyFakeRateWeights     = "3L"
+  hadTau_selection         = "dR03mvaLoose"
+  hadTau_selection_relaxed = "dR03mvaVLoose"
   hadTau_charge_selections = [ "OS" ]
+
 elif mode.startswith("sync"):
   if mode == "sync_wMEM":
     if use_preselected:
@@ -178,16 +161,8 @@ elif mode.startswith("sync"):
   else:
     raise ValueError("Invalid mode: %s" % mode)
 
-  if era == "2016":
-    hadTau_selection = "dR03mvaVTight"
-  elif era == "2017":
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection = "dR03mvaMedium"
 
-  applyFakeRateWeights = "3L"
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
@@ -215,7 +190,7 @@ if __name__ == '__main__':
     lep_mva_wp                            = lep_mva_wp,
     hadTau_selection                      = hadTau_selection,
     hadTau_charge_selections              = hadTau_charge_selections,
-    applyFakeRateWeights                  = applyFakeRateWeights,
+    applyFakeRateWeights                  = "3L",
     jet_cleaning_by_index                 = jet_cleaning_by_index,
     gen_matching_by_index                 = gen_matching_by_index,
     central_or_shifts                     = central_or_shifts,

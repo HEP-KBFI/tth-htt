@@ -93,16 +93,8 @@ if mode == "default":
     else:
       raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2017":
-    hadTau_selection = "dR03mvaLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection = "dR03mvaLoose"
 
-  applyFakeRateWeights = "2lepton"
 elif mode == "addMEM":
   if use_preselected:
     if era == "2016":
@@ -123,17 +115,9 @@ elif mode == "addMEM":
     else:
       raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    MEMbranch        = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2017":
-    MEMbranch        = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaLoose'
-    hadTau_selection = "dR03mvaLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
-  applyFakeRateWeights = "2lepton"
+  hadTau_selection = "dR03mvaLoose"
+  MEMbranch        = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
+
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -147,18 +131,9 @@ elif mode == "forBDTtraining_beforeAddMEM":
     else:
       raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    hadTau_selection         = "dR03mvaMedium"
-    hadTau_selection_relaxed = "dR03mvaMedium"
-  elif era == "2017":
-    hadTau_selection         = "dR03mvaLoose"
-    hadTau_selection_relaxed = "dR03mvaLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection         = "dR03mvaLoose"
+  hadTau_selection_relaxed = "dR03mvaLoose"
 
-  applyFakeRateWeights     = "2lepton"
 elif mode == "forBDTtraining_afterAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -172,20 +147,10 @@ elif mode == "forBDTtraining_afterAddMEM":
     else:
       raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
-    hadTau_selection         = "dR03mvaMedium"
-    hadTau_selection_relaxed = "dR03mvaMedium"
-  elif era == "2017":
-    MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaLoose'
-    hadTau_selection         = "dR03mvaLoose"
-    hadTau_selection_relaxed = "dR03mvaLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection         = "dR03mvaLoose"
+  hadTau_selection_relaxed = "dR03mvaLoose"
+  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_{}'.format(hadTau_selection)
 
-  applyFakeRateWeights     = "2lepton"
 elif mode.startswith("sync"):
   if mode == "sync_wMEM":
     if use_preselected:
@@ -238,28 +203,10 @@ elif mode.startswith("sync"):
   else:
     raise ValueError("Invalid mode: %s" % mode)
 
-  if era == "2016":
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2017":
-    hadTau_selection = "dR03mvaLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection = "dR03mvaLoose"
 
-  applyFakeRateWeights = "2lepton"
 else:
   raise ValueError("Invalid mode: %s" % mode)
-
-# To avoid overlap w/ 2l+2tau SR
-if era == "2016":
-  hadTau_selection_veto = "dR03mvaVTight"
-elif era == "2017":
-  hadTau_selection_veto = "dR03mvaMedium"
-elif era == "2018":
-  raise ValueError("Implement me!")
-else:
-  raise ValueError("Invalid era: %s" % era)
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
@@ -294,10 +241,10 @@ if __name__ == '__main__':
     lepton_charge_selections  = lepton_charge_selections,
     lep_mva_wp                = lep_mva_wp,
     hadTau_selection          = hadTau_selection,
-    hadTau_selection_veto     = hadTau_selection_veto,
+    hadTau_selection_veto     = "dR03mvaMedium", # To avoid overlap w/ 2l+2tau SR
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
-    applyFakeRateWeights      = applyFakeRateWeights,
+    applyFakeRateWeights      = "2lepton",
     chargeSumSelections       = chargeSumSelections,
     jet_cleaning_by_index     = jet_cleaning_by_index,
     gen_matching_by_index     = gen_matching_by_index,

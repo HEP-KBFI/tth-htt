@@ -92,16 +92,8 @@ if mode == "default":
     else:
       raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2017":
-    hadTau_selection = "dR03mvaLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection = "dR03mvaLoose"
 
-  applyFakeRateWeights = "3lepton"
 elif mode == "addMEM":
   if use_preselected:
     if era == "2016":
@@ -122,18 +114,9 @@ elif mode == "addMEM":
     else:
       raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaMedium'
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2017":
-    MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaLoose'
-    hadTau_selection = "dR03mvaLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection = "dR03mvaLoose"
+  MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
 
-  applyFakeRateWeights = "3lepton"
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -147,18 +130,9 @@ elif mode == "forBDTtraining_beforeAddMEM":
     else:
       raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    hadTau_selection         = "dR03mvaVTight"
-    hadTau_selection_relaxed = "dR03mvaMedium"
-  elif era == "2017":
-    hadTau_selection         = "dR03mvaTight"
-    hadTau_selection_relaxed = "dR03mvaVVLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection         = "dR03mvaTight"
+  hadTau_selection_relaxed = "dR03mvaVVLoose"
 
-  applyFakeRateWeights = "4L"
 elif mode == "forBDTtraining_afterAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -172,20 +146,10 @@ elif mode == "forBDTtraining_afterAddMEM":
     else:
       raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVLoose'
-    hadTau_selection         = "dR03mvaVTight"
-    hadTau_selection_relaxed = "dR03mvaMedium"
-  elif era == "2017":
-    MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVVLoose'
-    hadTau_selection         = "dR03mvaTight"
-    hadTau_selection_relaxed = "dR03mvaVVLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  hadTau_selection         = "dR03mvaTight"
+  hadTau_selection_relaxed = "dR03mvaVVLoose"
+  MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_{}'.format(hadTau_selection_relaxed)
 
-  applyFakeRateWeights     = "4L"
 elif mode.startswith("sync"):
   if mode == "sync_wMEM":
     if use_preselected:
@@ -238,15 +202,7 @@ elif mode.startswith("sync"):
   else:
     raise ValueError("Invalid mode: %s" % mode)
 
-  if era == "2016":
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2017":
-    hadTau_selection = "dR03mvaLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
-  applyFakeRateWeights = "3lepton"
+  hadTau_selection = "dR03mvaLoose"
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
@@ -276,7 +232,7 @@ if __name__ == '__main__':
     hadTau_selection                      = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
-    applyFakeRateWeights                  = applyFakeRateWeights,
+    applyFakeRateWeights                  = "3lepton",
     chargeSumSelections                   = chargeSumSelections,
     jet_cleaning_by_index                 = jet_cleaning_by_index,
     gen_matching_by_index                 = gen_matching_by_index,

@@ -84,19 +84,32 @@ else:
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
+
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "1mu", "2e", "2mu" ]
-  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):
-      sample_info["use_it"] = False
+
   if sample_info["sample_category"] == "QCD":
     sample_info["use_it"] = True
     if sample_info["process_name_specific"].endswith("_Mu5"):
       sample_info["use_it"] = not qcd_inclusive
     elif sample_info["process_name_specific"] == "QCD_Mu15":
       sample_info["use_it"] = qcd_inclusive
-  if era == "2017":
+
+  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):
+    sample_info["use_it"] = False
+
+  if era == "2016":
+    if sample_name.startswith('/SingleElectron'):
+      # SingleElectron excluded since no 1e triggers used
+      sample_info["use_it"] = False
+  elif era == "2017":
     if sample_name.startswith(('/DoubleEG/Run', '/SingleElectron/Run2017B')):
-      # '/SingleElectron/Run2017B' excluded since no useful triggers present in that dataset
+      # DoubleEG excluded since no 2e triggers used
+      # SingleElectron B run excluded since no useful triggers present in that dataset
+      sample_info["use_it"] = False
+  elif era == "2018":
+    if sample_name.startswith('/DoubleEG/Run'):
+      # DoubleEG excluded since no 2e triggers used
       sample_info["use_it"] = False
 
 if __name__ == '__main__':

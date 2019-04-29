@@ -94,14 +94,7 @@ else:
     else:
       raise ValueError("Invalid era: %s" % era)
 
-if era == "2016":
-  hadTau_selection = "dR03mvaVLoose"
-elif era == "2017":
-  hadTau_selection = "dR03mvaVLoose"
-elif era == "2018":
-  hadTau_selection = "dR03mvaVLoose"
-else:
-  raise ValueError("Invalid era: %s" % era)
+hadTau_selection = "dR03mvaVLoose"
 
 if __name__ == '__main__':
   if sample_filter:

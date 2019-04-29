@@ -65,22 +65,11 @@ elif era == "2018":
 else:
   raise ValueError("Invalid era: %s" % era)
 
-if era == "2016":
-  hadTau_selection_denominator = "dR03mvaLoose"
-elif era == "2017":
-  #hadTau_selection_denominator = "dR03mvaVLoose"
-  hadTau_selection_denominator = "dR03mvaVVLoose" # CV: 'dR03mvaVVLoose' discriminator requires new Ntuple production, as 'dR03mvaVLoose' discriminator required in prodNtuple step
-elif era == "2018":
-  raise ValueError("Implement me!")
-else:
-  raise ValueError("Invalid era: %s" % era)
-
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "1mu", "1e1mu" ]
-  if era == "2016" and sample_name.startswith(("/DoubleMuon/", "/DoubleEG/", "/Tau/")) and \
-     sample_name.find("PromptReco-v3") == -1:
+  if sample_name.startswith(("/DoubleMuon/", "/DoubleEG/", "/Tau/")) and sample_name.find("PromptReco") == -1:
       sample_info["use_it"] = False
 
 if __name__ == '__main__':
@@ -110,7 +99,7 @@ if __name__ == '__main__':
     jet_maxPt                        = 1.e+6,
     jet_minAbsEta                    = -1.,
     jet_maxAbsEta                    = 2.3,
-    hadTau_selection_denominator     = hadTau_selection_denominator,
+    hadTau_selection_denominator     = "dR03mvaVVLoose",
     hadTau_selections_numerator      = [
       "dR03mvaVLoose",
       "dR03mvaLoose",
