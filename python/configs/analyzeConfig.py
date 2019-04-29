@@ -177,7 +177,8 @@ class analyzeConfig(object):
             self.central_or_shifts.remove('central')
             self.central_or_shifts = [ 'central' ] + self.central_or_shifts
         #------------------------------------------------------------------------
-        if (set(systematics.L1PreFiring) & set(self.central_or_shifts)) == set(systematics.L1PreFiring) and self.era == "2018":
+        self.do_l1prefiring = False # FIXME: re-enable once the histograms are available: self.era != "2018"
+        if (set(systematics.L1PreFiring) & set(self.central_or_shifts)) == set(systematics.L1PreFiring) and not self.do_l1prefiring:
           logging.warning('Removing systematics from {} era:'.format(self.era, ', '.join(systematics.L1PreFiring)))
           for central_or_shift in systematics.L1PreFiring:
             self.central_or_shifts.remove(central_or_shift)
@@ -588,63 +589,72 @@ class analyzeConfig(object):
         if 'apply_DYMCNormScaleFactors' not in jobOptions:
           jobOptions['apply_DYMCNormScaleFactors'] =  is_dymc_reweighting(sample_info["dbs_name"])
         if 'apply_l1PreFireWeight' not in jobOptions:
-          jobOptions['apply_l1PreFireWeight'] = self.era != "2018"
+          jobOptions['apply_l1PreFireWeight'] = self.do_l1prefiring
         if 'central_or_shift' not in jobOptions:
           jobOptions['central_or_shift'] = 'central'
         if 'lumiScale' not in jobOptions:
           nof_events = -1
           if is_mc:
             # Convention: CountWeighted includes the sign of genWeight, CountFullWeighted includes the full genWeight
+            # If L1 prefiring weights are enabled, then L1PrefireNom suffix is added
+            count_suffix = "L1PrefireNom" if self.do_l1prefiring else ""
+
             central_or_shift = jobOptions['central_or_shift']
             if central_or_shift == systematics.PU_().up:
-              nof_events = sample_info["nof_events"]['CountWeighted'][1] # PU weight up
-              stitch_histogram_name = 'CountWeighted_1'
+              nof_events = sample_info["nof_events"]['CountWeighted{}'.format(count_suffix)][1] # PU weight up
+              stitch_histogram_name = 'CountWeighted{}_1'.format(count_suffix)
             elif central_or_shift == systematics.PU_().down:
-              nof_events = sample_info["nof_events"]['CountWeighted'][2] # PU weight down
-              stitch_histogram_name = 'CountWeighted_2'
+              nof_events = sample_info["nof_events"]['CountWeighted{}'.format(count_suffix)][2] # PU weight down
+              stitch_histogram_name = 'CountWeighted{}_2'.format(count_suffix)
             elif central_or_shift in systematics.LHE().x1_up:
-              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale'])
+              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)])
               if nof_lhe_scale_weights == 9:
                 lhe_idx = 5
               elif nof_lhe_scale_weights == 44:
                 lhe_idx = 24
               else:
                 raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
-              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][lhe_idx] # muR=1   muF=2
-              stitch_histogram_name = 'CountWeightedLHEWeightScale_%d' % lhe_idx
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)][lhe_idx] # muR=1   muF=2
+              stitch_histogram_name = 'CountWeightedLHEWeightScale{}_{}'.format(count_suffix, lhe_idx)
             elif central_or_shift in systematics.LHE().y1_up:
-              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale'])
+              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)])
               if nof_lhe_scale_weights == 9:
                 lhe_idx = 7
               elif nof_lhe_scale_weights == 44:
                 lhe_idx = 34
               else:
                 raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
-              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][lhe_idx] # muR=2   muF=1
-              stitch_histogram_name = 'CountWeightedLHEWeightScale_%d' % lhe_idx
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)][lhe_idx] # muR=2   muF=1
+              stitch_histogram_name = 'CountWeightedLHEWeightScale{}_{}'.format(count_suffix, lhe_idx)
             elif central_or_shift in systematics.LHE().x1_down:
-              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale'])
+              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)])
               if nof_lhe_scale_weights == 9:
                 lhe_idx = 3
               elif nof_lhe_scale_weights == 44:
                 lhe_idx = 15
               else:
                 raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
-              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][lhe_idx] # muR=1   muF=0.5
-              stitch_histogram_name = 'CountWeightedLHEWeightScale_%d' % lhe_idx
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)][lhe_idx] # muR=1   muF=0.5
+              stitch_histogram_name = 'CountWeightedLHEWeightScale{}_{}'.format(count_suffix, lhe_idx)
             elif central_or_shift in systematics.LHE().y1_down:
-              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale'])
+              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)])
               if nof_lhe_scale_weights == 9:
                 lhe_idx = 1
               elif nof_lhe_scale_weights == 44:
                 lhe_idx = 5
               else:
                 raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
-              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][lhe_idx] # muR=0.5 muF=1
-              stitch_histogram_name = 'CountWeightedLHEWeightScale_%d' % lhe_idx
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)][lhe_idx] # muR=0.5 muF=1
+              stitch_histogram_name = 'CountWeightedLHEWeightScale{}_{}'.format(count_suffix, lhe_idx)
+            elif central_or_shift in systematics.L1PreFiring_().up:
+              nof_events = sample_info["nof_events"]['CountWeightedL1Prefire'][1]  # L1 prefiring weight up
+              stitch_histogram_name = 'CountWeightedL1Prefire_1'
+            elif central_or_shift in systematics.L1PreFiring_().down:
+              nof_events = sample_info["nof_events"]['CountWeightedL1Prefire'][2]  # L1 prefiring weight down
+              stitch_histogram_name = 'CountWeightedL1Prefire_2'
             else:
               nof_events = sample_info["nof_events"]['CountWeighted'][0] # PU weight central
-              stitch_histogram_name = 'CountWeighted_0'
+              stitch_histogram_name = 'CountWeighted{}_0'.format(count_suffix)
           else:
             nof_events = sample_info["nof_events"]['Count'][0]
           assert(nof_events > 0)

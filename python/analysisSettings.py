@@ -41,7 +41,13 @@ class systematics(object):
   triggerSF            = [ "CMS_ttHl_triggerUp",              "CMS_ttHl_triggerDown"              ]
   DYMCReweighting      = [ "CMS_ttHl_DYMCReweightingUp",      "CMS_ttHl_DYMCReweightingDown"      ]
   DYMCNormScaleFactors = [ "CMS_ttHl_DYMCNormScaleFactorsUp", "CMS_ttHl_DYMCNormScaleFactorsDown" ]
-  L1PreFiring          = [ "CMS_ttHl_l1PreFireUp",            "CMS_ttHl_l1PreFireDown"            ]
+
+  class L1PreFiring_(object):
+    up   = "CMS_ttHl_l1PreFireUp"
+    down = "CMS_ttHl_l1PreFireDown"
+    full = [ up, down ]
+
+  L1PreFiring = L1PreFiring_().full
 
   class PU_(object):
     up   = "CMS_ttHl_pileupUp"
