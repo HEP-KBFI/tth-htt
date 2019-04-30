@@ -28,7 +28,7 @@ public:
   MEMOutput_3l
   operator()(const RecoLepton * selLepton_lead,
              const RecoLepton * selLepton_sublead,
-	     const RecoLepton * selLepton_third,
+             const RecoLepton * selLepton_third,
              const RecoMEt & met,
              const std::vector<const RecoJet *> & selJets) const;
 

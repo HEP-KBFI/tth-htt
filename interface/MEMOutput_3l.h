@@ -38,7 +38,7 @@ public:
   void
   fillInputs(const RecoLepton * leadLepton,
              const RecoLepton * subleadLepton,
-	     const RecoLepton * thirdLepton);
+             const RecoLepton * thirdLepton);
 
   EventInfo eventInfo_;
   Float_t leadLepton_eta_;

@@ -22,8 +22,8 @@ MEMOutput_3l::MEMOutput_3l()
 
 void
 MEMOutput_3l::fillInputs(const RecoLepton * leadLepton,
-			 const RecoLepton * subleadLepton,
-			 const RecoLepton * thirdLepton)
+                         const RecoLepton * subleadLepton,
+                         const RecoLepton * thirdLepton)
 {
   leadLepton_eta_    = leadLepton -> eta();
   leadLepton_phi_    = leadLepton -> phi();
