@@ -18,6 +18,7 @@ import time
 import shutil
 import datetime
 import math
+import collections
 
 HISTOGRAM_COUNT                                         = 'Count'
 HISTOGRAM_COUNTWEIGHTED                                 = 'CountWeighted'
@@ -38,7 +39,7 @@ HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE                    = 'CountFullWeightedLHEW
 HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM      = 'CountFullWeightedLHEWeightScaleL1PrefireNom'
 HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU               = 'CountFullWeightedLHEWeightScaleNoPU'
 HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM = 'CountFullWeightedLHEWeightScaleNoPUL1PrefireNom'
-EVENTS_TREE                               = 'Events'
+EVENTS_TREE = 'Events'
 
 HISTOGRAM_COUNT_KEY = 'histogram_count'
 TREE_COUNT_KEY      = 'tree_count'
@@ -125,7 +126,7 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("nof_files",                       {{ nof_files }}),
   ("nof_db_files",                    {{ nof_db_files }}),
   ("nof_events",                      { {%- for histogram_name, event_counts in nof_events.items() %}
-    {{ "%-40s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
+    {{ "%-50s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
   {%- endfor %}
   }),
   ("nof_tree_events",                 {{ nof_tree_events }}),
@@ -293,7 +294,7 @@ def process_paths(meta_dict, key):
 
   if len(local_paths_sorted) == 1:
     # let's compute the number of files, events and the list of blacklisted files
-    nof_events = {}
+    nof_events = collections.OrderedDict()
     histogram_names = meta_dict[key]['histogram_names']
     for histogram_name, nBins in histogram_names.items():
       if nBins < 0:
@@ -440,31 +441,31 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
 
   digit_regex = re.compile(r"tree_(?P<i>\d+)\.root")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
-  histogram_names = { HISTOGRAM_COUNT : -1 }
+  histogram_names = collections.OrderedDict([ ( HISTOGRAM_COUNT, -1 ) ])
   if not is_data:
-    histogram_names.update({
-      HISTOGRAM_COUNTWEIGHTED                   : -1,
-      HISTOGRAM_COUNTWEIGHTED_NOPU              : -1,
-      HISTOGRAM_COUNTFULLWEIGHTED               : -1,
-      HISTOGRAM_COUNTFULLWEIGHTED_NOPU          : -1,
-      HISTOGRAM_COUNTWEIGHTED_LHESCALE          : -1,
-      HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU     : -1,
-      HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE      : -1,
-      HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU : -1,
-    })
+    histogram_names.update([
+      (HISTOGRAM_COUNTWEIGHTED,                   -1),
+      (HISTOGRAM_COUNTWEIGHTED_NOPU,              -1),
+      (HISTOGRAM_COUNTFULLWEIGHTED,               -1),
+      (HISTOGRAM_COUNTFULLWEIGHTED_NOPU,          -1),
+      (HISTOGRAM_COUNTWEIGHTED_LHESCALE,          -1),
+      (HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU,     -1),
+      (HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE,      -1),
+      (HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU, -1),
+    ])
     if era in [ 2016, 2017 ]:
-      histogram_names.update({
-        HISTOGRAM_COUNTWEIGHTED_L1PREFIRE_NOM                   : -1,
-        HISTOGRAM_COUNTWEIGHTED_L1PREFIRE                       : -1,
-        HISTOGRAM_COUNTWEIGHTED_NOPU_L1PREFIRE_NOM              : -1,
-        HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE_NOM               : -1,
-        HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE                   : -1,
-        HISTOGRAM_COUNTFULLWEIGHTED_NOPU_L1PREFIRE_NOM          : -1,
-        HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM          : -1,
-        HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM     : -1,
-        HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM      : -1,
-        HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM : -1,
-      })
+      histogram_names.update([
+        (HISTOGRAM_COUNTWEIGHTED_L1PREFIRE_NOM,                   -1),
+        (HISTOGRAM_COUNTWEIGHTED_L1PREFIRE,                       -1),
+        (HISTOGRAM_COUNTWEIGHTED_NOPU_L1PREFIRE_NOM,              -1),
+        (HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE_NOM,               -1),
+        (HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE,                   -1),
+        (HISTOGRAM_COUNTFULLWEIGHTED_NOPU_L1PREFIRE_NOM,          -1),
+        (HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM,          -1),
+        (HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,     -1),
+        (HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM,      -1),
+        (HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM, -1),
+      ])
 
   indices = {}
   for entry in entries_valid:
