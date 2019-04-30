@@ -35,8 +35,8 @@ class EvtHistManager_3l
                  double mvaOutput_3l_ttV,
                  double mvaOutput_3l_ttbar,
                  double mvaDiscr_3l,
+                 double output_NN_3l_ttH_tH_3cat_v8,
 		 const MEMOutput_3l * memOutput_3l,
-     double output_NN_3l_ttH_tH_3cat_v8,
                  double evtWeight);
 
   const TH1 *

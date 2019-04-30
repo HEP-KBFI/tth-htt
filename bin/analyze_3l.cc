@@ -535,7 +535,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   };
   std::map<std::string, double> mvaInputs_3l_ttH_tH_3cat_v8_TF;
   std::vector<std::string> classes_TensorFlow_3l_ttH_tH_3cat = {"predictions_ttH",  "predictions_rest", "predictions_tH"};
-  std::string mvaFileName_TensorFlow_3l_ttH_tH_3cat_v8 = "tthAnalysis/HiggsToTauTau/data/NN_14Feb2019/test_model_3l_ttH_tH_3cat_nottZ_no4mom_noSemi_noStand_v8.pb";
+  std::string mvaFileName_TensorFlow_3l_ttH_tH_3cat_v8 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_sync/test_model_3l_ttH_tH_3cat_nottZ_no4mom_noSemi_noStand_v8.pb";
   TensorFlowInterface mva_3l_ttH_tH_3cat_v8_TF(
     mvaFileName_TensorFlow_3l_ttH_tH_3cat_v8,
     mvaInputVariables_TensorFlow_3l_ttH_tH_3cat_v8,
@@ -793,7 +793,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
-  bool isDebugTF = true;
+  bool isDebugTF = false;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
@@ -1831,8 +1831,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       selElectrons.size(), selMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
-      memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
       output_NN_3l_ttH_tH_3cat_v8,
+      memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
       evtWeight);
     EvtHistManager_3l* selHistManager_evt_category = selHistManager->evt_in_categories_[category];
     if ( selHistManager_evt_category ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
@@ -1840,19 +1840,19 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       selElectrons.size(), selMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
-      memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
       output_NN_3l_ttH_tH_3cat_v8,
+      memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
       evtWeight);
     }
     EvtHistManager_3l* selHistManager_evt_3l_ttH_tH_3cat_v8_TF = selHistManager->evt_in_categories_3l_ttH_tH_3cat_v8_TF_[category_3l_ttH_tH_3cat_v8_TF];
     if ( selHistManager_evt_3l_ttH_tH_3cat_v8_TF ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-      selHistManager_evt_category->fillHistograms(
-      selElectrons.size(), selMuons.size(), selHadTaus.size(),
-      selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
-      memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-      output_NN_3l_ttH_tH_3cat_v8,
-      evtWeight);
+      selHistManager_evt_3l_ttH_tH_3cat_v8_TF->fillHistograms(
+        selElectrons.size(), selMuons.size(), selHadTaus.size(),
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
+        output_NN_3l_ttH_tH_3cat_v8,
+        memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
+        evtWeight);
     }
 
     if(isSignal)
@@ -1870,8 +1870,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           mvaOutput_3l_ttV,
           mvaOutput_3l_ttbar,
           mvaDiscr_3l,
+          output_NN_3l_ttH_tH_3cat_v8,
 	  memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-    output_NN_3l_ttH_tH_3cat_v8,
           evtWeight
         );
         std::string decayMode_and_genMatch = decayModeStr;
@@ -1888,8 +1888,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 	    mvaOutput_3l_ttV,
 	    mvaOutput_3l_ttbar,
 	    mvaDiscr_3l,
-	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
       output_NN_3l_ttH_tH_3cat_v8,
+	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
 	    evtWeight
 	  );
 	}
@@ -1906,8 +1906,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   	    mvaOutput_3l_ttV,
   	    mvaOutput_3l_ttbar,
   	    mvaDiscr_3l,
-  	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
         output_NN_3l_ttH_tH_3cat_v8,
+  	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
   	    evtWeight
     );
   }
