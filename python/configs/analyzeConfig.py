@@ -1161,7 +1161,7 @@ class analyzeConfig(object):
         for job in self.jobOptions_analyze.values():
             self.filesToClean.append(job['syncOutput'])
 
-    def addToMakefile_hadd(self, lines_makefile, make_target, make_dependency, inputFiles, outputFiles, max_input_files_per_job = 5):        
+    def addToMakefile_hadd(self, lines_makefile, make_target, make_dependency, inputFiles, outputFiles, max_input_files_per_job = 2):
         if not make_target in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         if self.is_sbatch and self.run_hadd_master_on_batch:
@@ -1234,13 +1234,13 @@ class analyzeConfig(object):
         for job in jobOptions.values():
             self.filesToClean.append(job['outputFile'])
 
-    def addToMakefile_hadd_stage1_5(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 5):
+    def addToMakefile_hadd_stage1_5(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 2):
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
            that is used as input for data-driven background estimation.
         """
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage1_5, self.outputFile_hadd_stage1_5, max_input_files_per_job)
 
-    def addToMakefile_hadd_stage1_6(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 5):
+    def addToMakefile_hadd_stage1_6(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 2):
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
            that is used as input for data-driven background estimation.
         """
@@ -1294,7 +1294,7 @@ class analyzeConfig(object):
             lines_makefile.append("")
         self.make_dependency_hadd_stage2 = make_target
 
-    def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, max_input_files_per_job = 5):
+    def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, max_input_files_per_job = 2):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
         """        
         if make_dependency is None:
