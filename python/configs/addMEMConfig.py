@@ -76,8 +76,12 @@ class addMEMConfig:
         self.channel = channel
         self.leptonSelection = leptonSelection
         self.hadTauSelection = hadTauSelection
-        self.hadTauDefinition = self.hadTauSelection.split('|')[0]
-        self.hadTauWorkingPoint = self.hadTauSelection.split('|')[1]
+        if self.hadTauSelection:
+            self.hadTauDefinition = self.hadTauSelection.split('|')[0]
+            self.hadTauWorkingPoint = self.hadTauSelection.split('|')[1]
+        else:
+            self.hadTauDefinition = None
+            self.hadTauWorkingPoint = None
         self.maxPermutations_branchName = None
         self.lowIntegrationPoints = lowIntegrationPoints
         self.jet_cleaning_by_index = jet_cleaning_by_index
