@@ -424,17 +424,11 @@ class analyzeConfig(object):
               raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
             self.lep_mva_cut = 0.90
         elif self.lep_mva_wp == "075":
-            if self.era not in [ "2016", "2017" ]:
-              raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
-            self.lep_mva_cut = 0.75
+            raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
         else:
             raise ValueError("Invalid Configuration parameter 'lep_mva_wp' = %s !!" % self.lep_mva_wp)
 
-        if self.era == '2016':
-            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2016_data.root"
-        elif self.era == '2017':
-            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva%s_2017_CERN_2018May29.root" % self.lep_mva_wp
-        elif self.era == '2018':
+        if self.era in [ '2016', '2017', '2018' ]:
             self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva%s_2017_CERN_2018May29.root" % self.lep_mva_wp
         else:
             raise ValueError('Invalid era: %s' % self.era)
@@ -442,11 +436,7 @@ class analyzeConfig(object):
             raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
         self.hadTau_selection_relaxed = None
-        if self.era == '2016':
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
-        elif self.era == '2017':
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
-        elif self.era == '2018':
+        if self.era in [ '2016', '2017', '2018' ]:
             self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
         else:
             raise ValueError('Invalid era: %s' % self.era)
@@ -478,12 +468,10 @@ class analyzeConfig(object):
         return lines
 
     def set_leptonFakeRateWeightHistogramNames(self, central_or_shift, lepton_and_hadTau_selection):
-        if 'mcClosure' in lepton_and_hadTau_selection and self.era != '2017':
+        if 'mcClosure' in lepton_and_hadTau_selection and self.era not in [ '2016', '2017', '2018' ]:
           raise ValueError('Invalid selection for era %s: %s' % (self.era, lepton_and_hadTau_selection))
         suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection else 'data_comb'
-        if self.era == '2016':
-          self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s" % (self.lep_mva_wp, suffix)
-        elif self.era == '2017':
+        if self.era in [ '2016', '2017', '2018' ]:
           self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (self.lep_mva_wp, suffix)
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (self.lep_mva_wp, suffix)
 
@@ -498,16 +486,12 @@ class analyzeConfig(object):
         elif central_or_shift == "CMS_ttHl_FRe_shape_normDown":
             leptonFakeRateWeight_histogramName_e_suffix = '_down'
         elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelUp":
-            if self.era == '2016':
-                leptonFakeRateWeight_histogramName_e_suffix = '_b1'
-            elif self.era == '2017':
+            if self.era in [ '2016', '2017', '2018' ]:
                 leptonFakeRateWeight_histogramName_e_suffix = '_be1'
             else:
                 raise ValueError('Invalid era: %s' % self.era)
         elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelDown":
-            if self.era == '2016':
-                leptonFakeRateWeight_histogramName_e_suffix = '_b2'
-            elif self.era == '2017':
+            if self.era in [ '2016', '2017', '2018' ]:
                 leptonFakeRateWeight_histogramName_e_suffix = '_be2'
             else:
                 raise ValueError('Invalid era: %s' % self.era)
@@ -520,16 +504,12 @@ class analyzeConfig(object):
         elif central_or_shift == "CMS_ttHl_FRm_shape_normDown":
             leptonFakeRateWeight_histogramName_mu_suffix = '_down'
         elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelUp":
-            if self.era == '2016':
-                leptonFakeRateWeight_histogramName_mu_suffix = '_b1'
-            elif self.era == '2017':
+            if self.era in [ '2016', '2017', '2018' ]:
                 leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
             else:
                 raise ValueError('Invalid era: %s' % self.era)
         elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelDown":
-            if self.era == '2016':
-                leptonFakeRateWeight_histogramName_mu_suffix = '_b2'
-            elif self.era == '2017':
+            if self.era in [ '2016', '2017', '2018' ]:
                 leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
             else:
                 raise ValueError('Invalid era: %s' % self.era)
@@ -543,22 +523,13 @@ class analyzeConfig(object):
         """
         self.hadTau_selection_relaxed = hadTau_selection_relaxed
         if self.hadTau_selection_relaxed == "dR03mvaVLoose":
-            if self.era == "2016":
-                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vLoosePresel.root"
-            elif self.era == "2017":
+            if self.era in [ '2016', '2017', '2018' ]:
                 pass
-            elif self.era == "2018":
-                raise ValueError("Implement me!")
             else:
                 raise ValueError("Invalid era: %s" % self.era)
         if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
-            if self.era == "2016":
-                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
-            elif self.era == "2017":
-#                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
+            if self.era in [ '2016', '2017', '2018' ]:
                 self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
-            elif self.era == "2018":
-                raise ValueError("Implement me!")
             else:
                 raise ValueError("Invalid era: %s" % self.era)
         self.isBDTtraining = True
