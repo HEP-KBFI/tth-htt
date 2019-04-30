@@ -177,7 +177,7 @@ class analyzeConfig(object):
             self.central_or_shifts.remove('central')
             self.central_or_shifts = [ 'central' ] + self.central_or_shifts
         #------------------------------------------------------------------------
-        self.do_l1prefiring = False # FIXME: re-enable once the histograms are available: self.era != "2018"
+        self.do_l1prefiring = self.era != "2018"
         if (set(systematics.L1PreFiring) & set(self.central_or_shifts)) == set(systematics.L1PreFiring) and not self.do_l1prefiring:
           logging.warning('Removing systematics from {} era:'.format(self.era, ', '.join(systematics.L1PreFiring)))
           for central_or_shift in systematics.L1PreFiring:
@@ -589,7 +589,7 @@ class analyzeConfig(object):
         if 'apply_DYMCNormScaleFactors' not in jobOptions:
           jobOptions['apply_DYMCNormScaleFactors'] =  is_dymc_reweighting(sample_info["dbs_name"])
         if 'apply_l1PreFireWeight' not in jobOptions:
-          jobOptions['apply_l1PreFireWeight'] = self.do_l1prefiring
+          jobOptions['apply_l1PreFireWeight'] = self.do_l1prefiring if is_mc else False
         if 'central_or_shift' not in jobOptions:
           jobOptions['central_or_shift'] = 'central'
         if 'lumiScale' not in jobOptions:
