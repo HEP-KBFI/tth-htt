@@ -183,6 +183,7 @@ class sbatchManager:
         self.logFileDir     = None
         queue_environ = os.environ.get('SBATCH_PRIORITY')
         verbose_environ = os.environ.get('SBATCH_VERBOSE')
+        self.sbatch_exclude = os.environ.get('SBATCH_EXCLUDE')
         self.queue             = queue_environ if queue_environ else "small"
         self.poll_interval     = 30
         self.queuedJobs        = []
@@ -200,6 +201,9 @@ class sbatchManager:
         self.use_home          = use_home
         self.max_resubmissions = max_resubmissions
         self.min_file_size     = min_file_size
+
+        if self.sbatch_exclude:
+            self.sbatchArgs += ' -x {}'.format(self.sbatch_exclude)
 
         verbose = bool(verbose_environ) if verbose_environ else verbose
         if verbose:
