@@ -177,6 +177,7 @@ class analyzeConfig(object):
             self.central_or_shifts.remove('central')
             self.central_or_shifts = [ 'central' ] + self.central_or_shifts
         #------------------------------------------------------------------------
+        self.era = era
         self.do_l1prefiring = self.era != "2018"
         if (set(systematics.L1PreFiring) & set(self.central_or_shifts)) == set(systematics.L1PreFiring) and not self.do_l1prefiring:
           logging.warning('Removing systematics from {} era:'.format(self.era, ', '.join(systematics.L1PreFiring)))
@@ -187,7 +188,6 @@ class analyzeConfig(object):
         self.gen_matching_by_index = gen_matching_by_index
         self.max_files_per_job = max_files_per_job
         self.max_num_jobs = -1
-        self.era = era
         self.use_lumi = use_lumi
         self.lumi = lumi
         self.check_output_files = check_output_files
