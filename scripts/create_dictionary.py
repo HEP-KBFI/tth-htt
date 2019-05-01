@@ -40,6 +40,7 @@ HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM      = 'CountFullWeightedLHEW
 HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU               = 'CountFullWeightedLHEWeightScaleNoPU'
 HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM = 'CountFullWeightedLHEWeightScaleNoPUL1PrefireNom'
 EVENTS_TREE = 'Events'
+BRANCH_LHEPDFWEIGHT = 'LHEPdfWeight'
 
 HISTOGRAM_COUNT_KEY = 'histogram_count'
 TREE_COUNT_KEY      = 'tree_count'
@@ -138,6 +139,7 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("genWeight",                       {{ genWeight }}),{% endif %}
   ("triggers",                        {{ triggers }}),
   ("has_LHE",                         {{ has_LHE }}),
+  ("LHE_set",                         "{{ LHE_set }}"),
   ("local_paths",
     [
 {{ paths }}
@@ -366,6 +368,12 @@ def process_paths(meta_dict, key):
   else:
     raise ValueError("Not enough paths to locate for %s" % key)
 
+def get_lhe_set(tree):
+  lhe_branch = tree.GetBranch(BRANCH_LHEPDFWEIGHT)
+  if lhe_branch:
+    return lhe_branch.GetTitle()
+  return ''
+
 def has_LHE(indices):
   branch_names = set()
   for index_entry in indices.values():
@@ -468,6 +476,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
       ])
 
   indices = {}
+  lhe_set = ''
   for entry in entries_valid:
     index_entry = {
       HISTOGRAM_COUNT_KEY : {},
@@ -581,6 +590,9 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
         )
       )
 
+      if not is_data:
+        lhe_set = get_lhe_set(tree)
+
       root_file.Close()
       del tree
       del root_file
@@ -619,6 +631,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
     meta_dict[key]['has_LHE']                         = False if is_data else has_LHE(indices)
     meta_dict[key]['missing_from_superset']           = missing_from_superset
     meta_dict[key]['histogram_names']                 = histogram_names
+    meta_dict[key]['LHE_set']                         = lhe_set
   meta_dict[key]['paths'].append(
     PathEntry(path_obj.name, indices, histogram_names)
   )
@@ -1040,6 +1053,7 @@ if __name__ == '__main__':
           genWeight                       = meta_dict[key]['genWeight'],
           triggers                        = meta_dict[key]['triggers'],
           has_LHE                         = meta_dict[key]['has_LHE'],
+          LHE_set                         = meta_dict[key]['LHE_set'],
           missing_from_superset           = missing_branches_template_filled,
           missing_hlt_paths               = missing_hlt_paths_filled,
           hlt_paths                       = hlt_paths_filled,
