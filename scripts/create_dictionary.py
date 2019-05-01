@@ -387,12 +387,13 @@ def get_lhe_set(tree):
     if lhe_match:
       lhe_start = int(lhe_match.group('lha_start'))
       lhe_end = int(lhe_match.group('lha_end'))
+      lhe_doc = 'LHA IDs {} - {}'.format(lhe_start, lhe_end)
       lhe_count = lhe_end - lhe_start + 1
       lhe_val = {}
       if lhe_start in LHE_DOC:
         lhe_val = LHE_DOC[lhe_start]
-      elif (lhe_start + 1) in LHE_DOC:
-        lhe_val = LHE_DOC[lhe_start + 1]
+      elif (lhe_start - 1) in LHE_DOC:
+        lhe_val = LHE_DOC[lhe_start - 1]
       if lhe_val:
         lhe_doc += ' -> {name} PDF set, expecting {count} weights'.format(**lhe_val)
       else:
