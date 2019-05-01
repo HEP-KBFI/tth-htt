@@ -505,6 +505,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
 
   indices = {}
   lhe_set = ''
+  lhe_set_tried = False
   for entry in entries_valid:
     index_entry = {
       HISTOGRAM_COUNT_KEY : {},
@@ -618,8 +619,9 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
         )
       )
 
-      if not is_data:
+      if not is_data and not lhe_set_tried:
         lhe_set = get_lhe_set(tree)
+        lhe_set_tried = True
 
       root_file.Close()
       del tree
