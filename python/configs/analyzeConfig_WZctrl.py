@@ -293,6 +293,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
                 continue
               if central_or_shift in systematics.DYMCReweighting and not is_dymc_reweighting(sample_name):
                 continue
+              if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):
+                continue
 
               # build config files for executing analysis code
               key_analyze_dir = getKey(process_name, lepton_selection_and_frWeight, central_or_shift)

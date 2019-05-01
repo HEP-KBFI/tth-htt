@@ -311,6 +311,8 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   continue
                 if central_or_shift in systematics.DYMCReweighting and not is_dymc_reweighting(sample_name):
                   continue
+                if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):
+                  continue
 
                 logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (lepton_selection_and_frWeight, central_or_shift))
 

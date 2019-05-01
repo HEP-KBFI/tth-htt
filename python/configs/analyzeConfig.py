@@ -183,6 +183,14 @@ class analyzeConfig(object):
           logging.warning('Removing systematics from {} era:'.format(self.era, ', '.join(systematics.L1PreFiring)))
           for central_or_shift in systematics.L1PreFiring:
             self.central_or_shifts.remove(central_or_shift)
+        # ------------------------------------------------------------------------
+        self.do_dymc_sys = self.channel == "0l_2tau" and era != "2018"
+        for dymc_sys in [ systematics.DYMCReweighting, systematics.DYMCNormScaleFactors ]:
+          if (set(dymc_sys) & set(self.central_or_shifts)) == set(dymc_sys) and not self.do_dymc_sys:
+            logging.warning('Removing systematics from {} era:'.format(self.era, ', '.join(dymc_sys)))
+            for central_or_shift in dymc_sys:
+              self.central_or_shifts.remove(central_or_shift)
+        # ------------------------------------------------------------------------
 
         self.jet_cleaning_by_index = jet_cleaning_by_index
         self.gen_matching_by_index = gen_matching_by_index
