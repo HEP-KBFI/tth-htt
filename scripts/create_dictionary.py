@@ -47,7 +47,18 @@ TREE_COUNT_KEY      = 'tree_count'
 FSIZE_KEY           = 'fsize'
 BRANCH_NAMES_KEY    = 'branch_names'
 
-LHE_REGEX = re.compile('(n|)LHE(Scale|Pdf)Weight')
+LHE_REGEX     = re.compile('(n|)LHE(Scale|Pdf)Weight')
+LHE_DOC_REGEX = re.compile('LHE pdf variation weights \(w_var \/ w\_nominal\) for LHA IDs (?P<lha_start>[0-9]+) - (?P<lha_end>[0-9]+)')
+
+# see https://github.com/cms-nanoAOD/cmssw/blob/9a2728ac9f44fc45ba1aa56389e28c594207c0fe/PhysicsTools/NanoAOD/python/nano_cff.py#L99-L104
+LHE_DOC = {
+  91400  : { 'name' : 'PDF4LHC15_nnlo_30_pdfas',    'count' : 33  },
+  306000 : { 'name' : 'NNPDF31_nnlo_hessian_pdfas', 'count' : 103 },
+  260000 : { 'name' : 'NNPDF30_nlo_as_0118',        'count' : 101 },
+  262000 : { 'name' : 'NNPDF30_lo_as_0130',         'count' : 101 },
+  292000 : { 'name' : 'NNPDF30_nlo_nf_4_pdfas',     'count' : 103 },
+  292200 : { 'name' : 'NNPDF30_nlo_nf_5_pdfas',     'count' : 103 },
+}
 
 try:
     from urllib.parse import urlparse
@@ -371,7 +382,23 @@ def process_paths(meta_dict, key):
 def get_lhe_set(tree):
   lhe_branch = tree.GetBranch(BRANCH_LHEPDFWEIGHT)
   if lhe_branch:
-    return lhe_branch.GetTitle()
+    lhe_doc = lhe_branch.GetTitle()
+    lhe_match = LHE_DOC_REGEX.match(lhe_doc)
+    if lhe_match:
+      lhe_start = int(lhe_match.group('lha_start'))
+      lhe_end = int(lhe_match.group('lha_end'))
+      lhe_count = lhe_end - lhe_start + 1
+      lhe_val = {}
+      if lhe_start in LHE_DOC:
+        lhe_val = LHE_DOC[lhe_start]
+      elif (lhe_start + 1) in LHE_DOC:
+        lhe_val = LHE_DOC[lhe_start + 1]
+      if lhe_val:
+        lhe_doc += ' -> {name} PDF set, expecting {count} weights'.format(**lhe_val)
+      else:
+        lhe_doc += ' -> unrecognizable PDF set'
+      lhe_doc += ' (counted {} weights)'.format(lhe_count)
+    return lhe_doc
   return ''
 
 def has_LHE(indices):
