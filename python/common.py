@@ -43,3 +43,9 @@ def load_samples(era, is_postproc = True, base = 'tth', suffix = ''):
   sample = getattr(sample_module, sample_name)
 
   return sample
+
+def load_samples_hh_multilepton(era, is_postproc = True, suffix = ''):
+  return load_samples(era, is_postproc, "hh_multilepton", suffix)
+
+def load_samples_hh_bbww(era, is_postproc = True, suffix = ''):
+  return load_samples(era, is_postproc, "hh_bbww", suffix)
