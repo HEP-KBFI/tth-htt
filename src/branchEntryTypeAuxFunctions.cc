@@ -103,6 +103,7 @@ copyBranches_singleType(TTree * inputTree,
     const TBranch * const inputTree_branch = dynamic_cast<const TBranch * const>(inputTree_branches->At(idxBranch));
     assert(inputTree_branch);
     const std::string branchName = inputTree_branch->GetName();
+    const std::string branchTitle = inputTree_branch->GetTitle();
 
     if(isBranchToKeep.at(branchName))
     {
@@ -128,17 +129,18 @@ copyBranches_singleType(TTree * inputTree,
       }
 
       branchEntryBaseType * outputTree_branch = nullptr;
-      if     (branchType == "Float_t"  ) outputTree_branch = new branchEntryTypeFF  (branchName, "F", branchName, "F");
-      else if(branchType == "Double_t" ) outputTree_branch = new branchEntryTypeDD  (branchName, "D", branchName, "D");
-      else if(branchType == "Int_t"    ) outputTree_branch = new branchEntryTypeII  (branchName, "I", branchName, "I");
-      else if(branchType == "UInt_t"   ) outputTree_branch = new branchEntryTypeUIUI(branchName, "i", branchName, "i");
-      else if(branchType == "ULong64_t") outputTree_branch = new branchEntryTypeULUL(branchName, "l", branchName, "l");
-      else if(branchType == "UChar_t"  ) outputTree_branch = new branchEntryTypeUCUC(branchName, "b", branchName, "b");
-      else if(branchType == "Short_t"  ) outputTree_branch = new branchEntryTypeSS  (branchName, "S", branchName, "S");
-      else if(branchType == "UShort_t" ) outputTree_branch = new branchEntryTypeUSUS(branchName, "s", branchName, "s");
-      else if(branchType == "Bool_t"   ) outputTree_branch = new branchEntryTypeBB  (branchName, "O", branchName, "O");
+      if     (branchType == "Float_t"  ) outputTree_branch = new branchEntryTypeFF  (branchName, "F", branchName, "F", branchTitle);
+      else if(branchType == "Double_t" ) outputTree_branch = new branchEntryTypeDD  (branchName, "D", branchName, "D", branchTitle);
+      else if(branchType == "Int_t"    ) outputTree_branch = new branchEntryTypeII  (branchName, "I", branchName, "I", branchTitle);
+      else if(branchType == "UInt_t"   ) outputTree_branch = new branchEntryTypeUIUI(branchName, "i", branchName, "i", branchTitle);
+      else if(branchType == "ULong64_t") outputTree_branch = new branchEntryTypeULUL(branchName, "l", branchName, "l", branchTitle);
+      else if(branchType == "UChar_t"  ) outputTree_branch = new branchEntryTypeUCUC(branchName, "b", branchName, "b", branchTitle);
+      else if(branchType == "Short_t"  ) outputTree_branch = new branchEntryTypeSS  (branchName, "S", branchName, "S", branchTitle);
+      else if(branchType == "UShort_t" ) outputTree_branch = new branchEntryTypeUSUS(branchName, "s", branchName, "s", branchTitle);
+      else if(branchType == "Bool_t"   ) outputTree_branch = new branchEntryTypeBB  (branchName, "O", branchName, "O", branchTitle);
       else throw cmsException(__func__, __LINE__)
-        << "Branch = '" << branchName << "' is of unsupported Type = " << branchType;
+        << "Branch = '" << branchName << "' is of unsupported Type = " << branchType
+      ;
 
       outputTree_branch->setInputTree(inputTree);
       outputTree_branch->setOutputTree(outputTree);
@@ -162,6 +164,7 @@ copyBranches_vectorType(TTree * inputTree,
     const TBranch * const inputTree_branch = dynamic_cast<const TBranch * const>(inputTree_branches->At(idxBranch));
     assert(inputTree_branch);
     const std::string branchName = inputTree_branch->GetName();
+    const std::string branchTitle = inputTree_branch->GetTitle();
 
     if(isBranchToKeep.at(branchName))
     {
@@ -203,23 +206,23 @@ copyBranches_vectorType(TTree * inputTree,
       branchEntryBaseType * outputTree_branch = nullptr;
       if(branchType == "Float_t")
       {
-        outputTree_branch = new branchEntryTypeVFVF(branch_nElements, max_nElements, branchName, "F", branchName, "F");
+        outputTree_branch = new branchEntryTypeVFVF(branch_nElements, max_nElements, branchName, "F", branchName, "F", branchTitle);
       }
       else if(branchType == "Int_t")
       {
-        outputTree_branch = new branchEntryTypeVIVI(branch_nElements, max_nElements, branchName, "I", branchName, "I");
+        outputTree_branch = new branchEntryTypeVIVI(branch_nElements, max_nElements, branchName, "I", branchName, "I", branchTitle);
       }
       else if(branchType == "UInt_t")
       {
-        outputTree_branch = new branchEntryTypeVUIVUI(branch_nElements, max_nElements, branchName, "i", branchName, "i");
+        outputTree_branch = new branchEntryTypeVUIVUI(branch_nElements, max_nElements, branchName, "i", branchName, "i", branchTitle);
       }
       else if(branchType == "UChar_t")
       {
-        outputTree_branch = new branchEntryTypeVCVC(branch_nElements, max_nElements, branchName, "b", branchName, "b");
+        outputTree_branch = new branchEntryTypeVCVC(branch_nElements, max_nElements, branchName, "b", branchName, "b", branchTitle);
       }
       else if(branchType == "Bool_t")
       {
-        outputTree_branch = new branchEntryTypeVBVB(branch_nElements, max_nElements, branchName, "O", branchName, "O");
+        outputTree_branch = new branchEntryTypeVBVB(branch_nElements, max_nElements, branchName, "O", branchName, "O", branchTitle);
       }
       else
       {
