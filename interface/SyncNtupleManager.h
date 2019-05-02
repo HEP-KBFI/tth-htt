@@ -95,6 +95,15 @@ enum class FloatVariableType
   mvaOutput_plainKin_SUM_M, ///< 3l+1tau (BDT3)
   mvaOutput_plainKin_1B_M,  ///< 3l+1tau (BDT4)
 
+  mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH,
+  mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH,
+  mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW,
+  mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest,
+
+  mvaOutput_3l_ttH_tH_3cat_v8_ttH,
+  mvaOutput_3l_ttH_tH_3cat_v8_tH,
+  mvaOutput_3l_ttH_tH_3cat_v8_rest,
+
 //--- Event weights
   FR_weight,                ///< weight used for fake rate reweighting
   triggerSF_weight,         ///< scale factor for trigger
