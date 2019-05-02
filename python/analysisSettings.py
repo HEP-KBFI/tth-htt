@@ -239,15 +239,16 @@ class Triggers(object):
           'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL', # L=35.918/fb; present in all eras; unprescaled
         },
         '2mu' : {
-          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # L=35.918/fb; present in all eras; unprescaled
-          'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ', # L=35.918/fb; present in all eras; unprescaled
-          'HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ' # L=8650.63/fb; present in H, missing in B, C, D, E, F, G; unprescaled
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # L=35.918/fb; present in all eras; unprescaled (+ non-DZ IS DOCUMENTED ON GITLAB)
+          'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ', # L=35.918/fb; present in all eras; unprescaled (+ non-DZ IS DOCUMENTED ON GITLAB)
+          'HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ' # L=8650.63/fb; present in H, missing in B, C, D, E, F, G; unprescaled (effectively prescaled by 4.2) (+ non-DZ IS DOCUMENTED ON GITLAB)
         },
         '1e1mu' : {
           'HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL', # L=24.975/fb; present in all eras; unprescaled?
-          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL', # L=27.267/fb; present in B, C, D, E, F, G, missing in H; unprescaled?
+          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL', # L=27.267/fb; present in B, C, D, E, F, G, missing in H; unprescaled? (+ DZ IS DOCUMENTED ON GITLAB)
           'HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=24.975/fb; present in all eras; unprescaled?
-          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=29.598/fb; present in all eras; unprescaled?
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=29.598/fb; present in all eras; unprescaled? (+ DZ IS DOCUMENTED ON GITLAB)
+          #'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', DOCUMENTED ON GITLAB
         },
         '2e' : {
           'HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=24.978/fb; present in all eras; unprescaled?
@@ -262,7 +263,7 @@ class Triggers(object):
           'HLT_IsoTkMu24', # L=35.918/fb; present in all eras; unprescaled
         },
         '1e' : {
-          'HLT_Ele25_WPTight_Gsf', # L=24.978/fb; present in all eras; unprescaled?
+          'HLT_Ele25_WPTight_Gsf', # L=24.978/fb; present in all eras; unprescaled? NOT DOCUMENTED ON GITLAB
           'HLT_Ele27_WPTight_Gsf', # L=35.918/fb; present in all eras; unprescaled
           'HLT_Ele25_eta2p1_WPTight_Gsf', # L=35.918/fb; present in all eras; unprescaled
           'HLT_Ele27_eta2p1_WPLoose_Gsf', # L=27.303/fb; present in all eras; unprescaled?
@@ -272,27 +273,28 @@ class Triggers(object):
         },
         '1e1tau' : {
           'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30', # L=22.883/fb; present in E, F, G, H; missing in B, C, D; unprescaled
-          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1', # L=17.640/fb; present in B, C, D, E, F, missing in G, H; unprescaled
-          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20', # L=17.144/fb; present in B, C, D, E, F, missing in G, H; unprescaled
+          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1', # L=17.640/fb; present in B, C, D, E, F, missing in G, H; unprescaled (effectively prescaled by 2.0)
+          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20', # L=17.144/fb; present in B, C, D, E, F, missing in G, H; unprescaled (effectively prescaled by 2.1)
         },
         '2tau' : {
           'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg', # L=27.267/fb; present in B, C, D, E, F, G, missing in H; unprescaled
-          'HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg', # L=8650.63/pb; present in H, missing in B, C, D, E, F, G; unprescaled
+          'HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg', # L=8650.63/pb; present in H, missing in B, C, D, E, F, G; unprescaled (effectively presscaled by 4.2)
         },
       }
+
       self.triggers_leptonFR = {
         '1e' : set(),
         '1mu': {
-          'HLT_Mu27', # L=250.508/pb; present in all eras; prescale factor 143.0 (143.4 from recorded)
+          'HLT_Mu27', # L=250.508/pb; present in all eras; prescale factor 143.4 (143.0 from delivery)
         },
         '2e' : {
-          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30', # L=62.761/pb; present in all eras; prescale factor 573.4 (572.4 from recorded)
-          'HLT_Ele12_CaloIdM_TrackIdM_PFJet30', # L=17.714/pb; present in all eras; prescale factor 2032.1 (2027.9 from recorded)
+          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30', # L=62.761/pb; present in all eras; prescale factor 572.4 (573.4 from delivery)
+          'HLT_Ele12_CaloIdM_TrackIdM_PFJet30', # L=17.714/pb; present in all eras; prescale factor 2027.9 (2032.1 from delivery)
         },
         '2mu': {
-          'HLT_Mu17', # L=282.781/pb; present in all eras; prescale factor 127.4 (127.0 from recorded)
-          'HLT_Mu8', # L=3.937/pb; present in all eras; prescale factor 9081.0 (9123.1 from recorded)
-          'HLT_Mu3_PFJet40', # L=7.408/pb; present in all eras; prescale factor 4863.2 (4849.0 from recorded)
+          'HLT_Mu17', # L=282.781/pb; present in all eras; prescale factor 127.0 (127.4 from delivery)
+          'HLT_Mu8', # L=3.937/pb; present in all eras; prescale factor 9123.1 (9081.0 from delivery)
+          'HLT_Mu3_PFJet40', # L=7.408/pb; present in all eras; prescale factor 4849.0 (4863.2 from delivery)
         }
       }
     elif era == "2017":
@@ -301,35 +303,38 @@ class Triggers(object):
           'HLT_TripleMu_12_10_5', # L=41.527/fb; present in all eras; unprescaled
         },
         '1e2mu' : {
-          #'HLT_DiMu9_Ele9_CaloIdL_TrackIdL', # L=38.397/fb; present in all eras; unprescaled (although previous comment said a prescale of 2)
+          #'HLT_DiMu9_Ele9_CaloIdL_TrackIdL', # L=38.397/fb; present in all eras; unprescaled (although previous comment said a prescale of 2) NOT DOCUMENTED ON GITLAB
           'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ', # L=41.527/fb; present in all eras; unprescaled
         },
         '2e1mu' : {
-          'HLT_Mu8_DiEle12_CaloIdL_TrackIdL', # L=41.527/fb; present in all eras; unprescaled
+          'HLT_Mu8_DiEle12_CaloIdL_TrackIdL', # L=41.527/fb; present in all eras; unprescaled (+ DZ IS DOCUMENTED ON GITLAB)
         },
         '3e' : {
           'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL', # L=35.997/fb; present in all eras; unprescaled (has PU dependence)
         },
         '2mu' : {
-          #'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL', # L=6500/pb; present in all eras; prescale factor 6.5 (6.4 from recorded)
-          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # L=7449/pb; present in all eras; prescale factor 5.6 (5.6 from recorded) (unprescaled in B; heavily prescaled since C)
+          #'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL', # L=6500/pb; present in all eras; prescale factor 6.5 (6.4 from recorded) NOT DOCUMENTED ON GITLAB
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # L=7449/pb; present in all eras; prescale factor 5.6 (5.6 from delivery) (unprescaled in B; heavily prescaled since C) NOT DOCUMENTED ON GITLAB
           'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # L=36.733/fb; present in C, D, E, F, missing in B; unprescaled
+          #'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8', # IS DOCUMENTED ON GITLAB -> is it a typo??
         },
         '1e1mu' : {
           'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=36.733/fb; present in C, D, E, F, missing in B; unprescaled
-          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled NOT DOCUMENTED ON GITLAB
           'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled
+          #'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', IS DOCUMENTED ON GITLAB
+          #'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', IS DOCUMENTED ON GITLAB
         },
         '2e' : {
           'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # L=41.527/fb; present in all eras; unprescaled (higher efficiency than non-DZ; not present in B)
-          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled
+          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled NOT DOCUMENTED ON GITLAB
         },
         '1mu' : {
           'HLT_IsoMu24', # L=38.046/fb; present in all eras; unprescaled (not enabled at high lumi)
           'HLT_IsoMu27', # L=41.527/fb; present in all eras; unprescaled
         },
         '1e' : {
-          'HLT_Ele32_WPTight_Gsf', # L=27.121/fb; present in C, D, E, F, missing in B; unprescaled
+          'HLT_Ele32_WPTight_Gsf', # L=27.121/fb; present in C, D, E, F, missing in B; unprescaled NOT DOCUMENTED ON GITLAB
           'HLT_Ele35_WPTight_Gsf', # L=41.527/fb; present in all eras; unprescaled
         },
         # CV: tau trigger paths taken from slide 6 of presentation given by Hale Sert at HTT workshop in December 2017
@@ -353,32 +358,32 @@ class Triggers(object):
 
       self.triggers_leptonFR = {
         '1e' : {
-          'HLT_Ele8_CaloIdM_TrackIdM_PFJet30', # L=3.654/pb; present in C, D, E, F, missing in B; prescale factor 9643.4 (10051.8 from recorded)
-          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30', # L=35.593/pb; present in C, D, E, F, missing in B; prescale factor 1032.9 (1032.0 from recorded)
-          'HLT_Ele23_CaloIdM_TrackIdM_PFJet30', # L=38.216/pb; present in C, D, E, F, missing in B; prescale factor 963.1 (961.2 from recorded)
+          'HLT_Ele8_CaloIdM_TrackIdM_PFJet30', # L=3.654/pb; present in C, D, E, F, missing in B; prescale factor 11363.9 (11029.2 from delivery)
+          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30', # L=35.593/pb; present in C, D, E, F, missing in B; prescale factor 1166.8 (1181.3 from delivery)
+          'HLT_Ele23_CaloIdM_TrackIdM_PFJet30', # L=38.216/pb; present in C, D, E, F, missing in B; prescale factor 1086.7 (1101.5 from delivery)
         },
         '1mu' : {
-          'HLT_Mu27', # L=184.944/pb; present in all eras; prescale factor 216.1 (224.5 from recorded)
-          'HLT_Mu20', # L=574.1/pb; present in all eras; prescale factor 73.9 (72.3 from recorded)
-          'HLT_Mu3_PFJet40', # L=4.611/pb; present in C, D, E, F, missing in B; prescale factor 7756.2 (7965.8 from recorded)
+          'HLT_Mu27', # L=184.944/pb; present in all eras; prescale factor 224.5 (216.1 from delivery)
+          'HLT_Mu20', # L=574.1/pb; present in all eras; prescale factor 72.3 (73.9 from delivery)
+          'HLT_Mu3_PFJet40', # L=4.611/pb; present in C, D, E, F, missing in B; prescale factor 9005.6 (8870.8 from delivery)
         },
         '2e' : set(),
         '2mu' : {
-          'HLT_Mu17', # L=70.038/pb; present in all eras; prescale factor 600.1 (592.9 from recorded)
-          'HLT_Mu8', # L=2.605/pb; present in all eras; prescale factor 15120.6 (15943.0 from recorded)
+          'HLT_Mu17', # L=70.038/pb; present in all eras; prescale factor 592.9 (600.1 from delivery)
+          'HLT_Mu8', # L=2.605/pb; present in all eras; prescale factor 15943.0 (15120.6 from delivery)
         }
       }
     elif era == "2018":
       self.triggers_analysis = {
         '3mu' : {
-#         #'HLT_TripleMu_10_5_5_DZ', # L=59.735/fb; present in all eras; unprescaled
+#         #'HLT_TripleMu_10_5_5_DZ', # L=59.735/fb; present in all eras; unprescaled NOT DOCUMENTED ON GITLAB
           'HLT_TripleMu_12_10_5', # L=59.735/fb; present in all eras; unprescaled
         },
         '1e2mu' : {
           'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ', # L=59.735/fb; present in all eras; unprescaled
         },
         '2e1mu' : {
-          #'HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ', # L=59.735/fb; present in all eras; unprescaled
+          #'HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ', # L=59.735/fb; present in all eras; unprescaled NOT DOCUMENTED ON GITLAB
           'HLT_Mu8_DiEle12_CaloIdL_TrackIdL', # L=59.735/fb; present in all eras; unprescaled
         },
         '3e' : {
@@ -388,14 +393,14 @@ class Triggers(object):
           'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # L=59.735/fb; present in all eras; unprescaled
         },
         '1e1mu' : {
-          #'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=59.735/fb; present in all eras; unprescaled
+          #'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=59.735/fb; present in all eras; unprescaled NOT DOCUMENTED ON GITLAB
           'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=59.735/fb; present in all eras; unprescaled
           'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=59.735/fb; present in all eras; unprescaled
           'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=59.735/fb; present in all eras; unprescaled
         },
         '2e' : {
           'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # L=59.735/fb; present in all eras; unprescaled
-          #'HLT_DoubleEle25_CaloIdL_MW', # L=59.735/fb; present in all eras; unprescaled (used by H->ZZ->4 lepton analysis, but why ?)
+          #'HLT_DoubleEle25_CaloIdL_MW', # L=59.735/fb; present in all eras; unprescaled (used by H->ZZ->4 lepton analysis, but why ?) NOT DOCUMENTED ON GITLAB
         },
         '1mu' : {
           'HLT_IsoMu24', # L=59.727/fb; present in all eras; unprescaled
@@ -403,41 +408,41 @@ class Triggers(object):
         },
         '1e' : {
           'HLT_Ele32_WPTight_Gsf', # L=59.735/fb; present in all eras; unprescaled
-          #'HLT_Ele35_WPTight_Gsf', # L=59.735; present in all eras; unprescaled (used by Alexei, but why ?)
+          #'HLT_Ele35_WPTight_Gsf', # L=59.735; present in all eras; unprescaled (used by Alexei, but why ?) NOT DOCUMENTED ON GITLAB
         },
         # CV: tau trigger paths taken from slide 12 of presentation given by Hale Sert at HTT workshop in April 2019
         #    (https://indico.cern.ch/event/803335/contributions/3359970/attachments/1829789/2996369/TriggerStatus_HTTworkshop_hsert.pdf)
         '1mu1tau' : { # stored in SingleMuon dataset
-          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled
-          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTauHPS27_eta2p1_CrossL1', # L=59.735/fb; present in all eras; unprescaled
+          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled (effectively prescaled by 3.4); not in MC
+          'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTauHPS27_eta2p1_CrossL1', # L=59.735/fb; present in all eras; unprescaled; not in MC
         },
         '1e1tau' : { # stored in SingleElectron dataset?
-          'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled
+          'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled (effectively prescaled by 3.4); not in MC
           'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTauHPS30_eta2p1_CrossL1', # L=42.053/fb; present in eras B, C, D, missing in A; unprescaled
         },
         '2tau' : { # stored in Tau dataset
-          'HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled
-          'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled
-          'HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled
+          'HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled (effectively prescaled by 3.4); not in MC
+          'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled (effectively prescaled by 3.4); not in MC
+          'HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg', # L=17.682/fb; present in eras A, B, missing in C, D; unprescaled (effectively prescaled by 3.4); not in MC
           'HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg', # L=59.735/fb; present in all eras; unprescaled
         },
       }
 
       self.triggers_leptonFR = {
         '1e' : {
-          'HLT_Ele8_CaloIdM_TrackIdM_PFJet30', # L=6.411/pb; present in all eras; prescale factor 9325.6 (9318.5 from recorded)
-          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30', # L=38.861/pb; present in all eras; prescale factor 1538.9 (1537.3 from recorded)
-          'HLT_Ele23_CaloIdM_TrackIdM_PFJet30', # L=38.875/pb; present in all eras; prescale factor 1538.4 (1536.7 from recorded)
+          'HLT_Ele8_CaloIdM_TrackIdM_PFJet30', # L=6.411/pb; present in all eras; prescale factor 9318.5 (9325.6 from delivery)
+          'HLT_Ele17_CaloIdM_TrackIdM_PFJet30', # L=38.861/pb; present in all eras; prescale factor 1537.3 (1538.9 from delivery)
+          'HLT_Ele23_CaloIdM_TrackIdM_PFJet30', # L=38.875/pb; present in all eras; prescale factor 1536.7 (1538.4 from delivery)
         },
         '1mu' : {
-          'HLT_Mu27', # L=125.783/pb; present in all eras; prescale factor 464.6 (475.0 from recorded)
-          'HLT_Mu20', # L=55.273/pb; present in all eras; prescale factor 1082.1 (1080.8 from recorded)
-          'HLT_Mu3_PFJet40', # L=2.695/pb; present in all eras; prescale factor 22182.4 (22160.5 from recorded)
+          'HLT_Mu27', # L=125.783/pb; present in all eras; prescale factor 475.0 (464.6 from delivery)
+          'HLT_Mu20', # L=55.273/pb; present in all eras; prescale factor 1080.8 (1082.1 from delivery)
+          'HLT_Mu3_PFJet40', # L=2.695/pb; present in all eras; prescale factor 22160.5 (22182.4 from delivery)
         },
         '2e' : set(),
         '2mu' : {
-          'HLT_Mu17', # L=45.781/pb; present in all eras; prescale factor 1307.1 (1304.9 from recorded)
-          'HLT_Mu8', # L=8.546/pb; present in all eras; prescale factor 6981.9 (6990.5 from recorded)
+          'HLT_Mu17', # L=45.781/pb; present in all eras; prescale factor 1304.9 (1307.1 from delivery)
+          'HLT_Mu8', # L=8.546/pb; present in all eras; prescale factor 6990.5 (6981.9 from delivery)
         }
       }
     else:

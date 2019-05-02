@@ -187,7 +187,7 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff() const
       eff_2tau_tauLeg2_mc   = get_from_lut(effTrigger_2tau_perLeg_mc_faketau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
     }
   }
-  if(era_ == kEra_2017)
+  else if(era_ == kEra_2017)
   {
     const auto getTriggerEfficiencyDataFunc = aux::getTriggerFuncData(triggerSF_option_);
     const auto getTriggerEfficiencyMCFunc   = aux::getTriggerFuncMC(triggerSF_option_);

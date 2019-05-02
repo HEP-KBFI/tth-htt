@@ -4,12 +4,14 @@ branchEntryBaseType::branchEntryBaseType(const std::string & inputBranchName,
                                          const std::string & inputBranchType,
                                          const std::string & outputBranchName,
                                          const std::string & outputBranchType,
+                                         const std::string & branchTitle,
                                          int idx)
   : idxColumn_(idx)
   , inputBranchName_(inputBranchName)
   , inputBranchType_string_(inputBranchType)
   , outputBranchName_(outputBranchName)
   , outputBranchType_string_(outputBranchType)
+  , branchTitle_(branchTitle)
 {
   assert(! inputBranchName_.empty());
 
@@ -79,6 +81,7 @@ branchEntryBaseType *
 addBranch(std::vector<branchEntryBaseType *> & branches,
           const std::string & outputBranchName,
           const std::string & inputBranchName_and_Type,
+          const std::string & branchTitle,
           int idx)
 {
   const std::size_t idx1 = inputBranchName_and_Type.find_last_of("/");
@@ -105,17 +108,17 @@ addBranch(std::vector<branchEntryBaseType *> & branches,
   }
 
   branchEntryBaseType * branch = nullptr;
-  if     (inputBranchType == "F"       && outputBranchType == "F") branch = new branchEntryTypeFD  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
-  else if(inputBranchType == "F"       && outputBranchType == "D") branch = new branchEntryTypeFD  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
-  else if(inputBranchType == "F"       && outputBranchType == "I") branch = new branchEntryTypeFI  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
-  else if(inputBranchType == "D"       && outputBranchType == "F") branch = new branchEntryTypeFD  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
-  else if(inputBranchType == "D"       && outputBranchType == "D") branch = new branchEntryTypeFD  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
-  else if(inputBranchType == "D"       && outputBranchType == "I") branch = new branchEntryTypeFI  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
-  else if(inputBranchType == "I"       && outputBranchType == "I") branch = new branchEntryTypeII  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
-  else if(inputBranchType == "i"       && outputBranchType == "i") branch = new branchEntryTypeUIUI(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
-  else if(inputBranchType == "l"       && outputBranchType == "l") branch = new branchEntryTypeULUL(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
-  else if(inputBranchType == "Formula" && outputBranchType == "F") branch = new branchEntryFormulaTypeF(inputBranchName, outputBranchName, outputBranchType, idx);
-  else if(inputBranchType == "Formula" && outputBranchType == "D") branch = new branchEntryFormulaTypeD(inputBranchName, outputBranchName, outputBranchType, idx);
+  if     (inputBranchType == "F"       && outputBranchType == "F") branch = new branchEntryTypeFD  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, branchTitle, idx);
+  else if(inputBranchType == "F"       && outputBranchType == "D") branch = new branchEntryTypeFD  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, branchTitle, idx);
+  else if(inputBranchType == "F"       && outputBranchType == "I") branch = new branchEntryTypeFI  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, branchTitle, idx);
+  else if(inputBranchType == "D"       && outputBranchType == "F") branch = new branchEntryTypeFD  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, branchTitle, idx);
+  else if(inputBranchType == "D"       && outputBranchType == "D") branch = new branchEntryTypeFD  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, branchTitle, idx);
+  else if(inputBranchType == "D"       && outputBranchType == "I") branch = new branchEntryTypeFI  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, branchTitle, idx);
+  else if(inputBranchType == "I"       && outputBranchType == "I") branch = new branchEntryTypeII  (inputBranchName, inputBranchType, outputBranchName, outputBranchType, branchTitle, idx);
+  else if(inputBranchType == "i"       && outputBranchType == "i") branch = new branchEntryTypeUIUI(inputBranchName, inputBranchType, outputBranchName, outputBranchType, branchTitle, idx);
+  else if(inputBranchType == "l"       && outputBranchType == "l") branch = new branchEntryTypeULUL(inputBranchName, inputBranchType, outputBranchName, outputBranchType, branchTitle, idx);
+  else if(inputBranchType == "Formula" && outputBranchType == "F") branch = new branchEntryFormulaTypeF(inputBranchName, outputBranchName, outputBranchType, branchTitle, idx);
+  else if(inputBranchType == "Formula" && outputBranchType == "D") branch = new branchEntryFormulaTypeD(inputBranchName, outputBranchName, outputBranchType, branchTitle, idx);
   else throw cmsException(__func__, __LINE__)
          << "Invalid branch declaration = '" << inputBranchName_and_Type
          << "' for branch = '" << outputBranchName << '\'';

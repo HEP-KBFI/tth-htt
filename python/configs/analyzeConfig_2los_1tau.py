@@ -107,7 +107,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     self.hadTau_selection_veto = hadTau_selection_veto
     self.applyFakeRateWeights = applyFakeRateWeights
     run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
-    if self.era != '2017':
+    if self.era not in [ '2016', '2017', '2018' ]:
       logging.warning('mcClosure for lepton FR not possible for era %s' % self.era)
       run_mcClosure = False
     if run_mcClosure:
@@ -389,6 +389,8 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                 continue
               if central_or_shift in systematics.DYMCReweighting and not is_dymc_reweighting(sample_name):
                   continue
+              if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):
+                continue
 
               logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (lepton_and_hadTau_selection_and_frWeight, central_or_shift))
 

@@ -99,7 +99,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
     self.hadTauVeto_selection_part2 = hadTauVeto_selection
     self.applyFakeRateWeights = applyFakeRateWeights
     run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
-    if self.era != '2017':
+    if self.era not in [ '2016', '2017', '2018' ]:
       logging.warning('mcClosure for lepton FR not possible for era %s' % self.era)
       run_mcClosure = False
     if run_mcClosure:
@@ -292,6 +292,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
               if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
                 continue
               if central_or_shift in systematics.DYMCReweighting and not is_dymc_reweighting(sample_name):
+                continue
+              if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):
                 continue
 
               # build config files for executing analysis code

@@ -15,11 +15,12 @@ struct branchEntryBaseType
   enum { kF, kD, kI, kUI, kUL, kUC, kS, kUS, kB };
   enum { kFixed, kScientific };
 
-  branchEntryBaseType(const std::string & inputBranchName,
-                      const std::string & inputBranchType,
-                      const std::string & outputBranchName,
-                      const std::string & outputBranchType,
-                      int idx = -1);
+  explicit branchEntryBaseType(const std::string & inputBranchName,
+                               const std::string & inputBranchType,
+                               const std::string & outputBranchName,
+                               const std::string & outputBranchType,
+                               const std::string & branchTitle = "",
+                               int idx = -1);
   virtual ~branchEntryBaseType() {}
 
   virtual void setInputTree(TTree *) = 0;
@@ -44,6 +45,8 @@ struct branchEntryBaseType
 
   int outputBranchFormat_;
   int outputBranchPrecision_;
+
+  std::string branchTitle_;
 };
 
 template <typename T1, typename T2>
@@ -54,8 +57,9 @@ struct branchEntryType
                   const std::string & inputBranchType,
                   const std::string & outputBranchName,
                   const std::string & outputBranchType,
+                  const std::string & branchTitle,
                   int idx = -1)
-    : branchEntryBaseType(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx)
+    : branchEntryBaseType(inputBranchName, inputBranchType, outputBranchName, outputBranchType, branchTitle, idx)
   {}
 
   ~branchEntryType() {}
@@ -69,9 +73,13 @@ struct branchEntryType
   void
   setOutputTree(TTree * outputTree) override
   {
-    outputTree->Branch(
+    TBranch * branch = outputTree->Branch(
       outputBranchName_.data(), &outputValue_, Form("%s/%s", outputBranchName_.data(), outputBranchType_string_.data())
     );
+    if(! branchTitle_.empty())
+    {
+      branch->SetTitle(branchTitle_.data());
+    }
   }
 
   void
@@ -129,8 +137,9 @@ struct branchEntryFormulaType
   branchEntryFormulaType(const std::string & inputExpression,
                          const std::string & outputBranchName,
                          const std::string & outputBranchType,
+                         const std::string & branchTitle,
                          int idx = -1)
-    : branchEntryBaseType(inputExpression, "F", outputBranchName, outputBranchType, idx)
+    : branchEntryBaseType(inputExpression, "F", outputBranchName, outputBranchType, branchTitle, idx)
     , inputExpression_string_(inputExpression)
     , inputExpression_(nullptr)
   {}
@@ -152,9 +161,13 @@ struct branchEntryFormulaType
   void
   setOutputTree(TTree * outputTree) override
   {
-    outputTree->Branch(
+    TBranch * branch = outputTree->Branch(
       outputBranchName_.data(), &outputValue_, Form("%s/%s", outputBranchName_.data(), outputBranchType_string_.data())
     );
+    if(! branchTitle_.empty())
+    {
+      branch->SetTitle(branchTitle_.data());
+    }
   }
 
   void
@@ -204,8 +217,9 @@ struct branchEntryVType
                    const std::string & inputBranchType,
                    const std::string & outputBranchName,
                    const std::string & outputBranchType,
+                   const std::string & branchTitle,
                    int idx = -1)
-    : branchEntryBaseType(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx)
+    : branchEntryBaseType(inputBranchName, inputBranchType, outputBranchName, outputBranchType, branchTitle, idx)
     , branch_nElements_(branch_nElements)
     , max_nElements_(max_nElements)
   {
@@ -230,10 +244,14 @@ struct branchEntryVType
   void
   setOutputTree(TTree * outputTree) override
   {
-    outputTree->Branch(
+    TBranch * branch = outputTree->Branch(
       outputBranchName_.data(), outputValues_,
       Form("%s[%s]/%s", outputBranchName_.data(), branch_nElements_->outputBranchName_.data(), outputBranchType_string_.data())
     );
+    if(! branchTitle_.empty())
+    {
+      branch->SetTitle(branchTitle_.data());
+    }
   }
 
   void
@@ -325,9 +343,10 @@ typedef branchEntryVType<UChar_t,   UChar_t> branchEntryTypeVCVC;
 typedef branchEntryVType<Bool_t,     Bool_t> branchEntryTypeVBVB;
 
 branchEntryBaseType *
-addBranch(std::vector<branchEntryBaseType *> &,
-          const std::string &,
-          const std::string &,
+addBranch(std::vector<branchEntryBaseType *> & branches,
+          const std::string & outputBranchName,
+          const std::string & inputBranchName_and_Type,
+          const std::string & branchTitle,
           int = -1);
 
 #endif
