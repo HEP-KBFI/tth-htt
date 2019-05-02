@@ -184,6 +184,15 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::mvaOutput_plainKin_SUM_M], "mvaOutput_3l_1tau_plainKin_SUM_M",
     floatMap[FloatVariableType::mvaOutput_plainKin_1B_M],  "mvaOutput_3l_1tau_plainKin_1B_M",
 
+    floatMap[FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH], "mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH",
+    floatMap[FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH], "mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH",
+    floatMap[FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW], "mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW",
+    floatMap[FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest], "mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest",
+
+    floatMap[FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_ttH], "mvaOutput_3l_ttH_tH_3cat_v8_ttH",
+    floatMap[FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_tH], "mvaOutput_3l_ttH_tH_3cat_v8_tH",
+    floatMap[FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_rest], "mvaOutput_3l_ttH_tH_3cat_v8_rest",
+
 //--- Event weights
     floatMap[FloatVariableType::FR_weight],                "FR_weight",
     floatMap[FloatVariableType::triggerSF_weight],         "triggerSF_weight",
