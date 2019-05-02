@@ -695,6 +695,8 @@ class analyzeConfig(object):
             'apply_hadTauFakeRateSF',
             'jetCleaningByIndex',
             'genMatchingByIndex',
+            'branchName_fatJetsLS',
+            'branchName_subJetsLS',
         ]
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
