@@ -248,7 +248,7 @@ class Triggers(object):
           'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL', # L=27.267/fb; present in B, C, D, E, F, G, missing in H; unprescaled? (+ DZ IS DOCUMENTED ON GITLAB)
           'HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=24.975/fb; present in all eras; unprescaled?
           'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=29.598/fb; present in all eras; unprescaled? (+ DZ IS DOCUMENTED ON GITLAB)
-          #'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', DOCUMENTED ON GITLAB
+          'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', # L=?
         },
         '2e' : {
           'HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=24.978/fb; present in all eras; unprescaled?
@@ -263,7 +263,6 @@ class Triggers(object):
           'HLT_IsoTkMu24', # L=35.918/fb; present in all eras; unprescaled
         },
         '1e' : {
-          'HLT_Ele25_WPTight_Gsf', # L=24.978/fb; present in all eras; unprescaled? NOT DOCUMENTED ON GITLAB
           'HLT_Ele27_WPTight_Gsf', # L=35.918/fb; present in all eras; unprescaled
           'HLT_Ele25_eta2p1_WPTight_Gsf', # L=35.918/fb; present in all eras; unprescaled
           'HLT_Ele27_eta2p1_WPLoose_Gsf', # L=27.303/fb; present in all eras; unprescaled?
@@ -303,7 +302,6 @@ class Triggers(object):
           'HLT_TripleMu_12_10_5', # L=41.527/fb; present in all eras; unprescaled
         },
         '1e2mu' : {
-          #'HLT_DiMu9_Ele9_CaloIdL_TrackIdL', # L=38.397/fb; present in all eras; unprescaled (although previous comment said a prescale of 2) NOT DOCUMENTED ON GITLAB
           'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ', # L=41.527/fb; present in all eras; unprescaled
         },
         '2e1mu' : {
@@ -313,17 +311,15 @@ class Triggers(object):
           'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL', # L=35.997/fb; present in all eras; unprescaled (has PU dependence)
         },
         '2mu' : {
-          #'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL', # L=6500/pb; present in all eras; prescale factor 6.5 (6.4 from recorded) NOT DOCUMENTED ON GITLAB
-          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # L=7449/pb; present in all eras; prescale factor 5.6 (5.6 from delivery) (unprescaled in B; heavily prescaled since C) NOT DOCUMENTED ON GITLAB
           'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # L=36.733/fb; present in C, D, E, F, missing in B; unprescaled
-          #'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8', # IS DOCUMENTED ON GITLAB -> is it a typo??
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8', # L=?
         },
         '1e1mu' : {
           'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=36.733/fb; present in C, D, E, F, missing in B; unprescaled
           'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled NOT DOCUMENTED ON GITLAB
           'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled
-          #'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', IS DOCUMENTED ON GITLAB
-          #'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', IS DOCUMENTED ON GITLAB
+          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=?
+          'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', # L=?
         },
         '2e' : {
           'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # L=41.527/fb; present in all eras; unprescaled (higher efficiency than non-DZ; not present in B)
@@ -334,7 +330,6 @@ class Triggers(object):
           'HLT_IsoMu27', # L=41.527/fb; present in all eras; unprescaled
         },
         '1e' : {
-          'HLT_Ele32_WPTight_Gsf', # L=27.121/fb; present in C, D, E, F, missing in B; unprescaled NOT DOCUMENTED ON GITLAB
           'HLT_Ele35_WPTight_Gsf', # L=41.527/fb; present in all eras; unprescaled
         },
         # CV: tau trigger paths taken from slide 6 of presentation given by Hale Sert at HTT workshop in December 2017
@@ -376,14 +371,12 @@ class Triggers(object):
     elif era == "2018":
       self.triggers_analysis = {
         '3mu' : {
-#         #'HLT_TripleMu_10_5_5_DZ', # L=59.735/fb; present in all eras; unprescaled NOT DOCUMENTED ON GITLAB
           'HLT_TripleMu_12_10_5', # L=59.735/fb; present in all eras; unprescaled
         },
         '1e2mu' : {
           'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ', # L=59.735/fb; present in all eras; unprescaled
         },
         '2e1mu' : {
-          #'HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ', # L=59.735/fb; present in all eras; unprescaled NOT DOCUMENTED ON GITLAB
           'HLT_Mu8_DiEle12_CaloIdL_TrackIdL', # L=59.735/fb; present in all eras; unprescaled
         },
         '3e' : {
@@ -393,14 +386,13 @@ class Triggers(object):
           'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # L=59.735/fb; present in all eras; unprescaled
         },
         '1e1mu' : {
-          #'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=59.735/fb; present in all eras; unprescaled NOT DOCUMENTED ON GITLAB
           'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=59.735/fb; present in all eras; unprescaled
           'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=59.735/fb; present in all eras; unprescaled
           'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=59.735/fb; present in all eras; unprescaled
         },
         '2e' : {
           'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # L=59.735/fb; present in all eras; unprescaled
-          #'HLT_DoubleEle25_CaloIdL_MW', # L=59.735/fb; present in all eras; unprescaled (used by H->ZZ->4 lepton analysis, but why ?) NOT DOCUMENTED ON GITLAB
+          #'HLT_DoubleEle25_CaloIdL_MW', # L=59.735/fb; present in all eras; unprescaled (used by H->ZZ->4 lepton analysis, but why ?)
         },
         '1mu' : {
           'HLT_IsoMu24', # L=59.727/fb; present in all eras; unprescaled
@@ -408,7 +400,7 @@ class Triggers(object):
         },
         '1e' : {
           'HLT_Ele32_WPTight_Gsf', # L=59.735/fb; present in all eras; unprescaled
-          #'HLT_Ele35_WPTight_Gsf', # L=59.735; present in all eras; unprescaled (used by Alexei, but why ?) NOT DOCUMENTED ON GITLAB
+          #'HLT_Ele35_WPTight_Gsf', # L=59.735; present in all eras; unprescaled (used by Alexei, but why ?)
         },
         # CV: tau trigger paths taken from slide 12 of presentation given by Hale Sert at HTT workshop in April 2019
         #    (https://indico.cern.ch/event/803335/contributions/3359970/attachments/1829789/2996369/TriggerStatus_HTTworkshop_hsert.pdf)
