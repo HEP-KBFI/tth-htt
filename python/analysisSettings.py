@@ -248,7 +248,7 @@ class Triggers(object):
           'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL', # L=27.267/fb; present in B, C, D, E, F, G, missing in H; unprescaled? (+ DZ IS DOCUMENTED ON GITLAB)
           'HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=24.975/fb; present in all eras; unprescaled?
           'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=29.598/fb; present in all eras; unprescaled? (+ DZ IS DOCUMENTED ON GITLAB)
-          'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', # L=?
+          'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', # L=27.267/fb; present in B, C, D, E, F, G, missing in H; unprescaled?
         },
         '2e' : {
           'HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=24.978/fb; present in all eras; unprescaled?
@@ -312,14 +312,14 @@ class Triggers(object):
         },
         '2mu' : {
           'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # L=36.733/fb; present in C, D, E, F, missing in B; unprescaled
-          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8', # L=?
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8', # L=41.527/fb; present in all eras; unprescaled
         },
         '1e1mu' : {
           'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=36.733/fb; present in C, D, E, F, missing in B; unprescaled
           'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled NOT DOCUMENTED ON GITLAB
           'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled
-          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=?
-          'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', # L=?
+          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled
+          'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', # L=0/fb?
         },
         '2e' : {
           'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # L=41.527/fb; present in all eras; unprescaled (higher efficiency than non-DZ; not present in B)
