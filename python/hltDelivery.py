@@ -212,11 +212,13 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
       expected_recording *= unit_factor
       expected_delivery  *= unit_factor
 
-      prescale_recording = expected_recording / dict_entry['recorded']
-      prescale_delivery  = expected_delivery  / dict_entry['delivered']
+      prescale_recording = (expected_recording / dict_entry['recorded']) if dict_entry['recorded'] != 0. else -1.
+      prescale_delivery  = (expected_delivery  / dict_entry['delivered']) if dict_entry['delivered'] != 0. else -1.
 
       if int(prescale_recording) == 1:
         prescale_msg = "NOT prescaled"
+      elif int(prescale_recording) == -1:
+        prescale_msg = "NOT recording anything?"
       else:
         prescale_msg = "prescale factor %.1f (%.1f from delivery)" % (prescale_recording, prescale_delivery)
       prescale_msg += " (expected %.1f recorded, %.1f delivery; units = %s)" % (
