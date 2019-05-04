@@ -1,4 +1,3 @@
-from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import os.path
@@ -6,6 +5,7 @@ import re
 import multiprocessing
 import signal
 import psutil
+import subprocess
 
 HLT_SUFFIX = re.compile(r'(.*_v\*$)|(.*_v[0-9]+)$')
 DATASET    = re.compile(r'^/.*/Run(?P<year>[\d]{4})(?P<era>[ABCDEFGH]{1}).*/MINIAOD$')
@@ -31,7 +31,11 @@ def process_hlt(hlt_path, golden_json, brilcalc_path, normtag, units, output_dir
   )
   output_file = os.path.join(output_dir, '{}.csv'.format(hlt_path.replace('_v*', ''))) if output_dir else ''
   logging.debug("Running: {}".format(brilcalc_cmd))
-  brilcalc_out, brilcalc_err = run_cmd(brilcalc_cmd, do_not_log = True, stdout_file = output_file, return_stderr = True)
+  brilcalc_run = subprocess.Popen(brilcalc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+  brilcalc_out, brilcalc_err = brilcalc_run.communicate()
+  if output_file:
+    with open(output_file, 'w') as output_file_ptr:
+      output_file_ptr.write(brilcalc_out + '\n')
   if brilcalc_err:
     raise ValueError("brilcalc return an error: %s" % brilcalc_err)
   logging.debug("Parsing results for {}".format(hlt_path))
@@ -181,7 +185,7 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file, o
     os.makedirs(output_dir)
 
   # prepare the jobs
-  pool_size = 12
+  pool_size = 16
   pool = multiprocessing.Pool(pool_size, handle_worker)
 
   logging.debug("Constructing pool for {} HLT paths".format(len(hlt_paths)))
