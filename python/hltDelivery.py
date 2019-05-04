@@ -29,7 +29,7 @@ def process_hlt(hlt_path, golden_json, brilcalc_path, normtag, units, output_dir
     hlt_path      = hlt_path,
     units         = units,
   )
-  output_file = os.path.join(output_dir, '{}.csv'.format(hlt_path)) if output_dir else ''
+  output_file = os.path.join(output_dir, '{}.csv'.format(hlt_path.replace('_v*', ''))) if output_dir else ''
   logging.debug("Running: {}".format(brilcalc_cmd))
   brilcalc_out, brilcalc_err = run_cmd(brilcalc_cmd, do_not_log = True, stdout_file = output_file, return_stderr = True)
   if brilcalc_err:
