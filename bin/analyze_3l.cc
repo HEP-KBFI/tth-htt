@@ -2133,6 +2133,15 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       // mvaOutput_2lss_1tau_HTT_SUM_M not filled
       // mvaOutput_2lss_1tau_HTTMEM_SUM_M not filled
 
+      // mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH not filled
+      // mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH not filled
+      // mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW not filled
+      // mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest not filled
+
+      snm->read(mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"],  FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_ttH);
+      snm->read(mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"],   FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_tH);
+      snm->read(mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"], FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_rest);
+
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
       if((sync_requireGenMatching && isGenMatched) || ! sync_requireGenMatching)

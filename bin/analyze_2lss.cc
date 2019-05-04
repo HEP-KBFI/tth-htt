@@ -2159,6 +2159,15 @@ int main(int argc, char* argv[])
       // mvaOutput_2lss_1tau_HTT_SUM_M not filled
       // mvaOutput_2lss_1tau_HTTMEM_SUM_M not filled
 
+      snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttH"],  FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH);
+      snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_tH"],   FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH);
+      snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttW"],  FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW);
+      snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_rest"], FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest);
+
+      // mvaOutput_3l_ttH_tH_3cat_v8_ttH not filled
+      // mvaOutput_3l_ttH_tH_3cat_v8_tH not filled
+      // mvaOutput_3l_ttH_tH_3cat_v8_rest not filled
+
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
       if((sync_requireGenMatching && isGenMatched) || ! sync_requireGenMatching)
