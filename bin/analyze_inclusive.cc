@@ -193,7 +193,6 @@ main(int argc,
   const std::string central_or_shift        = cfg_analyze.getParameter<std::string>("central_or_shift");
 
   const bool isMC               = cfg_analyze.getParameter<bool>("isMC");
-  const bool isMC_tH            = process_string == "tHq" || process_string == "tHW";
   const bool useNonNominal      = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
@@ -264,7 +263,7 @@ main(int argc,
   });
 
 //--- declare event-level variables
-  EventInfo eventInfo(isSignal, isMC, isMC_tH);
+  EventInfo eventInfo(isSignal, isMC);
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree->registerReader(&eventInfoReader);
 

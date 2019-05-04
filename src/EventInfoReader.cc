@@ -22,7 +22,8 @@ EventInfoReader::EventInfoReader(EventInfo * info,
   , branchName_genHiggsDecayMode("genHiggsDecayMode")
   , branchName_genWeight("genWeight")
   , branchName_puWeight(getBranchName_pileup(puSys_option))
-  , branchName_lheWeightSM("LHEWeight_rwgt_12")
+  , branchName_LHEReweightingWeight("LHEReweightingWeight")
+  , branchName_nLHEReweightingWeight(Form("n%s", branchName_LHEReweightingWeight.data()))
 {}
 
 void
@@ -39,14 +40,16 @@ EventInfoReader::setBranchAddresses(TTree * tree)
   if(info_ -> is_mc())
   {
     bai.setBranchAddress(info_ -> genWeight, branchName_genWeight);
-    if (read_puWeight_)
+    if(read_puWeight_)
     {
       bai.setBranchAddress(info_ -> pileupWeight, branchName_puWeight);
     }
   }
-  if(info_ -> is_mc_th())
+  if(info_ -> is_mc())
   {
-    bai.setBranchAddress(info_ -> genWeight_tH, branchName_lheWeightSM);
+    BranchAddressInitializer bai_LHEReweight(tree, info_ -> LHEReweightingWeight_max);
+    bai_LHEReweight.setBranchAddress(info_ -> nLHEReweightingWeight, branchName_nLHEReweightingWeight);
+    bai_LHEReweight.setBranchAddress(info_ -> LHEReweightingWeight, branchName_LHEReweightingWeight);
   }
 }
 

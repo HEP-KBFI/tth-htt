@@ -183,7 +183,7 @@ main(int argc,
   std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
 
 //--- declare event-level variables
-  EventInfo eventInfo(false, false, false);
+  EventInfo eventInfo;
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 
@@ -339,7 +339,7 @@ main(int argc,
   }
   TTree * const outputTree = new TTree(outputTreeName.data(), outputTreeName.data());
 
-  EventInfoWriter eventInfoWriter(false, false, false);
+  EventInfoWriter eventInfoWriter;
   eventInfoWriter.setBranches(outputTree);
 
   hltPathWriter hltPathWriter_instance(branchNames_triggers);

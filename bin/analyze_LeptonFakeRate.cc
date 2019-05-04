@@ -456,7 +456,6 @@ main(int argc,
   const std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
   const bool isMC    = cfg_analyze.getParameter<bool>("isMC");
-  const bool isMC_tH = process_string == "tHq" || process_string == "tHW" ? true : false;
   const bool hasLHE  = cfg_analyze.getParameter<bool>("hasLHE");
 
   const std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
@@ -623,7 +622,7 @@ main(int argc,
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
 //--- declare event-level variables
-  EventInfo eventInfo(isSignal, isMC, isMC_tH);
+  EventInfo eventInfo(isSignal, isMC);
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree->registerReader(&eventInfoReader);
 
@@ -1009,12 +1008,12 @@ main(int argc,
     if(isMC)
     {
       if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(isMC_tH)                 evtWeight_inclusive *= eventInfo.genWeight_tH;
       if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
       if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
+      evtWeight_inclusive *= eventInfo.genWeight_tH();
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)

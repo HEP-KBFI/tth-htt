@@ -162,7 +162,6 @@ int main(int argc, char* argv[])
   const int era = get_era(era_string);
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
-  bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
 
@@ -232,7 +231,7 @@ int main(int argc, char* argv[])
   std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
 
 //--- declare event-level variables
-  EventInfo eventInfo(isSignal, isMC, isMC_tH);
+  EventInfo eventInfo(isSignal, isMC);
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 

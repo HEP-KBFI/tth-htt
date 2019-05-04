@@ -161,7 +161,7 @@ int main(int argc,
             << " Entries in "         << inputTree->GetListOfFiles()->GetEntries() << " files.\n";
   
 //--- declare event-level variables
-  EventInfo eventInfo(false, false, false);
+  EventInfo eventInfo;
   EventInfoReader eventInfoReader(&eventInfo);
   eventInfoReader.setBranchAddresses(inputTree);
 
@@ -249,7 +249,7 @@ int main(int argc,
   std::map<std::string, branchEntryBaseType*> branchesToKeep;
   if(copy_all_branches)
   {
-    eventInfoWriter = new EventInfoWriter(eventInfo.is_signal(), eventInfo.is_mc(), eventInfo.is_mc_th());
+    eventInfoWriter = new EventInfoWriter(eventInfo.is_signal(), eventInfo.is_mc());
     eventInfoWriter->setBranches(outputTree);
 
     muonWriter = new RecoMuonWriter(era, Form("n%s", branchName_muons.data()), branchName_muons);
