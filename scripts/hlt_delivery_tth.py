@@ -51,6 +51,10 @@ if __name__ == '__main__':
     default = os.path.expanduser('~/brilconda/bin/brilcalc'),
     help = 'R|Location of brilcalc',
   )
+  parser.add_argument('-o', '--output',
+    type = str, dest = 'output', metavar = 'directory', required = False, default = '',
+    help = 'R|Directory for the output of brilcalc commands',
+  )
   parser.add_argument('-v', '--verbose',
     dest = 'verbose', action = 'store_true', default = False, required = False,
     help = 'R|Verbose output',
@@ -72,4 +76,4 @@ if __name__ == '__main__':
     triggers = Triggers(era)
     hlt_paths = getattr(triggers, triggers_attr)
 
-    run_brilcalc(hlt_paths, JSONS[era], args.normtag, args.units, args.brilcalc_path, DATA_TABLES[era])
+    run_brilcalc(hlt_paths, JSONS[era], args.normtag, args.units, args.brilcalc_path, DATA_TABLES[era], args.output)

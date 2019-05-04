@@ -21,7 +21,7 @@ def hlt_version(hlt_path):
   else:
     return hlt_path
 
-def process_hlt(hlt_path, golden_json, brilcalc_path, normtag, units):
+def process_hlt(hlt_path, golden_json, brilcalc_path, normtag, units, output_dir):
   brilcalc_cmd = '{brilcalc_path} lumi -c web {json} {normtag} --output-style csv --hltpath "{hlt_path}" -u {units}'.format(
     brilcalc_path = brilcalc_path,
     json          = ('-i {}'.format(golden_json)    if golden_json else ''),
@@ -29,8 +29,9 @@ def process_hlt(hlt_path, golden_json, brilcalc_path, normtag, units):
     hlt_path      = hlt_path,
     units         = units,
   )
+  output_file = os.path.join(output_dir, '{}.csv'.format(hlt_path)) if output_dir else ''
   logging.debug("Running: {}".format(brilcalc_cmd))
-  brilcalc_out, brilcalc_err = run_cmd(brilcalc_cmd, do_not_log = True, return_stderr = True)
+  brilcalc_out, brilcalc_err = run_cmd(brilcalc_cmd, do_not_log = True, stdout_file = output_file, return_stderr = True)
   if brilcalc_err:
     raise ValueError("brilcalc return an error: %s" % brilcalc_err)
   logging.debug("Parsing results for {}".format(hlt_path))
@@ -152,7 +153,7 @@ def parse_data(data_file):
 
   return data
 
-def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
+def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file, output_dir):
 
   assert (all(map(lambda hlt_path: hlt_path.startswith('HLT'), hlt_paths_in)))
   hlt_paths = {hlt_path: hlt_version(hlt_path) for hlt_path in hlt_paths_in}
@@ -176,6 +177,9 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
   else:
     data = None
 
+  if output_dir and not os.path.isdir(output_dir):
+    os.makedirs(output_dir)
+
   # prepare the jobs
   pool_size = 12
   pool = multiprocessing.Pool(pool_size, handle_worker)
@@ -184,7 +188,7 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
   for hlt_path in hlt_paths:
     pool.apply_async(
       process_hlt,
-      args     = (hlt_paths[hlt_path], json, brilcalc_path, normtag, units),
+      args     = (hlt_paths[hlt_path], json, brilcalc_path, normtag, units, output_dir),
       callback = get_trigger_results,
     )
   pool.close()
