@@ -174,11 +174,6 @@ def plot_ratio(data1, data2, label1, label2, era, output_dir, is_cumul, is_recor
 
   has_labeled = False
   for era_idx, era_key in enumerate(runs[era]):
-    if not has_labeled:
-      has_labeled = True
-      label_on_plot = '{} / {}'.format(label2, label1)
-    else:
-      label_on_plot = ''
 
     run_len_1 = len(list(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data1))))
     run_len_2 = len(list(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data2))))
@@ -188,6 +183,9 @@ def plot_ratio(data1, data2, label1, label2, era, output_dir, is_cumul, is_recor
     data2_vals = list(map(lambda x: x[subject], filter(lambda y: y['era'] == era_key, data2)))
     data1_vals = list(map(lambda x: x[subject], filter(lambda y: y['era'] == era_key, data1)))
     data2_data1_ratio = [data2_vals[run_idx] / data1_vals[run_idx] for run_idx in range(run_len)]
+
+    if not data2_data1_ratio:
+      continue
 
     data2_data1_ratio_min = min(data2_data1_ratio)
     data2_data1_ratio_max = max(data2_data1_ratio)
@@ -202,6 +200,13 @@ def plot_ratio(data1, data2, label1, label2, era, output_dir, is_cumul, is_recor
         y = ratio_mean, xmin = run_count, xmax = run_count + run_len, color = 'black', linestyle='--',
         label = 'Average prescale: %.1f' % ratio_mean
       )
+
+    if not has_labeled:
+      has_labeled = True
+      label_on_plot = '{} / {}'.format(label2, label1)
+    else:
+      label_on_plot = ''
+
     ax.plot(
       list(range(run_count, run_count + run_len)), data2_data1_ratio, c = '#1f77b4', ls = '-', label = label_on_plot
     )
@@ -215,13 +220,15 @@ def plot_ratio(data1, data2, label1, label2, era, output_dir, is_cumul, is_recor
 
   era_colors = ['gray', 'olive']
   for era_idx, era_key in enumerate(runs[era]):
+    if era_key not in runmap:
+      continue
     ax.fill_between(runmap[era_key], *ylim, facecolor = era_colors[era_idx % 2], alpha = 0.2)
     runb_avg = (runmap[era_key][0] + runmap[era_key][1]) / 2
     ab = obox.AnnotationBbox(obox.TextArea(era_key), xy = (runb_avg, ylim[1] * 0.8), xycoords = 'data')
     ax.add_artist(ab)
 
   plt.xlabel('run (indexed)')
-  plt.ylabel('Ratio {}'.format(subject))
+  plt.ylabel('Ratio of {}'.format(subject.replace('_', ' ')))
 
   plt.grid(True)
   plt.legend(loc = 'best')
