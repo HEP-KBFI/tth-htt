@@ -38,7 +38,17 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_geral.h" // isGenMatchedJetTriplet tags
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
+#include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger_boosted.h" // HadTopTagger_boosted
+#include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger_semi_boosted_AK8.h" // HadTopTagger_semi_boosted
 #include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions_Hj_and_Hjj_taggers.h" // comp_mvaOutput_Hj_tagger, comp_mvaOutput_Hjj_tagger
+
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorHTTv2.h" // RecoJetSelectorHTTv2
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderHTTv2.h" // RecoJetReaderHTTv2
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderAK8.h" // RecoJetReaderAK8
+#include "tthAnalysis/HiggsToTauTau/interface/JetHistManagerHTTv2.h" // JetHistManagerHTTv2
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorAK8.h" // RecoJetSelectorAK8
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleanerSubJets.h" // RecoJetCollectionCleanerAK8SubJets
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 #include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
@@ -129,7 +139,10 @@ main(int argc,
     "max(Jet25_qg,0.)", "Jet25_lepdrmax", "Jet25_pt" };
   TMVAInterface mva_Hj_tagger(mvaFileName_Hj_tagger, mvaInputVariables_Hj_tagger);
 
+  //--- initialize hadronic top tagger BDT
   HadTopTagger* hadTopTagger = new HadTopTagger();
+  HadTopTagger_boosted* hadTopTagger_boosted = new HadTopTagger_boosted();
+  HadTopTagger_semi_boosted_AK8* hadTopTagger_semi_boosted_fromAK8 = new HadTopTagger_semi_boosted_AK8();
 
   const edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
   const edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_inclusive");
@@ -225,6 +238,11 @@ main(int argc,
   const std::string branchName_hadTauGenMatch   = cfg_analyze.getParameter<std::string>("branchName_hadTauGenMatch");
   const std::string branchName_jetGenMatch      = cfg_analyze.getParameter<std::string>("branchName_jetGenMatch");
 
+  const std::string branchName_jetsHTTv2 = cfg_analyze.getParameter<std::string>("branchName_jetsHTTv2");
+  const std::string branchName_subjetsHTTv2 = cfg_analyze.getParameter<std::string>("branchName_subjetsHTTv2");
+  const std::string branchName_jetsAK8 = cfg_analyze.getParameter<std::string>("branchName_jetsAK8");
+  const std::string branchName_subjetsAK8 = cfg_analyze.getParameter<std::string>("branchName_subjetsAK8");
+
   const std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << '\n';
   RunLumiEventSelector * run_lumi_eventSelector = nullptr;
@@ -313,8 +331,21 @@ main(int argc,
   const RecoJetCollectionCleanerByIndex jetCleanerByIndex(isDEBUG);
   const RecoJetCollectionSelector jetSelector(era, -1, isDEBUG);
   const RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
+  const RecoJetCollectionCleaner jetCleaner_large8(0.8, isDEBUG);
   const RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
   const RecoJetCollectionSelectorForward jetSelectorForward(era, -1, isDEBUG);
+
+  RecoJetReaderHTTv2* jetReaderHTTv2 = new RecoJetReaderHTTv2(era, branchName_jetsHTTv2, branchName_subjetsHTTv2);
+  inputTree -> registerReader(jetReaderHTTv2);
+  RecoJetCollectionSelectorHTTv2 jetSelectorHTTv2(era);
+  RecoJetCollectionCleanerHTTv2 jetCleanerHTTv2(1.5, isDEBUG); //to clean against leptons and hadronic taus
+  RecoJetCollectionCleanerHTTv2SubJets jetCleanerHTTv2SubJets(0.4, isDEBUG); //to clean against leptons and hadronic taus
+
+  RecoJetReaderAK8* jetReaderAK8 = new RecoJetReaderAK8(era, branchName_jetsAK8, branchName_subjetsAK8);
+  inputTree -> registerReader(jetReaderAK8);
+  RecoJetCollectionSelectorAK8 jetSelectorAK8(era);
+  RecoJetCollectionCleanerAK8 jetCleanerAK8(0.8, isDEBUG); //to clean against leptons and hadronic taus
+  RecoJetCollectionCleanerAK8SubJets jetCleanerAK8SubJets(0.4, isDEBUG); //to clean against leptons and hadronic taus
 
 //--- declare missing transverse energy
   RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
@@ -604,20 +635,86 @@ main(int argc,
     bool calculate_matching = false;
     std::map<int, Particle::LorentzVector> genVar;
     std::map<int, Particle::LorentzVector> genVarAnti;
+    bool isGenMatched = false;
+    double genTopPt_teste = 0.;
     if (selJets.size() > 2)
     {
-      bool isGenMatched = false;
-      double genTopPt_teste = 0.;
       const std::map<int, double> bdtResult = (*hadTopTagger)(*selJets[0], *selJets[1], *selJets[2], calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti );
-      HadTop_pt = (selJets[0]->p4() + selJets[1]->p4() + selJets[2]->p4()).pt();;
+      HTT = bdtResult.at(kXGB_CSVsort4rd);
+      HadTop_pt = (selJets[0]->p4() + selJets[1]->p4() + selJets[2]->p4()).pt();
+      snm->read(HTT, FloatVariableType::HTT);
+      snm->read(HadTop_pt, FloatVariableType::HadTop_pt);
     }
-    snm->read(HTT, FloatVariableType::HTT);
+
+    //--- build collections of jets reconstructed by hep-top-tagger (HTTv2) algorithm
+    const std::vector<RecoJetHTTv2> jetsHTTv2 = jetReaderHTTv2->read();
+    const std::vector<const RecoJetHTTv2*> jet_ptrsHTTv2raw = convert_to_ptrs(jetsHTTv2);
+    const std::vector<const RecoJetHTTv2*> jet_ptrsHTTv2rawSel = jetSelectorHTTv2(jet_ptrsHTTv2raw, isHigherPt);
+    const std::vector<const RecoJetHTTv2*> sel_HTTv2 = jetCleanerHTTv2SubJets(jet_ptrsHTTv2rawSel, fakeableMuons, fakeableElectrons, selHadTaus);
+
+    //--- build collections of jets reconstructed by anti-kT algorithm with dR=0.8 (AK8)
+    const std::vector<RecoJetAK8> jetsAK8 = jetReaderAK8->read();
+    const std::vector<const RecoJetAK8*> jet_ptrsAK8raw1 = convert_to_ptrs(jetsAK8);
+    const std::vector<const RecoJetAK8*> jet_ptrsAK8raw = jetSelectorAK8(jet_ptrsAK8raw1, isHigherPt);;
+    const std::vector<const RecoJetAK8*> jet_ptrsAK8 = jetCleanerAK8SubJets(jet_ptrsAK8raw, selMuons, selElectrons, selHadTaus);
+    const std::vector<const RecoJet*> cleanedJets_fromAK8 = jetCleaner_large8(selJets, jet_ptrsAK8);
+
+    const int nHTTv2 = sel_HTTv2.size();
+    snm->read(nHTTv2,         FloatVariableType::nHTTv2);
+
+    if ( nHTTv2 > 0 )
+    {
+      snm->read(sel_HTTv2[0] -> pt(),  FloatVariableType::jetHTTv2_1_pt);
+      snm->read(sel_HTTv2[0] -> eta(), FloatVariableType::jetHTTv2_1_eta);
+      snm->read(sel_HTTv2[0] -> phi(), FloatVariableType::jetHTTv2_1_phi);
+      snm->read((sel_HTTv2[0] -> p4()).E(),   FloatVariableType::jetHTTv2_1_E);
+
+      const std::map<int, double> bdtResult_HTTv2 = (*hadTopTagger_boosted)(*sel_HTTv2[0], calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti);
+      snm->read(bdtResult_HTTv2.at(kXGB_boosted_no_kinFit),                    FloatVariableType::HTT_boosted);
+    }
+
+    snm->read(jet_ptrsAK8.size(),       FloatVariableType::N_jetAK8);
+    snm->read(cleanedJets_fromAK8.size(),           FloatVariableType::NcleanedJets_fromAK8);
+    if ( jet_ptrsAK8.size() > 0 )
+    {
+      snm->read(jet_ptrsAK8[0] -> pt(),    FloatVariableType::jetAK8_1_pt);
+      snm->read(jet_ptrsAK8[0] -> eta(),   FloatVariableType::jetAK8_1_eta);
+      snm->read(jet_ptrsAK8[0] -> phi(),   FloatVariableType::jetAK8_1_phi);
+      snm->read((jet_ptrsAK8[0] -> p4()).E(),     FloatVariableType::jetAK8_1_E);
+      if ( cleanedJets_fromAK8.size() > 0 )
+      {
+        const std::map<int, double> bdtResult_semi_boosted = (*hadTopTagger_semi_boosted_fromAK8)(*jet_ptrsAK8[0], *cleanedJets_fromAK8[0], calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti);
+        snm->read(bdtResult_semi_boosted.at(kXGB_semi_boosted_AK8_no_kinFit), FloatVariableType::HTT_semi_boosted_fromAK8);
+        const double HadTop_pt_semi_boosted_fromAK8 = (jet_ptrsAK8[0] -> p4() + cleanedJets_fromAK8[0] -> p4()).pt();
+        snm->read(HadTop_pt_semi_boosted_fromAK8, FloatVariableType::HadTop_pt_semi_boosted_fromAK8);
+      }
+
+    }
+
+    if (preselLeptons.size() > 1) {
+      const double massL = comp_MT_met_lep1(preselLeptons[0]->p4() + preselLeptons[1]->p4(), met.pt(), met.phi());
+      snm->read(massL,           FloatVariableType::massL);
+    }
+
+    double lep1_conePt = 0.;
+    double lep2_conePt = 0.;
+    double sum_lep_charge_2lss = 0.;
+    double sum_lep_charge_3l = 0.;
+    double mT_met_lep3    = 0.;
+    double mindr_lep3_jet = 0.;
+    double lep3_conePt = 0.;
+    double max_lep_eta_2lss = 0.;
+    double max_lep_eta_3l = 0.;
+    double mT_met_lep1    = 0.;
+    double mindr_lep1_jet = 0.;
+    double mindr_lep2_jet = 0.;
+    double mT_met_lep2    = 0.;
 
     if(selLeptons.size() > 0)
     {
       const RecoLepton * selLepton_lead = selLeptons[0];
-      const double mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-      const double mT_met_lep1    = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
+      mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
+      mT_met_lep1    = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
       double mTauTauVis1_sel      = selHadTaus.size() > 0      ?
         (selLepton_lead->p4() + selHadTaus.at(0)->p4()).mass() :
         snm->placeholder_value
@@ -630,8 +727,8 @@ main(int argc,
       if(selLeptons.size() > 1)
       {
         const RecoLepton * selLepton_sublead = selLeptons[1];
-        const double mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
-        const double mT_met_lep2    = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
+        mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
+        mT_met_lep2    = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
         const double dR_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
         double mTauTauVis2_sel      = selHadTaus.size() > 0  ?
           (selLepton_sublead->p4() + selHadTaus.at(0)->p4()).mass() :
@@ -643,87 +740,90 @@ main(int argc,
         snm->read(dR_leps,         FloatVariableType::dr_leps);
         snm->read(mTauTauVis2_sel, FloatVariableType::mvis_l2tau);
 
-        const double lep1_conePt = comp_lep1_conePt(*selLepton_lead);
-        const double lep2_conePt = comp_lep2_conePt(*selLepton_sublead);
-
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["avg_dr_jet"] = avg_dr_jet;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["ptmiss"]     = met.pt();
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["mbb_medium"] = mbb;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["max_dr_jet"] = max_dr_jet;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jet1_pt"]    = selJets.size() > 0 ? selJets[0]->pt() : 0;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jet2_pt"]    = selJets.size() > 1 ? selJets[1]->pt() : 0;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jet3_pt"]    = selJets.size() > 2 ? selJets[2]->pt() : 0;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jet4_pt"]    = selJets.size() > 3 ? selJets[3]->pt() : 0;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["max_lep_eta"]     = TMath::Max(std::abs(selLepton_lead -> eta()), std::abs(selLepton_sublead -> eta()));
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep1_mT"] = mT_met_lep1;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep1_conept"] = lep1_conePt;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep1_min_dr_jet"] = TMath::Min(10., mindr_lep1_jet);
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep2_mT"] = mT_met_lep2;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep2_conept"] = lep2_conePt;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep2_min_dr_jet"] = TMath::Min(10., mindr_lep2_jet);
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nJetForward"]          = selJetsForward.size();
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jetForward1_pt"]       = selJetsForward.size() > 0 ?  selJetsForward[0]->pt() : 0;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jetForward1_eta_abs"]  = selJetsForward.size() > 0 ?  selJetsForward[0]->absEta() : -1;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["res-HTT_CSVsort4rd"]   = HTT;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["HadTop_pt_CSVsort4rd"] = HadTop_pt;
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nJet"]                 = selJets.size();
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nBJetLoose"]           = selBJets_loose.size();
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nBJetMedium"]          = selBJets_medium.size();
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nElectron"]            = selElectrons.size();
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["sum_lep_charge"]       = selLepton_lead->charge() + selLepton_sublead->charge();
-        mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["mvaOutput_Hj_tagger"]  = mvaOutput_Hj_tagger;
-        std::map<std::string, double> mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4 = mva_2lss_ttH_tH_4cat_onlyTHQ_v4(mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF);
-
-        snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttH"], FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH);
-        snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_tH"], FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH);
-        snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttW"], FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW);
-        snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_rest"], FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest);
+        lep1_conePt = comp_lep1_conePt(*selLepton_lead);
+        lep2_conePt = comp_lep2_conePt(*selLepton_sublead);
+        sum_lep_charge_2lss = selLepton_lead->charge() + selLepton_sublead->charge();
+        max_lep_eta_2lss = TMath::Max(std::abs(selLepton_lead -> eta()), std::abs(selLepton_sublead -> eta()));
 
         if(selLeptons.size() > 2)
         {
           const RecoLepton * selLepton_third = selLeptons[2];
-          const double mT_met_lep3    = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
-          const double mindr_lep3_jet = comp_mindr_lep3_jet(*selLepton_third, selJets);
+          mT_met_lep3    = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
+          mindr_lep3_jet = comp_mindr_lep3_jet(*selLepton_third, selJets);
 
           snm->read(mT_met_lep3,    FloatVariableType::mT_met_lep3);
           snm->read(mindr_lep3_jet, FloatVariableType::mindr_lep3_jet);
 
-          const double lep3_conePt = comp_lep3_conePt(*selLepton_third);
-
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["avg_dr_jet"]                 = avg_dr_jet;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["ptmiss"] = met.pt();
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["mbb_medium"] = selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : 0;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["jet1_pt"] = selJets.size() > 0 ? selJets[0]->pt() : 0;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["jet2_pt"] = selJets.size() > 1 ? selJets[1]->pt() : 0;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["jet3_pt"] = selJets.size() > 2 ?  selJets[2]->pt() : 0;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["jet4_pt"] = selJets.size() > 3 ?  selJets[3]->pt() : 0;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["max_lep_eta"] = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["lep1_mT"] = mT_met_lep1;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["lep1_conept"] = lep1_conePt;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["lep2_mT"] = mT_met_lep2;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["lep2_conept"] = lep2_conePt;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["lep3_mT"] = mT_met_lep3;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["lep3_conept"] = lep3_conePt;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["jetForward1_pt"] = selJetsForward.size() > 0 ? selJetsForward[0]->pt() : 0;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["res-HTT_CSVsort4rd"] = HTT;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["HadTop_pt_CSVsort4rd"] = HadTop_pt;
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["nJet"] = selJets.size();
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["nJetForward"] = selJetsForward.size();
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["nBJetLoose"] = selBJets_loose.size();
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["nBJetMedium"] = selBJets_medium.size();
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["nElectron"] = selElectrons.size();
-          mvaInputs_3l_ttH_tH_3cat_v8_TF["sum_lep_charge"] = selLepton_lead->charge() + selLepton_sublead->charge() + selLepton_third->charge();
-          std::map<std::string, double> mvaOutput_3l_ttH_tH_3cat_v8 = mva_3l_ttH_tH_3cat_v8_TF(mvaInputs_3l_ttH_tH_3cat_v8_TF);
-
-          snm->read(mvaOutput_3l_ttH_tH_3cat_v8["predictions_ttH"],  FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_ttH);
-          snm->read(mvaOutput_3l_ttH_tH_3cat_v8["predictions_tH"],   FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_tH);
-          snm->read(mvaOutput_3l_ttH_tH_3cat_v8["predictions_rest"], FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_rest);
+          lep3_conePt = comp_lep3_conePt(*selLepton_third);
+          sum_lep_charge_3l = selLepton_lead->charge() + selLepton_sublead->charge() + selLepton_third->charge();
+          max_lep_eta_3l = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
 
         }
       }
 
     }
 
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["avg_dr_jet"] = selJets.size() > 0 ? avg_dr_jet : 0;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["ptmiss"]     = met.pt();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["mbb_medium"] = mbb;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["max_dr_jet"] = selJets.size() > 0 ? max_dr_jet : 0;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jet1_pt"]    = selJets.size() > 0 ? selJets[0]->pt() : 0;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jet2_pt"]    = selJets.size() > 1 ? selJets[1]->pt() : 0;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jet3_pt"]    = selJets.size() > 2 ? selJets[2]->pt() : 0;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jet4_pt"]    = selJets.size() > 3 ? selJets[3]->pt() : 0;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["max_lep_eta"] = max_lep_eta_2lss;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep1_mT"] = mT_met_lep1;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep1_conept"] = lep1_conePt;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep1_min_dr_jet"] = TMath::Min(10., mindr_lep1_jet);
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep2_mT"] = mT_met_lep2;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep2_conept"] = lep2_conePt;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep2_min_dr_jet"] = TMath::Min(10., mindr_lep2_jet);
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nJetForward"]          = selJetsForward.size();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jetForward1_pt"]       = selJetsForward.size() > 0 ?  selJetsForward[0]->pt() : 0;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jetForward1_eta_abs"]  = selJetsForward.size() > 0 ?  selJetsForward[0]->absEta() : -1;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["res-HTT_CSVsort4rd"]   = HTT;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["HadTop_pt_CSVsort4rd"] = HadTop_pt;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nJet"]                 = selJets.size();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nBJetLoose"]           = selBJets_loose.size();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nBJetMedium"]          = selBJets_medium.size();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nElectron"]            = selElectrons.size();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["sum_lep_charge"]       = sum_lep_charge_2lss;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["mvaOutput_Hj_tagger"]  = mvaOutput_Hj_tagger;
+    std::map<std::string, double> mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4 = mva_2lss_ttH_tH_4cat_onlyTHQ_v4(mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF);
+
+    snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttH"], FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH);
+    snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_tH"], FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH);
+    snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttW"], FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW);
+    snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_rest"], FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest);
+
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["avg_dr_jet"] = selJets.size() > 0 ? avg_dr_jet : 0;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["ptmiss"] = met.pt();
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["mbb_medium"] = selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : 0;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet1_pt"] = selJets.size() > 0 ? selJets[0]->pt() : 0;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet2_pt"] = selJets.size() > 1 ? selJets[1]->pt() : 0;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet3_pt"] = selJets.size() > 2 ?  selJets[2]->pt() : 0;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet4_pt"] = selJets.size() > 3 ?  selJets[3]->pt() : 0;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["max_lep_eta"] = max_lep_eta_3l;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep1_mT"] = mT_met_lep1;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep1_conept"] = lep1_conePt;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep2_mT"] = mT_met_lep2;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep2_conept"] = lep2_conePt;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep3_mT"] = mT_met_lep3;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep3_conept"] = lep3_conePt;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["jetForward1_pt"] = selJetsForward.size() > 0 ? selJetsForward[0]->pt() : 0;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["res-HTT_CSVsort4rd"] = HTT;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["HadTop_pt_CSVsort4rd"] = HadTop_pt;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["nJet"] = selJets.size();
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["nJetForward"] = selJetsForward.size();
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["nBJetLoose"] = selBJets_loose.size();
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["nBJetMedium"] = selBJets_medium.size();
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["nElectron"] = selElectrons.size();
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["sum_lep_charge"] = sum_lep_charge_3l;
+    std::map<std::string, double> mvaOutput_3l_ttH_tH_3cat_v8 = mva_3l_ttH_tH_3cat_v8_TF(mvaInputs_3l_ttH_tH_3cat_v8_TF);
+
+    snm->read(mvaOutput_3l_ttH_tH_3cat_v8["predictions_ttH"],  FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_ttH);
+    snm->read(mvaOutput_3l_ttH_tH_3cat_v8["predictions_tH"],   FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_tH);
+    snm->read(mvaOutput_3l_ttH_tH_3cat_v8["predictions_rest"], FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_rest);
 
     if(selLeptons.size() > 3)
     {

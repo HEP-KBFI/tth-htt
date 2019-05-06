@@ -59,6 +59,7 @@ enum class FloatVariableType
   mT_met_lep2,              ///< transverse mass of subleading lepton and MET (using reco pt)
   mT_met_lep3,              ///< transverse mass of trailing lepton and MET (using reco pt)
   mT_met_lep4,              ///< transverse mass of fourth lepton and MET (using reco pt)
+  massL,                    ///< transverse mass of highest pT dilepton pair passing loose selection
 
   mTauTauVis,               ///< visible mass of the two selected taus
   mvis_l1tau,               ///< visible mass of leading lepton and tau (of OS in 3l+1tau)
@@ -70,6 +71,22 @@ enum class FloatVariableType
   cosThetaS_hadTau,         ///< cosine of the angle b/w leading tau and the beam axis in di-tau frame?
   HTT,                      ///< output of hadronic top tagger with kin fit
   HadTop_pt,                ///< pT of the unfitted hadronic top
+
+//--- boosted variables
+  nHTTv2,                   ///< Number of jets passing the HTTv2 object deffinition
+  jetHTTv2_1_pt,
+  jetHTTv2_1_eta,
+  jetHTTv2_1_phi,
+  jetHTTv2_1_E,
+  N_jetAK8,                 ///< Number of AK8 jets passing the preselection (called FatJet on the miniAOD) |
+  jetAK8_1_pt,
+  jetAK8_1_eta,
+  jetAK8_1_phi,
+  jetAK8_1_E,
+  NcleanedJets_fromAK8,      ///<   Number of jets passing the preselection (n_presel_jet), cleaned from the AK8 jet collection with a 0.8 distance deffinition |
+  HTT_boosted,              ///<  output of hadronic top tagger for boosted scenario - see [here]() |
+  HTT_semi_boosted_fromAK8, ///<  output of hadronic top tagger for semi-boosted scenario - see [here]() |
+  HadTop_pt_semi_boosted_fromAK8,
   Hj_tagger,                ///< MVA output of Hj-tagger
 
 //--- Additional event-level MVA output variables
@@ -423,6 +440,21 @@ private:
   Float_t * jetFwd_eta;
   Float_t * jetFwd_phi;
   Float_t * jetFwd_E;
+
+  Int_t * nHTTv2;
+  Float_t * jetHTTv2_1_pt;
+  Float_t * jetHTTv2_1_eta;
+  Float_t * jetHTTv2_1_phi;
+  Float_t * jetHTTv2_1_E;
+  Int_t * N_jetAK8;
+  Float_t * jetAK8_1_pt;
+  Float_t * jetAK8_1_eta;
+  Float_t * jetAK8_1_phi;
+  Float_t * jetAK8_1_E;
+  Int_t * NcleanedJets_fromAK8;
+  Float_t * HTT_boosted;
+  Float_t * HTT_semi_boosted_fromAK8;
+  Float_t * HadTop_pt_semi_boosted_fromAK8;
 
   std::map<std::string, Int_t> hltMap;
 

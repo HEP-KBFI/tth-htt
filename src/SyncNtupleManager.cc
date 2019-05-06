@@ -144,6 +144,7 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::mT_met_lep2],              "mT_lep2",
     floatMap[FloatVariableType::mT_met_lep3],              "mT_lep3",
     floatMap[FloatVariableType::mT_met_lep4],              "mT_lep4",
+    floatMap[FloatVariableType::massL],                    "massL",
 
     floatMap[FloatVariableType::mTauTauVis],               "mTauTauVis",
     floatMap[FloatVariableType::mvis_l1tau],               "mTauTauVis1",
@@ -156,6 +157,23 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::HTT],                      "HTT",
     floatMap[FloatVariableType::HadTop_pt],                "HadTop_pt",
     floatMap[FloatVariableType::Hj_tagger],                "Hj_tagger",
+
+//--- boosted variables
+    floatMap[FloatVariableType::HTT_boosted],             "HTT_boosted",
+    floatMap[FloatVariableType::nHTTv2],                  "nHTTv2",
+
+    floatMap[FloatVariableType::jetHTTv2_1_pt],           "jetHTTv2_1_pt",
+    floatMap[FloatVariableType::jetHTTv2_1_eta],          "jetHTTv2_1_eta",
+    floatMap[FloatVariableType::jetHTTv2_1_phi],          "jetHTTv2_1_phi",
+    floatMap[FloatVariableType::jetHTTv2_1_E],            "jetHTTv2_1_E",
+    floatMap[FloatVariableType::N_jetAK8],                "N_jetAK8",
+    floatMap[FloatVariableType::jetAK8_1_pt],             "jetAK8_1_pt",
+    floatMap[FloatVariableType::jetAK8_1_eta],            "jetAK8_1_eta",
+    floatMap[FloatVariableType::jetAK8_1_phi],            "jetAK8_1_phi",
+    floatMap[FloatVariableType::jetAK8_1_E],              "jetAK8_1_E",
+    floatMap[FloatVariableType::NcleanedJets_fromAK8],    "NcleanedJets_fromAK8",
+    floatMap[FloatVariableType::HadTop_pt_semi_boosted_fromAK8],  "HadTop_pt_semi_boosted_fromAK8",
+    floatMap[FloatVariableType::HTT_semi_boosted_fromAK8],        "HTT_semi_boosted_fromAK8",
 
     ntags,                                                 "nBJetMedium",
     ntags_loose,                                           "nBJetLoose",
