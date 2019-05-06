@@ -15,26 +15,26 @@ import matplotlib.offsetbox as obox
 
 runs = {
   '2016' : collections.OrderedDict([
-    ('B', (273150,275376)),
-    ('C', (275656,276283)),
-    ('D', (276315,276811)),
-    ('E', (276831,277420)),
-    ('F', (277932,278808)),
-    ('G', (278820,280385)),
-    ('H', (281613,284044)),
+    ('B', { 'ranges' : (273150,275376), 'delivered' : 5.991, 'recorded' : 5.750 }),
+    ('C', { 'ranges' : (275656,276283), 'delivered' : 2.685, 'recorded' : 2.573 }),
+    ('D', { 'ranges' : (276315,276811), 'delivered' : 4.411, 'recorded' : 4.242 }),
+    ('E', { 'ranges' : (276831,277420), 'delivered' : 4.222, 'recorded' : 4.025 }),
+    ('F', { 'ranges' : (277932,278808), 'delivered' : 3.283, 'recorded' : 3.105 }),
+    ('G', { 'ranges' : (278820,280385), 'delivered' : 7.865, 'recorded' : 7.576 }),
+    ('H', { 'ranges' : (281613,284044), 'delivered' : 8.985, 'recorded' : 8.651 }),
   ]),
   '2017' : collections.OrderedDict([
-    ('B', (297047,299329)),
-    ('C', (299368,302029)),
-    ('D', (302030,302663)),
-    ('E', (303818,304797)),
-    ('F', (305040,306462)),
+    ('B', { 'ranges' : (297047,299329), 'delivered' :  5.023, 'recorded' :  4.794 }),
+    ('C', { 'ranges' : (299368,302029), 'delivered' : 10.308, 'recorded' :  9.633 }),
+    ('D', { 'ranges' : (302030,302663), 'delivered' :  4.368, 'recorded' :  4.248 }),
+    ('E', { 'ranges' : (303818,304797), 'delivered' :  9.760, 'recorded' :  9.314 }),
+    ('F', { 'ranges' : (305040,306462), 'delivered' : 14.185, 'recorded' : 13.539 }),
   ]),
   '2018' : collections.OrderedDict([
-    ('A', (315257-316995)),
-    ('B', (317080-319310)),
-    ('C', (319337-320065)),
-    ('D', (320497,325175)),
+    ('A', { 'ranges' : (315257,316995), 'delivered' : 14.497, 'recorded' : 14.027 }),
+    ('B', { 'ranges' : (317080,319310), 'delivered' :  7.310, 'recorded' :  7.061 }),
+    ('C', { 'ranges' : (319337,320065), 'delivered' :  7.143, 'recorded' :  6.895 }),
+    ('D', { 'ranges' : (320497,325175), 'delivered' : 33.011, 'recorded' : 31.743 }),
   ])
 }
 
@@ -46,7 +46,7 @@ class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
 def get_acq_era(run_nr, era):
   for acq_era, run_range in runs[era].items():
-    if run_range[0] <= run_nr <= run_range[1]:
+    if run_range['ranges'][0] <= run_nr <= run_range['ranges'][1]:
       return acq_era
   raise RuntimeError('Invalid run nr: %d' % run_nr)
 
@@ -93,7 +93,8 @@ def read_data(filename, era):
 def plot_range(data1, data2, label1, label2, era, output_dir, is_cumul, is_sequential, is_recorded = True):
   fig, ax = plt.subplots(figsize = (10, 8), dpi = 120)
 
-  subject = '{}{}'.format('cumulative_' if is_cumul else '', 'recorded' if is_recorded else 'delivered')
+  figure_type = 'recorded' if is_recorded else 'delivered'
+  subject = '{}{}'.format('cumulative_' if is_cumul else '', figure_type)
 
   ylim = (
     10 ** math.floor(math.log10(min(min(map(lambda x: x[subject], data1)), min(map(lambda x: x[subject], data2))))),
@@ -103,6 +104,7 @@ def plot_range(data1, data2, label1, label2, era, output_dir, is_cumul, is_seque
 
   run_count = 0
   runmap = {}
+  expected_cumul = 0.
 
   has_labeled = False
   for era_idx, era_key in enumerate(runs[era]):
@@ -125,22 +127,30 @@ def plot_range(data1, data2, label1, label2, era, output_dir, is_cumul, is_seque
     assert(xrange_run_real_1 == xrange_run_real_2)
     xrange_run_real = xrange_run_real_1
 
+    xrange_plot = xrange_run_count if is_sequential else xrange_run_real
+
     ax.plot(
-      xrange_run_count if is_sequential else xrange_run_real,
-      list(map(lambda x: x[subject], filter(lambda y: y['era'] == era_key, data1))), c = '#ff7f0e', ls = '--',
-      label = label1_on_plot
-    )
-    ax.plot(
-      xrange_run_count if is_sequential else xrange_run_real,
+      xrange_plot,
       list(map(lambda x: x[subject], filter(lambda y: y['era'] == era_key, data2))), c = '#1f77b4', ls = '-',
       label = label2_on_plot
     )
+    ax.plot(
+      xrange_plot,
+      list(map(lambda x: x[subject], filter(lambda y: y['era'] == era_key, data1))), c = '#ff7f0e', ls = '--',
+      label = label1_on_plot
+    )
+
+    if is_cumul and xrange_plot:
+      expected_cumul += runs[era][era_key][figure_type] * 1e3
+      ax.hlines(
+        y = expected_cumul, xmin = xrange_plot[0], xmax=xrange_plot[-1], color = 'black', linestyle=':',
+      )
 
     runmap[era_key] = (run_count, run_count + run_len)
     run_count += run_len
 
   if not is_sequential:
-    runmap = runs[era]
+    runmap = { era_key : runs[era][era_key]['ranges'] for era_key in runs[era] }
 
   era_colors = ['gray', 'olive']
   for era_idx, era_key in enumerate(runs[era]):
