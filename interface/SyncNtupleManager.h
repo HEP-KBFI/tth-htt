@@ -8,6 +8,7 @@
 #include <TTree.h> // TTree
 
 #include <type_traits> // std::enable_if<,>, std::is_arithmetic<>
+#include <regex> // std::regex
 
 // forward declarations
 class TFile;
@@ -16,6 +17,8 @@ class RecoElectron;
 class RecoHadTau;
 class RecoJet;
 class RecoLepton;
+class RecoJetAK8;
+class RecoJetHTTv2;
 class hltPath;
 
 enum class FloatVariableType
@@ -73,21 +76,10 @@ enum class FloatVariableType
   HadTop_pt,                ///< pT of the unfitted hadronic top
 
 //--- boosted variables
-  nHTTv2,                   ///< Number of jets passing the HTTv2 object deffinition
-  jetHTTv2_1_pt,
-  jetHTTv2_1_eta,
-  jetHTTv2_1_phi,
-  jetHTTv2_1_E,
-  N_jetAK8,                 ///< Number of AK8 jets passing the preselection (called FatJet on the miniAOD) |
-  jetAK8_1_pt,
-  jetAK8_1_eta,
-  jetAK8_1_phi,
-  jetAK8_1_E,
-  NcleanedJets_fromAK8,      ///<   Number of jets passing the preselection (n_presel_jet), cleaned from the AK8 jet collection with a 0.8 distance deffinition |
-  HTT_boosted,              ///<  output of hadronic top tagger for boosted scenario - see [here]() |
-  HTT_semi_boosted_fromAK8, ///<  output of hadronic top tagger for semi-boosted scenario - see [here]() |
-  HadTop_pt_semi_boosted_fromAK8,
-  Hj_tagger,                ///< MVA output of Hj-tagger
+  HTT_boosted,                    ///<  output of hadronic top tagger for boosted scenario - see [here]() |
+  HTT_semi_boosted_fromAK8,       ///<  output of hadronic top tagger for semi-boosted scenario - see [here]() |
+  HadTop_pt_semi_boosted_fromAK8, ///< ...
+  Hj_tagger,                      ///< MVA output of Hj-tagger
 
 //--- Additional event-level MVA output variables
   mvaOutput_plainKin_ttV,   ///< 2l+2tau (BDT1), 3l+1tau (BDT1)
@@ -162,17 +154,27 @@ public:
   void read(const std::vector<const RecoHadTau *> & hadtaus);
   void read(const std::vector<const RecoJet *> & jets,
             bool isFwd = false);
+  void read(const std::vector<const RecoJetAK8 *> & jets);
+  void read(const std::vector<const RecoJetHTTv2 *> & jets);
   void read(Float_t value,
             FloatVariableType type);
   void read(const std::vector<std::vector<hltPath *>> & hltPaths);
-  void read(bool is_genMatched, int n_tags, int n_tags_loose, int n_jets_light);
+  void read(bool is_genMatched,
+            int n_tags,
+            int n_tags_loose,
+            int n_jets_light,
+            int n_jets_cleanedFromAK8 = placeholder_value);
   void fill();
   void write();
   void reset();
 
   static const Int_t placeholder_value;
+  static const std::regex endsWithNumberRegex;
 
 private:
+  static bool
+  endsWithNumber(const std::string & infix);
+
   template<typename T,
            typename = std::enable_if<std::is_arithmetic<T>::value && ! std::is_pointer<T>::value>>
   void
@@ -183,11 +185,14 @@ private:
   {
     if(count > 0)
     {
+      const bool isEndsWithNumber = SyncNtupleManager::endsWithNumber(infix);
       var = new T[count];
       for(int i = 0; i < count; ++i)
       {
         var[i] = placeholder_value;
-        const std::string branchName = Form("%s%d_%s", infix.c_str(), i + 1, label.c_str());
+        const std::string branchName = Form("%s%s%d_%s",
+          infix.c_str(), isEndsWithNumber ? "_" : "", i + 1, label.c_str()
+        );
         outputTree -> Branch(branchName.c_str(), &(var[i]), Form("%s/%s", branchName.c_str(), Traits<T>::TYPE_NAME));
       }
     }
@@ -309,6 +314,8 @@ private:
   const Int_t nof_taus;
   const Int_t nof_jets;
   const Int_t nof_fwdJets;
+  const Int_t nof_jetHTTv2;
+  const Int_t nof_jetAK8;
 
   Long64_t nEvent;
   Int_t ls;
@@ -324,11 +331,15 @@ private:
   Int_t n_presel_tau;
   Int_t n_presel_jet;
   Int_t n_presel_fwdJet;
+  Int_t n_presel_jetHTTv2;
+  Int_t n_presel_jetAK8;
 
-  Bool_t isGenMatched; ///< flag to indicate whether lepton(s) + tau(s) are all gen matched
-  Int_t ntags;         ///< number of medium b-tagged jets
-  Int_t ntags_loose;   ///< number of loose b-tagged jets
-  Int_t njets_light;   ///< number of light jets (central jets not passing loose b-tag requirement + forward jets)
+  Bool_t isGenMatched;        ///< flag to indicate whether lepton(s) + tau(s) are all gen matched
+  Int_t ntags;                ///< number of medium b-tagged jets
+  Int_t ntags_loose;          ///< number of loose b-tagged jets
+  Int_t njets_light;          ///< number of light jets (central jets not passing loose b-tag requirement + forward jets)
+  Int_t njets_cleanedFromAK8; ///< number of jets passing the preselection (n_presel_jet),
+                              ///  cleaned from the AK8 jet collection with a 0.8 distance deffinition
 
   Float_t * lep_pt;
   Float_t * lep_conePt;
@@ -441,20 +452,15 @@ private:
   Float_t * jetFwd_phi;
   Float_t * jetFwd_E;
 
-  Int_t * nHTTv2;
-  Float_t * jetHTTv2_1_pt;
-  Float_t * jetHTTv2_1_eta;
-  Float_t * jetHTTv2_1_phi;
-  Float_t * jetHTTv2_1_E;
-  Int_t * N_jetAK8;
-  Float_t * jetAK8_1_pt;
-  Float_t * jetAK8_1_eta;
-  Float_t * jetAK8_1_phi;
-  Float_t * jetAK8_1_E;
-  Int_t * NcleanedJets_fromAK8;
-  Float_t * HTT_boosted;
-  Float_t * HTT_semi_boosted_fromAK8;
-  Float_t * HadTop_pt_semi_boosted_fromAK8;
+  Float_t * jetHTTv2_pt;
+  Float_t * jetHTTv2_eta;
+  Float_t * jetHTTv2_phi;
+  Float_t * jetHTTv2_E;
+
+  Float_t * jetAK8_pt;
+  Float_t * jetAK8_eta;
+  Float_t * jetAK8_phi;
+  Float_t * jetAK8_E;
 
   std::map<std::string, Int_t> hltMap;
 

@@ -4,6 +4,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h" // RecoJetAK8
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h" // RecoJetHTTv2
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // as_integer()
 
@@ -14,6 +16,7 @@
 #include <algorithm> // std::min()
 
 const Int_t SyncNtupleManager::placeholder_value = -9999;
+const std::regex SyncNtupleManager::endsWithNumberRegex(".*\\d+$");
 
 SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
                                      const std::string & outputTreeName)
@@ -26,6 +29,8 @@ SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
   , nof_taus(2)
   , nof_jets(4)
   , nof_fwdJets(4)
+  , nof_jetHTTv2(2)
+  , nof_jetAK8(2)
 {
   std::string outputDirName_;
   std::string outputTreeName_ = outputTreeName;
@@ -70,12 +75,14 @@ SyncNtupleManager::~SyncNtupleManager()
 void
 SyncNtupleManager::initializeBranches()
 {
-  const char * lstr  = "lep";
-  const char * mstr  = "mu";
-  const char * estr  = "ele";
-  const char * tstr  = "tau";
-  const char * jstr  = "jet";
-  const char * jfstr = "jetFwd";
+  const char * lstr    = "lep";
+  const char * mstr    = "mu";
+  const char * estr    = "ele";
+  const char * tstr    = "tau";
+  const char * jstr    = "jet";
+  const char * jfstr   = "jetFwd";
+  const char * jhtstr  = "jetHTTv2";
+  const char * jak8str = "jetAK8";
 
   const std::string n_sel_lep_str         = Form("n_%s",             lstr);
   const std::string n_presel_mu_str       = Form("n_presel_%s",      mstr);
@@ -87,6 +94,8 @@ SyncNtupleManager::initializeBranches()
   const std::string n_presel_tau_str      = Form("n_presel_%s",      tstr);
   const std::string n_presel_jet_str      = Form("n_presel_%s",      jstr);
   const std::string n_presel_fwdJet_str   = Form("n_presel_%s",      jfstr);
+  const std::string n_presel_jetHTTv2_str = Form("n_presel_%s",      jhtstr);
+  const std::string n_presel_jetAK8_str   = Form("n_presel_%s",      jak8str);
 
   setBranches(
     nEvent,            "nEvent",
@@ -102,6 +111,8 @@ SyncNtupleManager::initializeBranches()
     n_presel_tau,      n_presel_tau_str,
     n_presel_jet,      n_presel_jet_str,
     n_presel_fwdJet,   n_presel_fwdJet_str,
+    n_presel_jetHTTv2, n_presel_jetHTTv2_str,
+    n_presel_jetAK8,   n_presel_jetAK8_str,
 
 //--- MET/MHT
     floatMap[FloatVariableType::PFMET],                    "PFMET",
@@ -159,21 +170,9 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::Hj_tagger],                "Hj_tagger",
 
 //--- boosted variables
-    floatMap[FloatVariableType::HTT_boosted],             "HTT_boosted",
-    floatMap[FloatVariableType::nHTTv2],                  "nHTTv2",
-
-    floatMap[FloatVariableType::jetHTTv2_1_pt],           "jetHTTv2_1_pt",
-    floatMap[FloatVariableType::jetHTTv2_1_eta],          "jetHTTv2_1_eta",
-    floatMap[FloatVariableType::jetHTTv2_1_phi],          "jetHTTv2_1_phi",
-    floatMap[FloatVariableType::jetHTTv2_1_E],            "jetHTTv2_1_E",
-    floatMap[FloatVariableType::N_jetAK8],                "N_jetAK8",
-    floatMap[FloatVariableType::jetAK8_1_pt],             "jetAK8_1_pt",
-    floatMap[FloatVariableType::jetAK8_1_eta],            "jetAK8_1_eta",
-    floatMap[FloatVariableType::jetAK8_1_phi],            "jetAK8_1_phi",
-    floatMap[FloatVariableType::jetAK8_1_E],              "jetAK8_1_E",
-    floatMap[FloatVariableType::NcleanedJets_fromAK8],    "NcleanedJets_fromAK8",
-    floatMap[FloatVariableType::HadTop_pt_semi_boosted_fromAK8],  "HadTop_pt_semi_boosted_fromAK8",
-    floatMap[FloatVariableType::HTT_semi_boosted_fromAK8],        "HTT_semi_boosted_fromAK8",
+    floatMap[FloatVariableType::HTT_boosted],                    "HTT_boosted",
+    floatMap[FloatVariableType::HadTop_pt_semi_boosted_fromAK8], "HadTop_pt_semi_boosted_fromAK8",
+    floatMap[FloatVariableType::HTT_semi_boosted_fromAK8],       "HTT_semi_boosted_fromAK8",
 
     ntags,                                                 "nBJetMedium",
     ntags_loose,                                           "nBJetLoose",
@@ -359,6 +358,22 @@ SyncNtupleManager::initializeBranches()
     jetFwd_eta, "eta",
     jetFwd_phi, "phi",
     jetFwd_E,   "E"
+  );
+
+  setBranches(
+    jhtstr, nof_jetHTTv2,
+    jetHTTv2_pt,  "pt",
+    jetHTTv2_eta, "eta",
+    jetHTTv2_phi, "phi",
+    jetHTTv2_E,   "E"
+  );
+
+  setBranches(
+    jak8str, nof_jetAK8,
+    jetAK8_pt,  "pt",
+    jetAK8_eta, "eta",
+    jetAK8_phi, "phi",
+    jetAK8_E,   "E"
   );
 
   reset();
@@ -617,6 +632,36 @@ SyncNtupleManager::read(const std::vector<const RecoJet *> & jets,
 }
 
 void
+SyncNtupleManager::read(const std::vector<const RecoJetAK8 *> & jets)
+{
+  n_presel_jetAK8 = jets.size();
+  const Int_t nof_iterations = std::min(n_presel_jetAK8, nof_jetAK8);
+  for(Int_t i = 0; i < nof_iterations; ++i)
+  {
+    const RecoJetAK8 * const jet = jets[i];
+    jetAK8_pt[i] = jet -> pt();
+    jetAK8_eta[i] = jet -> eta();
+    jetAK8_phi[i] = jet -> phi();
+    jetAK8_E[i] = (jet -> p4()).E();
+  }
+}
+
+void
+SyncNtupleManager::read(const std::vector<const RecoJetHTTv2 *> & jets)
+{
+  n_presel_jetHTTv2 = jets.size();
+  const Int_t nof_iterations = std::min(n_presel_jetHTTv2, nof_jetHTTv2);
+  for(Int_t i = 0; i < nof_iterations; ++i)
+  {
+    const RecoJetHTTv2 * const jet = jets[i];
+    jetHTTv2_pt[i] = jet -> pt();
+    jetHTTv2_eta[i] = jet -> eta();
+    jetHTTv2_phi[i] = jet -> phi();
+    jetHTTv2_E[i] = (jet -> p4()).E();
+  }
+}
+
+void
 SyncNtupleManager::read(Float_t value,
                         FloatVariableType type)
 {
@@ -639,12 +684,14 @@ void
 SyncNtupleManager::read(bool is_genMatched,
                         int n_tags,
                         int n_tags_loose,
-                        int n_jets_light)
+                        int n_jets_light,
+                        int n_jets_cleanedFromAK8)
 {
-  isGenMatched = is_genMatched;
-  ntags        = n_tags;
-  ntags_loose  = n_tags_loose;
-  njets_light  = n_jets_light;
+  isGenMatched         = is_genMatched;
+  ntags                = n_tags;
+  ntags_loose          = n_tags_loose;
+  njets_light          = n_jets_light;
+  njets_cleanedFromAK8 = n_jets_cleanedFromAK8;
 }
 
 void
@@ -803,6 +850,22 @@ SyncNtupleManager::reset()
     jetFwd_E
   );
 
+  reset(
+    nof_jetHTTv2,
+    jetHTTv2_pt,
+    jetHTTv2_eta,
+    jetHTTv2_phi,
+    jetHTTv2_E
+  );
+
+  reset(
+    nof_jetAK8,
+    jetAK8_pt,
+    jetAK8_eta,
+    jetAK8_phi,
+    jetAK8_E
+  );
+
   for(auto & kv: hltMap)
   {
     hltMap[kv.first] = -1;
@@ -836,4 +899,11 @@ SyncNtupleManager::write()
     outputFile -> cd();
   }
   outputTree -> Write();
+}
+
+bool
+SyncNtupleManager::endsWithNumber(const std::string & infix)
+{
+  std::smatch match;
+  return std::regex_match(infix, match, endsWithNumberRegex);
 }

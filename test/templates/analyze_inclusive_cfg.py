@@ -79,10 +79,10 @@ process.analyze_inclusive = cms.PSet(
     branchName_hadTauGenMatch   = cms.string('TauGenMatch'),
     branchName_jetGenMatch      = cms.string('JetGenMatch'),
 
-    branchName_jetsHTTv2 = cms.string('HTTV2'),
+    branchName_jetsHTTv2    = cms.string('HTTV2'),
     branchName_subjetsHTTv2 = cms.string('HTTV2Subjets'),
-    branchName_jetsAK8 = cms.string('FatJet'),
-    branchName_subjetsAK8 = cms.string('SubJet'),
+    branchName_jetsAK8      = cms.string('FatJet'),
+    branchName_subjetsAK8   = cms.string('SubJet'),
 
     redoGenMatching    = cms.bool(False),
     genMatchingByIndex = cms.bool(True),
