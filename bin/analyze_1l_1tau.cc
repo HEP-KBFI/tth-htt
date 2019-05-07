@@ -394,16 +394,8 @@ int main(int argc, char* argv[])
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
 
   const double maxAbsEta_lepton = 2.1;
-  double minPt_e = -1.;
-  double minPt_mu = -1.;
-  switch(era)
-  {
-    case kEra_2016: minPt_e = 25.; minPt_mu = 20.; break; // AN2016_372_v14:331
-    case kEra_2017: minPt_e = 30.; minPt_mu = 25.; break;
-    case kEra_2018: throw cmsException("analyze_1l_1tau", __LINE__) << "Implement me!";
-    default:        throw cmsException("analyze_1l_1tau", __LINE__) << "Invalid era = " << era;
-  }
-  assert(minPt_e > 0. && minPt_mu > 0.);
+  const double minPt_e = 30.;
+  const double minPt_mu = 25.;
   const double minPt_hadTau = 30.;
 
   fwlite::InputSource inputFiles(cfg);
@@ -598,7 +590,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
    "mindr_lep_jet", "mindr_tau_jet", "avg_dr_jet", "mT_lep",
    "htmiss", "tau_pt", "tau_eta",
    "dr_lep_tau", "costS", "mTauTauVis", "PzetaComb",
-   "res-HTT_CSVsort4rd", "res-HTT_CSVsort4rd_2", "HadTop_pt_CSVsort4rd", //"HTT_boosted", 
+   "res-HTT_CSVsort4rd", "res-HTT_CSVsort4rd_2", "HadTop_pt_CSVsort4rd", //"HTT_boosted",
    "nBJetMedium", "HadTop_pt_boosted", "mTauTau", "nJet", "lep_pt", "charge_lep_tau", "mbb_loose"
 };
   XGBInterface mva_1l_1tau_evtLevelSUM_TTH_16Var(
@@ -677,7 +669,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       selHistManager->BJets_medium_->bookHistograms(fs);
       selHistManager->met_ = new MEtHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/met", histogramDir.data()), era_string, central_or_shift));
-      selHistManager->met_->bookHistograms(fs);     
+      selHistManager->met_->bookHistograms(fs);
       selHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/metFilters", histogramDir.data()), era_string, central_or_shift));
       selHistManager->metFilters_->bookHistograms(fs);
@@ -778,10 +770,10 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), era_string, central_or_shift)
     );
     bdt_filler->register_variable<float_type>(
-      "lep_pt", "lep_conePt", "lep_eta", "lep_tth_mva", "mindr_lep_jet", "mindr_tau_jet", 
+      "lep_pt", "lep_conePt", "lep_eta", "lep_tth_mva", "mindr_lep_jet", "mindr_tau_jet",
       "avg_dr_jet", "ptmiss", "mT_lep", "mT_tau", "htmiss", "tau_mva", "tau_pt",
       "tau_eta", "dr_lep_tau",
-      "costS", "mTauTauVis", "mTauTau", "Pzeta", "PzetaVis", "PzetaComb", 
+      "costS", "mTauTauVis", "mTauTau", "Pzeta", "PzetaVis", "PzetaComb",
       "res-HTT_CSVsort4rd", "res-HTT_CSVsort4rd_2",
       "HadTop_pt_CSVsort4rd", "HadTop_pt_CSVsort4rd_2",
       "genTopPt_CSVsort4rd", "genTopPt_CSVsort4rd_2",
@@ -789,7 +781,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       "HTT_semi_boosted_fromAK8", "genTopPt_semi_boosted_fromAK8", "HadTop_pt_semi_boosted_fromAK8",
       "minDR_HTTv2_lep", "minDR_AK8_lep",
       "minDR_HTTv2subjets_lep", "minDR_AK8subjets_lep",
-      "lumiScale", "genWeight", "evtWeight", 
+      "lumiScale", "genWeight", "evtWeight",
       "prob_fake_lepton", "prob_fake_hadTau","mbb","mbb_loose"
     );
     bdt_filler->register_variable<int_type>(
@@ -800,7 +792,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       "bWj1Wj2_isGenMatched_CSVsort4rd", "bWj1Wj2_isGenMatched_CSVsort4rd_2",
       "hadtruth_boosted", "hadtruth_semi_boosted_fromAK8",
       "bWj1Wj2_isGenMatched_boosted", "bWj1Wj2_isGenMatched_semi_boosted_fromAK8",
-      "resolved_and_semi_AK8", "boosted_and_semi_AK8", "resolved_and_boosted"      
+      "resolved_and_semi_AK8", "boosted_and_semi_AK8", "resolved_and_boosted"
     );
     bdt_filler->bookTree(fs);
   }
@@ -986,7 +978,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         }
         continue;
       }
-      
+
       if ( era == kEra_2016 ) {
 	// CV: only needed for 2016 data-taking period,
 	//     as mu+tau (e+tau) cross trigger is stored in the same primary dataset as the single muon (single electron) trigger
@@ -1815,7 +1807,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     std::vector<classic_svFit::MeasuredTauLepton> measuredTauLeptons;
     classic_svFit::MeasuredTauLepton::kDecayType leg1Type = classic_svFit::MeasuredTauLepton::kUndefinedDecayType;
     double leg1Mass = -1.;
-    if ( selLepton_type == kElectron ) { 
+    if ( selLepton_type == kElectron ) {
       leg1Type = classic_svFit::MeasuredTauLepton::kTauToElecDecay;
       leg1Mass = classic_svFit::electronMass;
     } else if ( selLepton_type == kMuon ) {
@@ -2143,10 +2135,10 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     if ( bdt_filler ) {
       bdt_filler->operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
 	  ("lep_pt",                                    lep_pt)
-	  ("lep_conePt",                                lep_conePt) 
+	  ("lep_conePt",                                lep_conePt)
 	  ("lep_eta",                                   lep_eta)
 	  ("lep_tth_mva",                               lep_tth_mva)
-	  ("mindr_lep_jet",                             mindr_lep_jet) 
+	  ("mindr_lep_jet",                             mindr_lep_jet)
 	  ("mindr_tau_jet",                             mindr_tau_jet)
 	  ("avg_dr_jet",                                avg_dr_jet)
 	  ("ptmiss",                                    ptmiss)
@@ -2187,7 +2179,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 	  ("nJet",                                      selJets.size())
 	  ("nBJetLoose",                                selBJets_loose.size())
 	  ("nBJetMedium",                               selBJets_medium.size())
-	  ("charge_lep_tau",                            selLepton->charge() + selHadTau->charge()) 
+	  ("charge_lep_tau",                            selLepton->charge() + selHadTau->charge())
 	  ("nHTTv2",                                    sel_HTTv2.size())
 	  ("N_jetAK8",                                  jet_ptrsAK8.size())
 	  ("cleanedJets_fromAK8",                       cleanedJets_fromAK8.size())
@@ -2201,7 +2193,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 	  ("bWj1Wj2_isGenMatched_semi_boosted_fromAK8", bWj1Wj2_isGenMatched_semi_boosted_fromAK8)
 	  ("resolved_and_semi_AK8",                     resolved_and_semi_AK8)
 	  ("boosted_and_semi_AK8",                      boosted_and_semi_AK8)
-	  ("resolved_and_boosted",                      resolved_and_boosted)          
+	  ("resolved_and_boosted",                      resolved_and_boosted)
 	  ("mbb",					mbb)
 	  ("mbb_loose",					mbb_loose)
         .fill();
