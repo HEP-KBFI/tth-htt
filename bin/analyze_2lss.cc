@@ -1379,13 +1379,16 @@ int main(int argc, char* argv[])
 
     bool ttH_like = false;
     bool ttW_like = false;
+    bool tH_like = false;
     if ((selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && (selJets.size() >= 4)) ttH_like = true;
     if ((selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && (selJets.size() == 3)) ttW_like = true;
-    // Xanda: It is written like this to be easier to add the tH-selection if we decide to
+    if (
+      (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1)
+    ) tH_like = true;
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
-    bool passEvents = ttH_like || ttW_like;
-    if(do_sync) passEvents = ttH_like;
+    bool passEvents = ttH_like || ttW_like || tH_like;
+    if(do_sync) passEvents = ttH_like || tH_like;
     if ( !(passEvents) ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS Hadronic selection." << std::endl;
@@ -1395,6 +1398,9 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("Hadronic selection", evtWeight);
     cutFlowHistManager->fillHistograms("Hadronic selection", evtWeight);
+
+    bool is_tH_like_and_not_ttH_like = false;
+    if ( tH_like && !ttH_like ) is_tH_like_and_not_ttH_like = true;
 
     if ( selHadTaus.size() > 0 ) {
       if ( run_lumi_eventSelector ) {
@@ -2068,7 +2074,7 @@ int main(int argc, char* argv[])
       snm->read(selJets);
 
       snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
-      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet);
+      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet, is_tH_like_and_not_ttH_like);
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);

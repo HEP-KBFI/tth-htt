@@ -1211,11 +1211,13 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     bool tH_like = false;
     bool ttH_like = false;
-
     if ((selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && ((int)selJets.size() >= 2)) ttH_like = true;
     if (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1) tH_like = true;
-    bool passEvents = ttH_like || tH_like;
-    if(do_sync) passEvents = ttH_like;
+    if (
+      (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1)
+    ) tH_like = true;
+    bool passEvents = ttH_like || tH_like || tH_like;
+    if(do_sync) passEvents = ttH_like || tH_like;
     if ( !(passEvents) ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
@@ -1227,6 +1229,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     cutFlowTable.update("Hadronic selection");
     cutFlowHistManager->fillHistograms("Hadronic selection", lumiScale);
+
+    bool is_tH_like_and_not_ttH_like = false;
+    if ( tH_like && !ttH_like ) is_tH_like_and_not_ttH_like = true;
 
 //--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();
@@ -2042,7 +2047,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         triggers_1e, triggers_1mu, triggers_2e, triggers_1e1mu, triggers_2mu,
         triggers_3e, triggers_2e1mu, triggers_1e2mu, triggers_3mu
       });
-      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet);
+      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet, is_tH_like_and_not_ttH_like);
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
