@@ -173,10 +173,14 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::HTT_boosted],                    "HTT_boosted",
     floatMap[FloatVariableType::HadTop_pt_semi_boosted_fromAK8], "HadTop_pt_semi_boosted_fromAK8",
     floatMap[FloatVariableType::HTT_semi_boosted_fromAK8],       "HTT_semi_boosted_fromAK8",
+    floatMap[FloatVariableType::HadTop_pt_boosted],              "HadTop_pt_boosted",
+    floatMap[FloatVariableType::minDR_HTTv2_Lep],                "minDR_HTTv2_Lep",
+    floatMap[FloatVariableType::minDR_AK8_Lep],                  "minDR_AK8_Lep",
 
     ntags,                                                 "nBJetMedium",
     ntags_loose,                                           "nBJetLoose",
     njets_light,                                           "nLightJet",
+    njets_cleanedFromAK8,                                  "cleanedJets_fromAK8",
 
 //--- Additional event-level MVA output variables
     floatMap[FloatVariableType::mvaOutput_plainKin_ttV],   "mvaOutput_plainKin_ttV",
@@ -714,7 +718,8 @@ SyncNtupleManager::reset()
     isGenMatched,
     ntags,
     ntags_loose,
-    njets_light
+    njets_light,
+    njets_cleanedFromAK8
   );
 
   for(auto & kv: floatMap)

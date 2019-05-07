@@ -656,7 +656,9 @@ main(int argc,
     const std::vector<RecoJetHTTv2> jetsHTTv2 = jetReaderHTTv2->read();
     const std::vector<const RecoJetHTTv2 *> jet_ptrsHTTv2raw = convert_to_ptrs(jetsHTTv2);
     const std::vector<const RecoJetHTTv2 *> jet_ptrsHTTv2rawSel = jetSelectorHTTv2(jet_ptrsHTTv2raw, isHigherPt);
-    const std::vector<const RecoJetHTTv2 *> sel_HTTv2 = jetCleanerHTTv2SubJets(jet_ptrsHTTv2rawSel, fakeableMuons, fakeableElectrons, selHadTaus);
+    const std::vector<const RecoJetHTTv2 *> sel_HTTv2 = jetCleanerHTTv2SubJets(
+      jet_ptrsHTTv2rawSel, fakeableMuons, fakeableElectrons, selHadTaus
+    );
 
     //--- build collections of jets reconstructed by anti-kT algorithm with dR=0.8 (AK8)
     const std::vector<RecoJetAK8> jetsAK8 = jetReaderAK8->read();
@@ -741,7 +743,7 @@ main(int argc,
         lep1_conePt = comp_lep1_conePt(*selLepton_lead);
         lep2_conePt = comp_lep2_conePt(*selLepton_sublead);
         sum_lep_charge_2lss = selLepton_lead->charge() + selLepton_sublead->charge();
-        max_lep_eta_2lss = TMath::Max(std::abs(selLepton_lead -> eta()), std::abs(selLepton_sublead -> eta()));
+        max_lep_eta_2lss = std::max(selLepton_lead -> absEta(), selLepton_sublead -> absEta());
 
         if(selLeptons.size() > 2)
         {
@@ -755,7 +757,6 @@ main(int argc,
           lep3_conePt = comp_lep3_conePt(*selLepton_third);
           sum_lep_charge_3l = selLepton_lead->charge() + selLepton_sublead->charge() + selLepton_third->charge();
           max_lep_eta_3l = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
-
         }
       }
     }

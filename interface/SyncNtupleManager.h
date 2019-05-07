@@ -76,10 +76,15 @@ enum class FloatVariableType
   HadTop_pt,                ///< pT of the unfitted hadronic top
 
 //--- boosted variables
-  HTT_boosted,                    ///<  output of hadronic top tagger for boosted scenario - see [here]() |
-  HTT_semi_boosted_fromAK8,       ///<  output of hadronic top tagger for semi-boosted scenario - see [here]() |
+  HTT_boosted,                    ///<  output of hadronic top tagger for boosted scenario
+  HTT_semi_boosted_fromAK8,       ///<  output of hadronic top tagger for semi-boosted scenario
   HadTop_pt_semi_boosted_fromAK8, ///< ...
   Hj_tagger,                      ///< MVA output of Hj-tagger
+  HadTop_pt_boosted,              ///< ?
+  minDR_HTTv2_Lep,                ///< minimum distance between a tight Lepton (e/mu/tau) and the HTTv2 objet
+                                  ///  that is tagged as "HTT_boosted"
+  minDR_AK8_Lep,                  ///< minimum distance between a tight Lepton (e/mu/tau) and the AK8 jet
+                                  /// that is tagged as part of "HTT_semi_boosted_fromAK8"
 
 //--- Additional event-level MVA output variables
   mvaOutput_plainKin_ttV,   ///< 2l+2tau (BDT1), 3l+1tau (BDT1)
