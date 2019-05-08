@@ -349,12 +349,16 @@ if __name__ == '__main__':
   if args.singles_disable and not args.input_second:
     raise ValueError("Doesn't make any sense to disable single plotting")
 
-  for input_file in (args.input, args.input_second):
-    if not os.path.isfile(input_file):
-      raise ValueError("No such file: %s" % input_file)
+  if not os.path.isfile(args.input):
+    raise ValueError("No such file: %s" % args.input)
+
+  if not args.singles_disable and args.input_second:
+    if not os.path.isfile(args.input_second):
+      raise ValueError("No such file: %s" % args.input_second)
 
   if not os.path.isdir(args.output):
     os.makedirs(args.output)
+
 
   data1 = read_data(args.input, args.era)
   label1 = os.path.basename(args.input).replace('.csv', '')
