@@ -772,13 +772,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     "trigger",
     ">= 3 presel leptons",
     "presel lepton trigger match",
-    ">= 2 jets (1)",
     "Hadronic selection",
     "3 sel leptons",
     "fakeable lepton trigger match",
     "HLT filter matching",
-    ">= 2 jets (2)",
-    ">= 2 loose b-jets || 1 medium b-jet (2)",
     "sel tau veto",
     "m(ll) > 12 GeV",
     "lead lepton pT > 25 GeV && sublead lepton pT > 15 GeV && third lepton pT > 10 GeV",
@@ -1216,7 +1213,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     if (
       (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1)
     ) tH_like = true;
-    bool passEvents = ttH_like || tH_like || tH_like;
+    bool passEvents = ttH_like || tH_like;
     if(do_sync) passEvents = ttH_like || tH_like;
     if ( !(passEvents) ) {
       if ( run_lumi_eventSelector ) {
