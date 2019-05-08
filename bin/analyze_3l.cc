@@ -1549,10 +1549,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 	}
       }
     }
-
+// is_tH_like_and_not_ttH_like
     double met_LD_cut = 0.;
-    if (tH_like && !do_sync) met_LD_cut = -1.; // MET LD cut not applied -- Xanda: pass that info the sync
-    else if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
+    //if (tH_like && !do_sync) met_LD_cut = -1.;
+    if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
     else if ( isSameFlavor_OS_FO     ) met_LD_cut = 45.;
     else                            met_LD_cut = 30.;
     if ( met_LD_cut > 0 && met_LD < met_LD_cut ) {
@@ -1560,7 +1560,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
 	std::cout << " (met_LD = " << met_LD << ", met_LD_cut = " << met_LD_cut << ")" << std::endl;
       }
-      continue;
+
+      if ( !tH_like ) continue; // MET LD cut not applied if tH_like
+      else is_tH_like_and_not_ttH_like = true;
+
     }
     cutFlowTable.update("met LD", evtWeight);
     cutFlowHistManager->fillHistograms("met LD", evtWeight);
