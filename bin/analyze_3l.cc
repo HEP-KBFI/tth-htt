@@ -2047,7 +2047,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         triggers_1e, triggers_1mu, triggers_2e, triggers_1e1mu, triggers_2mu,
         triggers_3e, triggers_2e1mu, triggers_1e2mu, triggers_3mu
       });
-      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet, is_tH_like_and_not_ttH_like);
+      snm->read(
+        isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet,
+        SyncNtupleManager::placeholder_value, is_tH_like_and_not_ttH_like
+      );
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);

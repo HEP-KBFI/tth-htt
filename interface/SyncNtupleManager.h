@@ -169,7 +169,7 @@ public:
             int n_tags_loose,
             int n_jets_light,
             int n_jets_cleanedFromAK8 = placeholder_value,
-            bool bool_is_tH_like_and_not_ttH_like = false);
+            bool b_is_like_tH_not_ttH = false);
   void fill();
   void write();
   void reset();
@@ -341,7 +341,7 @@ private:
   Int_t n_presel_jetAK8;
 
   Bool_t isGenMatched;        ///< flag to indicate whether lepton(s) + tau(s) are all gen matched
-  Bool_t is_tH_like_and_not_ttH_like;
+  Bool_t is_like_tH_not_ttH;  ///< flag to indicate whether the event is tH-like and not ttH-like
   Int_t ntags;                ///< number of medium b-tagged jets
   Int_t ntags_loose;          ///< number of loose b-tagged jets
   Int_t njets_light;          ///< number of light jets (central jets not passing loose b-tag requirement + forward jets)
