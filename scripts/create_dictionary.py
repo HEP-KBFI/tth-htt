@@ -224,23 +224,21 @@ class PathEntry:
 
 def get_triggers(process_name_specific, is_data, era):
   if 'SingleElec' in process_name_specific:
-    return ['1e', '1e1tau'] if era > 2016 else ['1e']
+    return ['1e', '1e1tau']
   if 'SingleMuon' in process_name_specific:
-    return ['1mu', '1mu1tau'] if era > 2016 else ['1mu']
+    return ['1mu', '1mu1tau']
   if 'DoubleEG' in process_name_specific:
-    return ['2e', '3e'] if era > 2015 else ['2e']
+    return ['2e', '3e']
   if 'DoubleMuon' in process_name_specific:
-    return ['2mu', '3mu'] if era > 2015 else ['2mu']
+    return ['2mu', '3mu']
   if 'MuonEG' in process_name_specific:
-    return ['1e1mu', '2e1mu', '1e2mu']  if era > 2015 else ['1e1mu']
+    return ['1e1mu', '2e1mu', '1e2mu']
   if 'Tau' in process_name_specific:
-    return ['1e1tau', '1mu1tau', '2tau'] if era > 2015 else ['']
+    return ['1e1tau', '1mu1tau', '2tau']
   if is_data:
     raise ValueError("Expected MC!")
   return [
     '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau'
-  ] if era > 2015 else [
-    '1e', '1e1mu', '1mu', '2e', '2mu'
   ]
 
 def get_array_type(tree, branch_name, array_multiplier = 1):
