@@ -526,7 +526,7 @@ main(int argc,
     const std::vector<const RecoJet *> selJets         = jetSelector          (cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selBJets_loose  = jetSelectorBtagLoose (cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
-    const std::vector<const RecoJet *> selJetsForward  = jetSelectorForward   (jet_ptrs,    isHigherPt);
+    const std::vector<const RecoJet *> selJetsForward  = jetSelectorForward   (cleanedJets, isHigherPt);
 
     if(isMC && ! readGenObjects)
     {
