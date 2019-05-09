@@ -810,7 +810,7 @@ int main(int argc, char* argv[])
     "run:ls:event selection",
     "trigger",
     ">= 2 presel leptons",
-    "presel lepton trigger match",
+    //"presel lepton trigger match",
     ">= 2 jets",
     ">= 2 sel leptons",
     "<= 2 tight leptons",
@@ -1081,6 +1081,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
     std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
+    std::vector<const RecoHadTau *> preselHadTaus  = preselHadTauSelector  (cleanedHadTaus, isHigherPt);
     std::vector<const RecoHadTau*> selHadTaus = tightHadTauSelector(cleanedHadTaus, isHigherPt);
 
     if(isDEBUG || run_lumi_eventSelector)
@@ -1088,6 +1089,7 @@ int main(int argc, char* argv[])
       printCollection("selMuons", selMuons);
       printCollection("selElectrons", selElectrons);
       printCollection("selLeptons", selLeptons);
+      printCollection("preselHadTaus", preselHadTaus);
       printCollection("selHadTaus", selHadTaus);
     }
 
@@ -1095,8 +1097,8 @@ int main(int argc, char* argv[])
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, fakeableHadTaus) :
-      jetCleaner       (jet_ptrs, fakeableLeptonsFull, fakeableHadTaus)
+      jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, preselHadTaus) :
+      jetCleaner       (jet_ptrs, fakeableLeptonsFull, preselHadTaus)
     ;
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);

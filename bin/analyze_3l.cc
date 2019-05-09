@@ -771,7 +771,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     "run:ls:event selection",
     "trigger",
     ">= 3 presel leptons",
-    "presel lepton trigger match",
+    //"presel lepton trigger match",
     "Hadronic selection",
     "3 sel leptons",
     "fakeable lepton trigger match",
@@ -1181,6 +1181,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined3);
 
+    /*
     // require that trigger paths match event category (with event category based on preselLeptons)
     if ( !((preselElectrons.size() >= 3 &&                            (selTrigger_3e    || selTrigger_2e  || selTrigger_1e                                      )) ||
 	   (preselElectrons.size() >= 2 && preselMuons.size() >= 1 && (selTrigger_2e1mu || selTrigger_2e  || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
@@ -1204,6 +1205,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     cutFlowTable.update("presel lepton trigger match");
     cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
+    */
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     bool tH_like = false;
