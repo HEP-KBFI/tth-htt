@@ -90,7 +90,79 @@ def read_data(filename, era):
       })
   return data
 
-def plot_range(data1, data2, label1, label2, era, output_dir, is_cumul, is_sequential, is_recorded = True):
+def plot_single(data, label, era, output_dir, is_cumul, is_sequential, is_recorded = True):
+  fig, ax = plt.subplots(figsize = (10, 8), dpi = 120)
+
+  figure_type = 'recorded' if is_recorded else 'delivered'
+  subject = '{}{}'.format('cumulative_' if is_cumul else '', figure_type)
+
+  ylim = (
+    10 ** math.floor(math.log10(min(map(lambda x: x[subject], data)))),
+    10 ** math.ceil (math.log10(max(map(lambda x: x[subject], data))))
+  )
+
+  run_count = 0
+  runmap = {}
+  expected_cumul = 0.
+
+  has_labeled = False
+  for era_idx, era_key in enumerate(runs[era]):
+    if not has_labeled:
+      has_labeled = True
+      label_on_plot = label
+    else:
+      label_on_plot = ''
+
+    run_len = len(list(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data))))
+    xrange_run_count = list(range(run_count, run_count + run_len))
+
+    xrange_run_real = list(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data)))
+
+    xrange_plot = xrange_run_count if is_sequential else xrange_run_real
+
+    ax.plot(
+      xrange_plot,
+      list(map(lambda x: x[subject], filter(lambda y: y['era'] == era_key, data))), c = '#1f77b4', ls = '-',
+      label = label_on_plot
+    )
+
+    if is_cumul and xrange_plot:
+      expected_cumul += runs[era][era_key][figure_type] * 1e3
+      ax.hlines(
+        y = expected_cumul, xmin = xrange_plot[0], xmax=xrange_plot[-1], color = 'black', linestyle=':',
+      )
+      if expected_cumul > ylim[1]:
+        ylim = (ylim[0], expected_cumul * 5)
+
+    runmap[era_key] = (run_count, run_count + run_len)
+    run_count += run_len
+
+  ax.set_ylim(ylim)
+
+  if not is_sequential:
+    runmap = { era_key : runs[era][era_key]['ranges'] for era_key in runs[era] }
+
+  era_colors = ['gray', 'olive']
+  for era_idx, era_key in enumerate(runs[era]):
+    ax.fill_between(runmap[era_key], *ylim, facecolor = era_colors[era_idx % 2], alpha = 0.2)
+    runb_avg = (runmap[era_key][0] + runmap[era_key][1]) / 2
+    ab = obox.AnnotationBbox(obox.TextArea(era_key), xy = (runb_avg, 10 * ylim[0]), xycoords = 'data')
+    ax.add_artist(ab)
+
+  plt.xlabel('Run {}'.format('index' if is_sequential else 'number'))
+  plt.ylabel('{} [/pb]'.format(subject.replace('_', ' ').capitalize()))
+  plt.yscale('log')
+  plt.grid(True)
+  plt.legend(loc = 'best')
+  plt.title('Run {}'.format(era))
+  out_path = os.path.join(output_dir, '{}_{}'.format(label, subject))
+  if is_sequential:
+    out_path += '_seq'
+  out_path += '.png'
+  plt.savefig(out_path, bbox_inches = 'tight')
+  plt.close()
+
+def plot_double(data1, data2, label1, label2, era, output_dir, is_cumul, is_sequential, is_recorded = True):
   fig, ax = plt.subplots(figsize = (10, 8), dpi = 120)
 
   figure_type = 'recorded' if is_recorded else 'delivered'
@@ -117,7 +189,7 @@ def plot_range(data1, data2, label1, label2, era, output_dir, is_cumul, is_seque
       label2_on_plot = ''
 
     run_len_1 = len(list(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data1))))
-    run_len_2 = len(list(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data1))))
+    run_len_2 = len(list(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data2))))
     assert(run_len_1 == run_len_2)
     run_len = run_len_1
     xrange_run_count = list(range(run_count, run_count + run_len))
@@ -258,7 +330,7 @@ if __name__ == '__main__':
     help = 'R|First input file',
   )
   parser.add_argument('-j', '--input-second',
-    type = str, dest = 'input_second', metavar = 'file', required = True,
+    type = str, dest = 'input_second', metavar = 'file', required = False,
     help = 'R|Second input file',
   )
   parser.add_argument('-o', '--output',
@@ -269,24 +341,48 @@ if __name__ == '__main__':
     type = str, dest = 'era', metavar = 'year', required = True, choices = list(runs.keys()),
     help = 'R|Era',
   )
+  parser.add_argument('-s', '--singles-disable',
+    dest = 'singles_disable', action = 'store_true', default = False,
+    help = 'R|Disable plotting single HLT paths when two inputs are given',
+  )
   args = parser.parse_args()
+  if args.singles_disable and not args.input_second:
+    raise ValueError("Doesn't make any sense to disable single plotting")
 
-  for input_file in (args.input, args.input_second):
-    if not os.path.isfile(input_file):
-      raise ValueError("No such file: %s" % input_file)
+  if not os.path.isfile(args.input):
+    raise ValueError("No such file: %s" % args.input)
+
+  if not args.singles_disable and args.input_second:
+    if not os.path.isfile(args.input_second):
+      raise ValueError("No such file: %s" % args.input_second)
 
   if not os.path.isdir(args.output):
     os.makedirs(args.output)
 
+
   data1 = read_data(args.input, args.era)
-  data2 = read_data(args.input_second, args.era)
   label1 = os.path.basename(args.input).replace('.csv', '')
-  label2 = os.path.basename(args.input_second).replace('.csv', '')
 
-  plot_range(data1, data2, label1, label2, args.era, args.output, True, False)
-  plot_range(data1, data2, label1, label2, args.era, args.output, False, False)
-  plot_range(data1, data2, label1, label2, args.era, args.output, True, True)
-  plot_range(data1, data2, label1, label2, args.era, args.output, False, True)
+  if not args.singles_disable:
+    plot_single(data1, label1, args.era, args.output, True, False)
+    plot_single(data1, label1, args.era, args.output, False, False)
+    plot_single(data1, label1, args.era, args.output, True, True)
+    plot_single(data1, label1, args.era, args.output, False, True)
 
-  plot_ratio(data1, data2, label1, label2, args.era, args.output, False)
-  plot_ratio(data1, data2, label1, label2, args.era, args.output, True)
+  if args.input_second:
+    data2 = read_data(args.input_second, args.era)
+    label2 = os.path.basename(args.input_second).replace('.csv', '')
+
+    if not args.singles_disable:
+      plot_single(data2, label2, args.era, args.output, True, False)
+      plot_single(data2, label2, args.era, args.output, False, False)
+      plot_single(data2, label2, args.era, args.output, True, True)
+      plot_single(data2, label2, args.era, args.output, False, True)
+
+    plot_double(data1, data2, label1, label2, args.era, args.output, True, False)
+    plot_double(data1, data2, label1, label2, args.era, args.output, False, False)
+    plot_double(data1, data2, label1, label2, args.era, args.output, True, True)
+    plot_double(data1, data2, label1, label2, args.era, args.output, False, True)
+
+    plot_ratio(data1, data2, label1, label2, args.era, args.output, False)
+    plot_ratio(data1, data2, label1, label2, args.era, args.output, True)

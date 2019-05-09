@@ -122,7 +122,7 @@ SyncNtupleManager::initializeBranches()
 
 //--- Additional event-level MVA input variables
     isGenMatched,                                          "isGenMatched",
-    is_tH_like_and_not_ttH_like,                           "is_tH_like_and_not_ttH_like",
+    is_like_tH_not_ttH,                                    "is_tH_like_and_not_ttH_like",
 
     floatMap[FloatVariableType::mindr_lep1_jet],           "mindr_lep1_jet",
     floatMap[FloatVariableType::mindr_lep2_jet],           "mindr_lep2_jet",
@@ -691,15 +691,14 @@ SyncNtupleManager::read(bool is_genMatched,
                         int n_tags_loose,
                         int n_jets_light,
                         int n_jets_cleanedFromAK8,
-                        bool bool_is_tH_like_and_not_ttH_like
-                      )
+                        bool b_is_like_tH_not_ttH)
 {
   isGenMatched         = is_genMatched;
   ntags                = n_tags;
   ntags_loose          = n_tags_loose;
   njets_light          = n_jets_light;
   njets_cleanedFromAK8 = n_jets_cleanedFromAK8;
-  bool_is_tH_like_and_not_ttH_like = is_tH_like_and_not_ttH_like;
+  is_like_tH_not_ttH   = b_is_like_tH_not_ttH;
 }
 
 void
@@ -724,7 +723,7 @@ SyncNtupleManager::reset()
     ntags_loose,
     njets_light,
     njets_cleanedFromAK8,
-    is_tH_like_and_not_ttH_like
+    is_like_tH_not_ttH
   );
 
   for(auto & kv: floatMap)
