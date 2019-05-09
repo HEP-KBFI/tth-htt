@@ -1195,6 +1195,7 @@ int main(int argc, char* argv[])
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined2);
 
+    /*
     // require that trigger paths match event category (with event category based on preselLeptons)
     if ( !((preselElectrons.size() >= 2 &&                            (selTrigger_2e    || selTrigger_1e                  )) ||
 	   (preselElectrons.size() >= 1 && preselMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
@@ -1213,6 +1214,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("presel lepton trigger match");
     cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
+    */
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     if ( !(selJets.size() >= 2) ) {
@@ -1401,6 +1403,14 @@ int main(int argc, char* argv[])
 
     bool is_tH_like_and_not_ttH_like = false;
     if ( tH_like && !ttH_like ) is_tH_like_and_not_ttH_like = true;
+    if ( run_lumi_eventSelector )
+      std::cout << "event " << eventInfo.str()
+      << "\n is_tH_like_and_not_ttH_like = " << is_tH_like_and_not_ttH_like
+      << "\n selJets.size() = " << selJets.size()
+      << "\n selBJets_medium.size() = " << selBJets_medium.size()
+      << "\n selBJets_loose.size() = "<< selBJets_loose.size()
+      << "\n selJetsForward.size()" << selJetsForward.size()
+      << std::endl;
 
     if ( selHadTaus.size() > 0 ) {
       if ( run_lumi_eventSelector ) {
