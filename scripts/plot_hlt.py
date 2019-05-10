@@ -84,18 +84,33 @@ def read_data(filename, era):
 
   data = list(sorted(data, key = lambda record: record['run']))
   cumul_delivered, cumul_recorded = 0., 0.
+  cumul_delivered_era, cumul_recorded_era = 0., 0.
+  last_era = ''
   for record in data:
     cumul_delivered += record['delivered']
     cumul_recorded += record['recorded']
     record['cumulative_delivered'] = cumul_delivered
     record['cumulative_recorded'] = cumul_recorded
+    if last_era != record['era']:
+      last_era = record['era']
+      cumul_delivered_era, cumul_recorded_era = 0., 0.
+    cumul_delivered_era += record['delivered']
+    cumul_recorded_era += record['recorded']
+    record['cumulative_delivered_era'] = cumul_delivered_era
+    record['cumulative_recorded_era'] = cumul_recorded_era
   return data
 
-def plot_single(data, label, era, output_dir, is_cumul, is_sequential, is_recorded = True):
+def plot_single(data, label, era, output_dir, is_cumul, is_sequential, split_by_era, is_recorded = True):
+  if split_by_era and not is_cumul:
+    # Applies only when is_cumul is set to true
+    return
+
   fig, ax = plt.subplots(figsize = (10, 8), dpi = 120)
 
   figure_type = 'recorded' if is_recorded else 'delivered'
   subject = '{}{}'.format('cumulative_' if is_cumul else '', figure_type)
+  if split_by_era and is_cumul:
+    subject += '_era'
 
   ylim = (
     10 ** math.floor(math.log10(min(map(lambda x: x[subject], data)))),
@@ -128,7 +143,10 @@ def plot_single(data, label, era, output_dir, is_cumul, is_sequential, is_record
     )
 
     if is_cumul and xrange_plot:
-      expected_cumul += runs[era][era_key][figure_type] * 1e3
+      if split_by_era:
+        expected_cumul = runs[era][era_key][figure_type] * 1e3
+      else:
+        expected_cumul += runs[era][era_key][figure_type] * 1e3
       ax.hlines(
         y = expected_cumul, xmin = xrange_plot[0], xmax=xrange_plot[-1], color = 'black', linestyle=':',
       )
@@ -364,19 +382,19 @@ if __name__ == '__main__':
   data1 = read_data(args.input, args.era)
   label1 = os.path.basename(args.input).replace('.csv', '')
 
-  for boolIdx in range(4):
-    plot_single(data1, label1, args.era, args.output, bool(boolIdx & 1), bool(boolIdx & 2))
+  for boolIdx in range(8):
+    plot_single(data1, label1, args.era, args.output, bool(boolIdx & 1), bool(boolIdx & 2), bool(boolIdx & 4))
 
   if args.input_second:
     data2 = read_data(args.input_second, args.era)
     label2 = os.path.basename(args.input_second).replace('.csv', '')
 
     if not args.singles_disable:
-      for boolIdx in range(4):
-        plot_single(data2, label2, args.era, args.output, bool(boolIdx & 1), bool(boolIdx & 2))
+      for boolIdx in range(8):
+        plot_single(data2, label2, args.era, args.output, bool(boolIdx & 1), bool(boolIdx & 2), bool(boolIdx & 4))
 
-    for boolIdx in range(4):
-      plot_double(data1, data2, label1, label2, args.era, args.output, bool(boolIdx & 1), bool(boolIdx & 2))
+    for boolIdx in range(8):
+      plot_double(data1, data2, label1, label2, args.era, args.output, bool(boolIdx & 1), bool(boolIdx & 2), bool(boolIdx & 4))
 
     for is_recorded in [ True, False ]:
       plot_ratio(data1, data2, label1, label2, args.era, args.output, is_recorded)
