@@ -239,41 +239,41 @@ class Triggers(object):
           'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL', # L=35.918/fb; present in all eras; unprescaled
         },
         '2mu' : {
-          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # L=35.918/fb; present in all eras; unprescaled (+ non-DZ IS DOCUMENTED ON GITLAB)
-          'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ', # L=35.918/fb; present in all eras; unprescaled (+ non-DZ IS DOCUMENTED ON GITLAB)
-          'HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ' # L=8650.63/fb; present in H, missing in B, C, D, E, F, G; unprescaled (effectively prescaled by 4.2) (+ non-DZ IS DOCUMENTED ON GITLAB)
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL', # L=27.655/fb; present in all eras, prescaled in run H
+          'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # L=35.918/fb; present in all eras; unprescaled
+          'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL', # L=27.655/fb; present in all eras, prescaled in run H
+          'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ', # L=35.918/fb; present in all eras; unprescaled
         },
         '1e1mu' : {
-          'HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL', # L=24.975/fb; present in all eras; unprescaled?
-          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL', # L=27.267/fb; present in B, C, D, E, F, G, missing in H; unprescaled? (+ DZ IS DOCUMENTED ON GITLAB)
-          'HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=24.975/fb; present in all eras; unprescaled?
-          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=29.598/fb; present in all eras; unprescaled? (+ DZ IS DOCUMENTED ON GITLAB)
-          'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', # L=27.267/fb; present in B, C, D, E, F, G, missing in H; unprescaled?
+          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL', # L=27.267/fb; present in B, C, D, E, F, G, missing in H; unprescaled
+          'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=18.277/fb; present in F, G, H; unprescaled
+          'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', # L=27.267/fb; present in B, C, D, E, F, G, missing in H
+          'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ', # L=8650/pb; present in H, missing in B, C, D, E, F, G; unprescaled
+          
         },
         '2e' : {
-          'HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=24.978/fb; present in all eras; unprescaled?
           'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=35.918/fb; present in all eras; unprescaled
         },
         '1mu' : {
-          'HLT_IsoMu22', # L=28.564/fb; present in all eras; unprescaled?
-          'HLT_IsoTkMu22', # L=28.564/fb; present in all eras; unprescaled?
-          'HLT_IsoMu22_eta2p1', # L=33.182/fb; present in all eras; unprescaled
-          'HLT_IsoTkMu22_eta2p1', # L=33.182/fb; present in all eras; unprescaled
+          'HLT_IsoMu22', # L=28.564/fb; present in all eras; prescaled since mid run E til the end of 2016
+          'HLT_IsoTkMu22', # L=28.564/fb; present in all eras; prescaled since mid run E til the end of 2016
+          'HLT_IsoMu22_eta2p1', # L=33.182/fb; present in all eras (introduced mid B); unprescaled
+          'HLT_IsoTkMu22_eta2p1', # L=33.182/fb; present in all eras (introduced mid B); unprescaled
           'HLT_IsoMu24', # L=35.918/fb; present in all eras; unprescaled
           'HLT_IsoTkMu24', # L=35.918/fb; present in all eras; unprescaled
         },
         '1e' : {
           'HLT_Ele27_WPTight_Gsf', # L=35.918/fb; present in all eras; unprescaled
           'HLT_Ele25_eta2p1_WPTight_Gsf', # L=35.918/fb; present in all eras; unprescaled
-          'HLT_Ele27_eta2p1_WPLoose_Gsf', # L=27.303/fb; present in all eras; unprescaled?
+          'HLT_Ele27_eta2p1_WPLoose_Gsf', # L=27.303/fb; present in all eras; heavily prescaled in run H
         },
         '1mu1tau' : {
           'HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1', # L=35.918/fb; present in all eras; unprescaled
         },
         '1e1tau' : {
-          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30', # L=22.883/fb; present in E, F, G, H; missing in B, C, D; unprescaled
-          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1', # L=17.640/fb; present in B, C, D, E, F, missing in G, H; unprescaled (effectively prescaled by 2.0)
           'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20', # L=17.144/fb; present in B, C, D, E, F, missing in G, H; unprescaled (effectively prescaled by 2.1)
+          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1', # L=17.640/fb; present in B, C, D, E, F, missing in G, H; unprescaled (effectively prescaled by 2.0)
+          'HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30', # L=22.883/fb; present in E, F, G, H; missing in B, C, D; unprescaled
         },
         '2tau' : {
           'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg', # L=27.267/fb; present in B, C, D, E, F, G, missing in H; unprescaled
@@ -315,15 +315,13 @@ class Triggers(object):
           'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8', # L=41.527/fb; present in all eras; unprescaled
         },
         '1e1mu' : {
-          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=36.733/fb; present in C, D, E, F, missing in B; unprescaled
-          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled NOT DOCUMENTED ON GITLAB
-          'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled
           'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled
-          'HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL', # L=0/fb?
+          'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=36.733/fb; present in C, D, E, F, missing in B; unprescaled
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled
         },
         '2e' : {
           'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # L=41.527/fb; present in all eras; unprescaled (higher efficiency than non-DZ; not present in B)
-          'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ', # L=41.527/fb; present in all eras; unprescaled NOT DOCUMENTED ON GITLAB
         },
         '1mu' : {
           'HLT_IsoMu24', # L=38.046/fb; present in all eras; unprescaled (not enabled at high lumi)
@@ -331,6 +329,7 @@ class Triggers(object):
         },
         '1e' : {
           'HLT_Ele35_WPTight_Gsf', # L=41.527/fb; present in all eras; unprescaled
+          'HLT_Ele32_WPTight_Gsf', # L=27.121/fb; present in D, E, F; missing in B, C; unprescaled
         },
         # CV: tau trigger paths taken from slide 6 of presentation given by Hale Sert at HTT workshop in December 2017
         #    (https://indico.cern.ch/event/684622/contributions/2807071/attachments/1575421/2487940/141217_triggerStatusPlans_hsert.pdf),
@@ -386,9 +385,9 @@ class Triggers(object):
           'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # L=59.735/fb; present in all eras; unprescaled
         },
         '1e1mu' : {
-          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=59.735/fb; present in all eras; unprescaled
           'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=59.735/fb; present in all eras; unprescaled
           'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ', # L=59.735/fb; present in all eras; unprescaled
+          'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # L=59.735/fb; present in all eras; unprescaled
         },
         '2e' : {
           'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # L=59.735/fb; present in all eras; unprescaled
