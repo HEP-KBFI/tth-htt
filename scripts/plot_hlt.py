@@ -54,7 +54,6 @@ def read_data(filename, era):
   data = []
   # TODO PARSE UNITS
   with open(filename, 'r') as file_ptr:
-    cumul_delivered, cumul_recorded = 0., 0.
     for line in file_ptr:
       if line.startswith('#'):
         continue
@@ -72,22 +71,24 @@ def read_data(filename, era):
       recorded  = float(line_split[5])
 
       era_key = get_acq_era(run, era)
-
-      cumul_delivered += delivered
-      cumul_recorded += recorded
-
       data.append({
-        'run'                  : run,
-        'era'                  : era_key,
-        'fill'                 : fill,
-        'dt'                   : dt,
-        'ncms'                 : ncms,
-        'hltpath'              : hltpath,
-        'delivered'            : delivered,
-        'recorded'             : recorded,
-        'cumulative_delivered' : cumul_delivered,
-        'cumulative_recorded'  : cumul_recorded,
+        'run'       : run,
+        'era'       : era_key,
+        'fill'      : fill,
+        'dt'        : dt,
+        'ncms'      : ncms,
+        'hltpath'   : hltpath,
+        'delivered' : delivered,
+        'recorded'  : recorded,
       })
+
+  data = list(sorted(data, key = lambda record: record['run']))
+  cumul_delivered, cumul_recorded = 0., 0.
+  for record in data:
+    cumul_delivered += record['delivered']
+    cumul_recorded += record['recorded']
+    record['cumulative_delivered'] = cumul_delivered
+    record['cumulative_recorded'] = cumul_recorded
   return data
 
 def plot_single(data, label, era, output_dir, is_cumul, is_sequential, is_recorded = True):
