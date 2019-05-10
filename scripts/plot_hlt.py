@@ -363,26 +363,19 @@ if __name__ == '__main__':
   data1 = read_data(args.input, args.era)
   label1 = os.path.basename(args.input).replace('.csv', '')
 
-  if not args.singles_disable:
-    plot_single(data1, label1, args.era, args.output, True, False)
-    plot_single(data1, label1, args.era, args.output, False, False)
-    plot_single(data1, label1, args.era, args.output, True, True)
-    plot_single(data1, label1, args.era, args.output, False, True)
+  for boolIdx in range(4):
+    plot_single(data1, label1, args.era, args.output, bool(boolIdx & 1), bool(boolIdx & 2))
 
   if args.input_second:
     data2 = read_data(args.input_second, args.era)
     label2 = os.path.basename(args.input_second).replace('.csv', '')
 
     if not args.singles_disable:
-      plot_single(data2, label2, args.era, args.output, True, False)
-      plot_single(data2, label2, args.era, args.output, False, False)
-      plot_single(data2, label2, args.era, args.output, True, True)
-      plot_single(data2, label2, args.era, args.output, False, True)
+      for boolIdx in range(4):
+        plot_single(data2, label2, args.era, args.output, bool(boolIdx & 1), bool(boolIdx & 2))
 
-    plot_double(data1, data2, label1, label2, args.era, args.output, True, False)
-    plot_double(data1, data2, label1, label2, args.era, args.output, False, False)
-    plot_double(data1, data2, label1, label2, args.era, args.output, True, True)
-    plot_double(data1, data2, label1, label2, args.era, args.output, False, True)
+    for boolIdx in range(4):
+      plot_double(data1, data2, label1, label2, args.era, args.output, bool(boolIdx & 1), bool(boolIdx & 2))
 
-    plot_ratio(data1, data2, label1, label2, args.era, args.output, False)
-    plot_ratio(data1, data2, label1, label2, args.era, args.output, True)
+    for is_recorded in [ True, False ]:
+      plot_ratio(data1, data2, label1, label2, args.era, args.output, is_recorded)
