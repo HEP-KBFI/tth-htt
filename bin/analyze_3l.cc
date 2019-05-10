@@ -2043,7 +2043,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       snm->read(selLeptons);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
-      snm->read(selJets);
+      snm->read(selJets, false);
+      snm->read(selJetsForward, true);
 
       snm->read({
         triggers_1e, triggers_1mu, triggers_2e, triggers_1e1mu, triggers_2mu,
