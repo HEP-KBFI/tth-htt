@@ -8,6 +8,8 @@ import collections
 import datetime
 import argparse
 import os
+import logging
+import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -179,6 +181,7 @@ def plot_single(data, label, era, output_dir, is_cumul, is_sequential, split_by_
     out_path += '_seq'
   out_path += '.png'
   plt.savefig(out_path, bbox_inches = 'tight')
+  logging.info('Created plot {}'.format(out_path))
   plt.close()
 
 def plot_double(data1, data2, label1, label2, era, output_dir, is_cumul, is_sequential, split_by_era, is_recorded = True):
@@ -213,29 +216,41 @@ def plot_double(data1, data2, label1, label2, era, output_dir, is_cumul, is_sequ
       label1_on_plot = ''
       label2_on_plot = ''
 
-    run_len_1 = len(list(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data1))))
-    run_len_2 = len(list(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data2))))
-    assert(run_len_1 == run_len_2)
-    run_len = run_len_1
+    run_set_1 = set(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data1)))
+    run_set_2 = set(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data2)))
+    run_set = run_set_1 | run_set_2
+    xrange_run_real = list(sorted(list(run_set)))
+    run_len = len(run_set)
+
     xrange_run_count = list(range(run_count, run_count + run_len))
-
-    xrange_run_real_1 = list(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data1)))
-    xrange_run_real_2 = list(map(lambda x: x['run'], filter(lambda y: y['era'] == era_key, data2)))
-    assert(xrange_run_real_1 == xrange_run_real_2)
-    xrange_run_real = xrange_run_real_1
-
     xrange_plot = xrange_run_count if is_sequential else xrange_run_real
 
-    ax.plot(
-      xrange_plot,
-      list(map(lambda x: x[subject], filter(lambda y: y['era'] == era_key, data2))), c = '#1f77b4', ls = '-',
-      label = label2_on_plot
-    )
-    ax.plot(
-      xrange_plot,
-      list(map(lambda x: x[subject], filter(lambda y: y['era'] == era_key, data1))), c = '#ff7f0e', ls = '--',
-      label = label1_on_plot
-    )
+    yvals_1_filtered = list(sorted(filter(lambda y: y['era'] == era_key, data1), key = lambda record: record['run']))
+    yvals_2_filtered = list(sorted(filter(lambda y: y['era'] == era_key, data2), key = lambda record: record['run']))
+    yvals_1, yvals_2 = [], []
+    for xval in xrange_run_real:
+      if xval not in run_set_1:
+        if yvals_1:
+          yvals_1.append(yvals_1[-1])
+        else:
+          yvals_1.append(0.)
+      else:
+        yval_candidate = [ yval for yval in yvals_1_filtered if yval['run'] == xval ]
+        assert(len(yval_candidate) == 1)
+        yvals_1.append(yval_candidate[0][subject])
+
+      if xval not in run_set_2:
+        if yvals_2:
+          yvals_2.append(yvals_2[-1])
+        else:
+          yvals_2.append(0.)
+      else:
+        yval_candidate = [ yval for yval in yvals_2_filtered if yval['run'] == xval ]
+        assert(len(yval_candidate) == 1)
+        yvals_2.append(yval_candidate[0][subject])
+
+    ax.plot(xrange_plot, yvals_2, c = '#1f77b4', ls = '-',  label = label2_on_plot)
+    ax.plot(xrange_plot, yvals_1, c = '#ff7f0e', ls = '--', label = label1_on_plot)
 
     if is_cumul and xrange_plot:
       if split_by_era:
@@ -270,10 +285,11 @@ def plot_double(data1, data2, label1, label2, era, output_dir, is_cumul, is_sequ
     out_path += '_seq'
   out_path += '.png'
   plt.savefig(out_path, bbox_inches = 'tight')
+  logging.info('Created plot {}'.format(out_path))
   plt.close()
 
 def plot_ratio(data1, data2, label1, label2, era, output_dir, is_cumul, is_recorded = True):
-  fig, ax = plt.subplots(figsize=(10, 8), dpi=120)
+  fig, ax = plt.subplots(figsize = (10, 8), dpi = 120)
 
   subject = '{}{}'.format('cumulative_' if is_cumul else '', 'recorded' if is_recorded else 'delivered')
 
@@ -346,10 +362,8 @@ def plot_ratio(data1, data2, label1, label2, era, output_dir, is_cumul, is_recor
 
   out_path = os.path.join(output_dir, '{}_vs_{}_{}_ratio.png'.format(label1, label2, subject))
   plt.savefig(out_path, bbox_inches = 'tight')
+  logging.info('Created plot {}'.format(out_path))
   plt.close()
-
-def test_single(x, a, b, c):
-  print(x, a, b, c)
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(
@@ -375,6 +389,12 @@ if __name__ == '__main__':
     dest = 'singles_disable', action = 'store_true', default = False,
     help = 'R|Disable plotting single HLT paths when two inputs are given',
   )
+  logging.basicConfig(
+    stream = sys.stdout,
+    level  = logging.INFO,
+    format = '%(asctime)s - %(levelname)s: %(message)s',
+  )
+
   args = parser.parse_args()
   if args.singles_disable and not args.input_second:
     raise ValueError("Doesn't make any sense to disable single plotting")
@@ -419,5 +439,12 @@ if __name__ == '__main__':
         *(bool(boolIdx & 2**boolJdx) for boolJdx in range(n_double_bools))
       )
 
-    for is_recorded in [ True, False ]:
-      plot_ratio(data1, data2, label1, label2, args.era, args.output, is_recorded)
+    data1_runset = set([ record['run'] for record in data1 ])
+    data2_runset = set([ record['run'] for record in data2 ])
+    if data1_runset != data2_runset:
+      logging.warning(
+        'Not going to perform ratio plot b/w {} and {} as they have incompatible run numbers'.format(label1, label2)
+      )
+    else:
+      for is_recorded in [ True, False ]:
+        plot_ratio(data1, data2, label1, label2, args.era, args.output, is_recorded)
