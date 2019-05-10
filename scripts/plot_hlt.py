@@ -181,11 +181,17 @@ def plot_single(data, label, era, output_dir, is_cumul, is_sequential, split_by_
   plt.savefig(out_path, bbox_inches = 'tight')
   plt.close()
 
-def plot_double(data1, data2, label1, label2, era, output_dir, is_cumul, is_sequential, is_recorded = True):
+def plot_double(data1, data2, label1, label2, era, output_dir, is_cumul, is_sequential, split_by_era, is_recorded = True):
+  if split_by_era and not is_cumul:
+    # Applies only when is_cumul is set to true
+    return
+
   fig, ax = plt.subplots(figsize = (10, 8), dpi = 120)
 
   figure_type = 'recorded' if is_recorded else 'delivered'
   subject = '{}{}'.format('cumulative_' if is_cumul else '', figure_type)
+  if split_by_era and is_cumul:
+    subject += '_era'
 
   ylim = (
     10 ** math.floor(math.log10(min(min(map(lambda x: x[subject], data1)), min(map(lambda x: x[subject], data2))))),
@@ -232,7 +238,10 @@ def plot_double(data1, data2, label1, label2, era, output_dir, is_cumul, is_sequ
     )
 
     if is_cumul and xrange_plot:
-      expected_cumul += runs[era][era_key][figure_type] * 1e3
+      if split_by_era:
+        expected_cumul = runs[era][era_key][figure_type] * 1e3
+      else:
+        expected_cumul += runs[era][era_key][figure_type] * 1e3
       ax.hlines(
         y = expected_cumul, xmin = xrange_plot[0], xmax=xrange_plot[-1], color = 'black', linestyle=':',
       )
@@ -339,6 +348,8 @@ def plot_ratio(data1, data2, label1, label2, era, output_dir, is_cumul, is_recor
   plt.savefig(out_path, bbox_inches = 'tight')
   plt.close()
 
+def test_single(x, a, b, c):
+  print(x, a, b, c)
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(
@@ -382,19 +393,31 @@ if __name__ == '__main__':
   data1 = read_data(args.input, args.era)
   label1 = os.path.basename(args.input).replace('.csv', '')
 
-  for boolIdx in range(8):
-    plot_single(data1, label1, args.era, args.output, bool(boolIdx & 1), bool(boolIdx & 2), bool(boolIdx & 4))
+  n_single_bools = 3
+  n_double_bools = 4
+
+  for boolIdx in range(2 ** n_single_bools):
+    plot_single(
+      data1, label1, args.era, args.output,
+      *(bool(boolIdx & 2**boolJdx) for boolJdx in range(n_single_bools))
+    )
 
   if args.input_second:
     data2 = read_data(args.input_second, args.era)
     label2 = os.path.basename(args.input_second).replace('.csv', '')
 
     if not args.singles_disable:
-      for boolIdx in range(8):
-        plot_single(data2, label2, args.era, args.output, bool(boolIdx & 1), bool(boolIdx & 2), bool(boolIdx & 4))
+      for boolIdx in range(2**n_single_bools):
+        plot_single(
+          data2, label2, args.era, args.output,
+          *(bool(boolIdx & 2**boolJdx) for boolJdx in range(n_single_bools))
+        )
 
-    for boolIdx in range(8):
-      plot_double(data1, data2, label1, label2, args.era, args.output, bool(boolIdx & 1), bool(boolIdx & 2), bool(boolIdx & 4))
+    for boolIdx in range(2**n_double_bools):
+      plot_double(
+        data1, data2, label1, label2, args.era, args.output,
+        *(bool(boolIdx & 2**boolJdx) for boolJdx in range(n_double_bools))
+      )
 
     for is_recorded in [ True, False ]:
       plot_ratio(data1, data2, label1, label2, args.era, args.output, is_recorded)
