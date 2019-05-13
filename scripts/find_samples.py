@@ -68,7 +68,7 @@ class Command(object):
     self.err = None
     self.success = False
 
-  def run(self, max_tries = 10, timeout = 5):
+  def run(self, max_tries = 20, timeout = 5):
     ntries = 0
     while not self.success:
       if ntries > max_tries:
