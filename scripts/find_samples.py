@@ -266,7 +266,7 @@ def get_crab_string(dataset_name, paths):
     full_path = os.path.join(path, primary_name, requestName)
     if hdfs.isdir(full_path):
       return requestName
-    # is a hack... I cannot explain where this magic number '152' comes from but it works
+    # Depends on the CERN user name: the overall limit on the request name is 160 characters, and my user name is 8 characters
     if len(requestName) > 152:
       requestName = requestName[:152]
     full_path = os.path.join(path, primary_name, requestName)
