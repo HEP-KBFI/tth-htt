@@ -164,17 +164,12 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Apply HLT filter',
     )
 
-  def add_use_home(self, default = True):
-    if default:
-      self.add_argument('-y', '--use-scratch',
-        dest = 'use_home', action = 'store_false', default = True,
-        help = 'R|Use /scratch for SLURM jobs',
-      )
-    else:
-      self.add_argument('-y', '--use-home',
-        dest = 'use_home', action = 'store_true', default = False,
-        help = 'R|Use /home for SLURM jobs',
-      )
+  def add_use_home(self, use_home = True):
+    self.add_argument('-y', '--use-home',
+      type = lambda s: s.lower() in ['true', 't', 'yes', '1'], dest = 'use_home', metavar = 'option',
+      default = use_home, required = False,
+      help = 'R|Use /home instead of /scratch for SLURM jobs',
+    )
 
   def add_lep_mva_wp(self, default_wp = '090'):
     self.add_argument('-L', '--lepton-mva-wp',

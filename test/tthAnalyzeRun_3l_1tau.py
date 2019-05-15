@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_3l_1tau import analyzeConfi
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 
 import os
 import sys
@@ -73,180 +73,42 @@ MEMbranch           = ''
 chargeSumSelections = [ "OS" ] if "forBDTtraining" in mode else [ "OS", "SS" ]
 
 if mode == "default":
-  if use_preselected:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_preselected import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_preselected import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
-  else:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+  hadTau_selection = "dR03mvaLoose"
 
-  if era == "2016":
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2017":
-    hadTau_selection = "dR03mvaLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
-
-  applyFakeRateWeights = "3lepton"
 elif mode == "addMEM":
-  if use_preselected:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_preselected_3l1tau import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_preselected_3l1tau import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_preselected_3l1tau import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
-  else:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_3l1tau import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_3l1tau import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_3l1tau import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, suffix = "addMEM_preselected_3l1tau" if use_preselected else "addMEM_3l1tau")
+  hadTau_selection = "dR03mvaLoose"
+  MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
 
-  if era == "2016":
-    MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaMedium'
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2017":
-    MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaLoose'
-    hadTau_selection = "dR03mvaLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
-
-  applyFakeRateWeights = "3lepton"
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
-  else:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_BDT import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_BDT import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    hadTau_selection         = "dR03mvaVTight"
-    hadTau_selection_relaxed = "dR03mvaMedium"
-  elif era == "2017":
-    hadTau_selection         = "dR03mvaTight"
-    hadTau_selection_relaxed = "dR03mvaVVLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, suffix = "BDT")
+  hadTau_selection         = "dR03mvaTight"
+  hadTau_selection_relaxed = "dR03mvaVVLoose"
 
-  applyFakeRateWeights = "4L"
 elif mode == "forBDTtraining_afterAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
-  else:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_BDT_addMEM_3l1tau import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT_addMEM_3l1tau import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_BDT_addMEM_3l1tau import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
 
-  if era == "2016":
-    MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVLoose'
-    hadTau_selection         = "dR03mvaVTight"
-    hadTau_selection_relaxed = "dR03mvaMedium"
-  elif era == "2017":
-    MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVVLoose'
-    hadTau_selection         = "dR03mvaTight"
-    hadTau_selection_relaxed = "dR03mvaVVLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, suffix = "BDT_addMEM_3l1tau")
+  hadTau_selection         = "dR03mvaTight"
+  hadTau_selection_relaxed = "dR03mvaVVLoose"
+  MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_{}'.format(hadTau_selection_relaxed)
 
-  applyFakeRateWeights     = "4L"
 elif mode.startswith("sync"):
   if mode == "sync_wMEM":
-    if use_preselected:
-      if era == "2016":
-        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_preselected_sync import samples_2016 as samples
-      elif era == "2017":
-        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_preselected_sync import samples_2017 as samples
-      elif era == "2018":
-        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_preselected_sync import samples_2018 as samples
-      else:
-        raise ValueError("Invalid era: %s" % era)
-    else:
-      if era == "2016":
-        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_sync import samples_2016 as samples
-      elif era == "2017":
-        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
-      elif era == "2018":
-        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_sync import samples_2018 as samples
-      else:
-        raise ValueError("Invalid era: %s" % era)
+    samples = load_samples(era, suffix = "addMEM_preselected_sync" if use_preselected else "addMEM_sync")
   elif mode == "sync":
     if use_preselected:
-      if era == "2016":
-        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_preselected_sync import samples_2016 as samples
-      elif era == "2017":
-        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected_sync import samples_2017 as samples
-      elif era == "2018":
-        from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_preselected_sync import samples_2018 as samples
-      else:
-        raise ValueError("Invalid era: %s" % era)
-    else:
-      if use_nonnominal:
-        if era == "2016":
-          from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
-        elif era == "2017":
-          from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
-        elif era == "2018":
-          from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
-        else:
-          raise ValueError("Invalid era: %s" % era)
-      else:
-        if era == "2016":
-          from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync_nom import samples_2016 as samples
-        elif era == "2017":
-          from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
-        elif era == "2018":
-          from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync_nom import samples_2018 as samples
-        else:
-          raise ValueError("Invalid era: %s" % era)
+      raise ValueError("Makes no sense to use preselected samples in sync")
+    samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
   else:
     raise ValueError("Invalid mode: %s" % mode)
 
-  if era == "2016":
-    hadTau_selection = "dR03mvaMedium"
-  elif era == "2017":
-    hadTau_selection = "dR03mvaLoose"
-  elif era == "2018":
-    raise ValueError("Implement me!")
-  else:
-    raise ValueError("Invalid era: %s" % era)
-  applyFakeRateWeights = "3lepton"
+  hadTau_selection = "dR03mvaLoose"
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
@@ -276,7 +138,7 @@ if __name__ == '__main__':
     hadTau_selection                      = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
-    applyFakeRateWeights                  = applyFakeRateWeights,
+    applyFakeRateWeights                  = "3lepton",
     chargeSumSelections                   = chargeSumSelections,
     jet_cleaning_by_index                 = jet_cleaning_by_index,
     gen_matching_by_index                 = gen_matching_by_index,

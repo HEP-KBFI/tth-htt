@@ -6,6 +6,7 @@
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
 
 #include <cmath> // std::fabs()
+#include <cstring> // std::memcpy()
 
 #define EPS 1E-2
 
@@ -19,26 +20,29 @@ const std::map<std::string, Float_t> EventInfo::decayMode_idString =
 };
 
 EventInfo::EventInfo()
-  : EventInfo(false, false, false)
+  : EventInfo(false, false)
 {}
 
 EventInfo::EventInfo(bool is_signal,
-                     bool is_mc,
-                     bool is_mc_th)
+                     bool is_mc)
   : run(0)
   , lumi(0)
   , event(0)
   , genHiggsDecayMode(-1)
   , genDiHiggsDecayMode(-1)
   , genWeight(1.)
-  , genWeight_tH(1.)
   , pileupWeight(1.)
   , is_signal_(is_signal)
   , is_mc_(is_mc)
-  , is_mc_th_(is_mc_th)
+  , nLHEReweightingWeight(0)
+  , LHEReweightingWeight(nullptr)
+  , LHEReweightingWeight_SMidx(11)
+  , LHEReweightingWeight_max(69)
 {}
 
 EventInfo::EventInfo(const EventInfo & eventInfo)
+  : LHEReweightingWeight_SMidx(eventInfo.LHEReweightingWeight_SMidx)
+  , LHEReweightingWeight_max(eventInfo.LHEReweightingWeight_max)
 {
   *this = eventInfo;
 }
@@ -46,19 +50,38 @@ EventInfo::EventInfo(const EventInfo & eventInfo)
 EventInfo &
 EventInfo::operator=(const EventInfo & eventInfo)
 {
-  run               = eventInfo.run;
-  lumi              = eventInfo.lumi;
-  event             = eventInfo.event;
-  genHiggsDecayMode = eventInfo.genHiggsDecayMode;
+  run                 = eventInfo.run;
+  lumi                = eventInfo.lumi;
+  event               = eventInfo.event;
+  genHiggsDecayMode   = eventInfo.genHiggsDecayMode;
   genDiHiggsDecayMode = eventInfo.genDiHiggsDecayMode;
-  genWeight         = eventInfo.genWeight;
-  genWeight_tH      = eventInfo.genWeight_tH;
+  genWeight           = eventInfo.genWeight;
 
   is_signal_ = eventInfo.is_signal_;
   is_mc_     = eventInfo.is_mc_;
-  is_mc_th_  = eventInfo.is_mc_th_;
+
+  nLHEReweightingWeight = eventInfo.nLHEReweightingWeight;
+  if(eventInfo.LHEReweightingWeight)
+  {
+    if(! LHEReweightingWeight)
+    {
+      LHEReweightingWeight = new Float_t[LHEReweightingWeight_max];
+    }
+    std::memcpy(LHEReweightingWeight, eventInfo.LHEReweightingWeight, nLHEReweightingWeight);
+  }
 
   return *this;
+}
+
+EventInfo::~EventInfo()
+{
+  delete[] this->LHEReweightingWeight;
+}
+
+Float_t
+EventInfo::genWeight_tH() const
+{
+  return nLHEReweightingWeight > LHEReweightingWeight_SMidx ? LHEReweightingWeight[LHEReweightingWeight_SMidx] : 1.;
 }
 
 bool
@@ -71,12 +94,6 @@ bool
 EventInfo::is_mc() const
 {
   return is_mc_;
-}
-
-bool
-EventInfo::is_mc_th() const
-{
-  return is_mc_th_;
 }
 
 bool

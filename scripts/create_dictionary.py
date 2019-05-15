@@ -18,24 +18,47 @@ import time
 import shutil
 import datetime
 import math
+import collections
 
-HISTOGRAM_COUNT                           = 'Count'
-HISTOGRAM_COUNTWEIGHTED                   = 'CountWeighted'
-HISTOGRAM_COUNTWEIGHTED_NOPU              = 'CountWeightedNoPU'
-HISTOGRAM_COUNTFULLWEIGHTED               = 'CountFullWeighted'
-HISTOGRAM_COUNTFULLWEIGHTED_NOPU          = 'CountFullWeightedNoPU'
-HISTOGRAM_COUNTWEIGHTED_LHESCALE          = 'CountWeightedLHEWeightScale'
-HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU     = 'CountWeightedLHEWeightScaleNoPU'
-HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE      = 'CountFullWeightedLHEWeightScale'
-HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU = 'CountFullWeightedLHEWeightScaleNoPU'
-EVENTS_TREE                               = 'Events'
+HISTOGRAM_COUNT                                         = 'Count'
+HISTOGRAM_COUNTWEIGHTED                                 = 'CountWeighted'
+HISTOGRAM_COUNTWEIGHTED_L1PREFIRE_NOM                   = 'CountWeightedL1PrefireNom'
+HISTOGRAM_COUNTWEIGHTED_L1PREFIRE                       = 'CountWeightedL1Prefire'
+HISTOGRAM_COUNTWEIGHTED_NOPU                            = 'CountWeightedNoPU'
+HISTOGRAM_COUNTWEIGHTED_NOPU_L1PREFIRE_NOM              = 'CountWeightedNoPUL1PrefireNom'
+HISTOGRAM_COUNTFULLWEIGHTED                             = 'CountFullWeighted'
+HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE_NOM               = 'CountFullWeightedL1PrefireNom'
+HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE                   = 'CountFullWeightedL1Prefire'
+HISTOGRAM_COUNTFULLWEIGHTED_NOPU                        = 'CountFullWeightedNoPU'
+HISTOGRAM_COUNTFULLWEIGHTED_NOPU_L1PREFIRE_NOM          = 'CountFullWeightedNoPUL1PrefireNom'
+HISTOGRAM_COUNTWEIGHTED_LHESCALE                        = 'CountWeightedLHEWeightScale'
+HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM          = 'CountWeightedLHEWeightScaleL1PrefireNom'
+HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU                   = 'CountWeightedLHEWeightScaleNoPU'
+HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM     = 'CountWeightedLHEWeightScaleNoPUL1PrefireNom'
+HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE                    = 'CountFullWeightedLHEWeightScale'
+HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM      = 'CountFullWeightedLHEWeightScaleL1PrefireNom'
+HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU               = 'CountFullWeightedLHEWeightScaleNoPU'
+HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM = 'CountFullWeightedLHEWeightScaleNoPUL1PrefireNom'
+EVENTS_TREE = 'Events'
+BRANCH_LHEPDFWEIGHT = 'LHEPdfWeight'
 
 HISTOGRAM_COUNT_KEY = 'histogram_count'
 TREE_COUNT_KEY      = 'tree_count'
 FSIZE_KEY           = 'fsize'
 BRANCH_NAMES_KEY    = 'branch_names'
 
-LHE_REGEX = re.compile('(n|)LHE(Scale|Pdf)Weight')
+LHE_REGEX     = re.compile('(n|)LHE(Scale|Pdf)Weight')
+LHE_DOC_REGEX = re.compile('LHE pdf variation weights \(w_var \/ w\_nominal\) for LHA IDs (?P<lha_start>[0-9]+) - (?P<lha_end>[0-9]+)')
+
+# see https://github.com/cms-nanoAOD/cmssw/blob/9a2728ac9f44fc45ba1aa56389e28c594207c0fe/PhysicsTools/NanoAOD/python/nano_cff.py#L99-L104
+LHE_DOC = {
+  91400  : { 'name' : 'PDF4LHC15_nnlo_30_pdfas',    'count' : 33  },
+  306000 : { 'name' : 'NNPDF31_nnlo_hessian_pdfas', 'count' : 103 },
+  260000 : { 'name' : 'NNPDF30_nlo_as_0118',        'count' : 101 },
+  262000 : { 'name' : 'NNPDF30_lo_as_0130',         'count' : 101 },
+  292000 : { 'name' : 'NNPDF30_nlo_nf_4_pdfas',     'count' : 103 },
+  292200 : { 'name' : 'NNPDF30_nlo_nf_5_pdfas',     'count' : 103 },
+}
 
 try:
     from urllib.parse import urlparse
@@ -115,7 +138,7 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("nof_files",                       {{ nof_files }}),
   ("nof_db_files",                    {{ nof_db_files }}),
   ("nof_events",                      { {%- for histogram_name, event_counts in nof_events.items() %}
-    {{ "%-40s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
+    {{ "%-50s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
   {%- endfor %}
   }),
   ("nof_tree_events",                 {{ nof_tree_events }}),
@@ -127,6 +150,7 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("genWeight",                       {{ genWeight }}),{% endif %}
   ("triggers",                        {{ triggers }}),
   ("has_LHE",                         {{ has_LHE }}),
+  ("LHE_set",                         "{{ LHE_set }}"),
   ("local_paths",
     [
 {{ paths }}
@@ -200,23 +224,21 @@ class PathEntry:
 
 def get_triggers(process_name_specific, is_data, era):
   if 'SingleElec' in process_name_specific:
-    return ['1e', '1e1tau'] if era > 2016 else ['1e']
+    return ['1e', '1e1tau']
   if 'SingleMuon' in process_name_specific:
-    return ['1mu', '1mu1tau'] if era > 2016 else ['1mu']
+    return ['1mu', '1mu1tau']
   if 'DoubleEG' in process_name_specific:
-    return ['2e', '3e'] if era > 2015 else ['2e']
+    return ['2e', '3e']
   if 'DoubleMuon' in process_name_specific:
-    return ['2mu', '3mu'] if era > 2015 else ['2mu']
+    return ['2mu', '3mu']
   if 'MuonEG' in process_name_specific:
-    return ['1e1mu', '2e1mu', '1e2mu']  if era > 2015 else ['1e1mu']
+    return ['1e1mu', '2e1mu', '1e2mu']
   if 'Tau' in process_name_specific:
-    return ['1e1tau', '1mu1tau', '2tau'] if era > 2015 else ['']
+    return ['1e1tau', '1mu1tau', '2tau']
   if is_data:
     raise ValueError("Expected MC!")
   return [
     '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau'
-  ] if era > 2015 else [
-    '1e', '1e1mu', '1mu', '2e', '2mu'
   ]
 
 def get_array_type(tree, branch_name, array_multiplier = 1):
@@ -283,7 +305,7 @@ def process_paths(meta_dict, key):
 
   if len(local_paths_sorted) == 1:
     # let's compute the number of files, events and the list of blacklisted files
-    nof_events = {}
+    nof_events = collections.OrderedDict()
     histogram_names = meta_dict[key]['histogram_names']
     for histogram_name, nBins in histogram_names.items():
       if nBins < 0:
@@ -354,6 +376,29 @@ def process_paths(meta_dict, key):
 
   else:
     raise ValueError("Not enough paths to locate for %s" % key)
+
+def get_lhe_set(tree):
+  lhe_branch = tree.GetBranch(BRANCH_LHEPDFWEIGHT)
+  if lhe_branch:
+    lhe_doc = lhe_branch.GetTitle()
+    lhe_match = LHE_DOC_REGEX.match(lhe_doc)
+    if lhe_match:
+      lhe_start = int(lhe_match.group('lha_start'))
+      lhe_end = int(lhe_match.group('lha_end'))
+      lhe_doc = 'LHA IDs {} - {}'.format(lhe_start, lhe_end)
+      lhe_count = lhe_end - lhe_start + 1
+      lhe_val = {}
+      if lhe_start in LHE_DOC:
+        lhe_val = LHE_DOC[lhe_start]
+      elif (lhe_start - 1) in LHE_DOC:
+        lhe_val = LHE_DOC[lhe_start - 1]
+      if lhe_val:
+        lhe_doc += ' -> {name} PDF set, expecting {count} weights'.format(**lhe_val)
+      else:
+        lhe_doc += ' -> unrecognizable PDF set'
+      lhe_doc += ' (counted {} weights)'.format(lhe_count)
+    return lhe_doc
+  return ''
 
 def has_LHE(indices):
   branch_names = set()
@@ -430,20 +475,35 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
 
   digit_regex = re.compile(r"tree_(?P<i>\d+)\.root")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
-  histogram_names = { HISTOGRAM_COUNT : -1 }
+  histogram_names = collections.OrderedDict([ ( HISTOGRAM_COUNT, -1 ) ])
   if not is_data:
-    histogram_names.update({
-      HISTOGRAM_COUNTWEIGHTED                   : -1,
-      HISTOGRAM_COUNTWEIGHTED_NOPU              : -1,
-      HISTOGRAM_COUNTFULLWEIGHTED               : -1,
-      HISTOGRAM_COUNTFULLWEIGHTED_NOPU          : -1,
-      HISTOGRAM_COUNTWEIGHTED_LHESCALE          : -1,
-      HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU     : -1,
-      HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE      : -1,
-      HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU : -1,
-    })
+    histogram_names.update([
+      (HISTOGRAM_COUNTWEIGHTED,                   -1),
+      (HISTOGRAM_COUNTWEIGHTED_NOPU,              -1),
+      (HISTOGRAM_COUNTFULLWEIGHTED,               -1),
+      (HISTOGRAM_COUNTFULLWEIGHTED_NOPU,          -1),
+      (HISTOGRAM_COUNTWEIGHTED_LHESCALE,          -1),
+      (HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU,     -1),
+      (HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE,      -1),
+      (HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU, -1),
+    ])
+    if era in [ 2016, 2017 ]:
+      histogram_names.update([
+        (HISTOGRAM_COUNTWEIGHTED_L1PREFIRE_NOM,                   -1),
+        (HISTOGRAM_COUNTWEIGHTED_L1PREFIRE,                       -1),
+        (HISTOGRAM_COUNTWEIGHTED_NOPU_L1PREFIRE_NOM,              -1),
+        (HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE_NOM,               -1),
+        (HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE,                   -1),
+        (HISTOGRAM_COUNTFULLWEIGHTED_NOPU_L1PREFIRE_NOM,          -1),
+        (HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM,          -1),
+        (HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,     -1),
+        (HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM,      -1),
+        (HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM, -1),
+      ])
 
   indices = {}
+  lhe_set = ''
+  lhe_set_tried = False
   for entry in entries_valid:
     index_entry = {
       HISTOGRAM_COUNT_KEY : {},
@@ -557,6 +617,10 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
         )
       )
 
+      if not is_data and not lhe_set_tried:
+        lhe_set = get_lhe_set(tree)
+        lhe_set_tried = True
+
       root_file.Close()
       del tree
       del root_file
@@ -595,6 +659,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
     meta_dict[key]['has_LHE']                         = False if is_data else has_LHE(indices)
     meta_dict[key]['missing_from_superset']           = missing_from_superset
     meta_dict[key]['histogram_names']                 = histogram_names
+    meta_dict[key]['LHE_set']                         = lhe_set
   meta_dict[key]['paths'].append(
     PathEntry(path_obj.name, indices, histogram_names)
   )
@@ -1016,6 +1081,7 @@ if __name__ == '__main__':
           genWeight                       = meta_dict[key]['genWeight'],
           triggers                        = meta_dict[key]['triggers'],
           has_LHE                         = meta_dict[key]['has_LHE'],
+          LHE_set                         = meta_dict[key]['LHE_set'],
           missing_from_superset           = missing_branches_template_filled,
           missing_hlt_paths               = missing_hlt_paths_filled,
           hlt_paths                       = hlt_paths_filled,

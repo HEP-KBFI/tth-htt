@@ -73,7 +73,7 @@ RecoMEtReader::setBranchNames()
       branchName_pt_[met_option]  = getBranchName_MEt(branchName_obj_, era_, met_option, true);
       branchName_phi_[met_option] = getBranchName_MEt(branchName_obj_, era_, met_option, false);
     }
-    branchName_sumEt_ = Form("%s_%s", branchName_sumEt_.data(), "sumEt");
+    branchName_sumEt_ = Form("%s_%s", branchName_obj_.data(), "sumEt");
     branchName_covXX_ = Form("%s_%s", branchName_cov_.data(), "covXX");
     branchName_covXY_ = Form("%s_%s", branchName_cov_.data(), "covXY");
     branchName_covYY_ = Form("%s_%s", branchName_cov_.data(), "covYY");
@@ -103,7 +103,7 @@ RecoMEtReader::setBranchAddresses(TTree * tree)
         bai.setBranchAddress(met_.systematics_[met_option].phi_, branchName_phi_[met_option]);
       }
     }
-    //bai.setBranchAddress(met_.sumEt_, branchName_sumEt_); CV: temporarily commented-out, as "sumEt" branch is not present in current Ntuples (requires to rerun prodNtuple step)
+    bai.setBranchAddress(met_.sumEt_, branchName_sumEt_);
     bai.setBranchAddress(met_.covXX_, branchName_covXX_);
     bai.setBranchAddress(met_.covXY_, branchName_covXY_);
     bai.setBranchAddress(met_.covYY_, branchName_covYY_);

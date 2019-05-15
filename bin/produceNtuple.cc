@@ -183,7 +183,7 @@ main(int argc,
   std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
 
 //--- declare event-level variables
-  EventInfo eventInfo(false, false, false);
+  EventInfo eventInfo;
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 
@@ -211,8 +211,8 @@ main(int argc,
   switch(era)
   {
     case kEra_2016:
-    case kEra_2018:
-    case kEra_2017: minPt_ele = 23.; minPt_mu = 18.; break;
+    case kEra_2017:
+    case kEra_2018: minPt_ele = 23.; minPt_mu = 18.; break;
     default:        throw cmsException("produceNtuple", __LINE__) << "Unsupported era = " << era;
   }
 
@@ -339,7 +339,7 @@ main(int argc,
   }
   TTree * const outputTree = new TTree(outputTreeName.data(), outputTreeName.data());
 
-  EventInfoWriter eventInfoWriter(false, false, false);
+  EventInfoWriter eventInfoWriter;
   eventInfoWriter.setBranches(outputTree);
 
   hltPathWriter hltPathWriter_instance(branchNames_triggers);
@@ -426,6 +426,10 @@ main(int argc,
     .setHadTauSelection    (hadTauSelection, kTight)
     .setHadTauWorkingPoints(hadTauSelection_tauIDwp)
   ;
+  MEMPermutationWriter memPermutationWriter_tauLess;
+  memPermutationWriter_tauLess
+    .setLepSelection       (leptonSelection, kTight)
+  ;
   MEMPermutationWriter memPermutationWriter_hh;
   memPermutationWriter_hh
     .setLepSelection       (leptonSelection, kTight)
@@ -435,14 +439,17 @@ main(int argc,
   // the arguments are: the name of the channel, minimum number of leptons, minimum number of hadronic taus
   memPermutationWriter
     .addCondition("2lss_1tau", 2, 1)
-    .addCondition("3l",        3, 0)
     .addCondition("3l_1tau",   3, 1)
+  ;
+  memPermutationWriter_tauLess
+    .addCondition("3l",        3, 0)
   ;
   memPermutationWriter_hh
     .addCondition("hh_bb2l",   2, 0)
     .addCondition("hh_bb1l",   1, 0)
   ;
   memPermutationWriter.setBranchNames(outputTree, era, true);
+  memPermutationWriter_tauLess.setBranchNames(outputTree, era, true);
   memPermutationWriter_hh.setBranchNames(outputTree, era, true);
 
   std::vector<std::string> outputCommands_string = {
@@ -832,6 +839,9 @@ main(int argc,
     }
 
     memPermutationWriter.write(
+      {{preselLeptons, fakeableLeptons, tightLeptons}}, {{selBJets_loose, selBJets_medium}}, cleanedHadTaus
+    );
+    memPermutationWriter_tauLess.write(
       {{preselLeptons, fakeableLeptons, tightLeptons}}, {{selBJets_loose, selBJets_medium}}, cleanedHadTaus
     );
     memPermutationWriter_hh.write(

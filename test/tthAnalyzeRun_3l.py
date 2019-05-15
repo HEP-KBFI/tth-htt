@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_3l import analyzeConfig_3l
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 
 import os
 import sys
@@ -12,7 +12,9 @@ import getpass
 
 # E.g.: ./tthAnalyzeRun_3l.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'sync_wMEM' ]
+mode_choices     = [
+  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
+]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -65,64 +67,22 @@ gen_matching_by_index = (gen_matching == 'by_index')
 chargeSumSelections = [ "OS", "SS" ]
 
 if mode == "default":
-  if era == "2016":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
-  elif era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  elif era == "2018":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
-elif mode == "forBDTtraining":
-  if era == "2016":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_BDT import samples_2016 as samples
-  elif era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
-  elif era == "2018":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_BDT import samples_2018 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
-
+  samples = load_samples(era)
+elif mode == "addMEM":
+  samples = load_samples(era, suffix = "addMEM_3l")
+  MEMbranch = 'memObjects_3l_lepFakeable'
+elif mode == "forBDTtraining_beforeAddMEM":
+  samples = load_samples(era, suffix = "BDT")
   chargeSumSelections = [ "OS" ]
+elif mode == "forBDTtraining_afterAddMEM":
+  samples = load_samples(era, suffix = "BDT_addMEM_3l")
+  MEMbranch = 'memObjects_3l_lepFakeable'
 elif mode == "sync_wMEM":
-  if era == "2016":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_sync import samples_2016 as samples
-  elif era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
-  elif era == "2018":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_sync import samples_2018 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, suffix = "addMEM_sync")
 elif mode == "sync":
-  if use_nonnominal:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
-  else:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync_nom import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync_nom import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
 else:
   raise ValueError("Invalid mode: %s" % mode)
-
-if era == "2016":
-  hadTauVeto_selection = "dR03mvaMedium"
-elif era == "2017":
-  hadTauVeto_selection = "dR03mvaLoose"
-elif era == "2018":
-  pass
-else:
-  raise ValueError("Invalid era: %s" % era)
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
@@ -145,7 +105,7 @@ if __name__ == '__main__':
     cfgFile_analyze                       = "analyze_3l_cfg.py",
     samples                               = samples,
     MEMbranch                             = None, # CV: MEM not implemented for 3l channel yet
-    hadTauVeto_selection                  = hadTauVeto_selection, # veto events containing taus that pass tau ID WP applied in 3l+1tau channel,
+    hadTauVeto_selection                  = "dR03mvaLoose", # veto events containing taus that pass tau ID WP applied in 3l+1tau channel,
     applyFakeRateWeights                  = "3lepton",
     chargeSumSelections                   = chargeSumSelections,
     jet_cleaning_by_index                 = jet_cleaning_by_index,

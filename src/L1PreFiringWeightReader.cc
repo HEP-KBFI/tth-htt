@@ -51,9 +51,9 @@ L1PreFiringWeightReader::setBranchAddresses(TTree * tree)
     {
       switch(option_)
       {
-        case L1PreFiringWeightSys::nominal: return branchName_l1PreFiringWeight_;
-        case L1PreFiringWeightSys::up:      return Form("%sUp", branchName_l1PreFiringWeight_.data());
-        case L1PreFiringWeightSys::down:    return Form("%sDn", branchName_l1PreFiringWeight_.data());
+        case L1PreFiringWeightSys::nominal: return Form("%s_Nom", branchName_l1PreFiringWeight_.data());
+        case L1PreFiringWeightSys::up:      return Form("%s_Up",  branchName_l1PreFiringWeight_.data());
+        case L1PreFiringWeightSys::down:    return Form("%s_Dn",  branchName_l1PreFiringWeight_.data());
       }
       assert(0);
     }();

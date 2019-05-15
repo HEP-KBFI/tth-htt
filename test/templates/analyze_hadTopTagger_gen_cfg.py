@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 import os
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
@@ -167,15 +167,15 @@ zombie_files = [ ]
 import os
 def getInputFiles(inputFilePath):
     inputFiles = []
-    files_and_subdirectories = hdfs.listdir(inputFilePath)
+    files_and_subdirectories = list(map(lambda path: os.path.join(inputFilePath, path), os.listdir(inputFilePath)))
     for file_or_subdirectory in files_and_subdirectories:
         if file_or_subdirectory in zombie_files:
             continue
         file_or_subdirectory = os.path.join(inputFilePath, file_or_subdirectory)
-        if hdfs.isfile(file_or_subdirectory):
+        if os.path.isfile(file_or_subdirectory):
             if file_or_subdirectory.endswith(".root"):
                 inputFiles.append(file_or_subdirectory)
-        if hdfs.isdir(file_or_subdirectory):
+        if os.path.isdir(file_or_subdirectory):
             inputFiles.extend(getInputFiles(file_or_subdirectory))
     return inputFiles
 inputFiles = getInputFiles(inputFilePath)

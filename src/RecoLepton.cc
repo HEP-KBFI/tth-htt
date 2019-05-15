@@ -10,8 +10,8 @@ RecoLepton::RecoLepton(const ChargedParticle & lepton,
                        Double_t dz,
                        Double_t relIso,
                        Double_t pfRelIso04All,
-                       Double_t miniIsoCharged,
-                       Double_t miniIsoNeutral,
+                       Double_t miniRelIsoCharged,
+                       Double_t miniRelIsoNeutral,
                        Double_t sip3d,
                        Double_t mvaRawTTH,
                        Double_t jetPtRatio,
@@ -26,8 +26,8 @@ RecoLepton::RecoLepton(const ChargedParticle & lepton,
   , dz_(dz)
   , relIso_(relIso)
   , pfRelIso04All_(pfRelIso04All)
-  , miniIsoCharged_(miniIsoCharged)
-  , miniIsoNeutral_(miniIsoNeutral)
+  , miniRelIsoCharged_(miniRelIsoCharged)
+  , miniRelIsoNeutral_(miniRelIsoNeutral)
   , sip3d_(sip3d)
   , mvaRawTTH_(mvaRawTTH)
   , jetPtRatio_(jetPtRatio)
@@ -177,15 +177,15 @@ RecoLepton::pfRelIso04All() const
 }
 
 Double_t
-RecoLepton::miniIsoCharged() const
+RecoLepton::miniRelIsoCharged() const
 {
-  return miniIsoCharged_;
+  return miniRelIsoCharged_;
 }
 
 Double_t
-RecoLepton::miniIsoNeutral() const
+RecoLepton::miniRelIsoNeutral() const
 {
-  return miniIsoNeutral_;
+  return miniRelIsoNeutral_;
 }
 
 Double_t

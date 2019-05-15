@@ -25,6 +25,7 @@
 # Option -o and flag -v in Example #1 are applicable here as well.
 
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
 from DataFormats.FWLite import Events, Handle
 
@@ -128,11 +129,10 @@ if output_filenames:
 
 for output_filename in output_filenames:
   output_dir = os.path.dirname(output_filename)
-  if not hdfs.isdir(output_dir):
+  if not os.path.isdir(output_dir):
     logging.debug('Directory %s does not exist' % output_dir)
     if args.force:
-      if hdfs.mkdirs(output_dir) != 0:
-        raise ValueError('Unable to create directory %s' % output_dir)
+      create_if_not_exists(output_dir)
     else:
       raise ValueError('Use -f/--force to create the output directory %s' % output_dir)
 

@@ -4,7 +4,8 @@ from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import re
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+import os.path
+
 def get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight):
   lepton_selection_and_frWeight = lepton_selection
   if lepton_selection.startswith("Fakeable"):
@@ -98,7 +99,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
     self.hadTauVeto_selection_part2 = hadTauVeto_selection
     self.applyFakeRateWeights = applyFakeRateWeights
     run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
-    if self.era != '2017':
+    if self.era not in [ '2016', '2017', '2018' ]:
       logging.warning('mcClosure for lepton FR not possible for era %s' % self.era)
       run_mcClosure = False
     if run_mcClosure:
@@ -292,6 +293,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
                 continue
               if central_or_shift in systematics.DYMCReweighting and not is_dymc_reweighting(sample_name):
                 continue
+              if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):
+                continue
 
               # build config files for executing analysis code
               key_analyze_dir = getKey(process_name, lepton_selection_and_frWeight, central_or_shift)
@@ -325,7 +328,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
               syncRLE = ''
               if self.do_sync and self.rle_select:
                 syncRLE = self.rle_select % syncTree
-                if not hdfs.isfile(syncRLE):
+                if not os.path.isfile(syncRLE):
                   logging.warning("Input RLE file for the sync is missing: %s; skipping the job" % syncRLE)
                   continue
               if syncOutput:
@@ -547,8 +550,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
       self.addToMakefile_syncNtuple(lines_makefile)
       outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
       self.outputFile_sync['sync'] = outputFile_sync_path
-      self.targets.append(outputFile_sync_path)
       self.addToMakefile_hadd_sync(lines_makefile)
+      self.targets.extend(self.phoniesToAdd)
       self.createMakefile(lines_makefile)
       logging.info("Done.")
       return self.num_jobs

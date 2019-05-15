@@ -3,7 +3,7 @@
 from tthAnalysis.HiggsToTauTau.configs.prodNtupleConfig import prodNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 
 import os
 import sys
@@ -73,138 +73,46 @@ version = "%s_w%sPresel_%s_%s" % (
 gen_matching_by_index = (gen_matching == 'by_index')
 
 if mode == 'sync':
-  if preselection:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
-  else:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_nanoAOD_sync import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD_sync import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
-  pileup       = os.path.join(
+  samples = load_samples(era, preselection, suffix = 'sync')
+  pileup = os.path.join(
     os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s_sync.root' % era
   )
 elif mode == 'leptonFR_sync':
   if preselection:
     raise ValueError("Does not make sense to apply preselection to Ntuples used in lepton FR sync")
-  else:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_nanoAOD_leptonFR_sync import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_leptonFR_sync import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD_leptonFR_sync import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
+
+  samples = load_samples(era, False, suffix = 'leptonFR_sync')
 elif mode == 'hh_bbww_sync':
   if preselection:
     raise ValueError("Preselection not possible in mode: %s" % mode)
-  else:
-    if era == "2017":
-      from hhAnalysis.bbww.samples.hhAnalyzeSamples_2017_nanoAOD_sync import samples_2017 as samples
-      pileup = os.path.join(
-        os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_2017.root'
-      )
-    else:
-      raise ValueError("Invalid era: %s" % era)
+
+  samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync')
+  pileup = os.path.join(
+    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}.root'.format(era)
+  )
 elif mode == 'hh':
-  if preselection:
-    if era == "2016":
-      from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2016 import samples_2016 as samples
-      pileup = os.path.join(
-        os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_2016.root'
-      )
-    elif era == "2017":
-      from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017 import samples_2017 as samples
-      pileup = os.path.join(
-        os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_2017.root'
-      )
-    elif era == "2018":
-      from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2018 import samples_2018 as samples
-      pileup = os.path.join(
-        os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_2018.root'
-      )
-    else:
-      raise ValueError("Invalid era: %s" % era)
-  else:
-    if era == "2016":
-      from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2016_nanoAOD_hh import samples_2016 as samples
-      pileup = os.path.join(
-        os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_2016.root'
-      )
-    elif era == "2017":
-      from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_nanoAOD_hh_merged import samples_2017 as samples
-      pileup = os.path.join(
-        os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_2017.root'
-      )
-    elif era == "2018":
-      from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2018_nanoAOD_hh import samples_2018 as samples
-      pileup = os.path.join(
-        os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_2018.root'
-      )
-    else:
-      raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, preselection, base = 'hh_multilepton', suffix = '' if preselection else 'hh_merged')
+  pileup = os.path.join(
+    os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_{}.root'.format(era)
+  )
 elif mode == 'hh_bbww':
   if preselection:
     raise ValueError("Preselection not possible for %s mode" % mode)
-  else:
-    if era == "2016":
-      from hhAnalysis.bbww.samples.hhAnalyzeSamples_2016_nanoAOD_hh import samples_2016 as samples
-      pileup = os.path.join(
-        os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_2016.root'
-      )
-    elif era == "2017":
-      from hhAnalysis.bbww.samples.hhAnalyzeSamples_2017_nanoAOD_hh import samples_2017 as samples
-      pileup = os.path.join(
-        os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_2017.root'
-      )
-    elif era == "2018":
-      from hhAnalysis.bbww.samples.hhAnalyzeSamples_2018_nanoAOD_hh import samples_2018 as samples
-      pileup = os.path.join(
-        os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_2018.root'
-      )
-    else:
-      raise ValueError("Invalid era: %s" % era)
+
+  samples = load_samples(era, False, base = 'hh_bbww', suffix = 'hh')
+  pileup = os.path.join(
+    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}.root'.format(era)
+  )
 elif mode == 'hh_wjets':
   if preselection:
     raise ValueError("Preselection not possible for %s mode" % mode)
-  else:
-    if era == "2017":
-      from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_wjets_nanoAOD import samples_2017 as samples
-      pileup = os.path.join(
-        os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_wjets_2017.root'
-      )
-    else:
-      raise ValueError("Invalid era: %s" % era)
+
+  samples = load_samples(era, False, base = 'hh_multilepton', suffix = 'wjets')
+  pileup = os.path.join(
+    os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_wjets_{}.root'.format(era)
+  )
 else:
-  if preselection:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
-  else:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_nanoAOD import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, preselection)
 
 if era == "2016":
   golden_json = golden_json_2016

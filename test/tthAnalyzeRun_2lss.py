@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_2lss import analyzeConfig_2
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 
 import os
 import sys
@@ -65,64 +65,16 @@ gen_matching_by_index = (gen_matching == 'by_index')
 lepton_charge_selections = [ "OS", "SS" ]
 
 if mode == "default":
-  if era == "2016":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
-  elif era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  elif era == "2018":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era)
 elif mode == "forBDTtraining":
-  if era == "2016":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_BDT import samples_2016 as samples
-  elif era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_BDT import samples_2017 as samples
-  elif era == "2018":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_BDT import samples_2018 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
-
+  samples = load_samples(era, suffix = "BDT")
   lepton_charge_selections = [ "SS" ]
 elif mode == "sync_wMEM":
-  if era == "2016":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_sync import samples_2016 as samples
-  elif era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
-  elif era == "2018":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_sync import samples_2018 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, suffix = "addMEM_sync")
 elif mode == "sync":
-  if use_nonnominal:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
-  else:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync_nom import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync_nom import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
 else:
   raise ValueError("Invalid mode: %s" % mode)
-
-if era == "2016":
-  hadTauVeto_selection = "dR03mvaMedium"
-elif era == "2017":
-  hadTauVeto_selection = "dR03mvaLoose"
-elif era == "2018":
-  raise ValueError("Implement me!")
-else:
-  raise ValueError("Invalid era: %s" % era)
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
@@ -149,7 +101,7 @@ if __name__ == '__main__':
     samples                   = samples,
     MEMbranch                 = None, # CV: MEM not implemented for 2lss channel yet
     lepton_charge_selections  = lepton_charge_selections,
-    hadTauVeto_selection      = hadTauVeto_selection, # veto events containing taus that pass tau ID WP applied in 2lss+1tau channel,
+    hadTauVeto_selection      = "dR03mvaLoose", # veto events containing taus that pass tau ID WP applied in 2lss+1tau channel,
     applyFakeRateWeights      = "2lepton",
     jet_cleaning_by_index     = jet_cleaning_by_index,
     gen_matching_by_index     = gen_matching_by_index,
@@ -165,11 +117,12 @@ if __name__ == '__main__':
     executable_addFakes       = "addBackgroundLeptonFakes",
     executable_addFlips       = "addBackgroundLeptonFlips",
     histograms_to_fit         = {
-      "EventCounter"         : {},
-      "numJets"              : {},
-      "mvaOutput_2lss_ttV"   : {},
-      "mvaOutput_2lss_ttbar" : {},
-      "mvaDiscr_2lss"        : {},
+      "EventCounter"                          : {},
+      "numJets"                               : {},
+      "mvaOutput_2lss_ttV"                    : {},
+      "mvaOutput_2lss_ttbar"                  : {},
+      "mvaDiscr_2lss"                         : {},
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4" : {},
     },
     select_rle_output         = True,
     dry_run                   = dry_run,

@@ -4,12 +4,13 @@
 <use   name="DataFormats/Math"/>
 <use   name="ttH_Htautau_MEM_Analysis/MEMAlgo"/>
 <use   name="tthAnalysis/tthMEM"/>
-<use   name="tthAnalysis/MEMmultilepton"/> 
+<use   name="tthAnalysis/MEMmultilepton"/>
 <use   name="TauAnalysisTools/TauTriggerSFs"/>
+<use   name="PhysicsTools/TensorFlow"/>
 <use   name="root"/>
 <use   name="roottmva"/>
 <use   name="boost" />
-<Flags CXXFLAGS="-O3 -fPIC -Wswitch -Wswitch-enum -Wno-reorder -Wno-error=bool-compare" />
+<Flags CXXFLAGS="-O3 -fPIC -Wswitch -Wswitch-enum -Werror -Wshadow -Wno-reorder -Wno-error=bool-compare" />
 <export>
   <lib   name="1"/>
 </export>

@@ -44,6 +44,10 @@ if __name__ == '__main__':
     type = str, dest = 'prescale', metavar = 'file', required = False, default = '',
     help = 'R|File containing run ranges and integrated luminosities per acquisition era and primary dataset type',
   )
+  parser.add_argument('-o', '--output',
+    type = str, dest = 'output', metavar = 'directory', required = False, default = '',
+    help = 'R|Directory for the output of brilcalc commands',
+  )
   parser.add_argument('-v', '--verbose',
     dest = 'verbose', action = 'store_true', default = False, required = False,
     help = 'R|Verbose output',
@@ -70,4 +74,4 @@ if __name__ == '__main__':
             raise RuntimeError("Invalid HLT path: %s" % line_stripped)
           hlt_paths.append(line_stripped)
 
-  run_brilcalc(hlt_paths, args.json, args.normtag, args.units, args.brilcalc_path, args.prescale)
+  run_brilcalc(hlt_paths, args.json, args.normtag, args.units, args.brilcalc_path, args.prescale, args.output)

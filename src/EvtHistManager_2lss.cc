@@ -20,7 +20,7 @@ EvtHistManager_2lss::EvtHistManager_2lss(const edm::ParameterSet& cfg)
   central_or_shiftOptions_["mvaOutput_2lss_ttbar"] = { "central" };
   central_or_shiftOptions_["mvaDiscr_2lss"] = { "*" };
   central_or_shiftOptions_["mvaOutput_Hj_tagger"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_Hjj_tagger"] = { "central" };
+  central_or_shiftOptions_["output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4"] = { "central" };
   central_or_shiftOptions_["EventCounter"] = { "*" };
 }
 
@@ -47,7 +47,7 @@ void EvtHistManager_2lss::bookHistograms(TFileDirectory & dir)
   histogram_mvaDiscr_2lss_        = book1D(dir, "mvaDiscr_2lss",        "mvaDiscr_2lss",         7,  0.5, 7.5);
 
   histogram_mvaOutput_Hj_tagger_  = book1D(dir, "mvaOutput_Hj_tagger",  "mvaOutput_Hj_tagger",  20, -1., +1.);
-  histogram_mvaOutput_Hjj_tagger_ = book1D(dir, "mvaOutput_Hjj_tagger", "mvaOutput_Hjj_tagger", 20, -1., +1.);
+  histogram_output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ = book1D(dir, "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4", "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4", 10, 0., +1.);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
@@ -64,7 +64,7 @@ EvtHistManager_2lss::fillHistograms(int numElectrons,
                                     double mvaOutput_2lss_ttbar,
                                     double mvaDiscr_2lss,
                                     double mvaOutput_Hj_tagger,
-                                    double mvaOutput_Hjj_tagger)
+                                    double output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4)
 {
   const double evtWeightErr = 0.;
 
@@ -83,7 +83,7 @@ EvtHistManager_2lss::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mvaDiscr_2lss_,        mvaDiscr_2lss,        evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mvaOutput_Hj_tagger_,  mvaOutput_Hj_tagger,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_Hjj_tagger_, mvaOutput_Hjj_tagger, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_, output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

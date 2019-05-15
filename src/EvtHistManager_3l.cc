@@ -26,6 +26,7 @@ EvtHistManager_3l::EvtHistManager_3l(const edm::ParameterSet & cfg)
   central_or_shiftOptions_["memOutput_LR"] = { "central" };
   central_or_shiftOptions_["mem_logCPUTime"] = { "central" };
   central_or_shiftOptions_["mem_logRealTime"] = { "central" };
+  central_or_shiftOptions_["output_NN_3l_ttH_tH_3cat_v8"] = { "central" };
   central_or_shiftOptions_["EventCounter"] = { "*" };
 }
 
@@ -59,6 +60,7 @@ EvtHistManager_3l::bookHistograms(TFileDirectory & dir)
   histogram_memOutput_LR_                = book1D(dir, "memOutput_LR",                "memOutput_LR",                 40,   0.,   1.);
   histogram_mem_logCPUTime_              = book1D(dir, "mem_logCPUTime",              "mem_logCPUTime",              400, -20., +20.);
   histogram_mem_logRealTime_             = book1D(dir, "mem_logRealTime",             "mem_logRealTime",             400, -20., +20.);
+  histogram_output_NN_3l_ttH_tH_3cat_v8_ = book1D(dir, "output_NN_3l_ttH_tH_3cat_v8",             "output_NN_3l_ttH_tH_3cat_v8",             7, 0., 1.);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
@@ -73,6 +75,7 @@ EvtHistManager_3l::fillHistograms(int numElectrons,
                                   double mvaOutput_3l_ttV,
                                   double mvaOutput_3l_ttbar,
                                   double mvaDiscr_3l,
+                                  double output_NN_3l_ttH_tH_3cat_v8,
 				  const MEMOutput_3l * memOutput_3l,
                                   double evtWeight)
 {
@@ -91,6 +94,7 @@ EvtHistManager_3l::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mvaOutput_3l_ttV_,   mvaOutput_3l_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_3l_ttbar_, mvaOutput_3l_ttbar, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaDiscr_3l_,        mvaDiscr_3l,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_output_NN_3l_ttH_tH_3cat_v8_,        output_NN_3l_ttH_tH_3cat_v8,        evtWeight, evtWeightErr);
 
   if(memOutput_3l)
   {

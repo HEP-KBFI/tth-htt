@@ -16,6 +16,7 @@
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
 import argparse
 import os
@@ -366,10 +367,10 @@ for sample_entry in samples.values():
       'label'    : sample_name,
     })
 
-if not hdfs.isdir(args.output):
+if not os.path.isdir(args.output):
   if not args.force:
     raise ValueError('Use -f/--force to create output directory %s' % args.output)
-  hdfs.mkdirs(args.output)
+  create_if_not_exists(args.output)
 
 for valid_samples in valid_samples_to_sum:
   input_files = {

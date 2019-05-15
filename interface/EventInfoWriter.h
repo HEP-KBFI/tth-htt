@@ -12,7 +12,6 @@ public:
   EventInfoWriter();
   EventInfoWriter(bool is_signal,
                   bool is_mc,
-                  bool is_mc_th,
                   const std::string & prefix = "");
 
   void
@@ -30,18 +29,6 @@ public:
   std::string
   getBranchName_event() const;
 
-  std::string
-  getBranchName_genHiggsDecayMode() const;
-
-  std::string
-  getBranchName_genWeight() const;
-
-  std::string
-  getBranchName_genWeight_tH() const;
-
-  std::string
-  getBranchName_pileupWeight() const;
-
 protected:
   std::string branchName_run_;
   std::string branchName_lumi_;
@@ -49,8 +36,9 @@ protected:
 
   std::string branchName_genHiggsDecayMode_;
   std::string branchName_genWeight_;
-  std::string branchName_genWeight_tH_;
   std::string branchName_pileupWeight_;
+  std::string branchName_LHEReweightingWeight;
+  std::string branchName_nLHEReweightingWeight;
 
   EventInfo eventInfo_;
 };

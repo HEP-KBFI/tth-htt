@@ -122,6 +122,8 @@ enum { kFR_disabled, kFR_2lepton, kFR_3L, kFR_1tau };
 //const int hadTauSelection_antiMuon = 1; // Loose
 const int hadTauSelection_antiElectron = -1; // not applied
 const int hadTauSelection_antiMuon = -1; // not applied
+const int hadTauSelection_veto_antiElectron = -1; // Karl: needs to match anti-electron discriminator applied in 2l+2tau category
+const int hadTauSelection_veto_antiMuon = -1; // Karl: needs to match anti-muon discriminator applied in 2l+2tau category
 
 double comp_mvaOutput_Hj_tagger(const RecoJet* jet,
                                 const std::vector<const RecoLepton*>& leptons,
@@ -235,6 +237,7 @@ int main(int argc, char* argv[])
   const int hadTauSelection = get_selection(hadTauSelection_part1);
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
+  std::string hadTauSelection_veto = cfg_analyze.getParameter<std::string>("hadTauSelection_veto");
 
   bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
   std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(apply_hadTauGenMatching);
@@ -242,7 +245,6 @@ int main(int argc, char* argv[])
   std::cout << hadTauGenMatch_definitions;
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
-  bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
@@ -401,7 +403,7 @@ int main(int argc, char* argv[])
   }
 
 //--- declare event-level variables
-  EventInfo eventInfo(isSignal, isMC, isMC_tH);
+  EventInfo eventInfo(isSignal, isMC);
   EventInfoReader eventInfoReader(&eventInfo, puSys_option);
   inputTree -> registerReader(&eventInfoReader);
 
@@ -460,6 +462,12 @@ int main(int argc, char* argv[])
   tightHadTauFilter.set("dR03mvaMedium");
   tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
+
+  // Karl: veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
+  RecoHadTauCollectionSelectorTight vetoHadTauSelector(era, -1, isDEBUG);
+  vetoHadTauSelector.set(hadTauSelection_veto);
+  vetoHadTauSelector.set_min_antiElectron(hadTauSelection_veto_antiElectron);
+  vetoHadTauSelector.set_min_antiMuon(hadTauSelection_veto_antiMuon);
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
@@ -835,7 +843,7 @@ int main(int argc, char* argv[])
         Form("%s/presel/evt", histogramDir.data()), era_string, central_or_shift));
       preselHistManager->evt_->bookHistograms(fs);
       edm::ParameterSet cfg_EvtYieldHistManager_presel = makeHistManager_cfg(process_and_genMatch,
-        Form("%s/presel/evtYield", histogramDir.data()), central_or_shift, "allHistograms");
+        Form("%s/presel/evtYield", histogramDir.data()), era_string, central_or_shift, "allHistograms");
       cfg_EvtYieldHistManager_presel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
       cfg_EvtYieldHistManager_presel.addParameter<bool>("isMC", isMC);
       preselHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_presel);
@@ -1006,6 +1014,7 @@ selHistManagerType* selHistManager = new selHistManagerType();
     ">= 3 jets",
     ">= 2 loose b-jets || 1 medium b-jet (2)",
     ">= 1 sel tau (2)",
+    "<= 1 veto taus",
     "m(ll) > 12 GeV",
     "lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV",
     "tight lepton charge",
@@ -1092,12 +1101,12 @@ selHistManagerType* selHistManager = new selHistManagerType();
     if(isMC)
     {
       if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(isMC_tH)                 evtWeight_inclusive *= eventInfo.genWeight_tH;
       if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
       if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
+      evtWeight_inclusive *= eventInfo.genWeight_tH();
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
@@ -1271,6 +1280,9 @@ selHistManagerType* selHistManager = new selHistManagerType();
       printCollection("selHadTaus", selHadTaus);
     }
 
+    // Karl: veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
+    std::vector<const RecoHadTau*> vetoHadTaus = vetoHadTauSelector(cleanedHadTaus, isHigherPt);
+
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
@@ -1281,7 +1293,7 @@ selHistManagerType* selHistManager = new selHistManagerType();
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
-    const std::vector<const RecoJet *> selJetsForward = jetSelectorForward(jet_ptrs, isHigherPt);
+    const std::vector<const RecoJet *> selJetsForward = jetSelectorForward(cleanedJets, isHigherPt);
     if(isDEBUG || run_lumi_eventSelector)
     {
       printCollection("uncleanedJets", jet_ptrs);
@@ -1442,6 +1454,7 @@ selHistManagerType* selHistManager = new selHistManagerType();
     }
     cutFlowTable.update(">= 1 sel tau (1)");
     cutFlowHistManager->fillHistograms(">= 1 sel tau (1)", lumiScale);
+
     const RecoHadTau* selHadTau = selHadTaus[0];
     const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau);
     int idxSelHadTau_genMatch = selHadTau_genMatch.idx_;
@@ -1710,6 +1723,18 @@ selHistManagerType* selHistManager = new selHistManagerType();
     }
     cutFlowTable.update(">= 1 sel tau (2)", evtWeight);
     cutFlowHistManager->fillHistograms(">= 1 sel tau (2)", evtWeight);
+
+    // veto events containing more than one tau passing the Medium WP, to avoid overlap with the 2l+2tau category
+    // we want to keep all cuts consistent in SR and fake CR, to obtain a consistent estimate of the fake background
+    if ( !(vetoHadTaus.size() <= 1) ) {
+      if ( run_lumi_eventSelector ) {
+        std::cout << "event " << eventInfo.str() << " FAILS vetoHadTaus selection." << std::endl;
+        printCollection("vetoHadTaus", vetoHadTaus);
+      }
+      continue;
+    }
+    cutFlowTable.update("<= 1 veto taus", evtWeight);
+    cutFlowHistManager->fillHistograms("<= 1 veto taus", evtWeight);
 
     bool failsLowMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();

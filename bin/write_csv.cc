@@ -174,7 +174,7 @@ int main(int argc, char* argv[])
   for ( vstring::const_iterator columnName = columnNames.begin();
         columnName != columnNames.end(); ++columnName ) {
     std::string inputBranchName_and_Type = cfg_branches_to_write.getParameter<std::string>(*columnName);
-    addBranch(branches, *columnName, inputBranchName_and_Type, idxColumn);
+    addBranch(branches, *columnName, inputBranchName_and_Type, "", idxColumn);
     ++idxColumn;
   }
       

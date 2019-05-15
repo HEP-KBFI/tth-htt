@@ -3,7 +3,7 @@
 from tthAnalysis.HiggsToTauTau.configs.puHistogramConfig import puHistogramConfig, validate_pu
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 
 import os
 import sys
@@ -53,41 +53,13 @@ if '{era}' in output_file:
   output_file = output_file.format(era = era)
 
 if mode == 'sync':
-  if era == "2016":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_nanoAOD_sync import samples_2016 as samples
-  elif era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017 as samples
-  elif era == "2018":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD_sync import samples_2018 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, False, suffix = 'sync')
 elif mode == 'all':
-  if era == "2016":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_nanoAOD import samples_2016 as samples
-  elif era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
-  elif era == "2018":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_nanoAOD import samples_2018 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, False)
 elif mode == 'hh':
-  if era == "2016":
-    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2016_nanoAOD_hh import samples_2016 as samples
-  elif era == "2017":
-    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_nanoAOD_hh_merged import samples_2017 as samples
-  elif era == "2018":
-    from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2018_nanoAOD_hh import samples_2018 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, False, base = 'hh_multilepton', suffix = 'hh_merged')
 elif mode == 'hh_bbww':
-  if era == "2016":
-    from hhAnalysis.bbww.samples.hhAnalyzeSamples_2016_nanoAOD_hh import samples_2016 as samples
-  elif era == "2017":
-    from hhAnalysis.bbww.samples.hhAnalyzeSamples_2017_nanoAOD_hh import samples_2017 as samples
-  elif era == "2018":
-    from hhAnalysis.bbww.samples.hhAnalyzeSamples_2018_nanoAOD_hh import samples_2018 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, False, base = 'hh_multilepton', suffix = 'hh')
 else:
   raise ValueError('Invalid mode: %s' % mode)
 

@@ -96,7 +96,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
-
+#include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterface.h"
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <iostream> // std::cerr, std::fixed
@@ -208,7 +208,6 @@ int main(int argc, char* argv[])
   delete hadTauSelection_parts;
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
-  bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
@@ -354,7 +353,7 @@ int main(int argc, char* argv[])
   }
 
 //--- declare event-level variables
-  EventInfo eventInfo(isSignal, isMC, isMC_tH);
+  EventInfo eventInfo(isSignal, isMC);
   EventInfoReader eventInfoReader(&eventInfo, puSys_option);
   inputTree -> registerReader(&eventInfoReader);
 
@@ -543,6 +542,26 @@ int main(int argc, char* argv[])
   mvaInputVariables_Hjj_tagger.push_back("bdtJetPair_minjOvermaxjdr");
   TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagger);
 
+  // enter the pb
+  std::string mvaFileName_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_sync/test_model_2lss_ttH_tH_4cat_onlyTHQ_notEnrich_v4.pb";
+  std::vector<std::string> mvaInputVariables_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4 = {
+    "avg_dr_jet", "ptmiss", "mbb_medium",
+    "jet1_pt", "jet2_pt", "jet3_pt", "jet4_pt", "max_lep_eta",
+    "lep1_mT", "lep1_conept", "lep1_min_dr_jet",
+    "lep2_mT", "lep2_conept", "lep2_min_dr_jet",
+    "nJetForward", "jetForward1_pt", "jetForward1_eta_abs",
+    "res-HTT_CSVsort4rd", "HadTop_pt_CSVsort4rd",
+    "nJet", "nBJetLoose", "nBJetMedium", "nElectron", "sum_lep_charge", "mvaOutput_Hj_tagger"
+  };
+  // the order also matters
+  std::vector<std::string> classes_TensorFlow_2lss_ttH_tH_4cat = {"predictions_ttH", "predictions_ttW", "predictions_rest", "predictions_tH"};
+  std::map<std::string, double> mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF;
+  TensorFlowInterface mva_2lss_ttH_tH_4cat_onlyTHQ_v4(
+    mvaFileName_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4,
+    mvaInputVariables_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4,
+    classes_TensorFlow_2lss_ttH_tH_4cat
+  );
+
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
@@ -565,8 +584,11 @@ int main(int argc, char* argv[])
     MVAInputVarHistManager* mvaInputVariables_2lss_;
     EvtHistManager_2lss* evt_;
     std::map<std::string, EvtHistManager_2lss*> evt_in_categories_;
+    std::map<std::string, EvtHistManager_2lss*> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_;
     std::map<std::string, EvtHistManager_2lss*> evt_in_decayModes_;
+
     std::map<std::string, std::map<std::string, EvtHistManager_2lss*>> evt_in_categories_and_decayModes_; // key = category, decayMode
+    std::map<std::string, std::map<std::string, EvtHistManager_2lss*>> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_;
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
@@ -586,7 +608,7 @@ int main(int argc, char* argv[])
       Form("%s/sel/electrons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
     selHistManager->electrons_->bookHistograms(fs);
     selHistManager->muons_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/muons", histogramDir.data()), central_or_shift, "allHistograms"));
+      Form("%s/sel/muons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
     selHistManager->muons_->bookHistograms(fs);
     selHistManager->hadTaus_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/hadTaus", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
@@ -622,13 +644,35 @@ int main(int argc, char* argv[])
       Form("%s/sel/mvaInputs_2lss", histogramDir.data()), era_string, central_or_shift));
     selHistManager->mvaInputVariables_2lss_->bookHistograms(fs, mvaInputVariables_2lss);
     selHistManager->evt_ = new EvtHistManager_2lss(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/evt", histogramDir.data()), era_string, era_string, central_or_shift));
+      Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
     selHistManager->evt_->bookHistograms(fs);
     vstring categories_evt = {
       "ee_neg", "ee_pos",
       "em_bl_neg", "em_bl_pos", "em_bt_neg", "em_bt_pos",
       "mm_bl_neg", "mm_bl_pos", "mm_bt_neg", "mm_bt_pos"
     };
+    vstring categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4 = {
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_ee_bl",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_ee_bt",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_em_bl",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_em_bt",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_mm_bl",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_mm_bt",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_ee_bl",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_ee_bt",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_em_bl",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_em_bt",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_mm_bl",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_mm_bt",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_rest_bl",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_rest_bt",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_ee_bl",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_ee_bt",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_em_bl",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_em_bt",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bl",
+      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bt"
+     };
     for ( vstring::const_iterator category = categories_evt.begin();
 	    category != categories_evt.end(); ++category ) {
       TString histogramDir_category = histogramDir.data();
@@ -637,6 +681,16 @@ int main(int argc, char* argv[])
         Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
       selHistManager->evt_in_categories_[*category]->bookHistograms(fs);
     }
+
+    for ( vstring::const_iterator category = categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4.begin();
+	    category != categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4.end(); ++category ) {
+      TString histogramDir_category = histogramDir.data();
+      histogramDir_category.ReplaceAll("2lss",  category->data());
+      selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_[*category] = new EvtHistManager_2lss(makeHistManager_cfg(process_and_genMatch,
+        Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
+      selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_[*category]->bookHistograms(fs);
+    }
+
     const vstring decayModes_evt = eventInfo.getDecayModes();
     if ( isSignal ) {
       for ( const std::string & decayMode_evt: decayModes_evt ) {
@@ -655,14 +709,27 @@ int main(int argc, char* argv[])
 	      category != categories_evt.end(); ++category ) {
 	  TString histogramDir_category = histogramDir.data();
 	  histogramDir_category.ReplaceAll("2lss", Form("2lss_%s", category->data()));
-          selHistManager -> evt_in_categories_and_decayModes_[*category][decayMode_evt] = new EvtHistManager_2lss(makeHistManager_cfg(
+          selHistManager -> evt_in_categories_and_decayModes_[*category][decayMode_and_genMatch] = new EvtHistManager_2lss(makeHistManager_cfg(
             decayMode_and_genMatch,
 	    Form("%s/sel/evt", histogramDir_category.Data()),
 	    era_string,
 	    central_or_shift
           ));
-	  selHistManager -> evt_in_categories_and_decayModes_[*category][decayMode_evt] -> bookHistograms(fs);
+          selHistManager -> evt_in_categories_and_decayModes_[*category][decayMode_and_genMatch] -> bookHistograms(fs);
 	}
+  for ( vstring::const_iterator category = categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4.begin();
+  category != categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4.end(); ++category ) {
+    TString histogramDir_category = histogramDir.data();
+    histogramDir_category.ReplaceAll("2lss",  category->data());
+    selHistManager -> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[*category][decayMode_evt] = new EvtHistManager_2lss(makeHistManager_cfg(
+      decayMode_and_genMatch,
+      Form("%s/sel/evt", histogramDir_category.Data()),
+      era_string,
+      central_or_shift
+    ));
+    selHistManager -> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[*category][decayMode_evt] -> bookHistograms(fs);
+  }
+
       }
     }
     edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
@@ -743,15 +810,13 @@ int main(int argc, char* argv[])
     "run:ls:event selection",
     "trigger",
     ">= 2 presel leptons",
-    "presel lepton trigger match",
+    //"presel lepton trigger match",
     ">= 2 jets",
-    ">= 2 loose b-jets || 1 medium b-jet (1)",
     ">= 2 sel leptons",
     "<= 2 tight leptons",
     "fakeable lepton trigger match",
     "HLT filter matching",
-    ">= 4 jets",
-    ">= 2 loose b-jets || 1 medium b-jet (2)",
+    "Hadronic selection",
     "sel tau veto",
     "m(ll) > 12 GeV",
     "lead lepton pT > 25 GeV && sublead lepton pT > 15 GeV",
@@ -766,6 +831,7 @@ int main(int argc, char* argv[])
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
+  bool isDEBUG_TF = false;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
@@ -842,12 +908,12 @@ int main(int argc, char* argv[])
     if(isMC)
     {
       if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(isMC_tH)                 evtWeight_inclusive *= eventInfo.genWeight_tH;
       if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
       if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
+      evtWeight_inclusive *= eventInfo.genWeight_tH();
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
@@ -1022,6 +1088,7 @@ int main(int argc, char* argv[])
       printCollection("selMuons", selMuons);
       printCollection("selElectrons", selElectrons);
       printCollection("selLeptons", selLeptons);
+      printCollection("fakeableHadTaus", fakeableHadTaus);
       printCollection("selHadTaus", selHadTaus);
     }
 
@@ -1035,10 +1102,10 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
-    const std::vector<const RecoJet *> selJetsForward = jetSelectorForward(jet_ptrs, isHigherPt);
+    const std::vector<const RecoJet *> selJetsForward = jetSelectorForward(cleanedJets, isHigherPt);
     if(isDEBUG || run_lumi_eventSelector)
     {
-    //  printCollection("uncleanedJets", jet_ptrs);
+      printCollection("uncleanedJets", jet_ptrs);
       printCollection("selJets",       selJets);
     }
 
@@ -1129,6 +1196,7 @@ int main(int argc, char* argv[])
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined2);
 
+    /*
     // require that trigger paths match event category (with event category based on preselLeptons)
     if ( !((preselElectrons.size() >= 2 &&                            (selTrigger_2e    || selTrigger_1e                  )) ||
 	   (preselElectrons.size() >= 1 && preselMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
@@ -1147,6 +1215,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("presel lepton trigger match");
     cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
+    */
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     if ( !(selJets.size() >= 2) ) {
@@ -1158,17 +1227,6 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(">= 2 jets");
     cutFlowHistManager->fillHistograms(">= 2 jets", lumiScale);
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
-      if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selBJets selection (1)." << std::endl;
-	printCollection("selJets", selJets);
-	printCollection("selBJets_loose", selBJets_loose);
-	printCollection("selBJets_medium", selBJets_medium);
-      }
-      continue;
-    }
-    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (1)");
-    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)", lumiScale);
 
 //--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();
@@ -1322,33 +1380,43 @@ int main(int argc, char* argv[])
     cutFlowTable.update("HLT filter matching", evtWeight);
     cutFlowHistManager->fillHistograms("HLT filter matching", evtWeight);
 
+    bool ttH_like = false;
+    bool ttW_like = false;
+    bool tH_like = false;
+    if ((selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && (selJets.size() >= 4)) ttH_like = true;
+    if ((selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && (selJets.size() == 3)) ttW_like = true;
+    if (
+      (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1)
+    ) tH_like = true;
+
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
-    if ( !(selJets.size() >= 4) ) {
+    bool passEvents = ttH_like || ttW_like || tH_like;
+    if(do_sync) passEvents = ttH_like || tH_like;
+    if ( !(passEvents) ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selJets selection (2)." << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS Hadronic selection." << std::endl;
 	printCollection("selJets", selJets);
       }
       continue;
     }
-    cutFlowTable.update(">= 4 jets", evtWeight);
-    cutFlowHistManager->fillHistograms(">= 4 jets", evtWeight);
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
-      if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selBJets selection (2)." << std::endl;
-	printCollection("selJets", selJets);
-	printCollection("selBJets_loose", selBJets_loose);
-	printCollection("selBJets_medium", selBJets_medium);
-      }
-      continue;
-    }
-    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
-    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
+    cutFlowTable.update("Hadronic selection", evtWeight);
+    cutFlowHistManager->fillHistograms("Hadronic selection", evtWeight);
+
+    bool is_tH_like_and_not_ttH_like = false;
+    if ( tH_like && !ttH_like ) is_tH_like_and_not_ttH_like = true;
+    if ( run_lumi_eventSelector )
+      std::cout << "event " << eventInfo.str()
+      << "\n is_tH_like_and_not_ttH_like = " << is_tH_like_and_not_ttH_like
+      << "\n selJets.size() = " << selJets.size()
+      << "\n selBJets_medium.size() = " << selBJets_medium.size()
+      << "\n selBJets_loose.size() = "<< selBJets_loose.size()
+      << "\n selJetsForward.size()" << selJetsForward.size()
+      << std::endl;
 
     if ( selHadTaus.size() > 0 ) {
-      std::cout << "event " << eventInfo.str() << " FAILS selHadTaus veto." << std::endl;
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selHadTaus veto." << std::endl;
-	printCollection("selHadTaus", selHadTaus);
+        std::cout << "event " << eventInfo.str() << " FAILS selHadTaus veto." << std::endl;
+        printCollection("selHadTaus", selHadTaus);
       }
       continue;
     }
@@ -1548,7 +1616,7 @@ int main(int argc, char* argv[])
 //--- compute variables BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar -- they will be used more than once -- Xanda
     double mindr_lep1_jet=comp_mindr_lep1_jet(*selLepton_lead, selJets);
     double mindr_lep2_jet=comp_mindr_lep2_jet(*selLepton_sublead, selJets);
-    //double max_lep_eta=TMath::Max(std::abs(selLepton_lead -> eta()), std::abs(selLepton_sublead -> eta()));
+    const double max_lep_eta=TMath::Max(std::abs(selLepton_lead -> eta()), std::abs(selLepton_sublead -> eta()));
     //double ptmiss=met.pt();
     //double dr_leps=deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4());
     //double mT_lep1=comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi());
@@ -1659,8 +1727,99 @@ int main(int argc, char* argv[])
 
     evtWeightSum += evtWeight;
 
-//--- fill histograms with events passing final selection
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["avg_dr_jet"] =  comp_avg_dr_jet(selJets);
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["ptmiss"] = met.pt();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["mbb_medium"] = selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : 0;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["max_dr_jet"] = comp_max_dr_jet(selJets);
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jet1_pt"] = selJets[0]->pt();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jet2_pt"] = selJets.size() > 1 ?  selJets[1]->pt() : 0;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jet3_pt"] = selJets.size() > 2 ?  selJets[2]->pt() : 0;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jet4_pt"] = selJets.size() > 3 ?  selJets[3]->pt() : 0;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["max_lep_eta"] = max_lep_eta;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep1_mT"] = comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi());
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep1_conept"] = lep1_conePt;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep1_min_dr_jet"] = TMath::Min(10., mindr_lep1_jet);
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep2_mT"] = comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi());
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep2_conept"] = lep2_conePt;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["lep2_min_dr_jet"] = TMath::Min(10., mindr_lep2_jet);
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nJetForward"] = selJetsForward.size();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jetForward1_pt"] = selJetsForward.size() > 0 ?  selJetsForward[0]->pt() : 0;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["jetForward1_eta_abs"] = selJetsForward.size() > 0 ?  selJetsForward[0]->absEta() : -1;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["res-HTT_CSVsort4rd"] = max_mvaOutput_HTT_CSVsort4rd;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["HadTop_pt_CSVsort4rd"] = HadTop_pt_CSVsort4rd;
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nJet"] = selJets.size();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nBJetLoose"] = selBJets_loose.size();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nBJetMedium"] = selBJets_medium.size();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["nElectron"] = selElectrons.size();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["sum_lep_charge"] = selLepton_lead->charge() + selLepton_sublead->charge();
+    mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF["mvaOutput_Hj_tagger"] = mvaOutput_Hj_tagger;
+    std::map<std::string, double> mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4 = mva_2lss_ttH_tH_4cat_onlyTHQ_v4(mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF);
+    if ( isDEBUG_TF ) {
+      std::cout << "result tH 4cat v1 :";
+      for(auto elem : mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4) std::cout << elem.first << " " << elem.second << " ";
+      std::cout << "\n";
+    }
+
+//--- do NN categories
+    bool sigExtCat = false;
+    std::string category_2lss_ttH_tH_4cat_onlyTHQ_v4 = "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_";
+    double output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4 = -10;
+    if (ttH_like || ttW_like) {
+      if (
+        mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttH"] >= mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_tH"] &&\
+        mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttH"] >= mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttW"] &&\
+        mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttH"] >= mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_rest"]
+      ) {
+        category_2lss_ttH_tH_4cat_onlyTHQ_v4 += "ttH";
+        output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4 = mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttH"];
+        sigExtCat = true;
+      }
+      if (
+        mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_tH"] > mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttH"] &&\
+        mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_tH"] > mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttW"] &&\
+        mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_tH"] >= mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_rest"]
+      ) {
+        category_2lss_ttH_tH_4cat_onlyTHQ_v4 += "tH";
+        output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4 = mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_tH"];
+        sigExtCat = true;
+      }
+      if (
+        mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttW"] > mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttH"] &&\
+        mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttW"] >= mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_tH"] &&\
+        mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttW"] >= mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_rest"]
+      ) {
+        category_2lss_ttH_tH_4cat_onlyTHQ_v4 += "ttW";
+        output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4 = mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttW"];
+        sigExtCat = true;
+      }
+      if (
+        mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_rest"] > mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttH"] &&\
+        mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_rest"] > mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_tH"] &&\
+        mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_rest"] > mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttW"]
+      ) {
+        category_2lss_ttH_tH_4cat_onlyTHQ_v4 += "rest";
+        output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4 = mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_rest"];
+        sigExtCat = false;
+      }
+
+      if (sigExtCat)
+      {
+        if  ( ( selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron ) ) {
+          category_2lss_ttH_tH_4cat_onlyTHQ_v4 += "_ee";
+        } else if (  selLepton_lead_type == kMuon     && selLepton_sublead_type == kMuon      ) {
+          category_2lss_ttH_tH_4cat_onlyTHQ_v4 += "_mm";
+        } else if ( (selLepton_lead_type == kElectron && selLepton_sublead_type == kMuon    ) ||
+        (selLepton_lead_type == kMuon     && selLepton_sublead_type == kElectron) ) {
+          category_2lss_ttH_tH_4cat_onlyTHQ_v4 += "_em";
+        }
+      }
+      if (selBJets_medium.size() >= 2) category_2lss_ttH_tH_4cat_onlyTHQ_v4 += "_bt";
+      else category_2lss_ttH_tH_4cat_onlyTHQ_v4 += "_bl";
+    }
+
+//--- on the BDT categories we use only "ttH-selection"
     std::string category;
+    if (ttH_like) {
     if        (  selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron  ) {
       category += "ee";
       if      ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() < 0 ) category += "_neg";
@@ -1679,6 +1838,10 @@ int main(int argc, char* argv[])
       if      ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() < 0 ) category += "_neg";
       else if ( selLepton_lead->charge() > 0 && selLepton_sublead->charge() > 0 ) category += "_pos";
     } else assert(0);
+    }
+
+//--- fill histograms with events passing final selection
+
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
@@ -1707,7 +1870,7 @@ int main(int argc, char* argv[])
       mvaOutput_2lss_ttbar,
       mvaDiscr_2lss,
       mvaOutput_Hj_tagger,
-      mvaOutput_Hj_tagger
+      output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
     );
     EvtHistManager_2lss* selHistManager_evt_category = selHistManager->evt_in_categories_[category];
     if ( selHistManager_evt_category ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
@@ -1724,9 +1887,27 @@ int main(int argc, char* argv[])
         mvaOutput_2lss_ttbar,
         mvaDiscr_2lss,
         mvaOutput_Hj_tagger,
-        mvaOutput_Hj_tagger
+        output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
       );
     }
+    EvtHistManager_2lss* selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4 = selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_[category_2lss_ttH_tH_4cat_onlyTHQ_v4];
+    if ( selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4 ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
+      selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4->fillHistograms(
+        selElectrons.size(),
+        selMuons.size(),
+        selHadTaus.size(),
+        selJets.size(),
+        selBJets_loose.size(),
+        selBJets_medium.size(),
+        evtWeight,
+        mvaOutput_2lss_ttV,
+        mvaOutput_2lss_ttbar,
+        mvaDiscr_2lss,
+        mvaOutput_Hj_tagger,
+        output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
+      );
+    }
+
     if ( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
       if(! decayModeStr.empty())
@@ -1743,26 +1924,47 @@ int main(int argc, char* argv[])
           mvaOutput_2lss_ttbar,
           mvaDiscr_2lss,
           mvaOutput_Hj_tagger,
-          mvaOutput_Hj_tagger
+          output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
         );
-  EvtHistManager_2lss* selHistManager_evt_category_decMode = selHistManager->evt_in_categories_and_decayModes_[category][decayModeStr];
-  if ( selHistManager_evt_category_decMode ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
+      std::string decayMode_and_genMatch = decayModeStr;
+      if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
+      EvtHistManager_2lss* selHistManager_evt_category_decMode = selHistManager->evt_in_categories_and_decayModes_[category][decayMode_and_genMatch];
+      if ( selHistManager_evt_category_decMode ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
           selHistManager_evt_category_decMode->fillHistograms(
-            selElectrons.size(),
-	    selMuons.size(),
-	    selHadTaus.size(),
-	    selJets.size(),
-	    selBJets_loose.size(),
-	    selBJets_medium.size(),
-	    evtWeight,
-	    //
-	    mvaOutput_2lss_ttV,
-	    mvaOutput_2lss_ttbar,
-	    mvaDiscr_2lss,
-	    mvaOutput_Hj_tagger,
-	    mvaOutput_Hj_tagger
+          selElectrons.size(),
+          selMuons.size(),
+          selHadTaus.size(),
+          selJets.size(),
+          selBJets_loose.size(),
+          selBJets_medium.size(),
+          evtWeight,
+          //
+          mvaOutput_2lss_ttV,
+          mvaOutput_2lss_ttbar,
+          mvaDiscr_2lss,
+          mvaOutput_Hj_tagger,
+          output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
           );
 	}
+
+  EvtHistManager_2lss* selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes = selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[category_2lss_ttH_tH_4cat_onlyTHQ_v4][decayModeStr];
+  if ( selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
+      selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes->fillHistograms(
+        selElectrons.size(),
+        selMuons.size(),
+        selHadTaus.size(),
+        selJets.size(),
+        selBJets_loose.size(),
+        selBJets_medium.size(),
+        evtWeight,
+        //
+        mvaOutput_2lss_ttV,
+        mvaOutput_2lss_ttbar,
+        mvaDiscr_2lss,
+        mvaOutput_Hj_tagger,
+        output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
+      );
+    }
       }
     }
     selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
@@ -1874,17 +2076,21 @@ int main(int argc, char* argv[])
       const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
       const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
       const double dr_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
-      const double max_lep_eta    = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
       const int nLightJet         = selJets.size() - selBJets_loose.size() + selJetsForward.size();
 
       snm->read(eventInfo);
       snm->read(selLeptons);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
-      snm->read(selJets);
+      snm->read(fakeableHadTaus);
+      snm->read(selJets, false);
+      snm->read(selJetsForward, true);
 
       snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
-      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet);
+      snm->read(
+        isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet,
+        SyncNtupleManager::placeholder_value, is_tH_like_and_not_ttH_like
+      );
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
@@ -1974,6 +2180,15 @@ int main(int argc, char* argv[])
       // mvaOutput_2lss_1tau_HTT_SUM_M not filled
       // mvaOutput_2lss_1tau_HTTMEM_SUM_M not filled
 
+      snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttH"],  FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH);
+      snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_tH"],   FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH);
+      snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_ttW"],  FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW);
+      snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4["predictions_rest"], FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest);
+
+      // mvaOutput_3l_ttH_tH_3cat_v8_ttH not filled
+      // mvaOutput_3l_ttH_tH_3cat_v8_tH not filled
+      // mvaOutput_3l_ttH_tH_3cat_v8_rest not filled
+
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
       if((sync_requireGenMatching && isGenMatched) || ! sync_requireGenMatching)
@@ -1988,7 +2203,6 @@ int main(int argc, char* argv[])
 
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
-    printCollection("tightLeptons", tightLeptons);
     histogram_selectedEntries->Fill(0.);
   }
 

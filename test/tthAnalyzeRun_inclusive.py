@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_inclusive import analyzeCon
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 
 import os
 import sys
@@ -19,7 +19,7 @@ parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
 parser.add_rle_select()
 parser.add_nonnominal()
-parser.add_tau_id_wp()
+parser.add_tau_id_wp("dR03mvaVLoose")
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
@@ -66,54 +66,13 @@ jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
 if with_mem:
-  if era == "2016":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_addMEM_sync import samples_2016 as samples
-  elif era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
-  elif era == "2018":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_addMEM_sync import samples_2018 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, suffix = "addMEM_sync" if use_nonnominal else "addMEM_sync_nom")
 else:
-  if use_nonnominal:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
-  else:
-    if era == "2016":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016_sync_nom import samples_2016 as samples
-    elif era == "2017":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync_nom import samples_2017 as samples
-    elif era == "2018":
-      from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018_sync_nom import samples_2018 as samples
-    else:
-      raise ValueError("Invalid era: %s" % era)
-
-if era == "2016":
-  hadTau_selection = "dR03mvaVLoose"
-elif era == "2017":
-  hadTau_selection = "dR03mvaVLoose"
-elif era == "2018":
-  hadTau_selection = "dR03mvaVLoose"
-else:
-  raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
 
 if __name__ == '__main__':
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
-
-  if tau_id_wp:
-    logging.warning(
-      "Changing hadTau_selection_denominator from {} to {}".format(
-        hadTau_selection, tau_id_wp
-      )
-    )
-    hadTau_selection = tau_id_wp
 
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
@@ -136,7 +95,7 @@ if __name__ == '__main__':
     dry_run                 = dry_run,
     isDebug                 = debug,
     rle_select              = rle_select,
-    hadTauSelection_tauIdWP = hadTau_selection,
+    hadTauSelection_tauIdWP = tau_id_wp,
     jet_cleaning_by_index   = jet_cleaning_by_index,
     gen_matching_by_index   = gen_matching_by_index,
     central_or_shifts       = central_or_shifts,

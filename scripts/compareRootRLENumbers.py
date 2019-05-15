@@ -143,7 +143,7 @@ if not os.path.isdir(output_dir):
   else:
     try:
       logging.debug("Creating directory: %s" % output_dir)
-      os.path.mkdirs(output_dir)
+      os.makedirs(output_dir)
     except IOError as err:
       raise ValueError('Unable to create directory %s because: %s' % (output_dir, err))
 

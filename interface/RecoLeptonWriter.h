@@ -50,8 +50,8 @@ public:
       dz_[idxLepton] = lepton->dz();
       relIso_all_[idxLepton] = lepton->relIso();
       pfRelIso04_all_[idxLepton] = lepton->pfRelIso04All();
-      absIso_chg_[idxLepton] = lepton->miniIsoCharged();
-      absIso_neu_[idxLepton] = lepton->miniIsoNeutral();
+      relIso_chg_[idxLepton] = lepton->miniRelIsoCharged();
+      relIso_neu_[idxLepton] = lepton->miniRelIsoNeutral();
       sip3d_[idxLepton] = lepton->sip3d();
       mvaRawTTH_[idxLepton] = lepton->mvaRawTTH();
       jetPtRatio_[idxLepton] = lepton->jetPtRatio();
@@ -136,8 +136,8 @@ protected:
   std::string branchName_dz_;
   std::string branchName_relIso_all_;
   std::string branchName_pfRelIso04_all_;
-  std::string branchName_absIso_chg_;
-  std::string branchName_absIso_neu_;
+  std::string branchName_relIso_chg_;
+  std::string branchName_relIso_neu_;
   std::string branchName_sip3d_;
   std::string branchName_mvaRawTTH_;
   std::string branchName_jetPtRatio_;
@@ -161,8 +161,8 @@ protected:
   Float_t * dz_;
   Float_t * relIso_all_;
   Float_t * pfRelIso04_all_;
-  Float_t * absIso_chg_;
-  Float_t * absIso_neu_;
+  Float_t * relIso_chg_;
+  Float_t * relIso_neu_;
   Float_t * sip3d_;
   Float_t * mvaRawTTH_;
   Float_t * jetPtRatio_;

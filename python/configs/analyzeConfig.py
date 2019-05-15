@@ -4,7 +4,6 @@ from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_crea
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import os
@@ -178,16 +177,25 @@ class analyzeConfig(object):
             self.central_or_shifts.remove('central')
             self.central_or_shifts = [ 'central' ] + self.central_or_shifts
         #------------------------------------------------------------------------
-        if (set(systematics.L1PreFiring) & set(self.central_or_shifts)) == set(systematics.L1PreFiring) and self.era == "2018":
-          logging.warning('Removing systematics from {} era:'.format(self.era, ', '.join(systematics.L1PreFiring)))
+        self.era = era
+        self.do_l1prefiring = self.era != "2018"
+        if (set(systematics.L1PreFiring) & set(self.central_or_shifts)) == set(systematics.L1PreFiring) and not self.do_l1prefiring:
+          logging.warning('Removing systematics from {} era: {}'.format(self.era, ', '.join(systematics.L1PreFiring)))
           for central_or_shift in systematics.L1PreFiring:
             self.central_or_shifts.remove(central_or_shift)
+        # ------------------------------------------------------------------------
+        self.do_dymc_sys = self.channel == "0l_2tau" and era != "2018"
+        for dymc_sys in [ systematics.DYMCReweighting, systematics.DYMCNormScaleFactors ]:
+          if (set(dymc_sys) & set(self.central_or_shifts)) == set(dymc_sys) and not self.do_dymc_sys:
+            logging.warning('Removing systematics from {} era: {}'.format(self.era, ', '.join(dymc_sys)))
+            for central_or_shift in dymc_sys:
+              self.central_or_shifts.remove(central_or_shift)
+        # ------------------------------------------------------------------------
 
         self.jet_cleaning_by_index = jet_cleaning_by_index
         self.gen_matching_by_index = gen_matching_by_index
         self.max_files_per_job = max_files_per_job
         self.max_num_jobs = -1
-        self.era = era
         self.use_lumi = use_lumi
         self.lumi = lumi
         self.check_output_files = check_output_files
@@ -226,7 +234,7 @@ class analyzeConfig(object):
           from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
           from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import get_branch_type
           self.stitched_weights = "tthAnalysis/HiggsToTauTau/data/stitched_weights_2017.root"
-          assert (hdfs.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.stitched_weights)))
+          assert (os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.stitched_weights)))
         elif self.era == '2018':
           pass
         else:
@@ -424,29 +432,19 @@ class analyzeConfig(object):
               raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
             self.lep_mva_cut = 0.90
         elif self.lep_mva_wp == "075":
-            if self.era not in [ "2016", "2017" ]:
-              raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
-            self.lep_mva_cut = 0.75
+            raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
         else:
             raise ValueError("Invalid Configuration parameter 'lep_mva_wp' = %s !!" % self.lep_mva_wp)
 
-        if self.era == '2016':
-            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2016_data.root"
-        elif self.era == '2017':
-            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva%s_2017_CERN_2018May29.root" % self.lep_mva_wp
-        elif self.era == '2018':
+        if self.era in [ '2016', '2017', '2018' ]:
             self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva%s_2017_CERN_2018May29.root" % self.lep_mva_wp
         else:
             raise ValueError('Invalid era: %s' % self.era)
-        if not hdfs.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
+        if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
             raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
         self.hadTau_selection_relaxed = None
-        if self.era == '2016':
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
-        elif self.era == '2017':
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
-        elif self.era == '2018':
+        if self.era in [ '2016', '2017', '2018' ]:
             self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
         else:
             raise ValueError('Invalid era: %s' % self.era)
@@ -478,12 +476,10 @@ class analyzeConfig(object):
         return lines
 
     def set_leptonFakeRateWeightHistogramNames(self, central_or_shift, lepton_and_hadTau_selection):
-        if 'mcClosure' in lepton_and_hadTau_selection and self.era != '2017':
+        if 'mcClosure' in lepton_and_hadTau_selection and self.era not in [ '2016', '2017', '2018' ]:
           raise ValueError('Invalid selection for era %s: %s' % (self.era, lepton_and_hadTau_selection))
         suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection else 'data_comb'
-        if self.era == '2016':
-          self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s" % (self.lep_mva_wp, suffix)
-        elif self.era == '2017':
+        if self.era in [ '2016', '2017', '2018' ]:
           self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (self.lep_mva_wp, suffix)
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (self.lep_mva_wp, suffix)
 
@@ -498,16 +494,12 @@ class analyzeConfig(object):
         elif central_or_shift == "CMS_ttHl_FRe_shape_normDown":
             leptonFakeRateWeight_histogramName_e_suffix = '_down'
         elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelUp":
-            if self.era == '2016':
-                leptonFakeRateWeight_histogramName_e_suffix = '_b1'
-            elif self.era == '2017':
+            if self.era in [ '2016', '2017', '2018' ]:
                 leptonFakeRateWeight_histogramName_e_suffix = '_be1'
             else:
                 raise ValueError('Invalid era: %s' % self.era)
         elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelDown":
-            if self.era == '2016':
-                leptonFakeRateWeight_histogramName_e_suffix = '_b2'
-            elif self.era == '2017':
+            if self.era in [ '2016', '2017', '2018' ]:
                 leptonFakeRateWeight_histogramName_e_suffix = '_be2'
             else:
                 raise ValueError('Invalid era: %s' % self.era)
@@ -520,16 +512,12 @@ class analyzeConfig(object):
         elif central_or_shift == "CMS_ttHl_FRm_shape_normDown":
             leptonFakeRateWeight_histogramName_mu_suffix = '_down'
         elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelUp":
-            if self.era == '2016':
-                leptonFakeRateWeight_histogramName_mu_suffix = '_b1'
-            elif self.era == '2017':
+            if self.era in [ '2016', '2017', '2018' ]:
                 leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
             else:
                 raise ValueError('Invalid era: %s' % self.era)
         elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelDown":
-            if self.era == '2016':
-                leptonFakeRateWeight_histogramName_mu_suffix = '_b2'
-            elif self.era == '2017':
+            if self.era in [ '2016', '2017', '2018' ]:
                 leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
             else:
                 raise ValueError('Invalid era: %s' % self.era)
@@ -543,22 +531,13 @@ class analyzeConfig(object):
         """
         self.hadTau_selection_relaxed = hadTau_selection_relaxed
         if self.hadTau_selection_relaxed == "dR03mvaVLoose":
-            if self.era == "2016":
-                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vLoosePresel.root"
-            elif self.era == "2017":
+            if self.era in [ '2016', '2017', '2018' ]:
                 pass
-            elif self.era == "2018":
-                raise ValueError("Implement me!")
             else:
                 raise ValueError("Invalid era: %s" % self.era)
         if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
-            if self.era == "2016":
-                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
-            elif self.era == "2017":
-#                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_vvLoosePresel_v1.root"
+            if self.era in [ '2016', '2017', '2018' ]:
                 self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
-            elif self.era == "2018":
-                raise ValueError("Implement me!")
             else:
                 raise ValueError("Invalid era: %s" % self.era)
         self.isBDTtraining = True
@@ -589,63 +568,72 @@ class analyzeConfig(object):
         if 'apply_DYMCNormScaleFactors' not in jobOptions:
           jobOptions['apply_DYMCNormScaleFactors'] =  is_dymc_reweighting(sample_info["dbs_name"])
         if 'apply_l1PreFireWeight' not in jobOptions:
-          jobOptions['apply_l1PreFireWeight'] = self.era != "2018"
+          jobOptions['apply_l1PreFireWeight'] = self.do_l1prefiring if is_mc else False
         if 'central_or_shift' not in jobOptions:
           jobOptions['central_or_shift'] = 'central'
         if 'lumiScale' not in jobOptions:
           nof_events = -1
           if is_mc:
             # Convention: CountWeighted includes the sign of genWeight, CountFullWeighted includes the full genWeight
+            # If L1 prefiring weights are enabled, then L1PrefireNom suffix is added
+            count_suffix = "L1PrefireNom" if self.do_l1prefiring else ""
+
             central_or_shift = jobOptions['central_or_shift']
             if central_or_shift == systematics.PU_().up:
-              nof_events = sample_info["nof_events"]['CountWeighted'][1] # PU weight up
-              stitch_histogram_name = 'CountWeighted_1'
+              nof_events = sample_info["nof_events"]['CountWeighted{}'.format(count_suffix)][1] # PU weight up
+              stitch_histogram_name = 'CountWeighted{}_1'.format(count_suffix)
             elif central_or_shift == systematics.PU_().down:
-              nof_events = sample_info["nof_events"]['CountWeighted'][2] # PU weight down
-              stitch_histogram_name = 'CountWeighted_2'
+              nof_events = sample_info["nof_events"]['CountWeighted{}'.format(count_suffix)][2] # PU weight down
+              stitch_histogram_name = 'CountWeighted{}_2'.format(count_suffix)
             elif central_or_shift in systematics.LHE().x1_up:
-              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale'])
+              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)])
               if nof_lhe_scale_weights == 9:
                 lhe_idx = 5
               elif nof_lhe_scale_weights == 44:
                 lhe_idx = 24
               else:
                 raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
-              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][lhe_idx] # muR=1   muF=2
-              stitch_histogram_name = 'CountWeightedLHEWeightScale_%d' % lhe_idx
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)][lhe_idx] # muR=1   muF=2
+              stitch_histogram_name = 'CountWeightedLHEWeightScale{}_{}'.format(count_suffix, lhe_idx)
             elif central_or_shift in systematics.LHE().y1_up:
-              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale'])
+              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)])
               if nof_lhe_scale_weights == 9:
                 lhe_idx = 7
               elif nof_lhe_scale_weights == 44:
                 lhe_idx = 34
               else:
                 raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
-              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][lhe_idx] # muR=2   muF=1
-              stitch_histogram_name = 'CountWeightedLHEWeightScale_%d' % lhe_idx
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)][lhe_idx] # muR=2   muF=1
+              stitch_histogram_name = 'CountWeightedLHEWeightScale{}_{}'.format(count_suffix, lhe_idx)
             elif central_or_shift in systematics.LHE().x1_down:
-              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale'])
+              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)])
               if nof_lhe_scale_weights == 9:
                 lhe_idx = 3
               elif nof_lhe_scale_weights == 44:
                 lhe_idx = 15
               else:
                 raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
-              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][lhe_idx] # muR=1   muF=0.5
-              stitch_histogram_name = 'CountWeightedLHEWeightScale_%d' % lhe_idx
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)][lhe_idx] # muR=1   muF=0.5
+              stitch_histogram_name = 'CountWeightedLHEWeightScale{}_{}'.format(count_suffix, lhe_idx)
             elif central_or_shift in systematics.LHE().y1_down:
-              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale'])
+              nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)])
               if nof_lhe_scale_weights == 9:
                 lhe_idx = 1
               elif nof_lhe_scale_weights == 44:
                 lhe_idx = 5
               else:
                 raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
-              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale'][lhe_idx] # muR=0.5 muF=1
-              stitch_histogram_name = 'CountWeightedLHEWeightScale_%d' % lhe_idx
+              nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)][lhe_idx] # muR=0.5 muF=1
+              stitch_histogram_name = 'CountWeightedLHEWeightScale{}_{}'.format(count_suffix, lhe_idx)
+            elif central_or_shift in systematics.L1PreFiring_().up:
+              nof_events = sample_info["nof_events"]['CountWeightedL1Prefire'][1]  # L1 prefiring weight up
+              stitch_histogram_name = 'CountWeightedL1Prefire_1'
+            elif central_or_shift in systematics.L1PreFiring_().down:
+              nof_events = sample_info["nof_events"]['CountWeightedL1Prefire'][2]  # L1 prefiring weight down
+              stitch_histogram_name = 'CountWeightedL1Prefire_2'
             else:
               nof_events = sample_info["nof_events"]['CountWeighted'][0] # PU weight central
-              stitch_histogram_name = 'CountWeighted_0'
+              stitch_histogram_name = 'CountWeighted{}_0'.format(count_suffix)
           else:
             nof_events = sample_info["nof_events"]['Count'][0]
           assert(nof_events > 0)
@@ -707,6 +695,8 @@ class analyzeConfig(object):
             'apply_hadTauFakeRateSF',
             'jetCleaningByIndex',
             'genMatchingByIndex',
+            'branchName_fatJetsLS',
+            'branchName_subJetsLS',
         ]
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
@@ -1176,7 +1166,7 @@ class analyzeConfig(object):
         for job in self.jobOptions_analyze.values():
             self.filesToClean.append(job['syncOutput'])
 
-    def addToMakefile_hadd(self, lines_makefile, make_target, make_dependency, inputFiles, outputFiles, max_input_files_per_job = 5):        
+    def addToMakefile_hadd(self, lines_makefile, make_target, make_dependency, inputFiles, outputFiles, max_input_files_per_job = 2):
         if not make_target in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         if self.is_sbatch and self.run_hadd_master_on_batch:
@@ -1208,7 +1198,9 @@ class analyzeConfig(object):
                     lines_makefile.append("%s: %s" % (make_target_batch, make_dependency))
                     make_target_batches.append(make_target_batch)
                     idxBatch = idxBatch + 1
-                lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
+                # do not remove the output file -> maybe it's valid
+                # the sbatch job checks the existance of the file anyways
+                #lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
                 scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]))   
                 lines_makefile.append("\t%s %s" % ("python", scriptFile))
             lines_makefile.append("")
@@ -1249,13 +1241,13 @@ class analyzeConfig(object):
         for job in jobOptions.values():
             self.filesToClean.append(job['outputFile'])
 
-    def addToMakefile_hadd_stage1_5(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 5):
+    def addToMakefile_hadd_stage1_5(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 2):
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
            that is used as input for data-driven background estimation.
         """
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage1_5, self.outputFile_hadd_stage1_5, max_input_files_per_job)
 
-    def addToMakefile_hadd_stage1_6(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 5):
+    def addToMakefile_hadd_stage1_6(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 2):
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
            that is used as input for data-driven background estimation.
         """
@@ -1309,7 +1301,7 @@ class analyzeConfig(object):
             lines_makefile.append("")
         self.make_dependency_hadd_stage2 = make_target
 
-    def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, max_input_files_per_job = 5):
+    def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, max_input_files_per_job = 2):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
         """        
         if make_dependency is None:

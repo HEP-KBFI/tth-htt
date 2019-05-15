@@ -8,6 +8,7 @@
 #include <TTree.h> // TTree
 
 #include <type_traits> // std::enable_if<,>, std::is_arithmetic<>
+#include <regex> // std::regex
 
 // forward declarations
 class TFile;
@@ -16,6 +17,8 @@ class RecoElectron;
 class RecoHadTau;
 class RecoJet;
 class RecoLepton;
+class RecoJetAK8;
+class RecoJetHTTv2;
 class hltPath;
 
 enum class FloatVariableType
@@ -59,6 +62,7 @@ enum class FloatVariableType
   mT_met_lep2,              ///< transverse mass of subleading lepton and MET (using reco pt)
   mT_met_lep3,              ///< transverse mass of trailing lepton and MET (using reco pt)
   mT_met_lep4,              ///< transverse mass of fourth lepton and MET (using reco pt)
+  massL,                    ///< transverse mass of highest pT dilepton pair passing loose selection
 
   mTauTauVis,               ///< visible mass of the two selected taus
   mvis_l1tau,               ///< visible mass of leading lepton and tau (of OS in 3l+1tau)
@@ -70,7 +74,17 @@ enum class FloatVariableType
   cosThetaS_hadTau,         ///< cosine of the angle b/w leading tau and the beam axis in di-tau frame?
   HTT,                      ///< output of hadronic top tagger with kin fit
   HadTop_pt,                ///< pT of the unfitted hadronic top
-  Hj_tagger,                ///< MVA output of Hj-tagger
+
+//--- boosted variables
+  HTT_boosted,                    ///<  output of hadronic top tagger for boosted scenario
+  HTT_semi_boosted_fromAK8,       ///<  output of hadronic top tagger for semi-boosted scenario
+  HadTop_pt_semi_boosted_fromAK8, ///< ...
+  Hj_tagger,                      ///< MVA output of Hj-tagger
+  HadTop_pt_boosted,              ///< ?
+  minDR_HTTv2_Lep,                ///< minimum distance between a tight Lepton (e/mu/tau) and the HTTv2 objet
+                                  ///  that is tagged as "HTT_boosted"
+  minDR_AK8_Lep,                  ///< minimum distance between a tight Lepton (e/mu/tau) and the AK8 jet
+                                  /// that is tagged as part of "HTT_semi_boosted_fromAK8"
 
 //--- Additional event-level MVA output variables
   mvaOutput_plainKin_ttV,   ///< 2l+2tau (BDT1), 3l+1tau (BDT1)
@@ -94,6 +108,15 @@ enum class FloatVariableType
   mvaOutput_3l_ttbar,       ///< 3l+1tau
   mvaOutput_plainKin_SUM_M, ///< 3l+1tau (BDT3)
   mvaOutput_plainKin_1B_M,  ///< 3l+1tau (BDT4)
+
+  mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH,
+  mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH,
+  mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW,
+  mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest,
+
+  mvaOutput_3l_ttH_tH_3cat_v8_ttH,
+  mvaOutput_3l_ttH_tH_3cat_v8_tH,
+  mvaOutput_3l_ttH_tH_3cat_v8_rest,
 
 //--- Event weights
   FR_weight,                ///< weight used for fake rate reweighting
@@ -136,17 +159,28 @@ public:
   void read(const std::vector<const RecoHadTau *> & hadtaus);
   void read(const std::vector<const RecoJet *> & jets,
             bool isFwd = false);
+  void read(const std::vector<const RecoJetAK8 *> & jets);
+  void read(const std::vector<const RecoJetHTTv2 *> & jets);
   void read(Float_t value,
             FloatVariableType type);
   void read(const std::vector<std::vector<hltPath *>> & hltPaths);
-  void read(bool is_genMatched, int n_tags, int n_tags_loose, int n_jets_light);
+  void read(bool is_genMatched,
+            int n_tags,
+            int n_tags_loose,
+            int n_jets_light,
+            int n_jets_cleanedFromAK8 = placeholder_value,
+            bool b_is_like_tH_not_ttH = false);
   void fill();
   void write();
   void reset();
 
   static const Int_t placeholder_value;
+  static const std::regex endsWithNumberRegex;
 
 private:
+  static bool
+  endsWithNumber(const std::string & infix);
+
   template<typename T,
            typename = std::enable_if<std::is_arithmetic<T>::value && ! std::is_pointer<T>::value>>
   void
@@ -157,11 +191,14 @@ private:
   {
     if(count > 0)
     {
+      const bool isEndsWithNumber = SyncNtupleManager::endsWithNumber(infix);
       var = new T[count];
       for(int i = 0; i < count; ++i)
       {
         var[i] = placeholder_value;
-        const std::string branchName = Form("%s%d_%s", infix.c_str(), i + 1, label.c_str());
+        const std::string branchName = Form("%s%s%d_%s",
+          infix.c_str(), isEndsWithNumber ? "_" : "", i + 1, label.c_str()
+        );
         outputTree -> Branch(branchName.c_str(), &(var[i]), Form("%s/%s", branchName.c_str(), Traits<T>::TYPE_NAME));
       }
     }
@@ -283,6 +320,8 @@ private:
   const Int_t nof_taus;
   const Int_t nof_jets;
   const Int_t nof_fwdJets;
+  const Int_t nof_jetHTTv2;
+  const Int_t nof_jetAK8;
 
   Long64_t nEvent;
   Int_t ls;
@@ -298,11 +337,16 @@ private:
   Int_t n_presel_tau;
   Int_t n_presel_jet;
   Int_t n_presel_fwdJet;
+  Int_t n_presel_jetHTTv2;
+  Int_t n_presel_jetAK8;
 
-  Bool_t isGenMatched; ///< flag to indicate whether lepton(s) + tau(s) are all gen matched
-  Int_t ntags;         ///< number of medium b-tagged jets
-  Int_t ntags_loose;   ///< number of loose b-tagged jets
-  Int_t njets_light;   ///< number of light jets (central jets not passing loose b-tag requirement + forward jets)
+  Bool_t isGenMatched;        ///< flag to indicate whether lepton(s) + tau(s) are all gen matched
+  Bool_t is_like_tH_not_ttH;  ///< flag to indicate whether the event is tH-like and not ttH-like
+  Int_t ntags;                ///< number of medium b-tagged jets
+  Int_t ntags_loose;          ///< number of loose b-tagged jets
+  Int_t njets_light;          ///< number of light jets (central jets not passing loose b-tag requirement + forward jets)
+  Int_t njets_cleanedFromAK8; ///< number of jets passing the preselection (n_presel_jet),
+                              ///  cleaned from the AK8 jet collection with a 0.8 distance deffinition
 
   Float_t * lep_pt;
   Float_t * lep_conePt;
@@ -319,8 +363,8 @@ private:
   Float_t * mu_E;
   Int_t * mu_charge;
   Float_t * mu_miniRelIso;
-  Float_t * mu_miniIsoCharged;
-  Float_t * mu_miniIsoNeutral;
+  Float_t * mu_miniRelIsoCharged;
+  Float_t * mu_miniRelIsoNeutral;
   Float_t * mu_pfRelIso04All;
   Int_t * mu_jetNDauChargedMVASel;
   Float_t * mu_jetPtRel;
@@ -347,8 +391,8 @@ private:
   Float_t * ele_E;
   Int_t * ele_charge;
   Float_t * ele_miniRelIso;
-  Float_t * ele_miniIsoCharged;
-  Float_t * ele_miniIsoNeutral;
+  Float_t * ele_miniRelIsoCharged;
+  Float_t * ele_miniRelIsoNeutral;
   Float_t * ele_pfRelIso04All;
   Int_t * ele_jetNDauChargedMVASel;
   Float_t * ele_jetPtRel;
@@ -414,6 +458,16 @@ private:
   Float_t * jetFwd_eta;
   Float_t * jetFwd_phi;
   Float_t * jetFwd_E;
+
+  Float_t * jetHTTv2_pt;
+  Float_t * jetHTTv2_eta;
+  Float_t * jetHTTv2_phi;
+  Float_t * jetHTTv2_E;
+
+  Float_t * jetAK8_pt;
+  Float_t * jetAK8_eta;
+  Float_t * jetAK8_phi;
+  Float_t * jetAK8_E;
 
   std::map<std::string, Int_t> hltMap;
 

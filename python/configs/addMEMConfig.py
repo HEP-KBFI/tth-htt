@@ -9,7 +9,7 @@ from tthAnalysis.HiggsToTauTau.common import logging
 import os
 import array
 import uuid
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 DEPENDENCIES = [
     "",  # CMSSW_BASE/src
     "tthAnalysis/HiggsToTauTau",
@@ -76,8 +76,12 @@ class addMEMConfig:
         self.channel = channel
         self.leptonSelection = leptonSelection
         self.hadTauSelection = hadTauSelection
-        self.hadTauDefinition = self.hadTauSelection.split('|')[0]
-        self.hadTauWorkingPoint = self.hadTauSelection.split('|')[1]
+        if self.hadTauSelection:
+            self.hadTauDefinition = self.hadTauSelection.split('|')[0]
+            self.hadTauWorkingPoint = self.hadTauSelection.split('|')[1]
+        else:
+            self.hadTauDefinition = None
+            self.hadTauWorkingPoint = None
         self.maxPermutations_branchName = None
         self.lowIntegrationPoints = lowIntegrationPoints
         self.jet_cleaning_by_index = jet_cleaning_by_index
@@ -375,7 +379,7 @@ class addMEMConfig:
               sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
                 continue
 
-            if not hdfs.exists(sample_info['local_paths'][0]['path']):
+            if not os.path.exists(sample_info['local_paths'][0]['path']):
                 logging.warning("Skipping sample {sample_name}".format(sample_name = sample_name))
                 continue
 
@@ -435,8 +439,8 @@ class addMEMConfig:
                     self.dirs[key_dir][DKEY_FINAL_NTUPLES],
                     '%04d' % (fileset_id // 1000)
                 )
-                if not hdfs.exists(hadd_output_dir):
-                    hdfs.mkdirs(hadd_output_dir)
+                if not os.path.exists(hadd_output_dir):
+                    os.makedirs(hadd_output_dir)
                 hadd_output = os.path.join(
                     hadd_output_dir, '%s_%i.root' % ('tree', fileset_id) # UDPATE: ADDED
                     #hadd_output_dir, "tree.root" # UDPATE: REMOVED

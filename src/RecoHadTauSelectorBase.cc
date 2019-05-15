@@ -178,6 +178,7 @@ RecoHadTauSelectorBase::set_if_looser(const std::string & cut)
       }
       else
       {
+        cut_part_new = mva_old + wp_old;
         std::cout << "Keeping old cut for '" << mva_new << "' at '" << wp_old << "'\n";
       }
     }

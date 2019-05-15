@@ -67,7 +67,7 @@ protected:
   ///< (default) 4-momentum constructed from pT and phi, assuming eta and mass to be equal to zero
   math::PtEtaPhiMLorentzVector p4_;
 
-  double sumEt_; ///< sum of transverse energies of all particles in the event 
+  Float_t sumEt_; ///< sum of transverse energies of all particles in the event
 
   TMatrixD cov_; ///< MET resolution matrix
 

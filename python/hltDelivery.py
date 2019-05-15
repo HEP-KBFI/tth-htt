@@ -1,4 +1,3 @@
-from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import os.path
@@ -6,6 +5,7 @@ import re
 import multiprocessing
 import signal
 import psutil
+import subprocess
 
 HLT_SUFFIX = re.compile(r'(.*_v\*$)|(.*_v[0-9]+)$')
 DATASET    = re.compile(r'^/.*/Run(?P<year>[\d]{4})(?P<era>[ABCDEFGH]{1}).*/MINIAOD$')
@@ -21,7 +21,7 @@ def hlt_version(hlt_path):
   else:
     return hlt_path
 
-def process_hlt(hlt_path, golden_json, brilcalc_path, normtag, units):
+def process_hlt(hlt_path, golden_json, brilcalc_path, normtag, units, output_dir):
   brilcalc_cmd = '{brilcalc_path} lumi -c web {json} {normtag} --output-style csv --hltpath "{hlt_path}" -u {units}'.format(
     brilcalc_path = brilcalc_path,
     json          = ('-i {}'.format(golden_json)    if golden_json else ''),
@@ -29,8 +29,13 @@ def process_hlt(hlt_path, golden_json, brilcalc_path, normtag, units):
     hlt_path      = hlt_path,
     units         = units,
   )
+  output_file = os.path.join(output_dir, '{}.csv'.format(hlt_path.replace('_v*', ''))) if output_dir else ''
   logging.debug("Running: {}".format(brilcalc_cmd))
-  brilcalc_out, brilcalc_err = run_cmd(brilcalc_cmd, do_not_log = True, return_stderr = True)
+  brilcalc_run = subprocess.Popen(brilcalc_cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+  brilcalc_out, brilcalc_err = brilcalc_run.communicate()
+  if output_file:
+    with open(output_file, 'w') as output_file_ptr:
+      output_file_ptr.write(brilcalc_out + '\n')
   if brilcalc_err:
     raise ValueError("brilcalc return an error: %s" % brilcalc_err)
   logging.debug("Parsing results for {}".format(hlt_path))
@@ -152,7 +157,7 @@ def parse_data(data_file):
 
   return data
 
-def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
+def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file, output_dir):
 
   assert (all(map(lambda hlt_path: hlt_path.startswith('HLT'), hlt_paths_in)))
   hlt_paths = {hlt_path: hlt_version(hlt_path) for hlt_path in hlt_paths_in}
@@ -176,15 +181,18 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
   else:
     data = None
 
+  if output_dir and not os.path.isdir(output_dir):
+    os.makedirs(output_dir)
+
   # prepare the jobs
-  pool_size = 12
+  pool_size = 16
   pool = multiprocessing.Pool(pool_size, handle_worker)
 
   logging.debug("Constructing pool for {} HLT paths".format(len(hlt_paths)))
   for hlt_path in hlt_paths:
     pool.apply_async(
       process_hlt,
-      args     = (hlt_paths[hlt_path], json, brilcalc_path, normtag, units),
+      args     = (hlt_paths[hlt_path], json, brilcalc_path, normtag, units, output_dir),
       callback = get_trigger_results,
     )
   pool.close()
@@ -206,27 +214,23 @@ def run_brilcalc(hlt_paths_in, json, normtag, units, brilcalc_path, data_file):
 
       expected_recording = data['totrecorded']
       expected_delivery  = data['totdelivered']
-      if missing_eras:
-        expected_recording = sum([ data['runs'][era]['tot_recorded']  for era in present_eras ])
-        expected_delivery  = sum([ data['runs'][era]['tot_delivered'] for era in present_eras ])
 
       data_units = data['units']
       unit_factor = 1000**(LUMI_UNITS.index(units) - LUMI_UNITS.index(data_units))
       expected_recording *= unit_factor
       expected_delivery  *= unit_factor
 
-      prescale_recording = expected_recording / dict_entry['recorded']
-      prescale_delivery  = expected_delivery  / dict_entry['delivered']
+      prescale_recording = (expected_recording / dict_entry['recorded']) if dict_entry['recorded'] != 0. else -1.
+      prescale_delivery  = (expected_delivery  / dict_entry['delivered']) if dict_entry['delivered'] != 0. else -1.
 
-      prescale_recording_int = int(prescale_recording)
-      prescale_delivery_int  = int(prescale_delivery)
-
-      if prescale_delivery_int == 1:
+      if int(prescale_recording) == 1:
         prescale_msg = "NOT prescaled"
+      elif int(prescale_recording) == -1:
+        prescale_msg = "NOT recording anything?"
       else:
-        prescale_msg = "prescale factor %.1f (%.1f from recorded)" % (prescale_delivery, prescale_recording)
-      prescale_msg += " (expected %.1f delivery, %.1f recorded; units = %s)" % (
-        expected_delivery, expected_recording, units
+        prescale_msg = "prescale factor %.1f (%.1f from delivery)" % (prescale_recording, prescale_delivery)
+      prescale_msg += " (expected %.1f recorded, %.1f delivery; units = %s)" % (
+        expected_recording, expected_delivery, units
       )
 
     print("{} nrun = {} totdelivered = {} totrecorded = {} (units = {})".format(

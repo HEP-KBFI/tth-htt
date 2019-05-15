@@ -261,6 +261,10 @@ RecoJetReader::read() const
     jets.reserve(nJets);
     for(UInt_t idxJet = 0; idxJet < nJets; ++idxJet)
     {
+      // set QGL to -1. if:
+      // 1) the value is nan
+      // 2) the value is invalid: https://twiki.cern.ch/twiki/bin/view/CMS/QuarkGluonLikelihood#Return_codes
+      const double qgl = std::max(-1., std::isnan(gInstance->jet_QGDiscr_[idxJet]) ? -1. : gInstance->jet_QGDiscr_[idxJet]);
       jets.push_back({
         {
           gInstance->jet_pt_systematics_.at(ptMassOption_)[idxJet],
@@ -271,7 +275,7 @@ RecoJetReader::read() const
         gInstance->jet_charge_[idxJet],
         gInstance->jet_BtagCSVs_.at(btag_)[idxJet],
         gInstance->jet_BtagWeights_systematics_.at(btag_).at(btag_central_or_shift_)[idxJet],
-        gInstance->jet_QGDiscr_[idxJet],
+        qgl,
         gInstance->jet_pullEta_[idxJet],
         gInstance->jet_pullPhi_[idxJet],
         gInstance->jet_pullMag_[idxJet],

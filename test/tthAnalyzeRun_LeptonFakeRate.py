@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_LeptonFakeRate import analy
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 
 import os
 import sys
@@ -16,9 +16,9 @@ cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_8_1_0') # immediate parent 
 
 qcd_inclusive = True # set to True if you want to process inclusive muon-enriched sample
 
-mode_choices           = [ 'default', 'sync' ]
-sys_choices            = [ 'full' ] + systematics.an_leptonFR_opts
-systematics.full       = systematics.an_leptonFR
+mode_choices     = [ 'default', 'sync' ]
+sys_choices      = [ 'full' ] + systematics.an_leptonFR_opts
+systematics.full = systematics.an_leptonFR
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -62,41 +62,40 @@ jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
 if mode == 'default':
-  if era == "2016":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
-  elif era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  elif era == "2018":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_2018 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era)
 elif mode == 'sync':
-  if era == "2016":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_sync import samples_2017 as samples
-  elif era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_sync import samples_2017 as samples
-  elif era == "2018":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_sync import samples_2017 as samples
-  else:
-    raise ValueError("Invalid era: %s" % era)
+  samples = load_samples(era, suffix = 'leptonFR_sync')
 else:
   raise ValueError('Invalid mode: %s' % mode)
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
+
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "1mu", "2e", "2mu" ]
-  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):
-      sample_info["use_it"] = False
+
   if sample_info["sample_category"] == "QCD":
     sample_info["use_it"] = True
     if sample_info["process_name_specific"].endswith("_Mu5"):
       sample_info["use_it"] = not qcd_inclusive
     elif sample_info["process_name_specific"] == "QCD_Mu15":
       sample_info["use_it"] = qcd_inclusive
-  if era == "2017":
+
+  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):
+    sample_info["use_it"] = False
+
+  if era == "2016":
+    if sample_name.startswith('/SingleElectron'):
+      # SingleElectron excluded since no 1e triggers used
+      sample_info["use_it"] = False
+  elif era == "2017":
     if sample_name.startswith(('/DoubleEG/Run', '/SingleElectron/Run2017B')):
-      # '/SingleElectron/Run2017B' excluded since no useful triggers present in that dataset
+      # DoubleEG excluded since no 2e triggers used
+      # SingleElectron B run excluded since no useful triggers present in that dataset
+      sample_info["use_it"] = False
+  elif era == "2018":
+    if sample_name.startswith('/DoubleEG/Run'):
+      # DoubleEG excluded since no 2e triggers used
       sample_info["use_it"] = False
 
 if __name__ == '__main__':

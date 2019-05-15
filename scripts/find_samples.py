@@ -49,6 +49,44 @@ import ast
 import getpass
 import multiprocessing
 import signal
+import shutil
+import psutil
+import subprocess
+import shlex
+
+class Alarm(Exception):
+  pass
+
+def alarm_handler(signum, frame):
+  raise Alarm
+
+class Command(object):
+  def __init__(self, cmd):
+    self.cmd = cmd
+    self.process = None
+    self.out = None
+    self.err = None
+    self.success = False
+
+  def run(self, max_tries = 20, timeout = 5):
+    ntries = 0
+    while not self.success:
+      if ntries > max_tries:
+        break
+      ntries += 1
+      signal.signal(signal.SIGALRM, alarm_handler)
+      signal.alarm(timeout)
+      self.process = subprocess.Popen(shlex.split(self.cmd), stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+      try:
+        self.out, self.err = self.process.communicate()
+        signal.alarm(0)
+      except Alarm:
+        parent = psutil.Process(self.process.pid)
+        for child in parent.children(recursive = True):
+          child.kill()
+        parent.kill()
+      else:
+        self.success = True
 
 class Version:
   def __init__(self, version):
@@ -187,14 +225,24 @@ PRIVATE_TIER  = 'USER'
 AQC_KEY       = 'cat'
 PDS_KEY       = 'data'
 
-DASGOCLIENT_QUERY_COMMON     = "dasgoclient -query='        dataset=%s          | grep dataset.%s' -unique | grep -v '^\\['"
-DASGOCLIENT_QUERY_ANY_STATUS = "dasgoclient -query='dataset dataset=%s status=* | grep dataset.%s' -unique | grep -v '^\\['"
-DASGOCLIENT_QUERY_RELEASE    = "dasgoclient -query='release dataset=%s' -unique"
-DASGOCLIENT_QUERY_RUNLUMI    = "dasgoclient -query='run,lumi dataset=%s' -unique"
+DASGOCLIENT_QUERY_RUNLUMI = "dasgoclient -query='run,lumi dataset=%s' -unique"
+DASGOCLIENT_QUERY         = "dasgoclient -query='dataset dataset=%s status=%s' -json"
+DASGOCLIENT_QUERY_RELEASE = "dasgoclient -query='release dataset=%s' -json"
 
 PRIVATE_REGEX = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % PRIVATE_TIER)
 MC_REGEX      = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
 DATASET_REGEX = re.compile("^/(.*)/(.*)/[0-9A-Za-z]+$")
+
+def find_das_idx(query_json, das_key):
+  idx = -1
+  required_service = "dbs3:filesummaries" if das_key in [ "size", "nfiles", "nevents" ] else "dbs3:datasets"
+  for entry_idx, entry in enumerate(query_json):
+    if str(entry['das']['services'][0]) == required_service:
+      idx = entry_idx
+      break
+  if idx < 0:
+    raise RuntimeError("Unable to find the location for DAS key %s from the JSON output" % das_key)
+  return idx
 
 def get_crab_string(dataset_name, paths):
   paths_ = []
@@ -218,7 +266,7 @@ def get_crab_string(dataset_name, paths):
     full_path = os.path.join(path, primary_name, requestName)
     if hdfs.isdir(full_path):
       return requestName
-    # is a hack... I cannot explain where this magic number '152' comes from but it works
+    # Depends on the CERN user name: the overall limit on the request name is 160 characters, and my user name is 8 characters
     if len(requestName) > 152:
       requestName = requestName[:152]
     full_path = os.path.join(path, primary_name, requestName)
@@ -230,10 +278,7 @@ def convert_date(date):
   return datetime.datetime.fromtimestamp(int(date)).strftime('%Y-%m-%d %H:%M:%S')
 
 def convert_cmssw_versions(cmssw_list):
-  return ','.join(set([
-    re.match(r'.*\"(?P<ver>.*)\".*', cmssw_ver).group('ver')[len('CMSSW')+1:]
-    for cmssw_ver in cmssw_list.split(',')
-  ]))
+  return ','.join(set( cmssw_ver[len('CMSSW') + 1:] for cmssw_ver in cmssw_list ))
 
 def id_(x): # identity function
   return x
@@ -360,8 +405,8 @@ def get_integrated_lumi(dataset_name, data_golden, brilcalc_path, normtag, units
 
   # Cleanup
   if data_golden:
-    if hdfs.isfile(tmp_filename):
-      hdfs.remove(tmp_filename)
+    if os.path.isfile(tmp_filename):
+      shutil.remove(tmp_filename)
 
   return dataset_name, results
 
@@ -536,7 +581,7 @@ if __name__ == '__main__':
   )
 
   lumimask_location = args.golden_json
-  if not hdfs.isfile(lumimask_location):
+  if not os.path.isfile(lumimask_location):
     raise ValueError("No such file: %s" % lumimask_location)
   golden_runlumi = get_golden_runlumi(lumimask_location)
 
@@ -564,18 +609,18 @@ if __name__ == '__main__':
   print("Requiring DAS names to contain one of these strings:     %s" % ', '.join(custom_strings_allowed))
   print("Requiring DAS names to not contain one of these strings: %s" % ', '.join(custom_strings_rejected))
 
-  if sum_events_file and not hdfs.isfile(sum_events_file):
+  if sum_events_file and not os.path.isfile(sum_events_file):
     raise ValueError('No such file: %s' % sum_events_file)
 
   if compute_lumi:
     # Check if the brilconda package has been installed
-    if not hdfs.isfile(brilcalc_path):
+    if not os.path.isfile(brilcalc_path):
       raise ValueError("brilcalc not available in %s" % brilcalc_path)
 
     # Check if the user requested to run with normtag or not; if the user has requested to
     # use a normtag, then we have to make sure that the normtag is available
     if normtag_path:
-      if not hdfs.isfile(normtag_path):
+      if not os.path.isfile(normtag_path):
         raise ValueError("normtag not found in %s" % normtag_path)
 
     # Create the temporary directory only when it's needed
@@ -642,9 +687,8 @@ if __name__ == '__main__':
 
     for dataset_idx, dataset in enumerate(das_query_results):
       if verbose:
-        sys.stdout.write(
-          "Querying sample (%d/%d): %s;" % (dataset_idx + 1, len(das_query_results), dataset)
-        )
+        print("Querying sample (%d/%d): %s" % (dataset_idx + 1, len(das_query_results), dataset))
+        sys.stdout.flush()
       dataset_split = dataset.split('/')
       if dataset_split[3] == PRIVATE_TIER:
         # The sample is privately produced and we would have to get the stats from the FS directly
@@ -667,40 +711,43 @@ if __name__ == '__main__':
         # [*] Assume that the MINIAODSIM was produced with a CMSSW version that is at least as new
         #     as the required CMSSW version
       else:
-        for das_key_idx, das_key in enumerate(das_keys):
-          if verbose:
-            sys.stdout.write(" %s%s" % (das_key, (',' if das_key_idx != len(das_keys) - 1 else '\n')))
-            sys.stdout.flush()
-          dataset_q = dataset
-          if dataset_q.split('/')[-1].startswith('part'):
-            dataset_q = '/'.join(dataset.split('/')[:-1])
-          mc_query_str = DASGOCLIENT_QUERY_COMMON % (dataset_q, das_key) if das_key != 'release' \
-                         else DASGOCLIENT_QUERY_RELEASE % dataset_q
-          mc_query_out, mc_query_err = run_cmd(mc_query_str, do_not_log = True, return_stderr = True)
-          if not mc_query_out or mc_query_err:
-            # this may happen if a sample is in PRODUCTION stage and the dasgoclient script
-            # returns nonsense; let's try again with status=*
-            query_fail = False
-            if das_key != 'release':
-              mc_query_str = DASGOCLIENT_QUERY_ANY_STATUS % (dataset_q, das_key)
-              mc_query_out, mc_query_err = run_cmd(mc_query_str, do_not_log = True, return_stderr = True)
-              if not mc_query_out or mc_query_err:
-                query_fail = True
-            else:
-              query_fail = True
-            if query_fail:
-              raise ValueError("Query to DAS resulted in an empty output or an error:"
-                               "\nstdout = '%s'\nstderr = '%s'" % (mc_query_out, mc_query_err))
+        dataset_q = dataset
+        if dataset_q.split('/')[-1].startswith('part'):
+          dataset_q = '/'.join(dataset.split('/')[:-1])
 
+        mc_query = Command(DASGOCLIENT_QUERY % (dataset_q, '*'))
+        mc_query.run()
+        if not mc_query.out or mc_query.err:
+          raise ValueError(
+            "Query to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
+            (mc_query.out, mc_query.err)
+          )
+
+        mc_release = Command(DASGOCLIENT_QUERY_RELEASE % dataset_q)
+        mc_release.run()
+        if not mc_release.out or mc_release.err:
+          raise ValueError(
+            "Query to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
+            (mc_release.out, mc_release.err)
+          )
+
+        mc_query_json = json.loads(mc_query.out)
+        mc_release_json = json.loads(mc_release.out)
+
+        for das_key in das_keys:
           das_parser = das_keys[das_key]['func']
-          das_query_results[dataset][das_key] = das_parser(mc_query_out.rstrip('\n')).strip()
+          if das_key != 'release':
+            das_key_idx = find_das_idx(mc_query_json, das_key)
+            das_query_results[dataset][das_key] = das_parser(mc_query_json[das_key_idx]['dataset'][0][das_key])
+          else:
+            das_query_results[dataset][das_key] = das_parser(mc_release_json[0][das_key][0]['name'])
 
     col_widths = {
       das_key:
         max(
           max(
             map(
-              lambda col_value: len(col_value), [
+              lambda col_value: len(str(col_value)), [
                 das_query_results[dataset][das_key] for dataset in das_query_results
               ]
             )
@@ -724,7 +771,7 @@ if __name__ == '__main__':
       print('  %s %s' % (
         passes_version_req_tick,
         '  '.join([
-          das_query_results[dataset][das_key].ljust(col_widths[das_key]) for das_key in das_keys
+          str(das_query_results[dataset][das_key]).ljust(col_widths[das_key]) for das_key in das_keys
         ])
       ))
 
@@ -861,25 +908,41 @@ if __name__ == '__main__':
         das_query_results = {}
         for dataset in datasets:
           das_query_results[dataset] = {}
-          for das_key in das_keys:
-            dasgoclient_query = DASGOCLIENT_QUERY_COMMON %                 \
-                                (dataset, das_key) if das_key != 'release' \
-                                else DASGOCLIENT_QUERY_RELEASE % dataset
-            dasgoclient_query_out, dasgoclient_query_err = run_cmd(
-              dasgoclient_query, do_not_log = True, return_stderr = True
-            )
-            das_parser = das_keys[das_key]['func']
-            das_query_results[dataset][das_key] = das_parser(dasgoclient_query_out.rstrip('\n')).strip()
 
-          if das_query_results[dataset]['dataset_access_type'] != 'VALID':
-            del das_query_results[dataset]
+          dasgoclient_query = Command(DASGOCLIENT_QUERY % (dataset, 'VALID'))
+          dasgoclient_query.run()
+          if not dasgoclient_query.out or dasgoclient_query.err:
+            raise ValueError(
+              "Query to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
+              (dasgoclient_query.out, dasgoclient_query.err)
+            )
+
+          dasgoclient_release = Command(DASGOCLIENT_QUERY_RELEASE % dataset)
+          dasgoclient_release.run()
+          if not dasgoclient_release.out or dasgoclient_release.err:
+            raise ValueError(
+              "Query to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
+              (dasgoclient_release.out, dasgoclient_release.err)
+            )
+
+          dasgoclient_query_json = json.loads(dasgoclient_query.out)
+          dasgoclient_release_json = json.loads(dasgoclient_release.out)
+          for das_key in das_keys:
+            das_parser = das_keys[das_key]['func']
+            if das_key != 'release':
+              das_key_idx = find_das_idx(dasgoclient_query_json, das_key)
+              das_query_results[dataset][das_key] = das_parser(
+                dasgoclient_query_json[das_key_idx]['dataset'][0][das_key]
+              )
+            else:
+              das_query_results[dataset][das_key] = das_parser(dasgoclient_release_json[0][das_key][0]['name'])
 
         col_widths = {
           das_key :
             max(
               max(
                 map(
-                  lambda col_value: len(col_value), [
+                  lambda col_value: len(str(col_value)), [
                       das_query_results[dataset][das_key] for dataset in das_query_results
                   ]
                 )
@@ -926,7 +989,7 @@ if __name__ == '__main__':
           print(' %s %s %s' % (
             passes_version_req_tick, is_last_modified_tick,
             '  '.join([
-              das_query_results[dataset][das_key].ljust(col_widths[das_key]) for das_key in das_keys
+              str(das_query_results[dataset][das_key]).ljust(col_widths[das_key]) for das_key in das_keys
             ])
           ))
           if passes_version_req:
@@ -973,16 +1036,14 @@ if __name__ == '__main__':
           # pick a single sample out of multiple from the same PD & acquisition era combination.
           # Otherwise, we would spend a lot of time on querying and matching the run and luminosity ranges.
 
-          runlumi_query = DASGOCLIENT_QUERY_RUNLUMI % selection['name']
-          runlumi_query_out, runlumi_query_err = run_cmd(
-            runlumi_query, do_not_log = True, return_stderr = True
-          )
-          if not runlumi_query_out or runlumi_query_err:
+          runlumi_query = Command(DASGOCLIENT_QUERY_RUNLUMI % selection['name'])
+          runlumi_query.run()
+          if not runlumi_query.out or runlumi_query.err:
             raise ValueError(
               "Was not able to fetch run and lumi ranges for the sample: %s" % selection['name']
             )
 
-          runlumi_data        = get_runlumi_data(runlumi_query_out)
+          runlumi_data        = get_runlumi_data(runlumi_query.out)
           runlumi_data_golden = get_data_golden(runlumi_data, golden_runlumi)
 
           if runlumi_data_golden:

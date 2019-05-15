@@ -1,6 +1,5 @@
 import imp
 import os
-import sklearn
 import pandas
 import cPickle as pickle
 import itertools
@@ -16,7 +15,7 @@ if found_xgboost:
   import xgboost
 else:
   xgb_path = os.path.join('/cvmfs/cms.cern.ch', os.environ['SCRAM_ARCH'] ,'external/py2-pippkgs_depscipy/3.0-njopjo7/lib/python2.7/site-packages')
-  if not hdfs.isdir(xgb_path):
+  if not os.path.isdir(xgb_path):
     raise ValueError('Cannot import xgboost')
   sys.path.insert(0, xgb_path)
   import xgboost as xgb
