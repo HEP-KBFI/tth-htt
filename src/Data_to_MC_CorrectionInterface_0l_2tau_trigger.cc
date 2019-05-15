@@ -82,8 +82,13 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0
   }
   else if(era_ == kEra_2018)
   {
-    // CV: tau leg efficiency for 2018 data not available from Tau POG yet (as of 2019/04/16)
-    throw cmsException(this) << "Implement me!";
+    const LocalFileInPath inputFileName_tauLeg("TauAnalysisTools/TauTriggerSFs/data/tauTriggerEfficiencies2018.root");
+    const std::string hadTauSelection_TauTriggerSFs2017 = aux::getHadTauSelectionLabel_2017(hadTauSelection_);
+    const std::string wpType = "MVAv2";
+    const std::string year = "2018";
+    effTrigger_tauLeg_ = new TauTriggerSFs2017(
+      inputFileName_tauLeg.fullPath(), "ditau", year, hadTauSelection_TauTriggerSFs2017, wpType
+    );
   }
   else
   {
