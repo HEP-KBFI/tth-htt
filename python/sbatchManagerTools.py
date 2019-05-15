@@ -175,8 +175,15 @@ def generate_sbatch_line(
     job_template_file = 'sbatch-node.sh.template',
     validate_outputs  = True,
   ):
-    if is_file_ok(output_file_name, validate_outputs, min_file_size):
-      return None
+    #------------------------------------------------------------------------------------------------
+    # CV: This check (which considerably slows down the execution of 'python tthAnalyzeRun_XXX.py') is no longer needed,
+    #     as the template scripts in https://github.com/HEP-KBFI/tth-htt/tree/master/python/templates
+    #     perform this check before starting to process the batch job
+    #     and skip the batch job in case the output file already exists.
+    #
+    #if is_file_ok(output_file_name, validate_outputs, min_file_size):
+    #  return None
+    #------------------------------------------------------------------------------------------------
 
     if log_file_name and os.path.exists(log_file_name):
         time           = None
