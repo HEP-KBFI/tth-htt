@@ -11,6 +11,8 @@
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 #include <DataFormats/Math/interface/LorentzVector.h> // math::PtEtaPhiMLorentzVector
 
+#include <TMath.h> // TMath::Abs()
+
 #include <vector> // std::vector<>
 #include <map> // std::map<,>
 #include <algorithm> // std::copy_n()
@@ -422,8 +424,39 @@ contains(const std::vector<std::string>& list_of_strings, const std::string& key
 /**
  * @brief Find file using FileInPatch mechanism
  */
-
 std::string
 findFile(const std::string& fileName);
+
+/**
+ * @brief Find generator-level jets produced in W->jj decay
+ *
+ * This function is used for the HH->multilepton and HH->bbWW analyses, *not* for the ttH analysis.
+ * Its code is put into the tthAnalysis/HiggsToTauTau package to avoid that the packages
+ * hhAnalysis/multilepton and hhAnalysis/bbww depend on each other.
+ *
+ */
+template<typename T>
+std::pair<const T*, const T*> 
+findGenJetsFromWBoson(const GenParticle* genWBoson, const std::vector<T>& genJets)
+{
+  const T* genJet1FromWBoson = nullptr;
+  const T* genJet2FromWBoson = nullptr;
+  double minDeltaMass = 1.e+3;
+  for ( typename std::vector<T>::const_iterator genJet1 = genJets.begin();
+	genJet1 != genJets.end(); ++genJet1 ) {
+    for ( typename std::vector<T>::const_iterator genJet2 = genJet1 + 1;
+	  genJet2 != genJets.end(); ++genJet2 ) {
+      Particle::LorentzVector genDijetP4 = genJet1->p4() + genJet2->p4();
+      double deltaMass = TMath::Abs(genDijetP4.mass() - genWBoson->mass());
+      double dR = deltaR(genDijetP4, genWBoson->p4());
+      if ( deltaMass < 5. && deltaMass < minDeltaMass && dR < 1. ) {
+	genJet1FromWBoson = &(*genJet1);
+	genJet2FromWBoson = &(*genJet2);
+	minDeltaMass = deltaMass;
+      }
+    }
+  }
+  return std::pair<const T*, const T*>(genJet1FromWBoson, genJet2FromWBoson);
+}
 
 #endif
