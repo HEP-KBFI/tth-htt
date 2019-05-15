@@ -7,6 +7,21 @@
 echo 'Unsetting JAVA_HOME=$JAVA_HOME'
 unset JAVA_HOME
 
+read -r -d '' _JAVA_OPTIONS <<- EOM
+  -Xmx256m
+  -Xms64m
+  -XX:ReservedCodeCacheSize=64m
+  -XX:ParallelGCThreads=1
+  -Dhadoop.log.dir=/usr/lib/hadoop/logs
+  -Dhadoop.log.file=hadoop.log
+  -Dhadoop.home.dir=/usr/lib/hadoop
+  -Dhadoop.id.str=
+  -Dhadoop.root.logger=INFO,console
+  -Dhadoop.policy.file=hadoop-policy.xml
+  -Djava.library.path=/usr/lib/hadoop/lib/native
+  -Djava.net.preferIPv4Stack=true
+EOM
+
 # This value is provided by sbatchManager.py that creates sbatch scripts based this template
 echo 'Running script {{ script_file }} (created from template {{ job_template_file }})'
 
@@ -46,6 +61,10 @@ run_failure_wrapped_executable() {
             echo "Maximum tries reached, will not try to resubmit any more. GL & HF"
         fi
     fi
+
+    echo "Delete job directory: rm -r $JOB_DIR"
+    rm -r $JOB_DIR
+
     return $EXIT_CODE
 }
 
