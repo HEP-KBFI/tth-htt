@@ -59,9 +59,9 @@ OBJECTS_MAP['ele']      = { 'n' : 2, 'human_name' : 'electron'    }
 OBJECTS_MAP['tau']      = { 'n' : 2, 'human_name' : 'tau'         }
 OBJECTS_MAP['jet']      = { 'n' : 4, 'human_name' : 'jet'         }
 OBJECTS_MAP['jetFwd']   = { 'n' : 4, 'human_name' : 'forward jet' }
-OBJECTS_MAP['ak4Jet']   = { 'n' : 4, 'human_name' : 'ak4 jet'     },
-OBJECTS_MAP['ak8Jet']   = { 'n' : 2, 'human_name' : 'ak8 jet'     },
-OBJECTS_MAP['ak8lsJet'] = { 'n' : 2, 'human_name' : 'ak8 LS jet'  },
+OBJECTS_MAP['ak4Jet']   = { 'n' : 2, 'human_name' : 'ak4 jet'     }
+OBJECTS_MAP['ak8Jet']   = { 'n' : 2, 'human_name' : 'ak8 jet'     }
+OBJECTS_MAP['ak8lsJet'] = { 'n' : 2, 'human_name' : 'ak8 LS jet'  }
 
 # For counting the number of preselected objects
 PRESELECTION_COUNTER_BRANCHES = [ 'n_presel_%s' % object_prefix for object_prefix in OBJECTS_MAP ]
@@ -107,13 +107,13 @@ OBJECTS_MAP['jet']['branch_names'] = COMMON_BRANCH_NAMES | { 'CSV', 'DeepCSV', '
 
 OBJECTS_MAP['jetFwd']['branch_names'] = COMMON_BRANCH_NAMES
 
-OBJECTS_MAP['ak4Jet'] = COMMON_BRANCH_NAMES | { 'CSV' }
+OBJECTS_MAP['ak4Jet']['branch_names'] = COMMON_BRANCH_NAMES | { 'CSV', }
 
-SUBJET_BRANCHES = { 'subjet%d_%s' % (idx, variable) for idx in range(2) for variable in set(COMMON_BRANCH_NAMES | { 'CSV' }) }
+SUBJET_BRANCHES = { 'subjet%d_%s' % (idx, variable) for idx in range(2) for variable in set(COMMON_BRANCH_NAMES | { 'CSV', }) }
 
-OBJECTS_MAP['ak8Jet'] = COMMON_BRANCH_NAMES | { 'msoftdrop', 'tau1', 'tau2' } | SUBJET_BRANCHES
+OBJECTS_MAP['ak8Jet']['branch_names'] = COMMON_BRANCH_NAMES | { 'msoftdrop', 'tau1', 'tau2' } | SUBJET_BRANCHES
 
-OBJECTS_MAP['ak8lsJet'] = COMMON_BRANCH_NAMES | { 'msoftdrop', 'tau1', 'tau2' } | SUBJET_BRANCHES
+OBJECTS_MAP['ak8lsJet']['branch_names'] = COMMON_BRANCH_NAMES | { 'msoftdrop', 'tau1', 'tau2' } | SUBJET_BRANCHES
 
 LEADING_TYPES = [ 'leading', 'subleading', 'third', 'fourth' ]
 
@@ -918,7 +918,9 @@ if args.analysis == 'tth':
   del OBJECTS_MAP['ak8lsJet']
 elif args.analysis == 'hh_bbww':
   del OBJECTS_MAP['jet']
+  del OBJECTS_MAP['jetFwd']
   del OBJECTS_MAP['tau']
+  del OBJECTS_MAP['ak8lsJet']
 
 if args.command == 'count':
   get_stats(args.input, args.tree, args.count_objects)
@@ -1024,7 +1026,7 @@ branch_names_common = branch_names_ref & branch_names_test
 # in both TTrees
 run_branch_name = 'run'
 ls_branch_name  = 'ls'
-evt_branch_name = 'nEvent'
+evt_branch_name = 'nEvent' if args.analysis == 'tth' else 'event'
 
 # The branch names of run, lumi and event numbers should definitely be in the sync Ntuple
 event_branch_names_list = [ run_branch_name, ls_branch_name, evt_branch_name ]
