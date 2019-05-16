@@ -590,6 +590,21 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
               path           = subentry_file.name,
             ))
           nBins = histogram.GetNbinsX()
+          if nBins != 9 and histogram_name in [
+                HISTOGRAM_COUNTWEIGHTED_LHESCALE,
+                HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU,
+                HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE,
+                HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU,
+                HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM,
+                HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
+                HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM,
+                HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
+              ]:
+            logging.warning("Expected 9 bins but found {nBins} bins in {histogram_name}".format(
+              nBins          = nBins,
+              histogram_name = histogram_name,
+            ))
+            continue
           index_entry[HISTOGRAM_COUNT_KEY][histogram_name] = [
             histogram.GetBinContent(idxBin) for idxBin in range(1, nBins + 1)
           ]
