@@ -1198,6 +1198,8 @@ class analyzeConfig(object):
                     lines_makefile.append("%s: %s" % (make_target_batch, make_dependency))
                     make_target_batches.append(make_target_batch)
                     idxBatch = idxBatch + 1
+                    if not make_target_batch in self.phoniesToAdd:
+                        self.phoniesToAdd.append(make_target_batch)
                 # do not remove the output file -> maybe it's valid
                 # the sbatch job checks the existance of the file anyways
                 #lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
@@ -1344,9 +1346,12 @@ class analyzeConfig(object):
         """Adds the commands to Makefile that are necessary for making control plots of the jet->tau fake background estimation procedure.
         """
         for idxJob, job in enumerate(self.jobOptions_make_plots.values()):
-            lines_makefile.append("phony_makePlots%i: %s" % (idxJob, job['inputFile']))
+            make_target_plot = "phony_makePlots%i" % idxJob
+            lines_makefile.append("%s: %s" % (make_target_plot, job['inputFile']))
             lines_makefile.append("\t%s %s" % (job['executable'], job['cfgFile_modified']))
             lines_makefile.append("")
+            if not make_target_plot in self.phoniesToAdd:
+                self.phoniesToAdd.append(make_target_plot)
 
     def addToMakefile_outRoot(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the final condensed *.root output file
@@ -1371,7 +1376,10 @@ class analyzeConfig(object):
         if self.rootOutputAux:
             self.targets.append("selEventTree_hadd")
         for idxJob, jobOptions in enumerate(self.jobOptions_make_plots.values()):
-            self.targets.append("phony_makePlots%i" % idxJob)
+            make_target_plot = "phony_makePlots%i" % idxJob
+            self.targets.append(make_target_plot)
+            if not make_target_plot in self.phoniesToAdd:
+                  self.phoniesToAdd.append(make_target_plot)
         for rootOutput in self.rootOutputAux.values():
             self.filesToClean.append(rootOutput[0])
         if len(self.targets) == 0:
