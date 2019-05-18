@@ -1171,8 +1171,10 @@ class analyzeConfig(object):
             self.phoniesToAdd.append(make_target)
         if self.is_sbatch and self.run_hadd_master_on_batch:
             lines_makefile.append("%s: %s" % (make_target, make_dependency))
-            for outputFile in outputFiles.values():
-                lines_makefile.append("\t%s %s" % ("rm -f", outputFile))
+            # do not remove the output file -> maybe it's valid
+            # the sbatch job checks the existance of the file anyways
+            #for outputFile in outputFiles.values():
+            #    lines_makefile.append("\t%s %s" % ("rm -f", outputFile))
             sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, label))
             jobOptions = {}
             for key in outputFiles.keys():
