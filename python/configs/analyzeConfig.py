@@ -1273,7 +1273,7 @@ class analyzeConfig(object):
             lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addFlips))
         else:
             for job in self.jobOptions_addFlips.values():
-                lines_makefile.append("\t%s %s &> %s" % (self.executable_addFlips, jobOptions['cfgFile_modified'], jobOptions['logFile']))
+                lines_makefile.append("\t%s %s &> %s" % (self.executable_addFlips, job['cfgFile_modified'], job['logFile']))
         lines_makefile.append("")
         for job in self.jobOptions_addFlips.values():
             self.filesToClean.append(job['outputFile'])
