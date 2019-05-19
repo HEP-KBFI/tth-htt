@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-05-14 02:51:17 with the following command:
+# file generated at 2019-05-19 16:54:26 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2017_RunIIFall17MiniAODv2.txt -m python/samples/metaDict_2017_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2017_RunIIFall17MiniAODv2.txt
 
 meta_dictionary = OD()
@@ -697,17 +697,17 @@ meta_dictionary["/ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17M
   ("comment",               "status: VALID; size: 1.31TB; nevents: 30.49M; release: 9_4_7; last modified: 2019-03-10 11:48:36"),
 ])
 
-meta_dictionary["/TGJets_TuneCP5_13TeV_amcatnlo_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] =  OD([
+meta_dictionary["/TGJets_leptonDecays_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
   ("crab_string",           ""),
   ("sample_category",       "Rares"),
-  ("process_name_specific", "TGJets"),
-  ("nof_db_events",         1909000),
-  ("nof_db_files",          60),
-  ("fsize_db",              96871538662),
+  ("process_name_specific", "TGJets_PSweights"),
+  ("nof_db_events",         6649547),
+  ("nof_db_files",          110),
+  ("fsize_db",              332620767606),
   ("xsection",              2.967),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: VALID; size: 96.87GB; nevents: 1.91M; release: 9_4_6_patch1; last modified: 2018-06-20 03:31:34"),
+  ("comment",               "status: VALID; size: 332.62GB; nevents: 6.65M; release: 9_4_7; last modified: 2018-07-26 01:58:13"),
 ])
 
 meta_dictionary["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
@@ -1403,13 +1403,13 @@ meta_dictionary["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAO
   ("crab_string",           ""),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WJetsToLNu_madgraphMLM"),
-  ("nof_db_events",         15594956),
-  ("nof_db_files",          256),
-  ("fsize_db",              614474136269),
+  ("nof_db_events",         16515556),
+  ("nof_db_files",          272),
+  ("fsize_db",              650858332313),
   ("xsection",              61526.7),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: PRODUCTION; size: 614.47GB; nevents: 15.59M; release: 9_4_6_patch1; last modified: 2019-04-11 22:11:26"),
+  ("comment",               "status: PRODUCTION; size: 650.86GB; nevents: 16.52M; release: 9_4_6_patch1; last modified: 2019-04-11 22:11:26"),
 ])
 
 meta_dictionary["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM"] =  OD([
@@ -1871,13 +1871,13 @@ meta_dictionary["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2
   ("crab_string",           ""),
   ("sample_category",       "EWK"),
   ("process_name_specific", "ZZTo4L_ext2"),
-  ("nof_db_events",         34532355),
-  ("nof_db_files",          498),
-  ("fsize_db",              1457663587353),
+  ("nof_db_events",         44813934),
+  ("nof_db_files",          704),
+  ("fsize_db",              1892845491892),
   ("xsection",              1.256),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: PRODUCTION; size: 1.46TB; nevents: 34.53M; release: 9_4_7; last modified: 2019-05-05 13:50:36"),
+  ("comment",               "status: PRODUCTION; size: 1.89TB; nevents: 44.81M; release: 9_4_7; last modified: 2019-05-05 13:50:36"),
 ])
 
 meta_dictionary["/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
@@ -2228,8 +2228,8 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall
 # TTW:                       25.74M
 # TTWW:                      200.00k
 # TT:                        962.83M
-# Rares:                     95.54M
+# Rares:                     100.28M
 # VH:                        10.67M
-# EWK:                       1.21G
+# EWK:                       1.22G
 # QCD:                       399.84M
 
