@@ -80,7 +80,7 @@ public:
    *     5  - muon from b
    *     15 - muon from prompt tau
    * - gen electrons:
-   *     1  - prompt electron (including gamma* -> mu mu)
+   *     1  - prompt electron (including gamma* -> e e)
    *     3  - electron from light or unknown
    *     4  - electron from c
    *     5  - electron from b

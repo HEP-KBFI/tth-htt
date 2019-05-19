@@ -1,14 +1,16 @@
 #ifndef tthAnalysis_HiggsToTauTau_ParticleCollectionGenMatcher_h
 #define tthAnalysis_HiggsToTauTau_ParticleCollectionGenMatcher_h
 
-#include <DataFormats/Math/interface/deltaR.h> // deltaR()
-
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h"
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h"
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhoton.h"
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h"
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"
-#include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
+
+#include <DataFormats/Math/interface/deltaR.h> // deltaR()
 
 #include <algorithm> // std::find()
 
@@ -175,19 +177,56 @@ protected:
         Tgen * genMatch = const_cast<Tgen *>(&genParticles.at(genMatchIdx));
 
         std::vector<unsigned int> genAbsPdgIds;
+        std::vector<unsigned int> genPartFlavs;
+        if(typeid(Trec) == typeid(RecoMuon) && genParticleType == GenParticleType::kGenMuon)
+        {
+          genPartFlavs = { 1, 15 };
+        }
+        else if(typeid(Trec) == typeid(RecoElectron))
+        {
+          if(genParticleType == GenParticleType::kGenPhoton)
+          {
+            genPartFlavs = { 22 };
+          }
+          else if(genParticleType == GenParticleType::kGenElectron)
+          {
+            genPartFlavs = { 1, 15 };
+          }
+        }
+        else if(typeid(Trec) == typeid(RecoHadTau))
+        {
+          if(genParticleType == GenParticleType::kGenMuon)
+          {
+            genPartFlavs = { 2, 4 };
+          }
+          else if(genParticleType == GenParticleType::kGenElectron)
+          {
+            genPartFlavs = { 1, 3 };
+          }
+          else if(genParticleType == GenParticleType::kGenAnyLepton)
+          {
+            genPartFlavs = { 1, 2, 3, 4 };
+          }
+        }
         switch(genParticleType)
         {
           case GenParticleType::kGenElectron:  genAbsPdgIds = { 11 };     break;
           case GenParticleType::kGenMuon:      genAbsPdgIds = { 13 };     break;
           case GenParticleType::kGenAnyLepton: genAbsPdgIds = { 11, 13 }; break;
           case GenParticleType::kGenPhoton:    genAbsPdgIds = { 22 };     break;
-          case GenParticleType::kGenAny:                                 break;
+          case GenParticleType::kGenAny:                                  break;
         }
 
-        if(genAbsPdgIds.empty() ||
-            (! genAbsPdgIds.empty() &&
-             std::find(genAbsPdgIds.begin(), genAbsPdgIds.end(), std::abs(genMatch->pdgId())) != genAbsPdgIds.end())
-           )
+        const bool hasGenAbsPdgIdMatch = genAbsPdgIds.empty() || (
+          ! genAbsPdgIds.empty() &&
+          std::find(genAbsPdgIds.begin(), genAbsPdgIds.end(), std::abs(genMatch->pdgId())) != genAbsPdgIds.end()
+        );
+        const bool hasGenPartFlavMatch = genPartFlavs.empty() || (
+          ! genPartFlavs.empty() &&
+          std::find(genPartFlavs.begin(), genPartFlavs.end(), std::abs(genMatch->genPartFlav())) != genPartFlavs.end()
+        );
+
+        if(hasGenAbsPdgIdMatch && hasGenPartFlavMatch)
         {
           Trec * recParticle_nonconst = const_cast<Trec *>(recParticle);
           linker(*recParticle_nonconst, genMatch);
@@ -257,24 +296,10 @@ protected:
   GenJetLinker genJetLinker_;
 };
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h"
-
 typedef ParticleCollectionGenMatcher<RecoElectron> RecoElectronCollectionGenMatcher;
-
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h"
-
 typedef ParticleCollectionGenMatcher<RecoMuon> RecoMuonCollectionGenMatcher;
-
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"
-
 typedef ParticleCollectionGenMatcher<RecoHadTau> RecoHadTauCollectionGenMatcher;
-
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
-
 typedef ParticleCollectionGenMatcher<RecoJet> RecoJetCollectionGenMatcher;
-
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetBase.h" // CV: used for generator-level matching of subjets in boosted H->bb and boosted W->jj decays
-
 typedef ParticleCollectionGenMatcher<RecoJetBase> RecoJetBaseCollectionGenMatcher;
 
 #endif // tthAnalysis_HiggsToTauTau_ParticleCollectionGenMatcher_h
