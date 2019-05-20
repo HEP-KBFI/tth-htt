@@ -1166,8 +1166,10 @@ class analyzeConfig(object):
             self.phoniesToAdd.append(make_target)
         if self.is_sbatch and self.run_hadd_master_on_batch:
             lines_makefile.append("%s: %s" % (make_target, make_dependency))
-            for outputFile in outputFiles.values():
-                lines_makefile.append("\t%s %s" % ("rm -f", outputFile))
+            # do not remove the output file -> maybe it's valid
+            # the sbatch job checks the existance of the file anyways
+            #for outputFile in outputFiles.values():
+            #    lines_makefile.append("\t%s %s" % ("rm -f", outputFile))
             sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, label))
             jobOptions = {}
             for key in outputFiles.keys():
@@ -1193,7 +1195,11 @@ class analyzeConfig(object):
                     lines_makefile.append("%s: %s" % (make_target_batch, make_dependency))
                     make_target_batches.append(make_target_batch)
                     idxBatch = idxBatch + 1
-                lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
+                    if not make_target_batch in self.phoniesToAdd:
+                        self.phoniesToAdd.append(make_target_batch)
+                # do not remove the output file -> maybe it's valid
+                # the sbatch job checks the existance of the file anyways
+                #lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
                 scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]))   
                 lines_makefile.append("\t%s %s" % ("python", scriptFile))
             lines_makefile.append("")
@@ -1267,7 +1273,7 @@ class analyzeConfig(object):
             lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addFlips))
         else:
             for job in self.jobOptions_addFlips.values():
-                lines_makefile.append("\t%s %s &> %s" % (self.executable_addFlips, jobOptions['cfgFile_modified'], jobOptions['logFile']))
+                lines_makefile.append("\t%s %s &> %s" % (self.executable_addFlips, job['cfgFile_modified'], job['logFile']))
         lines_makefile.append("")
         for job in self.jobOptions_addFlips.values():
             self.filesToClean.append(job['outputFile'])
@@ -1337,9 +1343,12 @@ class analyzeConfig(object):
         """Adds the commands to Makefile that are necessary for making control plots of the jet->tau fake background estimation procedure.
         """
         for idxJob, job in enumerate(self.jobOptions_make_plots.values()):
-            lines_makefile.append("phony_makePlots%i: %s" % (idxJob, job['inputFile']))
+            make_target_plot = "phony_makePlots%i" % idxJob
+            lines_makefile.append("%s: %s" % (make_target_plot, job['inputFile']))
             lines_makefile.append("\t%s %s" % (job['executable'], job['cfgFile_modified']))
             lines_makefile.append("")
+            if not make_target_plot in self.phoniesToAdd:
+                self.phoniesToAdd.append(make_target_plot)
 
     def addToMakefile_outRoot(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the final condensed *.root output file
@@ -1364,7 +1373,10 @@ class analyzeConfig(object):
         if self.rootOutputAux:
             self.targets.append("selEventTree_hadd")
         for idxJob, jobOptions in enumerate(self.jobOptions_make_plots.values()):
-            self.targets.append("phony_makePlots%i" % idxJob)
+            make_target_plot = "phony_makePlots%i" % idxJob
+            self.targets.append(make_target_plot)
+            if not make_target_plot in self.phoniesToAdd:
+                  self.phoniesToAdd.append(make_target_plot)
         for rootOutput in self.rootOutputAux.values():
             self.filesToClean.append(rootOutput[0])
         if len(self.targets) == 0:

@@ -225,7 +225,7 @@ def generate_sbatch_line(
         output_file_basename   = [ os.path.basename(output_file_name) ] if output_file_name else [],
         script_file_name       = script_file_name,
         log_file_name          = log_file_name,
-        skipIfOutputFileExists = str(bool(output_file_name)),
+        skipIfOutputFileExists = False,
         job_template_file      = job_template_file,
     )
     return submissionStatement

@@ -13,4 +13,6 @@ log.txt
 G__HDFS.*
 __init__.py
 *~
+*.cflags
+*.cxxflags
 
