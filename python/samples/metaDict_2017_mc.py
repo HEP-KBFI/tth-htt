@@ -145,7 +145,7 @@ meta_dictionary["/ttHTobb_ttTo2L2Nu_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall1
   ("nof_db_events",         9794620),
   ("nof_db_files",          204),
   ("fsize_db",              608369897715),
-  ("xsection",              0.03136),
+  ("xsection",              0.03137),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 608.37GB; nevents: 9.79M; release: 9_4_6_patch1; last modified: 2018-07-02 18:35:07"),

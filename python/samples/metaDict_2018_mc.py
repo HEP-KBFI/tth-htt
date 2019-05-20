@@ -82,7 +82,7 @@ meta_dictionary["/ttHTobb_ttTo2L2Nu_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutum
   ("nof_db_events",         9572600),
   ("nof_db_files",          334),
   ("fsize_db",              595087252743),
-  ("xsection",              0.03136),
+  ("xsection",              0.03137),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 595.09GB; nevents: 9.57M; release: 10_2_5; last modified: 2019-03-28 14:35:22"),
