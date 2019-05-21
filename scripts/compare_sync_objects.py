@@ -74,11 +74,11 @@ COMMON_BRANCH_NAMES = { 'pt', 'eta', 'phi', 'E', }
 LEPTON_BRANCH_NAMES = COMMON_BRANCH_NAMES | {
   'charge', 'dxy', 'dz', 'miniRelIso', 'miniIsoCharged', 'miniIsoNeutral', 'PFRelIso04',
   'jetNDauChargedMVASel', 'jetPtRel', 'jetPtRatio', 'jetCSV', 'jetDeepCSV', 'jetDeepJet',
-  'sip3D', 'dxyAbs', 'isfakeablesel', 'ismvasel', 'leptonMVA', 'conept',
+  'sip3D', 'dxyAbs', 'isfakeablesel', 'ismvasel', 'leptonMVA', 'conept', 'isGenMatched',
 }
 
 OBJECTS_MAP['mu']['branch_names'] = LEPTON_BRANCH_NAMES | {
-  'segmentCompatibility', 'mediumID', 'dpt_div_pt',
+  'segmentCompatibility', 'mediumID', 'dpt_div_pt', 'isGenMatched'
 }
 
 OBJECTS_MAP['ele']['branch_names'] = LEPTON_BRANCH_NAMES | {
@@ -103,7 +103,7 @@ OBJECTS_MAP['tau']['branch_names'] = COMMON_BRANCH_NAMES | {
   'againstElectronMediumMVA6', 'againstElectronTightMVA6',
 }
 
-OBJECTS_MAP['jet']['branch_names'] = COMMON_BRANCH_NAMES | { 'CSV', 'DeepCSV', 'DeepJet' }
+OBJECTS_MAP['jet']['branch_names'] = COMMON_BRANCH_NAMES | { 'CSV', 'DeepCSV', 'DeepJet', 'QGdiscr' }
 
 OBJECTS_MAP['jetFwd']['branch_names'] = COMMON_BRANCH_NAMES
 
@@ -921,6 +921,7 @@ elif args.analysis == 'hh_bbww':
   del OBJECTS_MAP['jetFwd']
   del OBJECTS_MAP['tau']
   del OBJECTS_MAP['ak8lsJet']
+PRESELECTION_COUNTER_BRANCHES = [ 'n_presel_%s' % object_prefix for object_prefix in OBJECTS_MAP ]
 
 if args.command == 'count':
   get_stats(args.input, args.tree, args.count_objects)
