@@ -104,12 +104,6 @@ RecoElectron::is_muon() const
   return false;
 }
 
-bool
-RecoElectron::isGenMatched() const
-{
-  return !! genLepton_ || !! genPhoton_;
-}
-
 std::ostream &
 operator<<(std::ostream & stream,
            const RecoElectron & electron)

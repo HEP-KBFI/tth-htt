@@ -51,13 +51,6 @@ public:
   bool
   is_muon() const override;
 
-  /**
-   * @brief Checks if the electron is matched to gen electrons or photons
-   * @return
-   */
-  bool
-  isGenMatched() const;
-
   const static bool useNoIso = true;
 
 //--- observables specific to electrons
