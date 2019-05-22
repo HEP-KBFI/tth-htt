@@ -208,14 +208,11 @@ int
 get_era(const std::string & eraString);
 
 int
-get_tau_id_wp_int(const std::string & wp_str);
+get_tau_id_wp_int(const std::string & tauId_str);
 
 int
 get_tau_id_wp_int(TauID tauID,
                   const std::string & wp_str);
-
-std::string
-get_tau_id_wp_str(int wp_int);
 
 std::string
 get_tau_id_wp_str(TauID tauID,

@@ -84,23 +84,14 @@ get_era(const std::string & eraString)
 }
 
 int
-get_tau_id_wp_int(const std::string & wp_str)
+get_tau_id_wp_int(const std::string & tauId_str)
 {
-  int wp_int = -1;
-  if     (wp_str == "VVLoose") wp_int = 1;
-  else if(wp_str == "VLoose" ) wp_int = 2;
-  else if(wp_str == "Loose"  ) wp_int = 3;
-  else if(wp_str == "Medium" ) wp_int = 4;
-  else if(wp_str == "Tight"  ) wp_int = 5;
-  else if(wp_str == "VTight" ) wp_int = 6;
-  else if(wp_str == "VVTight") wp_int = 7;
-  else
+  const std::string wp_type = tauId_str.substr(0, 7);
+  if(! TauID_PyMap.count(wp_type))
   {
-    throw cmsException(__func__, __LINE__)
-      << "Invalid argument 'wp_str' = " << wp_str
-    ;
+    throw cmsException(__func__, __LINE__) << "Unrecognizable tau ID selection: " << tauId_str;
   }
-  return wp_int;
+  return get_tau_id_wp_int(TauID_PyMap.at(wp_type), tauId_str.substr(7));
 }
 
 int
@@ -119,21 +110,6 @@ get_tau_id_wp_int(TauID tauID,
     ;
   }
   return static_cast<int>(std::distance(levels.begin(), wp_str_it)) + 1;
-}
-
-std::string
-get_tau_id_wp_str(int wp_int)
-{
-  if     (wp_int == 1) return "VVLoose";
-  else if(wp_int == 2) return "VLoose";
-  else if(wp_int == 3) return "Loose";
-  else if(wp_int == 4) return "Medium";
-  else if(wp_int == 5) return "Tight";
-  else if(wp_int == 6) return "VTight";
-  else if(wp_int == 7) return "VVTight";
-  else throw cmsException(__func__, __LINE__)
-         << "Invalid argument 'wp_int' = " << wp_int
-       ;
 }
 
 std::string

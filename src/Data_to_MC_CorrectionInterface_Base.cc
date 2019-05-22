@@ -91,7 +91,7 @@ Data_to_MC_CorrectionInterface_Base::~Data_to_MC_CorrectionInterface_Base()
 void
 Data_to_MC_CorrectionInterface_Base::setHadTauSelection(const std::string & hadTauSelection)
 {
-  hadTauSelection_ = get_tau_id_wp_int(hadTauSelection.substr(7));
+  hadTauSelection_ = get_tau_id_wp_int(hadTauSelection);
 }
 
 void
