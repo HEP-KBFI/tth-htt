@@ -436,6 +436,15 @@ private:
   Int_t * tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT;
   Int_t * tau_byVVTightIsolationMVArun2v1DBdR03oldDMwLT;
   Float_t * tau_rawMVArun2v1DBdR03oldDMwLT;
+  Int_t * tau_byVVVLooseDeepTau2017v2VSjet;
+  Int_t * tau_byVVLooseDeepTau2017v2VSjet;
+  Int_t * tau_byVLooseDeepTau2017v2VSjet;
+  Int_t * tau_byLooseDeepTau2017v2VSjet;
+  Int_t * tau_byMediumDeepTau2017v2VSjet;
+  Int_t * tau_byTightDeepTau2017v2VSjet;
+  Int_t * tau_byVTightDeepTau2017v2VSjet;
+  Int_t * tau_byVVTightDeepTau2017v2VSjet;
+  Float_t * tau_byDeepTau2017v2VSjetraw;
   Int_t * tau_againstMuonLoose3;
   Int_t * tau_againstMuonTight3;
   Int_t * tau_againstElectronVLooseMVA6;

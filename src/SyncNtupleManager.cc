@@ -335,6 +335,15 @@ SyncNtupleManager::initializeBranches()
     tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT,  "byVTightIsolationMVArun2v1DBdR03oldDMwLT",
     tau_byVVTightIsolationMVArun2v1DBdR03oldDMwLT, "byVVTightIsolationMVArun2v1DBdR03oldDMwLT",
     tau_rawMVArun2v1DBdR03oldDMwLT,                "rawMVArun2v1DBdR03oldDMwLT",
+    tau_byVVVLooseDeepTau2017v2VSjet,              "byVVVLooseDeepTau2017v2VSjet",
+    tau_byVVLooseDeepTau2017v2VSjet,               "byVVLooseDeepTau2017v2VSjet",
+    tau_byVLooseDeepTau2017v2VSjet,                "byVLooseDeepTau2017v2VSjet",
+    tau_byLooseDeepTau2017v2VSjet,                 "byLooseDeepTau2017v2VSjet",
+    tau_byMediumDeepTau2017v2VSjet,                "byMediumDeepTau2017v2VSjet",
+    tau_byTightDeepTau2017v2VSjet,                 "byTightDeepTau2017v2VSjet",
+    tau_byVTightDeepTau2017v2VSjet,                "byVTightDeepTau2017v2VSjet",
+    tau_byVVTightDeepTau2017v2VSjet,               "byVVTightDeepTau2017v2VSjet",
+    tau_byDeepTau2017v2VSjetraw,                   "byDeepTau2017v2VSjetraw",
     tau_againstMuonLoose3,                         "againstMuonLoose3",
     tau_againstMuonTight3,                         "againstMuonTight3",
     tau_againstElectronVLooseMVA6,                 "againstElectronVLooseMVA6",
@@ -573,7 +582,7 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
     tau_decayModeFindingOldDMs[i] = hadtau -> decayModeFinding();
     tau_decayModeFindingNewDMs[i] = hadtau -> decayModeFindingNew();
 
-    const Int_t idMVArun2dR03 = hadtau -> id_mva();
+    const Int_t idMVArun2dR03 = hadtau -> id_mva(TauID::MVAoldDMdR032017v2);
     tau_byVVLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 1 ? 1 : 0;
     tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 2 ? 1 : 0;
     tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 3 ? 1 : 0;
@@ -581,7 +590,18 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
     tau_byTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 5 ? 1 : 0;
     tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 6 ? 1 : 0;
     tau_byVVTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 7 ? 1 : 0;
-    tau_rawMVArun2v1DBdR03oldDMwLT[i] = hadtau -> raw_mva();
+    tau_rawMVArun2v1DBdR03oldDMwLT[i] = hadtau -> raw_mva(TauID::MVAoldDMdR032017v2);
+
+    const Int_t idDeepTauVSjet = hadtau -> id_mva(TauID::DeepTau2017v2VSjet);
+    tau_byVVVLooseDeepTau2017v2VSjet[i] = idDeepTauVSjet >= 1 ? 1 : 0;
+    tau_byVVLooseDeepTau2017v2VSjet[i] = idDeepTauVSjet >= 2 ? 1 : 0;
+    tau_byVLooseDeepTau2017v2VSjet[i] = idDeepTauVSjet >= 3 ? 1 : 0;
+    tau_byLooseDeepTau2017v2VSjet[i] = idDeepTauVSjet >= 4 ? 1 : 0;
+    tau_byMediumDeepTau2017v2VSjet[i] = idDeepTauVSjet >= 5 ? 1 : 0;
+    tau_byTightDeepTau2017v2VSjet[i] = idDeepTauVSjet >= 6 ? 1 : 0;
+    tau_byVTightDeepTau2017v2VSjet[i] = idDeepTauVSjet >= 7 ? 1 : 0;
+    tau_byVVTightDeepTau2017v2VSjet[i] = idDeepTauVSjet >= 8 ? 1 : 0;
+    tau_byDeepTau2017v2VSjetraw[i] = hadtau -> raw_mva(TauID::DeepTau2017v2VSjet);
 
     const Int_t idAntiMu = hadtau -> antiMuon();
     tau_againstMuonLoose3[i] = idAntiMu >= 1 ? 1 : 0;
@@ -829,6 +849,15 @@ SyncNtupleManager::reset()
     tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT,
     tau_byVVTightIsolationMVArun2v1DBdR03oldDMwLT,
     tau_rawMVArun2v1DBdR03oldDMwLT,
+    tau_byVVVLooseDeepTau2017v2VSjet,
+    tau_byVVLooseDeepTau2017v2VSjet,
+    tau_byVLooseDeepTau2017v2VSjet,
+    tau_byLooseDeepTau2017v2VSjet,
+    tau_byMediumDeepTau2017v2VSjet,
+    tau_byTightDeepTau2017v2VSjet,
+    tau_byVTightDeepTau2017v2VSjet,
+    tau_byVVTightDeepTau2017v2VSjet,
+    tau_byDeepTau2017v2VSjetraw,
     tau_againstMuonLoose3,
     tau_againstMuonTight3,
     tau_againstElectronVLooseMVA6,
