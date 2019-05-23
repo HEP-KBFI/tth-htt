@@ -87,8 +87,12 @@ class syncNtupleConfig:
     final_output_dir = os.path.join(output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)
 
-    common_args = "-m %s -v %s -e %s -s %s -q %s -g %s -y %s" % \
-      ('sync_wMEM' if with_mem else 'sync',  version, era, ' '.join(systematics_label), jet_cleaning, gen_matching, use_home)
+    common_args = "-m %s -v %s -e %s -s %s -y %s " % \
+      ('sync_wMEM' if with_mem else 'sync',  version, era, ' '.join(systematics_label), use_home)
+    if jet_cleaning:
+      common_args += " -q %s " % jet_cleaning
+    if gen_matching:
+      common_args += " -g %s " % gen_matching
     additional_args = " -E"
     if self.dry_run:
       additional_args += " -d"
