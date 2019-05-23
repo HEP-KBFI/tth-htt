@@ -1202,11 +1202,14 @@ class analyzeConfig(object):
                     idxBatch = idxBatch + 1
                     if not make_target_batch in self.phoniesToAdd:
                         self.phoniesToAdd.append(make_target_batch)
-                # do not remove the output file -> maybe it's valid
-                # the sbatch job checks the existance of the file anyways
-                #lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
-                scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]))   
-                lines_makefile.append("\t%s %s" % ("python", scriptFile))
+                if self.is_sbatch:
+                    # do not remove the output file -> maybe it's valid
+                    # the sbatch job checks the existance of the file anyways
+                    #lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
+                    scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]))
+                    lines_makefile.append("\t%s %s" % ("python", scriptFile))
+                else:
+                    lines_makefile.append("\thadd -f %s %s" % (outputFiles[key], ' '.join(inputFiles[key])))
             lines_makefile.append("")
             lines_makefile.append("%s: %s" % (make_target, " ".join(make_target_batches)))
         lines_makefile.append("")
