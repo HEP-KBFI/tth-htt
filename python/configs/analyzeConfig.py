@@ -1200,7 +1200,7 @@ class analyzeConfig(object):
                     lines_makefile.append("%s: %s" % (make_target_batch, make_dependency))
                     make_target_batches.append(make_target_batch)
                     idxBatch = idxBatch + 1
-                    if not make_target_batch in self.phoniesToAdd:
+                    if make_target_batch not in self.phoniesToAdd:
                         self.phoniesToAdd.append(make_target_batch)
                 if self.is_sbatch:
                     # do not remove the output file -> maybe it's valid
