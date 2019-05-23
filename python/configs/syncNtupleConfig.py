@@ -70,6 +70,7 @@ class syncNtupleConfig:
         gen_matching,
         project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau'),
         file_pattern = 'tthAnalyzeRun_%s.py',
+        suffix = '',
       ):
 
     self.running_method     = running_method
@@ -155,6 +156,8 @@ class syncNtupleConfig:
       self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
     ))
     self.makefile_path = os.path.join(config_dir, 'Makefile_sync')
+    if suffix:
+      self.makefile_path += "_{}".format(suffix)
 
   def create(self):
     create_if_not_exists(self.hadd_log_dir_path)
