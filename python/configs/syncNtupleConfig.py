@@ -42,7 +42,7 @@ clean:
 \t{{ channel_cmd['clean'] }}{% endfor %}
 \trm -f {{ output_file }}
 
-.PHONY: clean
+.PHONY: clean run
 
 '''
 

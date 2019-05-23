@@ -105,6 +105,7 @@ def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, i
         phonies.append(' '.join(phoniesToAdd))
     if len(phonies) > 0:
         lines_makefile_with_header.append(".PHONY: %s" % ' '.join(phonies))
+        lines_makefile_with_header.append("")
     if filesToClean:
         lines_makefile_with_header.append("clean:")
         for fileToClean in filesToClean:

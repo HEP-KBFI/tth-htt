@@ -1135,7 +1135,7 @@ class analyzeConfig(object):
     def addToMakefile_analyze(self, lines_makefile, make_target = "phony_analyze", make_dependency = ""):
         """Adds the commands to Makefile that are necessary for running the analysis code on the Ntuple and filling the histograms
         """
-        if not make_target in self.phoniesToAdd:
+        if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         lines_makefile.append("%s: %s" % (make_target, make_dependency))
         if self.is_sbatch:
@@ -1144,7 +1144,7 @@ class analyzeConfig(object):
             for job in self.jobOptions_analyze.values():
                 lines_makefile.append("\t%s %s &> %s" % (self.executable_analyze, job['cfgFile_modified'], job['logFile']))
         lines_makefile.append("")
-        if not make_target in self.phoniesToAdd:
+        if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         for job in self.jobOptions_analyze.values():
             self.filesToClean.append(job['histogramFile'])
@@ -1152,7 +1152,7 @@ class analyzeConfig(object):
     def addToMakefile_syncNtuple(self, lines_makefile, make_target = "phony_analyze", make_dependency = ""):
         """Adds the commands to Makefile that are necessary for running the analysis code on the Ntuple and filling the histograms
         """        
-        if not make_target in self.phoniesToAdd:
+        if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         lines_makefile.append("%s: %s" % (make_target, make_dependency))
         if self.is_sbatch:
@@ -1167,7 +1167,7 @@ class analyzeConfig(object):
             self.filesToClean.append(job['syncOutput'])
 
     def addToMakefile_hadd(self, lines_makefile, make_target, make_dependency, inputFiles, outputFiles, max_input_files_per_job = 2):
-        if not make_target in self.phoniesToAdd:
+        if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         if self.is_sbatch and self.run_hadd_master_on_batch:
             lines_makefile.append("%s: %s" % (make_target, make_dependency))
@@ -1223,7 +1223,7 @@ class analyzeConfig(object):
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_sync, self.outputFile_sync)
 
     def addToMakefile_copyHistograms(self, lines_makefile, make_target = "phony_copyHistograms", make_dependency = "phony_hadd_stage1"):
-        if not make_target in self.phoniesToAdd:
+        if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         lines_makefile.append("%s: %s" % (make_target, make_dependency))
         if self.is_sbatch:
@@ -1236,7 +1236,7 @@ class analyzeConfig(object):
             self.filesToClean.append(job['outputFile'])
 
     def addToMakefile_addBackgrounds(self, lines_makefile, make_target, make_dependency, sbatchFile, jobOptions):
-        if not make_target in self.phoniesToAdd:
+        if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         lines_makefile.append("%s: %s" % (make_target, make_dependency))        
         if self.is_sbatch:
@@ -1261,7 +1261,7 @@ class analyzeConfig(object):
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage1_6, self.outputFile_hadd_stage1_6, max_input_files_per_job)
 
     def addToMakefile_addFakes(self, lines_makefile, make_target, make_dependency):
-        if not make_target in self.phoniesToAdd:
+        if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         lines_makefile.append("%s: %s" % (make_target, make_dependency))
         if self.is_sbatch:
@@ -1274,7 +1274,7 @@ class analyzeConfig(object):
             self.filesToClean.append(job['outputFile'])
 
     def addToMakefile_addFlips(self, lines_makefile, make_target, make_dependency):
-        if not make_target in self.phoniesToAdd:
+        if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         lines_makefile.append("%s: %s" % (make_target, make_dependency))
         if self.is_sbatch:
@@ -1355,7 +1355,7 @@ class analyzeConfig(object):
             lines_makefile.append("%s: %s" % (make_target_plot, job['inputFile']))
             lines_makefile.append("\t%s %s" % (job['executable'], job['cfgFile_modified']))
             lines_makefile.append("")
-            if not make_target_plot in self.phoniesToAdd:
+            if make_target_plot not in self.phoniesToAdd:
                 self.phoniesToAdd.append(make_target_plot)
 
     def addToMakefile_outRoot(self, lines_makefile):
@@ -1383,7 +1383,7 @@ class analyzeConfig(object):
         for idxJob, jobOptions in enumerate(self.jobOptions_make_plots.values()):
             make_target_plot = "phony_makePlots%i" % idxJob
             self.targets.append(make_target_plot)
-            if not make_target_plot in self.phoniesToAdd:
+            if make_target_plot not in self.phoniesToAdd:
                   self.phoniesToAdd.append(make_target_plot)
         for rootOutput in self.rootOutputAux.values():
             self.filesToClean.append(rootOutput[0])
