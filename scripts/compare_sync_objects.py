@@ -59,6 +59,8 @@ OBJECTS_MAP['ele']      = { 'n' : 2, 'human_name' : 'electron'    }
 OBJECTS_MAP['tau']      = { 'n' : 2, 'human_name' : 'tau'         }
 OBJECTS_MAP['jet']      = { 'n' : 4, 'human_name' : 'jet'         }
 OBJECTS_MAP['jetFwd']   = { 'n' : 4, 'human_name' : 'forward jet' }
+OBJECTS_MAP['jetAK8']   = { 'n' : 2, 'human_name' : 'AK8 jet'     }
+OBJECTS_MAP['jetHTTv2'] = { 'n' : 2, 'human_name' : 'HTTv2 jet'   }
 OBJECTS_MAP['ak4Jet']   = { 'n' : 2, 'human_name' : 'ak4 jet'     }
 OBJECTS_MAP['ak8Jet']   = { 'n' : 2, 'human_name' : 'ak8 jet'     }
 OBJECTS_MAP['ak8lsJet'] = { 'n' : 2, 'human_name' : 'ak8 LS jet'  }
@@ -106,6 +108,10 @@ OBJECTS_MAP['tau']['branch_names'] = COMMON_BRANCH_NAMES | {
 OBJECTS_MAP['jet']['branch_names'] = COMMON_BRANCH_NAMES | { 'CSV', 'DeepCSV', 'DeepJet', 'QGdiscr' }
 
 OBJECTS_MAP['jetFwd']['branch_names'] = COMMON_BRANCH_NAMES
+
+OBJECTS_MAP['jetAK8']['branch_names'] = COMMON_BRANCH_NAMES
+
+OBJECTS_MAP['jetHTTv2']['branch_names'] = COMMON_BRANCH_NAMES
 
 OBJECTS_MAP['ak4Jet']['branch_names'] = COMMON_BRANCH_NAMES | { 'CSV', }
 
@@ -916,9 +922,13 @@ if args.analysis == 'tth':
   del OBJECTS_MAP['ak4Jet']
   del OBJECTS_MAP['ak8Jet']
   del OBJECTS_MAP['ak8lsJet']
+  del OBJECTS_MAP['jetAK8']
+  del OBJECTS_MAP['jetHTTv2']
 elif args.analysis == 'hh_bbww':
   del OBJECTS_MAP['jet']
   del OBJECTS_MAP['jetFwd']
+  del OBJECTS_MAP['jetAK8']
+  del OBJECTS_MAP['jetHTTv2']
   del OBJECTS_MAP['tau']
   del OBJECTS_MAP['ak8lsJet']
 PRESELECTION_COUNTER_BRANCHES = [ 'n_presel_%s' % object_prefix for object_prefix in OBJECTS_MAP ]
