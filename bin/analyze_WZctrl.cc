@@ -1264,15 +1264,7 @@ int main(int argc, char* argv[])
 
     const double minPt_lead = 25.;
     const double minPt_sublead = 15.;
-    double minPt_third = -1.;
-    switch(era)
-    {
-      case kEra_2016: minPt_third = 15.; break; // AN2017_029_v5:371
-      case kEra_2017: minPt_third = 10.; break;
-      case kEra_2018: throw cmsException("analyze_3l", __LINE__) << "Implement me!";
-      default:        throw cmsException("analyze_3l", __LINE__) << "Invalid era = " << era;
-    }
-    assert(minPt_third > 0.);
+    const double minPt_third = 10.;
     // CV: according to Giovanni, the pT cuts should be applied on cone_pt
     //    (combined efficiency of single lepton, double lepton, and triple lepton triggers assumed to be high,
     //     even if one or two leptons and fakes and hence cone_pt may be significantly smaller than lepton_pt,
