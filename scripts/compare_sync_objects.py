@@ -35,6 +35,12 @@ TYPE_MAP = {
   'Bool_t'    : 'b',
 }
 
+ttH_tH_BRANCH = 'is_tH_like_and_not_ttH_like'
+ttH_tH_CHANNELS = [
+  'syncTree_2lSS_SR', 'syncTree_2lSS_Fake', 'syncTree_2lSS_Flip',
+  'syncTree_3l_SR',   'syncTree_3l_Fake'
+]
+
 # Default placeholder value for a variable that is not filled in sync Ntuples
 PLACEHOLDER = -9999
 
@@ -767,7 +773,7 @@ def positive_int_type(value):
     raise argparse.ArgumentTypeError('Must be a positive integer: %s' % value)
   return value_int
 
-def get_stats(filenames, object_tree_name, count_objects):
+def get_stats(filenames, object_tree_name, count_objects, ttH_tH_chs):
   for filename in filenames:
     if not os.path.isfile(filename):
       raise ValueError('No such file: %s' % filename)
@@ -776,6 +782,14 @@ def get_stats(filenames, object_tree_name, count_objects):
       raise ValueError('Not a valid ROOT file: %s' % filename)
     tree_keys = [ key.GetName() for key in root_file.GetListOfKeys() if key.GetClassName() == 'TTree' ]
     event_counts = { tree_name : root_file.Get(tree_name).GetEntries() for tree_name in tree_keys }
+    for tree_name in event_counts:
+      if tree_name in ttH_tH_chs:
+        tree = root_file.Get(tree_name)
+        if not tree:
+          continue
+        is_tH_like  = int(tree.Project(ttH_tH_BRANCH, ttH_tH_BRANCH, '%s == 1' % ttH_tH_BRANCH))
+        is_ttH_like = int(tree.Project(ttH_tH_BRANCH, ttH_tH_BRANCH, '%s == 0' % ttH_tH_BRANCH))
+        event_counts[tree_name] = '%d/%d' % (is_ttH_like, is_tH_like)
     max_tree_len = max(map(len, event_counts)) + 1
     print('%s:' % filename)
     for tree_name in sorted(event_counts.keys()):
@@ -934,7 +948,7 @@ elif args.analysis == 'hh_bbww':
 PRESELECTION_COUNTER_BRANCHES = [ 'n_presel_%s' % object_prefix for object_prefix in OBJECTS_MAP ]
 
 if args.command == 'count':
-  get_stats(args.input, args.tree, args.count_objects)
+  get_stats(args.input, args.tree, args.count_objects, ttH_tH_CHANNELS if args.analysis == 'tth' else [])
   sys.exit(0)
 
 filename_ref  = args.input_ref
