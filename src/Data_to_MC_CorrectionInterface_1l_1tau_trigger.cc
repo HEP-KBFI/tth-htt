@@ -429,7 +429,7 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::getSF_triggerEff() const
       assert(0);
     }
   }
-  else if(era_ == kEra_2017 || kEra_2018)
+  else if(era_ == kEra_2017 || era_ == kEra_2018)
   {
     const auto getTriggerEfficiencyDataFunc = aux::getTriggerFuncData(triggerSF_option_);
     const auto getTriggerEfficiencyMCFunc   = aux::getTriggerFuncMC(triggerSF_option_);
