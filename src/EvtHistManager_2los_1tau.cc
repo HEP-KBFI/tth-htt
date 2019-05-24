@@ -53,10 +53,6 @@ EvtHistManager_2los_1tau::bookHistograms(TFileDirectory & dir)
   histogram_mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var_ = book1D(dir, "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var", "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var", 100, 0., +1.);
   histogram_mvaOutput_2los_1tau_evtLevelTT_TTH_20Var_  = book1D(dir, "mvaOutput_2los_1tau_evtLevelTT_TTH_20Var",  "mvaOutput_2los_1tau_evtLevelTT_TTH_20Var",  100, 0., +1.);
 
-  histogram_mvaOutput_2los_1tau_evtLevelTT_TTH_20Var_ = book1D(dir, "mvaOutput_XGB_Updated",     "mvaOutput_XGB_Updated", 100, 0., +1.);
-  histogram_mvaOutput_2los_1tau_evtLevelTT_TTH_20Var_ = book1D(dir, "mvaOutput_XGB_Boosted_AK8", "mvaOutput_XGB_Boosted_AK8", 100, 0., +1.);
-
-
   histogram_mvaOutput_XGB_Updated_ = book1D(dir, "mvaOutput_XGB_Updated", "mvaOutput_XGB_Updated", 100, 0., +1.);
   histogram_mvaOutput_XGB_Boosted_AK8_ = book1D(dir, "mvaOutput_XGB_Boosted_AK8", "mvaOutput_XGB_Boosted_AK8", 100, 0., +1.);
 
