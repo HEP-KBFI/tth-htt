@@ -8,9 +8,12 @@
 Data_to_MC_CorrectionInterface_2018::Data_to_MC_CorrectionInterface_2018(const edm::ParameterSet & cfg)
   : Data_to_MC_CorrectionInterface_Base(cfg)
 {
+#if 0
   throw cmsException(this, __func__, __LINE__)
-    << "Not available for 2018 era"
+    << "Not available in 2018 era"
   ;
+#endif
+#pragma message "Setting data-to-MC corrections to 1 in 2018"
 }
 
 Data_to_MC_CorrectionInterface_2018::~Data_to_MC_CorrectionInterface_2018()
@@ -19,17 +22,25 @@ Data_to_MC_CorrectionInterface_2018::~Data_to_MC_CorrectionInterface_2018()
 double
 Data_to_MC_CorrectionInterface_2018::getWeight_leptonTriggerEff() const
 {
+#if 0
   throw cmsException(this, __func__, __LINE__)
-    << "Not available for 2018 era"
+    << "Not available in 2018 era"
   ;
+#endif
+#pragma message "Setting data-to-MC corrections to 1 in 2018"
+  return 1.;
 }
 
 double
 Data_to_MC_CorrectionInterface_2018::getSF_leptonTriggerEff() const
 {
+#if 0
   throw cmsException(this, __func__, __LINE__)
-    << "Not available for 2018 era"
+    << "Not available in 2018 era"
   ;
+#endif
+#pragma message "Setting data-to-MC corrections to 1 in 2018"
+  return 1.;
 }
 
 double
