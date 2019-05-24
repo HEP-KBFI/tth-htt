@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-05-20 03:47:56 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2016_sync.py -p /home/karl/sync_ntuples/2016/nanoAODproduction/2019May20 -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_nanoAOD_sync.py -M
+# file generated at 2019-05-24 16:19:43 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2016_sync.py -p /hdfs/local/karl/sync_ntuples/2016/nanoAODproduction/2019May20 -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_nanoAOD_sync.py -M
 
 samples_2016 = OD()
 samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
@@ -14,7 +14,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/Run
   }),
   ("nof_tree_events",                 77700),
   ("nof_db_events",                   3981250),
-  ("fsize_local",                     256701455), # 256.70MB, avg file size 256.70MB
+  ("fsize_local",                     278698019), # 278.70MB, avg file size 278.70MB
   ("fsize_db",                        208884155497), # 208.88GB, avg file size 5.97GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -25,7 +25,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/home/karl/sync_ntuples/2016/nanoAODproduction/2019May20/ttHToNonbb_M125_powheg"),
+        ("path",      "/hdfs/local/karl/sync_ntuples/2016/nanoAODproduction/2019May20/ttHToNonbb_M125_powheg"),
         ("selection", "*"),
         ("blacklist", []),
       ]),

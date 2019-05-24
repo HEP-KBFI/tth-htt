@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-05-20 03:38:05 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2017_sync.py -p /home/karl/ttHNtupleProduction/2017/2019May20_woPresel_nonNom_sync/ntuples -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_sync.py -M
+# file generated at 2019-05-24 16:26:14 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2017_sync.py -p /hdfs/local/karl/ttHNtupleProduction/2017/2019May20_woPresel_nonNom_sync/ntuples -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_sync.py -M
 
 samples_2017 = OD()
 samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
@@ -27,13 +27,13 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
     'CountFullWeightedL1Prefire'                       : [        62247,        61693,        62787, ],
     'CountFullWeightedNoPUL1PrefireNom'                : [        62164, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'          : [        22052,        22464,        22862,        21981,        21659,        21409,        20633,        19969,        19421, ],
-    'CountWeightedLHEWeightScaleNoPUL1PrefireNom'      : [        22036,        22449,        22848,        21948,        21629,        21381,        20595,        19933,        19388, ],
+    'CountWeightedLHEWeightScaleNoPUL1PrefireNom'      : [        22035,        22449,        22848,        21948,        21629,        21381,        20595,        19933,        19388, ],
     'CountFullWeightedLHEWeightScaleL1PrefireNom'      : [        63375,        64559,        65703,        63170,        62246,        61527,        59295,        57387,        55813, ],
     'CountFullWeightedLHEWeightScaleNoPUL1PrefireNom'  : [        63326,        64515,        65661,        63076,        62163,        61446,        59187,        57284,        55717, ],
   }),
   ("nof_tree_events",                 65452),
   ("nof_db_events",                   9779592),
-  ("fsize_local",                     302516160), # 302.52MB, avg file size 302.52MB
+  ("fsize_local",                     304154206), # 304.15MB, avg file size 304.15MB
   ("fsize_db",                        625507074411), # 625.51GB, avg file size 3.01GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -44,7 +44,7 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/home/karl/ttHNtupleProduction/2017/2019May20_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019May20_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
