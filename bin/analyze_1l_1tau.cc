@@ -1366,13 +1366,9 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       {
         dataToMCcorrectionInterface_1l_1tau_trigger->setHadTaus(selHadTau_genPdgId, selHadTau->pt(), selHadTau->eta(), selHadTau->decayMode());
       }
-      else if(era == kEra_2017)
+      else if(era == kEra_2017 || era == kEra_2018)
       {
         dataToMCcorrectionInterface_1l_1tau_trigger->setHadTaus(selHadTau->pt(), selHadTau->eta(), selHadTau->phi(), selHadTau->decayMode());
-      }
-      else if(era == kEra_2018)
-      {
-        throw cmsException("analyze_1l_1tau", __LINE__) << "Implement me!";
       }
       else
       {
