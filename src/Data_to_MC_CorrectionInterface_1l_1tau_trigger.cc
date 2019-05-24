@@ -296,7 +296,7 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::~Data_to_MC_CorrectionInterface_
     aux::clearCollection(effTrigger_1m1tau_tauLeg_mc_gentau_);
     aux::clearCollection(effTrigger_1m1tau_tauLeg_mc_faketau_);
   }
-  else if(era_ == kEra_2017)
+  else if(era_ == kEra_2017 || era_ == kEra_2018)
   {
     delete effTrigger_1e1tau_tauLeg_;
     delete effTrigger_1m1tau_tauLeg_;
@@ -429,7 +429,7 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::getSF_triggerEff() const
       assert(0);
     }
   }
-  else if(era_ == kEra_2017)
+  else if(era_ == kEra_2017 || kEra_2018)
   {
     const auto getTriggerEfficiencyDataFunc = aux::getTriggerFuncData(triggerSF_option_);
     const auto getTriggerEfficiencyMCFunc   = aux::getTriggerFuncMC(triggerSF_option_);
