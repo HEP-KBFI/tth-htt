@@ -19,7 +19,8 @@ namespace aux
 {
   std::string
   getEtaBinLabel(double etaMin,
-                 double etaMax);
+                 double etaMax,
+                 bool replace_period = false);
 
   std::string
   getHadTauIdxLabel(int idx);

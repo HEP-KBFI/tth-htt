@@ -14,7 +14,8 @@ namespace aux
 {
   std::string
   getEtaBinLabel(double etaMin,
-                 double etaMax)
+                 double etaMax,
+                 bool replace_period)
   {
     std::string etaBinLabel_tstring;
     if(etaMin != -1. && etaMax != -1.)
@@ -32,6 +33,18 @@ namespace aux
     else
     {
       assert(0);
+    }
+    if(replace_period)
+    {
+      if(etaBinLabel_tstring.find('.') != std::string::npos)
+      {
+        std::replace(etaBinLabel_tstring.begin(), etaBinLabel_tstring.end(), '.', 'p');
+      }
+      else
+      {
+        assert(etaMin == -1. || etaMax == -1.);
+        etaBinLabel_tstring += "p0";
+      }
     }
     const std::string etaBinLabel = boost::replace_all_copy(etaBinLabel_tstring, ".", "p");
     return etaBinLabel;
@@ -269,7 +282,7 @@ namespace aux
     {
       const double etaMin = etaBinEdges_1e[idxEtaBin];
       const double etaMax = etaBinEdges_1e[idxEtaBin + 1];
-      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax, true);
 
       effTrigger_1e_data.push_back(new lutWrapperTGraph(
         inputFiles,
@@ -299,7 +312,7 @@ namespace aux
     {
       const double etaMin = etaBinEdges_1e_1tau_lepLeg[idxEtaBin];
       const double etaMax = etaBinEdges_1e_1tau_lepLeg[idxEtaBin + 1];
-      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax, true);
 
       effTrigger_1e1tau_lepLeg_data.push_back(new lutWrapperTGraph(
         inputFiles,
@@ -345,7 +358,7 @@ namespace aux
       ));
     }
   }
- 
+
   void
   loadTriggerEff_1m_1tau_lepLeg_2018(vLutWrapperBase & effTrigger_1m1tau_lepLeg_data,
                                      vLutWrapperBase & effTrigger_1m1tau_lepLeg_mc,
