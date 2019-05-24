@@ -20,7 +20,20 @@ namespace aux
     std::string etaBinLabel_tstring;
     if(etaMin != -1. && etaMax != -1.)
     {
-      etaBinLabel_tstring = Form("%1.4gto%1.4g", etaMin, etaMax);
+      std::string etaBinLabel_partMin = Form("%1.4g", etaMin);
+      std::string etaBinLabel_partMax = Form("%1.4g", etaMax);
+      if(replace_period)
+      {
+        if(etaBinLabel_partMin.find('.') == std::string::npos)
+        {
+          etaBinLabel_partMin += ".0";
+        }
+        if(etaBinLabel_partMax.find('.') == std::string::npos)
+        {
+          etaBinLabel_partMax += ".0";
+        }
+      }
+      etaBinLabel_tstring = Form("%sto%s", etaBinLabel_partMin.data(), etaBinLabel_partMax.data());
     }
     else if(etaMin != -1.)
     {
