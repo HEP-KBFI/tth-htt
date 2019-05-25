@@ -118,10 +118,6 @@ protected:
 
 typedef ParticleCollectionCleanerSubJets<RecoJetHTTv2> RecoJetCollectionCleanerHTTv2SubJets;
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK12.h"
-
-typedef ParticleCollectionCleanerSubJets<RecoJetAK12> RecoJetCollectionCleanerAK12SubJets;
-
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h"
 
 typedef ParticleCollectionCleanerSubJets<RecoJetAK8> RecoJetCollectionCleanerAK8SubJets;

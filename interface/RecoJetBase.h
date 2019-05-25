@@ -7,7 +7,6 @@
  *
  * Derrived classes:
  *   RecoJet      = "resolved" anti-kT jets with dR=0.4
- *   RecoJetAK12  = anti-kT jet with dR=1.2 and jet sub-structure reconstruction, used for reconstruction of boosted hadronic W bosons
  *   RecoJetHTTv2 = collection of jets reconstructed by the hep-top-tagger (HTTv2) algorithm, used for reconstruction of boosted hadronic tops
  *
  * \author Christian Veelken, Tallin

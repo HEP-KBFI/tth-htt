@@ -28,7 +28,7 @@ public:
    */
   std::map<int, double>
   operator()(
-    const RecoJetAK8 & jet_ptrsAK12, const RecoJet & b_jet_candidate,
+    const RecoJetAK8 & jet_ptrsAK8, const RecoJet & b_jet_candidate,
     bool & calculate_matching, bool & isGenMatched,
     double & genTopPt,
     std::map<int, Particle::LorentzVector> genVar, std::map<int, Particle::LorentzVector> genVarAnti

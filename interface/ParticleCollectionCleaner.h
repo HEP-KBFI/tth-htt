@@ -102,10 +102,6 @@ typedef ParticleCollectionCleaner<GenJet> GenJetCollectionCleaner;
 
 typedef ParticleCollectionCleaner<RecoJetHTTv2> RecoJetCollectionCleanerHTTv2;
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK12.h"
-
-typedef ParticleCollectionCleaner<RecoJetAK12> RecoJetCollectionCleanerAK12;
-
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h"
 
 typedef ParticleCollectionCleaner<RecoJetAK8> RecoJetCollectionCleanerAK8;

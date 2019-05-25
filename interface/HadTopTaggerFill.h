@@ -2,7 +2,6 @@
 #define tthAnalysis_HiggsToTauTau_HadTopTaggerFill_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK12.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h"
 
 // forward declarations

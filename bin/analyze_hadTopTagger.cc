@@ -24,7 +24,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h" // RecoJetAK8
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK12.h" // RecoJetAK12
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h"
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
@@ -41,7 +40,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderHTTv2.h" // RecoJetReaderHTTv2
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderAK12.h" // RecoJetReaderAK12
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderAK8.h" // RecoJetReaderAK8
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
@@ -62,13 +60,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorHTTv2.h" // RecoJetSelectorHTTv2
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorAK12.h" // RecoJetSelectorAK12
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorAK8.h" // RecoJetSelectorAK8
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManager.h" // JetHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManagerHTTv2.h" // JetHistManagerHTTv2
-#include "tthAnalysis/HiggsToTauTau/interface/JetHistManagerAK12.h" // JetHistManagerAK12
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/WeightHistManager.h" // WeightHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
@@ -118,7 +114,6 @@ typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
 
 enum { kGen_bWj1Wj2, kGen_bWj1, kGen_bWj2, kGen_Wj1Wj2, kGen_b, kGen_Wj1, kGen_Wj2, kGen_none };
-bool inAK12 = true;
 bool loopB = true;
 bool cleanLep = true;
 bool selInJets = true;
@@ -190,8 +185,6 @@ int main(int argc, char* argv[])
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
   std::string branchName_jetsHTTv2 = cfg_analyze.getParameter<std::string>("branchName_jetsHTTv2");
   std::string branchName_subjetsHTTv2 = cfg_analyze.getParameter<std::string>("branchName_subjetsHTTv2");
-  //std::string branchName_jetsAK12 = cfg_analyze.getParameter<std::string>("branchName_jetsAK12");
-  //std::string branchName_subjetsAK12 = cfg_analyze.getParameter<std::string>("branchName_subjetsAK12");
   std::string branchName_jetsAK8 = cfg_analyze.getParameter<std::string>("branchName_jetsAK8");
   std::string branchName_subjetsAK8 = cfg_analyze.getParameter<std::string>("branchName_subjetsAK8");
   std::string branchName_met = cfg_analyze.getParameter<std::string>("branchName_met");
@@ -248,19 +241,12 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelector jetSelector(era);
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
-  RecoJetCollectionCleaner jetCleaner(0.8, isDEBUG); //to clean against AK12
+  RecoJetCollectionCleaner jetCleaner(0.8, isDEBUG); //to clean against AK8
 
   RecoJetReaderHTTv2* jetReaderHTTv2 = new RecoJetReaderHTTv2(era, branchName_jetsHTTv2, branchName_subjetsHTTv2);
   inputTree -> registerReader(jetReaderHTTv2);
   RecoJetCollectionSelectorHTTv2 jetSelectorHTTv2(era);
   RecoJetCollectionCleanerHTTv2 jetCleanerHTTv2(0.75, isDEBUG); //to clean against leptons and hadronic taus
-
-  /*
-  RecoJetReaderAK12* jetReaderAK12 = new RecoJetReaderAK12(era, branchName_jetsAK12, branchName_subjetsAK12);
-  inputTree -> registerReader(jetReaderAK12);
-  RecoJetCollectionSelectorAK12 jetSelectorAK12(era);
-  RecoJetCollectionCleanerAK12 jetCleanerAK12(0.6, isDEBUG); //to clean against leptons and hadronic taus
-  */
 
   RecoJetReaderAK8* jetReaderAK8 = new RecoJetReaderAK8(era, branchName_jetsAK8, branchName_subjetsAK8);
   inputTree -> registerReader(jetReaderAK8);
@@ -432,14 +418,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoJetHTTv2*> jet_ptrsHTTv2;
     jet_ptrsHTTv2 =  jetSelectorHTTv2(jet_ptrsHTTv2raw, isHigherPt);
     //std::cout << "after load HTT "<< jet_ptrsHTTv2raw.size()<< " " <<  jet_ptrsHTTv2 .size() << std::endl;
-    /*
-//--- build collections of jets reconstructed by anti-kT algorithm with dR=1.2 (AK12)
-    std::vector<RecoJetAK12> jetsAK12 = jetReaderAK12->read();
-    std::vector<const RecoJetAK12*> jet_ptrsAK12raw = convert_to_ptrs(jetsAK12);
-    std::vector<const RecoJetAK12*> jet_ptrsAK12;
-    jet_ptrsAK12 = jetSelectorAK12(jet_ptrsAK12raw, isHigherPt);
-    //std::cout << "after load ak12"  << std::endl;
-    */
+
 //--- build collections of jets reconstructed by anti-kT algorithm with dR=0.8 (AK8)
     std::vector<RecoJetAK8> jetsAK8 = jetReaderAK8->read();
     std::vector<const RecoJetAK8*> jet_ptrsAK8raw = convert_to_ptrs(jetsAK8);
@@ -447,7 +426,7 @@ int main(int argc, char* argv[])
     jet_ptrsAK8 = jetSelectorAK8(jet_ptrsAK8raw , isHigherPt);
     //std::cout << "after load ak8"  << std::endl;
 
-    // cleaned RecoJet collection from AK12 as well -- to keep b-tag ordering consistent in cat2
+    // cleaned RecoJet collection from AK8 as well -- to keep b-tag ordering consistent in cat2
     std::vector<const RecoJet*> cleanedJets;
     cleanedJets = jetCleaner(selJets, jet_ptrsAK8);
 
@@ -496,10 +475,6 @@ int main(int argc, char* argv[])
     //std::cout << "Size of genjet collections "
     //  <<genQuarkFromTop.size()<< " "<< genWJets.size() << " " << genWBosons.size() << std::endl;
     if (genQuarkFromTop.size() < 2) continue;
-
-		//std::cout << "\nTreeEntry "<<analyzedEntries << " passed selection conditions "<< genWJets.size() << std::endl;
-    //std::cout << "Size of jet collections "
-    //  <<jet_ptrsHTTv2.size()<< " "<< jet_ptrsAK8.size() << " "<< jet_ptrsAK12.size() << " " << cleanedJets.size() << " " << selJets.size() << std::endl;
 
     Particle::LorentzVector unfittedHadTopP4, selBJet, selWJet1, selWJet2 ;
     double m12=-1.,m23=-1.,m13=-1.,m123=-1.;
@@ -582,8 +557,7 @@ int main(int argc, char* argv[])
     }
 
     // to be used at analysis level
-    int typeTop = -1; // 1 - FatTop; 2 - countFatAK8 ? countFatAK12; 3- countResolved;
-    //if (inAK12) typeTop = getType(jet_ptrsHTTv2.size(), jet_ptrsAK12.size(), selJets.size());
+    int typeTop = -1; // 1 - FatTop; 2 - countFatAK8; 3- countResolved;
     //else typeTop = getType(jet_ptrsHTTv2.size(), jet_ptrsAK8.size(), selJets.size());
     // start loops in jets
     //if (typeTop == 1) {
@@ -886,164 +860,6 @@ int main(int argc, char* argv[])
     auto btag_order = calRank(btag_disc);
     unsigned int bToLoop = cleanedJets.size();
     if (!loopB) bToLoop = 1;
-    //std::cout<<std::endl;
-    //std::cout<<"btag ordering  ";
-    //for (auto i: btag_order) std::cout << i << " ";
-    // classify between 2 and 3
-    /*
-    if (inAK12) { // typeTop == 2 and
-      if (jet_ptrsAK12.size() > 0 && cleanedJets.size() > 0) {countFatAK12++; typeTop = 2;}
-      std::cout<<" typeTop = "<<typeTop<<std::endl;
-      for ( std::vector<const RecoJetAK12*>::const_iterator jetIter = jet_ptrsAK12.begin();
-        jetIter != jet_ptrsAK12.end(); ++jetIter ) {
-          for ( unsigned int bjetCandidate = 0; bjetCandidate < bToLoop; bjetCandidate++ ) { // cleanedJets.size()
-              unfittedHadTopP4 = (*jetIter)->p4() + (*cleanedJets[bjetCandidate]).p4();
-              selBJet = (*cleanedJets[bjetCandidate]).p4();
-              if((*jetIter)->subJet1() && (*jetIter)->subJet2()) {
-              selWJet1 = (*jetIter)->subJet1()->p4();
-              selWJet2 = (*jetIter)->subJet2()->p4();
-              // calculate matching
-              std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
-                selBJet, selWJet1, selWJet2,
-                genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
-                kGenTop, typeTop, (*jetIter)->p4()
-              );
-              std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
-                selBJet, selWJet1, selWJet2,
-                genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2],
-                kGenAntiTop, typeTop, (*jetIter)->p4()
-              );
-              if(genMatchingTop[kGenMatchedTriplet]) { genTopPt = genVar[kGenTop].pt();  genTopEta = genVar[kGenTop].eta();}
-              if(genMatchingAntiTop[kGenMatchedTriplet]) { genTopPt = genVarAnti[kGenTop].pt();  genTopEta = genVarAnti[kGenTop].eta();}
-
-              isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
-              fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
-              b_isGenMatched = (genMatchingTop[kGenMatchedBJet] || genMatchingAntiTop[kGenMatchedBJet]);
-              wj1_isGenMatched = (genMatchingTop[kGenMatchedWJet1] || genMatchingAntiTop[kGenMatchedWJet1]);
-              wj2_isGenMatched = (genMatchingTop[kGenMatchedWJet2] || genMatchingAntiTop[kGenMatchedWJet2]);
-              if (btag_order[bjetCandidate] > cutJetCombo) continue;
-              if (isGenMatched) {hadtruth2++; cat2 = true;}
-
-              double minT;
-              double minAntiT;
-              if (loopB) {
-                minT = std::min(deltaR(selWJet1, genVar[kGenTopWj1]),deltaR(selWJet1, genVar[kGenTopWj2])) + std::min(deltaR(selWJet2, genVar[kGenTopWj2]),deltaR(selWJet2, genVar[kGenTopWj1]));
-                minAntiT = std::min(deltaR(selWJet1, genVarAnti[kGenTopWj1]),deltaR(selWJet1, genVarAnti[kGenTopWj2])) + std::min(deltaR(selWJet2, genVarAnti[kGenTopWj2]),deltaR(selWJet2, genVarAnti[kGenTopWj1]));
-              } else {
-                minT = deltaR(selBJet, genVar[kGenTopB]);
-                minAntiT = deltaR(selBJet, genVarAnti[kGenTopB]);
-              }
-              if ( minT < minAntiT ){
-                genFatPtAll = genVar[kGenTopW].pt();
-                genFatEtaAll = genVar[kGenTopW].pt();
-                drT_gen = deltaR(unfittedHadTopP4, genVar[kGenTop]);
-                drT_genTriplet = deltaR(unfittedHadTopP4, genVar[kGenTopWj1]+genVar[kGenTopWj1]+genVar[kGenTopB]);
-                drB_gen = deltaR(selBJet, genVar[kGenTopB]);
-                drWj1_gen = std::min(deltaR(selWJet1, genVar[kGenTopWj1]),deltaR(selWJet1, genVar[kGenTopWj2]));
-                drWj2_gen = std::min(deltaR(selWJet2, genVar[kGenTopWj2]),deltaR(selWJet2, genVar[kGenTopWj1]));
-                etaB_gen = genVar[kGenTopB].eta();
-                etaWj1_gen = genVar[kGenTopWj1].eta();
-                etaWj2_gen = genVar[kGenTopWj2].eta();
-                ptB_gen = genVar[kGenTopB].pt();
-                ptWj1_gen = genVar[kGenTopWj1].pt();
-                ptWj2_gen = genVar[kGenTopWj2].pt();
-                drb_wj1_gen = deltaR(genVar[kGenTopB], genVar[kGenTopWj1]);
-                drb_wj2_gen = deltaR(genVar[kGenTopB], genVar[kGenTopWj2]);
-                drwj1_wj2_gen = deltaR(genVar[kGenTopWj1], genVar[kGenTopWj2]);
-                drW_gen = deltaR(unfittedHadTopP4 , genVar[kGenTopW]);
-              } else {
-                genFatPtAll = genVarAnti[kGenTopW].pt();
-                genFatEtaAll = genVarAnti[kGenTopW].pt();
-                drT_gen = deltaR(unfittedHadTopP4, genVarAnti[kGenTop]);
-                drT_genTriplet = deltaR(unfittedHadTopP4, genVarAnti[kGenTopWj1]+genVarAnti[kGenTopWj1]+genVarAnti[kGenTopB]);
-                drB_gen = deltaR(selBJet, genVarAnti[kGenTopB]);
-                drWj1_gen = std::min(deltaR(selWJet1, genVarAnti[kGenTopWj1]),deltaR(selWJet1, genVarAnti[kGenTopWj2]));
-                drWj2_gen = std::min(deltaR(selWJet2, genVarAnti[kGenTopWj2]),deltaR(selWJet2, genVarAnti[kGenTopWj1]));
-                etaB_gen = genVarAnti[kGenTopB].eta();
-                etaWj1_gen = genVarAnti[kGenTopWj1].eta();
-                etaWj2_gen = genVarAnti[kGenTopWj2].eta();
-                ptB_gen = genVarAnti[kGenTopB].pt();
-                ptWj1_gen = genVarAnti[kGenTopWj1].pt();
-                ptWj2_gen = genVarAnti[kGenTopWj2].pt();
-                drb_wj1_gen= deltaR(genVarAnti[kGenTopB], genVarAnti[kGenTopWj1]);
-                drb_wj2_gen = deltaR(genVarAnti[kGenTopB], genVar[kGenTopWj2]);
-                drwj1_wj2_gen = deltaR(genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2]);
-                drW_gen = deltaR(unfittedHadTopP4 , genVarAnti[kGenTopW]);
-              }
-              if (genFatPtAll > 130) {
-                countFatWpt130++;
-                if (wj1_isGenMatched && wj2_isGenMatched) countFatWjets++;
-                if (fatjet_isGenMatched) countFatW++;
-              }
-
-              if ( bdt_filler ) {
-                (*hadTopTaggerFill)(selBJet, selWJet1, selWJet2);
-                const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-                for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-                  mvaInput != mvaInputs.end(); ++mvaInput ) {
-                  bdt_filler->operator()(mvaInput->first, mvaInput->second);
-                }
-                bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
-                ("typeTop",              typeTop)
-                ("tau32Top",             -1.)
-                ("massTop",              unfittedHadTopP4.mass())
-                ("tau21W",               (*jetIter)->tau2()/(*jetIter)->tau1())
-                ("massW_SD",             (*jetIter)->msoftdrop())
-                ("btagDisc",             (*cleanedJets[bjetCandidate]).BtagCSV())
-                ("qg_Wj1",                -1.)
-                ("qg_Wj2",                -1.)
-                ("genTopPt",             genTopPt)
-                ("genTopEta",             std::fabs(genTopEta))
-                ("genFatPtAll", genFatPtAll)
-                ("genFatEtaAll",         std::fabs(genFatEtaAll))
-                ("drT_gen",       drT_gen)
-                ("drT_genTriplet",  drT_genTriplet)
-                ("drT_genJ_max", drT_genJ_max)
-                ("drB_gen", drB_gen)
-                ("drW_gen", drW_gen)
-                ("drWj1_gen", drWj1_gen)
-                ("drWj2_gen", drWj2_gen)
-                ("etaB_gen", etaB_gen)
-                ("etaWj1_gen", etaWj1_gen)
-                ("etaWj2_gen", etaWj2_gen)
-                ("ptB_gen", ptB_gen)
-                ("ptWj1_gen", ptWj1_gen)
-                ("ptWj2_gen", ptWj2_gen)
-                ("dr_b_wj1", deltaR(selBJet, selWJet1))
-                ("dr_b_wj2", deltaR(selBJet, selWJet2))
-                ("dr_wj1_wj2", deltaR(selBJet, selWJet2))
-                ("dr_b_wj1_gen", drb_wj1_gen)
-                ("dr_b_wj2_gen", drb_wj2_gen)
-                ("dr_wj1_wj2_gen", drwj1_wj2_gen)
-                ("collectionSize",       jet_ptrsAK12.size())
-                ("bjet_tag_position",    btag_order[bjetCandidate])
-                ("bWj1Wj2_isGenMatched", isGenMatched)
-                ("fatjet_isGenMatched",  fatjet_isGenMatched)
-                ("b_isGenMatched",       b_isGenMatched)
-                ("Wj1_isGenMatched", wj1_isGenMatched)
-                ("Wj2_isGenMatched", wj2_isGenMatched)
-                ("counter",       analyzedEntries)
-                ("nbjets",  selBJets_medium.size())
-                ("nbjets_loose",  selBJets_loose.size())
-                ("njets",  selJets.size())
-                ("passJetSel", passJetSel)
-                ("HTTv2_area", HTTv2_area)
-                ("HTTv2_Ropt", HTTv2_Ropt)
-                ("HTTv2_RoptCalc", HTTv2_RoptCalc)
-                ("genTopMassFromW", genTopMassFromW )
-                ("genTopMassFromWj", genTopMassFromWj )
-                ("genWMassFromWj", genWMassFromWj )
-                ("genAntiTopMassFromW", genAntiTopMassFromW )
-                ("genAntiTopMassFromWj", genAntiTopMassFromWj )
-                ("genAntiWMassFromWj", genAntiWMassFromWj )
-                ("genWMass", genWMass)
-                ("genAntiWMass", genAntiWMass)
-                    .fill();
-              }
-            } else { std::cout<<" type2 akt12 did not had subjets "<<std::endl; continue;}
-            }
-        } // end typeTop == 2 ak12 loop
-    } else { // if (typeTop == 2) */
         if (jet_ptrsAK8.size() > 0 && cleanedJets.size() > 0) {countFatAK8++; typeTop = 2;}
         for ( std::vector<const RecoJetAK8*>::const_iterator jetIter = jet_ptrsAK8.begin();
           jetIter != jet_ptrsAK8.end(); ++jetIter ) {
@@ -1366,7 +1182,6 @@ int main(int argc, char* argv[])
   //if(bdt_filler) bdt_filler->write();
 
   std::cout << "AK8 separation = " << countFatTop << " " << countFatAK8 << " " << countResolved<< " " << countFatTop+countFatAK8+countResolved<<std::endl;
-  //std::cout << "AK12 separation = " << countFatTop << " " << countFatAK12 << " " << countResolved<< " " << countFatTop+countFatAK12+countResolved<<std::endl;
   std::cout << "truth counters = "<<hadtruth1 << " "<<hadtruth2 << " "<<hadtruth3 << std::endl;
   std::cout << "overlaps = "<< ca1_cat2 << " "<< cat2_cat3 << " "<< cat3_cat1 << " " << cat3_cat2_cat1 << std::endl;
 

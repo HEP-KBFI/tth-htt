@@ -32,7 +32,7 @@ HadTopTagger_semi_boosted_AK8::~HadTopTagger_semi_boosted_AK8()
 
 std::map<int, double>
 HadTopTagger_semi_boosted_AK8::operator()(
-  const RecoJetAK8 & jet_ptrsAK12, const RecoJet & b_jet_candidate,
+  const RecoJetAK8 & jet_ptrsAK8, const RecoJet & b_jet_candidate,
   bool & calculate_matching, bool & isGenMatched,
   double & genTopPt,
   std::map<int, Particle::LorentzVector> genVar, std::map<int, Particle::LorentzVector> genVarAnti
@@ -42,15 +42,15 @@ HadTopTagger_semi_boosted_AK8::operator()(
     { kXGB_semi_boosted_AK8_no_kinFit,  0. }
   };
 
-  if ( !(jet_ptrsAK12.subJet1() && jet_ptrsAK12.subJet2()) ) {
+  if ( !(jet_ptrsAK8.subJet1() && jet_ptrsAK8.subJet2()) ) {
     result[kXGB_semi_boosted_AK8_no_kinFit] = 0.;
     return result;
   }
 
   Particle::LorentzVector recBJet, recWJet1, recWJet2 ;
   recBJet = b_jet_candidate.p4();
-  recWJet1 = jet_ptrsAK12.subJet1()->p4();
-  recWJet2 = jet_ptrsAK12.subJet2()->p4();
+  recWJet1 = jet_ptrsAK8.subJet1()->p4();
+  recWJet2 = jet_ptrsAK8.subJet2()->p4();
 
   double m_bWj1Wj2 = (recWJet1 + recWJet2 + recBJet).mass();
   double  m_Wj1Wj2 = (recWJet1 + recWJet2).mass();
@@ -60,12 +60,12 @@ HadTopTagger_semi_boosted_AK8::operator()(
     std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
       recBJet, recWJet1, recWJet2,
       genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
-      kGenTop, typeTop, jet_ptrsAK12.p4()
+      kGenTop, typeTop, jet_ptrsAK8.p4()
     );
     std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
       recBJet, recWJet1, recWJet2,
       genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2],
-      kGenAntiTop, typeTop, jet_ptrsAK12.p4()
+      kGenAntiTop, typeTop, jet_ptrsAK8.p4()
     );
     if(genMatchingTop[kGenMatchedTriplet]) { genTopPt = genVar[kGenTop].pt();}
     if(genMatchingAntiTop[kGenMatchedTriplet]) { genTopPt = genVarAnti[kGenTop].pt();}
@@ -75,8 +75,8 @@ HadTopTagger_semi_boosted_AK8::operator()(
   } // close gen matching
 
 
-  mvaInputsHTT_AK8["massW_SD"]           = jet_ptrsAK12.msoftdrop();
-  mvaInputsHTT_AK8["tau21W"]           = jet_ptrsAK12.tau2()/jet_ptrsAK12.tau1();
+  mvaInputsHTT_AK8["massW_SD"]           = jet_ptrsAK8.msoftdrop();
+  mvaInputsHTT_AK8["tau21W"]           = jet_ptrsAK8.tau2()/jet_ptrsAK8.tau1();
   mvaInputsHTT_AK8["btagDisc_b"]         = b_jet_candidate.BtagCSV();
   mvaInputsHTT_AK8["m_Wj1Wj2_div_m_bWj1Wj2"]  = m_Wj1Wj2/m_bWj1Wj2;
   mvaInputsHTT_AK8["dR_Wj1Wj2"]          = deltaR(recWJet1, recWJet2);
@@ -89,7 +89,7 @@ HadTopTagger_semi_boosted_AK8::operator()(
   mvaInputsHTT_AK8["mass_b"]             = recBJet.mass();
   const double HTT_CSVsort3rd = (*mva_xgb_HTT_AK8_)(mvaInputsHTT_AK8);
   result[kXGB_semi_boosted_AK8_no_kinFit] = HTT_CSVsort3rd;
-  //std::cout << "semi-boosted HTT_CSVsort3rd " << HTT_CSVsort3rd << jet_ptrsAK12.tau2()/jet_ptrsAK12.tau1() << std::endl;
+  //std::cout << "semi-boosted HTT_CSVsort3rd " << HTT_CSVsort3rd << jet_ptrsAK8.tau2()/jet_ptrsAK8.tau1() << std::endl;
   return result;
 }
 
