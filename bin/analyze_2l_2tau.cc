@@ -758,12 +758,12 @@ int main(int argc, char* argv[])
     "run:ls:event selection",
     "trigger",
     ">= 2 presel leptons",
-    "presel lepton trigger match",
+    //"presel lepton trigger match",
     ">= 2 presel taus",
     ">= N jets (1)",
     ">= 2 loose b-jets || 1 medium b-jet (1)",
     ">= 2 sel leptons",
-    "fakeable lepton trigger match",
+    //"fakeable lepton trigger match",
     ">= 2 sel taus",
     "HLT filter matching",
     "<= 2 tight leptons",
@@ -1134,7 +1134,7 @@ int main(int argc, char* argv[])
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined2);
 
-    // require that trigger paths match event category (with event category based on preselLeptons)
+    /*// require that trigger paths match event category (with event category based on preselLeptons)
     if ( !((preselElectrons.size() >= 2 &&                            (selTrigger_2e    || selTrigger_1e                  )) ||
 	   (preselElectrons.size() >= 1 && preselMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
 	   (                               preselMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
@@ -1151,7 +1151,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("presel lepton trigger match");
-    cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
+    cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);*/
 
     // require presence of at least two hadronic taus passing loose preselection criteria
     // (do not veto events with more than two loosely selected hadronic tau candidates,
@@ -1239,7 +1239,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("<= 2 tight leptons", evtWeight);
     cutFlowHistManager->fillHistograms("<= 2 tight leptons", evtWeight);
 
-    // require that trigger paths match event category (with event category based on fakeableLeptons)
+    /*// require that trigger paths match event category (with event category based on fakeableLeptons)
     if ( !((fakeableElectrons.size() >= 2 &&                              (selTrigger_2e    || selTrigger_1e                  )) ||
 	   (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
 	   (                                 fakeableMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
@@ -1256,7 +1256,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("fakeable lepton trigger match", evtWeight);
-    cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);
+    cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);*/
 
     if ( !(selHadTaus.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 sel taus", evtWeight);

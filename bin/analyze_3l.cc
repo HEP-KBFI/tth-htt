@@ -783,7 +783,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     //"presel lepton trigger match",
     "Hadronic selection",
     "3 sel leptons",
-    "fakeable lepton trigger match",
+    //"fakeable lepton trigger match",
     "HLT filter matching",
     "sel tau veto",
     "m(ll) > 12 GeV",
@@ -1370,7 +1370,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       continue;
     }
 
-    // require that trigger paths match event category (with event category based on fakeableLeptons)
+    /*// require that trigger paths match event category (with event category based on fakeableLeptons)
     if ( !((fakeableElectrons.size() >= 3 &&                              (selTrigger_3e    || selTrigger_2e  || selTrigger_1e                                      )) ||
 	   (fakeableElectrons.size() >= 2 && fakeableMuons.size() >= 1 && (selTrigger_2e1mu || selTrigger_2e  || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
 	   (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 2 && (selTrigger_1e2mu || selTrigger_2mu || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
@@ -1392,7 +1392,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       continue;
     }
     cutFlowTable.update("fakeable lepton trigger match", evtWeight);
-    cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);
+    cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);*/
 
 //--- apply HLT filter
     if(apply_hlt_filter)

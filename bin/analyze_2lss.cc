@@ -823,7 +823,7 @@ int main(int argc, char* argv[])
     ">= 2 jets",
     ">= 2 sel leptons",
     "<= 2 tight leptons",
-    "fakeable lepton trigger match",
+    //"fakeable lepton trigger match",
     "HLT filter matching",
     "Hadronic selection",
     "sel tau veto",
@@ -853,6 +853,7 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
+    //if (!( eventInfo.event == 1903584)) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1227,6 +1228,7 @@ int main(int argc, char* argv[])
     */
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
+    /* X: This cut is not applied for Legacy because we have these events on the tH-selection
     if ( !(selJets.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS selJets selection (1)." << std::endl;
@@ -1236,6 +1238,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(">= 2 jets");
     cutFlowHistManager->fillHistograms(">= 2 jets", lumiScale);
+    */
 
 //--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();
@@ -1348,6 +1351,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("<= 2 tight leptons", evtWeight);
     cutFlowHistManager->fillHistograms("<= 2 tight leptons", evtWeight);
+    /* X: we do not require trigger matching for Legacy
     // require that trigger paths match event category (with event category based on fakeableLeptons)
     if ( !((fakeableElectrons.size() >= 2 &&                              (selTrigger_2e    || selTrigger_1e                  )) ||
 	   (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
@@ -1366,6 +1370,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("fakeable lepton trigger match", evtWeight);
     cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);
+    */
 
 //--- apply HLT filter
     if(apply_hlt_filter)
