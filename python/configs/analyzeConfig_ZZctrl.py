@@ -427,16 +427,17 @@ class analyzeConfig_ZZctrl(analyzeConfig):
                       lepton_genMatches.extend(self.lepton_genMatches_conversions)
                       lepton_genMatches.extend(self.lepton_genMatches_fakes)
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in lepton_genMatches ]
-                    elif sample_category in [ "ttH" ]:
+                    elif sample_category in self.procsWithDecayModes :
                       lepton_genMatches = []
                       lepton_genMatches.extend(self.lepton_genMatches_nonfakes)
-                      lepton_genMatches.extend(self.lepton_genMatches_conversions)
+                      if sample_category == "ttH" : lepton_genMatches.extend(self.lepton_genMatches_conversions)
                       processes_input = []
-                      processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in lepton_genMatches ])
-                      processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in lepton_genMatches ])
-                      processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in lepton_genMatches ])
-                      processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in lepton_genMatches ])
-                      processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in lepton_genMatches ])
+                      ## X: save also the process without the decay modes: do we need?
+                      if not sample_category == "ttH" :
+                        processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in lepton_genMatches ])
+                      for decayMode in self.decayModes :
+                        if not sample_category == "ttH" and decayMode in ["hmm", "hzg"] : continue
+                        processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in lepton_genMatches ])
                     else:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_nonfakes ]
                     process_output = sample_category
@@ -447,13 +448,14 @@ class analyzeConfig_ZZctrl(analyzeConfig):
                     # output processes: TT_conversion; ...
                     if sample_category in [ "signal" ]:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_conversions ]
-                    elif sample_category in [ "ttH" ]:
+                    elif sample_category in self.procsWithDecayModes :
                       processes_input = []
-                      processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.lepton_genMatches_conversions ])
-                      processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.lepton_genMatches_conversions ])
-                      processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.lepton_genMatches_conversions ])
-                      processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in self.lepton_genMatches_conversions ])
-                      processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in self.lepton_genMatches_conversions ])
+                      ## X: save also the process without the decay modes: do we need?
+                      if not sample_category == "ttH" :
+                        processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_conversions ])
+                      for decayMode in self.decayModes :
+                        if not sample_category == "ttH" and decayMode in ["hmm", "hzg"] : continue
+                        processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in self.lepton_genMatches_conversions ])
                     else:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_conversions ]
                     process_output = "%s_conversion" % sample_category
@@ -464,13 +466,14 @@ class analyzeConfig_ZZctrl(analyzeConfig):
                     # output processes: TT_fake; ...
                     if sample_category in [ "signal" ]:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_fakes ]
-                    elif sample_category in [ "ttH" ]:
+                    elif sample_category in self.procsWithDecayModes :
                       processes_input = []
-                      processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.lepton_genMatches_fakes ])
-                      processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.lepton_genMatches_fakes ])
-                      processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.lepton_genMatches_fakes ])
-                      processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in self.lepton_genMatches_fakes ])
-                      processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in self.lepton_genMatches_fakes ])
+                      ## X: save also the process without the decay modes: do we need?
+                      if not sample_category == "ttH" :
+                        processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_fakes ])
+                      for decayMode in self.decayModes :
+                        if not sample_category == "ttH" and decayMode in ["hmm", "hzg"] : continue
+                        processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in self.lepton_genMatches_fakes ])
                     else:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_fakes ]
                     process_output = "%s_fake" % sample_category
@@ -653,7 +656,7 @@ class analyzeConfig_ZZctrl(analyzeConfig):
           'category' : self.channel,
           'histogramToFit' : histogramToFit,
           'plots_outputFileName' : os.path.join(self.dirs[key_add_syst_fakerate_dir][DKEY_PLOT], "addSystFakeRates.png")
-        }        
+        }
         histogramDir_nominal = None
         if chargeSumSelection == "OS":
           histogramDir_nominal = self.histogramDir_prep_dcard
@@ -680,7 +683,7 @@ class analyzeConfig_ZZctrl(analyzeConfig):
     logging.info("Creating configuration files to run 'makePlots'")
     key_hadd_stage2_job = getKey(get_lepton_selection_and_frWeight("Tight", "disabled"), "OS")
     key_makePlots_dir = getKey("makePlots")
-    key_makePlots_job = getKey("OS")    
+    key_makePlots_job = getKey("OS")
     self.jobOptions_make_plots[key_makePlots_job] = {
       'executable' : self.executable_make_plots,
       'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
@@ -693,7 +696,7 @@ class analyzeConfig_ZZctrl(analyzeConfig):
     self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
     if "SS" in self.chargeSumSelections:
       key_hadd_stage2_job = getKey(get_lepton_selection_and_frWeight("Tight", "disabled"), "SS")
-      key_makePlots_job = getKey("SS")      
+      key_makePlots_job = getKey("SS")
       self.jobOptions_make_plots[key_makePlots_job] = {
         'executable' : self.executable_make_plots,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
@@ -706,7 +709,7 @@ class analyzeConfig_ZZctrl(analyzeConfig):
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
     if "Fakeable_mcClosure" in self.lepton_selections: #TODO
       key_hadd_stage2_job = getKey(get_lepton_selection_and_frWeight("Tight", "disabled"), "OS")
-      key_makePlots_job = getKey("OS")      
+      key_makePlots_job = getKey("OS")
       self.jobOptions_make_plots[key_makePlots_job] = {
         'executable' : self.executable_make_plots_mcClosure,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],

@@ -169,7 +169,9 @@ int main(int argc, char* argv[])
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
-  bool isSignal = ( process_string == "signal" ) ? true : false;
+  bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
+  bool isMC_VH = ( process_string == "VH" ) ? true : false;
+  bool isSignal = ( process_string == "signal" || isMC_tH || isMC_VH ) ? true : false;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_t = histogramDir.find("mcClosure_t") != std::string::npos;
@@ -733,7 +735,15 @@ int main(int argc, char* argv[])
       for ( vstring::const_iterator decayMode = decayModes_evt.begin();
             decayMode != decayModes_evt.end(); ++decayMode) {
 
-        std::string decayMode_and_genMatch = (*decayMode);
+        if ( ( isMC_tH || isMC_VH ) && ( (*decayMode) == "hzg" || (*decayMode) == "hmm" ) ) continue;
+        std::string decayMode_and_genMatch;
+        if ( isMC_tH || isMC_VH ) {
+          decayMode_and_genMatch = process_string;
+          decayMode_and_genMatch += "_";
+        }
+        else decayMode_and_genMatch = "ttH_";
+        decayMode_and_genMatch += (*decayMode);
+
         if ( apply_hadTauGenMatching ) decayMode_and_genMatch += hadTauGenMatch_definition->name_;
 
         selHistManager->evt_in_decayModes_[*decayMode] = new EvtHistManager_0l_2tau(makeHistManager_cfg(decayMode_and_genMatch,
@@ -1767,7 +1777,7 @@ int main(int argc, char* argv[])
       pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight);
     if ( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
-      if(! decayModeStr.empty())
+      if(! decayModeStr.empty() && !((isMC_tH || isMC_VH) && ( decayModeStr == "hzg" || decayModeStr == "hmm" )))
       {
         selHistManager->evt_in_decayModes_[decayModeStr]->fillHistograms(
           preselElectrons.size(),

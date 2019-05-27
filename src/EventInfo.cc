@@ -12,11 +12,11 @@
 
 const std::map<std::string, Float_t> EventInfo::decayMode_idString =
 {
-  { "ttH_hww",     24 },
-  { "ttH_hzz",     23 },
-  { "ttH_htt",     15 },
-  { "ttH_hzg", 230022 },
-  { "ttH_hmm",     13 },
+  { "hww",     24 },
+  { "hzz",     23 },
+  { "htt",     15 },
+  { "hzg", 230022 },
+  { "hmm",     13 },
 };
 
 EventInfo::EventInfo()

@@ -162,7 +162,9 @@ int main(int argc, char* argv[])
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
-  bool isSignal = ( process_string == "signal" ) ? true : false;
+  bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
+  bool isMC_VH = ( process_string == "VH" ) ? true : false;
+  bool isSignal = ( process_string == "signal"  || isMC_tH || isMC_VH ) ? true : false;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -539,7 +541,7 @@ int main(int argc, char* argv[])
   };
   TMVAInterface mva_plainKin_tt(mvaFileName_plainKin_tt, mvaInputVariables_plainKin_ttSort);
   mva_plainKin_tt.enableBDTTransform();
-  
+
   std::string mvaFileName_plainKin_SUM_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2l_2tau_XGB_plainKin_evtLevelSUM_TTH_VT_13Var.xml";
   std::vector<std::string> mvaInputVariables_plainKin_SUMSort = {
     "mTauTauVis", "cosThetaS_hadTau", "tau1_pt", "tau2_pt",
@@ -642,7 +644,16 @@ int main(int argc, char* argv[])
       {
         for(const std::string & decayMode_evt: decayModes_evt)
         {
-          std::string decayMode_and_genMatch = decayMode_evt;
+
+          if ( ( isMC_tH || isMC_VH ) && ( decayMode_evt == "hzg" || decayMode_evt == "hmm" ) ) continue;
+          std::string decayMode_and_genMatch;
+          if ( isMC_tH || isMC_VH ) {
+            decayMode_and_genMatch = process_string;
+            decayMode_and_genMatch += "_";
+          }
+          else decayMode_and_genMatch = "ttH_";
+          decayMode_and_genMatch += decayMode_evt;
+
           if(apply_leptonGenMatching)                            decayMode_and_genMatch += leptonGenMatch_definition -> name_;
           if(apply_leptonGenMatching && apply_hadTauGenMatching) decayMode_and_genMatch += "&";
           if(apply_hadTauGenMatching)                            decayMode_and_genMatch += hadTauGenMatch_definition -> name_;
@@ -656,12 +667,12 @@ int main(int argc, char* argv[])
           selHistManager -> evt_in_decayModes_[decayMode_evt] -> bookHistograms(fs);
         }
       }
-      edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch, 
+      edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/evtYield", histogramDir.data()), era_string, central_or_shift);
       cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
       cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);
       selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_sel);
-      selHistManager->evtYield_->bookHistograms(fs);  
+      selHistManager->evtYield_->bookHistograms(fs);
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/weights", histogramDir.data()), era_string, central_or_shift));
       selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "triggerWeight", "data_to_MC_correction", "fakeRate" });
@@ -1709,6 +1720,7 @@ int main(int argc, char* argv[])
     );
     if ( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
+      if ( ( isMC_tH || isMC_VH ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
       if(! decayModeStr.empty())
       {
         selHistManager->evt_in_decayModes_[decayModeStr]->fillHistograms(

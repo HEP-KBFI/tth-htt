@@ -184,7 +184,9 @@ int main(int argc, char* argv[])
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
-  bool isSignal = ( process_string == "signal" ) ? true : false;
+  bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
+  bool isMC_VH = ( process_string == "VH" ) ? true : false;
+  bool isSignal = ( process_string == "signal" || isMC_tH || isMC_VH ) ? true : false;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -679,7 +681,16 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       const vstring decayModes_evt = eventInfo.getDecayModes();
       if ( isSignal ) {
         for ( const std::string & decayMode_evt: decayModes_evt ) {
-          std::string decayMode_and_genMatch = decayMode_evt;
+
+          if ( ( isMC_tH || isMC_VH ) && ( decayMode_evt == "hzg" || decayMode_evt == "hmm" ) ) continue;
+          std::string decayMode_and_genMatch;
+          if ( isMC_tH || isMC_VH ) {
+            decayMode_and_genMatch = process_string;
+            decayMode_and_genMatch += "_";
+          }
+          else decayMode_and_genMatch = "ttH_";
+          decayMode_and_genMatch += decayMode_evt;
+
           if ( apply_leptonGenMatching                            ) decayMode_and_genMatch += leptonGenMatch_definition->name_;
           if ( apply_leptonGenMatching && apply_hadTauGenMatching ) decayMode_and_genMatch += "&";
           if ( apply_hadTauGenMatching                            ) decayMode_and_genMatch += hadTauGenMatch_definition->name_;
@@ -706,13 +717,22 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 
         if ( isSignal ) {
           for ( const std::string & decayMode_evt: decayModes_evt ) {
-            std::string decayMode_and_genMatch = decayMode_evt;
+
+            if ( ( isMC_tH || isMC_VH ) && ( decayMode_evt == "hzg" || decayMode_evt == "hmm" ) ) continue;
+            std::string decayMode_and_genMatch;
+            if ( isMC_tH || isMC_VH ) {
+              decayMode_and_genMatch = process_string;
+              decayMode_and_genMatch += "_";
+            }
+            else decayMode_and_genMatch = "ttH_";
+            decayMode_and_genMatch += decayMode_evt;
+
             if ( apply_leptonGenMatching                            ) decayMode_and_genMatch += leptonGenMatch_definition->name_;
             if ( apply_leptonGenMatching && apply_hadTauGenMatching ) decayMode_and_genMatch += "&";
             if ( apply_hadTauGenMatching                            ) decayMode_and_genMatch += hadTauGenMatch_definition->name_;
-            selHistManager->evt_in_categories_and_decayModes_[category][decayMode_and_genMatch] = new EvtHistManager_1l_1tau(makeHistManager_cfg(decayMode_and_genMatch,
+            selHistManager->evt_in_categories_and_decayModes_[category][decayMode_evt] = new EvtHistManager_1l_1tau(makeHistManager_cfg(decayMode_and_genMatch,
               Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
-            selHistManager->evt_in_categories_and_decayModes_[category][decayMode_and_genMatch]->bookHistograms(fs);
+            selHistManager->evt_in_categories_and_decayModes_[category][decayMode_evt]->bookHistograms(fs);
           }
         }
       }
@@ -1995,7 +2015,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 	);
     if( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
-      if ( !decayModeStr.empty() ) {
+      if ( !decayModeStr.empty() && !((isMC_tH || isMC_VH) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ))) {
         selHistManager->evt_in_decayModes_[decayModeStr]->fillHistograms(
           selElectrons.size(),
           selMuons.size(),
@@ -2077,19 +2097,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       {
         if( isSignal ) {
           std::string decayModeStr = eventInfo.getDecayModeString();
-          if ( !decayModeStr.empty() ) {
-            if(apply_leptonGenMatching)
-            {
-              decayModeStr += selLepton_genMatch.name_;
-            }
-            if(apply_leptonGenMatching && apply_hadTauGenMatching)
-            {
-              decayModeStr += "&";
-            }
-            if(apply_hadTauGenMatching)
-            {
-              decayModeStr += selHadTau_genMatch.name_;
-            }
+          if ( !decayModeStr.empty() && !((isMC_tH || isMC_VH) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ))) {
             selHistManager->evt_in_categories_and_decayModes_[category][decayModeStr]->fillHistograms(
               selElectrons.size(),
               selMuons.size(),

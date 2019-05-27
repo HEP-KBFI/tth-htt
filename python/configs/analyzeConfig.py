@@ -226,7 +226,7 @@ class analyzeConfig(object):
         self.triggers = triggers
         self.triggerTable = Triggers(self.era)
         self.do_sync = do_sync
-        
+
         samples_to_stitch = []
         if self.era == '2016':
           pass
@@ -394,6 +394,8 @@ class analyzeConfig(object):
         self.cfgFile_add_syst_fakerate = os.path.join(self.template_dir, "addSystFakeRates_cfg.py")
         self.jobOptions_add_syst_fakerate = {}
         self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
+        self.decayModes = ["htt", "hww", "hzz", "hmm", "hzg"]
+        self.procsWithDecayModes = ["ttH", "VH", "tHW", "tHq"]
         self.make_plots_signal = "signal"
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
         self.jobOptions_make_plots = {}
@@ -811,7 +813,7 @@ class analyzeConfig(object):
 
     def createCfg_copyHistograms(self, jobOptions):
         """Create python configuration file for the copyHistograms executable (split the ROOT files produced by hadd_stage1 into separate ROOT files, one for each event category)
-        
+
            Args:
              inputFiles: input file (the ROOT file produced by hadd_stage1)
              outputFile: output file of the job
@@ -832,7 +834,7 @@ class analyzeConfig(object):
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
-        lines.append("process.addBackgrounds.categories = cms.vstring(%s)" % jobOptions['categories'])        
+        lines.append("process.addBackgrounds.categories = cms.vstring(%s)" % jobOptions['categories'])
         lines.append("process.addBackgrounds.processes_input = cms.vstring(%s)" % jobOptions['processes_input'])
         lines.append("process.addBackgrounds.process_output = cms.string('%s')" % jobOptions['process_output'])
         if 'histogramsToCopy' in jobOptions.keys():
@@ -1151,7 +1153,7 @@ class analyzeConfig(object):
 
     def addToMakefile_syncNtuple(self, lines_makefile, make_target = "phony_analyze", make_dependency = ""):
         """Adds the commands to Makefile that are necessary for running the analysis code on the Ntuple and filling the histograms
-        """        
+        """
         if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         lines_makefile.append("%s: %s" % (make_target, make_dependency))
@@ -1178,7 +1180,7 @@ class analyzeConfig(object):
             sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, label))
             jobOptions = {}
             for key in outputFiles.keys():
-                scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]))    
+                scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]))
                 jobOptions[key] = {
                     'inputFile' : inputFiles[key],
                     'cfgFile_modified' : scriptFile,
@@ -1238,7 +1240,7 @@ class analyzeConfig(object):
     def addToMakefile_addBackgrounds(self, lines_makefile, make_target, make_dependency, sbatchFile, jobOptions):
         if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
-        lines_makefile.append("%s: %s" % (make_target, make_dependency))        
+        lines_makefile.append("%s: %s" % (make_target, make_dependency))
         if self.is_sbatch:
             lines_makefile.append("\t%s %s" % ("python", sbatchFile))
         else:
@@ -1310,7 +1312,7 @@ class analyzeConfig(object):
 
     def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, max_input_files_per_job = 2):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
-        """        
+        """
         if make_dependency is None:
             make_dependency = self.make_dependency_hadd_stage2
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2, max_input_files_per_job)
@@ -1321,7 +1323,7 @@ class analyzeConfig(object):
 
     def addToMakefile_prep_dcard(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the datacards.
-        """        
+        """
         for job in self.jobOptions_prep_dcard.values():
             lines_makefile.append("%s: %s" % (job['datacardFile'], job['inputFile']))
             lines_makefile.append("\t%s %s" % (self.executable_prep_dcard, job['cfgFile_modified']))

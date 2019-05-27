@@ -137,7 +137,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares", "VH", "tHW", "tHq" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares", "tHq", "tHW", "VH" ]
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
     self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
 
@@ -238,7 +238,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
               for process_name_or_dummy in process_name_extended:
                 if central_or_shift_or_dummy in [ "hadd", "addBackgrounds" ] and process_name_or_dummy in [ "hadd" ]:
                   continue
-                key_dir = getKey(process_name_or_dummy, hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift_or_dummy)                
+                key_dir = getKey(process_name_or_dummy, hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift_or_dummy)
                 for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
                   initDict(self.dirs, [ key_dir, dir_type ])
                   if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
@@ -318,7 +318,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
 
             sample_category = sample_info["sample_category"]
             is_mc = (sample_info["type"] == "mc")
-            is_signal = (sample_category == "signal")
+            is_signal = (sample_category == "signal" )
 
             for central_or_shift in self.central_or_shifts:
 
@@ -433,11 +433,10 @@ class analyzeConfig_0l_2tau(analyzeConfig):
 
               sample_categories = [ sample_category ]
               if is_signal:
-                sample_categories = [ "signal", "ttH", "ttH_htt", "ttH_hww", "ttH_hzz", "ttH_hmm", "ttH_hzg" ]
+                sample_categories = [ "signal", "ttH" ]
               for sample_category in sample_categories:
                 # sum non-fake and fake contributions for each MC sample separately
                 genMatch_categories = [ "nonfake", "fake" ]
-
                 for genMatch_category in genMatch_categories:
                   key_hadd_stage1_job = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
                   key_addBackgrounds_dir = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection, "addBackgrounds")
@@ -453,16 +452,17 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                       hadTau_genMatches.extend(self.hadTau_genMatches_nonfakes)
                       hadTau_genMatches.extend(self.hadTau_genMatches_fakes)
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in hadTau_genMatches ]
-                    elif sample_category in [ "ttH" ]:
+                    elif sample_category in self.procsWithDecayModes :
                       processes_input = []
-                      processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
-                      processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
-                      processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
-                      processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
-                      processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
+                      ## X: save also the process without the decay modes: do we need?
+                      if not sample_category == "ttH" :
+                        processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
+                      for decayMode in self.decayModes :
+                        if not sample_category == "ttH" and decayMode in ["hmm", "hzg"] : continue
+                        processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in self.hadTau_genMatches_nonfakes ])
                     else:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_nonfakes ]
-                    process_output = sample_category                     
+                    process_output = sample_category
                     addBackgrounds_job_tuple = (process_name, sample_category, hadTau_selection_and_frWeight, hadTau_charge_selection)
                   elif genMatch_category == "fake":
                     # sum fake contributions for each MC sample separately
@@ -470,13 +470,14 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                     # output processes: TT_fake; ...
                     if sample_category in [ "signal" ]:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
-                    elif sample_category in [ "ttH" ]:
+                    elif sample_category in self.procsWithDecayModes:
                       processes_input = []
-                      processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
-                      processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
-                      processes_input.extend([ "%s%s" % ("ttH_hzz", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
-                      processes_input.extend([ "%s%s" % ("ttH_hzg", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
-                      processes_input.extend([ "%s%s" % ("ttH_hmm", genMatch) for genMatch in self.hadTau_genMatches_fakes ])
+                      ## X: save also the process without the decay modes: do we need?
+                      if not sample_category == "ttH" :
+                        processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_fakes ])
+                      for decayMode in self.decayModes :
+                        if not sample_category == "ttH" and decayMode in ["hmm", "hzg"] : continue
+                        processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in self.hadTau_genMatches_fakes ])
                     else:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
                     process_output = "%s_fake" % sample_category
@@ -610,9 +611,9 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     for category in self.categories:
       for histogramToFit in self.histograms_to_fit:
         key_hadd_stage2_job = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
-        key_prep_dcard_dir = getKey("prepareDatacards")                              
+        key_prep_dcard_dir = getKey("prepareDatacards")
         prep_dcard_job_tuple = (self.channel, category, histogramToFit)
-        key_prep_dcard_job = getKey(category, histogramToFit, "OS")        
+        key_prep_dcard_job = getKey(category, histogramToFit, "OS")
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
           'cfgFile_modified' : os.path.join(self.dirs[key_prep_dcard_dir][DKEY_CFGS], "prepareDatacards_%s_%s_%s_cfg.py" % prep_dcard_job_tuple),
@@ -644,7 +645,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         for hadTau_charge_selection in self.hadTau_charge_selections:
           key_prep_dcard_job = getKey(category, histogramToFit, hadTau_charge_selection)
           key_hadd_stage2_job = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), hadTau_charge_selection)
-          key_add_syst_fakerate_dir = getKey("addSystFakeRates")                            
+          key_add_syst_fakerate_dir = getKey("addSystFakeRates")
           add_syst_fakerate_job_tuple = (self.channel, category, histogramToFit, hadTau_charge_selection)
           key_add_syst_fakerate_job = getKey(category, histogramToFit, hadTau_charge_selection)
           self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job] = {
@@ -680,7 +681,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
 
     logging.info("Creating configuration files to run 'makePlots'")
     key_hadd_stage2_job = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
-    key_makePlots_dir = getKey("makePlots") 
+    key_makePlots_dir = getKey("makePlots")
     key_makePlots_job = getKey("OS")
     self.jobOptions_make_plots[key_makePlots_job] = {
       'executable' : self.executable_make_plots,
@@ -707,7 +708,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
     if "Fakeable_mcClosure" in self.hadTau_selections: #TODO
       key_hadd_stage2_job = getKey(get_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
-      key_makePlots_job = getKey("OS")      
+      key_makePlots_job = getKey("OS")
       self.jobOptions_make_plots[key_makePlots_job] = {
         'executable' : self.executable_make_plots_mcClosure,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],

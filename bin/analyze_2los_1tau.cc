@@ -184,7 +184,9 @@ int main(int argc, char* argv[])
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
-  bool isSignal = ( process_string == "signal" ) ? true : false;
+  bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
+  bool isMC_VH = ( process_string == "VH" ) ? true : false;
+  bool isSignal = ( process_string == "signal"  || isMC_tH || isMC_VH ) ? true : false;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -901,7 +903,16 @@ selHistManagerType* selHistManager = new selHistManagerType();
       {
         for(const std::string & decayMode_evt: decayModes_evt)
         {
-          std::string decayMode_and_genMatch = decayMode_evt;
+
+          if ( ( isMC_tH || isMC_VH ) && ( decayMode_evt == "hzg" || decayMode_evt == "hmm" ) ) continue;
+          std::string decayMode_and_genMatch;
+          if ( isMC_tH || isMC_VH ) {
+            decayMode_and_genMatch = process_string;
+            decayMode_and_genMatch += "_";
+          }
+          else decayMode_and_genMatch = "ttH_";
+          decayMode_and_genMatch += decayMode_evt;
+
           if(apply_leptonGenMatching)                            decayMode_and_genMatch += leptonGenMatch_definition -> name_;
           if(apply_leptonGenMatching && apply_hadTauGenMatching) decayMode_and_genMatch += "&";
           if(apply_hadTauGenMatching)                            decayMode_and_genMatch += hadTauGenMatch_definition -> name_;
@@ -2241,6 +2252,7 @@ selHistManagerType* selHistManager = new selHistManagerType();
     if(isSignal)
     {
       const std::string decayModeStr = eventInfo.getDecayModeString();
+      if ( ( isMC_tH || isMC_VH ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
       if(! decayModeStr.empty())
       {
         selHistManager -> evt_in_decayModes_[decayModeStr] -> fillHistograms(
