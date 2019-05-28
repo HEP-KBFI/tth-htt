@@ -998,6 +998,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         }
         continue;
       }
+    }
 
     cutFlowTable.update("trigger", evtWeight_inclusive);
     cutFlowHistManager->fillHistograms("trigger", evtWeight_inclusive);

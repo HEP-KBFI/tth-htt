@@ -995,6 +995,7 @@ int main(int argc, char* argv[])
         }
         continue;
       }
+    }
 
     cutFlowTable.update("trigger", evtWeight_inclusive);
     cutFlowHistManager->fillHistograms("trigger", evtWeight_inclusive);
