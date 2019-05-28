@@ -996,21 +996,6 @@ int main(int argc, char* argv[])
         continue;
       }
 
-      if ( era == kEra_2016 ) {
-	// CV: only needed for 2016 data-taking period,
-	//     as mu+tau (e+tau) cross trigger is stored in the same primary dataset as the single muon (single electron) trigger
-	//     in the 2017 (and presumably also in the) data-taking period
-	if ( selTrigger_Tau && (isTriggered_SingleMuon || isTriggered_SingleElectron) ) {
-	  if ( run_lumi_eventSelector ) {
-	    std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
-	    std::cout << " (selTrigger_Tau = " << selTrigger_Tau
-		      << ", isTriggered_SingleMuon = " << isTriggered_SingleMuon
-		      << ", isTriggered_SingleElectron = " << isTriggered_SingleElectron << ")" << std::endl;
-	  }
-	  continue;
-	}
-      }
-    }
     cutFlowTable.update("trigger", evtWeight_inclusive);
     cutFlowHistManager->fillHistograms("trigger", evtWeight_inclusive);
 
