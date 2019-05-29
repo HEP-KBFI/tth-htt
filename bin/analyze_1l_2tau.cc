@@ -864,6 +864,7 @@ int main(int argc, char* argv[])
                 << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
+    //if (!( eventInfo.event == 126270 )) continue;
     histogram_analyzedEntries->Fill(0.);
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
@@ -1496,6 +1497,18 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
     cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
+    if(run_lumi_eventSelector || isDEBUG)
+    {
+      std::cout << "event " << eventInfo.str()
+      << "\n selJets.size() = " << selJets.size()
+      << "\n selBJets_medium.size() = " << selBJets_medium.size()
+      << "\n selBJets_loose.size() = "<< selBJets_loose.size()
+      << "\n selJetsForward.size()" << selJetsForward.size()
+      << std::endl;
+      printCollection("selJetsForward", selJetsForward);
+      printCollection("selBJets_medium", selBJets_medium);
+      printCollection("selBJets_loose", selBJets_loose);
+    }
 
     bool failsLowMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
