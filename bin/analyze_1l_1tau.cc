@@ -982,13 +982,8 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 // CV: This logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets.
 //     The mu+tau (e+tau) cross trigger is stored in the same primary dataset as the single muon (single electron) trigger during the 2017 data-taking period!!
     if ( !isMC && !isDEBUG ) {
-      bool isTriggered_SingleElectron = isTriggered_1e || isTriggered_1e1tau;
       bool isTriggered_SingleMuon = isTriggered_1mu || isTriggered_1mu1tau;
-      //bool isTriggered_Tau = isTriggered_1e1tau || isTriggered_1mu1tau;
-
       bool selTrigger_SingleElectron = selTrigger_1e || selTrigger_1e1tau;
-      //bool selTrigger_SingleMuon = selTrigger_1mu || selTrigger_1mu1tau;
-      bool selTrigger_Tau = selTrigger_1e1tau || selTrigger_1mu1tau;
 
       if ( selTrigger_SingleElectron && isTriggered_SingleMuon ) {
         if ( run_lumi_eventSelector ) {
@@ -998,22 +993,8 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         }
         continue;
       }
-
-      if ( era == kEra_2016 ) {
-	// CV: only needed for 2016 data-taking period,
-	//     as mu+tau (e+tau) cross trigger is stored in the same primary dataset as the single muon (single electron) trigger
-	//     in the 2017 (and presumably also in the) data-taking period
-	if ( selTrigger_Tau && (isTriggered_SingleMuon || isTriggered_SingleElectron) ) {
-	  if ( run_lumi_eventSelector ) {
-	    std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
-	    std::cout << " (selTrigger_Tau = " << selTrigger_Tau
-		      << ", isTriggered_SingleMuon = " << isTriggered_SingleMuon
-		      << ", isTriggered_SingleElectron = " << isTriggered_SingleElectron << ")" << std::endl;
-	  }
-	  continue;
-	}
-      }
     }
+
     cutFlowTable.update("trigger", evtWeight_inclusive);
     cutFlowHistManager->fillHistograms("trigger", evtWeight_inclusive);
 
