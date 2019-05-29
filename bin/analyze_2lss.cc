@@ -1501,7 +1501,6 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("sel lepton-pair OS/SS charge", evtWeight);
 
     bool failsZbosonMassVeto = false;
-    /*
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
           lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
@@ -1512,15 +1511,10 @@ int main(int argc, char* argv[])
         }
       }
     }
-    */
-    // Sergio and Marco way
-    // Zee veto in 2lss categories <=> veto event if the two tight leptons are electrons with mZ-mee < 10
-    double mass = (selLepton_lead->p4() + selLepton_sublead->p4()).mass();
-    if ( selLepton_lead->is_electron() && selLepton_sublead->is_electron() && std::fabs(mass - z_mass) < z_window ) failsZbosonMassVeto = true;
 
     if ( failsZbosonMassVeto ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto. std::fabs(mass - z_mass) = "<< std::fabs(mass - z_mass) << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto. " << std::endl;
       }
       continue;
     }

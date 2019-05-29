@@ -1024,29 +1024,6 @@ int main(int argc, char* argv[])
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined3);
 
-    /*// require that trigger paths match event category (with event category based on preselLeptons)
-    if ( !((preselElectrons.size() >= 3 &&                            (selTrigger_3e    || selTrigger_2e  || selTrigger_1e                                      )) ||
-	   (preselElectrons.size() >= 2 && preselMuons.size() >= 1 && (selTrigger_2e1mu || selTrigger_2e  || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	   (preselElectrons.size() >= 1 && preselMuons.size() >= 2 && (selTrigger_1e2mu || selTrigger_2mu || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	   (                               preselMuons.size() >= 3 && (selTrigger_3mu   || selTrigger_2mu || selTrigger_1mu                                     ))) ) {
-      if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given preselLepton multiplicity." << std::endl;
-	std::cout << " (#preselElectrons = " << preselElectrons.size()
-		  << ", #preselMuons = " << preselMuons.size()
-		  << ", selTrigger_3mu = " << selTrigger_3mu
-		  << ", selTrigger_1e2mu = " << selTrigger_1e2mu
-		  << ", selTrigger_2e1mu = " << selTrigger_2e1mu
-		  << ", selTrigger_3e = " << selTrigger_3e
-		  << ", selTrigger_2mu = " << selTrigger_2mu
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
-		  << ", selTrigger_2e = " << selTrigger_2e
-		  << ", selTrigger_1mu = " << selTrigger_1mu
-		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("presel lepton trigger match");*/
-
     // apply requirement on jets (incl. b-tagged jets) on preselection level
     if ( !((int)selJets.size() >= minNumJets) ) {
       if ( run_lumi_eventSelector ) {
@@ -1187,29 +1164,6 @@ int main(int argc, char* argv[])
       std::cout << "evtWeight = " << evtWeight << std::endl;
     }
 
-    /*// require that trigger paths match event category (with event category based on fakeableLeptons)
-    if ( !((fakeableElectrons.size() >= 3 &&                              (selTrigger_3e    || selTrigger_2e  || selTrigger_1e                                      )) ||
-	   (fakeableElectrons.size() >= 2 && fakeableMuons.size() >= 1 && (selTrigger_2e1mu || selTrigger_2e  || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	   (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 2 && (selTrigger_1e2mu || selTrigger_2mu || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	   (                                 fakeableMuons.size() >= 3 && (selTrigger_3mu   || selTrigger_2mu || selTrigger_1mu                                     ))) ) {
-      if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given fakeableLepton multiplicity." << std::endl;
-	std::cout << " (#fakeableElectrons = " << fakeableElectrons.size()
-		  << ", #fakeableMuons = " << fakeableMuons.size()
-		  << ", selTrigger_3mu = " << selTrigger_3mu
-		  << ", selTrigger_1e2mu = " << selTrigger_1e2mu
-		  << ", selTrigger_2e1mu = " << selTrigger_2e1mu
-		  << ", selTrigger_3e = " << selTrigger_3e
-		  << ", selTrigger_2mu = " << selTrigger_2mu
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
-		  << ", selTrigger_2e = " << selTrigger_2e
-		  << ", selTrigger_1mu = " << selTrigger_1mu
-		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("fakeable lepton trigger match", evtWeight);*/
-
 //--- apply HLT filter
     if(apply_hlt_filter)
     {
@@ -1301,7 +1255,6 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("sel lepton charge", evtWeight);
 
-    bool isSFOS = false;
     double massSFOS = -1.;
     const RecoLepton* selLepton_extra = 0;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
@@ -1309,7 +1262,6 @@ int main(int argc, char* argv[])
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
       lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
 	if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // pair of same flavor leptons of opposite charge
-	  isSFOS = true;
 	  double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
 	  if ( std::fabs(mass - z_mass) < std::fabs(massSFOS - z_mass) ) {
 	    massSFOS = mass;
@@ -1321,10 +1273,10 @@ int main(int argc, char* argv[])
       }
     }
 
-    bool passesZbosonMassCut = isSFOS && std::fabs(massSFOS - z_mass) < z_window;
+    bool passesZbosonMassCut = std::fabs(massSFOS - z_mass) < z_window;
     if ( !passesZbosonMassCut ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS Z-boson mass cut. " << isSFOS << " "<< std::fabs(massSFOS - z_mass) << " " << z_window << std::endl;
+    std::cout << "event " << eventInfo.str() << " FAILS Z-boson mass cut. " << std::fabs(massSFOS - z_mass) << " " << z_window << std::endl;
       }
       continue;
     }
