@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-05-19 16:54:26 with the following command:
+# file generated at 2019-05-28 15:01:05 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2017_RunIIFall17MiniAODv2.txt -m python/samples/metaDict_2017_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2017_RunIIFall17MiniAODv2.txt
 
 meta_dictionary = OD()
@@ -60,19 +60,6 @@ meta_dictionary["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/
   ("comment",               "status: VALID; size: 625.51GB; nevents: 9.78M; release: 9_4_7; last modified: 2018-06-16 07:53:14"),
 ])
 
-meta_dictionary["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
-  ("sample_category",       "signal"),
-  ("process_name_specific", "ttHJetTobb_M125_amcatnlo"),
-  ("nof_db_events",         10055168),
-  ("nof_db_files",          212),
-  ("fsize_db",              651382274350),
-  ("xsection",              0.2953),
-  ("use_it",                False),
-  ("genWeight",             True),
-  ("comment",               "status: VALID; size: 651.38GB; nevents: 10.06M; release: 9_4_7; last modified: 2018-06-11 22:54:00"),
-])
-
 meta_dictionary["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
   ("crab_string",           ""),
   ("sample_category",       "signal"),
@@ -99,19 +86,6 @@ meta_dictionary["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAO
   ("comment",               "status: VALID; size: 515.82GB; nevents: 8.24M; release: 9_4_6_patch1; last modified: 2019-01-18 18:55:27"),
 ])
 
-meta_dictionary["/ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
-  ("sample_category",       "signal"),
-  ("process_name_specific", "ttHTobb_M125_powheg"),
-  ("nof_db_events",         8000000),
-  ("nof_db_files",          173),
-  ("fsize_db",              508758174315),
-  ("xsection",              0.2953),
-  ("use_it",                False),
-  ("genWeight",             True),
-  ("comment",               "status: VALID; size: 508.76GB; nevents: 8.00M; release: 9_4_7; last modified: 2018-06-11 22:52:14"),
-])
-
 meta_dictionary["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
   ("crab_string",           ""),
   ("sample_category",       "signal"),
@@ -123,32 +97,6 @@ meta_dictionary["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIFall17MiniAO
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 604.10GB; nevents: 9.62M; release: 9_4_7; last modified: 2019-02-02 22:34:37"),
-])
-
-meta_dictionary["/ttHTobb_ttToSemiLep_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
-  ("sample_category",       "signal"),
-  ("process_name_specific", "ttHTobb_ttToSemiLep_M125"),
-  ("nof_db_events",         9332943),
-  ("nof_db_files",          191),
-  ("fsize_db",              586897322522),
-  ("xsection",              0.1298),
-  ("use_it",                False),
-  ("genWeight",             True),
-  ("comment",               "status: VALID; size: 586.90GB; nevents: 9.33M; release: 9_4_6_patch1; last modified: 2018-10-07 20:16:20"),
-])
-
-meta_dictionary["/ttHTobb_ttTo2L2Nu_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
-  ("sample_category",       "signal"),
-  ("process_name_specific", "ttHTobb_ttTo2L2Nu_M125"),
-  ("nof_db_events",         9794620),
-  ("nof_db_files",          204),
-  ("fsize_db",              608369897715),
-  ("xsection",              0.03137),
-  ("use_it",                False),
-  ("genWeight",             True),
-  ("comment",               "status: VALID; size: 608.37GB; nevents: 9.79M; release: 9_4_6_patch1; last modified: 2018-07-02 18:35:07"),
 ])
 
 meta_dictionary["/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
@@ -991,7 +939,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythi
   ("nof_db_files",          106),
   ("fsize_db",              401052735767),
   ("xsection",              239.63),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 401.05GB; nevents: 9.03M; release: 9_4_6_patch1; last modified: 2019-02-02 05:51:42"),
 ])
@@ -1004,7 +952,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythi
   ("nof_db_files",          15),
   ("fsize_db",              44369238206),
   ("xsection",              239.63),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 44.37GB; nevents: 1.03M; release: 9_4_6_patch1; last modified: 2018-04-18 00:09:22"),
 ])
@@ -1017,7 +965,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythi
   ("nof_db_files",          56),
   ("fsize_db",              52509999108),
   ("xsection",              63.79),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 52.51GB; nevents: 1.07M; release: 9_4_7; last modified: 2018-10-25 01:18:19"),
 ])
@@ -1030,7 +978,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythi
   ("nof_db_files",          19),
   ("fsize_db",              48889722830),
   ("xsection",              63.79),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 48.89GB; nevents: 1.02M; release: 9_4_7; last modified: 2018-05-18 04:51:48"),
 ])
@@ -1043,7 +991,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythi
   ("nof_db_files",          32),
   ("fsize_db",              111643815539),
   ("xsection",              6.726),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 111.64GB; nevents: 2.07M; release: 9_4_7; last modified: 2018-10-14 06:43:37"),
 ])
@@ -1056,7 +1004,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythi
   ("nof_db_files",          19),
   ("fsize_db",              53407812926),
   ("xsection",              6.726),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 53.41GB; nevents: 994.58k; release: 9_4_6_patch1; last modified: 2018-04-19 18:21:21"),
 ])
@@ -1069,7 +1017,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-600toInf_TuneCP5_13TeV-madgraphMLM-pythi
   ("nof_db_files",          34),
   ("fsize_db",              116733344895),
   ("xsection",              2.172),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 116.73GB; nevents: 1.99M; release: 9_4_6_patch1; last modified: 2018-05-18 15:32:44"),
 ])
@@ -1082,7 +1030,7 @@ meta_dictionary["/DYJetsToLL_M-4to50_HT-600toInf_TuneCP5_13TeV-madgraphMLM-pythi
   ("nof_db_files",          48),
   ("fsize_db",              56015594969),
   ("xsection",              2.172),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 56.02GB; nevents: 942.88k; release: 9_4_6_patch1; last modified: 2018-09-06 04:12:00"),
 ])
@@ -1095,7 +1043,7 @@ meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17M
   ("nof_db_files",          553),
   ("fsize_db",              1989278749780),
   ("xsection",              5765.4),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.99TB; nevents: 48.68M; release: 9_4_6_patch1; last modified: 2018-04-26 12:18:24"),
 ])
@@ -1108,7 +1056,7 @@ meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17M
   ("nof_db_files",          591),
   ("fsize_db",              2002707381991),
   ("xsection",              5765.4),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 2.00TB; nevents: 49.13M; release: 9_4_6_patch1; last modified: 2018-04-23 22:46:40"),
 ])
@@ -1121,7 +1069,7 @@ meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17
   ("nof_db_files",          324),
   ("fsize_db",              1129729744374),
   ("xsection",              5765.4),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.13TB; nevents: 27.53M; release: 9_4_7; last modified: 2019-03-15 16:44:40"),
 ])
@@ -1134,7 +1082,7 @@ meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17
   ("nof_db_files",          2005),
   ("fsize_db",              7474232515523),
   ("xsection",              5765.4),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 7.47TB; nevents: 182.22M; release: 9_4_7; last modified: 2018-12-02 07:40:50"),
 ])
@@ -1147,7 +1095,7 @@ meta_dictionary["/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17
   ("nof_db_files",          417),
   ("fsize_db",              1462619517307),
   ("xsection",              945.24),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.46TB; nevents: 34.86M; release: 9_4_6_patch1; last modified: 2018-04-20 01:40:36"),
 ])
@@ -1160,7 +1108,7 @@ meta_dictionary["/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17
   ("nof_db_files",          492),
   ("fsize_db",              1818087283471),
   ("xsection",              945.24),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.82TB; nevents: 42.33M; release: 9_4_7; last modified: 2018-05-28 20:31:22"),
 ])
@@ -1173,7 +1121,7 @@ meta_dictionary["/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17
   ("nof_db_files",          2),
   ("fsize_db",              4131753194),
   ("xsection",              330.99),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 4.13GB; nevents: 88.89k; release: 9_4_6_patch1; last modified: 2018-06-03 02:31:14"),
 ])
@@ -1186,7 +1134,7 @@ meta_dictionary["/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17
   ("nof_db_files",          163),
   ("fsize_db",              464730818230),
   ("xsection",              330.99),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 464.73GB; nevents: 10.04M; release: 9_4_7; last modified: 2019-02-05 04:01:05"),
 ])
@@ -1199,7 +1147,7 @@ meta_dictionary["/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17
   ("nof_db_files",          84),
   ("fsize_db",              276614009421),
   ("xsection",              120.72),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 276.61GB; nevents: 5.75M; release: 9_4_6_patch1; last modified: 2018-08-01 04:29:16"),
 ])
@@ -1212,7 +1160,7 @@ meta_dictionary["/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17
   ("nof_db_files",          34),
   ("fsize_db",              55739563882),
   ("xsection",              120.72),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 55.74GB; nevents: 1.15M; release: 9_4_6_patch1; last modified: 2019-05-01 09:28:29"),
 ])
@@ -1225,7 +1173,7 @@ meta_dictionary["/DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17
   ("nof_db_files",          75),
   ("fsize_db",              229309195986),
   ("xsection",              47.47),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 229.31GB; nevents: 4.33M; release: 9_4_6_patch1; last modified: 2018-10-07 10:25:43"),
 ])
@@ -1238,7 +1186,7 @@ meta_dictionary["/DYJetsToLL_M-50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia8/R
   ("nof_db_files",          207),
   ("fsize_db",              429654206472),
   ("xsection",              158.49),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 429.65GB; nevents: 9.34M; release: 9_4_6_patch1; last modified: 2018-09-07 17:40:18"),
 ])
@@ -1251,7 +1199,7 @@ meta_dictionary["/DYJetsToLL_M-50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_files",          172),
   ("fsize_db",              547433166562),
   ("xsection",              173.53),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 547.43GB; nevents: 11.20M; release: 9_4_7; last modified: 2018-09-06 02:28:37"),
 ])
@@ -1264,7 +1212,7 @@ meta_dictionary["/DYJetsToLL_M-50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_files",          61),
   ("fsize_db",              186406431655),
   ("xsection",              173.53),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 186.41GB; nevents: 3.95M; release: 9_4_6_patch1; last modified: 2018-04-20 12:32:47"),
 ])
@@ -1277,7 +1225,7 @@ meta_dictionary["/DYJetsToLL_M-50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_files",          159),
   ("fsize_db",              576131281371),
   ("xsection",              53.0),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 576.13GB; nevents: 10.73M; release: 9_4_6_patch1; last modified: 2018-10-05 06:39:30"),
 ])
@@ -1290,7 +1238,7 @@ meta_dictionary["/DYJetsToLL_M-50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_files",          22),
   ("fsize_db",              63472314509),
   ("xsection",              53.0),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 63.47GB; nevents: 1.20M; release: 9_4_6_patch1; last modified: 2018-04-20 01:49:19"),
 ])
@@ -1303,7 +1251,7 @@ meta_dictionary["/DYJetsToLL_M-50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_files",          193),
   ("fsize_db",              605120374708),
   ("xsection",              7.539),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 605.12GB; nevents: 10.22M; release: 9_4_6_patch1; last modified: 2018-10-04 16:55:21"),
 ])
@@ -1316,7 +1264,7 @@ meta_dictionary["/DYJetsToLL_M-50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_files",          23),
   ("fsize_db",              65482538135),
   ("xsection",              7.539),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 65.48GB; nevents: 1.12M; release: 9_4_6_patch1; last modified: 2018-04-20 00:54:12"),
 ])
@@ -1329,7 +1277,7 @@ meta_dictionary["/DYJetsToLL_M-50_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_files",          183),
   ("fsize_db",              535469359588),
   ("xsection",              1.8815),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 535.47GB; nevents: 8.74M; release: 9_4_7; last modified: 2018-09-26 06:53:39"),
 ])
@@ -1342,7 +1290,7 @@ meta_dictionary["/DYJetsToLL_M-50_HT-800to1200_TuneCP5_13TeV-madgraphMLM-pythia8
   ("nof_db_files",          66),
   ("fsize_db",              196397396234),
   ("xsection",              0.8684),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 196.40GB; nevents: 3.11M; release: 9_4_7; last modified: 2018-10-17 14:23:53"),
 ])
@@ -1355,7 +1303,7 @@ meta_dictionary["/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_13TeV-madgraphMLM-pythia
   ("nof_db_files",          15),
   ("fsize_db",              41980141603),
   ("xsection",              0.2079),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 41.98GB; nevents: 625.52k; release: 9_4_6_patch1; last modified: 2018-04-20 00:43:19"),
 ])
@@ -1368,7 +1316,7 @@ meta_dictionary["/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8
   ("nof_db_files",          10),
   ("fsize_db",              30462850223),
   ("xsection",              0.003749),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 30.46GB; nevents: 419.31k; release: 9_4_6_patch1; last modified: 2018-10-06 02:51:56"),
 ])
@@ -1381,7 +1329,7 @@ meta_dictionary["/DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall1
   ("nof_db_files",          46),
   ("fsize_db",              133741432740),
   ("xsection",              14.59),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 133.74GB; nevents: 2.73M; release: 9_4_6_patch1; last modified: 2018-04-19 22:53:50"),
 ])
@@ -1394,7 +1342,7 @@ meta_dictionary["/DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall1
   ("nof_db_files",          121),
   ("fsize_db",              118040727435),
   ("xsection",              14.59),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 118.04GB; nevents: 2.38M; release: 9_4_7; last modified: 2018-11-23 11:37:26"),
 ])
@@ -1403,13 +1351,13 @@ meta_dictionary["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAO
   ("crab_string",           ""),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WJetsToLNu_madgraphMLM"),
-  ("nof_db_events",         16515556),
-  ("nof_db_files",          272),
-  ("fsize_db",              650858332313),
+  ("nof_db_events",         17366948),
+  ("nof_db_files",          290),
+  ("fsize_db",              684483126354),
   ("xsection",              61526.7),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: PRODUCTION; size: 650.86GB; nevents: 16.52M; release: 9_4_6_patch1; last modified: 2019-04-11 22:11:26"),
+  ("comment",               "status: PRODUCTION; size: 684.48GB; nevents: 17.37M; release: 9_4_6_patch1; last modified: 2019-04-11 22:11:26"),
 ])
 
 meta_dictionary["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM"] =  OD([
@@ -1433,7 +1381,7 @@ meta_dictionary["/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniA
   ("nof_db_files",          801),
   ("fsize_db",              2175397601720),
   ("xsection",              9418.44),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 2.18TB; nevents: 54.15M; release: 9_4_6_patch1; last modified: 2018-08-24 10:17:33"),
 ])
@@ -1446,7 +1394,7 @@ meta_dictionary["/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniA
   ("nof_db_files",          522),
   ("fsize_db",              1391019305711),
   ("xsection",              3244.85),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.39TB; nevents: 32.37M; release: 9_4_6_patch1; last modified: 2019-04-18 00:31:35"),
 ])
@@ -1459,7 +1407,7 @@ meta_dictionary["/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniA
   ("nof_db_files",          250),
   ("fsize_db",              868954430671),
   ("xsection",              1153.02),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 868.95GB; nevents: 19.70M; release: 9_4_6_patch1; last modified: 2018-04-20 18:55:18"),
 ])
@@ -1472,7 +1420,7 @@ meta_dictionary["/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniA
   ("nof_db_files",          185),
   ("fsize_db",              544022661408),
   ("xsection",              633.05),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 544.02GB; nevents: 11.10M; release: 9_4_7; last modified: 2018-11-19 21:42:04"),
 ])
@@ -1485,7 +1433,7 @@ meta_dictionary["/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIF
   ("nof_db_files",          403),
   ("fsize_db",              957900452414),
   ("xsection",              1502.72),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 957.90GB; nevents: 22.26M; release: 9_4_7; last modified: 2019-01-13 04:33:38"),
 ])
@@ -1498,7 +1446,7 @@ meta_dictionary["/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunII
   ("nof_db_files",          735),
   ("fsize_db",              1632440553612),
   ("xsection",              1625.94),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.63TB; nevents: 35.86M; release: 9_4_6_patch1; last modified: 2018-07-16 22:47:23"),
 ])
@@ -1511,7 +1459,7 @@ meta_dictionary["/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunII
   ("nof_db_files",          400),
   ("fsize_db",              1058111782457),
   ("xsection",              477.52),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.06TB; nevents: 21.25M; release: 9_4_6_patch1; last modified: 2018-06-11 22:53:32"),
 ])
@@ -1524,7 +1472,7 @@ meta_dictionary["/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunII
   ("nof_db_files",          314),
   ("fsize_db",              780224610750),
   ("xsection",              67.51),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 780.22GB; nevents: 14.31M; release: 9_4_6_patch1; last modified: 2018-05-28 05:52:21"),
 ])
@@ -1537,7 +1485,7 @@ meta_dictionary["/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunII
   ("nof_db_files",          488),
   ("fsize_db",              1256446599197),
   ("xsection",              15.09),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.26TB; nevents: 21.71M; release: 9_4_6_patch1; last modified: 2018-06-17 00:32:54"),
 ])
@@ -1550,7 +1498,7 @@ meta_dictionary["/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunI
   ("nof_db_files",          488),
   ("fsize_db",              1227636244434),
   ("xsection",              6.297),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.23TB; nevents: 20.47M; release: 9_4_6_patch1; last modified: 2018-06-26 12:59:36"),
 ])
@@ -1563,7 +1511,7 @@ meta_dictionary["/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("nof_db_files",          551),
   ("fsize_db",              1289100671636),
   ("xsection",              1.262),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.29TB; nevents: 20.26M; release: 9_4_6_patch1; last modified: 2018-06-25 05:52:24"),
 ])
@@ -1576,7 +1524,7 @@ meta_dictionary["/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunI
   ("nof_db_files",          616),
   ("fsize_db",              1489610697179),
   ("xsection",              0.009446),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.49TB; nevents: 21.50M; release: 9_4_6_patch1; last modified: 2018-07-06 12:31:23"),
 ])
@@ -1871,13 +1819,13 @@ meta_dictionary["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2
   ("crab_string",           ""),
   ("sample_category",       "EWK"),
   ("process_name_specific", "ZZTo4L_ext2"),
-  ("nof_db_events",         44813934),
-  ("nof_db_files",          704),
-  ("fsize_db",              1892845491892),
+  ("nof_db_events",         50129445),
+  ("nof_db_files",          817),
+  ("fsize_db",              2117689045362),
   ("xsection",              1.256),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: PRODUCTION; size: 1.89TB; nevents: 44.81M; release: 9_4_7; last modified: 2019-05-05 13:50:36"),
+  ("comment",               "status: PRODUCTION; size: 2.12TB; nevents: 50.13M; release: 9_4_7; last modified: 2019-05-05 13:50:36"),
 ])
 
 meta_dictionary["/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
@@ -2220,7 +2168,7 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall
 
 
 # event statistics by sample category:
-# signal:                    72.79M
+# signal:                    35.61M
 # tHq:                       9.92M
 # tHW:                       4.72M
 # additional_signal_overlap: 965.20k
@@ -2230,6 +2178,6 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall
 # TT:                        962.83M
 # Rares:                     100.28M
 # VH:                        10.67M
-# EWK:                       1.22G
+# EWK:                       1.23G
 # QCD:                       399.84M
 
