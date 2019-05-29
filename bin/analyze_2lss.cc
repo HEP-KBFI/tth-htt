@@ -819,11 +819,9 @@ int main(int argc, char* argv[])
     "run:ls:event selection",
     "trigger",
     ">= 2 presel leptons",
-    //"presel lepton trigger match",
     ">= 2 jets",
     ">= 2 sel leptons",
     "<= 2 tight leptons",
-    //"fakeable lepton trigger match",
     "HLT filter matching",
     "Hadronic selection",
     "sel tau veto",
@@ -853,7 +851,7 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    //if (!( eventInfo.event == 1903584)) continue;
+    //if (!( eventInfo.event == 3818026 )) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -863,7 +861,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("run:ls:event selection");
     cutFlowHistManager->fillHistograms("run:ls:event selection", lumiScale);
 
-    if ( isDEBUG ) {
+    if ( isDEBUG || run_lumi_eventSelector) {
       std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
     }
 
@@ -1116,7 +1114,9 @@ int main(int argc, char* argv[])
     if(isDEBUG || run_lumi_eventSelector)
     {
       printCollection("uncleanedJets", jet_ptrs);
+      printCollection("cleanedJets", cleanedJets);
       printCollection("selJets",       selJets);
+      printCollection("selJetsForward", selJetsForward);
     }
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
@@ -1205,27 +1205,6 @@ int main(int argc, char* argv[])
     const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton_lead, preselLepton_sublead);
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined2);
-
-    /*
-    // require that trigger paths match event category (with event category based on preselLeptons)
-    if ( !((preselElectrons.size() >= 2 &&                            (selTrigger_2e    || selTrigger_1e                  )) ||
-	   (preselElectrons.size() >= 1 && preselMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	   (                               preselMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
-      if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given preselLepton multiplicity." << std::endl;
-	std::cout << " (#preselElectrons = " << preselElectrons.size()
-		  << ", #preselMuons = " << preselMuons.size()
-		  << ", selTrigger_2mu = " << selTrigger_2mu
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
-		  << ", selTrigger_2e = " << selTrigger_2e
-		  << ", selTrigger_1mu = " << selTrigger_1mu
-		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("presel lepton trigger match");
-    cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
-    */
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     /* X: This cut is not applied for Legacy because we have these events on the tH-selection
@@ -1351,26 +1330,6 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("<= 2 tight leptons", evtWeight);
     cutFlowHistManager->fillHistograms("<= 2 tight leptons", evtWeight);
-    /* X: we do not require trigger matching for Legacy
-    // require that trigger paths match event category (with event category based on fakeableLeptons)
-    if ( !((fakeableElectrons.size() >= 2 &&                              (selTrigger_2e    || selTrigger_1e                  )) ||
-	   (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	   (                                 fakeableMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
-      if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given fakeableLepton multiplicity." << std::endl;
-	std::cout << " (#fakeableElectrons = " << fakeableElectrons.size()
-		  << ", #fakeableMuons = " << fakeableMuons.size()
-		  << ", selTrigger_2mu = " << selTrigger_2mu
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
-		  << ", selTrigger_2e = " << selTrigger_2e
-		  << ", selTrigger_1mu = " << selTrigger_1mu
-		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("fakeable lepton trigger match", evtWeight);
-    cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);
-    */
 
 //--- apply HLT filter
     if(apply_hlt_filter)
@@ -1403,29 +1362,29 @@ int main(int argc, char* argv[])
       (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1)
     ) tH_like = true;
 
+    bool is_tH_like_and_not_ttH_like = false;
+    if ( tH_like && !ttH_like ) is_tH_like_and_not_ttH_like = true;
+
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
     bool passEvents = ttH_like || ttW_like || tH_like;
     if(do_sync) passEvents = ttH_like || tH_like;
     if ( !(passEvents) ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS Hadronic selection." << std::endl;
-	printCollection("selJets", selJets);
+	//printCollection("selJets", selJets);
+  std::cout << "event " << eventInfo.str()
+  << "\n is_tH_like_and_not_ttH_like = " << is_tH_like_and_not_ttH_like
+  << "\n selJets.size() = " << selJets.size()
+  << "\n selBJets_medium.size() = " << selBJets_medium.size()
+  << "\n selBJets_loose.size() = "<< selBJets_loose.size()
+  << "\n selJetsForward.size()" << selJetsForward.size()
+  << std::endl;
+  printCollection("selJetsForward", selJetsForward);
       }
       continue;
     }
     cutFlowTable.update("Hadronic selection", evtWeight);
     cutFlowHistManager->fillHistograms("Hadronic selection", evtWeight);
-
-    bool is_tH_like_and_not_ttH_like = false;
-    if ( tH_like && !ttH_like ) is_tH_like_and_not_ttH_like = true;
-    if ( run_lumi_eventSelector )
-      std::cout << "event " << eventInfo.str()
-      << "\n is_tH_like_and_not_ttH_like = " << is_tH_like_and_not_ttH_like
-      << "\n selJets.size() = " << selJets.size()
-      << "\n selBJets_medium.size() = " << selBJets_medium.size()
-      << "\n selBJets_loose.size() = "<< selBJets_loose.size()
-      << "\n selJetsForward.size()" << selJetsForward.size()
-      << std::endl;
 
     if ( selHadTaus.size() > 0 ) {
       if ( run_lumi_eventSelector ) {
@@ -1448,9 +1407,9 @@ int main(int argc, char* argv[])
         }
       }
     }
-    if ( failsLowMassVeto ) {
-      if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS low mass lepton pair veto." << std::endl;
+    if ( failsLowMassVeto  ) {
+      if ( run_lumi_eventSelector || isDEBUG ) {
+    std::cout << "event " << eventInfo.str() << " FAILS low mass lepton pair veto. " << std::endl;
       }
       continue;
     }
@@ -1561,7 +1520,7 @@ int main(int argc, char* argv[])
 
     if ( failsZbosonMassVeto ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto. std::fabs(mass - z_mass) = "<< std::fabs(mass - z_mass) << std::endl;
       }
       continue;
     }
@@ -1592,7 +1551,7 @@ int main(int argc, char* argv[])
     if (isMC) {
       if((selLepton_lead->genLepton() && selLepton_lead->charge() != selLepton_lead->genLepton()->charge()) ||
          (selLepton_sublead->genLepton() && selLepton_sublead->charge() != selLepton_sublead->genLepton()->charge())){
-        if(run_lumi_eventSelector)
+        if(run_lumi_eventSelector )
           {
 	    std::cout << "event " << eventInfo.str() << " FAILS lepton-par gen=rec charge matching\n"
               "(leading lepton charge = " << selLepton_lead->charge() << " genlepton charge = " << selLepton_lead->genLepton()->charge()<< "; "
