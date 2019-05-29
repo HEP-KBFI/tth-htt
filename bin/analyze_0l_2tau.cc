@@ -1153,7 +1153,11 @@ int main(int argc, char* argv[])
     if ( !(selJets.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 jets");
     cutFlowHistManager->fillHistograms(">= 2 jets", lumiScale);
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
+    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
+      std::cout << "event " << eventInfo.str() << " FAILS >= 2 loose b-jets || 1 medium b-jet ." << std::endl;
+      std::cout << "selBJets_loose.size() = " << selBJets_loose.size() << "selBJets_medium.size() = " << selBJets_medium.size() << std::endl;
+      continue;
+    }
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (1)");
     cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)", lumiScale);
 
@@ -1164,7 +1168,10 @@ int main(int argc, char* argv[])
 
 //--- apply final event selection
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
-    if ( !(selHadTaus.size() >= 2) ) continue;
+    if ( !(selHadTaus.size() >= 2) ) {
+      std::cout << "event " << eventInfo.str() << " FAILS selHadTaus.size() >= 2; selHadTaus.size() = " << selHadTaus.size() << std::endl;
+      continue;
+    }
     cutFlowTable.update(">= 2 sel taus", lumiScale);
     cutFlowHistManager->fillHistograms(">= 2 sel taus", lumiScale);
     const RecoHadTau* selHadTau_lead = selHadTaus[0];
@@ -1322,11 +1329,23 @@ int main(int argc, char* argv[])
     cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
     cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
 
-    if ( !(selHadTau_lead->pt() > minPt_hadTau_lead && selHadTau_lead->absEta() < 2.1) ) continue;
+    if ( !(selHadTau_lead->pt() > minPt_hadTau_lead && selHadTau_lead->absEta() < 2.1) ) {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS lead tau pt eta; selHadTau_lead->pt()  " << selHadTau_lead->pt()  << "abs(eta)" << selHadTau_lead->absEta()  << " \n";
+      }
+      continue;
+    }
     cutFlowTable.update(Form("lead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_lead), evtWeight);
     cutFlowHistManager->fillHistograms(Form("lead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_lead), evtWeight);
 
-    if ( !(selHadTau_sublead->pt() > minPt_hadTau_sublead && selHadTau_sublead->absEta() < 2.1) ) continue;
+    if ( !(selHadTau_sublead->pt() > minPt_hadTau_sublead && selHadTau_sublead->absEta() < 2.1) ) {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS sublead tau pt eta; selHadTau_sublead->pt()  " << selHadTau_sublead->pt()  << "abs(eta)" << selHadTau_sublead->absEta()  << " \n";
+      }
+      continue;
+    }
     cutFlowTable.update(Form("sublead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_sublead), evtWeight);
     cutFlowHistManager->fillHistograms(Form("sublead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_sublead), evtWeight);
 
