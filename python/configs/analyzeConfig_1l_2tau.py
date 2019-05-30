@@ -158,8 +158,10 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "VH" ]
 
-    self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "conversions", "fakes_data", "fakes_mc" ]
-    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "conversions", "fakes_data" ]
+    #self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "conversions", "fakes_data", "fakes_mc" ] FIXME
+    self.prep_dcard_processesToCopy = self.nonfake_backgrounds + [ "conversions", "fakes_mc" ]
+    #self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "conversions", "fakes_data" ] FIXME
+    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "conversions", "fakes_mc" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.histogramDir_prep_dcard = "1l_2tau_OS_Tight"
@@ -469,7 +471,11 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
             if is_mc:
               logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
-
+              thcouplings = [
+              "kt_m3p0_kv_1p0" ,  "kt_m2p0_kv_1p0" , "kt_m1p5_kv_1p0" , "kt_m1p25_kv_1p0" , "kt_m0p75_kv_1p0" , "kt_m0p5_kv_1p0" , "kt_m0p25_kv_1p0" , "kt_0p0_kv_1p0" , "kt_0p25_kv_1p0" , "kt_0p5_kv_1p0" , "kt_0p75_kv_1p0" , "kt_1p0_kv_1p0" , "kt_1p25_kv_1p0" , "kt_1p5_kv_1p0" , "kt_2p0_kv_1p0" , "kt_3p0_kv_1p0",
+              "kt_m3p0_kv_1p5" ,  "kt_m2p0_kv_1p5" , "kt_m1p5_kv_1p5" , "kt_m1p25_kv_1p5" , "kt_m0p75_kv_1p5" , "kt_m0p5_kv_1p5" , "kt_m0p25_kv_1p5" , "kt_0p0_kv_1p5" , "kt_0p25_kv_1p5" , "kt_0p5_kv_1p5" , "kt_0p75_kv_1p5" , "kt_1p0_kv_1p5" , "kt_1p25_kv_1p5" , "kt_1p5_kv_1p5" , "kt_2p0_kv_1p5" , "kt_3p0_kv_1p5" ,
+              "kt_m3p0_kv_0p5" , "kt_m2p0_kv_0p5" , "kt_m1p5_kv_0p5" ,  "kt_m1p25_kv_0p5" , "kt_m0p75_kv_0p5" , "kt_m0p5_kv_0p5" , "kt_m0p25_kv_0p5" , "kt_0p0_kv_0p5" , "kt_0p25_kv_0p5" , "kt_0p5_kv_0p5" , "kt_0p75_kv_0p5" , "kt_1p0_kv_0p5" , "kt_1p25_kv_0p5" , "kt_1p5_kv_0p5" , "kt_2p0_kv_0p5" ,  "kt_3p0_kv_0p5"
+              ]
               sample_categories = [ sample_category ]
               if is_signal:
                 sample_categories = [ "signal", "ttH" ]
@@ -499,11 +505,16 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                         lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_conversions)
                       processes_input = []
                       ## X: save also the process without the decay modes: do we need?
-                      if not sample_category == "ttH" : processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_nonfakes ])
+                      if sample_category == "VH" : processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in lepton_and_hadTau_genMatches ])
+                      if sample_category in ["tHq", "tHW"] : processes_input.extend([ "%s_%s_%s" % (sample_category, "kt_1p0_kv_1p0", genMatch) for genMatch in lepton_and_hadTau_genMatches ])
                       for decayMode in self.decayModes :
                         if not sample_category == "ttH" and  decayMode in ["hmm", "hzg"] : continue
-                        processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_nonfakes ])
-                    else : processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_nonfakes ]
+                        if sample_category in ["tHq", "tHW"] :
+                            for thcoupling in thcouplings :
+                                processes_input.extend([ "%s_%s_%s_%s" % (sample_category, decayMode, thcoupling, genMatch) for genMatch in lepton_and_hadTau_genMatches ])
+                        else :
+                            processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in lepton_and_hadTau_genMatches ])
+                    else : processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in lepton_and_hadTau_genMatches ]
                     process_output = sample_category
                     addBackgrounds_job_tuple = (process_name, sample_category, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection)
                   elif genMatch_category == "conversions":
@@ -514,11 +525,16 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_conversions ]
                     elif sample_category in self.procsWithDecayModes :
                       processes_input = []
-                      ## X: save also the process without the decay modes: do we need?
-                      if not sample_category == "ttH" : processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_conversions ])
+                      ## X: save also the process without the decay modes: do we need? stoped here
+                      if sample_category == "VH" : processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_conversions ])
+                      if sample_category in ["tHq", "tHW"] : processes_input.extend([ "%s%s_%s_" % (sample_category, genMatch, "kt_1p0_kv_1p0") for genMatch in self.lepton_and_hadTau_genMatches_conversions ])
                       for decayMode in self.decayModes :
                           if not sample_category == "ttH" and decayMode in ["hmm", "hzg"] : continue
-                          processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_conversions ])
+                          if sample_category in ["tHq", "tHW"] :
+                              for thcoupling in thcouplings :
+                                  processes_input.extend([ "%s_%s_%s_%s_" % (sample_category, decayMode, thcoupling, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_conversions ])
+                          else :
+                              processes_input.extend([ "%s_%s_%s" % (sample_category, "kt_1p0_kv_1p0", genMatch) for genMatch in self.lepton_and_hadTau_genMatches_conversions ])
                     else:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_conversions ]
                     process_output = "%s_conversion" % sample_category
@@ -532,10 +548,18 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                     elif sample_category in self.procsWithDecayModes:
                       processes_input = []
                       ## X: save also the process without the decay modes: do we need?
-                      if not sample_category == "ttH" : processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ]
+                      if sample_category == "VH" : processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
+                      if sample_category in ["tHq", "tHW"] :
+                          processes_input.extend([ "%s_%s_%s" % (sample_category, "kt_1p0_kv_1p0", genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
+                          #print ("%s_%s_%s" % (sample_category, "kt_1p0_kv_1p0", genMatch) )
                       for decayMode in self.decayModes :
                           if not sample_category == "ttH" and decayMode in ["hmm", "hzg"] : continue
-                          processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
+                          if sample_category in ["tHq", "tHW"] :
+                              for thcoupling in thcouplings :
+                                  #print ("%s_%s_%s_%s" % (sample_category, decayMode, thcoupling, genMatch))
+                                  processes_input.extend([ "%s_%s_%s_%s" % (sample_category, decayMode, thcoupling, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
+                          else :
+                              processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
                     else:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ]
                     process_output = "%s_fake" % sample_category
@@ -668,7 +692,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     for hadTau_charge_selection in self.hadTau_charge_selections:
       key_hadd_stage1_5_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Fakeable", "enabled"), hadTau_charge_selection)
       key_addFakes_dir = getKey("addBackgroundLeptonFakes")
-      key_addFakes_job = getKey("fakes_data", hadTau_charge_selection)
+      #key_addFakes_job = getKey("fakes_data", hadTau_charge_selection) # FIXME
+      key_addFakes_job = getKey("fakes_mc", hadTau_charge_selection)
       category_sideband = None
       if self.applyFakeRateWeights == "3L":
         category_sideband = "1l_2tau_%s_Fakeable_wFakeRateWeights" % hadTau_charge_selection
