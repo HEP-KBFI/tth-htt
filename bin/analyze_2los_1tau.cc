@@ -1117,7 +1117,7 @@ selHistManagerType* selHistManager = new selHistManagerType();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
+      //evtWeight_inclusive *= eventInfo.genWeight_tH();
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
@@ -1791,17 +1791,7 @@ selHistManagerType* selHistManager = new selHistManagerType();
     cutFlowTable.update("sel lepton-pair OS charge", evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton-pair OS charge", evtWeight);
 
-    bool failsZbosonMassVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
-    lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
-      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-      lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
-        double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
-        if ( (((*lepton1)->is_electron() && (*lepton2)->is_electron()) || ((*lepton1)->is_muon() && (*lepton2)->is_muon())) && std::fabs(mass - z_mass) < z_window ) {
-          failsZbosonMassVeto = true;
-        }
-      }
-    }
+    bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull);
     if ( failsZbosonMassVeto ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto." << std::endl;
@@ -2225,6 +2215,7 @@ selHistManagerType* selHistManager = new selHistManagerType();
     Double_t mvaDiscr_2los_1tau = getSF_from_TH2(mva_mapping_2los_1tau, mvaOutput_2los_1tau_ttbar, mvaOutput_2los_1tau_ttV) + 1.;
 
 //--- fill histograms with events passing final selection
+    std::map<std::string, double> param_weight = eventInfo.genWeight_tH();
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
@@ -2241,6 +2232,8 @@ selHistManagerType* selHistManager = new selHistManagerType();
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputs_2lss, evtWeight);
     selHistManager->mvaInputVariables_2los_1tau_->fillHistograms(mvaInputs_2los_1tau, evtWeight);
+    double evtWeight0 = evtWeight;
+    if ( isMC_tH) evtWeight0 *= param_weight["kt_1p0_kv_1p0"];
     selHistManager->evt_->fillHistograms(
       selElectrons.size(), selMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
@@ -2248,7 +2241,7 @@ selHistManagerType* selHistManager = new selHistManagerType();
       mTauTauVis_sel,
       mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var,mvaOutput_2los_1tau_evtLevelTT_TTH_20Var,
       mvaOutput_XGB_Updated, mvaOutput_XGB_Boosted_AK8,
-      evtWeight);
+      evtWeight0);
     if(isSignal)
     {
       const std::string decayModeStr = eventInfo.getDecayModeString();
@@ -2272,7 +2265,7 @@ selHistManagerType* selHistManager = new selHistManagerType();
           mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var,
           mvaOutput_2los_1tau_evtLevelTT_TTH_20Var,
           mvaOutput_XGB_Updated, mvaOutput_XGB_Boosted_AK8,
-          evtWeight
+          evtWeight0
         );
       }
     }

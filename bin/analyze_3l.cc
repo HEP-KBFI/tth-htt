@@ -877,7 +877,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
+    //  evtWeight_inclusive *= eventInfo.genWeight_tH();
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
@@ -1441,21 +1441,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     cutFlowTable.update("sel lepton charge", evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton charge", evtWeight);
 
-    bool isSameFlavor_OS = false;
-    double massSameFlavor_OS = -1.;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
-    lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
-      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-      lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
-	if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // pair of same flavor leptons of opposite charge
-	  isSameFlavor_OS = true;
-	  double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
-	  if ( std::fabs(mass - z_mass) < std::fabs(massSameFlavor_OS - z_mass) ) massSameFlavor_OS = mass;
-	}
-      }
-    }
-
-    bool failsZbosonMassVeto = isSameFlavor_OS && std::fabs(massSameFlavor_OS - z_mass) < z_window;
+    bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull);
     if ( failsZbosonMassVeto ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto." << std::endl;
@@ -1772,6 +1758,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     if      ( sumLeptonCharge < 0 ) category += "_neg";
     else if ( sumLeptonCharge > 0 ) category += "_pos";
     }
+    std::map<std::string, double> param_weight = eventInfo.genWeight_tH();
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
@@ -1787,13 +1774,15 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_3l_->fillHistograms(mvaInputs_3l, evtWeight);
+    double evtWeight0 = evtWeight;
+    if ( isMC_tH) evtWeight0 *= param_weight["kt_1p0_kv_1p0"];
     selHistManager->evt_->fillHistograms(
       selElectrons.size(), selMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
       output_NN_3l_ttH_tH_3cat_v8,
       memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-      evtWeight);
+      evtWeight0);
     EvtHistManager_3l* selHistManager_evt_category = selHistManager->evt_in_categories_[category];
     if ( selHistManager_evt_category ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
       selHistManager_evt_category->fillHistograms(
@@ -1802,7 +1791,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
       output_NN_3l_ttH_tH_3cat_v8,
       memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-      evtWeight);
+      evtWeight0);
     }
     EvtHistManager_3l* selHistManager_evt_3l_ttH_tH_3cat_v8_TF = selHistManager->evt_in_categories_3l_ttH_tH_3cat_v8_TF_[category_3l_ttH_tH_3cat_v8_TF];
     if ( selHistManager_evt_3l_ttH_tH_3cat_v8_TF ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
@@ -1812,7 +1801,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
         output_NN_3l_ttH_tH_3cat_v8,
         memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-        evtWeight);
+        evtWeight0);
     }
 
     if(isSignal)
@@ -1833,7 +1822,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           mvaDiscr_3l,
           output_NN_3l_ttH_tH_3cat_v8,
 	  memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-          evtWeight
+          evtWeight0
         );
         std::string decayMode_and_genMatch = decayModeStr;
         if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
@@ -1851,7 +1840,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 	    mvaDiscr_3l,
       output_NN_3l_ttH_tH_3cat_v8,
 	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-	    evtWeight
+	    evtWeight0
 	  );
 	}
 
@@ -1869,7 +1858,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   	    mvaDiscr_3l,
         output_NN_3l_ttH_tH_3cat_v8,
   	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-  	    evtWeight
+  	    evtWeight0
     );
   }
 

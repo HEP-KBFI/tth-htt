@@ -608,11 +608,9 @@ int main(int argc, char* argv[])
     "run:ls:event selection",
     "trigger",
     ">= 4 presel leptons",
-    //"presel lepton trigger match",
     ">= 2 jets (1)",
     ">= 2 loose b-jets || 1 medium b-jet (1)",
     "4 sel leptons",
-    //"fakeable lepton trigger match",
     "HLT filter matching",
     ">= 2 jets (2)",
     ">= 2 loose b-jets || 1 medium b-jet (2)",
@@ -627,6 +625,7 @@ int main(int argc, char* argv[])
   };
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
+  bool isDEBUG_tH = true;
 
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
@@ -640,6 +639,7 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
+    if ( analyzedEntries > 1 ) break;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -701,12 +701,17 @@ int main(int argc, char* argv[])
     if(isMC)
     {
       if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      if(isMC_tH)
+      {
+        std::map<std::string, double> tH_weight = eventInfo.genWeight_tH();
+        if ( isDEBUG_tH ) std::cout << "eventInfo.genWeight_tH() =" << tH_weight["kt_1p0_kv_1p0"] << "\n";
+        evtWeight_inclusive *= tH_weight["kt_1p0_kv_1p0"];
+      }
       if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
       if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
@@ -1002,30 +1007,6 @@ int main(int argc, char* argv[])
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined4);
 
-    /*// require that trigger paths match event category (with event category based on preselLeptons)
-    if ( !((preselElectrons.size() >= 3 &&                            (selTrigger_3e    || selTrigger_2e  || selTrigger_1e                                      )) ||
-	   (preselElectrons.size() >= 2 && preselMuons.size() >= 1 && (selTrigger_2e1mu || selTrigger_2e  || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	   (preselElectrons.size() >= 1 && preselMuons.size() >= 2 && (selTrigger_1e2mu || selTrigger_2mu || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	   (                               preselMuons.size() >= 3 && (selTrigger_3mu   || selTrigger_2mu || selTrigger_1mu                                     ))) ) {
-      if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given preselLepton multiplicity." << std::endl;
-	std::cout << " (#preselElectrons = " << preselElectrons.size()
-		  << ", #preselMuons = " << preselMuons.size()
-		  << ", selTrigger_3mu = " << selTrigger_3mu
-		  << ", selTrigger_1e2mu = " << selTrigger_1e2mu
-		  << ", selTrigger_2e1mu = " << selTrigger_2e1mu
-		  << ", selTrigger_3e = " << selTrigger_3e
-		  << ", selTrigger_2mu = " << selTrigger_2mu
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
-		  << ", selTrigger_2e = " << selTrigger_2e
-		  << ", selTrigger_1mu = " << selTrigger_1mu
-		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("presel lepton trigger match");
-    cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);*/
-
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     if ( !((int)selJets.size() >= minNumJets) ) {
       if ( run_lumi_eventSelector ) {
@@ -1177,30 +1158,6 @@ int main(int argc, char* argv[])
       std::cout << "evtWeight = " << evtWeight << std::endl;
     }
 
-    /*// require that trigger paths match event category (with event category based on fakeableLeptons)
-    if ( !((fakeableElectrons.size() >= 3 &&                              (selTrigger_3e    || selTrigger_2e  || selTrigger_1e                                      )) ||
-	   (fakeableElectrons.size() >= 2 && fakeableMuons.size() >= 1 && (selTrigger_2e1mu || selTrigger_2e  || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	   (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 2 && (selTrigger_1e2mu || selTrigger_2mu || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	   (                                 fakeableMuons.size() >= 3 && (selTrigger_3mu   || selTrigger_2mu || selTrigger_1mu                                     ))) ) {
-      if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given fakeableLepton multiplicity." << std::endl;
-	std::cout << " (#fakeableElectrons = " << fakeableElectrons.size()
-		  << ", #fakeableMuons = " << fakeableMuons.size()
-		  << ", selTrigger_3mu = " << selTrigger_3mu
-		  << ", selTrigger_1e2mu = " << selTrigger_1e2mu
-		  << ", selTrigger_2e1mu = " << selTrigger_2e1mu
-		  << ", selTrigger_3e = " << selTrigger_3e
-		  << ", selTrigger_2mu = " << selTrigger_2mu
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
-		  << ", selTrigger_2e = " << selTrigger_2e
-		  << ", selTrigger_1mu = " << selTrigger_1mu
-		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("fakeable lepton trigger match", evtWeight);
-    cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);*/
-
 //--- apply HLT filter
     if(apply_hlt_filter)
     {
@@ -1317,21 +1274,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("sel lepton charge", evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton charge", evtWeight);
 
-    bool isSameFlavor_OS = false;
-    double massSameFlavor_OS = -1.;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
-    lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
-      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-      lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
-	if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // pair of same flavor leptons of opposite charge
-	  isSameFlavor_OS = true;
-	  double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
-	  if ( std::fabs(mass - z_mass) < std::fabs(massSameFlavor_OS - z_mass) ) massSameFlavor_OS = mass;
-	}
-      }
-    }
-
-    bool failsZbosonMassVeto = isSameFlavor_OS && std::fabs(massSameFlavor_OS - z_mass) < z_window;
+    bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull);
     if ( failsZbosonMassVeto ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto." << std::endl;
@@ -1427,6 +1370,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
 
 //--- fill histograms with events passing final selection
+    std::map<std::string, double> param_weight = eventInfo.genWeight_tH();
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
@@ -1440,10 +1384,12 @@ int main(int argc, char* argv[])
     selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
+    double evtWeight0 = evtWeight;
+    if ( isMC_tH) evtWeight0 *= param_weight["kt_1p0_kv_1p0"];
     selHistManager->evt_->fillHistograms(
       selElectrons.size(), selMuons.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      evtWeight);
+      evtWeight0);
     if(isSignal)
     {
       const std::string decayModeStr = eventInfo.getDecayModeString();
@@ -1456,7 +1402,7 @@ int main(int argc, char* argv[])
           selJets.size(),
           selBJets_loose.size(),
           selBJets_medium.size(),
-          evtWeight
+          evtWeight0
         );
       }
     }

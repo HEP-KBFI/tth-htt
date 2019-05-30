@@ -851,7 +851,7 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    //if (!( eventInfo.event == 3818026 )) continue;
+    if (!( eventInfo.event == 626693 )) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -916,12 +916,17 @@ int main(int argc, char* argv[])
     if(isMC)
     {
       if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
+      /*if(isMC_tH)
+      {
+        if ( isDEBUG ) std::cout << "eventInfo.genWeight_tH() =" << eventInfo.genWeight_tH() << "\n";
+        evtWeight_inclusive *= eventInfo.genWeight_tH();
+      }*/
       if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
       if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
+      //evtWeight_inclusive *= eventInfo.genWeight_tH();
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
@@ -1500,18 +1505,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton-pair OS/SS charge", evtWeight);
 
-    bool failsZbosonMassVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
-          lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
-      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-            lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
-        double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
-        if ( (*lepton1)->is_electron() && (*lepton2)->is_electron() && std::fabs(mass - z_mass) < z_window ) {
-          failsZbosonMassVeto = true;
-        }
-      }
-    }
-
+    bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull);
     if ( failsZbosonMassVeto ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto. " << std::endl;
@@ -1803,7 +1797,7 @@ int main(int argc, char* argv[])
     }
 
 //--- fill histograms with events passing final selection
-
+    std::map<std::string, double> param_weight = eventInfo.genWeight_tH();
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
@@ -1819,6 +1813,8 @@ int main(int argc, char* argv[])
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputs_2lss, evtWeight);
+    double evtWeight0 = evtWeight;
+    if ( isMC_tH) evtWeight0 *= param_weight["kt_1p0_kv_1p0"];
     selHistManager->evt_->fillHistograms(
       selElectrons.size(),
       selMuons.size(),
@@ -1826,7 +1822,7 @@ int main(int argc, char* argv[])
       selJets.size(),
       selBJets_loose.size(),
       selBJets_medium.size(),
-      evtWeight,
+      evtWeight0,
       //
       mvaOutput_2lss_ttV,
       mvaOutput_2lss_ttbar,
@@ -1843,7 +1839,7 @@ int main(int argc, char* argv[])
         selJets.size(),
         selBJets_loose.size(),
         selBJets_medium.size(),
-        evtWeight,
+        evtWeight0,
         //
         mvaOutput_2lss_ttV,
         mvaOutput_2lss_ttbar,
@@ -1861,7 +1857,7 @@ int main(int argc, char* argv[])
         selJets.size(),
         selBJets_loose.size(),
         selBJets_medium.size(),
-        evtWeight,
+        evtWeight0,
         mvaOutput_2lss_ttV,
         mvaOutput_2lss_ttbar,
         mvaDiscr_2lss,
@@ -1882,7 +1878,7 @@ int main(int argc, char* argv[])
           selJets.size(),
           selBJets_loose.size(),
           selBJets_medium.size(),
-          evtWeight,
+          evtWeight0,
           mvaOutput_2lss_ttV,
           mvaOutput_2lss_ttbar,
           mvaDiscr_2lss,
@@ -1900,7 +1896,7 @@ int main(int argc, char* argv[])
           selJets.size(),
           selBJets_loose.size(),
           selBJets_medium.size(),
-          evtWeight,
+          evtWeight0,
           //
           mvaOutput_2lss_ttV,
           mvaOutput_2lss_ttbar,
@@ -1919,7 +1915,7 @@ int main(int argc, char* argv[])
         selJets.size(),
         selBJets_loose.size(),
         selBJets_medium.size(),
-        evtWeight,
+        evtWeight0,
         //
         mvaOutput_2lss_ttV,
         mvaOutput_2lss_ttbar,

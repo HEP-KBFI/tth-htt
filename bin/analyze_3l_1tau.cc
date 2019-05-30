@@ -883,7 +883,7 @@ int main(int argc, char* argv[])
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
+      //evtWeight_inclusive *= eventInfo.genWeight_tH();
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
@@ -1319,8 +1319,8 @@ int main(int argc, char* argv[])
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
 	std::cout << "lumiScale = " << lumiScale << std::endl;
-	if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
-        std::cout << "genWeight_tH = " << eventInfo.genWeight_tH() << std::endl;
+	//if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
+  //      std::cout << "genWeight_tH = " << eventInfo.genWeight_tH() << std::endl;
 	std::cout << "lheWeight = " << lheWeight << std::endl;
 	std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
 	std::cout << "btagWeight = " << btagWeight << std::endl;
@@ -1613,21 +1613,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("sel lepton+tau charge", evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton+tau charge", evtWeight);
 
-    bool isSameFlavor_OS = false;
-    double massSameFlavor_OS = -1.;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
-    lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
-      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-      lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
-	if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // pair of same flavor leptons of opposite charge
-	  isSameFlavor_OS = true;
-	  double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
-	  if ( std::fabs(mass - z_mass) < std::fabs(massSameFlavor_OS - z_mass) ) massSameFlavor_OS = mass;
-	}
-      }
-    }
-
-    bool failsZbosonMassVeto = isSameFlavor_OS && std::fabs(massSameFlavor_OS - z_mass) < z_window;
+    bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull);
     if ( failsZbosonMassVeto ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto." << std::endl;
@@ -1893,6 +1879,7 @@ int main(int argc, char* argv[])
     }
 
 //--- fill histograms with events passing final selection
+    std::map<std::string, double> param_weight = eventInfo.genWeight_tH();
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
@@ -1908,6 +1895,8 @@ int main(int argc, char* argv[])
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_3l_->fillHistograms(mvaInputVariables_plainKin_SUM, evtWeight);
+    double evtWeight0 = evtWeight;
+    if ( isMC_tH) evtWeight0 *= param_weight["kt_1p0_kv_1p0"];
     selHistManager->evt_->fillHistograms(
       selElectrons.size(), selMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
@@ -1917,7 +1906,7 @@ int main(int argc, char* argv[])
       mTauTauVis1_sel,
       mTauTauVis2_sel,
       memOutput_3l_1tau_matched.is_initialized() ? &memOutput_3l_1tau_matched : nullptr,
-      evtWeight,
+      evtWeight0,
       mvaOutput_plainKin_tt,
       mvaOutput_plainKin_ttV,
       mvaOutput_plainKin_SUM_M,
@@ -1942,7 +1931,7 @@ int main(int argc, char* argv[])
           mTauTauVis1_sel,
           mTauTauVis2_sel,
           memOutput_3l_1tau_matched.is_initialized() ? &memOutput_3l_1tau_matched : nullptr,
-          evtWeight,
+          evtWeight0,
           mvaOutput_plainKin_tt,
           mvaOutput_plainKin_ttV,
           mvaOutput_plainKin_SUM_M,
