@@ -45,7 +45,7 @@ if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   exit 2;
 fi
 
-NANO_MODULES_DATA="absIso,tauIDLog,jetSubstructureObservablesHTTv2,trigObjMatcher,jetIdx"
+NANO_MODULES_DATA="absIso,tauIDLog,trigObjMatcher,jetIdx"
 NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,genMatchCollection,\
 puWeight${ERA}($PILEUP;$PROCESS_NAME),jetmetUncertainties${ERA},btagSF_deep_${ERA},btagSF_deepFlav_${ERA}"
 
