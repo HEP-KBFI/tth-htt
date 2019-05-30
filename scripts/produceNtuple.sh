@@ -50,8 +50,8 @@ NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,genMatchCollection,
 puWeight${ERA}($PILEUP;$PROCESS_NAME),jetmetUncertainties${ERA},btagSF_deep_${ERA},btagSF_deepFlav_${ERA}"
 
 if [ "$ERA" = "2016" ]; then
-  NANO_MODULES_DATA="$NANO_MODULES_DATA,egammaId"
-  NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_${ERA},egammaId";
+  NANO_MODULES_DATA="$NANO_MODULES_DATA"
+  NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_${ERA}";
 elif [ "$ERA" == "2017" ]; then
   NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_${ERA}";
 elif [ "$ERA" == "2018" ]; then
