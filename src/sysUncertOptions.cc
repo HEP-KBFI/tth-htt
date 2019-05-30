@@ -229,12 +229,14 @@ getBranchName_bTagWeight(Btag btag,
                          int central_or_shift)
 {
   std::map<int, std::string> branchNames_bTagWeight;
+  std::string discrName;
   switch(btag)
   {
-    case Btag::kDeepJet: branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_deepjet_shape", default_collectionName.data()); break;
-    case Btag::kDeepCSV: branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_deepcsv_shape", default_collectionName.data()); break;
-    case Btag::kCSVv2:   branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_csvv2_shape", default_collectionName.data());   break;
+    case Btag::kDeepJet: discrName = "deepjet"; break;
+    case Btag::kDeepCSV: discrName = "deepcsv"; break;
+    case Btag::kCSVv2:   discrName = "csvv2";   break;
   }
+  branchNames_bTagWeight[kBtag_central] = Form("%s_btagSF_%s_shape", default_collectionName.data(), discrName.data());
   branchNames_bTagWeight[kBtag_hfUp]         = branchNames_bTagWeight[kBtag_central] + "_up_hf";
   branchNames_bTagWeight[kBtag_hfDown]       = branchNames_bTagWeight[kBtag_central] + "_down_hf";
   branchNames_bTagWeight[kBtag_hfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_up_hfstats1";

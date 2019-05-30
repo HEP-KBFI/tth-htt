@@ -47,19 +47,7 @@ fi
 
 NANO_MODULES_DATA="absIso,tauIDLog,trigObjMatcher,jetIdx"
 NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,genMatchCollection,\
-puWeight${ERA}($PILEUP;$PROCESS_NAME),jetmetUncertainties${ERA},btagSF_deep_${ERA},btagSF_deepFlav_${ERA}"
-
-if [ "$ERA" = "2016" ]; then
-  NANO_MODULES_DATA="$NANO_MODULES_DATA"
-  NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_${ERA}";
-elif [ "$ERA" == "2017" ]; then
-  NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_csvv2_${ERA}";
-elif [ "$ERA" == "2018" ]; then
-  :
-else
-  echo "Invalid era = '$ERA'";
-  exit 3;
-fi
+puWeight${ERA}($PILEUP;$PROCESS_NAME),jetmetUncertainties${ERA},btagSF_deepFlav_${ERA}"
 
 if [ "$IS_MC" == "True" ]; then
   NANO_MODULES=$NANO_MODULES_MC;

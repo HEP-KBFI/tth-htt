@@ -94,6 +94,10 @@ RecoJetWriter::setBranchNames()
   branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
   for(const auto & kv: BtagWP_map.at(era_))
   {
+    if(kv.first != Btag::kDeepJet)
+    {
+      continue;
+    }
     std::string btagName;
     switch(kv.first)
     {

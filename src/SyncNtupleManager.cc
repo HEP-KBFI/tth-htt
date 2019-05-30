@@ -649,7 +649,10 @@ SyncNtupleManager::read(const std::vector<const RecoJet *> & jets,
       {
         jet_CSV[i] = jet -> BtagCSV(Btag::kCSVv2);
       }
-      jet_DeepCSV[i] = jet -> BtagCSV(Btag::kDeepCSV);
+      if(jet -> hasBtag(Btag::kDeepCSV))
+      {
+        jet_DeepCSV[i] = jet -> BtagCSV(Btag::kDeepCSV);
+      }
       jet_DeepJet[i] = jet -> BtagCSV(Btag::kDeepJet);
       jet_QGdiscr[i] = jet -> QGDiscr();
     }

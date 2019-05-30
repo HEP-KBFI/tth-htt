@@ -141,6 +141,10 @@ RecoJetReader::setBranchNames()
 
     for(const auto & kv: BtagWP_map.at(era_))
     {
+      if(kv.first != Btag::kDeepJet)
+      {
+        continue;
+      }
       std::string btagName;
       switch(kv.first)
       {
