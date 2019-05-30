@@ -10,7 +10,7 @@
 class GenLepton;
 class GenJet;
 
-enum class TauDecayModeE { kOld, kNew };
+enum class TauDecayModeE { kOld, kDeep, kNew };
 
 enum class TauID;
 
@@ -54,8 +54,7 @@ public:
   Double_t dxy() const;
   Double_t dz() const;
   Int_t decayMode() const;
-  Bool_t decayModeFinding() const;
-  Bool_t decayModeFindingNew() const;
+  Bool_t decayModeFinding(TauDecayModeE mode) const;
   Int_t id_mva() const;
   Double_t raw_mva() const;
   Int_t id_mva(TauID tauID) const;
@@ -88,18 +87,18 @@ public:
                          TauDecayModeE mode);
 
 protected:
-  Double_t dxy_;               ///< d_{xy}, distance in the transverse plane w.r.t PV
-  Double_t dz_;                ///< d_{z}, distance on the z axis w.r.t PV
-  Int_t decayMode_;            ///< tau decay mode (5x(nof charged pions - 1) - (nof neutral pions))
-  Bool_t decayModeFinding_;    ///< decayModeFinding discriminator
-  Bool_t decayModeFindingNew_; ///< new decayModeFinding discriminator
-  Int_t id_mva_;               ///< MVA-based tau id
-  Double_t raw_mva_;           ///< raw output of MVA-based tau id
-  Int_t antiElectron_;         ///< discriminator against electrons
-  Int_t antiMuon_;             ///< discriminator against muons
-  UInt_t filterBits_;          ///< bitmask of matching with trigger objects
-  Int_t jetIdx_;               ///< index of the matched jet from initial jet collection (-1 if no match)
-  Int_t genMatchIdx_;          ///< index to matched gen particle (-1 if no match)
+  Double_t dxy_;       ///< d_{xy}, distance in the transverse plane w.r.t PV
+  Double_t dz_;        ///< d_{z}, distance on the z axis w.r.t PV
+  Int_t decayMode_;    ///< tau decay mode (5x(nof charged pions - 1) - (nof neutral pions))
+  Int_t id_mva_;       ///< MVA-based tau id
+  Double_t raw_mva_;   ///< raw output of MVA-based tau id
+  Int_t antiElectron_; ///< discriminator against electrons
+  Int_t antiMuon_;     ///< discriminator against muons
+  UInt_t filterBits_;  ///< bitmask of matching with trigger objects
+  Int_t jetIdx_;       ///< index of the matched jet from initial jet collection (-1 if no match)
+  Int_t genMatchIdx_;  ///< index to matched gen particle (-1 if no match)
+
+  std::map<TauDecayModeE, bool> decayModeFinding_; ///< decayModeFinding discriminator
 
 //--- matching to generator level particles
   std::shared_ptr<const GenLepton> genLepton_;

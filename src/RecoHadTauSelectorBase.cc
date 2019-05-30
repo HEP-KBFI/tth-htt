@@ -17,7 +17,7 @@ RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
   , max_absEta_(2.3)
   , max_dxy_(1000.)
   , max_dz_(0.2)
-  , apply_decayModeFinding_(true)
+  , apply_decayModeFinding_(TauDecayModeE::kOld)
   , min_antiElectron_(DEFAULT_TAUID_ID_VALUE)
   , min_antiMuon_(DEFAULT_TAUID_ID_VALUE)
 {
@@ -125,6 +125,12 @@ RecoHadTauSelectorBase::set(const std::string & cut)
     const std::string wp = cut_part.substr(7);
     const int wp_int = get_tau_id_wp_int(tauId, wp);
     set_min_id_mva(tauId, wp_int);
+    if(tauId == TauID::DeepTau2017v2VSe ||
+       tauId == TauID::DeepTau2017v2VSmu ||
+       tauId == TauID::DeepTau2017v2VSjet)
+    {
+      apply_decayModeFinding_ = TauDecayModeE::kDeep;
+    }
   }
   cut_ = cut;
 }
@@ -227,11 +233,11 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
     }
     return false;
   }
-  if(apply_decayModeFinding_ && ! hadTau.decayModeFinding())
+  if(hadTau.decayModeFinding(apply_decayModeFinding_))
   {
     if(debug_)
     {
-      std::cout << "FAILS decayModeFinding cut\n";
+      std::cout << "FAILS decayModeFinding cut = " << as_integer(apply_decayModeFinding_) << "\n";
     }
     return false;
   }

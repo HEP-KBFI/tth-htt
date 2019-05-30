@@ -5,8 +5,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // TauID, as_integer(), cmsException()
 
 std::map<TauDecayModeE, std::vector<int>> RecoHadTau::tauDecayModeMap = {
-  { TauDecayModeE::kOld, { 0, 1, 2,       7, 10     } },
-  { TauDecayModeE::kNew, { 0, 1, 2, 5, 6, 7, 10, 11 } },
+  { TauDecayModeE::kOld,  { 0, 1, 2,       7, 10     } },
+  { TauDecayModeE::kDeep, { 0, 1, 2,       7, 10, 11 } },
+  { TauDecayModeE::kNew,  { 0, 1, 2, 5, 6, 7, 10, 11 } },
 };
 
 bool
@@ -32,8 +33,6 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
   , dxy_(dxy)
   , dz_(dz)
   , decayMode_(decayMode)
-  , decayModeFinding_(hasTauDecayModeFinding(decayMode_, TauDecayModeE::kOld))
-  , decayModeFindingNew_(hasTauDecayModeFinding(decayMode_, TauDecayModeE::kNew))
   , id_mva_(id_mva)
   , raw_mva_(raw_mva)
   , antiElectron_(antiElectron)
@@ -41,6 +40,11 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
   , filterBits_(filterBits)
   , jetIdx_(jetIdx)
   , genMatchIdx_(genMatchIdx)
+  , decayModeFinding_({
+      { TauDecayModeE::kOld,  hasTauDecayModeFinding(decayMode_, TauDecayModeE::kOld)  },
+      { TauDecayModeE::kDeep, hasTauDecayModeFinding(decayMode_, TauDecayModeE::kDeep) },
+      { TauDecayModeE::kNew,  hasTauDecayModeFinding(decayMode_, TauDecayModeE::kNew)  },
+    })
   , genLepton_(nullptr)
   , genHadTau_(nullptr)
   , genJet_(nullptr)
@@ -107,15 +111,9 @@ RecoHadTau::decayMode() const
 }
 
 Bool_t
-RecoHadTau::decayModeFinding() const
+RecoHadTau::decayModeFinding(TauDecayModeE mode) const
 {
-  return decayModeFinding_;
-}
-
-Bool_t
-RecoHadTau::decayModeFindingNew() const
-{
-  return decayModeFindingNew_;
+  return decayModeFinding_.at(mode);
 }
 
 Int_t
@@ -237,8 +235,7 @@ operator<<(std::ostream & stream,
            const RecoHadTau & hadTau)
 {
   stream << static_cast<const GenHadTau &>(hadTau)               << ",\n"
-            " decayMode = "        << hadTau.decayMode()         <<
-            " (is old = "          << hadTau.decayModeFinding()  << "),"
+            " decayMode = "        << hadTau.decayMode()         << ","
             " id_mva = "           << hadTau.id_mva()            <<
             " (raw = "             << hadTau.raw_mva()           << "),\n"
             " antiElectron = "     << hadTau.antiElectron()      << ","
