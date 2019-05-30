@@ -674,7 +674,7 @@ int main(int argc, char* argv[])
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
+      //evtWeight_inclusive *= eventInfo.genWeight_tH();
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
@@ -1215,17 +1215,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
 
-    bool failsZbosonMassVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptonsFull.begin();
-    lepton1 != preselLeptonsFull.end(); ++lepton1 ) {
-      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-      lepton2 != preselLeptonsFull.end(); ++lepton2 ) {
-	double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
-	if ( (*lepton1)->is_electron() && (*lepton2)->is_electron() && std::fabs(mass - z_mass) < z_window ) {
-	  failsZbosonMassVeto = true;
-	}
-      }
-    }
+    bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull);
     if ( failsZbosonMassVeto ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto." << std::endl;
