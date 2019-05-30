@@ -380,7 +380,7 @@ compSTMEt(const std::vector<const RecoLepton *> & leptons,
  *        "Measuring the triple Higgs self-interaction at the Large Hadron Collider";
  *        J.H. Kim, K. Kong, K.T. Matchev, M. Park; arXiv: 1807.11498
  */
-double 
+double
 comp_Smin(const Particle::LorentzVector & visP4,
           double metPx,
           double metPy);
@@ -474,9 +474,9 @@ printCollection(const std::string & collection_name,
  */
 int
 countFakeElectrons(const std::vector<const RecoLepton *> & leptons);
-int 
+int
 countFakeMuons(const std::vector<const RecoLepton *> & leptons);
-int 
+int
 countFakeHadTaus(const std::vector<const RecoHadTau *> & hadTaus);
 
 /**
@@ -545,6 +545,9 @@ contains(const std::vector<std::string> & list_of_strings,
 std::string
 findFile(const std::string & fileName);
 
+bool
+isfailsZbosonMassVeto(const std::vector<const RecoLepton*> preselLeptons);
+
 /**
  * @brief Find generator-level jets produced in W->jj decay
  *
@@ -554,7 +557,7 @@ findFile(const std::string & fileName);
  *
  */
 template<typename T>
-std::pair<const T*, const T*> 
+std::pair<const T*, const T*>
 findGenJetsFromWBoson(const GenParticle* genWBoson, const std::vector<T>& genJets)
 {
   const T* genJet1FromWBoson = nullptr;
