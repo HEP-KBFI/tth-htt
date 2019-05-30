@@ -1005,6 +1005,7 @@ main(int argc,
   
 //--- fill generator level histograms (before cuts)
     double evtWeight_inclusive = 1.;
+    std::map<std::string, double> param_weight;
     if(isMC)
     {
       if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
@@ -1013,7 +1014,8 @@ main(int argc,
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
+      param_weight = eventInfo.genWeight_tH();
+      evtWeight_inclusive *= param_weight["kt_1p0_kv_1p0"];
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
