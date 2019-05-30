@@ -23,12 +23,12 @@ public:
   UInt_t    lumi;                ///< luminosity
   ULong64_t event;               ///< event number
   Int_t     genHiggsDecayMode;   ///< Higgs decay mode (only if ttH signal MC)
-  Int_t     genDiHiggsDecayMode; ///< Decay mode of both Higgs bosons (only if HH signal MC)  
+  Int_t     genDiHiggsDecayMode; ///< Decay mode of both Higgs bosons (only if HH signal MC)
   Float_t   genWeight;           ///< generator-level weight (only if MC)
   Float_t   pileupWeight;        ///< pile-up weight (only if MC)
 
   ///< reweight tH MC sample from kappa=-1 to kappa=+1 (SM) case
-  Float_t
+  std::map<std::string, double>
   genWeight_tH() const;
 
   bool
