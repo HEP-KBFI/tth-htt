@@ -178,7 +178,7 @@ compMEt_LD(const Particle::LorentzVector & met_p4,
   return met_coef * met_p4.pt() + mht_coef * mht_p4.pt();
 }
 
-double 
+double
 comp_Smin(const Particle::LorentzVector & visP4,
           double metPx,
           double metPy)
@@ -260,7 +260,7 @@ countFakeElectrons(const std::vector<const RecoLepton *> & leptons)
   return numGenMatchedJets;
 }
 
-int 
+int
 countFakeMuons(const std::vector<const RecoLepton *> & leptons)
 {
   int numGenMatchedLeptons = 0;
@@ -276,7 +276,7 @@ countFakeMuons(const std::vector<const RecoLepton *> & leptons)
   return numGenMatchedJets;
 }
 
-int 
+int
 countFakeHadTaus(const std::vector<const RecoHadTau *> & hadTaus)
 {
   int numGenMatchedHadTaus = 0;
@@ -348,4 +348,21 @@ findFile(const std::string & fileName)
     ;
   }
   return inputFile.fullPath();
+}
+
+bool
+isfailsZbosonMassVeto(const std::vector<const RecoLepton*> preselLeptons)
+{
+  bool failsZbosonMassVeto = false;
+  for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptons.begin();
+  lepton1 != preselLeptons.end(); ++lepton1 ) {
+    for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
+    lepton2 != preselLeptons.end(); ++lepton2 ) {
+      if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // pair of same flavor leptons of opposite charge
+        double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
+        if (std::fabs(mass - z_mass) < z_window ) failsZbosonMassVeto = true;
+      }
+    }
+  }
+  return failsZbosonMassVeto;
 }
