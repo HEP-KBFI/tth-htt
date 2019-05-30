@@ -32,8 +32,6 @@ RecoHadTauWriter::RecoHadTauWriter(int era,
   , hadTau_dxy_(nullptr)
   , hadTau_dz_(nullptr)
   , hadTau_decayMode_(nullptr)
-  , hadTau_idDecayMode_(nullptr)
-  , hadTau_idDecayModeNewDMs_(nullptr)
   , hadTau_idAgainstElec_(nullptr)
   , hadTau_idAgainstMu_(nullptr)
   , hadTau_filterBits_(nullptr)
@@ -58,8 +56,6 @@ RecoHadTauWriter::~RecoHadTauWriter()
   delete[] hadTau_dxy_;
   delete[] hadTau_dz_;
   delete[] hadTau_decayMode_;
-  delete[] hadTau_idDecayMode_;
-  delete[] hadTau_idDecayModeNewDMs_;
   delete[] hadTau_idAgainstElec_;
   delete[] hadTau_idAgainstMu_;
   delete[] hadTau_charge_;
@@ -87,8 +83,6 @@ void RecoHadTauWriter::setBranchNames()
   branchName_dxy_ = Form("%s_%s", branchName_obj_.data(), "dxy");
   branchName_dz_ = Form("%s_%s", branchName_obj_.data(), "dz");
   branchName_decayMode_ = Form("%s_%s", branchName_obj_.data(), "decayMode");
-  branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
-  branchName_idDecayModeNewDMs_ = Form("%s_%s", branchName_obj_.data(), "idDecayModeNewDMs");
   for(const auto & kv: TauID_levels)
   {
     const std::string & mvaString = TauID_names.at(kv.first);
@@ -117,8 +111,6 @@ void RecoHadTauWriter::setBranches(TTree * tree)
   bai.setBranch(hadTau_dxy_, branchName_dxy_);
   bai.setBranch(hadTau_dz_, branchName_dz_);
   bai.setBranch(hadTau_decayMode_, branchName_decayMode_);
-  bai.setBranch(hadTau_idDecayMode_, branchName_idDecayMode_);
-  bai.setBranch(hadTau_idDecayModeNewDMs_, branchName_idDecayModeNewDMs_);
   for(const auto & kv: TauID_levels)
   {
     bai.setBranch(hadTau_idMVAs_[kv.first], branchNames_idMVA_[kv.first]);
@@ -146,8 +138,6 @@ void RecoHadTauWriter::write(const std::vector<const RecoHadTau *> & hadTaus)
     hadTau_dxy_[idxHadTau] = hadTau->dxy();
     hadTau_dz_[idxHadTau] = hadTau->dz();
     hadTau_decayMode_[idxHadTau] = hadTau->decayMode();
-    hadTau_idDecayMode_[idxHadTau] = hadTau->decayModeFinding();
-    hadTau_idDecayModeNewDMs_[idxHadTau] = hadTau->decayModeFindingNew();
     for(const auto & kv: branchNames_idMVA_)
     {
       hadTau_idMVAs_[kv.first][idxHadTau] = hadTau->id_mva(kv.first);

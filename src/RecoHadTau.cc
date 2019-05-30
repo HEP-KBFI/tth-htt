@@ -4,12 +4,23 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // TauID, as_integer(), cmsException()
 
+std::map<TauDecayModeE, std::vector<int>> RecoHadTau::tauDecayModeMap = {
+  { TauDecayModeE::kOld, { 0, 1, 2,       7, 10     } },
+  { TauDecayModeE::kNew, { 0, 1, 2, 5, 6, 7, 10, 11 } },
+};
+
+bool
+RecoHadTau::hasTauDecayModeFinding(int decayMode,
+                                   TauDecayModeE mode)
+{
+  const std::vector<int> & modes = tauDecayModeMap.at(mode);
+  return std::find(modes.cbegin(), modes.cend(), decayMode) != modes.cend();
+}
+
 RecoHadTau::RecoHadTau(const GenHadTau & particle,
                        Double_t dxy,
                        Double_t dz,
                        Int_t decayMode,
-                       Bool_t decayModeFinding,
-                       Bool_t decayModeFindingNew,
                        Int_t id_mva,
                        Double_t raw_mva,
                        Int_t antiElectron,
@@ -21,8 +32,8 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
   , dxy_(dxy)
   , dz_(dz)
   , decayMode_(decayMode)
-  , decayModeFinding_(decayModeFinding)
-  , decayModeFindingNew_(decayModeFindingNew)
+  , decayModeFinding_(hasTauDecayModeFinding(decayMode_, TauDecayModeE::kOld))
+  , decayModeFindingNew_(hasTauDecayModeFinding(decayMode_, TauDecayModeE::kNew))
   , id_mva_(id_mva)
   , raw_mva_(raw_mva)
   , antiElectron_(antiElectron)
@@ -226,8 +237,9 @@ operator<<(std::ostream & stream,
            const RecoHadTau & hadTau)
 {
   stream << static_cast<const GenHadTau &>(hadTau)               << ",\n"
-            " decayModeFinding = " << hadTau.decayModeFinding()  << ","
-            " id_mva      = "      << hadTau.id_mva()            <<
+            " decayMode = "        << hadTau.decayMode()         <<
+            " (is old = "          << hadTau.decayModeFinding()  << "),"
+            " id_mva = "           << hadTau.id_mva()            <<
             " (raw = "             << hadTau.raw_mva()           << "),\n"
             " antiElectron = "     << hadTau.antiElectron()      << ","
             " antiMuon = "         << hadTau.antiMuon()          << ",\n"

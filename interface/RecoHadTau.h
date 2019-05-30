@@ -10,6 +10,8 @@
 class GenLepton;
 class GenJet;
 
+enum class TauDecayModeE { kOld, kNew };
+
 enum class TauID;
 
 class RecoHadTau
@@ -21,8 +23,6 @@ public:
              Double_t dxy,
              Double_t dz,
              Int_t decayMode,
-             Bool_t decayModeFinding,
-             Bool_t decayModeFindingNew,
              Int_t id_mva,
              Double_t raw_mva,
              Int_t antiElectron,
@@ -79,6 +79,13 @@ public:
 
   friend class RecoHadTauReader;
   friend class RecoHadTauWriter;
+
+  static std::map<TauDecayModeE, std::vector<int>>
+  tauDecayModeMap;
+
+  static bool
+  hasTauDecayModeFinding(int decayMode,
+                         TauDecayModeE mode);
 
 protected:
   Double_t dxy_;               ///< d_{xy}, distance in the transverse plane w.r.t PV

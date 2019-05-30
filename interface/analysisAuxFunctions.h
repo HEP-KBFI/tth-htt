@@ -557,27 +557,30 @@ isfailsZbosonMassVeto(const std::vector<const RecoLepton*> preselLeptons);
  *
  */
 template<typename T>
-std::pair<const T*, const T*>
-findGenJetsFromWBoson(const GenParticle* genWBoson, const std::vector<T>& genJets)
+std::pair<const T *, const T *>
+findGenJetsFromWBoson(const GenParticle * genWBoson,
+                      const std::vector<T> & genJets)
 {
-  const T* genJet1FromWBoson = nullptr;
-  const T* genJet2FromWBoson = nullptr;
+  const T * genJet1FromWBoson = nullptr;
+  const T * genJet2FromWBoson = nullptr;
   double minDeltaMass = 1.e+3;
-  for ( typename std::vector<T>::const_iterator genJet1 = genJets.begin();
-	genJet1 != genJets.end(); ++genJet1 ) {
-    for ( typename std::vector<T>::const_iterator genJet2 = genJet1 + 1;
-	  genJet2 != genJets.end(); ++genJet2 ) {
-      Particle::LorentzVector genDijetP4 = genJet1->p4() + genJet2->p4();
-      double deltaMass = TMath::Abs(genDijetP4.mass() - genWBoson->mass());
-      double dR = deltaR(genDijetP4, genWBoson->p4());
-      if ( deltaMass < 5. && deltaMass < minDeltaMass && dR < 1. ) {
-	genJet1FromWBoson = &(*genJet1);
-	genJet2FromWBoson = &(*genJet2);
-	minDeltaMass = deltaMass;
+
+  for(typename std::vector<T>::const_iterator genJet1 = genJets.begin(); genJet1 != genJets.end(); ++genJet1)
+  {
+    for(typename std::vector<T>::const_iterator genJet2 = genJet1 + 1; genJet2 != genJets.end(); ++genJet2)
+    {
+      const Particle::LorentzVector genDijetP4 = genJet1->p4() + genJet2->p4();
+      const double deltaMass = TMath::Abs(genDijetP4.mass() - genWBoson->mass());
+      const double dR = deltaR(genDijetP4, genWBoson->p4());
+      if(deltaMass < 5. && deltaMass < minDeltaMass && dR < 1.)
+      {
+        genJet1FromWBoson = &(*genJet1);
+        genJet2FromWBoson = &(*genJet2);
+        minDeltaMass = deltaMass;
       }
     }
   }
-  return std::pair<const T*, const T*>(genJet1FromWBoson, genJet2FromWBoson);
+  return std::make_pair<const T*, const T*>(genJet1FromWBoson, genJet2FromWBoson);
 }
 
 #endif

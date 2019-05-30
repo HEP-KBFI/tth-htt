@@ -45,8 +45,6 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , hadTau_dxy_(nullptr)
   , hadTau_dz_(nullptr)
   , hadTau_decayMode_(nullptr)
-  , hadTau_idDecayMode_(nullptr)
-  , hadTau_idDecayModeNewDMs_(nullptr)
   , hadTau_idAgainstElec_(nullptr)
   , hadTau_idAgainstMu_(nullptr)
   , hadTau_filterBits_(nullptr)
@@ -84,8 +82,6 @@ RecoHadTauReader::~RecoHadTauReader()
     delete[] gInstance->hadTau_dxy_;
     delete[] gInstance->hadTau_dz_;
     delete[] gInstance->hadTau_decayMode_;
-    delete[] gInstance->hadTau_idDecayMode_;
-    delete[] gInstance->hadTau_idDecayModeNewDMs_;
     delete[] gInstance->hadTau_idAgainstElec_;
     delete[] gInstance->hadTau_idAgainstMu_;
     delete[] gInstance->hadTau_charge_;
@@ -131,8 +127,6 @@ RecoHadTauReader::setBranchNames()
     branchName_dxy_ = Form("%s_%s", branchName_obj_.data(), "dxy");
     branchName_dz_ = Form("%s_%s", branchName_obj_.data(), "dz");
     branchName_decayMode_ = Form("%s_%s", branchName_obj_.data(), "decayMode");
-    branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
-    branchName_idDecayModeNewDMs_ = Form("%s_%s", branchName_obj_.data(), "idDecayModeNewDMs");
     for(const auto & kv: TauID_levels)
     {
       const std::string & mvaString = TauID_names.at(kv.first);
@@ -181,8 +175,6 @@ RecoHadTauReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_dxy_, branchName_dxy_);
     bai.setBranchAddress(hadTau_dz_, branchName_dz_);
     bai.setBranchAddress(hadTau_decayMode_, branchName_decayMode_);
-    bai.setBranchAddress(hadTau_idDecayMode_, branchName_idDecayMode_);
-    bai.setBranchAddress(hadTau_idDecayModeNewDMs_, branchName_idDecayModeNewDMs_);
     for(const auto & kv: TauID_levels)
     {
       bai.setBranchAddress(hadTau_idMVAs_[kv.first], branchNames_idMVA_[kv.first]);
@@ -236,8 +228,6 @@ RecoHadTauReader::read() const
         gInstance->hadTau_dxy_[idxHadTau],
         gInstance->hadTau_dz_[idxHadTau],
         gInstance->hadTau_decayMode_[idxHadTau],
-        gInstance->hadTau_idDecayMode_[idxHadTau],
-        gInstance->hadTau_idDecayModeNewDMs_[idxHadTau],
         gInstance->hadTau_idMVAs_.at(tauID_)[idxHadTau],
         gInstance->hadTau_rawMVAs_.at(tauID_)[idxHadTau],
         gInstance->hadTau_idAgainstElec_[idxHadTau],
