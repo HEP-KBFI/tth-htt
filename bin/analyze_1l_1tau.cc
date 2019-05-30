@@ -934,7 +934,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
+      //evtWeight_inclusive *= eventInfo.genWeight_tH();
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
@@ -1962,6 +1962,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
   const double mvaOutput_1l_1tau_16_variables = mva_1l_1tau_evtLevelSUM_TTH_16Var(mvaInputVariables_mva_XGB_1l_1tau_16_variables);
 
 //--- fill histograms with events passing final selection
+    std::map<std::string, double> param_weight = eventInfo.genWeight_tH();
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
@@ -1977,6 +1978,8 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     //selHistManager->mvaInputVariables_HTT_sum_->fillHistograms(mvaInputsHTT_sum, evtWeight);
+    double evtWeight0 = evtWeight;
+    if ( isMC_tH) evtWeight0 *= param_weight["kt_1p0_kv_1p0"];
     selHistManager->evt_->fillHistograms(
       selElectrons.size(),
       selMuons.size(),
@@ -1992,7 +1995,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       mTauTauVis, mTauTau,
       Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
       mbb, mbb_loose,mvaOutput_1l_1tau_16_variables,
-      evtWeight
+      evtWeight0
 	);
     if( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
@@ -2013,7 +2016,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 	  Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
 	  mbb, mbb_loose,
 	  mvaOutput_1l_1tau_16_variables,
-          evtWeight
+          evtWeight0
 	);
       }
     }
@@ -2052,7 +2055,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     }
     for(const std::string & category: categories)
     {
-      double evtWeight_category = evtWeight;
+      double evtWeight_category = evtWeight0;
       if ( category.find("_wChargeFlipWeights") != std::string::npos ) {
 	double prob_chargeMisId_lepton = prob_chargeMisId(selLepton_type, selLepton->pt(), selLepton->eta());
 	double prob_chargeMisId_tau = 0.01; // CV: not implemented yet; take "guessed" value for now

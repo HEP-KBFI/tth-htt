@@ -949,7 +949,7 @@ int main(int argc, char* argv[])
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
+      //evtWeight_inclusive *= eventInfo.genWeight_tH();
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(
             genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive
@@ -1781,6 +1781,7 @@ int main(int argc, char* argv[])
     //std::cout<<" mva_Updated "<<mva_Updated<<std::endl;
 
 //--- fill histograms with events passing final selection
+    std::map<std::string, double> param_weight = eventInfo.genWeight_tH();
     selHistManagerType* selHistManager = selHistManagers[idxSelHadTau_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(preselElectrons, evtWeight);
@@ -1800,13 +1801,15 @@ int main(int argc, char* argv[])
     selHistManager->mvaInputVariables_ttbar_->fillHistograms(mvaInputs_ttbar, evtWeight);
     //selHistManager->mvaInputVariables_ttV_->fillHistograms(mvaInputs_ttV, evtWeight);
     //selHistManager->xgbInputVariables_ttbar_->fillHistograms(xgbInputs_ttbar, evtWeight);
+    double evtWeight0 = evtWeight;
+    if ( isMC_tH) evtWeight0 *= param_weight["kt_1p0_kv_1p0"];
     selHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
       mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
       mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
-      pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight);
+      pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight0);
     if ( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
       if(! decayModeStr.empty() && !((isMC_tH || isMC_VH) && ( decayModeStr == "hzg" || decayModeStr == "hmm" )))
@@ -1835,7 +1838,7 @@ int main(int argc, char* argv[])
 	  mT_tau2,
 	  mbb,
           mbb_loose,
-	  evtWeight
+	  evtWeight0
         );
       }
     }
@@ -1882,7 +1885,7 @@ int main(int argc, char* argv[])
 	mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
 	mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
 	mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
-	pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight);
+	pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight0);
     }
 
     if ( isMC ) {
