@@ -7,20 +7,6 @@
 echo 'Unsetting JAVA_HOME=$JAVA_HOME'
 unset JAVA_HOME
 
-read -r -d '' _JAVA_OPTIONS <<- EOM
-  -Xmx256m
-  -Xms64m
-  -XX:ReservedCodeCacheSize=64m
-  -XX:ParallelGCThreads=1
-  -Dhadoop.log.dir=/usr/lib/hadoop/logs
-  -Dhadoop.log.file=hadoop.log
-  -Dhadoop.home.dir=/usr/lib/hadoop
-  -Dhadoop.id.str=
-  -Dhadoop.root.logger=INFO,console
-  -Dhadoop.policy.file=hadoop-policy.xml
-  -Djava.library.path=/usr/lib/hadoop/lib/native
-  -Djava.net.preferIPv4Stack=true
-EOM
 
 # This value is provided by sbatchManager.py that creates sbatch scripts based this template
 echo 'Running script {{ script_file }} (created from template {{ job_template_file }})'
@@ -93,20 +79,11 @@ run_wrapped_executable() {
 
     # change cp, stat and ls commands in case the output directory is on /hdfs
     OUTPUT_DIR="{{ outputDir }}"
-    if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hdfs) ) ]]; then
-      cp_cmd="hdfs dfs -copyFromLocal";
-      st_cmd="hdfs dfs -stat '%b'"
-      ls_cmd="hdfs dfs -ls"
-      ls_cmd_mult=$ls_cmd
-      ls_cmd_sfx=""
-      OUTPUT_DIR=${OUTPUT_DIR#/hdfs}
-    else
-      cp_cmd=cp;
-      st_cmd="stat --printf='%s'"
-      ls_cmd="ls -l"
-      ls_cmd_mult="ls -d -1"
-      ls_cmd_sfx="*"
-    fi
+    cp_cmd=cp;
+    st_cmd="stat --printf='%s'"
+    ls_cmd="ls -l"
+    ls_cmd_mult="ls -d -1"
+    ls_cmd_sfx="*"
     cp_cmd="$cp_cmd -f"
 
     # if all output files already exist, quit the job and return 0
