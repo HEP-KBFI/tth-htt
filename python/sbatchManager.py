@@ -1,7 +1,7 @@
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
+from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, get_log_version
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import is_file_ok
 from tthAnalysis.HiggsToTauTau.common import logging
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 import codecs
 import getpass
 import jinja2
@@ -472,7 +472,7 @@ class sbatchManager:
             prefix = os.path.join('/home', getpass.getuser(), 'jobs')
         else:
             prefix = os.path.join('/scratch', getpass.getuser())
-            if not hdfs.isdir(prefix):
+            if not os.path.isdir(prefix):
                 run_cmd('/scratch/mkscratch')
         job_dir = os.path.join(
             prefix, "%s_%s" % (self.analysisName, datetime.date.today().isoformat()),
@@ -613,7 +613,7 @@ class sbatchManager:
                         for failed_job in failed_jobs:
                             for log in zip(['wrapper', 'executable'], ['log_wrap', 'log_exec']):
                                 logfile = self.submittedJobs[failed_job][log[1]]
-                                if hdfs.isfile(logfile):
+                                if os.path.isfile(logfile):
                                     logfile_contents = open(logfile, 'r').read()
                                 else:
                                     logfile_contents = '<file is missing>'
