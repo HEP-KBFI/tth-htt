@@ -5,7 +5,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h" // RecoJetAK8
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h" // RecoJetHTTv2
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // as_integer()
 
@@ -29,7 +28,6 @@ SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
   , nof_taus(2)
   , nof_jets(4)
   , nof_fwdJets(4)
-  , nof_jetHTTv2(2)
   , nof_jetAK8(2)
 {
   std::string outputDirName_;
@@ -81,7 +79,6 @@ SyncNtupleManager::initializeBranches()
   const char * tstr    = "tau";
   const char * jstr    = "jet";
   const char * jfstr   = "jetFwd";
-  const char * jhtstr  = "jetHTTv2";
   const char * jak8str = "jetAK8";
 
   const std::string n_sel_lep_str         = Form("n_%s",             lstr);
@@ -94,7 +91,6 @@ SyncNtupleManager::initializeBranches()
   const std::string n_presel_tau_str      = Form("n_presel_%s",      tstr);
   const std::string n_presel_jet_str      = Form("n_presel_%s",      jstr);
   const std::string n_presel_fwdJet_str   = Form("n_presel_%s",      jfstr);
-  const std::string n_presel_jetHTTv2_str = Form("n_presel_%s",      jhtstr);
   const std::string n_presel_jetAK8_str   = Form("n_presel_%s",      jak8str);
 
   setBranches(
@@ -111,7 +107,6 @@ SyncNtupleManager::initializeBranches()
     n_presel_tau,      n_presel_tau_str,
     n_presel_jet,      n_presel_jet_str,
     n_presel_fwdJet,   n_presel_fwdJet_str,
-    n_presel_jetHTTv2, n_presel_jetHTTv2_str,
     n_presel_jetAK8,   n_presel_jetAK8_str,
 
 //--- MET/MHT
@@ -171,11 +166,8 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::Hj_tagger],                "Hj_tagger",
 
 //--- boosted variables
-    floatMap[FloatVariableType::HTT_boosted],                    "HTT_boosted",
     floatMap[FloatVariableType::HadTop_pt_semi_boosted_fromAK8], "HadTop_pt_semi_boosted_fromAK8",
     floatMap[FloatVariableType::HTT_semi_boosted_fromAK8],       "HTT_semi_boosted_fromAK8",
-    floatMap[FloatVariableType::HadTop_pt_boosted],              "HadTop_pt_boosted",
-    floatMap[FloatVariableType::minDR_HTTv2_Lep],                "minDR_HTTv2_Lep",
     floatMap[FloatVariableType::minDR_AK8_Lep],                  "minDR_AK8_Lep",
 
     ntags,                                                 "nBJetMedium",
@@ -375,19 +367,20 @@ SyncNtupleManager::initializeBranches()
   );
 
   setBranches(
-    jhtstr, nof_jetHTTv2,
-    jetHTTv2_pt,  "pt",
-    jetHTTv2_eta, "eta",
-    jetHTTv2_phi, "phi",
-    jetHTTv2_E,   "E"
-  );
-
-  setBranches(
     jak8str, nof_jetAK8,
     jetAK8_pt,  "pt",
     jetAK8_eta, "eta",
     jetAK8_phi, "phi",
-    jetAK8_E,   "E"
+    jetAK8_E,   "E",
+    jetAK8_tau1,         "tau1",
+    jetAK8_tau2,         "tau2",
+    jetAK8_SDmass,       "SDmass",
+    jetAK8_subjet_1_pt,  "subjet_1_pt",
+    jetAK8_subjet_1_eta, "subjet_1_eta",
+    jetAK8_subjet_1_phi, "subjet_1_phi",
+    jetAK8_subjet_2_pt,  "subjet_2_pt",
+    jetAK8_subjet_2_eta, "subjet_2_eta",
+    jetAK8_subjet_2_phi, "subjet_2_phi"
   );
 
   reset();
@@ -671,21 +664,17 @@ SyncNtupleManager::read(const std::vector<const RecoJetAK8 *> & jets)
     jetAK8_eta[i] = jet -> eta();
     jetAK8_phi[i] = jet -> phi();
     jetAK8_E[i] = (jet -> p4()).E();
-  }
-}
-
-void
-SyncNtupleManager::read(const std::vector<const RecoJetHTTv2 *> & jets)
-{
-  n_presel_jetHTTv2 = jets.size();
-  const Int_t nof_iterations = std::min(n_presel_jetHTTv2, nof_jetHTTv2);
-  for(Int_t i = 0; i < nof_iterations; ++i)
-  {
-    const RecoJetHTTv2 * const jet = jets[i];
-    jetHTTv2_pt[i] = jet -> pt();
-    jetHTTv2_eta[i] = jet -> eta();
-    jetHTTv2_phi[i] = jet -> phi();
-    jetHTTv2_E[i] = (jet -> p4()).E();
+    jetAK8_tau1[i] = jet -> tau1();
+    jetAK8_tau2[i] = jet -> tau2();
+    jetAK8_SDmass[i] = jet -> msoftdrop();
+    Particle::LorentzVector subJet1 = (jet -> subJet1()) ->p4();
+    Particle::LorentzVector subJet2 = (jet -> subJet2()) -> p4();
+    jetAK8_subjet_1_pt[i] = subJet1.pt();
+    jetAK8_subjet_1_eta[i] = subJet1.eta();
+    jetAK8_subjet_1_phi[i] = subJet1.phi();
+    jetAK8_subjet_2_pt[i] = subJet2.pt();
+    jetAK8_subjet_2_eta[i] = subJet2.eta();
+    jetAK8_subjet_2_phi[i] = subJet2.phi();
   }
 }
 
@@ -892,19 +881,20 @@ SyncNtupleManager::reset()
   );
 
   reset(
-    nof_jetHTTv2,
-    jetHTTv2_pt,
-    jetHTTv2_eta,
-    jetHTTv2_phi,
-    jetHTTv2_E
-  );
-
-  reset(
     nof_jetAK8,
     jetAK8_pt,
     jetAK8_eta,
     jetAK8_phi,
-    jetAK8_E
+    jetAK8_E,
+    jetAK8_tau1,
+    jetAK8_tau2,
+    jetAK8_SDmass,
+    jetAK8_subjet_1_pt,
+    jetAK8_subjet_1_eta,
+    jetAK8_subjet_1_phi,
+    jetAK8_subjet_2_pt,
+    jetAK8_subjet_2_eta,
+    jetAK8_subjet_2_phi
   );
 
   for(auto & kv: hltMap)

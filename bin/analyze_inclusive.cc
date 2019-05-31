@@ -36,15 +36,10 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterface.h"
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
-#include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger_boosted.h" // HadTopTagger_boosted
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger_semi_boosted_AK8.h" // HadTopTagger_semi_boosted
 #include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions_Hj_and_Hjj_taggers.h" // comp_mvaOutput_Hj_tagger()
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorHTTv2.h" // RecoJetSelectorHTTv2
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h" // RecoJetHTTv2
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderHTTv2.h" // RecoJetReaderHTTv2
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderAK8.h" // RecoJetReaderAK8
-#include "tthAnalysis/HiggsToTauTau/interface/JetHistManagerHTTv2.h" // JetHistManagerHTTv2
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorAK8.h" // RecoJetSelectorAK8
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleanerSubJets.h" // RecoJetCollectionCleanerAK8SubJets
 
@@ -146,7 +141,6 @@ main(int argc,
 
   //--- initialize hadronic top tagger BDT
   HadTopTagger hadTopTagger;
-  HadTopTagger_boosted hadTopTagger_boosted;
   HadTopTagger_semi_boosted_AK8 hadTopTagger_semi_boosted_fromAK8;
 
   const edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
@@ -243,8 +237,6 @@ main(int argc,
   const std::string branchName_hadTauGenMatch   = cfg_analyze.getParameter<std::string>("branchName_hadTauGenMatch");
   const std::string branchName_jetGenMatch      = cfg_analyze.getParameter<std::string>("branchName_jetGenMatch");
 
-  const std::string branchName_jetsHTTv2    = cfg_analyze.getParameter<std::string>("branchName_jetsHTTv2");
-  const std::string branchName_subjetsHTTv2 = cfg_analyze.getParameter<std::string>("branchName_subjetsHTTv2");
   const std::string branchName_jetsAK8      = cfg_analyze.getParameter<std::string>("branchName_jetsAK8");
   const std::string branchName_subjetsAK8   = cfg_analyze.getParameter<std::string>("branchName_subjetsAK8");
 
@@ -339,12 +331,6 @@ main(int argc,
   const RecoJetCollectionCleaner jetCleaner_large8(0.8, isDEBUG);
   const RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
   const RecoJetCollectionSelectorForward jetSelectorForward(era, -1, isDEBUG);
-
-  RecoJetReaderHTTv2 * const jetReaderHTTv2 = new RecoJetReaderHTTv2(era, branchName_jetsHTTv2, branchName_subjetsHTTv2);
-  inputTree -> registerReader(jetReaderHTTv2);
-  const RecoJetCollectionSelectorHTTv2 jetSelectorHTTv2(era);
-  const RecoJetCollectionCleanerHTTv2 jetCleanerHTTv2(1.5, isDEBUG); // [*]
-  const RecoJetCollectionCleanerHTTv2SubJets jetCleanerHTTv2SubJets(0.4, isDEBUG); // [*]
 
   RecoJetReaderAK8 * const jetReaderAK8 = new RecoJetReaderAK8(era, branchName_jetsAK8, branchName_subjetsAK8);
   inputTree -> registerReader(jetReaderAK8);
@@ -652,14 +638,6 @@ main(int argc,
       snm->read(HadTop_pt, FloatVariableType::HadTop_pt);
     }
 
-    //--- build collections of jets reconstructed by hep-top-tagger (HTTv2) algorithm
-    const std::vector<RecoJetHTTv2> jetsHTTv2 = jetReaderHTTv2->read();
-    const std::vector<const RecoJetHTTv2 *> jet_ptrsHTTv2raw = convert_to_ptrs(jetsHTTv2);
-    const std::vector<const RecoJetHTTv2 *> jet_ptrsHTTv2rawSel = jetSelectorHTTv2(jet_ptrsHTTv2raw, isHigherPt);
-    const std::vector<const RecoJetHTTv2 *> sel_HTTv2 = jetCleanerHTTv2SubJets(
-      jet_ptrsHTTv2rawSel, fakeableMuons, fakeableElectrons, selHadTaus
-    );
-
     //--- build collections of jets reconstructed by anti-kT algorithm with dR=0.8 (AK8)
     const std::vector<RecoJetAK8> jetsAK8 = jetReaderAK8->read();
     const std::vector<const RecoJetAK8 *> jet_ptrsAK8raw1 = convert_to_ptrs(jetsAK8);
@@ -667,17 +645,8 @@ main(int argc,
     const std::vector<const RecoJetAK8 *> jet_ptrsAK8 = jetCleanerAK8SubJets(jet_ptrsAK8raw, selMuons, selElectrons, selHadTaus);
     const std::vector<const RecoJet *> cleanedJets_fromAK8 = jetCleaner_large8(selJets, jet_ptrsAK8);
 
-    snm->read(sel_HTTv2);
     snm->read(jet_ptrsAK8);
     snm->read(false, selBJets_medium.size(), selBJets_loose.size(), nLightJet, cleanedJets_fromAK8.size());
-
-    if(! sel_HTTv2.empty())
-    {
-      const std::map<int, double> bdtResult_HTTv2 = hadTopTagger_boosted(
-        *sel_HTTv2[0], calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti
-      );
-      snm->read(bdtResult_HTTv2.at(kXGB_boosted_no_kinFit), FloatVariableType::HTT_boosted);
-    }
 
     if(! jet_ptrsAK8.empty() && ! cleanedJets_fromAK8.empty())
     {
@@ -900,7 +869,6 @@ main(int argc,
   delete electronReader;
   delete hadTauReader;
   delete jetReader;
-  delete jetReaderHTTv2;
   delete jetReaderAK8;
   delete metReader;
 

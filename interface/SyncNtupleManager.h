@@ -18,7 +18,6 @@ class RecoHadTau;
 class RecoJet;
 class RecoLepton;
 class RecoJetAK8;
-class RecoJetHTTv2;
 class hltPath;
 
 enum class FloatVariableType
@@ -76,13 +75,9 @@ enum class FloatVariableType
   HadTop_pt,                ///< pT of the unfitted hadronic top
 
 //--- boosted variables
-  HTT_boosted,                    ///<  output of hadronic top tagger for boosted scenario
   HTT_semi_boosted_fromAK8,       ///<  output of hadronic top tagger for semi-boosted scenario
   HadTop_pt_semi_boosted_fromAK8, ///< ...
   Hj_tagger,                      ///< MVA output of Hj-tagger
-  HadTop_pt_boosted,              ///< ?
-  minDR_HTTv2_Lep,                ///< minimum distance between a tight Lepton (e/mu/tau) and the HTTv2 objet
-                                  ///  that is tagged as "HTT_boosted"
   minDR_AK8_Lep,                  ///< minimum distance between a tight Lepton (e/mu/tau) and the AK8 jet
                                   /// that is tagged as part of "HTT_semi_boosted_fromAK8"
 
@@ -160,7 +155,6 @@ public:
   void read(const std::vector<const RecoJet *> & jets,
             bool isFwd = false);
   void read(const std::vector<const RecoJetAK8 *> & jets);
-  void read(const std::vector<const RecoJetHTTv2 *> & jets);
   void read(Float_t value,
             FloatVariableType type);
   void read(const std::vector<std::vector<hltPath *>> & hltPaths);
@@ -320,7 +314,6 @@ private:
   const Int_t nof_taus;
   const Int_t nof_jets;
   const Int_t nof_fwdJets;
-  const Int_t nof_jetHTTv2;
   const Int_t nof_jetAK8;
 
   Long64_t nEvent;
@@ -337,7 +330,6 @@ private:
   Int_t n_presel_tau;
   Int_t n_presel_jet;
   Int_t n_presel_fwdJet;
-  Int_t n_presel_jetHTTv2;
   Int_t n_presel_jetAK8;
 
   Bool_t isGenMatched;        ///< flag to indicate whether lepton(s) + tau(s) are all gen matched
@@ -468,15 +460,19 @@ private:
   Float_t * jetFwd_phi;
   Float_t * jetFwd_E;
 
-  Float_t * jetHTTv2_pt;
-  Float_t * jetHTTv2_eta;
-  Float_t * jetHTTv2_phi;
-  Float_t * jetHTTv2_E;
-
   Float_t * jetAK8_pt;
   Float_t * jetAK8_eta;
   Float_t * jetAK8_phi;
   Float_t * jetAK8_E;
+  Float_t * jetAK8_tau1;
+  Float_t * jetAK8_tau2;
+  Float_t * jetAK8_SDmass;
+  Float_t * jetAK8_subjet_1_pt;
+  Float_t * jetAK8_subjet_1_eta;
+  Float_t * jetAK8_subjet_1_phi;
+  Float_t * jetAK8_subjet_2_pt;
+  Float_t * jetAK8_subjet_2_eta;
+  Float_t * jetAK8_subjet_2_phi;
 
   std::map<std::string, Int_t> hltMap;
 
