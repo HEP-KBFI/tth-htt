@@ -54,6 +54,8 @@
 #include <TChain.h> // TChain
 #include <TBenchmark.h> // TBenchmark
 
+#include <regex> // std::regex_match(), std::regex, std::smatch
+
 typedef std::vector<std::string> vstring;
 
 template <typename GenParticleType>
@@ -165,6 +167,12 @@ main(int argc,
 
   const vstring copy_histograms = cfg_produceNtuple.getParameter<vstring>("copy_histograms");
   const vstring drop_branches = cfg_produceNtuple.getParameter<vstring>("drop_branches");
+
+  std::vector<std::regex> copy_histograms_regex;
+  std::transform(
+    copy_histograms.begin(), copy_histograms.end(), std::back_inserter(copy_histograms_regex),
+    [](const std::string & copy_histogram_regex) -> std::regex { return std::regex(copy_histogram_regex); }
+  );
 
   const fwlite::InputSource inputFiles(cfg);
   const int maxEvents = inputFiles.maxEvents();
@@ -918,6 +926,7 @@ main(int argc,
 //--- copy histograms keeping track of number of processed events from input files to output file
   std::cout << "copying histograms:\n";
   delete inputTree;
+  std::smatch histogram_match;
   std::map<std::string, TH1 *> histograms;
   for(const std::string & inputFileName: inputFiles.files())
   {
@@ -928,9 +937,25 @@ main(int argc,
         << "Failed to open input File = '" << inputFileName << '\''
       ;
     }
-
-    for(const std::string & histogramName: copy_histograms)
+    TIter next(inputFile->GetListOfKeys());
+    TKey * key = nullptr;
+    while((key = static_cast<TKey *>(next())))
     {
+      const std::string histogramName = key->GetName();
+      bool is_match = false;
+      for(const std::regex & copy_histogram_regex: copy_histograms_regex)
+      {
+        if(std::regex_match(histogramName, histogram_match, copy_histogram_regex))
+        {
+          is_match = true;
+          break;
+        }
+      }
+      if(! is_match)
+      {
+        continue;
+      }
+
       if(inputFiles.files().size() > 1)
       {
         std::cout << ' ' << histogramName << " from input File = '" << inputFileName << "'\n";
