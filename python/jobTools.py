@@ -1,12 +1,10 @@
+from tthAnalysis.HiggsToTauTau.common import logging
+
 import os
 import subprocess
 import sys
 import math
 import stat
-import time
-
-from tthAnalysis.HiggsToTauTau.common import logging
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -46,7 +44,8 @@ def create_if_not_exists(dir_fullpath):
   Args:
     dir_fullpath: full path to the directory
   """
-  #print("create_if_not_exists: dir_fullpath = '%s'" % dir_fullpath)
+  from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
   if hdfs.mkdirs(dir_fullpath) != 0:
     raise RuntimeError("Unable to create directory %s" % dir_fullpath)
 
@@ -90,7 +89,8 @@ def generate_input_list(job_ids, secondary_files, primary_store, secondary_store
     secondary_store: full path to the second subdirectory
     debug: if True, checks whether each file is present in the file system
   """
-  #print "<generate_input_list>:"
+  from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
   input_list = []
   for job in job_ids:
     actual_storedir = secondary_store if job in secondary_files else primary_store
@@ -108,19 +108,7 @@ def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None,
             return_stderr = False):
   """Runs given commands and logs stdout and stderr to files
   """
-  max_tries = 5
-  tries = 0
-  while True:
-    try:
-      tries += 1
-      p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-      break
-    except OSError, e:
-      if e.errno != 11 or tries > max_tries:
-        raise
-      else:
-        time.sleep(5)
-
+  p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
   stdout, stderr = p.communicate()
   # Remove trailing newline
   stdout = stdout.rstrip('\n')
@@ -149,6 +137,8 @@ def get_log_version(list_of_log_files):
   Instead of passing log files one-by-one, the more consistent way of dealing with these things is
   to loop over a set of log files that represents a single joint iteration of the jobs.
   """
+  from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
   if all(map(lambda path: not hdfs.exists(path), list_of_log_files)):
     # if none of the files exist, then retain the path names
     return list_of_log_files
@@ -178,6 +168,8 @@ def human_size(fsize, use_si = True, byte_suffix = 'B'):
     return '%d%s' % (fsize_int, units[unit_idx])
 
 def record_software_state(txtfile_cfg, txtfile_out, dependencies):
+  from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
   git_cmds = [
     'log -n1 --format="%D"',
     'log -n3 --format="%H | %cd | %cn | %s"',

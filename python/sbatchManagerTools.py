@@ -2,7 +2,6 @@ from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import createFile
 from tthAnalysis.HiggsToTauTau.common import logging
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import os
 import jinja2
@@ -121,7 +120,7 @@ def generate_sbatch_lines(
     return lines_sbatch, num_jobs
 
 def is_file_ok(output_file_name, validate_outputs = True, min_file_size = 20000):
-  if not (output_file_name and hdfs.exists(output_file_name)):
+  if not (output_file_name and os.path.exists(output_file_name)):
     return False
 
   logging.info("Output file %s already exists" % output_file_name)
