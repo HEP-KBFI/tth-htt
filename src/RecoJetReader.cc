@@ -160,6 +160,10 @@ RecoJetReader::setBranchNames()
     branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
     for(auto & kv: BtagWP_map.at(era_))
     {
+      if(kv.first != Btag::kDeepJet)
+      {
+        continue;
+      }
       branchNames_BtagWeight_systematics_[kv.first] = {};
       for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
       {

@@ -119,6 +119,10 @@ RecoJetWriter::setBranchNames()
   branchName_genMatchIdx_ = Form("%s_%s", branchName_obj_.data(), "genMatchIdx");
   for(auto & kv: BtagWP_map.at(era_))
   {
+    if(kv.first != Btag::kDeepJet)
+    {
+      continue;
+    }
     for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
     {
       branchNames_BtagWeight_systematics_[kv.first][idxShift] = getBranchName_bTagWeight(
