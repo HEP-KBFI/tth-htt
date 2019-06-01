@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-05-28 09:08:29 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2017.py -p /hdfs/local/karl/ntuples/2017/nanoAODproduction/2019May28 -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_nanoAOD.py -M
+# file generated at 2019-06-01 16:02:12 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2017.py -p /hdfs/local/karl/ntuples/2017/nanoAODproduction/2019Jun01 -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_nanoAOD.py -M
 
 samples_2017 = OD()
 samples_2017["/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
@@ -14,7 +14,7 @@ samples_2017["/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-P
   }),
   ("nof_tree_events",                 51000),
   ("nof_db_events",                   9918994),
-  ("fsize_local",                     143190824), # 143.19MB, avg file size 143.19MB
+  ("fsize_local",                     132471393), # 132.47MB, avg file size 132.47MB
   ("fsize_db",                        569542482347), # 569.54GB, avg file size 2.21GB
   ("use_it",                          True),
   ("xsection",                        0.07096),
@@ -25,7 +25,7 @@ samples_2017["/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-P
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ntuples/2017/nanoAODproduction/2019May28/THQ_ctcvcp"),
+        ("path",      "/hdfs/local/karl/ntuples/2017/nanoAODproduction/2019Jun01/THQ_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -52,7 +52,7 @@ samples_2017["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-P
   }),
   ("nof_tree_events",                 50400),
   ("nof_db_events",                   4719999),
-  ("fsize_local",                     174597196), # 174.60MB, avg file size 174.60MB
+  ("fsize_local",                     155855399), # 155.86MB, avg file size 155.86MB
   ("fsize_db",                        308444472684), # 308.44GB, avg file size 1.79GB
   ("use_it",                          True),
   ("xsection",                        0.01561),
@@ -63,7 +63,7 @@ samples_2017["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-P
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ntuples/2017/nanoAODproduction/2019May28/THW_ctcvcp"),
+        ("path",      "/hdfs/local/karl/ntuples/2017/nanoAODproduction/2019Jun01/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
