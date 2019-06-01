@@ -6,6 +6,8 @@ from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
+from tthAnalysis.NanoAODTools.tHweights_cff import tHweights
+
 import argparse
 import os.path
 import sys
@@ -49,6 +51,40 @@ BRANCH_NAMES_KEY    = 'branch_names'
 
 LHE_REGEX     = re.compile('(n|)LHE(Scale|Pdf)Weight')
 LHE_DOC_REGEX = re.compile('LHE pdf variation weights \(w_var \/ w\_nominal\) for LHA IDs (?P<lha_start>[0-9]+) - (?P<lha_end>[0-9]+)')
+
+HISTOGRAM_COUNT_COMMON_MC = [
+  HISTOGRAM_COUNTWEIGHTED,
+  HISTOGRAM_COUNTWEIGHTED_NOPU,
+  HISTOGRAM_COUNTFULLWEIGHTED,
+  HISTOGRAM_COUNTFULLWEIGHTED_NOPU,
+  HISTOGRAM_COUNTWEIGHTED_LHESCALE,
+  HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU,
+  HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE,
+  HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU,
+]
+HISTOGRAM_COUNT_EXTENDED_MC = [
+  HISTOGRAM_COUNTWEIGHTED_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTWEIGHTED_L1PREFIRE,
+  HISTOGRAM_COUNTWEIGHTED_NOPU_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE,
+  HISTOGRAM_COUNTFULLWEIGHTED_NOPU_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
+]
+LHESCALEARR = [
+  HISTOGRAM_COUNTWEIGHTED_LHESCALE,
+  HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU,
+  HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE,
+  HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU,
+  HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
+]
+TH_INDICES = [ coupling.idx.value() for coupling in tHweights if coupling.kv == 1.0 ]
 
 # see https://github.com/cms-nanoAOD/cmssw/blob/9a2728ac9f44fc45ba1aa56389e28c594207c0fe/PhysicsTools/NanoAOD/python/nano_cff.py#L99-L104
 LHE_DOC = {
@@ -138,7 +174,7 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("nof_files",                       {{ nof_files }}),
   ("nof_db_files",                    {{ nof_db_files }}),
   ("nof_events",                      { {%- for histogram_name, event_counts in nof_events.items() %}
-    {{ "%-50s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
+    {{ "%-60s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
   {%- endfor %}
   }),
   ("nof_tree_events",                 {{ nof_tree_events }}),
@@ -475,31 +511,26 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
 
   digit_regex = re.compile(r"tree_(?P<i>\d+)\.root")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
+  is_tH = meta_dict[key]['sample_category'] in [ "tHq", "tHW" ]
+
   histogram_names = collections.OrderedDict([ ( HISTOGRAM_COUNT, -1 ) ])
   if not is_data:
-    histogram_names.update([
-      (HISTOGRAM_COUNTWEIGHTED,                   -1),
-      (HISTOGRAM_COUNTWEIGHTED_NOPU,              -1),
-      (HISTOGRAM_COUNTFULLWEIGHTED,               -1),
-      (HISTOGRAM_COUNTFULLWEIGHTED_NOPU,          -1),
-      (HISTOGRAM_COUNTWEIGHTED_LHESCALE,          -1),
-      (HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU,     -1),
-      (HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE,      -1),
-      (HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU, -1),
-    ])
+    for histogram_name in HISTOGRAM_COUNT_COMMON_MC:
+      histogram_names[histogram_name] = -1
     if era in [ 2016, 2017 ]:
-      histogram_names.update([
-        (HISTOGRAM_COUNTWEIGHTED_L1PREFIRE_NOM,                   -1),
-        (HISTOGRAM_COUNTWEIGHTED_L1PREFIRE,                       -1),
-        (HISTOGRAM_COUNTWEIGHTED_NOPU_L1PREFIRE_NOM,              -1),
-        (HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE_NOM,               -1),
-        (HISTOGRAM_COUNTFULLWEIGHTED_L1PREFIRE,                   -1),
-        (HISTOGRAM_COUNTFULLWEIGHTED_NOPU_L1PREFIRE_NOM,          -1),
-        (HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM,          -1),
-        (HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,     -1),
-        (HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM,      -1),
-        (HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM, -1),
-      ])
+      for histogram_name in HISTOGRAM_COUNT_EXTENDED_MC:
+        histogram_names[histogram_name] = -1
+
+  lheScaleArr = LHESCALEARR
+  if is_tH:
+    for tH_idx in TH_INDICES:
+      for histogram_name in HISTOGRAM_COUNT_COMMON_MC:
+        histogram_name_rwgt = "{}_rwgt{}".format(histogram_name, tH_idx)
+        histogram_names[histogram_name_rwgt] = -1
+        lheScaleArr.append(histogram_name_rwgt)
+      if era in [2016, 2017]:
+        for histogram_name in HISTOGRAM_COUNT_EXTENDED_MC:
+          histogram_names["{}_rwgt{}".format(histogram_name, tH_idx)] = -1
 
   indices = {}
   lhe_set = ''
@@ -590,16 +621,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
               path           = subentry_file.name,
             ))
           nBins = histogram.GetNbinsX()
-          if nBins != 9 and histogram_name in [
-                HISTOGRAM_COUNTWEIGHTED_LHESCALE,
-                HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU,
-                HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE,
-                HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU,
-                HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM,
-                HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
-                HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM,
-                HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
-              ]:
+          if nBins != 9 and histogram_name in lheScaleArr:
             logging.warning("Expected 9 bins but found {nBins} bins in {histogram_name}".format(
               nBins          = nBins,
               histogram_name = histogram_name,
