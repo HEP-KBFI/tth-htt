@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-06-01 15:48:08 with the following command:
+# file generated at 2019-06-01 16:24:45 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018_sync.py -p /hdfs/local/karl/ttHNtupleProduction/2018/2019Jun01_woPresel_nonNom_sync/ntuples -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_sync.py -M
 
 samples_2018 = OD()
@@ -11,15 +11,15 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   ("nof_files",                       1),
   ("nof_db_files",                    224),
   ("nof_events",                      {
-    'Count'                                            : [        63000, ],
-    'CountWeighted'                                    : [        61650,        61660,        61653, ],
-    'CountWeightedNoPU'                                : [        61692, ],
-    'CountFullWeighted'                                : [        33168,        33175,        33166, ],
-    'CountFullWeightedNoPU'                            : [        33211, ],
-    'CountWeightedLHEWeightScale'                      : [        89698,        87068,        85055,        63175,        61650,        60527,        51746,        50384,        49345, ],
-    'CountWeightedLHEWeightScaleNoPU'                  : [        89754,        87106,        85075,        63230,        61692,        60555,        51788,        50414,        49367, ],
-    'CountFullWeightedLHEWeightScale'                  : [        48256,        46841,        45757,        33986,        33168,        32562,        27838,        27105,        26546, ],
-    'CountFullWeightedLHEWeightScaleNoPU'              : [        48285,        46861,        45768,        34016,        33211,        32577,        27861,        27122,        26558, ],
+    'Count'                                                      : [        63000, ],
+    'CountWeighted'                                              : [        61650,        61660,        61653, ],
+    'CountWeightedNoPU'                                          : [        61692, ],
+    'CountFullWeighted'                                          : [        33168,        33175,        33166, ],
+    'CountFullWeightedNoPU'                                      : [        33211, ],
+    'CountWeightedLHEWeightScale'                                : [        89698,        87068,        85055,        63175,        61650,        60527,        51746,        50384,        49345, ],
+    'CountWeightedLHEWeightScaleNoPU'                            : [        89754,        87106,        85075,        63230,        61692,        60555,        51788,        50414,        49367, ],
+    'CountFullWeightedLHEWeightScale'                            : [        48256,        46841,        45757,        33986,        33168,        32562,        27838,        27105,        26546, ],
+    'CountFullWeightedLHEWeightScaleNoPU'                        : [        48285,        46861,        45768,        34016,        33211,        32577,        27861,        27122,        26558, ],
   }),
   ("nof_tree_events",                 63000),
   ("nof_db_events",                   7525991),
