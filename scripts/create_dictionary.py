@@ -521,13 +521,15 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
       for histogram_name in HISTOGRAM_COUNT_EXTENDED_MC:
         histogram_names[histogram_name] = -1
 
-  lheScaleArr = LHESCALEARR
+  lheScaleArr = copy.deepcopy(LHESCALEARR)
   if is_tH:
     for tH_idx in TH_INDICES:
+      for lheScaleHistName in LHESCALEARR:
+        histogram_name_rwgt = "{}_rwgt{}".format(lheScaleHistName, tH_idx)
+        lheScaleArr.append(histogram_name_rwgt)
       for histogram_name in HISTOGRAM_COUNT_COMMON_MC:
         histogram_name_rwgt = "{}_rwgt{}".format(histogram_name, tH_idx)
         histogram_names[histogram_name_rwgt] = -1
-        lheScaleArr.append(histogram_name_rwgt)
       if era in [2016, 2017]:
         for histogram_name in HISTOGRAM_COUNT_EXTENDED_MC:
           histogram_names["{}_rwgt{}".format(histogram_name, tH_idx)] = -1
