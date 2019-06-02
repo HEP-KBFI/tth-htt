@@ -1781,7 +1781,7 @@ int main(int argc, char* argv[])
     //std::cout<<" mva_Updated "<<mva_Updated<<std::endl;
 
 //--- fill histograms with events passing final selection
-    std::map<std::string, double> param_weight = eventInfo.genWeight_tH();
+    std::map<std::string, double> param_weight = {};//eventInfo.genWeight_tH();
     selHistManagerType* selHistManager = selHistManagers[idxSelHadTau_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(preselElectrons, evtWeight);

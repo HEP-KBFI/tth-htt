@@ -1426,7 +1426,7 @@ int main(int argc, char* argv[])
       evtWeight *= lumiScale;
       if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
       evtWeight *= eventInfo.pileupWeight;
-      evtWeight *= eventInfo.genWeight_tH();
+      //evtWeight *= eventInfo.genWeight_tH();
       evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
       double btagWeight = 1.;
       for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();

@@ -703,7 +703,7 @@ int main(int argc, char* argv[])
       if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
       if(isMC_tH)
       {
-        std::map<std::string, double> tH_weight = eventInfo.genWeight_tH();
+        std::map<std::string, double> tH_weight = {};//eventInfo.genWeight_tH();
         if ( isDEBUG_tH ) std::cout << "eventInfo.genWeight_tH() =" << tH_weight["kt_1p0_kv_1p0"] << "\n";
         evtWeight_inclusive *= tH_weight["kt_1p0_kv_1p0"];
       }
@@ -1370,7 +1370,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
 
 //--- fill histograms with events passing final selection
-    std::map<std::string, double> param_weight = eventInfo.genWeight_tH();
+    std::map<std::string, double> param_weight = {};//eventInfo.genWeight_tH();
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);

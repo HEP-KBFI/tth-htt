@@ -629,7 +629,7 @@ class analyzeConfig(object):
               tH_weights.append(
                 cms.PSet(
                   idx    = cms.uint32(idx),
-                  weight = cms.double(float(sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]) / nof_events),
+                  weight = cms.double(float(nof_events) /sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]),
                 )
               )
             jobOptions['tHweights'] = tH_weights

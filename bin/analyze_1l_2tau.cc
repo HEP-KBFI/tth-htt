@@ -91,6 +91,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
+#include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tHq_sf(), get_tHW_sf()
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
@@ -169,9 +170,11 @@ int main(int argc, char* argv[])
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
-  bool isMC_tH = ( process_string == "tHq" || process_string == "tHW" ) ? true : false;
-  bool isMC_VH = ( process_string == "VH" ) ? true : false;
-  bool isSignal = ( process_string == "signal"  || isMC_tH || isMC_VH ) ? true : false;
+  const bool isMC_tHq = process_string == "tHq";
+  const bool isMC_tHW = process_string == "tHW";
+  const bool isMC_tH = isMC_tHq || isMC_tHW;
+  const bool isMC_VH = process_string == "VH";
+  const bool isSignal = process_string == "signal"  || isMC_tH || isMC_VH;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -633,12 +636,27 @@ int main(int argc, char* argv[])
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
-  std::vector<std::string> paramStr = {"not_th"};
-  if ( isMC_tH ) paramStr = {
-    "kt_m3p0_kv_1p0" ,  "kt_m2p0_kv_1p0" , "kt_m1p5_kv_1p0" , "kt_m1p25_kv_1p0" , "kt_m0p75_kv_1p0" , "kt_m0p5_kv_1p0" , "kt_m0p25_kv_1p0" , "kt_0p0_kv_1p0" , "kt_0p25_kv_1p0" , "kt_0p5_kv_1p0" , "kt_0p75_kv_1p0" , "kt_1p0_kv_1p0" , "kt_1p25_kv_1p0" , "kt_1p5_kv_1p0" , "kt_2p0_kv_1p0" , "kt_3p0_kv_1p0",
-    "kt_m3p0_kv_1p5" ,  "kt_m2p0_kv_1p5" , "kt_m1p5_kv_1p5" , "kt_m1p25_kv_1p5" , "kt_m0p75_kv_1p5" , "kt_m0p5_kv_1p5" , "kt_m0p25_kv_1p5" , "kt_0p0_kv_1p5" , "kt_0p25_kv_1p5" , "kt_0p5_kv_1p5" , "kt_0p75_kv_1p5" , "kt_1p0_kv_1p5" , "kt_1p25_kv_1p5" , "kt_1p5_kv_1p5" , "kt_2p0_kv_1p5" , "kt_3p0_kv_1p5" ,
-    "kt_m3p0_kv_0p5" , "kt_m2p0_kv_0p5" , "kt_m1p5_kv_0p5" ,  "kt_m1p25_kv_0p5" , "kt_m0p75_kv_0p5" , "kt_m0p5_kv_0p5" , "kt_m0p25_kv_0p5" , "kt_0p0_kv_0p5" , "kt_0p25_kv_0p5" , "kt_0p5_kv_0p5" , "kt_0p75_kv_0p5" , "kt_1p0_kv_0p5" , "kt_1p25_kv_0p5" , "kt_1p5_kv_0p5" , "kt_2p0_kv_0p5" ,  "kt_3p0_kv_0p5"
-  };
+
+  const std::string default_cat_str = "default";
+  std::vector<std::string> paramStr = { default_cat_str };
+  double (*tH_reweighting_func)(const std::string &) = nullptr;
+  if(isMC_tH)
+  {
+    const std::vector<edm::ParameterSet> tHweights_cfg = cfg_analyze.getParameterSetVector("tHweights_cfg");
+    const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+    eventInfo.loadWeight_tH(tHweights_cfg, tHweights);
+    paramStr = eventInfo.getWeight_tH_str();
+
+    assert(isMC_tHq != isMC_tHW);
+    if(isMC_tHq)
+    {
+      tH_reweighting_func = get_tHq_sf;
+    }
+    else
+    {
+      tH_reweighting_func = get_tHW_sf;
+    }
+  }
 
   typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
   std::map<int, int_to_selHistManagerMap> selHistManagers;
@@ -874,9 +892,6 @@ int main(int argc, char* argv[])
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
-  double countFatTopEntries = 0;
-  double countFatTop = 0;
-  double countFatTopTruth = 0;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
@@ -948,6 +963,7 @@ int main(int argc, char* argv[])
     }
 
     double evtWeight_inclusive = 1.;
+    double evtWeight_tH_nom = 1.;
     if(isMC)
     {
       if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
@@ -956,7 +972,10 @@ int main(int argc, char* argv[])
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      //evtWeight_inclusive *= eventInfo.genWeight_tH();
+
+      evtWeight_tH_nom = eventInfo.genWeight_tH();
+      evtWeight_inclusive *= evtWeight_tH_nom;
+
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
@@ -1800,8 +1819,6 @@ int main(int argc, char* argv[])
     const double mvaOutput_plainKin_SUM_VT = mva_plainKin_sum_VT(mvaInputsplainKin_sum);
 
 //--- fill histograms with events passing final selection
-    std::map<std::string, double> param_weight = eventInfo.genWeight_tH();
-
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
@@ -1819,10 +1836,18 @@ int main(int argc, char* argv[])
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_HTT_sum_->fillHistograms(mvaInputsHTT_sum, evtWeight);
+
+    std::map<std::string, double> paramMap;
     for(const std::string & param: paramStr)
     {
-      double evtWeight0 = evtWeight*param_weight[param];
-      selHistManager->evt_[param]->fillHistograms(
+      paramMap[param] = isMC_tH ?
+        evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(param) * tH_reweighting_func(param) :
+        evtWeight
+      ;
+    }
+    for(const auto & kv: paramMap)
+    {
+      selHistManager->evt_[kv.first]->fillHistograms(
         selElectrons.size(),
         selMuons.size(),
         selHadTaus.size(),
@@ -1835,16 +1860,15 @@ int main(int argc, char* argv[])
         mvaOutput_HTT_SUM_VT,
         mvaOutput_plainKin_SUM_VT,
         mTauTauVis,
-        evtWeight0);
+        kv.second);
     }
     if( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
       if ( ( isMC_tH || isMC_VH ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
       if ( !decayModeStr.empty() ) {
-        for(const std::string & param: paramStr)
+        for(const auto & kv: paramMap)
         {
-          double evtWeight0 = evtWeight*param_weight[param];
-          selHistManager->evt_in_decayModes_[param][decayModeStr]->fillHistograms(
+          selHistManager->evt_in_decayModes_[kv.first][decayModeStr]->fillHistograms(
             selElectrons.size(),
             selMuons.size(),
             selHadTaus.size(),
@@ -1857,7 +1881,7 @@ int main(int argc, char* argv[])
             mvaOutput_HTT_SUM_VT,
             mvaOutput_plainKin_SUM_VT,
             mTauTauVis,
-            evtWeight0
+            kv.second
           );
         }
       }
@@ -2111,15 +2135,11 @@ int main(int argc, char* argv[])
       int idxLepton = leptonGenMatch_definition->idx_;
       int idxHadTau = hadTauGenMatch_definition->idx_;
 
-      std::string paramSM = "not_th";
-      if ( isMC_tH ) paramSM = "kt_1p0_kv_1p0";
+      const std::string paramSM = isMC_tH ? get_tH_weight_str(1.0, 1.0) : default_cat_str;
       const TH1* histogram_EventCounter = selHistManagers[idxLepton][idxHadTau]->evt_[paramSM]->getHistogram_EventCounter();
       std::cout << " " << process_and_genMatch << " = " << histogram_EventCounter->GetEntries() << " (weighted = " << histogram_EventCounter->Integral() << ")" << std::endl;
     }
   }
-  std::cout << std::endl;
-
-  std::cout << "countFat " << countFatTop << " " << countFatTopEntries << " " << countFatTopTruth << std::endl;
 
   delete dataToMCcorrectionInterface;
   delete dataToMCcorrectionInterface_1l_2tau_trigger;

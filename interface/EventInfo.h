@@ -1,6 +1,8 @@
 #ifndef EventInfo_H
 #define EventInfo_H
 
+#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
+
 #include <Rtypes.h> // *_t
 
 #include <iostream> // std::ostream
@@ -27,9 +29,22 @@ public:
   Float_t   genWeight;           ///< generator-level weight (only if MC)
   Float_t   pileupWeight;        ///< pile-up weight (only if MC)
 
-  ///< reweight tH MC sample from kappa=-1 to kappa=+1 (SM) case
-  std::map<std::string, double>
+  double
   genWeight_tH() const;
+
+  double
+  genWeight_tH(double kv,
+               double kt) const;
+
+  double
+  genWeight_tH(const std::string & name) const;
+
+  void
+  loadWeight_tH(const std::vector<edm::ParameterSet> & cfg_main,
+                const std::vector<edm::ParameterSet> & cfg_choice);
+
+  std::vector<std::string>
+  getWeight_tH_str() const;
 
   bool
   is_signal() const;
@@ -62,9 +77,9 @@ private:
 
   UInt_t nLHEReweightingWeight;
   Float_t * LHEReweightingWeight;
-  const unsigned int LHEReweightingWeight_SMidx;
   const unsigned int LHEReweightingWeight_max;
 
+  std::map<std::string, std::pair<unsigned, double>> tH_sf;
   static const std::map<std::string, Float_t> decayMode_idString;
 };
 
