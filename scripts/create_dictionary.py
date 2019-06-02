@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
-from tthAnalysis.NanoAODTools.tHweights_cff import tHweights
+from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights
 
 import argparse
 import os.path

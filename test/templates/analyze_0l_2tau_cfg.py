@@ -3,7 +3,7 @@ import os
 
 from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_cfi import *
-from tthAnalysis.NanoAODTools.tHweights_cff import tHweights
+from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights
 
 process = cms.PSet()
 

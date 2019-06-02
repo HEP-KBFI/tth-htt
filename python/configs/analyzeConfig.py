@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_had
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
 from tthAnalysis.HiggsToTauTau.common import logging
 
-from tthAnalysis.NanoAODTools.tHweights_cff import thIdxs
+from tthAnalysis.NanoAODTools.tHweights_cfi import thIdxs
 
 import FWCore.ParameterSet.Config as cms
 

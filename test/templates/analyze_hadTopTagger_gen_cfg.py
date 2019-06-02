@@ -108,6 +108,8 @@ process.analyze_hadTopTagger_gen = cms.PSet(
         branchTypeXaxis = cms.string(''),
         branchTypeYaxis = cms.string(''),
     ),
+    tHweights_cfg = cms.VPSet(),
+    tHweights = cms.VPSet(),
 )
 
 ## inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb28_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
