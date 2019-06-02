@@ -591,8 +591,6 @@ class analyzeConfig(object):
               nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)])
               if nof_lhe_scale_weights == 9:
                 lhe_idx = 5
-              elif nof_lhe_scale_weights == 44:
-                lhe_idx = 24
               else:
                 raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
               nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)][lhe_idx] # muR=1   muF=2
@@ -601,8 +599,6 @@ class analyzeConfig(object):
               nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)])
               if nof_lhe_scale_weights == 9:
                 lhe_idx = 7
-              elif nof_lhe_scale_weights == 44:
-                lhe_idx = 34
               else:
                 raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
               nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)][lhe_idx] # muR=2   muF=1
@@ -611,8 +607,6 @@ class analyzeConfig(object):
               nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)])
               if nof_lhe_scale_weights == 9:
                 lhe_idx = 3
-              elif nof_lhe_scale_weights == 44:
-                lhe_idx = 15
               else:
                 raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
               nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)][lhe_idx] # muR=1   muF=0.5
@@ -621,8 +615,6 @@ class analyzeConfig(object):
               nof_lhe_scale_weights = len(sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)])
               if nof_lhe_scale_weights == 9:
                 lhe_idx = 1
-              elif nof_lhe_scale_weights == 44:
-                lhe_idx = 5
               else:
                 raise RuntimeError("Unexpected number of LHE scale weights: %d" % nof_lhe_scale_weights)
               nof_events = sample_info["nof_events"]['CountWeightedLHEWeightScale{}'.format(count_suffix)][lhe_idx] # muR=0.5 muF=1
