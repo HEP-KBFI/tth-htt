@@ -580,7 +580,7 @@ findGenJetsFromWBoson(const GenParticle * genWBoson,
       }
     }
   }
-  return std::make_pair<const T*, const T*>(genJet1FromWBoson, genJet2FromWBoson);
+  return std::pair<const T*, const T*>(genJet1FromWBoson, genJet2FromWBoson);
 }
 
 #endif
