@@ -495,7 +495,6 @@ int main(int argc, char* argv[])
     WeightHistManager* weights_;
   };
   std::map<int, selHistManagerType*> selHistManagers;
-
   for ( std::vector<leptonGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
 	leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {
 
@@ -541,6 +540,8 @@ int main(int argc, char* argv[])
     selHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/metFilters", histogramDir.data()), era_string, central_or_shift));
     selHistManager->metFilters_->bookHistograms(fs);
+    selHistManager->evt_ = new EvtHistManager_ttZctrl(makeHistManager_cfg(process_and_genMatch,
+     Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
     selHistManager->evt_->bookHistograms(fs);
     const vstring decayModes_evt = eventInfo.getDecayModes();
     if ( isSignal ) {
