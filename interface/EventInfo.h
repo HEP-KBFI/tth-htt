@@ -79,7 +79,7 @@ private:
   Float_t * LHEReweightingWeight;
   const unsigned int LHEReweightingWeight_max;
 
-  std::map<std::string, std::pair<unsigned, double>> tH_sf;
+  std::map<std::string, std::pair<int, double>> tH_sf;
   static const std::map<std::string, Float_t> decayMode_idString;
 };
 

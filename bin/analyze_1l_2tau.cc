@@ -91,7 +91,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
-#include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tHq_sf(), get_tHW_sf()
+#include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tH_weight_str()
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
@@ -639,23 +639,12 @@ int main(int argc, char* argv[])
 
   const std::string default_cat_str = "default";
   std::vector<std::string> paramStr = { default_cat_str };
-  double (*tH_reweighting_func)(const std::string &) = nullptr;
   if(isMC_tH)
   {
     const std::vector<edm::ParameterSet> tHweights_cfg = cfg_analyze.getParameterSetVector("tHweights_cfg");
     const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
     eventInfo.loadWeight_tH(tHweights_cfg, tHweights);
     paramStr = eventInfo.getWeight_tH_str();
-
-    assert(isMC_tHq != isMC_tHW);
-    if(isMC_tHq)
-    {
-      tH_reweighting_func = get_tHq_sf;
-    }
-    else
-    {
-      tH_reweighting_func = get_tHW_sf;
-    }
   }
 
   typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
@@ -1841,7 +1830,7 @@ int main(int argc, char* argv[])
     for(const std::string & param: paramStr)
     {
       paramMap[param] = isMC_tH ?
-        evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(param) * tH_reweighting_func(param) :
+        evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(param):
         evtWeight
       ;
     }

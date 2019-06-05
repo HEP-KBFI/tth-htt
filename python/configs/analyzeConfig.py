@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_had
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
 from tthAnalysis.HiggsToTauTau.common import logging
 
-from tthAnalysis.NanoAODTools.tHweights_cfi import thIdxs
+from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxs, find_tHweight
 
 import FWCore.ParameterSet.Config as cms
 
@@ -623,16 +623,64 @@ class analyzeConfig(object):
           assert(nof_events_idx >= 0)
           nof_events = nof_events = sample_info["nof_events"][nof_events_label][nof_events_idx]
           assert(nof_events > 0)
-          if sample_info['sample_category'] in [ 'tHq', 'tHW' ]:
-            tH_weights = []
-            for idx in thIdxs:
-              tH_weights.append(
+          if sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal' ]:
+            nof_reweighting = sample_info['nof_reweighting']
+
+            #TODO maybe pick only kv = 1.0 when running on ttH signal MC?
+            missing_reweighting =  set(thIdxs) - set(range(-1, nof_reweighting))
+
+            if missing_reweighting:
+              logging.warning("Could not find the following weights for {}: {}".format(
+                sample_info["process_name_specific"],
+                ", ".join(map(str, missing_reweighting))
+              ))
+            else:
+              xsec_weight_str = ""
+              if sample_info['sample_category'] == 'tHq':
+                xsec_weight_str = "xs_tHq"
+              elif sample_info['sample_category'] == 'tHW':
+                xsec_weight_str = "xs_tHW"
+              elif sample_info['sample_category'] == 'signal':
+                xsec_weight_str = "xs_ttH"
+              else:
+                raise RuntimeError("Unexpected category detected: %s" % sample_info['sample_category'])
+
+              # record the weight for the default case (corresponds to no reweighting weight, i.e. idx of -1)
+              xsec_weight_default = float(getattr(find_tHweight(tHweights, -1), xsec_weight_str).configValue())
+              tH_weights = [
                 cms.PSet(
-                  idx    = cms.uint32(idx),
-                  weight = cms.double(float(nof_events) / sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]),
+                  idx    = cms.int32(-1),
+                  weight = cms.double(xsec_weight_default),
                 )
-              )
-            jobOptions['tHweights'] = tH_weights
+              ]
+
+              for idx in thIdxs:
+                if idx < 0:
+                  # we've already recorded the weight for the default case
+                  logging.info(
+                    "Process {}, weight index {}: the default/actual # events is {} and the XS weight is {:.6f}".format(
+                      sample_info["process_name_specific"], idx, nof_events, xsec_weight_default
+                    )
+                  )
+                  continue
+
+                nof_events_rwgt = sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]
+                xsec_weight = float(getattr(find_tHweight(tHweights, idx), xsec_weight_str).configValue())
+                final_reweighting = float(nof_events) / nof_events_rwgt * xsec_weight
+                logging.info(
+                  "Process {}, weight index {}: the default # events is {}, actual # events {} and the XS weight is {:.6f} "
+                  "-> final weight is {:.6f}".format(
+                    sample_info["process_name_specific"], idx, nof_events, nof_events_rwgt, xsec_weight, final_reweighting
+                  )
+                )
+                tH_weights.append(
+                  cms.PSet(
+                    idx    = cms.int32(idx),
+                    weight = cms.double(final_reweighting),
+                  )
+                )
+              jobOptions['tHweights'] = tH_weights
+
           jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / nof_events if (self.use_lumi and is_mc) else 1.
         if 'hasLHE' not in jobOptions:
             jobOptions['hasLHE'] = sample_info['has_LHE']

@@ -105,31 +105,31 @@ EventInfo::genWeight_tH(const std::string & name) const
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid coupling requested: " << name;
   }
-  const std::pair<unsigned, double> & settings = tH_sf.at(name);
-  assert(settings.first < nLHEReweightingWeight);
+  const std::pair<int, double> & settings = tH_sf.at(name);
+  assert(settings.first < static_cast<int>(nLHEReweightingWeight));
 
-  return LHEReweightingWeight[settings.first] * settings.second;
+  return (settings.first >= 0 ? LHEReweightingWeight[settings.first] : 1.) * settings.second;
 }
 
 void
 EventInfo::loadWeight_tH(const std::vector<edm::ParameterSet> & cfg_main,
                          const std::vector<edm::ParameterSet> & cfg_choice)
 {
-  std::map<unsigned, double> choice_map;
+  std::map<int, double> choice_map;
   for(const edm::ParameterSet & cfg_choice_entry: cfg_choice)
   {
-    const unsigned idx = cfg_choice_entry.getParameter<unsigned>("idx");
+    const int idx = cfg_choice_entry.getParameter<int>("idx");
     const double weight = cfg_choice_entry.getParameter<double>("weight");
     assert(! choice_map.count(idx));
     choice_map[idx] = weight;
   }
 
-  std::map<std::string, unsigned> main_map;
+  std::map<std::string, int> main_map;
   for(const edm::ParameterSet & cfg_main_entry: cfg_main)
   {
     const double kt = cfg_main_entry.getParameter<double>("kt");
     const double kv = cfg_main_entry.getParameter<double>("kv");
-    const unsigned idx = cfg_main_entry.getParameter<unsigned>("idx");
+    const int idx = cfg_main_entry.getParameter<int>("idx");
     const std::string name = get_tH_weight_str(kt, kv);
 
     // make sure that we can recover the paramters encoded by the string
@@ -140,7 +140,7 @@ EventInfo::loadWeight_tH(const std::vector<edm::ParameterSet> & cfg_main,
     assert(! tH_sf.count(name));
     if(choice_map.count(idx))
     {
-      tH_sf[name] = std::pair<unsigned, double>(idx, choice_map.at(idx));
+      tH_sf[name] = std::pair<int, double>(idx, choice_map.at(idx));
       std::cout
         << "Loaded weight '" << name << "': kt = " << kt << " & kv = " << kv
         << " -> weight = " << choice_map.at(idx) <<" @ idx = " << idx << '\n'
