@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-06-05 22:42:25 with the following command:
+# file generated at 2019-06-05 23:12:53 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2016_sync.py -p /hdfs/local/karl/ttHNtupleProduction/2016/2019Jun01_woPresel_nonNom_sync/ntuples -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_sync.py -M
 
 samples_2016 = OD()
@@ -28,6 +28,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/Run
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
   ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
+  ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
