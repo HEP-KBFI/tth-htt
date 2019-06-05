@@ -606,10 +606,10 @@ class analyzeConfig(object):
               nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
               nof_events_idx = 1 # muR=0.5 muF=1
             elif central_or_shift in systematics.L1PreFiring_().up:
-              nof_events_label = 'CountWeightedL1Prefire'
+              nof_events_label = 'CountWeightedL1Prefire{}'.format(count_suffix)
               nof_events_idx = 1  # L1 prefiring weight up
             elif central_or_shift in systematics.L1PreFiring_().down:
-              nof_events_label = 'CountWeightedL1Prefire'
+              nof_events_label = 'CountWeightedL1Prefire{}'.format(count_suffix)
               nof_events_idx = 2  # L1 prefiring weight down
             else:
               nof_events_label = 'CountWeighted{}'.format(count_suffix)
@@ -629,7 +629,7 @@ class analyzeConfig(object):
               tH_weights.append(
                 cms.PSet(
                   idx    = cms.uint32(idx),
-                  weight = cms.double(float(nof_events) /sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]),
+                  weight = cms.double(float(nof_events) / sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]),
                 )
               )
             jobOptions['tHweights'] = tH_weights
