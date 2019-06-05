@@ -8,6 +8,9 @@ std::string
 get_tH_weight_str(double kt,
                   double kv);
 
+std::string
+get_tH_SM_str();
+
 std::pair<double, double>
 get_tH_params(const std::string & kt_kv_str);
 

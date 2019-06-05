@@ -643,7 +643,8 @@ int main(int argc, char* argv[])
   {
     const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
     eventInfo.loadWeight_tH(tHweights);
-    paramStr = eventInfo.getWeight_tH_str();
+    const std::vector<std::string> paramStr_tH = eventInfo.getWeight_tH_str();
+    paramStr.insert(paramStr.end(), paramStr_tH.begin(), paramStr_tH.end());
   }
 
   typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
@@ -1828,8 +1829,9 @@ int main(int argc, char* argv[])
     std::map<std::string, double> paramMap;
     for(const std::string & param: paramStr)
     {
+      const std::string param_query = param == default_cat_str ? get_tH_SM_str() : param;
       paramMap[param] = isMC_tH ?
-        evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(param):
+        evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(param_query):
         evtWeight
       ;
     }
@@ -2123,8 +2125,7 @@ int main(int argc, char* argv[])
       int idxLepton = leptonGenMatch_definition->idx_;
       int idxHadTau = hadTauGenMatch_definition->idx_;
 
-      const std::string paramSM = isMC_tH ? get_tH_weight_str(1.0, 1.0) : default_cat_str;
-      const TH1* histogram_EventCounter = selHistManagers[idxLepton][idxHadTau]->evt_[paramSM]->getHistogram_EventCounter();
+      const TH1* histogram_EventCounter = selHistManagers[idxLepton][idxHadTau]->evt_[default_cat_str]->getHistogram_EventCounter();
       std::cout << " " << process_and_genMatch << " = " << histogram_EventCounter->GetEntries() << " (weighted = " << histogram_EventCounter->Integral() << ")" << std::endl;
     }
   }

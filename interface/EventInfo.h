@@ -43,7 +43,7 @@ public:
   loadWeight_tH(const std::vector<edm::ParameterSet> & cfg);
 
   std::vector<std::string>
-  getWeight_tH_str() const;
+  getWeight_tH_str(bool include_sm = false) const;
 
   bool
   is_signal() const;

@@ -3,9 +3,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tH_weight_str()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include <boost/range/algorithm/copy.hpp> // boost::copy()
-#include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
-
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 
@@ -84,7 +81,7 @@ EventInfo::~EventInfo()
 double
 EventInfo::genWeight_tH() const
 {
-  return genWeight_tH(1.0, 1.0);
+  return genWeight_tH(get_tH_SM_str());
 }
 
 double
@@ -138,10 +135,18 @@ EventInfo::loadWeight_tH(const std::vector<edm::ParameterSet> & cfg)
 }
 
 std::vector<std::string>
-EventInfo::getWeight_tH_str() const
+EventInfo::getWeight_tH_str(bool include_sm) const
 {
   std::vector<std::string> names;
-  boost::copy(tH_sf | boost::adaptors::map_keys, std::back_inserter(names));
+  const std::string sm_str = get_tH_SM_str();
+  for(const auto & kv: tH_sf)
+  {
+    if(! include_sm && kv.first == sm_str)
+    {
+      continue;
+    }
+    names.push_back(kv.first);
+  }
   return names;
 }
 

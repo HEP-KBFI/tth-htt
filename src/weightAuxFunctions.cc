@@ -15,6 +15,12 @@ get_tH_weight_str(double kt,
   return kt_kv_str;
 }
 
+std::string
+get_tH_SM_str()
+{
+  return get_tH_weight_str(1.0, 1.0);
+}
+
 std::pair<double, double>
 get_tH_params(const std::string & kt_kv_str)
 {
