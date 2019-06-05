@@ -21,6 +21,7 @@ import shutil
 import datetime
 import math
 import collections
+import array
 
 HISTOGRAM_COUNT                                         = 'Count'
 HISTOGRAM_COUNTWEIGHTED                                 = 'CountWeighted'
@@ -43,6 +44,7 @@ HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM          = 'CountWeightedLHEWeigh
 # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM = 'CountFullWeightedLHEWeightScaleNoPUL1PrefireNom'
 EVENTS_TREE = 'Events'
 BRANCH_LHEPDFWEIGHT = 'LHEPdfWeight'
+BRANCH_NLHEREWEIGHTINGWEIGHT = 'nLHEReweightingWeight'
 
 HISTOGRAM_COUNT_KEY = 'histogram_count'
 TREE_COUNT_KEY      = 'tree_count'
@@ -187,6 +189,7 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("triggers",                        {{ triggers }}),
   ("has_LHE",                         {{ has_LHE }}),
   ("LHE_set",                         "{{ LHE_set }}"),
+  ("nof_reweighting",                 {{ nof_reweighting }}),
   ("local_paths",
     [
 {{ paths }}
@@ -511,7 +514,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
 
   digit_regex = re.compile(r"tree_(?P<i>\d+)\.root")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
-  is_tH = meta_dict[key]['sample_category'] in [ "tHq", "tHW" ]
+  is_rwgt = meta_dict[key]['sample_category'] in [ "tHq", "tHW", "signal" ]
 
   histogram_names = collections.OrderedDict([ ( HISTOGRAM_COUNT, -1 ) ])
   if not is_data:
@@ -522,7 +525,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
         histogram_names[histogram_name] = -1
 
   lheScaleArr = copy.deepcopy(LHESCALEARR)
-  if is_tH:
+  if is_rwgt:
     for tH_idx in TH_INDICES:
       for lheScaleHistName in LHESCALEARR:
         histogram_name_rwgt = "{}_rwgt{}".format(lheScaleHistName, tH_idx)
@@ -537,6 +540,8 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   indices = {}
   lhe_set = ''
   lhe_set_tried = False
+  nof_reweighting_weights = 0
+  reweighting_tried = not is_rwgt
   for entry in entries_valid:
     index_entry = {
       HISTOGRAM_COUNT_KEY : {},
@@ -588,6 +593,14 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
         ))
       index_entry[TREE_COUNT_KEY] = tree.GetEntries()
       index_entry[BRANCH_NAMES_KEY] = [ branch.GetName() for branch in tree.GetListOfBranches() ]
+
+      if not reweighting_tried:
+        if BRANCH_NLHEREWEIGHTINGWEIGHT in index_entry[BRANCH_NAMES_KEY]:
+          nof_reweighting_weights_br = array.array('I', [0])
+          tree.SetBranchAddress(BRANCH_NLHEREWEIGHTINGWEIGHT, nof_reweighting_weights_br)
+          tree.GetEntry(0)
+          nof_reweighting_weights = nof_reweighting_weights_br[0]
+        reweighting_tried = True
 
       if check_every_event:
         logging.info("Inspecting file {path} for corruption".format(path = subentry_file.name))
@@ -699,6 +712,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
     meta_dict[key]['missing_from_superset']           = missing_from_superset
     meta_dict[key]['histogram_names']                 = histogram_names
     meta_dict[key]['LHE_set']                         = lhe_set
+    meta_dict[key]['nof_reweighting']                 = nof_reweighting_weights
   meta_dict[key]['paths'].append(
     PathEntry(path_obj.name, indices, histogram_names)
   )
@@ -1121,6 +1135,7 @@ if __name__ == '__main__':
           triggers                        = meta_dict[key]['triggers'],
           has_LHE                         = meta_dict[key]['has_LHE'],
           LHE_set                         = meta_dict[key]['LHE_set'],
+          nof_reweighting                 = meta_dict[key]['nof_reweighting'],
           missing_from_superset           = missing_branches_template_filled,
           missing_hlt_paths               = missing_hlt_paths_filled,
           hlt_paths                       = hlt_paths_filled,
