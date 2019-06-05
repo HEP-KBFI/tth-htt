@@ -641,9 +641,8 @@ int main(int argc, char* argv[])
   std::vector<std::string> paramStr = { default_cat_str };
   if(isMC_tH)
   {
-    const std::vector<edm::ParameterSet> tHweights_cfg = cfg_analyze.getParameterSetVector("tHweights_cfg");
     const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
-    eventInfo.loadWeight_tH(tHweights_cfg, tHweights);
+    eventInfo.loadWeight_tH(tHweights);
     paramStr = eventInfo.getWeight_tH_str();
   }
 

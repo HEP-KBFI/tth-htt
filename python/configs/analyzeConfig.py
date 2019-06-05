@@ -646,11 +646,14 @@ class analyzeConfig(object):
                 raise RuntimeError("Unexpected category detected: %s" % sample_info['sample_category'])
 
               # record the weight for the default case (corresponds to no reweighting weight, i.e. idx of -1)
-              xsec_weight_default = float(getattr(find_tHweight(tHweights, -1), xsec_weight_str).configValue())
+              tHweight_default = find_tHweight(tHweights, -1)
+              xsec_weight_default = float(getattr(tHweight_default, xsec_weight_str).configValue())
               tH_weights = [
                 cms.PSet(
                   idx    = cms.int32(-1),
                   weight = cms.double(xsec_weight_default),
+                  kt     = tHweight_default.kt,
+                  kv     = tHweight_default.kv,
                 )
               ]
 
@@ -665,7 +668,8 @@ class analyzeConfig(object):
                   continue
 
                 nof_events_rwgt = sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]
-                xsec_weight = float(getattr(find_tHweight(tHweights, idx), xsec_weight_str).configValue())
+                tHweight = find_tHweight(tHweights, idx)
+                xsec_weight = float(getattr(tHweight, xsec_weight_str).configValue())
                 final_reweighting = float(nof_events) / nof_events_rwgt * xsec_weight
                 logging.info(
                   "Process {}, weight index {}: the default # events is {}, actual # events {} and the XS weight is {:.6f} "
@@ -677,6 +681,8 @@ class analyzeConfig(object):
                   cms.PSet(
                     idx    = cms.int32(idx),
                     weight = cms.double(final_reweighting),
+                    kt     = tHweight.kt,
+                    kv     = tHweight.kv,
                   )
                 )
               jobOptions['tHweights'] = tH_weights

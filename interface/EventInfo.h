@@ -40,8 +40,7 @@ public:
   genWeight_tH(const std::string & name) const;
 
   void
-  loadWeight_tH(const std::vector<edm::ParameterSet> & cfg_main,
-                const std::vector<edm::ParameterSet> & cfg_choice);
+  loadWeight_tH(const std::vector<edm::ParameterSet> & cfg);
 
   std::vector<std::string>
   getWeight_tH_str() const;

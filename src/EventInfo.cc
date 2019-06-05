@@ -112,24 +112,15 @@ EventInfo::genWeight_tH(const std::string & name) const
 }
 
 void
-EventInfo::loadWeight_tH(const std::vector<edm::ParameterSet> & cfg_main,
-                         const std::vector<edm::ParameterSet> & cfg_choice)
+EventInfo::loadWeight_tH(const std::vector<edm::ParameterSet> & cfg)
 {
-  std::map<int, double> choice_map;
-  for(const edm::ParameterSet & cfg_choice_entry: cfg_choice)
-  {
-    const int idx = cfg_choice_entry.getParameter<int>("idx");
-    const double weight = cfg_choice_entry.getParameter<double>("weight");
-    assert(! choice_map.count(idx));
-    choice_map[idx] = weight;
-  }
-
   std::map<std::string, int> main_map;
-  for(const edm::ParameterSet & cfg_main_entry: cfg_main)
+  for(const edm::ParameterSet & cfg_entry: cfg)
   {
-    const double kt = cfg_main_entry.getParameter<double>("kt");
-    const double kv = cfg_main_entry.getParameter<double>("kv");
-    const int idx = cfg_main_entry.getParameter<int>("idx");
+    const double weight = cfg_entry.getParameter<double>("weight");
+    const double kt = cfg_entry.getParameter<double>("kt");
+    const double kv = cfg_entry.getParameter<double>("kv");
+    const int idx = cfg_entry.getParameter<int>("idx");
     const std::string name = get_tH_weight_str(kt, kv);
 
     // make sure that we can recover the paramters encoded by the string
@@ -138,17 +129,12 @@ EventInfo::loadWeight_tH(const std::vector<edm::ParameterSet> & cfg_main,
     assert(kt_kv.second == kv);
 
     assert(! tH_sf.count(name));
-    if(choice_map.count(idx))
-    {
-      tH_sf[name] = std::pair<int, double>(idx, choice_map.at(idx));
-      std::cout
-        << "Loaded weight '" << name << "': kt = " << kt << " & kv = " << kv
-        << " -> weight = " << choice_map.at(idx) <<" @ idx = " << idx << '\n'
-      ;
-    }
+    tH_sf[name] = std::pair<int, double>(idx, weight);
+    std::cout
+      << "Loaded weight '" << name << "': kt = " << kt << " & kv = " << kv
+      << " -> weight = " << weight <<" @ idx = " << idx << '\n'
+    ;
   }
-
-  assert(tH_sf.size() == choice_map.size());
 }
 
 std::vector<std::string>
