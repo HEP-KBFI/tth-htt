@@ -304,7 +304,10 @@ int main(int argc, char* argv[])
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
-  bool isSignal = ( process_string == "signal" ) ? true : false;
+  const bool isMC_tHq = process_string == "tHq";
+  const bool isMC_tHW = process_string == "tHW";
+  const bool isMC_tH = isMC_tHq || isMC_tHW;
+  const bool isSignal = process_string == "signal";
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
@@ -562,6 +565,12 @@ int main(int argc, char* argv[])
     inputTree->registerReader(lheInfoReader);
   }
 
+  if(isMC_tH)
+  {
+    const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+    eventInfo.loadWeight_tH(tHweights);
+  }
+
   ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_string, 
     Form("jetToTauFakeRate_%s/electrons", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
   selElectronHistManager.bookHistograms(fs);
@@ -726,7 +735,6 @@ int main(int argc, char* argv[])
     }
 
     double evtWeight_inclusive = 1.;
-    std::map<std::string, double> param_weight;
     if(isMC)
     {
       if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
@@ -735,9 +743,9 @@ int main(int argc, char* argv[])
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      //param_weight = eventInfo.genWeight_tH();
-      evtWeight_inclusive *= param_weight["kt_1p0_kv_1p0"];
       evtWeight_inclusive *= lumiScale;
+      evtWeight_inclusive *= eventInfo.genWeight_tH();
+
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
       {

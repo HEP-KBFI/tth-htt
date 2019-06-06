@@ -451,6 +451,9 @@ main(int argc,
   const edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_LeptonFakeRate");
   const std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
   const std::string process_string = cfg_analyze.getParameter<std::string>("process");
+  const bool isMC_tHq = process_string == "tHq";
+  const bool isMC_tHW = process_string == "tHW";
+  const bool isMC_tH = isMC_tHq || isMC_tHW;
   const bool isSignal = process_string == "signal" ? true : false;
 
   const std::string era_string = cfg_analyze.getParameter<std::string>("era");
@@ -738,6 +741,12 @@ main(int argc,
     inputTree->registerReader(lheInfoReader);
   }
 
+  if(isMC_tH)
+  {
+    const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+    eventInfo.loadWeight_tH(tHweights);
+  }
+
   const auto get_num_den_hist_managers =
     [&process_string, isMC, &era_string, &central_or_shift](const std::string & dir,
                                                             int lepton_type,
@@ -1005,7 +1014,6 @@ main(int argc,
   
 //--- fill generator level histograms (before cuts)
     double evtWeight_inclusive = 1.;
-    std::map<std::string, double> param_weight;
     if(isMC)
     {
       if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
@@ -1014,9 +1022,9 @@ main(int argc,
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      //param_weight = eventInfo.genWeight_tH();
-      evtWeight_inclusive *= param_weight["kt_1p0_kv_1p0"];
       evtWeight_inclusive *= lumiScale;
+      evtWeight_inclusive *= eventInfo.genWeight_tH();
+
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
       {
