@@ -1148,19 +1148,6 @@ meta_dictionary["/DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIS
   ("comment",               "status: VALID; size: 169.84GB; nevents: 4.20M; release: 9_4_9; last modified: 2018-12-26 10:08:24"),
 ])
 
-meta_dictionary["/DYJetsToLL_M-50_HT-70to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
-  ("sample_category",       "EWK"),
-  ("process_name_specific", "DYJetsToLL_M50_HT70to100"),
-  ("nof_db_events",         9691660),
-  ("nof_db_files",          69),
-  ("fsize_db",              329006562106),
-  ("xsection",              158.49),
-  ("use_it",                False),
-  ("genWeight",             True),
-  ("comment",               "status: VALID; size: 329.01GB; nevents: 9.69M; release: 9_4_9; last modified: 2018-11-18 06:32:44"),
-])
-
 meta_dictionary["/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
   ("crab_string",           ""),
   ("sample_category",       "EWK"),
