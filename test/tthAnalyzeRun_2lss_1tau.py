@@ -13,7 +13,7 @@ import getpass
 # E.g. to run: ./tthAnalyzeRun_2lss_1tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices         = [
-  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
+  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM', 'coupling_study'
 ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
@@ -72,15 +72,13 @@ gen_matching_by_index = (gen_matching == 'by_index')
 MEMbranch                = ''
 lepton_charge_selections = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
 chargeSumSelections      = [ "OS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
+hadTau_selection         = "dR03mvaLoose"
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-  hadTau_selection = "dR03mvaLoose"
-
 elif mode == "addMEM":
   samples = load_samples(era, suffix = "addMEM_preselected_2lss1tau" if use_preselected else "addMEM_2lss1tau")
-  hadTau_selection = "dR03mvaLoose"
-  MEMbranch        = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
+  MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
 
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
@@ -93,7 +91,6 @@ elif mode == "forBDTtraining_beforeAddMEM":
 elif mode == "forBDTtraining_afterAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
-
   samples = load_samples(era, suffix = "BDT_addMEM_2lss1tau")
   hadTau_selection         = "dR03mvaLoose"
   hadTau_selection_relaxed = "dR03mvaLoose"
@@ -103,20 +100,15 @@ elif mode.startswith("sync"):
   if mode == "sync_wMEM":
     if use_preselected:
       raise ValueError("Makes no sense to use preselected samples in sync")
-
     samples = load_samples(era, suffix = "addMEM_sync" if use_nonnominal else "addMEM_sync_nom")
-
   elif mode == "sync":
     if use_preselected:
       raise ValueError("Makes no sense to use preselected samples in sync")
-
     samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
-
   else:
     raise ValueError("Invalid mode: %s" % mode)
-
-  hadTau_selection = "dR03mvaLoose"
-
+elif mode == "coupling_study":
+  samples = load_samples(era, suffix = "ctcvcp")
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
@@ -199,6 +191,7 @@ if __name__ == '__main__':
     rle_select                = rle_select,
     use_nonnominal            = use_nonnominal,
     hlt_filter                = hlt_filter,
+    coupling_study            = mode == "coupling_study",
     use_home                  = use_home,
   )
 

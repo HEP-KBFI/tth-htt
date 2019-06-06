@@ -12,7 +12,7 @@ import getpass
 
 # E.g.: ./tthAnalyzeRun_1l_1tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'coupling_study' ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -64,23 +64,20 @@ do_sync = mode.startswith('sync')
 lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
+hadTau_selection = "dR03mvaMedium"
 
 if mode == "default":
   samples = load_samples(era)
-
-  hadTau_selection = "dR03mvaMedium"
-
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT")
   # CV: check if BDT training statistics is sufficient with nominal tau ID working point
   #     before relaxing tau ID working point
   hadTau_selection         = "dR03mvaLoose"
   hadTau_selection_relaxed = "dR03mvaLoose"
-
 elif mode == "sync":
   samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
-  hadTau_selection = "dR03mvaMedium"
-
+elif mode == "coupling_study":
+  samples = load_samples(era, suffix = "ctcvcp")
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
@@ -148,6 +145,7 @@ if __name__ == '__main__':
     rle_select                            = rle_select,
     use_nonnominal                        = use_nonnominal,
     hlt_filter                            = hlt_filter,
+    coupling_study                        = mode == "coupling_study",
     use_home                              = use_home,
   )
 

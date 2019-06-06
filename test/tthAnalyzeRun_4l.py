@@ -12,7 +12,7 @@ import getpass
 
 # E.g.: ./tthAnalyzeRun_4l.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'sync_wMEM' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'coupling_study' ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -70,10 +70,10 @@ if mode == "default":
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT")
   chargeSumSelections = [ "OS" ]
-elif mode == "sync_wMEM":
-  samples = load_samples(era, suffix = 'addMEM_sync' if use_nonnominal else 'addMEM_sync_nom')
 elif mode == "sync":
   samples = load_samples(era, suffix = 'sync' if use_nonnominal else 'sync_nom')
+elif mode == "coupling_study":
+  samples = load_samples(era, suffix = "ctcvcp")
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
@@ -123,6 +123,7 @@ if __name__ == '__main__':
     rle_select                            = rle_select,
     use_nonnominal                        = use_nonnominal,
     hlt_filter                            = hlt_filter,
+    coupling_study                        = mode == "coupling_study",
     use_home                              = use_home,
   )
 

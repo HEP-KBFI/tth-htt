@@ -13,7 +13,7 @@ import getpass
 # E.g.: ./tthAnalyzeRun_3l_1tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices         = [
-  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
+  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM', 'coupling_study'
 ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
@@ -71,14 +71,13 @@ gen_matching_by_index = (gen_matching == 'by_index')
 
 MEMbranch           = ''
 chargeSumSelections = [ "OS" ] if "forBDTtraining" in mode else [ "OS", "SS" ]
+hadTau_selection    = "dR03mvaLoose"
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-  hadTau_selection = "dR03mvaLoose"
 
 elif mode == "addMEM":
   samples = load_samples(era, suffix = "addMEM_preselected_3l1tau" if use_preselected else "addMEM_3l1tau")
-  hadTau_selection = "dR03mvaLoose"
   MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
 
 elif mode == "forBDTtraining_beforeAddMEM":
@@ -107,8 +106,8 @@ elif mode.startswith("sync"):
     samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
   else:
     raise ValueError("Invalid mode: %s" % mode)
-
-  hadTau_selection = "dR03mvaLoose"
+elif mode == "coupling_study":
+  samples = load_samples(era, suffix = "ctcvcp")
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
@@ -173,6 +172,7 @@ if __name__ == '__main__':
     rle_select                            = rle_select,
     use_nonnominal                        = use_nonnominal,
     hlt_filter                            = hlt_filter,
+    coupling_study                        = mode == "coupling_study",
     use_home                              = use_home,
   )
 

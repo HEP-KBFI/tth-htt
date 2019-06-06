@@ -103,6 +103,7 @@ class analyzeConfig(object):
           executable_make_plots           = "makePlots",
           executable_make_plots_mcClosure = "makePlots",
           do_sync                         = False,
+          coupling_study                  = False,
           verbose                         = False,
           dry_run                         = False,
           use_home                        = True,
@@ -230,6 +231,7 @@ class analyzeConfig(object):
         self.triggers = triggers
         self.triggerTable = Triggers(self.era)
         self.do_sync = do_sync
+        self.coupling_study = coupling_study
 
         samples_to_stitch = []
         if self.era == '2016':
@@ -623,11 +625,14 @@ class analyzeConfig(object):
           assert(nof_events_idx >= 0)
           nof_events = nof_events = sample_info["nof_events"][nof_events_label][nof_events_idx]
           assert(nof_events > 0)
-          if sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal' ]:
-            nof_reweighting = sample_info['nof_reweighting']
 
-            #TODO maybe pick only kv = 1.0 when running on ttH signal MC?
-            missing_reweighting =  set(thIdxs) - set(range(-1, nof_reweighting))
+          nof_reweighting = sample_info['nof_reweighting']
+          if sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal' ] and nof_reweighting > 0:
+            thIdxs_to_consider = thIdxs if self.coupling_study else [
+              entry.idx.value() for entry in tHweights if entry.kt.value() == 1.0 and entry.kv.value() == 1.0
+            ]
+
+            missing_reweighting =  set(thIdxs_to_consider) - set(range(-1, nof_reweighting))
 
             if missing_reweighting:
               logging.warning("Could not find the following weights for {}: {}".format(
@@ -657,7 +662,7 @@ class analyzeConfig(object):
                 )
               ]
 
-              for idx in thIdxs:
+              for idx in thIdxs_to_consider:
                 if idx < 0:
                   # we've already recorded the weight for the default case
                   logging.info(
