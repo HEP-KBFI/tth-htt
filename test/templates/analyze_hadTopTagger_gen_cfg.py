@@ -108,7 +108,6 @@ process.analyze_hadTopTagger_gen = cms.PSet(
         branchTypeXaxis = cms.string(''),
         branchTypeYaxis = cms.string(''),
     ),
-    tHweights_cfg = cms.VPSet(),
     tHweights = cms.VPSet(),
 )
 

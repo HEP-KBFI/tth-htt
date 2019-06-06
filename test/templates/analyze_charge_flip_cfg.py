@@ -76,6 +76,5 @@ process.analyze_charge_flip = cms.PSet(
         branchTypeXaxis = cms.string(''),
         branchTypeYaxis = cms.string(''),
     ),
-    tHweights_cfg = cms.VPSet(),
     tHweights = cms.VPSet(),
 )

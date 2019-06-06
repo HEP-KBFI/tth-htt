@@ -3,7 +3,6 @@ import os
 
 from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_cfi import *
-from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights
 
 process = cms.PSet()
 
@@ -133,6 +132,5 @@ process.analyze_1l_1tau = cms.PSet(
         branchTypeXaxis = cms.string(''),
         branchTypeYaxis = cms.string(''),
     ),
-    tHweights_cfg = tHweights,
     tHweights = cms.VPSet(),
 )
