@@ -710,12 +710,14 @@ int main(int argc, char* argv[])
 
       for(const std::string & evt_cat_str: evt_cat_strs)
       {
-        std::string process_and_genMatchName = process_and_genMatch;
-        if(isMC_tH)
-        {
-          const std::string process_string_new = process_string + "_" + evt_cat_str + "_";
-          boost::replace_all(process_and_genMatchName, process_string, process_string_new);
-        }
+        const std::string process_string_new = evt_cat_str == default_cat_str ?
+          process_string + "_" :
+          process_string + "_" + evt_cat_str + "_"
+        ;
+        const std::string process_and_genMatchName = boost::replace_all_copy(
+          process_and_genMatch, process_string, process_string_new
+        );
+
         selHistManager->evt_[evt_cat_str] = new EvtHistManager_1l_2tau(makeHistManager_cfg(
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
         ));
@@ -730,20 +732,15 @@ int main(int argc, char* argv[])
 
           if ( ( isMC_tH || isMC_VH ) && ( decayMode_evt == "hzg" || decayMode_evt == "hmm" ) ) continue;
           std::string decayMode_and_genMatch;
-          std::string decayMode_and_genMatch_replace;
           if ( isMC_tH || isMC_VH ) {
             decayMode_and_genMatch = process_string;
             decayMode_and_genMatch += "_";
-            decayMode_and_genMatch_replace = process_string;
-            decayMode_and_genMatch_replace += "_";
           }
           else
           {
             decayMode_and_genMatch = "ttH_";
-            decayMode_and_genMatch_replace = "ttH_";
           }
           decayMode_and_genMatch += decayMode_evt;
-          decayMode_and_genMatch_replace += decayMode_evt;
 
           if(apply_leptonGenMatching)                            decayMode_and_genMatch += leptonGenMatch_definition -> name_;
           if(apply_leptonGenMatching && apply_hadTauGenMatching) decayMode_and_genMatch += "&";
@@ -751,17 +748,16 @@ int main(int argc, char* argv[])
 
           for(const std::string & evt_cat_str: evt_cat_strs)
           {
-            std::string decayMode_and_genMatchName = decayMode_and_genMatch;
-            if(isMC_tH)
-            {
-              const std::string decayMode_and_genMatch_replace_new = decayMode_and_genMatch_replace + "_" + evt_cat_str + "_";
-              boost::replace_all(decayMode_and_genMatchName, decayMode_and_genMatch_replace, decayMode_and_genMatch_replace_new);
-            }
+            const std::string process_string_new = evt_cat_str == default_cat_str ?
+              process_string:
+              process_string + "_" + evt_cat_str
+            ;
+            const std::string decayMode_and_genMatchName = boost::replace_all_copy(
+              decayMode_and_genMatch, process_string, process_string_new
+            );
+
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_1l_2tau(makeHistManager_cfg(
-            decayMode_and_genMatchName,
-            Form("%s/sel/evt", histogramDir.data()),
-            era_string,
-	          central_or_shift
+              decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
             ));
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
           }
