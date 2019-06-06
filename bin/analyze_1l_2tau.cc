@@ -638,13 +638,13 @@ int main(int argc, char* argv[])
   };
 
   const std::string default_cat_str = "default";
-  std::vector<std::string> paramStr = { default_cat_str };
+  std::vector<std::string> evt_cat_strs = { default_cat_str };
   if(isMC_tH)
   {
     const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
     eventInfo.loadWeight_tH(tHweights);
-    const std::vector<std::string> paramStr_tH = eventInfo.getWeight_tH_str();
-    paramStr.insert(paramStr.end(), paramStr_tH.begin(), paramStr_tH.end());
+    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
+    evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
   }
 
   typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
@@ -708,13 +708,18 @@ int main(int argc, char* argv[])
         Form("%s/sel/mvaInputs_HTT_sum", histogramDir.data()), era_string, central_or_shift));
       selHistManager->mvaInputVariables_HTT_sum_->bookHistograms(fs, mvaInputVariables_HTT_sumSort);
 
-      for(const std::string & param: paramStr)
+      for(const std::string & evt_cat_str: evt_cat_strs)
       {
         std::string process_and_genMatchName = process_and_genMatch;
-        if ( isMC_tH ) boost::replace_all(process_and_genMatchName, process_string, process_string + std::string("_") + param + std::string("_"));
-        selHistManager->evt_[param] = new EvtHistManager_1l_2tau(makeHistManager_cfg(process_and_genMatchName,
-         Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
-        selHistManager->evt_[param]->bookHistograms(fs);
+        if(isMC_tH)
+        {
+          const std::string process_string_new = process_string + "_" + evt_cat_str + "_";
+          boost::replace_all(process_and_genMatchName, process_string, process_string_new);
+        }
+        selHistManager->evt_[evt_cat_str] = new EvtHistManager_1l_2tau(makeHistManager_cfg(
+          process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+        ));
+        selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
 
       const vstring decayModes_evt = eventInfo.getDecayModes();
@@ -744,17 +749,21 @@ int main(int argc, char* argv[])
           if(apply_leptonGenMatching && apply_hadTauGenMatching) decayMode_and_genMatch += "&";
           if(apply_hadTauGenMatching)                            decayMode_and_genMatch += hadTauGenMatch_definition -> name_;
 
-          for(const std::string & param: paramStr)
+          for(const std::string & evt_cat_str: evt_cat_strs)
           {
             std::string decayMode_and_genMatchName = decayMode_and_genMatch;
-            if ( isMC_tH ) boost::replace_all(decayMode_and_genMatchName, decayMode_and_genMatch_replace, decayMode_and_genMatch_replace + std::string("_") + param + std::string("_"));
-            selHistManager -> evt_in_decayModes_[param][decayMode_evt] = new EvtHistManager_1l_2tau(makeHistManager_cfg(
+            if(isMC_tH)
+            {
+              const std::string decayMode_and_genMatch_replace_new = decayMode_and_genMatch_replace + "_" + evt_cat_str + "_";
+              boost::replace_all(decayMode_and_genMatchName, decayMode_and_genMatch_replace, decayMode_and_genMatch_replace_new);
+            }
+            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_1l_2tau(makeHistManager_cfg(
             decayMode_and_genMatchName,
             Form("%s/sel/evt", histogramDir.data()),
             era_string,
 	          central_or_shift
             ));
-            selHistManager -> evt_in_decayModes_[param][decayMode_evt] -> bookHistograms(fs);
+            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
           }
 
         }
@@ -1826,16 +1835,16 @@ int main(int argc, char* argv[])
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_HTT_sum_->fillHistograms(mvaInputsHTT_sum, evtWeight);
 
-    std::map<std::string, double> paramMap;
-    for(const std::string & param: paramStr)
+    std::map<std::string, double> tH_weight_map;
+    for(const std::string & evt_cat_str: evt_cat_strs)
     {
-      const std::string param_query = param == default_cat_str ? get_tH_SM_str() : param;
-      paramMap[param] = isMC_tH ?
-        evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(param_query):
+      const std::string evt_cat_str_query = evt_cat_str == default_cat_str ? get_tH_SM_str() : evt_cat_str;
+      tH_weight_map[evt_cat_str] = isMC_tH ?
+        evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(evt_cat_str_query):
         evtWeight
       ;
     }
-    for(const auto & kv: paramMap)
+    for(const auto & kv: tH_weight_map)
     {
       selHistManager->evt_[kv.first]->fillHistograms(
         selElectrons.size(),
@@ -1856,7 +1865,7 @@ int main(int argc, char* argv[])
       const std::string decayModeStr = eventInfo.getDecayModeString();
       if ( ( isMC_tH || isMC_VH ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
       if ( !decayModeStr.empty() ) {
-        for(const auto & kv: paramMap)
+        for(const auto & kv: tH_weight_map)
         {
           selHistManager->evt_in_decayModes_[kv.first][decayModeStr]->fillHistograms(
             selElectrons.size(),
