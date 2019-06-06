@@ -7,6 +7,7 @@ import array
 import itertools
 import copy
 import os
+import argparse
 
 def comp_weights_1(f, samples, samples_to_stitch, split_var, apply_sf = True):
   inclusive_samples  = samples_to_stitch['inclusive']['samples']
