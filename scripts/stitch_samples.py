@@ -1,21 +1,14 @@
 #!/usr/bin/env python
 
-do_wjets = False
-
-from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2017 as samples_to_stitch
-
-if do_wjets:
-  from hhAnalysis.multilepton.samples.hhAnalyzeSamples_2017_wjets import samples_2017 as samples
-else:
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import SmartFormatter, load_samples
 
 import array
 import itertools
 import copy
+import os
 
-def comp_weights_1(f, samples_to_stitch, split_var, apply_sf = True):
+def comp_weights_1(f, samples, samples_to_stitch, split_var, apply_sf = True):
   inclusive_samples  = samples_to_stitch['inclusive']['samples']
   inclusive_binning  = samples_to_stitch['inclusive'][split_var]
 
@@ -174,7 +167,7 @@ def comp_weights_1(f, samples_to_stitch, split_var, apply_sf = True):
 
           histogram.Write()
 
-def comp_weights_2(f, samples_to_stitch, split_var_1, split_var_2, apply_sf = True):
+def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, apply_sf = True):
   inclusive_samples   = samples_to_stitch['inclusive']['samples']
   inclusive_binning_1 = samples_to_stitch['inclusive'][split_var_1]
   inclusive_binning_2 = samples_to_stitch['inclusive'][split_var_2]
@@ -492,7 +485,7 @@ def comp_weights_2(f, samples_to_stitch, split_var_1, split_var_2, apply_sf = Tr
 
           histogram.Write()
 
-def comp_weights_2_wo_inclusive(f, samples_to_stitch, split_var_1, split_var_2):
+def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, split_var_2):
   inclusive_samples   = samples_to_stitch['inclusive']['samples']
   inclusive_binning_1 = samples_to_stitch['inclusive'][split_var_1]
   inclusive_binning_2 = samples_to_stitch['inclusive'][split_var_2]
@@ -735,17 +728,57 @@ def comp_weights_2_wo_inclusive(f, samples_to_stitch, split_var_1, split_var_2):
 
           histogram.Write()
 
+parser = argparse.ArgumentParser(
+    formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35)
+)
+parser.add_argument('-e', '--era',
+  type = str, dest = 'era', metavar = 'era', required = True, choices = [ '2016', '2017', '2018' ],
+  help = 'R|Era',
+)
+parser.add_argument('-o', '--output',
+  type = str, dest = 'output', metavar = 'path', required = False,
+  help = 'R|Output file name',
+)
+parser.add_argument('-w', '--do-wjet-parts',
+  dest = 'do_wjet_parts', action = 'store_true', default = False,
+  help = 'R|Enable verbose output',
+)
+args = parser.parse_args()
+
+era = args.era
+output = args.output
+do_wjet_parts = args.do_wjet_parts
+
+if not output:
+  output = os.path.join(
+    os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'HiggsToTauTau', 'data', 'stitched_weights_{}.root'.format(era)
+  )
+
+if era == '2016':
+  from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2016 as samples_to_stitch
+elif era == '2017':
+  from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2017 as samples_to_stitch
+elif era == '2018':
+  from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2018 as samples_to_stitch
+else:
+  raise RuntimeError("Invalid era: %s" % era)
+
+if do_wjet_parts:
+  samples = load_samples(era, base = 'hh_multilepton', suffix = 'wjets')
+else:
+  samples = load_samples(era)
+
 apply_sf = True
-fp = ROOT.TFile.Open('data/stitched_weights_2017.root', 'recreate')
+fp = ROOT.TFile.Open(output, 'recreate')
 for sample_to_stitch in samples_to_stitch:
   binning_vars = [ var for var in sample_to_stitch if var != 'inclusive' ]
   if len(binning_vars) == 1:
-    comp_weights_1(fp, sample_to_stitch, binning_vars[0], apply_sf)
+    comp_weights_1(fp, samples, sample_to_stitch, binning_vars[0], apply_sf)
   elif len(binning_vars) == 2:
     for binning_var in binning_vars:
-      comp_weights_1(fp, sample_to_stitch, binning_var, apply_sf)
-    comp_weights_2(fp, sample_to_stitch, binning_vars[0], binning_vars[1], apply_sf)
-    comp_weights_2_wo_inclusive(fp, sample_to_stitch, binning_vars[0], binning_vars[1])
+      comp_weights_1(fp, samples, sample_to_stitch, binning_var, apply_sf)
+    comp_weights_2(fp, samples, sample_to_stitch, binning_vars[0], binning_vars[1], apply_sf)
+    comp_weights_2_wo_inclusive(fp, samples, sample_to_stitch, binning_vars[0], binning_vars[1])
   else:
     raise ValueError('More than 2 variables used for the binning: %s' % ', '.join(binning_vars))
 fp.Close()
