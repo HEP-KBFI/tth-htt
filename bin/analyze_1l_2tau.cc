@@ -761,7 +761,6 @@ int main(int argc, char* argv[])
             ));
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
           }
-
         }
       }
       vstring categories_evt = {
