@@ -1803,7 +1803,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     if      ( sumLeptonCharge < 0 ) category += "_neg";
     else if ( sumLeptonCharge > 0 ) category += "_pos";
     }
-    std::map<std::string, double> param_weight = {};//eventInfo.genWeight_tH();
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);

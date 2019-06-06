@@ -1726,7 +1726,6 @@ int main(int argc, char* argv[])
     const double mvaOutput_plainKin_1B_VT = mva_plainKin_1B_VT(mvaInputVariables_plainKin_1B);
 
 //--- fill histograms with events passing final selection
-    std::map<std::string, double> param_weight = {};//eventInfo.genWeight_tH();
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
