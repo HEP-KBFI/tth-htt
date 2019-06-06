@@ -99,7 +99,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
+#include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tH_weight_str()
 
+#include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <iostream> // std::cerr, std::fixed
@@ -666,15 +668,25 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_2lss_;
     MVAInputVarHistManager* mvaInputVariables_2lss_1tau_;
-    EvtHistManager_2lss_1tau* evt_;
-    std::map<std::string, EvtHistManager_2lss_1tau*> evt_in_decayModes_;
+    std::map<std::string, EvtHistManager_2lss_1tau*> evt_;
+    std::map<std::string, std::map<std::string, EvtHistManager_2lss_1tau*>> evt_in_decayModes_;
     std::map<std::string, EvtHistManager_2lss_1tau*> evt_in_categories_;
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
+
+  const std::string default_cat_str = "default";
+  std::vector<std::string> evt_cat_strs = { default_cat_str };
+  if(isMC_tH)
+  {
+    const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+    eventInfo.loadWeight_tH(tHweights);
+    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
+    evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
+  }
+
   typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
   std::map<int, int_to_selHistManagerMap> selHistManagers;
-
   for ( std::vector<leptonGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
         leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {
     for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
@@ -731,9 +743,22 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       selHistManager->mvaInputVariables_2lss_->bookHistograms(fs, mvaInputVariables_2lss);
       selHistManager->mvaInputVariables_2lss_1tau_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/mvaInputs_2lss_1tau", histogramDir.data()), era_string, central_or_shift));
-      selHistManager->evt_ = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
-      selHistManager->evt_->bookHistograms(fs);
+
+      for(const std::string & evt_cat_str: evt_cat_strs)
+      {
+        const std::string process_string_new = evt_cat_str == default_cat_str ?
+          process_string + "_" :
+          process_string + "_" + evt_cat_str + "_"
+        ;
+        const std::string process_and_genMatchName = boost::replace_all_copy(
+          process_and_genMatch, process_string, process_string_new
+        );
+
+        selHistManager->evt_[evt_cat_str] = new EvtHistManager_2lss_1tau(makeHistManager_cfg(
+          process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+        ));
+        selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
+      }
 
       const vstring decayModes_evt = eventInfo.getDecayModes();
       if(isSignal)
@@ -753,13 +778,21 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           if(apply_leptonGenMatching && apply_hadTauGenMatching) decayMode_and_genMatch += "&";
           if(apply_hadTauGenMatching)                            decayMode_and_genMatch += hadTauGenMatch_definition -> name_;
 
-          selHistManager -> evt_in_decayModes_[decayMode_evt] = new EvtHistManager_2lss_1tau(makeHistManager_cfg(
-            decayMode_and_genMatch,
-            Form("%s/sel/evt", histogramDir.data()),
-            era_string,
-            central_or_shift
-          ));
-          selHistManager -> evt_in_decayModes_[decayMode_evt] -> bookHistograms(fs);
+          for(const std::string & evt_cat_str: evt_cat_strs)
+          {
+            const std::string process_string_new = evt_cat_str == default_cat_str ?
+              process_string:
+              process_string + "_" + evt_cat_str
+            ;
+            const std::string decayMode_and_genMatchName = boost::replace_all_copy(
+              decayMode_and_genMatch, process_string, process_string_new
+            );
+
+            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_2lss_1tau(makeHistManager_cfg(
+              decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+            ));
+            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
+          }
         }
       }
       edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
@@ -947,6 +980,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
 
     double evtWeight_inclusive = 1.;
+    double evtWeight_tH_nom = 1.;
     if(isMC)
     {
       if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
@@ -955,7 +989,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      //evtWeight_inclusive *= eventInfo.genWeight_tH();
+
+      evtWeight_tH_nom = eventInfo.genWeight_tH();
+      evtWeight_inclusive *= evtWeight_tH_nom;
+
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
@@ -2039,54 +2076,67 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputVariables_HTT_SUM, evtWeight);
-    double evtWeight0 = evtWeight;
-    if ( isMC_tH) evtWeight0 *= param_weight["kt_1p0_kv_1p0"];
-    selHistManager->evt_->fillHistograms(
-      selElectrons.size(),
-      selMuons.size(),
-      selHadTaus.size(),
-      selJets.size(),
-      selBJets_loose.size(),
-      selBJets_medium.size(),
-      evtWeight0,
-      //
-      mvaOutput_2lss_ttV,
-      mvaOutput_2lss_tt,
-      mvaOutput_2lss_1tau_plainKin_tt,
-      mvaOutput_2lss_1tau_plainKin_ttV,
-      mvaOutput_2lss_1tau_plainKin_1B_M,
-      mvaOutput_2lss_1tau_plainKin_SUM_M,
-      mvaOutput_2lss_1tau_HTT_SUM_M,
-      mvaOutput_2lss_1tau_HTTMEM_SUM_M,
-      mTauTauVis1_sel,
-      mTauTauVis2_sel,
-      memOutput_LR
-    );
+
+    std::map<std::string, double> tH_weight_map;
+    for(const std::string & evt_cat_str: evt_cat_strs)
+    {
+      const std::string evt_cat_str_query = evt_cat_str == default_cat_str ? get_tH_SM_str() : evt_cat_str;
+      tH_weight_map[evt_cat_str] = isMC_tH ?
+        evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(evt_cat_str_query):
+        evtWeight
+      ;
+    }
+    for(const auto & kv: tH_weight_map)
+    {
+      selHistManager->evt_[kv.first]->fillHistograms(
+        selElectrons.size(),
+        selMuons.size(),
+        selHadTaus.size(),
+        selJets.size(),
+        selBJets_loose.size(),
+        selBJets_medium.size(),
+        kv.second,
+        mvaOutput_2lss_ttV,
+        mvaOutput_2lss_tt,
+        mvaOutput_2lss_1tau_plainKin_tt,
+        mvaOutput_2lss_1tau_plainKin_ttV,
+        mvaOutput_2lss_1tau_plainKin_1B_M,
+        mvaOutput_2lss_1tau_plainKin_SUM_M,
+        mvaOutput_2lss_1tau_HTT_SUM_M,
+        mvaOutput_2lss_1tau_HTTMEM_SUM_M,
+        mTauTauVis1_sel,
+        mTauTauVis2_sel,
+        memOutput_LR
+      );
+    }
     if ( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
       if ( ( isMC_tH || isMC_VH ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
       if(! decayModeStr.empty())
       {
-        selHistManager->evt_in_decayModes_[decayModeStr]->fillHistograms(
-          selElectrons.size(),
-          selMuons.size(),
-          selHadTaus.size(),
-          selJets.size(),
-          selBJets_loose.size(),
-          selBJets_medium.size(),
-          evtWeight0,
-          mvaOutput_2lss_ttV,
-          mvaOutput_2lss_tt,
-          mvaOutput_2lss_1tau_plainKin_tt,
-          mvaOutput_2lss_1tau_plainKin_ttV,
-          mvaOutput_2lss_1tau_plainKin_1B_M,
-          mvaOutput_2lss_1tau_plainKin_SUM_M,
-          mvaOutput_2lss_1tau_HTT_SUM_M,
-          mvaOutput_2lss_1tau_HTTMEM_SUM_M,
-          mTauTauVis1_sel,
-          mTauTauVis2_sel,
-          memOutput_LR
-        );
+        for(const auto & kv: tH_weight_map)
+        {
+          selHistManager->evt_in_decayModes_[kv.first][decayModeStr]->fillHistograms(
+            selElectrons.size(),
+            selMuons.size(),
+            selHadTaus.size(),
+            selJets.size(),
+            selBJets_loose.size(),
+            selBJets_medium.size(),
+            kv.second,
+            mvaOutput_2lss_ttV,
+            mvaOutput_2lss_tt,
+            mvaOutput_2lss_1tau_plainKin_tt,
+            mvaOutput_2lss_1tau_plainKin_ttV,
+            mvaOutput_2lss_1tau_plainKin_1B_M,
+            mvaOutput_2lss_1tau_plainKin_SUM_M,
+            mvaOutput_2lss_1tau_HTT_SUM_M,
+            mvaOutput_2lss_1tau_HTTMEM_SUM_M,
+            mTauTauVis1_sel,
+            mTauTauVis2_sel,
+            memOutput_LR
+          );
+        }
       }
     }
     selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
@@ -2350,7 +2400,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       int idxLepton = leptonGenMatch_definition->idx_;
       int idxHadTau = hadTauGenMatch_definition->idx_;
 
-      const TH1* histogram_EventCounter = selHistManagers[idxLepton][idxHadTau]->evt_->getHistogram_EventCounter();
+      const TH1* histogram_EventCounter = selHistManagers[idxLepton][idxHadTau]->evt_[default_cat_str]->getHistogram_EventCounter();
       std::cout << " " << process_and_genMatch << " = " << histogram_EventCounter->GetEntries() << " (weighted = " << histogram_EventCounter->Integral() << ")" << std::endl;
     }
   }
