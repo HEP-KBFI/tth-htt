@@ -1,8 +1,9 @@
+import copy
 
 samples_to_stitch_DYJets_2017 = [
   {
     'inclusive' : {
-      'samples'   : [ 'DYJetsToLL_M-50_LO', 'DYJetsToLL_M-50_LO_ext1' ],
+      'samples'   : [ 'DYJetsToLL_M-50', 'DYJetsToLL_M-50_ext1' ],
       'LHE_Njets' : [ 0, 5 ],
       'LHE_HT'    : [ 0., 100000. ],
     },
@@ -13,6 +14,7 @@ samples_to_stitch_DYJets_2017 = [
       { 'value' : [ 4, 5 ], 'samples' : [ 'DY4JetsToLL_M-50'                          ] },
     ],
     'LHE_HT'    : [
+      { 'value' : [   70.,    100. ], 'samples' : [ 'DYJetsToLL_M50_HT70to100'                                    ] },
       { 'value' : [  100.,    200. ], 'samples' : [ 'DYJetsToLL_M50_HT100to200', 'DYJetsToLL_M50_HT100to200_ext1' ] },
       { 'value' : [  200.,    400. ], 'samples' : [ 'DYJetsToLL_M50_HT200to400', 'DYJetsToLL_M50_HT200to400_ext1' ] },
       { 'value' : [  400.,    600. ], 'samples' : [ 'DYJetsToLL_M50_HT400to600', 'DYJetsToLL_M50_HT400to600_ext1' ] },
@@ -24,15 +26,14 @@ samples_to_stitch_DYJets_2017 = [
   },
   {
     'inclusive' : {
-      'samples' : [ 'DYJetsToLL_M-10to50' ],
+      'samples' : [ 'DYJetsToLL_M-10to50', 'DYJetsToLL_M-10to50_ext1' ],
       'LHE_HT'  : [ 0., 100000. ]
     },
     'LHE_HT'    : [
-#      { 'value' : [  70.,    100. ], 'samples' : [ 'DYJetsToLL_M-4to50_HT-70to100',  'DYJetsToLL_M-4to50_HT-70to100_ext1'  ] }, # [*]
       { 'value' : [ 100.,    200. ], 'samples' : [ 'DYJetsToLL_M-4to50_HT-100to200', 'DYJetsToLL_M-4to50_HT-100to200_ext1' ] },
       { 'value' : [ 200.,    400. ], 'samples' : [ 'DYJetsToLL_M-4to50_HT-200to400', 'DYJetsToLL_M-4to50_HT-200to400_ext1' ] },
       { 'value' : [ 400.,    600. ], 'samples' : [ 'DYJetsToLL_M-4to50_HT-400to600', 'DYJetsToLL_M-4to50_HT-400to600_ext1' ] },
-      { 'value' : [ 600., 100000. ], 'samples' : [ 'DYJetsToLL_M-4to50_HT-600toInf',                                       ] },
+      { 'value' : [ 600., 100000. ], 'samples' : [ 'DYJetsToLL_M-4to50_HT-600toInf', 'DYJetsToLL_M-4to50_HT-600toInf_ext1' ] },
     ],
   }
 ]
@@ -40,7 +41,7 @@ samples_to_stitch_DYJets_2017 = [
 samples_to_stitch_WJets_2017 = [
   {
     'inclusive' : {
-      'samples'   : [ 'WJetsToLNu', 'WJetsToLNu_ext' ],
+      'samples'   : [ 'WJetsToLNu_madgraphMLM', 'WJetsToLNu_madgraphMLM_ext1' ],
       'LHE_Njets' : [ 0, 5 ],
       'LHE_HT'    : [ 0., 100000. ],
     },
@@ -51,6 +52,7 @@ samples_to_stitch_WJets_2017 = [
       { 'value' : [ 4, 5 ], 'samples' : [ 'W4JetsToLNu' ] },
     ],
     'LHE_HT'    : [
+      { 'value' : [   70.,    100. ], 'samples' : [ 'WJetsToLNu_HT70To100'    ] },
       { 'value' : [  100.,    200. ], 'samples' : [ 'WJetsToLNu_HT100To200'   ] },
       { 'value' : [  200.,    400. ], 'samples' : [ 'WJetsToLNu_HT200To400'   ] },
       { 'value' : [  400.,    600. ], 'samples' : [ 'WJetsToLNu_HT400To600'   ] },
@@ -60,51 +62,19 @@ samples_to_stitch_WJets_2017 = [
       { 'value' : [ 2500., 100000. ], 'samples' : [ 'WJetsToLNu_HT2500ToInf'  ] },
     ],
   },
-  {
-    'inclusive' : {
-      'samples'   : [ 'WJetsToLNu_part1', 'WJetsToLNu_ext_part1' ],
-      'LHE_Njets' : [ 0, 5 ],
-      'LHE_HT'    : [ 0., 100000. ],
-    },
-    'LHE_Njets' : [
-      { 'value' : [ 1, 2 ], 'samples' : [ 'W1JetsToLNu_part1' ] },
-      { 'value' : [ 2, 3 ], 'samples' : [ 'W2JetsToLNu_part1' ] },
-      { 'value' : [ 3, 4 ], 'samples' : [ 'W3JetsToLNu_part1' ] },
-      { 'value' : [ 4, 5 ], 'samples' : [ 'W4JetsToLNu_part1' ] },
-    ],
-    'LHE_HT'    : [
-      { 'value' : [  100.,    200. ], 'samples' : [ 'WJetsToLNu_HT100To200_part1'   ] },
-      { 'value' : [  200.,    400. ], 'samples' : [ 'WJetsToLNu_HT200To400_part1'   ] },
-      { 'value' : [  400.,    600. ], 'samples' : [ 'WJetsToLNu_HT400To600_part1'   ] },
-      { 'value' : [  600.,    800. ], 'samples' : [ 'WJetsToLNu_HT600To800_part1'   ] },
-      { 'value' : [  800.,   1200. ], 'samples' : [ 'WJetsToLNu_HT800To1200_part1'  ] },
-      { 'value' : [ 1200.,   2500. ], 'samples' : [ 'WJetsToLNu_HT1200To2500_part1' ] },
-      { 'value' : [ 2500., 100000. ], 'samples' : [ 'WJetsToLNu_HT2500ToInf_part1'  ] },
-    ],
-  },
-  {
-    'inclusive' : {
-      'samples'   : [ 'WJetsToLNu_part2', 'WJetsToLNu_ext_part2' ],
-      'LHE_Njets' : [ 0, 5 ],
-      'LHE_HT'    : [ 0., 100000. ],
-    },
-    'LHE_Njets' : [
-      { 'value' : [ 1, 2 ], 'samples' : [ 'W1JetsToLNu_part2' ] },
-      { 'value' : [ 2, 3 ], 'samples' : [ 'W2JetsToLNu_part2' ] },
-      { 'value' : [ 3, 4 ], 'samples' : [ 'W3JetsToLNu_part2' ] },
-      { 'value' : [ 4, 5 ], 'samples' : [ 'W4JetsToLNu_part2' ] },
-    ],
-    'LHE_HT'    : [
-      { 'value' : [  100.,    200. ], 'samples' : [ 'WJetsToLNu_HT100To200_part2'   ] },
-      { 'value' : [  200.,    400. ], 'samples' : [ 'WJetsToLNu_HT200To400_part2'   ] },
-      { 'value' : [  400.,    600. ], 'samples' : [ 'WJetsToLNu_HT400To600_part2'   ] },
-      { 'value' : [  600.,    800. ], 'samples' : [ 'WJetsToLNu_HT600To800_part2'   ] },
-      { 'value' : [  800.,   1200. ], 'samples' : [ 'WJetsToLNu_HT800To1200_part2'  ] },
-      { 'value' : [ 1200.,   2500. ], 'samples' : [ 'WJetsToLNu_HT1200To2500_part2' ] },
-      { 'value' : [ 2500., 100000. ], 'samples' : [ 'WJetsToLNu_HT2500ToInf_part2'  ] },
-    ],
-  },
 ]
+
+def add_part(arr, idx):
+  return list(map(lambda sample_name: '%s_part%d' % (sample_name, idx), arr))
+
+nof_parts = 2
+for part_idx in range(1, nof_parts + 1):
+  samples_part = copy.deepcopy(samples_to_stitch_WJets_2017[0])
+  samples_part['inclusive']['samples'] = add_part(samples_part['inclusive']['samples'], part_idx)
+  for split_key in [ 'LHE_Njets', 'LHE_HT' ]:
+    for split_samples in samples_part[split_key]:
+      split_samples['samples'] = add_part(split_samples['samples'], part_idx)
+  samples_to_stitch_WJets_2017.append(samples_part)
 
 samples_to_stitch_2017 = []
 samples_to_stitch_2017.extend(samples_to_stitch_DYJets_2017)

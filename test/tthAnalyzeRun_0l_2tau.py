@@ -72,7 +72,7 @@ if mode == "default":
   samples = load_samples(era)
 
   if era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
+    from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2017 as samples_to_stitch
 
     # [*] use binned DY samples in BDT training
     dy_samples_inclusive = []
@@ -104,7 +104,7 @@ elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT")
 
   if era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
+    from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2017 as samples_to_stitch
 
     # [*] use binned DY samples in BDT training
     dy_samples_inclusive = []

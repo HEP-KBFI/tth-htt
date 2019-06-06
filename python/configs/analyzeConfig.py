@@ -5,6 +5,7 @@ from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as 
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
 from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.samples.stitch import get_branch_type
 
 from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxs, find_tHweight
 
@@ -235,16 +236,17 @@ class analyzeConfig(object):
 
         samples_to_stitch = []
         if self.era == '2016':
-          pass
+          from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2016 as samples_to_stitch
         elif self.era == '2017':
-          from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import samples_to_stitch_2017 as samples_to_stitch
-          from tthAnalysis.HiggsToTauTau.samples.stitch_2017 import get_branch_type
-          self.stitched_weights = "tthAnalysis/HiggsToTauTau/data/stitched_weights_2017.root"
-          assert (os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.stitched_weights)))
+          from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2017 as samples_to_stitch
         elif self.era == '2018':
-          pass
+          from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2018 as samples_to_stitch
         else:
           raise ValueError('Invalid era: %s' % self.era)
+
+        self.stitched_weights = "tthAnalysis/HiggsToTauTau/data/stitched_weights_{}.root".format(self.era)
+        #assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.stitched_weights)))
+
         # we do not need to stitch anything when running the analysis on the sync Ntuple
         self.stitching_args = {}
         if not self.do_sync:
