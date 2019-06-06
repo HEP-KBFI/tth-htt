@@ -98,6 +98,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
+#include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tH_weight_str()
 
 #include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h" // ClassicSVfit
 #include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h" // classic_svFit::MeasuredTauLepton
@@ -107,6 +108,8 @@
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
+
+#include <boost/algorithm/string/replace.hpp> // boost::replace_all()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -631,14 +634,23 @@ int main(int argc, char* argv[])
     MEtHistManager* met_;
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_ttbar_;
-    //MVAInputVarHistManager* mvaInputVariables_ttV_;
-    //MVAInputVarHistManager* xgbInputVariables_ttbar_;
-    EvtHistManager_0l_2tau* evt_;
-    std::map<std::string, EvtHistManager_0l_2tau*> evt_in_decayModes_;
+    std::map<std::string, EvtHistManager_0l_2tau*> evt_;
+    std::map<std::string, std::map<std::string, EvtHistManager_0l_2tau*>> evt_in_decayModes_;
     std::map<std::string, EvtHistManager_0l_2tau*> evt_in_categories_;
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
+
+  const std::string default_cat_str = "default";
+  std::vector<std::string> evt_cat_strs = { default_cat_str };
+  if(isMC_tH)
+  {
+    const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+    eventInfo.loadWeight_tH(tHweights);
+    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
+    evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
+  }
+
   std::map<int, selHistManagerType*> selHistManagers;
   for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
         hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
@@ -694,34 +706,65 @@ int main(int argc, char* argv[])
     selHistManager->mvaInputVariables_ttbar_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/mvaInputs_ttbar", histogramDir.data()), era_string, central_or_shift));
     selHistManager->mvaInputVariables_ttbar_->bookHistograms(fs, mvaInputVariables_0l_2tau_ttbar);
-    //selHistManager->mvaInputVariables_ttV_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
-    //  Form("%s/sel/mvaInputs_ttV", histogramDir.data()), era_string, central_or_shift));
-    //selHistManager->mvaInputVariables_ttV_->bookHistograms(fs, mvaInputVariables_0l_2tau_ttV);
-    //selHistManager->xgbInputVariables_ttbar_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
-    //  Form("%s/sel/xgbInputs_ttbar", histogramDir.data()), era_string, central_or_shift));
-    //selHistManager->xgbInputVariables_ttbar_->bookHistograms(fs, xgbInputVariables_0l_2tau_ttbar);
-    selHistManager->evt_ = new EvtHistManager_0l_2tau(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
-    selHistManager->evt_->bookHistograms(fs);
-    const vstring decayModes_evt = eventInfo.getDecayModes();
-    if ( isSignal ) {
-      for ( vstring::const_iterator decayMode = decayModes_evt.begin();
-            decayMode != decayModes_evt.end(); ++decayMode) {
 
-        if ( ( isMC_tH || isMC_VH ) && ( (*decayMode) == "hzg" || (*decayMode) == "hmm" ) ) continue;
+    for(const std::string & evt_cat_str: evt_cat_strs)
+    {
+      const std::string process_string_new = evt_cat_str == default_cat_str ?
+        process_string + "_" :
+        process_string + "_" + evt_cat_str + "_"
+      ;
+      const std::string process_and_genMatchName = boost::replace_all_copy(
+        process_and_genMatch, process_string, process_string_new
+      );
+
+      selHistManager->evt_[evt_cat_str] = new EvtHistManager_0l_2tau(makeHistManager_cfg(
+        process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+      ));
+      selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
+    }
+
+    const vstring decayModes_evt = eventInfo.getDecayModes();
+    if(isSignal)
+    {
+      for(const std::string & decayMode: decayModes_evt)
+      {
+
+        if(( isMC_tH || isMC_VH ) && (decayMode == "hzg" || decayMode == "hmm" ))
+        {
+          continue;
+        }
         std::string decayMode_and_genMatch;
-        if ( isMC_tH || isMC_VH ) {
+        if(isMC_tH || isMC_VH)
+        {
           decayMode_and_genMatch = process_string;
           decayMode_and_genMatch += "_";
         }
-        else decayMode_and_genMatch = "ttH_";
-        decayMode_and_genMatch += (*decayMode);
+        else
+        {
+          decayMode_and_genMatch = "ttH_";
+        }
+        decayMode_and_genMatch += decayMode;
 
-        if ( apply_hadTauGenMatching ) decayMode_and_genMatch += hadTauGenMatch_definition->name_;
+        if(apply_hadTauGenMatching)
+        {
+          decayMode_and_genMatch += hadTauGenMatch_definition->name_;
+        }
 
-        selHistManager->evt_in_decayModes_[*decayMode] = new EvtHistManager_0l_2tau(makeHistManager_cfg(decayMode_and_genMatch,
-          Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
-        selHistManager->evt_in_decayModes_[*decayMode]->bookHistograms(fs);
+        for(const std::string & evt_cat_str: evt_cat_strs)
+        {
+          const std::string process_string_new = evt_cat_str == default_cat_str ?
+            process_string :
+            process_string + "_" + evt_cat_str
+          ;
+          const std::string decayMode_and_genMatchName = boost::replace_all_copy(
+            decayMode_and_genMatch, process_string, process_string_new
+          );
+
+          selHistManager->evt_in_decayModes_[evt_cat_str][decayMode] = new EvtHistManager_0l_2tau(makeHistManager_cfg(
+            decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+          ));
+          selHistManager->evt_in_decayModes_[evt_cat_str][decayMode]->bookHistograms(fs);
+        }
       }
     }
     vstring categories_evt = {
@@ -912,6 +955,7 @@ int main(int argc, char* argv[])
     }
 
     double evtWeight_inclusive = 1.;
+    double evtWeight_tH_nom = 1.;
     if(isMC)
     {
       if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
@@ -921,7 +965,10 @@ int main(int argc, char* argv[])
       lheInfoReader->read();
       evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
       evtWeight_inclusive *= eventInfo.pileupWeight;
-      //evtWeight_inclusive *= eventInfo.genWeight_tH();
+
+      evtWeight_tH_nom = eventInfo.genWeight_tH();
+      evtWeight_inclusive *= evtWeight_tH_nom;
+
       evtWeight_inclusive *= lumiScale;
       genEvtHistManager_beforeCuts->fillHistograms(
             genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive
@@ -1687,47 +1734,62 @@ int main(int argc, char* argv[])
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
     selHistManager->mvaInputVariables_ttbar_->fillHistograms(mvaInputs_ttbar, evtWeight);
-    //selHistManager->mvaInputVariables_ttV_->fillHistograms(mvaInputs_ttV, evtWeight);
-    //selHistManager->xgbInputVariables_ttbar_->fillHistograms(xgbInputs_ttbar, evtWeight);
-    double evtWeight0 = evtWeight;
-    if ( isMC_tH) evtWeight0 *= param_weight["kt_1p0_kv_1p0"];
-    selHistManager->evt_->fillHistograms(
-      preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
-      selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
-      mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-      mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
-      pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight0);
+
+
+    std::map<std::string, double> tH_weight_map;
+    for(const std::string & evt_cat_str: evt_cat_strs)
+    {
+      const std::string evt_cat_str_query = evt_cat_str == default_cat_str ? get_tH_SM_str() : evt_cat_str;
+      tH_weight_map[evt_cat_str] = isMC_tH ?
+        evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(evt_cat_str_query):
+        evtWeight
+      ;
+    }
+
+    for(const auto & kv: tH_weight_map)
+    {
+      selHistManager->evt_[kv.first]->fillHistograms(
+        preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
+        mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
+        mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
+        pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, kv.second
+      );
+    }
     if ( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
       if(! decayModeStr.empty() && !((isMC_tH || isMC_VH) && ( decayModeStr == "hzg" || decayModeStr == "hmm" )))
       {
-        selHistManager->evt_in_decayModes_[decayModeStr]->fillHistograms(
-          preselElectrons.size(),
-          preselMuons.size(),
-          selHadTaus.size(),
-          selJets.size(),
-          selBJets_loose.size(),
-          selBJets_medium.size(),
-          mvaOutput_0l_2tau_ttbar,
-	  mvaOutput_0l_2tau_HTT_tt,
-	  mvaOutput_0l_2tau_HTT_ttv,
-	  mvaOutput_0l_2tau_HTT_sum,
-	  mvaOutput_0l_2tau_HTT_sum_dy,
-	  mvaDiscr_0l_2tau_HTT,
-	  mva_Boosted_AK8,
-	  mva_Updated,
-          mTauTauVis,
-          mTauTau,
-          pZeta,
-	  pZetaVis,
-	  pZetaComb,
-	  mT_tau1,
-	  mT_tau2,
-	  mbb,
-          mbb_loose,
-	  evtWeight0
-        );
+        for(const auto & kv: tH_weight_map)
+        {
+          selHistManager->evt_in_decayModes_[kv.first][decayModeStr]->fillHistograms(
+            preselElectrons.size(),
+            preselMuons.size(),
+            selHadTaus.size(),
+            selJets.size(),
+            selBJets_loose.size(),
+            selBJets_medium.size(),
+            mvaOutput_0l_2tau_ttbar,
+            mvaOutput_0l_2tau_HTT_tt,
+            mvaOutput_0l_2tau_HTT_ttv,
+            mvaOutput_0l_2tau_HTT_sum,
+            mvaOutput_0l_2tau_HTT_sum_dy,
+            mvaDiscr_0l_2tau_HTT,
+            mva_Boosted_AK8,
+            mva_Updated,
+            mTauTauVis,
+            mTauTau,
+            pZeta,
+            pZetaVis,
+            pZetaComb,
+            mT_tau1,
+            mT_tau2,
+            mbb,
+            mbb_loose,
+            kv.second
+          );
+        }
       }
     }
     selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
@@ -1773,7 +1835,7 @@ int main(int argc, char* argv[])
 	mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
 	mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
 	mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
-	pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight0);
+        pZeta, pZetaVis, pZetaComb, mT_tau1, mT_tau2, mbb, mbb_loose, evtWeight);
     }
 
     if ( isMC ) {
@@ -2001,7 +2063,7 @@ int main(int argc, char* argv[])
 
     int idxHadTau = hadTauGenMatch_definition->idx_;
 
-    const TH1* histogram_EventCounter = selHistManagers[idxHadTau]->evt_->getHistogram_EventCounter();
+    const TH1* histogram_EventCounter = selHistManagers[idxHadTau]->evt_[default_cat_str]->getHistogram_EventCounter();
     std::cout << " " << process_and_genMatch << " = " << histogram_EventCounter->GetEntries()
               << " (weighted = " << histogram_EventCounter->Integral() << ")" << std::endl;
   }
