@@ -174,7 +174,8 @@ int main(int argc, char* argv[])
   const bool isMC_tHW = process_string == "tHW";
   const bool isMC_tH = isMC_tHq || isMC_tHW;
   const bool isMC_VH = process_string == "VH";
-  const bool isSignal = process_string == "signal"  || isMC_tH || isMC_VH;
+  const bool isMC_signal = process_string == "signal";
+  const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -639,9 +640,9 @@ int main(int argc, char* argv[])
 
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
-  if(isMC_tH)
+  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+  if((isMC_tH || isMC_signal) && ! tHweights.empty())
   {
-    const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
     eventInfo.loadWeight_tH(tHweights);
     const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
     evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());

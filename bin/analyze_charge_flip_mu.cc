@@ -109,6 +109,7 @@ int main(int argc, char* argv[])
   const bool isMC_tHq = process_string == "tHq";
   const bool isMC_tHW = process_string == "tHW";
   const bool isMC_tH = isMC_tHq || isMC_tHW;
+  const bool isSignal = process_string == "signal";
   const bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
@@ -316,9 +317,9 @@ int main(int argc, char* argv[])
     inputTree -> registerReader(lheInfoReader);
   }
 
-  if(isMC_tH)
+  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+  if((isMC_tH || isSignal) && ! tHweights.empty())
   {
-    const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
     eventInfo.loadWeight_tH(tHweights);
   }
 

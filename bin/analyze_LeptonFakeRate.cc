@@ -454,7 +454,7 @@ main(int argc,
   const bool isMC_tHq = process_string == "tHq";
   const bool isMC_tHW = process_string == "tHW";
   const bool isMC_tH = isMC_tHq || isMC_tHW;
-  const bool isSignal = process_string == "signal" ? true : false;
+  const bool isSignal = process_string == "signal";
 
   const std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
@@ -741,9 +741,9 @@ main(int argc,
     inputTree->registerReader(lheInfoReader);
   }
 
-  if(isMC_tH)
+  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+  if((isMC_tH || isSignal) && ! tHweights.empty())
   {
-    const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
     eventInfo.loadWeight_tH(tHweights);
   }
 

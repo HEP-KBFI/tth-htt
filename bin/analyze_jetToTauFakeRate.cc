@@ -565,9 +565,9 @@ int main(int argc, char* argv[])
     inputTree->registerReader(lheInfoReader);
   }
 
-  if(isMC_tH)
+  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+  if((isMC_tH || isSignal) && ! tHweights.empty())
   {
-    const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
     eventInfo.loadWeight_tH(tHweights);
   }
 
