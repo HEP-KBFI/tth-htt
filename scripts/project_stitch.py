@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
-from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2017 as samples_to_stitch
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+from tthAnalysis.HiggsToTauTau.common import SmartFormatter, load_samples
 
 import itertools
 import os
 import array
+import argparse
 
 def project(input_file, output_file, binnings):
   if not hdfs.isfile(input_file):
@@ -43,8 +43,39 @@ def hadd(input_files, output_file):
   if not stdout or stderr:
     raise RuntimeError('Error: %s' % stderr)
 
-output_root_dir = os.path.expanduser('~/sandbox/stitch_samples/root_files')
-output_plot_dir = os.path.expanduser('~/sandbox/stitch_samples/plots')
+parser = argparse.ArgumentParser(
+    formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35)
+)
+parser.add_argument('-e', '--era',
+  type = str, dest = 'era', metavar = 'era', required = True, choices = [ '2016', '2017', '2018' ],
+  help = 'R|Path to the sample dictionary',
+)
+parser.add_argument('-r', '--root-output',
+  type = str, dest = 'root_output', metavar = 'directory', required = False,
+  default = os.path.expanduser('~/sandbox/stitch_samples/root_files'),
+  help = 'R|Directory where the output ROOT files will be stored',
+)
+parser.add_argument('-p', '--plot-output',
+  type = str, dest = 'plot_output', metavar = 'directory', required = False,
+  default = os.path.expanduser('~/sandbox/stitch_samples/plots'),
+  help = 'R|Directory where the plots will be stored',
+)
+args = parser.parse_args()
+
+era = args.era
+output_root_dir = args.root_output
+output_plot_dir = args.plot_output
+
+if era == '2016':
+  from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2016 as samples_to_stitch
+elif era == '2017':
+  from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2017 as samples_to_stitch
+elif era == '2018':
+  from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2018 as samples_to_stitch
+else:
+  raise RuntimeError("Invalid era: %s" % era)
+
+samples = load_samples(era, is_postproc = False)
 
 for output_dir in [ output_root_dir, output_plot_dir ]:
   create_if_not_exists(output_dir)
