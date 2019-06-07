@@ -642,23 +642,12 @@ class analyzeConfig(object):
                 ", ".join(map(str, missing_reweighting))
               ))
             else:
-              xsec_weight_str = ""
-              if sample_info['sample_category'] == 'tHq':
-                xsec_weight_str = "xs_tHq"
-              elif sample_info['sample_category'] == 'tHW':
-                xsec_weight_str = "xs_tHW"
-              elif sample_info['sample_category'] == 'signal':
-                xsec_weight_str = "xs_ttH"
-              else:
-                raise RuntimeError("Unexpected category detected: %s" % sample_info['sample_category'])
-
               # record the weight for the default case (corresponds to no reweighting weight, i.e. idx of -1)
               tHweight_default = find_tHweight(tHweights, -1)
-              xsec_weight_default = float(getattr(tHweight_default, xsec_weight_str).configValue())
               tH_weights = [
                 cms.PSet(
                   idx    = cms.int32(-1),
-                  weight = cms.double(xsec_weight_default),
+                  weight = cms.double(1.),
                   kt     = tHweight_default.kt,
                   kv     = tHweight_default.kv,
                 )
@@ -668,20 +657,19 @@ class analyzeConfig(object):
                 if idx < 0:
                   # we've already recorded the weight for the default case
                   logging.info(
-                    "Process {}, weight index {}: the default/actual # events is {} and the XS weight is {:.6f}".format(
-                      sample_info["process_name_specific"], idx, nof_events, xsec_weight_default
+                    "Process {}, weight index {}: the default/actual # events is {}".format(
+                      sample_info["process_name_specific"], idx, nof_events
                     )
                   )
                   continue
 
                 nof_events_rwgt = sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]
                 tHweight = find_tHweight(tHweights, idx)
-                xsec_weight = float(getattr(tHweight, xsec_weight_str).configValue())
-                final_reweighting = float(nof_events) / nof_events_rwgt * xsec_weight
+                final_reweighting = float(nof_events) / nof_events_rwgt
                 logging.info(
-                  "Process {}, weight index {}: the default # events is {}, actual # events {} and the XS weight is {:.6f} "
+                  "Process {}, weight index {}: the default # events is {}, but actual # events is {} "
                   "-> final weight is {:.6f}".format(
-                    sample_info["process_name_specific"], idx, nof_events, nof_events_rwgt, xsec_weight, final_reweighting
+                    sample_info["process_name_specific"], idx, nof_events, nof_events_rwgt, final_reweighting
                   )
                 )
                 tH_weights.append(
