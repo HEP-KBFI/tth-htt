@@ -13,8 +13,8 @@ class EventInfo
 {
 public:
   EventInfo();
-  EventInfo(bool is_signal,
-            bool is_mc);
+  EventInfo(bool is_mc,
+            bool is_signal = false);
   EventInfo(const EventInfo & eventInfo);
   EventInfo &
   operator=(const EventInfo & eventInfo);
@@ -57,8 +57,14 @@ public:
   std::string
   getDecayModeString() const;
 
+  std::string
+  getDiHiggsDecayModeString() const;
+
   static std::vector<std::string>
   getDecayModes();
+
+  static std::vector<std::string>
+  getDiHiggsDecayModes();
 
   std::string
   str() const;
@@ -79,7 +85,14 @@ private:
   const unsigned int LHEReweightingWeight_max;
 
   std::map<std::string, std::pair<int, double>> tH_sf;
-  static const std::map<std::string, Float_t> decayMode_idString;
+  static const std::map<std::string, Int_t> decayMode_idString_singleHiggs;
+  static const std::map<std::string, Int_t> decayMode_idString_diHiggs_multilepton;
+
+  std::string
+  getDecayModeString(const std::map<std::string, Int_t> & decayMode_idString) const;
+
+  static std::vector<std::string>
+  getDecayModes(const std::map<std::string, Int_t> & decayMode_idString);
 };
 
 #endif // EventInfo_H

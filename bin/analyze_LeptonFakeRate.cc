@@ -625,7 +625,7 @@ main(int argc,
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
 //--- declare event-level variables
-  EventInfo eventInfo(isSignal, isMC);
+  EventInfo eventInfo(isMC);
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree->registerReader(&eventInfoReader);
 

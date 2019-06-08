@@ -397,7 +397,7 @@ int main(int argc, char* argv[])
   }
 
 //--- declare event-level variables
-  EventInfo eventInfo(isSignal, isMC);
+  EventInfo eventInfo(isMC, isSignal);
   EventInfoReader eventInfoReader(&eventInfo, puSys_option);
   inputTree -> registerReader(&eventInfoReader);
 

@@ -12,17 +12,27 @@
 
 #define EPS 1E-2
 
-const std::map<std::string, Float_t> EventInfo::decayMode_idString =
+const std::map<std::string, Int_t> EventInfo::decayMode_idString_singleHiggs =
 {
   { "hww",     24 },
   { "hzz",     23 },
   { "htt",     15 },
-  { "hzg", 230022 },
+  { "hzg", 220023 },
   { "hmm",     13 },
 };
 
+const std::map<std::string, Int_t> EventInfo::decayMode_idString_diHiggs_multilepton =
+{
+  { "tttt",       15 },
+  { "zzzz",       23 },
+  { "wwww",       24 },
+  { "ttzz", 15000023 },
+  { "ttww", 15000024 },
+  { "zzww", 23000024 },
+};
+
 EventInfo::EventInfo()
-  : EventInfo(false, false)
+  : EventInfo(false)
 {}
 
 EventInfo::EventInfo(bool is_signal,
@@ -39,7 +49,9 @@ EventInfo::EventInfo(bool is_signal,
   , nLHEReweightingWeight(0)
   , LHEReweightingWeight(nullptr)
   , LHEReweightingWeight_max(69)
-{}
+{
+  assert(is_mc_ || ! is_signal_);
+}
 
 EventInfo::EventInfo(const EventInfo & eventInfo)
   : LHEReweightingWeight_max(eventInfo.LHEReweightingWeight_max)
@@ -171,14 +183,26 @@ EventInfo::is_initialized() const
 std::string
 EventInfo::getDecayModeString() const
 {
-  if(! is_signal())
+  return EventInfo::getDecayModeString(decayMode_idString_singleHiggs);
+}
+
+std::string
+EventInfo::getDiHiggsDecayModeString() const
+{
+  return EventInfo::getDecayModeString(decayMode_idString_diHiggs_multilepton);
+}
+
+std::string
+EventInfo::getDecayModeString(const std::map<std::string, Int_t> & decayMode_idString) const
+{
+  if(! is_signal_)
   {
     throw cmsException(this, __func__, __LINE__)
       << "The event " << *this << " is not a signal event => request "
          "for a decay mode as a string is not applicable\n"
     ;
   }
-  for(const auto & kv: EventInfo::decayMode_idString)
+  for(const auto & kv: decayMode_idString)
   {
     if(genHiggsDecayMode == kv.second)
     {
@@ -191,11 +215,21 @@ EventInfo::getDecayModeString() const
 std::vector<std::string>
 EventInfo::getDecayModes()
 {
+  return getDecayModes(decayMode_idString_singleHiggs);
+}
+
+std::vector<std::string>
+EventInfo::getDiHiggsDecayModes()
+{
+  return getDecayModes(decayMode_idString_diHiggs_multilepton);
+}
+
+std::vector<std::string>
+EventInfo::getDecayModes(const std::map<std::string, Int_t> & decayMode_idString)
+{
   std::vector<std::string> decayModes;
-  decayModes.reserve(EventInfo::decayMode_idString.size());
-  boost::copy(
-    EventInfo::decayMode_idString | boost::adaptors::map_keys, std::back_inserter(decayModes)
-  );
+  decayModes.reserve(decayMode_idString.size());
+  boost::copy(decayMode_idString | boost::adaptors::map_keys, std::back_inserter(decayModes));
   return decayModes;
 }
 
