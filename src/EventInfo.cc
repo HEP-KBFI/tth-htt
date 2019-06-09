@@ -35,8 +35,8 @@ EventInfo::EventInfo()
   : EventInfo(false)
 {}
 
-EventInfo::EventInfo(bool is_signal,
-                     bool is_mc)
+EventInfo::EventInfo(bool is_mc,
+                     bool is_signal)
   : run(0)
   , lumi(0)
   , event(0)
