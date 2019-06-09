@@ -22,6 +22,7 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
                        Double_t dxy,
                        Double_t dz,
                        Int_t decayMode,
+                       Bool_t idDecayMode,
                        Int_t id_mva,
                        Double_t raw_mva,
                        Int_t antiElectron,
@@ -33,6 +34,7 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
   , dxy_(dxy)
   , dz_(dz)
   , decayMode_(decayMode)
+  , idDecayMode_(idDecayMode)
   , id_mva_(id_mva)
   , raw_mva_(raw_mva)
   , antiElectron_(antiElectron)
@@ -108,6 +110,12 @@ Int_t
 RecoHadTau::decayMode() const
 {
   return decayMode_;
+}
+
+Bool_t
+RecoHadTau::idDecayMode() const
+{
+  return idDecayMode_;
 }
 
 Bool_t
@@ -236,6 +244,7 @@ operator<<(std::ostream & stream,
 {
   stream << static_cast<const GenHadTau &>(hadTau)               << ",\n"
             " decayMode = "        << hadTau.decayMode()         << ","
+            " oldDecayModeID = "   << hadTau.idDecayMode()       << ","
             " id_mva = "           << hadTau.id_mva()            <<
             " (raw = "             << hadTau.raw_mva()           << "),\n"
             " antiElectron = "     << hadTau.antiElectron()      << ","

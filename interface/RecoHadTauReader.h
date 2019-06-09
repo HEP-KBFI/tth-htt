@@ -79,6 +79,7 @@ protected:
   std::string branchName_dxy_;
   std::string branchName_dz_;
   std::string branchName_decayMode_;
+  std::string branchName_idDecayMode_;
   std::string branchName_idAgainstElec_;
   std::string branchName_idAgainstMu_;
   std::string branchName_filterBits_;
@@ -100,6 +101,7 @@ protected:
   Float_t * hadTau_dxy_;
   Float_t * hadTau_dz_;
   Int_t * hadTau_decayMode_;
+  Bool_t * hadTau_idDecayMode_;
   Int_t * hadTau_idAgainstElec_;
   Int_t * hadTau_idAgainstMu_;
   UInt_t * hadTau_filterBits_;
