@@ -233,7 +233,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
     }
     return false;
   }
-  if(hadTau.decayModeFinding(apply_decayModeFinding_))
+  if(! hadTau.decayModeFinding(apply_decayModeFinding_))
   {
     if(debug_)
     {
