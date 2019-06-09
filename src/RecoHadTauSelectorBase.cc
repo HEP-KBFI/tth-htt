@@ -17,7 +17,7 @@ RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
   , max_absEta_(2.3)
   , max_dxy_(1000.)
   , max_dz_(0.2)
-  , apply_decayModeFinding_(TauDecayModeE::kOld)
+  , apply_decayModeFinding_(true)
   , min_antiElectron_(DEFAULT_TAUID_ID_VALUE)
   , min_antiMuon_(DEFAULT_TAUID_ID_VALUE)
 {
@@ -129,7 +129,8 @@ RecoHadTauSelectorBase::set(const std::string & cut)
        tauId == TauID::DeepTau2017v2VSmu ||
        tauId == TauID::DeepTau2017v2VSjet)
     {
-      apply_decayModeFinding_ = TauDecayModeE::kDeep;
+      apply_decayModeFinding_ = false;
+      decayMode_blacklist_ = { 5, 6 }; // exclude DMs 5 & 6
     }
   }
   cut_ = cut;
@@ -233,13 +234,52 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
     }
     return false;
   }
-  if(! hadTau.decayModeFinding(apply_decayModeFinding_))
+  if(apply_decayModeFinding_ && ! hadTau.idDecayMode())
   {
     if(debug_)
     {
-      std::cout << "FAILS decayModeFinding cut = " << as_integer(apply_decayModeFinding_) << "\n";
+      std::cout << "FAILS old decayModeFinding cut\n";
     }
     return false;
+  }
+  if(std::find(decayMode_blacklist_.begin(), decayMode_blacklist_.end(), hadTau.decayMode()) != decayMode_blacklist_.end())
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS decay mode cut DM (=" << hadTau.decayMode() << ") NOT in ";
+      for(unsigned decayModeIdx = 0; decayModeIdx < decayMode_blacklist_.size(); ++decayModeIdx)
+      {
+        std::cout << decayMode_blacklist_.at(decayModeIdx);
+        if(decayModeIdx < decayMode_blacklist_.size() - 1)
+        {
+          std::cout << ", ";
+        }
+        else
+        {
+          std::cout << '\n';
+        }
+      }
+    }
+  }
+  if(! decayMode_whitelist_.empty() &&
+     std::find(decayMode_whitelist_.begin(), decayMode_whitelist_.end(), hadTau.decayMode()) == decayMode_whitelist_.end())
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS decay mode cut DM (=" << hadTau.decayMode() << ") in ";
+      for(unsigned decayModeIdx = 0; decayModeIdx < decayMode_whitelist_.size(); ++decayModeIdx)
+      {
+        std::cout << decayMode_whitelist_.at(decayModeIdx);
+        if(decayModeIdx < decayMode_whitelist_.size() - 1)
+        {
+          std::cout << ", ";
+        }
+        else
+        {
+          std::cout << '\n';
+        }
+      }
+    }
   }
 
   std::vector<TauID> min_id_mva_cuts;

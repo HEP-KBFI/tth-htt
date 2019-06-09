@@ -4,20 +4,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // TauID, as_integer(), cmsException()
 
-std::map<TauDecayModeE, std::vector<int>> RecoHadTau::tauDecayModeMap = {
-  { TauDecayModeE::kOld,  { 0, 1, 2,       7, 10     } },
-  { TauDecayModeE::kDeep, { 0, 1, 2,       7, 10, 11 } },
-  { TauDecayModeE::kNew,  { 0, 1, 2, 5, 6, 7, 10, 11 } },
-};
-
-bool
-RecoHadTau::hasTauDecayModeFinding(int decayMode,
-                                   TauDecayModeE mode)
-{
-  const std::vector<int> & modes = tauDecayModeMap.at(mode);
-  return std::find(modes.cbegin(), modes.cend(), decayMode) != modes.cend();
-}
-
 RecoHadTau::RecoHadTau(const GenHadTau & particle,
                        Double_t dxy,
                        Double_t dz,
@@ -42,11 +28,6 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
   , filterBits_(filterBits)
   , jetIdx_(jetIdx)
   , genMatchIdx_(genMatchIdx)
-  , decayModeFinding_({
-      { TauDecayModeE::kOld,  hasTauDecayModeFinding(decayMode_, TauDecayModeE::kOld)  },
-      { TauDecayModeE::kDeep, hasTauDecayModeFinding(decayMode_, TauDecayModeE::kDeep) },
-      { TauDecayModeE::kNew,  hasTauDecayModeFinding(decayMode_, TauDecayModeE::kNew)  },
-    })
   , genLepton_(nullptr)
   , genHadTau_(nullptr)
   , genJet_(nullptr)
@@ -116,12 +97,6 @@ Bool_t
 RecoHadTau::idDecayMode() const
 {
   return idDecayMode_;
-}
-
-Bool_t
-RecoHadTau::decayModeFinding(TauDecayModeE mode) const
-{
-  return decayModeFinding_.at(mode);
 }
 
 Int_t

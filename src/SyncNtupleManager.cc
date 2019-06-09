@@ -572,8 +572,8 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
     tau_dxy[i] = hadtau -> dxy();
     tau_dz[i] = hadtau -> dz();
     tau_decayMode[i] = hadtau -> decayMode();
-    tau_decayModeFindingOldDMs[i] = hadtau -> decayModeFinding(TauDecayModeE::kOld);
-    tau_decayModeFindingNewDMs[i] = hadtau -> decayModeFinding(TauDecayModeE::kNew);
+    tau_decayModeFindingOldDMs[i] = hadtau -> idDecayMode();
+    tau_decayModeFindingNewDMs[i] = true; // all taus pass new DM
 
     const Int_t idMVArun2dR03 = hadtau -> id_mva(TauID::MVAoldDMdR032017v2);
     tau_byVVLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 1 ? 1 : 0;

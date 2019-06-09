@@ -75,15 +75,15 @@ HadTauHistManager::fillHistograms(const RecoHadTau & hadTau,
   fillWithOverFlow(histogram_abs_genPdgId_, abs_genPdgId, evtWeight, evtWeightErr);
 
   if ( option_ == kOption_allHistograms ) {
-    fillWithOverFlow(histogram_decayMode_,        hadTau.decayMode(),                           evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_mass_,             hadTau.mass(),                                evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_charge_,           hadTau.charge(),                              evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_dz_,               hadTau.dz(),                                  evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_dxy_,              hadTau.dxy(),                                 evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_decayModeFinding_, hadTau.decayModeFinding(TauDecayModeE::kOld), evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_id_mva_,           hadTau.id_mva(),                              evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_antiElectron_,     hadTau.antiElectron(),                        evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_antiMuon_,         hadTau.antiMuon(),                            evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_decayMode_,        hadTau.decayMode(),    evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mass_,             hadTau.mass(),         evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_charge_,           hadTau.charge(),       evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_dz_,               hadTau.dz(),           evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_dxy_,              hadTau.dxy(),          evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_decayModeFinding_, hadTau.idDecayMode(),  evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_id_mva_,           hadTau.id_mva(),       evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_antiElectron_,     hadTau.antiElectron(), evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_antiMuon_,         hadTau.antiMuon(),     evtWeight, evtWeightErr);
   }
 }
 

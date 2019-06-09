@@ -10,8 +10,6 @@
 class GenLepton;
 class GenJet;
 
-enum class TauDecayModeE { kOld, kDeep, kNew };
-
 enum class TauID;
 
 class RecoHadTau
@@ -56,7 +54,6 @@ public:
   Double_t dz() const;
   Int_t decayMode() const;
   Bool_t idDecayMode() const;
-  Bool_t decayModeFinding(TauDecayModeE mode) const;
   Int_t id_mva() const;
   Double_t raw_mva() const;
   Int_t id_mva(TauID tauID) const;
@@ -81,13 +78,6 @@ public:
   friend class RecoHadTauReader;
   friend class RecoHadTauWriter;
 
-  static std::map<TauDecayModeE, std::vector<int>>
-  tauDecayModeMap;
-
-  static bool
-  hasTauDecayModeFinding(int decayMode,
-                         TauDecayModeE mode);
-
 protected:
   Double_t dxy_;       ///< d_{xy}, distance in the transverse plane w.r.t PV
   Double_t dz_;        ///< d_{z}, distance on the z axis w.r.t PV
@@ -100,8 +90,6 @@ protected:
   UInt_t filterBits_;  ///< bitmask of matching with trigger objects
   Int_t jetIdx_;       ///< index of the matched jet from initial jet collection (-1 if no match)
   Int_t genMatchIdx_;  ///< index to matched gen particle (-1 if no match)
-
-  std::map<TauDecayModeE, bool> decayModeFinding_; ///< decayModeFinding discriminator
 
 //--- matching to generator level particles
   std::shared_ptr<const GenLepton> genLepton_;
