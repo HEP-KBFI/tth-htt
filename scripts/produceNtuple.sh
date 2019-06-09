@@ -30,6 +30,7 @@ echo "Parsing $SCRIPT"
 FILES=$(python -c "execfile('$SCRIPT'); print(' '.join(inputFiles))")
 EXECUTABLE=$(python -c "execfile('$SCRIPT'); print(executable)")
 IS_MC=$(python -c "execfile('$SCRIPT'); print(isMC)")
+IS_HH_NONRES=$(python -c "execfile('$SCRIPT'); print(isHHnonRes)")
 ERA=$(python -c "execfile('$SCRIPT'); print(era)")
 PILEUP=$(python -c "execfile('$SCRIPT'); print(pileup)")
 PROCESS_NAME=$(python -c "execfile('$SCRIPT'); print(process_name)")
@@ -48,6 +49,10 @@ fi
 NANO_MODULES_DATA="absIso,tauIDLog,trigObjMatcher,jetIdx"
 NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,genMatchCollection,\
 puWeight${ERA}($PILEUP;$PROCESS_NAME),jetmetUncertainties${ERA},btagSF_deepFlav_${ERA}"
+
+if [ "$IS_HH_NONRES" == "True" ]; then
+  NANO_MODULES_MC="$NANO_MODULES_MC,diHiggsVar_${ERA}"
+fi
 
 if [ "$IS_MC" == "True" ]; then
   NANO_MODULES=$NANO_MODULES_MC;

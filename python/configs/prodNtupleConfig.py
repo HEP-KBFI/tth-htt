@@ -5,6 +5,7 @@ from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging
 
+import re
 import os
 import uuid
 
@@ -27,6 +28,10 @@ def get_pileup_histograms(pileup_filename):
     histogram_names = [ key.GetName() for key in keys if key.GetClassName().startswith('TH1') ]
     pileup_file.Close()
     return histogram_names
+
+HH_NONRES_CATEGORY_RE = re.compile('signal_\w+_nonresonant_hh_\w+')
+def is_hh_nonres(jobOptions):
+    return jobOptions['is_mc'] and HH_NONRES_CATEGORY_RE.match(jobOptions['category_name'])
 
 class prodNtupleConfig:
     """Configuration metadata needed to run Ntuple production.
@@ -191,6 +196,7 @@ class prodNtupleConfig:
             "executable      = 'produceNtuple'",
             "inputFiles      = %s" % jobOptions['inputFiles'],
             "isMC            = %s" % str(jobOptions['is_mc']),
+            "isHHnonRes      = %s" % str(is_hh_nonres(jobOptions)),
             "era             = %s" % str(self.era),
             "pileup          = '%s'" % self.pileup,
             "golden_json     = '%s'" % self.golden_json,
@@ -321,6 +327,7 @@ class prodNtupleConfig:
                     'is_mc'            : is_mc,
                     'random_seed'      : jobId,
                     'process_name'     : process_name,
+                    'category_name'    : sample_info["sample_category"],
                     'triggers'         : hlt_paths,
                 }
                 self.createCfg_prodNtuple(jobOptions)
