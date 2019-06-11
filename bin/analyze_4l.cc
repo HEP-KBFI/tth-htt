@@ -951,7 +951,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
       jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull) :
-      jetCleaner       (jet_ptrs, fakeableLeptonsFul)
+      jetCleaner       (jet_ptrs, fakeableLeptonsFull)
     ; // X: FIXME: in principle we should clean against FO taus as well -- to implement
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
