@@ -10,8 +10,9 @@ import sys
 
 DEPENDENCIES = [
     "",  # CMSSW_BASE/src
+    "tthAnalysis/NanoAOD",
     "tthAnalysis/HiggsToTauTau",
-    "tthAnalysis/TauTriggerSFs2017",
+    "TauAnalysisTools/TauTriggerSFs",
     "TauAnalysis/ClassicSVfit",
     "TauAnalysis/SVfitTF",
     "ttH_Htautau_MEM_Analysis",
