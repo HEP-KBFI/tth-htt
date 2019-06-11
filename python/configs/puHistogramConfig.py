@@ -37,8 +37,7 @@ def validate_pu(output_file, samples):
         logging.error('Not a valid ROOT file: {}'.format(output_file))
         return 2
     for sample_name, sample_info in samples.items():
-        is_mc = (sample_info["type"] == "mc")
-        if not is_mc:
+        if not sample_info["use_it"]:
             continue
         process_name = sample_info["process_name_specific"]
         expected_nof_events = sample_info["nof_tree_events"]
