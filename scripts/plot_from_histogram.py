@@ -46,8 +46,11 @@ parser.add_argument('-y', '--y-title',
 parser.add_argument('-g', '--grid',
   dest = 'grid', action = 'store_true', default = False, help = "Enable grid lines",
 )
-parser.add_argument('-l', '--log',
-  dest = 'log', action = 'store_true', default = False, help = "Use logarithmic scale for y-axis",
+parser.add_argument('-l', '--log-y',
+  dest = 'logy', action = 'store_true', default = False, help = "Use logarithmic scale for y-axis",
+)
+parser.add_argument('-L', '--log-x',
+  dest = 'logx', action = 'store_true', default = False, help = "Use logarithmic scale for x-axis",
 )
 parser.add_argument('-f', '--force',
   dest = 'force', action = 'store_true', default = False, help = "Create output dir if it doesn't exist",
@@ -63,7 +66,8 @@ height          = args.height
 x_title         = args.x_title
 y_title         = args.y_title
 grid            = args.grid
-use_log         = args.log
+use_log_y       = args.logy
+use_log_x       = args.logx
 force           = args.force
 
 if not os.path.isfile(input_filename):
@@ -96,8 +100,10 @@ if y_title:
   histogram.SetYTitle(y_title)
 histogram.Draw()
 
-if use_log:
+if use_log_y:
   canvas.SetLogy()
+if use_log_x:
+  canvas.SetLogx()
 if grid:
   canvas.SetGrid()
 canvas.SaveAs(output_filename)
