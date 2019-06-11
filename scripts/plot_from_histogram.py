@@ -75,7 +75,7 @@ if not os.path.isdir(output_directory):
     raise ValueError('Directory %s does not exist; use -f/--force to create it' % output_directory)
   else:
     try:
-      os.path.mkdirs(output_directory)
+      os.makedirs(output_directory)
     except OSError as err:
       raise ValueError('Could not create directory %s because: %s' % (output_directory, err))
 
