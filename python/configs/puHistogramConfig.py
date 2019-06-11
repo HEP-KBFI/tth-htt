@@ -189,10 +189,16 @@ class puHistogramConfig:
         assert(len(lines) >= 3)
         createFile(jobOptions['cfgFile_path'], lines, nofNewLines = 1)
 
-    def createScript_sbatch(self, executable, sbatchFile, jobOptions,
-                            key_cfg_file = 'cfgFile_path', key_input_file = 'inputFiles',
-                            key_output_file = 'outputFile', key_log_file = 'logFile',
-                            key_script_file = 'scriptFile'):
+    def createScript_sbatch(self,
+                            executable,
+                            sbatchFile,
+                            jobOptions,
+                            key_cfg_file = 'cfgFile_path',
+                            key_input_file = 'inputFiles',
+                            key_output_file = 'outputFile',
+                            key_log_file = 'logFile',
+                            key_script_file = 'scriptFile',
+                           ):
         num_jobs = tools_createScript_sbatch(
             sbatch_script_file_name = sbatchFile,
             executable              = executable,
