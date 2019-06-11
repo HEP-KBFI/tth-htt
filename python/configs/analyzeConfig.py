@@ -218,8 +218,6 @@ class analyzeConfig(object):
         self.num_parallel_jobs = num_parallel_jobs
         self.histograms_to_fit = histograms_to_fit
         self.executable_prep_dcard = executable_prep_dcard
-        self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
-        self.prep_dcard_signals = [ "signal", "ttH", "ttH_hzg", "ttH_hmm", "ttH_hww", "ttH_hzz", "ttH_htt", "ttH_fake" ]
         self.executable_add_syst_dcard = executable_add_syst_dcard
         self.executable_add_syst_fakerate = executable_add_syst_fakerate
         self.executable_make_plots = executable_make_plots
@@ -399,9 +397,15 @@ class analyzeConfig(object):
         self.jobOptions_add_syst_dcard = {}
         self.cfgFile_add_syst_fakerate = os.path.join(self.template_dir, "addSystFakeRates_cfg.py")
         self.jobOptions_add_syst_fakerate = {}
+        self.signalProcs = [ "signal", "signal_ctcvcp" ]
+        self.ttHProcs = [ "ttH", "ttH_ctcvcp" ]
+        self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
+        self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
+        self.procsWithDecayModes = self.ttHProcs + [ "VH", "tHW", "tHq" ]
+        self.prep_dcard_signals = self.signalProcs + self.ttHProcs + [
+          "{}_{}".format(proc, decMode) for proc in self.ttHProcs for decMode in self.decayModes + [ 'fake' ]
+        ]
         self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
-        self.decayModes = ["htt", "hww", "hzz", "hmm", "hzg"]
-        self.procsWithDecayModes = ["ttH", "VH", "tHW", "tHq"]
         self.make_plots_signal = "signal"
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
         self.jobOptions_make_plots = {}
@@ -608,10 +612,10 @@ class analyzeConfig(object):
               nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
               nof_events_idx = 1 # muR=0.5 muF=1
             elif central_or_shift in systematics.L1PreFiring_().up:
-              nof_events_label = 'CountWeightedL1Prefire{}'.format(count_suffix)
+              nof_events_label = 'CountWeightedL1Prefire'
               nof_events_idx = 1  # L1 prefiring weight up
             elif central_or_shift in systematics.L1PreFiring_().down:
-              nof_events_label = 'CountWeightedL1Prefire{}'.format(count_suffix)
+              nof_events_label = 'CountWeightedL1Prefire'
               nof_events_idx = 2  # L1 prefiring weight down
             else:
               nof_events_label = 'CountWeighted{}'.format(count_suffix)
@@ -623,7 +627,7 @@ class analyzeConfig(object):
           stitch_histogram_name = '{}_{}'.format(nof_events_label, nof_events_idx)
           assert(nof_events_label)
           assert(nof_events_idx >= 0)
-          nof_events = nof_events = sample_info["nof_events"][nof_events_label][nof_events_idx]
+          nof_events = sample_info["nof_events"][nof_events_label][nof_events_idx]
           assert(nof_events > 0)
 
           nof_reweighting = sample_info['nof_reweighting']

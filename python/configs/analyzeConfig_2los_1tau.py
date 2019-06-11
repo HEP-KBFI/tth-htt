@@ -368,7 +368,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
 
           sample_category = sample_info["sample_category"]
           is_mc = (sample_info["type"] == "mc")
-          is_signal = (sample_category == "signal")
+          is_signal = sample_category in self.signalProcs
 
           for central_or_shift in self.central_or_shifts:
 

@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-06-09 02:01:22 with the following command:
+# file generated at 2019-06-11 22:48:25 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2017_RunIIFall17MiniAODv2.txt -m python/samples/metaDict_2017_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2017_RunIIFall17MiniAODv2.txt
 
 meta_dictionary = OD()
@@ -88,7 +88,7 @@ meta_dictionary["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAO
 
 meta_dictionary["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
   ("crab_string",           ""),
-  ("sample_category",       "signal"),
+  ("sample_category",       "signal_ctcvcp"),
   ("process_name_specific", "TTH_4f_ctcvcp"),
   ("nof_db_events",         9618000),
   ("nof_db_files",          257),
@@ -1819,13 +1819,13 @@ meta_dictionary["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2
   ("crab_string",           ""),
   ("sample_category",       "EWK"),
   ("process_name_specific", "ZZTo4L_ext2"),
-  ("nof_db_events",         61688527),
-  ("nof_db_files",          1078),
-  ("fsize_db",              2606862133550),
+  ("nof_db_events",         63299374),
+  ("nof_db_files",          1129),
+  ("fsize_db",              2675001459046),
   ("xsection",              1.256),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: PRODUCTION; size: 2.61TB; nevents: 61.69M; release: 9_4_7; last modified: 2019-05-05 13:50:36"),
+  ("comment",               "status: PRODUCTION; size: 2.68TB; nevents: 63.30M; release: 9_4_7; last modified: 2019-05-05 13:50:36"),
 ])
 
 meta_dictionary["/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
@@ -2168,7 +2168,8 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall
 
 
 # event statistics by sample category:
-# signal:                    35.61M
+# signal:                    25.99M
+# signal_ctcvcp:             9.62M
 # tHq:                       9.92M
 # tHW:                       4.72M
 # additional_signal_overlap: 965.20k
