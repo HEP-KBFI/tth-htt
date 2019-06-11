@@ -10,7 +10,7 @@ import os
 import sys
 import getpass
 
-# E.g.: ./tthAnalyzeRun_LeptonFakeRate.py -v 2017Dec13 -e 2017
+# E.g.: ./test/tthAnalyzeRun_LeptonFakeRate.py -v 2017Dec13 -e 2017
 
 cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_8_1_0') # immediate parent dir to src folder
 

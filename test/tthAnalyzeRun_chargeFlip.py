@@ -10,7 +10,7 @@ import os
 import sys
 import getpass
 
-# E.g.: ./tthAnalyzeRun_chargeFlip.py -v 2017Dec13 -e 2017
+# E.g.: ./test/tthAnalyzeRun_chargeFlip.py -v 2017Dec13 -e 2017
 
 era_choices      = ['2017']
 sys_choices      = [ 'full' ] + systematics.an_chargeFlip_e_opts

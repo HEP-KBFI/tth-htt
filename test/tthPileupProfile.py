@@ -9,7 +9,7 @@ import os
 import sys
 import getpass
 
-# E.g.: ./tthPileupProfile.py -v 2018May09 -e 2017 -m all
+# E.g.: ./test/tthPileupProfile.py -v 2018May09 -e 2017 -m all
 
 mode_choices = [ 'all', 'sync', 'hh', 'hh_bbww' ]
 

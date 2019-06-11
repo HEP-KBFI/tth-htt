@@ -10,7 +10,7 @@ import os
 import sys
 import getpass
 
-# E.g.: ./tthAnalyzeRun_2l_2tau.py -v 2017Dec13 -m default -e 2017
+# E.g.: ./test/tthAnalyzeRun_2l_2tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts

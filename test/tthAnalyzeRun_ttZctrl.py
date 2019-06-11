@@ -10,7 +10,7 @@ import os
 import sys
 import getpass
 
-# E.g.: ./tthAnalyzeRun_ttZctrl.py -v 2017Dec13 -e 2017
+# E.g.: ./test/tthAnalyzeRun_ttZctrl.py -v 2017Dec13 -e 2017
 
 mode_choices     = [ 'default', 'sync', 'sync_wMEM' ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts

@@ -10,7 +10,7 @@ import os
 import sys
 import getpass
 
-# E.g.: ./tthAnalyzeRun_jetToTauFakeRate.py -v 2017Dec13 -e 2017
+# E.g.: ./test/tthAnalyzeRun_jetToTauFakeRate.py -v 2017Dec13 -e 2017
 
 sys_choices      = [ 'full' ] + systematics.an_jetToTauFR_opts
 systematics.full = systematics.an_jetToTauFR

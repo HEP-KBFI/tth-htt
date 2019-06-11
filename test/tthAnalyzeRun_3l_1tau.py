@@ -10,7 +10,7 @@ import os
 import sys
 import getpass
 
-# E.g.: ./tthAnalyzeRun_3l_1tau.py -v 2017Dec13 -m default -e 2017
+# E.g.: ./test/tthAnalyzeRun_3l_1tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices         = [
   'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
