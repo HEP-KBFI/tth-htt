@@ -1296,8 +1296,8 @@ int main(int argc, char* argv[])
     cutFlowTable.update("sel lepton charge", evtWeight);
 
     double massSFOS = -1.;
-    bool failsZbosonMassCut = isfailsZbosonMassVeto(preselLeptonsFull);
-    if ( !failsZbosonMassCut ) {
+    bool passesZbosonMassCut = !(isfailsZbosonMassVeto(preselLeptonsFull));
+    if ( !passesZbosonMassCut ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event " << eventInfo.str() << " FAILS Z-boson mass cut." << std::endl;
       }

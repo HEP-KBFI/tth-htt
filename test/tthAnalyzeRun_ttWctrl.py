@@ -116,7 +116,7 @@ if __name__ == '__main__':
     use_home                  = use_home,
     do_sync                   = do_sync,
     use_nonnominal            = use_nonnominal,
-    #coupling_study            = mode == "coupling_study",
+    coupling_study            = mode == "coupling_study",
     rle_select                = rle_select,
   )
 

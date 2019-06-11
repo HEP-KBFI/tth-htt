@@ -32,11 +32,11 @@ RunLumiEventSelector::RunLumiEventSelector(const edm::ParameterSet & cfg)
 RunLumiEventSelector::~RunLumiEventSelector()
 {
   const std::string matchRemark = numEventsSelected_ == numEventsToBeSelected_ ? "matches" : "does NOT match";
-  std::cout << "<RunLumiEventSelector::~RunLumiEventSelector>:"
+  std::cout << "<RunLumiEventSelector::~RunLumiEventSelector>:" 
                " Number of Events processed = " << numEventsProcessed_ << "\n"
                " Number of Events selected = " << numEventsSelected_ << ", " << matchRemark
             << " Number of Events to be selected = " << numEventsToBeSelected_ << '\n';
-
+ 
 //--- check for events specified by run + event number in ASCII file
 //    and not found in EDM input .root file
   int numRunLumiSectionEventNumbersUnmatched = 0;
@@ -193,8 +193,7 @@ RunLumiEventSelector::operator()(ULong_t run,
     } else {
       return false;
     }
-  } else std::cout << "<RunLumiEventSelector::operator>: NOT selecting "
-               "run# = " << run << ", ls# " << ls << ", event# " << event << '\n';
+  }
 
   return false;
 }

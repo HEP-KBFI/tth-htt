@@ -1133,8 +1133,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, fakeableHadTaus) :
-      jetCleaner       (jet_ptrs, fakeableLeptonsFull, fakeableHadTaus)
+      jetCleanerByIndex(jet_ptrs, fakeableLeptons, fakeableHadTaus) :
+      jetCleaner       (jet_ptrs, fakeableLeptons, fakeableHadTaus)
     ;
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);

@@ -191,7 +191,7 @@ if __name__ == '__main__':
     rle_select                = rle_select,
     use_nonnominal            = use_nonnominal,
     hlt_filter                = hlt_filter,
-    #coupling_study            = mode == "coupling_study",
+    coupling_study            = mode == "coupling_study",
     use_home                  = use_home,
   )
 

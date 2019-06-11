@@ -1059,8 +1059,8 @@ int main(int argc, char* argv[])
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptons, fakeableHadTausFull) :
-      jetCleaner       (jet_ptrs, fakeableLeptons, fakeableHadTausFull)
+      jetCleanerByIndex(jet_ptrs, fakeableHadTaus) :
+      jetCleaner       (jet_ptrs, fakeableHadTaus)
     ;
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
