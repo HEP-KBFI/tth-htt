@@ -12,7 +12,7 @@ import getpass
 
 # E.g.: ./tthAnalyzeRun_WZctrl.py -v 2017Dec13 -e 2017
 
-mode_choices     = [ 'default', 'sync', 'coupling_study' ]
+mode_choices     = [ 'default', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts
 systematics.full = systematics.an_common
 
@@ -66,8 +66,6 @@ if mode == 'default':
   samples = load_samples(era)
 elif mode == 'sync':
   samples = load_samples(era, suffix = 'sync' if use_nonnominal else 'sync_nom')
-elif mode == "coupling_study":
-  samples = load_samples(era, suffix = "ctcvcp")
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
@@ -119,7 +117,6 @@ if __name__ == '__main__':
     use_home           = use_home,
     do_sync            = do_sync,
     use_nonnominal     = use_nonnominal,
-    #coupling_study     = mode == "coupling_study",
     rle_select         = rle_select,
   )
 

@@ -307,7 +307,7 @@ int main(int argc, char* argv[])
   const bool isMC_tHq = process_string == "tHq";
   const bool isMC_tHW = process_string == "tHW";
   const bool isMC_tH = isMC_tHq || isMC_tHW;
-  const bool isSignal = process_string == "signal";
+  const bool isSignal = process_string == "signal" || process_string == "signal_ctcvcp";
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);

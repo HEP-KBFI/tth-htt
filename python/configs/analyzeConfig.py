@@ -104,7 +104,6 @@ class analyzeConfig(object):
           executable_make_plots           = "makePlots",
           executable_make_plots_mcClosure = "makePlots",
           do_sync                         = False,
-          coupling_study                  = False,
           verbose                         = False,
           dry_run                         = False,
           use_home                        = True,
@@ -232,7 +231,6 @@ class analyzeConfig(object):
         self.triggers = triggers
         self.triggerTable = Triggers(self.era)
         self.do_sync = do_sync
-        self.coupling_study = coupling_study
 
         samples_to_stitch = []
         if self.era == '2016':
@@ -629,10 +627,8 @@ class analyzeConfig(object):
           assert(nof_events > 0)
 
           nof_reweighting = sample_info['nof_reweighting']
-          if sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal', 'TH', 'TTH' ] and nof_reweighting > 0:
-            thIdxs_to_consider = thIdxs if self.coupling_study else [
-              entry.idx.value() for entry in tHweights if entry.kt.value() == 1.0 and entry.kv.value() == 1.0
-            ]
+          if sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and nof_reweighting > 0:
+            thIdxs_to_consider = thIdxs
 
             missing_reweighting =  set(thIdxs_to_consider) - set(range(-1, nof_reweighting))
 
