@@ -1242,8 +1242,8 @@ int main(int argc, char* argv[])
 
     double massSFOS = -1.;
 
-    bool passesZbosonMassCut = !(isfailsZbosonMassVeto(preselLeptonsFull));
-    if ( !passesZbosonMassCut ) {
+    bool failsZbosonMassCut = isfailsZbosonMassVeto(preselLeptonsFull);
+    if ( !failsZbosonMassCut ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS Z-boson mass cut. " << std::endl;
       }
