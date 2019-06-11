@@ -191,7 +191,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
         logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
         sample_category = sample_info["sample_category"]
         is_mc = (sample_info["type"] == "mc")
-        is_signal = sample_category in self.signalProcs
         inputFileList = inputFileLists[sample_name]
         for central_or_shift in self.central_or_shifts:
           for jobId in inputFileList.keys():

@@ -259,7 +259,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
             if central_or_shift != "central" and not is_mc:
               continue
 
-            if central_or_shift in systematics.LHE().ttH and sample_category != "signal":
+            is_signal = sample_category in self.signalProcs
+            if central_or_shift in systematics.LHE().ttH and not is_signal:
               continue
             if central_or_shift in systematics.LHE().ttW and sample_category != "TTW":
               continue
