@@ -915,8 +915,8 @@ int main(int argc, char* argv[])
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptons, fakeableHadTaus) :
-      jetCleaner       (jet_ptrs, fakeableLeptons, fakeableHadTaus)
+      jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, fakeableHadTaus) :
+      jetCleaner       (jet_ptrs, fakeableLeptonsFull, fakeableHadTaus)
     ;
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
