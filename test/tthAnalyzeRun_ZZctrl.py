@@ -97,6 +97,7 @@ if __name__ == '__main__':
     executable_analyze                    = "analyze_ZZctrl",
     cfgFile_analyze                       = "analyze_ZZctrl_cfg.py",
     samples                               = samples,
+    hadTauVeto_selection                  = "dR03mvaLoose", # veto events containing taus that pass tau ID WP applied in 3l+1tau channel,
     applyFakeRateWeights                  = "4lepton",
     chargeSumSelections                   = chargeSumSelections,
     jet_cleaning_by_index                 = jet_cleaning_by_index,

@@ -43,6 +43,7 @@ class analyzeConfig_4l(analyzeConfig):
         executable_analyze,
         cfgFile_analyze,
         samples,
+        hadTauVeto_selection,
         applyFakeRateWeights,
         chargeSumSelections,
         jet_cleaning_by_index,
@@ -100,6 +101,7 @@ class analyzeConfig_4l(analyzeConfig):
 
     self.lepton_selections = [ "Tight", "Fakeable" ]
     self.lepton_frWeights = [ "enabled", "disabled" ]
+    self.hadTauVeto_selection_part2 = hadTauVeto_selection
     self.applyFakeRateWeights = applyFakeRateWeights
     run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
     if self.era not in [ '2016', '2017', '2018' ]:
@@ -269,6 +271,9 @@ class analyzeConfig_4l(analyzeConfig):
       electron_selection = lepton_selection
       muon_selection = lepton_selection
 
+      hadTauVeto_selection = "Tight"
+      hadTauVeto_selection = "|".join([ hadTauVeto_selection, self.hadTauVeto_selection_part2 ])
+
       if lepton_selection == "forBDTtraining":
         electron_selection = "Loose"
         muon_selection = "Loose"
@@ -387,6 +392,7 @@ class analyzeConfig_4l(analyzeConfig):
                   'electronSelection'        : electron_selection,
                   'muonSelection'            : muon_selection,
                   'apply_leptonGenMatching'  : self.apply_leptonGenMatching,
+                  'hadTauSelection'          : hadTauVeto_selection,
                   'chargeSumSelection'       : chargeSumSelection,
                   'applyFakeRateWeights'     : self.applyFakeRateWeights if not lepton_selection == "Tight" else "disabled",
                   'central_or_shift'         : central_or_shift,
