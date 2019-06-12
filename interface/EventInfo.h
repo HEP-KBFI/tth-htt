@@ -76,7 +76,7 @@ public:
   friend class EventInfoReader;
   friend class EventInfoWriter;
 
-private:
+protected:
   bool is_signal_;
   bool is_mc_;
 
