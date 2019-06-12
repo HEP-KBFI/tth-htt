@@ -37,8 +37,7 @@ def validate_pu(output_file, samples):
         logging.error('Not a valid ROOT file: {}'.format(output_file))
         return 2
     for sample_name, sample_info in samples.items():
-        is_mc = (sample_info["type"] == "mc")
-        if not is_mc:
+        if not sample_info["use_it"]:
             continue
         process_name = sample_info["process_name_specific"]
         expected_nof_events = sample_info["nof_tree_events"]
@@ -189,10 +188,16 @@ class puHistogramConfig:
         assert(len(lines) >= 3)
         createFile(jobOptions['cfgFile_path'], lines, nofNewLines = 1)
 
-    def createScript_sbatch(self, executable, sbatchFile, jobOptions,
-                            key_cfg_file = 'cfgFile_path', key_input_file = 'inputFiles',
-                            key_output_file = 'outputFile', key_log_file = 'logFile',
-                            key_script_file = 'scriptFile'):
+    def createScript_sbatch(self,
+                            executable,
+                            sbatchFile,
+                            jobOptions,
+                            key_cfg_file = 'cfgFile_path',
+                            key_input_file = 'inputFiles',
+                            key_output_file = 'outputFile',
+                            key_log_file = 'logFile',
+                            key_script_file = 'scriptFile',
+                           ):
         num_jobs = tools_createScript_sbatch(
             sbatch_script_file_name = sbatchFile,
             executable              = executable,

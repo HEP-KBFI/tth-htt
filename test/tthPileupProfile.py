@@ -9,7 +9,7 @@ import os
 import sys
 import getpass
 
-# E.g.: ./tthPileupProfile.py -v 2018May09 -e 2017 -m all
+# E.g.: ./test/tthPileupProfile.py -v 2018May09 -e 2017 -m all
 
 mode_choices = [ 'all', 'sync', 'hh', 'hh_bbww' ]
 
@@ -57,9 +57,9 @@ if mode == 'sync':
 elif mode == 'all':
   samples = load_samples(era, False)
 elif mode == 'hh':
-  samples = load_samples(era, False, base = 'hh_multilepton', suffix = 'hh_merged')
-elif mode == 'hh_bbww':
   samples = load_samples(era, False, base = 'hh_multilepton', suffix = 'hh')
+elif mode == 'hh_bbww':
+  samples = load_samples(era, False, base = 'hh_bbww', suffix = 'hh')
 else:
   raise ValueError('Invalid mode: %s' % mode)
 

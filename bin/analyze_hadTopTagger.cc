@@ -151,7 +151,6 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_hadTopTagger");
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
-  bool isSignal = ( process_string == "signal" ) ? true : false;
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);

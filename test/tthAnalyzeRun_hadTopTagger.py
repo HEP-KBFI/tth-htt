@@ -10,7 +10,7 @@ import os
 import sys
 import getpass
 
-# E.g.: ./tthAnalyzeRun_hadTopTagger.py -v 2017Dec13 -e 2017
+# E.g.: ./test/tthAnalyzeRun_hadTopTagger.py -v 2017Dec13 -e 2017
 
 parser = tthAnalyzeParser()
 parser.add_tau_id_wp('dR03mvaLoose')

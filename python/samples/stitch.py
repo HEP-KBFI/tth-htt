@@ -194,7 +194,7 @@ samples_to_stitch_WJets_2018 = [
 def add_part(arr, idx):
   return list(map(lambda sample_name: '%s_part%d' % (sample_name, idx), arr))
 
-nof_parts = 2
+nof_parts = 0 # temporary fix until we have samples ready
 eras = [ 2016, 2017, 2018 ]
 
 for era in eras:

@@ -289,7 +289,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
 
             sample_category = sample_info["sample_category"]
             is_mc = (sample_info["type"] == "mc")
-            is_signal = (sample_category == "signal")
+            is_signal = sample_category in self.signalProcs
 
             for central_or_shift in self.central_or_shifts:
 
@@ -303,7 +303,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   if not is_mc and not isFR_shape_shift:
                     continue
 
-                if central_or_shift in systematics.LHE().ttH and sample_category != "signal":
+                if central_or_shift in systematics.LHE().ttH and not is_signal:
                   continue
                 if central_or_shift in systematics.LHE().ttW and sample_category != "TTW":
                   continue
@@ -405,7 +405,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
 
               sample_categories = [ sample_category ]
               if is_signal:
-                sample_categories = [ "signal", "ttH", "ttH_htt", "ttH_hww", "ttH_hzz", "ttH_hmm", "ttH_hzg" ]
+                sample_categories.append("ttH{}".format(sample_category[len('signal'):]))
               for sample_category in sample_categories:
                 # sum non-fake and fake contributions for each MC sample separately
                 genMatch_categories = [ "nonfake", "conversions", "fake" ]
@@ -419,13 +419,13 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                     # sum non-fake contributions for each MC sample separately
                     # input processes: TT2l0g0j; ...
                     # output processes: TT; ...
-                    if sample_category in [ "signal" ]:
+                    if sample_category in self.signalProcs:
                       lepton_genMatches = []
                       lepton_genMatches.extend(self.lepton_genMatches_nonfakes)
                       lepton_genMatches.extend(self.lepton_genMatches_conversions)
                       lepton_genMatches.extend(self.lepton_genMatches_fakes)
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in lepton_genMatches ]
-                    elif sample_category in [ "ttH" ]:
+                    elif sample_category in self.ttHProcs:
                       lepton_genMatches = []
                       lepton_genMatches.extend(self.lepton_genMatches_nonfakes)
                       lepton_genMatches.extend(self.lepton_genMatches_conversions)
@@ -443,9 +443,9 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                     # sum conversion background  contributions for each MC sample separately
                     # input processes: TT1l1g0j, TT0l2g0j; ...
                     # output processes: TT_conversion; ...
-                    if sample_category in [ "signal" ]:
+                    if sample_category in self.signalProcs:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_conversions ]
-                    elif sample_category in [ "ttH" ]:
+                    elif sample_category in self.ttHProcs:
                       processes_input = []
                       processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.lepton_genMatches_conversions ])
                       processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.lepton_genMatches_conversions ])
@@ -460,9 +460,9 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                     # sum fake contributions for each MC sample separately
                     # input processes: TT1l0g1j, TT0l1g1j, TT0l0g2j; ...
                     # output processes: TT_fake; ...
-                    if sample_category in [ "signal" ]:
+                    if sample_category in self.signalProcs:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_fakes ]
-                    elif sample_category in [ "ttH" ]:
+                    elif sample_category in self.ttHProcs:
                       processes_input = []
                       processes_input.extend([ "%s%s" % ("ttH_htt", genMatch) for genMatch in self.lepton_genMatches_fakes ])
                       processes_input.extend([ "%s%s" % ("ttH_hww", genMatch) for genMatch in self.lepton_genMatches_fakes ])
@@ -518,7 +518,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
           key_addBackgrounds_job_fakes = getKey(*addBackgrounds_job_fakes_tuple)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
-          sample_categories.extend([ "signal" ])
+          sample_categories.extend(self.signalProcs)
           processes_input = []
           for sample_category in sample_categories:
             processes_input.append("%s_fake" % sample_category)
@@ -540,7 +540,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
           key_addBackgrounds_job_conversions = getKey(*addBackgrounds_job_conversions_tuple)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
-          sample_categories.extend([ "signal" ])
+          sample_categories.extend(self.signalProcs)
           processes_input = []
           for sample_category in sample_categories:
             processes_input.append("%s_conversion" % sample_category)

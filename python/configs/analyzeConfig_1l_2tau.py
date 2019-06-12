@@ -354,7 +354,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
             sample_category = sample_info["sample_category"]
             is_mc = (sample_info["type"] == "mc")
-            is_signal = (sample_category in ["signal"])
+            is_signal = sample_category in self.signalProcs
 
             for central_or_shift in self.central_or_shifts:
 
@@ -368,7 +368,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   if not is_mc and not isFR_shape_shift:
                     continue
 
-                if central_or_shift in systematics.LHE().ttH and sample_category != "signal":
+                if central_or_shift in systematics.LHE().ttH and not is_signal:
                   continue
                 if central_or_shift in systematics.LHE().ttW and sample_category != "TTW":
                   continue
@@ -478,7 +478,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
               ]
               sample_categories = [ sample_category ]
               if is_signal:
-                sample_categories = [ "signal", "ttH" ]
+                sample_categories.append("ttH{}".format(sample_category[len('signal'):]))
               for sample_category in sample_categories:
                 # sum non-fake and fake contributions for each MC sample separately
                 genMatch_categories = [ "nonfake", "conversions", "fake" ]
@@ -492,7 +492,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                     # sum non-fake contributions for each MC sample separately
                     # input processes: TT1l0g0j&2t0e0m0j, TT1l0g0j&1t1e0m0j, TT1l0g0j&1t0e1m0j, TT1l0g0j&0t2e0m0j, TT1l0g0j&0t1e1m0j, TT1l0g0j&0t0e2m0j; ...
                     # output processes: TT; ...
-                    if sample_category in [ "signal" ]:
+                    if sample_category in self.signalProcs:
                       lepton_and_hadTau_genMatches = []
                       lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_nonfakes)
                       lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_conversions)
@@ -501,14 +501,14 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                     elif sample_category in self.procsWithDecayModes :
                       lepton_and_hadTau_genMatches = []
                       lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_nonfakes)
-                      if sample_category == "ttH" :
+                      if sample_category in self.ttHProcs :
                         lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_conversions)
                       processes_input = []
                       ## X: save also the process without the decay modes: do we need?
                       if sample_category == "VH" : processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in lepton_and_hadTau_genMatches ])
                       if sample_category in ["tHq", "tHW"] : processes_input.extend([ "%s_%s_%s" % (sample_category, "kt_1p0_kv_1p0", genMatch) for genMatch in lepton_and_hadTau_genMatches ])
                       for decayMode in self.decayModes :
-                        if not sample_category == "ttH" and  decayMode in ["hmm", "hzg"] : continue
+                        if sample_category not in self.ttHProcs and  decayMode in ["hmm", "hzg"] : continue
                         if sample_category in ["tHq", "tHW"] :
                             for thcoupling in thcouplings :
                                 processes_input.extend([ "%s_%s_%s_%s" % (sample_category, decayMode, thcoupling, genMatch) for genMatch in lepton_and_hadTau_genMatches ])
@@ -521,7 +521,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                     # sum conversion background contributions for each MC sample separately
                     # input processes: TT0l1g0j,...
                     # output processes: TT_conversions; ...
-                    if sample_category in [ "signal" ]:
+                    if sample_category in self.signalProcs:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_conversions ]
                     elif sample_category in self.procsWithDecayModes :
                       processes_input = []
@@ -529,7 +529,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                       if sample_category == "VH" : processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_conversions ])
                       if sample_category in ["tHq", "tHW"] : processes_input.extend([ "%s%s_%s_" % (sample_category, genMatch, "kt_1p0_kv_1p0") for genMatch in self.lepton_and_hadTau_genMatches_conversions ])
                       for decayMode in self.decayModes :
-                          if not sample_category == "ttH" and decayMode in ["hmm", "hzg"] : continue
+                          if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
                           if sample_category in ["tHq", "tHW"] :
                               for thcoupling in thcouplings :
                                   processes_input.extend([ "%s_%s_%s_%s_" % (sample_category, decayMode, thcoupling, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_conversions ])
@@ -543,7 +543,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                     # sum fake background contributions for each MC sample separately
                     # input processes: TT1l0g0j&1t0e0m1j, TT1l0g0j&0t1e0m1j, TT1l0g0j&0t0e1m1j, TT1l0g0j&0t0e0m2j; ...
                     # output processes: TT_fake; ...
-                    if sample_category in [ "signal" ]:
+                    if sample_category in self.signalProcs:
                       processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ]
                     elif sample_category in self.procsWithDecayModes:
                       processes_input = []
@@ -553,7 +553,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                           processes_input.extend([ "%s_%s_%s" % (sample_category, "kt_1p0_kv_1p0", genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
                           #print ("%s_%s_%s" % (sample_category, "kt_1p0_kv_1p0", genMatch) )
                       for decayMode in self.decayModes :
-                          if not sample_category == "ttH" and decayMode in ["hmm", "hzg"] : continue
+                          if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
                           if sample_category in ["tHq", "tHW"] :
                               for thcoupling in thcouplings :
                                   #print ("%s_%s_%s_%s" % (sample_category, decayMode, thcoupling, genMatch))
@@ -613,7 +613,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           key_addBackgrounds_job_fakes = getKey(*addBackgrounds_job_fakes_tuple)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
-          sample_categories.extend([ "signal" ])
+          sample_categories.extend(self.signalProcs)
           processes_input = []
           for sample_category in sample_categories:
             processes_input.append("%s_fake" % sample_category)
@@ -635,7 +635,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           key_addBackgrounds_job_conversions = getKey(*addBackgrounds_job_conversions_tuple)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
-          sample_categories.extend([ "signal"])
+          sample_categories.extend(self.signalProcs)
           processes_input = []
           for sample_category in sample_categories:
             processes_input.append("%s_conversion" % sample_category)

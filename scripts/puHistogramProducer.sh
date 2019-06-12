@@ -3,7 +3,7 @@
 # The script takes a text file as an input which has the following format:
 # 1) input files from which the PU distributions are taken from, are listed one per line
 # 2) this is followed by a blank line
-# 3) which is followed by the output file name
+# 3) which is followed by year, process name and the output file name
 #
 # Example:
 #
@@ -11,7 +11,7 @@
 # tree_2.root
 # tree_3.root
 #
-# output.root
+# 2017 process_name output.root
 #
 # NB!! Do not source this file, it may kill your shell session!
 

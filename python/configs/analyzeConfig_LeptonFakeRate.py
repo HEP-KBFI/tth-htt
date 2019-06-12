@@ -459,7 +459,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           if central_or_shift != "central" and not is_mc:
             continue
 
-          if central_or_shift in systematics.LHE().ttH and sample_category != "signal":
+          is_signal = sample_category in self.signalProcs
+          if central_or_shift in systematics.LHE().ttH and not is_signal:
             continue
           if central_or_shift in systematics.LHE().ttW and sample_category != "TTW":
             continue
@@ -531,7 +532,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     key_addBackgrounds_job = getKey("fakes_mc")
     sample_categories = []
     sample_categories.extend(self.nonfake_backgrounds)
-    sample_categories.extend([ "signal" ])
+    sample_categories.extend(self.signalProcs)
     processes_input = []
     for sample_category in sample_categories:
       processes_input.append("%sj" % sample_category)

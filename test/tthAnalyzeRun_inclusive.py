@@ -10,7 +10,7 @@ import os
 import sys
 import getpass
 
-# E.g. to run: ./tthAnalyzeRun_inclusive.py -v 2017Dec13 -e 2017 -o syncTree
+# E.g. to run: ./test/tthAnalyzeRun_inclusive.py -v 2017Dec13 -e 2017 -o syncTree
 
 sys_choices      = [ "full" ] + systematics.an_inclusive_opts
 systematics.full = systematics.an_inclusive

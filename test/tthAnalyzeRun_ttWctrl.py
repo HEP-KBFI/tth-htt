@@ -10,9 +10,9 @@ import os
 import sys
 import getpass
 
-# E.g.: ./tthAnalyzeRun_ttWctrl.py -v 2017Dec13 -e 2017
+# E.g.: ./test/tthAnalyzeRun_ttWctrl.py -v 2017Dec13 -e 2017
 
-mode_choices     = [ 'default', 'sync', 'sync_wMEM', 'coupling_study' ]
+mode_choices     = [ 'default', 'sync', 'sync_wMEM' ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts
 systematics.full = systematics.an_common
 
@@ -68,8 +68,6 @@ elif mode == 'sync_wMEM':
   samples = load_samples(era, suffix = 'addMEM_sync' if use_nonnominal else 'addMEM_sync_nom')
 elif mode == 'sync':
   samples = load_samples(era, suffix = 'sync' if use_nonnominal else 'sync_nom')
-elif mode == "coupling_study":
-  samples = load_samples(era, suffix = "ctcvcp")
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
@@ -116,7 +114,6 @@ if __name__ == '__main__':
     use_home                  = use_home,
     do_sync                   = do_sync,
     use_nonnominal            = use_nonnominal,
-    #coupling_study            = mode == "coupling_study",
     rle_select                = rle_select,
   )
 

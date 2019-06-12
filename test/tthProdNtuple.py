@@ -9,7 +9,7 @@ import os
 import sys
 import getpass
 
-# E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
+# E.g.: ./test/tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
 mode_choices = [
   'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh', 'hh_bbww', 'hh_bkg', 'hh_wjets',
