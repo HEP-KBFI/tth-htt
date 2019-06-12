@@ -709,7 +709,9 @@ int main(int argc, char* argv[])
         Form("%s/sel/mvaInputs_HTT_sum", histogramDir.data()), era_string, central_or_shift));
       selHistManager->mvaInputVariables_HTT_sum_->bookHistograms(fs, mvaInputVariables_HTT_sumSort);
 
-      for(const std::string & evt_cat_str: evt_cat_strs)
+      if ( !isSignal )
+      {
+        for(const std::string & evt_cat_str: evt_cat_strs)
       {
         const std::string process_string_new = evt_cat_str == default_cat_str ?
           process_string + "_" :
@@ -723,6 +725,7 @@ int main(int argc, char* argv[])
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
         ));
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
+      }
       }
 
       const vstring decayModes_evt = eventInfo.getDecayModes();
@@ -1840,7 +1843,9 @@ int main(int argc, char* argv[])
         evtWeight
       ;
     }
-    for(const auto & kv: tH_weight_map)
+    if ( !isSignal )
+    {
+      for(const auto & kv: tH_weight_map)
     {
       selHistManager->evt_[kv.first]->fillHistograms(
         selElectrons.size(),
@@ -1856,6 +1861,7 @@ int main(int argc, char* argv[])
         mvaOutput_plainKin_SUM_VT,
         mTauTauVis,
         kv.second);
+    }
     }
     if( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
@@ -2130,8 +2136,11 @@ int main(int argc, char* argv[])
       int idxLepton = leptonGenMatch_definition->idx_;
       int idxHadTau = hadTauGenMatch_definition->idx_;
 
+      if ( !(isMC_tH || isMC_VH || isSignal))
+      {
       const TH1* histogram_EventCounter = selHistManagers[idxLepton][idxHadTau]->evt_[default_cat_str]->getHistogram_EventCounter();
       std::cout << " " << process_and_genMatch << " = " << histogram_EventCounter->GetEntries() << " (weighted = " << histogram_EventCounter->Integral() << ")" << std::endl;
+    } // X: else print it on SM by decay mode
     }
   }
 
