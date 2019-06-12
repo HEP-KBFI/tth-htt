@@ -21,16 +21,6 @@ const std::map<std::string, Int_t> EventInfo::decayMode_idString_singleHiggs =
   { "hmm",     13 },
 };
 
-const std::map<std::string, Int_t> EventInfo::decayMode_idString_diHiggs_multilepton =
-{
-  { "tttt",       15 },
-  { "zzzz",       23 },
-  { "wwww",       24 },
-  { "ttzz", 15000023 },
-  { "ttww", 15000024 },
-  { "zzww", 23000024 },
-};
-
 EventInfo::EventInfo()
   : EventInfo(false)
 {}
@@ -41,7 +31,6 @@ EventInfo::EventInfo(bool is_mc,
   , lumi(0)
   , event(0)
   , genHiggsDecayMode(-1)
-  , genDiHiggsDecayMode(-1)
   , genWeight(1.)
   , pileupWeight(1.)
   , is_signal_(is_signal)
@@ -66,7 +55,6 @@ EventInfo::operator=(const EventInfo & eventInfo)
   lumi                = eventInfo.lumi;
   event               = eventInfo.event;
   genHiggsDecayMode   = eventInfo.genHiggsDecayMode;
-  genDiHiggsDecayMode = eventInfo.genDiHiggsDecayMode;
   genWeight           = eventInfo.genWeight;
 
   is_signal_ = eventInfo.is_signal_;
@@ -187,12 +175,6 @@ EventInfo::getDecayModeString() const
 }
 
 std::string
-EventInfo::getDiHiggsDecayModeString() const
-{
-  return EventInfo::getDecayModeString(decayMode_idString_diHiggs_multilepton);
-}
-
-std::string
 EventInfo::getDecayModeString(const std::map<std::string, Int_t> & decayMode_idString) const
 {
   if(! is_signal_)
@@ -216,12 +198,6 @@ std::vector<std::string>
 EventInfo::getDecayModes()
 {
   return getDecayModes(decayMode_idString_singleHiggs);
-}
-
-std::vector<std::string>
-EventInfo::getDiHiggsDecayModes()
-{
-  return getDecayModes(decayMode_idString_diHiggs_multilepton);
 }
 
 std::vector<std::string>

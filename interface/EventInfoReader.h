@@ -19,7 +19,7 @@ public:
                            PUsys puSys_option = PUsys::central,
                            bool read_genHiggsDecayMode = true,
                            bool read_puWeight = true);
-  ~EventInfoReader() {}
+  ~EventInfoReader() override {}
 
   void
   setBranchAddresses(TTree * tree) override;

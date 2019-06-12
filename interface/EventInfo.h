@@ -25,7 +25,6 @@ public:
   UInt_t    lumi;                ///< luminosity
   ULong64_t event;               ///< event number
   Int_t     genHiggsDecayMode;   ///< Higgs decay mode (only if ttH signal MC)
-  Int_t     genDiHiggsDecayMode; ///< Decay mode of both Higgs bosons (only if HH signal MC)
   Float_t   genWeight;           ///< generator-level weight (only if MC)
   Float_t   pileupWeight;        ///< pile-up weight (only if MC)
 
@@ -57,14 +56,8 @@ public:
   std::string
   getDecayModeString() const;
 
-  std::string
-  getDiHiggsDecayModeString() const;
-
   static std::vector<std::string>
   getDecayModes();
-
-  static std::vector<std::string>
-  getDiHiggsDecayModes();
 
   std::string
   str() const;
@@ -86,7 +79,6 @@ protected:
 
   std::map<std::string, std::pair<int, double>> tH_sf;
   static const std::map<std::string, Int_t> decayMode_idString_singleHiggs;
-  static const std::map<std::string, Int_t> decayMode_idString_diHiggs_multilepton;
 
   std::string
   getDecayModeString(const std::map<std::string, Int_t> & decayMode_idString) const;
