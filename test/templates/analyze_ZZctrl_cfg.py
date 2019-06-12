@@ -59,6 +59,7 @@ process.analyze_ZZctrl = cms.PSet(
     electronSelection = cms.string(''),
     muonSelection = cms.string(''),
     apply_leptonGenMatching = cms.bool(True),
+    hadTauSelection = cms.string(''),
 
     chargeSumSelection = cms.string(''),
 
@@ -86,6 +87,7 @@ process.analyze_ZZctrl = cms.PSet(
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
+    branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
     branchName_memOutput = cms.string(''),
@@ -105,7 +107,7 @@ process.analyze_ZZctrl = cms.PSet(
     selEventsFileName_output = cms.string(''),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
-    
+
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
