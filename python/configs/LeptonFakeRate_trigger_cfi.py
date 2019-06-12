@@ -52,7 +52,7 @@ triggers_mu_cfg_2016 = cms.VPSet(
     is_trigger_2mu = cms.bool(True),
     is_trigger_1e = cms.bool(False),
     is_trigger_2e = cms.bool(False)
-  )
+  ),
 )
 
 triggers_e_cfg_2016 = cms.VPSet(
@@ -81,7 +81,46 @@ triggers_e_cfg_2016 = cms.VPSet(
     is_trigger_2mu = cms.bool(False),
     is_trigger_1e = cms.bool(False),
     is_trigger_2e = cms.bool(True)
-  )
+  ),
+#   cms.PSet(
+#     path = cms.vstring("HLT_Ele8_CaloIdM_TrackIdM_PFJet30"),
+#     cone_minPt = cms.double(20.), # to be confirmed
+#     cone_maxPt = cms.double(30.), # to be confirmed
+#     jet_minPt = cms.double(30.),
+# #    pufile    = cms.FileInPath(""), # PU file to be implemented later
+#     average_prescale = cms.double(5140), # prescale factor 5140.3 (5135.5 from delivery)
+#     prescale_rand_mc = cms.double(25.), # to be confirmed
+#     is_trigger_1mu = cms.bool(False),
+#     is_trigger_2mu = cms.bool(False),
+#     is_trigger_1e = cms.bool(False),
+#     is_trigger_2e = cms.bool(True)
+#   ),
+#   cms.PSet(
+#     path = cms.vstring("HLT_Ele23_CaloIdM_TrackIdM_PFJet30"),
+#     cone_minPt = cms.double(30.), # to be confirmed
+#     cone_maxPt = cms.double(100000.), # to be confirmed
+#     jet_minPt = cms.double(30.),
+# #    pufile    = cms.FileInPath(""), # PU file to be implemented later
+#     average_prescale = cms.double(572), # prescale factor 572.4 (573.4 from delivery)
+#     prescale_rand_mc = cms.double(25.), # to be confirmed
+#     is_trigger_1mu = cms.bool(False),
+#     is_trigger_2mu = cms.bool(False),
+#     is_trigger_1e = cms.bool(False),
+#     is_trigger_2e = cms.bool(True)
+#   ),
+#   cms.PSet(
+#     path = cms.vstring("HLT_Ele10_CaloIdM_TrackIdM_CentralPFJet30_BTagCSV_p13"),
+#     cone_minPt = cms.double(20.), # to be confirmed
+#     cone_maxPt = cms.double(30.), # to be confirmed
+#     jet_minPt = cms.double(30.),
+# #    pufile    = cms.FileInPath(""), # PU file to be implemented later
+#     average_prescale = cms.double(80.5), # prescale factor 80.5 (80.6 from delivery)
+#     prescale_rand_mc = cms.double(25.), # to be confirmed
+#     is_trigger_1mu = cms.bool(False),
+#     is_trigger_2mu = cms.bool(False),
+#     is_trigger_1e = cms.bool(False),
+#     is_trigger_2e = cms.bool(True)
+#   ),
 )
 
 triggers_mu_cfg_2017 = cms.VPSet(
@@ -149,7 +188,7 @@ triggers_mu_cfg_2017 = cms.VPSet(
     is_trigger_2mu = cms.bool(False),
     is_trigger_1e = cms.bool(False),
     is_trigger_2e = cms.bool(False)
-  )
+  ),
 )
 
 triggers_e_cfg_2017 = cms.VPSet(
@@ -191,7 +230,7 @@ triggers_e_cfg_2017 = cms.VPSet(
     is_trigger_2mu = cms.bool(False),
     is_trigger_1e = cms.bool(True),
     is_trigger_2e = cms.bool(False)
-  )
+  ),
 )
 
 triggers_mu_cfg_2018 = cms.VPSet(
@@ -259,7 +298,7 @@ triggers_mu_cfg_2018 = cms.VPSet(
     is_trigger_2mu = cms.bool(False),
     is_trigger_1e = cms.bool(False),
     is_trigger_2e = cms.bool(False)
-  )
+  ),
 )
 
 triggers_e_cfg_2018 = cms.VPSet(
@@ -301,5 +340,5 @@ triggers_e_cfg_2018 = cms.VPSet(
     is_trigger_2mu = cms.bool(False),
     is_trigger_1e = cms.bool(True),
     is_trigger_2e = cms.bool(False)
-  )
+  ),
 )
