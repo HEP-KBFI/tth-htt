@@ -23,18 +23,17 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
   switch(era_)
   {
     case kEra_2016:
-    case kEra_2018:
     case kEra_2017:
+    case kEra_2018:
     {
       min_pt_ = 5.; // F
-      min_mvaTTH_ = 0.90; // Table 6 in AN2017_029_v5
-      max_jetBtagCSV_ = get_BtagWP(kEra_2017, Btag::kDeepCSV, BtagWP::kMedium);  // F; [*]
+      min_mvaTTH_ = 0.85; // T
+      max_jetBtagCSV_ = get_BtagWP(kEra_2017, Btag::kDeepCSV, BtagWP::kMedium);  // F
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
   // F -- inherited from the fakeable selection
-  //      https://gitlab.cern.ch/ttH_leptons/doc/blob/dbb7082bb3668bb3e839293602bc16f47f11c515/2017/objects.md
   // T -- additional tight cut not applied in the fakeable selection
   assert(min_pt_ > 0.);
   assert(min_mvaTTH_ > 0.);

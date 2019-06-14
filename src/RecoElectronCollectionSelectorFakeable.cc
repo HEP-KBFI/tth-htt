@@ -25,23 +25,23 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   switch(era_)
   {
     case kEra_2016:
-    case kEra_2018:
     case kEra_2017:
+    case kEra_2018:
     {
       min_cone_pt_ = 10.; // F
       min_lepton_pt_ = 7.; // L
-      binning_absEta_ = { 1.479 }; // F; [*]
+      binning_absEta_ = { 1.479 }; // F
       min_pt_trig_ = -1.; // LFR sync; used to be 30 GeV Lines:237-240 in AN_2017_029_v5
-      max_sigmaEtaEta_trig_ = { 0.011, 0.030 }; // F; [*]
-      max_HoE_trig_ = { 0.10, 0.10 }; // F; [*]
-      max_deltaEta_trig_ = { +1.e+3, +1.e+3 }; // F; [*]
-      max_deltaPhi_trig_ = { +1.e+3, +1.e+3 }; // F; [*]
-      min_OoEminusOoP_trig_ = -0.04; // F; [*]
-      max_OoEminusOoP_trig_ = { +1.e+3, +1.e+3 }; // F; [*]
-      binning_mvaTTH_ = { 0.90 }; // F; Table 7 in AN2017_029_v5
-      min_jetPtRatio_ = { 0.60, -1.e+3 }; // F; [*]
-      min_mvaIDraw_ = { 0.50, -1.e+3 }; // F; [*]
-      max_jetBtagCSV_ = { 0.07, get_BtagWP(kEra_2017, Btag::kDeepCSV, BtagWP::kMedium) }; // F; [*]
+      max_sigmaEtaEta_trig_ = { 0.011, 0.030 }; // F
+      max_HoE_trig_ = { 0.10, 0.10 }; // F
+      max_deltaEta_trig_ = { +1.e+3, +1.e+3 }; // F
+      max_deltaPhi_trig_ = { +1.e+3, +1.e+3 }; // F
+      min_OoEminusOoP_trig_ = -0.04; // F
+      max_OoEminusOoP_trig_ = { +1.e+3, +1.e+3 }; // F
+      binning_mvaTTH_ = { 0.80 }; // F
+      min_jetPtRatio_ = { 0.60, -1.e+3 }; // F
+      min_mvaIDraw_ = { 0.50, -1.e+3 }; // F
+      max_jetBtagCSV_ = { 0.07, get_BtagWP(kEra_2017, Btag::kDeepCSV, BtagWP::kMedium) }; // F
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
@@ -59,7 +59,6 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   assert(min_mvaIDraw_.size() == binning_mvaTTH_.size() + 1);
   // L -- inherited from the preselection (loose cut)
   // F -- additional fakeable cut not applied in the preselection
-  // [*] https://gitlab.cern.ch/ttH_leptons/doc/blob/dbb7082bb3668bb3e839293602bc16f47f11c515/2017/objects.md
 }
 
 void

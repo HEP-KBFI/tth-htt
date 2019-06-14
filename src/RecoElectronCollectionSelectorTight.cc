@@ -25,8 +25,8 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   switch(era_)
   {
     case kEra_2016:
-    case kEra_2018:
     case kEra_2017:
+    case kEra_2018:
     {
       min_pt_ = 7.; // F
       binning_absEta_ = { 1.479 }; // F
@@ -37,7 +37,7 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
       max_deltaPhi_trig_ = { +1.e+3, +1.e+3 }; // F
       min_OoEminusOoP_trig_ = -0.04; // F
       max_OoEminusOoP_trig_ = { +1.e+3, +1.e+3 }; // F
-      min_mvaTTH_ = 0.90; // Table 7 in AN2017_029_v5
+      min_mvaTTH_ = 0.80; // T
       max_jetBtagCSV_ = get_BtagWP(kEra_2017, Btag::kDeepCSV, BtagWP::kMedium); // F
       break;
     }
@@ -51,7 +51,6 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   assert(max_deltaPhi_trig_.size() == binning_absEta_.size() + 1);
   assert(max_OoEminusOoP_trig_.size() == binning_absEta_.size() + 1);
   // F -- inherited from the fakeable selection
-  //      https://gitlab.cern.ch/ttH_leptons/doc/blob/dbb7082bb3668bb3e839293602bc16f47f11c515/2017/objects.md
   // T -- additional tight cut not applied in the fakeable selection
 }
 
