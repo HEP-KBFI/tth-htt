@@ -1212,7 +1212,7 @@ class analyzeConfig(object):
             # the sbatch job checks the existance of the file anyways
             #for outputFile in outputFiles.values():
             #    lines_makefile.append("\t%s %s" % ("rm -f", outputFile))
-            sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, label))
+            sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s.py" % self.channel)
             jobOptions = {}
             for key in outputFiles.keys():
                 scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]))

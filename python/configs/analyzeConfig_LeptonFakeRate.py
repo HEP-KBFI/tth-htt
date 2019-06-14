@@ -343,14 +343,14 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
   def addToMakefile_backgrounds_from_data(self, lines_makefile):
-    self.addToMakefile_hadd_stage1_5(lines_makefile)
-    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_sum", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
-    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_LeptonFakeRate", self.sbatchFile_addBackgrounds_LeptonFakeRate, self.jobOptions_addBackgrounds_LeptonFakeRate)
-    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_Convs_LeptonFakeRate", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
+    self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_hadd_stage1", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds)
+    self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds_sum")
+    self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_LeptonFakeRate", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_LeptonFakeRate, self.jobOptions_addBackgrounds_LeptonFakeRate)
+    self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_Convs_LeptonFakeRate", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
 
   def addToMakefile_backgrounds_from_MC(self, lines_makefile):
-    self.addToMakefile_hadd_stage1_5(lines_makefile)
-    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_Convs_LeptonFakeRate", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
+    self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds_sum")
+    self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_Convs_LeptonFakeRate", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
 
   def addToMakefile_combine(self, lines_makefile):
     jobOptions = self.jobOptions_combine
@@ -468,7 +468,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             continue
 
           key_analyze_dir = getKey(process_name, central_or_shift)
-          analyze_job_tuple = getKey(process_name, central_or_shift, jobId)
+          analyze_job_tuple = (process_name, central_or_shift, jobId)
           key_analyze_job = getKey(*analyze_job_tuple)
           ntupleFiles = inputFileList[jobId]
           if len(ntupleFiles) == 0:
@@ -476,13 +476,13 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             continue
 
           rleOutputFile = os.path.join(
-            self.dirs[key_dir][DKEY_RLES],
-          "rle_{channel}_{process_name}_{central_or_shift}_{jobId}_%s_%s.txt".format(
-            channel          = self.channel,
-            process_name     = process_name,
-            central_or_shift = central_or_shift,
-            jobId            = jobId,
-          )) if self.select_rle_output else ""
+            self.dirs[key_analyze_dir][DKEY_RLES],
+            "rle_{channel}_{process_name}_{central_or_shift}_{jobId}_%s_%s.txt".format(
+              channel          = self.channel,
+              process_name     = process_name,
+              central_or_shift = central_or_shift,
+              jobId            = jobId,
+            )) if self.select_rle_output else ""
 
           cfgFile_modified_path = os.path.join(self.dirs[key_analyze_dir][DKEY_CFGS], "analyze_%s_%s_%i_cfg.py" % analyze_job_tuple)
           logFile_path          = os.path.join(self.dirs[key_analyze_dir][DKEY_LOGS], "analyze_%s_%s_%i.log" % analyze_job_tuple)
@@ -530,14 +530,14 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     # output process: fakes_mc
     key_hadd_stage1_5_job = getKey('')
     key_addBackgrounds_dir = getKey("addBackgrounds")
-    key_addBackgrounds_job = getKey("fakes_mc")
+    key_addBackgrounds_job_sum = getKey("fakes_mc")
     sample_categories = []
     sample_categories.extend(self.nonfake_backgrounds)
     sample_categories.extend(self.signalProcs)
     processes_input = []
     for sample_category in sample_categories:
       processes_input.append("%sj" % sample_category)
-      self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job] = {
+      self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_sum] = {
         'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
         'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_cfg.py" % "fakes_mc"),
         'outputFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackgrounds_%s.root" % "fakes_mc"),
@@ -553,27 +553,27 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         'histogramsToCopy' : list(self.histograms_to_fit.keys()),
         'sysShifts' : []
       }
-      self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job])
+      self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_sum])
 
     # create configuration files to run 'addBackgrounds_LeptonFakeRate'
-    key_addBackgrounds_job = getKey('')
-    self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job] = {
+    key_addBackgrounds_job_leptonFR = getKey('')
+    self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job_leptonFR] = {
       'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
       'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], os.path.basename(self.cfgFile_addBackgrounds_LeptonFakeRate)),
       'outputFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackground_LeptonFakeRate.root"),
       'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], os.path.basename(self.cfgFile_addBackgrounds_LeptonFakeRate.replace("_cfg.py", ".log")) ),
     }
-    self.createCfg_addBackgrounds_LeptonFakeRate(self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job])
+    self.createCfg_addBackgrounds_LeptonFakeRate(self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job_leptonFR])
 
     # create configuration files to run 'addBackgrounds_Convs_LeptonFakeRate'
-    key_addBackgrounds_job = getKey('')
-    self.jobOptions_addBackgrounds_Convs_LeptonFakeRate[key_addBackgrounds_job] = {
+    key_addBackgrounds_job_conv = getKey('')
+    self.jobOptions_addBackgrounds_Convs_LeptonFakeRate[key_addBackgrounds_job_conv] = {
       'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
       'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], os.path.basename(self.cfgFile_addBackgrounds_Convs_LeptonFakeRate)),
       'outputFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackground_Convs_LeptonFakeRate.root"),
       'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], os.path.basename(self.cfgFile_addBackgrounds_Convs_LeptonFakeRate.replace("_cfg.py", ".log")) ),
     }
-    self.createCfg_addBackgrounds_Convs_LeptonFakeRate(self.jobOptions_addBackgrounds_Convs_LeptonFakeRate[key_addBackgrounds_job])
+    self.createCfg_addBackgrounds_Convs_LeptonFakeRate(self.jobOptions_addBackgrounds_Convs_LeptonFakeRate[key_addBackgrounds_job_conv])
 
 
     # initialize input and output file names for hadd_stage2
@@ -583,9 +583,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       self.inputFiles_hadd_stage2[key_hadd_stage2_job] = []
     # CV: hadd_stage_1_5 output file does not need to be added as input for hadd_stage_2,
     #     as addBackgrounds_LeptonFakeRate output file contains all histograms except fakes_mc
-    self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job]['outputFile'])
-    self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'])
-    self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_Convs_LeptonFakeRate[key_addBackgrounds_job]['outputFile'])
+    self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_sum]['outputFile'])
+    self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job_leptonFR]['outputFile'])
+    self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_Convs_LeptonFakeRate[key_addBackgrounds_job_conv]['outputFile'])
     self.outputFile_hadd_stage2[key_hadd_stage2_job] = os.path.join(self.dirs[key_hadd_stage2_dir][DKEY_HIST], "hadd_stage2.root")
 
     # We need to generate the eta and pt bins for electrons and muons
@@ -802,7 +802,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       key_comp_LeptonFakeRate = getKey('')
       leptonFR_final_output = os.path.join(combine_output_dir, 'leptonFakeRates.root')
       self.jobOptions_comp_LeptonFakeRate[key_comp_LeptonFakeRate] = {
-        'inputFile'            : [ fit_value_file, self.outputFile_hadd_stage2[key_hadd_stage2] ],
+        'inputFile'            : [ fit_value_file, self.outputFile_hadd_stage2[key_hadd_stage2_job] ],
         'outputFile'           : leptonFR_final_output,
         'absEtaBins_e'         : self.absEtaBins_e,
         'ptBins_e'             : self.ptBins_e,
@@ -834,7 +834,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.addToMakefile_hadd_stage1(lines_makefile)
     self.addToMakefile_backgrounds_from_data(lines_makefile) ## this step now does both e Conv, fakes_data and fakes_mc computation
     # self.addToMakefile_backgrounds_from_MC(lines_makefile)
-    self.addToMakefile_hadd_stage2(lines_makefile)
+    self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = "phony_addBackgrounds_LeptonFakeRate phony_addBackgrounds_Convs_LeptonFakeRate")
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_combine(lines_makefile)
     self.addToMakefile_comp_LeptonFakeRate(lines_makefile)
@@ -844,5 +844,5 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
     return self.num_jobs
 
-  
-      
+
+
