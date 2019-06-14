@@ -24,6 +24,7 @@ parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_rle_select()
+parser.add_lep_mva_wp(default_wp = 'ttZctrl')
 parser.add_nonnominal()
 parser.add_hlt_filter()
 args = parser.parse_args()
@@ -43,6 +44,7 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+lep_mva_wp        = args.lep_mva_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 rle_select        = os.path.expanduser(args.rle_select)
@@ -88,6 +90,7 @@ if __name__ == '__main__':
     samples                               = samples,
     hadTauVeto_selection                  = "dR03mvaLoose",
     applyFakeRateWeights                  = "3lepton",
+    lep_mva_wp                            = lep_mva_wp,
     jet_cleaning_by_index                 = jet_cleaning_by_index,
     gen_matching_by_index                 = gen_matching_by_index,
     central_or_shifts                     = central_or_shifts,

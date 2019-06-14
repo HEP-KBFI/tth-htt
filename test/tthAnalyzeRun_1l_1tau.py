@@ -27,7 +27,6 @@ parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
-parser.add_lep_mva_wp()
 args = parser.parse_args()
 
 # Common arguments
@@ -50,7 +49,6 @@ use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
 files_per_job     = args.files_per_job
 use_home          = args.use_home
-lep_mva_wp        = args.lep_mva_wp
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 
@@ -110,7 +108,6 @@ if __name__ == '__main__':
     executable_analyze                    = "analyze_1l_1tau",
     cfgFile_analyze                       = "analyze_1l_1tau_cfg.py",
     samples                               = samples,
-    lep_mva_wp                            = lep_mva_wp,
     hadTau_selection                      = hadTau_selection,
     hadTau_selection_veto                 = "dR03mvaMedium", # To avoid overlap w/ 1l+2tau SR
     chargeSumSelections                   = [ "disabled" ], # CV: setting chargeSumSelections to 'disabled' will run OS and SS lepton+tau charge selections as separate categories

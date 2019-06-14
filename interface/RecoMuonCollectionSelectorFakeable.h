@@ -20,6 +20,9 @@ public:
   bool
   operator()(const RecoMuon & muon) const;
 
+  void set_mvaTTH_wp(double mvaTTH_wp);
+  double get_mvaTTH_wp() const;
+
   void
   set_selection_flags(bool selection_flags);
 
@@ -40,7 +43,7 @@ protected:
 //--- define cuts that dependent on lepton MVA of ttH multilepton analysis 
 //    format: muon fails / passes loose cut on lepton MVA value
   typedef std::vector<Double_t> vDouble_t;  
-  vDouble_t binning_mvaTTH_;          ///< lepton MVA threshold
+  Double_t  wp_mvaTTH_;               ///< lepton MVA threshold
   vDouble_t min_jetPtRatio_;          ///< lower cut on ratio of lepton pT to pT of nearby jet
   vDouble_t max_jetBtagCSV_;          ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet
 //-------------------------------------------------------------------------------

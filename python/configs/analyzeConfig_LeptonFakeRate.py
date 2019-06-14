@@ -296,10 +296,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['inputFile'])
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['outputFile'])
-    lines.append("process.comp_LeptonFakeRate.histogramName_e = cms.string('FR_mva%s_el_data_comb')" % self.lep_mva_wp)
+    lines.append("process.comp_LeptonFakeRate.histogramName_e = cms.string('FR_mva%s_el_data_comb')" % convert_lep_wp(self.lep_mva_cut_e))
     lines.append("process.comp_LeptonFakeRate.absEtaBins_e = cms.vdouble(%s)" % jobOptions['absEtaBins_e'])
     lines.append("process.comp_LeptonFakeRate.ptBins_e = cms.vdouble(%s)" % jobOptions['ptBins_e'])
-    lines.append("process.comp_LeptonFakeRate.histogramName_mu = cms.string('FR_mva%s_mu_data_comb')" % self.lep_mva_wp)
+    lines.append("process.comp_LeptonFakeRate.histogramName_mu = cms.string('FR_mva%s_mu_data_comb')" % convert_lep_wp(self.lep_mva_cut_mu))
     lines.append("process.comp_LeptonFakeRate.absEtaBins_mu = cms.vdouble(%s)" % jobOptions['absEtaBins_mu'])
     lines.append("process.comp_LeptonFakeRate.ptBins_mu = cms.vdouble(%s)" % jobOptions['ptBins_mu'])
     lines.append("process.comp_LeptonFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
@@ -501,7 +501,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'fillGenEvtHistograms'     : self.fillGenEvtHistograms,
             'triggers_mu_cfg'          : 'triggers_mu_cfg_%s' % self.era,
             'triggers_e_cfg'           : 'triggers_e_cfg_%s'  % self.era,
-            'lep_mva_cut'              : self.lep_mva_cut,
+            'lep_mva_cut_e'            : float(self.lep_mva_cut_e),
+            'lep_mva_cut_mu'           : float(self.lep_mva_cut_mu),
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 

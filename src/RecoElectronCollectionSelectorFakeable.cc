@@ -38,7 +38,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
       max_deltaPhi_trig_ = { +1.e+3, +1.e+3 }; // F
       min_OoEminusOoP_trig_ = -0.04; // F
       max_OoEminusOoP_trig_ = { +1.e+3, +1.e+3 }; // F
-      binning_mvaTTH_ = { 0.80 }; // F
+      wp_mvaTTH_ = 0.80; // F
       min_jetPtRatio_ = { 0.60, -1.e+3 }; // F
       min_mvaIDraw_ = { 0.50, -1.e+3 }; // F
       max_jetBtagCSV_ = { 0.07, get_BtagWP(kEra_2017, Btag::kDeepCSV, BtagWP::kMedium) }; // F
@@ -53,10 +53,9 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   assert(max_deltaEta_trig_.size() == binning_absEta_.size() + 1);
   assert(max_deltaPhi_trig_.size() == binning_absEta_.size() + 1);
   assert(max_OoEminusOoP_trig_.size() == binning_absEta_.size() + 1);
-  assert(binning_mvaTTH_.size() == 1);
-  assert(min_jetPtRatio_.size() == binning_mvaTTH_.size() + 1);
-  assert(max_jetBtagCSV_.size() == binning_mvaTTH_.size() + 1);
-  assert(min_mvaIDraw_.size() == binning_mvaTTH_.size() + 1);
+  assert(min_jetPtRatio_.size() == 2);
+  assert(max_jetBtagCSV_.size() == 2);
+  assert(min_mvaIDraw_.size() == 2);
   // L -- inherited from the preselection (loose cut)
   // F -- additional fakeable cut not applied in the preselection
 }
@@ -77,6 +76,17 @@ void
 RecoElectronSelectorFakeable::set_selection_flags(bool selection_flags)
 {
   set_selection_flags_ = selection_flags;
+}
+
+void RecoElectronSelectorFakeable::set_mvaTTH_wp(double wp_mvaTTH)
+{
+  std::cout << "setting cut on prompt-lepton MVA for fakeable electrons: " << wp_mvaTTH_ << '\n';
+  wp_mvaTTH_ = wp_mvaTTH;
+}
+
+double RecoElectronSelectorFakeable::get_mvaTTH_wp() const
+{
+  return wp_mvaTTH_;
 }
 
 bool
@@ -176,7 +186,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  const int idxBin_mvaTTH = electron.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
+  const std::size_t idxBin_mvaTTH = electron.mvaRawTTH() <= wp_mvaTTH_ ? 0 : 1;
 
   if(electron.jetPtRatio() < min_jetPtRatio_[idxBin_mvaTTH])
   {

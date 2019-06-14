@@ -26,7 +26,6 @@ parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
-parser.add_lep_mva_wp()
 args = parser.parse_args()
 
 # Common arguments

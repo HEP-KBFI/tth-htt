@@ -42,6 +42,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
         samples,
         hadTauVeto_selection,
         applyFakeRateWeights,
+        lep_mva_wp,
         jet_cleaning_by_index,
         gen_matching_by_index,
         central_or_shifts,
@@ -85,6 +86,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
       num_parallel_jobs         = num_parallel_jobs,
       histograms_to_fit         = histograms_to_fit,
       triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
+      lep_mva_wp                = lep_mva_wp,
       executable_prep_dcard     = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
       verbose                   = verbose,
@@ -360,6 +362,8 @@ class analyzeConfig_ttZctrl(analyzeConfig):
                 'syncRequireGenMatching'   : syncRequireGenMatching,
                 'useNonNominal'            : self.use_nonnominal,
                 'apply_hlt_filter'         : self.hlt_filter,
+                'lep_mva_cut_e'            : float(self.lep_mva_cut_e),
+                'lep_mva_cut_mu'           : float(self.lep_mva_cut_mu),
               }
               self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)
 

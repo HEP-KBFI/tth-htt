@@ -1,4 +1,5 @@
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import LEP_MVA_WPS
 
 import argparse
 import datetime
@@ -171,10 +172,12 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Use /home instead of /scratch for SLURM jobs',
     )
 
-  def add_lep_mva_wp(self, default_wp = '090'):
+  def add_lep_mva_wp(self, default_wp = ''):
+    if default_wp:
+      assert(default_wp in LEP_MVA_WPS)
     self.add_argument('-L', '--lepton-mva-wp',
-      type = str, dest = 'lep_mva_wp', metavar = 'lepton MVA WP', default = default_wp, required = False,
-      choices = [ '075', '090' ],
+      type = str, dest = 'lep_mva_wp', metavar = 'lepton MVA WP', choices = list(LEP_MVA_WPS.keys()),
+      required = not bool(default_wp), default = default_wp,
       help = 'R|Lepton MVA WP',
     )
 

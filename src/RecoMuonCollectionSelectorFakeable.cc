@@ -28,7 +28,7 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
     {
       min_cone_pt_ = 10.; // F
       min_lepton_pt_ = 5.; // L
-      binning_mvaTTH_ = { 0.85 }; // F
+      wp_mvaTTH_ = 0.85; // F
       min_jetPtRatio_ = { 0.60, -1.e+3 }; // F
       min_segmentCompatibility_ = { 0.3, -1.e+3 }; // F
       max_jetBtagCSV_ = { 0.07, get_BtagWP(kEra_2017, Btag::kDeepCSV, BtagWP::kMedium) };  // F
@@ -37,12 +37,22 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
   assert(min_lepton_pt_ > 0.);
-  assert(binning_mvaTTH_.size() == 1);
-  assert(min_jetPtRatio_.size() == binning_mvaTTH_.size() + 1);
-  assert(min_segmentCompatibility_.size() == binning_mvaTTH_.size() + 1);
-  assert(max_jetBtagCSV_.size() == binning_mvaTTH_.size() + 1);
+  assert(min_jetPtRatio_.size() == 2);
+  assert(min_segmentCompatibility_.size() == 2);
+  assert(max_jetBtagCSV_.size() == 2);
   // L -- inherited from the preselection (loose cut)
   // F -- additional fakeable cut not applied in the preselection
+}
+
+void RecoMuonSelectorFakeable::set_mvaTTH_wp(double wp_mvaTTH)
+{
+  std::cout << "setting cut on prompt-lepton MVA for fakeable muons: " << wp_mvaTTH_ << '\n';
+  wp_mvaTTH_ = wp_mvaTTH;
+}
+
+double RecoMuonSelectorFakeable::get_mvaTTH_wp() const
+{
+  return wp_mvaTTH_;
 }
 
 bool
@@ -133,7 +143,7 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
     return false;
   }
 
-  const int idxBin = muon.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
+  const std::size_t idxBin = muon.mvaRawTTH() <= wp_mvaTTH_ ? 0 : 1;
 
   if(muon.jetPtRatio() < min_jetPtRatio_[idxBin])
   {
