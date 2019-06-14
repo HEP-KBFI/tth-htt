@@ -277,7 +277,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_hadd_stage2(lines_makefile)
+    self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = "phony_hadd_stage1")
     self.addToMakefile_prep_dcard(lines_makefile)
     self.createMakefile(lines_makefile)
 
