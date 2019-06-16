@@ -137,16 +137,14 @@ def get_log_version(list_of_log_files):
   Instead of passing log files one-by-one, the more consistent way of dealing with these things is
   to loop over a set of log files that represents a single joint iteration of the jobs.
   """
-  from tthAnalysis.HiggsToTauTau.hdfs import hdfs
-
-  if all(map(lambda path: not hdfs.exists(path), list_of_log_files)):
+  if all(map(lambda path: not os.path.exists(path), list_of_log_files)):
     # if none of the files exist, then retain the path names
     return list_of_log_files
   # loop over version numbers until none of the paths exist
   version_idx = 1
   while True:
     list_of_log_files_versioned = tuple(map(lambda path: "%s.%i" % (path, version_idx), list_of_log_files))
-    if all(map(lambda path: not hdfs.exists(path), list_of_log_files_versioned)):
+    if all(map(lambda path: not os.path.exists(path), list_of_log_files_versioned)):
       return list_of_log_files_versioned
     else:
       # some log files already exist -> increase the version number
