@@ -17,6 +17,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtag*
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorForward.h" // RecoJetSelectorForward
@@ -58,6 +59,9 @@
 #include <numeric> // std::accumulate()
 
 typedef std::vector<std::string> vstring;
+
+const int hadTauSelection_antiElectron = -1; // not applied
+const int hadTauSelection_antiMuon = -1; // not applied
 
 /**
  * @brief Run sync Ntuple in inclusive mode
@@ -317,6 +321,10 @@ main(int argc,
   fakeableHadTauSelector.set_if_looser(hadTauSelection_tauIdWP);
   fakeableHadTauSelector.set_min_antiElectron(-1);
   fakeableHadTauSelector.set_min_antiMuon(-1);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector(era, -1, isDEBUG);
+  tightHadTauSelector.set("dR03mvaMedium"); // X: it is used just for cleaning of AK8 jets, that is used only on channels that use Medium WP tau as tight tau
+  tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
+  tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
@@ -401,6 +409,7 @@ main(int argc,
                 << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
+    //if (!( eventInfo.event == 46622 )) continue;
 
     if(run_lumi_eventSelector && ! (*run_lumi_eventSelector)(eventInfo))
     {
@@ -499,6 +508,7 @@ main(int argc,
     const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselLeptons);
     const std::vector<const RecoHadTau *> preselHadTaus   = preselHadTauSelector  (cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> tightHadTaus = tightHadTauSelector(cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> selHadTaus = preselHadTaus;
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
@@ -641,7 +651,7 @@ main(int argc,
     const std::vector<RecoJetAK8> jetsAK8 = jetReaderAK8->read();
     const std::vector<const RecoJetAK8 *> jet_ptrsAK8raw1 = convert_to_ptrs(jetsAK8);
     const std::vector<const RecoJetAK8 *> jet_ptrsAK8raw = jetSelectorAK8(jet_ptrsAK8raw1, isHigherPt);
-    const std::vector<const RecoJetAK8 *> jet_ptrsAK8 = jetCleanerAK8SubJets(jet_ptrsAK8raw, selMuons, selElectrons, selHadTaus);
+    const std::vector<const RecoJetAK8 *> jet_ptrsAK8 = jetCleanerAK8SubJets(jet_ptrsAK8raw, tightMuons, tightElectrons, tightHadTaus);
     const std::vector<const RecoJet *> cleanedJets_fromAK8 = jetCleaner_large8(selJets, jet_ptrsAK8);
 
     snm->read(jet_ptrsAK8);
