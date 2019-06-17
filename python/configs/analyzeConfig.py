@@ -16,6 +16,11 @@ import uuid
 import inspect
 import copy
 
+LEP_MVA_WPS = {
+  'default' : 'mu=0.85;e=0.80',
+  'ttZctrl' : 'mu=0.85;e=0.50',
+}
+
 DEPENDENCIES = [
     "",  # CMSSW_BASE/src
     "tthAnalysis/NanoAOD",
@@ -44,6 +49,9 @@ DIRLIST = [
     DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES, DKEY_ROOT,
     DKEY_HADD_RT, DKEY_SYNC
 ]
+
+def convert_lep_wp(float_str):
+  return float_str.replace('.', '')
 
 class analyzeConfig(object):
     """Configuration metadata needed to run analysis in a single go.
@@ -98,7 +106,7 @@ class analyzeConfig(object):
           num_parallel_jobs,
           histograms_to_fit,
           triggers,
-          lep_mva_wp                      = "090",
+          lep_mva_wp                      = "default",
           executable_prep_dcard           = "prepareDatacards",
           executable_add_syst_dcard       = "addSystDatacards",
           executable_add_syst_fakerate    = "addSystFakeRates",
@@ -434,30 +442,23 @@ class analyzeConfig(object):
         self.leptonFakeRateWeight_inputFile = None
         self.leptonFakeRateWeight_histogramName_e = None
         self.leptonFakeRateWeight_histogramName_mu = None
-        self.lep_mva_cut = None
-        if self.lep_mva_wp == "0.90":
-            self.lep_mva_wp = "090"
-        elif self.lep_mva_wp == "0.75":
-            self.lep_mva_wp = "075"
 
-        if self.lep_mva_wp == "090":
-            if self.era not in [ "2016", "2017", "2018" ]:
-              raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
-            self.lep_mva_cut = 0.90
-        elif self.lep_mva_wp == "075":
-            raise ValueError("Lepton MVA WP %s not available for era %s" % (self.lep_mva_wp, self.era))
-        else:
-            raise ValueError("Invalid Configuration parameter 'lep_mva_wp' = %s !!" % self.lep_mva_wp)
+        self.lep_mva_cut_map = dict(map(
+          lambda lep_mva_cut: lep_mva_cut.split('='), LEP_MVA_WPS[self.lep_mva_wp].split(';')
+        ))
+        self.lep_mva_cut_mu = self.lep_mva_cut_map['mu']
+        self.lep_mva_cut_e = self.lep_mva_cut_map['e']
 
-        if self.era in [ '2016', '2017', '2018' ]:
-            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva%s_2017_CERN_2018May29.root" % self.lep_mva_wp
-        else:
-            raise ValueError('Invalid era: %s' % self.era)
+        # e.g. FR_lep_ttH_mva_default_2016.root, FR_lep_ttH_mva_ttZctrl_2017.root
+        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_{}.root".format(self.lep_mva_wp, self.era)
+        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva090_2017_CERN_2018May29.root"
+
         if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
             raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
         self.hadTau_selection_relaxed = None
         if self.era in [ '2016', '2017', '2018' ]:
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_{}.root".format(self.era)
             self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
         else:
             raise ValueError('Invalid era: %s' % self.era)
@@ -489,12 +490,14 @@ class analyzeConfig(object):
         return lines
 
     def set_leptonFakeRateWeightHistogramNames(self, central_or_shift, lepton_and_hadTau_selection):
-        if 'mcClosure' in lepton_and_hadTau_selection and self.era not in [ '2016', '2017', '2018' ]:
-          raise ValueError('Invalid selection for era %s: %s' % (self.era, lepton_and_hadTau_selection))
         suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection else 'data_comb'
-        if self.era in [ '2016', '2017', '2018' ]:
-          self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (self.lep_mva_wp, suffix)
-        self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (self.lep_mva_wp, suffix)
+
+        # e.g. FR_mva080_el_QCD_NC, FR_mva085_mu_data_comb
+        self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (convert_lep_wp(self.lep_mva_cut_e), suffix)
+        self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu), suffix)
+
+        self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_%s_NC" % suffix
+        self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_%s" % suffix
 
         leptonFakeRateWeight_histogramName_e_suffix = ''
         leptonFakeRateWeight_histogramName_mu_suffix = ''
@@ -507,15 +510,9 @@ class analyzeConfig(object):
         elif central_or_shift == "CMS_ttHl_FRe_shape_normDown":
             leptonFakeRateWeight_histogramName_e_suffix = '_down'
         elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelUp":
-            if self.era in [ '2016', '2017', '2018' ]:
-                leptonFakeRateWeight_histogramName_e_suffix = '_be1'
-            else:
-                raise ValueError('Invalid era: %s' % self.era)
+            leptonFakeRateWeight_histogramName_e_suffix = '_be1'
         elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelDown":
-            if self.era in [ '2016', '2017', '2018' ]:
-                leptonFakeRateWeight_histogramName_e_suffix = '_be2'
-            else:
-                raise ValueError('Invalid era: %s' % self.era)
+            leptonFakeRateWeight_histogramName_e_suffix = '_be2'
         elif central_or_shift == "CMS_ttHl_FRm_shape_ptUp":
             leptonFakeRateWeight_histogramName_mu_suffix = '_pt1'
         elif central_or_shift == "CMS_ttHl_FRm_shape_ptDown":
@@ -525,15 +522,9 @@ class analyzeConfig(object):
         elif central_or_shift == "CMS_ttHl_FRm_shape_normDown":
             leptonFakeRateWeight_histogramName_mu_suffix = '_down'
         elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelUp":
-            if self.era in [ '2016', '2017', '2018' ]:
-                leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
-            else:
-                raise ValueError('Invalid era: %s' % self.era)
+            leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
         elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelDown":
-            if self.era in [ '2016', '2017', '2018' ]:
-                leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
-            else:
-                raise ValueError('Invalid era: %s' % self.era)
+            leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
 
         self.leptonFakeRateWeight_histogramName_e  += leptonFakeRateWeight_histogramName_e_suffix
         self.leptonFakeRateWeight_histogramName_mu += leptonFakeRateWeight_histogramName_mu_suffix
@@ -544,15 +535,9 @@ class analyzeConfig(object):
         """
         self.hadTau_selection_relaxed = hadTau_selection_relaxed
         if self.hadTau_selection_relaxed == "dR03mvaVLoose":
-            if self.era in [ '2016', '2017', '2018' ]:
-                pass
-            else:
-                raise ValueError("Invalid era: %s" % self.era)
+            pass
         if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
-            if self.era in [ '2016', '2017', '2018' ]:
-                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
-            else:
-                raise ValueError("Invalid era: %s" % self.era)
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
         self.isBDTtraining = True
 
     def get_addMEM_systematics(self, central_or_shift):
@@ -696,7 +681,8 @@ class analyzeConfig(object):
             'leptonSelection',
             'electronSelection',
             'muonSelection',
-            'lep_mva_cut',
+            'lep_mva_cut_mu',
+            'lep_mva_cut_e',
             'chargeSumSelection',
             'histogramDir',
             'lumiScale',
@@ -1224,7 +1210,7 @@ class analyzeConfig(object):
             # the sbatch job checks the existance of the file anyways
             #for outputFile in outputFiles.values():
             #    lines_makefile.append("\t%s %s" % ("rm -f", outputFile))
-            sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, label))
+            sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s.py" % self.channel)
             jobOptions = {}
             for key in outputFiles.keys():
                 scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]))
@@ -1337,25 +1323,25 @@ class analyzeConfig(object):
 
     def addToMakefile_backgrounds_from_data(self, lines_makefile, make_target = "phony_addFakes", make_dependency = "phony_hadd_stage1"):
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds", make_dependency, self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
-        self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_addBackgrounds", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
-        self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds_sum")
+        self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds")
+        self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
         self.addToMakefile_addFakes(lines_makefile, "phony_addFakes", "phony_hadd_stage1_5")
         if make_target != "phony_addFakes":
             lines_makefile.append("%s: %s" % (make_target, "phony_addFakes"))
             lines_makefile.append("")
-        self.make_dependency_hadd_stage2 = make_target
-
+        self.make_dependency_hadd_stage2 = " ".join([ "phony_addBackgrounds_sum", make_target ])
+        
     def addToMakefile_backgrounds_from_data_withFlips(self, lines_makefile, make_target = "phony_addFlips", make_dependency = "phony_hadd_stage1"):
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds", "phony_hadd_stage1", self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
-        self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_addBackgrounds", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
-        self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds_sum")
+        self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds")
+        self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
         self.addToMakefile_addFakes(lines_makefile, "phony_addFakes", "phony_hadd_stage1_5")
         self.addToMakefile_hadd_stage1_6(lines_makefile, "phony_hadd_stage1_6", "phony_addFakes")
         self.addToMakefile_addFlips(lines_makefile, "phony_addFlips", "phony_hadd_stage1_6")
         if make_target != "phony_addFlips":
             lines_makefile.append("%s: %s" % (make_target, "phony_addFlips"))
             lines_makefile.append("")
-        self.make_dependency_hadd_stage2 = make_target
+        self.make_dependency_hadd_stage2 = " ".join([ "phony_addBackgrounds_sum", make_target ])
 
     def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, max_input_files_per_job = 2):
         """Adds the commands to Makefile that are necessary for building the final histogram file.

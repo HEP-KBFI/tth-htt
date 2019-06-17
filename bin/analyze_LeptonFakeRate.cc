@@ -544,7 +544,8 @@ main(int argc,
   const double minRecoPt_global_e  = cfg_analyze.getParameter<double>("minRecoPt_global_e");
   const double minRecoPt_global_mu = cfg_analyze.getParameter<double>("minRecoPt_global_mu");
 
-  const double lep_mva_cut = cfg_analyze.getParameter<double>("lep_mva_cut"); // CV: used for tight lepton selection only
+  const double lep_mva_cut_mu = cfg_analyze.getParameter<double>("lep_mva_cut_mu");
+  const double lep_mva_cut_e  = cfg_analyze.getParameter<double>("lep_mva_cut_e");
 
   const std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
   const std::string branchName_muons     = cfg_analyze.getParameter<std::string>("branchName_muons");
@@ -654,7 +655,8 @@ main(int argc,
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
-  tightMuonSelector.getSelector().set_min_mvaTTH(lep_mva_cut);
+  fakeableMuonSelector.getSelector().set_mvaTTH_wp(lep_mva_cut_mu);
+  tightMuonSelector.getSelector().set_min_mvaTTH(lep_mva_cut_mu);
 
   RecoElectronReader * electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
   inputTree->registerReader(electronReader);
@@ -663,9 +665,10 @@ main(int argc,
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
+  fakeableElectronSelector.getSelector().set_mvaTTH_wp(lep_mva_cut_mu);
   fakeableElectronSelector.enable_offline_e_trigger_cuts();
   tightElectronSelector.enable_offline_e_trigger_cuts();
-  tightElectronSelector.getSelector().set_min_mvaTTH(lep_mva_cut);
+  tightElectronSelector.getSelector().set_min_mvaTTH(lep_mva_cut_e);
 
   RecoJetReader * jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);

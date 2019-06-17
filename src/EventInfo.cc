@@ -38,6 +38,7 @@ EventInfo::EventInfo(bool is_mc,
   , nLHEReweightingWeight(0)
   , LHEReweightingWeight(nullptr)
   , LHEReweightingWeight_max(69)
+  , is_owner(false)
 {
   assert(is_mc_ || ! is_signal_);
 }
@@ -63,10 +64,22 @@ EventInfo::operator=(const EventInfo & eventInfo)
   nLHEReweightingWeight = eventInfo.nLHEReweightingWeight;
   if(eventInfo.LHEReweightingWeight)
   {
-    if(! LHEReweightingWeight)
+    if(LHEReweightingWeight)
     {
-      LHEReweightingWeight = new Float_t[LHEReweightingWeight_max];
+      if(is_owner)
+      {
+        delete[] LHEReweightingWeight;
+        LHEReweightingWeight = nullptr;
+      }
+      else
+      {
+        throw cmsException(this, __func__, __LINE__)
+          << "Cannot overwrite with instance" << eventInfo << " because this instance doesn't own LHEReweightingWeight"
+        ;
+      }
     }
+    LHEReweightingWeight = new Float_t[LHEReweightingWeight_max];
+    is_owner = true;
     std::memcpy(LHEReweightingWeight, eventInfo.LHEReweightingWeight, nLHEReweightingWeight);
   }
 
@@ -74,9 +87,7 @@ EventInfo::operator=(const EventInfo & eventInfo)
 }
 
 EventInfo::~EventInfo()
-{
-  delete[] this->LHEReweightingWeight;
-}
+{}
 
 double
 EventInfo::genWeight_tH() const

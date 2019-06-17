@@ -49,7 +49,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         executable_analyze,
         cfgFile_analyze,
         samples,
-        lep_mva_wp,
         hadTau_selection,
         hadTau_charge_selections,
         applyFakeRateWeights,
@@ -82,7 +81,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       executable_analyze    = executable_analyze,
       channel               = "0l_2tau",
       samples               = samples,
-      lep_mva_wp            = lep_mva_wp,
       jet_cleaning_by_index = jet_cleaning_by_index,
       gen_matching_by_index = gen_matching_by_index,
       central_or_shifts     = central_or_shifts,
@@ -251,7 +249,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       key_dir = getKey(subdirectory)
       for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_DCRD, DKEY_PLOT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
-        if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
+        if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
           self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)
         else:
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, subdirectory)
@@ -398,7 +396,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'histogramFile'            : histogramFile_path,
                   'logFile'                  : logFile_path,
                   'selEventsFileName_output' : rleOutputFile_path,
-                  'lep_mva_cut'              : self.lep_mva_cut,
                   'hadTauSelection'          : hadTauSelection,
                   'apply_hadTauGenMatching'  : self.apply_hadTauGenMatching,
                   'hadTauChargeSelection'    : hadTau_charge_selection,

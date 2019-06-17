@@ -47,6 +47,9 @@ process.analyze_LeptonFakeRate = cms.PSet(
     minConePt_global_mu = cms.double(10),
     minRecoPt_global_mu = cms.double(5),
 
+    lep_mva_cut_mu = cms.double(1.),
+    lep_mva_cut_e  = cms.double(1.),
+
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
     lumiScale = cms.double(1.),

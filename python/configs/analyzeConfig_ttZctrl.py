@@ -42,6 +42,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
         samples,
         hadTauVeto_selection,
         applyFakeRateWeights,
+        lep_mva_wp,
         jet_cleaning_by_index,
         gen_matching_by_index,
         central_or_shifts,
@@ -85,6 +86,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
       num_parallel_jobs         = num_parallel_jobs,
       histograms_to_fit         = histograms_to_fit,
       triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
+      lep_mva_wp                = lep_mva_wp,
       executable_prep_dcard     = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
       verbose                   = verbose,
@@ -202,7 +204,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
       key_dir = getKey(subdirectory)
       for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_DCRD, DKEY_PLOT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
-        if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
+        if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
           self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)
         else:
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, subdirectory)
@@ -360,6 +362,8 @@ class analyzeConfig_ttZctrl(analyzeConfig):
                 'syncRequireGenMatching'   : syncRequireGenMatching,
                 'useNonNominal'            : self.use_nonnominal,
                 'apply_hlt_filter'         : self.hlt_filter,
+                'lep_mva_cut_e'            : float(self.lep_mva_cut_e),
+                'lep_mva_cut_mu'           : float(self.lep_mva_cut_mu),
               }
               self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)
 

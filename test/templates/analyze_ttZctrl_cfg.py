@@ -60,6 +60,9 @@ process.analyze_ttZctrl = cms.PSet(
     muonSelection = cms.string(''),
     apply_leptonGenMatching = cms.bool(True),
 
+    lep_mva_cut_mu = cms.double(1.),
+    lep_mva_cut_e  = cms.double(1.),
+
     hadTauSelection_veto = cms.string(''),
 
     applyFakeRateWeights = cms.string(""),

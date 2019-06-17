@@ -26,6 +26,14 @@ EventInfoReader::EventInfoReader(EventInfo * info,
   , branchName_nLHEReweightingWeight(Form("n%s", branchName_LHEReweightingWeight.data()))
 {}
 
+EventInfoReader::~EventInfoReader()
+{
+  if(info_ -> is_mc())
+  {
+    delete[] info_ -> LHEReweightingWeight;
+  }
+}
+
 void
 EventInfoReader::setBranchAddresses(TTree * tree)
 {

@@ -269,7 +269,7 @@ int main(int argc,
               << " to branch = '" << branchName_memOutput_cos << "'\n";
   }
 
-  LocalFileInPath memConfigFileName("tthAnalysis/MEMmultilepton/test/config.cfg");
+  LocalFileInPath memConfigFileName("tthAnalysis/HiggsToTauTau/data/addMEM_3l.cfg");
   MEMInterface_3l memInterface_3l(memConfigFileName.fullPath());
 
   const int numEntries = inputTree->GetEntries();

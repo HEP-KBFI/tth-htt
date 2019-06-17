@@ -45,7 +45,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         cfgFile_analyze,
         samples,
         MEMbranch,
-        lep_mva_wp,
         lepton_charge_selections,
         hadTau_selection,
         hadTau_selection_veto,
@@ -83,7 +82,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       executable_analyze        = executable_analyze,
       channel                   = "2lss_1tau",
       samples                   = samples,
-      lep_mva_wp                = lep_mva_wp,
       jet_cleaning_by_index     = jet_cleaning_by_index,
       gen_matching_by_index     = gen_matching_by_index,
       central_or_shifts         = central_or_shifts,
@@ -299,7 +297,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       key_dir = getKey(subdirectory)
       for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_DCRD, DKEY_PLOT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
-        if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
+        if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
           self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)
         else:
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, subdirectory)
@@ -486,7 +484,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     'selEventsFileName_output' : rleOutputFile_path,
                     'electronSelection'        : electron_selection,
                     'muonSelection'            : muon_selection,
-                    'lep_mva_cut'              : self.lep_mva_cut,
                     'apply_leptonGenMatching'  : self.apply_leptonGenMatching,
                     'leptonChargeSelection'    : lepton_charge_selection,
                     'hadTauSelection'          : hadTau_selection,

@@ -30,7 +30,6 @@ parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
-parser.add_lep_mva_wp()
 args = parser.parse_args()
 
 # Common arguments
@@ -54,7 +53,6 @@ use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
 files_per_job     = args.files_per_job
 use_home          = args.use_home
-lep_mva_wp        = args.lep_mva_wp
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 
@@ -131,7 +129,6 @@ if __name__ == '__main__':
     cfgFile_analyze                       = "analyze_3l_1tau_cfg.py",
     samples                               = samples,
     MEMbranch                             = MEMbranch,
-    lep_mva_wp                            = lep_mva_wp,
     hadTau_selection                      = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
