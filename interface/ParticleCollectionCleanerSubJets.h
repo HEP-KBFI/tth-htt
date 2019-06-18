@@ -57,9 +57,20 @@ public:
     for(const T * particle: particles)
     {
       bool isOverlap = false;
-      if ( !(particle->subJet1() && particle->subJet2()) ) continue;
+      if ( !(particle->subJet1() && particle->subJet2()) )
+      {
+        isOverlap = true;
+        if(debug_)
+        {
+          std::cout << "TypeJet: " << typeid(particles).name() << std::endl;
+          std::cout << toStringExists<T>(0) << std::endl;
+          std::cout << "Removed:\n"                    << *particle
+                    << "because it does not have subjets\n";
+        }
+      }
       for(const Toverlap * overlap: overlaps)
       {
+        if ( isOverlap ) break;
         const double dRoverlap1 = deltaR(
           particle->subJet1()->eta(), particle->subJet1()->phi(), overlap->eta(), overlap->phi()
         );
