@@ -343,7 +343,7 @@ main(int argc,
   inputTree -> registerReader(jetReaderAK8);
   const RecoJetCollectionSelectorAK8 jetSelectorAK8(era);
   const RecoJetCollectionCleanerAK8 jetCleanerAK8(0.8, isDEBUG); // [*]
-  const RecoJetCollectionCleanerAK8SubJets jetCleanerAK8SubJets(0.4, isDEBUG); // [*]
+  const RecoJetCollectionCleanerAK8SubJets jetCleanerAK8SubJets(0.4, true); // [*]
   // [*] to clean against leptons and hadronic taus
 
 //--- declare missing transverse energy
@@ -409,7 +409,7 @@ main(int argc,
                 << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
-    //if (!( eventInfo.event == 46622 )) continue;
+    //if (!( eventInfo.event == 126120 )) continue; 
 
     if(run_lumi_eventSelector && ! (*run_lumi_eventSelector)(eventInfo))
     {
