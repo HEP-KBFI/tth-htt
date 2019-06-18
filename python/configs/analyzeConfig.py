@@ -6,6 +6,7 @@ from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_had
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
 from tthAnalysis.HiggsToTauTau.common import logging
 from tthAnalysis.HiggsToTauTau.samples.stitch import get_branch_type
+from tthAnalysis.HiggsToTauTau.common import couplings_tH_tags
 
 from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxs, find_tHweight
 
@@ -383,6 +384,7 @@ class analyzeConfig(object):
 
         self.dirs = {}
 
+        self.thcouplings = couplings_tH_tags()
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
         self.outputFile_hadd_stage1 = {}
@@ -1330,7 +1332,7 @@ class analyzeConfig(object):
             lines_makefile.append("%s: %s" % (make_target, "phony_addFakes"))
             lines_makefile.append("")
         self.make_dependency_hadd_stage2 = " ".join([ "phony_addBackgrounds_sum", make_target ])
-        
+
     def addToMakefile_backgrounds_from_data_withFlips(self, lines_makefile, make_target = "phony_addFlips", make_dependency = "phony_hadd_stage1"):
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds", "phony_hadd_stage1", self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
         self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds")

@@ -2,7 +2,6 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList, is_dymc_reweighting
 from tthAnalysis.HiggsToTauTau.common import logging
-from tthAnalysis.HiggsToTauTau.common import couplings_tH_tags
 
 import re
 import os.path
@@ -158,7 +157,25 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "VH" ]
 
     #self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "conversions", "fakes_data", "fakes_mc" ] FIXME
-    self.prep_dcard_processesToCopy = self.nonfake_backgrounds + [ "conversions", "fakes_mc" ]
+    samples_categories_MC = []
+    for sample_category in self.nonfake_backgrounds + self.ttHProcs:
+      if sample_category == "signal" :  sample_category = "ttH"
+      if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+      if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
+      decays = [""]
+      if sample_category in self.procsWithDecayModes : decays = self.decayModes
+      couplings = [""]
+      if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
+      for decayMode in decays :
+        for coupling in couplings :
+            if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
+            if coupling == "" and decayMode == "" :
+              samples_categories_MC.append("%s" % sample_category)
+            elif coupling == "" :
+              samples_categories_MC.append("%s_%s" % (sample_category, decayMode))
+            else:
+              samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
+    self.prep_dcard_processesToCopy = samples_categories_MC + [ "conversions", "fakes_data", "fakes_mc", "data_obs" ]
     #self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "conversions", "fakes_data" ] FIXME
     self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "conversions", "fakes_mc" ]
 
@@ -336,7 +353,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         hadTau_selection = "Fakeable"
         hadTau_selection = "|".join([hadTau_selection, self.hadTau_selection_part2])
 
-      thcouplings = couplings_tH_tags()
       for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
         if lepton_and_hadTau_frWeight == "enabled" and not lepton_and_hadTau_selection.startswith("Fakeable"):
           continue
@@ -480,7 +496,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                 decays = [""]
                 if sample_category in self.procsWithDecayModes : decays = self.decayModes
                 couplings = [""]
-                if sample_category in ["tHq", "tHW"] : couplings += thcouplings
+                if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
                 for decayMode in decays :
                   for coupling in couplings :
                     if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
@@ -574,7 +590,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
             decays = [""]
             if sample_category in self.procsWithDecayModes : decays = self.decayModes
             couplings = [""]
-            if sample_category in ["tHq", "tHW"] : couplings += thcouplings
+            if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
             for decayMode in decays :
               for coupling in couplings :
                 if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
