@@ -706,14 +706,16 @@ int main(int argc, char* argv[])
         Form("%s/sel/mvaInputs_HTT_sum", histogramDir.data()), era_string, central_or_shift));
       selHistManager->mvaInputVariables_HTT_sum_->bookHistograms(fs, mvaInputVariables_HTT_sumSort);
 
-      if ( !isSignal )
-      {
         for(const std::string & evt_cat_str: evt_cat_strs)
       {
+        std::string proc0 = process_string;
+        if ( process_string == "signal") proc0 = "ttH";
+        if ( process_string == "signal_ctcvcp" ) proc0 = "ttH_ctcvcp";
         const std::string process_string_new = evt_cat_str == default_cat_str ?
-          process_string  :
-          process_string + evt_cat_str
+          proc0  :
+          proc0 + evt_cat_str
         ;
+
         const std::string process_and_genMatchName = boost::replace_all_copy(
           process_and_genMatch, process_string, process_string_new
         );
@@ -722,7 +724,6 @@ int main(int argc, char* argv[])
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
         ));
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
-      }
       }
 
       const vstring decayModes_evt = eventInfo.getDecayModes();
@@ -739,7 +740,8 @@ int main(int argc, char* argv[])
           }
           else
           {
-            decayMode_and_genMatch = "ttH_";
+            if ( process_string == "signal") decayMode_and_genMatch = "ttH_";
+            if ( process_string == "signal_ctcvcp" ) decayMode_and_genMatch = "ttH_ctcvcp_";
           }
           decayMode_and_genMatch += decayMode_evt;
 
@@ -1840,8 +1842,6 @@ int main(int argc, char* argv[])
         evtWeight
       ;
     }
-    if ( !isSignal )
-    {
       for(const auto & kv: tH_weight_map)
     {
       selHistManager->evt_[kv.first]->fillHistograms(
@@ -1858,7 +1858,6 @@ int main(int argc, char* argv[])
         mvaOutput_plainKin_SUM_VT,
         mTauTauVis,
         kv.second);
-    }
     }
     if( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();

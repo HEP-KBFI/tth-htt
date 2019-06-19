@@ -107,6 +107,8 @@ int main(int argc, char* argv[])
         TDirectory * dir_input = dynamic_cast<TDirectory *>((const_cast<TDirectory *>(subdir_level2))->Get(the_process_input.data()));
         if ( !dir_input ) {
           if ( the_process_input.find("kt_") != std::string::npos ||
+               the_process_input.find("_ctcvcp") != std::string::npos ||
+               the_process_input.find("ttH") != std::string::npos ||
                the_process_input.find("_htt") != std::string::npos ||
                the_process_input.find("_hww") != std::string::npos ||
                the_process_input.find("_hzz") != std::string::npos ||
@@ -156,6 +158,8 @@ int main(int argc, char* argv[])
             {
               bool is_decayed = false;
               if ( process_input.find("kt_") != std::string::npos ||
+                   process_input.find("_ctcvcp") != std::string::npos ||
+                   process_input.find("ttH") != std::string::npos ||
                    process_input.find("_htt") != std::string::npos ||
                    process_input.find("_hww") != std::string::npos ||
                    process_input.find("_hzz") != std::string::npos ||
@@ -165,8 +169,10 @@ int main(int argc, char* argv[])
                 is_decayed = true;
               }
               bool is_evt = std::string(subdir_level2->GetName()) == "evt";
+              bool is_tth = (std::string(process_input) == "ttH") || (std::string(process_input) == "ttH_ctcvcp");
               bool enableException = (central_or_shift.empty() || central_or_shift == "central" ) ? true : false;
               if ( is_decayed && ! is_evt ) continue;
+              if ( is_tth     && ! is_evt ) continue;
               TH1 * histogram_input = getHistogram(subdir_level2, process_input, histogram, central_or_shift, enableException);
               if (! histogram_input)
               {

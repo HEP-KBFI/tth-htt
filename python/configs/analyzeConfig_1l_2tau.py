@@ -161,14 +161,15 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
       if sample_category == "signal" :  sample_category = "ttH"
       if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
-      if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
+      #if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
       decays = [""]
-      if sample_category in self.procsWithDecayModes : decays = self.decayModes
+      if sample_category in self.procsWithDecayModes : decays += self.decayModes
       couplings = [""]
       if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
       for decayMode in decays :
         for coupling in couplings :
             if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
+            if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
             if coupling == "" and decayMode == "" :
               samples_categories_MC.append("%s" % sample_category)
             elif coupling == "" :
@@ -492,14 +493,15 @@ class analyzeConfig_1l_2tau(analyzeConfig):
               for sample_category in sample_categories:
                 if sample_category == "signal" :  sample_category = "ttH"
                 if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
-                if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
+                #if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
                 decays = [""]
-                if sample_category in self.procsWithDecayModes : decays = self.decayModes
+                if sample_category in self.procsWithDecayModes : decays += self.decayModes
                 couplings = [""]
                 if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
                 for decayMode in decays :
                   for coupling in couplings :
                     if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
+                    if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
                     # sum non-fake and fake contributions for each MC sample separately
                     genMatch_categories = [ "nonfake", "conversions", "fake" ]
                     for genMatch_category in genMatch_categories:
@@ -586,14 +588,15 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           for sample_category in sample_categories:
             if sample_category == "signal" :  sample_category = "ttH"
             if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
-            if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
+            #if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
             decays = [""]
-            if sample_category in self.procsWithDecayModes : decays = self.decayModes
+            if sample_category in self.procsWithDecayModes : decays += self.decayModes
             couplings = [""]
             if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
             for decayMode in decays :
               for coupling in couplings :
                 if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
+                if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
                 if coupling == "" and decayMode == "" :
                   processes_input_base.append("%s" % sample_category)
                 elif coupling == "" :
