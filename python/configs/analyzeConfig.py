@@ -1,12 +1,11 @@
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, is_dymc_reweighting
-from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
+from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, get_tH_weight_str, get_tH_SM_str
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
 from tthAnalysis.HiggsToTauTau.common import logging
 from tthAnalysis.HiggsToTauTau.samples.stitch import get_branch_type
-from tthAnalysis.HiggsToTauTau.common import couplings_tH_tags
 
 from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxs, find_tHweight
 
@@ -384,7 +383,15 @@ class analyzeConfig(object):
 
         self.dirs = {}
 
-        self.thcouplings = couplings_tH_tags()
+        tH_SM_str = get_tH_SM_str()
+        self.thIdxs = thIdxs
+        self.thcouplings = list(filter(
+          lambda tH_str: tH_str != tH_SM_str,
+          map(
+            lambda couplings: get_tH_weight_str(couplings.kt, couplings.kv),
+            [ find_tHweight(tHweights, thIdx) for thIdx in self.thIdxs ]
+          )
+        ))
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
         self.outputFile_hadd_stage1 = {}
@@ -620,9 +627,7 @@ class analyzeConfig(object):
 
           nof_reweighting = sample_info['nof_reweighting']
           if sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and nof_reweighting > 0:
-            thIdxs_to_consider = thIdxs
-
-            missing_reweighting =  set(thIdxs_to_consider) - set(range(-1, nof_reweighting))
+            missing_reweighting =  set(self.thIdxs) - set(range(-1, nof_reweighting))
 
             if missing_reweighting:
               logging.warning("Could not find the following weights for {}: {}".format(
@@ -641,7 +646,7 @@ class analyzeConfig(object):
                 )
               ]
 
-              for idx in thIdxs_to_consider:
+              for idx in self.thIdxs:
                 if idx < 0:
                   # we've already recorded the weight for the default case
                   logging.info(
