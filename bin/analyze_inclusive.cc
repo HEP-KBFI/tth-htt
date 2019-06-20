@@ -346,7 +346,7 @@ main(int argc,
   inputTree -> registerReader(jetReaderAK8);
   const RecoJetCollectionSelectorAK8 jetSelectorAK8(era);
   const RecoJetCollectionCleanerAK8 jetCleanerAK8(0.8, isDEBUG); // [*]
-  const RecoJetCollectionCleanerAK8SubJets jetCleanerAK8SubJets(0.4, true); // [*]
+  const RecoJetCollectionCleanerAK8SubJets jetCleanerAK8SubJets(0.4, isDEBUG); // [*]
   // [*] to clean against leptons and hadronic taus
 
 //--- declare missing transverse energy
