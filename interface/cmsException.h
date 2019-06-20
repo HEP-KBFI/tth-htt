@@ -14,9 +14,9 @@ get_human_line(const T * const this_,
                int line = -1)
 {
   return
-    std::string(abi::__cxa_demangle(typeid(T).name(), 0, 0, 0)) +
-      (func.empty() ? "" : "::" + func)                         +
-      (line >= 0 ? ":" + std::to_string(line) : "")             +
+    std::string(abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr)) +
+      (func.empty() ? "" : "::" + func)                                           +
+      (line >= 0 ? ":" + std::to_string(line) : "")                               +
       " "
   ;
 }

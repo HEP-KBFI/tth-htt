@@ -2,38 +2,63 @@
 #define tthAnalysis_HiggsToTauTau_ParticleCollectionCleanerSubJets_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetHTTv2.h"
+
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
+
+#include <cxxabi.h> // abi::__cxa_demangle()
+
 #include <type_traits>
 
-template<typename TT> using toStringFn = decltype(std::declval<const TT>().subJet3());
+class RecoJetHTTv2;
 
-template < class TT, toStringFn<TT>* = nullptr>
-const RecoSubjetHTTv2* optionalToString(const TT* obj, int)
+template <typename T>
+std::string
+get_human_name()
 {
-    return obj->subJet3();
+  return std::string(abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr));
 }
 
-template <class TT>
-const RecoSubjetHTTv2* optionalToString(const TT* obj, long)
-{
-    return nullptr;
-}
+// credit to: https://stackoverflow.com/a/47064058
+// If the class T has function subJet3, hasSubjet3Functor won't be nullptr, which in turn means that
+// the functions that take int as the first argument will be enabled (because the second template argument is not
+// a nullptr); if the class T has no function subJet3, the hasSubJet3Functor functor will be a nullptr and
+// the functions taking long as the first argument are called. When calling these functions with an integer literal
+// (such as 0), the functions that take int as the first argument are tried; if that fails, then overloaded functions
+// that take long as the first argument are called. This mechanism makes sure that 3rd subjet (or nullptr) is returned
+// when it's (not) available in the class T at compile time.
+template<typename T> using hasSubJet3Functor = decltype(std::declval<const T>().subJet3());
 
-template <typename TT>
-constexpr bool toStringExists(long)
+template <typename T,
+          hasSubJet3Functor<T> * = nullptr>
+const RecoSubjetHTTv2 *
+optionalToSubJet3(const T * obj, int)
 {
-    return false;
-}
-
-template <typename TT, toStringFn<TT>* = nullptr>
-constexpr bool toStringExists(int)
-{
-    return true;
+  return obj->subJet3();
 }
 
 template <typename T>
+const RecoSubjetHTTv2 *
+optionalToSubJet3(const T *, long)
+{
+  return nullptr;
+}
 
+template <typename T>
+constexpr bool
+subJet3Exists(long)
+{
+  return false;
+}
 
+template <typename T,
+          hasSubJet3Functor<T> * = nullptr>
+constexpr bool
+subJet3Exists(int)
+{
+  return true;
+}
+
+template <typename T>
 class ParticleCollectionCleanerSubJets
 {
 public:
@@ -57,45 +82,51 @@ public:
     for(const T * particle: particles)
     {
       bool isOverlap = false;
-      if ( !(particle->subJet1() && particle->subJet2()) )
+      if(! (particle->subJet1() && particle->subJet2()))
       {
         isOverlap = true;
         if(debug_)
         {
-          std::cout << "TypeJet: " << typeid(particles).name() << std::endl;
-          std::cout << toStringExists<T>(0) << std::endl;
-          std::cout << "Removed:\n"                    << *particle
-                    << "because it does not have subjets\n";
+          std::cout << "Jet of type '" << get_human_name<T>() << "' "
+                    << "removed:\n"    << *particle
+                    << "because it does not have subjets\n"
+          ;
         }
       }
       for(const Toverlap * overlap: overlaps)
       {
-        if ( isOverlap ) break;
+        if(isOverlap)
+        {
+          break;
+        }
+
         const double dRoverlap1 = deltaR(
           particle->subJet1()->eta(), particle->subJet1()->phi(), overlap->eta(), overlap->phi()
         );
         const double dRoverlap2 = deltaR(
           particle->subJet2()->eta(), particle->subJet2()->phi(), overlap->eta(), overlap->phi()
         );
-        const bool has_subjet3 =  toStringExists<T>(0);
+
         double dRoverlap3 = 100.;
-        if (has_subjet3) {
-        const RecoSubjetHTTv2* sub3 = optionalToString(particle, 0);
-        if (istypeHTTv2 && !(sub3 == 0)) dRoverlap3 = deltaR(
-          sub3->p4().eta(), sub3->p4().phi(), overlap->eta(), overlap->phi()
-        );
+        const bool has_subjet3 = subJet3Exists<T>(0);
+        if(has_subjet3)
+        {
+          const RecoSubjetHTTv2 * sub3 = optionalToSubJet3(particle, 0);
+          if(istypeHTTv2 && sub3)
+          {
+            dRoverlap3 = deltaR(sub3->p4().eta(), sub3->p4().phi(), overlap->eta(), overlap->phi());
+          }
         }
-        if ( dRoverlap1 < dR_ || dRoverlap2 < dR_ || dRoverlap3 < dR_) //
+
+        if(dRoverlap1 < dR_ || dRoverlap2 < dR_ || dRoverlap3 < dR_)
         {
           isOverlap = true;
           if(debug_)
           {
-            std::cout << "TypeJet: " << typeid(particles).name() << " " << dRoverlap1 << " " << dRoverlap2 << " " << dRoverlap3 << std::endl;
-            std::cout << toStringExists<T>(0) << std::endl;
-            std::cout << "Removed:\n"                    << *particle
-                      << "because it overlapped with:\n" << *overlap
-                      << "within "                       << dRoverlap1
-                      << '\n'
+            std::cout
+              << "Jet of type '" << get_human_name<T>() << "' (that has 3rd subjet =" << subJet3Exists<T>(0) << ") "
+                 "removed:\n" << *particle << "because it overlapped with:\n" << *overlap << " "
+                 "within dR1 = " << dRoverlap1 << " dR2 = " << dRoverlap2 << " dR3 = " << dRoverlap3 << '\n'
             ;
           }
           break;
