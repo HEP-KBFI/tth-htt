@@ -205,6 +205,7 @@ main(int argc,
   const bool apply_offline_e_trigger_cuts_1e1tau  = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e1tau");
 
   const std::string hadTauSelection_tauIdWP = cfg_analyze.getParameter<std::string>("hadTauSelection_tauIdWP");
+  const std::string hadTauAk8Clean_tauIdWP  = cfg_analyze.getParameter<std::string>("hadTauAk8Clean_tauIdWP");
   const std::string central_or_shift        = cfg_analyze.getParameter<std::string>("central_or_shift");
 
   const bool isMC               = cfg_analyze.getParameter<bool>("isMC");
@@ -321,8 +322,10 @@ main(int argc,
   fakeableHadTauSelector.set_if_looser(hadTauSelection_tauIdWP);
   fakeableHadTauSelector.set_min_antiElectron(-1);
   fakeableHadTauSelector.set_min_antiMuon(-1);
+
+  // X: it is used just for cleaning of AK8 jets, that is used only in channels using Medium WP tau as the tight tau
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era, -1, isDEBUG);
-  tightHadTauSelector.set("dR03mvaMedium"); // X: it is used just for cleaning of AK8 jets, that is used only on channels that use Medium WP tau as tight tau
+  tightHadTauSelector.set(hadTauAk8Clean_tauIdWP);
   tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 

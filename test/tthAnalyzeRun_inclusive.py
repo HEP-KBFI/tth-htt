@@ -30,6 +30,10 @@ parser.add_argument('-o', '--output-tree',
 parser.add_argument('-M', '--with-mem',
   dest = 'with_mem', action = 'store_true', default = False, help = 'R|Use Ntuple w/ MEM included',
 )
+parser.add_argument('-t', '--tau-wp-ak8',
+  type = str, dest = 'tau_wp_ak8', metavar = 'wp', default = 'dR03mvaMedium', required = False,
+  help = 'R|Tau ID WP of the taus that are used in the cleaning of AK8 jets',
+)
 args = parser.parse_args()
 
 # Common arguments
@@ -55,6 +59,7 @@ gen_matching      = args.gen_matching
 # Custom arguments
 output_tree = args.output_tree
 with_mem    = args.with_mem
+tau_wp_ak8  = args.tau_wp_ak8
 
 # Use the arguments
 central_or_shifts = []
@@ -96,6 +101,7 @@ if __name__ == '__main__':
     isDebug                 = debug,
     rle_select              = rle_select,
     hadTauSelection_tauIdWP = tau_id_wp,
+    hadTauAk8Clean_tauIdWP  = tau_wp_ak8,
     jet_cleaning_by_index   = jet_cleaning_by_index,
     gen_matching_by_index   = gen_matching_by_index,
     central_or_shifts       = central_or_shifts,

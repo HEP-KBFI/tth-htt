@@ -20,6 +20,7 @@ class analyzeConfig_inclusive(analyzeConfig):
         isDebug,
         rle_select,
         hadTauSelection_tauIdWP,
+        hadTauAk8Clean_tauIdWP,
         jet_cleaning_by_index,
         gen_matching_by_index,
         central_or_shifts,
@@ -60,6 +61,7 @@ class analyzeConfig_inclusive(analyzeConfig):
     self.rle_select = rle_select
     self.hadTauSelection_tauIdWP = hadTauSelection_tauIdWP
     self.use_nonnominal = use_nonnominal
+    self.hadTauAk8Clean_tauIdWP = hadTauAk8Clean_tauIdWP
 
     if self.rle_select and not os.path.isfile(self.rle_select):
       raise ValueError('Input RLE file for the sync is missing: %s' % self.rle_select)
@@ -163,6 +165,7 @@ class analyzeConfig_inclusive(analyzeConfig):
             'syncOutput'              : syncOutput,
             'syncRLE'                 : self.rle_select if self.rle_select and '%s' not in self.rle_select else '',
             'hadTauSelection_tauIdWP' : self.hadTauSelection_tauIdWP,
+            'hadTauAk8Clean_tauIdWP'  : self.hadTauAk8Clean_tauIdWP,
             'useNonNominal'           : self.use_nonnominal,
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
