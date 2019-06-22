@@ -24,7 +24,7 @@ parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_rle_select()
-parser.add_lep_mva_wp(default_wp = 'ttZctrl')
+parser.add_lep_mva_wp(default_wp = 'default') # alternative: ttZctrl
 parser.add_nonnominal()
 parser.add_hlt_filter()
 args = parser.parse_args()
