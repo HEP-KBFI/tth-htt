@@ -10,8 +10,8 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
   : era_(era)
   , debug_(debug)
   , set_selection_flags_(set_selection_flags)
-  , min_cone_pt_(-1.e+3)
-  , min_lepton_pt_(-1.e+3)
+  , min_cone_pt_(10.) // F
+  , min_lepton_pt_(5.) // L
   , max_absEta_(2.4) // L
   , max_dxy_(0.05) // L
   , max_dz_(0.1) // L
@@ -19,27 +19,14 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
   , max_sip3d_(8.) // L
   , apply_looseIdPOG_(true) // L
   , apply_mediumIdPOG_(false) // L
+  , wp_mvaTTH_(0.85) // F
+  , min_jetPtRatio_(2. / 3) // F
+  , min_jetBtagCSV_(get_BtagWP(era_, Btag::kDeepJet, BtagWP::kLoose)) // F
+  , max_jetBtagCSV_(get_BtagWP(era_, Btag::kDeepJet, BtagWP::kMedium)) // F
+  , smoothBtagCut_minPt_(20.)
+  , smoothBtagCut_maxPt_(45.)
+  , smoothBtagCut_ptDiff_(smoothBtagCut_maxPt_ - smoothBtagCut_minPt_)
 {
-  switch(era_)
-  {
-    case kEra_2016:
-    case kEra_2017:
-    case kEra_2018:
-    {
-      min_cone_pt_ = 10.; // F
-      min_lepton_pt_ = 5.; // L
-      wp_mvaTTH_ = 0.85; // F
-      min_jetPtRatio_ = { 0.60, -1.e+3 }; // F
-      min_segmentCompatibility_ = { 0.3, -1.e+3 }; // F
-      max_jetBtagCSV_ = { 0.07, get_BtagWP(kEra_2017, Btag::kDeepCSV, BtagWP::kMedium) };  // F
-      break;
-    }
-    default: throw cmsException(this) << "Invalid era: " << era_;
-  }
-  assert(min_lepton_pt_ > 0.);
-  assert(min_jetPtRatio_.size() == 2);
-  assert(min_segmentCompatibility_.size() == 2);
-  assert(max_jetBtagCSV_.size() == 2);
   // L -- inherited from the preselection (loose cut)
   // F -- additional fakeable cut not applied in the preselection
 }
@@ -143,33 +130,37 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
     return false;
   }
 
-  const std::size_t idxBin = muon.mvaRawTTH() <= wp_mvaTTH_ ? 0 : 1;
-
-  if(muon.jetPtRatio() < min_jetPtRatio_[idxBin])
+  if(muon.mvaRawTTH() >= wp_mvaTTH_)
   {
-    if(debug_)
+    if(muon.jetBtagCSV() > max_jetBtagCSV_)
     {
-      std::cout << "FAILS jetPtRatio >= " << min_jetPtRatio_[idxBin] << " fakeable cut\n";
+      if(debug_)
+      {
+        std::cout << "FAILS jetBtagCSV <= " << max_jetBtagCSV_ << " fakeable cut\n";
+      }
+      return false;
     }
-    return false;
   }
-
-  if(muon.jetBtagCSV() > max_jetBtagCSV_[idxBin])
+  else
   {
-    if(debug_)
+    if(muon.jetPtRatio() < min_jetPtRatio_)
     {
-      std::cout << "FAILS jetBtagCSV <= " << max_jetBtagCSV_[idxBin] << " fakeable cut\n";
+      if(debug_)
+      {
+        std::cout << "FAILS jetPtRatio >= " << min_jetPtRatio_ << " fakeable cut\n";
+      }
+      return false;
     }
-    return false;
-  }
 
-  if(muon.segmentCompatibility() <= min_segmentCompatibility_[idxBin])
-  {
-    if(debug_)
+    const double max_jetBtagCSV = smoothBtagCut(muon.assocJet_pt());
+    if(muon.jetBtagCSV() > max_jetBtagCSV)
     {
-      std::cout << "FAILS segmentCompatibility > " << min_segmentCompatibility_[idxBin] << " fakeable cut\n";
+      if(debug_)
+      {
+        std::cout << "FAILS smooth jetBtagCSV <= " << max_jetBtagCSV << " fakeable cut\n";
+      }
+      return false;
     }
-    return false;
   }
 
   if(set_selection_flags_)
@@ -178,6 +169,13 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
   }
 
   return true;
+}
+
+double
+RecoMuonSelectorFakeable::smoothBtagCut(double assocJet_pt) const
+{
+  const double ptInterp = std::min(1., std::max(0., assocJet_pt - smoothBtagCut_minPt_) / smoothBtagCut_ptDiff_);
+  return ptInterp * min_jetBtagCSV_ + (1. - ptInterp) * max_jetBtagCSV_;
 }
 
 void

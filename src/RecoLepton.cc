@@ -215,7 +215,7 @@ RecoLepton::jetPtRel() const
 Double_t
 RecoLepton::jetBtagCSV() const
 {
-  return jetBtagCSV(Btag::kDeepCSV);
+  return jetBtagCSV(Btag::kDeepJet);
 }
 
 Double_t

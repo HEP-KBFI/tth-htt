@@ -10,7 +10,7 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
   : era_(era)
   , set_selection_flags_(set_selection_flags)
   , debug_(debug)
-  , min_pt_(-1.e+3)
+  , min_pt_(5.) // L
   , max_absEta_(2.4) // F
   , max_dxy_(0.05) // F
   , max_dz_(0.1) // F
@@ -18,26 +18,12 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
   , max_sip3d_(8.) // F
   , apply_looseIdPOG_(true) // F
   , apply_mediumIdPOG_(true) // T
-  , min_mvaTTH_(-1.e+3)
+  , max_jetBtagCSV_(get_BtagWP(era_, Btag::kDeepJet, BtagWP::kMedium)) // T
+  , min_mvaTTH_(0.85) // T
 {
-  switch(era_)
-  {
-    case kEra_2016:
-    case kEra_2017:
-    case kEra_2018:
-    {
-      min_pt_ = 5.; // F
-      min_mvaTTH_ = 0.85; // T
-      max_jetBtagCSV_ = get_BtagWP(kEra_2017, Btag::kDeepCSV, BtagWP::kMedium);  // F
-      break;
-    }
-    default: throw cmsException(this) << "Invalid era: " << era_;
-  }
+  // L -- inherited from the preselection (loose cut)
   // F -- inherited from the fakeable selection
   // T -- additional tight cut not applied in the fakeable selection
-  assert(min_pt_ > 0.);
-  assert(min_mvaTTH_ > 0.);
-  assert(max_jetBtagCSV_ > 0.);
 }
 
 bool
