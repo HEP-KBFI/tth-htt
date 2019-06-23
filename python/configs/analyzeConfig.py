@@ -388,7 +388,7 @@ class analyzeConfig(object):
         self.thcouplings = list(filter(
           lambda tH_str: tH_str != tH_SM_str,
           map(
-            lambda couplings: get_tH_weight_str(couplings.kt, couplings.kv),
+            lambda couplings: get_tH_weight_str(float(couplings.kt.configValue()), float(couplings.kv.configValue())),
             [ find_tHweight(tHweights, thIdx) for thIdx in self.thIdxs ]
           )
         ))
