@@ -11,51 +11,24 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , debug_(debug)
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
-  , min_cone_pt_(-1.e+3)
-  , min_lepton_pt_(-1.e+3)
+  , min_cone_pt_(10.) // F
+  , min_lepton_pt_(7.) // L
   , max_absEta_(2.5) // L
   , max_dxy_(0.05) // L
   , max_dz_(0.1) // L
   , max_relIso_(0.4) // L
   , max_sip3d_(8.) // L
-  , min_OoEminusOoP_trig_(-1.e+3)
-  , apply_conversionVeto_(true) // F (after Giovanni sync)
+  , binning_absEta_(1.479) // F
+  , min_sigmaEtaEta_trig_(0.011) // F
+  , max_sigmaEtaEta_trig_(0.019) // F
+  , max_HoE_trig_(0.10) // F
+  , min_OoEminusOoP_trig_(-0.04) // F
+  , wp_mvaTTH_ (0.80) // F
+  , min_jetPtRatio_(1. / 1.7) // F
+  , max_jetBtagCSV_(get_BtagWP(era_, Btag::kDeepJet, BtagWP::kMedium)) // F
+  , apply_conversionVeto_(true) // F
   , max_nLostHits_(0) // F
 {
-  switch(era_)
-  {
-    case kEra_2016:
-    case kEra_2017:
-    case kEra_2018:
-    {
-      min_cone_pt_ = 10.; // F
-      min_lepton_pt_ = 7.; // L
-      binning_absEta_ = { 1.479 }; // F
-      min_pt_trig_ = -1.; // LFR sync; used to be 30 GeV Lines:237-240 in AN_2017_029_v5
-      max_sigmaEtaEta_trig_ = { 0.011, 0.030 }; // F
-      max_HoE_trig_ = { 0.10, 0.10 }; // F
-      max_deltaEta_trig_ = { +1.e+3, +1.e+3 }; // F
-      max_deltaPhi_trig_ = { +1.e+3, +1.e+3 }; // F
-      min_OoEminusOoP_trig_ = -0.04; // F
-      max_OoEminusOoP_trig_ = { +1.e+3, +1.e+3 }; // F
-      wp_mvaTTH_ = 0.80; // F
-      min_jetPtRatio_ = { 0.60, -1.e+3 }; // F
-      min_mvaIDraw_ = { 0.50, -1.e+3 }; // F
-      max_jetBtagCSV_ = { 0.07, get_BtagWP(kEra_2017, Btag::kDeepCSV, BtagWP::kMedium) }; // F
-      break;
-    }
-    default: throw cmsException(this) << "Invalid era: " << era_;
-  }
-  assert(min_lepton_pt_ > 0.);
-  assert(binning_absEta_.size() > 0);
-  assert(max_sigmaEtaEta_trig_.size() == binning_absEta_.size() + 1);
-  assert(max_HoE_trig_.size() == binning_absEta_.size() + 1);
-  assert(max_deltaEta_trig_.size() == binning_absEta_.size() + 1);
-  assert(max_deltaPhi_trig_.size() == binning_absEta_.size() + 1);
-  assert(max_OoEminusOoP_trig_.size() == binning_absEta_.size() + 1);
-  assert(min_jetPtRatio_.size() == 2);
-  assert(max_jetBtagCSV_.size() == 2);
-  assert(min_mvaIDraw_.size() == 2);
   // L -- inherited from the preselection (loose cut)
   // F -- additional fakeable cut not applied in the preselection
 }
@@ -186,106 +159,56 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  const std::size_t idxBin_mvaTTH = electron.mvaRawTTH() <= wp_mvaTTH_ ? 0 : 1;
-
-  if(electron.jetPtRatio() < min_jetPtRatio_[idxBin_mvaTTH])
+  if(electron.mvaRawTTH() > wp_mvaTTH_)
   {
-    if(debug_)
-    {
-      std::cout << "FAILS jetPtRatio >= " << min_jetPtRatio_[idxBin_mvaTTH] << " fakeable cut\n";
-    }
-    return false;
-  }
-
-  if(electron.jetBtagCSV() > max_jetBtagCSV_[idxBin_mvaTTH])
-  {
-    if(debug_)
-    {
-      std::cout << "FAILS jetBtagCSV <= " << max_jetBtagCSV_[idxBin_mvaTTH] << " fakeable cut\n";
-    }
-    return false;
-  }
-
-  if(electron.mvaRaw_POG() < min_mvaIDraw_[idxBin_mvaTTH])
-  {
-    if(debug_)
-    {
-      std::cout << "FAILS EGamma POG MVA raw >= " << min_mvaIDraw_[idxBin_mvaTTH] << " fakeable cut\n";
-    }
-    return false;
-  }
-
-  double pt = -1.e+3;
-  switch(era_)
-  {
-    case kEra_2016:
-    case kEra_2018:
-    case kEra_2017: pt = electron.cone_pt(); break;
-    default: throw cmsException(this, __func__, __LINE__) << "Invalid era = " << era_;
-  }
-  assert(pt > 0.);
-
-  if(pt > min_pt_trig_ && apply_offline_e_trigger_cuts_)
-  {
-    std::size_t idxBin_absEta = binning_absEta_.size();
-    for(std::size_t binning_absEta_idx = 0; binning_absEta_idx < binning_absEta_.size(); ++binning_absEta_idx)
-    {
-      if(electron.absEta() <= binning_absEta_[binning_absEta_idx])
-      {
-        idxBin_absEta = binning_absEta_idx;
-        break;
-      }
-    }
-    if(electron.sigmaEtaEta() > max_sigmaEtaEta_trig_[idxBin_absEta])
+    if(electron.jetBtagCSV() > max_jetBtagCSV_)
     {
       if(debug_)
       {
-        std::cout << "FAILS sigmaEtaEta <= " << max_sigmaEtaEta_trig_[idxBin_absEta] << " fakeable cut\n";
+        std::cout << "FAILS jetBtagCSV <= " << max_jetBtagCSV_ << " fakeable cut\n";
+      }
+      return false;
+    }
+  }
+  else
+  {
+    if(electron.jetPtRatio() < min_jetPtRatio_)
+    {
+      if(debug_)
+      {
+        std::cout << "FAILS jetPtRatio >= " << min_jetPtRatio_ << " fakeable cut\n";
+      }
+      return false;
+    }
+    //TODO apply Egamma ID WP80 cut
+  }
+
+  if(apply_offline_e_trigger_cuts_)
+  {
+    const double max_sigmaEtaEta_trig = min_sigmaEtaEta_trig_ +
+                                        max_sigmaEtaEta_trig_ * (electron.absEta() > binning_absEta_);
+    if(electron.sigmaEtaEta() > max_sigmaEtaEta_trig)
+    {
+      if(debug_)
+      {
+        std::cout << "FAILS sigmaEtaEta <= " << max_sigmaEtaEta_trig << " fakeable cut\n";
       }
       return false;
     }
 
-    if(electron.HoE() > max_HoE_trig_[idxBin_absEta])
+    if(electron.HoE() > max_HoE_trig_)
     {
       if(debug_)
       {
-        std::cout << "FAILS HoE <= " << max_HoE_trig_[idxBin_absEta] << " fakeable cut\n";
+        std::cout << "FAILS HoE <= " << max_HoE_trig_ << " fakeable cut\n";
       }
       return false;
     }
-
-    if(std::fabs(electron.deltaEta()) > max_deltaEta_trig_[idxBin_absEta]) // why no abs in 2016?
-    {
-      if(debug_)
-      {
-        std::cout << "FAILS abs(deltaEta) <= " << max_deltaEta_trig_[idxBin_absEta] << " fakeable cut\n";
-      }
-      return false;
-    }
-
-    if(std::fabs(electron.deltaPhi()) > max_deltaPhi_trig_[idxBin_absEta]) // why no abs in 2016?
-    {
-      if(debug_)
-      {
-        std::cout << "FAILS abs(deltaPhi) <= " << max_deltaPhi_trig_[idxBin_absEta] << " fakeable cut\n";
-      }
-      return false;
-    }
-
     if(electron.OoEminusOoP() < min_OoEminusOoP_trig_)
     {
       if(debug_)
       {
         std::cout << "FAILS OoEminusOoP >= " << min_OoEminusOoP_trig_ << " fakeable cut\n";
-      }
-      return false;
-    }
-
-    if(electron.OoEminusOoP() > max_OoEminusOoP_trig_[idxBin_absEta])
-    {
-      if(debug_)
-      {
-        std::cout << "FAILS OoEminusOoP <= " << max_OoEminusOoP_trig_[idxBin_absEta] << " fakeable cut\n";
       }
       return false;
     }

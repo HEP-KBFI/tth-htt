@@ -11,45 +11,23 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
   , debug_(debug)
-  , min_pt_(-1.e+3)
+  , min_pt_(7.) // L
   , max_absEta_(2.5) // F
   , max_dxy_(0.05) // F
   , max_dz_(0.1) // F
   , max_relIso_(0.4) // F
   , max_sip3d_(8.) // F
-  , min_pt_trig_(-1.e+3)
-  , min_OoEminusOoP_trig_(-1.e+3)
-  , apply_conversionVeto_(true) // T
+  , binning_absEta_(1.479) // F
+  , min_sigmaEtaEta_trig_(0.011) // F
+  , max_sigmaEtaEta_trig_(0.019) // F
+  , max_HoE_trig_(0.10) // F
+  , min_OoEminusOoP_trig_(-0.04) // F
+  , max_jetBtagCSV_(get_BtagWP(era_, Btag::kDeepJet, BtagWP::kMedium)) // F
   , max_nLostHits_(0) // F
+  , apply_conversionVeto_(true) // F
+  , min_mvaTTH_(0.80) // T
 {
-  switch(era_)
-  {
-    case kEra_2016:
-    case kEra_2017:
-    case kEra_2018:
-    {
-      min_pt_ = 7.; // F
-      binning_absEta_ = { 1.479 }; // F
-      min_pt_trig_ = -1.; // Lines:237-240 in AN_2017_029_V5
-      max_sigmaEtaEta_trig_ = { 0.011, 0.030 }; // F
-      max_HoE_trig_ = { 0.10, 0.10 }; // F
-      max_deltaEta_trig_ = { +1.e+3, +1.e+3 }; // F
-      max_deltaPhi_trig_ = { +1.e+3, +1.e+3 }; // F
-      min_OoEminusOoP_trig_ = -0.04; // F
-      max_OoEminusOoP_trig_ = { +1.e+3, +1.e+3 }; // F
-      min_mvaTTH_ = 0.80; // T
-      max_jetBtagCSV_ = get_BtagWP(kEra_2017, Btag::kDeepCSV, BtagWP::kMedium); // F
-      break;
-    }
-    default: throw cmsException(this) << "Invalid era: " << era_;
-  }
-  assert(min_pt_ > 0.);
-  assert(binning_absEta_.size() > 0);
-  assert(max_sigmaEtaEta_trig_.size() == binning_absEta_.size() + 1);
-  assert(max_HoE_trig_.size() == binning_absEta_.size() + 1);
-  assert(max_deltaEta_trig_.size() == binning_absEta_.size() + 1);
-  assert(max_deltaPhi_trig_.size() == binning_absEta_.size() + 1);
-  assert(max_OoEminusOoP_trig_.size() == binning_absEta_.size() + 1);
+  // L -- inherited from the preselection (loose cut)
   // F -- inherited from the fakeable selection
   // T -- additional tight cut not applied in the fakeable selection
 }
@@ -195,47 +173,23 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
 
   // extra cuts for electrons passing pT threshold of single electron trigger,
   // as explained in section 3.3.4 of AN-2015/321
-  if(apply_offline_e_trigger_cuts_ && electron.pt() >= min_pt_trig_)
+  if(apply_offline_e_trigger_cuts_)
   {
-    std::size_t idxBin = binning_absEta_.size();
-    for(std::size_t binning_absEta_idx = 0; binning_absEta_idx < binning_absEta_.size(); ++binning_absEta_idx)
-    {
-      if(electron.absEta() <= binning_absEta_[binning_absEta_idx])
-      {
-        idxBin = binning_absEta_idx;
-        break;
-      }
-    }
-
-    if(electron.sigmaEtaEta() > max_sigmaEtaEta_trig_[idxBin])
+    const double max_sigmaEtaEta_trig = min_sigmaEtaEta_trig_ +
+                                        max_sigmaEtaEta_trig_ * (electron.absEta() > binning_absEta_);
+    if(electron.sigmaEtaEta() > max_sigmaEtaEta_trig)
     {
       if(debug_)
       {
-        std::cout << "FAILS sigmaEtaEta <= " << max_sigmaEtaEta_trig_[idxBin] << " tight cut\n";
+        std::cout << "FAILS sigmaEtaEta <= " << max_sigmaEtaEta_trig << " tight cut\n";
       }
       return false;
     }
-    if(electron.HoE() > max_HoE_trig_[idxBin])
+    if(electron.HoE() > max_HoE_trig_)
     {
       if(debug_)
       {
-        std::cout << "FAILS HoE <= " << max_HoE_trig_[idxBin] << " tight cut\n";
-      }
-      return false;
-    }
-    if(std::fabs(electron.deltaEta()) > max_deltaEta_trig_[idxBin]) // why no abs in 2016?
-    {
-      if(debug_)
-      {
-        std::cout << "FAILS deltaEta <= " << max_deltaEta_trig_[idxBin] << " tight cut\n";
-      }
-      return false;
-    }
-    if(std::fabs(electron.deltaPhi()) > max_deltaPhi_trig_[idxBin]) // why no abs in 2016?
-    {
-      if(debug_)
-      {
-        std::cout << "FAILS deltaPhi <= " << max_deltaPhi_trig_[idxBin] << " tight cut\n";
+        std::cout << "FAILS HoE <= " << max_HoE_trig_ << " tight cut\n";
       }
       return false;
     }
@@ -244,14 +198,6 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
       if(debug_)
       {
         std::cout << "FAILS OoEminusOoP >= " << min_OoEminusOoP_trig_ << " tight cut\n";
-      }
-      return false;
-    }
-    if(electron.OoEminusOoP() > max_OoEminusOoP_trig_[idxBin])
-    {
-      if(debug_)
-      {
-        std::cout << "FAILS OoEminusOoP <= " << max_OoEminusOoP_trig_[idxBin] << " tight cut\n";
       }
       return false;
     }
