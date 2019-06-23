@@ -11,9 +11,10 @@ EventInfoWriter::EventInfoWriter(bool is_signal,
                                  const std::string & prefix)
 {
   const std::string pattern = prefix.empty() ? "%s" : prefix + "_%s";
-  branchName_run_   = Form(pattern.data(), "run");
-  branchName_lumi_  = Form(pattern.data(), "luminosityBlock");
-  branchName_event_ = Form(pattern.data(), "event");
+  branchName_run_     = Form(pattern.data(), "run");
+  branchName_lumi_    = Form(pattern.data(), "luminosityBlock");
+  branchName_event_   = Form(pattern.data(), "event");
+  branchName_PV_ndof_ = Form(pattern.data(), "PV_ndof");
 
   branchName_genHiggsDecayMode_ = is_signal ? Form(pattern.data(), "genHiggsDecayMode") : "";
   branchName_genWeight_         = is_mc     ? Form(pattern.data(), "genWeight")         : "";
@@ -32,6 +33,7 @@ EventInfoWriter::setBranches(TTree * tree)
   bai.setBranch(eventInfo_.run, branchName_run_);
   bai.setBranch(eventInfo_.lumi, branchName_lumi_);
   bai.setBranch(eventInfo_.event, branchName_event_);
+  bai.setBranch(eventInfo_.PV_ndof, branchName_PV_ndof_);
   if(! branchName_genHiggsDecayMode_.empty())
   {
     bai.setBranch(eventInfo_.genHiggsDecayMode, branchName_genHiggsDecayMode_);
@@ -76,4 +78,10 @@ std::string
 EventInfoWriter::getBranchName_event() const
 {
   return branchName_event_;
+}
+
+std::string
+EventInfoWriter::getBranchName_PV_ndof() const
+{
+  return branchName_PV_ndof_;
 }

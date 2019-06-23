@@ -29,10 +29,14 @@ public:
   std::string
   getBranchName_event() const;
 
+  std::string
+  getBranchName_PV_ndof() const;
+
 protected:
   std::string branchName_run_;
   std::string branchName_lumi_;
   std::string branchName_event_;
+  std::string branchName_PV_ndof_;
 
   std::string branchName_genHiggsDecayMode_;
   std::string branchName_genWeight_;

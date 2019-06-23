@@ -33,6 +33,7 @@ EventInfo::EventInfo(bool is_mc,
   , genHiggsDecayMode(-1)
   , genWeight(1.)
   , pileupWeight(1.)
+  , PV_ndof(0.)
   , is_signal_(is_signal)
   , is_mc_(is_mc)
   , nLHEReweightingWeight(0)
@@ -57,6 +58,7 @@ EventInfo::operator=(const EventInfo & eventInfo)
   event               = eventInfo.event;
   genHiggsDecayMode   = eventInfo.genHiggsDecayMode;
   genWeight           = eventInfo.genWeight;
+  PV_ndof             = eventInfo.PV_ndof;
 
   is_signal_ = eventInfo.is_signal_;
   is_mc_     = eventInfo.is_mc_;

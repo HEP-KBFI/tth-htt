@@ -27,6 +27,7 @@ public:
   Int_t     genHiggsDecayMode;   ///< Higgs decay mode (only if ttH signal MC)
   Float_t   genWeight;           ///< generator-level weight (only if MC)
   Float_t   pileupWeight;        ///< pile-up weight (only if MC)
+  Float_t   PV_ndof;             ///< number of degree of freedom of the main primary vertex
 
   double
   genWeight_tH() const;

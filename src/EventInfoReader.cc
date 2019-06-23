@@ -19,6 +19,7 @@ EventInfoReader::EventInfoReader(EventInfo * info,
   , branchName_run("run")
   , branchName_lumi("luminosityBlock")
   , branchName_event("event")
+  , branchName_PV_ndof("PV_ndof")
   , branchName_genHiggsDecayMode("genHiggsDecayMode")
   , branchName_genWeight("genWeight")
   , branchName_puWeight(getBranchName_pileup(puSys_option))
@@ -41,6 +42,7 @@ EventInfoReader::setBranchAddresses(TTree * tree)
   bai.setBranchAddress(info_ -> run, branchName_run);
   bai.setBranchAddress(info_ -> lumi, branchName_lumi);
   bai.setBranchAddress(info_ -> event, branchName_event);
+  bai.setBranchAddress(info_ -> PV_ndof, branchName_PV_ndof);
   if(info_ -> is_signal() && read_genHiggsDecayMode_)
   {
     bai.setBranchAddress(info_ -> genHiggsDecayMode, branchName_genHiggsDecayMode);
