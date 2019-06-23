@@ -482,6 +482,7 @@ main(int argc,
   const bool readGenObjects        = isMC && ! redoGenMatching;
   const bool isDEBUG               = cfg_analyze.getParameter<bool>("isDEBUG");
   const bool apply_met_filters     = cfg_analyze.getParameter<bool>("apply_met_filters");
+  const double min_PV_ndof         = cfg_analyze.getParameter<double>("min_PV_ndof");
   
   const vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   const vstring triggerNames_2e = cfg_analyze.getParameter<vstring>("triggers_2e");
@@ -949,7 +950,10 @@ main(int argc,
 
   cutFlowTableType cutFlowTable_e(isDEBUG);
   initializeCutFlowTable(cutFlowTable_e, ">= 1 presel/Loose electron");
-  if(apply_met_filters){ initializeCutFlowTable(cutFlowTable_e, "MEt filter"); }
+  if(apply_met_filters)
+  {
+    initializeCutFlowTable(cutFlowTable_e, "MEt filter");
+  }
   initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger bit");
   initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger bit && prescale");
   initializeCutFlowTable(cutFlowTable_e, histograms_e_numerator_binned_beforeCuts);
@@ -960,7 +964,10 @@ main(int argc,
 
   cutFlowTableType cutFlowTable_mu(isDEBUG);
   initializeCutFlowTable(cutFlowTable_mu, ">= 1 presel/Loose muon");
-  if(apply_met_filters){ initializeCutFlowTable(cutFlowTable_mu, "MEt filter"); }
+  if(apply_met_filters)
+  {
+    initializeCutFlowTable(cutFlowTable_mu, "MEt filter");
+  }
   initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger bit");
   initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger bit && prescale");
   initializeCutFlowTable(cutFlowTable_mu, histograms_mu_numerator_binned_beforeCuts);
@@ -998,6 +1005,15 @@ main(int argc,
       {
         std::cout << "input File = " << inputTree -> getCurrentFileName() << '\n';
       }
+    }
+
+    if(eventInfo.PV_ndof <= min_PV_ndof)
+    {
+      if(run_lumi_eventSelector)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS PV ndof > " << min_PV_ndof << "cut \n";
+      }
+      continue;
     }
 
 //--- build collections of generator level particles (before any cuts are applied,

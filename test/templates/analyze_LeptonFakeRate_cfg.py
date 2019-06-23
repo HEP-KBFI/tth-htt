@@ -56,6 +56,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
     apply_l1PreFireWeight = cms.bool(True),
     apply_genWeight = cms.bool(True),
     apply_met_filters = cms.bool(True),
+    min_PV_ndof = cms.double(100.),
     cfgMEtFilter = cms.PSet(),
     fillGenEvtHistograms = cms.bool(True),
     cfgEvtYieldHistManager = cms.PSet(),
