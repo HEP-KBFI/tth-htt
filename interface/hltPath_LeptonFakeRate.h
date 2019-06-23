@@ -24,33 +24,33 @@ class hltPath_LeptonFakeRate
                          bool is_trigger_2e,
                          double minPt = -1.,
                          double maxPt = -1.,
-                         double minRecoPt = -1., // NEWLY ADDED AFTER GIOVANNI SYNC
+                         double minRecoPt = -1.,
                          double min_jetPt = -1.,
                          double prescale = 1.); 
   ~hltPath_LeptonFakeRate() {}
 
   std::string getPathName() const;
   double getMinJetPt() const;
-  double getMinRecoPt() const; // NEWLY ADDED AFTER GIOVANNI SYNC 
+  double getMinRecoPt() const;
   double getPrescale() const;
   bool is_trigger_1mu() const;
   bool is_trigger_2mu() const;
   bool is_trigger_1e() const;
   bool is_trigger_2e() const;
-  bool isTriggered() const; // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
-  void setIsTriggered(bool decision) const; // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
+  bool isTriggered() const;
+  void setIsTriggered(bool decision) const;
 
   friend class hltPathReader;
 
  private:
-  double minRecoPt_;   // NEWLY ADDED AFTER GIOVANNI SYNC 
+  double minRecoPt_;
   double minJetPt_;
   double prescale_;
   bool is_trigger_1mu_;
   bool is_trigger_2mu_;
   bool is_trigger_1e_;
   bool is_trigger_2e_;
-  mutable bool isTriggered_; // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
+  mutable bool isTriggered_;
 };
 
 std::vector<hltPath_LeptonFakeRate *>
@@ -59,19 +59,18 @@ create_hltPaths_LeptonFakeRate(const std::vector<std::string> & branchNames,
 
 void
 hltPaths_LeptonFakeRate_delete(const std::vector<hltPath_LeptonFakeRate *> & hltPaths);
+/**
+ * @brief Used in sortin HLT paths by reco pT thresholds in descending order (from higher pT threshold to lowest)
+ * @param trigger_lhs The first HLT path
+ * @param trigger_rhs The second HLT path
+ * @return true if the reco pT threshold is higher in the first HLT path than in the second path; false otherwise
+ */
+bool
+isHigherMinRecoPt(hltPath_LeptonFakeRate * trigger_lhs,
+                  hltPath_LeptonFakeRate * trigger_rhs);
 
 std::ostream &
 operator<<(std::ostream & stream,
            const hltPath_LeptonFakeRate & hltPath_iter);
-
-
-
-
-
-
-
-// bool hltPaths_LeptonFakeRate_isTriggered(const std::vector<hltPath_LeptonFakeRate *> & hltPaths, bool verbose); // NEWLY ADDED AFTER CHRISTIAN'S LOGIC
-
-
 
 #endif // tthAnalysis_HiggsToTauTau_hltPath_LeptonFakeRate_h

@@ -554,6 +554,10 @@ main(int argc,
     }
   }
 
+  // sort HLT paths by reco pT thresholds in descending order (from higher pT threshold to lowest)
+  std::sort(triggers_e.begin(),  triggers_e.end(),  isHigherMinRecoPt);
+  std::sort(triggers_mu.begin(), triggers_mu.end(), isHigherMinRecoPt);
+
   const vdouble etaBins_e  = cfg_analyze.getParameter<vdouble>("absEtaBins_e");
   const vdouble ptBins_e   = cfg_analyze.getParameter<vdouble>("ptBins_e");
   const vdouble etaBins_mu = cfg_analyze.getParameter<vdouble>("absEtaBins_mu");
@@ -1242,7 +1246,7 @@ main(int argc,
     // loop over triggers_mu (given in descendng order of thresholds in the config)
     for(const hltPath_LeptonFakeRate * const hltPath_iter: triggers_mu)
     {
-      hltPath_iter->setIsTriggered(false); // resetting the bool to false 
+      hltPath_iter->setIsTriggered(false); // resetting the bool to false
 
       if(! (hltPath_iter->getValue() >= 1))
       {
