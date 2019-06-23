@@ -499,8 +499,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'ptBins_mu'                : self.ptBins_mu,
             'central_or_shift'         : central_or_shift,
             'fillGenEvtHistograms'     : self.fillGenEvtHistograms,
-            'triggers_mu_cfg'          : 'triggers_mu_cfg_%s' % self.era,
-            'triggers_e_cfg'           : 'triggers_e_cfg_%s'  % self.era,
+            'triggers_mu_cfg'          : "leptonFR_triggers['{}']['{}']".format(self.era, 'mu'),
+            'triggers_e_cfg'           : "leptonFR_triggers['{}']['{}']".format(self.era, 'e'),
             'lep_mva_cut_e'            : float(self.lep_mva_cut_e),
             'lep_mva_cut_mu'           : float(self.lep_mva_cut_mu),
           }
