@@ -1,9 +1,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // EGammaID, EGammaWP, as_integer(), cmsException()
+
 RecoElectron::RecoElectron(const RecoLepton & lepton,
                            Double_t eCorr,
-                           Double_t mvaRaw_POG,
-                           Bool_t mvaID_POG,
                            Double_t sigmaEtaEta,
                            Double_t HoE,
                            Double_t deltaEta,
@@ -14,8 +14,6 @@ RecoElectron::RecoElectron(const RecoLepton & lepton,
                            Int_t cutbasedID_HLT)
   : RecoLepton(lepton)
   , eCorr_(eCorr)
-  , mvaRaw_POG_(mvaRaw_POG)
-  , mvaID_POG_(mvaID_POG)
   , sigmaEtaEta_(sigmaEtaEta)
   , HoE_(HoE)
   , deltaEta_(deltaEta) 
@@ -35,13 +33,41 @@ RecoElectron::eCorr() const
 Double_t
 RecoElectron::mvaRaw_POG() const
 {
-  return mvaRaw_POG_;
+  return mvaRaw_POG(EGammaID::Fall17V2noIso);
+}
+
+Double_t
+RecoElectron::mvaRaw_POG(EGammaID id) const
+{
+  if(! egammaID_raws_.count(id))
+  {
+    throw cmsException(this, __func__, __LINE__) << "No such EGamma ID available: " << as_integer(id);
+  }
+  return egammaID_raws_.at(id);
 }
 
 Bool_t
-RecoElectron::mvaID_POG() const
+RecoElectron::mvaID_POG(EGammaWP wp) const
 {
-  return mvaID_POG_;
+  return mvaID_POG(EGammaID::Fall17V2noIso, wp);
+}
+
+Bool_t
+RecoElectron::mvaID_POG(EGammaID id,
+                        EGammaWP wp) const
+{
+  if(! egammaID_ids_.count(id))
+  {
+    throw cmsException(this, __func__, __LINE__) << "No such EGamma ID available: " << as_integer(id);
+  }
+  const auto & egammaID_id = egammaID_ids_.at(id);
+  if(! egammaID_id.count(wp))
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "No such EGamma WP available for EGamma ID " << as_integer(id) << ": " << as_integer(wp)
+    ;
+  }
+  return egammaID_id.at(wp);
 }
 
 Double_t
@@ -108,18 +134,19 @@ std::ostream &
 operator<<(std::ostream & stream,
            const RecoElectron & electron)
 {
-  stream << static_cast<const RecoLepton & >(electron)                   << ",\n "
-            "eCorr = "                << electron.eCorr()                << ", "
-            "mvaRaw_POG = "           << electron.mvaRaw_POG()           << " ("
-            "mvaID_POG = "            << electron.mvaID_POG()            << "), "
-            "nLostHits = "            << electron.nLostHits()            << ",\n "
-            "passesConversionVeto = " << electron.passesConversionVeto() << ", "
-            "sigmaEtaEta = "          << electron.sigmaEtaEta()          << ", "
-            "deltaEta = "             << electron.deltaEta()             << ",\n "
-            "deltaPhi = "             << electron.deltaPhi()             << ", "
-            "HoE = "                  << electron.HoE()                  << ", "
-            "OoEminusOoP = "          << electron.OoEminusOoP()          << ",\n"
-            "cutbasedID_HLT = "       << electron.cutbasedID_HLT()       << '\n'
+  stream << static_cast<const RecoLepton & >(electron)                      << ",\n "
+            "eCorr = "                << electron.eCorr()                   << ", "
+            "mvaRaw_POG = "           << electron.mvaRaw_POG()              << " ("
+            "mvaID_POG (loose) = "    << electron.mvaID_POG(EGammaWP::WPL)  << ", "
+            "mvaID_POG (80%) = "      << electron.mvaID_POG(EGammaWP::WP80) << "), "
+            "nLostHits = "            << electron.nLostHits()               << ",\n "
+            "passesConversionVeto = " << electron.passesConversionVeto()    << ", "
+            "sigmaEtaEta = "          << electron.sigmaEtaEta()             << ", "
+            "deltaEta = "             << electron.deltaEta()                << ",\n "
+            "deltaPhi = "             << electron.deltaPhi()                << ", "
+            "HoE = "                  << electron.HoE()                     << ", "
+            "OoEminusOoP = "          << electron.OoEminusOoP()             << ",\n"
+            "cutbasedID_HLT = "       << electron.cutbasedID_HLT()          << '\n'
   ;
   return stream;
 }

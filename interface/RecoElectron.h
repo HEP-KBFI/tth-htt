@@ -3,6 +3,10 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 
+// forward declarations
+enum class EGammaID;
+enum class EGammaWP;
+
 class RecoElectron
   : public RecoLepton
 {
@@ -10,8 +14,6 @@ public:
   RecoElectron() = default;
   RecoElectron(const RecoLepton & lepton,
                Double_t eCorr,
-               Double_t mvaRaw_POG,
-               Bool_t mvaID_POG,
                Double_t sigmaEtaEta,
                Double_t HoE,
                Double_t deltaEta,
@@ -27,7 +29,9 @@ public:
    */
   Double_t eCorr() const;
   Double_t mvaRaw_POG() const;
-  Bool_t mvaID_POG() const;
+  Double_t mvaRaw_POG(EGammaID id) const;
+  Bool_t mvaID_POG(EGammaWP wp) const;
+  Bool_t mvaID_POG(EGammaID id, EGammaWP wp) const;
   Double_t sigmaEtaEta() const;
   Double_t HoE() const;
   Double_t deltaEta() const;
@@ -51,12 +55,12 @@ public:
   bool
   is_muon() const override;
 
-  const static bool useNoIso = true;
+  friend class RecoElectronReader;
+
+protected:
 
 //--- observables specific to electrons
   Double_t eCorr_;              ///< ratio of the calibrated energy/miniaod energy
-  Double_t mvaRaw_POG_;         ///< raw output value of EGamma POG electron ID MVA (continuous range -1..+1)
-  Bool_t mvaID_POG_;            ///< EGamma POG electron ID MVA WP (false=electron fails, true=electron passes WP)
   Double_t sigmaEtaEta_;        ///< second shower moment in eta-direction
   Double_t HoE_;                ///< ratio of energy deposits in hadronic/electromagnetic section of calorimeter
   Double_t deltaEta_;           ///< difference in eta between impact position of track and electron cluster
@@ -65,6 +69,10 @@ public:
   Int_t nLostHits_;             ///< number of operational tracker layers between interaction point and innermost hit on track
   Bool_t passesConversionVeto_; ///< Flag indicating if electron passes (true) or fails (false) photon conversion veto
   Int_t cutbasedID_HLT_;        ///< Cut-based HLT electron ID
+
+//--- all EGamma IDs and their raw values
+  std::map<EGammaID, std::map<EGammaWP, Bool_t>> egammaID_ids_;
+  std::map<EGammaID, Double_t> egammaID_raws_;
 };
 
 std::ostream &

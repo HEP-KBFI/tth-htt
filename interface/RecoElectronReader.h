@@ -9,6 +9,8 @@
 // forward declarations
 class TTree;
 class RecoLeptonReader;
+enum class EGammaID;
+enum class EGammaWP;
 
 class RecoElectronReader
   : public ReaderBase
@@ -54,8 +56,6 @@ protected:
   RecoLeptonReader * leptonReader_;
 
   std::string branchName_eCorr_;
-  std::string branchName_mvaRaw_POG_;
-  std::string branchName_mvaID_POG_;
   std::string branchName_sigmaEtaEta_;
   std::string branchName_HoE_;
   std::string branchName_deltaEta_;
@@ -65,9 +65,10 @@ protected:
   std::string branchName_conversionVeto_;
   std::string branchName_cutbasedID_HLT_;
 
+  std::map<EGammaID, std::string> branchNames_mvaRaw_POG_;
+  std::map<EGammaID, std::map<EGammaWP, std::string>> branchNames_mvaID_POG_;
+
   Float_t * eCorr_;
-  Float_t * mvaRaw_POG_;
-  Bool_t * mvaID_POG_;
   Float_t * sigmaEtaEta_;
   Float_t * HoE_;
   Float_t * deltaEta_;
@@ -76,6 +77,9 @@ protected:
   UChar_t * lostHits_;
   Bool_t * conversionVeto_;
   Int_t * cutbasedID_HLT_;
+
+  std::map<EGammaID, Float_t *> rawMVAs_POG_;
+  std::map<EGammaID, std::map<EGammaWP, Bool_t *>> mvaIDs_POG_;
 
   // CV: make sure that only one RecoElectronReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

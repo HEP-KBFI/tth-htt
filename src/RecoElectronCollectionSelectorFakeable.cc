@@ -150,11 +150,11 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  if(! electron.mvaID_POG())
+  if(! electron.mvaID_POG(EGammaWP::WPL))
   {
     if(debug_)
     {
-      std::cout << "FAILS EGamma POG MVA fakeable cut\n";
+      std::cout << "FAILS loose EGamma POG MVA fakeable cut\n";
     }
     return false;
   }
@@ -180,7 +180,14 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
       }
       return false;
     }
-    //TODO apply Egamma ID WP80 cut
+    if(! electron.mvaID_POG(EGammaWP::WP80))
+    {
+      if(debug_)
+      {
+        std::cout << "FAILS 80% EGamma POG MVA fakeable cut\n";
+      }
+      return false;
+    }
   }
 
   if(apply_offline_e_trigger_cuts_)

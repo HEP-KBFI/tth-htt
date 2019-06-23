@@ -23,8 +23,6 @@ RecoElectronReader::RecoElectronReader(int era,
   , readUncorrected_(false)
   , leptonReader_(new RecoLeptonReader(branchName_obj_, readGenMatching))
   , eCorr_(nullptr)
-  , mvaRaw_POG_(nullptr)
-  , mvaID_POG_(nullptr)
   , sigmaEtaEta_(nullptr)
   , HoE_(nullptr)
   , deltaEta_(nullptr)
@@ -48,8 +46,6 @@ RecoElectronReader::~RecoElectronReader()
     assert(gInstance);
     delete gInstance->leptonReader_;
     delete[] gInstance->eCorr_;
-    delete[] gInstance->mvaRaw_POG_;
-    delete[] gInstance->mvaID_POG_;
     delete[] gInstance->sigmaEtaEta_;
     delete[] gInstance->HoE_;
     delete[] gInstance->deltaEta_;
@@ -58,6 +54,19 @@ RecoElectronReader::~RecoElectronReader()
     delete[] gInstance->lostHits_;
     delete[] gInstance->conversionVeto_;
     delete[] gInstance->cutbasedID_HLT_;
+
+    for(auto & kv: gInstance->rawMVAs_POG_)
+    {
+      delete[] kv.second;
+    }
+    for(auto & kv: gInstance->mvaIDs_POG_)
+    {
+      for(auto & kw: kv.second)
+      {
+        delete[] kw.second;
+      }
+    }
+
     instances_[branchName_obj_] = nullptr;
   }
 }
@@ -67,14 +76,21 @@ RecoElectronReader::setBranchNames()
 {
   if (numInstances_[branchName_obj_] == 0)
   {
-    // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations?rev=12#Fall17v2
-    // "we consider these the best possible IDs right now with the best signal"
-    // "can use for 2016 if you want to use a consistent ID for all years"
-    const std::string mvaString = RecoElectron::useNoIso ? "mvaFall17V2noIso" : "mvaFall17V2Iso";
+    for(const auto & EGammaID_choice: EGammaID_map)
+    {
+      branchNames_mvaRaw_POG_[EGammaID_choice.first] = Form(
+        "%s_%s", branchName_obj_.data(), EGammaID_choice.second.data()
+      );
+      branchNames_mvaID_POG_[EGammaID_choice.first] = {};
+      for(const auto & EGammaWP_choice: EGammaWP_map)
+      {
+        branchNames_mvaID_POG_[EGammaID_choice.first][EGammaWP_choice.first] = Form(
+          "%s_%s", branchNames_mvaRaw_POG_[EGammaID_choice.first].data(), EGammaWP_choice.second.data()
+        );
+      }
+    }
 
     branchName_eCorr_ = Form("%s_%s", branchName_obj_.data(), "eCorr");
-    branchName_mvaRaw_POG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
-    branchName_mvaID_POG_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WPL", mvaString.data()));
     branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "sieie");
     branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "hoe");
     branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "deltaEtaSC_trackatVtx");
@@ -108,9 +124,20 @@ RecoElectronReader::setBranchAddresses(TTree * tree)
     const unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
 
     BranchAddressInitializer bai(tree, max_nLeptons);
+    for(const auto & EGammaID_choice: EGammaID_map)
+    {
+      bai.setBranchAddress(rawMVAs_POG_[EGammaID_choice.first], branchNames_mvaRaw_POG_[EGammaID_choice.first]);
+      mvaIDs_POG_[EGammaID_choice.first] = {};
+      for(const auto & EGammaWP_choice: EGammaWP_map)
+      {
+        bai.setBranchAddress(
+          mvaIDs_POG_           [EGammaID_choice.first][EGammaWP_choice.first],
+          branchNames_mvaID_POG_[EGammaID_choice.first][EGammaWP_choice.first]
+        );
+      }
+    }
+
     bai.setBranchAddress(eCorr_, branchName_eCorr_);
-    bai.setBranchAddress(mvaRaw_POG_, branchName_mvaRaw_POG_);
-    bai.setBranchAddress(mvaID_POG_, branchName_mvaID_POG_);
     bai.setBranchAddress(sigmaEtaEta_, branchName_sigmaEtaEta_);
     bai.setBranchAddress(HoE_, branchName_HoE_);
     bai.setBranchAddress(deltaEta_, branchName_deltaEta_);
@@ -181,8 +208,6 @@ RecoElectronReader::read() const
             gLeptonReader->genMatchIdx_[idxLepton],
           },
           gElectronReader->eCorr_[idxLepton],
-          gElectronReader->mvaRaw_POG_[idxLepton],
-          gElectronReader->mvaID_POG_[idxLepton],
           gElectronReader->sigmaEtaEta_[idxLepton],
           gElectronReader->HoE_[idxLepton],
           gElectronReader->deltaEta_[idxLepton],
@@ -198,6 +223,18 @@ RecoElectronReader::read() const
         {
           const double val = kv.second[idxLepton];
           electron.jetBtagCSVs_[kv.first] = std::isnan(val) ? -2. : val;
+        }
+        for(const auto & EGammaID_choice: gElectronReader->rawMVAs_POG_)
+        {
+          electron.egammaID_raws_[EGammaID_choice.first] = EGammaID_choice.second[idxLepton];
+        }
+        for(const auto & EGammaID_choice: gElectronReader->mvaIDs_POG_)
+        {
+          electron.egammaID_ids_[EGammaID_choice.first] = {};
+          for(const auto & EGammaWP_choice: EGammaID_choice.second)
+          {
+            electron.egammaID_ids_[EGammaID_choice.first][EGammaWP_choice.first] = EGammaWP_choice.second[idxLepton];
+          }
         }
       }
     }

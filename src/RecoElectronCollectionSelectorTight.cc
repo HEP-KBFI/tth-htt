@@ -162,11 +162,11 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     }
     return false;
   }
-  if(! electron.mvaID_POG())
+  if(! electron.mvaID_POG(EGammaWP::WPL))
   {
     if(debug_)
     {
-      std::cout << "FAILS EGamma POG MVA tight cut\n";
+      std::cout << "FAILS loose EGamma POG MVA tight cut\n";
     }
     return false;
   }
