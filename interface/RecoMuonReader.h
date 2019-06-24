@@ -14,10 +14,12 @@ class RecoMuonReader
 {
 public:
   RecoMuonReader(int era,
-                 bool readGenMatching = false);
+                 bool readGenMatching = false
+                 );
   RecoMuonReader(int era,
                  const std::string & branchName_obj,
-                 bool readGenMatching = false);
+                 bool readGenMatching = false,
+                 bool isDebug = false);
   ~RecoMuonReader();
 
   /**
@@ -31,7 +33,7 @@ public:
    * @return Collection of RecoMuon objects
    */
   std::vector<RecoMuon>
-  read() const;
+  read(bool debug = false) const;
 
 protected:
  /**
@@ -61,4 +63,3 @@ protected:
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonReader_h
-

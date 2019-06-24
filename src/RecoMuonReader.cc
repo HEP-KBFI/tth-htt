@@ -3,18 +3,21 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Btag, cmsException()
 
 std::map<std::string, int> RecoMuonReader::numInstances_;
 std::map<std::string, RecoMuonReader *> RecoMuonReader::instances_;
 
 RecoMuonReader::RecoMuonReader(int era,
-                               bool readGenMatching)
+                               bool readGenMatching
+                             )
   : RecoMuonReader(era, "Muon", readGenMatching)
 {}
 
 RecoMuonReader::RecoMuonReader(int era,
                                const std::string & branchName_obj,
-                               bool readGenMatching)
+                               bool readGenMatching,
+                               bool isDebug)
   : era_(era)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
@@ -84,7 +87,7 @@ RecoMuonReader::setBranchAddresses(TTree * tree)
 }
 
 std::vector<RecoMuon>
-RecoMuonReader::read() const
+RecoMuonReader::read(bool debug) const
 {
   const RecoLeptonReader * const gLeptonReader = leptonReader_->instances_[branchName_obj_];
   assert(gLeptonReader);
@@ -92,7 +95,7 @@ RecoMuonReader::read() const
   assert(gMuonReader);
   std::vector<RecoMuon> muons;
   const UInt_t nLeptons = gLeptonReader->nLeptons_;
-  
+
   if(nLeptons > leptonReader_->max_nLeptons_)
   {
     throw cmsException(this)
@@ -146,6 +149,13 @@ RecoMuonReader::read() const
         {
           const double val = kv.second[idxLepton];
           muon.jetBtagCSVs_[kv.first] = std::isnan(val) ? -2. : val;
+          if(debug){
+          std::string btag_str = "";
+          if (kv.first == Btag::kCSVv2)        btag_str = "CSV";
+          if (kv.first == Btag::kDeepCSV)            btag_str = "DeepCSV";
+          if (kv.first == Btag::kDeepJet)      btag_str = "DeepJet";
+          std::cout << "Btag type = " << btag_str << "; value = " << muon.jetBtagCSVs_[kv.first] << "\n";
+          }
         }
       }
     }
