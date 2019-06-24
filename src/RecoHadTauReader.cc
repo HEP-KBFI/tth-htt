@@ -220,11 +220,6 @@ RecoHadTauReader::read() const
         case kHadTauPt_shiftDown: hadTau_pt = 0.97 * gInstance->hadTau_pt_[idxHadTau]; break;
         default: throw cmsException(this) << "Invalid tau ES option: " << hadTauPt_option_;
       }
-      const double hadTau_rawMVA =
-        std::isnan(gInstance->hadTau_rawMVAs_.at(tauID_)[idxHadTau]) ?
-        -1.                                                          :
-        gInstance->hadTau_rawMVAs_.at(tauID_)[idxHadTau]
-      ;
 
       hadTaus.push_back({
         {
@@ -239,7 +234,7 @@ RecoHadTauReader::read() const
         gInstance->hadTau_decayMode_[idxHadTau],
         gInstance->hadTau_idDecayMode_[idxHadTau],
         gInstance->hadTau_idMVAs_.at(tauID_)[idxHadTau],
-        hadTau_rawMVA,
+        gInstance->hadTau_rawMVAs_.at(tauID_)[idxHadTau],
         gInstance->hadTau_idAgainstElec_[idxHadTau],
         gInstance->hadTau_idAgainstMu_[idxHadTau],
         gInstance->hadTau_filterBits_[idxHadTau],
@@ -255,12 +250,7 @@ RecoHadTauReader::read() const
       }
       for(const auto & kv: gInstance->hadTau_rawMVAs_)
       {
-        const double rawMVA =
-          std::isnan(gInstance->hadTau_rawMVAs_.at(kv.first)[idxHadTau]) ?
-          -1.                                                            :
-          gInstance->hadTau_rawMVAs_.at(kv.first)[idxHadTau]
-        ;
-        hadTau.tauID_raws_[kv.first] = rawMVA;
+        hadTau.tauID_raws_[kv.first] = gInstance->hadTau_rawMVAs_.at(kv.first)[idxHadTau];
       }
     }
     readGenMatching(hadTaus);

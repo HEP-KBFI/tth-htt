@@ -272,7 +272,23 @@ RecoJetReader::read() const
       // set QGL to -1. if:
       // 1) the value is nan
       // 2) the value is invalid: https://twiki.cern.ch/twiki/bin/view/CMS/QuarkGluonLikelihood#Return_codes
-      const double qgl = std::max(-1., std::isnan(gInstance->jet_QGDiscr_[idxJet]) ? -1. : gInstance->jet_QGDiscr_[idxJet]);
+      double qgl = gInstance->jet_QGDiscr_[idxJet];
+      if(std::isnan(qgl))
+      {
+        qgl = -1.;
+      }
+      qgl = std::max(-1., qgl);
+
+      // According to the log files of NanoAOD production, some jets might have nan as the value for DeepJet
+      // b-tagging discriminator. In the past we've seen similar issues with DeepCSV score as well. Will set the value
+      // of b-tagging discriminant to -2. in case the score is nan (as we already did with lepton-to-jet variables).
+      // Not sure how nan values affect the b-tagging scale factors, though.
+      double btagCSV = gInstance->jet_BtagCSVs_.at(btag_)[idxJet];
+      if(std::isnan(btagCSV))
+      {
+        btagCSV = -2.;
+      }
+
       jets.push_back({
         {
           gInstance->jet_pt_systematics_.at(ptMassOption_)[idxJet],
@@ -281,7 +297,7 @@ RecoJetReader::read() const
           gInstance->jet_mass_systematics_.at(ptMassOption_)[idxJet]
         },
         gInstance->jet_charge_[idxJet],
-        gInstance->jet_BtagCSVs_.at(btag_)[idxJet],
+        btagCSV,
         gInstance->jet_BtagWeights_systematics_.at(btag_).at(btag_central_or_shift_)[idxJet],
         qgl,
         gInstance->jet_pullEta_[idxJet],
@@ -311,7 +327,12 @@ RecoJetReader::read() const
 
       for(const auto & kv: gInstance->jet_BtagCSVs_)
       {
-        jet.BtagCSVs_[kv.first] = gInstance->jet_BtagCSVs_.at(kv.first)[idxJet];
+        double btagCSV_tmp = gInstance->jet_BtagCSVs_.at(kv.first)[idxJet];
+        if(std::isnan(btagCSV_tmp))
+        {
+          btagCSV_tmp = -2;
+        }
+        jet.BtagCSVs_[kv.first] = btagCSV_tmp;
       }
 
       if(isMC_)
