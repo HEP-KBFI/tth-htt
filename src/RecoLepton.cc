@@ -326,6 +326,7 @@ operator<<(std::ostream & stream,
 {
   stream << static_cast<const ChargedParticle &>(lepton)  << ",\n"
             " cone_pT = "             << lepton.cone_pt()                  << ","
+            " assocJet pT = "         << lepton.assocJet_pt()              << ","
             " dxy = "                 << lepton.dxy()                      << ","
             " dz = "                  << lepton.dz()                       << ",\n"
             " sip3d = "               << lepton.sip3d()                    << ","

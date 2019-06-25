@@ -153,6 +153,10 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
     }
 
     const double max_jetBtagCSV = smoothBtagCut(muon.assocJet_pt());
+    if(debug_)
+    {
+      std::cout << "smooth jetBtagCSV cut = " << max_jetBtagCSV << '\n';
+    }
     if(muon.jetBtagCSV() > max_jetBtagCSV)
     {
       if(debug_)
