@@ -132,7 +132,7 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
 
   if(muon.mvaRawTTH() >= wp_mvaTTH_)
   {
-    if(muon.jetBtagCSV(Btag::kDeepJet) > max_jetBtagCSV_)
+    if(muon.jetBtagCSV() > max_jetBtagCSV_)
     {
       if(debug_)
       {
@@ -153,8 +153,7 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
     }
 
     const double max_jetBtagCSV = smoothBtagCut(muon.assocJet_pt());
-    if(debug_) std::cout << "max_jetBtagCSV = " << max_jetBtagCSV << "; muon.jetBtagDJ() = " << muon.jetBtagCSV(Btag::kDeepJet) << " \n";
-    if(muon.jetBtagCSV(Btag::kDeepJet) > max_jetBtagCSV)
+    if(muon.jetBtagCSV() > max_jetBtagCSV)
     {
       if(debug_)
       {

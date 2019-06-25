@@ -145,6 +145,8 @@ public:
   const GenPhoton * genPhoton() const;
   const GenJet * genJet() const;
 
+  bool hasJetBtagCSV(Btag btag) const;
+
   bool isGenMatched() const;
   bool hasAnyGenMatch() const;
 

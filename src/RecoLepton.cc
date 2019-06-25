@@ -221,7 +221,7 @@ RecoLepton::jetBtagCSV() const
 Double_t
 RecoLepton::jetBtagCSV(Btag btag) const
 {
-  if(! jetBtagCSVs_.count(btag))
+  if(! hasJetBtagCSV(btag))
   {
     throw cmsException(this, __func__, __LINE__)
       << "b-tagging discriminator not available: " << as_integer(btag)
@@ -285,6 +285,12 @@ RecoLepton::genJet() const
 }
 
 bool
+RecoLepton::hasJetBtagCSV(Btag btag) const
+{
+  return jetBtagCSVs_.count(btag);
+}
+
+bool
 RecoLepton::isGenMatched() const
 {
   return !! genLepton_;
@@ -319,16 +325,19 @@ operator<<(std::ostream & stream,
            const RecoLepton & lepton)
 {
   stream << static_cast<const ChargedParticle &>(lepton)  << ",\n"
-            " cone_pT = "       << lepton.cone_pt()       << ","
-            " dxy = "           << lepton.dxy()           << ","
-            " dz = "            << lepton.dz()            << ",\n"
-            " sip3d = "         << lepton.sip3d()         << ","
-            " relIso = "        << lepton.relIso()        << ","
-            " pfRelIso04All = " << lepton.pfRelIso04All() << ",\n"
-            " tightCharge = "   << lepton.tightCharge()   << ","
-            " jetPtRatio = "    << lepton.jetPtRatio()    << ",\n"
-            " jetPtRel = "      << lepton.jetPtRel()      << ","
-            " mvaRawTTH = "     << lepton.mvaRawTTH()     << ",\n"
+            " cone_pT = "             << lepton.cone_pt()                         << ","
+            " dxy = "                 << lepton.dxy()                             << ","
+            " dz = "                  << lepton.dz()                              << ",\n"
+            " sip3d = "               << lepton.sip3d()                           << ","
+            " relIso = "              << lepton.relIso()                          << ","
+            " pfRelIso04All = "       << lepton.pfRelIso04All()                   << ",\n"
+            " tightCharge = "         << lepton.tightCharge()                     << ","
+            " jetPtRatio = "          << lepton.jetPtRatio()                      << ","
+            " jetPtRel = "            << lepton.jetPtRel()                        << ",\n"
+            " jetBtagCSV(DeepJet) = " << lepton.jetBtagCSV(Btag::kDeepJet, false) << ","
+            " jetBtagCSV(DeepCSV) = " << lepton.jetBtagCSV(Btag::kDeepCSV, false) << ","
+            " jetBtagCSV(CSVv2) = "   << lepton.jetBtagCSV(Btag::kCSVv2,   false) << ",\n"
+            " mvaRawTTH = "           << lepton.mvaRawTTH()                       << ",\n"
             " is loose/fakeable/tight = " << lepton.isLoose()    << '/'
                                           << lepton.isFakeable() << '/'
                                           << lepton.isTight()    << ",\n"
