@@ -1155,6 +1155,16 @@ int main(int argc, char* argv[])
       std::cout << "evtWeight = " << evtWeight << std::endl;
     }
 
+    // require exactly three leptons passing tight selection criteria, to avoid overlap with 4l channel
+    if ( !(tightLeptonsFull.size() <= 3) ) {
+      if ( run_lumi_eventSelector ) {
+        std::cout << "event " << eventInfo.str() << " FAILS tightLeptons selection.\n";
+        printCollection("tightLeptonsFull", tightLeptonsFull);
+      }
+      continue;
+    }
+    cutFlowTable.update("<= 3 tight leptons", evtWeight);
+
 //--- apply HLT filter
     if(apply_hlt_filter)
     {

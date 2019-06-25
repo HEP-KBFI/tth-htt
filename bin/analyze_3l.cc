@@ -824,6 +824,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     ">= 3 presel leptons",
     "Hadronic selection",
     "3 sel leptons",
+    "<= 3 tight leptons",
     "HLT filter matching",
     "sel tau veto",
     "m(ll) > 12 GeV",
@@ -1387,6 +1388,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       }
       continue;
     }
+    cutFlowTable.update("<= 3 tight leptons", evtWeight);
+    cutFlowHistManager->fillHistograms("<= 3 tight leptons", evtWeight);
 
 //--- apply HLT filter
     if(apply_hlt_filter)
