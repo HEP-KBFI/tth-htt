@@ -334,6 +334,7 @@ operator<<(std::ostream & stream,
             " tightCharge = "         << lepton.tightCharge()              << ","
             " jetPtRatio = "          << lepton.jetPtRatio()               << ","
             " jetPtRel = "            << lepton.jetPtRel()                 << ",\n"
+            " jetBtagCSV(default) = " << lepton.jetBtagCSV()               << ","
             " jetBtagCSV(DeepJet) = " << lepton.jetBtagCSV(Btag::kDeepJet) << ","
             " jetBtagCSV(DeepCSV) = " << lepton.jetBtagCSV(Btag::kDeepCSV) << ","
             " jetBtagCSV(CSVv2) = "   << lepton.jetBtagCSV(Btag::kCSVv2)   << ",\n"
