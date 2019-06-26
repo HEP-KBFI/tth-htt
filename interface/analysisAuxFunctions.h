@@ -569,7 +569,10 @@ std::string
 findFile(const std::string & fileName);
 
 bool
-isfailsZbosonMassVeto(const std::vector<const RecoLepton*> preselLeptons);
+isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons);
+
+bool
+isfailsHtoZZVeto(const std::vector<const RecoLepton *> & preselLeptons);
 
 /**
  * @brief Find generator-level jets produced in W->jj decay

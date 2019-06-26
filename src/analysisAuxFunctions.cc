@@ -351,18 +351,72 @@ findFile(const std::string & fileName)
 }
 
 bool
-isfailsZbosonMassVeto(const std::vector<const RecoLepton*> preselLeptons)
+isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons)
 {
   bool failsZbosonMassVeto = false;
-  for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptons.begin();
-  lepton1 != preselLeptons.end(); ++lepton1 ) {
-    for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-    lepton2 != preselLeptons.end(); ++lepton2 ) {
-      if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // pair of same flavor leptons of opposite charge
-        double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
-        if (std::fabs(mass - z_mass) < z_window ) failsZbosonMassVeto = true;
+  for(auto lepton1_it = preselLeptons.begin(); lepton1_it != preselLeptons.end(); ++lepton1_it)
+  {
+    const RecoLepton * lepton1 = *lepton1_it;
+    for(auto lepton2_it = lepton1_it + 1; lepton2_it != preselLeptons.end(); ++lepton2_it)
+    {
+      const RecoLepton * lepton2 = *lepton2_it;
+      if(lepton1->pdgId() == -lepton2->pdgId())
+      {
+        // pair of same flavor leptons of opposite charge
+        const double mass = (lepton1->p4() + lepton2->p4()).mass();
+        if(std::fabs(mass - z_mass) < z_window )
+        {
+          failsZbosonMassVeto = true;
+          break;
+        }
       }
     }
   }
   return failsZbosonMassVeto;
+}
+
+bool
+isfailsHtoZZVeto(const std::vector<const RecoLepton *> & preselLeptons)
+{
+  bool failsHtoZZVeto = false;
+  for(auto lepton1_it = preselLeptons.begin(); lepton1_it != preselLeptons.end(); ++lepton1_it)
+  {
+    const RecoLepton * lepton1 = *lepton1_it;
+    for(auto lepton2_it = lepton1_it + 1; lepton2_it != preselLeptons.end(); ++lepton2_it)
+    {
+      const RecoLepton * lepton2 = *lepton2_it;
+      if(lepton1->pdgId() == -lepton2->pdgId())
+      {
+        // first pair of same flavor leptons of opposite charge
+        for(auto lepton3_it = preselLeptons.begin(); lepton3_it != preselLeptons.end(); ++lepton3_it)
+        {
+          const RecoLepton * lepton3 = *lepton3_it;
+          if(lepton3 == lepton1 || lepton3 == lepton2)
+          {
+            continue;
+          }
+          for(auto lepton4_it = lepton3_it + 1; lepton4_it != preselLeptons.end(); ++lepton4_it)
+          {
+            const RecoLepton * lepton4 = *lepton4_it;
+            if(lepton4 == lepton1 || lepton4 == lepton2)
+            {
+              continue;
+            }
+
+            if(lepton3->pdgId() == -lepton4->pdgId())
+            {
+              // second pair of same flavor leptons of opposite charge
+              const double mass = (lepton1->p4() + lepton2->p4() + lepton3->p4() + lepton4->p4()).mass();
+              if(mass < 140.)
+              {
+                failsHtoZZVeto = true;
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return failsHtoZZVeto;
 }
