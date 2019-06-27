@@ -1266,9 +1266,9 @@ int main(int argc, char* argv[])
     */
 
 //--- compute MHT and linear MET discriminant (met_LD)
-    RecoMEt met = metReader->read();
-    Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, {}, selJets);
-    double met_LD = compMEt_LD(met.p4(), mht_p4);
+    const RecoMEt met = metReader->read();
+    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptonsFull, fakeableHadTaus, selJets);
+    const double met_LD = compMEt_LD(met.p4(), mht_p4);
 
 //--- apply final event selection
     if ( !(selLeptons.size() >= 2) ) {

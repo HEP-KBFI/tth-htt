@@ -927,10 +927,10 @@ int main(int argc, char* argv[])
     cutFlowTable.update("presel lepton trigger match");
     
 //--- compute MHT and linear MET discriminant (met_LD)
-    RecoMEt met = metReader->read();
-    std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
-    Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, selHadTaus, selJets);
-    double met_LD = compMEt_LD(met.p4(), mht_p4);
+    const RecoMEt met = metReader->read();
+    const std::vector<const RecoLepton *> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
+    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, selHadTaus, selJets);
+    const double met_LD = compMEt_LD(met.p4(), mht_p4);
 
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 

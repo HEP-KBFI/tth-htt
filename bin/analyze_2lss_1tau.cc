@@ -1344,9 +1344,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     assert(idxSelHadTau_genMatch != kGen_HadTauUndefined1);
 
 //--- compute MHT and linear MET discriminant (met_LD)
-    RecoMEt met = metReader->read();
-    Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, fakeableHadTaus, selJets);
-    double met_LD = compMEt_LD(met.p4(), mht_p4);
+    const RecoMEt met = metReader->read();
+    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptonsFull, fakeableHadTausFull, selJets);
+    const double met_LD = compMEt_LD(met.p4(), mht_p4);
 
 //--- apply final event selection
     if ( !(selLeptons.size() >= 2) ) {

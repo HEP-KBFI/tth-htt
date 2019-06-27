@@ -1465,9 +1465,9 @@ int main(int argc, char* argv[])
     assert(idxSelHadTau_genMatch != kGen_HadTauUndefined1);
 
 //--- compute MHT and linear MET discriminant (met_LD)
-    RecoMEt met = metReader->read();
-    Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, fakeableHadTaus, selJets);
-    double met_LD = compMEt_LD(met.p4(), mht_p4);
+    const RecoMEt met = metReader->read();
+    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptonsFull, fakeableHadTausFull, selJets);
+    const double met_LD = compMEt_LD(met.p4(), mht_p4);
 
     const RecoLepton* preselLepton_OS = 0;
     //const RecoLepton* preselLepton_SS = 0;

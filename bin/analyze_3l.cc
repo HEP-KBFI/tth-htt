@@ -1261,9 +1261,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     if ( tH_like && !ttH_like ) is_tH_like_and_not_ttH_like = true;
 
 //--- compute MHT and linear MET discriminant (met_LD)
-    RecoMEt met = metReader->read();
-    Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, {}, selJets);
-    double met_LD = compMEt_LD(met.p4(), mht_p4);
+    const RecoMEt met = metReader->read();
+    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptonsFull, fakeableHadTaus, selJets);
+    const double met_LD = compMEt_LD(met.p4(), mht_p4);
 
 //--- apply final event selection
     // require exactly three leptons passing tight selection criteria of final event selection
