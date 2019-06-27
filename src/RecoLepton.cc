@@ -293,7 +293,7 @@ RecoLepton::hasJetBtagCSV(Btag btag) const
 bool
 RecoLepton::isGenMatched() const
 {
-  return !! genLepton_;
+  return !! genLepton_ || !! genHadTau_;
 }
 
 bool

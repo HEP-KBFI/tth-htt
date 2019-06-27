@@ -186,7 +186,7 @@ RecoHadTau::genJet() const
 bool
 RecoHadTau::isGenMatched() const
 {
-  return !! genHadTau_;
+  return !! genHadTau_ || !! genLepton_;
 }
 
 bool
