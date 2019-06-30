@@ -1472,7 +1472,6 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         evtWeight *= weight_fakeRate;
       } else if ( applyFakeRateWeights == kFR_1tau) {
         prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
-        bool passesTight_hadTau = isMatched(*selHadTau, tightHadTausFull);
 
         weight_fakeRate = getWeight_1L(prob_fake_hadTau);
 
