@@ -1,4 +1,4 @@
-﻿#include "tthAnalysis/HiggsToTauTau/interface/DYMCReweighting.h"
+#include "tthAnalysis/HiggsToTauTau/interface/DYMCReweighting.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kDYMCReweighting_*
@@ -35,7 +35,13 @@ DYMCReweighting::DYMCReweighting(int era,
       );
       break;
     case kEra_2018:
-      throw cmsException(this, __func__, __LINE__) << "Implement me!";
+      weights_ = new lutWrapperTH2(
+        inputFiles_,
+        "tthAnalysis/HiggsToTauTau/data/zpt_weights_2018.root",
+        "zptmass_histo",
+        lut::kXetaYpt, 50., 1000., lut::kLimit, 0., 1000., lut::kLimit
+      );
+      break;
     default:
       throw cmsException(this, __func__, __LINE__) << "Invalid era = " << era_;
   }
