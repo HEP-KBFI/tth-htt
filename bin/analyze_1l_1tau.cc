@@ -2032,7 +2032,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     {
       double evtWeight_category = evtWeight;
       if ( category.find("_wChargeFlipWeights") != std::string::npos ) {
-	double prob_chargeMisId_lepton = prob_chargeMisId(selLepton_type, selLepton->pt(), selLepton->eta());
+        double prob_chargeMisId_lepton = prob_chargeMisId(era, selLepton_type, selLepton->pt(), selLepton->eta());
 	double prob_chargeMisId_tau = 0.01; // CV: not implemented yet; take "guessed" value for now
 	evtWeight_category *= (prob_chargeMisId_lepton + prob_chargeMisId_tau);
       }

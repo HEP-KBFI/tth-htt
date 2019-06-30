@@ -1241,10 +1241,10 @@ int main(int argc, char* argv[])
     if(leptonChargeSelection == kOS)
     {
       const double prob_chargeMisId_lead = prob_chargeMisId(
-        getLeptonType(selLepton_lead->pdgId()), selLepton_lead->pt(), selLepton_lead->eta()
+        era, getLeptonType(selLepton_lead->pdgId()), selLepton_lead->pt(), selLepton_lead->eta()
       );
       const double prob_chargeMisId_sublead = prob_chargeMisId(
-        getLeptonType(selLepton_sublead->pdgId()), selLepton_sublead->pt(), selLepton_sublead->eta()
+        era, getLeptonType(selLepton_sublead->pdgId()), selLepton_sublead->pt(), selLepton_sublead->eta()
       );
       evtWeight *= (prob_chargeMisId_lead + prob_chargeMisId_sublead);
 
