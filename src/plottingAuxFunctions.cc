@@ -7,7 +7,6 @@
 
 #include <TH1.h>
 #include <TDirectory.h>
-#include <TMath.h>
 #include <TPRegexp.h>
 #include <TObjString.h>
 #include <TObjArray.h>
@@ -315,7 +314,7 @@ HistogramManager::update()
 
         if(histogram_sysShift)
         {
-          const double absSysShift_value = TMath::Abs(sysShift_value);
+          const double absSysShift_value = std::fabs(sysShift_value);
           TH1 * histogram_prefit_central = histograms_prefit_[process];
           assert(histogram_prefit_central);
 
@@ -421,7 +420,7 @@ HistogramManager::update()
 
     histogram_uncertainty_->SetBinContent(iBin, binContent_uncertainty);
     assert(binErr2_uncertainty >= 0.);
-    histogram_uncertainty_->SetBinError(iBin, TMath::Sqrt(binErr2_uncertainty));
+    histogram_uncertainty_->SetBinError(iBin, std::sqrt(binErr2_uncertainty));
   } // iBin
 
   isUpToDate_ = true;
@@ -449,22 +448,18 @@ divideHistogramByBinWidth(TH1 * histogram)
 
 std::pair<double, double>
 compYmin_and_YmaxForClearance(TH1 * histogram,
-			      double legendPosX,
-			      double legendPosY,
-			      double labelPosY,
-			      bool useLogScale,
-			      double numOrdersOfMagnitude)
+                              double legendPosX,
+                              double legendPosY,
+                              double labelPosY,
+                              bool useLogScale,
+                              double numOrdersOfMagnitude)
 {
-  //std::cout << "<compYmaxForClearance>:" << std::endl;
-  //std::cout << " legendPos: x = " << legendPosX << ", y = " << legendPosY << std::endl;
-  //std::cout << " labelPos: x = " << labelPosY << std::endl;
   const TAxis * const xAxis = histogram->GetXaxis();
   const double xMin = xAxis->GetXmin();
   const double xMax = xAxis->GetXmax();
   const double dX = 0.05;
   const double dY = 0.05;
   const double x12 = xMin + (xMax - xMin) * legendPosX;
-  //std::cout << "x12 = " << x12 << std::endl;
   double maxBinContent1 = 0.;
   double maxBinContent2 = 0.;
 
@@ -487,38 +482,34 @@ compYmin_and_YmaxForClearance(TH1 * histogram,
       }
     }
   }
-  //std::cout << "maxBinContent1 = " << maxBinContent1 << ", maxBinContent2 = " << maxBinContent2 << std::endl;
 
   double yMinForClearance = 0.;
   double yMaxForClearance = 0.;
   if(useLogScale)
   {
-    const double maxBinContent = TMath::Max(maxBinContent1, maxBinContent2);
-    double logYmin = TMath::Log10(maxBinContent) - numOrdersOfMagnitude;
-    //std::cout << "logYmin = " << logYmin << std::endl;
+    const double maxBinContent = std::max(maxBinContent1, maxBinContent2);
+    double logYmin = std::log10(maxBinContent) - numOrdersOfMagnitude;
 
     double logYmaxForClearance1 = 0.;
     if(maxBinContent1 > 0. && maxBinContent > 0.)
     {
-      logYmaxForClearance1 = (TMath::Log10(maxBinContent1) - logYmin)/(labelPosY - dY);
+      logYmaxForClearance1 = (std::log10(maxBinContent1) - logYmin)/(labelPosY - dY);
     }
 
     double logYmaxForClearance2 = 0.;
     if(maxBinContent2 > 0. && maxBinContent > 0.)
     {
-      logYmaxForClearance2 = (TMath::Log10(maxBinContent2) - logYmin)/(legendPosY - dY);      
+      logYmaxForClearance2 = (std::log10(maxBinContent2) - logYmin)/(legendPosY - dY);
     }
-    //std::cout << "logYmaxForClearance1 = " << logYmaxForClearance1 << ", logYmaxForClearance2 = " << logYmaxForClearance2 << std::endl;
-    const double logYmaxForClearance = TMath::Max(logYmaxForClearance1, logYmaxForClearance2);
-    yMinForClearance = TMath::Power(10., logYmin);
-    yMaxForClearance = TMath::Power(10., logYmaxForClearance) + TMath::Power(10., logYmin);
+    const double logYmaxForClearance = std::max(logYmaxForClearance1, logYmaxForClearance2);
+    yMinForClearance = std::pow(10., logYmin);
+    yMaxForClearance = std::pow(10., logYmaxForClearance) + std::pow(10., logYmin);
   }
   else
   {
     yMinForClearance = 0.;
-    yMaxForClearance = TMath::Max(maxBinContent1 / (labelPosY - dY), maxBinContent2 / (legendPosY - dY));
+    yMaxForClearance = std::max(maxBinContent1 / (labelPosY - dY), maxBinContent2 / (legendPosY - dY));
   }
-  //std::cout << "yMaxForClearance = " << yMaxForClearance << std::endl;
   return std::pair<double, double>(yMinForClearance, yMaxForClearance);
 }
 

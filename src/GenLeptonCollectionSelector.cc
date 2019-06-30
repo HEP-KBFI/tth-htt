@@ -7,23 +7,12 @@ GenLeptonSelector::GenLeptonSelector(int era,
                                      int index,
                                      bool debug)
   : era_(era)
+  , min_pt_muon_(5.)
   , max_absEta_muon_(2.4)
+  , min_pt_electron_(7.)
   , max_absEta_electron_(2.5)
   , debug_(debug)
-{
-  switch ( era_ )
-  {
-    case kEra_2016:
-    case kEra_2018:
-    case kEra_2017:
-    {
-      min_pt_muon_ = 5.;
-      min_pt_electron_ = 7.;
-      break;
-    }
-    default: throw cmsException(this) << "Invalid era: " << era_;
-  }
-}
+{}
 
 void
 GenLeptonSelector::set_min_pt_muon(double min_pt)
@@ -76,34 +65,38 @@ GenLeptonSelector::get_max_absEta_electron() const
 bool
 GenLeptonSelector::operator()(const GenLepton & lepton) const
 {
-  if ( debug_ )
+  if(debug_)
   {
     std::cout << get_human_line(this, __func__) << ":\n lepton: " << lepton << '\n';
   }
 
   double min_pt, max_absEta;
-  if ( lepton.is_muon() ) 
+  if(lepton.is_muon())
   {
      min_pt = min_pt_muon_;
      max_absEta = max_absEta_muon_;
   } 
-  else if ( lepton.is_electron() ) 
+  else if(lepton.is_electron())
   {
      min_pt = min_pt_electron_;
      max_absEta = max_absEta_electron_;
-  } else assert(0);
-
-  if ( lepton.pt() < min_pt )
+  }
+  else
   {
-    if ( debug_ )
+    assert(0);
+  }
+
+  if(lepton.pt() < min_pt)
+  {
+    if(debug_)
     {
       std::cout << "FAILS pT >= " << min_pt << " cut\n";
     }
     return false;
   }
-  if ( max_absEta > 0. && lepton.absEta() > max_absEta )
+  if(max_absEta > 0. && lepton.absEta() > max_absEta)
   {
-    if ( debug_ )
+    if(debug_)
     {
       std::cout << "FAILS abs(eta) <= " << max_absEta << " cut\n";
     }

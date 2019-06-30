@@ -4,9 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 
 // forward declarations
-class HadTopKinFit;
 class TMVAInterface;
-class XGBInterface;
 
 enum { kXGB_CSVsort4rd };
 
@@ -25,16 +23,16 @@ public:
   operator()(const RecoJet & recBJet,
              const RecoJet & recWJet1,
              const RecoJet & recWJet2,
-             bool & calculate_matching, bool & isGenMatched,
+             bool & calculate_matching,
+             bool & isGenMatched,
              double & genTopPt,
-             std::map<int, Particle::LorentzVector> genVar, std::map<int, Particle::LorentzVector> genVarAnti
-           );
+             const std::map<int, Particle::LorentzVector> & genVar,
+             const std::map<int, Particle::LorentzVector> & genVarAnti);
 
   const std::map<std::string, double> &
   mvaInputs() const;
 
 protected:
-
   std::map<std::string, double> mvaInputsHTT;
   std::vector<std::string>      mvaInputsHTTSort;
   TMVAInterface * mva_xgb_HTT_CSVsort4rd_;

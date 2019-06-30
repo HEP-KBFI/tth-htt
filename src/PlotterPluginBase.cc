@@ -1,6 +1,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/PlotterPluginBase.h"
 
-PlotterPluginBase::PlotterPluginBase(const TFile* inputFile, const edm::ParameterSet& cfg)
+#include <TFile.h>
+
+PlotterPluginBase::PlotterPluginBase(const TFile * inputFile,
+                                     const edm::ParameterSet & cfg)
   : inputFile_(inputFile)
   , cfg_(cfg)
 {}

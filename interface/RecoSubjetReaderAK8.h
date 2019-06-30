@@ -8,6 +8,7 @@
 
 // forward declarations
 class TTree;
+enum class Btag;
 
 class RecoSubjetReaderAK8
   : public ReaderBase
@@ -15,9 +16,8 @@ class RecoSubjetReaderAK8
 public:
   RecoSubjetReaderAK8(int era);
   RecoSubjetReaderAK8(int era,
-		      const std::string & branchName_obj,
-		      bool readBtagCSV = true);
-  ~RecoSubjetReaderAK8();
+                      const std::string & branchName_obj);
+  ~RecoSubjetReaderAK8() override;
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoSubjetAK8 branches
@@ -40,7 +40,7 @@ protected:
   setBranchNames();
 
   int era_;
-  bool readBtagCSV_;
+  Btag btag_;
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;

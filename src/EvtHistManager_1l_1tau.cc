@@ -5,34 +5,46 @@
 EvtHistManager_1l_1tau::EvtHistManager_1l_1tau(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
 {
-  central_or_shiftOptions_["numElectrons"] = { "central" };
-  central_or_shiftOptions_["numMuons"] = { "central" };
-  central_or_shiftOptions_["numHadTaus"] = { "central" };
-  central_or_shiftOptions_["numJets"] = { "central" };
-  central_or_shiftOptions_["numBJets_loose"] = { "central" };
-  central_or_shiftOptions_["numBJets_medium"] = { "central" };
-  central_or_shiftOptions_["numBJets_loose_vs_numJets"] = { "central" };
-  central_or_shiftOptions_["numBJets_medium_vs_numJets"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_plainKin_ttV"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_plainKin_tt"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_plainKin_1B_VT"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_plainKin_SUM_VT"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_plainKin_SUM_VT_noRebin"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_HTT_SUM_VT"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_HTT_SUM_VT_noRebin"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_final"] = { "*" };
-  central_or_shiftOptions_["mTauTauVis"] = { "central" };
-  central_or_shiftOptions_["mTauTau"] = { "central" };
-  central_or_shiftOptions_["Pzeta"] = { "central" };
-  central_or_shiftOptions_["PzetaVis"] = { "central" };
-  central_or_shiftOptions_["PzetaMiss"] = { "central" };
-  central_or_shiftOptions_["PzetaComb"] = { "central" };
-  central_or_shiftOptions_["mT_lep"] = { "central" };
-  central_or_shiftOptions_["mT_tau"] = { "central" };
-  central_or_shiftOptions_["mbb"] = { "central" };
-  central_or_shiftOptions_["mbb_loose"] = { "central" };
-  central_or_shiftOptions_["EventCounter"] = { "*" };
-  central_or_shiftOptions_["mva_16Var"] = { "central" };
+  const std::vector<std::string> sysOpts_central = {
+    "numElectrons",
+    "numMuons",
+    "numHadTaus",
+    "numJets",
+    "numBJets_loose",
+    "numBJets_medium",
+    "numBJets_loose_vs_numJets",
+    "numBJets_medium_vs_numJets",
+    "mvaOutput_plainKin_ttV",
+    "mvaOutput_plainKin_tt",
+    "mvaOutput_plainKin_1B_VT",
+    "mvaOutput_plainKin_SUM_VT",
+    "mvaOutput_plainKin_SUM_VT_noRebin",
+    "mvaOutput_HTT_SUM_VT",
+    "mvaOutput_HTT_SUM_VT_noRebin",
+    "mTauTauVis",
+    "mTauTau",
+    "Pzeta",
+    "PzetaVis",
+    "PzetaMiss",
+    "PzetaComb",
+    "mT_lep",
+    "mT_tau",
+    "mbb",
+    "mbb_loose",
+    "mva_16Var",
+  };
+  const std::vector<std::string> sysOpts_all = {
+    "mvaOutput_final",
+    "EventCounter",
+  };
+  for(const std::string & sysOpt: sysOpts_central)
+  {
+    central_or_shiftOptions_[sysOpt] = { "central" };
+  }
+  for(const std::string & sysOpt: sysOpts_all)
+  {
+    central_or_shiftOptions_[sysOpt] = { "*" };
+  }
 }
 
 const TH1 *
@@ -61,7 +73,9 @@ EvtHistManager_1l_1tau::bookHistograms(TFileDirectory & dir)
   histogram_mT_tau_       = book1D(dir, "mT_tau",     "mT_tau",      30,    0.,   150.);
   histogram_mbb_          = book1D(dir, "mbb",        "mbb",         20,    0.,   300.);
   histogram_mbb_loose_    = book1D(dir, "mbb_loose",  "mbb_loose",   20,    0.,   300.);
-  histogram_mvaOutput_1l_1tau_16_variables_ = book1D(dir,"mva_16Var","mva_16Var",100,0.,+1.);
+
+  histogram_mvaOutput_1l_1tau_16_variables_ = book1D(dir, "mva_16Var", "mva_16Var", 100,0., +1.);
+
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
@@ -103,6 +117,8 @@ EvtHistManager_1l_1tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mT_tau_,          mT_tau,           evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mbb_,             mbb,              evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mbb_loose_,       mbb_loose,        evtWeight, evtWeightErr);
+
   fillWithOverFlow(histogram_mvaOutput_1l_1tau_16_variables_, mvaOutput_1l_1tau_16_variables, evtWeight, evtWeightErr);
+
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

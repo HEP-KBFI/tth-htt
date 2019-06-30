@@ -7,8 +7,8 @@
 #include <TMVA/Reader.h> // TMVA::Reader
 
 TMVAInterface_OddEven::TMVAInterface_OddEven(const std::string & mvaFileName_Odd,
-			     const std::string & mvaFileName_Even,
-			     const std::vector<std::string> & mvaInputVariables,
+                             const std::string & mvaFileName_Even,
+                             const std::vector<std::string> & mvaInputVariables,
                              const std::vector<std::string> & spectators)
   : mva_Odd_(nullptr)
   , mva_Even_(nullptr)

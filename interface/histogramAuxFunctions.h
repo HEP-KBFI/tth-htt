@@ -136,24 +136,22 @@ TArrayD getRebinnedBinning(TH1*, double);
 TArrayD
 getTArraDfromVector(const std::vector<double> & histogramBinning);
 
-TH1* compRatioHistogram(const std::string& ratioHistogramName, const TH1* numerator, const TH1* denominator);
+TH1 *
+compRatioHistogram(const std::string & ratioHistogramName,
+                   const TH1 * numerator,
+                   const TH1 * denominator);
 
-void divideByBinWidth(TH1* histogram);
+void
+divideByBinWidth(TH1 * histogram);
 
 struct histogramEntryType_private
 {
-  histogramEntryType_private(TH1* histogram, 
-		   bool isData)
-  : histogram_(histogram)
-  , isData_(isData)
-  {}
+  histogramEntryType_private(TH1 * histogram,
+                             bool isData);
 
-  ~histogramEntryType_private()
-  {
-    //  delete histogram_;
-  }
+  ~histogramEntryType_private(){}
 
-  TH1* histogram_;
+  TH1 * histogram_;
   bool isData_;
 };
 

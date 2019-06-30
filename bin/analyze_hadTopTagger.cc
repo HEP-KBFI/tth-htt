@@ -631,12 +631,12 @@ int main(int argc, char* argv[])
             std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
               selBJet, selWJet1, selWJet2,
               genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
-              kGenTop, typeTop, unfittedHadTopP4
+              typeTop, unfittedHadTopP4
             );
             std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
               selBJet, selWJet1, selWJet2,
               genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2],
-              kGenAntiTop, typeTop, unfittedHadTopP4
+              typeTop, unfittedHadTopP4
             );
             if(genMatchingTop[kGenMatchedTriplet]) { genTopPt = genVar[kGenTop].pt();  genTopEta = genVar[kGenTop].eta();}
             if(genMatchingAntiTop[kGenMatchedTriplet]) { genTopPt = genVarAnti[kGenTop].pt();  genTopEta = genVarAnti[kGenTop].eta();}
@@ -872,12 +872,12 @@ int main(int argc, char* argv[])
                 std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
                   selBJet, selWJet1, selWJet2,
                   genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
-                  kGenTop, typeTop, (*jetIter)->p4()
+                  typeTop, (*jetIter)->p4()
                 );
                 std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
                   selBJet, selWJet1, selWJet2,
                   genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2],
-                  kGenAntiTop, typeTop, (*jetIter)->p4()
+                  typeTop, (*jetIter)->p4()
                 );
                 if(genMatchingTop[kGenMatchedTriplet]) { genTopPt = genVar[kGenTop].pt();  genTopEta = genVar[kGenTop].eta();}
                 if(genMatchingAntiTop[kGenMatchedTriplet]) { genTopPt = genVarAnti[kGenTop].pt();  genTopEta = genVarAnti[kGenTop].eta();}
@@ -1038,13 +1038,11 @@ int main(int argc, char* argv[])
 
                   std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(
                     selBJet, selWJet1, selWJet2,
-                    genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
-                    kGenTop
+                    genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2]
                   );
                   std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(
                     selBJet, selWJet1, selWJet2,
-                    genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2],
-                    kGenAntiTop
+                    genVarAnti[kGenTop], genVarAnti[kGenTopB], genVarAnti[kGenTopW], genVarAnti[kGenTopWj1], genVarAnti[kGenTopWj2]
                   );
                   if(genMatchingTop[kGenMatchedTriplet]) { genTopPt = genVar[kGenTop].pt();  genTopEta = genVar[kGenTop].eta();}
                   if(genMatchingAntiTop[kGenMatchedTriplet]) { genTopPt = genVarAnti[kGenTop].pt();  genTopEta = genVarAnti[kGenTop].eta();}

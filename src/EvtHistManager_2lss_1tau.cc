@@ -8,31 +8,43 @@ EvtHistManager_2lss_1tau::EvtHistManager_2lss_1tau(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)
   , era_(get_era(cfg.getParameter<std::string>("era")))
 {
-  central_or_shiftOptions_["numElectrons"] = { "central" };
-  central_or_shiftOptions_["numMuons"] = { "central" };
-  central_or_shiftOptions_["numHadTaus"] = { "central" };
-  central_or_shiftOptions_["numJets"] = { "central" };
-  central_or_shiftOptions_["numBJets_loose"] = { "central" };
-  central_or_shiftOptions_["numBJets_medium"] = { "central" };
-  central_or_shiftOptions_["numBJets_loose_vs_numJets"] = { "central" };
-  central_or_shiftOptions_["numBJets_medium_vs_numJets"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_ttV"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_tt"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_1tau_plainKin_tt"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_1tau_plainKin_ttV"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_1tau_plainKin_1B_M"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_1tau_plainKin_SUM_M"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_1tau_HTT_SUM_M"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_1tau_HTT_SUM_M_noRebin"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_1tau_HTTMEM_SUM_M"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_final"] = { "*" };
-  central_or_shiftOptions_["mTauTauVis"] = { "central" };
-  central_or_shiftOptions_["mTauTauVis1"] = { "central" };
-  central_or_shiftOptions_["mTauTauVis2"] = { "central" };
-  central_or_shiftOptions_["memOutput_LR"] = { "central" };
-  central_or_shiftOptions_["EventCounter"] = { "*" };
+  const std::vector<std::string> sysOpts_central = {
+    "numElectrons",
+    "numMuons",
+    "numHadTaus",
+    "numJets",
+    "numBJets_loose",
+    "numBJets_medium",
+    "numBJets_loose_vs_numJets",
+    "numBJets_medium_vs_numJets",
+    "mvaOutput_2lss_ttV",
+    "mvaOutput_2lss_tt",
+    "mvaOutput_2lss_1tau_plainKin_tt",
+    "mvaOutput_2lss_1tau_plainKin_ttV",
+    "mvaOutput_2lss_1tau_plainKin_1B_M",
+    "mvaOutput_2lss_1tau_plainKin_SUM_M",
+    "mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin",
+    "mvaOutput_2lss_1tau_HTT_SUM_M",
+    "mvaOutput_2lss_1tau_HTT_SUM_M_noRebin",
+    "mvaOutput_2lss_1tau_HTTMEM_SUM_M",
+    "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin",
+    "mTauTauVis",
+    "mTauTauVis1",
+    "mTauTauVis2",
+    "memOutput_LR",
+  };
+  const std::vector<std::string> sysOpts_all = {
+    "mvaOutput_final",
+    "EventCounter",
+  };
+  for(const std::string & sysOpt: sysOpts_central)
+  {
+    central_or_shiftOptions_[sysOpt] = { "central" };
+  }
+  for(const std::string & sysOpt: sysOpts_all)
+  {
+    central_or_shiftOptions_[sysOpt] = { "*" };
+  }
 }
 
 const TH1 *
@@ -49,9 +61,6 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory & dir)
   histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
   histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
   histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
-
-  //histogram_numBJets_loose_vs_numJets_  = book2D(dir, "numBJets_loose_vs_numJets",  "numBJets_loose_vs_numJets",  8, -0.5, +7.5, 6, -0.5, +5.5);
-  //histogram_numBJets_medium_vs_numJets_ = book2D(dir, "numBJets_medium_vs_numJets", "numBJets_medium_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
 
   histogram_mvaOutput_2lss_ttV_ = book1D(dir, "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttV", 40, -1., +1.);
   histogram_mvaOutput_2lss_tt_  = book1D(dir, "mvaOutput_2lss_tt",  "mvaOutput_2lss_tt",  40, -1., +1.);
@@ -105,9 +114,6 @@ EvtHistManager_2lss_1tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
-
-  //fillWithOverFlow2d(histogram_numBJets_loose_vs_numJets_,  numJets, numBJets_loose,  evtWeight, evtWeightErr);
-  //fillWithOverFlow2d(histogram_numBJets_medium_vs_numJets_, numJets, numBJets_medium, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mvaOutput_2lss_ttV_, mvaOutput_2lss_ttV, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2lss_tt_,  mvaOutput_2lss_tt,  evtWeight, evtWeightErr);

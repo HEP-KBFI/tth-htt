@@ -110,19 +110,6 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
   clock_->Stop(func_str.data());
   clock_->Show(func_str.data());
 
-//  for(int ih = 0; ih < 10; ++ih)
-//  {
-//    if(index_hyp_[ih] != -1 && MEMpermutations_[index_hyp[ih]].computeHyp)
-//    {
-//      std::cout
-//        << "MEM hypothesis " << shyp[index_hyp[ih]] << ":"
-//        << " weight = "      << MEMpermutations_[index_hyp_[ih]].resMEM_avgExl0.weight       << ","
-//           " kinfitscore = " << MEMpermutations_[index_hyp_[ih]].resKin_maxKinFit_Int.weight << '\n'
-//      ;
-//    }
-//  }
-
-
   result.fillInputs(selLepton_lead, selLepton_sublead, selLepton_third);
   if(index_hyp_[1] != -1 || index_hyp_[2] != -1)
   {

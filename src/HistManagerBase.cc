@@ -76,8 +76,8 @@ HistManagerBase::book1D(TFileDirectory & dir,
                         double * binning)
 {
   TH1 * retVal = nullptr;
-  bool doBookHistogram = checkOptionIsSelected(distribution);
-  if ( doBookHistogram ) 
+  const bool doBookHistogram = checkOptionIsSelected(distribution);
+  if(doBookHistogram)
   {
     TDirectory * const subdir = createHistogramSubdirectory(dir);
     subdir->cd();
@@ -112,8 +112,8 @@ HistManagerBase::book2D(TFileDirectory & dir,
                         double yMax)
 {
   TH2 * retVal = nullptr;
-  bool doBookHistogram = checkOptionIsSelected(distribution);
-  if ( doBookHistogram ) 
+  const bool doBookHistogram = checkOptionIsSelected(distribution);
+  if(doBookHistogram)
   {
     TDirectory * const subdir = createHistogramSubdirectory(dir);
     subdir->cd();
@@ -150,8 +150,8 @@ HistManagerBase::book2D(TFileDirectory & dir,
                         float * binningY)
 {
   TH2 * retVal = nullptr;
-  bool doBookHistogram = checkOptionIsSelected(distribution);
-  if ( doBookHistogram ) 
+  const bool doBookHistogram = checkOptionIsSelected(distribution);
+  if(doBookHistogram)
   {
     TDirectory * const subdir = createHistogramSubdirectory(dir);
     subdir->cd();
@@ -186,8 +186,8 @@ HistManagerBase::book2D(TFileDirectory & dir,
                         double * binningY)
 {
   TH2 * retVal = nullptr;
-  bool doBookHistogram = checkOptionIsSelected(distribution);
-  if ( doBookHistogram ) 
+  const bool doBookHistogram = checkOptionIsSelected(distribution);
+  if(doBookHistogram)
   {
     TDirectory * const subdir = createHistogramSubdirectory(dir);
     subdir->cd();
@@ -216,23 +216,29 @@ bool
 HistManagerBase::checkOptionIsSelected(const std::string & distribution) const
 {
   bool isSelected = false;
-  std::map<std::string, std::vector<std::string>>::const_iterator central_or_shiftOptions_iter = central_or_shiftOptions_.find(distribution);
-  if ( central_or_shiftOptions_iter != central_or_shiftOptions_.end() ) 
+  const auto central_or_shiftOptions_iter = central_or_shiftOptions_.find(distribution);
+  if(central_or_shiftOptions_iter != central_or_shiftOptions_.end())
   {
-    for ( std::vector<std::string>::const_iterator central_or_shiftOption = central_or_shiftOptions_iter->second.begin();
-	  central_or_shiftOption != central_or_shiftOptions_iter->second.end(); ++central_or_shiftOption ) {
-      if ( (*central_or_shiftOption) == "*" ) {
-	isSelected = true;
-	break;
-      }
-      if ( (((*central_or_shiftOption) == "central" || central_or_shiftOption->empty())) && (central_or_shift_ == "central" || central_or_shift_.empty()) ) {
+    for(const std::string & central_or_shiftOption: central_or_shiftOptions_iter->second)
+    {
+      if(central_or_shiftOption == "*")
+      {
         isSelected = true;
-	break;
+        break;
+      }
+      if((central_or_shiftOption == "central" || central_or_shiftOption.empty()) &&
+         (central_or_shift_      == "central" || central_or_shift_.empty())       )
+      {
+        isSelected = true;
+        break;
       }
     }
-  } else {
-    throw cmsException(this)
-      << "Failed to find distribution = '" << distribution << "' in histogramOptions !!\n";
+  }
+  else
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "Failed to find distribution = '" << distribution << "' in histogramOptions"
+    ;
   }
   return isSelected;
 }
@@ -277,7 +283,7 @@ HistManagerBase::getHistogramName(const std::string & distribution) const
 edm::ParameterSet
 makeHistManager_cfg(const std::string & process,
                     const std::string & category,
-		    const std::string & era,
+                    const std::string & era,
                     const std::string & central_or_shift,
                     int idx)
 {
@@ -293,9 +299,9 @@ makeHistManager_cfg(const std::string & process,
 edm::ParameterSet
 makeHistManager_cfg(const std::string & process,
                     const std::string & category,
-		    const std::string & era,
+                    const std::string & era,
                     const std::string & central_or_shift,
-		    const std::string & option,
+                    const std::string & option,
                     int idx)
 {
   edm::ParameterSet cfg = makeHistManager_cfg(process, category, era, central_or_shift, idx);

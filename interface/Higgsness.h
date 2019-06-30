@@ -14,7 +14,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle::LorentzVector
 
-#include "Math/Minimizer.h"
+#include <Math/Minimizer.h>
 
 namespace higgsness
 {
@@ -28,9 +28,11 @@ namespace higgsness
 
 class Higgsness
 {
- public:
+public:
   enum modeType { kPublishedChi2, kFixedChi2 };
-  Higgsness(modeType mode = kPublishedChi2, int maxObjFunctionCalls = 10000);
+
+  Higgsness(modeType mode = kPublishedChi2,
+            int maxObjFunctionCalls = 10000);
   ~Higgsness();
 
   void set_sigmaW_onshell(double sigmaW_onshell);
@@ -38,9 +40,9 @@ class Higgsness
   void set_sigmaH_lep(double sigmaH_lep);
   
   /// compute Higgsness variable according to Eq. (4) in Ref. [1]
-  void fit(const Particle::LorentzVector& lepton1P4,
-	   const Particle::LorentzVector& lepton2P4,
-	   double metPx, double metPy);
+  void fit(const Particle::LorentzVector & lepton1P4,
+           const Particle::LorentzVector & lepton2P4,
+           double metPx, double metPy);
 
   /// flag indicating whether or not MINUIT fit converged
   bool isValidSolution() const;
@@ -54,7 +56,7 @@ class Higgsness
   /// fit-function, called by MINUIT
   double operator()(const double* x) const;
 
- private:
+private:
   modeType mode_;
 
   Particle::LorentzVector lepton1P4_;
@@ -70,7 +72,7 @@ class Higgsness
 
   //-----------------------------------------------------------------------------
   /// MINUIT algorithm
-  ROOT::Math::Minimizer* minimizer_;
+  ROOT::Math::Minimizer * minimizer_;
   higgsness::ObjectiveFunctionAdapterMINUIT objectiveFunctionAdapterMINUIT_;
   int maxObjFunctionCalls_;
   mutable int fitStatus_;
@@ -78,8 +80,8 @@ class Higgsness
   //-----------------------------------------------------------------------------
 
   const int numPermutations_;
-  double* chi2_of_permutation_;
-  int* fitStatus_of_permutation_;
+  double * chi2_of_permutation_;
+  int * fitStatus_of_permutation_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_Higgsness_h

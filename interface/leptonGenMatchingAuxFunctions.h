@@ -55,7 +55,7 @@ struct leptonGenMatchEntry
   leptonGenMatchEntry(const std::string & name,
                       int idx,
                       int numGenMatchedLeptons,
-		      int numGenMatchedPhotons,
+                      int numGenMatchedPhotons,
                       int numGenMatchedJets);
   ~leptonGenMatchEntry() {}
   std::string name_;
@@ -70,8 +70,8 @@ struct leptonChargeFlipGenMatchEntry
   leptonChargeFlipGenMatchEntry(const std::string & name,
                       int idx,
                       int numGenMatchedLeptons,
-		      int numChargeFlippedGenMatchedLeptons,
-		      int numGenMatchedPhotons,
+                      int numChargeFlippedGenMatchedLeptons,
+                      int numGenMatchedPhotons,
                       int numGenMatchedJets);
   ~leptonChargeFlipGenMatchEntry() {}
   std::string name_;
@@ -103,21 +103,21 @@ getLeptonGenMatch_int(const std::vector<leptonGenMatchEntry> & leptonGenMatch_de
 
 int
 getLeptonChargeFlipGenMatch_int(const std::vector<leptonChargeFlipGenMatchEntry> & leptonChargeFlipGenMatch_definitions,
-				const std::string & leptonChargeFlipGenMatch_string);
+                                const std::string & leptonChargeFlipGenMatch_string);
 
 
 void
 countLeptonGenMatches(const RecoLepton * lepton,
-		      int & numGenMatchedLeptons,
-		      int & numGenMatchedPhotons,
-		      int & numGenMatchedJets);
+                      int & numGenMatchedLeptons,
+                      int & numGenMatchedPhotons,
+                      int & numGenMatchedJets);
 
 void
 countLeptonChargeFlipGenMatches(const RecoLepton * lepton,
-		      int & numGenMatchedLeptons,
-		      int & numChargeFlippedGenMatchedLeptons,
-		      int & numGenMatchedPhotons,
-		      int & numGenMatchedJets);
+                      int & numGenMatchedLeptons,
+                      int & numChargeFlippedGenMatchedLeptons,
+                      int & numGenMatchedPhotons,
+                      int & numGenMatchedJets);
 
 const leptonGenMatchEntry &
 getLeptonGenMatch(const std::vector<leptonGenMatchEntry> & leptonGenMatch_definitions,
@@ -128,10 +128,10 @@ getLeptonGenMatch(const std::vector<leptonGenMatchEntry> & leptonGenMatch_defini
 
 const leptonChargeFlipGenMatchEntry &
 getLeptonChargeFlipGenMatch(const std::vector<leptonChargeFlipGenMatchEntry> & leptonChargeFlipGenMatch_definitions,
-			    const RecoLepton * lepton_lead,
-			    const RecoLepton * lepton_sublead = nullptr,
-			    const RecoLepton * lepton_third = nullptr,
-			    const RecoLepton * lepton_fourth = nullptr);
+                            const RecoLepton * lepton_lead,
+                            const RecoLepton * lepton_sublead = nullptr,
+                            const RecoLepton * lepton_third = nullptr,
+                            const RecoLepton * lepton_fourth = nullptr);
 
 
 std::ostream &

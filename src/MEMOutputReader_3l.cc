@@ -9,7 +9,7 @@ std::map<std::string, int> MEMOutputReader_3l::numInstances_;
 std::map<std::string, MEMOutputReader_3l *> MEMOutputReader_3l::instances_;
 
 MEMOutputReader_3l::MEMOutputReader_3l(const std::string & branchName_num,
-				       const std::string & branchName_obj)
+                                       const std::string & branchName_obj)
   : max_nMEMOutputs_(100)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
@@ -142,7 +142,8 @@ MEMOutputReader_3l::read() const
   {
     throw cmsException(this)
       << "Number of MEMOutputs stored in Ntuple = " << nMEMOutputs << ", "
-         "exceeds max_nMEMOutputs = " << max_nMEMOutputs_ << " !!\n";
+         "exceeds max_nMEMOutputs = " << max_nMEMOutputs_
+    ;
   }
   std::vector<MEMOutput_3l> memOutputs;
   if(nMEMOutputs > 0)

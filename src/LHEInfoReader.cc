@@ -11,7 +11,7 @@ std::map<std::string, int> LHEInfoReader::numInstances_;
 std::map<std::string, LHEInfoReader*> LHEInfoReader::instances_;
 
 LHEInfoReader::LHEInfoReader(bool has_LHE_weights)
-  : max_scale_nWeights_(44)
+  : max_scale_nWeights_(9)
   , branchName_scale_nWeights_("nLHEScaleWeight")
   , branchName_scale_weights_("LHEScaleWeight")
   , max_pdf_nWeights_(103)
@@ -116,58 +116,6 @@ LHEInfoReader::read() const
     weight_scale_xDown_ = gInstance->scale_weights_[3]; // muR=1.0 muF=0.5
     weight_scale_xUp_   = gInstance->scale_weights_[5]; // muR=1.0 muF=2.0
     weight_scale_yUp_   = gInstance->scale_weights_[7]; // muR=2.0 muF=1.0
-  }
-  // MG ver 2.6 and above:
-  //    [0]  is muR=0.5 muF=0.5
-  //    [1]  is muR=0.5 muF=0.5 dyn_scale_choice=sum pt
-  //    [2]  is muR=0.5 muF=0.5 dyn_scale_choice=HT
-  //    [3]  is muR=0.5 muF=0.5 dyn_scale_choice=HT/2
-  //    [4]  is muR=0.5 muF=0.5 dyn_scale_choice=sqrts
-  //    [5]  is muR=0.5 muF=1.0
-  //    [6]  is muR=0.5 muF=1.0 dyn_scale_choice=sum pt
-  //    [7]  is muR=0.5 muF=1.0 dyn_scale_choice=HT
-  //    [8]  is muR=0.5 muF=1.0 dyn_scale_choice=HT/2
-  //    [9]  is muR=0.5 muF=1.0 dyn_scale_choice=sqrts
-  //    [10] is muR=0.5 muF=2.0
-  //    [11] is muR=0.5 muF=2.0 dyn_scale_choice=sum pt
-  //    [12] is muR=0.5 muF=2.0 dyn_scale_choice=HT
-  //    [13] is muR=0.5 muF=2.0 dyn_scale_choice=HT/2
-  //    [14] is muR=0.5 muF=2.0 dyn_scale_choice=sqrts
-  //    [15] is muR=1.0 muF=0.5
-  //    [16] is muR=1.0 muF=0.5 dyn_scale_choice=sum pt
-  //    [17] is muR=1.0 muF=0.5 dyn_scale_choice=HT
-  //    [18] is muR=1.0 muF=0.5 dyn_scale_choice=HT/2
-  //    [19] is muR=1.0 muF=0.5 dyn_scale_choice=sqrts
-  //    [20] is muR=1.0 muF=1.0 dyn_scale_choice=sum pt
-  //    [21] is muR=1.0 muF=1.0 dyn_scale_choice=HT
-  //    [22] is muR=1.0 muF=1.0 dyn_scale_choice=HT/2
-  //    [23] is muR=1.0 muF=1.0 dyn_scale_choice=sqrts
-  //    [24] is muR=1.0 muF=2.0
-  //    [25] is muR=1.0 muF=2.0 dyn_scale_choice=sum pt
-  //    [26] is muR=1.0 muF=2.0 dyn_scale_choice=HT
-  //    [27] is muR=1.0 muF=2.0 dyn_scale_choice=HT/2
-  //    [28] is muR=1.0 muF=2.0 dyn_scale_choice=sqrts
-  //    [29] is muR=2.0 muF=0.5
-  //    [30] is muR=2.0 muF=0.5 dyn_scale_choice=sum pt
-  //    [31] is muR=2.0 muF=0.5 dyn_scale_choice=HT
-  //    [32] is muR=2.0 muF=0.5 dyn_scale_choice=HT/2
-  //    [33] is muR=2.0 muF=0.5 dyn_scale_choice=sqrts
-  //    [34] is muR=2.0 muF=1.0
-  //    [35] is muR=2.0 muF=1.0 dyn_scale_choice=sum pt
-  //    [36] is muR=2.0 muF=1.0 dyn_scale_choice=HT
-  //    [37] is muR=2.0 muF=1.0 dyn_scale_choice=HT/2
-  //    [38] is muR=2.0 muF=1.0 dyn_scale_choice=sqrts
-  //    [39] is muR=2.0 muF=2.0
-  //    [40] is muR=2.0 muF=2.0 dyn_scale_choice=sum pt
-  //    [41] is muR=2.0 muF=2.0 dyn_scale_choice=HT
-  //    [42] is muR=2.0 muF=2.0 dyn_scale_choice=HT/2
-  //    [43] is muR=2.0 muF=2.0 dyn_scale_choice=sqrts
-  else if(gInstance->scale_nWeights_ == 44)
-  {
-    weight_scale_yDown_ = gInstance->scale_weights_[5];  // muR=0.5 muF=1.0
-    weight_scale_xDown_ = gInstance->scale_weights_[15]; // muR=1.0 muF=0.5
-    weight_scale_xUp_   = gInstance->scale_weights_[24]; // muR=1.0 muF=2.0
-    weight_scale_yUp_   = gInstance->scale_weights_[34]; // muR=2.0 muF=1.0
   }
   else
   {

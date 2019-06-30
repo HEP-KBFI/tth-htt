@@ -12,7 +12,7 @@ RecoSubjetReaderHTTv2::RecoSubjetReaderHTTv2(int era)
 {}
 
 RecoSubjetReaderHTTv2::RecoSubjetReaderHTTv2(int era,
-					     const std::string & branchName_obj)
+                                             const std::string & branchName_obj)
   : era_(era)
   , max_nJets_(128)
   , branchName_num_(Form("n%s", branchName_obj.data()))
@@ -118,7 +118,7 @@ RecoSubjetReaderHTTv2::read() const
           gInstance->jet_phi_[idxJet],
           gInstance->jet_mass_[idxJet]
         },
-	( gInstance->jet_IDPassed_[idxJet] > 0.5 ) ? true : false ,
+        ( gInstance->jet_IDPassed_[idxJet] > 0.5 ) ? true : false ,
         gInstance->jet_btagDeepB_[idxJet],
         gInstance->jet_area_[idxJet],
         static_cast<Int_t>(idxJet)

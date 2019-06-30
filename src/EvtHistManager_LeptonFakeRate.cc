@@ -5,12 +5,18 @@
 EvtHistManager_LeptonFakeRate::EvtHistManager_LeptonFakeRate(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
 {
-  central_or_shiftOptions_["mT_fix_L"] = { "*" };
-  central_or_shiftOptions_["mT_fix_L_num"] = { "*" };
-  central_or_shiftOptions_["mT_fix_L_den"] = { "*" };
-  central_or_shiftOptions_["mT_L"] = { "*" };
-  central_or_shiftOptions_["MET"] = { "*" };
-  central_or_shiftOptions_["EventCounter"] = { "*" };
+  const std::vector<std::string> sysOpts_all = {
+    "mT_fix_L",
+    "mT_fix_L_num",
+    "mT_fix_L_den",
+    "mT_L",
+    "MET",
+    "EventCounter",
+  };
+  for(const std::string & sysOpt: sysOpts_all)
+  {
+    central_or_shiftOptions_[sysOpt] = { "*" };
+  }
 }
 
 void

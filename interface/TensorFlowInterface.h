@@ -6,7 +6,6 @@
 #include <string> // std::string
 #include <vector> // std::vector<>
 #include <map> // std::map<,>
-//#include <memory>
 
 // forward declarations
 namespace tensorflow
@@ -15,7 +14,6 @@ namespace tensorflow
   class GraphDef;
   class Session;
   class Status;
-  //class MemmappedEnv;
 }
 
 class TensorFlowInterface
@@ -36,17 +34,9 @@ public:
   std::map<std::string, double>
   operator()(const std::map<std::string, double> & mvaInputs) const;
 
-  //tensorflow::Session & getSession() const { return *session_; }
-
-  //using GraphPtr = std::shared_ptr<tensorflow::GraphDef>;
-  //const tensorflow::GraphDef & getGraph() const { return *graph_; }
-
 private:
   std::string mvaFileName_;
   tensorflow::GraphDef * graphDef_;
-  //int NumberOfInputs;
-  //tensorflow::Session * session_;
-  //GraphPtr graph_;
   tensorflow::Session * session_;
   const std::vector<std::string> classes_;
   std::string input_layer_name;

@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h"
 
 double
-getWeight_1L(double prob_fake, bool passesTight)
+getWeight_1L(double prob_fake)
 {
   const double p = prob_fake / (1. - prob_fake);
   const double weight = p;

@@ -3,48 +3,62 @@
 
 #include <TVectorD.h>
 #include <TMatrixD.h>
-#include <TF1.h>
-#include <TGraphAsymmErrors.h>
 
 #include <vector>
 #include <string>
 
+// forward declarations
+class TF1;
+class TGraphAsymmErrors;
+
 struct EigenVector_and_Value
 {
-  EigenVector_and_Value(const TVectorD& eigenVector, double eigenValue)
-    : eigenVector_(eigenVector),
-      eigenValue_(eigenValue)
-  {}
-  ~EigenVector_and_Value() {}  
+  EigenVector_and_Value(const TVectorD & eigenVector,
+                        double eigenValue);
   TVectorD eigenVector_;
   double eigenValue_;
 };
 
-std::vector<EigenVector_and_Value> compEigenVectors_and_Values(const TMatrixD& cov);
-
 struct fitFunction_and_legendEntry
 {
-  fitFunction_and_legendEntry(TF1* fitFunction, const std::string& legendEntry)
-    : fitFunction_(fitFunction),
-      legendEntry_(legendEntry)
-  {}
-  ~fitFunction_and_legendEntry() {}
-  TF1* fitFunction_;
+  fitFunction_and_legendEntry(TF1 * fitFunction,
+                              const std::string & legendEntry);
+  TF1 * fitFunction_;
   std::string legendEntry_;
 };
 
-void makeControlPlot_graphs(
-       TGraphAsymmErrors* graph_data, const std::string& legendEntry_data,
-       TGraphAsymmErrors* graph_mc, const std::string& legendEntry_mc,
-       TGraphAsymmErrors* graph_data_div_mc, 
-       double xMin, double xMax, const std::string& xAxisTitle, 
-       bool useLogScale, double yMin, double yMax, const std::string& yAxisTitle, double yMin_ratio, double yMax_ratio, const std::string& yAxisTitle_ratio, 
-       const std::string& outputFileName);
-void makeControlPlot_fit(
-       TGraphAsymmErrors* graph, 
-       TF1* fitFunction_central, std::vector<fitFunction_and_legendEntry>& fitFunctions_sysShifts, 
-       double xMin, double xMax, const std::string& xAxisTitle, 
-       bool useLogScale, double yMin, double yMax, const std::string& yAxisTitle, 
-       const std::string& outputFileName);
+std::vector<EigenVector_and_Value>
+compEigenVectors_and_Values(const TMatrixD & cov);
+
+void
+makeControlPlot_graphs(TGraphAsymmErrors * graph_data,
+                       const std::string & legendEntry_data,
+                       TGraphAsymmErrors * graph_mc,
+                       const std::string & legendEntry_mc,
+                       TGraphAsymmErrors * graph_data_div_mc,
+                       double xMin,
+                       double xMax,
+                       const std::string & xAxisTitle,
+                       bool useLogScale,
+                       double yMin,
+                       double yMax,
+                       const std::string & yAxisTitle,
+                       double yMin_ratio,
+                       double yMax_ratio,
+                       const std::string & yAxisTitle_ratio,
+                       const std::string & outputFileName);
+
+void
+makeControlPlot_fit(TGraphAsymmErrors * graph,
+                    TF1 * fitFunction_central,
+                    std::vector<fitFunction_and_legendEntry> & fitFunctions_sysShifts,
+                    double xMin,
+                    double xMax,
+                    const std::string & xAxisTitle,
+                    bool useLogScale,
+                    double yMin,
+                    double yMax,
+                    const std::string & yAxisTitle,
+                    const std::string & outputFileName);
 
 #endif

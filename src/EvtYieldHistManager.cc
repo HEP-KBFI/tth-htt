@@ -21,7 +21,7 @@ namespace evtYieldHistManager
   {
     if(luminosity_ <= 0.)
     {
-      throw cmsException(this) << "Invalid Configuration parameter 'luminosity' = " << luminosity_ << "!!";
+      throw cmsException(this) << "Invalid Configuration parameter 'luminosity' = " << luminosity_;
     }
 
     const std::string runRange = cfg.getParameter<std::string>("runRange");
@@ -49,13 +49,13 @@ namespace evtYieldHistManager
     return name_;
   }
 
-  UInt_t
+  Long64_t
   RunPeriod::firstRun() const
   {
     return firstRun_;
   }
 
-  UInt_t
+  Long64_t
   RunPeriod::lastRun() const
   {
     return lastRun_;
@@ -75,7 +75,7 @@ namespace evtYieldHistManager
        (runPeriod1.lastRun()  > runPeriod2.firstRun() && runPeriod1.lastRun()  < runPeriod2.lastRun())  )
     {
       throw cmsException(__func__, __LINE__)
-        << "Run periods '" << runPeriod1.name() << "' and '" << runPeriod2.name() << "' must not overlap !!"
+        << "Run periods '" << runPeriod1.name() << "' and '" << runPeriod2.name() << "' must not overlap"
       ;
     }
     return runPeriod1.firstRun() < runPeriod2.firstRun();
@@ -166,8 +166,10 @@ EvtYieldHistManager::EvtYieldHistManager(const edm::ParameterSet & cfg)
   {
     throw cmsException(this) << "Invalid Configuration parameter 'runPeriods' !!";
   }
+
+  // CV: central_or_shiftOptions for "evtYield" and "luminosity" histograms need to be identical
   central_or_shiftOptions_["evtYield"] = { "*" };
-  central_or_shiftOptions_["luminosity"] = central_or_shiftOptions_["evtYield"]; // CV: central_or_shiftOptions for "evtYield" and "luminosity" histograms need to be identical !!
+  central_or_shiftOptions_["luminosity"] = central_or_shiftOptions_["evtYield"];
 }
 
 void
@@ -193,7 +195,7 @@ EvtYieldHistManager::bookHistograms(TFileDirectory & dir)
       histogram_luminosity_->SetBinContent(idxBin, runPeriods_[idxRunPeriod].luminosity());
       histogram_luminosity_->GetXaxis()->SetBinLabel(idxBin, runPeriods_[idxRunPeriod].name().data());
     }
-    if ( isMC_ )
+    if(isMC_)
     {
       histogram_rnd_ = new evtYieldHistManager::TRandomTH1(histogram_luminosity_);
     }
@@ -204,11 +206,11 @@ void
 EvtYieldHistManager::fillHistograms(const EventInfo & eventInfo,
 				    double evtWeight)
 {
-  if ( histogram_evtYield_ && histogram_luminosity_ ) 
+  if(histogram_evtYield_ && histogram_luminosity_)
   {
     int idxBin_run = -1;
     double run = eventInfo.run;
-    if ( isMC_ )
+    if(isMC_)
     {
       if(! (idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX()))
       {
@@ -221,7 +223,7 @@ EvtYieldHistManager::fillHistograms(const EventInfo & eventInfo,
       idxBin_run = histogram_luminosity_->FindBin(run);
       if(! (idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX()))
       {
-        throw cmsException(this, __func__, __LINE__) << "No luminosity defined for run = " << run << " !!";
+        throw cmsException(this, __func__, __LINE__) << "No luminosity defined for run = " << run;
       }
     }
     assert(idxBin_run >= 1 && idxBin_run <= histogram_luminosity_->GetNbinsX());

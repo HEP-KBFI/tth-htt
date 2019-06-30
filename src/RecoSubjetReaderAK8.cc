@@ -12,10 +12,9 @@ RecoSubjetReaderAK8::RecoSubjetReaderAK8(int era)
 {}
 
 RecoSubjetReaderAK8::RecoSubjetReaderAK8(int era,
-                                         const std::string & branchName_obj,
-                                         bool readBtagCSV)
+                                         const std::string & branchName_obj)
   : era_(era)
-  , readBtagCSV_(readBtagCSV)
+  , btag_(Btag::kDeepCSV) // maybe read DeepJet?
   , max_nJets_(88)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
@@ -25,12 +24,11 @@ RecoSubjetReaderAK8::RecoSubjetReaderAK8(int era,
   , jet_mass_(nullptr)
   , jet_BtagCSV_(nullptr)
 {
-  switch(era_)
-    {
-    case kEra_2016:
-    case kEra_2018:
-    case kEra_2017: branchName_btag_ = "DeepB"; break;
-    default: throw cmsException(this) << "Invalid era = " << era_;
+  switch(btag_)
+  {
+    case Btag::kDeepCSV: branchName_btag_ = "DeepB";     break;
+    case Btag::kDeepJet: branchName_btag_ = "DeepFlavB"; break;
+    case Btag::kCSVv2:   branchName_btag_ = "CSVV2";     break;
   }
   assert(! branchName_btag_.empty());
   setBranchNames();
@@ -90,10 +88,7 @@ RecoSubjetReaderAK8::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_eta_, branchName_eta_);
     bai.setBranchAddress(jet_phi_, branchName_phi_);
     bai.setBranchAddress(jet_mass_, branchName_mass_);
-    if(readBtagCSV_)
-    {
-      bai.setBranchAddress(jet_BtagCSV_, branchName_BtagCSV_);
-    } 
+    bai.setBranchAddress(jet_BtagCSV_, branchName_BtagCSV_);
   }
 }
 
@@ -107,8 +102,8 @@ RecoSubjetReaderAK8::read() const
   const UInt_t nJets = gInstance->nJets_;
   if(nJets > max_nJets_)
   {
-    throw cmsException(this)
-      << "Number of jets stored in Ntuple = " << nJets << ", exceeds max_nJets = " << max_nJets_ << " !!\n";
+    throw cmsException(this, __func__, __LINE__)
+      << "Number of jets stored in Ntuple = " << nJets << ", exceeds max_nJets = " << max_nJets_;
   }
 
   if(nJets > 0)
@@ -123,7 +118,7 @@ RecoSubjetReaderAK8::read() const
           gInstance->jet_phi_[idxJet],
           gInstance->jet_mass_[idxJet]
         },
-        readBtagCSV_ ? gInstance->jet_BtagCSV_[idxJet] : -1.,
+        gInstance->jet_BtagCSV_[idxJet],
         static_cast<Int_t>(idxJet)
       });
     } // idxJet

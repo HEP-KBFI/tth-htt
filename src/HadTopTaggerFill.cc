@@ -19,8 +19,7 @@ HadTopTaggerFill::~HadTopTaggerFill()
 void
 HadTopTaggerFill::operator()(const Particle::LorentzVector & recBJet,
                              const Particle::LorentzVector & recWJet1,
-                             const Particle::LorentzVector & recWJet2
-                           )
+                             const Particle::LorentzVector & recWJet2)
 {
 	mvaInputs_.clear();
   const Particle::LorentzVector p4_bWj1Wj2 = recBJet + recWJet1 + recWJet2;
@@ -33,16 +32,10 @@ HadTopTaggerFill::operator()(const Particle::LorentzVector & recBJet,
   mvaInputs_["m_Wj1Wj2_div_m_bWj1Wj2"] = p4_bWj1Wj2.mass() > 0. ? p4_Wj1Wj2.mass() / p4_bWj1Wj2.mass() : -1.;
   mvaInputs_["pT_b"]                   = recBJet.pt();
   mvaInputs_["eta_b"]                  = abs(recBJet.eta());
-  //mvaInputs_["phi_b"]                  = recBJet.phi();
-  //mvaInputs_["mass_b"]                 = recBJet.mass();
   mvaInputs_["pT_Wj1"]                 = recWJet1.pt();
   mvaInputs_["eta_Wj1"]                = abs(recWJet1.eta());
-  //mvaInputs_["phi_Wj1"]                = recWJet1.phi();
-  //mvaInputs_["mass_Wj1"]               = recWJet1.mass();
   mvaInputs_["pT_Wj2"]                 = recWJet2.pt();
   mvaInputs_["eta_Wj2"]                = abs(recWJet2.eta());
-  //mvaInputs_["phi_Wj2"]                = recWJet2.phi();
-  //mvaInputs_["mass_Wj2"]               = recWJet2.mass();
   mvaInputs_["dR_bWj1"]                = deltaR(recBJet, recWJet1);
   mvaInputs_["dR_bWj2"]                = deltaR(recBJet, recWJet2);
   mvaInputs_["dR_Wj1Wj2"]              = deltaR(recWJet1, recWJet2);
@@ -55,17 +48,8 @@ HadTopTaggerFill::operator()(const Particle::LorentzVector & recBJet,
   mvaInputs_["alphaKinFit"]            = kinFit_->alpha();
 
   mvaInputs_["kinFit_pT_b"]            = kinFit_->fittedBJet().pt();
-  //mvaInputs_["kinFit_eta_b"]           = kinFit_->fittedBJet().absEta();
-  //mvaInputs_["kinFit_phi_b"]           = kinFit_->fittedBJet().phi();
-  //mvaInputs_["kinFit_mass_b"]          = kinFit_->fittedBJet().mass();
   mvaInputs_["kinFit_pT_Wj1"]          = kinFit_->fittedWJet1().pt();
-  //mvaInputs_["kinFit_eta_Wj1"]         = kinFit_->fittedWJet1().absEta();
-  //mvaInputs_["kinFit_phi_Wj1"]         = kinFit_->fittedWJet1().phi();
-  //mvaInputs_["kinFit_mass_Wj1"]        = kinFit_->fittedWJet1().mass();
   mvaInputs_["kinFit_pT_Wj2"]          = kinFit_->fittedWJet2().pt();
-  //mvaInputs_["kinFit_eta_Wj2"]         = kinFit_->fittedWJet2().absEta();
-  //mvaInputs_["kinFit_phi_Wj2"]         = kinFit_->fittedWJet2().phi();
-  //mvaInputs_["kinFit_mass_Wj2"]        = kinFit_->fittedWJet2().mass();
 
 //--- star angle computation
   TLorentzVector PWj1, PWj2;
@@ -205,17 +189,8 @@ HadTopTaggerFill::operator()(const Particle::LorentzVector & recBJet,
   mvaInputs_["cosThetaWj1_restW"]   = PWj1boost.CosTheta();
   mvaInputs_["cosThetaKinWj_restW"] = kinFit_PWj1boost.CosTheta();
 
-  //kinFit_->integrate(recBJet, recWJet1, recWJet2);
-  //mvaInputs_["logPKinFit"]         = kinFit_->p()    > 0. ? std::log(kinFit_->p())    : -1.e+3;
-  //mvaInputs_["logPErrKinFit"]      = kinFit_->pErr() > 0. ? std::log(kinFit_->pErr()) : -1.e+3;
-
   mvaInputs_["pT_bWj1Wj2"]         = p4_bWj1Wj2.pt();
   mvaInputs_["pT_Wj1Wj2"]          = p4_Wj1Wj2.pt();
-#if 0
-  const double expRjet = p4_bWj1Wj2.pt() > 0. ? 327. / p4_bWj1Wj2.pt() : -1.;
-  mvaInputs_["max_dR_div_expRjet"]     = std::max({dR_bWj1, dR_bWj2, dR_Wj1Wj2}) / expRjet;
-#endif
-
 }
 
 const std::vector<std::string> &
@@ -229,87 +204,6 @@ HadTopTaggerFill::defineBinnings(MVAInputVarHistManager * mvaInputHistManager)
   wrapper.defineBinning("m_bWj2",                 100, 0., 1.e+3);
   wrapper.defineBinning("m_Wj1Wj2_div_m_bWj1Wj2", 100, 0., 1.);
   wrapper.defineBinning("CSV_b",                  100, 0., 1.);
-
-  /*
-  wrapper.defineBinning("pT_b",   100, 0., 5.e+2);
-  wrapper.defineBinning("pT_Wj1", 100, 0., 5.e+2);
-  wrapper.defineBinning("pT_Wj2", 100, 0., 5.e+2);
-
-  wrapper.defineBinning("eta_b",   100, -5., 5.);
-  wrapper.defineBinning("eta_Wj1", 100, -5., 5.);
-  wrapper.defineBinning("eta_Wj2", 100, -5., 5.);
-
-  wrapper.defineBinning("phi_b",   100, -5., 5.);
-  wrapper.defineBinning("phi_Wj1", 100, -5., 5.);
-  wrapper.defineBinning("phi_Wj2", 100, -5., 5.);
-
-  wrapper.defineBinning("mass_b",   100, 0., 5.e+2);
-  wrapper.defineBinning("mass_Wj1", 100, 0., 5.e+2);
-  wrapper.defineBinning("mass_Wj2", 100, 0., 5.e+2);
-
-  wrapper.defineBinning("kinFit_pT_b",   100, 0., 5.e+2);
-  wrapper.defineBinning("kinFit_pT_Wj1", 100, 0., 5.e+2);
-  wrapper.defineBinning("kinFit_pT_Wj2", 100, 0., 5.e+2);
-
-  wrapper.defineBinning("kinFit_eta_b",   100, -5., 5.);
-  wrapper.defineBinning("kinFit_eta_Wj1", 100, -5., 5.);
-  wrapper.defineBinning("kinFit_eta_Wj2", 100, -5., 5.);
-
-  wrapper.defineBinning("kinFit_phi_b",   100, -5., 5.);
-  wrapper.defineBinning("kinFit_phi_Wj1", 100, -5., 5.);
-  wrapper.defineBinning("kinFit_phi_Wj2", 100, -5., 5.);
-
-  wrapper.defineBinning("kinFit_mass_b",   100, 0., 5.e+2);
-  wrapper.defineBinning("kinFit_mass_Wj1", 100, 0., 5.e+2);
-  wrapper.defineBinning("kinFit_mass_Wj2", 100, 0., 5.e+2);
-
-  wrapper.defineBinning("cosTheta_leadWj_restTop",        100, -1., 1.);
-  wrapper.defineBinning("cosTheta_subleadWj_restTop",     100, -1., 1.);
-  wrapper.defineBinning("cosTheta_Kin_leadWj_restTop",    100, -1., 1.);
-  wrapper.defineBinning("cosTheta_Kin_subleadWj_restTop", 100, -1., 1.);
-
-  wrapper.defineBinning("cosTheta_leadEWj_restTop",        100, -1., 1.);
-  wrapper.defineBinning("cosTheta_subleadEWj_restTop",     100, -1., 1.);
-  wrapper.defineBinning("cosTheta_Kin_leadEWj_restTop",    100, -1., 1.);
-  wrapper.defineBinning("cosTheta_Kin_subleadEWj_restTop", 100, -1., 1.);
-
-  wrapper.defineBinning("cosThetaW_rest",    100, -1., 1.);
-  wrapper.defineBinning("cosThetaKinW_rest", 100, -1., 1.);
-  wrapper.defineBinning("cosThetaW_lab",     100, -1., 1.);
-  wrapper.defineBinning("cosThetaKinW_lab",  100, -1., 1.);
-
-  wrapper.defineBinning("cosThetab_rest",    100, -1., 1.);
-  wrapper.defineBinning("cosThetaKinb_rest", 100, -1., 1.);
-  wrapper.defineBinning("cosThetab_lab",     100, -1., 1.);
-  wrapper.defineBinning("cosThetaKinb_lab",  100, -1., 1.);
-
-
-  wrapper.defineBinning("Dphi_Wj1_Wj2_lab",       100, -5., 5.);
-  wrapper.defineBinning("Dphi_KinWj1_KinWj2_lab", 100, -5., 5.);
-
-  wrapper.defineBinning("Dphi_Wb_rest",    100, -5., 5.);
-  wrapper.defineBinning("Dphi_KinWb_rest", 100, -5., 5.);
-  wrapper.defineBinning("Dphi_Wb_lab",     100, -5., 5.);
-  wrapper.defineBinning("Dphi_KinWb_lab",  100, -5., 5.);
-
-  wrapper.defineBinning("cosThetaWj1_restW",   100, -1., 1.);
-  wrapper.defineBinning("cosThetaKinWj_restW", 100, -1., 1.);
-
-  wrapper.defineBinning("dR_bWj1",            100,   0.,  5.);
-  wrapper.defineBinning("dR_bWj2",            100,   0.,  5.);
-  wrapper.defineBinning("dR_Wj1Wj2",          100,   0.,  5.);
-  wrapper.defineBinning("dR_bW",              100,   0.,  5.);
-  wrapper.defineBinning("statusKinFit",         6,  -1., +5.);
-  wrapper.defineBinning("nllKinFit",          150, -10., +5.);
-  wrapper.defineBinning("alphaKinFit",        200,   0.,  2.);
-  wrapper.defineBinning("logPKinFit",         150, -10., +5.);
-  wrapper.defineBinning("logPErrKinFit",      250, -20., +5.);
-  wrapper.defineBinning("qg_Wj1",             100,   0.,  1.);
-  wrapper.defineBinning("qg_Wj2",             100,   0.,  1.);
-  wrapper.defineBinning("pT_bWj1Wj2",         100,   0.,  5.e+2);
-  wrapper.defineBinning("pT_Wj1Wj2",          100,   0.,  5.e+2);
-  wrapper.defineBinning("max_dR_div_expRjet", 200,   0.,  2.);
-  */
 
   return mvaInputVariables_;
 }

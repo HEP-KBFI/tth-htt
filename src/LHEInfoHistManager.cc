@@ -10,9 +10,15 @@ LHEInfoHistManager::LHEInfoHistManager(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg),
     histogram_pdfWeights_(nullptr)
 {
-  central_or_shiftOptions_["scaleWeights"] = { "*" };
-  central_or_shiftOptions_["pdfWeights"] = { "*" };
-  central_or_shiftOptions_["EventCounter"] = { "*" };
+  const std::vector<std::string> sysOpts_all = {
+    "scaleWeights",
+    "pdfWeights",
+    "EventCounter",
+  };
+  for(const std::string & sysOpt: sysOpts_all)
+  {
+    central_or_shiftOptions_[sysOpt] = { "*" };
+  }
 }
 
 void

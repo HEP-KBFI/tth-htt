@@ -10,7 +10,7 @@
 leptonGenMatchEntry::leptonGenMatchEntry(const std::string & name,
                                          int idx,
                                          int numGenMatchedLeptons,
-					 int numGenMatchedPhotons,
+                                         int numGenMatchedPhotons,
                                          int numGenMatchedJets)
   : name_(name)
   , idx_(idx)
@@ -23,8 +23,8 @@ leptonGenMatchEntry::leptonGenMatchEntry(const std::string & name,
 leptonChargeFlipGenMatchEntry::leptonChargeFlipGenMatchEntry(const std::string & name,
                                          int idx,
                                          int numGenMatchedLeptons,
-					 int numChargeFlippedGenMatchedLeptons,
-					 int numGenMatchedPhotons,
+                                         int numChargeFlippedGenMatchedLeptons,
+                                         int numGenMatchedPhotons,
                                          int numGenMatchedJets)
   : name_(name)
   , idx_(idx)
@@ -255,11 +255,11 @@ getLeptonChargeFlipGenMatch_int(const std::vector<leptonChargeFlipGenMatchEntry>
 
 void
 countLeptonGenMatches(const RecoLepton * lepton,
-		      int & numGenMatchedLeptons,
-		      int & numGenMatchedPhotons,
-		      int & numGenMatchedJets)
+                      int & numGenMatchedLeptons,
+                      int & numGenMatchedPhotons,
+                      int & numGenMatchedJets)
 {
-  if(lepton->genLepton()) //  || lepton->genHadTau()
+  if(lepton->genLepton())
   {
     ++numGenMatchedLeptons;
   }
@@ -275,17 +275,17 @@ countLeptonGenMatches(const RecoLepton * lepton,
 
 void
 countLeptonChargeFlipGenMatches(const RecoLepton * lepton,
-		      int & numGenMatchedLeptons,
-		      int & numChargeFlippedGenMatchedLeptons,
-		      int & numGenMatchedPhotons,
-		      int & numGenMatchedJets)
+                      int & numGenMatchedLeptons,
+                      int & numChargeFlippedGenMatchedLeptons,
+                      int & numGenMatchedPhotons,
+                      int & numGenMatchedJets)
 { // dropped the "lepton->genHadTau()" criterion to make it consistent with charge flip veto in HH 2l_2tauh category
   if(lepton->genLepton())
   {
     ++numGenMatchedLeptons;
     if(lepton->charge() != lepton->genLepton()->charge())
       {
-	++numChargeFlippedGenMatchedLeptons;
+        ++numChargeFlippedGenMatchedLeptons;
       }
   }
   else if(lepton->is_electron() && lepton->genPhoton() && lepton->genPhoton()->pt() > (0.50*lepton->pt()))
@@ -310,14 +310,14 @@ namespace
   const leptonGenMatchEntry &
   getLeptonGenMatch(const std::vector<leptonGenMatchEntry> & leptonGenMatch_definitions,
                     int numGenMatchedLeptons,
-		    int numGenMatchedPhotons,
+                    int numGenMatchedPhotons,
                     int numGenMatchedJets)
   {
     const leptonGenMatchEntry * leptonGenMatch = nullptr;
     for(const leptonGenMatchEntry & leptonGenMatch_definition: leptonGenMatch_definitions)
     {
       if(matches(leptonGenMatch_definition.numGenMatchedLeptons_, numGenMatchedLeptons) &&
-	 matches(leptonGenMatch_definition.numGenMatchedPhotons_, numGenMatchedPhotons) &&
+         matches(leptonGenMatch_definition.numGenMatchedPhotons_, numGenMatchedPhotons) &&
          matches(leptonGenMatch_definition.numGenMatchedJets_,    numGenMatchedJets)     )
       {
         leptonGenMatch = &leptonGenMatch_definition;
@@ -327,7 +327,7 @@ namespace
       throw cmsException(__func__)
         << "Failed to compute 'leptonGenMatch' for numGenMatched:"
            " leptons = " << numGenMatchedLeptons << ","
-	   " photons = " << numGenMatchedPhotons << ","
+           " photons = " << numGenMatchedPhotons << ","
            " jets = "    << numGenMatchedJets;
     return *leptonGenMatch;
   }
@@ -335,16 +335,16 @@ namespace
   const leptonChargeFlipGenMatchEntry &
   getLeptonChargeFlipGenMatch(const std::vector<leptonChargeFlipGenMatchEntry> & leptonChargeFlipGenMatch_definitions,
                     int numGenMatchedLeptons,
-		    int numChargeFlippedGenMatchedLeptons,
-		    int numGenMatchedPhotons,
+                    int numChargeFlippedGenMatchedLeptons,
+                    int numGenMatchedPhotons,
                     int numGenMatchedJets)
   {
     const leptonChargeFlipGenMatchEntry * leptonChargeFlipGenMatch = nullptr;
     for(const leptonChargeFlipGenMatchEntry & leptonChargeFlipGenMatch_definition: leptonChargeFlipGenMatch_definitions)
     {
       if(matches(leptonChargeFlipGenMatch_definition.numGenMatchedLeptons_, numGenMatchedLeptons) &&
-	 matches(leptonChargeFlipGenMatch_definition.numChargeFlippedGenMatchedLeptons_, numChargeFlippedGenMatchedLeptons) &&
-	 matches(leptonChargeFlipGenMatch_definition.numGenMatchedPhotons_, numGenMatchedPhotons) &&
+         matches(leptonChargeFlipGenMatch_definition.numChargeFlippedGenMatchedLeptons_, numChargeFlippedGenMatchedLeptons) &&
+         matches(leptonChargeFlipGenMatch_definition.numGenMatchedPhotons_, numGenMatchedPhotons) &&
          matches(leptonChargeFlipGenMatch_definition.numGenMatchedJets_,    numGenMatchedJets)     )
       {
         leptonChargeFlipGenMatch = &leptonChargeFlipGenMatch_definition;
@@ -355,7 +355,7 @@ namespace
         << "Failed to compute 'leptonChargeFlipGenMatch' for numGenMatched:"
            " leptons = " << numGenMatchedLeptons << ","
            " charge flipped leptons = " << numChargeFlippedGenMatchedLeptons << ","
-	   " photons = " << numGenMatchedPhotons << ","
+           " photons = " << numGenMatchedPhotons << ","
            " jets = "    << numGenMatchedJets;
     return *leptonChargeFlipGenMatch;
   }

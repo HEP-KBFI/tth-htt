@@ -380,7 +380,7 @@ CheckGenHTTv2JetMatching(int kGenMode, const GenParticle **genParticle,
                       std::map<int, bool> genMatchingTop     = isGenMatchedJetTriplet(
                                       selBJet, selWJet1, selWJet2,
                                       genVar[kGenTop], genVar[kGenTopB], genVar[kGenTopW], genVar[kGenTopWj1], genVar[kGenTopWj2],
-                                      kGenMode, typeTop, unfittedHadTopP4,
+                                      typeTop, unfittedHadTopP4,
                                       isAnalysisModeGenStudy);
 
                       double dR_1 = deltaR(selBJet,  genBJetFromTop->p4());

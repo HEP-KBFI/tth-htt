@@ -412,8 +412,8 @@ compIntegral(const TH1 * histogram,
 
 double
 compIntegralErr(const TH1 * histogram,
-		bool includeUnderflowBin,
-		bool includeOverflowBin)
+                bool includeUnderflowBin,
+                bool includeOverflowBin)
 {
   const int numBins  = histogram->GetNbinsX();
   const int firstBin = includeUnderflowBin ? 0           : 1;
@@ -712,7 +712,7 @@ TH1 *
 getRebinnedHistogram1d(const TH1 * histoOriginal,
                        unsigned numBins_rebinned, // unused
                        const TArrayD & binEdges_rebinned,
-		       bool add_uniqueId)
+                       bool add_uniqueId)
 {
   static int idx = 0;
   std::string histoRebinnedName;
@@ -755,7 +755,7 @@ getRebinnedHistogram2d(const TH1 * histoOriginal,
                        const TArrayD & binEdgesX_rebinned,
                        unsigned numBinsY_rebinned, // unused
                        const TArrayD & binEdgesY_rebinned,
-		       bool add_uniqueId)
+                       bool add_uniqueId)
 {
   static int idx = 0;
   std::string histoRebinnedName;
@@ -803,11 +803,10 @@ TArrayD
 getRebinnedBinning(TH1 * histogram, 
                    double minEvents)
 {
-  std::cout << "<compBinning>:\n";
-  std::vector<double> histogramBinning;
+  std::cout << __func__ << ":\n";
   const TAxis * xAxis = histogram->GetXaxis();
 
-  histogramBinning.push_back(xAxis->GetBinLowEdge(1));
+  std::vector<double> histogramBinning = { xAxis->GetBinLowEdge(1) };
   double sumEvents = 0.;
   const int numBins = xAxis->GetNbins();
   for(int idxBin = 1; idxBin <= numBins; ++idxBin)
@@ -831,7 +830,7 @@ getRebinnedBinning(TH1 * histogram,
     }
   }
   assert(histogramBinning.size() >= 2);
-  std::cout << "binning = " << format_vdouble(histogramBinning) << "\n";
+  std::cout << "binning = " << format_vdouble(histogramBinning) << '\n';
 
   TArrayD binning_tarray(histogramBinning.size());
   for(std::size_t idxBin = 0; idxBin < histogramBinning.size(); ++idxBin)
@@ -852,18 +851,23 @@ getTArraDfromVector(const std::vector<double> & histogramBinning)
   return binning_tarray;
 }
 
-TH1* compRatioHistogram(const std::string& ratioHistogramName, const TH1* numerator, const TH1* denominator)
+TH1 *
+compRatioHistogram(const std::string & ratioHistogramName,
+                   const TH1 * numerator,
+                   const TH1 * denominator)
 {
-  TH1* histogramRatio = 0;
+  TH1 * histogramRatio = nullptr;
   
-  if ( numerator->GetDimension() == denominator->GetDimension() &&
-       numerator->GetNbinsX() == denominator->GetNbinsX() ) {
-    histogramRatio = (TH1*)numerator->Clone(ratioHistogramName.data());
+  if(numerator->GetDimension() == denominator->GetDimension() &&
+     numerator->GetNbinsX() == denominator->GetNbinsX()        )
+  {
+    histogramRatio = static_cast<TH1 *>(numerator->Clone(ratioHistogramName.data()));
     histogramRatio->Divide(denominator);
     
-    int nBins = histogramRatio->GetNbinsX();
-    for ( int iBin = 1; iBin <= nBins; ++iBin ){
-      double binContent = histogramRatio->GetBinContent(iBin);
+    const int nBins = histogramRatio->GetNbinsX();
+    for(int iBin = 1; iBin <= nBins; ++iBin)
+    {
+      const double binContent = histogramRatio->GetBinContent(iBin);
       histogramRatio->SetBinContent(iBin, binContent - 1.);
     }
     
@@ -877,16 +881,27 @@ TH1* compRatioHistogram(const std::string& ratioHistogramName, const TH1* numera
   return histogramRatio;
 }
 
-void divideByBinWidth(TH1* histogram)
+void
+divideByBinWidth(TH1 * histogram)
 {
-  if ( !histogram ) return;
-  TAxis* xAxis = histogram->GetXaxis();
-  int numBins = xAxis->GetNbins();
-  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
-    double binContent = histogram->GetBinContent(iBin);
-    double binError = histogram->GetBinError(iBin);
-    double binWidth = xAxis->GetBinWidth(iBin);
+  if(! histogram)
+  {
+    return;
+  }
+  const TAxis * const xAxis = histogram->GetXaxis();
+  const int numBins = xAxis->GetNbins();
+  for(int iBin = 1; iBin <= numBins; ++iBin)
+  {
+    const double binContent = histogram->GetBinContent(iBin);
+    const double binError = histogram->GetBinError(iBin);
+    const double binWidth = xAxis->GetBinWidth(iBin);
     histogram->SetBinContent(iBin, binContent/binWidth);
     histogram->SetBinError(iBin, binError/binWidth);
   }
 }
+
+histogramEntryType_private::histogramEntryType_private(TH1* histogram,
+                                                       bool isData)
+  : histogram_(histogram)
+  , isData_(isData)
+{}
