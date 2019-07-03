@@ -589,7 +589,7 @@ class analyzeConfig_2lss(analyzeConfig):
           }
           self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes])
 
-          # sum fake background contributions for the total of all MC sample
+          # sum flip background contributions for the total of all MC sample
           # input processes: TT2l1f0g0j,TT2l2f0g0j; ...
           # output process: flips_mc
           addBackgrounds_job_flips_tuple = ("flips_mc", lepton_selection_and_frWeight, lepton_charge_selection)
