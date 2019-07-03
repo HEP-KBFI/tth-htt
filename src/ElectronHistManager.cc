@@ -11,40 +11,50 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet & cfg)
   , option_(kOption_undefined)
   , idx_(cfg.getParameter<int>("idx"))
 {
-  std::string option_string = cfg.getParameter<std::string>("option");
-  if ( option_string == "allHistograms" ) {
+  const std::string option_string = cfg.getParameter<std::string>("option");
+  if(option_string == "allHistograms")
+  {
     option_ = kOption_allHistograms;
-  } else if ( option_string == "minimalHistograms" ) {
+  }
+  else if(option_string == "minimalHistograms")
+  {
     option_ = kOption_minimalHistograms;
-  } else {
-    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string << " !!";
+  }
+  else
+  {
+    throw cmsException(this, __func__) << "Invalid Configuration parameter 'option' = " << option_string;
   }
 
-  central_or_shiftOptions_["cone_pt"] = { "central" };
-  central_or_shiftOptions_["eta"] = { "central" };
-  central_or_shiftOptions_["phi"] = { "central" };
-  central_or_shiftOptions_["abs_genPdgId"] = { "central" };
-
-  central_or_shiftOptions_["pt"] = { "central" };
-  central_or_shiftOptions_["assocJet_pt"] = { "central" };
-  central_or_shiftOptions_["charge"] = { "central" };
-  central_or_shiftOptions_["dxy"] = { "central" };
-  central_or_shiftOptions_["dz"] = { "central" };
-  central_or_shiftOptions_["relIso"] = { "central" };
-  central_or_shiftOptions_["sip3d"] = { "central" };
-  central_or_shiftOptions_["mvaRawTTH"] = { "central" };
-  central_or_shiftOptions_["jetPtRatio"] = { "central" };
-  central_or_shiftOptions_["jetBtagCSV"] = { "central" };
-  central_or_shiftOptions_["tightCharge"] = { "central" };
-  central_or_shiftOptions_["mvaRawPOG"] = { "central" };
-  central_or_shiftOptions_["sigmaEtaEta"] = { "central" };
-  central_or_shiftOptions_["HoE"] = { "central" };
-  central_or_shiftOptions_["deltaEta"] = { "central" };
-  central_or_shiftOptions_["deltaPhi"] = { "central" };
-  central_or_shiftOptions_["OoEminusOoP"] = { "central" };
-  central_or_shiftOptions_["nLostHits"] = { "central" };
-  central_or_shiftOptions_["passesConversionVeto"] = { "central" };
-  central_or_shiftOptions_["gen_times_recCharge"] = { "central" };
+  const std::vector<std::string> sysOpts = {
+    "cone_pt",
+    "eta",
+    "phi",
+    "abs_genPdgId",
+    "pt",
+    "assocJet_pt",
+    "charge",
+    "dxy",
+    "dz",
+    "relIso",
+    "sip3d",
+    "mvaRawTTH",
+    "jetPtRatio",
+    "jetBtagCSV",
+    "tightCharge",
+    "mvaRawPOG",
+    "sigmaEtaEta",
+    "HoE",
+    "deltaEta",
+    "deltaPhi",
+    "OoEminusOoP",
+    "nLostHits",
+    "passesConversionVeto",
+    "gen_times_recCharge",
+  };
+  for(const std::string & sysOpt: sysOpts)
+  {
+    central_or_shiftOptions_[sysOpt] = { "central" };
+  }
 }
 
 void
@@ -55,7 +65,8 @@ ElectronHistManager::bookHistograms(TFileDirectory & dir)
   histogram_phi_                    = book1D(dir, "phi",                  "phi",                  36, -TMath::Pi(), +TMath::Pi());
   histogram_abs_genPdgId_           = book1D(dir, "abs_genPdgId",         "abs_genPdgId",         22, -0.5, +21.5);
 
-  if ( option_ == kOption_allHistograms ) {
+  if(option_ == kOption_allHistograms)
+  {
     histogram_pt_                   = book1D(dir, "pt",                   "pt",                   40,  0., 200.);
     histogram_assocJet_pt_          = book1D(dir, "assocJet_pt",          "assocJet_pt",          40,  0., 200.);
     histogram_charge_               = book1D(dir, "charge",               "charge",                3, -1.5, +1.5);
@@ -90,13 +101,14 @@ ElectronHistManager::fillHistograms(const RecoElectron & electron,
   fillWithOverFlow(histogram_phi_,             electron.phi(),           evtWeight, evtWeightErr);
 
   int abs_genPdgId = 0;
-  if      ( electron.genLepton() ) abs_genPdgId = std::abs(electron.genLepton()->pdgId()); // generator level match to electron or muon
-  else if ( electron.genHadTau() ) abs_genPdgId = 15; // generator level match to hadronic tau decay 
-  else if ( electron.genJet()    ) abs_genPdgId = 21; // generator level match to jet; fill histogram with pdgId of gluon
-  else                             abs_genPdgId =  0; // no match to any generator level particle (reconstructed electron most likely due to pileup)
+  if     (electron.genLepton()) abs_genPdgId = std::abs(electron.genLepton()->pdgId()); // generator level match to electron or muon
+  else if(electron.genHadTau()) abs_genPdgId = 15; // generator level match to hadronic tau decay
+  else if(electron.genJet()   ) abs_genPdgId = 21; // generator level match to jet; fill histogram with pdgId of gluon
+  else                          abs_genPdgId =  0; // no match to any generator level particle (reconstructed electron most likely due to pileup)
   fillWithOverFlow(histogram_abs_genPdgId_, abs_genPdgId, evtWeight, evtWeightErr);
 
-  if ( option_ == kOption_allHistograms ) {
+  if(option_ == kOption_allHistograms)
+  {
     fillWithOverFlow(histogram_pt_,            electron.pt(),            evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_assocJet_pt_,   electron.assocJet_pt(),   evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_charge_,        electron.charge(),        evtWeight, evtWeightErr);
@@ -117,8 +129,9 @@ ElectronHistManager::fillHistograms(const RecoElectron & electron,
     fillWithOverFlow(histogram_nLostHits_,     electron.nLostHits(),     evtWeight, evtWeightErr);    
     const int passesConversionVeto = static_cast<int>(electron.passesConversionVeto());
     fillWithOverFlow(histogram_passesConversionVeto_, passesConversionVeto, evtWeight, evtWeightErr);
-    if ( abs_genPdgId == 11 ) {
-      fillWithOverFlow(histogram_gen_times_recCharge_, electron.charge()*electron.genLepton()->charge(), evtWeight, evtWeightErr);
+    if(abs_genPdgId == 11)
+    {
+      fillWithOverFlow(histogram_gen_times_recCharge_, electron.charge() * electron.genLepton()->charge(), evtWeight, evtWeightErr);
     }
   }
 }

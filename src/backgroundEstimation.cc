@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
 #include <cmath> // std::fabs()
 #include <cassert> // assert()
@@ -14,7 +15,8 @@
  *         estimate "charge flip" background in SS signal region
  */
 double
-prob_chargeMisId(int lepton_type,
+prob_chargeMisId(int era,
+                 int lepton_type,
                  double lepton_pt,
                  double lepton_eta)
 {
@@ -22,17 +24,20 @@ prob_chargeMisId(int lepton_type,
   if(lepton_type == kElectron)
   {
     const double abs_lepton_eta = std::fabs(lepton_eta);
-    if(abs_lepton_eta >= 0. && abs_lepton_eta < 1.479)
+    if(era == kEra_2016 || era == kEra_2017 || era == kEra_2018)
     {
-      if     (lepton_pt >= 10. && lepton_pt < 25) prob = 0.0134 * 1.e-2;
-      else if(lepton_pt >= 25. && lepton_pt < 50) prob = 0.0224 * 1.e-2;
-      else if(lepton_pt >= 50.                  ) prob = 0.0228 * 1.e-2;
-    }
-    else if(abs_lepton_eta >= 1.479 && abs_lepton_eta < 2.5)
-    {
-      if     (lepton_pt >= 10. && lepton_pt < 25) prob = 0.0199 * 1.e-2;
-      else if(lepton_pt >= 25. && lepton_pt < 50) prob = 0.0560 * 1.e-2;
-      else if(lepton_pt >= 50.                  ) prob = 0.1387 * 1.e-2;
+      if(abs_lepton_eta >= 0. && abs_lepton_eta < 1.479)
+      {
+        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 0.0134 * 1.e-2;
+        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 0.0224 * 1.e-2;
+        else if(lepton_pt >= 50.                  ) prob = 0.0228 * 1.e-2;
+      }
+      else if(abs_lepton_eta >= 1.479 && abs_lepton_eta < 2.5)
+      {
+        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 0.0199 * 1.e-2;
+        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 0.0560 * 1.e-2;
+        else if(lepton_pt >= 50.                  ) prob = 0.1387 * 1.e-2;
+      }
     }
   }
   else if(lepton_type == kMuon)

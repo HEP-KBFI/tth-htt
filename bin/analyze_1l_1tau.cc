@@ -1472,11 +1472,8 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         evtWeight *= weight_fakeRate;
       } else if ( applyFakeRateWeights == kFR_1tau) {
         prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
-        bool passesTight_hadTau = isMatched(*selHadTau, tightHadTausFull);
 
-        weight_fakeRate = getWeight_1L(
-          prob_fake_hadTau, passesTight_hadTau
-        );
+        weight_fakeRate = getWeight_1L(prob_fake_hadTau);
 
         if ( isDEBUG ) {
           std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
@@ -2032,7 +2029,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     {
       double evtWeight_category = evtWeight;
       if ( category.find("_wChargeFlipWeights") != std::string::npos ) {
-	double prob_chargeMisId_lepton = prob_chargeMisId(selLepton_type, selLepton->pt(), selLepton->eta());
+        double prob_chargeMisId_lepton = prob_chargeMisId(era, selLepton_type, selLepton->pt(), selLepton->eta());
 	double prob_chargeMisId_tau = 0.01; // CV: not implemented yet; take "guessed" value for now
 	evtWeight_category *= (prob_chargeMisId_lepton + prob_chargeMisId_tau);
       }

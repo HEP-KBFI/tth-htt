@@ -15,8 +15,8 @@ RecoJetSelector::RecoJetSelector(int era,
   switch(era)
   {
     case kEra_2016: min_jetId_ = 1; break; // 1 means loose
-    case kEra_2018:
-    case kEra_2017: min_jetId_ = 2; break; // 2 means tight (loose jet ID deprecated since 94x)
+    case kEra_2017:
+    case kEra_2018: min_jetId_ = 2; break; // 2 means tight (loose jet ID deprecated since 94x)
     default: throw cmsException(this) << "Implement me!";
   }
 }

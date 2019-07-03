@@ -2,7 +2,6 @@
 #define tthAnalysis_HiggsToTauTau_HadTopTagger_boosted_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h"
-//#include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_geral.h" // kGenTop...
 #include <map>
 
 // forward declarations
@@ -24,18 +23,17 @@ public:
    * @return          MVA output
    */
   std::map<int, double>
-  operator()(
-    const RecoJetHTTv2 & jet_HTTv2,
-    bool & calculate_matching, bool & isGenMatched,
-    double & genTopPt,
-    std::map<int, Particle::LorentzVector> genVar, std::map<int, Particle::LorentzVector> genVarAnti
-  );
+  operator()(const RecoJetHTTv2 & jet_HTTv2,
+             bool & calculate_matching,
+             bool & isGenMatched,
+             double & genTopPt,
+             const std::map<int, Particle::LorentzVector> & genVar,
+             const std::map<int, Particle::LorentzVector> & genVarAnti);
 
   const std::map<std::string, double> &
   mvaInputs() const;
 
 protected:
-
   std::map<std::string, double> mvaInputsHTT;
   std::vector<std::string>      mvaInputsHTTSort;
   TMVAInterface * mva_xgb_HTT_highestCSV_;

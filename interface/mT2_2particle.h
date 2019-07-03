@@ -28,12 +28,11 @@
  *
  */
 
-#include "DataFormats/Candidate/interface/Candidate.h"
+#include <DataFormats/Candidate/interface/Candidate.h>
 
-#include "Math/Minimizer.h"
-#include "Math/Functor.h"
+#include <Math/Minimizer.h>
+#include <Math/Functor.h>
 #include <TRandom3.h>
-#include <TMath.h>
 
 namespace mT2_2particle_namespace
 {
@@ -42,27 +41,26 @@ namespace mT2_2particle_namespace
 
 class mT2_2particle
 {
- public:
-  /// constructor
+public:
   mT2_2particle(int numSteps = 100);
-
-  /// destructor
   ~mT2_2particle();
 
-  /// compute mT2 variable
-  void operator()(double b1Px, double b1Py, double b1Mass, 
-		  double b2Px, double b2Py, double b2Mass,
-		  double cSumPx, double cSumPy, double cMass);
+  void
+  operator()(double b1Px,   double b1Py,   double b1Mass,
+             double b2Px,   double b2Py,   double b2Mass,
+             double cSumPx, double cSumPy, double cMass);
   
   double get_min_mT2() const;
   int get_min_step() const;
 
-  static double comp_mT(double bPx, double bPy, double bMass, double cPx, double cPy, double cMass);
+  static double
+  comp_mT(double bPx, double bPy, double bMass,
+          double cPx, double cPy, double cMass);
 
- protected:
-  ROOT::Math::Minimizer* minimizer_;
-  mT2_2particle_namespace::mt2Functor_2particle* mT2Functor_;
-  ROOT::Math::Functor* f_;
+protected:
+  ROOT::Math::Minimizer * minimizer_;
+  mT2_2particle_namespace::mt2Functor_2particle * mT2Functor_;
+  ROOT::Math::Functor * f_;
   int numSteps_;
   TRandom3 rnd_;
   double min_mT2_;
@@ -76,28 +74,28 @@ namespace mT2_2particle_namespace
    public:
     double operator()(const double* par)
     {
-      double c1Pt   = par[0];
-      double c1Phi  = par[1];
+      const double c1Pt   = par[0];
+      const double c1Phi  = par[1];
 
-      double b1Px   = par[2];
-      double b1Py   = par[3];
-      double b1Mass = par[4];
-      double b2Px   = par[5];
-      double b2Py   = par[6];
-      double b2Mass = par[7];
-      double cSumPx = par[8];
-      double cSumPy = par[9];
-      double cMass  = par[10];
+      const double b1Px   = par[2];
+      const double b1Py   = par[3];
+      const double b1Mass = par[4];
+      const double b2Px   = par[5];
+      const double b2Py   = par[6];
+      const double b2Mass = par[7];
+      const double cSumPx = par[8];
+      const double cSumPy = par[9];
+      const double cMass  = par[10];
 
-      double c1Px  = TMath::Cos(c1Phi)*c1Pt;
-      double c1Py  = TMath::Sin(c1Phi)*c1Pt;
-      double mT2_1 = mT2_2particle::comp_mT(b1Px, b1Py, b1Mass, c1Px, c1Py, cMass);
+      const double c1Px  = std::cos(c1Phi) * c1Pt;
+      const double c1Py  = std::sin(c1Phi) * c1Pt;
+      const double mT2_1 = mT2_2particle::comp_mT(b1Px, b1Py, b1Mass, c1Px, c1Py, cMass);
 
-      double c2Px  = cSumPx - c1Px; 
-      double c2Py  = cSumPy - c1Py;
-      double mT2_2 = mT2_2particle::comp_mT(b2Px, b2Py, b2Mass, c2Px, c2Py, cMass);
+      const double c2Px  = cSumPx - c1Px;
+      const double c2Py  = cSumPy - c1Py;
+      const double mT2_2 = mT2_2particle::comp_mT(b2Px, b2Py, b2Mass, c2Px, c2Py, cMass);
 
-      return TMath::Sqrt(TMath::Max(mT2_1, mT2_2));
+      return std::sqrt(std::max(mT2_1, mT2_2));
     }
   };
 }

@@ -23,8 +23,8 @@ namespace evtYieldHistManager
     ~RunPeriod() {}
 
     const std::string & name() const;
-    UInt_t firstRun() const;
-    UInt_t lastRun() const;
+    Long64_t firstRun() const;
+    Long64_t lastRun() const;
     double luminosity() const;
 
   private:

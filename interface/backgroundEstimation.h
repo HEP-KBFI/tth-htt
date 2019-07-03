@@ -2,7 +2,8 @@
 #define tthAnalysis_HiggsToTauTau_backgroundEstimation_h
 
 double
-prob_chargeMisId(int lepton_type,
+prob_chargeMisId(int era,
+                 int lepton_type,
                  double lepton_pt,
                  double lepton_eta);
 

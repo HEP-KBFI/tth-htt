@@ -11,34 +11,43 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet & cfg)
   , option_(kOption_undefined)
   , idx_(cfg.getParameter<int>("idx"))
 {
-  std::string option_string = cfg.getParameter<std::string>("option");
-  if ( option_string == "allHistograms" ) {
+  const std::string option_string = cfg.getParameter<std::string>("option");
+  if(option_string == "allHistograms")
+  {
     option_ = kOption_allHistograms;
-  } else if ( option_string == "minimalHistograms" ) {
-    option_ = kOption_minimalHistograms;
-  } else {
-    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string << " !!";
   }
-
-  central_or_shiftOptions_["cone_pt"] = { "central" };
-  central_or_shiftOptions_["eta"] = { "central" };
-  central_or_shiftOptions_["phi"] = { "central" };
-  central_or_shiftOptions_["abs_genPdgId"] = { "central" };
-
-  central_or_shiftOptions_["pt"] = { "central" };
-  central_or_shiftOptions_["assocJet_pt"] = { "central" };
-  central_or_shiftOptions_["charge"] = { "central" };
-  central_or_shiftOptions_["dxy"] = { "central" };
-  central_or_shiftOptions_["dz"] = { "central" };
-  central_or_shiftOptions_["relIso"] = { "central" };
-  central_or_shiftOptions_["sip3d"] = { "central" };
-  central_or_shiftOptions_["mvaRawTTH"] = { "central" };
-  central_or_shiftOptions_["jetPtRatio"] = { "central" };
-  central_or_shiftOptions_["jetBtagCSV"] = { "central" };
-  central_or_shiftOptions_["tightCharge"] = { "central" };
-  central_or_shiftOptions_["passesLooseIdPOG"] = { "central" };
-  central_or_shiftOptions_["passesMediumIdPOG"] = { "central" };
-  central_or_shiftOptions_["gen_times_recCharge"] = { "central" };
+  else if(option_string == "minimalHistograms")
+  {
+    option_ = kOption_minimalHistograms;
+  }
+  else
+  {
+    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string;
+  }
+  const std::vector<std::string> sysOpts_central = {
+    "cone_pt",
+    "eta",
+    "phi",
+    "abs_genPdgId",
+    "pt",
+    "assocJet_pt",
+    "charge",
+    "dxy",
+    "dz",
+    "relIso",
+    "sip3d",
+    "mvaRawTTH",
+    "jetPtRatio",
+    "jetBtagCSV",
+    "tightCharge",
+    "passesLooseIdPOG",
+    "passesMediumIdPOG",
+    "gen_times_recCharge",
+  };
+  for(const std::string & sysOpt: sysOpts_central)
+  {
+    central_or_shiftOptions_[sysOpt] = { "central" };
+  }
 }
 
 void

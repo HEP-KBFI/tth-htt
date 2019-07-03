@@ -17,9 +17,9 @@ class TMVAInterface_OddEven
 {
 public:
   TMVAInterface_OddEven(const std::string & mvaFileName_Odd, 
-			const std::string & mvaFileName_Even,
-			const std::vector<std::string> & mvaInputVariables,
-			const std::vector<std::string> & spectators = {});
+                        const std::string & mvaFileName_Even,
+                        const std::vector<std::string> & mvaInputVariables,
+                        const std::vector<std::string> & spectators = {});
   ~TMVAInterface_OddEven();
 
   // CV: call enableBDTTransform if using XML files converted from xgboost trainings,

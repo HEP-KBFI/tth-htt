@@ -2,27 +2,39 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow(), fillWithOverFlow2d()
 
-EvtHistManager_2l_2tau::EvtHistManager_2l_2tau(const edm::ParameterSet& cfg)
+EvtHistManager_2l_2tau::EvtHistManager_2l_2tau(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
 {
-  central_or_shiftOptions_["numElectrons"] = { "central" };
-  central_or_shiftOptions_["numMuons"] = { "central" };
-  central_or_shiftOptions_["numHadTaus"] = { "central" };
-  central_or_shiftOptions_["numJets"] = { "central" };
-  central_or_shiftOptions_["numBJets_loose"] = { "central" };
-  central_or_shiftOptions_["numBJets_medium"] = { "central" };
-  central_or_shiftOptions_["numBJets_loose_vs_numJets"] = { "central" };
-  central_or_shiftOptions_["numBJets_medium_vs_numJets"] = { "central" };
-  central_or_shiftOptions_["leptonPairCharge"] = { "central" };
-  central_or_shiftOptions_["hadTauPairCharge"] = { "central" };
-  central_or_shiftOptions_["mTauTauVis"] = { "central" };
-  central_or_shiftOptions_["EventCounter"] = { "*" };
-  central_or_shiftOptions_["mvaOutput_plainKin_tt"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_plainKin_ttV"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_plainKin_1B_VT"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_plainKin_SUM_VT"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_plainKin_SUM_VT_noRebin"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_final"] = { "*" }; 
+  const std::vector<std::string> sysOpts_central = {
+    "numElectrons",
+    "numMuons",
+    "numHadTaus",
+    "numJets",
+    "numBJets_loose",
+    "numBJets_medium",
+    "numBJets_loose_vs_numJets",
+    "numBJets_medium_vs_numJets",
+    "leptonPairCharge",
+    "hadTauPairCharge",
+    "mTauTauVis",
+    "mvaOutput_plainKin_tt",
+    "mvaOutput_plainKin_ttV",
+    "mvaOutput_plainKin_1B_VT",
+    "mvaOutput_plainKin_SUM_VT",
+    "mvaOutput_plainKin_SUM_VT_noRebin",
+  };
+  const std::vector<std::string> sysOpts_all = {
+    "EventCounter",
+    "mvaOutput_final",
+  };
+  for(const std::string & sysOpt: sysOpts_central)
+  {
+    central_or_shiftOptions_[sysOpt] = { "central" };
+  }
+  for(const std::string & sysOpt: sysOpts_all)
+  {
+    central_or_shiftOptions_[sysOpt] = { "*" };
+  }
 }
 
 void
@@ -34,9 +46,6 @@ EvtHistManager_2l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
   histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
   histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
-
-  //histogram_numBJets_loose_vs_numJets_  = book2D(dir, "numBJets_loose_vs_numJets",  "numBJets_loose_vs_numJets",  8, -0.5, +7.5, 6, -0.5, +5.5);
-  //histogram_numBJets_medium_vs_numJets_ = book2D(dir, "numBJets_medium_vs_numJets", "numBJets_medium_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
 
   histogram_leptonPairCharge_ = book1D(dir, "leptonPairCharge", "leptonPairCharge", 5, -2.5, +2.5);
   histogram_hadTauPairCharge_ = book1D(dir, "hadTauPairCharge", "hadTauPairCharge", 5, -2.5, +2.5);
@@ -79,9 +88,6 @@ EvtHistManager_2l_2tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
-
-  //fillWithOverFlow2d(histogram_numBJets_loose_vs_numJets_,  numJets, numBJets_loose,  evtWeight, evtWeightErr);
-  //fillWithOverFlow2d(histogram_numBJets_medium_vs_numJets_, numJets, numBJets_medium, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_leptonPairCharge_, leptonPairCharge, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_hadTauPairCharge_, hadTauPairCharge, evtWeight, evtWeightErr);

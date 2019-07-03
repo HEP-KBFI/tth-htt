@@ -12,30 +12,39 @@ JetHistManagerAK8::JetHistManagerAK8(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
   , idx_(cfg.getParameter<int>("idx"))
 {
-  std::string option_string = cfg.getParameter<std::string>("option");
-  if ( option_string == "allHistograms" ) {
+  const std::string option_string = cfg.getParameter<std::string>("option");
+  if(option_string == "allHistograms")
+  {
     option_ = kOption_allHistograms;
-  } else if ( option_string == "minimalHistograms" ) {
-    option_ = kOption_minimalHistograms;
-  } else {
-    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string << " !!";
   }
-
-  central_or_shiftOptions_["pt"] = { "central" };
-  central_or_shiftOptions_["eta"] = { "central" };
-  central_or_shiftOptions_["phi"] = { "central" };
-  central_or_shiftOptions_["msoftdrop"] = { "central" };
-  central_or_shiftOptions_["tau21"] = { "central" };
-
-  central_or_shiftOptions_["mass"] = { "central" };
-  central_or_shiftOptions_["tau32"] = { "central" };
-  central_or_shiftOptions_["subjet1_pt"] = { "central" };
-  central_or_shiftOptions_["subjet1_eta"] = { "central" };
-  central_or_shiftOptions_["subjet1_BtagCSV"] = { "central" };
-  central_or_shiftOptions_["subjet2_pt"] = { "central" };
-  central_or_shiftOptions_["subjet2_eta"] = { "central" };
-  central_or_shiftOptions_["subjet2_BtagCSV"] = { "central" };
-  central_or_shiftOptions_["dR_subjets"] = { "central" };
+  else if(option_string == "minimalHistograms")
+  {
+    option_ = kOption_minimalHistograms;
+  }
+  else
+  {
+    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string;
+  }
+  const std::vector<std::string> sysOpts_central = {
+    "pt",
+    "eta",
+    "phi",
+    "msoftdrop",
+    "tau21",
+    "mass",
+    "tau32",
+    "subjet1_pt",
+    "subjet1_eta",
+    "subjet1_BtagCSV",
+    "subjet2_pt",
+    "subjet2_eta",
+    "subjet2_BtagCSV",
+    "dR_subjets",
+  };
+  for(const std::string & sysOpt: sysOpts_central)
+  {
+    central_or_shiftOptions_[sysOpt] = { "central" };
+  }
 }
 
 void
@@ -47,7 +56,8 @@ JetHistManagerAK8::bookHistograms(TFileDirectory & dir)
   histogram_msoftdrop_         = book1D(dir, "msoftdrop",       "msoftdrop",       40,  0.,  200.);
   histogram_tau21_             = book1D(dir, "tau21",           "tau21",           40,  0.2,   1.);
 
-  if ( option_ == kOption_allHistograms ) {
+  if(option_ == kOption_allHistograms)
+  {
     histogram_mass_            = book1D(dir, "mass",            "mass",            40,  0.,    2.);
     histogram_tau32_           = book1D(dir, "tau32",           "tau32",           40,  0.2,   1.);
     histogram_subjet1_pt_      = book1D(dir, "subjet1_pt",      "subjet1_pt",      50,  0.,  500.);
@@ -62,7 +72,7 @@ JetHistManagerAK8::bookHistograms(TFileDirectory & dir)
 
 void
 JetHistManagerAK8::fillHistograms(const RecoJetAK8 & jet,
-				    double evtWeight)
+                                    double evtWeight)
 {
   const double evtWeightErr = 0.;
 
@@ -74,24 +84,32 @@ JetHistManagerAK8::fillHistograms(const RecoJetAK8 & jet,
     fillWithOverFlow(histogram_tau21_,             jet.tau2()/jet.tau1(), evtWeight, evtWeightErr);
   }
 
-  if ( option_ == kOption_allHistograms ) {
+  if(option_ == kOption_allHistograms)
+  {
     fillWithOverFlow(histogram_mass_,              jet.mass(),            evtWeight, evtWeightErr);
-    if ( jet.tau2() > 0. ) {
+    if(jet.tau2() > 0.)
+    {
       fillWithOverFlow(histogram_tau32_,           jet.tau3()/jet.tau2(), evtWeight, evtWeightErr);
     }
-    const RecoSubjetAK8* subJet1 = jet.subJet1();
-    if ( subJet1 ) {
+
+    const RecoSubjetAK8 * const subJet1 = jet.subJet1();
+    if(subJet1)
+    {
       fillWithOverFlow(histogram_subjet1_pt_,      subJet1->pt(),         evtWeight, evtWeightErr);
       fillWithOverFlow(histogram_subjet1_eta_,     subJet1->eta(),        evtWeight, evtWeightErr); 
       fillWithOverFlow(histogram_subjet1_BtagCSV_, subJet1->BtagCSV(),    evtWeight, evtWeightErr);
     }
-    const RecoSubjetAK8* subJet2 = jet.subJet2();
-    if ( subJet2 ) {
+
+    const RecoSubjetAK8 * const subJet2 = jet.subJet2();
+    if(subJet2)
+    {
       fillWithOverFlow(histogram_subjet2_pt_,      subJet2->pt(),         evtWeight, evtWeightErr);
       fillWithOverFlow(histogram_subjet2_eta_,     subJet2->eta(),        evtWeight, evtWeightErr); 
       fillWithOverFlow(histogram_subjet2_BtagCSV_, subJet2->BtagCSV(),    evtWeight, evtWeightErr);
     }
-    if ( subJet1 && subJet2 ) {
+
+    if(subJet1 && subJet2)
+    {
       fillWithOverFlow(histogram_dR_subjets_, deltaR(subJet1->p4(), subJet2->p4()), evtWeight, evtWeightErr);
     }
   }
@@ -99,7 +117,7 @@ JetHistManagerAK8::fillHistograms(const RecoJetAK8 & jet,
 
 void
 JetHistManagerAK8::fillHistograms(const std::vector<const RecoJetAK8 *> & jet_ptrs,
-				   double evtWeight)
+                                   double evtWeight)
 {
   const int numJets = jet_ptrs.size();
   for(int idxJet = 0; idxJet < numJets; ++idxJet)

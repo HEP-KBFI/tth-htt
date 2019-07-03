@@ -19,13 +19,8 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
                        const Particle::LorentzVector  genWBosons,
                        const Particle::LorentzVector  genWJetFromTop_lead,
                        const Particle::LorentzVector  genWJetFromTop_sublead,
-                       int mode,
                        int TypeTop = 3,
                        const Particle::LorentzVector  recFatJet = Particle::LorentzVector(0., 0., 0., 0.),
-		       bool isAnalysisModeGenStudy = false);
-
-//template <typename T>
-std::vector<size_t>
-sort_indexes(const std::vector<double> &v);
+                       bool isAnalysisModeGenStudy = false);
 
 #endif

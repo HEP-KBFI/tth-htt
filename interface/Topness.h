@@ -14,7 +14,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle::LorentzVector
 
-#include "Math/Minimizer.h"
+#include <Math/Minimizer.h>
 
 namespace topness
 {
@@ -28,7 +28,7 @@ namespace topness
 
 class Topness
 {
- public:
+public:
   enum modeType { kPublishedChi2, kFixedChi2 };
   Topness(modeType mode = kPublishedChi2, int maxObjFunctionCalls = 10000);
   ~Topness();
@@ -38,10 +38,10 @@ class Topness
   
   /// compute Topness variable according to Eqs. (2) and (3) in Ref. [1]
   void fit(const Particle::LorentzVector& lepton1P4,
-	   const Particle::LorentzVector& lepton2P4,
-	   const Particle::LorentzVector& bjet1P4,
-	   const Particle::LorentzVector& bjet2P4,
-	   double metPx, double metPy);
+           const Particle::LorentzVector& lepton2P4,
+           const Particle::LorentzVector& bjet1P4,
+           const Particle::LorentzVector& bjet2P4,
+           double metPx, double metPy);
 
   /// flag indicating whether or not MINUIT fit converged
   bool isValidSolution() const;
@@ -53,9 +53,9 @@ class Topness
   static const Topness* gTopness;
 
   /// fit-function, called by MINUIT
-  double operator()(const double* x) const;
+  double operator()(const double * x) const;
 
- private:
+private:
   modeType mode_;
 
   Particle::LorentzVector lepton1P4_;
@@ -80,8 +80,8 @@ class Topness
   //-----------------------------------------------------------------------------
 
   const int numPermutations_;
-  double* chi2_of_permutation_;
-  int* fitStatus_of_permutation_;
+  double * chi2_of_permutation_;
+  int * fitStatus_of_permutation_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_Topness_h

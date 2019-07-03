@@ -18,8 +18,8 @@ class RecoSubjetAK8
 public:
   RecoSubjetAK8() = default;
   RecoSubjetAK8(const GenJet & particle,
-		Double_t BtagCSV,
-		Int_t idx);
+                Double_t BtagCSV,
+                Int_t idx);
 
   virtual ~RecoSubjetAK8();
 

@@ -15,8 +15,7 @@ RecoJetReaderAK8::RecoJetReaderAK8(int era)
 
 RecoJetReaderAK8::RecoJetReaderAK8(int era,
                                    const std::string & branchName_jet,
-                                   const std::string & branchName_subjet,
-                                   bool readBtagCSV)
+                                   const std::string & branchName_subjet)
   : era_(era)
   , max_nJets_(32)
   , branchName_num_(Form("n%s", branchName_jet.data()))
@@ -35,7 +34,7 @@ RecoJetReaderAK8::RecoJetReaderAK8(int era,
   , jet_tau4_(nullptr)
   , jet_jetId_(nullptr)
 {
-  subjetReader_ = new RecoSubjetReaderAK8(era, branchName_subjet, readBtagCSV);
+  subjetReader_ = new RecoSubjetReaderAK8(era, branchName_subjet);
   setBranchNames();
 }
 

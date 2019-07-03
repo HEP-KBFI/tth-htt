@@ -8,26 +8,38 @@ EvtHistManager_3l::EvtHistManager_3l(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
   , era_(get_era(cfg.getParameter<std::string>("era")))
 {
-  central_or_shiftOptions_["numElectrons"] = { "central" };
-  central_or_shiftOptions_["numMuons"] = { "central" };
-  central_or_shiftOptions_["numHadTaus"] = { "central" };
-  central_or_shiftOptions_["numJets"] = { "central" };
-  central_or_shiftOptions_["numBJets_loose"] = { "central" };
-  central_or_shiftOptions_["numBJets_medium"] = { "central" };
-  central_or_shiftOptions_["numBJets_loose_vs_numJets"] = { "central" };
-  central_or_shiftOptions_["numBJets_medium_vs_numJets"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_3l_ttV"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_3l_ttbar"] = { "central" };
-  central_or_shiftOptions_["mvaDiscr_3l"] = { "*" };
-  central_or_shiftOptions_["memOutput_isValid"] = { "central" };
-  central_or_shiftOptions_["memOutput_errorFlag"] = { "central" };
-  central_or_shiftOptions_["memOutput_logWeight_ttH"] = { "central" };
-  central_or_shiftOptions_["memOutput_logWeight_tt"] = { "central" };
-  central_or_shiftOptions_["memOutput_LR"] = { "central" };
-  central_or_shiftOptions_["mem_logCPUTime"] = { "central" };
-  central_or_shiftOptions_["mem_logRealTime"] = { "central" };
-  central_or_shiftOptions_["output_NN_3l_ttH_tH_3cat_v8"] = { "central" };
-  central_or_shiftOptions_["EventCounter"] = { "*" };
+  const std::vector<std::string> sysOpts_central = {
+    "numElectrons",
+    "numMuons",
+    "numHadTaus",
+    "numJets",
+    "numBJets_loose",
+    "numBJets_medium",
+    "numBJets_loose_vs_numJets",
+    "numBJets_medium_vs_numJets",
+    "mvaOutput_3l_ttV",
+    "mvaOutput_3l_ttbar",
+    "memOutput_isValid",
+    "memOutput_errorFlag",
+    "memOutput_logWeight_ttH",
+    "memOutput_logWeight_tt",
+    "memOutput_LR",
+    "mem_logCPUTime",
+    "mem_logRealTime",
+    "output_NN_3l_ttH_tH_3cat_v8",
+  };
+  const std::vector<std::string> sysOpts_all = {
+    "mvaDiscr_3l",
+    "EventCounter",
+  };
+  for(const std::string & sysOpt: sysOpts_central)
+  {
+    central_or_shiftOptions_[sysOpt] = { "central" };
+  }
+  for(const std::string & sysOpt: sysOpts_all)
+  {
+    central_or_shiftOptions_[sysOpt] = { "*" };
+  }
 }
 
 const TH1 *

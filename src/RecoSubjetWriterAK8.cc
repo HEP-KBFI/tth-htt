@@ -17,6 +17,7 @@ RecoSubjetWriterAK8::RecoSubjetWriterAK8(int era,
                                          const std::string & branchName_num,
                                          const std::string & branchName_obj)
   : era_(era)
+  , btag_(Btag::kDeepCSV) // maybe write DeepJet?
   , max_nJets_(88)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
@@ -26,12 +27,11 @@ RecoSubjetWriterAK8::RecoSubjetWriterAK8(int era,
   , jet_mass_(nullptr)
   , jet_BtagCSV_(nullptr)
 {
-  switch(era_)
-    {
-    case kEra_2016:
-    case kEra_2018:
-    case kEra_2017: branchName_btag_ = "DeepB"; break;
-    default: throw cmsException(this) << "Invalid era = " << era_;
+  switch(btag_)
+  {
+    case Btag::kDeepCSV: branchName_btag_ = "DeepB";     break;
+    case Btag::kDeepJet: branchName_btag_ = "DeepFlavB"; break;
+    case Btag::kCSVv2:   branchName_btag_ = "CSVV2";     break;
   }
   assert(! branchName_btag_.empty());
   setBranchNames();

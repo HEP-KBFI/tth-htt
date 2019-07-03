@@ -201,8 +201,8 @@ int
 getDYMCNormScaleFactors_option(const std::string & central_or_shift)
 {
   int central_or_shift_int = kDYMCNormScaleFactors_central;
-  if     (central_or_shift == "CMS_ttHl_DYMCNormScaleFactorsUp"   ) central_or_shift_int = kDYMCNormScaleFactors_shiftUp;
-  else if(central_or_shift == "CMS_ttHl_DYMCNormScaleFactorsDown" ) central_or_shift_int = kDYMCNormScaleFactors_shiftDown;
+  if     (central_or_shift == "CMS_ttHl_DYMCNormScaleFactorsUp"  ) central_or_shift_int = kDYMCNormScaleFactors_shiftUp;
+  else if(central_or_shift == "CMS_ttHl_DYMCNormScaleFactorsDown") central_or_shift_int = kDYMCNormScaleFactors_shiftDown;
   return central_or_shift_int;
 }
 

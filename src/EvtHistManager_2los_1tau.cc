@@ -5,26 +5,36 @@
 EvtHistManager_2los_1tau::EvtHistManager_2los_1tau(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
 {
-
-  central_or_shiftOptions_["numElectrons"] = { "central" };
-  central_or_shiftOptions_["numMuons"] = { "central" };
-  central_or_shiftOptions_["numHadTaus"] = { "central" };
-  central_or_shiftOptions_["numJets"] = { "central" };
-  central_or_shiftOptions_["numBJets_loose"] = { "central" };
-  central_or_shiftOptions_["numBJets_medium"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_ttV"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_ttbar"] = { "central" };
-  central_or_shiftOptions_["mvaDiscr_2lss"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2los_1tau_ttV"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2los_1tau_ttbar"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var"] = { "*" };
-  central_or_shiftOptions_["mvaOutput_2los_1tau_evtLevelTT_TTH_20Var"] = { "*" };
-  central_or_shiftOptions_["mvaOutput_XGB_Updated"] = { "*" };
-  central_or_shiftOptions_["mvaOutput_XGB_Boosted_AK8"] = { "*" };
-  central_or_shiftOptions_["mvaDiscr_2los_1tau"] = { "*" };
-  central_or_shiftOptions_["mTauTauVis"] = { "central" };
-  central_or_shiftOptions_["EventCounter"] = { "*" };
-
+  const std::vector<std::string> sysOpts_central = {
+    "numElectrons",
+    "numMuons",
+    "numHadTaus",
+    "numJets",
+    "numBJets_loose",
+    "numBJets_medium",
+    "mvaOutput_2lss_ttV",
+    "mvaOutput_2lss_ttbar",
+    "mvaDiscr_2lss",
+    "mvaOutput_2los_1tau_ttV",
+    "mvaOutput_2los_1tau_ttbar",
+    "mTauTauVis",
+  };
+  const std::vector<std::string> sysOpts_all = {
+    "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var",
+    "mvaOutput_2los_1tau_evtLevelTT_TTH_20Var",
+    "mvaOutput_XGB_Updated",
+    "mvaOutput_XGB_Boosted_AK8",
+    "mvaDiscr_2los_1tau",
+    "EventCounter",
+  };
+  for(const std::string & sysOpt: sysOpts_central)
+  {
+    central_or_shiftOptions_[sysOpt] = { "central" };
+  }
+  for(const std::string & sysOpt: sysOpts_all)
+  {
+    central_or_shiftOptions_[sysOpt] = { "*" };
+  }
 }
 
 const TH1 *
@@ -53,7 +63,7 @@ EvtHistManager_2los_1tau::bookHistograms(TFileDirectory & dir)
   histogram_mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var_ = book1D(dir, "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var", "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var", 100, 0., +1.);
   histogram_mvaOutput_2los_1tau_evtLevelTT_TTH_20Var_  = book1D(dir, "mvaOutput_2los_1tau_evtLevelTT_TTH_20Var",  "mvaOutput_2los_1tau_evtLevelTT_TTH_20Var",  100, 0., +1.);
 
-  histogram_mvaOutput_XGB_Updated_ = book1D(dir, "mvaOutput_XGB_Updated", "mvaOutput_XGB_Updated", 100, 0., +1.);
+  histogram_mvaOutput_XGB_Updated_     = book1D(dir, "mvaOutput_XGB_Updated",     "mvaOutput_XGB_Updated",     100, 0., +1.);
   histogram_mvaOutput_XGB_Boosted_AK8_ = book1D(dir, "mvaOutput_XGB_Boosted_AK8", "mvaOutput_XGB_Boosted_AK8", 100, 0., +1.);
 
   histogram_mvaDiscr_2los_1tau_        = book1D(dir, "mvaDiscr_2los_1tau",        "mvaDiscr_2los_1tau",         8,  0.5, 8.5);

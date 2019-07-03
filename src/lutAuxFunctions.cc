@@ -388,15 +388,18 @@ lutWrapperTH1::lutWrapperTH1(std::map<std::string, TFile *> & inputFiles,
                              int lutType,
                              double xMin,
                              double xMax,
-			     int xAction,
+                             int xAction,
                              double yMin,
                              double yMax,
-			     int yAction)
+                             int yAction)
   : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, xAction, yMin, yMax, yAction)
 {
-  if(yAction_ == kLimit || yAction_ == kLimit_and_Cut )
+  if(yAction_ == kLimit || yAction_ == kLimit_and_Cut)
+  {
     throw cmsException(__func__, __LINE__)
-      << " Configuration parameter 'yAction' = " << yAction << " not supported for objects of class lutWrapperTH1 !!\n";  
+      << " Configuration parameter 'yAction' = " << yAction << " not supported for objects of class lutWrapperTH1"
+    ;
+  }
   lut_ = loadTH1(inputFile_, lutName_);
 }
 
@@ -423,10 +426,10 @@ lutWrapperTH2::lutWrapperTH2(std::map<std::string, TFile *> & inputFiles,
                              int lutType,
                              double xMin,
                              double xMax,
-			     int xAction,
+                             int xAction,
                              double yMin,
                              double yMax,
-			     int yAction)
+                             int yAction)
   : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, xAction, yMin, yMax, yAction)
 {
   lut_ = loadTH2(inputFile_, lutName_);
@@ -453,10 +456,10 @@ lutWrapperTH2Poly::lutWrapperTH2Poly(std::map<std::string, TFile *> & inputFiles
                                      int lutType,
                                      double xMin,
                                      double xMax,
-				     int xAction,
+                                     int xAction,
                                      double yMin,
                                      double yMax,
-				     int yAction)
+                                     int yAction)
   : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, xAction, yMin, yMax, yAction)
 {
   lut_ = loadTH2(inputFile_, lutName_);
@@ -519,10 +522,10 @@ lutWrapperCrystalBall::lutWrapperCrystalBall(const std::string & lutName,
                                              int lutType,
                                              double xMin,
                                              double xMax,
-					     int xAction,
+                                             int xAction,
                                              double yMin,
                                              double yMax,
-					     int yAction)
+                                             int yAction)
   : lutWrapperBase(lutName, lutType, xMin, xMax, xAction, yMin, yMax, yAction)
   , m0_   (cfg.getParameter<double>("m_{0}"))
   , sigma_(cfg.getParameter<double>("sigma"))
@@ -530,9 +533,12 @@ lutWrapperCrystalBall::lutWrapperCrystalBall(const std::string & lutName,
   , n_    (cfg.getParameter<double>("n"))
   , norm_ (cfg.getParameter<double>("norm"))
 {
-  if(yAction_ == kLimit || yAction_ == kLimit_and_Cut )
+  if(yAction_ == kLimit || yAction_ == kLimit_and_Cut)
+  {
     throw cmsException(__func__, __LINE__)
-      << " Configuration parameter 'yAction' = " << yAction << " not supported for objects of class lutWrapperCrystalBall !!\n";  
+      << " Configuration parameter 'yAction' = " << yAction << " not supported for objects of class lutWrapperCrystalBall"
+    ;
+  }
 }
 
 double

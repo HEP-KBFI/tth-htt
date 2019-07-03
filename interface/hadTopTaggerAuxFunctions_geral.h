@@ -1,4 +1,4 @@
-// We do use these in aplication and calculation of the HTT
+// We do use these in application and calculation of the HTT
 enum {
   kGenTopVar, kGenTopB, kGenTopW, kGenTopWj1, kGenTopWj2
 };

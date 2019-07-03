@@ -111,24 +111,31 @@ comp_MT_met_hadTau3(const Particle & hadTau,
 
 namespace
 {
-  std::pair<double, double> comp_zetaX_and_Y(const Particle::LorentzVector & vis1P4, const Particle::LorentzVector & vis2P4)
+  std::pair<double, double>
+  comp_zetaX_and_Y(const Particle::LorentzVector & vis1P4,
+                   const Particle::LorentzVector & vis2P4)
   {
     double uX1 = 0.;
     double uY1 = 0.;
-    if ( vis1P4.pt() > 0. ) {
-      uX1 = vis1P4.px()/vis1P4.pt();
-      uY1 = vis1P4.py()/vis1P4.pt();
+    if(vis1P4.pt() > 0.)
+    {
+      uX1 = vis1P4.px() / vis1P4.pt();
+      uY1 = vis1P4.py() / vis1P4.pt();
     }
+
     double uX2 = 0.;
     double uY2 = 0.;
-    if ( vis2P4.pt() > 0. ) {
-      uX2 = vis2P4.px()/vis2P4.pt();
-      uY2 = vis2P4.py()/vis2P4.pt();
+    if(vis2P4.pt() > 0.)
+    {
+      uX2 = vis2P4.px() / vis2P4.pt();
+      uY2 = vis2P4.py() / vis2P4.pt();
     }
+
     double zetaX = uX1 + uX2;
     double zetaY = uY1 + uY2;
-    double zetaR = TMath::Sqrt(zetaX*zetaX + zetaY*zetaY);
-    if ( zetaR > 0. ) {
+    const double zetaR = std::sqrt(zetaX * zetaX + zetaY * zetaY);
+    if(zetaR > 0.)
+    {
       zetaX /= zetaR;
       zetaY /= zetaR;
     }
@@ -136,33 +143,43 @@ namespace
   }
 }
 
-double comp_pZeta(const Particle::LorentzVector & vis1P4, const Particle::LorentzVector & vis2P4, double metPx, double metPy)
+double
+comp_pZeta(const Particle::LorentzVector & vis1P4,
+           const Particle::LorentzVector & vis2P4,
+           double metPx,
+           double metPy)
 {
-  std::pair<double, double> zetaX_and_Y = comp_zetaX_and_Y(vis1P4, vis2P4);
-  double zetaX = zetaX_and_Y.first;
-  double zetaY = zetaX_and_Y.second;
-  double sumPx = vis1P4.px() + vis2P4.px() + metPx;
-  double sumPy = vis1P4.py() + vis2P4.py() + metPy;
-  double pZeta = sumPx*zetaX + sumPy*zetaY;
+  const std::pair<double, double> zetaX_and_Y = comp_zetaX_and_Y(vis1P4, vis2P4);
+  const double zetaX = zetaX_and_Y.first;
+  const double zetaY = zetaX_and_Y.second;
+  const double sumPx = vis1P4.px() + vis2P4.px() + metPx;
+  const double sumPy = vis1P4.py() + vis2P4.py() + metPy;
+  const double pZeta = sumPx * zetaX + sumPy * zetaY;
   return pZeta;
 }
 
-double comp_pZetaVis(const Particle::LorentzVector & vis1P4, const Particle::LorentzVector & vis2P4)
+double
+comp_pZetaVis(const Particle::LorentzVector & vis1P4,
+              const Particle::LorentzVector & vis2P4)
 {
-  std::pair<double, double> zetaX_and_Y = comp_zetaX_and_Y(vis1P4, vis2P4);
-  double zetaX    = zetaX_and_Y.first;
-  double zetaY    = zetaX_and_Y.second;
-  double visSumPx = vis1P4.px() + vis2P4.px();
-  double visSumPy = vis1P4.py() + vis2P4.py();
-  double pZetaVis = visSumPx*zetaX + visSumPy*zetaY;
+  const std::pair<double, double> zetaX_and_Y = comp_zetaX_and_Y(vis1P4, vis2P4);
+  const double zetaX    = zetaX_and_Y.first;
+  const double zetaY    = zetaX_and_Y.second;
+  const double visSumPx = vis1P4.px() + vis2P4.px();
+  const double visSumPy = vis1P4.py() + vis2P4.py();
+  const double pZetaVis = visSumPx * zetaX + visSumPy * zetaY;
   return pZetaVis;
 }
 
-double comp_pZetaComb(const Particle::LorentzVector & vis1P4, const Particle::LorentzVector & vis2P4, double metPx, double metPy)
+double
+comp_pZetaComb(const Particle::LorentzVector & vis1P4,
+               const Particle::LorentzVector & vis2P4,
+               double metPx,
+               double metPy)
 {
-  double pZeta     = comp_pZeta(vis1P4, vis2P4, metPx, metPy);
-  double pZetaVis  = comp_pZetaVis(vis1P4, vis2P4);
-  double pZetaComb = pZeta - 1.85*pZetaVis;
+  const double pZeta     = comp_pZeta(vis1P4, vis2P4, metPx, metPy);
+  const double pZetaVis  = comp_pZetaVis(vis1P4, vis2P4);
+  const double pZetaComb = pZeta - 1.85 * pZetaVis;
   return pZetaComb;
 }
 
@@ -313,8 +330,10 @@ comp_cosThetaStar(const Particle::LorentzVector & daughterP4, const Particle::Lo
   //    (cf. Section 2.6.2 and Fig. 59 of AN-2015/001)
   TLorentzVector daughterP4_lv;
   daughterP4_lv.SetPtEtaPhiM(daughterP4.pt(), daughterP4.eta(), daughterP4.phi(), daughterP4.mass());
+
   TLorentzVector motherP4_lv;
   motherP4_lv.SetPtEtaPhiM(motherP4.pt(), motherP4.eta(), motherP4.phi(), motherP4.mass());
+
   daughterP4_lv.Boost(-motherP4_lv.BoostVector());
   const double cosThetaStar = std::fabs(daughterP4_lv.CosTheta());
   return cosThetaStar;

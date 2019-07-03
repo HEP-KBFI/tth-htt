@@ -8,8 +8,8 @@ class RecoJetSelectorAK8
 {
 public:
   explicit RecoJetSelectorAK8(int era,
-                           int index = -1,
-                           bool debug = false);
+                              int index = -1,
+                              bool debug = false);
   ~RecoJetSelectorAK8() {}
 
   /**

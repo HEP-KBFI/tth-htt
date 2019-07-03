@@ -10,16 +10,17 @@
 // forward declarations
 class TTree;
 class RecoSubjetAK8;
+enum class Btag;
 
 class RecoSubjetWriterAK8
 {
 public:
   RecoSubjetWriterAK8(int era);
   RecoSubjetWriterAK8(int era,
-		      const std::string & branchName_obj);
+                      const std::string & branchName_obj);
   RecoSubjetWriterAK8(int era,
-		      const std::string & branchName_num,
-		      const std::string & branchName_obj);
+                      const std::string & branchName_num,
+                      const std::string & branchName_obj);
   ~RecoSubjetWriterAK8();
 
   /**
@@ -42,6 +43,7 @@ protected:
   setBranchNames();
 
   int era_;
+  Btag btag_;
 
   const unsigned int max_nJets_;
   std::string branchName_num_;

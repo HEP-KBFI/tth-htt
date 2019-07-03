@@ -11,22 +11,32 @@ JetHistManager::JetHistManager(const edm::ParameterSet & cfg)
   , option_(kOption_undefined)
   , idx_(cfg.getParameter<int>("idx"))
 {
-  std::string option_string = cfg.getParameter<std::string>("option");
-  if ( option_string == "allHistograms" ) {
+  const std::string option_string = cfg.getParameter<std::string>("option");
+  if(option_string == "allHistograms")
+  {
     option_ = kOption_allHistograms;
-  } else if ( option_string == "minimalHistograms" ) {
+  }
+  else if(option_string == "minimalHistograms")
+  {
     option_ = kOption_minimalHistograms;
-  } else {
-    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string << " !!";
+  }
+  else
+  {
+    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string;
   }
 
-  central_or_shiftOptions_["pt"] = { "central" };
-  central_or_shiftOptions_["eta"] = { "central" };
-  central_or_shiftOptions_["phi"] = { "central" };
-  central_or_shiftOptions_["abs_genPdgId"] = { "central" };
-
-  central_or_shiftOptions_["mass"] = { "central" };
-  central_or_shiftOptions_["BtagCSV"] = { "central" };  
+  const std::vector<std::string> sysOpts_central = {
+    "pt",
+    "eta",
+    "phi",
+    "abs_genPdgId",
+    "mass",
+    "BtagCSV",
+  };
+  for(const std::string & sysOpt: sysOpts_central)
+  {
+    central_or_shiftOptions_[sysOpt] = { "central" };
+  }
 }
 
 void
@@ -54,13 +64,14 @@ JetHistManager::fillHistograms(const RecoJet & jet,
   fillWithOverFlow(histogram_phi_,       jet.phi(),     evtWeight, evtWeightErr);
 
   int abs_genPdgId = 0;
-  if      ( jet.genLepton() ) abs_genPdgId = std::abs(jet.genLepton()->pdgId()); // generator level match to electron or muon
-  else if ( jet.genHadTau() ) abs_genPdgId = 15; // generator level match to hadronic tau decay
-  else if ( jet.genJet()    ) abs_genPdgId = 21; // generator level match to jet; fill histogram with pdgId of gluon
-  else                        abs_genPdgId =  0; // no match to any generator level particle (reconstructed jet most likely due to pileup)
+  if     (jet.genLepton()) abs_genPdgId = std::abs(jet.genLepton()->pdgId()); // generator level match to electron or muon
+  else if(jet.genHadTau()) abs_genPdgId = 15; // generator level match to hadronic tau decay
+  else if(jet.genJet()   ) abs_genPdgId = 21; // generator level match to jet; fill histogram with pdgId of gluon
+  else                     abs_genPdgId =  0; // no match to any generator level particle (reconstructed jet most likely due to pileup)
   fillWithOverFlow(histogram_abs_genPdgId_, abs_genPdgId, evtWeight, evtWeightErr);
 
-  if ( option_ == kOption_allHistograms ) {
+  if(option_ == kOption_allHistograms)
+  {
     fillWithOverFlow(histogram_mass_,    jet.mass(),    evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_BtagCSV_, jet.BtagCSV(), evtWeight, evtWeightErr);
   }

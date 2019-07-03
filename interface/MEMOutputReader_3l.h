@@ -12,7 +12,7 @@ class MEMOutputReader_3l
 {
 public:
   MEMOutputReader_3l(const std::string & branchName_num,
-		     const std::string & branchName_obj);
+                     const std::string & branchName_obj);
   ~MEMOutputReader_3l();
 
   /**

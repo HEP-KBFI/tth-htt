@@ -19,12 +19,12 @@ hadTauGenMatchEntry::hadTauGenMatchEntry(const std::string & name,
 {}
 
 hadTauChargeFlipGenMatchEntry::hadTauChargeFlipGenMatchEntry(const std::string & name,
-							     int idx,
-							     int numGenMatchedHadTaus,
-							     int numGenMatchedElectrons,
-							     int numGenMatchedMuons,
-							     int numChargeFlippedGenMatchedHadTaus_or_Leptons,	     
-							     int numGenMatchedJets)
+                                                             int idx,
+                                                             int numGenMatchedHadTaus,
+                                                             int numGenMatchedElectrons,
+                                                             int numGenMatchedMuons,
+                                                             int numChargeFlippedGenMatchedHadTaus_or_Leptons,
+                                                             int numGenMatchedJets)
   : name_(name)
   , idx_(idx)
   , numGenMatchedHadTaus_(numGenMatchedHadTaus)
@@ -253,7 +253,7 @@ getHadTauGenMatch_string(const std::vector<hadTauGenMatchEntry> & hadTauGenMatch
 
 std::string
 getHadTauChargeFlipGenMatch_string(const std::vector<hadTauChargeFlipGenMatchEntry> & hadTauChargeFlipGenMatch_definitions,
-				   int hadTauChargeFlipGenMatch_int)
+                                   int hadTauChargeFlipGenMatch_int)
 {
   const hadTauChargeFlipGenMatchEntry * hadTauChargeFlipGenMatch = nullptr;
   for(const hadTauChargeFlipGenMatchEntry & hadTauChargeFlipGenMatch_definition: hadTauChargeFlipGenMatch_definitions)
@@ -291,7 +291,7 @@ getHadTauGenMatch_int(const std::vector<hadTauGenMatchEntry> & hadTauGenMatch_de
 
 int
 getHadTauChargeFlipGenMatch_int(const std::vector<hadTauChargeFlipGenMatchEntry> & hadTauChargeFlipGenMatch_definitions,
-				const std::string & hadTauChargeFlipGenMatch_string)
+                                const std::string & hadTauChargeFlipGenMatch_string)
 {
   const hadTauChargeFlipGenMatchEntry * hadTauChargeFlipGenMatch = nullptr;
   for(const hadTauChargeFlipGenMatchEntry & hadTauChargeFlipGenMatch_definition: hadTauChargeFlipGenMatch_definitions)
@@ -309,10 +309,10 @@ getHadTauChargeFlipGenMatch_int(const std::vector<hadTauChargeFlipGenMatchEntry>
 
 void
 countHadTauGenMatches(const RecoHadTau * hadTau,
-		      int & numGenMatchedHadTaus,
-		      int & numGenMatchedElectrons,
-		      int & numGenMatchedMuons,
-		      int & numGenMatchedJets)
+                      int & numGenMatchedHadTaus,
+                      int & numGenMatchedElectrons,
+                      int & numGenMatchedMuons,
+                      int & numGenMatchedJets)
 {
   if     (hadTau->genHadTau()                                                ) ++numGenMatchedHadTaus;
   else if(hadTau->genLepton() && std::abs(hadTau->genLepton()->pdgId()) == 11) ++numGenMatchedElectrons;
@@ -322,11 +322,11 @@ countHadTauGenMatches(const RecoHadTau * hadTau,
 
 void
 countHadTauChargeFlipGenMatches(const RecoHadTau * hadTau,
-				int & numGenMatchedHadTaus,
-				int & numGenMatchedElectrons,
-				int & numGenMatchedMuons,
-				int & numChargeFlippedGenMatchedHadTaus_or_Leptons,
-				int & numGenMatchedJets)
+                                int & numGenMatchedHadTaus,
+                                int & numGenMatchedElectrons,
+                                int & numGenMatchedMuons,
+                                int & numChargeFlippedGenMatchedHadTaus_or_Leptons,
+                                int & numGenMatchedJets)
 {
   if (hadTau->genHadTau()) 
   {
@@ -400,11 +400,11 @@ namespace
 
   const hadTauChargeFlipGenMatchEntry &
   getHadTauChargeFlipGenMatch(const std::vector<hadTauChargeFlipGenMatchEntry> & hadTauChargeFlipGenMatch_definitions,
-			      int numGenMatchedHadTaus,
-			      int numGenMatchedElectrons,
-			      int numGenMatchedMuons,
-			      int numChargeFlippedGenMatchedHadTaus_or_Leptons,
-			      int numGenMatchedJets)
+                              int numGenMatchedHadTaus,
+                              int numGenMatchedElectrons,
+                              int numGenMatchedMuons,
+                              int numChargeFlippedGenMatchedHadTaus_or_Leptons,
+                              int numGenMatchedJets)
   {
     const hadTauChargeFlipGenMatchEntry * hadTauChargeFlipGenMatch = nullptr;
     for(const hadTauChargeFlipGenMatchEntry & hadTauChargeFlipGenMatch_definition: hadTauChargeFlipGenMatch_definitions)
@@ -412,7 +412,7 @@ namespace
       if(matches(hadTauChargeFlipGenMatch_definition.numGenMatchedHadTaus_,                         numGenMatchedHadTaus)   &&
          matches(hadTauChargeFlipGenMatch_definition.numGenMatchedElectrons_,                       numGenMatchedElectrons) &&
          matches(hadTauChargeFlipGenMatch_definition.numGenMatchedMuons_,                           numGenMatchedMuons)     &&
-	 matches(hadTauChargeFlipGenMatch_definition.numChargeFlippedGenMatchedHadTaus_or_Leptons_, numChargeFlippedGenMatchedHadTaus_or_Leptons) &&
+         matches(hadTauChargeFlipGenMatch_definition.numChargeFlippedGenMatchedHadTaus_or_Leptons_, numChargeFlippedGenMatchedHadTaus_or_Leptons) &&
          matches(hadTauChargeFlipGenMatch_definition.numGenMatchedJets_,                            numGenMatchedJets)       )
       {
         hadTauChargeFlipGenMatch = &hadTauChargeFlipGenMatch_definition;
@@ -425,7 +425,7 @@ namespace
            " hadTaus = "                           << numGenMatchedHadTaus << ","
            " electrons = "                         << numGenMatchedElectrons << ","
            " muons = "                             << numGenMatchedMuons << ","
-	   " charge flipped hadTaus or leptons = " << numChargeFlippedGenMatchedHadTaus_or_Leptons << ","
+           " charge flipped hadTaus or leptons = " << numChargeFlippedGenMatchedHadTaus_or_Leptons << ","
            " jets = "                              << numGenMatchedJets
       ;
     }
@@ -438,7 +438,7 @@ getHadTauGenMatch(const std::vector<hadTauGenMatchEntry> & hadTauGenMatch_defini
                   const RecoHadTau * hadTau_lead,
                   const RecoHadTau * hadTau_sublead,
                   const RecoHadTau * hadTau_third,
-		  const RecoHadTau * hadTau_fourth)
+                  const RecoHadTau * hadTau_fourth)
 {
   int numGenMatchedHadTaus = 0;
   int numGenMatchedElectrons = 0;
@@ -474,10 +474,10 @@ getHadTauGenMatch(const std::vector<hadTauGenMatchEntry> & hadTauGenMatch_defini
 
 const hadTauChargeFlipGenMatchEntry &
 getHadTauChargeFlipGenMatch(const std::vector<hadTauChargeFlipGenMatchEntry> & hadTauChargeFlipGenMatch_definitions,
-			    const RecoHadTau * hadTau_lead,
-			    const RecoHadTau * hadTau_sublead,
-			    const RecoHadTau * hadTau_third,
-			    const RecoHadTau * hadTau_fourth)
+                            const RecoHadTau * hadTau_lead,
+                            const RecoHadTau * hadTau_sublead,
+                            const RecoHadTau * hadTau_third,
+                            const RecoHadTau * hadTau_fourth)
 {
   int numGenMatchedHadTaus = 0;
   int numGenMatchedElectrons = 0;
@@ -488,7 +488,8 @@ getHadTauChargeFlipGenMatch(const std::vector<hadTauChargeFlipGenMatchEntry> & h
   const auto countHadTauChargeFlipGenMatches_local = [&](const RecoHadTau * hadTau) -> void
   {
     return countHadTauChargeFlipGenMatches(
-      hadTau, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons, numChargeFlippedGenMatchedHadTaus_or_Leptons, numGenMatchedJets
+      hadTau, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons,
+      numChargeFlippedGenMatchedHadTaus_or_Leptons, numGenMatchedJets
     );
   };
 
@@ -508,7 +509,8 @@ getHadTauChargeFlipGenMatch(const std::vector<hadTauChargeFlipGenMatchEntry> & h
   }
 
   return getHadTauChargeFlipGenMatch(
-    hadTauChargeFlipGenMatch_definitions, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons, numChargeFlippedGenMatchedHadTaus_or_Leptons, numGenMatchedJets
+    hadTauChargeFlipGenMatch_definitions, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons,
+    numChargeFlippedGenMatchedHadTaus_or_Leptons, numGenMatchedJets
   );
 }
 

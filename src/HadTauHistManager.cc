@@ -11,29 +11,38 @@ HadTauHistManager::HadTauHistManager(const edm::ParameterSet& cfg)
   , option_(kOption_undefined)
   , idx_(cfg.getParameter<int>("idx"))
 {
-  std::string option_string = cfg.getParameter<std::string>("option");
-  if ( option_string == "allHistograms" ) {
+  const std::string option_string = cfg.getParameter<std::string>("option");
+  if(option_string == "allHistograms")
+  {
     option_ = kOption_allHistograms;
-  } else if ( option_string == "minimalHistograms" ) {
-    option_ = kOption_minimalHistograms;
-  } else {
-    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string << " !!";
   }
-
-  central_or_shiftOptions_["pt"] = { "central" };
-  central_or_shiftOptions_["eta"] = { "central" };
-  central_or_shiftOptions_["phi"] = { "central" };
-  central_or_shiftOptions_["abs_genPdgId"] = { "central" };
-
-  central_or_shiftOptions_["decayMode"] = { "central" };
-  central_or_shiftOptions_["mass"] = { "central" };
-  central_or_shiftOptions_["charge"] = { "central" };
-  central_or_shiftOptions_["dz"] = { "central" };
-  central_or_shiftOptions_["dxy"] = { "central" };
-  central_or_shiftOptions_["decayModeFinding"] = { "central" };
-  central_or_shiftOptions_["id_mva"] = { "central" };
-  central_or_shiftOptions_["antiElectron"] = { "central" };
-  central_or_shiftOptions_["antiMuon"] = { "central" };
+  else if(option_string == "minimalHistograms")
+  {
+    option_ = kOption_minimalHistograms;
+  }
+  else
+  {
+    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string;
+  }
+  const std::vector<std::string> sysOpts_central = {
+    "pt",
+    "eta",
+    "phi",
+    "abs_genPdgId",
+    "decayMode",
+    "mass",
+    "charge",
+    "dz",
+    "dxy",
+    "decayModeFinding",
+    "id_mva",
+    "antiElectron",
+    "antiMuon",
+  };
+  for(const std::string & sysOpt: sysOpts_central)
+  {
+    central_or_shiftOptions_[sysOpt] = { "central" };
+  }
 }
 
 void HadTauHistManager::bookHistograms(TFileDirectory& dir)

@@ -6,16 +6,22 @@
 // forward declarations
 class TFile;
 
+/**
+ * @brief SFs applied to Drell-Yan MC, derived by Christian in Z->ll+jets events
+ */
 class DYMCNormScaleFactors
 {
 public:
-  DYMCNormScaleFactors(int era, int dyMCNormScaleFactors_option, bool debug = false);
+  DYMCNormScaleFactors(int era,
+                       int dyMCNormScaleFactors_option,
+                       bool debug = false);
   ~DYMCNormScaleFactors();
 
-  // SFs applied to Drell-Yan MC, derived by Christian in Z->ll+jets events
-
   double
-    getWeight(const std::vector<GenParticle>& genTauLeptons, int nJets, int nBLoose, int nBMedium) const;
+  getWeight(const std::vector<GenParticle> & genTauLeptons,
+            int nJets,
+            int nBLoose,
+            int nBMedium) const;
 
 protected:
   int era_;

@@ -8,23 +8,35 @@ EvtHistManager_ttZctrl::EvtHistManager_ttZctrl(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
   , era_(get_era(cfg.getParameter<std::string>("era")))
 {
-  central_or_shiftOptions_["numElectrons"] = { "central" };
-  central_or_shiftOptions_["numMuons"] = { "central" };
-  central_or_shiftOptions_["numLeptons"] = { "central" };
-  central_or_shiftOptions_["numHadTaus"] = { "central" };
-  central_or_shiftOptions_["numJets"] = { "central" };
-  central_or_shiftOptions_["numBJets_loose"] = { "central" };
-  central_or_shiftOptions_["numBJets_medium"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_ttV"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_2lss_ttbar"] = { "central" };
-  central_or_shiftOptions_["mvaDiscr_2lss"] = { "*" };
-  central_or_shiftOptions_["mvaOutput_3l_ttV"] = { "central" };
-  central_or_shiftOptions_["mvaOutput_3l_ttbar"] = { "central" };
-  central_or_shiftOptions_["mvaDiscr_3l"] = { "*" };
-  central_or_shiftOptions_["mLL"] = { "*" };
-  central_or_shiftOptions_["mT"] = { "*" };
-  central_or_shiftOptions_["sumLeptonCharge"] = { "central" };
-  central_or_shiftOptions_["EventCounter"] = { "*" };
+  const std::vector<std::string> sysOpts_central = {
+    "numElectrons",
+    "numMuons",
+    "numLeptons",
+    "numHadTaus",
+    "numJets",
+    "numBJets_loose",
+    "numBJets_medium",
+    "mvaOutput_2lss_ttV",
+    "mvaOutput_2lss_ttbar",
+    "mvaOutput_3l_ttV",
+    "mvaOutput_3l_ttbar",
+    "sumLeptonCharge",
+  };
+  const std::vector<std::string> sysOpts_all = {
+    "mvaDiscr_3l",
+    "mLL",
+    "mT",
+    "mvaDiscr_2lss",
+    "EventCounter",
+  };
+  for(const std::string & sysOpt: sysOpts_central)
+  {
+    central_or_shiftOptions_[sysOpt] = { "central" };
+  }
+  for(const std::string & sysOpt: sysOpts_all)
+  {
+    central_or_shiftOptions_[sysOpt] = { "*" };
+  }
 }
 
 const TH1 *

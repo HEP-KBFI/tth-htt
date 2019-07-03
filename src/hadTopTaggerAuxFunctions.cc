@@ -1,12 +1,14 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-#include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_geral.h" // kGenTop...
+#include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_geral.h" // kGen*
+
+#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <algorithm> // std::sort()
-#include <numeric> // iota
-#include <map>
+#include <numeric> // std::iota()
 
 std::map<int, Particle::LorentzVector>
 isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,
@@ -154,35 +156,50 @@ passWbosonMassVeto(const GenParticle * genWJetFromTop_lead,
 }
 
 int
-getType(size_t sizeHTTv2, size_t sizeFatW, size_t sizeResolved){
-  int typeTop = -1;
-  if (sizeHTTv2 > 0) typeTop = 1;
-  else if (sizeFatW >0) typeTop = 2;
-  else if (sizeResolved >0) typeTop = 3;
-  return typeTop;
+getType(std::size_t sizeHTTv2,
+        std::size_t sizeFatW,
+        std::size_t sizeResolved)
+{
+  if     (sizeHTTv2    > 0) return 1;
+  else if(sizeFatW     > 0) return 2;
+  else if(sizeResolved > 0) return 3;
+  return -1;
 }
 
 std::vector<double>
-getBdiscr(std::vector<const RecoJet*> selJetsIt){
+getBdiscr(const std::vector<const RecoJet *> & selJetsIt)
+{
   std::vector<double> btag_disc;
-  for ( std::vector<const RecoJet*>::const_iterator jetIterB = selJetsIt.begin();
-  jetIterB != selJetsIt.end(); ++jetIterB ) {
-    btag_disc.push_back((*jetIterB)->BtagCSV());
+  for(const RecoJet * jetIterB: selJetsIt)
+  {
+    btag_disc.push_back(jetIterB->BtagCSV());
   }
   return btag_disc;
 }
 
 std::vector<size_t>
-calRank( std::vector<double> & btag_disc ) {
-    std::vector<size_t> result(btag_disc.size(),0);
-    //sorted index
-    std::vector<size_t> indx(btag_disc.size());
-    iota(indx.begin(),indx.end(),0);
-    sort(indx.begin(),indx.end(),[&btag_disc](int i1, int i2){return btag_disc[i1]>btag_disc[i2];});
-    //return ranking
-    for(size_t iter=0;iter<btag_disc.size();++iter) result[indx[iter]]=iter+1;
-    //std::cout<<"btag discriminant  ";
-    //for (auto i: btag_disc) std::cout << i << " ";
-    //std::cout<<std::endl;
-    return result;
+calRank( std::vector<double> & btag_disc)
+{
+  std::vector<std::size_t> result(btag_disc.size(), 0);
+  //sorted index
+  std::vector<std::size_t> indx(btag_disc.size());
+  std::iota(indx.begin(), indx.end(), 0);
+  std::sort(indx.begin(), indx.end(), [&btag_disc](std::size_t i1, std::size_t i2) { return btag_disc[i1] > btag_disc[i2]; });
+  //return ranking
+  for(std::size_t iter = 0; iter < btag_disc.size(); ++iter)
+  {
+    result[indx[iter]] = iter + 1;
+  }
+  return result;
+}
+
+std::vector<std::size_t>
+sort_indexes(const std::vector<double> & v)
+{
+  // initialize original index locations
+  std::vector<std::size_t> idx(v.size());
+  iota(idx.begin(), idx.end(), 0);
+  // sort indexes based on comparing values in v
+  sort(idx.begin(), idx.end(), [&v](std::size_t i1, std::size_t i2) { return v[i1] > v[i2]; });
+  return idx;
 }

@@ -8,8 +8,6 @@
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
 #pragma GCC diagnostic pop
 
-//#include <tensorflow/core/util/memmapped_file_system.h>
-
 #include <boost/algorithm/string.hpp> // boost::contains()
 
 TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName,
@@ -85,21 +83,9 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName,
       {
         std::cout << "read output layer "<< output_layer_name << " " << idx_node << '\n';
       }
-
-//      const auto & shape = graphDef_->node(idx_node-1).attr().at("shape").shape();
-//      std::cout << "read output layer shape  " << shape.dim_size() << '\n';
-//      shape_classes = static_cast<int>(shape.dim(0).size());
       break;
     }
   }
-
-//  if(shape_classes != static_cast<int>(classes_.size()))
-//  {
-//    throw cmsException(this)
-//      << "number of classes declared (" << classes_.size() << ") does not match the expected inputs for the given "
-//         "version (" << shape_classes << ')'
-//    ;
-//  }
 }
 
 TensorFlowInterface::~TensorFlowInterface()
@@ -157,7 +143,7 @@ TensorFlowInterface::operator()(const std::map<std::string, double> & mvaInputs)
 
   // evaluation
   const int node_count = graphDef_->node_size();
-  if (isDEBUG_)
+  if(isDEBUG_)
   {
     for (int idx_node = 0; idx_node < node_count; ++idx_node)
     {
@@ -171,7 +157,7 @@ TensorFlowInterface::operator()(const std::map<std::string, double> & mvaInputs)
   {
     std::cout
       << "start run " << graphDef_->node(n_input_layer).name()
-      << " "          << graphDef_->node(n_output_layer).name()
+      << ' '          << graphDef_->node(n_output_layer).name()
       << '\n'
     ;
   }

@@ -12,29 +12,26 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include <TFile.h>
-
-#include <string>
+// forward declarations
+class TFile;
 
 class PlotterPluginBase
 {
  public:
-  // constructor 
-  explicit PlotterPluginBase(const TFile* inputFile, const edm::ParameterSet& cfg);
-  
-  // destructor
+  explicit PlotterPluginBase(const TFile * inputFile,
+                             const edm::ParameterSet & cfg);
   virtual ~PlotterPluginBase();
 
   virtual void makePlots() = 0;
 
  protected:
-  const TFile* inputFile_;
+  const TFile * inputFile_;
   edm::ParameterSet cfg_;
 };
 
 #include "FWCore/PluginManager/interface/PluginFactory.h"
 
-typedef edmplugin::PluginFactory<PlotterPluginBase* (const TFile*, const edm::ParameterSet&)> PlotterPluginFactory;
+typedef edmplugin::PluginFactory<PlotterPluginBase*(const TFile *, const edm::ParameterSet &)> PlotterPluginFactory;
 
 #endif  
 

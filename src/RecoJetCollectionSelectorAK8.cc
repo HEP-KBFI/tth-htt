@@ -1,8 +1,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorAK8.h" // RecoJetSelectorAK8
 
 RecoJetSelectorAK8::RecoJetSelectorAK8(int era,
-                                 int index,
-                                 bool debug)
+                                       int index,
+                                       bool debug)
   : min_pt_(100.)
   , max_absEta_(2.4)
   , min_msoftdrop_(50.)
