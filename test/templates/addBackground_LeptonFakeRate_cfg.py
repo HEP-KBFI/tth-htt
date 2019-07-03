@@ -31,9 +31,9 @@ process.addBackground_LeptonFakeRate = cms.PSet(
     processData = cms.string("data_obs"),
     processLeptonFakes = cms.string("fakes_data"),
     processesToSubtract = cms.vstring(
-        "TTl_plus_t",
-        "Raresl_plus_t",
-        "EWKl_plus_t",
+        "TTl",
+        "Raresl",
+        "EWKl",
     ),
     sysShifts = cms.vstring(
       "central",

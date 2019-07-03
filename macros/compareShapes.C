@@ -199,9 +199,9 @@ void compareShapes()
   }
   
   std::vector<processEntry*> processes; // key = channel
-  processes.push_back(new processEntry("EWKl_plus_t",   610, "EWK"));           // purple
-  processes.push_back(new processEntry("Raresl_plus_t", 851, "Rares"));         // light blue
-  processes.push_back(new processEntry("TTl_plus_t",     16, "t#bar{t}+jets")); // gray
+  processes.push_back(new processEntry("EWKl",          610, "EWK"));           // purple
+  processes.push_back(new processEntry("Raresl",        851, "Rares"));         // light blue
+  processes.push_back(new processEntry("TTl",            16, "t#bar{t}+jets")); // gray
   processes.push_back(new processEntry("fakes_data",      1, "Fakes"));         // black
     
   std::vector<categoryEntry*> categories;

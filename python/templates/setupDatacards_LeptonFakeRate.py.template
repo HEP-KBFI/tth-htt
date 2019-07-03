@@ -15,7 +15,7 @@ cb         = ch.CombineHarvester()
 ##########################################################################
 # Set the processes and categories
 ##########################################################################
-SUFFIX_GEN_MATCH = "l_plus_t"
+SUFFIX_GEN_MATCH = "l"
 
 sig_procs     = ['fakes_data'] ## for data driven fake estimate
 # sig_procs     = ['QCD']   ## for mc driven fake estimate

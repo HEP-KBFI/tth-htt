@@ -35,19 +35,19 @@ LAYOUTS1 = { ## FOR tt
         }
         ),
         ('Rares', {
-            'entries': ['Raresl_plus_t'],
+            'entries': ['Raresl'],
             'legend': 'Rares',
             'color': ROOT.TColor.GetColor(0,255,0)
         }
         ),
         ('TT', {
-            'entries': ['TTl_plus_t'],
+            'entries': ['TTl'],
             'legend': 't#bar{t}',
             'color': ROOT.TColor.GetColor(155, 152, 204)
         }
         ),
         ('EWK', {
-            'entries': ['EWKl_plus_t'],
+            'entries': ['EWKl'],
             'legend': 'Electroweak',
             'color': ROOT.TColor.GetColor(222, 90, 106)
         }
@@ -62,19 +62,19 @@ LAYOUTS1 = { ## FOR tt
         }
         ),
         ('Rares', {
-            'entries': ['Raresl_plus_t'],
+            'entries': ['Raresl'],
             'legend': 'Rares',
             'color': ROOT.TColor.GetColor(0,255,0)
         }
         ),
         ('TT', {
-            'entries': ['TTl_plus_t'],
+            'entries': ['TTl'],
             'legend': 't#bar{t}',
             'color': ROOT.TColor.GetColor(155, 152, 204)
         }
         ),
         ('EWK', {
-            'entries': ['EWKl_plus_t'],
+            'entries': ['EWKl'],
             'legend': 'Electroweak',
             'color': ROOT.TColor.GetColor(222, 90, 106)
         }

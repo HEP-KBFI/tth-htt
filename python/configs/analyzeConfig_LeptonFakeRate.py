@@ -325,9 +325,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
     #if self.use_QCD_fromMC :
-    #  lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'TTl_plus_t', 'Raresl_plus_t', 'EWKl_plus_t', 'QCD')")
+    #  lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'TTl', 'Raresl', 'EWKl', 'QCD')")
     #else:
-    #  lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'TTl_plus_t', 'Raresl_plus_t', 'EWKl_plus_t', 'fakes_data')")
+    #  lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'TTl', 'Raresl', 'EWKl', 'fakes_data')")
     if jobOptions['histogramToFit'] in [ "mT_fix_L", "mT_fix_L_num", "mT_fix_L_den"]:
       lines.append("process.prepareDatacards.histogramToFit_xMin = cms.double(0.)")
       lines.append("process.prepareDatacards.histogramToFit_xMax = cms.double(150.)")
