@@ -16,7 +16,7 @@ enum {
 enum {
   kGen_LeptonChargeFlipUndefined1, 
   kGen_LeptonChargeFlipAll1, kGen_1l1f0g0j, kGen_1l0f0g0j, kGen_0l0f1g0j, kGen_0l0f0g1j,
-}; // this is the new enum, where generator-level matched leptons are split into charge flip and non-flip contributions 
+};
 
 enum { 
   kGen_LeptonUndefined2, kGen_LeptonAll2, 
@@ -30,8 +30,7 @@ enum {
   kGen_2l2f0g0j, kGen_2l1f0g0j, kGen_2l0f0g0j,
   kGen_1l1f1g0j, kGen_1l1f0g1j, kGen_1l0f1g0j, kGen_1l0f0g1j,
   kGen_0l0f2g0j, kGen_0l0f1g1j, kGen_0l0f0g2j
-}; // this is the new enum, where generator-level matched leptons are split into charge flip and non-flip contributions 
-   // (needed for HH->2l+2tau channel)
+};
 
 enum { 
   kGen_LeptonUndefined3, kGen_LeptonAll3, 
@@ -68,11 +67,11 @@ struct leptonGenMatchEntry
 struct leptonChargeFlipGenMatchEntry
 {
   leptonChargeFlipGenMatchEntry(const std::string & name,
-                      int idx,
-                      int numGenMatchedLeptons,
-                      int numChargeFlippedGenMatchedLeptons,
-                      int numGenMatchedPhotons,
-                      int numGenMatchedJets);
+                                int idx,
+                                int numGenMatchedLeptons,
+                                int numChargeFlippedGenMatchedLeptons,
+                                int numGenMatchedPhotons,
+                                int numGenMatchedJets);
   ~leptonChargeFlipGenMatchEntry() {}
   std::string name_;
   int idx_;
@@ -95,7 +94,7 @@ getLeptonGenMatch_string(const std::vector<leptonGenMatchEntry> & leptonGenMatch
 
 std::string
 getLeptonChargeFlipGenMatch_string(const std::vector<leptonChargeFlipGenMatchEntry> & leptonChargeFlipGenMatch_definitions,
-                         int leptonChargeFlipGenMatch_int);
+                                   int leptonChargeFlipGenMatch_int);
 
 int
 getLeptonGenMatch_int(const std::vector<leptonGenMatchEntry> & leptonGenMatch_definitions,
@@ -114,10 +113,10 @@ countLeptonGenMatches(const RecoLepton * lepton,
 
 void
 countLeptonChargeFlipGenMatches(const RecoLepton * lepton,
-                      int & numGenMatchedLeptons,
-                      int & numChargeFlippedGenMatchedLeptons,
-                      int & numGenMatchedPhotons,
-                      int & numGenMatchedJets);
+                                int & numGenMatchedLeptons,
+                                int & numChargeFlippedGenMatchedLeptons,
+                                int & numGenMatchedPhotons,
+                                int & numGenMatchedJets);
 
 const leptonGenMatchEntry &
 getLeptonGenMatch(const std::vector<leptonGenMatchEntry> & leptonGenMatch_definitions,
