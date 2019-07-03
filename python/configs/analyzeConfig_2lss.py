@@ -596,6 +596,7 @@ class analyzeConfig_2lss(analyzeConfig):
           key_addBackgrounds_job_flips = getKey(*addBackgrounds_job_flips_tuple)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
+          sample_categories.extend(self.signalProcs)
           processes_input = []
           for sample_category in sample_categories:
             processes_input.append("%s_flip" % sample_category)
