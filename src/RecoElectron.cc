@@ -1,5 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // EGammaID, EGammaWP, as_integer(), cmsException()
 
 RecoElectron::RecoElectron(const RecoLepton & lepton,
@@ -131,9 +132,12 @@ RecoElectron::is_muon() const
 }
 
 bool
-RecoElectron::isGenMatched() const
+RecoElectron::isGenMatched(bool requireChargeMatch) const
 {
-  return !! genLepton_ || !! genPhoton_;
+  return requireChargeMatch                                    ?
+    (!! genLepton_ ? charge() == genLepton_->charge() : false) :
+    (!! genLepton_ || !! genPhoton_)
+  ;
 }
 
 std::ostream &

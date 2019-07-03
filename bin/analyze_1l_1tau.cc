@@ -410,7 +410,7 @@ int main(int argc, char* argv[])
   SyncNtupleManager * snm = nullptr;
   if(do_sync)
   {
-    snm = new SyncNtupleManager(syncNtuple_output, syncNtuple_tree);
+    snm = new SyncNtupleManager(syncNtuple_output, syncNtuple_tree, SyncGenMatchCharge::kAll);
     snm->initializeBranches();
     snm->initializeHLTBranches({ triggers_1e, triggers_1e1tau, triggers_1mu, triggers_1mu1tau });
   }

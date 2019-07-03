@@ -333,7 +333,7 @@ int main(int argc, char* argv[])
   SyncNtupleManager * snm = nullptr;
   if(do_sync)
   {
-    snm = new SyncNtupleManager(syncNtuple_output, syncNtuple_tree);
+    snm = new SyncNtupleManager(syncNtuple_output, syncNtuple_tree, SyncGenMatchCharge::kLepton);
     snm->initializeBranches();
     snm->initializeHLTBranches({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
   }

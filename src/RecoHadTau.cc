@@ -184,8 +184,20 @@ RecoHadTau::genJet() const
 }
 
 bool
-RecoHadTau::isGenMatched() const
+RecoHadTau::isGenMatched(bool requireChargeMatch) const
 {
+  if(requireChargeMatch)
+  {
+    if(!! genHadTau_)
+    {
+      return charge() == genHadTau_->charge();
+    }
+    if(!! genLepton_)
+    {
+      return charge() == genLepton_->charge();
+    }
+    return false;
+  }
   return !! genHadTau_ || !! genLepton_;
 }
 

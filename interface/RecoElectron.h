@@ -55,7 +55,7 @@ public:
   bool
   is_muon() const override;
 
-  bool isGenMatched() const;
+  bool isGenMatched(bool requireChargeMatch) const;
 
   friend class RecoElectronReader;
 

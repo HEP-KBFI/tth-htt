@@ -68,7 +68,7 @@ public:
   const GenHadTau * genHadTau() const;
   const GenJet * genJet() const;
 
-  bool isGenMatched() const;
+  bool isGenMatched(bool requireChargeMatch) const;
   bool hasAnyGenMatch() const;
 
   bool isLoose() const;

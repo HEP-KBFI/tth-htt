@@ -18,10 +18,13 @@ const Int_t SyncNtupleManager::placeholder_value = -9999;
 const std::regex SyncNtupleManager::endsWithNumberRegex(".*\\d+$");
 
 SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
-                                     const std::string & outputTreeName)
+                                     const std::string & outputTreeName,
+                                     SyncGenMatchCharge genMatchOpt)
   : outputFile(new TFile(outputFileName.c_str(), "recreate"))
   , outputDir(nullptr)
   , outputTree(nullptr)
+  , genMatchCharge_leptons(genMatchOpt == SyncGenMatchCharge::kLepton || genMatchOpt == SyncGenMatchCharge::kAll)
+  , genMatchCharge_taus   (genMatchOpt == SyncGenMatchCharge::kHadTau || genMatchOpt == SyncGenMatchCharge::kAll)
   , nof_leps(4)
   , nof_mus(2)
   , nof_eles(2)
@@ -485,7 +488,7 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
       }
     }
 
-    mu_isGenMatched[i] = muon -> isGenMatched();
+    mu_isGenMatched[i] = muon -> isGenMatched(genMatchCharge_leptons);
   }
 }
 
@@ -552,7 +555,7 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
       }
     }
 
-    ele_isGenMatched[i] = electron -> isGenMatched();
+    ele_isGenMatched[i] = electron -> isGenMatched(genMatchCharge_leptons);
   }
 }
 
@@ -606,7 +609,7 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
     tau_againstElectronMediumMVA6[i] = idAntiErun2 >= 3 ? 1 : 0;
     tau_againstElectronTightMVA6[i] = idAntiErun2 >= 4 ? 1 : 0;
     tau_againstElectronVTightMVA6[i] = idAntiErun2 >= 5 ? 1 : 0;
-    tau_isGenMatched[i] = hadtau -> isGenMatched();
+    tau_isGenMatched[i] = hadtau -> isGenMatched(genMatchCharge_taus);
   }
 }
 

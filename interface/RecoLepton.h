@@ -147,7 +147,7 @@ public:
 
   bool hasJetBtagCSV(Btag btag) const;
 
-  bool isGenMatched() const;
+  bool isGenMatched(bool requireChargeMatch) const;
   bool hasAnyGenMatch() const;
 
   bool isLoose() const;

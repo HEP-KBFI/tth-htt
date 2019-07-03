@@ -291,9 +291,9 @@ RecoLepton::hasJetBtagCSV(Btag btag) const
 }
 
 bool
-RecoLepton::isGenMatched() const
+RecoLepton::isGenMatched(bool requireChargeMatch) const
 {
-  return !! genLepton_;
+  return requireChargeMatch ? (!! genLepton_ ? charge() == genLepton_->charge() : false) : !! genLepton_;
 }
 
 bool

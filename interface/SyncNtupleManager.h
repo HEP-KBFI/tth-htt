@@ -134,11 +134,20 @@ enum class FloatVariableType
   genWeight
 };
 
+enum class SyncGenMatchCharge
+{
+  kDisabled,
+  kLepton,
+  kHadTau,
+  kAll,
+};
+
 class SyncNtupleManager
 {
 public:
   SyncNtupleManager(const std::string & outputFileName,
-                    const std::string & outputTreeName);
+                    const std::string & outputTreeName,
+                    SyncGenMatchCharge genMatchOpt = SyncGenMatchCharge::kDisabled);
   ~SyncNtupleManager();
 
   void initializeBranches();
@@ -307,6 +316,9 @@ private:
   TFile * outputFile;
   TDirectory * outputDir;
   TTree * outputTree;
+
+  bool genMatchCharge_leptons;
+  bool genMatchCharge_taus;
 
   const Int_t nof_leps;
   const Int_t nof_mus;
