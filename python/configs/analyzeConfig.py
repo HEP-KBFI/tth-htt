@@ -482,22 +482,6 @@ class analyzeConfig(object):
                 for time in times:
                     logging.error(str(time))
 
-    def set_triggerSF_2tau(self, lines):
-        lines.extend([
-          "",
-          "jsonFileName = os.path.expandvars('$CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/triggerSF/2016/trigger_sf_tt.json')",
-          "jsonFile = open(jsonFileName)",
-          "import json",
-          "jsonData = json.load(jsonFile)",
-          "for fit, parameters in jsonData.items():",
-          "  pset = cms.PSet()",
-          "  for parameterName, parameterValue in parameters.items():",
-          "    setattr(pset, parameterName, cms.double(parameterValue))",
-          "    setattr(process.analyze_%s.triggerSF_2tau, fit, pset)" % self.channel,
-          "",
-        ])
-        return lines
-
     def set_leptonFakeRateWeightHistogramNames(self, central_or_shift, lepton_and_hadTau_selection):
         suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection else 'data_comb'
 

@@ -79,26 +79,10 @@ namespace aux
   }
 
   std::string
-  getHadTauSelectionLabel_2016(const std::string & hadTauSelection)
-  {
-    std::string hadTauSelectionLabel;
-    if     (hadTauSelection == "dR03mvaVVLoose") hadTauSelectionLabel = "VLooseIso"; // CV: custom WP for which no trigger efficiency turn-on curve has been measured
-    else if(hadTauSelection == "dR03mvaVLoose" ) hadTauSelectionLabel = "VLooseIso";
-    else if(hadTauSelection == "dR03mvaLoose"  ) hadTauSelectionLabel = "LooseIso";
-    else if(hadTauSelection == "dR03mvaMedium" ) hadTauSelectionLabel = "MediumIso";
-    else if(hadTauSelection == "dR03mvaTight"  ) hadTauSelectionLabel = "TightIso";
-    else if(hadTauSelection == "dR03mvaVTight" ) hadTauSelectionLabel = "VTightIso";
-    else if(hadTauSelection == "dR03mvaVVTight") hadTauSelectionLabel = "VVTightIso";
-    else throw cmsException(__func__, __LINE__)
-           << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection;
-    return hadTauSelectionLabel;
-  }
-
-  std::string
-  getHadTauSelectionLabel_2017(const std::string & hadTauSelection)
+  getHadTauSelectionLabel(const std::string & hadTauSelection)
   {
     std::string hadTauSelection_TauTriggerSFs2017;
-    if     (hadTauSelection == "dR03mvaVVLoose") hadTauSelection_TauTriggerSFs2017 = "vloose"; // not measured for VVLoose
+    if     (hadTauSelection == "dR03mvaVVLoose") hadTauSelection_TauTriggerSFs2017 = "vloose"; // not measured for VVLoose in 2017
     else if(hadTauSelection == "dR03mvaVLoose" ) hadTauSelection_TauTriggerSFs2017 = "vloose";
     else if(hadTauSelection == "dR03mvaLoose"  ) hadTauSelection_TauTriggerSFs2017 = "loose";
     else if(hadTauSelection == "dR03mvaMedium" ) hadTauSelection_TauTriggerSFs2017 = "medium";
@@ -160,6 +144,124 @@ namespace aux
     }
     const double sf = get_from_lut(corrections.at(hadTau_decayMode), hadTau_pt, hadTau_eta, isDEBUG);
     return sf;
+  }
+
+  void
+  loadTriggerEff_1e_2016(vLutWrapperBase & effTrigger_1e_data,
+                         vLutWrapperBase & effTrigger_1e_mc,
+                         std::map<std::string, TFile *> & inputFiles)
+  {
+    const std::vector<double> etaBinEdges_1e = { -1., 1.48, 2.1 };
+    assert(etaBinEdges_1e.size() > 0);
+    const std::size_t numEtaBins_1e = etaBinEdges_1e.size() - 1;
+    for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1e; ++idxEtaBin)
+    {
+      const double etaMin = etaBinEdges_1e[idxEtaBin];
+      const double etaMax = etaBinEdges_1e[idxEtaBin + 1];
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+      effTrigger_1e_data.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele25WPTight_eff.root",
+        Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta,
+        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+      effTrigger_1e_mc.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele25WPTight_eff.root",
+        Form("ZMassEta%s_MC", etaBinLabel.data()),
+        lut::kXptYabsEta,
+        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+    }
+  }
+
+  void
+  loadTriggerEff_1e_1tau_lepLeg_2016(vLutWrapperBase & effTrigger_1e1tau_lepLeg_data,
+                                     vLutWrapperBase & effTrigger_1e1tau_lepLeg_mc,
+                                     std::map<std::string, TFile *> & inputFiles)
+  {
+    const std::vector<double> etaBinEdges_1e_1tau_lepLeg = { -1., 1.48, 2.1 };
+    assert(etaBinEdges_1e_1tau_lepLeg.size() > 0);
+    const std::size_t numEtaBins_1e_1tau_lepLeg = etaBinEdges_1e_1tau_lepLeg.size() - 1;
+    for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1e_1tau_lepLeg; ++idxEtaBin)
+    {
+      const double etaMin = etaBinEdges_1e_1tau_lepLeg[idxEtaBin];
+      const double etaMax = etaBinEdges_1e_1tau_lepLeg[idxEtaBin + 1];
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+      effTrigger_1e1tau_lepLeg_data.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele24_eff.root",
+        Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta,
+        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+      effTrigger_1e1tau_lepLeg_mc.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele24_eff.root",
+        Form("ZMassEta%s_MC", etaBinLabel.data()),
+        lut::kXptYabsEta,
+        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+    }
+  }
+
+  void
+  loadTriggerEff_1m_2016(vLutWrapperBase & effTrigger_1m_data,
+                         vLutWrapperBase & effTrigger_1m_mc,
+                         std::map<std::string, TFile *> & inputFiles)
+  {
+    const std::vector<double> etaBinEdges_1m = { -1., 0.9, 1.2, 2.1 };
+    assert(etaBinEdges_1m.size() > 0);
+    const std::size_t numEtaBins_1m = etaBinEdges_1m.size() - 1;
+    for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1m; ++idxEtaBin)
+    {
+      const double etaMin = etaBinEdges_1m[idxEtaBin];
+      const double etaMax = etaBinEdges_1m[idxEtaBin + 1];
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+      effTrigger_1m_data.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu22OR_eta2p1_eff.root", Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta,
+        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+      effTrigger_1m_mc.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu22OR_eta2p1_eff.root",
+        Form("ZMassEta%s_MC", etaBinLabel.data()),
+        lut::kXptYabsEta,
+        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+    }
+  }
+
+  void
+  loadTriggerEff_1m_1tau_lepLeg_2016(vLutWrapperBase & effTrigger_1m1tau_lepLeg_data,
+                                     vLutWrapperBase & effTrigger_1m1tau_lepLeg_mc,
+                                     std::map<std::string, TFile *> & inputFiles)
+  {
+    const std::vector<double> etaBinEdges_1m1tau_lepLeg = { -1., 0.9, 1.2, 2.1 };
+    assert(etaBinEdges_1m1tau_lepLeg.size() > 0);
+    const std::size_t numEtaBins_1m1tau_lepLeg = etaBinEdges_1m1tau_lepLeg.size() - 1;
+    for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1m1tau_lepLeg; ++idxEtaBin)
+    {
+      const double etaMin = etaBinEdges_1m1tau_lepLeg[idxEtaBin];
+      const double etaMax = etaBinEdges_1m1tau_lepLeg[idxEtaBin + 1];
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+      effTrigger_1m1tau_lepLeg_data.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu19leg_2016BtoH_eff.root",
+        Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta,
+        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+      effTrigger_1m1tau_lepLeg_mc.push_back(new lutWrapperTGraph(
+        inputFiles,
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu19leg_2016BtoH_eff.root",
+        Form("ZMassEta%s_MC", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+      ));
+    }
   }
 
   void 

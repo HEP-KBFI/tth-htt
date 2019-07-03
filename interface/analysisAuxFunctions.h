@@ -230,6 +230,9 @@ get_selection(const std::string & selectionString);
 int
 get_era(const std::string & eraString);
 
+std::string
+get_era(int era);
+
 int
 get_tau_id_wp_int(const std::string & tauId_str);
 

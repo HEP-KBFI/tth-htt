@@ -83,6 +83,18 @@ get_era(const std::string & eraString)
   throw cmsException(__func__) << "Invalid Configuration parameter 'era' = " << eraString;
 }
 
+std::string
+get_era(int era)
+{
+  switch(era)
+  {
+    case kEra_2016: return "2016";
+    case kEra_2017: return "2017";
+    case kEra_2018: return "2018";
+    default: throw cmsException(__func__, __LINE__) << "Invalid era: " << era;
+  }
+}
+
 int
 get_tau_id_wp_int(const std::string & tauId_str)
 {

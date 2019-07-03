@@ -50,8 +50,6 @@ process.analyze_0l_2tau = cms.PSet(
             applyFitFunction = cms.bool(True)
         )
     ),
-    triggerSF_2tau = cms.PSet(),
-
     isMC = cms.bool(False),
     central_or_shift = cms.string(''),
     lumiScale = cms.double(1.),

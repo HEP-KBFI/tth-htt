@@ -26,9 +26,6 @@ public:
   void
   setHadTaus(double hadTau1_pt, double hadTau1_eta, double hadTau1_phi, int hadTau1_decayMode,
              double hadTau2_pt, double hadTau2_eta, double hadTau2_phi, int hadTau2_decayMode);
-  void
-  setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta, int hadTau1_decayMode,
-             int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta, int hadTau2_decayMode);
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
@@ -44,22 +41,13 @@ public:
   //-----------------------------------------------------------------------------
 
 protected:
-
   //-----------------------------------------------------------------------------
-  // data/MC corrections for trigger efficiencies in 2016 ReReco data and Summer16 MC
-
-  std::map<int, vLutWrapperBase> effTrigger_2tau_perLeg_data_gentau_;  // key = reconstructed tau decay mode
-  std::map<int, vLutWrapperBase> effTrigger_2tau_perLeg_data_faketau_; // key = reconstructed tau decay mode
-  std::map<int, vLutWrapperBase> effTrigger_2tau_perLeg_mc_gentau_;    // key = reconstructed tau decay mode
-  std::map<int, vLutWrapperBase> effTrigger_2tau_perLeg_mc_faketau_;   // key = reconstructed tau decay mode
-  //-----------------------------------------------------------------------------
-
-  //-----------------------------------------------------------------------------
-  // data/MC corrections for trigger efficiencies in 2017 ReReco data and Summer17 MC
+  // data/MC corrections for trigger efficiencies
 
   TauTriggerSFs2017 * effTrigger_tauLeg_;
   //-----------------------------------------------------------------------------
 
+  std::string era_str_;
   int era_;
   std::string hadTauSelection_;
   bool isDEBUG_;

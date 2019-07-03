@@ -208,9 +208,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       jobOptions['apply_hadTauFakeRateSF'] = True
 
     lines = super(analyzeConfig_0l_2tau, self).createCfg_analyze(jobOptions, sample_info)
-    if self.era == "2016":
-      lines = self.set_triggerSF_2tau(lines)
-
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):

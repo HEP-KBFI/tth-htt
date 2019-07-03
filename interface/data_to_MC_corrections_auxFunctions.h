@@ -26,10 +26,7 @@ namespace aux
   getHadTauIdxLabel(int idx);
 
   std::string
-  getHadTauSelectionLabel_2016(const std::string & hadTauSelection);
-
-  std::string
-  getHadTauSelectionLabel_2017(const std::string & hadTauSelection);
+  getHadTauSelectionLabel(const std::string & hadTauSelection);
 
   std::string
   getHadTauDecayModeLabel(int hadTauDecayMode);
@@ -53,6 +50,26 @@ namespace aux
   {
     return std::min(eff_data / std::max(1.e-6, eff_mc), 1.e+1);
   }
+
+  void
+  loadTriggerEff_1e_2016(vLutWrapperBase & effTrigger_1e_data,
+                         vLutWrapperBase & effTrigger_1e_mc,
+                         std::map<std::string, TFile *> & inputFiles);
+
+  void
+  loadTriggerEff_1e_1tau_lepLeg_2016(vLutWrapperBase & effTrigger_1e1tau_lepLeg_data,
+                                     vLutWrapperBase & effTrigger_1e1tau_lepLeg_mc,
+                                     std::map<std::string, TFile *> & inputFiles);
+
+  void
+  loadTriggerEff_1m_2016(vLutWrapperBase & effTrigger_1m_data,
+                         vLutWrapperBase & effTrigger_1m_mc,
+                         std::map<std::string, TFile *> & inputFiles);
+
+  void
+  loadTriggerEff_1m_1tau_lepLeg_2016(vLutWrapperBase & effTrigger_1m1tau_lepLeg_data,
+                                     vLutWrapperBase & effTrigger_1m1tau_lepLeg_mc,
+                                     std::map<std::string, TFile *> & inputFiles);
 
   void 
   loadTriggerEff_1e_2017(vLutWrapperBase & effTrigger_1e_data,

@@ -33,9 +33,6 @@ public:
 
   void
   setHadTaus(double hadTau_pt, double hadTau_eta, double hadTau_phi, int hadTau_decayMode);
-
-  void
-  setHadTaus(int hadTau_genPdgId, double hadTau_pt, double hadTau_eta, int hadTau_decayMode);
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
@@ -60,20 +57,10 @@ protected:
   vLutWrapperBase effTrigger_1e1tau_lepLeg_data_;
   vLutWrapperBase effTrigger_1e1tau_lepLeg_mc_;
 
-  std::map<int, vLutWrapperBase> effTrigger_1e1tau_tauLeg_data_gentau_;  // key = reconstructed tau decay mode
-  std::map<int, vLutWrapperBase> effTrigger_1e1tau_tauLeg_data_faketau_; // key = reconstructed tau decay mode
-  std::map<int, vLutWrapperBase> effTrigger_1e1tau_tauLeg_mc_gentau_;    // key = reconstructed tau decay mode
-  std::map<int, vLutWrapperBase> effTrigger_1e1tau_tauLeg_mc_faketau_;   // key = reconstructed tau decay mode
-  
   vLutWrapperBase effTrigger_1m_data_;
   vLutWrapperBase effTrigger_1m_mc_;
   vLutWrapperBase effTrigger_1m1tau_lepLeg_data_;
   vLutWrapperBase effTrigger_1m1tau_lepLeg_mc_;
-
-  vLutWrapperBase effTrigger_1m1tau_tauLeg_data_gentau_;
-  vLutWrapperBase effTrigger_1m1tau_tauLeg_data_faketau_;
-  vLutWrapperBase effTrigger_1m1tau_tauLeg_mc_gentau_;
-  vLutWrapperBase effTrigger_1m1tau_tauLeg_mc_faketau_;
 
   TauTriggerSFs2017 * effTrigger_1e1tau_tauLeg_;
   TauTriggerSFs2017 * effTrigger_1m1tau_tauLeg_;
@@ -81,6 +68,7 @@ protected:
 
   std::map<std::string, TFile *> inputFiles_;
 
+  std::string era_str_;
   int era_;
   std::string hadTauSelection_;
   bool isDEBUG_;
