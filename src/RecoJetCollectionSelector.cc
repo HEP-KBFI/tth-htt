@@ -65,7 +65,7 @@ RecoJetSelector::operator()(const RecoJet & jet) const
     std::cout << get_human_line(this, __func__) << ":\n jet: " << jet << '\n';
   }
 
-  if(jet.pt() < min_pt_)
+  if(jet.pt() <= min_pt_)
   {
     if(debug_)
     {
@@ -73,7 +73,7 @@ RecoJetSelector::operator()(const RecoJet & jet) const
     }
     return false;
   }
-  if(max_absEta_ > 0. && jet.absEta() > max_absEta_)
+  if(max_absEta_ > 0. && jet.absEta() >= max_absEta_)
   {
     if(debug_)
     {

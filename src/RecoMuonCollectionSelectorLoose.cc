@@ -28,7 +28,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
     std::cout << get_human_line(this, __func__) << ":\n" << muon;
   }
 
-  if(muon.pt() < min_pt_)
+  if(muon.pt() <= min_pt_)
   {
     if(debug_)
     {
@@ -37,7 +37,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
     return false;
   }
 
-  if(muon.absEta() > max_absEta_)
+  if(muon.absEta() >= max_absEta_)
   {
     if(debug_)
     {
@@ -46,7 +46,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
     return false;
   }
 
-  if(std::fabs(muon.dxy()) > max_dxy_)
+  if(std::fabs(muon.dxy()) >= max_dxy_)
   {
     if(debug_)
     {
@@ -55,7 +55,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
     return false;
   }
 
-  if(std::fabs(muon.dz()) > max_dz_)
+  if(std::fabs(muon.dz()) >= max_dz_)
   {
     if(debug_)
     {
@@ -64,7 +64,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
     return false;
   }
 
-  if(muon.relIso() > max_relIso_)
+  if(muon.relIso() >= max_relIso_)
   {
     if(debug_)
     {
@@ -73,7 +73,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
     return false;
   }
 
-  if(muon.sip3d() > max_sip3d_)
+  if(muon.sip3d() >= max_sip3d_)
   {
     if(debug_)
     {
