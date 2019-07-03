@@ -409,7 +409,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
                 syncOutput = ''
                 syncTree = ''
-                syncRequireGenMatching = True
                 mcClosure_match = mcClosure_regex.match(lepton_and_hadTau_selection_and_frWeight)
                 if self.do_sync:
                   if hadTau_charge_selection != 'OS':
@@ -417,7 +416,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   if lepton_and_hadTau_selection_and_frWeight == 'Tight':
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift))
                     syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
-                    syncRequireGenMatching = True
                   elif lepton_and_hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights':
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
@@ -465,7 +463,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   'syncOutput'               : syncOutput,
                   'syncTree'                 : syncTree,
                   'syncRLE'                  : syncRLE,
-                  'syncRequireGenMatching'   : syncRequireGenMatching,
                   'apply_hlt_filter'         : self.hlt_filter,
                   'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,

@@ -812,10 +812,6 @@ class analyzeConfig(object):
                 "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.output', os.path.basename(jobOptions['syncOutput']), len = max_option_len),
                 "{}.{:<{len}} = cms.string('{}')".format(process_string, 'selEventsFileName_input', jobOptions['syncRLE'], len = max_option_len),
             ])
-            if 'syncRequireGenMatching' in jobOptions:
-                lines.append(
-                    "{}.{:<{len}} = cms.bool({})".format(process_string, 'syncNtuple.requireGenMatching', jobOptions['syncRequireGenMatching'], len = max_option_len),
-                )
 
         if sample_info['process_name_specific'] in self.stitching_args:
           process_stitching_args = self.stitching_args[sample_info['process_name_specific']]

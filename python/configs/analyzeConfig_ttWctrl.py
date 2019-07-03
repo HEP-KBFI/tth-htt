@@ -330,7 +330,6 @@ class analyzeConfig_ttWctrl(analyzeConfig):
 
                 syncOutput = ''
                 syncTree = ''
-                syncRequireGenMatching = True
                 if self.do_sync:
                   mcClosure_match = mcClosure_regex.match(lepton_selection_and_frWeight)
                   if lepton_selection_and_frWeight == 'Tight':
@@ -342,7 +341,6 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                       syncTree = 'syncTree_%s_Flip' % self.channel
                     else:
                       continue
-                    syncRequireGenMatching = True
                   elif lepton_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and lepton_charge_selection == 'SS':
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
                     syncTree = 'syncTree_%s_Fake' % self.channel
@@ -385,7 +383,6 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   'syncOutput'               : syncOutput,
                   'syncTree'                 : syncTree,
                   'syncRLE'                  : syncRLE,
-                  'syncRequireGenMatching'   : syncRequireGenMatching,
                   'useNonNominal'            : self.use_nonnominal,
                   'apply_hlt_filter'         : self.hlt_filter,
                 }

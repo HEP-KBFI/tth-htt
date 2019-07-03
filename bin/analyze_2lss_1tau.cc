@@ -254,7 +254,6 @@ int main(int argc, char* argv[])
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
   const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
-  const bool sync_requireGenMatching = syncNtuple_cfg.getParameter<bool>("requireGenMatching");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
   const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
@@ -2353,7 +2352,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
-      if((sync_requireGenMatching && isGenMatched) || ! sync_requireGenMatching)
+      if(isGenMatched)
       {
         snm->fill();
       }

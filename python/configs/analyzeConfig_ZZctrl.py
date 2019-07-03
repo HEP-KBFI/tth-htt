@@ -337,7 +337,6 @@ class analyzeConfig_ZZctrl(analyzeConfig):
 
                 syncOutput = ''
                 syncTree = ''
-                syncRequireGenMatching = True
                 if self.do_sync:
                   if chargeSumSelection != 'OS':
                     continue
@@ -345,7 +344,6 @@ class analyzeConfig_ZZctrl(analyzeConfig):
                   if lepton_selection_and_frWeight == 'Tight':
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift))
                     syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
-                    syncRequireGenMatching = True and is_mc
                   elif lepton_selection_and_frWeight == 'Fakeable_wFakeRateWeights':
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
@@ -389,7 +387,6 @@ class analyzeConfig_ZZctrl(analyzeConfig):
                   'syncOutput'               : syncOutput,
                   'syncTree'                 : syncTree,
                   'syncRLE'                  : syncRLE,
-                  'syncRequireGenMatching'   : syncRequireGenMatching,
                   'fillGenEvtHistograms'     : True,
                   'apply_hlt_filter'         : self.hlt_filter,
                 }

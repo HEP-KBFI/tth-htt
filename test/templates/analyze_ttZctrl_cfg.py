@@ -113,7 +113,6 @@ process.analyze_ttZctrl = cms.PSet(
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
-        requireGenMatching = cms.bool(False),
     ),
     hasLHE = cms.bool(True),
 
