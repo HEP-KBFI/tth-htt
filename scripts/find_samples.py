@@ -386,12 +386,14 @@ def get_integrated_lumi(dataset_name, data_golden, brilcalc_path, normtag, units
   )
   brilcalc_out, brilcalc_err = run_cmd(brilcalc_cmd, do_not_log = True, return_stderr = True)
   if brilcalc_err:
-    raise ValueError("brilcalc return an error: %s" % brilcalc_err)
+    print("brilcalc command '%s' return an error: %s" % (brilcalc_cmd, brilcalc_err))
+    return
 
   brilcalc_out_split = brilcalc_out.rstrip('\n').split('\n')
   summary_idx = brilcalc_out_split.index('#Summary:')
   if summary_idx < 0:
-    raise ValueError("brilcalc didn't return any summary: %s" % brilcalc_out)
+    print("brilcalc command '%s' didn't return any summary: %s" % (brilcalc_cmd, brilcalc_out))
+    return
 
   # We only need two lines in this summary: the header and the actual values in the table
   lines = [line.lstrip('#').split(',') for line in brilcalc_out_split[summary_idx + 1:summary_idx + 3]]
@@ -400,14 +402,15 @@ def get_integrated_lumi(dataset_name, data_golden, brilcalc_path, normtag, units
   nof_cols_first  = len(lines[0])
   nof_cols_second = len(lines[1])
   if nof_cols_first != nof_cols_second:
-    raise ValueError("brilcalc returned uneven amount of columns in the summary: %s" % brilcalc_out)
+    print("brilcalc command '%s' returned uneven amount of columns in the summary: %s" % (brilcalc_cmd, brilcalc_out))
+    return
 
   results = { lines[0][i] : lines[1][i] for i in range(nof_cols_first) }
 
   # Cleanup
   if data_golden:
     if os.path.isfile(tmp_filename):
-      shutil.remove(tmp_filename)
+      os.remove(tmp_filename)
 
   return dataset_name, results
 
