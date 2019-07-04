@@ -811,11 +811,19 @@ class analyzeConfig(object):
                 "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.output', os.path.basename(jobOptions['syncOutput']), len = max_option_len),
                 "{}.{:<{len}} = cms.string('{}')".format(process_string, 'selEventsFileName_input', jobOptions['syncRLE'], len = max_option_len),
             ])
-            sync_opts = "{}.{:<{len}} = cms.VPSet(\n".format(process_string, "syncNtuple.options", len = max_option_len)
-            for treeName, genMatch in jobOptions['syncOpts']:
-                sync_opts += "  cms.PSet(tree = cms.string('{}'), genMatch = cms.vstring({})),\n".format(treeName, genMatch)
-            sync_opts += ")"
-            lines.append(sync_opts)
+            if 'syncOpts' in jobOptions:
+              sync_opts = "{}.{:<{len}} = cms.VPSet(\n".format(process_string, "syncNtuple.options", len = max_option_len)
+              for treeName, genMatch in jobOptions['syncOpts']:
+                  sync_opts += "  cms.PSet(tree = cms.string('{}'), genMatch = cms.vstring({})),\n".format(treeName, genMatch)
+              sync_opts += ")"
+              lines.append(sync_opts)
+            elif 'syncTree' in jobOptions and 'syncGenMatch' in jobOptions:
+              lines.extend([
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree',     os.path.basename(jobOptions['syncTree']),     len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.genMatch', os.path.basename(jobOptions['syncGenMatch']), len = max_option_len),
+              ])
+            else:
+              raise RuntimeError("Not enough information available to preapre jobs for sync Ntuple production")
 
         if sample_info['process_name_specific'] in self.stitching_args:
           process_stitching_args = self.stitching_args[sample_info['process_name_specific']]
