@@ -819,8 +819,8 @@ class analyzeConfig(object):
               lines.append(sync_opts)
             elif 'syncTree' in jobOptions and 'syncGenMatch' in jobOptions:
               lines.extend([
-                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree',     os.path.basename(jobOptions['syncTree']),     len = max_option_len),
-                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.genMatch', os.path.basename(jobOptions['syncGenMatch']), len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree', os.path.basename(jobOptions['syncTree']), len = max_option_len),
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.genMatch', jobOptions['syncGenMatch'], len = max_option_len),
               ])
             else:
               raise RuntimeError("Not enough information available to preapre jobs for sync Ntuple production")
