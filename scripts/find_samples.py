@@ -211,6 +211,7 @@ DATA_SAMPLES_ALL = [
   'SingleElectron',
   'SingleMuon',
   'DoubleEG',
+  'EGamma',
   'DoubleMuon',
   'MuonEG',
   'Tau',
