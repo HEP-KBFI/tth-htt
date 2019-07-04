@@ -40,7 +40,7 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::Data_to_MC_CorrectionInterface_1
     aux::loadTriggerEff_1m_2016(effTrigger_1m_data_, effTrigger_1m_mc_, inputFiles_);
     aux::loadTriggerEff_1m_1tau_lepLeg_2016(effTrigger_1m1tau_lepLeg_data_, effTrigger_1m1tau_lepLeg_mc_, inputFiles_);
   }
-  if(era_ == kEra_2017)
+  else if(era_ == kEra_2017)
   {
     aux::loadTriggerEff_1e_2017(effTrigger_1e_data_, effTrigger_1e_mc_, inputFiles_);
     aux::loadTriggerEff_1e_1tau_lepLeg_2017(effTrigger_1e1tau_lepLeg_data_, effTrigger_1e1tau_lepLeg_mc_, inputFiles_);
