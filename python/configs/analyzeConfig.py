@@ -823,7 +823,7 @@ class analyzeConfig(object):
               )
               if 'syncGenMatch' in jobOptions:
                 lines.append(
-                  "{}.{:<{len}} = cms.string({})".format(process_string, 'syncNtuple.genMatch', jobOptions['syncGenMatch'], len = max_option_len)
+                  "{}.{:<{len}} = cms.vstring({})".format(process_string, 'syncNtuple.genMatch', jobOptions['syncGenMatch'], len = max_option_len)
                 )
             else:
               raise RuntimeError("Not enough information available to preapre jobs for sync Ntuple production")
