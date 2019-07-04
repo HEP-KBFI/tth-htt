@@ -4,22 +4,25 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
-RecoMuonWriter::RecoMuonWriter(int era)
-  : RecoMuonWriter(era, "Muon")
+RecoMuonWriter::RecoMuonWriter(int era,
+                               bool isMC)
+  : RecoMuonWriter(era, isMC, "Muon")
 {}
 
 RecoMuonWriter::RecoMuonWriter(int era,
+                               bool isMC,
                                const std::string & branchName_obj)
-  : RecoMuonWriter(era, Form("n%s", branchName_obj.data()), branchName_obj)
+  : RecoMuonWriter(era, isMC, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
 RecoMuonWriter::RecoMuonWriter(int era,
+                               bool isMC,
                                const std::string & branchName_num,
                                const std::string & branchName_obj)
   : era_(era)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , leptonWriter_(new RecoLeptonWriter(branchName_obj_))
+  , leptonWriter_(new RecoLeptonWriter(isMC, branchName_obj_))
   , looseIdPOG_(nullptr)
   , mediumIdPOG_(nullptr)
   , segmentCompatibility_(nullptr)

@@ -14,10 +14,13 @@ class RecoLeptonWriter;
 class RecoMuonWriter
 {
 public:
-  RecoMuonWriter(int era);
   RecoMuonWriter(int era,
+                 bool isMC);
+  RecoMuonWriter(int era,
+                 bool isMC,
                  const std::string & branchName_obj);
   RecoMuonWriter(int era,
+                 bool isMC,
                  const std::string & branchName_num,
                  const std::string & branchName_obj);
   ~RecoMuonWriter();

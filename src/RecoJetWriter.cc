@@ -38,9 +38,12 @@ RecoJetWriter::RecoJetWriter(int era,
   , jet_jetIdx_(nullptr)
   , jet_genMatchIdx_(nullptr)
 {
-  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nJets_);
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()), max_nJets_);
-  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()), max_nJets_);
+  if(isMC_)
+  {
+    genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nJets_);
+    genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()), max_nJets_);
+    genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()), max_nJets_);
+  }
   setBranchNames();
 }
 
@@ -147,9 +150,12 @@ RecoJetWriter::setPtMass_central_or_shift(int central_or_shift)
 void
 RecoJetWriter::setBranches(TTree * tree)
 {
-  genLeptonWriter_->setBranches(tree);
-  genHadTauWriter_->setBranches(tree);
-  genJetWriter_->setBranches(tree);
+  if(isMC_)
+  {
+    genLeptonWriter_->setBranches(tree);
+    genHadTauWriter_->setBranches(tree);
+    genJetWriter_->setBranches(tree);
+  }
 
   BranchAddressInitializer bai(tree, max_nJets_, branchName_num_);
   bai.setBranch(nJets_, branchName_num_);
@@ -176,7 +182,7 @@ RecoJetWriter::setBranches(TTree * tree)
   bai.setBranch(jet_jetId_, branchName_jetId_);
   bai.setBranch(jet_puId_, branchName_puId_);
   bai.setBranch(jet_jetIdx_, branchName_jetIdx_);
-  bai.setBranch(jet_genMatchIdx_, branchName_genMatchIdx_);
+  bai.setBranch(jet_genMatchIdx_, isMC_ ? branchName_genMatchIdx_ : "");
   for(const auto & kv: branchNames_btag_)
   {
     bai.setBranch(jet_BtagCSVs_[kv.first], kv.second);
@@ -267,9 +273,9 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
     jet_jetId_[idxJet] = jet->jetId();
     jet_puId_[idxJet] = jet->puId();
     jet_jetIdx_[idxJet] = jet->idx();
-    jet_genMatchIdx_[idxJet] = jet->genMatchIdx();
     if(isMC_)
     {
+      jet_genMatchIdx_[idxJet] = jet->genMatchIdx();
       for(const auto & kv: branchNames_BtagWeight_systematics_)
       {
         for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
@@ -290,12 +296,16 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
     }
     jet_QGDiscr_[idxJet] = jet->QGDiscr();
   }
-  writeGenMatching(jets);
+  if(isMC_)
+  {
+    writeGenMatching(jets);
+  }
 }
 
 void
 RecoJetWriter::writeGenMatching(const std::vector<const RecoJet *> & jets)
 {
+  assert(isMC_);
   std::vector<GenParticle> matched_genLeptons;
   std::vector<GenParticle> matched_genHadTaus;
   std::vector<GenParticle> matched_genJets;

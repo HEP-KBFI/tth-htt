@@ -5,16 +5,19 @@
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
-RecoElectronWriter::RecoElectronWriter(int era)
-  : RecoElectronWriter(era, "Electron")
+RecoElectronWriter::RecoElectronWriter(int era,
+                                       bool isMC)
+  : RecoElectronWriter(era, isMC, "Electron")
 {}
 
 RecoElectronWriter::RecoElectronWriter(int era,
+                                       bool isMC,
                                        const std::string & branchName_obj)
-  : RecoElectronWriter(era, Form("n%s", branchName_obj.data()), branchName_obj)
+  : RecoElectronWriter(era, isMC, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
 RecoElectronWriter::RecoElectronWriter(int era,
+                                       bool isMC,
                                        const std::string & branchName_num,
                                        const std::string & branchName_obj)
   : era_(era)
@@ -32,7 +35,7 @@ RecoElectronWriter::RecoElectronWriter(int era,
   , conversionVeto_(nullptr)
   , cutbasedID_HLT_(nullptr)
 {
-  leptonWriter_ = new RecoLeptonWriter(branchName_obj_);
+  leptonWriter_ = new RecoLeptonWriter(isMC, branchName_obj_);
   setBranchNames();
 }
 

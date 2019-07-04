@@ -213,9 +213,9 @@ int main(int argc,
     eventInfoWriter = new EventInfoWriter(eventInfo.is_signal(), eventInfo.is_mc());
     eventInfoWriter->setBranches(outputTree);
 
-    muonWriter = new RecoMuonWriter(era, Form("n%s", branchName_muons.data()), branchName_muons);
+    muonWriter = new RecoMuonWriter(era, isMC, Form("n%s", branchName_muons.data()), branchName_muons);
     muonWriter->setBranches(outputTree);
-    electronWriter = new RecoElectronWriter(era, Form("n%s", branchName_electrons.data()), branchName_electrons);
+    electronWriter = new RecoElectronWriter(era, isMC, Form("n%s", branchName_electrons.data()), branchName_electrons);
     electronWriter->writeUncorrected(useNonNominal);
     electronWriter->setBranches(outputTree);
     jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);

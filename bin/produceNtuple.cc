@@ -353,16 +353,16 @@ main(int argc,
   hltPathWriter hltPathWriter_instance(branchNames_triggers);
   hltPathWriter_instance.setBranches(outputTree);
 
-  RecoMuonWriter * const muonWriter = new RecoMuonWriter(era, branchName_muons);
+  RecoMuonWriter * const muonWriter = new RecoMuonWriter(era, isMC, branchName_muons);
   muonWriter->setBranches(outputTree);
   std::cout << "writing RecoMuon objects to branch = '" << branchName_muons << "'\n";
 
-  RecoElectronWriter * const electronWriter = new RecoElectronWriter(era, branchName_electrons);
+  RecoElectronWriter * const electronWriter = new RecoElectronWriter(era, isMC, branchName_electrons);
   electronWriter->writeUncorrected(false);
   electronWriter->setBranches(outputTree);
   std::cout << "writing RecoElectron objects to branch = '" << branchName_electrons << "'\n";
 
-  RecoHadTauWriter * const hadTauWriter = new RecoHadTauWriter(era, branchName_hadTaus);
+  RecoHadTauWriter * const hadTauWriter = new RecoHadTauWriter(era, isMC, branchName_hadTaus);
   hadTauWriter->setBranches(outputTree);
   std::cout << "writing RecoHadTau objects to branch = '" << branchName_hadTaus << "'\n";
 

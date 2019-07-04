@@ -3,15 +3,18 @@
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Btag
 
-RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_obj)
-  : RecoLeptonWriter(Form("n%s", branchName_obj.data()), branchName_obj)
+RecoLeptonWriter::RecoLeptonWriter(bool isMC,
+                                   const std::string & branchName_obj)
+  : RecoLeptonWriter(isMC, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
-RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
+RecoLeptonWriter::RecoLeptonWriter(bool isMC,
+                                   const std::string & branchName_num,
                                    const std::string & branchName_obj)
   : max_nLeptons_(64)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , isMC_(isMC)
   , genLeptonWriter_(nullptr)
   , genHadTauWriter_(nullptr)
   , genPhotonWriter_(nullptr)
@@ -39,10 +42,13 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   , genPartFlav_(nullptr)
   , genMatchIdx_(nullptr)
 {
-  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nLeptons_);
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()), max_nLeptons_);
-  genPhotonWriter_ = new GenParticleWriter(Form("%s_genPhoton", branchName_obj_.data()), max_nLeptons_);
-  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()), max_nLeptons_);
+  if(isMC_)
+  {
+    genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nLeptons_);
+    genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()), max_nLeptons_);
+    genPhotonWriter_ = new GenParticleWriter(Form("%s_genPhoton", branchName_obj_.data()), max_nLeptons_);
+    genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()), max_nLeptons_);
+  }
   setBranchNames();
 }
 
@@ -120,10 +126,13 @@ void RecoLeptonWriter::setBranchNames()
 
 void RecoLeptonWriter::setBranches(TTree * tree)
 {
-  genLeptonWriter_->setBranches(tree);
-  genHadTauWriter_->setBranches(tree);
-  genPhotonWriter_->setBranches(tree);
-  genJetWriter_->setBranches(tree);
+  if(isMC_)
+  {
+    genLeptonWriter_->setBranches(tree);
+    genHadTauWriter_->setBranches(tree);
+    genPhotonWriter_->setBranches(tree);
+    genJetWriter_->setBranches(tree);
+  }
   BranchAddressInitializer bai(tree, max_nLeptons_, branchName_num_);
   bai.setBranch(nLeptons_, branchName_num_);
   bai.setBranch(pt_, branchName_pt_);
@@ -150,6 +159,6 @@ void RecoLeptonWriter::setBranches(TTree * tree)
   bai.setBranch(charge_, branchName_charge_);
   bai.setBranch(filterBits_, branchName_filterBits_);
   bai.setBranch(jetIdx_, branchName_jetIdx_);
-  bai.setBranch(genPartFlav_, branchName_genPartFlav_);
-  bai.setBranch(genMatchIdx_, branchName_genMatchIdx_);
+  bai.setBranch(genPartFlav_, isMC_? branchName_genPartFlav_ : "");
+  bai.setBranch(genMatchIdx_, isMC_ ? branchName_genMatchIdx_ : "");
 }

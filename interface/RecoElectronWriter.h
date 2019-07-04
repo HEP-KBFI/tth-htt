@@ -17,10 +17,13 @@ enum class EGammaWP;
 class RecoElectronWriter
 {
 public:
-  RecoElectronWriter(int era);
   RecoElectronWriter(int era,
+                     bool isMC);
+  RecoElectronWriter(int era,
+                     bool isMC,
                      const std::string & branchName_obj);
   RecoElectronWriter(int era,
+                     bool isMC,
                      const std::string & branchName_num,
                      const std::string & branchName_obj);
   ~RecoElectronWriter();

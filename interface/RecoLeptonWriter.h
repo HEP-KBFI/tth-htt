@@ -18,8 +18,10 @@ enum class Btag;
 class RecoLeptonWriter
 {
 public:
-  RecoLeptonWriter(const std::string & branchName_obj);
-  RecoLeptonWriter(const std::string & branchName_num,
+  RecoLeptonWriter(bool isMC,
+                   const std::string & branchName_obj);
+  RecoLeptonWriter(bool isMC,
+                   const std::string & branchName_num,
                    const std::string & branchName_obj);
   ~RecoLeptonWriter();
 
@@ -67,7 +69,10 @@ public:
       jetIdx_[idxLepton] = lepton->jetIdx();
       genMatchIdx_[idxLepton] = lepton->genMatchIdx();
     }
-    writeGenMatching(leptons);
+    if(isMC_)
+    {
+      writeGenMatching(leptons);
+    }
   }
 
   /**
@@ -77,6 +82,7 @@ public:
   template<typename T>
   void writeGenMatching(const std::vector<const T *> & leptons)
   {
+    assert(isMC_);
     std::vector<GenParticle> matched_genLeptons;
     std::vector<GenParticle> matched_genHadTaus;
     std::vector<GenParticle> matched_genPhotons;
@@ -120,6 +126,7 @@ protected:
   const unsigned int max_nLeptons_;
   std::string branchName_num_;
   std::string branchName_obj_;
+  bool isMC_;
 
   GenParticleWriter * genLeptonWriter_;
   GenParticleWriter * genHadTauWriter_;

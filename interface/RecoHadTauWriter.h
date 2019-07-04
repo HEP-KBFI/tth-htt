@@ -17,10 +17,13 @@ enum class TauID;
 class RecoHadTauWriter
 {
 public:
-  RecoHadTauWriter(int era);
   RecoHadTauWriter(int era,
+                   bool isMC);
+  RecoHadTauWriter(int era,
+                   bool isMC,
                    const std::string & branchName_obj);
   RecoHadTauWriter(int era,
+                   bool isMC,
                    const std::string & branchName_num,
                    const std::string & branchName_obj);
   ~RecoHadTauWriter();
@@ -48,6 +51,7 @@ protected:
   void setBranchNames();
 
   int era_;
+  bool isMC_;
   const int max_nHadTaus_;
   std::string branchName_num_;
   std::string branchName_obj_;

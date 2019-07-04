@@ -5,19 +5,23 @@
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
-RecoHadTauWriter::RecoHadTauWriter(int era)
-  : RecoHadTauWriter(era, "Tau")
+RecoHadTauWriter::RecoHadTauWriter(int era,
+                                   bool isMC)
+  : RecoHadTauWriter(era, isMC, "Tau")
 {}
 
 RecoHadTauWriter::RecoHadTauWriter(int era,
+                                   bool isMC,
                                    const std::string & branchName_obj)
-  : RecoHadTauWriter(era, Form("n%s", branchName_obj.data()), branchName_obj)
+  : RecoHadTauWriter(era, isMC, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
 RecoHadTauWriter::RecoHadTauWriter(int era,
+                                   bool isMC,
                                    const std::string & branchName_num,
                                    const std::string & branchName_obj)
   : era_(era)
+  , isMC_(isMC)
   , max_nHadTaus_(36)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
@@ -40,9 +44,12 @@ RecoHadTauWriter::RecoHadTauWriter(int era,
   , hadTau_genPartFlav_(nullptr)
   , hadTau_genMatchIdx_(nullptr)
 {
-  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nHadTaus_);
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()), max_nHadTaus_);
-  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()), max_nHadTaus_);
+  if(isMC_)
+  {
+    genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()), max_nHadTaus_);
+    genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()), max_nHadTaus_);
+    genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()), max_nHadTaus_);
+  }
   setBranchNames();
 }
 
@@ -104,9 +111,12 @@ void RecoHadTauWriter::setBranchNames()
 
 void RecoHadTauWriter::setBranches(TTree * tree)
 {
-  genLeptonWriter_->setBranches(tree);
-  genHadTauWriter_->setBranches(tree);
-  genJetWriter_->setBranches(tree);
+  if(isMC_)
+  {
+    genLeptonWriter_->setBranches(tree);
+    genHadTauWriter_->setBranches(tree);
+    genJetWriter_->setBranches(tree);
+  }
   BranchAddressInitializer bai(tree, max_nHadTaus_, branchName_num_);
   bai.setBranch(nHadTaus_, branchName_num_);
   bai.setBranch(hadTau_pt_, branchName_pt_);
@@ -127,8 +137,8 @@ void RecoHadTauWriter::setBranches(TTree * tree)
   bai.setBranch(hadTau_idAgainstMu_, branchName_idAgainstMu_);
   bai.setBranch(hadTau_filterBits_, branchName_filterBits_);
   bai.setBranch(hadTau_jetIdx_, branchName_jetIdx_);
-  bai.setBranch(hadTau_genPartFlav_, branchName_genPartFlav_);
-  bai.setBranch(hadTau_genMatchIdx_, branchName_genMatchIdx_);
+  bai.setBranch(hadTau_genPartFlav_, isMC_ ? branchName_genPartFlav_ : "");
+  bai.setBranch(hadTau_genMatchIdx_, isMC_ ? branchName_genMatchIdx_ : "");
 }
 
 void RecoHadTauWriter::write(const std::vector<const RecoHadTau *> & hadTaus)
@@ -159,14 +169,21 @@ void RecoHadTauWriter::write(const std::vector<const RecoHadTau *> & hadTaus)
     hadTau_idAgainstMu_[idxHadTau] = hadTau->antiMuon();
     hadTau_filterBits_[idxHadTau] = hadTau->filterBits();
     hadTau_jetIdx_[idxHadTau] = hadTau->jetIdx();
-    hadTau_genPartFlav_[idxHadTau] = hadTau->genPartFlav();
-    hadTau_genMatchIdx_[idxHadTau] = hadTau->genMatchIdx();
+    if(isMC_)
+    {
+      hadTau_genPartFlav_[idxHadTau] = hadTau->genPartFlav();
+      hadTau_genMatchIdx_[idxHadTau] = hadTau->genMatchIdx();
+    }
   }
-  writeGenMatching(hadTaus);
+  if(isMC_)
+  {
+    writeGenMatching(hadTaus);
+  }
 }
 
 void RecoHadTauWriter::writeGenMatching(const std::vector<const RecoHadTau *> & hadTaus)
 {
+  assert(isMC_);
   std::vector<GenParticle> matched_genLeptons;
   std::vector<GenParticle> matched_genHadTaus;
   std::vector<GenParticle> matched_genJets;
