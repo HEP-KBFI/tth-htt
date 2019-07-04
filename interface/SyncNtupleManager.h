@@ -10,6 +10,7 @@ class RecoHadTau;
 class RecoJet;
 class RecoLepton;
 class RecoJetAK8;
+class hltPath;
 
 enum class FloatVariableType
 {

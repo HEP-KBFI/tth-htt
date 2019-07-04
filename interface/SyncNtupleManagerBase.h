@@ -12,7 +12,6 @@
 
 // forward declarations
 class TFile;
-class hltPath;
 
 class SyncNtupleManagerBase
 {
