@@ -34,6 +34,7 @@ public:
              Int_t    tightCharge,
              UInt_t   filterBits,
              Int_t    jetIdx,
+             UChar_t  genPartFlav,
              Int_t    genMatchIdx);
 
   virtual ~RecoLepton();
@@ -138,6 +139,7 @@ public:
   Int_t tightCharge() const;
   UInt_t filterBits() const;
   Int_t jetIdx() const;
+  UChar_t genPartFlav() const;
   Int_t genMatchIdx() const;
 
   const GenLepton * genLepton() const;
@@ -173,6 +175,7 @@ protected:
   Int_t tightCharge_;           ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
   UInt_t filterBits_;           ///< bitmask of matching with trigger objects
   Int_t jetIdx_;                ///< index of jet from initial jet collection that the lepton is constituent of (-1 if no match)
+  UChar_t genPartFlav_;         ///< generator-level parton flavor
   Int_t genMatchIdx_;           ///< index to matched gen particle (-1 if no match)
 
   std::map<Btag, Double_t> jetBtagCSVs_; ///< CSV b-tagging discriminator values of nearby jet

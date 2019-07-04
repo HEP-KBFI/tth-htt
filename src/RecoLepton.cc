@@ -20,6 +20,7 @@ RecoLepton::RecoLepton(const ChargedParticle & lepton,
                        Int_t    tightCharge,
                        UInt_t   filterBits,
                        Int_t    jetIdx,
+                       UChar_t  genPartFlav,
                        Int_t    genMatchIdx)
   : ChargedParticle(lepton)
   , dxy_(dxy)
@@ -36,6 +37,7 @@ RecoLepton::RecoLepton(const ChargedParticle & lepton,
   , tightCharge_(tightCharge)
   , filterBits_(filterBits)
   , jetIdx_(jetIdx)
+  , genPartFlav_(genPartFlav)
   , genMatchIdx_(genMatchIdx)
   , assocJet_pt_(jetPtRatio_ > 1.e-3 ? 0.90 * pt_ / jetPtRatio_ : pt_)
   , assocJet_p4_(assocJet_pt_, eta_, phi_, mass_)
@@ -254,6 +256,12 @@ RecoLepton::jetIdx() const
   return jetIdx_;
 }
 
+UChar_t
+RecoLepton::genPartFlav() const
+{
+  return genPartFlav_;
+}
+
 Int_t
 RecoLepton::genMatchIdx() const
 {
@@ -325,21 +333,22 @@ operator<<(std::ostream & stream,
            const RecoLepton & lepton)
 {
   stream << static_cast<const ChargedParticle &>(lepton)  << ",\n"
-            " cone_pT = "             << lepton.cone_pt()                  << ","
-            " assocJet pT = "         << lepton.assocJet_pt()              << ","
-            " dxy = "                 << lepton.dxy()                      << ","
-            " dz = "                  << lepton.dz()                       << ",\n"
-            " sip3d = "               << lepton.sip3d()                    << ","
-            " relIso = "              << lepton.relIso()                   << ","
-            " pfRelIso04All = "       << lepton.pfRelIso04All()            << ",\n"
-            " tightCharge = "         << lepton.tightCharge()              << ","
-            " jetPtRatio = "          << lepton.jetPtRatio()               << ","
-            " jetPtRel = "            << lepton.jetPtRel()                 << ",\n"
-            " jetBtagCSV(default) = " << lepton.jetBtagCSV()               << ","
-            " jetBtagCSV(DeepJet) = " << lepton.jetBtagCSV(Btag::kDeepJet) << ","
-            " jetBtagCSV(DeepCSV) = " << lepton.jetBtagCSV(Btag::kDeepCSV) << ","
-            " jetBtagCSV(CSVv2) = "   << lepton.jetBtagCSV(Btag::kCSVv2)   << ",\n"
-            " mvaRawTTH = "           << lepton.mvaRawTTH()                << ",\n"
+            " cone_pT = "             << lepton.cone_pt()                       << ","
+            " assocJet pT = "         << lepton.assocJet_pt()                   << ","
+            " dxy = "                 << lepton.dxy()                           << ","
+            " dz = "                  << lepton.dz()                            << ",\n"
+            " sip3d = "               << lepton.sip3d()                         << ","
+            " relIso = "              << lepton.relIso()                        << ","
+            " pfRelIso04All = "       << lepton.pfRelIso04All()                 << ",\n"
+            " genPartFlav = "         << static_cast<int>(lepton.genPartFlav()) << ", "
+            " tightCharge = "         << lepton.tightCharge()                   << ","
+            " jetPtRatio = "          << lepton.jetPtRatio()                    << ","
+            " jetPtRel = "            << lepton.jetPtRel()                      << ",\n"
+            " jetBtagCSV(default) = " << lepton.jetBtagCSV()                    << ","
+            " jetBtagCSV(DeepJet) = " << lepton.jetBtagCSV(Btag::kDeepJet)      << ","
+            " jetBtagCSV(DeepCSV) = " << lepton.jetBtagCSV(Btag::kDeepCSV)      << ","
+            " jetBtagCSV(CSVv2) = "   << lepton.jetBtagCSV(Btag::kCSVv2)        << ",\n"
+            " mvaRawTTH = "           << lepton.mvaRawTTH()                     << ",\n"
             " is loose/fakeable/tight = " << lepton.isLoose()    << '/'
                                           << lepton.isFakeable() << '/'
                                           << lepton.isTight()    << ",\n"

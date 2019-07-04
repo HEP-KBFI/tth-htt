@@ -50,6 +50,7 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , hadTau_idAgainstMu_(nullptr)
   , hadTau_filterBits_(nullptr)
   , hadTau_jetIdx_(nullptr)
+  , hadTau_genPartFlav_(nullptr)
   , hadTau_genMatchIdx_(nullptr)
 {
   if(readGenMatching_)
@@ -89,6 +90,7 @@ RecoHadTauReader::~RecoHadTauReader()
     delete[] gInstance->hadTau_charge_;
     delete[] gInstance->hadTau_filterBits_;
     delete[] gInstance->hadTau_jetIdx_;
+    delete[] gInstance->hadTau_genPartFlav_;
     delete[] gInstance->hadTau_genMatchIdx_;
 
     for(auto & kv: gInstance->hadTau_idMVAs_)
@@ -140,6 +142,7 @@ RecoHadTauReader::setBranchNames()
     branchName_idAgainstMu_ = Form("%s_%s", branchName_obj_.data(), "idAntiMu_log");
     branchName_filterBits_ = Form("%s_%s", branchName_obj_.data(), "filterBits");
     branchName_jetIdx_ = Form("%s_%s", branchName_obj_.data(), "jetIdx");
+    branchName_genPartFlav_ = Form("%s_%s", branchName_obj_.data(), "genPartFlav");
     branchName_genMatchIdx_ = Form("%s_%s", branchName_obj_.data(), "genMatchIdx");
     instances_[branchName_obj_] = this;
   }
@@ -188,6 +191,7 @@ RecoHadTauReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_idAgainstMu_, branchName_idAgainstMu_);
     bai.setBranchAddress(hadTau_filterBits_, branchName_filterBits_);
     bai.setBranchAddress(hadTau_jetIdx_, branchName_jetIdx_);
+    bai.setBranchAddress(hadTau_genPartFlav_, branchName_genPartFlav_);
     bai.setBranchAddress(hadTau_genMatchIdx_, branchName_genMatchIdx_);
   }
 }
@@ -239,6 +243,7 @@ RecoHadTauReader::read() const
         gInstance->hadTau_idAgainstMu_[idxHadTau],
         gInstance->hadTau_filterBits_[idxHadTau],
         gInstance->hadTau_jetIdx_[idxHadTau],
+        gInstance->hadTau_genPartFlav_[idxHadTau],
         gInstance->hadTau_genMatchIdx_[idxHadTau],
       });
 

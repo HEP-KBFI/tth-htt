@@ -63,7 +63,12 @@ public:
                     double dRmax = 0.3,
                     double maxDPtRel = 1.0) const
   {
-    return addGenMatch<GenHadTau, GenHadTauLinker>(recParticles, genHadTaus, dRmax, maxDPtRel, genHadTauLinker_);
+    std::vector<unsigned char> genPartFlavs;
+    if(typeid(Trec) == typeid(RecoHadTau))
+    {
+      genPartFlavs = { 5 };
+    }
+    return addGenMatch<GenHadTau, GenHadTauLinker>(recParticles, genHadTaus, dRmax, maxDPtRel, genHadTauLinker_, genPartFlavs);
   }
 
   void
@@ -112,7 +117,8 @@ protected:
               const std::vector<Tgen> & genParticles,
               double dRmax,
               double maxDPtRel,
-              const Tlinker & linker) const
+              const Tlinker & linker,
+              const std::vector<unsigned char> & genPartFlavs = {}) const
   {
     for(const Trec * recParticle: recParticles)
     {
@@ -129,8 +135,14 @@ protected:
         const double dR = deltaR(
           recParticle->eta(), recParticle->phi(), genParticle.eta(), genParticle.phi()
         );
-        const bool passesPtConstraint = std::abs(recParticle->pt() - genParticle.pt()) / genParticle.pt() < maxDPtRel;
-        if(dR < dRmax && dR < dR_bestMatch && passesPtConstraint && ! genParticle.isMatchedToReco())
+        bool passesConstraints = std::abs(recParticle->pt() - genParticle.pt()) / genParticle.pt() < maxDPtRel;
+        if(passesConstraints && typeid(Trec) != typeid(RecoJet) && ! genPartFlavs.empty())
+        {
+          passesConstraints &=
+            std::find(genPartFlavs.begin(), genPartFlavs.end(), recParticle->genPartFlav()) != genPartFlavs.end()
+          ;
+        }
+        if(dR < dRmax && dR < dR_bestMatch && passesConstraints && ! genParticle.isMatchedToReco())
         {
           bestMatch = const_cast<Tgen *>(&genParticle);
           dR_bestMatch = dR;
@@ -175,6 +187,13 @@ protected:
           ;
         }
         Tgen * genMatch = const_cast<Tgen *>(&genParticles.at(genMatchIdx));
+        if(genMatch->genPartFlav() != recParticle->genPartFlav())
+        {
+          throw cmsException(this, __func__, __LINE__)
+            << "Parton flavor of generator level object = " << genMatch->genPartFlav()
+            << " does not equal to parton flavor of reconstructed object = " << recParticle->genPartFlav()
+          ;
+        }
 
         std::vector<unsigned int> genAbsPdgIds;
         std::vector<unsigned int> genPartFlavs;

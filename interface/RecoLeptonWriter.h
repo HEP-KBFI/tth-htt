@@ -147,6 +147,7 @@ protected:
   std::string branchName_charge_;
   std::string branchName_filterBits_;
   std::string branchName_jetIdx_;
+  std::string branchName_genPartFlav_;
   std::string branchName_genMatchIdx_;
 
   std::map<Btag, std::string> branchNames_jetBtagCSV_;
@@ -172,6 +173,7 @@ protected:
   Int_t * charge_;
   UInt_t * filterBits_;
   Int_t * jetIdx_;
+  UChar_t * genPartFlav_;
   Int_t * genMatchIdx_;
 
   std::map<Btag, Float_t *> jetBtagCSVs_;

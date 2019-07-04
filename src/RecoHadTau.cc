@@ -15,6 +15,7 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
                        Int_t antiMuon,
                        UInt_t filterBits,
                        Int_t jetIdx,
+                       UChar_t  genPartFlav,
                        Int_t genMatchIdx)
   : GenHadTau(particle)
   , dxy_(dxy)
@@ -27,6 +28,7 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
   , antiMuon_(antiMuon)
   , filterBits_(filterBits)
   , jetIdx_(jetIdx)
+  , genPartFlav_(genPartFlav)
   , genMatchIdx_(genMatchIdx)
   , genLepton_(nullptr)
   , genHadTau_(nullptr)
@@ -159,6 +161,12 @@ RecoHadTau::jetIdx() const
   return jetIdx_;
 }
 
+UChar_t
+RecoHadTau::genPartFlav() const
+{
+  return genPartFlav_;
+}
+
 Int_t
 RecoHadTau::genMatchIdx() const
 {
@@ -229,16 +237,17 @@ std::ostream &
 operator<<(std::ostream & stream,
            const RecoHadTau & hadTau)
 {
-  stream << static_cast<const GenHadTau &>(hadTau)               << ",\n"
-            " decayMode = "        << hadTau.decayMode()         << ","
-            " oldDecayModeID = "   << hadTau.idDecayMode()       << ","
-            " id_mva = "           << hadTau.id_mva()            <<
-            " (raw = "             << hadTau.raw_mva()           << "),\n"
-            " antiElectron = "     << hadTau.antiElectron()      << ","
-            " antiMuon = "         << hadTau.antiMuon()          << ",\n"
-            " is loose/fakeable/tight = " << hadTau.isLoose()    << '/'
-                                          << hadTau.isFakeable() << '/'
-                                          << hadTau.isTight()    << ",\n"
+  stream << static_cast<const GenHadTau &>(hadTau)                           << ",\n"
+            " decayMode = "        << hadTau.decayMode()                     << ","
+            " oldDecayModeID = "   << hadTau.idDecayMode()                   << ","
+            " id_mva = "           << hadTau.id_mva()                        <<
+            " (raw = "             << hadTau.raw_mva()                       << "),\n"
+            " genPartFlav = "      << static_cast<int>(hadTau.genPartFlav()) << ", "
+            " antiElectron = "     << hadTau.antiElectron()                  << ","
+            " antiMuon = "         << hadTau.antiMuon()                      << ",\n"
+            " is loose/fakeable/tight = " << hadTau.isLoose()                << '/'
+                                          << hadTau.isFakeable()             << '/'
+                                          << hadTau.isTight()                << ",\n"
             " gen. matching:";
   stream << ",\n  lepton = " << hadTau.genLepton();
   if(hadTau.genLepton())

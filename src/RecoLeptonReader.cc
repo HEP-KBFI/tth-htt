@@ -40,6 +40,7 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   , charge_(nullptr)
   , filterBits_(nullptr)
   , jetIdx_(nullptr)
+  , genPartFlav_(nullptr)
   , genMatchIdx_(nullptr)
 {
   if(readGenMatching_)
@@ -85,6 +86,7 @@ RecoLeptonReader::~RecoLeptonReader()
     delete[] gInstance->charge_;
     delete[] gInstance->filterBits_;
     delete[] gInstance->jetIdx_;
+    delete[] gInstance->genPartFlav_;
     delete[] gInstance->genMatchIdx_;
 
     for(auto & kv: gInstance->jetBtagCSVs_)
@@ -132,6 +134,7 @@ RecoLeptonReader::setBranchNames()
     branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
     branchName_filterBits_ = Form("%s_%s", branchName_obj_.data(), "filterBits");
     branchName_jetIdx_ = Form("%s_%s", branchName_obj_.data(), "jetIdx");
+    branchName_genPartFlav_ = Form("%s_%s", branchName_obj_.data(), "genPartFlav");
     branchName_genMatchIdx_ = Form("%s_%s", branchName_obj_.data(), "genMatchIdx");
     instances_[branchName_obj_] = this;
   }
@@ -187,6 +190,7 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(charge_, branchName_charge_);
     bai.setBranchAddress(filterBits_, branchName_filterBits_);
     bai.setBranchAddress(jetIdx_, branchName_jetIdx_);
+    bai.setBranchAddress(genPartFlav_, branchName_genPartFlav_);
     bai.setBranchAddress(genMatchIdx_, branchName_genMatchIdx_);
   }
 }

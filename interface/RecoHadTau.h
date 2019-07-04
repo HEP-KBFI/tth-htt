@@ -28,6 +28,7 @@ public:
              Int_t antiMuon,
              UInt_t filterBits,
              Int_t jetIdx,
+             UChar_t genPartFlav,
              Int_t genMatchIdx);
 
   virtual ~RecoHadTau();
@@ -62,6 +63,7 @@ public:
   Int_t antiMuon() const;
   UInt_t filterBits() const;
   Int_t jetIdx() const;
+  UChar_t genPartFlav() const;
   Int_t genMatchIdx() const;
 
   const GenLepton * genLepton() const;
@@ -79,17 +81,19 @@ public:
   friend class RecoHadTauWriter;
 
 protected:
-  Double_t dxy_;       ///< d_{xy}, distance in the transverse plane w.r.t PV
-  Double_t dz_;        ///< d_{z}, distance on the z axis w.r.t PV
-  Int_t decayMode_;    ///< tau decay mode (5x(nof charged pions - 1) - (nof neutral pions))
-  Bool_t idDecayMode_; ///< old tau decay mode ID
-  Int_t id_mva_;       ///< MVA-based tau id
-  Double_t raw_mva_;   ///< raw output of MVA-based tau id
-  Int_t antiElectron_; ///< discriminator against electrons
-  Int_t antiMuon_;     ///< discriminator against muons
-  UInt_t filterBits_;  ///< bitmask of matching with trigger objects
-  Int_t jetIdx_;       ///< index of the matched jet from initial jet collection (-1 if no match)
-  Int_t genMatchIdx_;  ///< index to matched gen particle (-1 if no match)
+  Double_t dxy_;        ///< d_{xy}, distance in the transverse plane w.r.t PV
+  Double_t dz_;         ///< d_{z}, distance on the z axis w.r.t PV
+  Int_t decayMode_;     ///< tau decay mode (5x(nof charged pions - 1) - (nof neutral pions))
+  Bool_t idDecayMode_;  ///< old tau decay mode ID
+  Int_t id_mva_;        ///< MVA-based tau id
+  Double_t raw_mva_;    ///< raw output of MVA-based tau id
+  Int_t antiElectron_;  ///< discriminator against electrons
+  Int_t antiMuon_;      ///< discriminator against muons
+  UInt_t filterBits_;   ///< bitmask of matching with trigger objects
+  Int_t jetIdx_;        ///< index of the matched jet from initial jet collection (-1 if no match)
+  UChar_t genPartFlav_; ///< generator-level parton flavor (1 = prompt electron, 2 = prompt muon, 3 = tau->e decay,
+                        ///<                                4 = tau->mu decay, 5 = hadronic tau decay, 0 = unknown/no match)
+  Int_t genMatchIdx_;   ///< index to matched gen particle (-1 if no match)
 
 //--- matching to generator level particles
   std::shared_ptr<const GenLepton> genLepton_;
