@@ -18,12 +18,15 @@ SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
                                      const std::string & outputTreeName,
                                      SyncGenMatchCharge genMatchOpt)
   : SyncNtupleManager(new TFile(outputFileName.c_str(), "recreate"), outputTreeName, genMatchOpt)
-{}
+{
+  outputFile_owner = true;
+}
 
 SyncNtupleManager::SyncNtupleManager(TFile * outputFilePtr,
                                      const std::string & outputTreeName,
                                      SyncGenMatchCharge genMatchOpt)
   : SyncNtupleManagerBase(outputFilePtr, outputTreeName)
+  , outputFile_owner(false)
   , genMatchCharge_leptons(genMatchOpt == SyncGenMatchCharge::kLepton || genMatchOpt == SyncGenMatchCharge::kAll)
   , genMatchCharge_taus   (genMatchOpt == SyncGenMatchCharge::kHadTau || genMatchOpt == SyncGenMatchCharge::kAll)
   , nof_leps(4)
@@ -41,7 +44,14 @@ SyncNtupleManager::SyncNtupleManager(TFile * outputFilePtr,
 }
 
 SyncNtupleManager::~SyncNtupleManager()
-{}
+{
+  if(outputFile_owner)
+  {
+    outputFile -> Close();
+    delete outputFile;
+    outputFile = nullptr;
+  }
+}
 
 void
 SyncNtupleManager::initializeBranches()

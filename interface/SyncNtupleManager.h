@@ -172,6 +172,8 @@ public:
   void resetBranches() override;
 
 protected:
+  bool outputFile_owner;
+
   bool genMatchCharge_leptons;
   bool genMatchCharge_taus;
 
