@@ -17,7 +17,13 @@
 SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
                                      const std::string & outputTreeName,
                                      SyncGenMatchCharge genMatchOpt)
-  : SyncNtupleManagerBase(new TFile(outputFileName.c_str(), "recreate"), outputTreeName)
+  : SyncNtupleManager(new TFile(outputFileName.c_str(), "recreate"), outputTreeName, genMatchOpt)
+{}
+
+SyncNtupleManager::SyncNtupleManager(TFile * outputFilePtr,
+                                     const std::string & outputTreeName,
+                                     SyncGenMatchCharge genMatchOpt)
+  : SyncNtupleManagerBase(outputFilePtr, outputTreeName)
   , genMatchCharge_leptons(genMatchOpt == SyncGenMatchCharge::kLepton || genMatchOpt == SyncGenMatchCharge::kAll)
   , genMatchCharge_taus   (genMatchOpt == SyncGenMatchCharge::kHadTau || genMatchOpt == SyncGenMatchCharge::kAll)
   , nof_leps(4)

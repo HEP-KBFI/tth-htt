@@ -254,6 +254,8 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  const vstring syncNtuple_genMatch_hadTau = syncNtuple_cfg.getParameter<vstring>("genMatch_hadTau");
+  const vstring syncNtuple_genMatch_lepton = syncNtuple_cfg.getParameter<vstring>("genMatch_lepton");
   const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
@@ -1914,8 +1916,8 @@ int main(int argc, char* argv[])
     }
 
     const bool isGenMatched = isMC &&
-      ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching) &&
-      ((apply_hadTauGenMatching && selHadTau_genMatch.numGenMatchedJets_ == 0) || ! apply_hadTauGenMatching)
+      contains(syncNtuple_genMatch_hadTau, selHadTau_genMatch.name_) &&
+      contains(syncNtuple_genMatch_lepton, selLepton_genMatch.name_)
     ;
 
     if ( bdt_filler ) {
@@ -2117,11 +2119,8 @@ int main(int argc, char* argv[])
       int idxLepton = leptonGenMatch_definition->idx_;
       int idxHadTau = hadTauGenMatch_definition->idx_;
 
-      if ( !(isMC_tH || isMC_VH || isSignal))
-      {
       const TH1* histogram_EventCounter = selHistManagers[idxLepton][idxHadTau]->evt_[default_cat_str]->getHistogram_EventCounter();
       std::cout << " " << process_and_genMatch << " = " << histogram_EventCounter->GetEntries() << " (weighted = " << histogram_EventCounter->Integral() << ")" << std::endl;
-    } // X: else print it on SM by decay mode
     }
   }
 

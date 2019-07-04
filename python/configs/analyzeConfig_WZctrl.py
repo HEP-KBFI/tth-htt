@@ -307,14 +307,17 @@ class analyzeConfig_WZctrl(analyzeConfig):
 
               syncOutput = ''
               syncTree = ''
+              syncGenMatch_lepton = [ 'all' ]
               if self.do_sync:
                 mcClosure_match = mcClosure_regex.match(lepton_selection_and_frWeight)
                 if lepton_selection_and_frWeight == 'Tight':
                   syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift))
                   syncTree = 'syncTree_%s_SR' % self.channel
+                  syncGenMatch_lepton = self.lepton_genMatches_nonfakes
                 elif lepton_selection_and_frWeight == 'Fakeable_wFakeRateWeights':
                   syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
                   syncTree = 'syncTree_%s_Fake' % self.channel
+                  syncGenMatch_lepton = self.lepton_genMatches_fakes
                 elif mcClosure_match:
                   mcClosure_type = mcClosure_match.group('type')
                   syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_mcClosure_%s.root' % (self.channel, central_or_shift, mcClosure_type))
@@ -355,6 +358,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
                 'syncOutput'               : syncOutput,
                 'syncTree'                 : syncTree,
                 'syncRLE'                  : syncRLE,
+                'syncGenMatch_lepton'      : syncGenMatch_lepton,
               }
               self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)
 

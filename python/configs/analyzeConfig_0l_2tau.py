@@ -351,15 +351,18 @@ class analyzeConfig_0l_2tau(analyzeConfig):
 
                 syncOutput = ''
                 syncTree = ''
+                syncGenMatch_hadTau = [ 'all' ]
                 if self.do_sync:
                   if hadTau_charge_selection != 'OS':
                     continue
                   if hadTau_selection_and_frWeight == 'Tight':
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift))
                     syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
+                    syncGenMatch_hadTau = self.hadTau_genMatches_nonfakes
                   elif hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights':
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
+                    syncGenMatch_hadTau = self.hadTau_genMatches_nonfakes
                   elif hadTau_selection_and_frWeight == "Fakeable_mcClosure_t_wFakeRateWeights":
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_mcClosure_t.root' % (self.channel, central_or_shift))
                     syncTree = 'syncTree_%s_mcClosure_t' % self.channel.replace('_', '')
@@ -403,6 +406,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'apply_hlt_filter'         : self.hlt_filter,
                   'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,
+                  'syncGenMatch_hadTau'      : syncGenMatch_hadTau,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, hadTau_selection)
 

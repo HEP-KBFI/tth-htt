@@ -265,6 +265,8 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  const vstring syncNtuple_genMatch_hadTau = syncNtuple_cfg.getParameter<vstring>("genMatch_hadTau");
+  const vstring syncNtuple_genMatch_lepton = syncNtuple_cfg.getParameter<vstring>("genMatch_lepton");
   const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
@@ -2076,8 +2078,8 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     }
 
     const bool isGenMatched = isMC &&
-      ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedJets_ == 0) || ! apply_leptonGenMatching) &&
-      ((apply_hadTauGenMatching && selHadTau_genMatch.numGenMatchedJets_ == 0) || ! apply_hadTauGenMatching)
+      contains(syncNtuple_genMatch_hadTau, selHadTau_genMatch.name_) &&
+      contains(syncNtuple_genMatch_lepton, selLepton_genMatch.name_)
     ;
 
     if ( bdt_filler ) {

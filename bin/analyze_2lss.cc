@@ -229,6 +229,7 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  const vstring syncNtuple_genMatch_lepton = syncNtuple_cfg.getParameter<vstring>("genMatch_lepton");
   const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
@@ -1999,7 +2000,7 @@ int main(int argc, char* argv[])
     double prob_fake_lepton_sublead = 1.;
 
     const bool isGenMatched = isMC &&
-      ((apply_leptonGenMatching && selLepton_genMatch.numGenMatchedLeptons_ == 2) || ! apply_leptonGenMatching)
+      contains(syncNtuple_genMatch_lepton, selLepton_genMatch.name_)
     ;
 
     if ( bdt_filler ) {

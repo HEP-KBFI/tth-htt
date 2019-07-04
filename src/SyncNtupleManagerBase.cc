@@ -13,6 +13,7 @@ SyncNtupleManagerBase::SyncNtupleManagerBase(TFile * outputTreePtr,
   , outputDir(nullptr)
   , outputTree(nullptr)
 {
+  assert(outputFile);
   std::string outputDirName_;
   std::string outputTreeName_ = outputTreeName;
   const auto nofSlashes = std::count(outputTreeName.cbegin(), outputTreeName.cend(), '/');

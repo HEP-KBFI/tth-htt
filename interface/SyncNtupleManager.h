@@ -141,6 +141,9 @@ public:
   SyncNtupleManager(const std::string & outputFileName,
                     const std::string & outputTreeName,
                     SyncGenMatchCharge genMatchOpt = SyncGenMatchCharge::kDisabled);
+  SyncNtupleManager(TFile * outputFilePtr,
+                    const std::string & outputTreeName,
+                    SyncGenMatchCharge genMatchOpt = SyncGenMatchCharge::kDisabled);
   ~SyncNtupleManager() override;
 
   void initializeBranches() override;
