@@ -808,14 +808,14 @@ class analyzeConfig(object):
 
         if self.do_sync:
             lines.extend([
-                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree', jobOptions['syncTree'], len = max_option_len),
                 "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.output', os.path.basename(jobOptions['syncOutput']), len = max_option_len),
                 "{}.{:<{len}} = cms.string('{}')".format(process_string, 'selEventsFileName_input', jobOptions['syncRLE'], len = max_option_len),
             ])
-            if 'syncGenMatch' in jobOptions:
-              lines.append(
-                "{}.{:<{len}} = cms.vstring({})".format(process_string, 'syncNtuple.genMatch', jobOptions['syncGenMatch'], len = max_option_len)
-              )
+            sync_opts = "{}.{:<{len}} = cms.VPSet(\n".format(process_string, "syncNtuple.options", len = max_option_len)
+            for treeName, genMatch in jobOptions['syncOpts']:
+                sync_opts += "  cms.PSet(tree = cms.string('{}'), genMatch = cms.vstring({})),\n".format(treeName, genMatch)
+            sync_opts += ")"
+            lines.append(sync_opts)
 
         if sample_info['process_name_specific'] in self.stitching_args:
           process_stitching_args = self.stitching_args[sample_info['process_name_specific']]

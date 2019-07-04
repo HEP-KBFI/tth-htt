@@ -114,9 +114,13 @@ process.analyze_1l_1tau = cms.PSet(
     selectBDT = cms.bool(False),
 
     syncNtuple = cms.PSet(
-        tree = cms.string(''),
         output = cms.string(''),
-        genMatch = cms.vstring(),
+        options = cms.VPSet(
+            cms.PSet(
+                tree = cms.string(''),
+                genMatch = cms.vstring(),
+            ),
+        ),
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),

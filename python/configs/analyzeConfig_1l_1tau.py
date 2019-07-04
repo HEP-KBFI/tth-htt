@@ -400,24 +400,25 @@ class analyzeConfig_1l_1tau(analyzeConfig):
                   continue
 
                 syncOutput = ''
-                syncTree = ''
-                syncGenMatch = self.lepton_and_hadTau_genMatches_nonfakes
+                syncTrees = []
+                syncGenMatch = [ self.lepton_and_hadTau_genMatches_nonfakes ]
                 mcClosure_match = mcClosure_regex.match(lepton_and_hadTau_selection_and_frWeight)
                 if self.do_sync:
                   if lepton_and_hadTau_selection_and_frWeight == 'Tight':
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift))
-                    syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
+                    syncTrees.append('syncTree_%s_SR' % self.channel.replace('_', ''))
+                    syncTrees.append('syncTree_%s_Flip' % self.channel.replace('_', ''))
+                    syncGenMatch.append( self.lepton_and_hadTau_genMatches_flips )
                   elif lepton_and_hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights':
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
-                    syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
+                    syncTrees.append('syncTree_%s_Fake' % self.channel.replace('_', ''))
                   elif mcClosure_match:
                     mcClosure_type = mcClosure_match.group('type')
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_mcClosure_%s.root' % (self.channel, central_or_shift, mcClosure_type))
-                    syncTree = 'syncTree_%s_mcClosure_%s' % (self.channel.replace('_', ''), mcClosure_type)
+                    syncTrees.append('syncTree_%s_mcClosure_%s' % (self.channel.replace('_', ''), mcClosure_type))
                   else:
                     continue
-                if syncTree and central_or_shift != "central":
-                  syncTree = os.path.join(central_or_shift, syncTree)
+                syncTrees = list(map(lambda syncTree: os.path.join(central_or_shift, syncTree) if central_or_shift != "central" else syncTree, syncTrees))
                 syncRLE = ''
                 if self.do_sync and self.rle_select:
                   syncRLE = self.rle_select % syncTree
@@ -453,12 +454,11 @@ class analyzeConfig_1l_1tau(analyzeConfig):
                   'central_or_shift'         : central_or_shift,
                   'selectBDT'                : self.isBDTtraining,
                   'syncOutput'               : syncOutput,
-                  'syncTree'                 : syncTree,
+                  'syncOpts'                 : zip(syncTrees, syncGenMatch),
                   'syncRLE'                  : syncRLE,
                   'apply_hlt_filter'         : self.hlt_filter,
                   'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,
-                  'syncGenMatch'             : syncGenMatch,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_and_hadTau_selection)
 
