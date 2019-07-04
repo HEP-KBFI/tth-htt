@@ -2147,7 +2147,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       }
       else
       {
-        snm->reset();
+        snm->resetBranches();
       }
     }
 

@@ -2247,7 +2247,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       }
       else
       {
-        snm->reset();
+        snm->resetBranches();
       }
     }
 

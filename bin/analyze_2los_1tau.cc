@@ -2425,7 +2425,7 @@ int main(int argc, char* argv[])
       }
       else
       {
-        snm->reset();
+        snm->resetBranches();
       }
     }
 

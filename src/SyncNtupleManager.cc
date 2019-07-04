@@ -14,15 +14,10 @@
 
 #include <algorithm> // std::min()
 
-const Int_t SyncNtupleManager::placeholder_value = -9999;
-const std::regex SyncNtupleManager::endsWithNumberRegex(".*\\d+$");
-
 SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
                                      const std::string & outputTreeName,
                                      SyncGenMatchCharge genMatchOpt)
-  : outputFile(new TFile(outputFileName.c_str(), "recreate"))
-  , outputDir(nullptr)
-  , outputTree(nullptr)
+  : SyncNtupleManagerBase(new TFile(outputFileName.c_str(), "recreate"), outputTreeName)
   , genMatchCharge_leptons(genMatchOpt == SyncGenMatchCharge::kLepton || genMatchOpt == SyncGenMatchCharge::kAll)
   , genMatchCharge_taus   (genMatchOpt == SyncGenMatchCharge::kHadTau || genMatchOpt == SyncGenMatchCharge::kAll)
   , nof_leps(4)
@@ -33,31 +28,6 @@ SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
   , nof_fwdJets(4)
   , nof_jetAK8(2)
 {
-  std::string outputDirName_;
-  std::string outputTreeName_ = outputTreeName;
-  const auto nofSlashes = std::count(outputTreeName.cbegin(), outputTreeName.cend(), '/');
-  if(nofSlashes == 1)
-  {
-    const std::size_t slashPos = outputTreeName.find('/');
-    outputDirName_ = outputTreeName.substr(0, slashPos);
-    outputTreeName_ = outputTreeName.substr(slashPos + 1);
-  }
-  else if(nofSlashes > 1)
-  {
-    throw cmsException(this) << "Invalid name for TTree = " << outputTreeName;
-  }
-
-  if(! outputDirName_.empty())
-  {
-    outputDir = outputFile->mkdir(outputDirName_.c_str());
-    outputDir -> cd();
-  }
-
-  outputTree = new TTree(outputTreeName_.c_str(), outputTreeName_.c_str());
-  if(outputDir)
-  {
-    outputTree->SetDirectory(outputDir);
-  }
   for(int var = as_integer(FloatVariableType::PFMET); var <= as_integer(FloatVariableType::genWeight); ++var)
   {
     floatMap[static_cast<FloatVariableType>(var)] = placeholder_value;
@@ -65,13 +35,7 @@ SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
 }
 
 SyncNtupleManager::~SyncNtupleManager()
-{
-  outputFile -> Close();
-  delete outputFile;
-  outputTree = nullptr;
-  outputDir = nullptr;
-  outputFile = nullptr;
-}
+{}
 
 void
 SyncNtupleManager::initializeBranches()
@@ -386,7 +350,7 @@ SyncNtupleManager::initializeBranches()
     jetAK8_subjet_2_phi, "subjet_2_phi"
   );
 
-  reset();
+  resetBranches();
 }
 
 void
@@ -717,7 +681,7 @@ SyncNtupleManager::read(bool is_genMatched,
 }
 
 void
-SyncNtupleManager::reset()
+SyncNtupleManager::resetBranches()
 {
   nEvent = 0;
   ls = 0;
@@ -904,40 +868,4 @@ SyncNtupleManager::reset()
   {
     hltMap[kv.first] = -1;
   }
-}
-
-void
-SyncNtupleManager::fill()
-{
-  if(outputDir)
-  {
-    outputDir -> cd();
-  }
-  else
-  {
-    outputFile -> cd();
-  }
-  outputTree -> Fill();
-  reset();
-}
-
-void
-SyncNtupleManager::write()
-{
-  if(outputDir)
-  {
-    outputDir -> cd();
-  }
-  else
-  {
-    outputFile -> cd();
-  }
-  outputTree -> Write();
-}
-
-bool
-SyncNtupleManager::endsWithNumber(const std::string & infix)
-{
-  std::smatch match;
-  return std::regex_match(infix, match, endsWithNumberRegex);
 }
