@@ -6,15 +6,18 @@
 std::map<std::string, int> RecoLeptonReader::numInstances_;
 std::map<std::string, RecoLeptonReader *> RecoLeptonReader::instances_;
 
-RecoLeptonReader::RecoLeptonReader(bool readGenMatching_b)
-  : RecoLeptonReader("Lepton", readGenMatching_b)
+RecoLeptonReader::RecoLeptonReader(bool isMC,
+                                   bool readGenMatching_b)
+  : RecoLeptonReader("Lepton", isMC, readGenMatching_b)
 {}
 
 RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
+                                   bool isMC,
                                    bool readGenMatching_b)
   : max_nLeptons_(64)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
+  , isMC_(isMC)
   , genLeptonReader_(nullptr)
   , genHadTauReader_(nullptr)
   , genPhotonReader_(nullptr)
@@ -43,6 +46,7 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   , genPartFlav_(nullptr)
   , genMatchIdx_(nullptr)
 {
+  assert((isMC_ && readGenMatching_) || ! readGenMatching_);
   if(readGenMatching_)
   {
     genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_obj_.data()), max_nLeptons_);
@@ -190,7 +194,7 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(charge_, branchName_charge_);
     bai.setBranchAddress(filterBits_, branchName_filterBits_);
     bai.setBranchAddress(jetIdx_, branchName_jetIdx_);
-    bai.setBranchAddress(genPartFlav_, branchName_genPartFlav_);
-    bai.setBranchAddress(genMatchIdx_, branchName_genMatchIdx_);
+    bai.setBranchAddress(genPartFlav_, isMC_ ? branchName_genPartFlav_ : "");
+    bai.setBranchAddress(genMatchIdx_, isMC_ ? branchName_genMatchIdx_ : "");
   }
 }

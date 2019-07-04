@@ -8,17 +8,19 @@ std::map<std::string, int> RecoMuonReader::numInstances_;
 std::map<std::string, RecoMuonReader *> RecoMuonReader::instances_;
 
 RecoMuonReader::RecoMuonReader(int era,
+                               bool isMC,
                                bool readGenMatching)
-  : RecoMuonReader(era, "Muon", readGenMatching)
+  : RecoMuonReader(era, "Muon", isMC, readGenMatching)
 {}
 
 RecoMuonReader::RecoMuonReader(int era,
                                const std::string & branchName_obj,
+                               bool isMC,
                                bool readGenMatching)
   : era_(era)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
-  , leptonReader_(new RecoLeptonReader(branchName_obj_, readGenMatching))
+  , leptonReader_(new RecoLeptonReader(branchName_obj_, isMC, readGenMatching))
   , mediumIdPOG_(nullptr)
   , segmentCompatibility_(nullptr)
   , ptErr_(nullptr)

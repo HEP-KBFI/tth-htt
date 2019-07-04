@@ -20,17 +20,20 @@ std::map<std::string, int> RecoHadTauReader::numInstances_;
 std::map<std::string, RecoHadTauReader *> RecoHadTauReader::instances_;
 
 RecoHadTauReader::RecoHadTauReader(int era,
+                                   bool isMC,
                                    bool readGenMatching)
-  : RecoHadTauReader(era, "Tau", readGenMatching)
+  : RecoHadTauReader(era, "Tau", isMC, readGenMatching)
 {}
 
 RecoHadTauReader::RecoHadTauReader(int era,
                                    const std::string & branchName_obj,
+                                   bool isMC,
                                    bool readGenMatching)
   : era_(era)
   , max_nHadTaus_(36)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
+  , isMC_(isMC)
   , genLeptonReader_(nullptr)
   , genHadTauReader_(nullptr)
   , genJetReader_(nullptr)
@@ -53,6 +56,7 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , hadTau_genPartFlav_(nullptr)
   , hadTau_genMatchIdx_(nullptr)
 {
+  assert((isMC_ && readGenMatching_) || ! readGenMatching_);
   if(readGenMatching_)
   {
     genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_obj_.data()), max_nHadTaus_);
@@ -191,8 +195,8 @@ RecoHadTauReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_idAgainstMu_, branchName_idAgainstMu_);
     bai.setBranchAddress(hadTau_filterBits_, branchName_filterBits_);
     bai.setBranchAddress(hadTau_jetIdx_, branchName_jetIdx_);
-    bai.setBranchAddress(hadTau_genPartFlav_, branchName_genPartFlav_);
-    bai.setBranchAddress(hadTau_genMatchIdx_, branchName_genMatchIdx_);
+    bai.setBranchAddress(hadTau_genPartFlav_, isMC_ ? branchName_genPartFlav_ : "");
+    bai.setBranchAddress(hadTau_genMatchIdx_, isMC_ ? branchName_genMatchIdx_ : "");
   }
 }
 

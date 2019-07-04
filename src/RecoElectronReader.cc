@@ -10,18 +10,20 @@ std::map<std::string, int> RecoElectronReader::numInstances_;
 std::map<std::string, RecoElectronReader *> RecoElectronReader::instances_;
 
 RecoElectronReader::RecoElectronReader(int era,
+                                       bool isMC,
                                        bool readGenMatching)
-  : RecoElectronReader(era, "Electron", readGenMatching)
+  : RecoElectronReader(era, "Electron", isMC, readGenMatching)
 {}
 
 RecoElectronReader::RecoElectronReader(int era,
                                        const std::string & branchName_obj,
+                                       bool isMC,
                                        bool readGenMatching)
   : era_(era)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , readUncorrected_(false)
-  , leptonReader_(new RecoLeptonReader(branchName_obj_, readGenMatching))
+  , leptonReader_(new RecoLeptonReader(branchName_obj_, isMC, readGenMatching))
   , eCorr_(nullptr)
   , sigmaEtaEta_(nullptr)
   , HoE_(nullptr)

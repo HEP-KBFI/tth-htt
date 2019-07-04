@@ -677,7 +677,7 @@ main(int argc,
   }
 
 //--- declare particle collections
-  RecoMuonReader * muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
+  RecoMuonReader * muonReader = new RecoMuonReader(era, branchName_muons, isMC, readGenObjects);
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
@@ -686,7 +686,7 @@ main(int argc,
   fakeableMuonSelector.getSelector().set_mvaTTH_wp(lep_mva_cut_mu);
   tightMuonSelector.getSelector().set_min_mvaTTH(lep_mva_cut_mu);
 
-  RecoElectronReader * electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
+  RecoElectronReader * electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   inputTree->registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);

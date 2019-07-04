@@ -20,10 +20,12 @@ class RecoHadTauReader
 {
 public:
   RecoHadTauReader(int era,
-                   bool readGenMatching = false);
+                   bool isMC,
+                   bool readGenMatching);
   RecoHadTauReader(int era,
                    const std::string & branchName_obj,
-                   bool readGenMatching = false);
+                   bool isMC,
+                   bool readGenMatching);
   ~RecoHadTauReader();
 
   void
@@ -57,6 +59,7 @@ protected:
   const int max_nHadTaus_;
   std::string branchName_num_;
   std::string branchName_obj_;
+  bool isMC_;
 
   /**
    * @brief Read branches containing information on matching of RecoHadTau objects

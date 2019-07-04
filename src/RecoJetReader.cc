@@ -46,6 +46,7 @@ RecoJetReader::RecoJetReader(int era,
   , jet_jetIdx_(nullptr)
   , jet_genMatchIdx_(nullptr)
 {
+  assert((isMC_ && readGenMatching_) || ! readGenMatching_);
   if(readGenMatching_)
   {
     genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_obj_.data()), max_nJets_);
@@ -245,7 +246,7 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_jetId_, branchName_jetId_);
     bai.setBranchAddress(jet_puId_, branchName_puId_);
     bai.setBranchAddress(jet_jetIdx_, branchName_jetIdx_);
-    bai.setBranchAddress(jet_genMatchIdx_, branchName_genMatchIdx_);
+    bai.setBranchAddress(jet_genMatchIdx_, isMC_ ? branchName_genMatchIdx_ : "");
   }
 }
 

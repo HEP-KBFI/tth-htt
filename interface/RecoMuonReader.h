@@ -14,10 +14,12 @@ class RecoMuonReader
 {
 public:
   RecoMuonReader(int era,
-                 bool readGenMatching = false);
+                 bool isMC,
+                 bool readGenMatching);
   RecoMuonReader(int era,
                  const std::string & branchName_obj,
-                 bool readGenMatching = false);
+                 bool isMC,
+                 bool readGenMatching);
   ~RecoMuonReader();
 
   /**

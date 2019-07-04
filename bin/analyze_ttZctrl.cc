@@ -375,7 +375,7 @@ int main(int argc, char* argv[])
 
 //--- declare particle collections
   const bool readGenObjects = isMC && !redoGenMatching;
-  RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
+  RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, isMC, readGenObjects);
   inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
@@ -384,7 +384,7 @@ int main(int argc, char* argv[])
   fakeableMuonSelector.getSelector().set_mvaTTH_wp(lep_mva_cut_mu);
   tightMuonSelector.getSelector().set_min_mvaTTH(lep_mva_cut_mu);
 
-  RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
+  RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
@@ -394,7 +394,7 @@ int main(int argc, char* argv[])
   fakeableElectronSelector.getSelector().set_mvaTTH_wp(lep_mva_cut_e);
   tightElectronSelector.getSelector().set_min_mvaTTH(lep_mva_cut_e);
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, isMC, readGenObjects);
   hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
   inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;

@@ -13,9 +13,11 @@ class RecoLeptonReader
   : public ReaderBase
 {
 public:
-  RecoLeptonReader(bool readGenMatching = false);
+  RecoLeptonReader(bool isMC,
+                   bool readGenMatching);
   RecoLeptonReader(const std::string & branchName_obj,
-                   bool readGenMatching = false);
+                   bool isMC,
+                   bool readGenMatching);
   ~RecoLeptonReader();
 
   /**
@@ -37,6 +39,7 @@ protected:
   const unsigned int max_nLeptons_;
   std::string branchName_num_;
   std::string branchName_obj_;
+  bool isMC_;
 
   /**
    * @brief Read branches containing information on matching of RecoElectrons and RecoMuons

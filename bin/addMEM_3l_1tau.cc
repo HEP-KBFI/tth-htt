@@ -170,20 +170,20 @@ int main(int argc,
   );
 
 //--- declare particle collections
-  RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
+  RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, isMC, readGenObjects);
   muonReader->setBranchAddresses(inputTree);
   const RecoMuonCollectionSelectorLoose    preselMuonSelector  (era);
   const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   const RecoMuonCollectionSelectorTight    tightMuonSelector   (era);
 
-  RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
+  RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   electronReader->setBranchAddresses(inputTree);
   const RecoElectronCollectionCleaner electronCleaner(0.3);
   const RecoElectronCollectionSelectorLoose    preselElectronSelector  (era);
   const RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   const RecoElectronCollectionSelectorTight    tightElectronSelector   (era);
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, isMC, readGenObjects);
   hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_central);
   hadTauReader->setBranchAddresses(inputTree);
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3);

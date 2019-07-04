@@ -199,14 +199,14 @@ main(int argc,
   inputTree -> registerReader(&hltPathReader_instance);
 
 //--- declare particle collections
-  RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
+  RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons, isMC, readGenObjects);
   inputTree -> registerReader(muonReader);
   const RecoMuonCollectionGenMatcher muonGenMatcher;
   const RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
   
-  RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
+  RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   inputTree -> registerReader(electronReader);
   const RecoElectronCollectionGenMatcher electronGenMatcher;
   const RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
@@ -224,7 +224,7 @@ main(int argc,
     default:        throw cmsException("produceNtuple", __LINE__) << "Unsupported era = " << era;
   }
 
-  RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
+  RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, isMC, readGenObjects);
   inputTree -> registerReader(hadTauReader);
   const RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);

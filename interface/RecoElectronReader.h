@@ -17,10 +17,12 @@ class RecoElectronReader
 {
 public:
   RecoElectronReader(int era,
-                     bool readGenMatching = false);
+                     bool isMC,
+                     bool readGenMatching);
   RecoElectronReader(int era,
                      const std::string & branchName_obj,
-                     bool readGenMatching = false);
+                     bool isMC,
+                     bool readGenMatching);
   ~RecoElectronReader();
 
   /**

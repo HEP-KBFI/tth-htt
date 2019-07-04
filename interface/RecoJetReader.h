@@ -20,11 +20,11 @@ class RecoJetReader
 public:
   RecoJetReader(int era,
                 bool isMC,
-                bool readGenMatching = false);
+                bool readGenMatching);
   RecoJetReader(int era,
                 bool isMC,
                 const std::string & branchName_obj,
-                bool readGenMatching = false);
+                bool readGenMatching);
   ~RecoJetReader() override;
 
   void
