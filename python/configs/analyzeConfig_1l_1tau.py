@@ -401,20 +401,15 @@ class analyzeConfig_1l_1tau(analyzeConfig):
 
                 syncOutput = ''
                 syncTree = ''
-                syncGenMatch_hadTau = [ 'all' ]
-                syncGenMatch_lepton = [ 'all' ]
+                syncGenMatch = self.lepton_and_hadTau_genMatches_nonfakes
                 mcClosure_match = mcClosure_regex.match(lepton_and_hadTau_selection_and_frWeight)
                 if self.do_sync:
                   if lepton_and_hadTau_selection_and_frWeight == 'Tight':
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_SR.root' % (self.channel, central_or_shift))
                     syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
-                    syncGenMatch_lepton = filter_lepton_genmatches(self.lepton_and_hadTau_genMatches_nonfakes)
-                    syncGenMatch_hadTau = filter_hadTau_genmatches(self.lepton_and_hadTau_genMatches_nonfakes)
                   elif lepton_and_hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights':
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_Fake.root' % (self.channel, central_or_shift))
                     syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
-                    syncGenMatch_lepton = filter_lepton_genmatches(self.lepton_and_hadTau_genMatches_fakes)
-                    syncGenMatch_hadTau = filter_hadTau_genmatches(self.lepton_and_hadTau_genMatches_fakes)
                   elif mcClosure_match:
                     mcClosure_type = mcClosure_match.group('type')
                     syncOutput = os.path.join(self.dirs[key_analyze_dir][DKEY_SYNC], '%s_%s_mcClosure_%s.root' % (self.channel, central_or_shift, mcClosure_type))
@@ -463,8 +458,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
                   'apply_hlt_filter'         : self.hlt_filter,
                   'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,
-                  'syncGenMatch_hadTau'      : syncGenMatch_hadTau,
-                  'syncGenMatch_lepton'      : syncGenMatch_lepton,
+                  'syncGenMatch'             : syncGenMatch,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_and_hadTau_selection)
 

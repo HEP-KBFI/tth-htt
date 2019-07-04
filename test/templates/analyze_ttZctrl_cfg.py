@@ -113,8 +113,7 @@ process.analyze_ttZctrl = cms.PSet(
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
-        genMatch_hadTau = cms.vstring(),
-        genMatch_lepton = cms.vstring(),
+        genMatch = cms.vstring(),
     ),
     hasLHE = cms.bool(True),
 

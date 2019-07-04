@@ -96,7 +96,6 @@ process.analyze_inclusive = cms.PSet(
     syncNtuple = cms.PSet(
         tree = cms.string('syncTree'),
         output = cms.string('inclusive.root'),
-        genMatch_hadTau = cms.vstring(),
-        genMatch_lepton = cms.vstring(),
+        genMatch = cms.vstring(),
     ),
 )

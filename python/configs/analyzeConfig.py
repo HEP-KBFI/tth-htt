@@ -53,12 +53,6 @@ DIRLIST = [
 def convert_lep_wp(float_str):
   return float_str.replace('.', '')
 
-def filter_lepton_genmatches(genMatches):
-  return list(map(lambda genMatch: genMatch.split('&')[0], genMatches))
-
-def filter_hadTau_genmatches(genMatches):
-  return list(map(lambda genMatch: genMatch.split('&')[1], genMatches))
-
 class analyzeConfig(object):
     """Configuration metadata needed to run analysis in a single go.
 
@@ -818,13 +812,9 @@ class analyzeConfig(object):
                 "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.output', os.path.basename(jobOptions['syncOutput']), len = max_option_len),
                 "{}.{:<{len}} = cms.string('{}')".format(process_string, 'selEventsFileName_input', jobOptions['syncRLE'], len = max_option_len),
             ])
-            if 'syncGenMatch_hadTau' in jobOptions:
+            if 'syncGenMatch' in jobOptions:
               lines.append(
-                "{}.{:<{len}} = cms.vstring({})".format(process_string, 'syncNtuple.genMatch_hadTau', jobOptions['syncGenMatch_hadTau'], len = max_option_len)
-              )
-            if 'syncGenMatch_lepton' in jobOptions:
-              lines.append(
-                "{}.{:<{len}} = cms.vstring({})".format(process_string, 'syncNtuple.genMatch_lepton', jobOptions['syncGenMatch_lepton'], len = max_option_len)
+                "{}.{:<{len}} = cms.vstring({})".format(process_string, 'syncNtuple.genMatch', jobOptions['syncGenMatch'], len = max_option_len)
               )
 
         if sample_info['process_name_specific'] in self.stitching_args:
