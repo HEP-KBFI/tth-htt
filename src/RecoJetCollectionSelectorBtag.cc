@@ -98,6 +98,20 @@ RecoJetSelectorBtag::operator()(const RecoJet & jet) const
     }
     return false;
   }
+  // CV: Ignore jets with 2.65 < |eta| < 3.139 and pT < 50 GeV when selecting jets in 2017 data and MC,
+  //     in order to reduce effect of noise in ECAL endcap,
+  //     cf. slide 13 of presentation by Alexei Raspereza in HTT meeting on October 10th 2018
+  //    (https://indico.cern.ch/event/762837/contributions/3172618/attachments/1731302/2798220/Recoils_20181010.pdf )
+  // Karl: "rounded" the eta thresholds, increased the pT threshold and applied it equally to all eras, see:
+  // https://gitlab.cern.ch/ttH_leptons/doc/blob/01f187e5b2efb39f93004acb7606a149c765ea18/Legacy/objects.md#23-jets
+  if(jet.pt() < 60. && jet.absEta() > 2.7 && jet.absEta() < 3.)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS EE noise cut\n";
+    }
+    return false;
+  }
   if(jet.jetId() < min_jetId_)
   {
     if(debug_)
