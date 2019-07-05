@@ -29,7 +29,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
     std::cout << get_human_line(this, __func__) << ":\n" << electron;
   }
 
-  if(electron.pt() <= min_pt_)
+  if(electron.pt() < min_pt_)
   {
     if(debug_)
     {
@@ -37,7 +37,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
     }
     return false;
   }
-  if(electron.absEta() >= max_absEta_)
+  if(electron.absEta() > max_absEta_)
   {
     if(debug_)
     {
@@ -45,7 +45,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
     }
     return false;
   }
-  if(std::fabs(electron.dxy()) >= max_dxy_)
+  if(std::fabs(electron.dxy()) > max_dxy_)
   {
     if(debug_)
     {
@@ -53,7 +53,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
     }
     return false;
   }
-  if(std::fabs(electron.dz()) >= max_dz_)
+  if(std::fabs(electron.dz()) > max_dz_)
   {
     if(debug_)
     {
@@ -61,7 +61,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
     }
     return false;
   }
-  if(electron.relIso() >= max_relIso_)
+  if(electron.relIso() > max_relIso_)
   {
     if(debug_)
     {
@@ -69,7 +69,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
     }
     return false;
   }
-  if(electron.sip3d() >= max_sip3d_)
+  if(electron.sip3d() > max_sip3d_)
   {
     if(debug_)
     {
