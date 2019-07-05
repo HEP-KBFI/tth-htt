@@ -1660,29 +1660,28 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       double prob_chargeMisId_lead = prob_chargeMisId(era, getLeptonType(selLepton_lead->pdgId()), selLepton_lead->pt(), selLepton_lead->eta());
       double prob_chargeMisId_sublead = prob_chargeMisId(era, getLeptonType(selLepton_sublead->pdgId()), selLepton_sublead->pt(), selLepton_sublead->eta());
 
+      double prob_chargeMisId_applied = 1.;
       if ( apply_lepton_and_hadTauCharge_cut ) {
         if ( chargeSumSelection == kOS ) {
           // CV: apply charge misidentification probability to lepton of same charge as hadronic tau
           //    (if the lepton of charge opposite to the charge of the hadronic tau "flips",
           //     the event has sum of charges equal to three and fails "lepton+tau charge" cut)
-          if ( selLepton_lead->charge()*selHadTau->charge()    > 0 ) evtWeight *= prob_chargeMisId_lead;
-          if ( selLepton_sublead->charge()*selHadTau->charge() > 0 ) evtWeight *= prob_chargeMisId_sublead;
+          if ( selLepton_lead->charge()*selHadTau->charge()    > 0 ) prob_chargeMisId_applied *= prob_chargeMisId_lead;
+          if ( selLepton_sublead->charge()*selHadTau->charge() > 0 ) prob_chargeMisId_applied *= prob_chargeMisId_sublead;
         } else if ( chargeSumSelection == kSS ) {
           // CV: apply charge misidentification probability to lepton of opposite charge as hadronic tau
           //    (if the lepton of same charge as the hadronic tau "flips",
           //     the event has sum of charges equal to one and fails "lepton+tau charge" cut)
-          if ( selLepton_lead->charge()*selHadTau->charge()    < 0 ) evtWeight *= prob_chargeMisId_lead;
-          if ( selLepton_sublead->charge()*selHadTau->charge() < 0 ) evtWeight *= prob_chargeMisId_sublead;
+          if ( selLepton_lead->charge()*selHadTau->charge()    < 0 ) prob_chargeMisId_applied *= prob_chargeMisId_lead;
+          if ( selLepton_sublead->charge()*selHadTau->charge() < 0 ) prob_chargeMisId_applied *= prob_chargeMisId_sublead;
         } else assert(0);
       } else {
-        evtWeight *= (prob_chargeMisId_lead + prob_chargeMisId_sublead);
+        prob_chargeMisId_applied *= (prob_chargeMisId_lead + prob_chargeMisId_sublead);
       }
-      // Karl: reject the event, if the applied probability of charge misidentification is 0;
-      //       we assume that the event weight was not 0 before including the charge flip weights.
-      //       This can happen only if
+      // Karl: reject the event, if the applied probability of charge misidentification is 0. This can happen only if
       //       1) both selected leptons are muons (their misId prob is 0).
       //       2) one lepton is a muon and the other is an electron, and the muon has the same sign as the selected tau.
-      if(evtWeight == 0.)
+      if(prob_chargeMisId_applied == 0.)
       {
         if(run_lumi_eventSelector)
         {
@@ -1696,6 +1695,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         }
         continue;
       }
+      evtWeight *= prob_chargeMisId_applied;
     }
     cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton-pair OS/SS charge", evtWeight);
