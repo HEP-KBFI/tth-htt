@@ -74,7 +74,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS cone pT >= " << min_cone_pt_ << " fakeable cut\n";
+      std::cout << "FAILS cone pT = " << electron.cone_pt() << " >= " << min_cone_pt_ << " fakeable cut\n";
     }
     return false;
   }
@@ -83,7 +83,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS pT >= " << min_lepton_pt_ << " fakeable cut\n";
+      std::cout << "FAILS pT = " << electron.pt() << " >= " << min_lepton_pt_ << " fakeable cut\n";
     }
   }
 
@@ -91,7 +91,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(eta) <= " << max_absEta_ << " fakeable cut\n";
+      std::cout << "FAILS abs(eta) = " << electron.absEta() << " <= " << max_absEta_ << " fakeable cut\n";
     }
     return false;
   }
@@ -100,7 +100,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(dxy) <= " << max_dxy_ << " fakeable cut\n";
+      std::cout << "FAILS abs(dxy) = " << std::fabs(electron.dxy()) << " <= " << max_dxy_ << " fakeable cut\n";
     }
     return false;
   }
@@ -109,7 +109,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(dz) <= " << max_dz_ << " fakeable cut\n";
+      std::cout << "FAILS abs(dz) = " << std::fabs(electron.dz()) << " <= " << max_dz_ << " fakeable cut\n";
     }
     return false;
   }
@@ -118,7 +118,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS relIso <= " << max_relIso_ << " fakeable cut\n";
+      std::cout << "FAILS relIso = " << electron.relIso() << " <= " << max_relIso_ << " fakeable cut\n";
     }
     return false;
   }
@@ -127,7 +127,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS sip3d <= " << max_sip3d_ << " fakeable cut\n";
+      std::cout << "FAILS sip3d = " << electron.sip3d() << " <= " << max_sip3d_ << " fakeable cut\n";
     }
     return false;
   }
@@ -136,7 +136,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS nLostHits <= " << max_nLostHits_ << " fakeable cut\n";
+      std::cout << "FAILS nLostHits = " << electron.nLostHits() << " <= " << max_nLostHits_ << " fakeable cut\n";
     }
     return false;
   }
@@ -165,7 +165,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     {
       if(debug_)
       {
-        std::cout << "FAILS jetBtagCSV <= " << max_jetBtagCSV_ << " fakeable cut\n";
+        std::cout << "FAILS jetBtagCSV = " << electron.jetBtagCSV() << " <= " << max_jetBtagCSV_ << " fakeable cut\n";
       }
       return false;
     }
@@ -176,7 +176,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     {
       if(debug_)
       {
-        std::cout << "FAILS jetPtRatio >= " << min_jetPtRatio_ << " fakeable cut\n";
+        std::cout << "FAILS jetPtRatio = " << electron.jetPtRatio() << " >= " << min_jetPtRatio_ << " fakeable cut\n";
       }
       return false;
     }
@@ -198,7 +198,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     {
       if(debug_)
       {
-        std::cout << "FAILS sigmaEtaEta <= " << max_sigmaEtaEta_trig << " fakeable cut\n";
+        std::cout << "FAILS sigmaEtaEta = " << electron.sigmaEtaEta() << " <= " << max_sigmaEtaEta_trig << " fakeable cut\n";
       }
       return false;
     }
@@ -207,7 +207,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     {
       if(debug_)
       {
-        std::cout << "FAILS HoE <= " << max_HoE_trig_ << " fakeable cut\n";
+        std::cout << "FAILS HoE = " << electron.HoE() << " <= " << max_HoE_trig_ << " fakeable cut\n";
       }
       return false;
     }
@@ -215,7 +215,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     {
       if(debug_)
       {
-        std::cout << "FAILS OoEminusOoP >= " << min_OoEminusOoP_trig_ << " fakeable cut\n";
+        std::cout << "FAILS OoEminusOoP = " << electron.OoEminusOoP() << " >= " << min_OoEminusOoP_trig_ << " fakeable cut\n";
       }
       return false;
     }

@@ -38,7 +38,7 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS pT >= " << min_pt_ << " tight cut\n";
+      std::cout << "FAILS pT = " << muon.pt() << " >= " << min_pt_ << " tight cut\n";
     }
     return false;
   }
@@ -46,7 +46,7 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(eta) <= " << max_absEta_ << " tight cut\n";
+      std::cout << "FAILS abs(eta) = " << muon.absEta() << " <= " << max_absEta_ << " tight cut\n";
     }
     return false;
   }
@@ -54,7 +54,7 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(dxy) <= " << max_dxy_ << " tight cut\n";
+      std::cout << "FAILS abs(dxy) = " << std::fabs(muon.dxy()) << " <= " << max_dxy_ << " tight cut\n";
     }
     return false;
   }
@@ -62,7 +62,7 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(dz) <= " << max_dz_ << " tight cut\n";
+      std::cout << "FAILS abs(dz) = " << std::fabs(muon.dz()) << " <= " << max_dz_ << " tight cut\n";
     }
     return false;
   }
@@ -70,7 +70,7 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS relIso <= " << max_relIso_ << " tight cut\n";
+      std::cout << "FAILS relIso = " << muon.relIso() << " <= " << max_relIso_ << " tight cut\n";
     }
     return false;
   }
@@ -78,7 +78,7 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS sip3d <= " << max_sip3d_ << " tight cut\n";
+      std::cout << "FAILS sip3d = " << muon.sip3d() << " <= " << max_sip3d_ << " tight cut\n";
     }
     return false;
   }
@@ -94,7 +94,7 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS jetBtagCSV <= " << max_jetBtagCSV_ << " tight cut\n";
+      std::cout << "FAILS jetBtagCSV " << muon.jetBtagCSV() << " <= " << max_jetBtagCSV_ << " tight cut\n";
     }
     return false;
   }
@@ -110,7 +110,7 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS mvaTTH >= " << min_mvaTTH_ << " tight cut\n";
+      std::cout << "FAILS mvaTTH = " << muon.mvaRawTTH() << " >= " << min_mvaTTH_ << " tight cut\n";
     }
     return false;
   }

@@ -86,7 +86,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS pT >= " << min_pt_ << " tight cut\n";
+      std::cout << "FAILS pT = " << electron.pt() << " >= " << min_pt_ << " tight cut\n";
     }
     return false;
   }
@@ -94,7 +94,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(eta) <= " << max_absEta_ << " tight cut\n";
+      std::cout << "FAILS abs(eta) = " << electron.absEta() << " <= " << max_absEta_ << " tight cut\n";
     }
     return false;
   }
@@ -102,7 +102,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(dxy) <= " << max_dxy_ << " tight cut\n";
+      std::cout << "FAILS abs(dxy) = " << std::fabs(electron.dxy()) << " <= " << max_dxy_ << " tight cut\n";
     }
     return false;
   }
@@ -110,7 +110,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS max(dz) <= " << max_dz_ << " tight cut\n";
+      std::cout << "FAILS max(dz) = " << std::fabs(electron.dz()) << " <= " << max_dz_ << " tight cut\n";
     }
     return false;
   }
@@ -118,7 +118,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS relIso <= " << max_relIso_ << " tight cut\n";
+      std::cout << "FAILS relIso = " << electron.relIso() << " <= " << max_relIso_ << " tight cut\n";
     }
     return false;
   }
@@ -126,7 +126,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS sip3d <= " << max_sip3d_ << " tight cut\n";
+      std::cout << "FAILS sip3d = " << electron.sip3d() << " <= " << max_sip3d_ << " tight cut\n";
     }
     return false;
   }
@@ -134,7 +134,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS jetBtagCSV <= " << max_jetBtagCSV_ << " tight cut\n";
+      std::cout << "FAILS jetBtagCSV = " << electron.jetBtagCSV() << " <= " << max_jetBtagCSV_ << " tight cut\n";
     }
     return false;
   }
@@ -142,7 +142,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS nLostHits <= " << max_nLostHits_ << " tight cut\n";
+      std::cout << "FAILS nLostHits = " << electron.nLostHits() << " <= " << max_nLostHits_ << " tight cut\n";
     }
     return false;
   }
@@ -158,7 +158,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS mvaTTH >= " << min_mvaTTH_ << " tight cut\n";
+      std::cout << "FAILS mvaTTH = " << electron.mvaRawTTH() << " >= " << min_mvaTTH_ << " tight cut\n";
     }
     return false;
   }
@@ -181,7 +181,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     {
       if(debug_)
       {
-        std::cout << "FAILS sigmaEtaEta <= " << max_sigmaEtaEta_trig << " tight cut\n";
+        std::cout << "FAILS sigmaEtaEta = " << electron.sigmaEtaEta() << " <= " << max_sigmaEtaEta_trig << " tight cut\n";
       }
       return false;
     }
@@ -189,7 +189,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     {
       if(debug_)
       {
-        std::cout << "FAILS HoE <= " << max_HoE_trig_ << " tight cut\n";
+        std::cout << "FAILS HoE = " << electron.HoE() << " <= " << max_HoE_trig_ << " tight cut\n";
       }
       return false;
     }
@@ -197,7 +197,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     {
       if(debug_)
       {
-        std::cout << "FAILS OoEminusOoP >= " << min_OoEminusOoP_trig_ << " tight cut\n";
+        std::cout << "FAILS OoEminusOoP = " << electron.OoEminusOoP() << " >= " << min_OoEminusOoP_trig_ << " tight cut\n";
       }
       return false;
     }

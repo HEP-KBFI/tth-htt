@@ -32,7 +32,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS pT >= " << min_pt_ << " loose cut\n";
+      std::cout << "FAILS pT = " << muon.pt() << " >= " << min_pt_ << " loose cut\n";
     }
     return false;
   }
@@ -41,7 +41,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS pT <= " << max_absEta_ << " loose cut\n";
+      std::cout << "FAILS abs(eta) = " << muon.absEta() << " <= " << max_absEta_ << " loose cut\n";
     }
     return false;
   }
@@ -50,7 +50,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(dxy) <= " << max_dxy_ << " loose cut\n";
+      std::cout << "FAILS abs(dxy) = " << std::fabs(muon.dxy()) << " <= " << max_dxy_ << " loose cut\n";
     }
     return false;
   }
@@ -59,7 +59,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(dz) <= " << max_dz_ << " loose cut\n";
+      std::cout << "FAILS abs(dz) = " << std::fabs(muon.dz()) << " <= " << max_dz_ << " loose cut\n";
     }
     return false;
   }
@@ -68,7 +68,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS relIso <= " << max_relIso_ << " loose cut\n";
+      std::cout << "FAILS relIso = " << muon.relIso() << " <= " << max_relIso_ << " loose cut\n";
     }
     return false;
   }
@@ -77,7 +77,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
   {
     if(debug_)
     {
-      std::cout << "FAILS sip3d <= " << max_sip3d_ << " loose cut\n";
+      std::cout << "FAILS sip3d = " << muon.sip3d() << " <= " << max_sip3d_ << " loose cut\n";
     }
     return false;
   }

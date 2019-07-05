@@ -33,7 +33,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS pT >= " << min_pt_ << " loose cut\n";
+      std::cout << "FAILS pT = " << electron.pt() << " >= " << min_pt_ << " loose cut\n";
     }
     return false;
   }
@@ -41,7 +41,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(eta) <= " << max_absEta_ << " loose cut\n";
+      std::cout << "FAILS abs(eta) = " << electron.absEta() << " <= " << max_absEta_ << " loose cut\n";
     }
     return false;
   }
@@ -49,7 +49,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(dxy) <= " << max_dxy_ << " loose cut\n";
+      std::cout << "FAILS abs(dxy) = " << std::fabs(electron.dxy()) << " <= " << max_dxy_ << " loose cut\n";
     }
     return false;
   }
@@ -57,7 +57,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS max(dz) <= " << max_dz_ << " loose cut\n";
+      std::cout << "FAILS max(dz) = " << std::fabs(electron.dz()) << " <= " << max_dz_ << " loose cut\n";
     }
     return false;
   }
@@ -65,7 +65,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS relIso <= " << max_relIso_ << " loose cut\n";
+      std::cout << "FAILS relIso = " << electron.relIso() << " <= " << max_relIso_ << " loose cut\n";
     }
     return false;
   }
@@ -73,7 +73,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS sip3d <= " << max_sip3d_ << " loose cut\n";
+      std::cout << "FAILS sip3d = " << electron.sip3d() << " <= " << max_sip3d_ << " loose cut\n";
     }
     return false;
   }
@@ -81,7 +81,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
   {
     if(debug_)
     {
-      std::cout << "FAILS nLostHits <= " << max_nLostHits_ << " loose cut\n";
+      std::cout << "FAILS nLostHits = " << electron.nLostHits() << " <= " << max_nLostHits_ << " loose cut\n";
     }
     return false;
   }

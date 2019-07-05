@@ -76,7 +76,7 @@ RecoJetSelectorForward::operator()(const RecoJet & jet) const
   {
     if(debug_)
     {
-      std::cout << "FAILS pT >= " << min_pt_ << " cut\n";
+      std::cout << "FAILS pT = " << jet.pt() << " >= " << min_pt_ << " cut\n";
     }
     return false;
   }
@@ -84,7 +84,7 @@ RecoJetSelectorForward::operator()(const RecoJet & jet) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(eta) <= " << max_absEta_ << " cut\n";
+      std::cout << "FAILS abs(eta) " << jet.absEta() << " <= " << max_absEta_ << " cut\n";
     }
     return false;
   }
@@ -92,7 +92,7 @@ RecoJetSelectorForward::operator()(const RecoJet & jet) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(eta) >= " << min_absEta_ << " cut\n";
+      std::cout << "FAILS abs(eta) = " << jet.absEta() << " >= " << min_absEta_ << " cut\n";
     }
     return false;
   }
@@ -114,7 +114,7 @@ RecoJetSelectorForward::operator()(const RecoJet & jet) const
   {
     if(debug_)
     {
-      std::cout << "FAILS jet ID >= " << min_jetId_ << " cut\n";
+      std::cout << "FAILS jet ID = " << jet.jetId() << " >= " << min_jetId_ << " cut\n";
     }
     return false;
   }

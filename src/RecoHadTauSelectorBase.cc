@@ -214,7 +214,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
   {
     if(debug_)
     {
-      std::cout << "FAILS pT >= " << min_pt_ << " cut\n";
+      std::cout << "FAILS pT = " << hadTau.pt() << " >= " << min_pt_ << " cut\n";
     }
     return false;
   }
@@ -222,7 +222,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(eta) <= " << max_absEta_ << " cut\n";
+      std::cout << "FAILS abs(eta) = " << hadTau.absEta() << " <= " << max_absEta_ << " cut\n";
     }
     return false;
   }
@@ -230,7 +230,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
   {
     if(debug_)
     {
-      std::cout << "FAILS abs(dz) <= " << max_dz_ << " cut\n";
+      std::cout << "FAILS abs(dz) = " << std::fabs(hadTau.dz()) << " <= " << max_dz_ << " cut\n";
     }
     return false;
   }
@@ -360,7 +360,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
   {
     if(debug_)
     {
-      std::cout << "FAILS antiElectron >= " << min_antiElectron_ << " cut\n";
+      std::cout << "FAILS antiElectron = " << hadTau.antiElectron() << " >= " << min_antiElectron_ << " cut\n";
     }
     return false;
   }
@@ -368,7 +368,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
   {
     if(debug_)
     {
-      std::cout << "FAILS antiMuon >= " << min_antiMuon_ << "cut\n";
+      std::cout << "FAILS antiMuon = " << hadTau.antiMuon() << " >= " << min_antiMuon_ << "cut\n";
     }
     return false;
   }
