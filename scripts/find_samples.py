@@ -246,33 +246,36 @@ def find_das_idx(query_json, das_key):
   return idx
 
 def get_crab_string(dataset_name, paths):
-  paths_ = []
   for path in paths:
-    if hdfs.isfile(path):
-      with open(path, 'r') as f:
-        for line in f:
-          path_candidate = line.rstrip('\n')
-          if not path_candidate:
-            continue
-          if not hdfs.isdir(path_candidate):
-            raise RuntimeError('Not a directory: %s (dataset_name = %s, paths = %s)' % (path_candidate, dataset_name, str(paths)))
-          paths_.append(path_candidate)
-    else:
-      paths_.append(path)
-  for path in paths_:
-    version = os.path.basename(path)
     dataset_match = DATASET_REGEX.match(dataset_name)
+
+    version = os.path.basename(os.path.dirname(path))
+    requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
+    full_path = os.path.join(path, requestName)
+    if hdfs.isdir(full_path):
+      return requestName
+
+    version = os.path.basename(path)
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
     primary_name = dataset_name.split('/')[1]
     full_path = os.path.join(path, primary_name, requestName)
     if hdfs.isdir(full_path):
       return requestName
-    # Depends on the CERN user name: the overall limit on the request name is 160 characters, and my user name is 8 characters
-    if len(requestName) > 152:
-      requestName = requestName[:152]
+
+    # Depends on the CERN user name: the overall limit on the request name is 160 characters
+    username_len = 0
+    if '/hdfs/cms/store/user' in path:
+      path_split = path.split(os.path.sep)
+      assert(len(path_split) > 5)
+      username_len = len(path_split[5])
+    max_requestname_len = 160 - username_len
+
+    if len(requestName) > max_requestname_len:
+      requestName = requestName[:max_requestname_len]
     full_path = os.path.join(path, primary_name, requestName)
     if hdfs.isdir(full_path):
       return requestName
+
   return ''
 
 def convert_date(date):
@@ -573,7 +576,22 @@ if __name__ == '__main__':
   required_cmssw_version_str = args.version
   required_cmssw_version = Version(required_cmssw_version_str)
   verbose = args.verbose
-  crab_string = args.crab_string
+
+  crab_string = []
+  if len(args.crab_string) and hdfs.isfile(args.crab_string[0]):
+    with open(args.crab_string[0], 'r') as crab_file:
+      for line in crab_file:
+        line_stripped = line.rstrip('\n')
+        if not line_stripped:
+          continue
+        if not hdfs.isdir(line_stripped):
+          raise ValueError("No such directory: %s" % line_stripped)
+        crab_string.append(line_stripped)
+  else:
+    for crab_line in args.crab_string:
+      if not hdfs.isdir(crab_line):
+        raise ValueError("No such directory: %s" % crab_line)
+    crab_string = args.crab_string
 
   primary_datasets = args.primary_datasets
   DATA_GREP_STR = '\\|'.join(map(lambda sample: '^/%s/' % sample, primary_datasets))
