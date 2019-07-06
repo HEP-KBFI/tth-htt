@@ -245,38 +245,42 @@ def find_das_idx(query_json, das_key):
     raise RuntimeError("Unable to find the location for DAS key %s from the JSON output" % das_key)
   return idx
 
+def get_requestname(request_name, path):
+  # Depends on the CERN user name: the overall limit on the request name is 160 characters
+
+  username_len = 0
+  if '/hdfs/cms/store/user' in path:
+    path_split = path.split(os.path.sep)
+    assert (len(path_split) > 5)
+    username_len = len(path_split[5])
+  max_requestname_len = 160 - username_len
+
+  requestName = request_name
+  if len(requestName) > max_requestname_len:
+    requestName = requestName[:max_requestname_len]
+  return requestName
+
 def get_crab_string(dataset_name, paths):
   for path in paths:
     dataset_match = DATASET_REGEX.match(dataset_name)
 
     version = os.path.basename(os.path.dirname(os.path.dirname(path)))
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
+    requestName = get_requestname(requestName, path)
     if requestName == os.path.basename(path):
       return requestName
 
     version = os.path.basename(os.path.dirname(path))
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
+    requestName = get_requestname(requestName, path)
     full_path = os.path.join(path, requestName)
     if hdfs.isdir(full_path):
       return requestName
 
     version = os.path.basename(path)
-    requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
     primary_name = dataset_name.split('/')[1]
-    full_path = os.path.join(path, primary_name, requestName)
-    if hdfs.isdir(full_path):
-      return requestName
-
-    # Depends on the CERN user name: the overall limit on the request name is 160 characters
-    username_len = 0
-    if '/hdfs/cms/store/user' in path:
-      path_split = path.split(os.path.sep)
-      assert(len(path_split) > 5)
-      username_len = len(path_split[5])
-    max_requestname_len = 160 - username_len
-
-    if len(requestName) > max_requestname_len:
-      requestName = requestName[:max_requestname_len]
+    requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
+    requestName = get_requestname(requestName, path)
     full_path = os.path.join(path, primary_name, requestName)
     if hdfs.isdir(full_path):
       return requestName
