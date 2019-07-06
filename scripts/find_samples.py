@@ -251,7 +251,7 @@ def get_crab_string(dataset_name, paths):
 
     version = os.path.basename(os.path.dirname(os.path.dirname(path)))
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
-    if requestName == os.path.basename(dir):
+    if requestName == os.path.basename(path):
       return requestName
 
     version = os.path.basename(os.path.dirname(path))
