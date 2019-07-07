@@ -23,7 +23,7 @@ if __name__ == '__main__':
     help = 'R|Output file name',
   )
   parser.add_argument('-c', '--contains',
-    type = str, dest = 'contains', metavar = 'string', required = False, default = '',
+    type = str, dest = 'contains', metavar = 'string', required = False, nargs = '+', default = [],
     help = 'R|String a CRAB subdirectory must contain',
   )
   parser.add_argument('-v', '--verbose',
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
   crab_dirs = args.input
   output_fn = args.output
-  req_str = args.contains
+  req_strs = args.contains
 
   if args.verbose:
     logging.getLogger().setLevel(logging.DEBUG)
@@ -50,8 +50,14 @@ if __name__ == '__main__':
   crab_paths = []
   for crab_dir in crab_dirs:
     for crab_subdir in os.listdir(crab_dir):
-      if req_str and req_str not in crab_subdir:
-        continue
+      if req_strs:
+        is_match = False
+        for req_str in req_strs:
+          if req_str in crab_subdir:
+            is_match = True
+            break
+        if not is_match:
+          continue
       crab_subdir_fp = os.path.join(crab_dir, crab_subdir)
       if not os.path.isdir(crab_subdir_fp):
         continue
