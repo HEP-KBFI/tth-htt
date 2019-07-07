@@ -99,4 +99,4 @@ if __name__ == '__main__':
         logging.warning("No such directory found: {}".format(crab_path))
 
   with open(output_fn, 'w') as output_fptr:
-    output_fptr.write('\n'.join(list(sorted(crab_paths))))
+    output_fptr.write('\n'.join(list(sorted(crab_paths))) + '\n')
