@@ -519,7 +519,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
 
   digit_regex = re.compile(r"tree_(?P<i>\d+)\.root")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
-  is_rwgt = meta_dict[key]['sample_category'] in [ "tHq", "tHW", "signal" ]
+  is_rwgt = meta_dict[key]['sample_category'] in [ "tHq", "tHW", "signal_ctcvcp" ]
 
   histogram_names = collections.OrderedDict([ ( HISTOGRAM_COUNT, -1 ) ])
   if not is_data:
