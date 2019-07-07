@@ -195,13 +195,16 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
 {{ paths }}
     ]
   ),
-  ("missing_from_superset",           [
+  ("missing_completely",           [
+{{ missing_completely }}
+  ]),
+  ("missing_from_superset",        [
 {{ missing_from_superset }}
   ]),
-  ("missing_hlt_paths",               [
+  ("missing_hlt_paths",            [
 {{ missing_hlt_paths }}
   ]),
-  ("hlt_paths",               [
+  ("hlt_paths",                    [
 {{ hlt_paths }}
   ]),
 ])
@@ -274,6 +277,8 @@ def get_triggers(process_name_specific, is_data, era):
     return ['1e1mu', '2e1mu', '1e2mu']
   if 'Tau' in process_name_specific:
     return ['1e1tau', '1mu1tau', '2tau']
+  if 'EGamma' in process_name_specific: # merge of SingleElectron and DoubleEG PDs
+    return ['1e', '1e1tau', '2e', '3e']
   if is_data:
     raise ValueError("Expected MC!")
   return [
@@ -689,13 +694,14 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
     key             = key,
   ))
 
+  overlap_with_triggers = []
   if not meta_dict[key]['located']:
     missing_from_superset = [] if not missing_branches else get_missing_from_superset(indices)
-    overlap_with_triggers = triggerTable.triggers_flat & set(missing_from_superset)
+    overlap_with_triggers = list(triggerTable.triggers_flat & set(missing_from_superset))
     if overlap_with_triggers:
-      raise ValueError(
+      logging.error(
         "Found an overlap b/w the list of required triggers and the list of missing branches in "
-        "sample %s: %s" % (meta_dict[key]['process_name_specific'], ', '.join(overlap_with_triggers))
+        "sample {}: {}".format(meta_dict[key]['process_name_specific'], ', '.join(overlap_with_triggers))
        )
     meta_dict[key]['triggers']                        = get_triggers(
       meta_dict[key]['process_name_specific'], is_data, era
@@ -710,6 +716,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
     meta_dict[key]['located']                         = True
     meta_dict[key]['has_LHE']                         = False if is_data else has_LHE(indices)
     meta_dict[key]['missing_from_superset']           = missing_from_superset
+    meta_dict[key]['missing_completely']              = overlap_with_triggers
     meta_dict[key]['histogram_names']                 = histogram_names
     meta_dict[key]['LHE_set']                         = lhe_set
     meta_dict[key]['nof_reweighting']                 = nof_reweighting_weights
@@ -1104,6 +1111,10 @@ if __name__ == '__main__':
           is_available     = args.missing_branches and not is_mc,
           missing_branches = sorted(meta_dict[key]['missing_from_superset'], key = lambda s: s.lower()),
         ).lstrip('\n')
+        completely_missing_branches_template_filled = jinja2.Template(missing_branches_str).render(
+          is_available     = args.missing_branches and not is_mc,
+          missing_branches = sorted(meta_dict[key]['missing_completely'], key = lambda s: s.lower()),
+        ).lstrip('\n')
         missing_hlt_paths_filled = jinja2.Template(missing_branches_str).render(
           is_available     = True,
           missing_branches = sorted(meta_dict[key]['missing_hlt_paths'], key = lambda s: s.lower()),
@@ -1137,6 +1148,7 @@ if __name__ == '__main__':
           LHE_set                         = meta_dict[key]['LHE_set'],
           nof_reweighting                 = meta_dict[key]['nof_reweighting'],
           missing_from_superset           = missing_branches_template_filled,
+          missing_completely              = completely_missing_branches_template_filled,
           missing_hlt_paths               = missing_hlt_paths_filled,
           hlt_paths                       = hlt_paths_filled,
           paths                           = '\n'.join(path_entries_arr),
