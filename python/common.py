@@ -34,7 +34,10 @@ def load_samples(era, is_postproc = True, base = 'tth', suffix = ''):
   sample_location = "{}.samples.{}_{}".format(base_str, sample_prefix, era)
 
   if not is_postproc:
-    suffix = "nanoAOD_{}".format(suffix)
+    suffix_tmp = "nanoAOD"
+    if suffix:
+      suffix_tmp += "_{}".format(suffix)
+    suffix = suffix_tmp
 
   if suffix:
     sample_location += "_{}".format(suffix)
