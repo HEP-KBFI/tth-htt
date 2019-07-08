@@ -402,6 +402,7 @@ class analyzeConfig_4l(analyzeConfig):
                   'fillGenEvtHistograms'     : True,
                   'apply_hlt_filter'         : self.hlt_filter,
                   'syncGenMatch'             : syncGenMatch,
+                  'useNonNominal'            : self.use_nonnominal,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)
 
