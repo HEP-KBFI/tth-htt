@@ -177,8 +177,7 @@ RecoJetReaderAK8::read() const
         gInstance->jet_tau2_[idxJet],
         gInstance->jet_tau3_[idxJet],
         gInstance->jet_tau4_[idxJet],
-        //gInstance->jet_jetId_[idxJet], // CV: commented-out for DEBUGging only (instead set to hard-coded value of 2) !!
-        2,
+        gInstance->jet_jetId_[idxJet],
         static_cast<Int_t>(idxJet)
       });
     } // idxJet
