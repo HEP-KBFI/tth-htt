@@ -57,9 +57,9 @@ if mode == 'sync':
 elif mode == 'all':
   samples = load_samples(era, False)
 elif mode == 'hh':
-  samples = load_samples(era, False, base = 'hh_multilepton', suffix = 'hh')
+  samples = load_samples(era, False, base = 'hh_multilepton')
 elif mode == 'hh_bbww':
-  samples = load_samples(era, False, base = 'hh_bbww', suffix = 'hh')
+  samples = load_samples(era, False, base = 'hh_bbww')
 else:
   raise ValueError('Invalid mode: %s' % mode)
 
