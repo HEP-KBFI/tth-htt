@@ -419,14 +419,13 @@ class puHistogramConfig:
             outputFile = os.path.join(
                 self.dirs[key_dir][DKEY_HISTO], "%s.root" % process_name
             )
+            self.outputFiles[process_name] = {
+                'inputFiles' : [],
+                'outputFile' : outputFile,
+            }
             if os.path.isfile(outputFile) and tools_is_file_ok(outputFile, min_file_size = 2000):
                 logging.info('File {} already exists --> skipping job'.format(outputFile))
                 continue
-
-            self.outputFiles[process_name] = {
-                'inputFiles' : [],
-                'outputFile' : outputFile
-            }
 
             for jobId in inputFileList.keys():
 
@@ -435,7 +434,7 @@ class puHistogramConfig:
                 self.inputFiles[key_file] = inputFileList[jobId]
                 if len(self.inputFiles[key_file]) == 0:
                     logging.warning(
-                        "ntupleFiles['%s'] = %s --> skipping job !!" % (key_file, self.inputFiles[key_file])
+                        "'%s' = %s --> skipping job !!" % (key_file, self.inputFiles[key_file])
                     )
                     continue
 
