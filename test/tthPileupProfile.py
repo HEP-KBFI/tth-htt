@@ -13,7 +13,7 @@ import getpass
 
 mode_choices = [ 'all', 'sync', 'hh', 'hh_bbww' ]
 
-parser = tthAnalyzeParser(default_num_parallel_jobs = 40)
+parser = tthAnalyzeParser(default_num_parallel_jobs = 100)
 parser.add_modes(mode_choices)
 parser.add_files_per_job(100)
 parser.add_use_home()
