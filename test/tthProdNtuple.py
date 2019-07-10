@@ -91,7 +91,7 @@ elif mode == 'hh_bbww_sync':
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}.root'.format(era)
   )
 elif mode == 'hh':
-  samples = load_samples(era, preselection, base = 'hh_multilepton', suffix = '' if preselection else 'hh_merged')
+  samples = load_samples(era, preselection, base = 'hh_multilepton')
   pileup = os.path.join(
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_{}.root'.format(era)
   )
