@@ -31,7 +31,7 @@ def get_pileup_histograms(pileup_filename):
 
 HH_NONRES_CATEGORY_RE = re.compile('signal_\w+_nonresonant_hh_\w+')
 def is_hh_nonres(jobOptions):
-    return jobOptions['is_mc'] and HH_NONRES_CATEGORY_RE.match(jobOptions['category_name'])
+    return jobOptions['is_mc'] and bool(HH_NONRES_CATEGORY_RE.match(jobOptions['category_name']))
 
 class prodNtupleConfig:
     """Configuration metadata needed to run Ntuple production.
