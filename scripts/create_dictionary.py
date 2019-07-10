@@ -545,6 +545,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   indices = {}
   lhe_set = ''
   lhe_set_tried = False
+  lhe_correct_binning = True
   nof_reweighting_weights = 0
   reweighting_tried = not is_rwgt
   for entry in entries_valid:
@@ -646,6 +647,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
               nBins          = nBins,
               histogram_name = histogram_name,
             ))
+            lhe_correct_binning = False
             continue
           index_entry[HISTOGRAM_COUNT_KEY][histogram_name] = [
             histogram.GetBinContent(idxBin) for idxBin in range(1, nBins + 1)
@@ -714,7 +716,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
     meta_dict[key]['type']                            = 'data' if is_data else 'mc'
     meta_dict[key]['reHLT']                           = True
     meta_dict[key]['located']                         = True
-    meta_dict[key]['has_LHE']                         = False if is_data else has_LHE(indices)
+    meta_dict[key]['has_LHE']                         = False if is_data else (lhe_correct_binning and has_LHE(indices))
     meta_dict[key]['missing_from_superset']           = missing_from_superset
     meta_dict[key]['missing_completely']              = overlap_with_triggers
     meta_dict[key]['histogram_names']                 = histogram_names
