@@ -578,6 +578,9 @@ bool
 isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons);
 
 bool
+isfailsZbosonMassVetoSFOS(const std::vector<const RecoLepton *> & preselLeptons);
+
+bool
 isfailsHtoZZVeto(const std::vector<const RecoLepton *> & preselLeptons);
 
 /**

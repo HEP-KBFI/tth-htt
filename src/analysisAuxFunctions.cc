@@ -409,6 +409,32 @@ isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons)
 }
 
 bool
+isfailsZbosonMassVetoSFOS(const std::vector<const RecoLepton *> & preselLeptons)
+{
+  bool isSameFlavor_OS = false;
+  double massSameFlavor_OS = -1.;
+  for(auto lepton1_it = preselLeptons.begin(); lepton1_it != preselLeptons.end(); ++lepton1_it)
+  {
+    const RecoLepton * lepton1 = *lepton1_it;
+    for(auto lepton2_it = lepton1_it + 1; lepton2_it != preselLeptons.end(); ++lepton2_it)
+    {
+      const RecoLepton * lepton2 = *lepton2_it;
+      if(lepton1->pdgId() == -lepton2->pdgId())
+      {
+        // pair of same flavor leptons of opposite charge
+        isSameFlavor_OS = true;
+        const double mass = (lepton1->p4() + lepton2->p4()).mass();
+        if(std::fabs(mass - z_mass) < std::fabs(massSameFlavor_OS - z_mass))
+        {
+          massSameFlavor_OS = mass;
+        }
+      }
+    }
+  }
+  return isSameFlavor_OS && std::fabs(massSameFlavor_OS - z_mass) < z_window;
+}
+
+bool
 isfailsHtoZZVeto(const std::vector<const RecoLepton *> & preselLeptons)
 {
   bool failsHtoZZVeto = false;
