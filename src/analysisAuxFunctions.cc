@@ -363,6 +363,27 @@ findFile(const std::string & fileName)
 }
 
 bool
+isSFOS(const std::vector<const RecoLepton *> & leptons)
+{
+  bool isSameFlavor_OS = false;
+  for(auto lepton1_it = leptons.begin(); lepton1_it != leptons.end(); ++lepton1_it)
+  {
+    const RecoLepton * lepton1 = *lepton1_it;
+    for(auto lepton2_it = lepton1_it + 1; lepton2_it != leptons.end(); ++lepton2_it)
+    {
+      const RecoLepton * lepton2 = *lepton2_it;
+      if(lepton1->pdgId() == -lepton2->pdgId())
+      {
+        // pair of same flavor leptons of opposite charge
+        isSameFlavor_OS = true;
+        break;
+      }
+    }
+  }
+  return isSameFlavor_OS;
+}
+
+bool
 isfailsLowMassVeto(const std::vector<const RecoLepton *> & preselLeptons)
 {
   bool failsLowMassVeto = false;

@@ -572,6 +572,9 @@ std::string
 findFile(const std::string & fileName);
 
 bool
+isSFOS(const std::vector<const RecoLepton *> & leptons);
+
+bool
 isfailsLowMassVeto(const std::vector<const RecoLepton *> & preselLeptons);
 
 bool

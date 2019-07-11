@@ -1502,16 +1502,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     cutFlowTable.update("H->ZZ*->4l veto", evtWeight);
     cutFlowHistManager->fillHistograms("H->ZZ*->4l veto", evtWeight);
 
-    bool isSameFlavor_OS_FO = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = fakeableLeptons.begin();
-    lepton1 != fakeableLeptons.end(); ++lepton1 ) {
-      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-      lepton2 != fakeableLeptons.end(); ++lepton2 ) {
-	if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // pair of same flavor leptons of opposite charge
-	  isSameFlavor_OS_FO = true;
-	}
-      }
-    }
+    const bool isSameFlavor_OS_FO = isSFOS(fakeableLeptons);
 // is_tH_like_and_not_ttH_like
     double met_LD_cut = 0.;
     //if (tH_like && !do_sync) met_LD_cut = -1.;
