@@ -1017,17 +1017,9 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
 
-    bool failsLowMassVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = selLeptons.begin();
-	  lepton1 != selLeptons.end(); ++lepton1 ) {
-      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-	    lepton2 != selLeptons.end(); ++lepton2 ) {
-	if ( ((*lepton1)->p4() + (*lepton2)->p4()).mass() < 12. ) {
-	  failsLowMassVeto = true;
-	}
-      }
-    }
-    if ( failsLowMassVeto ) {
+    const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptons);
+    if(failsLowMassVeto)
+    {
       continue;
     }
     cutFlowTable.update("m(ll) > 12 GeV", evtWeight);

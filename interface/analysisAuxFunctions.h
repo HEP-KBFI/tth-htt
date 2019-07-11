@@ -572,6 +572,9 @@ std::string
 findFile(const std::string & fileName);
 
 bool
+isfailsLowMassVeto(const std::vector<const RecoLepton *> & preselLeptons);
+
+bool
 isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons);
 
 bool

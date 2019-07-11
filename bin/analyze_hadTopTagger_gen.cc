@@ -1502,17 +1502,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable_2lss_1tau.update(">= 1 sel tau (2)", evtWeight);
 
-    bool failsLowMassVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptons.begin();
-          lepton1 != preselLeptons.end(); ++lepton1 ) {
-      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-            lepton2 != preselLeptons.end(); ++lepton2 ) {
-        double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
-        if ( mass < 12. ) {
-          failsLowMassVeto = true;
-        }
-      }
-    }
+    const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptons);
     if ( failsLowMassVeto ) {
       continue;
     }

@@ -363,6 +363,27 @@ findFile(const std::string & fileName)
 }
 
 bool
+isfailsLowMassVeto(const std::vector<const RecoLepton *> & preselLeptons)
+{
+  bool failsLowMassVeto = false;
+  for(auto lepton1_it = preselLeptons.begin(); lepton1_it != preselLeptons.end(); ++lepton1_it)
+  {
+    const RecoLepton * lepton1 = *lepton1_it;
+    for(auto lepton2_it = lepton1_it + 1; lepton2_it != preselLeptons.end(); ++lepton2_it)
+    {
+      const RecoLepton * lepton2 = *lepton2_it;
+      const double mass = (lepton1->p4() + lepton2->p4()).mass();
+      if(mass < 12.)
+      {
+        failsLowMassVeto = true;
+        break;
+      }
+    }
+  }
+  return failsLowMassVeto;
+}
+
+bool
 isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons)
 {
   bool failsZbosonMassVeto = false;
