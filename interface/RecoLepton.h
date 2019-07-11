@@ -132,6 +132,7 @@ public:
   Double_t sip3d() const;
   Double_t mvaRawTTH() const;
   Double_t jetPtRatio() const;
+  Double_t jetRelIso() const;
   Double_t jetPtRel() const;
   Double_t jetBtagCSV() const;
   Double_t jetBtagCSV(Btag btag) const;

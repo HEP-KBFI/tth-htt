@@ -209,6 +209,12 @@ RecoLepton::jetPtRatio() const
 }
 
 Double_t
+RecoLepton::jetRelIso() const
+{
+  return 1. / jetPtRatio_ - 1.;
+}
+
+Double_t
 RecoLepton::jetPtRel() const
 {
   return jetPtRel_;
