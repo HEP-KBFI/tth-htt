@@ -78,14 +78,17 @@ TMVAInterface_OddEven
   double mvaOutput = -1.0;
   if(EventNumber % 2){ // Odd event number
     mvaOutput = mva_Odd_->EvaluateMVA("BDTG");
+    //std::cout<< "mvaOutput Odd original " << mvaOutput << std::endl;
   }else{ // Even event number
     mvaOutput = mva_Even_->EvaluateMVA("BDTG");
+    //std::cout<< "mvaOutput Even original " << mvaOutput << std::endl;
   }
 
 
   if(isBDTTransform_)
   {
     mvaOutput = 1. / (1. + std::sqrt((1. - mvaOutput) / (1. + mvaOutput)));
+    //std::cout<< "mvaOutput transformed " << mvaOutput << std::endl;
   }
 
   return mvaOutput;
