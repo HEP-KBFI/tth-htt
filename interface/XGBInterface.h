@@ -11,6 +11,9 @@ class XGBInterface
 public:
   XGBInterface(const std::string & mvaFileName,
                const std::vector<std::string> & mvaInputVariables);
+  XGBInterface(const std::string & mvaFileName_odd,
+	       const std::string & mvaFileName_even,
+               const std::vector<std::string> & mvaInputVariables);
   ~XGBInterface();
 
   /**
@@ -19,15 +22,28 @@ public:
    * @return          MVA output
    */
   double
-  operator()(const std::map<std::string, double> & mvaInputs) const;
+    operator()(const std::map<std::string, double> & mvaInputs) const;
+
+  double
+    operator()(const std::map<std::string, double> & mvaInputs, const int event_number) const;
+
 
 private:
+  enum Mode{k_old, k_odd_even};
+  int mode_;
   std::string mvaFileName_;
-
-  std::vector<std::string> mvaInputVariables_; // list of MVA input variables
   PyObject* pkldata_;
   PyObject* moduleMainString_;
   PyObject* moduleMain_;
+  std::string mvaFileName_odd_;
+  PyObject* pkldata_odd_;
+  PyObject* moduleMainString_odd_;
+  PyObject* moduleMain_odd_;
+  std::string mvaFileName_even_;
+  PyObject* pkldata_even_;
+  PyObject* moduleMainString_even_;
+  PyObject* moduleMain_even_;
+  std::vector<std::string> mvaInputVariables_; // list of MVA input variables
 };
 
 #endif // XGBInterface_h
