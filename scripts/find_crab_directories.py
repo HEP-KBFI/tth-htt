@@ -84,6 +84,7 @@ if __name__ == '__main__':
             is_completed = True
             break
       dataset_match = DATASET_REGEX.match(dataset_name)
+      logging.debug("Found dataset: {}".format(dataset_name))
       if not dataset_name or not dataset_match:
         raise RuntimeError("Unable to parse dataset name from file: %s" % crab_logfile)
       if not output_dir:
@@ -116,7 +117,9 @@ if __name__ == '__main__':
           logging.debug("'crab status' claimed failed jobs, but all files are actually present")
           is_completed = True
         else:
-          logging.debug("The following ROOT files are missing: {}".format(', '.join(map(str, list(sorted(missing_idxs))))))
+          logging.debug("The following {} ROOT file(s) are missing in {}: {}".format(
+            len(missing_idxs), crab_path, ', '.join(map(str, list(sorted(missing_idxs)))))
+          )
         if is_completed:
           if dataset_requestName not in crab_paths:
             crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path }
