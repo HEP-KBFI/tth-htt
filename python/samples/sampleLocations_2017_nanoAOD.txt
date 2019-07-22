@@ -29,6 +29,7 @@
 /hdfs/cms/store/user/kaehatah/2017v2_2019Jun22/SingleElectron/2017v2_2019Jun22_SingleElectron__Run2017B-31Mar2018-v1
 /hdfs/cms/store/user/kaehatah/2017v2_2019Jun22/SingleElectron/2017v2_2019Jun22_SingleElectron__Run2017C-31Mar2018-v1
 /hdfs/cms/store/user/kaehatah/2017v2_2019Jun22/SingleElectron/2017v2_2019Jun22_SingleElectron__Run2017D-31Mar2018-v1
+/hdfs/cms/store/user/kaehatah/2017v2_2019Jun22/SingleElectron/2017v2_2019Jun22_SingleElectron__Run2017E-31Mar2018-v1
 /hdfs/cms/store/user/kaehatah/2017v2_2019Jun22/SingleElectron/2017v2_2019Jun22_SingleElectron__Run2017F-31Mar2018-v1
 /hdfs/cms/store/user/kaehatah/2017v2_2019Jun22/SingleMuon/2017v2_2019Jun22_SingleMuon__Run2017B-31Mar2018-v1
 /hdfs/cms/store/user/kaehatah/2017v2_2019Jun22/SingleMuon/2017v2_2019Jun22_SingleMuon__Run2017C-31Mar2018-v1

@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-07-06 21:19:25 with the following command:
+# file generated at 2019-07-22 17:53:59 with the following command:
 # find_samples.py -V -m python/samples/metaDict_2017_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2017_31Mar18.txt -p SingleElectron SingleMuon DoubleEG DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt -v 9_4_5_cand1 -r 2017 -C +31Mar2018 -c python/samples/sampleLocations_2017_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -51,7 +51,7 @@ meta_dictionary["/SingleElectron/Run2017D-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleElectron/Run2017E-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2017v2_2019Jun22_SingleElectron__Run2017E-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2017E_31Mar2018_v1"),
   ("nof_db_events",         102121689),
@@ -96,7 +96,7 @@ meta_dictionary["/SingleMuon/Run2017B-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2017C-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2017v2_2019Jun22_SingleMuon__Run2017C-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2017C_31Mar2018_v1"),
   ("nof_db_events",         165652756),
@@ -156,7 +156,7 @@ meta_dictionary["/SingleMuon/Run2017F-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleEG/Run2017B-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2017v2_2019Jun22_DoubleEG__Run2017B-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2017B_31Mar2018_v1"),
   ("nof_db_events",         58088760),
@@ -216,7 +216,7 @@ meta_dictionary["/DoubleEG/Run2017E-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleEG/Run2017F-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2017v2_2019Jun22_DoubleEG__Run2017F-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2017F_31Mar2018_v1"),
   ("nof_db_events",         74344288),
@@ -231,7 +231,7 @@ meta_dictionary["/DoubleEG/Run2017F-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleMuon/Run2017B-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2017v2_2019Jun22_DoubleMuon__Run2017B-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleMuon_Run2017B_31Mar2018_v1"),
   ("nof_db_events",         14501767),
@@ -321,7 +321,7 @@ meta_dictionary["/MuonEG/Run2017B-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/MuonEG/Run2017C-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2017v2_2019Jun22_MuonEG__Run2017C-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2017C_31Mar2018_v1"),
   ("nof_db_events",         15595214),
@@ -381,7 +381,7 @@ meta_dictionary["/MuonEG/Run2017F-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2017B-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2017v2_2019Jun22_Tau__Run2017B-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2017B_31Mar2018_v1"),
   ("nof_db_events",         38158216),
@@ -396,7 +396,7 @@ meta_dictionary["/Tau/Run2017B-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2017C-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2017v2_2019Jun22_Tau__Run2017C-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2017C_31Mar2018_v1"),
   ("nof_db_events",         55416425),
@@ -411,7 +411,7 @@ meta_dictionary["/Tau/Run2017C-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2017D-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2017v2_2019Jun22_Tau__Run2017D-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2017D_31Mar2018_v1"),
   ("nof_db_events",         20530776),
