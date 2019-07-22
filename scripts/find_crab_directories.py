@@ -134,3 +134,4 @@ if __name__ == '__main__':
 
   with open(output_fn, 'w') as output_fptr:
     output_fptr.write('\n'.join(list(sorted(map(lambda kv: kv[1]['crab_path'], crab_paths.items())))) + '\n')
+  logging.info("Wrote file {}".format(output_fn))
