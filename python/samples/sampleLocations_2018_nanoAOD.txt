@@ -23,6 +23,7 @@
 /hdfs/cms/store/user/rdewanje/2018_2019Jun26/DoubleMuon/2018_2019Jun26_DoubleMuon__Run2018A-17Sep2018-v2
 /hdfs/cms/store/user/rdewanje/2018_2019Jun26/DoubleMuon/2018_2019Jun26_DoubleMuon__Run2018B-17Sep2018-v1
 /hdfs/cms/store/user/rdewanje/2018_2019Jun26/DoubleMuon/2018_2019Jun26_DoubleMuon__Run2018C-17Sep2018-v1
+/hdfs/cms/store/user/rdewanje/2018_2019Jun26/MuonEG/2018_2019Jun26_MuonEG__Run2018C-17Sep2018-v1
 /hdfs/cms/store/user/rdewanje/2018_2019Jun26/SingleMuon/2018_2019Jun26_SingleMuon__Run2018A-17Sep2018-v2
 /hdfs/cms/store/user/rdewanje/2018_2019Jun26/SingleMuon/2018_2019Jun26_SingleMuon__Run2018B-17Sep2018-v1
 /hdfs/cms/store/user/rdewanje/2018_2019Jun26/SingleMuon/2018_2019Jun26_SingleMuon__Run2018C-17Sep2018-v1

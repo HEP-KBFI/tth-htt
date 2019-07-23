@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-07-22 18:03:48 with the following command:
+# file generated at 2019-07-23 15:41:55 with the following command:
 # find_samples.py -V -m python/samples/metaDict_2018_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2018_17Sep18.txt -p SingleMuon EGamma DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt -v 10_2_4_patch1 -r 2018 -C +17Sep2018 +Run2018D-PromptReco -c python/samples/sampleLocations_2018_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -216,7 +216,7 @@ meta_dictionary["/MuonEG/Run2018B-17Sep2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/MuonEG/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018_2019Jun26_MuonEG__Run2018C-17Sep2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2018C_17Sep2018_v1"),
   ("nof_db_events",         15652198),
