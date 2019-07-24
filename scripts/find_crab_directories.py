@@ -83,6 +83,7 @@ if __name__ == '__main__':
           if COMPLETED_REGEX.match(line_stripped):
             is_completed = True
             break
+      chunk_str = crab_subdir[crab_subdir.find('CHUNK'):crab_subdir.find('CHUNK') + len('CHUNK') + 1] if 'CHUNK' in crab_subdir else ''
       dataset_match = DATASET_REGEX.match(dataset_name)
       logging.debug("Found dataset: {}".format(dataset_name))
       if not dataset_name or not dataset_match:
@@ -93,9 +94,10 @@ if __name__ == '__main__':
         raise RuntimeError("Unable to parse total number of jobs from file: %s" % crab_logfile)
       version = os.path.basename(output_dir)
       version_date = version.split('_')[1]
+      prefix = '{}_{}'.format(version, chunk_str) if chunk_str else version
       userName = os.path.basename(os.path.dirname(output_dir))
       dataset_requestName = '%s__%s' % (dataset_match.group(1), dataset_match.group(2))
-      requestName = '%s_%s' % (version, dataset_requestName)
+      requestName = '%s_%s' % (prefix, dataset_requestName)
       max_requestname_len = 160 - len(userName)
       if len(requestName) > max_requestname_len:
         requestName = requestName[:max_requestname_len]
