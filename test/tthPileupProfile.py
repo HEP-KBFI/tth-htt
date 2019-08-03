@@ -51,6 +51,8 @@ output_file = args.output_file
 # Use the arguments
 if '{era}' in output_file:
   output_file = output_file.format(era = era)
+version = "%s_%s" % (version, mode)
+
 
 if mode == 'sync':
   samples = load_samples(era, False, suffix = 'sync')
