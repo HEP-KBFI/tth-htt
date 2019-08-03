@@ -1705,7 +1705,12 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       cutFlowHistManager->fillHistograms("sel lepton+tau charge", evtWeight);
     }
 
-    bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull);
+    const bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull) || (
+        selLepton_lead->is_electron() &&
+        selLepton_sublead->is_electron() &&
+        isfailsZbosonMassVeto({ selLepton_lead, selLepton_sublead }, true)
+      )
+    ;
     if ( failsZbosonMassVeto ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto." << std::endl;

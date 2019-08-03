@@ -578,10 +578,8 @@ bool
 isfailsLowMassVeto(const std::vector<const RecoLepton *> & preselLeptons);
 
 bool
-isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons);
-
-bool
-isfailsZbosonMassVetoSFOS(const std::vector<const RecoLepton *> & preselLeptons);
+isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons,
+                      bool ignoreOS = false);
 
 bool
 isfailsHtoZZVeto(const std::vector<const RecoLepton *> & preselLeptons);
