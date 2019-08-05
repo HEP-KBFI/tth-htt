@@ -879,16 +879,11 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     "run:ls:event selection",
     "trigger",
     ">= 2 presel leptons",
-    //"presel lepton trigger match",
-    ">= 2 jets",
-    ">= 2 loose b-jets || 1 medium b-jet (1)",
     ">= 1 sel tau (1)",
     ">= 2 sel leptons",
     "<= 2 tight leptons",
-    //"fakeable lepton trigger match",
     "HLT filter matching",
-    ">= 3 jets",
-    ">= 2 loose b-jets || 1 medium b-jet (2)",
+    "Hadronic selection",
     ">= 1 sel tau (2)",
     "<= 1 veto taus",
     "m(ll) > 12 GeV",
@@ -1307,28 +1302,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
     */
 
-    // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
-    if ( !(selJets.size() >= 2) ) {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS selJets selection (1)." << std::endl;
-        printCollection("selJets", selJets);
-      }
-      continue;
-    }
-    cutFlowTable.update(">= 2 jets");
-    cutFlowHistManager->fillHistograms(">= 2 jets", lumiScale);
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection (1)." << std::endl;
-        printCollection("selJets", selJets);
-        printCollection("selBJets_loose", selBJets_loose);
-        printCollection("selBJets_medium", selBJets_medium);
-      }
-      continue;
-    }
-    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (1)");
-    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)", lumiScale);
-
     if ( !(selHadTaus.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS selHadTaus selection." << std::endl;
@@ -1529,27 +1502,25 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowTable.update("HLT filter matching", evtWeight);
     cutFlowHistManager->fillHistograms("HLT filter matching", evtWeight);
 
+    const bool ttH_like = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && (selJets.size() >= 3);
+    const bool tH_like = (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1);
+    const bool is_tH_like_and_not_ttH_like = tH_like && ! ttH_like;
+
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
-    if ( !(selJets.size() >= 3) ) {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS selJets selection (2)." << std::endl;
-        printCollection("selJets", selJets);
-      }
-      continue;
-    }
-    cutFlowTable.update(">= 3 jets", evtWeight);
-    cutFlowHistManager->fillHistograms(">= 3 jets", evtWeight);
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection (2)." << std::endl;
+    const bool passEvents = ttH_like || tH_like;
+    if(! passEvents)
+    {
+      if(run_lumi_eventSelector)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS Hadronic selection.\n";
         printCollection("selJets", selJets);
         printCollection("selBJets_loose", selBJets_loose);
         printCollection("selBJets_medium", selBJets_medium);
       }
       continue;
     }
-    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
-    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
+    cutFlowTable.update("Hadronic selection", evtWeight);
+    cutFlowHistManager->fillHistograms("Hadronic selection", evtWeight);
 
     if ( !(selHadTaus.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
@@ -2258,7 +2229,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       snm->read(selJets);
 
       snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
-      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet);
+      snm->read(
+        isGenMatched, selBJets_medium.size(), selBJets_loose.size(), nLightJet,
+        SyncNtupleManager::placeholder_value, is_tH_like_and_not_ttH_like
+      );
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
