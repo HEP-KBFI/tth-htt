@@ -33,7 +33,7 @@ RecoJetReader::RecoJetReader(int era,
   , readGenMatching_(readGenMatching)
   , btag_(Btag::kDeepJet)
   , btag_central_or_shift_(kBtag_central)
-  , ptMassOption_(isMC_ ? kJet_central : kJet_central_nonNominal)
+  , ptMassOption_(isMC_ ? kJetMET_central : kJetMET_central_nonNominal)
   , jet_eta_(nullptr)
   , jet_phi_(nullptr)
   , jet_charge_(nullptr)
@@ -104,11 +104,13 @@ RecoJetReader::~RecoJetReader()
 void
 RecoJetReader::setPtMass_central_or_shift(int central_or_shift)
 {
-  if(! isMC_ && central_or_shift != kJet_central_nonNominal)
+  if(! isMC_ && central_or_shift != kJetMET_central_nonNominal)
   {
-    throw cmsException(this, __func__, __LINE__)
-      << "Data has only non-nominal pt and mass"
-    ;
+    throw cmsException(this, __func__, __LINE__) << "Data has only non-nominal pt and mass";
+  }
+  if(! isValidJESsource(era_, central_or_shift))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << era_ << ": " << central_or_shift;
   }
   ptMassOption_ = central_or_shift;
 }
@@ -133,10 +135,14 @@ RecoJetReader::setBranchNames()
   {
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
-    for(int idxShift = kJet_central_nonNominal; idxShift <= kJet_jerDown; ++idxShift)
+    for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerDown; ++idxShift)
     {
-      branchNames_pt_systematics_[idxShift]   = getBranchName_jetPtMass(branchName_obj_, era_, idxShift, true);
-      branchNames_mass_systematics_[idxShift] = getBranchName_jetPtMass(branchName_obj_, era_, idxShift, false);
+      if(! isValidJESsource(era_, idxShift))
+      {
+        continue;
+      }
+      branchNames_pt_systematics_[idxShift]   = getBranchName_jetMET(branchName_obj_, era_, idxShift, true);
+      branchNames_mass_systematics_[idxShift] = getBranchName_jetMET(branchName_obj_, era_, idxShift, false);
     }
     branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
 
@@ -212,8 +218,12 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_mass_systematics_[ptMassOption_], branchNames_mass_systematics_[ptMassOption_]);
     if(isMC_)
     {
-      for(int idxShift = kJet_central_nonNominal; idxShift <= kJet_jerDown; ++idxShift)
+      for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerDown; ++idxShift)
       {
+        if(! isValidJESsource(era_, idxShift))
+        {
+          continue;
+        }
         if(idxShift == ptMassOption_)
         {
           continue; // do not bind the same branch twice
@@ -338,8 +348,12 @@ RecoJetReader::read() const
 
       if(isMC_)
       {
-        for(int idxShift = kJet_central_nonNominal; idxShift <= kJet_jerDown; ++idxShift)
+        for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerDown; ++idxShift)
         {
+          if(! isValidJESsource(era_, idxShift))
+          {
+            continue;
+          }
           // we want to save all pT-s and masses that have been shifted by systematic uncertainties to the maps,
           // including the central nominal and central non-nominal values; crucial for RecoJetWriter
           jet.pt_systematics_[idxShift]   = gInstance->jet_pt_systematics_.at(idxShift)[idxJet];

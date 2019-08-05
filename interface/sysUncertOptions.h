@@ -25,23 +25,72 @@ enum
   kBtag_jesUp, kBtag_jesDown,
 };
 
-//--- declare systematic uncertainties on data/MC corrections for jet pt & mass
+//--- declare systematic uncertainties on data/MC corrections for jet pt & mass and MET pt & phi
 enum
 {
-  kJet_central_nonNominal,  // for data and sync Ntuples
-  kJet_central,             // for MC
-  kJet_jesUp, kJet_jesDown,
-  kJet_jerUp, kJet_jerDown,
-};
-
-//--- declare systematic uncertainties on data/MC corrections for MET
-enum
-{
-  kMEt_central_nonNominal, // for data and sync Ntuples
-  kMEt_central,            // for MC
-  kMEt_shifted_JetEnUp,         kMEt_shifted_JetEnDown,
-  kMEt_shifted_JetResUp,        kMEt_shifted_JetResDown,
-  kMEt_shifted_UnclusteredEnUp, kMEt_shifted_UnclusteredEnDown,
+  kJetMET_central_nonNominal,  // for data and sync Ntuples
+  kJetMET_central,             // for MC
+  kJetMET_jesUp,                                 kJetMET_jesDown, // total JES
+  kJetMET_jesAbsoluteFlavMapUp,                  kJetMET_jesAbsoluteFlavMapDown,
+  kJetMET_jesAbsoluteMPFBiasUp,                  kJetMET_jesAbsoluteMPFBiasDown,
+  kJetMET_jesAbsoluteSampleUp,                   kJetMET_jesAbsoluteSampleDown, // not in 2016, 2017
+  kJetMET_jesAbsoluteScaleUp,                    kJetMET_jesAbsoluteScaleDown,
+  kJetMET_jesAbsoluteStatUp,                     kJetMET_jesAbsoluteStatDown,
+  kJetMET_jesCorrelationGroupbJESUp,             kJetMET_jesCorrelationGroupbJESDown,
+  kJetMET_jesCorrelationGroupFlavorUp,           kJetMET_jesCorrelationGroupFlavorDown,
+  kJetMET_jesCorrelationGroupIntercalibrationUp, kJetMET_jesCorrelationGroupIntercalibrationDown,
+  kJetMET_jesCorrelationGroupMPFInSituUp,        kJetMET_jesCorrelationGroupMPFInSituDown,
+  kJetMET_jesCorrelationGroupUncorrelatedUp,     kJetMET_jesCorrelationGroupUncorrelatedDown,
+  kJetMET_jesFlavorPhotonJetUp,                  kJetMET_jesFlavorPhotonJetDown,
+  kJetMET_jesFlavorPureBottomUp,                 kJetMET_jesFlavorPureBottomDown,
+  kJetMET_jesFlavorPureCharmUp,                  kJetMET_jesFlavorPureCharmDown,
+  kJetMET_jesFlavorPureGluonUp,                  kJetMET_jesFlavorPureGluonDown,
+  kJetMET_jesFlavorPureQuarkUp,                  kJetMET_jesFlavorPureQuarkDown,
+  kJetMET_jesFlavorQCDUp,                        kJetMET_jesFlavorQCDDown,
+  kJetMET_jesFlavorZJetUp,                       kJetMET_jesFlavorZJetDown,
+  kJetMET_jesFragmentationUp,                    kJetMET_jesFragmentationDown,
+  kJetMET_jesPileUpDataMCUp,                     kJetMET_jesPileUpDataMCDown,
+  kJetMET_jesPileUpEnvelopeUp,                   kJetMET_jesPileUpEnvelopeDown,
+  kJetMET_jesPileUpMuZeroUp,                     kJetMET_jesPileUpMuZeroDown,
+  kJetMET_jesPileUpPtBBUp,                       kJetMET_jesPileUpPtBBDown,
+  kJetMET_jesPileUpPtEC1Up,                      kJetMET_jesPileUpPtEC1Down,
+  kJetMET_jesPileUpPtEC2Up,                      kJetMET_jesPileUpPtEC2Down,
+  kJetMET_jesPileUpPtHFUp,                       kJetMET_jesPileUpPtHFDown,
+  kJetMET_jesPileUpPtRefUp,                      kJetMET_jesPileUpPtRefDown,
+  kJetMET_jesRelativeBalUp,                      kJetMET_jesRelativeBalDown,
+  kJetMET_jesRelativeFSRUp,                      kJetMET_jesRelativeFSRDown,
+  kJetMET_jesRelativeJEREC1Up,                   kJetMET_jesRelativeJEREC1Down,
+  kJetMET_jesRelativeJEREC2Up,                   kJetMET_jesRelativeJEREC2Down,
+  kJetMET_jesRelativeJERHFUp,                    kJetMET_jesRelativeJERHFDown,
+  kJetMET_jesRelativePtBBUp,                     kJetMET_jesRelativePtBBDown,
+  kJetMET_jesRelativePtEC1Up,                    kJetMET_jesRelativePtEC1Down,
+  kJetMET_jesRelativePtEC2Up,                    kJetMET_jesRelativePtEC2Down,
+  kJetMET_jesRelativePtHFUp,                     kJetMET_jesRelativePtHFDown,
+  kJetMET_jesRelativeSampleUp,                   kJetMET_jesRelativeSampleDown,
+  kJetMET_jesRelativeStatECUp,                   kJetMET_jesRelativeStatECDown,
+  kJetMET_jesRelativeStatFSRUp,                  kJetMET_jesRelativeStatFSRDown,
+  kJetMET_jesRelativeStatHFUp,                   kJetMET_jesRelativeStatHFDown,
+  kJetMET_jesSinglePionECALUp,                   kJetMET_jesSinglePionECALDown,
+  kJetMET_jesSinglePionHCALUp,                   kJetMET_jesSinglePionHCALDown,
+  kJetMET_jesSubTotalAbsoluteUp,                 kJetMET_jesSubTotalAbsoluteDown,
+  kJetMET_jesSubTotalMCUp,                       kJetMET_jesSubTotalMCDown,
+  kJetMET_jesSubTotalPileUpUp,                   kJetMET_jesSubTotalPileUpDown,
+  kJetMET_jesSubTotalPtUp,                       kJetMET_jesSubTotalPtDown,
+  kJetMET_jesSubTotalRelativeUp,                 kJetMET_jesSubTotalRelativeDown,
+  kJetMET_jesSubTotalScaleUp,                    kJetMET_jesSubTotalScaleDown,
+  kJetMET_jesTimePtEtaUp,                        kJetMET_jesTimePtEtaDown,
+  kJetMET_jesTimeRunBUp,                         kJetMET_jesTimeRunBDown, // not in 2016, 2018
+  kJetMET_jesTimeRunBCDUp,                       kJetMET_jesTimeRunBCDDown, // not in 2017, 2018
+  kJetMET_jesTimeRunCUp,                         kJetMET_jesTimeRunCDown, // not in 2016, 2018
+  kJetMET_jesTimeRunDEUp,                        kJetMET_jesTimeRunDEDown, // not in 2016, 2018
+  kJetMET_jesTimeRunEFUp,                        kJetMET_jesTimeRunEFDown, // not in 2017, 2018
+  kJetMET_jesTimeRunFUp,                         kJetMET_jesTimeRunFDown, // not in 2016, 2018
+  kJetMET_jesTimeRunGHUp,                        kJetMET_jesTimeRunGHDown, // not in 2017, 2018
+  kJetMET_jesTotalNoFlavorUp,                    kJetMET_jesTotalNoFlavorDown,
+  kJetMET_jesTotalNoFlavorNoTimeUp,              kJetMET_jesTotalNoFlavorNoTimeDown,
+  kJetMET_jesTotalNoTimeUp,                      kJetMET_jesTotalNoTimeDown,
+  kJetMET_jerUp,                                 kJetMET_jerDown, // total JER
+  kJetMET_UnclusteredEnUp,                       kJetMET_UnclusteredEnDown, // unclustered energy (only for MET)
 };
 
 enum
@@ -134,6 +183,10 @@ enum
   kDYMCNormScaleFactors_shiftUp, kDYMCNormScaleFactors_shiftDown
 };
 
+bool
+isValidJESsource(int era,
+                 int central_or_shift);
+
 /**
  * @brief Return branchName to read weights that need to be applied, per jet, to MC events
  *       in order to correct for data/MC differences in b-tagging efficiency and mistag rates
@@ -203,21 +256,10 @@ getBranchName_bTagWeight(Btag btag,
  * isPt -- if true, return pT branch name; if false, return mass branch name
  */
 std::string
-getBranchName_jetPtMass(const std::string & default_collectionName,
-                        int era,
-                        int central_or_shift,
-                        bool isPt);
-
-/**
- * @brief Return branch name to read MEt pt and phi
- *
- * isPt -- if true, return pT branch name; if false, return phi branch name
- */
-std::string
-getBranchName_MEt(const std::string & default_branchName,
-                  int era,
-                  int central_or_shift,
-                  bool isPt);
+getBranchName_jetMET(const std::string & default_branchName,
+                     int era,
+                     int central_or_shift,
+                     bool isPt);
 
 /**
  * @brief Return branch name to read PU weights

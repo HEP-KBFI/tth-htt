@@ -48,7 +48,7 @@ fi
 
 NANO_MODULES_DATA="absIso,tauIDLog,trigObjMatcher,jetIdx"
 NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,genMatchCollection,\
-puWeight${ERA}($PILEUP;$PROCESS_NAME),jetmetUncertainties${ERA},btagSF_deepFlav_${ERA}"
+puWeight${ERA}($PILEUP;$PROCESS_NAME),jetmetUncertainties${ERA}All,btagSF_deepFlav_${ERA}"
 
 if [ "$IS_HH_NONRES" == "True" ]; then
   NANO_MODULES_MC="$NANO_MODULES_MC,diHiggsVar_${ERA}"

@@ -222,7 +222,7 @@ int main(int argc,
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
   //     to allow systematic uncertainty on JEC to be estimated on analysis level
-  jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
+  jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
   jetReader->setBranchAddresses(inputTree);
   const RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
   const RecoJetCollectionCleanerByIndex jetCleanerByIndex(isDEBUG);
@@ -230,7 +230,7 @@ int main(int argc,
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
-  metReader->setMEt_central_or_shift(useNonNominal_jetmet ? kMEt_central_nonNominal : kMEt_central);
+  metReader->setMEt_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
   metReader->read_ptPhi_systematics(isMC);
   metReader->setBranchAddresses(inputTree);
 
@@ -274,10 +274,10 @@ int main(int argc,
     hadTauWriter = new RecoHadTauWriter(era, isMC, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
     hadTauWriter->setBranches(outputTree);
     jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
-    jetWriter->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
+    jetWriter->setPtMass_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
     jetWriter->setBranches(outputTree);
     metWriter = new RecoMEtWriter(era, isMC, branchName_met);
-    metWriter->setPtPhi_central_or_shift(useNonNominal_jetmet ? kMEt_central_nonNominal : kMEt_central);
+    metWriter->setPtPhi_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
     metWriter->write_ptPhi_systematics(isMC);
     metWriter->setBranches(outputTree);
 
@@ -459,9 +459,9 @@ int main(int argc,
             const int hadTauPt_option = getHadTauPt_option(central_or_shift);
             const int met_option      = getMET_option     (central_or_shift, isMC);
 
-            if(jetPt_option    == kJet_central      &&
+            if(jetPt_option    == kJetMET_central      &&
                hadTauPt_option == kHadTauPt_central &&
-               met_option      == kMEt_central      &&
+               met_option      == kJetMET_central      &&
                central_or_shift != "central")
             {
               std::cout << "Skipping systematics: " << central_or_shift << '\n';

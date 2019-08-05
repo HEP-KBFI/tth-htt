@@ -248,7 +248,7 @@ main(int argc,
   tightHadTauSelector.set_min_pt(18.);
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
-  jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
+  jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
   inputTree -> registerReader(jetReader);
   const RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetSelector jetSelector(era);
@@ -278,7 +278,7 @@ main(int argc,
 
 //--- declare missing transverse energy
   RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
-  metReader->setMEt_central_or_shift(useNonNominal_jetmet ? kMEt_central_nonNominal : kMEt_central);
+  metReader->setMEt_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
   metReader->read_ptPhi_systematics(isMC);
   inputTree -> registerReader(metReader);
 
@@ -367,12 +367,12 @@ main(int argc,
   std::cout << "writing RecoHadTau objects to branch = '" << branchName_hadTaus << "'\n";
 
   RecoJetWriter * const jetWriter = new RecoJetWriter(era, isMC, branchName_jets);
-  jetWriter->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
+  jetWriter->setPtMass_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
   jetWriter->setBranches(outputTree);
   std::cout << "writing RecoJet objects to branch = '" << branchName_jets << "'\n";
 
   RecoMEtWriter * const metWriter = new RecoMEtWriter(era, isMC, branchName_met);
-  metWriter->setPtPhi_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
+  metWriter->setPtPhi_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
   metWriter->write_ptPhi_systematics(isMC);
   metWriter->setBranches(outputTree);
   std::cout << "writing RecoMEt object to branch = '" << branchName_met << "'\n";

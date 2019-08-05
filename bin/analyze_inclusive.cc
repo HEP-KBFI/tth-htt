@@ -221,8 +221,8 @@ main(int argc,
   const int hadTauPt_option            = getHadTauPt_option     (central_or_shift);
   const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift);
 
-  const int met_option   = useNonNominal_jetmet ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
-  const int jetPt_option = useNonNominal_jetmet ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
+  const int met_option   = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC);
+  const int jetPt_option = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC);
 
   const bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
 
