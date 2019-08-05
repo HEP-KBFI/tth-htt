@@ -159,18 +159,16 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  if(electron.mvaRawTTH() > wp_mvaTTH_)
+  if(electron.jetBtagCSV() > max_jetBtagCSV_)
   {
-    if(electron.jetBtagCSV() > max_jetBtagCSV_)
+    if(debug_)
     {
-      if(debug_)
-      {
-        std::cout << "FAILS jetBtagCSV = " << electron.jetBtagCSV() << " <= " << max_jetBtagCSV_ << " fakeable cut\n";
-      }
-      return false;
+      std::cout << "FAILS jetBtagCSV = " << electron.jetBtagCSV() << " <= " << max_jetBtagCSV_ << " fakeable cut\n";
     }
+    return false;
   }
-  else
+
+  if(electron.mvaRawTTH() <= wp_mvaTTH_)
   {
     if(electron.jetPtRatio() < min_jetPtRatio_)
     {

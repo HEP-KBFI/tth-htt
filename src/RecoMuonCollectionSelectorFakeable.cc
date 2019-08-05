@@ -129,19 +129,16 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
     }
     return false;
   }
-
-  if(muon.mvaRawTTH() >= wp_mvaTTH_)
+  if(muon.jetBtagCSV() > max_jetBtagCSV_)
   {
-    if(muon.jetBtagCSV() > max_jetBtagCSV_)
+    if(debug_)
     {
-      if(debug_)
-      {
-        std::cout << "FAILS jetBtagCSV = " << muon.jetBtagCSV() << " <= " << max_jetBtagCSV_ << " fakeable cut\n";
-      }
-      return false;
+      std::cout << "FAILS jetBtagCSV = " << muon.jetBtagCSV() << " <= " << max_jetBtagCSV_ << " fakeable cut\n";
     }
+    return false;
   }
-  else
+
+  if(muon.mvaRawTTH() <= wp_mvaTTH_)
   {
     if(muon.jetPtRatio() < min_jetPtRatio_)
     {
