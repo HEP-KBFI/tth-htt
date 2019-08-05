@@ -37,8 +37,9 @@ TYPE_MAP = {
 
 ttH_tH_BRANCH = 'is_tH_like_and_not_ttH_like'
 ttH_tH_CHANNELS = [
-  'syncTree_2lSS_SR', 'syncTree_2lSS_Fake', 'syncTree_2lSS_Flip',
-  'syncTree_3l_SR',   'syncTree_3l_Fake'
+  'syncTree_2lSS1tau_SR', 'syncTree_2lSS1tau_Fake', 'syncTree_2lSS1tau_Flip',
+  'syncTree_2lSS_SR',     'syncTree_2lSS_Fake',     'syncTree_2lSS_Flip',
+  'syncTree_3l_SR',       'syncTree_3l_Fake',
 ]
 
 # Default placeholder value for a variable that is not filled in sync Ntuples
