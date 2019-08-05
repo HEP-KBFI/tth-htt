@@ -85,8 +85,8 @@ RecoElectronWriter::setBranchNames()
   branchName_eCorr_ = Form("%s_%s", branchName_obj_.data(), "eCorr");
   branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "sieie");
   branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "hoe");
-  branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "deltaEtaSC_trackatVtx");
-  branchName_deltaPhi_ = Form("%s_%s", branchName_obj_.data(), "deltaPhiSC_trackatVtx");
+  branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "deltaEtaSC");
+  branchName_deltaPhi_ = Form("%s_%s", branchName_obj_.data(), "deltaPhiSC");
   branchName_OoEminusOoP_ = Form("%s_%s", branchName_obj_.data(), "eInvMinusPInv");
   branchName_lostHits_ = Form("%s_%s", branchName_obj_.data(), "lostHits");
   branchName_conversionVeto_ = Form("%s_%s", branchName_obj_.data(), "convVeto");

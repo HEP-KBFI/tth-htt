@@ -96,6 +96,24 @@ RecoElectron::deltaPhi() const
 }
 
 Double_t
+RecoElectron::etaSC() const
+{
+  return deltaEta_ + eta_;
+}
+
+Double_t
+RecoElectron::phiSC() const
+{
+  return deltaPhi_ + phi_;
+}
+
+Double_t
+RecoElectron::absEtaSC() const
+{
+  return std::fabs(etaSC());
+}
+
+Double_t
 RecoElectron::OoEminusOoP() const
 {
   return OoEminusOoP_;

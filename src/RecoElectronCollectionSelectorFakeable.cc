@@ -193,7 +193,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   if(apply_offline_e_trigger_cuts_)
   {
     const double max_sigmaEtaEta_trig = min_sigmaEtaEta_trig_ +
-                                        max_sigmaEtaEta_trig_ * (electron.absEta() > binning_absEta_);
+                                        max_sigmaEtaEta_trig_ * (electron.absEtaSC() > binning_absEta_);
     if(electron.sigmaEtaEta() > max_sigmaEtaEta_trig)
     {
       if(debug_)

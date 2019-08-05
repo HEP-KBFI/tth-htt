@@ -36,6 +36,9 @@ public:
   Double_t HoE() const;
   Double_t deltaEta() const;
   Double_t deltaPhi() const;
+  Double_t etaSC() const;
+  Double_t phiSC() const;
+  Double_t absEtaSC() const;
   Double_t OoEminusOoP() const;
   Int_t nLostHits() const;
   Bool_t passesConversionVeto() const;
