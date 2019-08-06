@@ -476,8 +476,6 @@ class sbatchManager:
             prefix = os.path.join('/home', getpass.getuser(), 'jobs')
         else:
             prefix = os.path.join('/scratch', getpass.getuser())
-            if not os.path.isdir(prefix):
-                run_cmd('/scratch/mkscratch')
         job_dir = os.path.join(
             prefix, "%s_%s" % (self.analysisName, datetime.date.today().isoformat()),
         )
