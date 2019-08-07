@@ -74,6 +74,34 @@ class systematics(object):
 
       full = x1_().full + y1_().full
 
+    class THQ(object):
+
+      class x1_(object):
+        up   = "CMS_ttHl_thu_shape_tHq_x1Up"
+        down = "CMS_ttHl_thu_shape_tHq_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_tHq_y1Up"
+        down = "CMS_ttHl_thu_shape_tHq_y1Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full
+
+    class THW(object):
+
+      class x1_(object):
+        up   = "CMS_ttHl_thu_shape_tHW_x1Up"
+        down = "CMS_ttHl_thu_shape_tHW_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_tHW_y1Up"
+        down = "CMS_ttHl_thu_shape_tHW_y1Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full
+
     class TTW(object):
 
       class x1_(object):
@@ -117,16 +145,18 @@ class systematics(object):
       full = x1_().full + y1_().full
 
     ttH = TTH().full
+    tHq = THQ().full
+    tHW = THW().full
     ttW = TTW().full
     ttZ = TTZ().full
     hh  = HH().full
 
-    x1_up   = [ TTH().x1_().up,   TTW().x1_().up,   TTZ().x1_().up,   HH().x1_().up   ]
-    y1_up   = [ TTH().y1_().up,   TTW().y1_().up,   TTZ().y1_().up,   HH().y1_().up   ]
-    x1_down = [ TTH().x1_().down, TTW().x1_().down, TTZ().x1_().down, HH().x1_().down ]
-    y1_down = [ TTH().y1_().down, TTW().y1_().down, TTZ().y1_().down, HH().y1_().down ]
+    x1_up   = [ TTH().x1_().up,   THQ().x1_().up,   THW().x1_().up,   TTW().x1_().up,   TTZ().x1_().up,   HH().x1_().up   ]
+    y1_up   = [ TTH().y1_().up,   THQ().y1_().up,   THW().y1_().up,   TTW().y1_().up,   TTZ().y1_().up,   HH().y1_().up   ]
+    x1_down = [ TTH().x1_().down, THQ().x1_().down, THW().x1_().down, TTW().x1_().down, TTZ().x1_().down, HH().x1_().down ]
+    y1_down = [ TTH().y1_().down, THQ().y1_().down, THW().y1_().down, TTW().y1_().down, TTZ().y1_().down, HH().y1_().down ]
 
-    full = ttH + ttW + ttZ
+    full = ttH + tHq + tHW + ttW + ttZ
     full_hh = full + hh
 
   class Btag(object):
