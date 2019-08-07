@@ -6,12 +6,13 @@
 
 std::string
 get_tH_weight_str(double kt,
-                  double kv);
+                  double kv,
+                  double cosa);
 
 std::string
 get_tH_SM_str();
 
-std::pair<double, double>
-get_tH_params(const std::string & kt_kv_str);
+std::tuple<double, double, double>
+get_tH_params(const std::string & kt_kv_cosa_str);
 
 #endif

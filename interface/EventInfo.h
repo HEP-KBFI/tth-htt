@@ -34,7 +34,8 @@ public:
 
   double
   genWeight_tH(double kv,
-               double kt) const;
+               double kt,
+               double cosa) const;
 
   double
   genWeight_tH(const std::string & name) const;

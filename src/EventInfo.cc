@@ -99,9 +99,10 @@ EventInfo::genWeight_tH() const
 
 double
 EventInfo::genWeight_tH(double kv,
-                        double kt) const
+                        double kt,
+                        double cosa) const
 {
-  return genWeight_tH(get_tH_weight_str(kv, kt));
+  return genWeight_tH(get_tH_weight_str(kv, kt, cosa));
 }
 
 double
@@ -130,18 +131,26 @@ EventInfo::loadWeight_tH(const std::vector<edm::ParameterSet> & cfg)
     const double weight = cfg_entry.getParameter<double>("weight");
     const double kt = cfg_entry.getParameter<double>("kt");
     const double kv = cfg_entry.getParameter<double>("kv");
+    const double cosa = cfg_entry.exists("cosa") ?
+      cfg_entry.getParameter<double>("cosa")     :
+      std::numeric_limits<double>::quiet_NaN()
+    ;
     const int idx = cfg_entry.getParameter<int>("idx");
-    const std::string name = get_tH_weight_str(kt, kv);
+    const std::string name = get_tH_weight_str(kt, kv, cosa);
 
     // make sure that we can recover the paramters encoded by the string
-    const std::pair<double, double> kt_kv = get_tH_params(name);
-    assert(kt_kv.first == kt);
-    assert(kt_kv.second == kv);
+    const std::tuple<double, double, double> kt_kv_cosa = get_tH_params(name);
+    assert(std::get<0>(kt_kv_cosa) == kt);
+    assert(std::get<1>(kt_kv_cosa) == kv);
+    if(! std::isnan(cosa))
+    {
+      assert(std::get<2>(kt_kv_cosa) == cosa);
+    }
 
     assert(! tH_sf.count(name));
     tH_sf[name] = std::pair<int, double>(idx, weight);
     std::cout
-      << "Loaded weight '" << name << "': kt = " << kt << " & kv = " << kv
+      << "Loaded weight '" << name << "': kt = " << kt << " & kv = " << kv << " & cosa = " << cosa
       << " -> weight = " << weight <<" @ idx = " << idx << '\n'
     ;
   }
