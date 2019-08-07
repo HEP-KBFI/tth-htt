@@ -639,6 +639,8 @@ class analyzeConfig(object):
                     )
                   )
                   continue
+                if idx in missing_reweighting:
+                  continue
 
                 nof_events_rwgt = sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]
                 tHweight = find_tHweight(tHweights, idx)
