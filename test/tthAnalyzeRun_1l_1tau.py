@@ -89,6 +89,11 @@ else:
     "1l_1tau", "1l_1tau_OS", "1l_1tau_SS", "1l_1tau_OS_wChargeFlipWeights"
   ]
 
+for sample_name, sample_info in samples.items():
+  if sample_name == 'sum_events': continue
+  if sample_name.startswith("/DY"):
+    sample_info["sample_category"] = "DY"
+
 if __name__ == '__main__':
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \

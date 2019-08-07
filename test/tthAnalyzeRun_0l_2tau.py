@@ -145,6 +145,8 @@ for sample_name, sample_info in samples.items():
     sample_info["triggers"] = [ "2tau" ]
   if sample_info["type"] == "data":
     sample_info["use_it"] = sample_name.startswith("/Tau/")
+  if sample_name.startswith("/DY"):
+    sample_info["sample_category"] = "DY"
 
 if __name__ == '__main__':
   logging.info(
