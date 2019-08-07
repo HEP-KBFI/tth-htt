@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-07-04 23:57:35 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2017.py -p /hdfs/local/karl/ttHNtupleProduction/2017/2019Jul04_woPresel_nom/ntuples -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017.py -M
+# file generated at 2019-08-07 21:14:28 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2017.py -p /hdfs/local/karl/ttHNtupleProduction/2017/2019Aug07_woPresel_nom/ntuples -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_test.py -M
 
 samples_2017 = OD()
 samples_2017["/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
@@ -177,10 +177,105 @@ samples_2017["/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-P
     'CountWeightedL1PrefireNom_rwgt49'                           : [        78326,        78442,        78159, ],
     'CountWeightedL1Prefire_rwgt49'                              : [        78326,        77506,        79128, ],
     'CountWeightedLHEWeightScaleL1PrefireNom_rwgt49'             : [        97481,        89684,        82776,        85156,        78324,        72283,        75695,        69612,        64234, ],
+    'CountWeighted_rwgt50'                                       : [        46416,        46462,        46349, ],
+    'CountWeightedLHEWeightScale_rwgt50'                         : [        58165,        53207,        48880,        50753,        46415,        42636,        45075,        41216,        37855, ],
+    'CountWeightedL1PrefireNom_rwgt50'                           : [        44550,        44589,        44491, ],
+    'CountWeightedL1Prefire_rwgt50'                              : [        44550,        44099,        44990, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt50'             : [        55805,        51084,        46956,        48678,        44549,        40944,        43221,        39549,        36345, ],
+    'CountWeighted_rwgt51'                                       : [        42225,        42266,        42166, ],
+    'CountWeightedLHEWeightScale_rwgt51'                         : [        52934,        48404,        44455,        46187,        42225,        38774,        41019,        37494,        34426, ],
+    'CountWeightedL1PrefireNom_rwgt51'                           : [        40525,        40561,        40473, ],
+    'CountWeightedL1Prefire_rwgt51'                              : [        40525,        40115,        40926, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt51'             : [        50784,        46470,        42703,        44297,        40525,        37235,        39330,        35976,        33051, ],
+    'CountWeighted_rwgt52'                                       : [        38251,        38287,        38200, ],
+    'CountWeightedLHEWeightScale_rwgt52'                         : [        47973,        43850,        40259,        41857,        38251,        35114,        37172,        33965,        31176, ],
+    'CountWeightedL1PrefireNom_rwgt52'                           : [        36709,        36740,        36664, ],
+    'CountWeightedL1Prefire_rwgt52'                              : [        36709,        36336,        37073, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt52'             : [        46021,        42095,        38670,        40141,        36709,        33717,        35640,        32587,        29929, ],
+    'CountWeighted_rwgt53'                                       : [        34495,        34525,        34450, ],
+    'CountWeightedLHEWeightScale_rwgt53'                         : [        43282,        39545,        36293,        37762,        34494,        31654,        33535,        30628,        28103, ],
+    'CountWeightedL1PrefireNom_rwgt53'                           : [        33102,        33128,        33063, ],
+    'CountWeightedL1Prefire_rwgt53'                              : [        33102,        32765,        33431, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt53'             : [        41518,        37960,        34858,        36212,        33101,        30393,        32151,        29384,        26977, ],
+    'CountWeighted_rwgt54'                                       : [        30953,        30978,        30915, ],
+    'CountWeightedLHEWeightScale_rwgt54'                         : [        38857,        35486,        32554,        33902,        30952,        28392,        30106,        27483,        25206, ],
+    'CountWeightedL1PrefireNom_rwgt54'                           : [        29700,        29722,        29667, ],
+    'CountWeightedL1Prefire_rwgt54'                              : [        29700,        29397,        29996, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt54'             : [        37271,        34060,        31264,        32507,        29699,        27258,        28860,        26364,        24194, ],
+    'CountWeighted_rwgt55'                                       : [        27627,        27649,        27597, ],
+    'CountWeightedLHEWeightScale_rwgt55'                         : [        34704,        31675,        29045,        30276,        27627,        25330,        26885,        24530,        22488, ],
+    'CountWeightedL1PrefireNom_rwgt55'                           : [        26506,        26524,        26480, ],
+    'CountWeightedL1Prefire_rwgt55'                              : [        26506,        26235,        26771, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt55'             : [        33282,        30399,        27891,        29027,        26506,        24316,        25770,        23528,        21582, ],
+    'CountWeighted_rwgt56'                                       : [        24515,        24532,        24490, ],
+    'CountWeightedLHEWeightScale_rwgt56'                         : [        30813,        28107,        25760,        26881,        24514,        22465,        23870,        21765,        19943, ],
+    'CountWeightedL1PrefireNom_rwgt56'                           : [        23517,        23531,        23495, ],
+    'CountWeightedL1Prefire_rwgt56'                              : [        23517,        23275,        23752, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt56'             : [        29547,        26971,        24733,        25768,        23516,        21562,        22876,        20874,        19137, ],
+    'CountWeighted_rwgt57'                                       : [        21625,        21638,        21606, ],
+    'CountWeightedLHEWeightScale_rwgt57'                         : [        27201,        24795,        22711,        23729,        21625,        19805,        21070,        19199,        17582, ],
+    'CountWeightedL1PrefireNom_rwgt57'                           : [        20741,        20751,        20724, ],
+    'CountWeightedL1Prefire_rwgt57'                              : [        20741,        20527,        20949, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt57'             : [        26078,        23788,        21802,        22742,        20740,        19006,        20189,        18410,        16868, ],
+    'CountWeighted_rwgt58'                                       : [        18948,        18957,        18933, ],
+    'CountWeightedLHEWeightScale_rwgt58'                         : [        23852,        21726,        19887,        20806,        18947,        17342,        18475,        16822,        15394, ],
+    'CountWeightedL1PrefireNom_rwgt58'                           : [        18168,        18176,        18157, ],
+    'CountWeightedL1Prefire_rwgt58'                              : [        18168,        17980,        18352, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt58'             : [        22862,        20838,        19086,        19937,        18168,        16638,        17698,        16126,        14766, ],
+    'CountWeighted_rwgt59'                                       : [        16488,        16494,        16478, ],
+    'CountWeightedLHEWeightScale_rwgt59'                         : [        20774,        18906,        17293,        18121,        16488,        15080,        16090,        14638,        13386, ],
+    'CountWeightedL1PrefireNom_rwgt59'                           : [        15805,        15810,        15798, ],
+    'CountWeightedL1Prefire_rwgt59'                              : [        15805,        15640,        15967, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt59'             : [        19906,        18129,        16592,        17358,        15805,        14464,        15409,        14028,        12836, ],
+    'CountWeighted_rwgt60'                                       : [        14239,        14243,        14234, ],
+    'CountWeightedLHEWeightScale_rwgt60'                         : [        17959,        16328,        14923,        15665,        14239,        13012,        13908,        12641,        11551, ],
+    'CountWeightedL1PrefireNom_rwgt60'                           : [        13644,        13647,        13641, ],
+    'CountWeightedL1Prefire_rwgt60'                              : [        13644,        13501,        13785, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt60'             : [        17201,        15651,        14313,        14999,        13644,        12476,        13315,        12110,        11072, ],
+    'CountWeighted_rwgt61'                                       : [        12209,        12209,        12206, ],
+    'CountWeightedLHEWeightScale_rwgt61'                         : [        15414,        14000,        12783,        13445,        12208,        11146,        11937,        10838,         9894, ],
+    'CountWeightedL1PrefireNom_rwgt61'                           : [        11693,        11693,        11692, ],
+    'CountWeightedL1Prefire_rwgt61'                              : [        11693,        11568,        11814, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt61'             : [        14757,        13412,        12254,        12867,        11692,        10682,        11422,        10378,         9480, ],
+    'CountWeighted_rwgt62'                                       : [        10391,        10389,        10392, ],
+    'CountWeightedLHEWeightScale_rwgt62'                         : [        13134,        11915,        10869,        11456,        10391,         9477,        10172,         9224,         8412, ],
+    'CountWeightedL1PrefireNom_rwgt62'                           : [         9945,         9944,         9947, ],
+    'CountWeightedL1Prefire_rwgt62'                              : [         9945,         9838,        10051, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt62'             : [        12566,        11408,        10413,        10957,         9945,         9076,         9726,         8827,         8055, ],
+    'CountWeighted_rwgt63'                                       : [         8793,         8790,         8796, ],
+    'CountWeightedLHEWeightScale_rwgt63'                         : [        11128,        10083,         9187,         9707,         8793,         8011,         8618,         7806,         7111, ],
+    'CountWeightedL1PrefireNom_rwgt63'                           : [         8409,         8405,         8413, ],
+    'CountWeightedL1Prefire_rwgt63'                              : [         8409,         8316,         8500, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt63'             : [        10638,         9646,         8794,         9276,         8409,         7666,         8234,         7463,         6803, ],
+    'CountWeighted_rwgt64'                                       : [         7408,         7403,         7413, ],
+    'CountWeightedLHEWeightScale_rwgt64'                         : [         9387,         8494,         7731,         8188,         7408,         6741,         7270,         6577,         5985, ],
+    'CountWeightedL1PrefireNom_rwgt64'                           : [         7077,         7072,         7083, ],
+    'CountWeightedL1Prefire_rwgt64'                              : [         7077,         6997,         7155, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt64'             : [         8964,         8117,         7392,         7816,         7076,         6444,         6939,         6281,         5719, ],
+    'CountWeighted_rwgt65'                                       : [         6238,         6233,         6245, ],
+    'CountWeightedLHEWeightScale_rwgt65'                         : [         7913,         7152,         6502,         6903,         6238,         5671,         6130,         5539,         5035, ],
+    'CountWeightedL1PrefireNom_rwgt65'                           : [         5951,         5946,         5958, ],
+    'CountWeightedL1Prefire_rwgt65'                              : [         5951,         5882,         6019, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt65'             : [         7546,         6825,         6209,         6581,         5951,         5413,         5842,         5282,         4805, ],
+    'CountWeighted_rwgt66'                                       : [         5283,         5277,         5290, ],
+    'CountWeightedLHEWeightScale_rwgt66'                         : [         6706,         6055,         5500,         5851,         5282,         4798,         5197,         4691,         4260, ],
+    'CountWeightedL1PrefireNom_rwgt66'                           : [         5031,         5025,         5039, ],
+    'CountWeightedL1Prefire_rwgt66'                              : [         5031,         4970,         5090, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt66'             : [         6384,         5768,         5243,         5568,         5031,         4572,         4944,         4466,         4059, ],
+    'CountWeighted_rwgt67'                                       : [         4542,         4536,         4549, ],
+    'CountWeightedLHEWeightScale_rwgt67'                         : [         5765,         5204,         4725,         5032,         4542,         4124,         4471,         4034,         3663, ],
+    'CountWeightedL1PrefireNom_rwgt67'                           : [         4316,         4310,         4324, ],
+    'CountWeightedL1Prefire_rwgt67'                              : [         4316,         4262,         4369, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt67'             : [         5477,         4948,         4495,         4779,         4316,         3921,         4245,         3833,         3482, ],
+    'CountWeighted_rwgt68'                                       : [         4014,         4009,         4020, ],
+    'CountWeightedLHEWeightScale_rwgt68'                         : [         5090,         4598,         4176,         4445,         4014,         3646,         3950,         3567,         3240, ],
+    'CountWeightedL1PrefireNom_rwgt68'                           : [         3806,         3801,         3814, ],
+    'CountWeightedL1Prefire_rwgt68'                              : [         3806,         3757,         3855, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt68'             : [         4825,         4361,         3964,         4212,         3806,         3460,         3742,         3381,         3073, ],
   }),
   ("nof_tree_events",                 51000),
   ("nof_db_events",                   9918994),
-  ("fsize_local",                     146856569), # 146.86MB, avg file size 146.86MB
+  ("fsize_local",                     475904512), # 475.90MB, avg file size 475.90MB
   ("fsize_db",                        569542482347), # 569.54GB, avg file size 2.21GB
   ("use_it",                          True),
   ("xsection",                        0.07096),
@@ -192,19 +287,22 @@ samples_2017["/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-P
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Jul04_woPresel_nom/ntuples/THQ_ctcvcp"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Aug07_woPresel_nom/ntuples/THQ_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
     ]
   ),
-  ("missing_from_superset",           [
+  ("missing_completely",           [
     # not computed
   ]),
-  ("missing_hlt_paths",               [
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
 
   ]),
-  ("hlt_paths",               [
+  ("hlt_paths",                    [
     # not computed
   ]),
 ])
@@ -382,10 +480,105 @@ samples_2017["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-P
     'CountWeightedL1PrefireNom_rwgt49'                           : [       110643,       110620,       110640, ],
     'CountWeightedL1Prefire_rwgt49'                              : [       110643,       109697,       111568, ],
     'CountWeightedLHEWeightScaleL1PrefireNom_rwgt49'             : [       108481,       125865,       134510,        95360,       110643,       118241,        85131,        98775,       105559, ],
+    'CountWeighted_rwgt50'                                       : [        46060,        46055,        46066, ],
+    'CountWeightedLHEWeightScale_rwgt50'                         : [        45671,        52396,        55487,        40147,        46060,        48776,        35841,        41119,        43544, ],
+    'CountWeightedL1PrefireNom_rwgt50'                           : [        44362,        44351,        44371, ],
+    'CountWeightedL1Prefire_rwgt50'                              : [        44362,        43958,        44758, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt50'             : [        43937,        50465,        53491,        38623,        44362,        47021,        34480,        39603,        41977, ],
+    'CountWeighted_rwgt51'                                       : [        42012,        42012,        42013, ],
+    'CountWeightedLHEWeightScale_rwgt51'                         : [        41667,        47792,        50602,        36627,        42012,        44482,        32698,        37505,        39711, ],
+    'CountWeightedL1PrefireNom_rwgt51'                           : [        40461,        40455,        40466, ],
+    'CountWeightedL1Prefire_rwgt51'                              : [        40461,        40092,        40823, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt51'             : [        40082,        46027,        48779,        35234,        40461,        42879,        31455,        36121,        38280, ],
+    'CountWeighted_rwgt52'                                       : [        38173,        38177,        38170, ],
+    'CountWeightedLHEWeightScale_rwgt52'                         : [        37867,        43425,        45971,        33287,        38173,        40411,        29716,        34078,        36076, ],
+    'CountWeightedL1PrefireNom_rwgt52'                           : [        36762,        36760,        36762, ],
+    'CountWeightedL1Prefire_rwgt52'                              : [        36762,        36426,        37091, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt52'             : [        36425,        41819,        44312,        32019,        36762,        38952,        28584,        32818,        34774, ],
+    'CountWeighted_rwgt53'                                       : [        34546,        34554,        34539, ],
+    'CountWeightedLHEWeightScale_rwgt53'                         : [        34275,        39299,        41598,        30130,        34546,        36566,        26898,        30841,        32644, ],
+    'CountWeightedL1PrefireNom_rwgt53'                           : [        33267,        33270,        33263, ],
+    'CountWeightedL1Prefire_rwgt53'                              : [        33267,        32963,        33566, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt53'             : [        32968,        37844,        40094,        28980,        33267,        35244,        25872,        29699,        31464, ],
+    'CountWeighted_rwgt54'                                       : [        31131,        31143,        31120, ],
+    'CountWeightedLHEWeightScale_rwgt54'                         : [        30892,        35414,        37481,        27155,        31131,        32948,        24243,        27792,        29413, ],
+    'CountWeightedL1PrefireNom_rwgt54'                           : [        29977,        29984,        29969, ],
+    'CountWeightedL1Prefire_rwgt54'                              : [        29977,        29702,        30246, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt54'             : [        29712,        34101,        36124,        26118,        29977,        31755,        23317,        26761,        28349, ],
+    'CountWeighted_rwgt55'                                       : [        27931,        27946,        27916, ],
+    'CountWeightedLHEWeightScale_rwgt55'                         : [        27719,        31774,        33625,        24366,        27931,        29558,        21753,        24935,        26388, ],
+    'CountWeightedL1PrefireNom_rwgt55'                           : [        26894,        26905,        26882, ],
+    'CountWeightedL1Prefire_rwgt55'                              : [        26894,        26648,        27136, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt55'             : [        26659,        30594,        32406,        23435,        26894,        28487,        20921,        24009,        25431, ],
+    'CountWeighted_rwgt56'                                       : [        24942,        24960,        24924, ],
+    'CountWeightedLHEWeightScale_rwgt56'                         : [        24754,        28373,        30026,        21760,        24942,        26394,        19426,        22266,        23563, ],
+    'CountWeightedL1PrefireNom_rwgt56'                           : [        24015,        24030,        24000, ],
+    'CountWeightedL1Prefire_rwgt56'                              : [        24015,        23795,        24231, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt56'             : [        23807,        27319,        28937,        20927,        24015,        25437,        18682,        21439,        22708, ],
+    'CountWeighted_rwgt57'                                       : [        22174,        22195,        22153, ],
+    'CountWeightedLHEWeightScale_rwgt57'                         : [        22006,        25225,        26694,        19344,        22174,        23466,        17269,        19795,        20949, ],
+    'CountWeightedL1PrefireNom_rwgt57'                           : [        21349,        21367,        21331, ],
+    'CountWeightedL1Prefire_rwgt57'                              : [        21349,        21153,        21542, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt57'             : [        21163,        24287,        25726,        18603,        21349,        22614,        16608,        19059,        20189, ],
+    'CountWeighted_rwgt58'                                       : [        19618,        19641,        19594, ],
+    'CountWeightedLHEWeightScale_rwgt58'                         : [        19465,        22317,        23621,        17111,        19618,        20764,        15276,        17513,        18536, ],
+    'CountWeightedL1PrefireNom_rwgt58'                           : [        18888,        18909,        18867, ],
+    'CountWeightedL1Prefire_rwgt58'                              : [        18888,        18715,        19059, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt58'             : [        18720,        21487,        22764,        16456,        18888,        20010,        14691,        16862,        17864, ],
+    'CountWeighted_rwgt59'                                       : [        17279,        17305,        17253, ],
+    'CountWeightedLHEWeightScale_rwgt59'                         : [        17139,        19656,        20811,        15066,        17279,        18294,        13450,        15426,        16332, ],
+    'CountWeightedL1PrefireNom_rwgt59'                           : [        16637,        16660,        16614, ],
+    'CountWeightedL1Prefire_rwgt59'                              : [        16637,        16485,        16787, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt59'             : [        16483,        18926,        20057,        14489,        16637,        17631,        12935,        14853,        15740, ],
+    'CountWeighted_rwgt60'                                       : [        15152,        15179,        15124, ],
+    'CountWeightedLHEWeightScale_rwgt60'                         : [        15020,        17236,        18258,        13203,        15152,        16050,        11787,        13526,        14328, ],
+    'CountWeightedL1PrefireNom_rwgt60'                           : [        14590,        14615,        14565, ],
+    'CountWeightedL1Prefire_rwgt60'                              : [        14590,        14456,        14721, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt60'             : [        14446,        16597,        17598,        12699,        14590,        15469,        11337,        13025,        13810, ],
+    'CountWeighted_rwgt61'                                       : [        13242,        13271,        13213, ],
+    'CountWeightedLHEWeightScale_rwgt61'                         : [        13114,        15064,        15970,        11528,        13242,        14038,        10292,        11822,        12533, ],
+    'CountWeightedL1PrefireNom_rwgt61'                           : [        12753,        12779,        12726, ],
+    'CountWeightedL1Prefire_rwgt61'                              : [        12753,        12637,        12868, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt61'             : [        12615,        14508,        15395,        11089,        12753,        13533,         9900,        11385,        12081, ],
+    'CountWeighted_rwgt62'                                       : [        11547,        11576,        11517, ],
+    'CountWeightedLHEWeightScale_rwgt62'                         : [        11420,        13136,        13942,        10038,        11547,        12256,         8962,        10309,        10941, ],
+    'CountWeightedL1PrefireNom_rwgt62'                           : [        11124,        11151,        11095, ],
+    'CountWeightedL1Prefire_rwgt62'                              : [        11124,        11023,        11223, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt62'             : [        10987,        12654,        13443,         9658,        11124,        11817,         8623,         9930,        10550, ],
+    'CountWeighted_rwgt63'                                       : [        10072,        10101,        10041, ],
+    'CountWeightedLHEWeightScale_rwgt63'                         : [         9941,        11458,        12181,         8738,        10072,        10708,         7801,         8992,         9559, ],
+    'CountWeightedL1PrefireNom_rwgt63'                           : [         9706,         9733,         9677, ],
+    'CountWeightedL1Prefire_rwgt63'                              : [         9706,         9619,         9792, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt63'             : [         9568,        11041,        11749,         8411,         9706,        10328,         7508,         8665,         9221, ],
+    'CountWeighted_rwgt64'                                       : [         8812,         8841,         8780, ],
+    'CountWeightedLHEWeightScale_rwgt64'                         : [         8672,        10024,        10681,         7623,         8812,         9389,         6806,         7866,         8382, ],
+    'CountWeightedL1PrefireNom_rwgt64'                           : [         8496,         8523,         8466, ],
+    'CountWeightedL1Prefire_rwgt64'                              : [         8496,         8421,         8570, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt64'             : [         8352,         9665,        10308,         7341,         8496,         9061,         6554,         7585,         8089, ],
+    'CountWeighted_rwgt65'                                       : [         7769,         7797,         7737, ],
+    'CountWeightedLHEWeightScale_rwgt65'                         : [         7618,         8837,         9445,         6696,         7769,         8302,         5978,         6935,         7412, ],
+    'CountWeightedL1PrefireNom_rwgt65'                           : [         7495,         7522,         7465, ],
+    'CountWeightedL1Prefire_rwgt65'                              : [         7495,         7430,         7559, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt65'             : [         7341,         8527,         9121,         6453,         7495,         8018,         5761,         6691,         7158, ],
+    'CountWeighted_rwgt66'                                       : [         6943,         6969,         6911, ],
+    'CountWeightedLHEWeightScale_rwgt66'                         : [         6776,         7898,         8472,         5956,         6943,         7447,         5318,         6198,         6649, ],
+    'CountWeightedL1PrefireNom_rwgt66'                           : [         6704,         6730,         6675, ],
+    'CountWeightedL1Prefire_rwgt66'                              : [         6704,         6648,         6760, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt66'             : [         6536,         7627,         8189,         5745,         6704,         7199,         5129,         5985,         6427, ],
+    'CountWeighted_rwgt67'                                       : [         6335,         6360,         6304, ],
+    'CountWeightedLHEWeightScale_rwgt67'                         : [         6149,         7207,         7765,         5405,         6335,         6826,         4825,         5655,         6094, ],
+    'CountWeightedL1PrefireNom_rwgt67'                           : [         6125,         6149,         6095, ],
+    'CountWeightedL1Prefire_rwgt67'                              : [         6125,         6074,         6174, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt67'             : [         5938,         6967,         7514,         5220,         6125,         6605,         4660,         5468,         5896, ],
+    'CountWeighted_rwgt68'                                       : [         5947,         5969,         5918, ],
+    'CountWeightedLHEWeightScale_rwgt68'                         : [         5737,         6765,         7325,         5043,         5947,         6439,         4502,         5309,         5748, ],
+    'CountWeightedL1PrefireNom_rwgt68'                           : [         5757,         5778,         5729, ],
+    'CountWeightedL1Prefire_rwgt68'                              : [         5757,         5711,         5802, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt68'             : [         5548,         6549,         7096,         4876,         5757,         6238,         4353,         5139,         5569, ],
   }),
   ("nof_tree_events",                 50400),
   ("nof_db_events",                   4719999),
-  ("fsize_local",                     170162632), # 170.16MB, avg file size 170.16MB
+  ("fsize_local",                     531766317), # 531.77MB, avg file size 531.77MB
   ("fsize_db",                        308444472684), # 308.44GB, avg file size 1.79GB
   ("use_it",                          True),
   ("xsection",                        0.01561),
@@ -397,19 +590,22 @@ samples_2017["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-P
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Jul04_woPresel_nom/ntuples/THW_ctcvcp"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Aug07_woPresel_nom/ntuples/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
     ]
   ),
-  ("missing_from_superset",           [
+  ("missing_completely",           [
     # not computed
   ]),
-  ("missing_hlt_paths",               [
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
 
   ]),
-  ("hlt_paths",               [
+  ("hlt_paths",                    [
     # not computed
   ]),
 ])
@@ -442,7 +638,7 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Jul04_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Aug07_woPresel_nonNom_sync/ntuples/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -487,7 +683,7 @@ samples_2017["/ttHJet_ctcvcp/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_m
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Jul04_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Aug07_woPresel_nonNom_sync/ntuples/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -532,7 +728,7 @@ samples_2017["/ttZJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Jul04_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Aug07_woPresel_nonNom_sync/ntuples/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -577,7 +773,7 @@ samples_2017["/ttWJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Jul04_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Aug07_woPresel_nonNom_sync/ntuples/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -622,7 +818,7 @@ samples_2017["/ttWWJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Ru
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Jul04_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Aug07_woPresel_nonNom_sync/ntuples/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -667,7 +863,7 @@ samples_2017["/ttJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunI
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Jul04_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Aug07_woPresel_nonNom_sync/ntuples/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -712,7 +908,7 @@ samples_2017["/VHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunI
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Jul04_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Aug07_woPresel_nonNom_sync/ntuples/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -757,7 +953,7 @@ samples_2017["/EWKJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Jul04_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Aug07_woPresel_nonNom_sync/ntuples/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -802,7 +998,7 @@ samples_2017["/RaresJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/R
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Jul04_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Aug07_woPresel_nonNom_sync/ntuples/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
