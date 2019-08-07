@@ -393,7 +393,7 @@ class analyzeConfig(object):
               float(couplings.kv.configValue()),
               float(couplings.cosa.configValue()) if hasattr(couplings, 'cosa') else None
             ),
-            [ find_tHweight(tHweights, thIdx) for thIdx in self.thIdxs ]
+            [ copy.deepcopy(find_tHweight(tHweights, thIdx)) for thIdx in self.thIdxs ]
           )
         ))
         self.jobOptions_analyze = {}
@@ -624,7 +624,7 @@ class analyzeConfig(object):
               ))
             else:
               # record the weight for the default case (corresponds to no reweighting weight, i.e. idx of -1)
-              tHweight_default = find_tHweight(tHweights, -1)
+              tHweight_default = copy.deepcopy(find_tHweight(tHweights, -1))
               tHweight_default.weight = cms.double(1.)
               tH_weights = [ tHweight_default ]
 
@@ -641,7 +641,7 @@ class analyzeConfig(object):
                   continue
 
                 nof_events_rwgt = sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]
-                tHweight = find_tHweight(tHweights, idx)
+                tHweight = copy.deepcopy(find_tHweight(tHweights, idx))
                 final_reweighting = float(nof_events) / nof_events_rwgt
                 logging.info(
                   "Process {}, weight index {}: the default # events is {}, but actual # events is {} "
