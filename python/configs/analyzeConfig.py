@@ -542,6 +542,14 @@ class analyzeConfig(object):
             return central_or_shift
         return "central"
 
+    def accept_central_or_shift(self, central_or_shift, sample_category, sample_name):
+      if central_or_shift in systematics.LHE().ttH            and sample_category not in self.signalProcs: return False
+      if central_or_shift in systematics.LHE().ttW            and sample_category != "TTW":                return False
+      if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                return False
+      if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):    return False
+      if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):    return False
+      return True
+
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False):
         process_string = 'process.analyze_%s' % self.channel
         current_function_name = inspect.stack()[0][3]

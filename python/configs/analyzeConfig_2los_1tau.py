@@ -379,15 +379,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                 if not is_mc and not isFR_shape_shift:
                   continue
 
-              if central_or_shift in systematics.LHE().ttH and not is_signal:
-                continue
-              if central_or_shift in systematics.LHE().ttW and sample_category != "TTW":
-                continue
-              if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
-                continue
-              if central_or_shift in systematics.DYMCReweighting and not is_dymc_reweighting(sample_name):
-                  continue
-              if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):
+              if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
                 continue
 
               logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (lepton_and_hadTau_selection_and_frWeight, central_or_shift))

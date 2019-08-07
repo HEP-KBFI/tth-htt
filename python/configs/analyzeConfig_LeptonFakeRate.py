@@ -459,12 +459,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           if central_or_shift != "central" and not is_mc:
             continue
 
-          is_signal = sample_category in self.signalProcs
-          if central_or_shift in systematics.LHE().ttH and not is_signal:
-            continue
-          if central_or_shift in systematics.LHE().ttW and sample_category != "TTW":
-            continue
-          if central_or_shift in systematics.LHE().ttZ and sample_category != "TTZ":
+          if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
             continue
 
           key_analyze_dir = getKey(process_name, central_or_shift)
