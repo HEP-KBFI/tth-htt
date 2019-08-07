@@ -117,14 +117,20 @@ def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, i
 def is_dymc_reweighting(dbs_name):
   return dbs_name.startswith('/DY') and 'M-50' in dbs_name and not dbs_name.startswith('/DYBB')
 
-def get_tH_weight_str(kt, kv):
-    return ("kt_%.3g_kv_%.3g" % (kt, kv)).replace('.', 'p').replace('-', 'm')
+def get_tH_weight_str(kt, kv, cosa = None):
+    result = "kt_%.3g_kv_%.6g" % (kt, kv)
+    if cosa:
+        result += "_cosa_%.4g" % cosa
+    result = result.replace('.', 'p').replace('-', 'm')
+    return result
 
 def get_tH_SM_str():
     return get_tH_weight_str(1.0, 1.0)
 
-def get_tH_params(kt_kv_str):
-    kt_kv_str_repl = kt_kv_str.replace('m', '-').replace('p', '.')
-    kt_str = kt_kv_str_repl[kt_kv_str_repl.find('kt_') + 3 : kt_kv_str_repl.find('kv_') - 1]
-    kv_str = kt_kv_str_repl[kt_kv_str_repl.find('kv_') + 3 :]
-    return (float(kt_str), float(kv_str))
+def get_tH_params(kt_kv_cosa_str):
+    kt_kv_cosa_str_repl = kt_kv_cosa_str.replace('m', '-').replace('p', '.')
+    cosa_idx = kt_kv_cosa_str_repl.find('cosa_')
+    kt_str = kt_kv_cosa_str_repl[kt_kv_cosa_str_repl.find('kt_') + 3 : kt_kv_cosa_str_repl.find('kv_') - 1]
+    kv_str = kt_kv_cosa_str_repl[kt_kv_cosa_str_repl.find('kv_') + 3 : len(kt_kv_cosa_str_repl) if cosa_idx < 0 else (cosa_idx - 1)]
+    cosa_str = '' if cosa_idx < 0 else kt_kv_cosa_str_repl[cosa_idx + 5 : ]
+    return (float(kt_str), float(kv_str), float(cosa_str) if cosa_str else None)

@@ -388,7 +388,11 @@ class analyzeConfig(object):
         self.thcouplings = list(filter(
           lambda tH_str: tH_str != tH_SM_str,
           map(
-            lambda couplings: get_tH_weight_str(float(couplings.kt.configValue()), float(couplings.kv.configValue())),
+            lambda couplings: get_tH_weight_str(
+              float(couplings.kt.configValue()),
+              float(couplings.kv.configValue()),
+              float(couplings.cosa.configValue()) if hasattr(couplings, 'cosa') else None
+            ),
             [ find_tHweight(tHweights, thIdx) for thIdx in self.thIdxs ]
           )
         ))
@@ -621,14 +625,8 @@ class analyzeConfig(object):
             else:
               # record the weight for the default case (corresponds to no reweighting weight, i.e. idx of -1)
               tHweight_default = find_tHweight(tHweights, -1)
-              tH_weights = [
-                cms.PSet(
-                  idx    = cms.int32(-1),
-                  weight = cms.double(1.),
-                  kt     = tHweight_default.kt,
-                  kv     = tHweight_default.kv,
-                )
-              ]
+              tHweight_default.weight = cms.double(1.)
+              tH_weights = [ tHweight_default ]
 
               for idx in self.thIdxs:
                 if idx < 0:
@@ -651,14 +649,8 @@ class analyzeConfig(object):
                     sample_info["process_name_specific"], idx, nof_events, nof_events_rwgt, final_reweighting
                   )
                 )
-                tH_weights.append(
-                  cms.PSet(
-                    idx    = cms.int32(idx),
-                    weight = cms.double(final_reweighting),
-                    kt     = tHweight.kt,
-                    kv     = tHweight.kv,
-                  )
-                )
+                tHweight.weight = cms.double(final_reweighting)
+                tH_weights.append(tHweight)
               jobOptions['tHweights'] = tH_weights
 
           jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / nof_events if (self.use_lumi and is_mc) else 1.
