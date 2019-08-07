@@ -30,14 +30,15 @@ get_tH_SM_str()
 std::tuple<double, double, double>
 get_tH_params(const std::string & kt_kv_cosa_str)
 {
-  std::replace(kt_kv_cosa_str.begin(), kt_kv_cosa_str.end(),   'p', '.');
-  std::replace(kt_kv_cosa_str.begin(), kt_kv_cosa_str.end(),   'm', '-');
+  std::string kt_kv_cosa_str_copy = kt_kv_cosa_str;
+  std::replace(kt_kv_cosa_str_copy.begin(), kt_kv_cosa_str_copy.end(),   'p', '.');
+  std::replace(kt_kv_cosa_str_copy.begin(), kt_kv_cosa_str_copy.end(),   'm', '-');
 
-  std::string kt_str = kt_kv_cosa_str.substr(kt_kv_cosa_str.find("kt_") + 3, kt_kv_cosa_str.find("kv_") - 4);
-  const int cosa_idx = kt_kv_cosa_str.find("cosa_");
-  const int kv_str_limit = cosa_idx < 0 ? kt_kv_cosa_str.size() : cosa_idx - 9;
-  std::string kv_str = kt_kv_cosa_str.substr(kt_kv_cosa_str.find("kv_") + 3, kv_str_limit);
-  std::string cosa_str = cosa_idx < 0 ? "" : kt_kv_cosa_str.substr(cosa_idx + 5);
+  std::string kt_str = kt_kv_cosa_str_copy.substr(kt_kv_cosa_str_copy.find("kt_") + 3, kt_kv_cosa_str_copy.find("kv_") - 4);
+  const int cosa_idx = kt_kv_cosa_str_copy.find("cosa_");
+  const int kv_str_limit = cosa_idx < 0 ? kt_kv_cosa_str_copy.size() : cosa_idx - 9;
+  std::string kv_str = kt_kv_cosa_str_copy.substr(kt_kv_cosa_str_copy.find("kv_") + 3, kv_str_limit);
+  std::string cosa_str = cosa_idx < 0 ? "" : kt_kv_cosa_str_copy.substr(cosa_idx + 5);
 
   const double kt = std::stod(kt_str);
   const double kv = std::stod(kv_str);
