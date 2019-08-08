@@ -122,6 +122,7 @@ if __name__ == '__main__':
           logging.debug("The following {} ROOT file(s) are missing in {}: {}".format(
             len(missing_idxs), crab_path, ', '.join(map(str, list(sorted(missing_idxs)))))
           )
+          logging.debug("Job completion is at {}% out of {} jobs".format(round(len(root_idxs) * 100. / nof_jobs, 2), nof_jobs))
         if is_completed:
           if dataset_requestName not in crab_paths:
             crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path }
