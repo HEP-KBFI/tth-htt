@@ -261,21 +261,29 @@ def get_requestname(request_name, path):
   return requestName
 
 def get_crab_string(dataset_name, paths):
-  for path in paths:
+  for entry in paths:
+    if type(entry) == tuple:
+      path = entry[0]
+      comment = entry[1]
+    elif type(entry) == str:
+      path = entry
+      comment = ''
+    else:
+      raise RuntimeError("Invalid type: %s" % str(type(entry)))
     dataset_match = DATASET_REGEX.match(dataset_name)
 
     version = os.path.basename(os.path.dirname(os.path.dirname(path)))
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
     requestName = get_requestname(requestName, path)
     if requestName == os.path.basename(path):
-      return requestName
+      return (requestName, comment)
 
     version = os.path.basename(os.path.dirname(path))
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
     requestName = get_requestname(requestName, path)
     full_path = os.path.join(path, requestName)
     if hdfs.isdir(full_path):
-      return requestName
+      return (requestName, comment)
 
     version = os.path.basename(path)
     primary_name = dataset_name.split('/')[1]
@@ -283,9 +291,9 @@ def get_crab_string(dataset_name, paths):
     requestName = get_requestname(requestName, path)
     full_path = os.path.join(path, primary_name, requestName)
     if hdfs.isdir(full_path):
-      return requestName
+      return (requestName, comment)
 
-  return ''
+  return ('', '')
 
 def convert_date(date):
   return datetime.datetime.fromtimestamp(int(date)).strftime('%Y-%m-%d %H:%M:%S')
@@ -590,12 +598,14 @@ if __name__ == '__main__':
   if len(args.crab_string) and hdfs.isfile(args.crab_string[0]):
     with open(args.crab_string[0], 'r') as crab_file:
       for line in crab_file:
-        line_stripped = line.rstrip('\n')
+        line_stripped = line.rstrip('\n').split()
         if not line_stripped:
           continue
-        if not hdfs.isdir(line_stripped):
-          raise ValueError("No such directory: %s" % line_stripped)
-        crab_string.append(line_stripped)
+        crab_string_path = line_stripped[0]
+        crab_string_comment = ' '.join(line_stripped[1:]) if len(line_stripped) > 1 else ''
+        if not hdfs.isdir(crab_string_path):
+          raise ValueError("No such directory: %s" % crab_string_path)
+        crab_string.append((crab_string_path, crab_string_comment))
   else:
     for crab_line in args.crab_string:
       if not hdfs.isdir(crab_line):
@@ -811,6 +821,7 @@ if __name__ == '__main__':
       entry = das_query_results[dataset]
       entry['use_it'] = entry['dataset_access_type'] != 'INVALID' and entry['release_pass'] and \
                         entry['use_it']
+      crab_string_results = get_crab_string(entry['name'], crab_string)
       meta_dictionary_entries.append(jinja2.Template(METADICT_TEMPLATE_MC).render(
         dataset_name    = dataset,
         nof_db_events   = entry['nevents'],
@@ -820,8 +831,9 @@ if __name__ == '__main__':
         xs              = entry['xs'],
         specific_name   = entry['specific_name'],
         use_it          = entry['use_it'],
-        crab_string     = get_crab_string(entry['name'], crab_string),
-        comment         = "status: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
+        crab_string     = crab_string_results[0],
+        comment         = "%sstatus: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
+          '{}; '.format(crab_string_results[1]) if crab_string_results[1] else '',
           entry['dataset_access_type'],
           human_size(entry['size']),
           human_size(entry['nevents'], use_si = True, byte_suffix = ''),
@@ -1084,16 +1096,18 @@ if __name__ == '__main__':
 
             print('  %s, %s%s -> %s' % (dataset.rjust(MAX_DATA_SAMPLE_LEN), era, acquisition_era, selection['name']))
             selection['specific_name'] = '_'.join(selection['name'].split('/')[1:-1]).replace('-', '_')
+            crab_string_results = get_crab_string(selection['name'], crab_string)
             meta_dictionary_entries.append(jinja2.Template(METADICT_TEMPLATE_DATA).render(
               dataset_name          = selection['name'],
               process_name_specific = selection['specific_name'],
               nof_db_events         = selection['nevents'],
               nof_db_files          = selection['nfiles'],
               fsize_db              = selection['size'],
-              crab_string           = get_crab_string(selection['name'], crab_string),
+              crab_string           = crab_string_results[0],
               run_range             = minmax_runlumi_data,
               golden_run_range      = minmax_runlumi_data_golden,
-              comment               = "status: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
+              comment               = "%sstatus: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
+                '{}; '.format(crab_string_results[1]) if crab_string_results[1] else '',
                 selection['dataset_access_type'],
                 human_size(selection['size']),
                 human_size(selection['nevents'], use_si = True, byte_suffix = ''),
