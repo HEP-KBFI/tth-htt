@@ -91,11 +91,14 @@ if __name__ == '__main__':
       dataset_match = DATASET_REGEX.match(dataset_name)
       logging.debug("Found dataset: {}".format(dataset_name))
       if not dataset_name or not dataset_match:
-        raise RuntimeError("Unable to parse dataset name from file: %s" % crab_logfile)
+        logging.error("Unable to parse dataset name from file: %s" % crab_logfile)
+        continue
       if not output_dir:
-        raise RuntimeError("Unable to parse output directory from file: %s" % crab_logfile)
+        logging.error("Unable to parse output directory from file: %s" % crab_logfile)
+        continue
       if nof_jobs < 0:
-        raise RuntimeError("Unable to parse total number of jobs from file: %s" % crab_logfile)
+        logging.error("Unable to parse total number of jobs from file: %s" % crab_logfile)
+        continue
       version = os.path.basename(output_dir)
       version_date = version.split('_')[1]
       prefix = '{}_{}'.format(version, chunk_str) if chunk_str else version
