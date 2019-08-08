@@ -779,7 +779,7 @@ def obtain_paths(use_fuse, input_path):
           for line in f:
             line_stripped = line.rstrip('\n').rstrip(os.path.sep)
             if line_stripped:
-              paths.append(line_stripped)
+              paths.append(line_stripped.split()[0])
       else:
         paths = input_path
   else:
