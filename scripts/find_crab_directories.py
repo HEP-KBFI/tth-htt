@@ -28,6 +28,10 @@ if __name__ == '__main__':
     type = str, dest = 'contains', metavar = 'string', required = False, nargs = '+', default = [],
     help = 'R|String a CRAB subdirectory must contain',
   )
+  parser.add_argument('-t', '--threshold',
+    type = int, dest = 'threshold', metavar = 'percentage', required = False, default = 100,
+    help = 'R|Threshold of completed jobs',
+  )
   parser.add_argument('-v', '--verbose',
     dest = 'verbose', action = 'store_true', default = False, required = False,
     help = 'R|Verbose output',
@@ -112,6 +116,7 @@ if __name__ == '__main__':
           root_file for subsubdir in hdfs.listdir(subdir) for root_file in hdfs.listdir(subsubdir) if root_file.endswith('.root')
         ]
         root_idxs = set(map(lambda fn: int(TREE_REGEX.match(os.path.basename(fn)).group('idx')), root_files))
+        nof_completed = len(root_idxs) * 100. / nof_jobs
         expected_idxs = set(range(1, nof_jobs + 1))
         assert(not (root_idxs - expected_idxs))
         missing_idxs = expected_idxs - root_idxs
@@ -122,22 +127,32 @@ if __name__ == '__main__':
           logging.debug("The following {} ROOT file(s) are missing in {}: {}".format(
             len(missing_idxs), crab_path, ', '.join(map(str, list(sorted(missing_idxs)))))
           )
-          logging.debug("Job completion is at {}% out of {} jobs".format(round(len(root_idxs) * 100. / nof_jobs, 2), nof_jobs))
-        if is_completed:
-          if dataset_requestName not in crab_paths:
-            crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path }
-          else:
+          logging.debug("Job completion is at {}% out of {} jobs".format(round(nof_completed, 2), nof_jobs))
+        if dataset_requestName not in crab_paths:
+          crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
+        else:
+          if is_completed:
             logging.debug("Found duplicates: {} vs {}".format(crab_path, crab_paths[dataset_requestName]['crab_path']))
             current_date = datetime.datetime.strptime(version_date, '%Y%b%d')
             previous_date = datetime.datetime.strptime(crab_paths[dataset_requestName]['date'], '%Y%b%d')
             if current_date > previous_date:
               logging.debug("Favoured {} as it is more recent".format(crab_path))
-              crab_paths[dataset_requestName] = { 'date': version_date, 'crab_path': crab_path }
+              crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
             else:
               logging.debug("Favoured {} as it is more recent".format(crab_paths[dataset_requestName]['crab_path']))
+          elif nof_completed >= args.threshold:
+            logging.debug("Found duplicates: {} vs {}".format(crab_path, crab_paths[dataset_requestName]['crab_path']))
+            previous_completed = crab_paths[dataset_requestName]['nof_completed']
+            if nof_completed > previous_completed:
+              logging.debug("Favoured {} as it is more complete".format(crab_path))
+              crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
+            else:
+              logging.debug("Favoured {} as it is more complete".format(crab_paths[dataset_requestName]['crab_path']))
       else:
         logging.warning("No such directory found: {}".format(crab_path))
 
   with open(output_fn, 'w') as output_fptr:
-    output_fptr.write('\n'.join(list(sorted(map(lambda kv: kv[1]['crab_path'], crab_paths.items())))) + '\n')
+    output_fptr.write('\n'.join(list(sorted(
+      map(lambda kv: '{} {}%'.format(kv[1]['crab_path'], round(kv[1]['nof_completed'], 2)), crab_paths.items())
+    ))) + '\n')
   logging.info("Wrote file {}".format(output_fn))
