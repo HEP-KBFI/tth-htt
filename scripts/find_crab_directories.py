@@ -139,13 +139,19 @@ if __name__ == '__main__':
             current_date = datetime.datetime.strptime(version_date, '%Y%b%d')
             previous_date = datetime.datetime.strptime(crab_paths[dataset_requestName]['date'], '%Y%b%d')
             previous_completed = crab_paths[dataset_requestName]['nof_completed']
-            if current_date > previous_date and nof_completed >= previous_completed:
-              logging.debug("Favoured former ({}) as it is more recent (and more complete: {:.2f}% vs {:.2f}%)".format(
+            if nof_completed > previous_completed:
+              logging.debug("Favoured former ({}) as it is more complete ({:.2f}% vs {:.2f}%)".format(
                 crab_path, nof_completed, previous_completed
               ))
               crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
+            elif nof_completed == previous_completed:
+              if current_date > previous_date:
+                logging.debug("Favoured former ({}) as it is more recent".format(crab_path))
+                crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
+              else:
+                logging.debug("Favoured latter ({}) as it is more recent".format(crab_paths[dataset_requestName]['crab_path']))
             else:
-              logging.debug("Favoured latter ({}) as it is more recent (and more complete: {:.2f}% vs {:.2f}%)".format(
+              logging.debug("Favoured latter ({}) as it is more complete ({:.2f}% vs {:.2f}%)".format(
                 crab_paths[dataset_requestName]['crab_path'], nof_completed, previous_completed
               ))
           elif nof_completed >= args.threshold:
