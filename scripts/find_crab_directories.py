@@ -135,11 +135,12 @@ if __name__ == '__main__':
             logging.debug("Found duplicates: {} vs {}".format(crab_path, crab_paths[dataset_requestName]['crab_path']))
             current_date = datetime.datetime.strptime(version_date, '%Y%b%d')
             previous_date = datetime.datetime.strptime(crab_paths[dataset_requestName]['date'], '%Y%b%d')
-            if current_date > previous_date:
-              logging.debug("Favoured {} as it is more recent".format(crab_path))
+            previous_completed = crab_paths[dataset_requestName]['nof_completed']
+            if current_date > previous_date and nof_completed >= previous_completed:
+              logging.debug("Favoured {} as it is more recent (and more complete)".format(crab_path))
               crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
             else:
-              logging.debug("Favoured {} as it is more recent".format(crab_paths[dataset_requestName]['crab_path']))
+              logging.debug("Favoured {} as it is more recent (and more complete)".format(crab_paths[dataset_requestName]['crab_path']))
           elif nof_completed >= args.threshold:
             logging.debug("Found duplicates: {} vs {}".format(crab_path, crab_paths[dataset_requestName]['crab_path']))
             previous_completed = crab_paths[dataset_requestName]['nof_completed']
