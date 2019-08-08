@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-08-08 20:08:46 with the following command:
+# file generated at 2019-08-09 00:33:35 with the following command:
 # find_samples.py -V -m python/samples/metaDict_2018_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2018_17Sep18.txt -p SingleMuon EGamma DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt -v 10_2_4_patch1 -r 2018 -C +17Sep2018 +Run2018D-PromptReco -c python/samples/sampleLocations_2018_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -107,7 +107,7 @@ meta_dictionary["/EGamma/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [319337, 320065]),
   ("golden_run_range",      [319337, 320065]),
-  ("comment",               "99.86%; status: VALID; size: 5.49TB; nevents: 147.83M; release: 10_2_4_patch1; last modified: 2018-10-17 11:12:09"),
+  ("comment",               "100.0%; status: VALID; size: 5.49TB; nevents: 147.83M; release: 10_2_4_patch1; last modified: 2018-10-17 11:12:09"),
 ])
 
 meta_dictionary["/EGamma/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
@@ -122,7 +122,7 @@ meta_dictionary["/EGamma/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [320497, 325175]),
   ("golden_run_range",      [320673, 325172]),
-  ("comment",               "99.99%; status: VALID; size: 28.47TB; nevents: 738.98M; release: 10_2_1,10_2_5_patch1; last modified: 2018-08-01 10:55:01"),
+  ("comment",               "100.0%; status: VALID; size: 28.47TB; nevents: 738.98M; release: 10_2_1,10_2_5_patch1; last modified: 2018-08-01 10:55:01"),
 ])
 
 meta_dictionary["/DoubleMuon/Run2018A-17Sep2018-v2/MINIAOD"] =  OD([
@@ -302,6 +302,6 @@ meta_dictionary["/Tau/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [320497, 325175]),
   ("golden_run_range",      [320673, 325172]),
-  ("comment",               "99.81%; status: VALID; size: 6.00TB; nevents: 167.89M; release: 10_2_1,10_2_5_patch1; last modified: 2018-08-01 10:55:12"),
+  ("comment",               "100.0%; status: VALID; size: 6.00TB; nevents: 167.89M; release: 10_2_1,10_2_5_patch1; last modified: 2018-08-01 10:55:12"),
 ])
 
