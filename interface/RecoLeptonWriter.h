@@ -67,7 +67,11 @@ public:
       charge_[idxLepton] = lepton->charge();
       filterBits_[idxLepton] = lepton->filterBits();
       jetIdx_[idxLepton] = lepton->jetIdx();
-      genMatchIdx_[idxLepton] = lepton->genMatchIdx();
+      if(isMC_)
+      {
+        genPartFlav_[idxLepton] = lepton->genPartFlav();
+        genMatchIdx_[idxLepton] = lepton->genMatchIdx();
+      }
     }
     if(isMC_)
     {
