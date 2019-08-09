@@ -266,7 +266,8 @@ XGBInterface::operator()(const std::map<std::string, double>& mvaInputs, const i
   Py_XDECREF(func);
   Py_XDECREF(args);
   Py_XDECREF(result);
-
+  
+  std::cout<< "XGB: mvaOutput " << mvaOutput << std::endl; 
   return mvaOutput;
 }
 

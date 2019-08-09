@@ -145,6 +145,7 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs, const
   {
     mvaOutput = 1. / (1. + std::sqrt((1. - mvaOutput) / (1. + mvaOutput)));
   }
-
+  
+  std::cout << "TMVA: mvaOutput " << mvaOutput << std::endl;
   return mvaOutput;
 }
