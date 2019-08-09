@@ -125,7 +125,7 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
     } else if ( process.find("Rares") != std::string::npos ) {
       histogramRares = histogramBackground;
       histogramRares_density = histogramBackground_density;
-    } else if ( process.find("Conversions") != std::string::npos || process.find("conversions") != std::string::npos ) {
+    } else if ( process.find("Conversions") != std::string::npos || process.find("Convs") != std::string::npos ) {
       histogramConversions = histogramBackground;
       histogramConversions_density = histogramBackground_density;
     } else if ( process.find("Fakes") != std::string::npos || process.find("fakes") != std::string::npos ) {

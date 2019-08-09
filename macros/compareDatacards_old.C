@@ -651,8 +651,8 @@ void compareDatacards_old()
   processes.push_back("TTZ");
   processes.push_back("EWK");
   processes.push_back("Rares");
-  processes.push_back("fakes_data");
-  processes.push_back("flips_data");
+  processes.push_back("data_fakes");
+  processes.push_back("data_flips");
 
   std::vector<std::string> sysShifts;
 /*

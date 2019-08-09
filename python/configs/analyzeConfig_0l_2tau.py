@@ -136,8 +136,8 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares", "tHq", "tHW", "VH" ]
-    self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
-    self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
+    self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "data_fakes", "fakes_mc" ]
+    self.make_plots_backgrounds = self.nonfake_backgrounds + [ "data_fakes" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.histogramDir_prep_dcard = "0l_2tau_OS_Tight"
@@ -574,7 +574,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         key_hadd_stage1_5_job = getKey(get_hadTau_selection_and_frWeight("Fakeable", "enabled"), hadTau_charge_selection)
         key_addFakes_dir = getKey("addBackgroundLeptonFakes")
         addFakes_job_tuple = (category, hadTau_charge_selection)
-        key_addFakes_job = getKey("fakes_data", *addFakes_job_tuple)
+        key_addFakes_job = getKey("data_fakes", *addFakes_job_tuple)
         category_sideband = None
         if self.applyFakeRateWeights == "2tau":
           category_sideband = getHistogramDir(category, "Fakeable", "enabled", hadTau_charge_selection)

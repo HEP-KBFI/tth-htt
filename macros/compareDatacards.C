@@ -732,14 +732,14 @@ void compareDatacards_run(const ComparisonEntries & entry,
     "Rares",
     "signal",
     "fakes_mc",
-    "fakes_data",
-    "conversions",
+    "data_fakes",
+    "Convs",
     "ttH_hmm",
     "ttH_hzg",
     "tHq",
     "THW",
     "VH",
-    "flips_data",
+    "data_flips",
   };
 
   const std::vector<std::string> sysShifts_common = {

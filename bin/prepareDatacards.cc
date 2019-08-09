@@ -235,7 +235,7 @@ int main(int argc, char* argv[])
   }
 
   TPRegexp* data = new TPRegexp("data_obs");
-  TPRegexp* fakes = new TPRegexp("fakes_data");
+  TPRegexp* fakes = new TPRegexp("data_fakes");
 
   std::vector<categoryType> categories;
   edm::VParameterSet cfg_categories = cfg_prepareDatacards.getParameter<edm::VParameterSet>("categories");

@@ -17,7 +17,7 @@ cb         = ch.CombineHarvester()
 ##########################################################################
 SUFFIX_GEN_MATCH = "l"
 
-sig_procs     = ['fakes_data']
+sig_procs     = ['data_fakes']
 
 # bkg_procs_arr = ['EWK', 'TT', 'TTW','TTZ','Rares','tHq', 'tHW', 'TTWW', 'ttH_hbb', 'signal']
 bkg_procs_arr = ['EWK', 'TT', 'Rares']
@@ -130,7 +130,7 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
 #)
 
 ################### Shape systematics #############################
-{% for central_or_shift in central_or_shifts %} ## No shape unc. applied to fakes_data (due to issues in [data - Bg] in tails  of mT_fix_L causing fit failure for some bins)
+{% for central_or_shift in central_or_shifts %} ## No shape unc. applied to data_fakes (due to issues in [data - Bg] in tails  of mT_fix_L causing fit failure for some bins)
 cb.cp().AddSyst(cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'process')(channels, bkg_procs_arr, 1.00))   
 {% endfor %}
 

@@ -38,7 +38,7 @@ for fileN in files :
            #    h2.GetXaxis().SetLimits(0.,1.)
            #    h2.GetXaxis().SetRangeUser(0.,1.)
            h2.Write();
-           if keyO.GetName() == "fakes_data" :
+           if keyO.GetName() == "data_fakes" :
                ratio=100000
                if h2.GetBinContent(h2.GetNbinsX()) >0 : ratio=h2.GetBinError(h2.GetNbinsX())/h2.GetBinContent(h2.GetNbinsX())
                file2.write(str(nbins)+" "+str(h2.Integral())+" "+str(h2.GetBinContent(h2.GetNbinsX()))+" "+str(h2.GetBinError(h2.GetNbinsX()))+" "+str(ratio)+ "\n")

@@ -13,7 +13,7 @@ process.fwliteOutput = cms.PSet(
 process.prepareDatacards = cms.PSet(
     processesToCopy = cms.vstring(
         "data_obs",
-        "fakes_data",
+        "data_fakes",
         "TTl",
         "Raresl",
         "EWKl",

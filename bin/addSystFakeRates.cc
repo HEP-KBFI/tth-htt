@@ -626,9 +626,9 @@ int main(int argc, char* argv[])
     std::cout << "norm = " << norm << " +/- " << normErr << std::endl;
     std::cout << "slope = " << slope << " +/- " << slopeErr << " (fitResult_isValid = " << fitResult_isValid << ")" << std::endl;
 
-    TH1* histogram_fakes_data = loadHistogram(inputFile, process);
-    std::cout << "histogram_fakes_data:" << std::endl;
-    dumpHistogram(histogram_fakes_data);
+    TH1* histogram_data_fakes = loadHistogram(inputFile, process);
+    std::cout << "histogram_data_fakes:" << std::endl;
+    dumpHistogram(histogram_data_fakes);
    
     // convert results of fit to histogram format and write histograms to output file
     TFileDirectory* subdir_output = &fs;
@@ -643,30 +643,30 @@ int main(int argc, char* argv[])
     std::string histogramName_closureShapeDown = Form("%s_%s_shapeDown", process.data(), (*addSystConfig)->name_.data());
     TH1* histogram_closureShapeDown = cloneHistogram(histogram_fakes_mc, histogramName_closureShapeDown);
     for ( int idxBin = 1; idxBin <= histogram_fakes_mc->GetNbinsX(); ++idxBin ) {
-      double binContent_fakes_data = histogram_fakes_data->GetBinContent(idxBin);
-      double binError_fakes_data = histogram_fakes_data->GetBinError(idxBin);
+      double binContent_data_fakes = histogram_data_fakes->GetBinContent(idxBin);
+      double binError_data_fakes = histogram_data_fakes->GetBinError(idxBin);
       //double dy_closureNorm;
       //if ( norm > 1. ) dy_closureNorm = (norm + normErr) - 1.;
       //else dy_closureNorm = 1. - (norm - normErr);      
       double dy_closureNorm = TMath::Abs(norm - 1.);
       if ( dy_closureNorm < -1. ) dy_closureNorm = -1.; // CV: keep integral of histogram_closureNormUp positive
       if ( dy_closureNorm > +1. ) dy_closureNorm = +1.; // CV: keep integral of histogram_closureNormDown positive
-      histogram_closureNormUp->SetBinContent(idxBin, binContent_fakes_data*(1. + dy_closureNorm));
-      histogram_closureNormUp->SetBinError(idxBin, binError_fakes_data);
-      histogram_closureNormDown->SetBinContent(idxBin, binContent_fakes_data*(1. - dy_closureNorm));
-      histogram_closureNormDown->SetBinError(idxBin, binError_fakes_data);
+      histogram_closureNormUp->SetBinContent(idxBin, binContent_data_fakes*(1. + dy_closureNorm));
+      histogram_closureNormUp->SetBinError(idxBin, binError_data_fakes);
+      histogram_closureNormDown->SetBinContent(idxBin, binContent_data_fakes*(1. - dy_closureNorm));
+      histogram_closureNormDown->SetBinError(idxBin, binError_data_fakes);
       double x = histogram_fakes_mc->GetXaxis()->GetBinCenter(idxBin);
       double x0 = histogram_fakes_mc->GetMean();
       //double dy_closureShape;
       //if ( slope > 0. ) dy_closureShape = (x - x0)*(slope + slopeErr);
       //else dy_closureShape = (x - x0)*(slope - slopeErr);
       double dy_closureShape = (x - x0)*slope;
-      if ( dy_closureShape < -1. ) dy_closureShape = -1.; // CV: keep all bins of histogram_closureShapeUp positive (unless bin is negative in histogram_fakes_data also)
-      if ( dy_closureShape > +1. ) dy_closureShape = +1.; // CV: keep all bins of histogram_closureShapeDown positive (unless bin is negative in histogram_fakes_data also)
-      histogram_closureShapeUp->SetBinContent(idxBin, binContent_fakes_data*(1. + dy_closureShape));
-      histogram_closureShapeUp->SetBinError(idxBin, binError_fakes_data);
-      histogram_closureShapeDown->SetBinContent(idxBin, binContent_fakes_data*(1. - dy_closureShape));
-      histogram_closureShapeDown->SetBinError(idxBin, binError_fakes_data);
+      if ( dy_closureShape < -1. ) dy_closureShape = -1.; // CV: keep all bins of histogram_closureShapeUp positive (unless bin is negative in histogram_data_fakes also)
+      if ( dy_closureShape > +1. ) dy_closureShape = +1.; // CV: keep all bins of histogram_closureShapeDown positive (unless bin is negative in histogram_data_fakes also)
+      histogram_closureShapeUp->SetBinContent(idxBin, binContent_data_fakes*(1. + dy_closureShape));
+      histogram_closureShapeUp->SetBinError(idxBin, binError_data_fakes);
+      histogram_closureShapeDown->SetBinContent(idxBin, binContent_data_fakes*(1. - dy_closureShape));
+      histogram_closureShapeDown->SetBinError(idxBin, binError_data_fakes);
     }
     std::cout << "histogram_closureNormUp:" << std::endl;
     dumpHistogram(histogram_closureNormUp);
@@ -684,7 +684,7 @@ int main(int argc, char* argv[])
     outputFileName_syst.append(Form("_%s_%s_syst.png", histogramToFit.data(), (*addSystConfig)->name_.data()));
     showHistograms(
       800, 900, 
-      histogram_fakes_data, process, compIntegral(histogram_fakes_data, false, false),
+      histogram_data_fakes, process, compIntegral(histogram_data_fakes, false, false),
       histogram_closureNormUp, histogramName_closureNormUp.data(), compIntegral(histogram_closureNormUp, false, false),
       histogram_closureNormDown, histogramName_closureNormDown.data(), compIntegral(histogram_closureNormDown, false, false),
       histogram_closureShapeUp, histogramName_closureShapeUp.data(), compIntegral(histogram_closureShapeUp, false, false),

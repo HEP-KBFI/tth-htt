@@ -23,7 +23,7 @@ process.addBackgroundLeptonFlips = cms.PSet(
     ),
 
     processData = cms.string("data_obs"),
-    processLeptonFlips = cms.string("flips_data"),
+    processLeptonFlips = cms.string("data_flips"),
     processesToSubtract = cms.vstring(),
     sysShifts = cms.vstring()
 )

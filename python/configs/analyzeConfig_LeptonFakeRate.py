@@ -217,7 +217,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.jobOptions_comp_LeptonFakeRate = {}
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "VH" ]
-    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "signal", "TTWW", "tHq", "tHW", "VH", "ttH_hbb", "fakes_data" ]
+    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "signal", "TTWW", "tHq", "tHW", "VH", "ttH_hbb", "data_fakes" ]
     self.histogramDir_prep_dcard = "LeptonFakeRate"
     self.prep_dcard = prep_dcard
 
@@ -327,7 +327,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     #if self.use_QCD_fromMC :
     #  lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'TTl', 'Raresl', 'EWKl', 'QCD')")
     #else:
-    #  lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'TTl', 'Raresl', 'EWKl', 'fakes_data')")
+    #  lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'TTl', 'Raresl', 'EWKl', 'data_fakes')")
     if jobOptions['histogramToFit'] in [ "mT_fix_L", "mT_fix_L_num", "mT_fix_L_den"]:
       lines.append("process.prepareDatacards.histogramToFit_xMin = cms.double(0.)")
       lines.append("process.prepareDatacards.histogramToFit_xMax = cms.double(150.)")
@@ -827,7 +827,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_backgrounds_from_data(lines_makefile) ## this step now does both e Conv, fakes_data and fakes_mc computation
+    self.addToMakefile_backgrounds_from_data(lines_makefile) ## this step now does both e Conv, data_fakes and fakes_mc computation
     # self.addToMakefile_backgrounds_from_MC(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = " ".join([ "phony_addBackgrounds_LeptonFakeRate", "phony_addBackgrounds_Convs_LeptonFakeRate" ]))
     self.addToMakefile_prep_dcard(lines_makefile)

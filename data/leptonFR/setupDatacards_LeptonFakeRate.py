@@ -46,7 +46,7 @@ cb = ch.CombineHarvester()
 ##########################################################################
 # Set the processes and categories
 ##########################################################################
-sig_procs = ['fakes_data']
+sig_procs = ['data_fakes']
 
 bkg_procs = {
     'e_tight_incl': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],

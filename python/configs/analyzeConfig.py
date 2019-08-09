@@ -904,7 +904,7 @@ class analyzeConfig(object):
         processesToSubtract = []
         processesToSubtract.extend(self.nonfake_backgrounds)
         if '0l' not in self.channel:
-            processesToSubtract.extend([ "%s_conversion" % nonfake_background for nonfake_background in self.nonfake_backgrounds])
+            processesToSubtract.extend([ "%s_Convs" % nonfake_background for nonfake_background in self.nonfake_backgrounds])
         lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
@@ -925,8 +925,8 @@ class analyzeConfig(object):
         lines.append("        sideband = cms.string('%s')" % jobOptions['category_sideband'])
         lines.append("    )")
         lines.append(")")
-        processesToSubtract = [ "fakes_data" ]
-        processesToSubtract.extend([ "%s_conversion" % nonfake_background for nonfake_background in self.nonfake_backgrounds ])
+        processesToSubtract = [ "data_fakes" ]
+        processesToSubtract.extend([ "%s_Convs" % nonfake_background for nonfake_background in self.nonfake_backgrounds ])
         lines.append("process.addBackgroundLeptonFlips.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFlips.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFlips, jobOptions['cfgFile_modified'], lines)

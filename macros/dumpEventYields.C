@@ -95,11 +95,11 @@ void dumpEventYields()
   background_processes["0l_2tau"].push_back("TTZ");
   background_processes["0l_2tau"].push_back("EWK");
   background_processes["0l_2tau"].push_back("Rares");
-  background_processes["0l_2tau"].push_back("fakes_data");
+  background_processes["0l_2tau"].push_back("data_fakes");
   background_processes["0l_2tau"].push_back("fakes_mc");  
   background_processes["1l_1tau_OS"] = background_processes["0l_2tau"];
   background_processes["1l_1tau_SS"] = background_processes["0l_2tau"];
-  //background_processes["1l_1tau_SS"].push_back("flips_data"); 
+  //background_processes["1l_1tau_SS"].push_back("data_flips");
   background_processes["1l_1tau_SS"].push_back("flips_mc"); 
   background_processes["0l_3tau"] = background_processes["0l_2tau"];
   background_processes["1l_2tau"] = background_processes["0l_2tau"];
@@ -107,8 +107,8 @@ void dumpEventYields()
   background_processes["2lss_1tau"].push_back("TTZ");
   //background_processes["2lss_1tau"].push_back("WZ");
   background_processes["2lss_1tau"].push_back("Rares");
-  background_processes["2lss_1tau"].push_back("fakes_data");
-  background_processes["2lss_1tau"].push_back("flips_data");
+  background_processes["2lss_1tau"].push_back("data_fakes");
+  background_processes["2lss_1tau"].push_back("data_flips");
   background_processes["2los_1tau"] = background_processes["0l_2tau"];
   background_processes["2l_2tau"] = background_processes["0l_2tau"];
   background_processes["2los_2tau"] = background_processes["0l_2tau"];

@@ -205,7 +205,7 @@ void processHistogram(
       assert(pos_num < (subdirName_num.length() - 2));
       subdirName_num = std::string(subdirName_num, pos_num + 2);
 
-      //-------- compute fakes_data histogram for denominator 
+      //-------- compute data_fakes histogram for denominator
       //        (= data_obs - sum(prompt MC) histograms for fakeable lepton selection)
       std::string subdirLeptonFakesName_output_den = Form("%s/%s", subdirName_den.data(), processLeptonFakes.data());       
       //std::cout << " subdirLeptonFakesName_output_den = '" << subdirLeptonFakesName_output_den << "'" << std::endl;
@@ -224,10 +224,10 @@ void processHistogram(
       // histogramFakeBg_den->Write();      
       //--------
 
-      //-------- compute fakes_data histogram for numerator 
-      //        (take fakes_data shape from denominator and normalize the shape to data_obs - sum(prompt MC) for tight lepton selection;
-      //         in case the difference data_obs - sum(prompt MC) is below 10% times data_obs, normalize the fakes_data histogram for the numerator to 10% times data_obs
-      //         and rescale the histograms for the prompt MC "backgrounds" such that the sum(prompt MC) + fakes_data = data_obs)
+      //-------- compute data_fakes histogram for numerator
+      //        (take data_fakes shape from denominator and normalize the shape to data_obs - sum(prompt MC) for tight lepton selection;
+      //         in case the difference data_obs - sum(prompt MC) is below 10% times data_obs, normalize the data_fakes histogram for the numerator to 10% times data_obs
+      //         and rescale the histograms for the prompt MC "backgrounds" such that the sum(prompt MC) + data_fakes = data_obs)
       std::string subdirLeptonFakesName_output_num = Form("%s/%s", subdirName_num.data(), processLeptonFakes.data());        
       //std::cout<< " subdirLeptonFakesName_output_num = '" << subdirLeptonFakesName_output_num << "'" << std::endl;
       TDirectory* subdirLeptonFakes_output_num = createSubdirectory_recursively(fs, subdirLeptonFakesName_output_num);

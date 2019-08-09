@@ -16,8 +16,8 @@ CHANNELS = {
 
 LAYOUTS = {
     "generic": [
-        ('fakes_data', {
-            'entries': ['fakes_data'],
+        ('data_fakes', {
+            'entries': ['data_fakes'],
             'legend': 'Fakes',
             'color': ROOT.TColor.GetColor(250, 202, 255)
         }
@@ -28,8 +28,8 @@ LAYOUTS = {
 
 LAYOUTS1 = { ## FOR tt
     "e": [
-        ('fakes_data', {
-            'entries': ['fakes_data'],
+        ('data_fakes', {
+            'entries': ['data_fakes'],
             'legend': 'Fakes',
             'color': ROOT.TColor.GetColor(250, 202, 255)
         }
@@ -55,8 +55,8 @@ LAYOUTS1 = { ## FOR tt
     ],
 
     "mu": [
-        ('fakes_data', {
-            'entries': ['fakes_data'],
+        ('data_fakes', {
+            'entries': ['data_fakes'],
             'legend': 'Fakes',
             'color': ROOT.TColor.GetColor(250, 202, 255)
         }

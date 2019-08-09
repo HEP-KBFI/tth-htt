@@ -202,7 +202,7 @@ void compareShapes()
   processes.push_back(new processEntry("EWKl",          610, "EWK"));           // purple
   processes.push_back(new processEntry("Raresl",        851, "Rares"));         // light blue
   processes.push_back(new processEntry("TTl",            16, "t#bar{t}+jets")); // gray
-  processes.push_back(new processEntry("fakes_data",      1, "Fakes"));         // black
+  processes.push_back(new processEntry("data_fakes",      1, "Fakes"));         // black
     
   std::vector<categoryEntry*> categories;
   categories.push_back(new categoryEntry(

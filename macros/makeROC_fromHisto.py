@@ -75,13 +75,13 @@ signal_mvaOutput_1l_2tau_ttbar_HTTWithKinFit = file.Get('1l_2tau_OS_Tight/sel/ev
 signal_mvaOutput_1l_2tau_ttbar_HTTLepID = file.Get('1l_2tau_OS_Tight/sel/evt/signal/mvaOutput_1l_2tau_ttbar_HTTLepID')
 
 #file.cd()
-file.cd('1l_2tau_OS_Tight/sel/evt/fakes_data')
-fakes_data_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly  =  file.Get('1l_2tau_OS_Tight/sel/evt/fakes_data/mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly')
-fakes_data_mvaOutput_1l_2tau_ttbar_Old  =  file.Get('1l_2tau_OS_Tight/sel/evt/fakes_data/mvaOutput_1l_2tau_ttbar_Old')
-fakes_data_mvaOutput_1l_2tau_ttbar_OldVar  =  file.Get('1l_2tau_OS_Tight/sel/evt/fakes_data/mvaOutput_1l_2tau_ttbar_OldVar')
-fakes_data_mvaOutput_1l_2tau_ttbar_OldVarHTT  =  file.Get('1l_2tau_OS_Tight/sel/evt/fakes_data/mvaOutput_1l_2tau_ttbar_OldVarHTT')
-fakes_data_mvaOutput_1l_2tau_ttbar_HTTWithKinFit  =  file.Get('1l_2tau_OS_Tight/sel/evt/fakes_data/mvaOutput_1l_2tau_ttbar_HTTWithKinFit')
-fakes_data_mvaOutput_1l_2tau_ttbar_HTTLepID  =  file.Get('1l_2tau_OS_Tight/sel/evt/fakes_data/mvaOutput_1l_2tau_ttbar_HTTLepID')
+file.cd('1l_2tau_OS_Tight/sel/evt/data_fakes')
+data_fakes_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly  =  file.Get('1l_2tau_OS_Tight/sel/evt/data_fakes/mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly')
+data_fakes_mvaOutput_1l_2tau_ttbar_Old  =  file.Get('1l_2tau_OS_Tight/sel/evt/data_fakes/mvaOutput_1l_2tau_ttbar_Old')
+data_fakes_mvaOutput_1l_2tau_ttbar_OldVar  =  file.Get('1l_2tau_OS_Tight/sel/evt/data_fakes/mvaOutput_1l_2tau_ttbar_OldVar')
+data_fakes_mvaOutput_1l_2tau_ttbar_OldVarHTT  =  file.Get('1l_2tau_OS_Tight/sel/evt/data_fakes/mvaOutput_1l_2tau_ttbar_OldVarHTT')
+data_fakes_mvaOutput_1l_2tau_ttbar_HTTWithKinFit  =  file.Get('1l_2tau_OS_Tight/sel/evt/data_fakes/mvaOutput_1l_2tau_ttbar_HTTWithKinFit')
+data_fakes_mvaOutput_1l_2tau_ttbar_HTTLepID  =  file.Get('1l_2tau_OS_Tight/sel/evt/data_fakes/mvaOutput_1l_2tau_ttbar_HTTLepID')
 c1 = TCanvas( 'c1', '@ Analysis level ',  400, 400 )
 
 
@@ -92,31 +92,31 @@ yl2=yl1+.2;
 leg = TLegend(xl1,yl1,xl2,yl2);
 leg.SetHeader("@ Analysis level")
 #
-roc=CalcROC(fakes_data_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly,signal_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly)
+roc=CalcROC(data_fakes_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly,signal_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly)
 roc.SetLineColor(kViolet)
 roc.SetLineWidth(2)
 leg.AddEntry(roc,"HTTWithKinFit_MVAonly","l") # str(1-roc.Integral())
 roc.Draw()
 
-roc1=CalcROC(fakes_data_mvaOutput_1l_2tau_ttbar_HTTWithKinFit,signal_mvaOutput_1l_2tau_ttbar_HTTWithKinFit)
+roc1=CalcROC(data_fakes_mvaOutput_1l_2tau_ttbar_HTTWithKinFit,signal_mvaOutput_1l_2tau_ttbar_HTTWithKinFit)
 roc1.SetLineColor(kMagenta+4)
 roc1.SetLineWidth(2)
 leg.AddEntry(roc1,"HTTWithKinFit","l")
 roc1.Draw("same")
 
-roc2=CalcROC(fakes_data_mvaOutput_1l_2tau_ttbar_HTTLepID,signal_mvaOutput_1l_2tau_ttbar_HTTLepID)
+roc2=CalcROC(data_fakes_mvaOutput_1l_2tau_ttbar_HTTLepID,signal_mvaOutput_1l_2tau_ttbar_HTTLepID)
 roc2.SetLineColor(kCyan)
 roc2.SetLineWidth(2)
 leg.AddEntry(roc2,"HTT + LepID ","l")
 roc2.Draw("same")
 
-roc_Old=CalcROC(fakes_data_mvaOutput_1l_2tau_ttbar_Old,signal_mvaOutput_1l_2tau_ttbar_Old)
+roc_Old=CalcROC(data_fakes_mvaOutput_1l_2tau_ttbar_Old,signal_mvaOutput_1l_2tau_ttbar_Old)
 roc_Old.SetLineColor(kGreen)
 roc_Old.SetLineWidth(2)
 leg.AddEntry(roc_Old,"Old training","l")
 roc_Old.Draw("same")
 
-roc_OldVar=CalcROC(fakes_data_mvaOutput_1l_2tau_ttbar_OldVar,signal_mvaOutput_1l_2tau_ttbar_OldVar)
+roc_OldVar=CalcROC(data_fakes_mvaOutput_1l_2tau_ttbar_OldVar,signal_mvaOutput_1l_2tau_ttbar_OldVar)
 roc_OldVar.SetLineColor(kRed)
 roc_OldVar.SetLineWidth(2)
 leg.AddEntry(roc_OldVar,"Old variables","l")
