@@ -159,6 +159,9 @@ void RecoLeptonWriter::setBranches(TTree * tree)
   bai.setBranch(charge_, branchName_charge_);
   bai.setBranch(filterBits_, branchName_filterBits_);
   bai.setBranch(jetIdx_, branchName_jetIdx_);
-  bai.setBranch(genPartFlav_, isMC_? branchName_genPartFlav_ : "");
-  bai.setBranch(genMatchIdx_, isMC_ ? branchName_genMatchIdx_ : "");
+  if(isMC_)
+  {
+    bai.setBranch(genPartFlav_, branchName_genPartFlav_);
+    bai.setBranch(genMatchIdx_, branchName_genMatchIdx_);
+  }
 }

@@ -137,8 +137,11 @@ void RecoHadTauWriter::setBranches(TTree * tree)
   bai.setBranch(hadTau_idAgainstMu_, branchName_idAgainstMu_);
   bai.setBranch(hadTau_filterBits_, branchName_filterBits_);
   bai.setBranch(hadTau_jetIdx_, branchName_jetIdx_);
-  bai.setBranch(hadTau_genPartFlav_, isMC_ ? branchName_genPartFlav_ : "");
-  bai.setBranch(hadTau_genMatchIdx_, isMC_ ? branchName_genMatchIdx_ : "");
+  if(isMC_)
+  {
+    bai.setBranch(hadTau_genPartFlav_, branchName_genPartFlav_);
+    bai.setBranch(hadTau_genMatchIdx_, branchName_genMatchIdx_);
+  }
 }
 
 void RecoHadTauWriter::write(const std::vector<const RecoHadTau *> & hadTaus)
