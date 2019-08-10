@@ -184,9 +184,9 @@ main(int argc,
 
   TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
 
-//--- set the basket size to 512kb
+//--- set the basket size to 192kb
 //    this will decrease the memory footprint at the cost of increasing runtime
-  inputTree->setBasketSize(512000);
+  inputTree->setBasketSize(192000);
 
   std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
 
