@@ -131,6 +131,11 @@ if __name__ == '__main__':
             len(missing_idxs), crab_path, ', '.join(map(str, list(sorted(missing_idxs)))))
           )
           logging.debug("Job completion is at {}% out of {} jobs".format(round(nof_completed, 2), nof_jobs))
+        if nof_completed < args.threshold:
+          logging.debug("Sample {} falls below the completion threshold: {}% < {}%".format(
+            crab_path, nof_completed, args.threshold
+          ))
+          continue
         if dataset_requestName not in crab_paths:
           crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
         else:
@@ -154,7 +159,7 @@ if __name__ == '__main__':
               logging.debug("Favoured latter ({}) as it is more complete ({:.2f}% vs {:.2f}%)".format(
                 crab_paths[dataset_requestName]['crab_path'], nof_completed, previous_completed
               ))
-          elif nof_completed >= args.threshold:
+          else:
             logging.debug("Found duplicates: {} vs {}".format(crab_path, crab_paths[dataset_requestName]['crab_path']))
             previous_completed = crab_paths[dataset_requestName]['nof_completed']
             if nof_completed > previous_completed:
