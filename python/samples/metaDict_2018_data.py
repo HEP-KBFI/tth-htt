@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-08-09 00:33:35 with the following command:
+# file generated at 2019-08-11 19:28:32 with the following command:
 # find_samples.py -V -m python/samples/metaDict_2018_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2018_17Sep18.txt -p SingleMuon EGamma DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt -v 10_2_4_patch1 -r 2018 -C +17Sep2018 +Run2018D-PromptReco -c python/samples/sampleLocations_2018_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -257,7 +257,7 @@ meta_dictionary["/Tau/Run2018A-17Sep2018-v1/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [315257, 316995]),
   ("golden_run_range",      [315257, 316995]),
-  ("comment",               "99.66%; status: VALID; size: 2.57TB; nevents: 63.15M; release: 10_2_4_patch1; last modified: 2018-11-25 08:28:53"),
+  ("comment",               "100.0%; status: VALID; size: 2.57TB; nevents: 63.15M; release: 10_2_4_patch1; last modified: 2018-11-25 08:28:53"),
 ])
 
 meta_dictionary["/Tau/Run2018B-17Sep2018-v1/MINIAOD"] =  OD([
