@@ -192,7 +192,10 @@ RecoJetWriter::setBranches(TTree * tree)
   bai.setBranch(jet_jetId_, branchName_jetId_);
   bai.setBranch(jet_puId_, branchName_puId_);
   bai.setBranch(jet_jetIdx_, branchName_jetIdx_);
-  bai.setBranch(jet_genMatchIdx_, isMC_ ? branchName_genMatchIdx_ : "");
+  if(isMC_)
+  {
+    bai.setBranch(jet_genMatchIdx_, branchName_genMatchIdx_);
+  }
   for(const auto & kv: branchNames_btag_)
   {
     bai.setBranch(jet_BtagCSVs_[kv.first], kv.second);
