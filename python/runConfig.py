@@ -25,8 +25,13 @@ def condition_type(value):
   if len(value_split) != 2:
     raise argparse.ArgumentTypeError("You must provide the condition in the form of '<key>:<regex>'")
 
+  negate = False
   key = value_split[0]
-  regex = re.compile(value_split[1])
+  regex_str = value_split[1]
+  if regex_str.startswith('~'):
+    regex_str = regex_str[1:]
+    negate = True
+  regex = re.compile(regex_str)
 
   if key not in ALLOWED_CONDITION_KEYS:
     raise argparse.ArgumentTypeError(
@@ -35,11 +40,12 @@ def condition_type(value):
         ', '.join(map(lambda k: ALLOWED_CONDITION_KEYS[k], ALLOWED_CONDITION_KEYS))
       )
     )
-  return (key, regex)
+  return (key, regex, negate)
 
 def filter_samples(sample, condition, force = False):
   key = condition[0]
   regex = condition[1]
+  negate = condition[2]
 
   sample_key = ALLOWED_CONDITION_KEYS[key]
   for sample_name, sample_entry in sample.items():
@@ -48,6 +54,8 @@ def filter_samples(sample, condition, force = False):
       use_it = bool(regex.match(sample_entry['local_paths'][0]['path']))
     else:
       use_it = bool(regex.match(sample_entry[sample_key]))
+    if negate:
+      use_it = not use_it
     if force:
       sample_entry['use_it'] = use_it
     else:
