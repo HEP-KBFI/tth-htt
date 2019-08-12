@@ -1,4 +1,4 @@
-#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" 
+#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
@@ -11,11 +11,11 @@
 TMVAInterface::TMVAInterface(const std::string & mvaFileName,
                              const std::vector<std::string> & mvaInputVariables,
                              const std::vector<std::string> & spectators)
-  : mode_(Mode::k_old) 
+  : mode_(Mode::k_old)
   , mva_(nullptr)
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
-  , isBDTTransform_(false) 
+  , isBDTTransform_(false)
 {
 
   if(mode_ != Mode::k_old){
@@ -48,10 +48,10 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
                              const std::vector<std::string> & mvaInputVariables,
                              const std::vector<std::string> & spectators)
   : mode_(Mode::k_odd_even)
-  , mva_(nullptr) 
+  , mva_(nullptr)
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
-  , isBDTTransform_(false) 
+  , isBDTTransform_(false)
 {
 
   if(mode_ != Mode::k_odd_even){
@@ -110,10 +110,10 @@ TMVAInterface::disableBDTTransform()
 double
 TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs, const int event_number) const
 {
-    if(event_number % 2){ // Odd event number                                                                                                                                                  
+    if(event_number % 2){ // Odd event number
       return this->operator()(mvaInputs, mva_odd_);
-    }else{ // Even event number                    
-      return this->operator()(mvaInputs, mva_even_);                                                                                                                                                     
+    }else{ // Even event number
+      return this->operator()(mvaInputs, mva_even_);
     }
 }
 
@@ -145,7 +145,6 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs, const
   {
     mvaOutput = 1. / (1. + std::sqrt((1. - mvaOutput) / (1. + mvaOutput)));
   }
-  
-  std::cout << "TMVA: mvaOutput " << mvaOutput << std::endl;
+
   return mvaOutput;
 }
