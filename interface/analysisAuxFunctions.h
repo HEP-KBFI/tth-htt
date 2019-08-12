@@ -250,6 +250,12 @@ get_tau_id_wp_str(TauID tauID,
  * @return True, if first lepton has higher pT; false if second lepton has higher pT
  */
 
+double
+min_Deta_fwdJet_jet(Particle::LorentzVector FwdJet, std::vector<const RecoJet *> selJets);
+
+Particle::LorentzVector
+HighestEtaFwdJet(std::vector<const RecoJet *> selJetsForward);
+
 bool
 isHigherPt(const Particle * particle1,
            const Particle * particle2);

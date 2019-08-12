@@ -22,6 +22,35 @@ get_BtagWP(int era,
   return BtagWP_map.at(era).at(btag).at(wp);
 }
 
+double
+min_Deta_fwdJet_jet(Particle::LorentzVector FwdJet, std::vector<const RecoJet *> selJets)
+{
+  double min_deta = 10000.;
+  for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin(); selJet != selJets.end(); ++selJet )
+  {
+    double teste = std::abs(FwdJet.Eta() - (*selJet) -> eta());
+    if (teste < min_deta) { min_deta = teste; }
+  }
+  return min_deta;
+}
+
+
+Particle::LorentzVector
+HighestEtaFwdJet(std::vector<const RecoJet *> selJetsForward)
+{
+  Particle::LorentzVector mostFwdJet;
+  if (selJetsForward.size() > 0 )
+  {
+   double teste = 0;
+   for ( std::vector<const RecoJet*>::const_iterator selFwdJet = selJetsForward.begin(); selFwdJet != selJetsForward.end(); ++selFwdJet )
+   {
+     if ((*selFwdJet) -> absEta() > teste) { mostFwdJet = (*selFwdJet) -> p4(); }
+     teste = std::abs(mostFwdJet.Eta());
+   }
+  }
+  return mostFwdJet;
+}
+
 bool
 isHigherPt(const Particle * particle1,
            const Particle * particle2)

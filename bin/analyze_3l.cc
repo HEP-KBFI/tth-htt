@@ -790,10 +790,11 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), era_string, central_or_shift)
     );
     bdt_filler -> register_variable<float_type>(
-      "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet", "mT_lep1",
-      "lep2_pt", "lep2_conePt", "lep2_eta", "lep2_tth_mva", "mindr_lep2_jet", "mT_lep2",
-      "lep3_pt", "lep3_conePt", "lep3_eta", "lep3_tth_mva", "mindr_lep3_jet", "mT_lep3",
-      "avg_dr_jet", "ptmiss",  "htmiss", "dr_leps",
+      "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_phi", "lep1_tth_mva", "mindr_lep1_jet", "mT_lep1",
+      "lep2_pt", "lep2_conePt", "lep2_eta", "lep2_phi", "lep2_tth_mva", "mindr_lep2_jet", "mT_lep2",
+      "lep3_pt", "lep3_conePt", "lep3_eta", "lep3_phi", "lep3_tth_mva", "mindr_lep3_jet", "mT_lep3",
+      "avg_dr_jet", "ptmiss",  "htmiss", "met_LD",
+      "dr_leps",
       "lumiScale", "genWeight", "evtWeight",
       "memOutput_isValid", "memOutput_errorFlag", "memOutput_ttH", "memOutput_tt", "memOutput_LR",
       "lep1_genLepPt", "lep2_genLepPt", "lep3_genLepPt",
@@ -801,10 +802,20 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       "lep1_frWeight", "lep2_frWeight", "lep3_frWeight",
       "mvaOutput_3l_ttV", "mvaOutput_3l_ttbar", "mvaDiscr_3l",
       "mbb_loose", "mbb_medium",
-      "dr_lss", "dr_los1", "dr_los2"
+      "dr_Lep_lss", "dr_Lep_los1", "dr_Lep_los2", "eta_LepLep_los1", "eta_LepLep_los2", "eta_LepLep_los",
+      "mostFwdJet_eta", "mostFwdJet_pt", "mostFwdJet_phi", "mostFwdJet_E",
+      "leadFwdJet_eta", "leadFwdJet_pt", "leadFwdJet_phi", "leadFwdJet_E",
+      "min_dr_Lep", "max_dr_Lep",
+      "jet1_pt", "jet1_eta", "jet1_phi", "jet1_E",
+      "jet2_pt", "jet2_eta", "jet2_phi", "jet2_E",
+      "jet3_pt", "jet3_eta", "jet3_phi", "jet3_E",
+      "jet4_pt", "jet4_eta", "jet4_phi", "jet4_E",
+      "sum_Lep_charge", "HadTop_pt", "res_HTT", "max_Lep_eta",
+      "massL", "massL3", "min_Deta_mostfwdJet_jet", "min_Deta_leadfwdJet_jet"
     );
     bdt_filler -> register_variable<int_type>(
-      "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "lep3_isTight", "hadtruth"
+      "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "lep3_isTight", "hadtruth",
+      "nElectron", "has_SFOS"
     );
     bdt_filler -> bookTree(fs);
   }
@@ -1141,6 +1152,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selJetsForward = jetSelectorForward(cleanedJets, isHigherPt);
+
     if(isDEBUG || run_lumi_eventSelector)
     {
       printCollection("uncleanedJets", jet_ptrs);
@@ -1688,6 +1700,50 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const double min_dr_lep_jet    = std::min({ mindr_lep1_jet, mindr_lep2_jet, mindr_lep3_jet });
     const double dr_leps           = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
     const double max_lep_eta       = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
+    const double min_dr_lep    = std::min({
+      deltaR(selLepton_lead->p4(), selLepton_sublead->p4()),
+      deltaR(selLepton_lead->p4(), selLepton_third->p4()),
+      deltaR(selLepton_third->p4(), selLepton_sublead->p4())
+    });
+    const double max_dr_lep    = std::max({
+      deltaR(selLepton_lead->p4(), selLepton_sublead->p4()),
+      deltaR(selLepton_lead->p4(), selLepton_third->p4()),
+      deltaR(selLepton_third->p4(), selLepton_sublead->p4())
+    });
+    bool hasSFOS = isSFOS(selLeptons);
+    double min_Deta_mostfwdJet_jet = 0;
+    double min_Deta_leadfwdJet_jet = 0;
+    // take the highest eta selJetsForward
+    Particle::LorentzVector mostFwdJet = HighestEtaFwdJet(selJetsForward);
+    if (selJetsForward.size() > 0 && selJets.size() > 0)
+    {
+      min_Deta_mostfwdJet_jet = min_Deta_fwdJet_jet(mostFwdJet, selJets);
+      Particle::LorentzVector leadFwdJet = selJetsForward[0]-> p4();
+      min_Deta_leadfwdJet_jet = min_Deta_fwdJet_jet(leadFwdJet, selJets);
+    }
+
+    double dr_lss  = 0.;
+    double dr_los1 = 0.;
+    double dr_los2 = 0.;
+    double eta_los1 = 0.;
+    double eta_los2 = 0.;
+    // it does not assume mis-charge identification
+    if (selLepton_lead->charge()*selLepton_sublead->charge() > 0){
+      dr_lss  = deltaR(selLepton_sublead -> p4(), selLepton_lead -> p4());
+      dr_los1 = deltaR(selLepton_third -> p4(), selLepton_lead -> p4());
+      dr_los2 = deltaR(selLepton_third  -> p4(), selLepton_sublead -> p4());
+      eta_los1 = std::abs(selLepton_third -> eta() - selLepton_lead -> eta());
+      eta_los2 = std::abs(selLepton_third  -> eta() - selLepton_sublead -> eta());
+    } else {
+      dr_lss  = deltaR(selLepton_third -> p4(), selLepton_lead -> p4());
+      dr_los1 = deltaR(selLepton_sublead -> p4(), selLepton_third -> p4());
+      dr_los2 = deltaR(selLepton_sublead  -> p4(), selLepton_lead -> p4());
+      eta_los1 = std::abs(selLepton_sublead -> eta() - selLepton_third -> eta());
+      eta_los2 = std::abs(selLepton_sublead  -> eta() - selLepton_lead -> eta());
+    }
+    double eta_los = 0.;
+    if (dr_los1 < dr_los2) eta_los = eta_los1;
+    else eta_los = eta_los2;
 
     mvaInputs_3l_ttH_tH_3cat_v8_TF["avg_dr_jet"]                 = avg_dr_jet;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["ptmiss"] = met.pt();
@@ -1929,42 +1985,33 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       if      ( std::abs(selLepton_third->pdgId()) == 11 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_e(selLepton_third->cone_pt(), selLepton_third->absEta());
       else if ( std::abs(selLepton_third->pdgId()) == 13 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_mu(selLepton_third->cone_pt(), selLepton_third->absEta());
 
-      double dr_lss  = -1.;
-      double dr_los1 = -1.;
-      double dr_los2 = -1.;
-      // it does not assume mis-charge identification
-      if (selLepton_lead->charge()*selLepton_sublead->charge() > 0){
-        dr_lss  = deltaR(selLepton_sublead -> p4(), selLepton_lead -> p4());
-        dr_los1 = deltaR(selLepton_third -> p4(), selLepton_lead -> p4());
-        dr_los2 = deltaR(selLepton_third  -> p4(), selLepton_sublead -> p4());
-      } else {
-        dr_lss  = deltaR(selLepton_third -> p4(), selLepton_lead -> p4());
-        dr_los1 = deltaR(selLepton_sublead -> p4(), selLepton_third -> p4());
-        dr_los2 = deltaR(selLepton_sublead  -> p4(), selLepton_lead -> p4());
-      }
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",             selLepton_lead -> pt())
           ("lep1_conePt",         lep1_conePt)
           ("lep1_eta",            selLepton_lead -> eta())
+          ("lep1_phi",            selLepton_lead -> phi())
           ("lep1_tth_mva",        selLepton_lead -> mvaRawTTH())
           ("mindr_lep1_jet",      TMath::Min(10., mindr_lep1_jet))
           ("mT_lep1",             comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi()))
           ("lep2_pt",             selLepton_sublead -> pt())
           ("lep2_conePt",         lep2_conePt)
           ("lep2_eta",            selLepton_sublead -> eta())
+          ("lep2_phi",            selLepton_sublead -> phi())
           ("lep2_tth_mva",        selLepton_sublead -> mvaRawTTH())
           ("mindr_lep2_jet",      TMath::Min(10., mindr_lep2_jet))
           ("mT_lep2",             comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi()))
           ("lep3_pt",             selLepton_third -> pt())
           ("lep3_conePt",         lep3_conePt)
           ("lep3_eta",            selLepton_third -> eta())
+          ("lep3_phi",            selLepton_third -> phi())
           ("lep3_tth_mva",        selLepton_third -> mvaRawTTH())
           ("mindr_lep3_jet",      TMath::Min(10., mindr_lep3_jet))
           ("mT_lep3",             comp_MT_met_lep1(*selLepton_third, met.pt(), met.phi()))
           ("avg_dr_jet",          avg_dr_jet)
           ("ptmiss",              met.pt())
           ("htmiss",              mht_p4.pt())
+          ("met_LD",              met_LD)
           ("dr_leps",             deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
           ("lep1_genLepPt",       (selLepton_lead->genLepton() != 0) ? selLepton_lead->genLepton()->pt() : 0.)
           ("lep2_genLepPt",       (selLepton_sublead->genLepton() != 0) ? selLepton_sublead->genLepton() ->pt() : 0.)
@@ -1994,11 +2041,49 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("lep1_isTight",        int(selLepton_lead -> isTight()))
           ("lep2_isTight",        int(selLepton_sublead -> isTight()))
           ("lep3_isTight",        int(selLepton_third -> isTight()))
-          ("dr_lss",              dr_lss)
-          ("dr_los1",             dr_los1)
-          ("dr_los2",             dr_los2)
+          ("dr_Lep_lss",              dr_lss)
+          ("dr_Lep_los1",             dr_los1)
+          ("dr_Lep_los2",             dr_los2)
+          ("eta_LepLep_los1",            eta_los1)
+          ("eta_LepLep_los2",            eta_los2)
+          ("eta_LepLep_los",             eta_los) // for min dr section 4.1 of arXiv:1404.1278
           ("hadtruth",            hadtruth)
-
+          ("mostFwdJet_eta",      selJetsForward.size() > 0 ? std::abs(mostFwdJet.Eta()) : -1000)
+          ("mostFwdJet_pt",       selJetsForward.size() > 0 ? mostFwdJet.pt() : -1000)
+          ("mostFwdJet_phi",      selJetsForward.size() > 0 ? mostFwdJet.phi() : -1000)
+          ("mostFwdJet_E",        selJetsForward.size() > 0 ? mostFwdJet.energy() : -1000)
+          ("leadFwdJet_eta",      selJetsForward.size() > 0 ? selJetsForward[0] -> absEta() : -1000)
+          ("leadFwdJet_pt",       selJetsForward.size() > 0 ? selJetsForward[0] -> pt() : -1000)
+          ("leadFwdJet_phi",      selJetsForward.size() > 0 ? selJetsForward[0] -> phi() : -1000)
+          ("leadFwdJet_E",        selJetsForward.size() > 0 ? selJetsForward[0] -> p4().energy() : -1000)
+          ("min_dr_Lep",          min_dr_lep)
+          ("max_dr_Lep",          max_dr_lep)
+          ("jet1_pt",   selJets.size() > 0 ? selJets[0]->pt() : -1000)
+          ("jet1_eta",  selJets.size() > 0 ? selJets[0]->eta() : -1000)
+          ("jet1_phi",  selJets.size() > 0 ? selJets[0]->phi() : -1000)
+          ("jet1_E",    selJets.size() > 0 ? selJets[0]->p4().energy() : -1000)
+          ("jet2_pt",   selJets.size() > 1 ? selJets[1]->pt() : -1000)
+          ("jet2_eta",  selJets.size() > 1 ? selJets[1]->eta() : -1000)
+          ("jet2_phi",  selJets.size() > 1 ? selJets[1]->phi() : -1000)
+          ("jet2_E",    selJets.size() > 1 ? selJets[1]->p4().energy() : -1000)
+          ("jet3_pt",   selJets.size() > 2 ? selJets[2]->pt() : -1000)
+          ("jet3_eta",  selJets.size() > 2 ? selJets[2]->eta() : -1000)
+          ("jet3_phi",  selJets.size() > 2 ? selJets[2]->phi() : -1000)
+          ("jet3_E",    selJets.size() > 2 ? selJets[2]->p4().energy() : -1000)
+          ("jet4_pt",   selJets.size() > 3 ? selJets[3]->pt() : -1000)
+          ("jet4_eta",  selJets.size() > 3 ? selJets[3]->eta() : -1000)
+          ("jet4_phi",  selJets.size() > 3 ? selJets[3]->phi() : -1000)
+          ("jet4_E",    selJets.size() > 3 ? selJets[3]->p4().energy() : -1000)
+          ("sum_Lep_charge", sumLeptonCharge)
+          ("HadTop_pt",      HadTop_pt_CSVsort4rd)
+          ("res_HTT",        max_truth_HTT_CSVsort4rd)
+          ("max_Lep_eta",    max_lep_eta)
+          ("massL",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.)
+          ("massL3",          selLeptons.size() > 2 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4() + selLeptons[2]->p4(), met.pt(), met.phi())  : 0.)
+          ("has_SFOS",       hasSFOS)
+          ("min_Deta_mostfwdJet_jet", min_Deta_mostfwdJet_jet)
+          ("min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet)
+          ("nElectron",                      selElectrons.size())
 
         .fill()
       ;

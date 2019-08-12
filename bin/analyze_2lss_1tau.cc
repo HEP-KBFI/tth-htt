@@ -854,13 +854,22 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       "lep1_fake_prob", "lep2_fake_prob",  "tau_fake_prob", "tau_fake_test",
       "Hj_tagger",
       "genWeight", "evtWeight",
-      "mbb","ptbb", "mbb_loose","ptbb_loose",
-
-      "res-HTT_CSVsort4rd", "HadTop_pt_CSVsort4rd", "genTopPt_CSVsort4rd"
+      "mbb_loose", "mbb_medium",
+      "dr_Lep_lss", "dr_Lep_los1", "dr_Lep_los2", "eta_LepLep_los1", "eta_LepLep_los2", "eta_LepLep_los",
+      "res_HTT", "HadTop_pt", "genTopPt_CSVsort4rd",
+      "massL", "min_Deta_mostfwdJet_jet", "min_Deta_leadfwdJet_jet",
+      "met_LD", "jet1_pt", "jet1_eta",
+      "jet1_pt", "jet1_eta", "jet1_phi", "jet1_E",
+      "jet2_pt", "jet2_eta", "jet2_phi", "jet2_E",
+      "jet3_pt", "jet3_eta", "jet3_phi", "jet3_E",
+      "jet4_pt", "jet4_eta", "jet4_phi", "jet4_E",
+      "mostFwdJet_eta", "mostFwdJet_pt", "mostFwdJet_phi", "mostFwdJet_E",
+      "leadFwdJet_eta", "leadFwdJet_pt", "leadFwdJet_phi", "leadFwdJet_E"
     );
     bdt_filler->register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "nLep","nTau",
       "lep1_isTight", "lep2_isTight", "tau_isTight", "failsTightChargeCut",
+      "nElectron", "sum_Lep_charge",
       "hadtruth", "bWj1Wj2_isGenMatched_CSVsort4rd"
     );
     bdt_filler->bookTree(fs);
@@ -1890,6 +1899,39 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     const double mTauTauVis2_sel = (selLepton_sublead->p4() + selHadTau->p4()).mass();
     const double HTT             = max_mvaOutput_HTT_CSVsort4rd;
     const double HadTop_pt       = HadTop_pt_CSVsort4rd;
+    double min_Deta_mostfwdJet_jet = 0;
+    double min_Deta_leadfwdJet_jet = 0;
+    // take the highest eta selJetsForward
+    Particle::LorentzVector mostFwdJet = HighestEtaFwdJet(selJetsForward);
+    if (selJetsForward.size() > 0 && selJets.size() > 0)
+    {
+      min_Deta_mostfwdJet_jet = min_Deta_fwdJet_jet(mostFwdJet, selJets);
+      Particle::LorentzVector leadFwdJet = selJetsForward[0]-> p4();
+      min_Deta_leadfwdJet_jet = min_Deta_fwdJet_jet(leadFwdJet, selJets);
+    }
+
+    double dr_lss  = 0.;
+    double dr_los1 = 0.;
+    double dr_los2 = 0.;
+    double eta_los1 = 0.;
+    double eta_los2 = 0.;
+    // it does not assume mis-charge identification
+    if (selLepton_lead->charge()*selLepton_sublead->charge() > 0){
+      dr_lss  = deltaR(selLepton_sublead -> p4(), selLepton_lead -> p4());
+      dr_los1 = deltaR(selHadTau -> p4(), selLepton_lead -> p4());
+      dr_los2 = deltaR(selHadTau  -> p4(), selLepton_sublead -> p4());
+      eta_los1 = std::abs(selHadTau -> eta() - selLepton_lead -> eta());
+      eta_los2 = std::abs(selHadTau  -> eta() - selLepton_sublead -> eta());
+    } else {
+      dr_lss  = deltaR(selHadTau -> p4(), selLepton_lead -> p4());
+      dr_los1 = deltaR(selLepton_sublead -> p4(), selHadTau -> p4());
+      dr_los2 = deltaR(selLepton_sublead  -> p4(), selLepton_lead -> p4());
+      eta_los1 = std::abs(selLepton_sublead -> eta() - selHadTau -> eta());
+      eta_los2 = std::abs(selLepton_sublead  -> eta() - selLepton_lead -> eta());
+    }
+    double eta_los = 0.;
+    if (dr_los1 < dr_los2) eta_los = eta_los1;
+    else eta_los = eta_los2;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. tt
 //    in 2lss_1tau category of ttH multilepton analysis
@@ -2184,8 +2226,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
           ("hadtruth",               hadtruth)
           ("bWj1Wj2_isGenMatched_CSVsort4rd",              max_truth_HTT_CSVsort4rd)
-          ("res-HTT_CSVsort4rd",                 max_mvaOutput_HTT_CSVsort4rd)
-          ("HadTop_pt_CSVsort4rd",            HadTop_pt_CSVsort4rd)
+          ("res_HTT",                 max_mvaOutput_HTT_CSVsort4rd)
+          ("HadTop_pt",            HadTop_pt_CSVsort4rd)
           ("genTopPt_CSVsort4rd",             genTopPt_CSVsort4rd)
 
           ("genWeight",                      eventInfo.genWeight)
@@ -2200,11 +2242,48 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           ("tau_isTight",                    static_cast<int>(tightHadTauFilter(*selHadTau)))
           ("min(met_pt,400)",                minMET400)
           ("hadtruth",                       hadtruth)
-          ("mbb",                            selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000)
           ("ptbb",                           selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).pt() : -1000)
           ("mbb_loose",                      selBJets_loose.size()  > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1000)
-          ("ptbb_loose",                     selBJets_loose.size()  > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).pt() : -1000)
           ("failsTightChargeCut",            failsTightChargeCut)
+
+          ("dr_Lep_lss",              dr_lss)
+          ("dr_Lep_los1",             dr_los1)
+          ("dr_Lep_los2",             dr_los2)
+          ("eta_LepLep_los1",            eta_los1)
+          ("eta_LepLep_los2",            eta_los2)
+          ("eta_LepLep_los",             eta_los) // for min dr section 4.1 of arXiv:1404.1278
+          ("mbb_medium",     selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : 0 )
+          ("nElectron",      selElectrons.size())
+          ("sum_Lep_charge", selLepton_lead -> charge() + selLepton_sublead -> charge() + selHadTau->charge())
+          ("massL",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.)
+          ("min_Deta_mostfwdJet_jet", min_Deta_mostfwdJet_jet)
+          ("min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet)
+          ("met_LD",    met_LD)
+          ("jet1_pt",   selJets.size() > 0 ? selJets[0]->pt() : -1000)
+          ("jet1_eta",  selJets.size() > 0 ? selJets[0]->eta() : -1000)
+          ("jet1_phi",  selJets.size() > 0 ? selJets[0]->phi() : -1000)
+          ("jet1_E",    selJets.size() > 0 ? selJets[0]->p4().energy() : -1000)
+          ("jet2_pt",   selJets.size() > 1 ? selJets[1]->pt() : -1000)
+          ("jet2_eta",  selJets.size() > 1 ? selJets[1]->eta() : -1000)
+          ("jet2_phi",  selJets.size() > 1 ? selJets[1]->phi() : -1000)
+          ("jet2_E",    selJets.size() > 1 ? selJets[1]->p4().energy() : -1000)
+          ("jet3_pt",   selJets.size() > 2 ? selJets[2]->pt() : -1000)
+          ("jet3_eta",  selJets.size() > 2 ? selJets[2]->eta() : -1000)
+          ("jet3_phi",  selJets.size() > 2 ? selJets[2]->phi() : -1000)
+          ("jet3_E",    selJets.size() > 2 ? selJets[2]->p4().energy() : -1000)
+          ("jet4_pt",   selJets.size() > 3 ? selJets[3]->pt() : -1000)
+          ("jet4_eta",  selJets.size() > 3 ? selJets[3]->eta() : -1000)
+          ("jet4_phi",  selJets.size() > 3 ? selJets[3]->phi() : -1000)
+          ("jet4_E",    selJets.size() > 3 ? selJets[3]->p4().energy() : -1000)
+          ("mostFwdJet_eta",      selJetsForward.size() > 0 ? std::abs(mostFwdJet.Eta()) : -1000)
+          ("mostFwdJet_pt",       selJetsForward.size() > 0 ? mostFwdJet.pt() : -1000)
+          ("mostFwdJet_phi",      selJetsForward.size() > 0 ? mostFwdJet.phi() : -1000)
+          ("mostFwdJet_E",        selJetsForward.size() > 0 ? mostFwdJet.energy() : -1000)
+          ("leadFwdJet_eta",      selJetsForward.size() > 0 ? selJetsForward[0] -> absEta() : -1000)
+          ("leadFwdJet_pt",       selJetsForward.size() > 0 ? selJetsForward[0] -> pt() : -1000)
+          ("leadFwdJet_phi",      selJetsForward.size() > 0 ? selJetsForward[0] -> phi() : -1000)
+          ("leadFwdJet_E",        selJetsForward.size() > 0 ? selJetsForward[0] -> p4().energy() : -1000)
+
         .fill()
       ;
     }
