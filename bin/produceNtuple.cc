@@ -249,6 +249,7 @@ main(int argc,
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
+  jetReader->read_ptMass_systematics(true);
   inputTree -> registerReader(jetReader);
   const RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetSelector jetSelector(era);

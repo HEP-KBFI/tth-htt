@@ -34,6 +34,7 @@ RecoJetReader::RecoJetReader(int era,
   , btag_(Btag::kDeepJet)
   , btag_central_or_shift_(kBtag_central)
   , ptMassOption_(isMC_ ? kJetMET_central : kJetMET_central_nonNominal)
+  , read_ptMass_systematics_(false)
   , jet_eta_(nullptr)
   , jet_phi_(nullptr)
   , jet_charge_(nullptr)
@@ -129,6 +130,18 @@ RecoJetReader::setBranchName_BtagWeight(int central_or_shift)
 }
 
 void
+RecoJetReader::read_Btag(Btag btag)
+{
+  btag_ = btag;
+}
+
+void
+RecoJetReader::read_ptMass_systematics(bool flag)
+{
+  read_ptMass_systematics_ = flag;
+}
+
+void
 RecoJetReader::setBranchNames()
 {
   if(numInstances_[branchName_obj_] == 0)
@@ -216,7 +229,7 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     }
     bai.setBranchAddress(jet_pt_systematics_[ptMassOption_],   branchNames_pt_systematics_[ptMassOption_]);
     bai.setBranchAddress(jet_mass_systematics_[ptMassOption_], branchNames_mass_systematics_[ptMassOption_]);
-    if(isMC_)
+    if(isMC_ && read_ptMass_systematics_)
     {
       for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerDown; ++idxShift)
       {
@@ -244,6 +257,10 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     {
       for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
       {
+        if(! read_ptMass_systematics_ && idxShift != btag_central_or_shift_)
+        {
+          continue;
+        }
         bai.setBranchAddress(
           jet_BtagWeights_systematics_[kv.first][idxShift], isMC_ ? branchNames_BtagWeight_systematics_[kv.first][idxShift] : "", 1.
         );
@@ -322,7 +339,7 @@ RecoJetReader::read() const
 
       RecoJet & jet = jets.back();
 
-      if(isMC_)
+      if(isMC_ && read_ptMass_systematics_)
       {
         for(const auto & kv: gInstance->jet_BtagWeights_systematics_)
         {
@@ -346,7 +363,7 @@ RecoJetReader::read() const
         jet.BtagCSVs_[kv.first] = btagCSV_tmp;
       }
 
-      if(isMC_)
+      if(isMC_ && read_ptMass_systematics_)
       {
         for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerDown; ++idxShift)
         {
@@ -362,7 +379,7 @@ RecoJetReader::read() const
       }
       else
       {
-        // fill the maps with only the central (either nominal or non-nominal) values
+        // fill the maps with only the central values (either nominal or non-nominal if data)
         jet.pt_systematics_[ptMassOption_]   = gInstance->jet_pt_systematics_.at(ptMassOption_)[idxJet];
         jet.mass_systematics_[ptMassOption_] = gInstance->jet_mass_systematics_.at(ptMassOption_)[idxJet];
       } // isMC_
