@@ -80,6 +80,8 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
                        . $F_i
     fi
     test_exit_code $?
+    echo "Removing intermediate file $F_i"
+    rm -f $F_i
   done
   echo "Finished nanoAOD pre-processing at `date`"
 else
