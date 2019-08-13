@@ -154,12 +154,12 @@ if preselection:
     }
   else:
     preselection_cuts = {
-      'minNumLeptons'              : 1,
-      'minNumHadTaus'              : 1,
-      'minNumLeptons_and_HadTaus'  : 3,
-      'minNumJets'                 : -1,
-      'minNumBJets_loose'          : 2,
-      'minNumBJets_medium'         : 1,
+      'minNumLeptons'              : 0,
+      'minNumHadTaus'              : 0,
+      'minNumLeptons_and_HadTaus'  : 2,
+      'minNumJets'                 : 1,
+      'minNumBJets_loose'          : -1,
+      'minNumBJets_medium'         : -1,
       'maxNumBJets_loose'          : -1,
       'maxNumBJets_medium'         : -1,
       'applyJetEtaCut'             : False,
