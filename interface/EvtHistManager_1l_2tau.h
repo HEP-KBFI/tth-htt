@@ -30,11 +30,7 @@ public:
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
-                 double mvaOutput_plainKin_ttV,
-                 double mvaOutput_plainKin_tt,
-                 double mvaOutput_plainKin_1B_VT,
                  double mvaOutput_HTT_SUM_VT,
-                 double mvaOutput_plainKin_SUM_VT,
                  double mTauTauVis,
                  double evtWeight);
 
@@ -55,13 +51,6 @@ public:
   TH2 * histogram_numBJets_loose_vs_numJets_;
   TH2 * histogram_numBJets_medium_vs_numJets_;
 
-  TH1 * histogram_mvaOutput_plainKin_ttV_;
-  TH1 * histogram_mvaOutput_plainKin_tt_;
-  TH1 * histogram_mvaOutput_plainKin_1B_VT_;
-  TH1 * histogram_mvaOutput_HTT_SUM_VT_;
-  TH1 * histogram_mvaOutput_HTT_SUM_VT_noRebin_;
-  TH1 * histogram_mvaOutput_plainKin_SUM_VT_;
-  TH1 * histogram_mvaOutput_plainKin_SUM_VT_noRebin_;
   TH1 * histogram_final_;
 
   TH1 * histogram_mTauTauVis_;
