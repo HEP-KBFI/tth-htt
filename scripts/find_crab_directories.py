@@ -88,6 +88,18 @@ if __name__ == '__main__':
             is_completed = True
             break
       chunk_str = crab_subdir[crab_subdir.find('CHUNK'):crab_subdir.find('CHUNK') + len('CHUNK') + 1] if 'CHUNK' in crab_subdir else ''
+      line_data = {}
+      if chunk_str and chunk_str != 'CHUNK1':
+        with open(crab_logfile, 'r') as crab_logfile_ptr:
+          for line in crab_logfile_ptr:
+            line_stripped = line.rstrip('\n')
+            if "Got information from status cache file: " in line_stripped:
+              line_data = eval(
+                line_stripped[line_stripped.find("Got information from status cache file: ") + len("Got information from status cache file: "):]
+              )
+      expected_fails = { int(job_id) for job_id in line_data if ('Error' in line_data[job_id] and line_data[job_id]['Error'][0] == 60302) }
+      if expected_fails:
+        logging.debug("Expecting {} jobs to produce no output".format(len(expected_fails)))
       dataset_match = DATASET_REGEX.match(dataset_name)
       logging.debug("Found dataset: {}".format(dataset_name))
       if not dataset_name or not dataset_match:
@@ -119,6 +131,8 @@ if __name__ == '__main__':
           root_file for subsubdir in hdfs.listdir(subdir) for root_file in hdfs.listdir(subsubdir) if root_file.endswith('.root')
         ]
         root_idxs = set(map(lambda fn: int(TREE_REGEX.match(os.path.basename(fn)).group('idx')), root_files))
+        assert(not (root_idxs & expected_fails))
+        root_idxs = root_idxs | expected_fails
         nof_completed = len(root_idxs) * 100. / nof_jobs
         expected_idxs = set(range(1, nof_jobs + 1))
         assert(not (root_idxs - expected_idxs))
@@ -136,40 +150,41 @@ if __name__ == '__main__':
             crab_path, nof_completed, args.threshold
           ))
           continue
-        if dataset_requestName not in crab_paths:
-          crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
+        dataset_requestName_key = dataset_requestName + chunk_str
+        if dataset_requestName_key not in crab_paths:
+          crab_paths[dataset_requestName_key] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
         else:
           if is_completed:
-            logging.debug("Found duplicates: {} vs {}".format(crab_path, crab_paths[dataset_requestName]['crab_path']))
+            logging.debug("Found duplicates: {} vs {}".format(crab_path, crab_paths[dataset_requestName_key]['crab_path']))
             current_date = datetime.datetime.strptime(version_date, '%Y%b%d')
-            previous_date = datetime.datetime.strptime(crab_paths[dataset_requestName]['date'], '%Y%b%d')
-            previous_completed = crab_paths[dataset_requestName]['nof_completed']
+            previous_date = datetime.datetime.strptime(crab_paths[dataset_requestName_key]['date'], '%Y%b%d')
+            previous_completed = crab_paths[dataset_requestName_key]['nof_completed']
             if nof_completed > previous_completed:
               logging.debug("Favoured former ({}) as it is more complete ({:.2f}% vs {:.2f}%)".format(
                 crab_path, nof_completed, previous_completed
               ))
-              crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
+              crab_paths[dataset_requestName_key] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
             elif nof_completed == previous_completed:
               if current_date > previous_date:
                 logging.debug("Favoured former ({}) as it is more recent".format(crab_path))
-                crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
+                crab_paths[dataset_requestName_key] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
               else:
-                logging.debug("Favoured latter ({}) as it is more recent".format(crab_paths[dataset_requestName]['crab_path']))
+                logging.debug("Favoured latter ({}) as it is more recent".format(crab_paths[dataset_requestName_key]['crab_path']))
             else:
               logging.debug("Favoured latter ({}) as it is more complete ({:.2f}% vs {:.2f}%)".format(
-                crab_paths[dataset_requestName]['crab_path'], nof_completed, previous_completed
+                crab_paths[dataset_requestName_key]['crab_path'], nof_completed, previous_completed
               ))
           else:
-            logging.debug("Found duplicates: {} vs {}".format(crab_path, crab_paths[dataset_requestName]['crab_path']))
-            previous_completed = crab_paths[dataset_requestName]['nof_completed']
+            logging.debug("Found duplicates: {} vs {}".format(crab_path, crab_paths[dataset_requestName_key]['crab_path']))
+            previous_completed = crab_paths[dataset_requestName_key]['nof_completed']
             if nof_completed > previous_completed:
               logging.debug("Favoured former ({}) as it is more complete ({:.2f}% vs {:.2f}%)".format(
                 crab_path, nof_completed, previous_completed
               ))
-              crab_paths[dataset_requestName] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
+              crab_paths[dataset_requestName_key] = { 'date' : version_date, 'crab_path' : crab_path, 'nof_completed' : nof_completed }
             else:
               logging.debug("Favoured latter ({}) as it is more complete ({:.2f}% vs {:.2f}%)".format(
-                crab_paths[dataset_requestName]['crab_path'], nof_completed, previous_completed
+                crab_paths[dataset_requestName_key]['crab_path'], nof_completed, previous_completed
               ))
       else:
         logging.warning("No such directory found: {}".format(crab_path))

@@ -67,7 +67,7 @@ else:
 
 for sample_name, sample_entry in samples.items():
   if sample_name == 'sum_events': continue
-  sample_entry['use_it'] = True
+  sample_entry['use_it'] = sample_entry['type'] != 'data'
 
 if __name__ == '__main__':
   if sample_filter:

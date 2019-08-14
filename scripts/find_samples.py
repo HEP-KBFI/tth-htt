@@ -271,14 +271,19 @@ def get_crab_string(dataset_name, paths):
     else:
       raise RuntimeError("Invalid type: %s" % str(type(entry)))
     dataset_match = DATASET_REGEX.match(dataset_name)
+    chunk_str = 'CHUNK0' if 'CHUNK0' in path else ''
 
     version = os.path.basename(os.path.dirname(os.path.dirname(path)))
+    if chunk_str:
+      version += '_{}'.format(chunk_str)
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
     requestName = get_requestname(requestName, path)
     if requestName == os.path.basename(path):
       return (requestName, comment)
 
     version = os.path.basename(os.path.dirname(path))
+    if chunk_str:
+      version += '_{}'.format(chunk_str)
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
     requestName = get_requestname(requestName, path)
     full_path = os.path.join(path, requestName)
@@ -286,6 +291,8 @@ def get_crab_string(dataset_name, paths):
       return (requestName, comment)
 
     version = os.path.basename(path)
+    if chunk_str:
+      version += '_{}'.format(chunk_str)
     primary_name = dataset_name.split('/')[1]
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
     requestName = get_requestname(requestName, path)

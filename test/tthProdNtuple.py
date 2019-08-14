@@ -20,7 +20,7 @@ parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_nonnominal()
 parser.add_tau_id_wp('dR03mvaVVLoose&dR05mvaVVLoose&deepVSjVVVLoose')
-parser.add_files_per_job(10)
+parser.add_files_per_job(5)
 parser.add_use_home(False)
 parser.add_gen_matching()
 parser.add_argument('-p', '--enable-preselection',
@@ -154,12 +154,12 @@ if preselection:
     }
   else:
     preselection_cuts = {
-      'minNumLeptons'              : 1,
-      'minNumHadTaus'              : 1,
-      'minNumLeptons_and_HadTaus'  : 3,
-      'minNumJets'                 : -1,
-      'minNumBJets_loose'          : 2,
-      'minNumBJets_medium'         : 1,
+      'minNumLeptons'              : 0,
+      'minNumHadTaus'              : 0,
+      'minNumLeptons_and_HadTaus'  : 2,
+      'minNumJets'                 : 1,
+      'minNumBJets_loose'          : -1,
+      'minNumBJets_medium'         : -1,
       'maxNumBJets_loose'          : -1,
       'maxNumBJets_medium'         : -1,
       'applyJetEtaCut'             : False,
