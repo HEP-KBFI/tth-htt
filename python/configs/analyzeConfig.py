@@ -420,10 +420,10 @@ class analyzeConfig(object):
         self.cfgFile_add_syst_fakerate = os.path.join(self.template_dir, "addSystFakeRates_cfg.py")
         self.jobOptions_add_syst_fakerate = {}
         self.signalProcs = [ "signal", "signal_ctcvcp" ]
-        self.ttHProcs = [ "ttH" , "ttH_ctcvcp" ] 
+        self.ttHProcs = [ "ttH" , "ttH_ctcvcp" ]
         self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
         self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
-        self.procsWithDecayModes = self.ttHProcs + [ "VH", "tHW", "tHq" ]
+        self.procsWithDecayModes = self.ttHProcs + [ "VH", "tHW", "tHq", "ggH", "qqH" ]
         self.prep_dcard_signals = self.signalProcs + self.ttHProcs + [
           "{}_{}".format(proc, decMode) for proc in self.ttHProcs for decMode in self.decayModes + [ 'fake' ]
         ]
@@ -758,6 +758,7 @@ class analyzeConfig(object):
             "{}.{:<{len}} = cms.bool({})".format            (process_string, 'redoGenMatching',       'False',       len = max_option_len),
             "{}.{:<{len}} = cms.bool({})".format            (process_string, 'isDEBUG',                self.isDebug, len = max_option_len),
         ]
+        lines += ["{}.{:<{len}} = cms.bool({})".format            (process_string, 'FullSyst',   'False' if len(self.central_or_shifts) == 1 else 'True', len = max_option_len),]
         for jobOptions_key in jobOptions_keys:
             if jobOptions_key not in jobOptions: continue # temporary?
             jobOptions_val = jobOptions[jobOptions_key]

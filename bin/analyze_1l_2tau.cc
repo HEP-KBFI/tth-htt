@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
   const bool isMC_tHq = process_string == "tHq";
   const bool isMC_tHW = process_string == "tHW";
   const bool isMC_tH = isMC_tHq || isMC_tHW;
-  const bool isMC_VH = process_string == "VH";
+  const bool isMC_VH = process_string == "VH" || process_string == "ggH" || process_string == "qqH";
   const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
 
@@ -184,6 +184,8 @@ int main(int argc, char* argv[])
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
+
+  const bool FullSyst = cfg_analyze.getParameter<bool>("FullSyst");
 
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e, "triggers_1e");
@@ -660,6 +662,7 @@ int main(int argc, char* argv[])
       int idxHadTau = hadTauGenMatch_definition->idx_;
 
       selHistManagerType* selHistManager = new selHistManagerType();
+      if (!FullSyst) {
       selHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/electrons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
       selHistManager->electrons_->bookHistograms(fs);
@@ -702,6 +705,7 @@ int main(int argc, char* argv[])
       selHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/metFilters", histogramDir.data()), era_string, central_or_shift));
       selHistManager->metFilters_->bookHistograms(fs);
+      }
       selHistManager->mvaInputVariables_HTT_sum_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/mvaInputs_HTT_sum", histogramDir.data()), era_string, central_or_shift));
       selHistManager->mvaInputVariables_HTT_sum_->bookHistograms(fs, mvaInputVariables_HTT_sumSort);
@@ -778,6 +782,7 @@ int main(int argc, char* argv[])
         selHistManager->evt_in_categories_[category] = new EvtHistManager_1l_2tau(makeHistManager_cfg(process_and_genMatch,
           Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
         selHistManager->evt_in_categories_[category]->bookHistograms(fs);
+        if (!FullSyst) {
         selHistManager->electrons_in_categories_[category] = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
           Form("%s/sel/electrons", histogramDir_category.Data()), era_string, central_or_shift, "allHistograms"));
         selHistManager->electrons_in_categories_[category]->bookHistograms(fs);
@@ -793,6 +798,7 @@ int main(int argc, char* argv[])
         selHistManager->subleadHadTau_in_categories_[category] = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
           Form("%s/sel/subleadHadTau", histogramDir_category.Data()), era_string, central_or_shift, "minimalHistograms", 1));
         selHistManager->subleadHadTau_in_categories_[category]->bookHistograms(fs);
+        }
       }
       edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/evtYield", histogramDir.data()), era_string, central_or_shift);
@@ -800,17 +806,19 @@ int main(int argc, char* argv[])
       cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);
       selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_sel);
       selHistManager->evtYield_->bookHistograms(fs);
+      if (!FullSyst) {
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/weights", histogramDir.data()), era_string, central_or_shift));
       selHistManager->weights_->bookHistograms(fs,
         { "genWeight", "pileupWeight", "data_to_MC_correction", "triggerWeight", "leptonEff", "hadTauEff", "fakeRate" });
+      }
       selHistManagers[idxLepton][idxHadTau] = selHistManager;
     }
   }
   GenEvtHistManager* genEvtHistManager_beforeCuts = 0;
   GenEvtHistManager* genEvtHistManager_afterCuts = 0;
   LHEInfoHistManager* lheInfoHistManager = 0;
-  if ( isMC ) {
+  if ( isMC && !FullSyst) {
     genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_string,
       Form("%s/unbiased/genEvt", histogramDir.data()), era_string, central_or_shift));
     genEvtHistManager_beforeCuts->bookHistograms(fs);
@@ -886,7 +894,7 @@ int main(int argc, char* argv[])
     "signal region veto",
   };
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
-  cutFlowHistManager->bookHistograms(fs);
+  if (!FullSyst) cutFlowHistManager->bookHistograms(fs);
 
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
@@ -907,7 +915,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("run:ls:event selection", lumiScale);
-    cutFlowHistManager->fillHistograms("run:ls:event selection", lumiScale);
+    if (!FullSyst) cutFlowHistManager->fillHistograms("run:ls:event selection", lumiScale);
 
     if ( isDEBUG ) {
       std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
@@ -973,10 +981,12 @@ int main(int argc, char* argv[])
       evtWeight_inclusive *= evtWeight_tH_nom;
 
       evtWeight_inclusive *= lumiScale;
+      if (!FullSyst) {
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       if(eventWeightManager)
       {
         genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+      }
       }
     }
 
@@ -1033,7 +1043,7 @@ int main(int argc, char* argv[])
     }
 
     cutFlowTable.update("trigger", evtWeight_inclusive);
-    cutFlowHistManager->fillHistograms("trigger", evtWeight_inclusive);
+    if (!FullSyst) cutFlowHistManager->fillHistograms("trigger", evtWeight_inclusive);
 
     if ( (selTrigger_1mu     && !apply_offline_e_trigger_cuts_1mu)     ||
          (selTrigger_1mu1tau && !apply_offline_e_trigger_cuts_1mu1tau) ||
@@ -1221,7 +1231,7 @@ int main(int argc, char* argv[])
     // require exactly one lepton passing loose preselection criteria
     if ( !(preselLeptonsFull.size() >= 1) ) continue;
     cutFlowTable.update(">= 1 presel lepton", evtWeight_inclusive);
-    cutFlowHistManager->fillHistograms(">= 1 presel lepton", evtWeight_inclusive);
+    if (!FullSyst) cutFlowHistManager->fillHistograms(">= 1 presel lepton", evtWeight_inclusive);
     const RecoLepton* preselLepton = preselLeptonsFull[0];
     const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton);
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
@@ -1232,7 +1242,7 @@ int main(int argc, char* argv[])
     //  as sample of hadronic tau candidates passing loose preselection criteria contains significant contamination from jets)
     if ( !(preselHadTausFull.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 presel taus", evtWeight_inclusive);
-    cutFlowHistManager->fillHistograms(">= 2 presel taus", evtWeight_inclusive);
+    if (!FullSyst) cutFlowHistManager->fillHistograms(">= 2 presel taus", evtWeight_inclusive);
     const RecoHadTau* preselHadTau_lead = preselHadTausFull[0];
     const RecoHadTau* preselHadTau_sublead = preselHadTausFull[1];
     const hadTauGenMatchEntry& preselHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, preselHadTau_lead, preselHadTau_sublead);
@@ -1242,10 +1252,10 @@ int main(int argc, char* argv[])
     // apply requirement on jets (incl. b-tagged jets) on preselection level
     if ( !(selJets.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 jets", evtWeight_inclusive);
-    cutFlowHistManager->fillHistograms(">= 2 jets", evtWeight_inclusive);
+    if (!FullSyst) cutFlowHistManager->fillHistograms(">= 2 jets", evtWeight_inclusive);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (1)", evtWeight_inclusive);
-    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)", evtWeight_inclusive);
+    if (!FullSyst) cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)", evtWeight_inclusive);
 
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
@@ -1255,7 +1265,7 @@ int main(int argc, char* argv[])
 	//--- apply final event selection
     if ( !(selLeptons.size() >= 1) ) continue;
     cutFlowTable.update(">= 1 sel lepton", evtWeight_inclusive);
-    cutFlowHistManager->fillHistograms(">= 1 sel lepton", evtWeight_inclusive);
+    if (!FullSyst) cutFlowHistManager->fillHistograms(">= 1 sel lepton", evtWeight_inclusive);
     const RecoLepton* selLepton = selLeptons[0];
     int selLepton_type = getLeptonType(selLepton->pdgId());
     const leptonGenMatchEntry& selLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, selLepton);
@@ -1287,7 +1297,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("<= 1 tight leptons", evtWeight);
-    cutFlowHistManager->fillHistograms("<= 1 tight leptons", evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms("<= 1 tight leptons", evtWeight);
 
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
     if ( !(selHadTaus.size() >= 2) )
@@ -1300,7 +1310,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 2 sel taus", evtWeight);
-    cutFlowHistManager->fillHistograms(">= 2 sel taus", evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms(">= 2 sel taus", evtWeight);
 
 //--- apply HLT filter
     if(apply_hlt_filter)
@@ -1321,7 +1331,7 @@ int main(int argc, char* argv[])
       }
     }
     cutFlowTable.update("HLT filter matching", evtWeight);
-    cutFlowHistManager->fillHistograms("HLT filter matching", evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms("HLT filter matching", evtWeight);
 
     const RecoHadTau* selHadTau_lead = selHadTaus[0];
     const RecoHadTau* selHadTau_sublead = selHadTaus[1];
@@ -1477,7 +1487,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 3 jets", evtWeight);
-    cutFlowHistManager->fillHistograms(">= 3 jets", evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms(">= 3 jets", evtWeight);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) )
     {
       if(run_lumi_eventSelector)
@@ -1487,7 +1497,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
-    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
     if(run_lumi_eventSelector || isDEBUG)
     {
       std::cout << "event " << eventInfo.str()
@@ -1509,7 +1519,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
-    cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
 
     const double minPt = selLepton->is_electron() ? minPt_e : minPt_mu;
     if ( !(selLepton->cone_pt() > minPt) )
@@ -1521,7 +1531,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu), evtWeight);
-    cutFlowHistManager->fillHistograms(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu), evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu), evtWeight);
 
     if ( !(selLepton->absEta() < maxAbsEta_lepton) )
     {
@@ -1532,7 +1542,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton), evtWeight);
-    cutFlowHistManager->fillHistograms(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton), evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton), evtWeight);
 
     if ( !(selHadTau_lead->pt() > minPt_hadTau_lead) )
     {
@@ -1543,7 +1553,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(Form("sel lead hadTau pT > %.0f GeV", minPt_hadTau_lead), evtWeight);
-    cutFlowHistManager->fillHistograms(Form("sel lead hadTau pT > %.0f GeV", minPt_hadTau_lead), evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms(Form("sel lead hadTau pT > %.0f GeV", minPt_hadTau_lead), evtWeight);
 
     if ( !(selHadTau_sublead->pt() > minPt_hadTau_sublead) )
     {
@@ -1554,7 +1564,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(Form("sel sublead hadTau pT > %.0f GeV", minPt_hadTau_sublead), evtWeight);
-    cutFlowHistManager->fillHistograms(Form("sel sublead hadTau pT > %.0f GeV", minPt_hadTau_sublead), evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms(Form("sel sublead hadTau pT > %.0f GeV", minPt_hadTau_sublead), evtWeight);
 
     bool isCharge_SS = selHadTau_lead->charge()*selHadTau_sublead->charge() > 0;
     bool isCharge_OS = selHadTau_lead->charge()*selHadTau_sublead->charge() < 0;
@@ -1575,7 +1585,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(Form("tau-pair %s charge", hadTauChargeSelection_string.data()), evtWeight);
-    cutFlowHistManager->fillHistograms("tau-pair OS/SS charge", evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms("tau-pair OS/SS charge", evtWeight);
     const RecoHadTau* selHadTau_OS = 0;
     const RecoHadTau* selHadTau_SS = 0;
     if ( hadTauChargeSelection == kOS ) {
@@ -1601,7 +1611,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("lepton+tau charge", evtWeight);
-    cutFlowHistManager->fillHistograms("lepton+tau charge", evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms("lepton+tau charge", evtWeight);
 
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {
@@ -1612,7 +1622,7 @@ int main(int argc, char* argv[])
       }
     }
     cutFlowTable.update("MEt filters", evtWeight);
-    cutFlowHistManager->fillHistograms("MEt filters", evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms("MEt filters", evtWeight);
 
     bool failsSignalRegionVeto = false;
     if ( isMCClosure_e || isMCClosure_m || isMCClosure_t ) {
@@ -1635,7 +1645,7 @@ int main(int argc, char* argv[])
       continue; // CV: avoid overlap with signal region
     }
     cutFlowTable.update("signal region veto", evtWeight);
-    cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
+    if (!FullSyst) cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
 
 //--- compute output of hadronic top tagger BDT
     // it returns the gen-triplets organized in top/anti-top
@@ -1709,45 +1719,6 @@ int main(int argc, char* argv[])
     const double HadTop_pt          = HadTop_pt_CSVsort4rd;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Matthias for 1l_2tau category
-    const std::map<std::string, double> mvaInputsplainKin_ttV = {
-      { "avg_dr_jet",         avg_dr_jet         },
-      { "dr_taus",            dr_taus            },
-      { "ptmiss",             ptmiss             },
-      { "lep_conePt",         lep_conePt         },
-      { "mT_lep",             mT_lep             },
-      { "mTauTauVis",         mTauTauVis         },
-      { "mindr_lep_jet",      mindr_lep_jet      },
-      { "mindr_tau1_jet",     mindr_tau1_jet     },
-      { "dr_lep_tau_ss",      dr_lep_tau_ss      },
-      { "dr_lep_tau_sublead", dr_lep_tau_sublead },
-      { "costS_tau",          costS_tau          },
-      { "tau1_pt",            tau1_pt            },
-      { "tau2_pt",            tau2_pt            },
-    };
-    const double mvaOutput_plainKin_ttV = mva_plainKin_ttV(mvaInputsplainKin_ttV);
-
-    const std::map<std::string, double> mvaInputsplainKin_tt = {
-      { "avg_dr_jet",     avg_dr_jet       },
-      { "dr_taus",        dr_taus          },
-      { "ptmiss",         ptmiss           },
-      { "mT_lep",         mT_lep           },
-      { "nJet",           nJet             },
-      { "mTauTauVis",     mTauTauVis       },
-      { "mindr_lep_jet",  mindr_lep_jet    },
-      { "mindr_tau1_jet", mindr_tau1_jet   },
-      { "mindr_tau2_jet", mindr_tau2_jet   },
-      { "dr_lep_tau_lead", dr_lep_tau_lead },
-      { "nBJetLoose",     nBJetLoose       },
-      { "tau1_pt",        tau1_pt          },
-      { "tau2_pt",        tau2_pt          },
-    };
-    const double mvaOutput_plainKin_tt = mva_plainKin_tt(mvaInputsplainKin_tt);
-
-    const std::map<std::string, double> mvaInputVariables_plainKin_1B = {
-      { "BDTtt",  mvaOutput_plainKin_ttV },
-      { "BDTttV", mvaOutput_plainKin_tt },
-    };
-    const double mvaOutput_plainKin_1B_VT = mva_2lss_plainKin_1B_VT(mvaInputVariables_plainKin_1B);
 
     const std::map<std::string, double> mvaInputsHTT_sum = {
       { "avg_dr_jet",      avg_dr_jet      },
@@ -1770,29 +1741,10 @@ int main(int argc, char* argv[])
     };
     const double mvaOutput_HTT_SUM_VT = mva_HTT_sum_VT(mvaInputsHTT_sum);
 
-    const std::map<std::string, double> mvaInputsplainKin_sum = {
-      {"avg_dr_jet",      avg_dr_jet      },
-      {"dr_taus",         dr_taus         },
-      {"ptmiss",          ptmiss          },
-      {"lep_conePt",      lep_conePt      },
-      {"mT_lep",          mT_lep          },
-      {"mTauTauVis",      mTauTauVis      },
-      {"mindr_lep_jet",   mindr_lep_jet   },
-      {"mindr_tau1_jet",  mindr_tau1_jet  },
-      {"mindr_tau2_jet",  mindr_tau2_jet  },
-      {"nJet",           nJet             },
-      {"dr_lep_tau_ss",   dr_lep_tau_ss   },
-      {"dr_lep_tau_lead", dr_lep_tau_lead },
-      {"costS_tau",       costS_tau       },
-      {"nBJetLoose",      nBJetLoose      },
-      {"tau1_pt",         tau1_pt         },
-      {"tau2_pt",         tau2_pt         },
-    };
-    const double mvaOutput_plainKin_SUM_VT = mva_plainKin_sum_VT(mvaInputsplainKin_sum);
-
 //--- fill histograms with events passing final selection
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
+    if (!FullSyst) {
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
     selHistManager->muons_->fillHistograms(selMuons, evtWeight);
     selHistManager->hadTaus_->fillHistograms({ selHadTau_lead, selHadTau_sublead }, evtWeight);
@@ -1807,6 +1759,7 @@ int main(int argc, char* argv[])
     selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
     selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
+    }
     selHistManager->mvaInputVariables_HTT_sum_->fillHistograms(mvaInputsHTT_sum, evtWeight);
 
     std::map<std::string, double> tH_weight_map;
@@ -1827,11 +1780,7 @@ int main(int argc, char* argv[])
         selJets.size(),
         selBJets_loose.size(),
         selBJets_medium.size(),
-        mvaOutput_plainKin_ttV,
-        mvaOutput_plainKin_tt,
-        mvaOutput_plainKin_1B_VT,
         mvaOutput_HTT_SUM_VT,
-        mvaOutput_plainKin_SUM_VT,
         mTauTauVis,
         kv.second);
     }
@@ -1848,11 +1797,7 @@ int main(int argc, char* argv[])
             selJets.size(),
             selBJets_loose.size(),
             selBJets_medium.size(),
-            mvaOutput_plainKin_ttV,
-            mvaOutput_plainKin_tt,
-            mvaOutput_plainKin_1B_VT,
             mvaOutput_HTT_SUM_VT,
-            mvaOutput_plainKin_SUM_VT,
             mTauTauVis,
             kv.second
           );
@@ -1860,6 +1805,7 @@ int main(int argc, char* argv[])
       }
     }
     selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
+    if (!FullSyst) {
     selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
     selHistManager->weights_->fillHistograms("pileupWeight", eventInfo.pileupWeight);
     selHistManager->weights_->fillHistograms("data_to_MC_correction", weight_data_to_MC_correction);
@@ -1867,6 +1813,7 @@ int main(int argc, char* argv[])
     selHistManager->weights_->fillHistograms("leptonEff", weight_leptonEff);
     selHistManager->weights_->fillHistograms("hadTauEff", weight_hadTauEff);
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
+    }
 
     std::string category;
     if      ( selElectrons.size() >= 1 && selBJets_medium.size() >= 1 ) category = "1e_2tau_btight";
@@ -1874,24 +1821,21 @@ int main(int argc, char* argv[])
     else if ( selMuons.size()     >= 1 && selBJets_medium.size() >= 1 ) category = "1mu_2tau_btight";
     else if ( selMuons.size()     >= 1                                ) category = "1mu_2tau_bloose";
     else assert(0);
-
+    if (!FullSyst) {
     selHistManager->electrons_in_categories_[category]->fillHistograms(selElectrons, evtWeight);
     selHistManager->muons_in_categories_[category]->fillHistograms(selMuons, evtWeight);
     selHistManager->hadTaus_in_categories_[category]->fillHistograms({ selHadTau_lead, selHadTau_sublead }, evtWeight);
     selHistManager->leadHadTau_in_categories_[category]->fillHistograms({ selHadTau_lead }, evtWeight);
     selHistManager->subleadHadTau_in_categories_[category]->fillHistograms({ selHadTau_sublead }, evtWeight);
+    }
     selHistManager->evt_in_categories_[category]->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      mvaOutput_plainKin_ttV,
-      mvaOutput_plainKin_tt,
-      mvaOutput_plainKin_1B_VT,
       mvaOutput_HTT_SUM_VT,
-      mvaOutput_plainKin_SUM_VT,
       mTauTauVis,
       evtWeight);
 
-    if ( isMC ) {
+    if ( isMC && !FullSyst) {
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
       if(eventWeightManager)
@@ -2024,13 +1968,7 @@ int main(int argc, char* argv[])
       snm->read(HadTop_pt,                              FloatVariableType::HadTop_pt);
       // Hj_tagger not filled
 
-      snm->read(mvaOutput_plainKin_ttV,                 FloatVariableType::mvaOutput_plainKin_ttV);
-      snm->read(mvaOutput_plainKin_tt,                  FloatVariableType::mvaOutput_plainKin_tt);
-      snm->read(mvaOutput_plainKin_1B_VT,               FloatVariableType::mvaOutput_plainKin_1B_VT);
       snm->read(mvaOutput_HTT_SUM_VT,                   FloatVariableType::mvaOutput_HTT_SUM_VT);
-      snm->read(mvaOutput_plainKin_SUM_VT,              FloatVariableType::mvaOutput_plainKin_SUM_VT);
-
-      // mvaOutput_plainKin_SUM_VT not filled
 
       // mvaOutput_2lss_ttV not filled
       // mvaOutput_2lss_tt not filled

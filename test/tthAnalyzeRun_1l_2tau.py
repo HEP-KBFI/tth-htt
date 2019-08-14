@@ -70,7 +70,8 @@ hadTau_charge_selections = [ "OS", "SS" ]
 hadTau_selection = "dR03mvaMedium"
 
 if mode == "default":
-  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+  #samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+  samples = load_samples(era, suffix = "test")
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -84,6 +85,7 @@ elif mode == "sync":
     raise ValueError("Makes no sense to use preselected samples in sync")
   samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
 else:
+  samples = load_samples(era, suffix = "test")
   raise ValueError("Invalid mode: %s" % mode)
 
 if __name__ == '__main__':
@@ -126,13 +128,6 @@ if __name__ == '__main__':
     histograms_to_fit                     = {
       "EventCounter"                      : {},
       "numJets"                           : {},
-      "mvaOutput_plainKin_ttV"            : {},
-      "mvaOutput_plainKin_tt"             : { 'explicit_binning' : list(np.linspace(0., 1., 6 + 1)) }, # BDT1; 6 regular bin in range [0, 1]
-      "mvaOutput_plainKin_1B_VT"          : {},
-      "mvaOutput_HTT_SUM_VT"              : { 'explicit_binning' : list(np.linspace(0., 1., 7 + 1)) }, # BDT2; 7 regular bin in range [0, 1]
-      "mvaOutput_HTT_SUM_VT_noRebin"      : {},
-      "mvaOutput_plainKin_SUM_VT"         : { 'explicit_binning' : list(np.linspace(0., 1., 5 + 1)) }, # BDT3; 5 regular bin in range [0, 1]
-      "mvaOutput_plainKin_SUM_VT_noRebin" : {},
       "mTauTauVis"                        : {},
       "mvaOutput_final"                   : {},
     },
