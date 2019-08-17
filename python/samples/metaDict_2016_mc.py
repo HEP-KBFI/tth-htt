@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-08-08 21:03:31 with the following command:
+# file generated at 2019-08-17 14:23:28 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2016_RunIISummer16MiniAODv3.txt -m python/samples/metaDict_2016_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2016_RunIISummer16MiniAODv3.txt -c python/samples/sampleLocations_2016_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -108,7 +108,7 @@ meta_dictionary["/THQ_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16Min
   ("nof_db_files",          25),
   ("fsize_db",              158327042086),
   ("xsection",              0.02313),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 158.33GB; nevents: 3.50M; release: 9_4_9; last modified: 2018-11-19 21:35:57"),
 ])
@@ -147,7 +147,7 @@ meta_dictionary["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16Min
   ("nof_db_files",          11),
   ("fsize_db",              78915203633),
   ("xsection",              0.005087),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 78.92GB; nevents: 1.50M; release: 9_4_9; last modified: 2018-11-24 10:41:39"),
 ])
@@ -176,6 +176,19 @@ meta_dictionary["/THW_ctcvcp_HIncl_M125_TuneCP5_13TeV-madgraph-pythia8/RunIISumm
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "21.57%; status: VALID; size: 278.61GB; nevents: 5.00M; release: 9_4_9; last modified: 2019-05-21 18:07:24"),
+])
+
+meta_dictionary["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v3/MINIAODSIM"] =  OD([
+  ("crab_string",           "2016v3_2019Jul22_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v3"),
+  ("sample_category",       "ggH"),
+  ("process_name_specific", "GluGluHToTauTau"),
+  ("nof_db_events",         9673200),
+  ("nof_db_files",          78),
+  ("fsize_db",              301793073376),
+  ("xsection",              3.0469),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "100.0%; status: VALID; size: 301.79GB; nevents: 9.67M; release: 9_4_9; last modified: 2019-05-19 11:17:29"),
 ])
 
 meta_dictionary["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] =  OD([
@@ -267,6 +280,19 @@ meta_dictionary["/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniA
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 26.22GB; nevents: 812.65k; release: 9_4_9; last modified: 2019-04-22 20:59:06"),
+])
+
+meta_dictionary["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           "2016v3_2019Jul17_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
+  ("sample_category",       "qqH"),
+  ("process_name_specific", "VBFHToTauTau"),
+  ("nof_db_events",         1499400),
+  ("nof_db_files",          15),
+  ("fsize_db",              50767229807),
+  ("xsection",              0.2372),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "100.0%; status: VALID; size: 50.77GB; nevents: 1.50M; release: 9_4_9; last modified: 2019-02-10 01:58:13"),
 ])
 
 meta_dictionary["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
@@ -432,7 +458,7 @@ meta_dictionary["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/R
   ("nof_db_events",         3120397),
   ("nof_db_files",          31),
   ("fsize_db",              153765510942),
-  ("xsection",              0.21675),
+  ("xsection",              0.196),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 153.77GB; nevents: 3.12M; release: 9_4_9; last modified: 2018-10-18 10:47:11"),
@@ -576,7 +602,7 @@ meta_dictionary["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISummer16
   ("nof_db_files",          778),
   ("fsize_db",              2988515757147),
   ("xsection",              88.4),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "56.62%; status: VALID; size: 2.99TB; nevents: 67.93M; release: 9_4_9; last modified: 2019-06-05 16:53:03"),
 ])
@@ -589,7 +615,7 @@ meta_dictionary["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIS
   ("nof_db_files",          1105),
   ("fsize_db",              4847363049070),
   ("xsection",              365.52),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "41.5%; status: VALID; size: 4.85TB; nevents: 107.60M; release: 9_4_9; last modified: 2019-06-12 09:39:20"),
 ])
@@ -602,7 +628,7 @@ meta_dictionary["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISumme
   ("nof_db_files",          772),
   ("fsize_db",              3163848156807),
   ("xsection",              377.85),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "99.42%; status: VALID; size: 3.16TB; nevents: 68.52M; release: 9_4_9; last modified: 2019-06-14 17:19:47"),
 ])
@@ -615,7 +641,7 @@ meta_dictionary["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("nof_db_files",          48),
   ("fsize_db",              258912481730),
   ("xsection",              88.4),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 258.91GB; nevents: 6.07M; release: 9_4_9; last modified: 2018-11-17 21:59:27"),
 ])
@@ -628,7 +654,7 @@ meta_dictionary["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("nof_db_files",          208),
   ("fsize_db",              1057101408492),
   ("xsection",              88.4),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 1.06TB; nevents: 24.77M; release: 9_4_9; last modified: 2018-11-18 22:41:36"),
 ])
@@ -641,7 +667,7 @@ meta_dictionary["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/
   ("nof_db_files",          97),
   ("fsize_db",              527227071561),
   ("xsection",              182.76),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 527.23GB; nevents: 11.96M; release: 9_4_9; last modified: 2018-11-18 11:36:18"),
 ])
@@ -654,7 +680,7 @@ meta_dictionary["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/
   ("nof_db_files",          407),
   ("fsize_db",              2190287845746),
   ("xsection",              182.76),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 2.19TB; nevents: 49.66M; release: 9_4_9; last modified: 2018-11-20 10:44:10"),
 ])
@@ -667,7 +693,7 @@ meta_dictionary["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythi
   ("nof_db_files",          112),
   ("fsize_db",              529159861432),
   ("xsection",              182.76),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 529.16GB; nevents: 11.96M; release: 9_4_9; last modified: 2018-11-19 08:38:57"),
 ])
@@ -680,7 +706,7 @@ meta_dictionary["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythi
   ("nof_db_files",          366),
   ("fsize_db",              2131421738428),
   ("xsection",              182.76),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 2.13TB; nevents: 48.39M; release: 9_4_9; last modified: 2018-11-19 16:21:22"),
 ])
@@ -865,32 +891,6 @@ meta_dictionary["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIIS
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 476.69GB; nevents: 9.88M; release: 9_4_9; last modified: 2018-11-19 08:49:21"),
-])
-
-meta_dictionary["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v3/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Jul22_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v3"),
-  ("sample_category",       "Rares"),
-  ("process_name_specific", "GluGluHToTauTau"),
-  ("nof_db_events",         9673200),
-  ("nof_db_files",          78),
-  ("fsize_db",              301793073376),
-  ("xsection",              3.0469),
-  ("use_it",                True),
-  ("genWeight",             True),
-  ("comment",               "100.0%; status: VALID; size: 301.79GB; nevents: 9.67M; release: 9_4_9; last modified: 2019-05-19 11:17:29"),
-])
-
-meta_dictionary["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Jul17_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
-  ("sample_category",       "Rares"),
-  ("process_name_specific", "VBFHToTauTau"),
-  ("nof_db_events",         1499400),
-  ("nof_db_files",          15),
-  ("fsize_db",              50767229807),
-  ("xsection",              0.2372),
-  ("use_it",                True),
-  ("genWeight",             True),
-  ("comment",               "100.0%; status: VALID; size: 50.77GB; nevents: 1.50M; release: 9_4_9; last modified: 2019-02-10 01:58:13"),
 ])
 
 meta_dictionary["/tZq_ll_4f_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] =  OD([
@@ -1875,7 +1875,7 @@ meta_dictionary["/WWTo2L2Nu_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_
   ("nof_db_events",         1999000),
   ("nof_db_files",          16),
   ("fsize_db",              63758487635),
-  ("xsection",              12.615),
+  ("xsection",              12.2),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 63.76GB; nevents: 2.00M; release: 9_4_9; last modified: 2019-01-22 22:58:50"),
@@ -1889,7 +1889,7 @@ meta_dictionary["/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_
   ("nof_db_files",          18),
   ("fsize_db",              65976939838),
   ("xsection",              52.162),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 65.98GB; nevents: 2.00M; release: 9_4_9; last modified: 2018-12-24 00:52:07"),
 ])
@@ -1902,7 +1902,7 @@ meta_dictionary["/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_
   ("nof_db_files",          79),
   ("fsize_db",              223926394138),
   ("xsection",              52.162),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 223.93GB; nevents: 6.66M; release: 9_4_9; last modified: 2019-02-23 09:19:58"),
 ])
@@ -1928,7 +1928,7 @@ meta_dictionary["/WWTo4Q_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcR
   ("nof_db_files",          14),
   ("fsize_db",              67489035622),
   ("xsection",              53.923),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 67.49GB; nevents: 2.00M; release: 9_4_9; last modified: 2019-01-14 14:16:17"),
 ])
@@ -1940,7 +1940,7 @@ meta_dictionary["/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16
   ("nof_db_events",         11928707),
   ("nof_db_files",          91),
   ("fsize_db",              374708263805),
-  ("xsection",              5.07234),
+  ("xsection",              4.43),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 374.71GB; nevents: 11.93M; release: 9_4_9; last modified: 2018-11-18 05:11:22"),
@@ -1953,7 +1953,7 @@ meta_dictionary["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISummer16MiniAO
   ("nof_db_events",         18000000),
   ("nof_db_files",          130),
   ("fsize_db",              565443889573),
-  ("xsection",              5.07234),
+  ("xsection",              4.43),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 565.44GB; nevents: 18.00M; release: 9_4_9; last modified: 2018-10-22 18:56:41"),
@@ -2071,7 +2071,7 @@ meta_dictionary["/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniA
   ("nof_db_files",          197),
   ("fsize_db",              919865006859),
   ("xsection",              6.37968),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 919.87GB; nevents: 26.52M; release: 9_4_9; last modified: 2018-11-11 04:01:12"),
 ])
@@ -2096,7 +2096,7 @@ meta_dictionary["/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17
   ("nof_db_events",         6669988),
   ("nof_db_files",          50),
   ("fsize_db",              206407053220),
-  ("xsection",              1.325),
+  ("xsection",              1.256),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 206.41GB; nevents: 6.67M; release: 9_4_9; last modified: 2018-10-04 05:09:35"),
@@ -2109,7 +2109,7 @@ meta_dictionary["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMor
   ("nof_db_events",         10711278),
   ("nof_db_files",          76),
   ("fsize_db",              328957846220),
-  ("xsection",              1.325),
+  ("xsection",              1.256),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 328.96GB; nevents: 10.71M; release: 9_4_9; last modified: 2019-01-20 21:32:14"),
@@ -2123,7 +2123,7 @@ meta_dictionary["/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMorion
   ("nof_db_files",          74),
   ("fsize_db",              286633172052),
   ("xsection",              0.6008),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 286.63GB; nevents: 8.93M; release: 9_4_9; last modified: 2019-02-02 00:00:11"),
 ])
@@ -2136,7 +2136,7 @@ meta_dictionary["/ZZTo2L2Nu_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUM
   ("nof_db_files",          362),
   ("fsize_db",              1556906583517),
   ("xsection",              0.6008),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 1.56TB; nevents: 48.66M; release: 9_4_9; last modified: 2018-11-29 14:10:51"),
 ])
@@ -2149,7 +2149,7 @@ meta_dictionary["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniA
   ("nof_db_files",          128),
   ("fsize_db",              536411748052),
   ("xsection",              3.7),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 536.41GB; nevents: 15.46M; release: 9_4_9; last modified: 2019-02-02 00:27:00"),
 ])
@@ -2706,13 +2706,13 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunI
 # signal_ctcvcp: 9.57M
 # tHq:           23.05M
 # tHW:           11.48M
-# ggH:           9.27M
-# qqH:           9.77M
+# ggH:           18.94M
+# qqH:           11.27M
 # TTZ:           21.90M
 # TTW:           9.82M
 # TTWW:          98.30k
 # TT:            621.40M
-# Rares:         103.09M
+# Rares:         91.92M
 # VH:            4.58M
 # EWK:           1.35G
 # WW:            17.90M

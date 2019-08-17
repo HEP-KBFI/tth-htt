@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-08-14 01:43:17 with the following command:
+# file generated at 2019-08-17 15:21:23 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2018_RunIIAutumn18MiniAOD.txt -m python/samples/metaDict_2018_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2018_RunIIAutumn18MiniAOD.txt -c python/samples/sampleLocations_2018_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -87,6 +87,19 @@ meta_dictionary["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIAutumn18MiniAO
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "97.33%; status: VALID; size: 958.25GB; nevents: 15.00M; release: 10_2_5; last modified: 2019-01-22 18:31:18"),
+])
+
+meta_dictionary["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           "2018_2019Jun27_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
+  ("sample_category",       "ggH"),
+  ("process_name_specific", "GluGluHToTauTau"),
+  ("nof_db_events",         12575000),
+  ("nof_db_files",          188),
+  ("fsize_db",              515475856207),
+  ("xsection",              3.0469),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "100.0%; status: VALID; size: 515.48GB; nevents: 12.57M; release: 10_2_5; last modified: 2018-11-24 09:41:05"),
 ])
 
 meta_dictionary["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
@@ -191,6 +204,19 @@ meta_dictionary["/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutum
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 85.22GB; nevents: 1.93M; release: 10_2_5; last modified: 2019-07-09 10:05:45"),
+])
+
+meta_dictionary["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "2018_2019Jun27_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1"),
+  ("sample_category",       "qqH"),
+  ("process_name_specific", "VBFHToTauTau_ext1"),
+  ("nof_db_events",         3000000),
+  ("nof_db_files",          72),
+  ("fsize_db",              133643341940),
+  ("xsection",              0.2372),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "100.0%; status: VALID; size: 133.64GB; nevents: 3.00M; release: 10_2_6; last modified: 2018-11-27 14:00:45"),
 ])
 
 meta_dictionary["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
@@ -317,7 +343,7 @@ meta_dictionary["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIA
   ("nof_db_events",         4911941),
   ("nof_db_files",          149),
   ("fsize_db",              298983454636),
-  ("xsection",              0.21675),
+  ("xsection",              0.196),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "90.0%; status: VALID; size: 298.98GB; nevents: 4.91M; release: 10_2_5; last modified: 2019-01-12 00:25:10"),
@@ -448,7 +474,7 @@ meta_dictionary["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-10
   ("nof_db_files",          968),
   ("fsize_db",              3413760837047),
   ("xsection",              88.4),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 3.41TB; nevents: 64.31M; release: 10_2_5; last modified: 2018-11-21 18:44:43"),
 ])
@@ -461,7 +487,7 @@ meta_dictionary["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18Min
   ("nof_db_files",          1523),
   ("fsize_db",              5446585250527),
   ("xsection",              365.52),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 5.45TB; nevents: 101.55M; release: 10_2_6; last modified: 2019-01-22 14:22:10"),
 ])
@@ -474,7 +500,7 @@ meta_dictionary["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   ("nof_db_files",          3313),
   ("fsize_db",              7273064972485),
   ("xsection",              377.85),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "93.11%; status: VALID; size: 7.27TB; nevents: 133.81M; release: 10_2_5; last modified: 2018-11-27 22:36:52"),
 ])
@@ -487,7 +513,7 @@ meta_dictionary["/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   ("nof_db_files",          841),
   ("fsize_db",              1591205272331),
   ("xsection",              88.4),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 1.59TB; nevents: 28.70M; release: 10_2_5; last modified: 2019-03-05 07:07:19"),
 ])
@@ -500,7 +526,7 @@ meta_dictionary["/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/RunII
   ("nof_db_files",          1607),
   ("fsize_db",              3396470873673),
   ("xsection",              182.76),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "99.83%; status: VALID; size: 3.40TB; nevents: 61.66M; release: 10_2_5; last modified: 2019-03-18 20:03:54"),
 ])
@@ -513,7 +539,7 @@ meta_dictionary["/TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8/Ru
   ("nof_db_files",          1540),
   ("fsize_db",              3384871119793),
   ("xsection",              182.76),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "98.33%; status: VALID; size: 3.38TB; nevents: 59.93M; release: 10_2_5; last modified: 2019-02-13 04:50:04"),
 ])
@@ -659,32 +685,6 @@ meta_dictionary["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIAutumn
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "75.0%; status: VALID; size: 279.23GB; nevents: 4.69M; release: 10_2_5; last modified: 2019-02-02 00:24:03"),
-])
-
-meta_dictionary["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2019Jun27_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
-  ("sample_category",       "Rares"),
-  ("process_name_specific", "GluGluHToTauTau"),
-  ("nof_db_events",         12575000),
-  ("nof_db_files",          188),
-  ("fsize_db",              515475856207),
-  ("xsection",              3.0469),
-  ("use_it",                True),
-  ("genWeight",             True),
-  ("comment",               "100.0%; status: VALID; size: 515.48GB; nevents: 12.57M; release: 10_2_5; last modified: 2018-11-24 09:41:05"),
-])
-
-meta_dictionary["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2019Jun27_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1"),
-  ("sample_category",       "Rares"),
-  ("process_name_specific", "VBFHToTauTau_ext1"),
-  ("nof_db_events",         3000000),
-  ("nof_db_files",          72),
-  ("fsize_db",              133643341940),
-  ("xsection",              0.2372),
-  ("use_it",                True),
-  ("genWeight",             True),
-  ("comment",               "100.0%; status: VALID; size: 133.64GB; nevents: 3.00M; release: 10_2_6; last modified: 2018-11-27 14:00:45"),
 ])
 
 meta_dictionary["/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM"] =  OD([
@@ -1344,7 +1344,7 @@ meta_dictionary["/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18Mi
   ("nof_db_events",         7758900),
   ("nof_db_files",          176),
   ("fsize_db",              329888556817),
-  ("xsection",              12.615),
+  ("xsection",              12.2),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 329.89GB; nevents: 7.76M; release: 10_2_5; last modified: 2019-03-16 07:58:27"),
@@ -1358,7 +1358,7 @@ meta_dictionary["/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18Mi
   ("nof_db_files",          368),
   ("fsize_db",              833728084007),
   ("xsection",              52.162),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 833.73GB; nevents: 19.20M; release: 10_2_5; last modified: 2019-03-20 00:42:50"),
 ])
@@ -1384,7 +1384,7 @@ meta_dictionary["/WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniA
   ("nof_db_files",          110),
   ("fsize_db",              167149037630),
   ("xsection",              53.923),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 167.15GB; nevents: 3.81M; release: 10_2_5; last modified: 2019-03-16 15:54:15"),
 ])
@@ -1396,7 +1396,7 @@ meta_dictionary["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniA
   ("nof_db_events",         10749269),
   ("nof_db_files",          280),
   ("fsize_db",              465840197517),
-  ("xsection",              5.07234),
+  ("xsection",              4.43),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 465.84GB; nevents: 10.75M; release: 10_2_6; last modified: 2019-03-07 19:57:50"),
@@ -1409,7 +1409,7 @@ meta_dictionary["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniA
   ("nof_db_events",         11248318),
   ("nof_db_files",          206),
   ("fsize_db",              486637376419),
-  ("xsection",              5.07234),
+  ("xsection",              4.43),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 486.64GB; nevents: 11.25M; release: 10_2_5; last modified: 2019-01-11 20:43:05"),
@@ -1422,7 +1422,7 @@ meta_dictionary["/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102
   ("nof_db_events",         1976600),
   ("nof_db_files",          63),
   ("fsize_db",              83819106118),
-  ("xsection",              5.07234),
+  ("xsection",              4.43),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 83.82GB; nevents: 1.98M; release: 10_2_5; last modified: 2019-01-16 17:19:13"),
@@ -1540,7 +1540,7 @@ meta_dictionary["/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniA
   ("nof_db_files",          501),
   ("fsize_db",              1304463189799),
   ("xsection",              6.37968),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 1.30TB; nevents: 28.19M; release: 10_2_5; last modified: 2019-03-10 11:49:08"),
 ])
@@ -1565,7 +1565,7 @@ meta_dictionary["/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_
   ("nof_db_events",         6689900),
   ("nof_db_files",          138),
   ("fsize_db",              278854571525),
-  ("xsection",              1.325),
+  ("xsection",              1.256),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 278.85GB; nevents: 6.69M; release: 10_2_5; last modified: 2019-01-12 05:32:01"),
@@ -1578,7 +1578,7 @@ meta_dictionary["/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_
   ("nof_db_events",         99009000),
   ("nof_db_files",          1473),
   ("fsize_db",              4120965640479),
-  ("xsection",              1.325),
+  ("xsection",              1.256),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 4.12TB; nevents: 99.01M; release: 10_2_5; last modified: 2019-03-13 09:29:50"),
@@ -1592,7 +1592,7 @@ meta_dictionary["/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-10
   ("nof_db_files",          171),
   ("fsize_db",              362146384399),
   ("xsection",              0.6008),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 362.15GB; nevents: 8.38M; release: 10_2_5; last modified: 2019-01-12 02:21:00"),
 ])
@@ -1605,7 +1605,7 @@ meta_dictionary["/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-10
   ("nof_db_files",          842),
   ("fsize_db",              2074512868169),
   ("xsection",              0.6008),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 2.07TB; nevents: 48.05M; release: 10_2_5; last modified: 2019-03-29 15:55:06"),
 ])
@@ -1618,7 +1618,7 @@ meta_dictionary["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniA
   ("nof_db_files",          457),
   ("fsize_db",              1289685740970),
   ("xsection",              3.7),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 1.29TB; nevents: 27.90M; release: 10_2_5; last modified: 2019-02-25 18:47:59"),
 ])
@@ -1993,13 +1993,13 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutu
 # signal_ctcvcp: 29.09M
 # tHq:           29.68M
 # tHW:           15.00M
-# ggH:           22.82M
-# qqH:           13.01M
+# ggH:           35.40M
+# qqH:           16.01M
 # TTZ:           36.18M
 # TTW:           17.73M
 # TTWW:          985.00k
 # TT:            873.18M
-# Rares:         68.36M
+# Rares:         52.78M
 # VH:            12.90M
 # EWK:           824.03M
 # WW:            35.45M
