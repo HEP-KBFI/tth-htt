@@ -117,6 +117,25 @@ def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, i
 def is_dymc_reweighting(dbs_name):
   return dbs_name.startswith('/DY') and 'M-50' in dbs_name and not dbs_name.startswith('/DYBB')
 
+def split_stitched(samples_to_stitch, startstring):
+    assert(startstring in [ 'DY', 'W' ])
+    samples_inclusive = []
+    samples_binned = []
+    for sample_set in samples_to_stitch:
+        for sample_key, sample_value in sample_set.items():
+            if sample_key == 'inclusive':
+                inclusive_samples = list(filter(
+                    lambda sample_name: sample_name.startswith(startstring), sample_value['samples']
+                ))
+                samples_inclusive.extend(inclusive_samples)
+            else:
+                for sample_binned_value in sample_value:
+                    binned_samples = list(filter(
+                        lambda sample_name: sample_name.startswith(startstring), sample_binned_value['samples']
+                    ))
+                    samples_binned.extend(binned_samples)
+    return samples_inclusive, samples_binned
+
 def get_tH_weight_str(kt, kv, cosa = None):
     result = "kt_%.3g_kv_%.6g" % (kt, kv)
     if cosa:

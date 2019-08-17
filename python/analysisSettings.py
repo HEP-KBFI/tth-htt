@@ -14,8 +14,6 @@ lumi_2017 = 41.529e+3 # 1/pb (uncertainty: 2.3%)
 # Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/860.html & PAS LUM-18-002
 lumi_2018 = 59.741e+3 # 1/pb (uncertainty: 2.5%)
 
-#TODO review HLT trigger paths again
-
 # Reproduced
 
 def get_lumi(era):
