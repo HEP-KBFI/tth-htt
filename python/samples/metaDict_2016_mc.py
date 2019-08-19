@@ -121,7 +121,7 @@ meta_dictionary["/THQ_ctcvcp_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISumm
   ("nof_db_files",          95),
   ("fsize_db",              440044765353),
   ("xsection",              0.07096),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 440.04GB; nevents: 9.83M; release: 9_4_9; last modified: 2019-02-08 13:08:31"),
 ])
@@ -160,7 +160,7 @@ meta_dictionary["/THW_ctcvcp_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISumm
   ("nof_db_files",          46),
   ("fsize_db",              264383773632),
   ("xsection",              0.01561),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 264.38GB; nevents: 4.98M; release: 9_4_9; last modified: 2019-03-07 08:55:28"),
 ])
