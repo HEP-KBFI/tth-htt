@@ -6,6 +6,8 @@
 #include <string> // std::string
 #include <map> // std::map<,>
 
+#include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarTransformer.h"
+
 class XGBInterface
 {
 public:
@@ -13,6 +15,13 @@ public:
                const std::vector<std::string> & mvaInputVariables);
   XGBInterface(const std::string & mvaFileName_odd,
 	       const std::string & mvaFileName_even,
+               const std::vector<std::string> & mvaInputVariables);
+  XGBInterface(const std::string & mvaFileName,
+               const std::vector<std::string> & mvaInputVariables,
+	       const std::string & fitFunctionFileName);
+  XGBInterface(const std::string & mvaFileName_odd,
+	       const std::string & mvaFileName_even,
+	       const std::string & fitFunctionFileName,
                const std::vector<std::string> & mvaInputVariables);
   ~XGBInterface();
 
@@ -26,7 +35,6 @@ public:
 
   double
     operator()(const std::map<std::string, double> & mvaInputs, const int event_number) const;
-
 
 private:
   enum Mode{k_old, k_odd_even};
@@ -44,6 +52,8 @@ private:
   PyObject* moduleMainString_even_;
   PyObject* moduleMain_even_;
   std::vector<std::string> mvaInputVariables_; // list of MVA input variables
+  MVAInputVarTransformer* Transform_Ptr_;
+  std::string fitFunctionFileName_;
 };
 
 #endif // XGBInterface_h

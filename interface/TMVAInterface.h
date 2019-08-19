@@ -1,6 +1,9 @@
 #ifndef tthAnalysis_HiggsToTauTau_TMVAInterface_h
 #define tthAnalysis_HiggsToTauTau_TMVAInterface_h 
 
+
+#include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarTransformer.h"
+
 #include <Rtypes.h> // Float_t
 
 #include <string> // std::string
@@ -16,12 +19,21 @@ namespace TMVA
 class TMVAInterface
 {
 public:
-  TMVAInterface(const std::string & mvaFileName_,
-                const std::vector<std::string> & mvaInputVariables_,
+  TMVAInterface(const std::string & mvaFileName,
+                const std::vector<std::string> & mvaInputVariables,
 		const std::vector<std::string> & spectators = {});
-  TMVAInterface(const std::string & mvaFileName_odd_,
-		const std::string & mvaFileName_even_,
-                const std::vector<std::string> & mvaInputVariables_,
+  TMVAInterface(const std::string & mvaFileName_odd,
+		const std::string & mvaFileName_even,
+                const std::vector<std::string> & mvaInputVariables,
+                const std::vector<std::string> & spectators = {});
+  TMVAInterface(const std::string & mvaFileName,
+                const std::vector<std::string> & mvaInputVariables,
+		const std::string & fitFunctionFileName,
+		const std::vector<std::string> & spectators = {});
+  TMVAInterface(const std::string & mvaFileName_odd,
+		const std::string & mvaFileName_even,
+                const std::vector<std::string> & mvaInputVariables,
+		const std::string & fitFunctionFileName,
                 const std::vector<std::string> & spectators = {});
   ~TMVAInterface();
 
@@ -35,6 +47,7 @@ public:
    * @param mvaInputs Values of MVA input variables (stored in std::map with key = MVA input variable name)
    * @return          MVA output
    */
+
   double
     operator()(const std::map<std::string, double> & mvaInputs) const;
 
@@ -56,8 +69,10 @@ private:
   bool isBDTTransform_;
   mutable std::map<std::string, Float_t> mvaInputVariables_; // key = MVA input variable name
   // we do not really care about variables declared as "spectators" during TMVA training,
-  // but TMVA requires that we keep track of these variables...
+  // but TMVA requires that we keep track of these variables ...
   mutable std::map<std::string, Float_t> spectators_;
+  std::string fitFunctionFileName_;
+  MVAInputVarTransformer* Transform_Ptr_;
 };
 
 #endif // TMVAInterface_h
