@@ -1,9 +1,6 @@
 #ifndef tthAnalysis_HiggsToTauTau_TMVAInterface_h
 #define tthAnalysis_HiggsToTauTau_TMVAInterface_h 
 
-
-#include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarTransformer.h"
-
 #include <Rtypes.h> // Float_t
 
 #include <string> // std::string
@@ -15,25 +12,26 @@ namespace TMVA
 {
   class Reader;
 }
+class MVAInputVarTransformer;
 
 class TMVAInterface
 {
 public:
   TMVAInterface(const std::string & mvaFileName,
                 const std::vector<std::string> & mvaInputVariables,
-		const std::vector<std::string> & spectators = {});
+                const std::vector<std::string> & spectators = {});
   TMVAInterface(const std::string & mvaFileName_odd,
-		const std::string & mvaFileName_even,
+                const std::string & mvaFileName_even,
                 const std::vector<std::string> & mvaInputVariables,
                 const std::vector<std::string> & spectators = {});
   TMVAInterface(const std::string & mvaFileName,
                 const std::vector<std::string> & mvaInputVariables,
-		const std::string & fitFunctionFileName,
-		const std::vector<std::string> & spectators = {});
+                const std::string & fitFunctionFileName,
+                const std::vector<std::string> & spectators = {});
   TMVAInterface(const std::string & mvaFileName_odd,
-		const std::string & mvaFileName_even,
+                const std::string & mvaFileName_even,
                 const std::vector<std::string> & mvaInputVariables,
-		const std::string & fitFunctionFileName,
+                const std::string & fitFunctionFileName,
                 const std::vector<std::string> & spectators = {});
   ~TMVAInterface();
 
@@ -49,16 +47,20 @@ public:
    */
 
   double
-    operator()(const std::map<std::string, double> & mvaInputs) const;
+  operator()(const std::map<std::string, double> & mvaInputs) const;
 
   double
-    operator()(const std::map<std::string, double> & mvaInputs, const int event_number) const;
+  operator()(const std::map<std::string, double> & mvaInputs,
+             int event_number) const;
 
   double 
-    operator()(const std::map<std::string, double> & mvaInputs, const TMVA::Reader* mva) const;
+  operator()(const std::map<std::string, double> & mvaInputs,
+             const TMVA::Reader * mva) const;
 
 private:
-  enum Mode{k_old, k_odd_even}; 
+  enum Mode{
+    k_old, k_odd_even
+  };
   int mode_;
   std::string mvaFileName_;
   TMVA::Reader * mva_;
@@ -72,7 +74,7 @@ private:
   // but TMVA requires that we keep track of these variables ...
   mutable std::map<std::string, Float_t> spectators_;
   std::string fitFunctionFileName_;
-  MVAInputVarTransformer* Transform_Ptr_;
+  MVAInputVarTransformer * Transform_Ptr_;
 };
 
 #endif // TMVAInterface_h

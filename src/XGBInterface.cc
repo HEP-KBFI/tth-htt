@@ -1,7 +1,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h"
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 
-#include <FWCore/Utilities/interface/Exception.h> // cms::Exception
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarTransformer.h" // MVAInputVarTransformer
 
 #include <boost/filesystem.hpp> // boost::filesystem::
 
@@ -13,6 +14,9 @@ XGBInterface::XGBInterface(const std::string & mvaFileName,
                            const std::vector<std::string> & mvaInputVariables)
   : mode_(Mode::k_old)
   , mvaFileName_(LocalFileInPath(mvaFileName).fullPath())
+  , pkldata_(nullptr)
+  , moduleMainString_(nullptr)
+  , moduleMain_(nullptr)
   , pkldata_odd_(nullptr)
   , moduleMainString_odd_(nullptr)
   , moduleMain_odd_(nullptr)
@@ -23,9 +27,9 @@ XGBInterface::XGBInterface(const std::string & mvaFileName,
   , Transform_Ptr_(nullptr)
   , fitFunctionFileName_("")
 {
-  if(mode_ != Mode::k_old){
-    assert(mode_ == Mode::k_old);
-    std::cout<< "Using wrong Mode for this constructor" << std::endl;
+  if(mode_ != Mode::k_old)
+  {
+    throw cmsException(this, __func__, __LINE__) << "Using wrong Mode for this constructor";
   }
 
   // AC: limit number of threads running in python to one
@@ -60,21 +64,27 @@ XGBInterface::XGBInterface(const std::string & mvaFileName,
 }
 
 XGBInterface::XGBInterface(const std::string & mvaFileName_odd,
-			   const std::string & mvaFileName_even,
-			   const std::vector<std::string> & mvaInputVariables)
+                           const std::string & mvaFileName_even,
+                           const std::vector<std::string> & mvaInputVariables)
   : mode_(Mode::k_odd_even)
-  , mvaFileName_odd_(LocalFileInPath(mvaFileName_odd).fullPath())
-  , mvaFileName_even_(LocalFileInPath(mvaFileName_even).fullPath())
   , pkldata_(nullptr)
   , moduleMainString_(nullptr)
   , moduleMain_(nullptr)
+  , mvaFileName_odd_(LocalFileInPath(mvaFileName_odd).fullPath())
+  , pkldata_odd_(nullptr)
+  , moduleMainString_odd_(nullptr)
+  , moduleMain_odd_(nullptr)
+  , mvaFileName_even_(LocalFileInPath(mvaFileName_even).fullPath())
+  , pkldata_even_(nullptr)
+  , moduleMainString_even_(nullptr)
+  , moduleMain_even_(nullptr)
   , mvaInputVariables_(mvaInputVariables)
   , Transform_Ptr_(nullptr)
   , fitFunctionFileName_("")  
 {
-  if(mode_ != Mode::k_odd_even){
-    assert(mode_ == Mode::k_odd_even);
-    std::cout<< "Using wrong Mode for this constructor" << std::endl;
+  if(mode_ != Mode::k_odd_even)
+  {
+    throw cmsException(this, __func__, __LINE__) << "Using wrong Mode for this constructor";
   }
 
   // AC: limit number of threads running in python to one
@@ -112,12 +122,12 @@ XGBInterface::XGBInterface(const std::string & mvaFileName_odd,
   //PyObject* args = PyTuple_Pack(1, PyString_FromString(mvaFileName_.data()));
   //pkldata_ = PyObject_CallObject(func, args);
 
-  PyObject* func_odd = PyObject_GetAttrString(moduleMain_odd_, "load");
-  PyObject* args_odd = PyTuple_Pack(1, PyString_FromString(mvaFileName_odd_.data()));
+  PyObject * func_odd = PyObject_GetAttrString(moduleMain_odd_, "load");
+  PyObject * args_odd = PyTuple_Pack(1, PyString_FromString(mvaFileName_odd_.data()));
   pkldata_odd_ = PyObject_CallObject(func_odd, args_odd);
 
-  PyObject* func_even = PyObject_GetAttrString(moduleMain_even_, "load");
-  PyObject* args_even = PyTuple_Pack(1, PyString_FromString(mvaFileName_even_.data()));
+  PyObject * func_even = PyObject_GetAttrString(moduleMain_even_, "load");
+  PyObject * args_even = PyTuple_Pack(1, PyString_FromString(mvaFileName_even_.data()));
   pkldata_even_ = PyObject_CallObject(func_even, args_even);
 
   //Py_XDECREF(func);
@@ -132,9 +142,12 @@ XGBInterface::XGBInterface(const std::string & mvaFileName_odd,
 
 XGBInterface::XGBInterface(const std::string & mvaFileName,
                            const std::vector<std::string> & mvaInputVariables,
-			   const std::string & fitFunctionFileName)
+                           const std::string & fitFunctionFileName)
   : mode_(Mode::k_old)
   , mvaFileName_(LocalFileInPath(mvaFileName).fullPath())
+  , pkldata_(nullptr)
+  , moduleMainString_(nullptr)
+  , moduleMain_(nullptr)
   , pkldata_odd_(nullptr)
   , moduleMainString_odd_(nullptr)
   , moduleMain_odd_(nullptr)
@@ -144,9 +157,9 @@ XGBInterface::XGBInterface(const std::string & mvaFileName,
   , mvaInputVariables_(mvaInputVariables)
   , fitFunctionFileName_(fitFunctionFileName)
 {
-  if(mode_ != Mode::k_old){
-    assert(mode_ == Mode::k_old);
-    std::cout<< "Using wrong Mode for this constructor" << std::endl;
+  if(mode_ != Mode::k_old)
+  {
+    throw cmsException(this, __func__, __LINE__) << "Using wrong Mode for this constructor";
   }
 
   Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map  
@@ -174,8 +187,8 @@ XGBInterface::XGBInterface(const std::string & mvaFileName,
   moduleMainString_ = PyString_FromString("__main__");
   moduleMain_ = PyImport_Import(moduleMainString_);
   PyRun_SimpleString(applicationLoadStr.c_str());
-  PyObject* func = PyObject_GetAttrString(moduleMain_, "load");
-  PyObject* args = PyTuple_Pack(1, PyString_FromString(mvaFileName_.data()));
+  PyObject * func = PyObject_GetAttrString(moduleMain_, "load");
+  PyObject * args = PyTuple_Pack(1, PyString_FromString(mvaFileName_.data()));
   pkldata_ = PyObject_CallObject(func, args);
 
   Py_XDECREF(func);
@@ -183,21 +196,27 @@ XGBInterface::XGBInterface(const std::string & mvaFileName,
 }
 
 XGBInterface::XGBInterface(const std::string & mvaFileName_odd,
-			   const std::string & mvaFileName_even,
-			   const std::string & fitFunctionFileName,
-			   const std::vector<std::string> & mvaInputVariables)
+                           const std::string & mvaFileName_even,
+                           const std::string & fitFunctionFileName,
+                           const std::vector<std::string> & mvaInputVariables)
   : mode_(Mode::k_odd_even)
-  , mvaFileName_odd_(LocalFileInPath(mvaFileName_odd).fullPath())
-  , mvaFileName_even_(LocalFileInPath(mvaFileName_even).fullPath())
   , pkldata_(nullptr)
   , moduleMainString_(nullptr)
   , moduleMain_(nullptr)
+  , mvaFileName_odd_(LocalFileInPath(mvaFileName_odd).fullPath())
+  , pkldata_odd_(nullptr)
+  , moduleMainString_odd_(nullptr)
+  , moduleMain_odd_(nullptr)
+  , mvaFileName_even_(LocalFileInPath(mvaFileName_even).fullPath())
+  , pkldata_even_(nullptr)
+  , moduleMainString_even_(nullptr)
+  , moduleMain_even_(nullptr)
   , mvaInputVariables_(mvaInputVariables)
   , fitFunctionFileName_(fitFunctionFileName)
 {
-  if(mode_ != Mode::k_odd_even){
-    assert(mode_ == Mode::k_odd_even);
-    std::cout<< "Using wrong Mode for this constructor" << std::endl;
+  if(mode_ != Mode::k_odd_even)
+  {
+    throw cmsException(this, __func__, __LINE__) << "Using wrong Mode for this constructor";
   }
 
   Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map  
@@ -237,12 +256,12 @@ XGBInterface::XGBInterface(const std::string & mvaFileName_odd,
   //PyObject* args = PyTuple_Pack(1, PyString_FromString(mvaFileName_.data()));
   //pkldata_ = PyObject_CallObject(func, args);
 
-  PyObject* func_odd = PyObject_GetAttrString(moduleMain_odd_, "load");
-  PyObject* args_odd = PyTuple_Pack(1, PyString_FromString(mvaFileName_odd_.data()));
+  PyObject * func_odd = PyObject_GetAttrString(moduleMain_odd_, "load");
+  PyObject * args_odd = PyTuple_Pack(1, PyString_FromString(mvaFileName_odd_.data()));
   pkldata_odd_ = PyObject_CallObject(func_odd, args_odd);
 
-  PyObject* func_even = PyObject_GetAttrString(moduleMain_even_, "load");
-  PyObject* args_even = PyTuple_Pack(1, PyString_FromString(mvaFileName_even_.data()));
+  PyObject * func_even = PyObject_GetAttrString(moduleMain_even_, "load");
+  PyObject * args_even = PyTuple_Pack(1, PyString_FromString(mvaFileName_even_.data()));
   pkldata_even_ = PyObject_CallObject(func_even, args_even);
 
   //Py_XDECREF(func);
@@ -322,13 +341,16 @@ namespace
 }
 
 double
-XGBInterface::operator()(const std::map<std::string, double>& mvaInputs) const
+XGBInterface::operator()(const std::map<std::string, double> & mvaInputs) const
 {
   std::map<std::string, double> mvaInputs_final;
 
-  if(fitFunctionFileName_ != ""){
-    mvaInputs_final = Transform_Ptr_->TransformMVAInputVars(mvaInputs);      // Re-weight Input Var.s                                                                                             
-  }else{
+  if(! fitFunctionFileName_.empty())
+  {
+    mvaInputs_final = Transform_Ptr_->TransformMVAInputVars(mvaInputs); // Re-weight Input Var.s
+  }
+  else
+  {
     mvaInputs_final = mvaInputs;
   }
 
@@ -344,16 +366,17 @@ XGBInterface::operator()(const std::map<std::string, double>& mvaInputs) const
     }
     else
     {
-      throw cms::Exception("XGBInterface::operator()")
-        << "Missing value for MVA input variable = '" << mvaInputVariable << "' !!\n";
+      throw cmsException(this, __func__, __LINE__)
+        << "Missing value for MVA input variable = '" << mvaInputVariable << '\''
+      ;
     }
   }
 
-  PyObject* func = PyObject_GetAttrString(moduleMain_, "evaluate");
-  PyObject* vectorValues = vectorToTuple_Float(vectorValuesVec);
-  PyObject* vecNames = vectorToTuple_String(vectorNamesVec);
-  PyObject* args = PyTuple_Pack(3, vectorValues, vecNames, pkldata_);
-  PyObject* result = PyObject_CallObject(func, args);
+  PyObject * func = PyObject_GetAttrString(moduleMain_, "evaluate");
+  PyObject * vectorValues = vectorToTuple_Float(vectorValuesVec);
+  PyObject * vecNames = vectorToTuple_String(vectorNamesVec);
+  PyObject * args = PyTuple_Pack(3, vectorValues, vecNames, pkldata_);
+  PyObject * result = PyObject_CallObject(func, args);
   const double mvaOutput = PyFloat_AsDouble(result);
 
   Py_XDECREF(func);
@@ -366,13 +389,17 @@ XGBInterface::operator()(const std::map<std::string, double>& mvaInputs) const
 }
 
 double
-XGBInterface::operator()(const std::map<std::string, double>& mvaInputs, const int event_number) const
+XGBInterface::operator()(const std::map<std::string, double> & mvaInputs,
+                         int event_number) const
 {
   std::map<std::string, double> mvaInputs_final;
 
-  if(fitFunctionFileName_ != ""){
-    mvaInputs_final = Transform_Ptr_->TransformMVAInputVars(mvaInputs);      // Re-weight Input Var.s                                                                                               
-  }else{
+  if(! fitFunctionFileName_.empty())
+  {
+    mvaInputs_final = Transform_Ptr_->TransformMVAInputVars(mvaInputs); // Re-weight Input Var.s
+  }
+  else
+  {
     mvaInputs_final = mvaInputs;
   }
 
@@ -388,25 +415,29 @@ XGBInterface::operator()(const std::map<std::string, double>& mvaInputs, const i
     }
     else
     {
-      throw cms::Exception("XGBInterface::operator()")
-        << "Missing value for MVA input variable = '" << mvaInputVariable << "' !!\n";
+      throw cmsException(this, __func__, __LINE__)
+        << "Missing value for MVA input variable = '" << mvaInputVariable << '\''
+      ;
     }
   }
 
-  PyObject* vectorValues = vectorToTuple_Float(vectorValuesVec);
-  PyObject* vecNames = vectorToTuple_String(vectorNamesVec);
-  PyObject* func = 0;
-  PyObject* args = 0;
+  PyObject * vectorValues = vectorToTuple_Float(vectorValuesVec);
+  PyObject * vecNames = vectorToTuple_String(vectorNamesVec);
+  PyObject * func = nullptr;
+  PyObject * args = nullptr;
   
-  if(event_number % 2){ // Odd event number                                                                                                                                                      
+  if(event_number % 2)
+  {
     func = PyObject_GetAttrString(moduleMain_odd_, "evaluate");
     args = PyTuple_Pack(3, vectorValues, vecNames, pkldata_odd_);
-  }else{ // Even event number                                                                                                                                                                       
+  }
+  else
+  {
     func = PyObject_GetAttrString(moduleMain_even_, "evaluate");
     args = PyTuple_Pack(3, vectorValues, vecNames, pkldata_even_);
   }
 
-  PyObject* result = PyObject_CallObject(func, args);
+  PyObject * result = PyObject_CallObject(func, args);
   const double mvaOutput = PyFloat_AsDouble(result);
 
   Py_XDECREF(vectorValues);
@@ -415,7 +446,7 @@ XGBInterface::operator()(const std::map<std::string, double>& mvaInputs, const i
   Py_XDECREF(args);
   Py_XDECREF(result);
   
-  std::cout<< "XGB: mvaOutput " << mvaOutput << std::endl; 
+  //std::cout << "XGB: mvaOutput " << mvaOutput << '\n';
   return mvaOutput;
 }
 
