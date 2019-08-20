@@ -554,7 +554,7 @@ int main(int argc, char* argv[])
   mvaInputVariables_0l_2tau_ttbar.push_back("dr_taus");
   mvaInputVariables_0l_2tau_ttbar.push_back("mTauTauVis");
   mvaInputVariables_0l_2tau_ttbar.push_back("mTauTau");
-  TMVAInterface mva_0l_2tau_ttbar(mvaFileName_0l_2tau_ttbar, mvaInputVariables_0l_2tau_ttbar, { "tau1_mva", "tau2_mva" });
+  TMVAInterface mva_0l_2tau_ttbar(mvaFileName_0l_2tau_ttbar, mvaInputVariables_0l_2tau_ttbar, std::vector<std::string>({ "tau1_mva", "tau2_mva" }));
 
   std::map<std::string, double> mvaInputs_ttbar;
 

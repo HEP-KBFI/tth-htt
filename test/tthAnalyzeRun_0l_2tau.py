@@ -68,68 +68,12 @@ hadTau_selection = "dR03mvaMedium"
 
 if mode == "default":
   samples = load_samples(era)
-
-  if era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2017 as samples_to_stitch
-
-    # [*] use binned DY samples in BDT training
-    dy_samples_inclusive = []
-    dy_samples_binned = []
-    for sample_set in samples_to_stitch:
-      for sample_key, sample_value in sample_set.items():
-        if sample_key == 'inclusive':
-          dy_inclusive_samples = list(filter(lambda sample_name: sample_name.startswith('DY'), sample_value['samples']))
-          dy_samples_inclusive.extend(dy_inclusive_samples)
-        else:
-          for sample_binned_value in sample_value:
-            dy_binned_samples = list(
-              filter(lambda sample_name: sample_name.startswith('DY'), sample_binned_value['samples']))
-            dy_samples_binned.extend(dy_binned_samples)
-
-    for sample_name, sample_info in samples.items():
-      if sample_name == 'sum_events': continue
-      if sample_info["process_name_specific"] in [
-        "TTTo2L2Nu_PSweights", "TTToSemiLeptonic_PSweights", "TTToHadronic_PSweights", "DYBBJetsToLL_M-50"
-      ]:
-        # Use non-PSweights samples for the analysis to estimate the irreducible ttbar background
-        sample_info["use_it"] = False
-      elif sample_info["process_name_specific"] in dy_samples_binned:
-        sample_info["use_it"] = False  # [*]
-      elif sample_info["process_name_specific"] in dy_samples_inclusive:
-        sample_info["use_it"] = True  # [*]
-
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if sample_info["process_name_specific"].startswith("DYBBJetsToLL_M-50"):
+      sample_info["use_it"] = True
 elif mode == "forBDTtraining":
-  samples = load_samples(era, suffix = "BDT")
-
-  if era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2017 as samples_to_stitch
-
-    # [*] use binned DY samples in BDT training
-    dy_samples_inclusive = []
-    dy_samples_binned = []
-    for sample_set in samples_to_stitch:
-      for sample_key, sample_value in sample_set.items():
-        if sample_key == 'inclusive':
-          dy_inclusive_samples = list(filter(lambda sample_name: sample_name.startswith('DY'), sample_value['samples']))
-          dy_samples_inclusive.extend(dy_inclusive_samples)
-        else:
-          for sample_binned_value in sample_value:
-            dy_binned_samples = list(
-              filter(lambda sample_name: sample_name.startswith('DY'), sample_binned_value['samples']))
-            dy_samples_binned.extend(dy_binned_samples)
-
-    for sample_name, sample_info in samples.items():
-      if sample_name == 'sum_events': continue
-      if sample_info["process_name_specific"] in [
-        "TTTo2L2Nu", "TTToSemiLeptonic", "TTToHadronic",
-      ]:
-        # Use PSweights samples only for BDT training
-        sample_info["use_it"] = False
-      elif sample_info["process_name_specific"] in dy_samples_binned:
-        sample_info["use_it"] = True  # [*]
-      elif sample_info["process_name_specific"] in dy_samples_inclusive:
-        sample_info["use_it"] = False  # [*]
-
+  samples = load_samples(era, suffix = "BDT_DY")
   hadTau_selection = "dR03mvaLoose"
   hadTau_selection_relaxed = "dR03mvaVLoose"
   hadTau_charge_selections = [ "OS" ]

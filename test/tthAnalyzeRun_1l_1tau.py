@@ -67,7 +67,7 @@ hadTau_selection = "dR03mvaMedium"
 if mode == "default":
   samples = load_samples(era)
 elif mode == "forBDTtraining":
-  samples = load_samples(era, suffix = "BDT")
+  samples = load_samples(era, suffix = "BDT_DY")
   # CV: check if BDT training statistics is sufficient with nominal tau ID working point
   #     before relaxing tau ID working point
   hadTau_selection         = "dR03mvaLoose"
