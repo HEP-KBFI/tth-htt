@@ -20083,7 +20083,7 @@ samples_2017["/WWTo2L2Nu_DoubleScattering_13TeV-pythia8/RunIIFall17MiniAODv2-PU2
   ("nof_db_events",                   968000),
   ("fsize_local",                     4237787241), # 4.24GB, avg file size 2.12GB
   ("fsize_db",                        37369750968), # 37.37GB, avg file size 1.21GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        0.20147),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
