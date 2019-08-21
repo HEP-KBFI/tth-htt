@@ -652,7 +652,10 @@ class analyzeConfig(object):
 
                 nof_events_rwgt = sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]
                 tHweight = copy.deepcopy(find_tHweight(tHweights, idx))
-                final_reweighting = float(nof_events) / nof_events_rwgt
+                assert(nof_events_rwgt >= 0)
+                if nof_events_rwgt == 0:
+                  assert(tHweight.kt.configValue() == 0. and sample_info['sample_category'] == 'signal_ctcvcp')
+                final_reweighting = (float(nof_events) / nof_events_rwgt) if nof_events_rwgt > 0. else 0.
                 logging.info(
                   "Process {}, weight index {}: the default # events is {}, but actual # events is {} "
                   "-> final weight is {:.6f}".format(
