@@ -17,6 +17,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName,
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
   , isBDTTransform_(false)
+  , Transform_Ptr_(nullptr)
 {
 
   if(mode_ != Mode::k_old)
@@ -53,6 +54,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
   , isBDTTransform_(false)
+  , Transform_Ptr_(nullptr)
 {
 
   if(mode_ != Mode::k_odd_even)
@@ -98,6 +100,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName,
   , mva_even_(nullptr)
   , isBDTTransform_(false)
   , fitFunctionFileName_(fitFunctionFileName)
+  , Transform_Ptr_(nullptr)
 {
 
   if(mode_ != Mode::k_old)
@@ -138,6 +141,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
   , mva_even_(nullptr)
   , isBDTTransform_(false)
   , fitFunctionFileName_(fitFunctionFileName)
+  , Transform_Ptr_(nullptr)
 {
 
   if(mode_ != Mode::k_odd_even)
