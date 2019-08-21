@@ -152,13 +152,14 @@ main(int argc,
   const int maxNumBJets_medium        = cfg_produceNtuple.getParameter<int>("maxNumBJets_medium");
   const bool applyJetEtaCut           = cfg_produceNtuple.getParameter<bool>("applyJetEtaCut");
   
-  const bool isMC                 = cfg_produceNtuple.getParameter<bool>("isMC");
-  const bool redoGenMatching      = cfg_produceNtuple.getParameter<bool>("redoGenMatching");
-  const bool genMatchingByIndex   = cfg_produceNtuple.getParameter<bool>("genMatchingByIndex");
-  const bool isDEBUG              = cfg_produceNtuple.getParameter<bool>("isDEBUG");
-  const bool useNonNominal        = cfg_produceNtuple.getParameter<bool>("useNonNominal");
-  const bool useNonNominal_jetmet = useNonNominal || ! isMC;
-  const bool readGenObjects       = isMC && ! redoGenMatching;
+  const bool isMC                    = cfg_produceNtuple.getParameter<bool>("isMC");
+  const bool redoGenMatching         = cfg_produceNtuple.getParameter<bool>("redoGenMatching");
+  const bool genMatchingByIndex      = cfg_produceNtuple.getParameter<bool>("genMatchingByIndex");
+  const bool disableElectronCleaning = cfg_produceNtuple.getParameter<bool>("disableElectronCleaning");
+  const bool isDEBUG                 = cfg_produceNtuple.getParameter<bool>("isDEBUG");
+  const bool useNonNominal           = cfg_produceNtuple.getParameter<bool>("useNonNominal");
+  const bool useNonNominal_jetmet    = useNonNominal || ! isMC;
+  const bool readGenObjects          = isMC && ! redoGenMatching;
 
   const std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << '\n';
@@ -634,16 +635,23 @@ main(int argc,
     const std::vector<RecoElectron> electrons = electronReader->read();
     const std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
     const std::vector<const RecoElectron *> cleanedElectrons  = electronCleaner(electron_ptrs, preselMuons);
-    const std::vector<const RecoElectron *> preselElectrons   = preselElectronSelector  (cleanedElectrons, isHigherConePt);
+
+    const std::vector<const RecoElectron *>   preselElectronsUncleaned = preselElectronSelector(electron_ptrs, isHigherConePt);
+    const std::vector<const RecoElectron *>   preselElectronsCleaned   = preselElectronSelector(cleanedElectrons, isHigherConePt);
+    const std::vector<const RecoElectron *> & preselElectrons          =
+      disableElectronCleaning ? preselElectronsUncleaned : preselElectronsCleaned
+    ;
+
     const std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons,  isHigherConePt);
     const std::vector<const RecoElectron *> tightElectrons    = tightElectronSelector   (preselElectrons,  isHigherConePt);
     const std::vector<const RecoElectron *> selElectrons      = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
     );
 
+    // always used cleaned electron collection in the cleaning of had tau collection to maintain consistency with the analysis
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau *> hadTau_ptrs = convert_to_ptrs(hadTaus);
-    const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
+    const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectronsCleaned);
     const std::vector<const RecoHadTau *> preselHadTaus   = preselHadTauSelector  (cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> tightHadTaus    = tightHadTauSelector   (cleanedHadTaus, isHigherPt);
