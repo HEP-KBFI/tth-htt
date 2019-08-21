@@ -29,6 +29,7 @@ TTreeWrapper::TTreeWrapper(const std::string & treeName,
   , cumulativeMaxEventCount_(0)
   , eventCount_(-1)
   , basketSize_(-1)
+  , cacheSize_(-1)
 {
   if(! treeName_.empty())
   {
@@ -163,6 +164,10 @@ TTreeWrapper::hasNextEvent(bool getEntry)
     {
       currentTreePtr_->SetBasketSize("*", basketSize_);
     }
+    if(cacheSize_ > 0)
+    {
+      currentTreePtr_->SetCacheSize(cacheSize_);
+    }
     // set the branch addresses
     for(ReaderBase * reader: readers_)
     {
@@ -210,6 +215,12 @@ void
 TTreeWrapper::setBasketSize(int basketSize)
 {
   basketSize_ = basketSize;
+}
+
+void
+TTreeWrapper::setCacheSize(int cacheSize)
+{
+  cacheSize_ = cacheSize;
 }
 
 void

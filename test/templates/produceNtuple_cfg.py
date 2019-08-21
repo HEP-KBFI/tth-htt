@@ -14,6 +14,8 @@ process.fwliteOutput = cms.PSet(
 
 process.produceNtuple = cms.PSet(
     treeName = cms.string('Events'),
+    basketSize = cms.int32(-1),
+    cacheSize = cms.int32(-1),
 
     era = cms.string(''),
 

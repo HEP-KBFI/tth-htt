@@ -207,6 +207,13 @@ public:
   void
   setBasketSize(int basketSize);
 
+  /**
+   * @brief Set the cahce size
+   * @param cacheSize Cache size in bytes (default = 16000)
+   */
+  void
+  setCacheSize(int cacheSize);
+
 private:
   unsigned currentFileIdx_;             ///< Index of currently open file
   long long currentEventIdx_;           ///< Index of currently read event (per single file)
@@ -222,6 +229,7 @@ private:
   long long cumulativeMaxEventCount_;   ///< Sum of total nof events across all processed files
   mutable long long eventCount_;        ///< Total number of events across all files
   int basketSize_;                      ///< Basket size of all branches
+  int cacheSize_;                       ///< Cache size
 
   /**
    * @brief Closes a currently open file, if there is any

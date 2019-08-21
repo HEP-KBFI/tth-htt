@@ -109,6 +109,8 @@ main(int argc,
   const edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
   const edm::ParameterSet cfg_produceNtuple = cfg.getParameter<edm::ParameterSet>("produceNtuple");
   const std::string treeName = cfg_produceNtuple.getParameter<std::string>("treeName");
+  const int basketSize = cfg_produceNtuple.getParameter<int>("basketSize");
+  const int cacheSize = cfg_produceNtuple.getParameter<int>("cacheSize");
 
   const std::string era_string = cfg_produceNtuple.getParameter<std::string>("era");
   const int era = get_era(era_string);
@@ -184,9 +186,11 @@ main(int argc,
 
   TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
 
-//--- set the basket size to 192kb
-//    this will decrease the memory footprint at the cost of increasing runtime
-  inputTree->setBasketSize(192000);
+  std::cout
+    << "For the input trees, setting the basket size to " << basketSize << "b "
+       "and cache size to " << cacheSize << "b\n"
+  ;
+  inputTree->setBasketSize(basketSize);
 
   std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
 
