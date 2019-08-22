@@ -135,7 +135,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares", "tHq", "tHW", "VH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH", "DY" ]
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "data_fakes", "fakes_mc" ]
     self.make_plots_backgrounds = self.nonfake_backgrounds + [ "data_fakes" ]
 
