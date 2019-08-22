@@ -156,7 +156,6 @@ main(int argc,
   const bool isMC                    = cfg_produceNtuple.getParameter<bool>("isMC");
   const bool redoGenMatching         = cfg_produceNtuple.getParameter<bool>("redoGenMatching");
   const bool genMatchingByIndex      = cfg_produceNtuple.getParameter<bool>("genMatchingByIndex");
-  const bool disableElectronCleaning = cfg_produceNtuple.getParameter<bool>("disableElectronCleaning");
   const bool isDEBUG                 = cfg_produceNtuple.getParameter<bool>("isDEBUG");
   const bool useNonNominal           = cfg_produceNtuple.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet    = useNonNominal || ! isMC;
@@ -657,16 +656,10 @@ main(int argc,
     const std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
     const std::vector<const RecoElectron *> cleanedElectrons  = electronCleaner(electron_ptrs, preselMuons);
 
-    const std::vector<const RecoElectron *> preselElectronsUncleaned   = preselElectronSelector  (electron_ptrs,             isHigherConePt);
-    const std::vector<const RecoElectron *> preselElectronsCleaned     = preselElectronSelector  (cleanedElectrons,          isHigherConePt);
-    const std::vector<const RecoElectron *> fakeableElectronsUncleaned = fakeableElectronSelector(preselElectronsUncleaned,  isHigherConePt);
-    const std::vector<const RecoElectron *> fakeableElectronsCleaned   = fakeableElectronSelector(preselElectronsCleaned,    isHigherConePt);
-    const std::vector<const RecoElectron *> tightElectronsUncleaned    = tightElectronSelector   (preselElectronsUncleaned,  isHigherConePt);
-    const std::vector<const RecoElectron *> tightElectronsCleaned      = tightElectronSelector   (preselElectronsCleaned,    isHigherConePt);
-
-    const std::vector<const RecoElectron *> & preselElectrons   = disableElectronCleaning ? preselElectronsUncleaned   : preselElectronsCleaned;
-    const std::vector<const RecoElectron *> & fakeableElectrons = disableElectronCleaning ? fakeableElectronsUncleaned : fakeableElectronsCleaned;
-    const std::vector<const RecoElectron *> & tightElectrons    = disableElectronCleaning ? tightElectronsUncleaned    : tightElectronsCleaned;
+    const std::vector<const RecoElectron *> preselElectronsUncleaned = preselElectronSelector  (electron_ptrs,    isHigherConePt);
+    const std::vector<const RecoElectron *> preselElectrons          = preselElectronSelector  (cleanedElectrons, isHigherConePt);
+    const std::vector<const RecoElectron *> fakeableElectrons        = fakeableElectronSelector(preselElectrons,  isHigherConePt);
+    const std::vector<const RecoElectron *> tightElectrons           = tightElectronSelector   (preselElectrons,  isHigherConePt);
 
     const std::vector<const RecoElectron *> selElectrons      = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
@@ -675,7 +668,7 @@ main(int argc,
     // always used cleaned electron collection in the cleaning of had tau collection to maintain consistency with the analysis
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau *> hadTau_ptrs = convert_to_ptrs(hadTaus);
-    const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectronsCleaned);
+    const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
     const std::vector<const RecoHadTau *> preselHadTaus   = preselHadTauSelector  (cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> tightHadTaus    = tightHadTauSelector   (cleanedHadTaus, isHigherPt);
@@ -684,8 +677,8 @@ main(int argc,
     );
 
     ObjectMultiplicity objectMultiplicity;
-    objectMultiplicity.setNRecoMuon    (preselMuons.size(),            fakeableMuons.size(),            tightMuons.size());
-    objectMultiplicity.setNRecoElectron(preselElectronsCleaned.size(), fakeableElectronsCleaned.size(), tightElectronsCleaned.size());
+    objectMultiplicity.setNRecoMuon    (preselMuons.size(),     fakeableMuons.size(),     tightMuons.size());
+    objectMultiplicity.setNRecoElectron(preselElectrons.size(), fakeableElectrons.size(), tightElectrons.size());
     for(const auto & kv: TauID_PyMap)
     {
       const int max_level = TauID_levels.at(kv.second);
@@ -845,10 +838,10 @@ main(int argc,
         muonGenMatcher.addGenHadTauMatch       (preselMuons, genHadTaus);
         muonGenMatcher.addGenJetMatch          (preselMuons, genJets);
 
-        electronGenMatcher.addGenLeptonMatchByIndex(preselElectrons, electronGenMatch, GenParticleType::kGenElectron);
-        electronGenMatcher.addGenPhotonMatchByIndex(preselElectrons, electronGenMatch);
-        electronGenMatcher.addGenHadTauMatch       (preselElectrons, genHadTaus);
-        electronGenMatcher.addGenJetMatch          (preselElectrons, genJets);
+        electronGenMatcher.addGenLeptonMatchByIndex(preselElectronsUncleaned, electronGenMatch, GenParticleType::kGenElectron);
+        electronGenMatcher.addGenPhotonMatchByIndex(preselElectronsUncleaned, electronGenMatch);
+        electronGenMatcher.addGenHadTauMatch       (preselElectronsUncleaned, genHadTaus);
+        electronGenMatcher.addGenJetMatch          (preselElectronsUncleaned, genJets);
 
         hadTauGenMatcher.addGenLeptonMatchByIndex(selHadTaus, hadTauGenMatch, GenParticleType::kGenAnyLepton);
         hadTauGenMatcher.addGenHadTauMatch       (selHadTaus, genHadTaus);
@@ -883,10 +876,10 @@ main(int argc,
         muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
         muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
 
-        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons);
-        electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
-        electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
-        electronGenMatcher.addGenJetMatch(preselElectrons, genJets);
+        electronGenMatcher.addGenLeptonMatch(preselElectronsUncleaned, genElectrons);
+        electronGenMatcher.addGenPhotonMatch(preselElectronsUncleaned, genPhotons);
+        electronGenMatcher.addGenHadTauMatch(preselElectronsUncleaned, genHadTaus);
+        electronGenMatcher.addGenJetMatch(preselElectronsUncleaned, genJets);
 
         hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons);
         hadTauGenMatcher.addGenHadTauMatch  (selHadTaus, genHadTaus);
@@ -912,7 +905,7 @@ main(int argc,
     objectMultiplicityWriter.write(objectMultiplicity);
     hltPathWriter_instance.write(triggers);
     muonWriter->write(preselMuons);
-    electronWriter->write(preselElectrons);
+    electronWriter->write(preselElectronsUncleaned);
     hadTauWriter->write(preselHadTaus);
     jetWriter->write(selJets);
     metWriter->write(met);

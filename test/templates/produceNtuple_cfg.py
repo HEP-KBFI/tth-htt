@@ -56,7 +56,6 @@ process.produceNtuple = cms.PSet(
     isMC = cms.bool(True),
     redoGenMatching = cms.bool(False),
     genMatchingByIndex = cms.bool(True),
-    disableElectronCleaning = cms.bool(True),
 
     selEventsFileName_input = cms.string(''),
 
