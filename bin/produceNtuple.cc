@@ -206,7 +206,7 @@ main(int argc,
   //               All HLT paths are explicitly copied from input to output. There may be some missing "required"
   //               HLT paths that do not belong to a given PD or even to data -- they're never recreated but just
   //               excluded at the analysis level.
-  //    1.b) MC: branchNames_triggers is empty -> HLTcuts is not empty
+  //    1.b) MC: branchNames_triggers is empty
   //             All HLT paths are implicitly copied from input to output. Some HLT paths may be missing in MC -- they're
   //             never recreated but just excluded at the analysis level.
   // 2) event-level preselection by HLT paths is applied -> branchNames_triggersFilter is not empty
