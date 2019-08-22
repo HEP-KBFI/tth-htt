@@ -52,6 +52,8 @@ process.produceNtuple = cms.PSet(
     # that some triggers appear/disappear in the middle of a data-taking period, e.g. 2017RunB
     # (in this case the trigger decision is set to false for all events in each input file where the trigger branch is missing)
     branchNames_triggers = cms.vstring(),
+    # list of HLT paths that the events are skimmed by
+    branchNames_triggersFilter = cms.vstring(),
 
     isMC = cms.bool(True),
     redoGenMatching = cms.bool(False),

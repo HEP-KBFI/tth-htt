@@ -140,8 +140,8 @@ main(int argc,
   const std::string branchName_hadTauGenMatch   = cfg_produceNtuple.getParameter<std::string>("branchName_hadTauGenMatch");
   const std::string branchName_jetGenMatch      = cfg_produceNtuple.getParameter<std::string>("branchName_jetGenMatch");
 
-  const vstring branchNames_triggers = cfg_produceNtuple.getParameter<vstring>("branchNames_triggers");
-  const std::vector<hltPath *> triggers = create_hltPaths(branchNames_triggers, "triggers");
+  const vstring branchNames_triggers       = cfg_produceNtuple.getParameter<vstring>("branchNames_triggers");
+  const vstring branchNames_triggersFilter = cfg_produceNtuple.getParameter<vstring>("branchNames_triggersFilter");
 
   const int minNumLeptons             = cfg_produceNtuple.getParameter<int>("minNumLeptons");
   const int minNumHadTaus             = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
@@ -199,6 +199,53 @@ main(int argc,
   EventInfo eventInfo;
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
+
+  // There are four distinct scenarios:
+  // 1) no event-level preselection by HLT paths is applied -> branchNames_triggersFilter is empty
+  //    1.a) data: branchNames_triggers contains all HLT paths that a given PD must include
+  //               All HLT paths are explicitly copied from input to output. There may be some missing "required"
+  //               HLT paths that do not belong to a given PD or even to data -- they're never recreated but just
+  //               excluded at the analysis level.
+  //    1.b) MC: branchNames_triggers is empty -> HLTcuts is not empty
+  //             All HLT paths are implicitly copied from input to output. Some HLT paths may be missing in MC -- they're
+  //             never recreated but just excluded at the analysis level.
+  // 2) event-level preselection by HLT paths is applied -> branchNames_triggersFilter is not empty
+  //    2.a) data: branchNames_triggers contains all HLT paths that a given PD must include
+  //               All HLT paths are explicitly copied from input to output, which means that we can access their values
+  //               at the same time. So, by filtering these HLT paths by their name we can make the decision by taking
+  //               the logical OR of filtered HLT paths. Even if some HLT paths are missing from the input Ntuple,
+  //               then this works in favor to us: we just consider the paths to be not triggered.
+  //    2.b) MC: branchNames_triggers is empty
+  //             Now, this is a bit complicated: we don't explicitly copy the HLT paths from input to output but we do it
+  //             implicitly. This means that if we want to read the value of the HLT paths from the input file, we need
+  //             to exclude them from implicit copy procedure. However, this means that any missing branches will be
+  //             recreated.
+  assert(isMC != (! branchNames_triggers.empty()));
+  const bool filterByTrigger = ! branchNames_triggersFilter.empty();
+  std::vector<std::string> triggerBranches_explicitCopy;
+  std::vector<hltPath *> triggers;
+  std::vector<hltPath *> triggersToFilter;
+  if(! isMC)
+  {
+    // copy all branches explicitly in data (1.a, 2.a)
+    triggerBranches_explicitCopy = branchNames_triggers;
+  }
+  else if(filterByTrigger)
+  {
+    // copy only these branches explicitly that we filter in MC (2.b)
+    triggerBranches_explicitCopy = branchNames_triggersFilter;
+  }
+  // 1.b: nothing to explicitly copy
+  triggers = create_hltPaths(triggerBranches_explicitCopy, "triggers");
+  triggersToFilter = filter_hltPaths(triggers, branchNames_triggersFilter);
+  if(filterByTrigger)
+  {
+    std::cout << "Applying preselection by requiring each event to pass logical OR of the following HLT paths:\n";
+    for(const std::string & branchName_triggersFilter: branchNames_triggersFilter)
+    {
+      std::cout << "  " << branchName_triggersFilter << '\n';
+    }
+  }
 
   hltPathReader hltPathReader_instance(triggers);
   inputTree -> registerReader(&hltPathReader_instance);
@@ -376,7 +423,7 @@ main(int argc,
   ObjectMultiplicityWriter objectMultiplicityWriter(true);
   objectMultiplicityWriter.setBranches(outputTree);
 
-  hltPathWriter hltPathWriter_instance(branchNames_triggers);
+  hltPathWriter hltPathWriter_instance(triggerBranches_explicitCopy);
   hltPathWriter_instance.setBranches(outputTree);
 
   RecoMuonWriter * const muonWriter = new RecoMuonWriter(era, isMC, branchName_muons);
@@ -508,7 +555,7 @@ main(int argc,
     outputCommands_string.push_back(Form("drop %s", drop_branch.data()));
   }
 
-  for(const std::string & branchName: branchNames_triggers)
+  for(const std::string & branchName: triggerBranches_explicitCopy)
   {
     outputCommands_string.push_back(Form("drop %s", branchName.data()));
   }
@@ -729,6 +776,15 @@ main(int argc,
     const std::vector<const RecoLepton *> selLeptons      = mergeLeptonCollections(selElectrons,      selMuons,      isHigherConePt);
 
 //--- apply preselection
+    if(filterByTrigger && ! hltPaths_isTriggered(triggersToFilter, isDEBUG))
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event FAILS trigger selection\n";
+      }
+      continue;
+    }
+
     if(! (static_cast<int>(selLeptons.size()) >= minNumLeptons))
     {
       if(run_lumi_eventSelector || isDEBUG)

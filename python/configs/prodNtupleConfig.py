@@ -5,6 +5,8 @@ from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging
 
+from tthAnalysis.NanoAOD.triggers import Triggers
+
 import re
 import os
 import uuid
@@ -170,29 +172,29 @@ class prodNtupleConfig:
             inputFiles_prepended = map(lambda path: os.path.basename('%s_ii%s' % os.path.splitext(path)), jobOptions['inputFiles'])
         if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
             raise ValueError("Not all input files have a unique base name: %s" % ', '.join(jobOptions['inputFiles']))
-
         lines = [
-            "process.fwliteOutput.fileName                   = cms.string('%s')" % os.path.basename(jobOptions['outputFile']),
-            "process.produceNtuple.era                       = cms.string('%s')" % self.era,
-            "process.produceNtuple.minNumLeptons             = cms.int32(%i)"    % self.preselection_cuts['minNumLeptons'],
-            "process.produceNtuple.minNumHadTaus             = cms.int32(%i)"    % self.preselection_cuts['minNumHadTaus'],
-            "process.produceNtuple.minNumLeptons_and_HadTaus = cms.int32(%i)"    % self.preselection_cuts['minNumLeptons_and_HadTaus'],
-            "process.produceNtuple.minNumJets                = cms.int32(%i)"    % self.preselection_cuts['minNumJets'],
-            "process.produceNtuple.minNumBJets_loose         = cms.int32(%i)"    % self.preselection_cuts['minNumBJets_loose'],
-            "process.produceNtuple.minNumBJets_medium        = cms.int32(%i)"    % self.preselection_cuts['minNumBJets_medium'],
-            "process.produceNtuple.maxNumBJets_loose         = cms.int32(%i)"    % self.preselection_cuts['maxNumBJets_loose'],
-            "process.produceNtuple.maxNumBJets_medium        = cms.int32(%i)"    % self.preselection_cuts['maxNumBJets_medium'],
-            "process.produceNtuple.applyJetEtaCut            = cms.bool(%s)"     % self.preselection_cuts['applyJetEtaCut'],
-            "process.produceNtuple.isMC                      = cms.bool(%s)"     % jobOptions['is_mc'],
-            "process.produceNtuple.redoGenMatching           = cms.bool(%s)"     % (not self.skip_tools_step),
-            "process.produceNtuple.leptonSelection           = cms.string('%s')" % self.leptonSelection,
-            "process.produceNtuple.hadTauSelection           = cms.string('%s')" % self.hadTauSelection,
-            "process.produceNtuple.random_seed               = cms.uint32(%i)"   % jobOptions['random_seed'],
-            "process.produceNtuple.isDEBUG                   = cms.bool(%s)"     % self.isDebug,
-            "process.produceNtuple.useNonNominal             = cms.bool(%s)"     % self.use_nonnominal,
-            "process.produceNtuple.genMatchingByIndex        = cms.bool(%s)"     % self.gen_matching_by_index,
-            "process.produceNtuple.branchNames_triggers      = cms.vstring(%s)"  % jobOptions['triggers'],
-            "process.fwliteInput.fileNames                   = cms.vstring(%s)"  % inputFiles_prepended,
+            "process.fwliteOutput.fileName                    = cms.string('%s')" % os.path.basename(jobOptions['outputFile']),
+            "process.produceNtuple.era                        = cms.string('%s')" % self.era,
+            "process.produceNtuple.minNumLeptons              = cms.int32(%i)"    % self.preselection_cuts['minNumLeptons'],
+            "process.produceNtuple.minNumHadTaus              = cms.int32(%i)"    % self.preselection_cuts['minNumHadTaus'],
+            "process.produceNtuple.minNumLeptons_and_HadTaus  = cms.int32(%i)"    % self.preselection_cuts['minNumLeptons_and_HadTaus'],
+            "process.produceNtuple.minNumJets                 = cms.int32(%i)"    % self.preselection_cuts['minNumJets'],
+            "process.produceNtuple.minNumBJets_loose          = cms.int32(%i)"    % self.preselection_cuts['minNumBJets_loose'],
+            "process.produceNtuple.minNumBJets_medium         = cms.int32(%i)"    % self.preselection_cuts['minNumBJets_medium'],
+            "process.produceNtuple.maxNumBJets_loose          = cms.int32(%i)"    % self.preselection_cuts['maxNumBJets_loose'],
+            "process.produceNtuple.maxNumBJets_medium         = cms.int32(%i)"    % self.preselection_cuts['maxNumBJets_medium'],
+            "process.produceNtuple.applyJetEtaCut             = cms.bool(%s)"     % self.preselection_cuts['applyJetEtaCut'],
+            "process.produceNtuple.branchNames_triggersFilter = cms.vstring(%s)"  % jobOptions['HLTcuts'],
+            "process.produceNtuple.isMC                       = cms.bool(%s)"     % jobOptions['is_mc'],
+            "process.produceNtuple.redoGenMatching            = cms.bool(%s)"     % (not self.skip_tools_step),
+            "process.produceNtuple.leptonSelection            = cms.string('%s')" % self.leptonSelection,
+            "process.produceNtuple.hadTauSelection            = cms.string('%s')" % self.hadTauSelection,
+            "process.produceNtuple.random_seed                = cms.uint32(%i)"   % jobOptions['random_seed'],
+            "process.produceNtuple.isDEBUG                    = cms.bool(%s)"     % self.isDebug,
+            "process.produceNtuple.useNonNominal              = cms.bool(%s)"     % self.use_nonnominal,
+            "process.produceNtuple.genMatchingByIndex         = cms.bool(%s)"     % self.gen_matching_by_index,
+            "process.produceNtuple.branchNames_triggers       = cms.vstring(%s)"  % jobOptions['triggers'],
+            "process.fwliteInput.fileNames                    = cms.vstring(%s)"  % inputFiles_prepended,
             "executable      = 'produceNtuple'",
             "inputFiles      = %s" % jobOptions['inputFiles'],
             "isMC            = %s" % str(jobOptions['is_mc']),
@@ -320,6 +322,7 @@ class prodNtupleConfig:
                     self.dirs[key_dir][DKEY_LOGS], "produceNtuple_%s_%i.log" % (process_name, jobId)
                 )
                 hlt_paths = sample_info["hlt_paths"] if not is_mc else []
+                hlt_cuts = list(Triggers(self.era).triggers_flat) if self.preselection_cuts["applyHLTcut"] else []
                 jobOptions = {
                     'inputFiles'       : self.inputFiles[key_file],
                     'cfgFile_modified' : self.cfgFiles_prodNtuple_modified[key_file],
@@ -329,6 +332,7 @@ class prodNtupleConfig:
                     'process_name'     : process_name,
                     'category_name'    : sample_info["sample_category"],
                     'triggers'         : hlt_paths,
+                    'HLTcuts'          : hlt_cuts,
                 }
                 self.createCfg_prodNtuple(jobOptions)
 
