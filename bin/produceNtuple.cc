@@ -33,6 +33,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoWriter.h" // EventInfoWriter
 #include "tthAnalysis/HiggsToTauTau/interface/hltPathWriter.h" // hltPathWriter
+#include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicityWriter.h" // ObjectMultiplicityWriter
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
@@ -151,7 +152,7 @@ main(int argc,
   const int maxNumBJets_loose         = cfg_produceNtuple.getParameter<int>("maxNumBJets_loose");
   const int maxNumBJets_medium        = cfg_produceNtuple.getParameter<int>("maxNumBJets_medium");
   const bool applyJetEtaCut           = cfg_produceNtuple.getParameter<bool>("applyJetEtaCut");
-  
+
   const bool isMC                    = cfg_produceNtuple.getParameter<bool>("isMC");
   const bool redoGenMatching         = cfg_produceNtuple.getParameter<bool>("redoGenMatching");
   const bool genMatchingByIndex      = cfg_produceNtuple.getParameter<bool>("genMatchingByIndex");
@@ -248,9 +249,26 @@ main(int argc,
   // CV: lower thresholds on hadronic taus by 2 GeV 
   //     with respect to thresholds applied on analysis level 
   //     to allow for tau-ES uncertainties to be estimated
-  preselHadTauSelector.set_min_pt(18.); 
-  fakeableHadTauSelector.set_min_pt(18.);
-  tightHadTauSelector.set_min_pt(18.);
+  const double minPt_hadTau = 18.;
+  preselHadTauSelector.set_min_pt(minPt_hadTau);
+  fakeableHadTauSelector.set_min_pt(minPt_hadTau);
+  tightHadTauSelector.set_min_pt(minPt_hadTau);
+
+  // construct tau selectors that are needed for counting the multiplicities of taus passing each tau ID & WP
+  std::map<TauID, std::map<int, RecoHadTauCollectionSelectorLoose *>> multplicityHadTauSelectors;
+  for(const auto & kv: TauID_PyMap)
+  {
+    multplicityHadTauSelectors[kv.second] = {};
+    const int max_level = TauID_levels.at(kv.second);
+    for(int level = 1; level <= max_level; ++level)
+    {
+      multplicityHadTauSelectors[kv.second][level] = new RecoHadTauCollectionSelectorLoose(era, -1, isDEBUG);
+      multplicityHadTauSelectors[kv.second][level]->set(kv.first + TauID_level_strings.at(max_level).at(level - 1));
+      multplicityHadTauSelectors[kv.second][level]->set_min_antiElectron(-1);
+      multplicityHadTauSelectors[kv.second][level]->set_min_antiMuon(-1);
+      multplicityHadTauSelectors[kv.second][level]->set_min_pt(minPt_hadTau);
+    }
+  }
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
@@ -355,6 +373,9 @@ main(int argc,
 
   EventInfoWriter eventInfoWriter;
   eventInfoWriter.setBranches(outputTree);
+
+  ObjectMultiplicityWriter objectMultiplicityWriter(true);
+  objectMultiplicityWriter.setBranches(outputTree);
 
   hltPathWriter hltPathWriter_instance(branchNames_triggers);
   hltPathWriter_instance.setBranches(outputTree);
@@ -636,14 +657,17 @@ main(int argc,
     const std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
     const std::vector<const RecoElectron *> cleanedElectrons  = electronCleaner(electron_ptrs, preselMuons);
 
-    const std::vector<const RecoElectron *>   preselElectronsUncleaned = preselElectronSelector(electron_ptrs, isHigherConePt);
-    const std::vector<const RecoElectron *>   preselElectronsCleaned   = preselElectronSelector(cleanedElectrons, isHigherConePt);
-    const std::vector<const RecoElectron *> & preselElectrons          =
-      disableElectronCleaning ? preselElectronsUncleaned : preselElectronsCleaned
-    ;
+    const std::vector<const RecoElectron *> preselElectronsUncleaned   = preselElectronSelector  (electron_ptrs,             isHigherConePt);
+    const std::vector<const RecoElectron *> preselElectronsCleaned     = preselElectronSelector  (cleanedElectrons,          isHigherConePt);
+    const std::vector<const RecoElectron *> fakeableElectronsUncleaned = fakeableElectronSelector(preselElectronsUncleaned,  isHigherConePt);
+    const std::vector<const RecoElectron *> fakeableElectronsCleaned   = fakeableElectronSelector(preselElectronsCleaned,    isHigherConePt);
+    const std::vector<const RecoElectron *> tightElectronsUncleaned    = tightElectronSelector   (preselElectronsUncleaned,  isHigherConePt);
+    const std::vector<const RecoElectron *> tightElectronsCleaned      = tightElectronSelector   (preselElectronsCleaned,    isHigherConePt);
 
-    const std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons,  isHigherConePt);
-    const std::vector<const RecoElectron *> tightElectrons    = tightElectronSelector   (preselElectrons,  isHigherConePt);
+    const std::vector<const RecoElectron *> & preselElectrons   = disableElectronCleaning ? preselElectronsUncleaned   : preselElectronsCleaned;
+    const std::vector<const RecoElectron *> & fakeableElectrons = disableElectronCleaning ? fakeableElectronsUncleaned : fakeableElectronsCleaned;
+    const std::vector<const RecoElectron *> & tightElectrons    = disableElectronCleaning ? tightElectronsUncleaned    : tightElectronsCleaned;
+
     const std::vector<const RecoElectron *> selElectrons      = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
     );
@@ -658,6 +682,20 @@ main(int argc,
     const std::vector<const RecoHadTau *> selHadTaus = selectObjects(
       hadTauSelection, preselHadTaus, fakeableHadTaus, tightHadTaus
     );
+
+    ObjectMultiplicity objectMultiplicity;
+    objectMultiplicity.setNRecoMuon    (preselMuons.size(),            fakeableMuons.size(),            tightMuons.size());
+    objectMultiplicity.setNRecoElectron(preselElectronsCleaned.size(), fakeableElectronsCleaned.size(), tightElectronsCleaned.size());
+    for(const auto & kv: TauID_PyMap)
+    {
+      const int max_level = TauID_levels.at(kv.second);
+      for(int level = 1; level <= max_level; ++level)
+      {
+        const RecoHadTauCollectionSelectorLoose & hadTauSelector = *multplicityHadTauSelectors.at(kv.second).at(level);
+        const std::vector<const RecoHadTau *> multiplicityHadTaus = hadTauSelector(cleanedHadTaus, isHigherPt);
+        objectMultiplicity.setNRecoHadTau(kv.second, level, multiplicityHadTaus.size());
+      }
+    }
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     const std::vector<RecoJet> jets = jetReader->read();
@@ -842,8 +880,8 @@ main(int argc,
         }
 
         muonGenMatcher.addGenLeptonMatch(preselMuons, genMuons);
-        muonGenMatcher.addGenHadTauMatch    (preselMuons, genHadTaus);
-        muonGenMatcher.addGenJetMatch    (preselMuons, genJets);
+        muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
+        muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
 
         electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons);
         electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
@@ -871,6 +909,7 @@ main(int argc,
     );
 
     eventInfoWriter.write(eventInfo);
+    objectMultiplicityWriter.write(objectMultiplicity);
     hltPathWriter_instance.write(triggers);
     muonWriter->write(preselMuons);
     electronWriter->write(preselElectrons);
@@ -901,6 +940,15 @@ main(int argc,
   {
     std::cout << "output Tree:\n";
     outputTree->Print();
+  }
+
+  for(auto & kv: multplicityHadTauSelectors)
+  {
+    for(auto & kw: kv.second)
+    {
+      delete kw.second;
+      kw.second = nullptr;
+    }
   }
 
   delete run_lumi_eventSelector;
