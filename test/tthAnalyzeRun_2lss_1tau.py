@@ -13,7 +13,7 @@ import getpass
 # E.g. to run: ./test/tthAnalyzeRun_2lss_1tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices         = [
-  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
+  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM', "test"
 ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
@@ -74,6 +74,22 @@ hadTau_selection         = "dR03mvaLoose"
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+elif mode == "test":
+  samples = load_samples(era)
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if not sample_info["sample_category"] in [
+      "signal",
+      "TTWH",
+      "TTZH",
+      "HH",
+      "ggH",
+      "qqH",
+      "VH",
+      "tHq",
+      "tHW"
+    ]:
+      sample_info["use_it"] = False
 elif mode == "addMEM":
   samples = load_samples(era, suffix = "addMEM_preselected_2lss1tau" if use_preselected else "addMEM_2lss1tau")
   MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)

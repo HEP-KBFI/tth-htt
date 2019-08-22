@@ -13,7 +13,7 @@ import getpass
 # E.g.: ./test/tthAnalyzeRun_3l.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [
-  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
+  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM', "test"
 ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
@@ -68,6 +68,26 @@ chargeSumSelections = [ "OS", "SS" ]
 
 if mode == "default":
   samples = load_samples(era)
+elif mode == "test":
+  samples = load_samples(era)
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if not sample_info["sample_category"] in [
+      "signal",
+      "TTWH",
+      "TTZH",
+      "HH",
+      "ggH",
+      "qqH",
+      "VH",
+      "EWK",
+      "WW",
+      "WZ",
+      "ZZ",
+      "tHq",
+      "tHW"
+    ]:
+      sample_info["use_it"] = False
 elif mode == "addMEM":
   samples = load_samples(era, suffix = "addMEM_3l")
   MEMbranch = 'memObjects_3l_lepFakeable'

@@ -12,7 +12,7 @@ import getpass
 
 # E.g.: ./test/tthAnalyzeRun_4l.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'test' ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -66,6 +66,22 @@ chargeSumSelections = [ "OS", "SS" ]
 
 if mode == "default":
   samples = load_samples(era)
+elif mode == "test":
+  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if not sample_info["sample_category"] in [
+      "signal",
+      "TTWH",
+      "TTZH",
+      "HH",
+      "ggH",
+      "qqH",
+      "VH",
+      "tHq",
+      "tHW"
+    ]:
+      sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT")
   chargeSumSelections = [ "OS" ]
