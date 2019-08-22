@@ -14,6 +14,8 @@ process.fwliteOutput = cms.PSet(
 
 process.produceNtuple = cms.PSet(
     treeName = cms.string('Events'),
+    basketSize = cms.int32(-1),
+    cacheSize = cms.int32(-1),
 
     era = cms.string(''),
 
@@ -54,6 +56,7 @@ process.produceNtuple = cms.PSet(
     isMC = cms.bool(True),
     redoGenMatching = cms.bool(False),
     genMatchingByIndex = cms.bool(True),
+    disableElectronCleaning = cms.bool(True),
 
     selEventsFileName_input = cms.string(''),
 

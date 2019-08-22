@@ -410,6 +410,15 @@ int main(int argc, char* argv[])
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC, isSignal);
+  const std::string default_cat_str = "default";
+  std::vector<std::string> evt_cat_strs = { default_cat_str };
+  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+  if((isMC_tH || isMC_signal) && ! tHweights.empty())
+  {
+    eventInfo.loadWeight_tH(tHweights);
+    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
+    evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
+  }
   EventInfoReader eventInfoReader(&eventInfo, puSys_option);
   inputTree -> registerReader(&eventInfoReader);
 
@@ -603,16 +612,6 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     std::map<std::string, EvtYieldHistManager*> evtYield_in_categories_;
     WeightHistManager* weights_;
   };
-
-  const std::string default_cat_str = "default";
-  std::vector<std::string> evt_cat_strs = { default_cat_str };
-  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
-  if((isMC_tH || isMC_signal) && ! tHweights.empty())
-  {
-    eventInfo.loadWeight_tH(tHweights);
-    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
-    evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
-  }
 
   typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
   std::map<int, int_to_selHistManagerMap> selHistManagers;

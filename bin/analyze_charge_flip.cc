@@ -265,6 +265,11 @@ int main(int argc, char* argv[])
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC);
+  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+  if((isMC_tH || isSignal) && ! tHweights.empty())
+  {
+    eventInfo.loadWeight_tH(tHweights);
+  }
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree->registerReader(&eventInfoReader);
 
@@ -346,12 +351,6 @@ int main(int argc, char* argv[])
     }
     lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree -> registerReader(lheInfoReader);
-  }
-
-  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
-  if((isMC_tH || isSignal) && ! tHweights.empty())
-  {
-    eventInfo.loadWeight_tH(tHweights);
   }
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria

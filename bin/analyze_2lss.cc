@@ -360,6 +360,15 @@ int main(int argc, char* argv[])
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC, isSignal);
+  const std::string default_cat_str = "default";
+  std::vector<std::string> evt_cat_strs = { default_cat_str };
+  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+  if((isMC_tH || isMC_signal) && ! tHweights.empty())
+  {
+    eventInfo.loadWeight_tH(tHweights);
+    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
+    evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
+  }
   EventInfoReader eventInfoReader(&eventInfo, puSys_option);
   inputTree -> registerReader(&eventInfoReader);
 
@@ -599,16 +608,6 @@ int main(int argc, char* argv[])
     WeightHistManager* weights_;
   };
   std::map<int, selHistManagerType*> selHistManagers;
-
-  const std::string default_cat_str = "default";
-  std::vector<std::string> evt_cat_strs = { default_cat_str };
-  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
-  if((isMC_tH || isMC_signal) && ! tHweights.empty())
-  {
-    eventInfo.loadWeight_tH(tHweights);
-    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
-    evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
-  }
 
   for ( std::vector<leptonChargeFlipGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
 	leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {

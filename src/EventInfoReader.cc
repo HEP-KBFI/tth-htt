@@ -55,7 +55,7 @@ EventInfoReader::setBranchAddresses(TTree * tree)
       bai.setBranchAddress(info_ -> pileupWeight, branchName_puWeight);
     }
   }
-  if(info_ -> is_mc())
+  if(info_ -> is_mc() && ! info_ -> tH_sf.empty())
   {
     BranchAddressInitializer bai_LHEReweight(tree, info_ -> LHEReweightingWeight_max);
     bai_LHEReweight.setBranchAddress(info_ -> nLHEReweightingWeight, branchName_nLHEReweightingWeight);

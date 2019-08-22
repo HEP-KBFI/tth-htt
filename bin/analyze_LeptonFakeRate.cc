@@ -651,6 +651,11 @@ main(int argc,
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC);
+  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+  if((isMC_tH || isSignal) && ! tHweights.empty())
+  {
+    eventInfo.loadWeight_tH(tHweights);
+  }
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree->registerReader(&eventInfoReader);
 
@@ -770,12 +775,6 @@ main(int argc,
     }
     lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree->registerReader(lheInfoReader);
-  }
-
-  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
-  if((isMC_tH || isSignal) && ! tHweights.empty())
-  {
-    eventInfo.loadWeight_tH(tHweights);
   }
 
   const auto get_num_den_hist_managers =
