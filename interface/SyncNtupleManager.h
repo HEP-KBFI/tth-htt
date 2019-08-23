@@ -56,6 +56,8 @@ enum class FloatVariableType
   massL,                    ///< transverse mass of highest pT dilepton pair passing loose selection
 
   mTauTauVis,               ///< visible mass of the two selected taus
+  mTauTau,
+  pZetaComb,
   mvis_l1tau,               ///< visible mass of leading lepton and tau (of OS in 3l+1tau)
   mvis_l2tau,               ///< visible mass of subleading lepton and tau (of OS in 3l+1tau)
 

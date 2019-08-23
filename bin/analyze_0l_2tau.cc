@@ -1952,6 +1952,8 @@ int main(int argc, char* argv[])
       // mT_met_lep4 not filled
 
       snm->read(mTauTauVis,                             FloatVariableType::mTauTauVis);
+      snm->read(mTauTau,                                FloatVariableType::mTauTau);
+      snm->read(pZetaComb,                              FloatVariableType::pZetaComb);
       // mvis_l1tau not filled
       // mvis_l2tau not filled
 

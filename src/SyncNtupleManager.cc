@@ -137,6 +137,9 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::massL],                    "massL",
 
     floatMap[FloatVariableType::mTauTauVis],               "mTauTauVis",
+    floatMap[FloatVariableType::mTauTau],                  "mTauTau",
+    floatMap[FloatVariableType::pZetaComb],                "pZetaComb",
+
     floatMap[FloatVariableType::mvis_l1tau],               "mTauTauVis1",
     floatMap[FloatVariableType::mvis_l2tau],               "mTauTauVis2",
 
