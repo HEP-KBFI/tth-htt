@@ -22111,7 +22111,7 @@ samples_2018["/QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
       OD([
         ("path",      "/hdfs/cms/store/user/rdewanje/2018_2019Jun27/QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Jun27_QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/190627_151212"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [322]),
       ]),
     ]
   ),
