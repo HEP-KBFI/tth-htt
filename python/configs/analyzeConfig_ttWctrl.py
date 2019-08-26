@@ -379,6 +379,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   'useNonNominal'            : self.use_nonnominal,
                   'apply_hlt_filter'         : self.hlt_filter,
                   'syncGenMatch'             : syncGenMatch,
+                  'useObjectMultiplicity'    : self.do_sync,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)
 

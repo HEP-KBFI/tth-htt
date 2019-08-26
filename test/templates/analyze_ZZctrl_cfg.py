@@ -114,6 +114,7 @@ process.analyze_ZZctrl = cms.PSet(
         genMatch = cms.vstring(),
     ),
     hasLHE = cms.bool(True),
+    useObjectMultiplicity = cms.bool(False),
 
     evtWeight = cms.PSet(
         apply = cms.bool(False),

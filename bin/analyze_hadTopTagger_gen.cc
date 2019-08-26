@@ -1574,7 +1574,7 @@ int main(int argc, char* argv[])
     cutFlowTable_2lss_1tau.update("met LD > 0.2", evtWeight);
 
     if ( selEventsFile ) {
-      (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
+      (*selEventsFile) << eventInfo.str() << '\n';
     }
 
 #else

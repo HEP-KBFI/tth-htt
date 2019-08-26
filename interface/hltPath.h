@@ -51,6 +51,10 @@ std::vector<hltPath *>
 create_hltPaths(const std::vector<std::string> & branchNames,
                 const std::string & label = "");
 
+std::vector<hltPath *>
+filter_hltPaths(const std::vector<hltPath *> & hltPaths,
+                const std::vector<std::string> & branchNames);
+
 bool
 hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths,
                      bool verbose = false);

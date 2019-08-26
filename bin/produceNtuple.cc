@@ -33,6 +33,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoWriter.h" // EventInfoWriter
 #include "tthAnalysis/HiggsToTauTau/interface/hltPathWriter.h" // hltPathWriter
+#include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicityWriter.h" // ObjectMultiplicityWriter
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
@@ -139,8 +140,8 @@ main(int argc,
   const std::string branchName_hadTauGenMatch   = cfg_produceNtuple.getParameter<std::string>("branchName_hadTauGenMatch");
   const std::string branchName_jetGenMatch      = cfg_produceNtuple.getParameter<std::string>("branchName_jetGenMatch");
 
-  const vstring branchNames_triggers = cfg_produceNtuple.getParameter<vstring>("branchNames_triggers");
-  const std::vector<hltPath *> triggers = create_hltPaths(branchNames_triggers, "triggers");
+  const vstring branchNames_triggers       = cfg_produceNtuple.getParameter<vstring>("branchNames_triggers");
+  const vstring branchNames_triggersFilter = cfg_produceNtuple.getParameter<vstring>("branchNames_triggersFilter");
 
   const int minNumLeptons             = cfg_produceNtuple.getParameter<int>("minNumLeptons");
   const int minNumHadTaus             = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
@@ -151,11 +152,10 @@ main(int argc,
   const int maxNumBJets_loose         = cfg_produceNtuple.getParameter<int>("maxNumBJets_loose");
   const int maxNumBJets_medium        = cfg_produceNtuple.getParameter<int>("maxNumBJets_medium");
   const bool applyJetEtaCut           = cfg_produceNtuple.getParameter<bool>("applyJetEtaCut");
-  
+
   const bool isMC                    = cfg_produceNtuple.getParameter<bool>("isMC");
   const bool redoGenMatching         = cfg_produceNtuple.getParameter<bool>("redoGenMatching");
   const bool genMatchingByIndex      = cfg_produceNtuple.getParameter<bool>("genMatchingByIndex");
-  const bool disableElectronCleaning = cfg_produceNtuple.getParameter<bool>("disableElectronCleaning");
   const bool isDEBUG                 = cfg_produceNtuple.getParameter<bool>("isDEBUG");
   const bool useNonNominal           = cfg_produceNtuple.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet    = useNonNominal || ! isMC;
@@ -199,6 +199,53 @@ main(int argc,
   EventInfo eventInfo;
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
+
+  // There are four distinct scenarios:
+  // 1) no event-level preselection by HLT paths is applied -> branchNames_triggersFilter is empty
+  //    1.a) data: branchNames_triggers contains all HLT paths that a given PD must include
+  //               All HLT paths are explicitly copied from input to output. There may be some missing "required"
+  //               HLT paths that do not belong to a given PD or even to data -- they're never recreated but just
+  //               excluded at the analysis level.
+  //    1.b) MC: branchNames_triggers is empty
+  //             All HLT paths are implicitly copied from input to output. Some HLT paths may be missing in MC -- they're
+  //             never recreated but just excluded at the analysis level.
+  // 2) event-level preselection by HLT paths is applied -> branchNames_triggersFilter is not empty
+  //    2.a) data: branchNames_triggers contains all HLT paths that a given PD must include
+  //               All HLT paths are explicitly copied from input to output, which means that we can access their values
+  //               at the same time. So, by filtering these HLT paths by their name we can make the decision by taking
+  //               the logical OR of filtered HLT paths. Even if some HLT paths are missing from the input Ntuple,
+  //               then this works in favor to us: we just consider the paths to be not triggered.
+  //    2.b) MC: branchNames_triggers is empty
+  //             Now, this is a bit complicated: we don't explicitly copy the HLT paths from input to output but we do it
+  //             implicitly. This means that if we want to read the value of the HLT paths from the input file, we need
+  //             to exclude them from implicit copy procedure. However, this means that any missing branches will be
+  //             recreated.
+  assert(isMC != (! branchNames_triggers.empty()));
+  const bool filterByTrigger = ! branchNames_triggersFilter.empty();
+  std::vector<std::string> triggerBranches_explicitCopy;
+  std::vector<hltPath *> triggers;
+  std::vector<hltPath *> triggersToFilter;
+  if(! isMC)
+  {
+    // copy all branches explicitly in data (1.a, 2.a)
+    triggerBranches_explicitCopy = branchNames_triggers;
+  }
+  else if(filterByTrigger)
+  {
+    // copy only these branches explicitly that we filter in MC (2.b)
+    triggerBranches_explicitCopy = branchNames_triggersFilter;
+  }
+  // 1.b: nothing to explicitly copy
+  triggers = create_hltPaths(triggerBranches_explicitCopy, "triggers");
+  triggersToFilter = filter_hltPaths(triggers, branchNames_triggersFilter);
+  if(filterByTrigger)
+  {
+    std::cout << "Applying preselection by requiring each event to pass logical OR of the following HLT paths:\n";
+    for(const std::string & branchName_triggersFilter: branchNames_triggersFilter)
+    {
+      std::cout << "  " << branchName_triggersFilter << '\n';
+    }
+  }
 
   hltPathReader hltPathReader_instance(triggers);
   inputTree -> registerReader(&hltPathReader_instance);
@@ -248,9 +295,26 @@ main(int argc,
   // CV: lower thresholds on hadronic taus by 2 GeV 
   //     with respect to thresholds applied on analysis level 
   //     to allow for tau-ES uncertainties to be estimated
-  preselHadTauSelector.set_min_pt(18.); 
-  fakeableHadTauSelector.set_min_pt(18.);
-  tightHadTauSelector.set_min_pt(18.);
+  const double minPt_hadTau = 18.;
+  preselHadTauSelector.set_min_pt(minPt_hadTau);
+  fakeableHadTauSelector.set_min_pt(minPt_hadTau);
+  tightHadTauSelector.set_min_pt(minPt_hadTau);
+
+  // construct tau selectors that are needed for counting the multiplicities of taus passing each tau ID & WP
+  std::map<TauID, std::map<int, RecoHadTauCollectionSelectorLoose *>> multplicityHadTauSelectors;
+  for(const auto & kv: TauID_PyMap)
+  {
+    multplicityHadTauSelectors[kv.second] = {};
+    const int max_level = TauID_levels.at(kv.second);
+    for(int level = 1; level <= max_level; ++level)
+    {
+      multplicityHadTauSelectors[kv.second][level] = new RecoHadTauCollectionSelectorLoose(era, -1, isDEBUG);
+      multplicityHadTauSelectors[kv.second][level]->set(kv.first + TauID_level_strings.at(max_level).at(level - 1));
+      multplicityHadTauSelectors[kv.second][level]->set_min_antiElectron(-1);
+      multplicityHadTauSelectors[kv.second][level]->set_min_antiMuon(-1);
+      multplicityHadTauSelectors[kv.second][level]->set_min_pt(minPt_hadTau);
+    }
+  }
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
@@ -356,7 +420,10 @@ main(int argc,
   EventInfoWriter eventInfoWriter;
   eventInfoWriter.setBranches(outputTree);
 
-  hltPathWriter hltPathWriter_instance(branchNames_triggers);
+  ObjectMultiplicityWriter objectMultiplicityWriter(true);
+  objectMultiplicityWriter.setBranches(outputTree);
+
+  hltPathWriter hltPathWriter_instance(triggerBranches_explicitCopy);
   hltPathWriter_instance.setBranches(outputTree);
 
   RecoMuonWriter * const muonWriter = new RecoMuonWriter(era, isMC, branchName_muons);
@@ -488,7 +555,7 @@ main(int argc,
     outputCommands_string.push_back(Form("drop %s", drop_branch.data()));
   }
 
-  for(const std::string & branchName: branchNames_triggers)
+  for(const std::string & branchName: triggerBranches_explicitCopy)
   {
     outputCommands_string.push_back(Form("drop %s", branchName.data()));
   }
@@ -636,14 +703,11 @@ main(int argc,
     const std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
     const std::vector<const RecoElectron *> cleanedElectrons  = electronCleaner(electron_ptrs, preselMuons);
 
-    const std::vector<const RecoElectron *>   preselElectronsUncleaned = preselElectronSelector(electron_ptrs, isHigherConePt);
-    const std::vector<const RecoElectron *>   preselElectronsCleaned   = preselElectronSelector(cleanedElectrons, isHigherConePt);
-    const std::vector<const RecoElectron *> & preselElectrons          =
-      disableElectronCleaning ? preselElectronsUncleaned : preselElectronsCleaned
-    ;
+    const std::vector<const RecoElectron *> preselElectronsUncleaned = preselElectronSelector  (electron_ptrs,    isHigherConePt);
+    const std::vector<const RecoElectron *> preselElectrons          = preselElectronSelector  (cleanedElectrons, isHigherConePt);
+    const std::vector<const RecoElectron *> fakeableElectrons        = fakeableElectronSelector(preselElectrons,  isHigherConePt);
+    const std::vector<const RecoElectron *> tightElectrons           = tightElectronSelector   (preselElectrons,  isHigherConePt);
 
-    const std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons,  isHigherConePt);
-    const std::vector<const RecoElectron *> tightElectrons    = tightElectronSelector   (preselElectrons,  isHigherConePt);
     const std::vector<const RecoElectron *> selElectrons      = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
     );
@@ -651,13 +715,27 @@ main(int argc,
     // always used cleaned electron collection in the cleaning of had tau collection to maintain consistency with the analysis
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau *> hadTau_ptrs = convert_to_ptrs(hadTaus);
-    const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectronsCleaned);
+    const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
     const std::vector<const RecoHadTau *> preselHadTaus   = preselHadTauSelector  (cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> tightHadTaus    = tightHadTauSelector   (cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> selHadTaus = selectObjects(
       hadTauSelection, preselHadTaus, fakeableHadTaus, tightHadTaus
     );
+
+    ObjectMultiplicity objectMultiplicity;
+    objectMultiplicity.setNRecoMuon    (preselMuons.size(),     fakeableMuons.size(),     tightMuons.size());
+    objectMultiplicity.setNRecoElectron(preselElectrons.size(), fakeableElectrons.size(), tightElectrons.size());
+    for(const auto & kv: TauID_PyMap)
+    {
+      const int max_level = TauID_levels.at(kv.second);
+      for(int level = 1; level <= max_level; ++level)
+      {
+        const RecoHadTauCollectionSelectorLoose & hadTauSelector = *multplicityHadTauSelectors.at(kv.second).at(level);
+        const std::vector<const RecoHadTau *> multiplicityHadTaus = hadTauSelector(cleanedHadTaus, isHigherPt);
+        objectMultiplicity.setNRecoHadTau(kv.second, level, multiplicityHadTaus.size());
+      }
+    }
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     const std::vector<RecoJet> jets = jetReader->read();
@@ -698,6 +776,15 @@ main(int argc,
     const std::vector<const RecoLepton *> selLeptons      = mergeLeptonCollections(selElectrons,      selMuons,      isHigherConePt);
 
 //--- apply preselection
+    if(filterByTrigger && ! hltPaths_isTriggered(triggersToFilter, isDEBUG))
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event FAILS trigger selection\n";
+      }
+      continue;
+    }
+
     if(! (static_cast<int>(selLeptons.size()) >= minNumLeptons))
     {
       if(run_lumi_eventSelector || isDEBUG)
@@ -807,10 +894,10 @@ main(int argc,
         muonGenMatcher.addGenHadTauMatch       (preselMuons, genHadTaus);
         muonGenMatcher.addGenJetMatch          (preselMuons, genJets);
 
-        electronGenMatcher.addGenLeptonMatchByIndex(preselElectrons, electronGenMatch, GenParticleType::kGenElectron);
-        electronGenMatcher.addGenPhotonMatchByIndex(preselElectrons, electronGenMatch);
-        electronGenMatcher.addGenHadTauMatch       (preselElectrons, genHadTaus);
-        electronGenMatcher.addGenJetMatch          (preselElectrons, genJets);
+        electronGenMatcher.addGenLeptonMatchByIndex(preselElectronsUncleaned, electronGenMatch, GenParticleType::kGenElectron);
+        electronGenMatcher.addGenPhotonMatchByIndex(preselElectronsUncleaned, electronGenMatch);
+        electronGenMatcher.addGenHadTauMatch       (preselElectronsUncleaned, genHadTaus);
+        electronGenMatcher.addGenJetMatch          (preselElectronsUncleaned, genJets);
 
         hadTauGenMatcher.addGenLeptonMatchByIndex(selHadTaus, hadTauGenMatch, GenParticleType::kGenAnyLepton);
         hadTauGenMatcher.addGenHadTauMatch       (selHadTaus, genHadTaus);
@@ -842,13 +929,13 @@ main(int argc,
         }
 
         muonGenMatcher.addGenLeptonMatch(preselMuons, genMuons);
-        muonGenMatcher.addGenHadTauMatch    (preselMuons, genHadTaus);
-        muonGenMatcher.addGenJetMatch    (preselMuons, genJets);
+        muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
+        muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
 
-        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons);
-        electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
-        electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
-        electronGenMatcher.addGenJetMatch(preselElectrons, genJets);
+        electronGenMatcher.addGenLeptonMatch(preselElectronsUncleaned, genElectrons);
+        electronGenMatcher.addGenPhotonMatch(preselElectronsUncleaned, genPhotons);
+        electronGenMatcher.addGenHadTauMatch(preselElectronsUncleaned, genHadTaus);
+        electronGenMatcher.addGenJetMatch(preselElectronsUncleaned, genJets);
 
         hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons);
         hadTauGenMatcher.addGenHadTauMatch  (selHadTaus, genHadTaus);
@@ -871,9 +958,10 @@ main(int argc,
     );
 
     eventInfoWriter.write(eventInfo);
+    objectMultiplicityWriter.write(objectMultiplicity);
     hltPathWriter_instance.write(triggers);
     muonWriter->write(preselMuons);
-    electronWriter->write(preselElectrons);
+    electronWriter->write(preselElectronsUncleaned);
     hadTauWriter->write(preselHadTaus);
     jetWriter->write(selJets);
     metWriter->write(met);
@@ -901,6 +989,15 @@ main(int argc,
   {
     std::cout << "output Tree:\n";
     outputTree->Print();
+  }
+
+  for(auto & kv: multplicityHadTauSelectors)
+  {
+    for(auto & kw: kv.second)
+    {
+      delete kw.second;
+      kw.second = nullptr;
+    }
   }
 
   delete run_lumi_eventSelector;

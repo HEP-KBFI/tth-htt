@@ -729,6 +729,7 @@ class analyzeConfig(object):
             'branchName_fatJetsLS',
             'branchName_subJetsLS',
             'tHweights',
+            'useObjectMultiplicity',
         ]
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))

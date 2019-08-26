@@ -349,6 +349,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
                 'syncTree'                 : syncTree,
                 'syncRLE'                  : syncRLE,
                 'syncGenMatch'             : syncGenMatch,
+                'useObjectMultiplicity'    : self.do_sync,
               }
               self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)
 
