@@ -17,7 +17,8 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName,
                                          const std::vector<std::string> classes,
                                          const std::vector<double> & mvaInputVariables_mean,
                                          const std::vector<double> & mvaInputVariables_var)
-  : mvaFileName_(LocalFileInPath(mvaFileName).fullPath())
+  : mode_(Mode::k_old)
+  , mvaFileName_(LocalFileInPath(mvaFileName).fullPath())
   , graphDef_(nullptr)
   , session_(nullptr)
   , classes_(classes)
@@ -118,7 +119,8 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName,
 					 const std::string & fitFunctionFileName,
                                          const std::vector<double> & mvaInputVariables_mean,
                                          const std::vector<double> & mvaInputVariables_var)
-  : mvaFileName_(LocalFileInPath(mvaFileName).fullPath())
+  : mode_(Mode::k_old)
+  , mvaFileName_(LocalFileInPath(mvaFileName).fullPath())
   , graphDef_(nullptr)
   , session_(nullptr)
   , classes_(classes)
@@ -222,7 +224,8 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName_odd,
 					 const std::vector<double> & mvaInputVariables_mean_even,
                                          const std::vector<double> & mvaInputVariables_var_odd,
 					 const std::vector<double> & mvaInputVariables_var_even)
-  : mvaFileName_("")
+  : mode_(Mode::k_odd_even)
+  , mvaFileName_("")
   , graphDef_(nullptr)
   , session_(nullptr)
   , classes_(classes)
@@ -382,7 +385,8 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName_odd,
 					 const std::vector<double> & mvaInputVariables_mean_even,
                                          const std::vector<double> & mvaInputVariables_var_odd,
 					 const std::vector<double> & mvaInputVariables_var_even)
-  : mvaFileName_("")
+  : mode_(Mode::k_odd_even)
+  , mvaFileName_("")
   , graphDef_(nullptr)
   , session_(nullptr)
   , classes_(classes)
