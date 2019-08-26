@@ -1283,7 +1283,7 @@ int main(int argc, char* argv[])
         0, 1.);*/
     }
 
-    (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
+    (*selEventsFile) << eventInfo.str() << '\n';
 
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;

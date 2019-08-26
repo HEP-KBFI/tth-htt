@@ -22,6 +22,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
+#include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicity.h" // ObjectMultiplicity
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_2lss_1tau.h" // MEMOutput_2lss_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions.h" // check_mvaInputs, get_mvaInputVariables
@@ -43,6 +44,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
+#include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicityReader.h" // ObjectMultiplicityReader
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
@@ -219,6 +221,8 @@ int main(int argc, char* argv[])
   const int hadTauSelection = get_selection(hadTauSelection_part1);
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
+  const TauID tauId = TauID_PyMap.at(hadTauSelection_part2.substr(0, 7));
+  int tauLevel = get_tau_id_wp_int(hadTauSelection_part2);
   std::string hadTauSelection_veto = cfg_analyze.getParameter<std::string>("hadTauSelection_veto");
 
   bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
@@ -238,6 +242,7 @@ int main(int argc, char* argv[])
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
+  bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
@@ -409,6 +414,14 @@ int main(int argc, char* argv[])
   EventInfoReader eventInfoReader(&eventInfo, puSys_option);
   inputTree -> registerReader(&eventInfoReader);
 
+  ObjectMultiplicity objectMultiplicity;
+  ObjectMultiplicityReader objectMultiplicityReader(&objectMultiplicity);
+  if(useObjectMultiplicity)
+  {
+    inputTree -> registerReader(&objectMultiplicityReader);
+  }
+  const int minLeptonSelection = std::min(electronSelection, muonSelection);
+
   hltPathReader hltPathReader_instance({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
   inputTree -> registerReader(&hltPathReader_instance);
 
@@ -462,6 +475,13 @@ int main(int argc, char* argv[])
   tightHadTauFilter.set("dR03mvaMedium");
   tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
+  switch(hadTauSelection)
+  {
+    case kLoose:    tauLevel = std::min(tauLevel, get_tau_id_wp_int(preselHadTauSelector.getSelector().get()));   break;
+    case kFakeable: tauLevel = std::min(tauLevel, get_tau_id_wp_int(fakeableHadTauSelector.getSelector().get())); break;
+    case kTight:    tauLevel = std::min(tauLevel, get_tau_id_wp_int(tightHadTauSelector.getSelector().get()));    break;
+    default: assert(0);
+  }
 
   // CV: veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
   RecoHadTauCollectionSelectorTight vetoHadTauSelector(era, -1, isDEBUG);
@@ -885,6 +905,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   );
   const std::vector<std::string> cuts = {
     "run:ls:event selection",
+    "object multiplicity",
     "trigger",
     ">= 2 presel leptons",
     ">= 1 sel tau (1)",
@@ -941,6 +962,22 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         std::cout << "input File = " << inputTree -> getCurrentFileName() << '\n';
       }
     }
+
+    if(useObjectMultiplicity)
+    {
+      if(objectMultiplicity.getNRecoLepton(minLeptonSelection) < 2 ||
+         objectMultiplicity.getNRecoLepton(kTight)             > 2 ||
+         objectMultiplicity.getNRecoHadTau(tauId, tauLevel)    < 1  )
+      {
+        if(! isDEBUG || run_lumi_eventSelector)
+        {
+          std::cout << "event " << eventInfo.str() << " FAILS preliminary object multiplicity cuts\n";
+        }
+        continue;
+      }
+    }
+    cutFlowTable.update("object multiplicity");
+    cutFlowHistManager->fillHistograms("object multiplicity", lumiScale);
 
 //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
@@ -2163,10 +2200,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
 
     if ( selEventsFile ) {
-      //(*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
-      (*selEventsFile) << "(" << eventInfo.run << ", " << eventInfo.lumi << ", " << eventInfo.event << "L, " << weight_fakeRate
-		       << ", " << prob_fake_lepton_lead << ", " << passesTight_lepton_lead << ", " << prob_fake_lepton_sublead << ", " << passesTight_lepton_sublead
-		       << ")" << '\n';
+      (*selEventsFile) << eventInfo.str() << '\n';
     }
 
     double memOutput_type=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.type() : -100.;

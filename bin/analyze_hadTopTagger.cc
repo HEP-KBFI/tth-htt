@@ -461,7 +461,7 @@ int main(int argc, char* argv[])
     }
 
     if ( selEventsFile ) {
-      (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
+      (*selEventsFile) << eventInfo.str() << '\n';
     }
 
 //--- build collections of generator level particles

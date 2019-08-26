@@ -397,6 +397,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,
                   'syncGenMatch'             : syncGenMatch,
+                  'useObjectMultiplicity'    : self.do_sync,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, hadTau_selection)
 
