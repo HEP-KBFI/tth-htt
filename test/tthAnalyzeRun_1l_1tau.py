@@ -66,6 +66,8 @@ hadTau_selection = "dR03mvaMedium"
 
 if mode == "default":
   samples = load_samples(era)
+  if "DY" in sample_info["process_name_specific"]:
+      sample_info["sample_category"] = "DY"
 elif mode == "test":
   samples = load_samples(era)
   for sample_name, sample_info in samples.items():
@@ -78,16 +80,14 @@ elif mode == "test":
       "ggH",
       "qqH",
       "VH",
-      "EWK",
-      "WW",
-      "WZ",
-      "ZZ",
+      #"EWK",
+      #"WW",
+      #"WZ",
+      #"ZZ",
       "tHq",
       "tHW"
     ]:
       sample_info["use_it"] = False
-    if "DY" in sample_info["process_name_specific"]:
-      sample_info["sample_category"] = "DY"
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT_DY")
   # CV: check if BDT training statistics is sufficient with nominal tau ID working point
