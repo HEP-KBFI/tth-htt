@@ -71,19 +71,13 @@ elif mode == "test":
   for sample_name, sample_info in samples.items():
     if sample_name == 'sum_events': continue
     if not sample_info["sample_category"] in [
-      #"THQ_ctcvcp",
-      #"THW_ctcvcp",
-      #"signal",
-      #"TTWH",
-      #"TTZH",
-      #"HH",
-      #"ggH",
-      #"qqH",
-      #"VH",
-      #"EWK",
-      #"WW",
-      #"WZ",
-      #"ZZ",
+      "signal",
+      "TTWH",
+      "TTZH",
+      "HH",
+      "ggH",
+      "qqH",
+      "VH",
       "tHq",
       "tHW"
     ]:
