@@ -165,7 +165,7 @@ int main(int argc, char* argv[])
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
-  const bool isMC_VH = process_string == "VH";
+  const bool isMC_VH = process_string == "VH" || process_string == "ggH" || process_string == "qqH";
   const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
 
@@ -648,9 +648,12 @@ int main(int argc, char* argv[])
 
       for(const std::string & evt_cat_str: evt_cat_strs)
       {
+        std::string proc0 = process_string;
+        if ( process_string == "signal") proc0 = "ttH";
+        if ( process_string == "signal_ctcvcp" ) proc0 = "ttH_ctcvcp";
         const std::string process_string_new = evt_cat_str == default_cat_str ?
-          process_string + "_" :
-          process_string + "_" + evt_cat_str + "_"
+          proc0  :
+          proc0 + evt_cat_str
         ;
         const std::string process_and_genMatchName = boost::replace_all_copy(
           process_and_genMatch, process_string, process_string_new
@@ -674,7 +677,11 @@ int main(int argc, char* argv[])
             decayMode_and_genMatch = process_string;
             decayMode_and_genMatch += "_";
           }
-          else decayMode_and_genMatch = "ttH_";
+          else
+          {
+            if ( process_string == "signal") decayMode_and_genMatch = "ttH_";
+            if ( process_string == "signal_ctcvcp" ) decayMode_and_genMatch = "ttH_ctcvcp_";
+          }
           decayMode_and_genMatch += decayMode_evt;
 
           if(apply_leptonGenMatching)                            decayMode_and_genMatch += leptonGenMatch_definition -> name_;
