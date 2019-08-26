@@ -67,7 +67,7 @@ chargeSumSelections = [ "OS", "SS" ]
 if mode == "default":
   samples = load_samples(era)
 elif mode == "test":
-  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+  samples = load_samples(era)
   for sample_name, sample_info in samples.items():
     if sample_name == 'sum_events': continue
     if not sample_info["sample_category"] in [
