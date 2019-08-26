@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
-  const bool isMC_VH = process_string == "VH";
+  const bool isMC_VH = process_string == "VH" || process_string == "ggH" || process_string == "qqH";
   const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
 
@@ -264,7 +264,11 @@ int main(int argc, char* argv[])
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
+  const std::string syncNtuple_tree = "FIXME"; //syncNtuple_cfg.getParameter<std::string>("tree");
+  const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  const vstring syncNtuple_genMatch = {"FIXME"};//syncNtuple_cfg.getParameter<vstring>("genMatch");
   const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
+  const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
   const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
   const bool applyAdditionalEvtWeight = additionalEvtWeight.getParameter<bool>("apply");
@@ -398,15 +402,25 @@ int main(int argc, char* argv[])
   unsigned reportEvery = inputFiles.reportAfter();
 
   fwlite::OutputFiles outputFile(cfg);
+  std::cout << "blabla 1" << std::endl;
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
   TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
+  std::cout << "blabla " << std::endl;
 
   std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
 
 //--- prepare sync Ntuple
-  const std::vector<std::vector<hltPath *>> hltPaths{ triggers_1e, triggers_1e1tau, triggers_1mu, triggers_1mu1tau };
-  SyncNtupleManagerWrapper snmw(syncNtuple_cfg, hltPaths, SyncGenMatchCharge::kAll);
+  //const std::vector<std::vector<hltPath *>> hltPaths{ triggers_1e, triggers_1e1tau, triggers_1mu, triggers_1mu1tau };
+  SyncNtupleManager * snm = nullptr;
+  if(do_sync)
+  {
+    snm = new SyncNtupleManager(syncNtuple_output, syncNtuple_tree);
+    snm->initializeBranches();
+    snm->initializeHLTBranches({
+      triggers_1e, triggers_1e1tau, triggers_1mu, triggers_1mu1tau
+    });
+  }
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC, isSignal);
@@ -666,9 +680,12 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 
       for(const std::string & evt_cat_str: evt_cat_strs)
       {
+        std::string proc0 = process_string;
+        if ( process_string == "signal") proc0 = "ttH";
+        if ( process_string == "signal_ctcvcp" ) proc0 = "ttH_ctcvcp";
         const std::string process_string_new = evt_cat_str == default_cat_str ?
-          process_string + "_" :
-          process_string + "_" + evt_cat_str + "_"
+          proc0 :
+          proc0 + evt_cat_str
         ;
         const std::string process_and_genMatchName = boost::replace_all_copy(
           process_and_genMatch, process_string, process_string_new
@@ -692,7 +709,11 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
             decayMode_and_genMatch = process_string;
             decayMode_and_genMatch += "_";
           }
-          else decayMode_and_genMatch = "ttH_";
+          else
+          {
+            if ( process_string == "signal") decayMode_and_genMatch = "ttH_";
+            if ( process_string == "signal_ctcvcp" ) decayMode_and_genMatch = "ttH_ctcvcp_";
+          }
           decayMode_and_genMatch += decayMode_evt;
 
           if ( apply_leptonGenMatching                            ) decayMode_and_genMatch += leptonGenMatch_definition->name_;
@@ -2114,18 +2135,18 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         .fill();
     }
 
-    if(snmw)
+    if(snm)
     {
       const double max_dr_jet = comp_max_dr_jet(selJets);
       const int nLightJet     = selJets.size() - selBJets_loose.size() + selJetsForward.size();
 
-      for(auto & kv: snmw)
-      {
+      //for(auto & kv: snmw)
+      //{
         const bool isGenMatched = isMC &&
-          snmw.isGenMatched(kv.first, selLepton_genMatch.name_ + "&" + selHadTau_genMatch.name_)
+          contains(syncNtuple_genMatch, selLepton_genMatch.name_ + "&" + selHadTau_genMatch.name_)
         ;
 
-        SyncNtupleManager * snm = kv.second;
+        //SyncNtupleManager * snm = = nullptr;
 
         snm->read(eventInfo);
         snm->read(selLeptons);
@@ -2234,7 +2255,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         {
           snm->resetBranches();
         }
-      }
+      //}
     }
 
     ++selectedEntries;
@@ -2242,13 +2263,13 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     histogram_selectedEntries->Fill(0.);
   }
 
-  if(snmw)
+  /*if(snmw)
   {
     for(auto & kv: snmw)
     {
       kv.second->write();
     }
-  }
+  }*/
 
   std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
             << " (limited by " << maxEvents << ") processed in "

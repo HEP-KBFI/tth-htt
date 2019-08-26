@@ -5,6 +5,7 @@ from tthAnalysis.HiggsToTauTau.common import logging
 
 import re
 import os.path
+import sys, os
 
 def get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight):
   lepton_and_hadTau_selection_and_frWeight = lepton_and_hadTau_selection
@@ -182,10 +183,28 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "VH" ]
+    self.nonfake_backgrounds = [  "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ] #"TT", "TTW", "TTZ", "TTWW", "EWK", "Rares",
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
-    self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "Convs", "data_fakes", "fakes_mc" ]
+    #self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "Convs", "data_fakes", "fakes_mc" ]
+    samples_categories_MC = []
+    for sample_category in self.nonfake_backgrounds + self.ttHProcs:
+      if sample_category == "signal" :  sample_category = "ttH"
+      if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+      decays = [""]
+      if sample_category in self.procsWithDecayModes : decays += self.decayModes
+      couplings = [""]
+      if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
+      for decayMode in decays :
+        for coupling in couplings :
+            if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
+            if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
+            if coupling == "" and decayMode == "" :
+              samples_categories_MC.append("%s" % sample_category)
+            elif coupling == "" :
+              samples_categories_MC.append("%s_%s" % (sample_category, decayMode))
+            else:
+              samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
     self.histogramDir_prep_dcard = "3l_1tau_OS_lepTight_tauTight"
     self.histogramDir_prep_dcard_SS = "3l_1tau_SS_lepTight_tauTight"
     self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ]
@@ -494,148 +513,91 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
             if is_mc:
               logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
-
               sample_categories = [ sample_category ]
-              if is_signal:
-                sample_categories.append("ttH{}".format(sample_category[len('signal'):]))
               for sample_category in sample_categories:
-                # sum non-fake and fake contributions for each MC sample separately
-                genMatch_categories = [ "nonfake", "Convs", "fake" ]
+                if sample_category == "signal" :  sample_category = "ttH"
+                if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+                decays = [""]
+                if sample_category in self.procsWithDecayModes : decays += self.decayModes
+                couplings = [""]
+                if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
+                for decayMode in decays :
+                  for coupling in couplings :
+                    if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
+                    if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
+                    # sum non-fake and fake contributions for each MC sample separately
+                    genMatch_categories = [ "nonfake", "Convs", "fake" ]
+                    # in case fake background method is applied to leptons only,
+                    # split events with genuine leptons (taken from MC) into "gentau" and "faketau" parts,
+                    # so that different systematic uncertainties can be applied to both parts
+                    if self.applyFakeRateWeights == "3lepton":
+                        genMatch_categories.extend([ "gentau", "faketau" ])
+                    for genMatch_category in genMatch_categories:
+                      key_hadd_stage1_job = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+                      key_addBackgrounds_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, "addBackgrounds")
+                      addBackgrounds_job_tuple = None
+                      processes_input = None
+                      process_output = None
+                      if genMatch_category == "nonfake" :
+                        # sum non-fake contributions for each MC sample separately
+                        # input processes: TT1l0g0j&2t0e0m0j, TT1l0g0j&1t1e0m0j, TT1l0g0j&1t0e1m0j, TT1l0g0j&0t2e0m0j, TT1l0g0j&0t1e1m0j, TT1l0g0j&0t0e2m0j; ...
+                        # output processes: TT; ...
+                        lepton_and_hadTau_genMatches = []
+                        lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_nonfakes)
+                        if sample_category in self.procsWithDecayModes :
+                          #X: this I leave as it was originaly, is it on purpose that we duplicate fakes and conversions to H processes?
+                          lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_fakes)
+                          lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_Convs)
+                        copy_genMatches = lepton_and_hadTau_genMatches
+                      elif genMatch_category == "fake":
+                        copy_genMatches = self.lepton_and_hadTau_genMatches_fakes
+                      elif genMatch_category == "gentau":
+                        copy_genMatches = self.lepton_and_hadTau_genMatches_gentau
+                      elif genMatch_category == "faketau":
+                        copy_genMatches = self.lepton_and_hadTau_genMatches_faketau
+                      elif genMatch_category == "Convs":
+                        copy_genMatches = self.lepton_and_hadTau_genMatches_Convs
+                      processes_input = []
+                      ## the SM tH's does not have the couplings
+                      if coupling == "" :
+                        if decayMode == "" :
+                            processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in copy_genMatches ])
+                            process_output = sample_category
+                        else :
+                            processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in copy_genMatches ])
+                            process_output = "%s_%s" % (sample_category, decayMode)
+                      else :
+                        # If there is coupling, there is decayMode
+                        processes_input.extend([ "%s_%s_%s%s" % (sample_category, coupling, decayMode, genMatch) for genMatch in copy_genMatches ])
+                        process_output = "%s_%s_%s" % (sample_category, coupling, decayMode)
+                      if genMatch_category in ["gentau", "faketau", "Convs", "fake" ] : process_output += "_" + genMatch_category
+                      addBackgrounds_job_tuple = (process_name, process_output, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+                      if processes_input:
+                        logging.info(" ...for genMatch option = '%s'" % genMatch_category)
+                        key_addBackgrounds_job = getKey(*addBackgrounds_job_tuple)
+                        cfgFile_modified = os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_%s_%s_cfg.py" % addBackgrounds_job_tuple)
+                        outputFile = os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackgrounds_%s_%s_%s_%s.root" % addBackgrounds_job_tuple)
+                        self.jobOptions_addBackgrounds[key_addBackgrounds_job] = {
+                          'inputFile' : self.outputFile_hadd_stage1[key_hadd_stage1_job],
+                          'cfgFile_modified' : cfgFile_modified,
+                          'outputFile' : outputFile,
+                          'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], os.path.basename(cfgFile_modified).replace("_cfg.py", ".log")),
+                          'categories' : [ getHistogramDir(lepton_selection, hadTau_selection, lepton_and_hadTau_frWeight, chargeSumSelection) ],
+                          'processes_input' : processes_input,
+                          'process_output' : process_output
+                        }
+                        self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds[key_addBackgrounds_job])
 
-                # in case fake background method is applied to leptons only,
-                # split events with genuine leptons (taken from MC) into "gentau" and "faketau" parts,
-                # so that different systematic uncertainties can be applied to both parts
-                if self.applyFakeRateWeights == "3lepton":
-                  genMatch_categories.extend([ "gentau", "faketau" ])
-
-                for genMatch_category in genMatch_categories:
-                  key_hadd_stage1_job = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                  key_addBackgrounds_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, "addBackgrounds")
-                  addBackgrounds_job_tuple = None
-                  processes_input = None
-                  process_output = None
-                  if genMatch_category == "nonfake":
-                    # sum non-fake contributions for each MC sample separately
-                    # input processes: TT3l0g0j,...
-                    # output processes: TT; ...
-                    if sample_category in self.signalProcs:
-                      lepton_and_hadTau_genMatches = []
-                      lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_nonfakes)
-                      lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_Convs)
-                      lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_fakes)
-                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in lepton_and_hadTau_genMatches ]
-                    elif sample_category in self.procsWithDecayModes :
-                      lepton_and_hadTau_genMatches = []
-                      lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_nonfakes)
-                      if sample_category in self.ttHProcs : lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_Convs)
-                      processes_input = []
-                      ## X: save also the process without the decay modes: do we need?
-                      if sample_category not in self.ttHProcs :
-                        processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in lepton_and_hadTau_genMatches ])
-                      for decayMode in self.decayModes :
-                        if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
-                        processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in lepton_and_hadTau_genMatches ])
-                    else:
-                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_nonfakes ]
-                    process_output = sample_category
-                    addBackgrounds_job_tuple = (process_name, sample_category, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                  if genMatch_category == "Convs":
-                    # sum conversion background contributions for each MC sample separately
-                    # input processes: TT2l1g0j,...
-                    # output processes: TT_Convs; ...
-                    if sample_category in self.signalProcs:
-                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_Convs ]
-                    elif sample_category in self.procsWithDecayModes :
-                      processes_input = []
-                      ## X: save also the process without the decay modes: do we need?
-                      if sample_category not in self.ttHProcs :
-                        processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_Convs ])
-                      for decayMode in self.decayModes :
-                        if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
-                        processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_Convs ])
-                    else:
-                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_Convs ]
-                    process_output = "%s_Convs" % sample_category
-                    addBackgrounds_job_tuple = (process_name, "%s_Convs" % sample_category, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                  elif genMatch_category == "fake":
-                    # sum fake background contributions for each MC sample separately
-                    # input processes: TT2l1j, TT1l2j, TT0l3j; ...
-                    # output processes: TT_fake; ...
-                    if sample_category in self.signalProcs:
-                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ]
-                    elif sample_category in self.procsWithDecayModes :
-                      processes_input = []
-                      ## X: save also the process without the decay modes: do we need?
-                      if sample_category not in self.ttHProcs :
-                        processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
-                      for decayMode in self.decayModes :
-                        if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
-                        processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
-                    else:
-                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ]
-                    process_output = "%s_fake" % sample_category
-                    addBackgrounds_job_tuple = (process_name, "%s_fake" % sample_category, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                  elif genMatch_category == "gentau":
-                    # sum contributions with genuine leptons and genuine taus
-                    # input processes: TT3l0j1t0e0m0j, TT3l0j0t1e0m0j, TT3l0j0t0e1m0j; ...
-                    # output processes: TT_gentau; ...
-                    if sample_category in self.signalProcs:
-                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_gentau ]
-                    elif sample_category in self.procsWithDecayModes :
-                      processes_input = []
-                      ## X: save also the process without the decay modes: do we need?
-                      if sample_category not in self.ttHProcs :
-                        processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_gentau ])
-                      for decayMode in self.decayModes :
-                        if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
-                        processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_gentau ])
-                    else:
-                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_gentau ]
-                    process_output = "%s_gentau" % sample_category
-                    addBackgrounds_job_tuple = (process_name, "%s_gentau" % sample_category, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                  elif genMatch_category == "faketau":
-                    # sum contributions with genuine leptons and fake taus
-                    # input processes: TT3l0j0t0e0m1j;...
-                    # output processes: TT_faketau; ...
-                    if sample_category in self.signalProcs:
-                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_faketau ]
-                    elif sample_category in self.procsWithDecayModes :
-                      processes_input = []
-                      ## X: save also the process without the decay modes: do we need?
-                      if sample_category not in self.ttHProcs :
-                        processes_input.extend([ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_faketau ])
-                      for decayMode in self.decayModes :
-                        if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
-                        processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_faketau ])
-                    else:
-                      processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_faketau ]
-                    process_output = "%s_faketau" % sample_category
-                    addBackgrounds_job_tuple = (process_name, "%s_faketau" % sample_category, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                  if processes_input:
-                    logging.info(" ...for genMatch option = '%s'" % genMatch_category)
-                    key_addBackgrounds_job = getKey(*addBackgrounds_job_tuple)
-                    cfgFile_modified = os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_%s_%s_cfg.py" % addBackgrounds_job_tuple)
-                    outputFile = os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackgrounds_%s_%s_%s_%s.root" % addBackgrounds_job_tuple)
-                    self.jobOptions_addBackgrounds[key_addBackgrounds_job] = {
-                      'inputFile' : self.outputFile_hadd_stage1[key_hadd_stage1_job],
-                      'cfgFile_modified' : cfgFile_modified,
-                      'outputFile' : outputFile,
-                      'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], os.path.basename(cfgFile_modified).replace("_cfg.py", ".log")),
-                      'categories' : [ getHistogramDir(lepton_selection, hadTau_selection, lepton_and_hadTau_frWeight, chargeSumSelection) ],
-                      'processes_input' : processes_input,
-                      'process_output' : process_output
-                    }
-                    self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds[key_addBackgrounds_job])
-
-                    # initialize input and output file names for hadd_stage1_5
-                    key_hadd_stage1_5_dir = getKey("hadd", lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                    hadd_stage1_5_job_tuple = (lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-                    key_hadd_stage1_5_job = getKey(*hadd_stage1_5_job_tuple)
-                    if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
-                      self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
-                    self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
-                    self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job] = os.path.join(self.dirs[key_hadd_stage1_5_dir][DKEY_HIST],
-                                                                                        "hadd_stage1_5_%s_%s.root" % hadd_stage1_5_job_tuple)
+                        # initialize input and output file names for hadd_stage1_5
+                        key_hadd_stage1_5_dir = getKey("hadd", lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+                        hadd_stage1_5_job_tuple = (lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+                        key_hadd_stage1_5_job = getKey(*hadd_stage1_5_job_tuple)
+                        if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
+                          self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
+                        self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
+                        self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job] = os.path.join(self.dirs[key_hadd_stage1_5_dir][DKEY_HIST],
+                                                                                            "hadd_stage1_5_%s_%s.root" % hadd_stage1_5_job_tuple)
+              #sys.exit(os.EX_OK)
 
             if self.isBDTtraining or self.do_sync:
               continue
@@ -651,6 +613,30 @@ class analyzeConfig_3l_1tau(analyzeConfig):
           if self.isBDTtraining or self.do_sync:
             continue
 
+          ## doing list of processes to make the hadd in _Convs and _fake
+          ## we could remove the tH ones with althernative couplings
+          processes_input_base = []
+          sample_categories = []
+          sample_categories.extend(self.nonfake_backgrounds)
+          sample_categories.extend(self.ttHProcs)
+          for sample_category in sample_categories:
+            if sample_category == "signal" :  sample_category = "ttH"
+            if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+            decays = [""]
+            if sample_category in self.procsWithDecayModes : decays += self.decayModes
+            couplings = [""]
+            if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
+            for decayMode in decays :
+              for coupling in couplings :
+                if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
+                if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
+                if coupling == "" and decayMode == "" :
+                  processes_input_base.append("%s" % sample_category)
+                elif coupling == "" :
+                  processes_input_base.append("%s_%s" % (sample_category, decayMode))
+                else:
+                  processes_input_base.append("%s_%s_%s" % (sample_category, coupling, decayMode))
+
           # sum fake background contributions for the total of all MC sample
           # input processes: TT2l0g1j, TT1l1g1j, TT1l0g2j, TT0l2g1j, TT0l1g2j, TT0l0g3j; ...
           # output process: fakes_mc
@@ -660,10 +646,10 @@ class analyzeConfig_3l_1tau(analyzeConfig):
           key_addBackgrounds_job_fakes = getKey(*addBackgrounds_job_fakes_tuple)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
-          sample_categories.extend(self.signalProcs)
+          sample_categories.extend(self.ttHProcs)
           processes_input = []
-          for sample_category in sample_categories:
-            processes_input.append("%s_fake" % sample_category)
+          for process_input_base in processes_input_base:
+            processes_input.append("%s_fake" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
             'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_%s_%s_cfg.py" % addBackgrounds_job_fakes_tuple),
@@ -682,10 +668,10 @@ class analyzeConfig_3l_1tau(analyzeConfig):
           key_addBackgrounds_job_Convs = getKey(*addBackgrounds_job_Convs_tuple)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
-          sample_categories.extend(self.signalProcs)
+          sample_categories.extend(self.ttHProcs)
           processes_input = []
-          for sample_category in sample_categories:
-            processes_input.append("%s_Convs" % sample_category)
+          for process_input_base in processes_input_base:
+            processes_input.append("%s_Convs" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_Convs] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
             'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_%s_%s_cfg.py" % addBackgrounds_job_Convs_tuple),
@@ -743,11 +729,11 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       key_addFakes_job = getKey("data_fakes", chargeSumSelection)
       category_sideband = None
       if self.applyFakeRateWeights == "3lepton":
-        category_sideband = "3l_1tau_%s_lepFakeable_tauTight_wFakeRateWeights" % chargeSumSelection
+        category_sideband = "3l_1tau_%s_lepFakeable_hadTauTight_wFakeRateWeights" % chargeSumSelection
       elif self.applyFakeRateWeights == "4L":
-        category_sideband = "3l_1tau_%s_lepFakeable_tauFakeable_wFakeRateWeights" % chargeSumSelection
+        category_sideband = "3l_1tau_%s_lepFakeable_hadTauFakeable_wFakeRateWeights" % chargeSumSelection
       elif self.applyFakeRateWeights == "1tau":
-        category_sideband = "3l_1tau_%s_lepTight_tauFakeable_wFakeRateWeights" % chargeSumSelection
+        category_sideband = "3l_1tau_%s_lepTight_hadTauFakeable_wFakeRateWeights" % chargeSumSelection
       else:
         raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % self.applyFakeRateWeights)
       self.jobOptions_addFakes[key_addFakes_job] = {
