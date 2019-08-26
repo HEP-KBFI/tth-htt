@@ -160,8 +160,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
       if sample_category == "signal" :  sample_category = "ttH"
-      #if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
-      #if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
+      if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
       decays = [""]
       if sample_category in self.procsWithDecayModes : decays += self.decayModes
       couplings = [""]
@@ -479,12 +478,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
             if is_mc:
               logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
               sample_categories = [ sample_category ]
-              #if is_signal:
-              #  sample_categories.append("ttH{}".format(sample_category[len('signal'):]))
               for sample_category in sample_categories:
                 if sample_category == "signal" :  sample_category = "ttH"
-                #if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
-                #if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
+                if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
                 decays = [""]
                 if sample_category in self.procsWithDecayModes : decays += self.decayModes
                 couplings = [""]
@@ -507,7 +503,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                         # output processes: TT; ...
                         lepton_and_hadTau_genMatches = []
                         lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_nonfakes)
-                        if sample_category in self.ttHProcs :
+                        if sample_category in self.procsWithDecayModes :
+                          #X: this I leave as it was originaly, is it on purpose that we duplicate fakes and conversions to H processes?
+                          lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_fakes)
                           lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_Convs)
                         copy_genMatches = lepton_and_hadTau_genMatches
                       elif genMatch_category == "fake":
@@ -527,8 +525,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                         # If there is coupling, there is decayMode
                         processes_input.extend([ "%s_%s_%s%s" % (sample_category, coupling, decayMode, genMatch) for genMatch in copy_genMatches ])
                         process_output = "%s_%s_%s" % (sample_category, coupling, decayMode)
-                      if genMatch_category == "Convs" : process_output += "_Convs"
-                      if genMatch_category == "fake" :        process_output += "_fake"
+                      if genMatch_category in ["Convs", "fake"] : process_output += "_" + genMatch_category
                       addBackgrounds_job_tuple = (process_name, process_output, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection)
                       if processes_input:
                         logging.info(" ...for genMatch option = '%s'" % genMatch_category)
@@ -578,8 +575,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           for sample_category in sample_categories:
             if sample_category == "signal" :  sample_category = "ttH"
-            #if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
-            #if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
+            if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
             decays = [""]
             if sample_category in self.procsWithDecayModes : decays += self.decayModes
             couplings = [""]
