@@ -59,13 +59,28 @@ create_hltPaths(const std::vector<std::string> & branchNames,
   return hltPaths;
 }
 
+std::vector<hltPath *>
+filter_hltPaths(const std::vector<hltPath *> & hltPaths,
+                const std::vector<std::string> & branchNames)
+{
+  std::vector<hltPath *> filteredPaths;
+  std::copy_if(
+    hltPaths.cbegin(), hltPaths.cend(), std::back_inserter(filteredPaths),
+    [&branchNames](const hltPath * const path) -> bool
+    {
+      return std::find(branchNames.cbegin(), branchNames.cend(), path->getBranchName()) != branchNames.cend();
+    }
+  );
+  return filteredPaths;
+}
+
 bool
 hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths,
                      bool verbose)
 {
   return std::any_of(
     hltPaths.cbegin(), hltPaths.cend(),
-    [verbose](hltPath * const & path) -> bool
+    [verbose](const hltPath * const & path) -> bool
     {
       const bool passes = path->getValue();
       if(verbose)

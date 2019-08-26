@@ -444,6 +444,11 @@ int main(int argc, char* argv[])
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC);
+  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+  if((isMC_tH || isSignal) && ! tHweights.empty())
+  {
+    eventInfo.loadWeight_tH(tHweights);
+  }
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree->registerReader(&eventInfoReader);
 
@@ -563,12 +568,6 @@ int main(int argc, char* argv[])
     }
     lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree->registerReader(lheInfoReader);
-  }
-
-  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
-  if((isMC_tH || isSignal) && ! tHweights.empty())
-  {
-    eventInfo.loadWeight_tH(tHweights);
   }
 
   ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_string, 
@@ -798,6 +797,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
+    std::vector<const RecoElectron*> preselElectronsUncleaned = preselElectronSelector(electron_ptrs, isHigherConePt);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
     std::vector<const RecoElectron*> selElectrons = tightElectronSelector(preselElectrons);
 
@@ -908,6 +908,7 @@ int main(int argc, char* argv[])
 
 //--- apply preselection
     std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons);
+    std::vector<const RecoLepton*> preselLeptonsUncleaned = mergeLeptonCollections(preselElectronsUncleaned, preselMuons, isHigherConePt);
     // require two leptons passing loose preselection criteria 
     if ( !(preselLeptons.size() >= 2) ) {
       continue;
@@ -1017,7 +1018,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
 
-    const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptons);
+    const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptonsUncleaned);
     if(failsLowMassVeto)
     {
       continue;

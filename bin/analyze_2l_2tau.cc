@@ -404,6 +404,15 @@ int main(int argc, char* argv[])
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC, isSignal);
+  const std::string default_cat_str = "default";
+  std::vector<std::string> evt_cat_strs = { default_cat_str };
+  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+  if((isMC_tH || isMC_signal) && ! tHweights.empty())
+  {
+    eventInfo.loadWeight_tH(tHweights);
+    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
+    evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
+  }
   EventInfoReader eventInfoReader(&eventInfo, puSys_option);
   inputTree->registerReader(&eventInfoReader);
 
@@ -551,16 +560,6 @@ int main(int argc, char* argv[])
   TMVAInterface mva_plainKin_SUM_VT(mvaFileName_plainKin_SUM_VT, mvaInputVariables_plainKin_SUMSort);
   mva_plainKin_SUM_VT.enableBDTTransform();
   std::vector<std::string> mvaInputVariables_2l2tau = get_mvaInputVariables(mvaInputVariables_plainKin_SUMSort, mvaInputVariables_plainKin_ttSort);
-
-  const std::string default_cat_str = "default";
-  std::vector<std::string> evt_cat_strs = { default_cat_str };
-  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
-  if((isMC_tH || isMC_signal) && ! tHweights.empty())
-  {
-    eventInfo.loadWeight_tH(tHweights);
-    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
-    evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
-  }
 
 //--- declare histograms
   struct selHistManagerType
@@ -1001,16 +1000,19 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherConePt);
+    std::vector<const RecoElectron*> preselElectronsUncleaned = preselElectronSelector(electron_ptrs, isHigherConePt);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons, isHigherConePt);
     std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(fakeableElectrons, isHigherConePt);
     if(isDEBUG || run_lumi_eventSelector)
     {
       printCollection("preselElectrons",   preselElectrons);
+      printCollection("preselElectronsUncleaned", preselElectronsUncleaned);
       printCollection("fakeableElectrons", fakeableElectrons);
       printCollection("tightElectrons",    tightElectrons);
     }
 
     std::vector<const RecoLepton*> preselLeptonsFull = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
+    std::vector<const RecoLepton*> preselLeptonsFullUncleaned = mergeLeptonCollections(preselElectronsUncleaned, preselMuons, isHigherConePt);
     std::vector<const RecoLepton*> fakeableLeptonsFull = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherConePt);
     std::vector<const RecoLepton*> tightLeptonsFull = mergeLeptonCollections(tightElectrons, tightMuons, isHigherConePt);
 
@@ -1470,7 +1472,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
     cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
 
-    const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptonsFull);
+    const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptonsFullUncleaned);
     if ( failsLowMassVeto ) {
       if ( run_lumi_eventSelector ) {
     std::cout << "event " << eventInfo.str() << " FAILS low mass lepton pair veto." << std::endl;

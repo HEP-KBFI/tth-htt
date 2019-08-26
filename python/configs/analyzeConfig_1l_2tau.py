@@ -154,13 +154,13 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "VH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "HH", "tHq", "tHW", "VH", "ggH", "qqH" ]
 
     #self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "Convs", "data_fakes", "fakes_mc" ] FIXME
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
       if sample_category == "signal" :  sample_category = "ttH"
-      if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+      #if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
       #if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
       decays = [""]
       if sample_category in self.procsWithDecayModes : decays += self.decayModes
@@ -178,7 +178,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
               samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
     self.prep_dcard_processesToCopy = samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc", "data_obs" ]
     #self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ] FIXME
-    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "Convs", "fakes_mc" ]
+    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "HH", "tHq", "tHW" ] + [ "Convs", "fakes_mc" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.histogramDir_prep_dcard = "1l_2tau_OS_Tight"
@@ -483,7 +483,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
               #  sample_categories.append("ttH{}".format(sample_category[len('signal'):]))
               for sample_category in sample_categories:
                 if sample_category == "signal" :  sample_category = "ttH"
-                if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+                #if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
                 #if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
                 decays = [""]
                 if sample_category in self.procsWithDecayModes : decays += self.decayModes
@@ -578,7 +578,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           for sample_category in sample_categories:
             if sample_category == "signal" :  sample_category = "ttH"
-            if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+            #if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
             #if "ctcvcp" in sample_category : continue #X: FIXME: did not added yet this sample
             decays = [""]
             if sample_category in self.procsWithDecayModes : decays += self.decayModes

@@ -151,6 +151,7 @@ if preselection:
       'maxNumBJets_loose'         : 1,
       'maxNumBJets_medium'        : 0,
       'applyJetEtaCut'            : False,
+      'applyHLTcut'               : True,
     }
   else:
     preselection_cuts = {
@@ -163,6 +164,7 @@ if preselection:
       'maxNumBJets_loose'          : -1,
       'maxNumBJets_medium'         : -1,
       'applyJetEtaCut'             : False,
+      'applyHLTcut'                : True,
     }
   leptonSelection = 'Fakeable'
   hadTauSelection = 'Fakeable'
@@ -177,6 +179,7 @@ else:
     'maxNumBJets_loose'         : -1,
     'maxNumBJets_medium'        : -1,
     'applyJetEtaCut'            : False,
+    'applyHLTcut'               : False,
   }
   leptonSelection = 'Loose'
   hadTauSelection = 'Loose'

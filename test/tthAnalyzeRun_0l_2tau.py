@@ -12,7 +12,7 @@ import getpass
 
 # E.g.: ./test/tthAnalyzeRun_0l_2tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'test' ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts
 systematics.full = systematics.an_common
 
@@ -72,6 +72,28 @@ if mode == "default":
     if sample_name == 'sum_events': continue
     if sample_info["process_name_specific"].startswith("DYBBJetsToLL_M-50"):
       sample_info["use_it"] = True
+elif mode == "test":
+  samples = load_samples(era)
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if not sample_info["sample_category"] in [
+      "signal",
+      "TTWH",
+      "TTZH",
+      "HH",
+      "ggH",
+      "qqH",
+      "VH",
+      "EWK",
+      "WW",
+      "WZ",
+      "ZZ",
+      "tHq",
+      "tHW"
+    ]:
+      sample_info["use_it"] = False
+    if "DY" in sample_info["process_name_specific"]:
+      sample_info["sample_category"] = "DY"
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT_DY")
   hadTau_selection = "dR03mvaLoose"

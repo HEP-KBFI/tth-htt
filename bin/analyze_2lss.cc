@@ -360,6 +360,15 @@ int main(int argc, char* argv[])
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC, isSignal);
+  const std::string default_cat_str = "default";
+  std::vector<std::string> evt_cat_strs = { default_cat_str };
+  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
+  if((isMC_tH || isMC_signal) && ! tHweights.empty())
+  {
+    eventInfo.loadWeight_tH(tHweights);
+    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
+    evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
+  }
   EventInfoReader eventInfoReader(&eventInfo, puSys_option);
   inputTree -> registerReader(&eventInfoReader);
 
@@ -599,16 +608,6 @@ int main(int argc, char* argv[])
     WeightHistManager* weights_;
   };
   std::map<int, selHistManagerType*> selHistManagers;
-
-  const std::string default_cat_str = "default";
-  std::vector<std::string> evt_cat_strs = { default_cat_str };
-  const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
-  if((isMC_tH || isMC_signal) && ! tHweights.empty())
-  {
-    eventInfo.loadWeight_tH(tHweights);
-    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
-    evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
-  }
 
   for ( std::vector<leptonChargeFlipGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
 	leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {
@@ -1101,16 +1100,20 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherConePt);
+    std::vector<const RecoElectron*> preselElectronsUncleaned = preselElectronSelector(electron_ptrs, isHigherConePt);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons, isHigherConePt);
     std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(fakeableElectrons, isHigherConePt);
     if(isDEBUG || run_lumi_eventSelector)
     {
       printCollection("preselElectrons",   preselElectrons);
+      printCollection("preselElectronsUncleaned", preselElectronsUncleaned);
+      printCollection("preselElectronsUncleaned", preselElectronsUncleaned);
       printCollection("fakeableElectrons", fakeableElectrons);
       printCollection("tightElectrons",    tightElectrons);
     }
 
     std::vector<const RecoLepton*> preselLeptonsFull = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
+    std::vector<const RecoLepton*> preselLeptonsFullUncleaned = mergeLeptonCollections(preselElectronsUncleaned, preselMuons, isHigherConePt);
     std::vector<const RecoLepton*> fakeableLeptonsFull = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherConePt);
     std::vector<const RecoLepton*> tightLeptonsFull = mergeLeptonCollections(tightElectrons, tightMuons, isHigherConePt);
 
@@ -1451,7 +1454,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("sel tau veto");
     cutFlowHistManager->fillHistograms("sel tau veto", lumiScale);
 
-    const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptonsFull);
+    const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptonsFullUncleaned);
     if ( failsLowMassVeto  ) {
       if ( run_lumi_eventSelector || isDEBUG ) {
     std::cout << "event " << eventInfo.str() << " FAILS low mass lepton pair veto. " << std::endl;
