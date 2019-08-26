@@ -419,8 +419,8 @@ class analyzeConfig(object):
         self.jobOptions_add_syst_dcard = {}
         self.cfgFile_add_syst_fakerate = os.path.join(self.template_dir, "addSystFakeRates_cfg.py")
         self.jobOptions_add_syst_fakerate = {}
-        self.signalProcs = [ "signal", "signal_ctcvcp" ]
-        self.ttHProcs = [ "ttH", "ttH_ctcvcp" ]
+        self.signalProcs = [ "signal"] #, "signal_ctcvcp" ]
+        self.ttHProcs = [ "ttH" ]# , "ttH_ctcvcp" ]
         self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
         self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
         self.procsWithDecayModes = self.ttHProcs + [ "VH", "tHW", "tHq", "ggH", "qqH" ]
