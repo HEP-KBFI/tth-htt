@@ -144,7 +144,7 @@ class analyzeConfig_2lss(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
 
-    self.nonfake_backgrounds = [ "tHq", "tHW", "VH", "ggH", "qqH" ] # "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares",
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares", "tHq", "tHW", "VH", "ggH", "qqH" ]
 
     #self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "Convs", "data_fakes", "fakes_mc", "data_flips", "flips_mc" ]
     samples_categories_MC = []

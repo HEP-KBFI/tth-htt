@@ -167,7 +167,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
 
-    self.nonfake_backgrounds = [ "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ] # "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "DY",
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "DY", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     #self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "Convs", "data_fakes", "fakes_mc", "data_flips", "flips_mc" ]
     samples_categories_MC = []
