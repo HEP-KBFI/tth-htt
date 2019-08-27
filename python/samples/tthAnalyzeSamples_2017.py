@@ -25204,7 +25204,7 @@ samples_2017["/GluGluToHHTo4Tau_node_SM_13TeV-madgraph_correctedcfg/RunIIFall17M
   ("fsize_local",                     3192339723), # 3.19GB, avg file size 399.04MB
   ("fsize_db",                        20766449398), # 20.77GB, avg file size 1.38GB
   ("use_it",                          True),
-  ("xsection",                        0.003934*33.45),
+  ("xsection",                        0.003934*0.03345),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -25252,7 +25252,7 @@ samples_2017["/GluGluToHHTo2V2Tau_node_SM_13TeV-madgraph_correctedcfg/RunIIFall1
   ("fsize_local",                     3349343864), # 3.35GB, avg file size 372.15MB
   ("fsize_db",                        21713327567), # 21.71GB, avg file size 1.45GB
   ("use_it",                          True),
-  ("xsection",                        0.030092*33.45),
+  ("xsection",                        0.030092*0.03345),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -25300,7 +25300,7 @@ samples_2017["/GluGluToHHTo4V_node_SM_13TeV-madgraph_correctedcfg/RunIIFall17Min
   ("fsize_local",                     3305159277), # 3.31GB, avg file size 367.24MB
   ("fsize_db",                        20701310914), # 20.70GB, avg file size 1.22GB
   ("use_it",                          True),
-  ("xsection",                        0.057547*33.45),
+  ("xsection",                        0.057547*0.03345),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -25348,7 +25348,7 @@ samples_2017["/GluGluToHHTo2B2VTo2L2Nu_node_SM_13TeV-madgraph_correctedcfg/RunII
   ("fsize_local",                     3068311117), # 3.07GB, avg file size 383.54MB
   ("fsize_db",                        21257341288), # 21.26GB, avg file size 1.25GB
   ("use_it",                          True),
-  ("xsection",                        0.026422*33.45),
+  ("xsection",                        0.026422*0.03345),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -25396,7 +25396,7 @@ samples_2017["/GluGluToHHTo2B2Tau_node_SM_13TeV-madgraph_correctedcfg/RunIIFall1
   ("fsize_local",                     3062240787), # 3.06GB, avg file size 382.78MB
   ("fsize_db",                        20440095707), # 20.44GB, avg file size 1.14GB
   ("use_it",                          True),
-  ("xsection",                        0.073056*33.45),
+  ("xsection",                        0.073056*0.03345),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
