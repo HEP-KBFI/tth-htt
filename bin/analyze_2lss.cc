@@ -841,19 +841,19 @@ int main(int argc, char* argv[])
     );
     bdt_filler->register_variable<float_type>(
       "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_phi", "lep1_tth_mva", "mindr_lep1_jet",
-      "mindr_lep2_jet", "mT_lep1",  "MT_met_lep1", "dr_lep1_tau",
+      "mindr_lep2_jet", "mT_lep1",  "MT_met_lep1",
       "lep2_pt", "lep2_conePt", "lep2_eta", "lep2_phi", "max_Lep_eta", "avg_dr_lep",
-      "lep2_tth_mva", "mT_lep2", "dr_lep2_tau",
-      "mindr_tau_jet", "avg_dr_jet",  "nJet25_Recl", "ptmiss", "htmiss",
-      "tau_mva", "tau_pt", "tau_eta", "dr_leps",
+      "lep2_tth_mva", "mT_lep2",
+      "avg_dr_jet",  "nJet25_Recl", "ptmiss", "htmiss",
+       "dr_leps",
       "lep1_genLepPt", "lep2_genLepPt",
-      "tau_genTauPt",  "lep1_frWeight", "lep2_frWeight",   "tau_frWeight",
+      "lep1_frWeight", "lep2_frWeight",
       "mvaOutput_2lss_ttV",  "mvaOutput_2lss_ttbar", "mvaDiscr_2lss",
       "Hj_tagger",
       "lumiScale", "genWeight", "evtWeight", "min(met_pt,400)",
       "mbb_loose", "mbb_medium",
       "res_HTT", "HadTop_pt", "genTopPt_CSVsort4rd",
-      "massL", "min_Deta_mostfwdJet_jet", "min_Deta_leadfwdJet_jet",
+      "massLT", "massL", "min_Deta_mostfwdJet_jet", "min_Deta_leadfwdJet_jet",
       "met_LD", "jet1_pt", "jet1_eta",
       "jet1_pt", "jet1_eta", "jet1_phi", "jet1_E",
       "jet2_pt", "jet2_eta", "jet2_phi", "jet2_E",
@@ -2119,7 +2119,8 @@ int main(int argc, char* argv[])
           ("mbb_medium",          selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : 0 )
           ("nElectron",                      selElectrons.size())
           ("sum_Lep_charge", selLepton_lead -> charge() + selLepton_sublead -> charge())
-          ("massL",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.)
+          ("massLT",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.)
+          ("massL",           massL(fakeableLeptons))
           ("min_Deta_mostfwdJet_jet", min_Deta_mostfwdJet_jet)
           ("min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet)
           ("met_LD",              met_LD)

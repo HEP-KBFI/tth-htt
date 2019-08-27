@@ -583,6 +583,9 @@ isSFOS(const std::vector<const RecoLepton *> & leptons);
 bool
 isfailsLowMassVeto(const std::vector<const RecoLepton *> & preselLeptons);
 
+double
+massL(const std::vector<const RecoLepton *> & Leptons);
+
 bool
 isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons,
                       bool ignoreOS = false);

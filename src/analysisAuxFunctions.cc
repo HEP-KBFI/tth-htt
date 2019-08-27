@@ -433,6 +433,26 @@ isfailsLowMassVeto(const std::vector<const RecoLepton *> & preselLeptons)
   return failsLowMassVeto;
 }
 
+double
+massL(const std::vector<const RecoLepton *> & Leptons)
+{
+  double massFO = 10000.;
+  for(auto lepton1_it = Leptons.begin(); lepton1_it != Leptons.end(); ++lepton1_it)
+  {
+    const RecoLepton * lepton1 = *lepton1_it;
+    for(auto lepton2_it = lepton1_it + 1; lepton2_it != Leptons.end(); ++lepton2_it)
+    {
+      const RecoLepton * lepton2 = *lepton2_it;
+      const double mass = (lepton1->p4() + lepton2->p4()).mass();
+      if(mass < massFO)
+      {
+        massFO = mass;
+      }
+    }
+  }
+  return massFO;
+}
+
 bool
 isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons,
                       bool ignoreOS)
