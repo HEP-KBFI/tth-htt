@@ -189,7 +189,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
             else:
               samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
     self.prep_dcard_processesToCopy = samples_categories_MC + [ "data_fakes", "fakes_mc", "data_obs", "data_flips", "flips_mc" ]
-    self.make_plots_backgrounds_SS = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes", "flips_mc" ]
+    self.make_plots_backgrounds_SS = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes", "data_flips" ]
     self.make_plots_backgrounds_OS = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
