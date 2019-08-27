@@ -155,10 +155,10 @@ if preselection:
     }
   else:
     preselection_cuts = {
-      'minNumLeptons'              : 0,
-      'minNumHadTaus'              : 0,
+      'minNumLeptons'              : -1,
+      'minNumHadTaus'              : -1,
       'minNumLeptons_and_HadTaus'  : 2,
-      'minNumJets'                 : 1,
+      'minNumJets'                 : -1,
       'minNumBJets_loose'          : -1,
       'minNumBJets_medium'         : -1,
       'maxNumBJets_loose'          : -1,
@@ -168,6 +168,7 @@ if preselection:
     }
   leptonSelection = 'Fakeable'
   hadTauSelection = 'Fakeable'
+  hadTauWP = 'dR03mvaVLoose&deepVSjVLoose' # override user preference
 else:
   preselection_cuts = {
     'minNumLeptons'             : -1,
@@ -183,8 +184,9 @@ else:
   }
   leptonSelection = 'Loose'
   hadTauSelection = 'Loose'
+  hadTauWP = args.tau_id_wp
 
-hadTauSelectionAndWP = '%s|%s' % (hadTauSelection, args.tau_id_wp)
+hadTauSelectionAndWP = '%s|%s' % (hadTauSelection, hadTauWP)
 
 if __name__ == '__main__':
   logging.info("Preselection: %s" % ("enabled" if preselection else "disabled"))
