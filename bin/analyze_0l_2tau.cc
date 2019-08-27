@@ -1196,8 +1196,10 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 2 jets");
     cutFlowHistManager->fillHistograms(">= 2 jets", lumiScale);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
-      std::cout << "event " << eventInfo.str() << " FAILS >= 2 loose b-jets || 1 medium b-jet ." << std::endl;
+      if ( isDEBUG )
+      {  std::cout << "event " << eventInfo.str() << " FAILS >= 2 loose b-jets || 1 medium b-jet ." << std::endl;
       std::cout << "selBJets_loose.size() = " << selBJets_loose.size() << "selBJets_medium.size() = " << selBJets_medium.size() << std::endl;
+      }
       continue;
     }
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (1)");
@@ -1211,7 +1213,7 @@ int main(int argc, char* argv[])
 //--- apply final event selection
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
     if ( !(selHadTaus.size() >= 2) ) {
-      std::cout << "event " << eventInfo.str() << " FAILS selHadTaus.size() >= 2; selHadTaus.size() = " << selHadTaus.size() << std::endl;
+      if ( isDEBUG ) std::cout << "event " << eventInfo.str() << " FAILS selHadTaus.size() >= 2; selHadTaus.size() = " << selHadTaus.size() << std::endl;
       continue;
     }
     cutFlowTable.update(">= 2 sel taus", lumiScale);

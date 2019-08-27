@@ -863,7 +863,7 @@ int main(int argc, char* argv[])
       "leadFwdJet_eta", "leadFwdJet_pt", "leadFwdJet_phi", "leadFwdJet_E"
     );
     bdt_filler->register_variable<int_type>(
-      "nJet", "nBJetLoose", "nBJetMedium", "nLep",
+      "nJet", "nBJetLoose", "nBJetMedium", "nLep", "nJetForward",
       "lep1_isTight", "lep2_isTight", "failsTightChargeCut",
       "nElectron", "sum_Lep_charge",
       "hadtruth", "bWj1Wj2_isGenMatched_CSVsort4rd"
@@ -2147,6 +2147,7 @@ int main(int argc, char* argv[])
           ("leadFwdJet_pt",       selJetsForward.size() > 0 ? selJetsForward[0] -> pt() : -1000)
           ("leadFwdJet_phi",      selJetsForward.size() > 0 ? selJetsForward[0] -> phi() : -1000)
           ("leadFwdJet_E",        selJetsForward.size() > 0 ? selJetsForward[0] -> p4().energy() : -1000)
+          ("nJetForward",         selJetsForward.size())
 
         .fill()
       ;

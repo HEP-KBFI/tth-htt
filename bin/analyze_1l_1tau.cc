@@ -859,10 +859,11 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       "minDR_AK8_lep",
       "minDR_AK8subjets_lep",
       "lumiScale", "genWeight", "evtWeight",
-      "prob_fake_lepton", "prob_fake_hadTau","mbb","mbb_loose"
+      "prob_fake_lepton", "prob_fake_hadTau","mbb_medium","mbb_loose",
+      "met_LD", "leadFwdJet_eta", "leadFwdJet_pt", "leadFwdJet_phi", "leadFwdJet_E"
     );
     bdt_filler->register_variable<int_type>(
-      "nJet", "nBJetLoose", "nBJetMedium",
+      "nJet", "nBJetLoose", "nBJetMedium", "nJetForward",
       "charge_lep_tau",
       "N_jetAK8", "cleanedJets_fromAK8",
       "hadtruth", "hadtruth_2",
@@ -2128,6 +2129,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 	  ("mindr_tau_jet",                             mindr_tau_jet)
 	  ("avg_dr_jet",                                avg_dr_jet)
 	  ("ptmiss",                                    ptmiss)
+    ("met_LD",                                    met_LD)
 	  ("mT_lep",                                    mT_lep)
 	  ("mT_tau",                                    mT_tau)
 	  ("htmiss",                                    htmiss)
@@ -2170,8 +2172,13 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 	  ("hadtruth_semi_boosted_fromAK8",             hadtruth_semi_boosted_fromAK8)
 	  ("bWj1Wj2_isGenMatched_semi_boosted_fromAK8", bWj1Wj2_isGenMatched_semi_boosted_fromAK8)
 	  ("resolved_and_semi_AK8",                     resolved_and_semi_AK8)
-	  ("mbb",					mbb)
+	  ("mbb_medium",					mbb)
 	  ("mbb_loose",					mbb_loose)
+    ("leadFwdJet_eta",      selJetsForward.size() > 0 ? selJetsForward[0] -> absEta() : -1000)
+    ("leadFwdJet_pt",       selJetsForward.size() > 0 ? selJetsForward[0] -> pt() : -1000)
+    ("leadFwdJet_phi",      selJetsForward.size() > 0 ? selJetsForward[0] -> phi() : -1000)
+    ("leadFwdJet_E",        selJetsForward.size() > 0 ? selJetsForward[0] -> p4().energy() : -1000)
+    ("nJetForward",         selJetsForward.size())
         .fill();
     }
 
