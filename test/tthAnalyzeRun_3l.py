@@ -93,8 +93,6 @@ elif mode == "addMEM":
   MEMbranch = 'memObjects_3l_lepFakeable'
 elif mode == "forBDTtraining_beforeAddMEM":
   samples = load_samples(era, suffix = "BDT")
-  hadTau_selection = "dR03mvaLoose"
-  hadTau_selection_relaxed = "dR03mvaVLoose"
   chargeSumSelections = [ "OS" ]
 elif mode == "forBDTtraining_afterAddMEM":
   samples = load_samples(era, suffix = "BDT_addMEM_3l")
