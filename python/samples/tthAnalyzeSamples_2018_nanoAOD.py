@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-08-19 17:34:27 with the following command:
+# file generated at 2019-08-27 18:39:37 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p python/samples/sampleLocations_2018_nanoAOD.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_nanoAOD.py -M
 
 samples_2018 = OD()
@@ -15613,7 +15613,7 @@ samples_2018["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD
   ("nof_db_events",                   29093000),
   ("fsize_local",                     85165367485), # 85.17GB, avg file size 292.66MB
   ("fsize_db",                        1815791395391), # 1.82TB, avg file size 2.52GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        0.5071),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -22095,9 +22095,9 @@ samples_2018["/QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("nof_db_files",                    647),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 35978539),
+  ("nof_tree_events",                 35879060),
   ("nof_db_events",                   35978539),
-  ("fsize_local",                     79373320360), # 79.37GB, avg file size 219.26MB
+  ("fsize_local",                     79153868727), # 79.15GB, avg file size 218.66MB
   ("fsize_db",                        1839028645751), # 1.84TB, avg file size 2.84GB
   ("use_it",                          False),
   ("xsection",                        7022.81),
