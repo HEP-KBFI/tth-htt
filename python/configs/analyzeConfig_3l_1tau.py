@@ -205,8 +205,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
               samples_categories_MC.append("%s_%s" % (sample_category, decayMode))
             else:
               samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
-    self.histogramDir_prep_dcard = "3l_1tau_OS_lepTight_tauTight"
-    self.histogramDir_prep_dcard_SS = "3l_1tau_SS_lepTight_tauTight"
+    self.histogramDir_prep_dcard = "3l_1tau_OS_lepTight_hadTauTight"
+    self.histogramDir_prep_dcard_SS = "3l_1tau_SS_lepTight_hadTauTight"
     self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_3l_1tau_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_3l_1tau_cfg.py") #TODO
@@ -742,7 +742,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
         'cfgFile_modified' : os.path.join(self.dirs[key_addFakes_dir][DKEY_CFGS], "addBackgroundLeptonFakes_%s_cfg.py" % chargeSumSelection),
         'outputFile' : os.path.join(self.dirs[key_addFakes_dir][DKEY_HIST], "addBackgroundLeptonFakes_%s.root" % chargeSumSelection),
         'logFile' : os.path.join(self.dirs[key_addFakes_dir][DKEY_LOGS], "addBackgroundLeptonFakes_%s.log" % chargeSumSelection),
-        'category_signal' : "3l_1tau_%s_lepTight_tauTight" % chargeSumSelection,
+        'category_signal' : "3l_1tau_%s_lepTight_hadTauTight" % chargeSumSelection,
         'category_sideband' : category_sideband
       }
       self.createCfg_addFakes(self.jobOptions_addFakes[key_addFakes_job])

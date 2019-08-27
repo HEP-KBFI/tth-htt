@@ -710,7 +710,7 @@ class analyzeConfig_2lss(analyzeConfig):
     key_addFlips_dir = getKey("addBackgroundLeptonFlips")
     key_addFlips_job = getKey("data_flips")
     self.jobOptions_addFlips[key_addFlips_job] = {
-      'inputFile' : self.outputFile_hadd_stage1_6,
+      'inputFile' : self.outputFile_hadd_stage1_6[key_hadd_stage1_6_job],
       'cfgFile_modified' : os.path.join(self.dirs[key_addFlips_dir][DKEY_CFGS], "addBackgroundLeptonFlips_cfg.py"),
       'outputFile' : os.path.join(self.dirs[key_addFlips_dir][DKEY_HIST], "addBackgroundLeptonFlips.root"),
       'logFile' : os.path.join(self.dirs[key_addFlips_dir][DKEY_LOGS], "addBackgroundLeptonFlips.log"),
