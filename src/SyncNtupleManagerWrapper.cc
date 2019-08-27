@@ -51,9 +51,12 @@ SyncNtupleManagerWrapper::~SyncNtupleManagerWrapper()
   {
     delete kv.second;
   }
-  outputFile->Close();
-  delete outputFile;
-  outputFile = nullptr;
+  if(outputFile)
+  {
+    outputFile->Close();
+    delete outputFile;
+    outputFile = nullptr;
+  }
 }
 
 std::map<std::string, SyncNtupleManager *>::iterator
