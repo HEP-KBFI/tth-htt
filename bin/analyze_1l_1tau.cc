@@ -952,7 +952,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
          objectMultiplicity.getNRecoLepton(kTight)             > 1 ||
          objectMultiplicity.getNRecoHadTau(tauId, tauLevel)    < 1  )
       {
-        if(! isDEBUG || run_lumi_eventSelector)
+        if(isDEBUG || run_lumi_eventSelector)
         {
           std::cout << "event " << eventInfo.str() << " FAILS preliminary object multiplicity cuts\n";
         }

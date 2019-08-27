@@ -900,7 +900,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       if(objectMultiplicity.getNRecoLepton(minLeptonSelection) < 3 ||
          objectMultiplicity.getNRecoLepton(kTight)             > 3  )
       {
-        if(! isDEBUG || run_lumi_eventSelector)
+        if(isDEBUG || run_lumi_eventSelector)
         {
           std::cout << "event " << eventInfo.str() << " FAILS preliminary object multiplicity cuts\n";
         }

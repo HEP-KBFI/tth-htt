@@ -969,7 +969,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
          objectMultiplicity.getNRecoLepton(kTight)             > 2 ||
          objectMultiplicity.getNRecoHadTau(tauId, tauLevel)    < 1  )
       {
-        if(! isDEBUG || run_lumi_eventSelector)
+        if(isDEBUG || run_lumi_eventSelector)
         {
           std::cout << "event " << eventInfo.str() << " FAILS preliminary object multiplicity cuts\n";
         }
