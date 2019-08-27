@@ -16,25 +16,32 @@ SyncNtupleManagerWrapper::SyncNtupleManagerWrapper(const edm::ParameterSet & cfg
   : outputFile(nullptr)
 {
   const std::string syncNtuple_output = cfg.getParameter<std::string>("output");
-  outputFile = new TFile(syncNtuple_output.c_str(), "recreate");
-
-  const edm::VParameterSet opts = cfg.getParameter<edm::VParameterSet>("options");
-  for(const edm::ParameterSet & opt: opts)
+  if(! syncNtuple_output.empty())
   {
-    const std::string treeName = opt.getParameter<std::string>("tree");
-    if(std::find(treeNames.begin(), treeNames.end(), treeName) != treeNames.end())
+    outputFile = new TFile(syncNtuple_output.c_str(), "recreate");
+
+    const edm::VParameterSet opts = cfg.getParameter<edm::VParameterSet>("options");
+    for(const edm::ParameterSet & opt: opts)
     {
-      throw cmsException(this, __func__, __LINE__) << "Duplicate sync tree name found: " << treeName;
+      const std::string treeName = opt.getParameter<std::string>("tree");
+      if(treeName.empty())
+      {
+        throw cmsException(this, __func__, __LINE__) << "Must provide a name for sync TTree";
+      }
+      if(std::find(treeNames.begin(), treeNames.end(), treeName) != treeNames.end())
+      {
+        throw cmsException(this, __func__, __LINE__) << "Duplicate sync tree name found: " << treeName;
+      }
+      treeNames.push_back(treeName);
+
+      const std::vector<std::string> genMatch = opt.getParameter<std::vector<std::string>>("genMatch");
+      genMatchers[treeName] = genMatch;
+
+      SyncNtupleManager * snm_part = new SyncNtupleManager(outputFile, treeName, genMatchCharge);
+      snm_part->initializeBranches();
+      snm_part->initializeHLTBranches(hltPaths);
+      managers[treeName] = snm_part;
     }
-    treeNames.push_back(treeName);
-
-    const std::vector<std::string> genMatch = opt.getParameter<std::vector<std::string>>("genMatch");
-    genMatchers[treeName] = genMatch;
-
-    SyncNtupleManager * snm_part = new SyncNtupleManager(outputFile, treeName, genMatchCharge);
-    snm_part->initializeBranches();
-    snm_part->initializeHLTBranches(hltPaths);
-    managers[treeName] = snm_part;
   }
 }
 
