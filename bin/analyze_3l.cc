@@ -821,7 +821,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       "jet3_pt", "jet3_eta", "jet3_phi", "jet3_E",
       "jet4_pt", "jet4_eta", "jet4_phi", "jet4_E",
       "sum_Lep_charge", "HadTop_pt", "res_HTT", "max_Lep_eta",
-      "massL", "massL3", "min_Deta_mostfwdJet_jet", "min_Deta_leadfwdJet_jet"
+      "massL", "massL3", "massLT", "min_Deta_mostfwdJet_jet", "min_Deta_leadfwdJet_jet"
     );
     bdt_filler -> register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "lep3_isTight", "hadtruth",
@@ -2107,8 +2107,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("HadTop_pt",      HadTop_pt_CSVsort4rd)
           ("res_HTT",        max_truth_HTT_CSVsort4rd)
           ("max_Lep_eta",    max_lep_eta)
-          ("massL",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.)
+          ("massLT",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.)
           ("massL3",          selLeptons.size() > 2 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4() + selLeptons[2]->p4(), met.pt(), met.phi())  : 0.)
+          ("massL",           massL(fakeableLeptons))
           ("has_SFOS",       hasSFOS)
           ("min_Deta_mostfwdJet_jet", min_Deta_mostfwdJet_jet)
           ("min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet)
