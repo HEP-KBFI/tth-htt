@@ -97,7 +97,7 @@ elif mode == "test":
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT_DY")
   hadTau_selection = "dR03mvaLoose"
-  hadTau_selection_relaxed = "dR03mvaVLoose"
+  hadTau_selection_relaxed = "dR03mvaLoose" #"dR03mvaVLoose"
   hadTau_charge_selections = [ "OS" ]
 
 elif mode == "sync":

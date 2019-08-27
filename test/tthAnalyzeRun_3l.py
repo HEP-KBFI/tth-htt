@@ -93,6 +93,8 @@ elif mode == "addMEM":
   MEMbranch = 'memObjects_3l_lepFakeable'
 elif mode == "forBDTtraining_beforeAddMEM":
   samples = load_samples(era, suffix = "BDT")
+  hadTau_selection = "dR03mvaLoose"
+  hadTau_selection_relaxed = "dR03mvaVLoose"
   chargeSumSelections = [ "OS" ]
 elif mode == "forBDTtraining_afterAddMEM":
   samples = load_samples(era, suffix = "BDT_addMEM_3l")
@@ -155,6 +157,9 @@ if __name__ == '__main__':
     hlt_filter                            = hlt_filter,
     use_home                              = use_home,
   )
+
+  if "forBDTtraining" in mode :
+    analysis.set_BDT_training()
 
   job_statistics = analysis.create()
   for job_type, num_jobs in job_statistics.items():
