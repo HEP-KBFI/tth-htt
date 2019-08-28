@@ -17086,7 +17086,7 @@ samples_2018["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upg
 
 samples_2018["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
+  ("sample_category",                 "TTWH"),
   ("process_name_specific",           "TTWH_ext1"),
   ("nof_files",                       1),
   ("nof_db_files",                    13),
@@ -17135,7 +17135,7 @@ samples_2018["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
 
 samples_2018["/TTZH_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
+  ("sample_category",                 "TTZH"),
   ("process_name_specific",           "TTZH_ext1"),
   ("nof_files",                       1),
   ("nof_db_files",                    15),

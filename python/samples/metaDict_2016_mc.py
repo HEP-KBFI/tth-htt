@@ -960,7 +960,7 @@ meta_dictionary["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv
 
 meta_dictionary["/TTWH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] =  OD([
   ("crab_string",           "2016v3_2019Jul23_TTWH_TuneCUETP8M2T4_13TeV-madgraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1"),
-  ("sample_category",       "Rares"),
+  ("sample_category",       "TTWH"),
   ("process_name_specific", "TTWH_ext1"),
   ("nof_db_events",         100000),
   ("nof_db_files",          19),
@@ -973,7 +973,7 @@ meta_dictionary["/TTWH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAO
 
 meta_dictionary["/TTZH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] =  OD([
   ("crab_string",           "2016v3_2019Jul23_TTZH_TuneCUETP8M2T4_13TeV-madgraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1"),
-  ("sample_category",       "Rares"),
+  ("sample_category",       "TTZH"),
   ("process_name_specific", "TTZH_ext1"),
   ("nof_db_events",         97800),
   ("nof_db_files",          25),

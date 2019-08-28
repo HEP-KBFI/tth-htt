@@ -741,7 +741,7 @@ meta_dictionary["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_
 
 meta_dictionary["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM"] =  OD([
   ("crab_string",           "2018_2019Jun27_TTWH_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2"),
-  ("sample_category",       "Rares"),
+  ("sample_category",       "TTWH"),
   ("process_name_specific", "TTWH_ext1"),
   ("nof_db_events",         200000),
   ("nof_db_files",          13),
@@ -754,7 +754,7 @@ meta_dictionary["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_
 
 meta_dictionary["/TTZH_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM"] =  OD([
   ("crab_string",           "2018_2019Jun14_TTZH_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2"),
-  ("sample_category",       "Rares"),
+  ("sample_category",       "TTZH"),
   ("process_name_specific", "TTZH_ext1"),
   ("nof_db_events",         200000),
   ("nof_db_files",          15),
