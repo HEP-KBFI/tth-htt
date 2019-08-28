@@ -173,22 +173,37 @@ class analyzeConfig_WZctrl(analyzeConfig):
     """
 
     for sample_name, sample_info in self.samples.items():
-      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+      if not sample_info["use_it"]:
         continue
+
       process_name = sample_info["process_name_specific"]
+      sample_category = sample_info["sample_category"]
+      is_mc = (sample_info["type"] == "mc")
+
+      logging.info("Building dictionaries for sample %s..." % process_name)
       for lepton_selection in self.lepton_selections:
         for lepton_frWeight in self.lepton_frWeights:
           if lepton_frWeight == "enabled" and not lepton_selection.startswith("Fakeable"):
             continue
+          if lepton_frWeight == "disabled" and not lepton_selection in [ "Tight" ]:
+            continue
           lepton_selection_and_frWeight = get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight)
-          central_or_shifts_extended = [ "" ]
-          central_or_shifts_extended.extend(self.central_or_shifts)
-          central_or_shifts_extended.extend([ "hadd", "addBackgrounds" ])
+          central_or_shift_extensions = ["", "hadd", "addBackgrounds"]
+          central_or_shifts_extended = central_or_shift_extensions + self.central_or_shifts
           for central_or_shift_or_dummy in central_or_shifts_extended:
             process_name_extended = [ process_name, "hadd" ]
             for process_name_or_dummy in process_name_extended:
               if central_or_shift_or_dummy in [ "hadd", "addBackgrounds" ] and process_name_or_dummy in [ "hadd" ]:
                 continue
+              if central_or_shift_or_dummy != "central" and central_or_shift_or_dummy not in central_or_shift_extensions:
+                isFR_shape_shift = (central_or_shift_or_dummy in systematics.FR_all)
+                if not ((lepton_selection == "Fakeable" and isFR_shape_shift) or lepton_selection == "Tight"):
+                  continue
+                if not is_mc and not isFR_shape_shift:
+                  continue
+                if not self.accept_central_or_shift(central_or_shift_or_dummy, sample_category, sample_name):
+                  continue
+
               key_dir = getKey(process_name_or_dummy, lepton_selection_and_frWeight, central_or_shift_or_dummy)
               for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_RLES, DKEY_SYNC ]:
                 initDict(self.dirs, [ key_dir, dir_type ])
@@ -265,28 +280,29 @@ class analyzeConfig_WZctrl(analyzeConfig):
         lepton_selection_and_frWeight = get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight)
 
         for sample_name, sample_info in self.samples.items():
-          if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+          if not sample_info["use_it"]:
             continue
           process_name = sample_info["process_name_specific"]
           logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
+          inputFileList = inputFileLists[sample_name]
 
           sample_category = sample_info["sample_category"]
           is_mc = (sample_info["type"] == "mc")
           is_signal = sample_category in self.signalProcs
 
           for central_or_shift in self.central_or_shifts:
-
-            inputFileList = inputFileLists[sample_name]
-            for jobId in inputFileList.keys():
-              if central_or_shift != "central":
-                isFR_shape_shift = (central_or_shift in systematics.FR_all)
-                if not ((lepton_selection == "Fakeable" and isFR_shape_shift) or lepton_selection == "Tight"):
-                  continue
-                if not is_mc and not isFR_shape_shift:
-                  continue
-
-              if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
+            
+            if central_or_shift != "central":
+              isFR_shape_shift = (central_or_shift in systematics.FR_all)
+              if not ((lepton_selection == "Fakeable" and isFR_shape_shift) or lepton_selection == "Tight"):
                 continue
+              if not is_mc and not isFR_shape_shift:
+                continue
+
+            if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
+              continue
+
+            for jobId in inputFileList.keys():
 
               # build config files for executing analysis code
               key_analyze_dir = getKey(process_name, lepton_selection_and_frWeight, central_or_shift)

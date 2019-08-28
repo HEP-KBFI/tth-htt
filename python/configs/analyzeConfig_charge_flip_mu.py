@@ -37,7 +37,7 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
       configDir             = configDir,
       outputDir             = outputDir,
       executable_analyze    = executable_analyze,
-      channel               = "charge_flip",
+      channel               = "charge_flip_mu",
       samples               = samples,
       jet_cleaning_by_index = jet_cleaning_by_index,
       gen_matching_by_index = gen_matching_by_index,

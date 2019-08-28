@@ -174,18 +174,27 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     """
 
     for sample_name, sample_info in self.samples.items():
-      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+      if not sample_info["use_it"]:
         continue
       process_name = sample_info["process_name_specific"]
+      sample_category = sample_info["sample_category"]
+      is_mc = (sample_info["type"] == "mc")
+
+      logging.info("Building dictionaries for sample %s..." % process_name)
       for charge_selection in self.charge_selections:
-        central_or_shifts_extended = [ "" ]
-        central_or_shifts_extended.extend(self.central_or_shifts)
-        central_or_shifts_extended.extend([ "hadd" ])
+        central_or_shift_extensions = ["", "hadd", "addBackgrounds"]
+        central_or_shifts_extended = central_or_shift_extensions + self.central_or_shifts
         for central_or_shift_or_dummy in central_or_shifts_extended:
           process_name_extended = [ process_name, "hadd" ]
           for process_name_or_dummy in process_name_extended:
             if central_or_shift_or_dummy in [ "hadd" ] and process_name_or_dummy in [ "hadd" ]:
               continue
+            if central_or_shift_or_dummy != "central" and central_or_shift_or_dummy not in central_or_shift_extensions:
+              if not is_mc:
+                continue
+              if not self.accept_central_or_shift(central_or_shift_or_dummy, sample_category, sample_name):
+                continue
+
             key_dir = getKey(process_name_or_dummy, charge_selection, central_or_shift_or_dummy)
             for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
               initDict(self.dirs, [ key_dir, dir_type ])
@@ -234,17 +243,18 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
     inputFileLists = {}
     for sample_name, sample_info in self.samples.items():
-      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+      if not sample_info["use_it"]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
       inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job)
 
     self.inputFileIds = {}
     for sample_name, sample_info in self.samples.items():
-      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+      if not sample_info["use_it"]:
         continue
 
       process_name = sample_info["process_name_specific"]
+      inputFileList = inputFileLists[sample_name]
 
       logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
 
@@ -253,17 +263,17 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
       for charge_selection in self.charge_selections:
         for central_or_shift in self.central_or_shifts:
+          
+          if central_or_shift != "central" and not is_mc:
+            continue
+          if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
+            continue
 
-          inputFileList = inputFileLists[sample_name]
+          # build config files for executing analysis code
+          key_analyze_dir = getKey(process_name, charge_selection, central_or_shift)
+
           for jobId in inputFileList.keys():
-            if central_or_shift != "central" and not is_mc:
-              continue
 
-            if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
-              continue
-
-            # build config files for executing analysis code
-            key_analyze_dir = getKey(process_name, charge_selection, central_or_shift)
             analyze_job_tuple = (process_name, charge_selection, central_or_shift, jobId)
             key_analyze_job = getKey(*analyze_job_tuple)
             ntupleFiles = inputFileList[jobId]
