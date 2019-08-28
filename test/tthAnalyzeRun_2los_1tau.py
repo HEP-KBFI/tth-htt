@@ -11,7 +11,7 @@ import getpass
 
 # E.g.: ./test/tthAnalyzeRun_2los_1tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'test' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -67,26 +67,6 @@ hadTau_selection = "dR03mvaLoose"
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-elif mode == "test":
-  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if not sample_info["sample_category"] in [
-      "signal",
-      "TTWH",
-      "TTZH",
-      "HH",
-      "ggH",
-      "qqH",
-      "VH",
-      #"EWK",
-      #"WW",
-      #"WZ",
-      #"ZZ",
-      "tHq",
-      "tHW"
-    ]:
-      sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")

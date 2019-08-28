@@ -12,7 +12,7 @@ import getpass
 
 # E.g.: ./test/tthAnalyzeRun_1l_1tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'test' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -66,28 +66,6 @@ hadTau_selection = "dR03mvaMedium"
 
 if mode == "default":
   samples = load_samples(era)
-  if "DY" in sample_info["process_name_specific"]:
-      sample_info["sample_category"] = "DY"
-elif mode == "test":
-  samples = load_samples(era)
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if not sample_info["sample_category"] in [
-      "signal",
-      "TTWH",
-      "TTZH",
-      "HH",
-      "ggH",
-      "qqH",
-      "VH",
-      #"EWK",
-      #"WW",
-      #"WZ",
-      #"ZZ",
-      "tHq",
-      "tHW"
-    ]:
-      sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT_DY")
   # CV: check if BDT training statistics is sufficient with nominal tau ID working point
