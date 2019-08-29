@@ -84,22 +84,15 @@ elif mode == "test":
       "ggH",
       "qqH",
       "VH",
-      "EWK",
-      "WW",
-      "WZ",
-      "ZZ",
       "tHq",
       "tHW"
     ]:
       sample_info["use_it"] = False
-    if "DY" in sample_info["process_name_specific"]:
-      sample_info["sample_category"] = "DY"
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT_DY")
   hadTau_selection = "dR03mvaLoose"
-  hadTau_selection_relaxed = "dR03mvaLoose" #"dR03mvaVLoose"
+  hadTau_selection_relaxed = "dR03mvaVLoose"
   hadTau_charge_selections = [ "OS" ]
-
 elif mode == "sync":
   samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
 else:
@@ -109,10 +102,11 @@ for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "2tau" ]
-  if sample_info["type"] == "data":
-    sample_info["use_it"] = sample_name.startswith("/Tau/")
-  if sample_name.startswith("/DY"):
-    sample_info["sample_category"] = "DY"
+  if mode == "default" :
+      if sample_info["type"] == "data":
+        sample_info["use_it"] = sample_name.startswith("/Tau/")
+      if sample_name.startswith("/DY"):
+        sample_info["sample_category"] = "DY"
 
 if __name__ == '__main__':
   logging.info(
