@@ -165,6 +165,23 @@ public:
     return *this;
   }
 
+  NtupleFillerBDT &
+  operator()(std::map<std::string, double> & tH_weight_map)
+  {
+    for(const auto & kv: tH_weight_map)
+    {
+      if(float_map_.count(kv.first))
+      {
+          float_map_[kv.first].setValue(
+          kv.second
+        );
+      }
+      else   throw std::invalid_argument(std::string("No such key: ") + kv.first);
+    }
+
+    return *this;
+  }
+
   void
   fill()
   {

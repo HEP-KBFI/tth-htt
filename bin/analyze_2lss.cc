@@ -862,6 +862,10 @@ int main(int argc, char* argv[])
       "mostFwdJet_eta", "mostFwdJet_pt", "mostFwdJet_phi", "mostFwdJet_E",
       "leadFwdJet_eta", "leadFwdJet_pt", "leadFwdJet_phi", "leadFwdJet_E"
     );
+    for(const std::string & evt_cat_str: evt_cat_strs)
+    {
+      bdt_filler->register_variable<float_type>(evt_cat_str);
+    }
     bdt_filler->register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "nLep", "nJetForward",
       "lep1_isTight", "lep2_isTight", "failsTightChargeCut",
@@ -2064,7 +2068,14 @@ int main(int argc, char* argv[])
 
       double lep1_genLepPt=( selLepton_lead->genLepton() != 0 ) ? selLepton_lead->genLepton()->pt() : 0.;
       double lep2_genLepPt=( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.;
-
+/*lep1_conePt = comp_lep1_conePt(*selLepton_lead)
+lep2_conePt = comp_lep1_conePt(*selLepton_sublead)
+nJetForward = selJetsForward.size()
+selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : 0
+selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : 0
+selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.
+met_LD
+deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4())*/
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",                selLepton_lead -> pt())
           ("lep1_conePt",            comp_lep1_conePt(*selLepton_lead))
@@ -2149,7 +2160,7 @@ int main(int argc, char* argv[])
           ("leadFwdJet_phi",      selJetsForward.size() > 0 ? selJetsForward[0] -> phi() : -1000)
           ("leadFwdJet_E",        selJetsForward.size() > 0 ? selJetsForward[0] -> p4().energy() : -1000)
           ("nJetForward",         selJetsForward.size())
-
+          (tH_weight_map)
         .fill()
       ;
     }
