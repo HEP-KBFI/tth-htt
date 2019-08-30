@@ -522,8 +522,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                         lepton_and_hadTau_genMatches = []
                         lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_nonfakes)
                         if sample_category in self.procsWithDecayModes :
-                          #X: this I leave as it was originaly, is it on purpose that we duplicate fakes and conversions to H processes?
-                          lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_fakes)
                           lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_Convs)
                         copy_genMatches = lepton_and_hadTau_genMatches
                       elif genMatch_category == "fake":
