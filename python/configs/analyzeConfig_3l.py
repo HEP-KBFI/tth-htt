@@ -140,7 +140,7 @@ class analyzeConfig_3l(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     samples_categories_MC = []
@@ -244,10 +244,10 @@ class analyzeConfig_3l(analyzeConfig):
                     continue
                   if not is_mc and not isFR_shape_shift:
                     continue
-  
+
                   if not self.accept_central_or_shift(central_or_shift_or_dummy, sample_category, sample_name):
                     continue
-                  
+
                 key_dir = getKey(process_name_or_dummy, lepton_selection_and_frWeight, chargeSumSelection, central_or_shift_or_dummy)
                 for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_RLES, DKEY_SYNC ]:
                   initDict(self.dirs, [ key_dir, dir_type ])
@@ -340,7 +340,7 @@ class analyzeConfig_3l(analyzeConfig):
             is_signal = sample_category in self.signalProcs
 
             for central_or_shift in self.central_or_shifts:
-              
+
               if central_or_shift != "central":
                 isFR_shape_shift = (central_or_shift in systematics.FR_all)
                 if not ((lepton_selection == "Fakeable" and chargeSumSelection == "OS" and isFR_shape_shift) or
@@ -358,7 +358,7 @@ class analyzeConfig_3l(analyzeConfig):
               key_analyze_dir = getKey(process_name, lepton_selection_and_frWeight, chargeSumSelection, central_or_shift)
 
               for jobId in inputFileList.keys():
-                
+
                 analyze_job_tuple = (process_name, lepton_selection_and_frWeight, chargeSumSelection, central_or_shift, jobId)
                 key_analyze_job = getKey(*analyze_job_tuple)
                 ntupleFiles = inputFileList[jobId]

@@ -144,7 +144,7 @@ class analyzeConfig_2lss(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares", "tHq", "tHW", "VH", "ggH", "qqH", "HH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "ggH", "qqH", "HH", "TTWH", "TTZH" ]
 
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
@@ -358,7 +358,7 @@ class analyzeConfig_2lss(analyzeConfig):
             is_mc = (sample_info["type"] == "mc")
 
             for central_or_shift in self.central_or_shifts:
-              
+
               if central_or_shift != "central":
                 isFR_shape_shift = (central_or_shift in systematics.FR_all)
                 if not ((lepton_selection == "Fakeable" and lepton_charge_selection == "SS" and isFR_shape_shift) or
@@ -371,7 +371,7 @@ class analyzeConfig_2lss(analyzeConfig):
                 continue
 
               logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (lepton_selection_and_frWeight, central_or_shift))
-              
+
               # build config files for executing analysis code
               key_analyze_dir = getKey(process_name, lepton_selection_and_frWeight, lepton_charge_selection, central_or_shift)
 

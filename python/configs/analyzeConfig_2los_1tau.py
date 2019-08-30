@@ -174,7 +174,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
@@ -283,7 +283,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
             continue
           if lepton_and_hadTau_frWeight == "disabled" and not lepton_and_hadTau_selection in [ "Tight", "forBDTtraining" ]:
             continue
-            
+
           lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
           central_or_shift_extensions = ["", "hadd", "addBackgrounds"]
           central_or_shifts_extended = central_or_shift_extensions + self.central_or_shifts
@@ -407,7 +407,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
           is_signal = sample_category in self.signalProcs
 
           for central_or_shift in self.central_or_shifts:
-            
+
             if central_or_shift != "central":
               isFR_shape_shift = (central_or_shift in systematics.FR_all)
               if not ((lepton_and_hadTau_selection == "Fakeable" and isFR_shape_shift) or lepton_and_hadTau_selection == "Tight"):

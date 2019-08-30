@@ -135,7 +135,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares", "DY",  "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "WZ", "ZZ", "Rares", "DY",  "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
       if sample_category == "signal" :  sample_category = "ttH"
@@ -268,7 +268,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
 
                 if not self.accept_central_or_shift(central_or_shift_or_dummy, sample_category, sample_name):
                   continue
-                
+
                 key_dir = getKey(process_name_or_dummy, hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift_or_dummy)
                 for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
                   initDict(self.dirs, [ key_dir, dir_type ])

@@ -154,7 +154,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "HH", "tHq", "tHW", "VH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "HH", "tHq", "tHW", "VH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
@@ -389,7 +389,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
             is_mc = (sample_info["type"] == "mc")
 
             for central_or_shift in self.central_or_shifts:
-              
+
               if central_or_shift != "central":
                 isFR_shape_shift = (central_or_shift in systematics.FR_all)
                 if not ((lepton_and_hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
@@ -407,7 +407,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
               key_analyze_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift)
 
               for jobId in inputFileList.keys():
-                
+
                 analyze_job_tuple = (process_name, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift, jobId)
                 key_analyze_job = getKey(*analyze_job_tuple)
                 ntupleFiles = inputFileList[jobId]

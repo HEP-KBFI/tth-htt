@@ -191,7 +191,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
 
-    self.nonfake_backgrounds = [  "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ] 
+    self.nonfake_backgrounds = [  "TT", "TTW", "TTWW", "TTZ", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ] 
 
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
@@ -444,7 +444,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
               is_signal = sample_category in self.signalProcs
 
               for central_or_shift in self.central_or_shifts:
-                
+
                 if central_or_shift != "central":
                   isFR_shape_shift = (central_or_shift in systematics.FR_all)
                   if not ((lepton_and_hadTau_selection == "Fakeable" and lepton_charge_selection == "SS" and isFR_shape_shift) or
