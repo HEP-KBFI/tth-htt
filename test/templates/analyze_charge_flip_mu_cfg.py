@@ -16,7 +16,7 @@ process.fwliteOutput = cms.PSet(
     fileName = cms.string('')
 )
 
-process.analyze_charge_flip = cms.PSet(
+process.analyze_charge_flip_mu = cms.PSet(
     treeName = cms.string('Events'),
 
     process = cms.string(''),
@@ -80,6 +80,7 @@ process.analyze_charge_flip = cms.PSet(
     selEventsFileName_output = cms.string(''),
     isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
+    useObjectMultiplicity = cms.bool(True),
 
     evtWeight = cms.PSet(
         apply = cms.bool(False),

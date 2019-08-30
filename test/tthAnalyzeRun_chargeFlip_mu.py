@@ -16,7 +16,7 @@ sys_choices      = [ 'full' ] + systematics.an_chargeFlip_mu_opts
 systematics.full = systematics.an_chargeFlip_mu
 
 parser = tthAnalyzeParser()
-parser.add_sys(sys_choices)
+parser.add_sys(sys_choices, default_choice = 'full')
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
@@ -59,7 +59,7 @@ for sample_name, sample_info in samples.items():
   if sample_info["use_it"] == False: continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1mu", "2mu" ]
-  if sample_info["process_name_specific"].startswith("DYJetsToLL"):
+  if sample_info["process_name_specific"].startswith("DY"):
     sample_info["sample_category"] = "DY"
   elif sample_info["process_name_specific"].startswith("TTTo") and sample_info["sample_category"] == "TT":
     sample_info["sample_category"] = "TTbar"

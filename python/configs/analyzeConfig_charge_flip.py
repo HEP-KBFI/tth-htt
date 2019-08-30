@@ -119,7 +119,9 @@ class analyzeConfig_charge_flip(analyzeConfig):
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"]:
         continue
+
       process_name = sample_info["process_name_specific"]
+      sample_category = sample_info["sample_category"]
       is_mc = (sample_info["type"] == "mc")
 
       logging.info("Building dictionaries for sample %s..." % process_name)
@@ -229,6 +231,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
               'leptonSelection'          : lepton_selection,
               'applyFakeRateWeights'     : "disabled",
               'central_or_shift'         : central_or_shift,
+              'useObjectMultiplicity'    : self.era in ['2018'],
             }
             self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 

@@ -529,7 +529,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                       'useNonNominal'            : self.use_nonnominal,
                       'fillGenEvtHistograms'     : True,
                       'syncGenMatch'             : syncGenMatch,
-                      'useObjectMultiplicity'    : self.do_sync,
+                      'useObjectMultiplicity'    : self.era in ['2018'],
                     }
                     self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_and_hadTau_selection)
 
