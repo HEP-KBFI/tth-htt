@@ -13,7 +13,7 @@ import numpy as np
 
 # E.g.: ./test/tthAnalyzeRun_1l_2tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'test' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -71,14 +71,6 @@ hadTau_selection = "dR03mvaMedium"
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-elif mode == "test":
-  samples = load_samples(era, suffix = "test")
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if not sample_info["process_name_specific"] in [
-      "THQ_ctcvcp", "ttHJetToNonbb_M125_amcatnlo"
-    ]:
-      sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")

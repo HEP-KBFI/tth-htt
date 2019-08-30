@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-08-08 21:00:32 with the following command:
+# file generated at 2019-08-28 00:22:16 with the following command:
 # find_samples.py -V -m python/samples/metaDict_2016_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2016_17Jul18.txt -p SingleElectron SingleMuon DoubleEG DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt -v 9_4_9 -r 2016 -C +17Jul2018 xDoubleEG/Run2016B-17Jul2018_ver1-v1 -c python/samples/sampleLocations_2016_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -47,11 +47,11 @@ meta_dictionary["/SingleElectron/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [276315, 276811]),
   ("golden_run_range",      [276315, 276811]),
-  ("comment",               "98.79%; status: VALID; size: 3.69TB; nevents: 148.17M; release: 9_4_9; last modified: 2018-07-26 02:01:33"),
+  ("comment",               "100.0%; status: VALID; size: 3.69TB; nevents: 148.17M; release: 9_4_9; last modified: 2018-07-26 02:01:33"),
 ])
 
 meta_dictionary["/SingleElectron/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Aug06_SingleElectron__Run2016E-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug07_SingleElectron__Run2016E-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016E_17Jul2018_v1"),
   ("nof_db_events",         117321545),
@@ -62,7 +62,7 @@ meta_dictionary["/SingleElectron/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [276831, 277420]),
   ("golden_run_range",      [276831, 277420]),
-  ("comment",               "99.21%; status: VALID; size: 3.06TB; nevents: 117.32M; release: 9_4_9; last modified: 2018-08-01 04:20:05"),
+  ("comment",               "100.0%; status: VALID; size: 3.06TB; nevents: 117.32M; release: 9_4_9; last modified: 2018-08-01 04:20:05"),
 ])
 
 meta_dictionary["/SingleElectron/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
@@ -171,7 +171,7 @@ meta_dictionary["/SingleMuon/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_SingleMuon__Run2016F-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug08_SingleMuon__Run2016F-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016F_17Jul2018_v1"),
   ("nof_db_events",         65489554),
@@ -182,7 +182,7 @@ meta_dictionary["/SingleMuon/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [277932, 278808]),
   ("golden_run_range",      [277981, 278808]),
-  ("comment",               "23.49%; status: VALID; size: 1.53TB; nevents: 65.49M; release: 9_4_9; last modified: 2018-08-05 00:22:02"),
+  ("comment",               "100.0%; status: VALID; size: 1.53TB; nevents: 65.49M; release: 9_4_9; last modified: 2018-08-05 00:22:02"),
 ])
 
 meta_dictionary["/SingleMuon/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
@@ -572,7 +572,7 @@ meta_dictionary["/Tau/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [276315, 276811]),
   ("golden_run_range",      [276315, 276811]),
-  ("comment",               "99.46%; status: VALID; size: 1.38TB; nevents: 56.83M; release: 9_4_9; last modified: 2018-08-01 04:37:28"),
+  ("comment",               "100.0%; status: VALID; size: 1.38TB; nevents: 56.83M; release: 9_4_9; last modified: 2018-08-01 04:37:28"),
 ])
 
 meta_dictionary["/Tau/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
@@ -602,7 +602,7 @@ meta_dictionary["/Tau/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [277932, 278808]),
   ("golden_run_range",      [277981, 278808]),
-  ("comment",               "99.49%; status: VALID; size: 1.06TB; nevents: 40.55M; release: 9_4_9; last modified: 2018-07-23 23:56:59"),
+  ("comment",               "100.0%; status: VALID; size: 1.06TB; nevents: 40.55M; release: 9_4_9; last modified: 2018-07-23 23:56:59"),
 ])
 
 meta_dictionary["/Tau/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
@@ -632,6 +632,6 @@ meta_dictionary["/Tau/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [281613, 284044]),
   ("golden_run_range",      [281613, 284044]),
-  ("comment",               "94.28%; status: VALID; size: 2.15TB; nevents: 76.76M; release: 9_4_9; last modified: 2018-07-23 23:50:46"),
+  ("comment",               "100.0%; status: VALID; size: 2.15TB; nevents: 76.76M; release: 9_4_9; last modified: 2018-07-23 23:50:46"),
 ])
 

@@ -13,7 +13,7 @@ import getpass
 # E.g.: ./test/tthAnalyzeRun_3l.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [
-  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM', "test"
+  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
 ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended

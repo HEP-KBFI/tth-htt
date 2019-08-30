@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-08-14 18:30:57 with the following command:
+# file generated at 2019-08-27 21:23:37 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017_nanoAOD.txt -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_nanoAOD.py -M
 
 samples_2017 = OD()
@@ -16794,7 +16794,7 @@ samples_2017["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2
   ("nof_db_events",                   9618000),
   ("fsize_local",                     28518590557), # 28.52GB, avg file size 294.01MB
   ("fsize_db",                        604098212165), # 604.10GB, avg file size 2.35GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        0.5071),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -16889,6 +16889,90 @@ samples_2017["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-P
     [
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/2017v2_2019Jul24_THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190724_012246"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ggH"),
+  ("process_name_specific",           "GluGluHToTauTau"),
+  ("nof_files",                       30),
+  ("nof_db_files",                    35),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 2921180),
+  ("nof_db_events",                   2921180),
+  ("fsize_local",                     3511000256), # 3.51GB, avg file size 117.03MB
+  ("fsize_db",                        121621260930), # 121.62GB, avg file size 3.47GB
+  ("use_it",                          True),
+  ("xsection",                        3.0469),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/GluGluHToTauTau_M125_13TeV_powheg_pythia8/2017v2_2019Jul24_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v2/190724_015215"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ggH"),
+  ("process_name_specific",           "GluGluHToTauTau_ext1"),
+  ("nof_files",                       93),
+  ("nof_db_files",                    169),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 9259000),
+  ("nof_db_events",                   9259000),
+  ("fsize_local",                     11116432795), # 11.12GB, avg file size 119.53MB
+  ("fsize_db",                        387946138466), # 387.95GB, avg file size 2.30GB
+  ("use_it",                          True),
+  ("xsection",                        3.0469),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/GluGluHToTauTau_M125_13TeV_powheg_pythia8/2017v2_2019Jul24_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/190724_015352"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17309,6 +17393,48 @@ samples_2017["/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIIFall17MiniAODv2-
     [
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Aug06/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/2017v2_2019Aug06_GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/190806_163122"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "qqH"),
+  ("process_name_specific",           "VBFHToTauTau"),
+  ("nof_files",                       30),
+  ("nof_db_files",                    39),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 2977152),
+  ("nof_db_events",                   2977152),
+  ("fsize_local",                     4510382021), # 4.51GB, avg file size 150.35MB
+  ("fsize_db",                        133660549317), # 133.66GB, avg file size 3.43GB
+  ("use_it",                          True),
+  ("xsection",                        0.2372),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jun22/VBFHToTauTau_M125_13TeV_powheg_pythia8/2017v2_2019Jun22_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/190622_174024"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17929,7 +18055,7 @@ samples_2017["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall
   ("fsize_local",                     13740127112), # 13.74GB, avg file size 269.41MB
   ("fsize_db",                        304322832014), # 304.32GB, avg file size 3.20GB
   ("use_it",                          True),
-  ("xsection",                        0.21675),
+  ("xsection",                        0.196),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -17971,7 +18097,7 @@ samples_2017["/TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8
   ("fsize_local",                     13509584529), # 13.51GB, avg file size 270.19MB
   ("fsize_db",                        301017438722), # 301.02GB, avg file size 2.47GB
   ("use_it",                          True),
-  ("xsection",                        0.21675),
+  ("xsection",                        0.196),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -18600,7 +18726,7 @@ samples_2017["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU201
   ("nof_db_events",                   9000000),
   ("fsize_local",                     18932495299), # 18.93GB, avg file size 205.79MB
   ("fsize_db",                        482042390765), # 482.04GB, avg file size 3.15GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        88.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -18642,7 +18768,7 @@ samples_2017["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniA
   ("nof_db_events",                   69155808),
   ("fsize_local",                     144838295268), # 144.84GB, avg file size 208.40MB
   ("fsize_db",                        3693271643807), # 3.69TB, avg file size 3.50GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        88.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -18684,7 +18810,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv
   ("nof_db_events",                   43732445),
   ("fsize_local",                     96046169118), # 96.05GB, avg file size 218.29MB
   ("fsize_db",                        2384692629872), # 2.38TB, avg file size 2.88GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        365.52),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -18726,7 +18852,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall
   ("nof_db_events",                   110195128),
   ("fsize_local",                     241532807500), # 241.53GB, avg file size 218.58MB
   ("fsize_db",                        6010271289488), # 6.01TB, avg file size 2.76GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        365.52),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -18768,7 +18894,7 @@ samples_2017["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU
   ("nof_db_events",                   41729120),
   ("fsize_local",                     93664685981), # 93.66GB, avg file size 223.54MB
   ("fsize_db",                        2307611725630), # 2.31TB, avg file size 3.47GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        377.85),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -18806,11 +18932,11 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
   ("nof_db_files",                    2021),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 130163352),
+  ("nof_tree_events",                 130262440),
   ("nof_db_events",                   130262440),
-  ("fsize_local",                     293356099993), # 293.36GB, avg file size 224.28MB
+  ("fsize_local",                     293579390953), # 293.58GB, avg file size 224.45MB
   ("fsize_db",                        7191138172968), # 7.19TB, avg file size 3.56GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        377.85),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -18822,7 +18948,7 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/2017v2_2019Jul24_TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/190724_014522"),
         ("selection", "*"),
-        ("blacklist", [1259]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -18852,7 +18978,7 @@ samples_2017["/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAO
   ("nof_db_events",                   28380110),
   ("fsize_local",                     58105783953), # 58.11GB, avg file size 203.17MB
   ("fsize_db",                        1574497543250), # 1.57TB, avg file size 2.62GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        88.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -18894,7 +19020,7 @@ samples_2017["/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFal
   ("nof_db_events",                   61947630),
   ("fsize_local",                     132215010232), # 132.22GB, avg file size 213.25MB
   ("fsize_db",                        3422466502202), # 3.42TB, avg file size 3.24GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        182.76),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -18936,7 +19062,7 @@ samples_2017["/TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8/RunII
   ("nof_db_events",                   56705550),
   ("fsize_local",                     121739553860), # 121.74GB, avg file size 213.20MB
   ("fsize_db",                        3215810423559), # 3.22TB, avg file size 2.46GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        182.76),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -18974,9 +19100,9 @@ samples_2017["/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU
   ("nof_db_files",                    2540),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 154181599),
+  ("nof_tree_events",                 154280331),
   ("nof_db_events",                   154280331),
-  ("fsize_local",                     363017745916), # 363.02GB, avg file size 234.51MB
+  ("fsize_local",                     363250407414), # 363.25GB, avg file size 234.66MB
   ("fsize_db",                        8610252714647), # 8.61TB, avg file size 3.39GB
   ("use_it",                          False),
   ("xsection",                        831.76),
@@ -18990,7 +19116,7 @@ samples_2017["/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/2017v2_2019Jul24_TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/190724_014728"),
         ("selection", "*"),
-        ("blacklist", [1194]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -19016,9 +19142,9 @@ samples_2017["/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2
   ("nof_db_files",                    260),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 7326239),
+  ("nof_tree_events",                 7925836),
   ("nof_db_events",                   8026103),
-  ("fsize_local",                     15903593681), # 15.90GB, avg file size 196.34MB
+  ("fsize_local",                     17203993260), # 17.20GB, avg file size 212.39MB
   ("fsize_db",                        448684514040), # 448.68GB, avg file size 1.73GB
   ("use_it",                          False),
   ("xsection",                        831.76),
@@ -19032,7 +19158,7 @@ samples_2017["/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/2017v2_2019Jul24_TTJets_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190724_015008"),
         ("selection", "*"),
-        ("blacklist", [3, 25, 29, 34, 58, 59, 80]),
+        ("blacklist", [25]),
       ]),
     ]
   ),
@@ -19470,132 +19596,6 @@ samples_2017["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17Min
   ]),
 ])
 
-samples_2017["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "GluGluHToTauTau"),
-  ("nof_files",                       30),
-  ("nof_db_files",                    35),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2921180),
-  ("nof_db_events",                   2921180),
-  ("fsize_local",                     3511000256), # 3.51GB, avg file size 117.03MB
-  ("fsize_db",                        121621260930), # 121.62GB, avg file size 3.47GB
-  ("use_it",                          True),
-  ("xsection",                        3.0469),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/GluGluHToTauTau_M125_13TeV_powheg_pythia8/2017v2_2019Jul24_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v2/190724_015215"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2017["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "GluGluHToTauTau_ext1"),
-  ("nof_files",                       93),
-  ("nof_db_files",                    169),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9259000),
-  ("nof_db_events",                   9259000),
-  ("fsize_local",                     11116432795), # 11.12GB, avg file size 119.53MB
-  ("fsize_db",                        387946138466), # 387.95GB, avg file size 2.30GB
-  ("use_it",                          True),
-  ("xsection",                        3.0469),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/GluGluHToTauTau_M125_13TeV_powheg_pythia8/2017v2_2019Jul24_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/190724_015352"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2017["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "VBFHToTauTau"),
-  ("nof_files",                       30),
-  ("nof_db_files",                    39),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2977152),
-  ("nof_db_events",                   2977152),
-  ("fsize_local",                     4510382021), # 4.51GB, avg file size 150.35MB
-  ("fsize_db",                        133660549317), # 133.66GB, avg file size 3.43GB
-  ("use_it",                          True),
-  ("xsection",                        0.2372),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jun22/VBFHToTauTau_M125_13TeV_powheg_pythia8/2017v2_2019Jun22_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/190622_174024"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
 samples_2017["/tZq_ll_4f_ckm_NLO_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "Rares"),
@@ -19766,7 +19766,7 @@ samples_2017["/TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv
 
 samples_2017["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
+  ("sample_category",                 "TTWH"),
   ("process_name_specific",           "TTWH"),
   ("nof_files",                       3),
   ("nof_db_files",                    5),
@@ -19808,7 +19808,7 @@ samples_2017["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAODv2-PU2017_1
 
 samples_2017["/TTZH_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
+  ("sample_category",                 "TTZH"),
   ("process_name_specific",           "TTZH"),
   ("nof_files",                       2),
   ("nof_db_files",                    7),
@@ -20402,9 +20402,9 @@ samples_2017["/DYJetsToLL_M-4to50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/
   ("nof_db_files",                    32),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 1968059),
+  ("nof_tree_events",                 2067660),
   ("nof_db_events",                   2067660),
-  ("fsize_local",                     4348591113), # 4.35GB, avg file size 207.08MB
+  ("fsize_local",                     4568597193), # 4.57GB, avg file size 217.55MB
   ("fsize_db",                        111643815539), # 111.64GB, avg file size 3.49GB
   ("use_it",                          False),
   ("xsection",                        6.72981),
@@ -20418,7 +20418,7 @@ samples_2017["/DYJetsToLL_M-4to50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/DYJetsToLL_M-4to50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/2017v2_2019Jul24_DYJetsToLL_M-4to50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190724_021128"),
         ("selection", "*"),
-        ("blacklist", [7]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -21326,9 +21326,9 @@ samples_2017["/DYJetsToLL_M-50_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("nof_db_files",                    183),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 6051051),
+  ("nof_tree_events",                 8344860),
   ("nof_db_events",                   8743640),
-  ("fsize_local",                     16530226229), # 16.53GB, avg file size 187.84MB
+  ("fsize_local",                     22797626781), # 22.80GB, avg file size 259.06MB
   ("fsize_db",                        535469359588), # 535.47GB, avg file size 2.93GB
   ("use_it",                          False),
   ("xsection",                        2.04208),
@@ -21342,7 +21342,7 @@ samples_2017["/DYJetsToLL_M-50_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8/Run
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Aug12/DYJetsToLL_M-50_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8/2017v2_2019Aug12_DYJetsToLL_M-50_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v/190812_143821"),
         ("selection", "*"),
-        ("blacklist", [5, 22, 24, 27, 28, 30, 31, 34, 35, 38, 39, 42, 44, 45, 46, 51, 55, 56, 59, 60, 67, 68, 69, 70, 74, 75, 76]),
+        ("blacklist", [42, 59, 60, 74]),
       ]),
     ]
   ),
@@ -22040,9 +22040,9 @@ samples_2017["/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFa
   ("nof_db_files",                    488),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 19932689),
+  ("nof_tree_events",                 20232741),
   ("nof_db_events",                   20466692),
-  ("fsize_local",                     52565824067), # 52.57GB, avg file size 256.42MB
+  ("fsize_local",                     53356908764), # 53.36GB, avg file size 260.28MB
   ("fsize_db",                        1227636244434), # 1.23TB, avg file size 2.52GB
   ("use_it",                          False),
   ("xsection",                        6.31517),
@@ -22056,7 +22056,7 @@ samples_2017["/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFa
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/2017v2_2019Jul24_WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190724_030414"),
         ("selection", "*"),
-        ("blacklist", [19, 58, 113, 174, 191]),
+        ("blacklist", [19, 58]),
       ]),
     ]
   ),
@@ -22124,9 +22124,9 @@ samples_2017["/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFa
   ("nof_db_files",                    616),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 20695404),
+  ("nof_tree_events",                 20795253),
   ("nof_db_events",                   21495421),
-  ("fsize_local",                     62314824296), # 62.31GB, avg file size 288.49MB
+  ("fsize_local",                     62615316342), # 62.62GB, avg file size 289.89MB
   ("fsize_db",                        1489610697179), # 1.49TB, avg file size 2.42GB
   ("use_it",                          False),
   ("xsection",                        0.00944087),
@@ -22140,7 +22140,7 @@ samples_2017["/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFa
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/2017v2_2019Jul24_WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/190724_030902"),
         ("selection", "*"),
-        ("blacklist", [42, 62, 73, 170, 173, 184, 201, 206]),
+        ("blacklist", [42, 62, 170, 173, 184, 201, 206]),
       ]),
     ]
   ),
@@ -22171,7 +22171,7 @@ samples_2017["/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
   ("fsize_local",                     2641153973), # 2.64GB, avg file size 125.77MB
   ("fsize_db",                        85721560743), # 85.72GB, avg file size 3.43GB
   ("use_it",                          True),
-  ("xsection",                        12.615),
+  ("xsection",                        12.2),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -22213,7 +22213,7 @@ samples_2017["/WWTo2L2Nu_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFal
   ("fsize_local",                     2655594245), # 2.66GB, avg file size 126.46MB
   ("fsize_db",                        85800202496), # 85.80GB, avg file size 3.43GB
   ("use_it",                          True),
-  ("xsection",                        12.615),
+  ("xsection",                        12.2),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -22254,7 +22254,7 @@ samples_2017["/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
   ("nof_db_events",                   8782525),
   ("fsize_local",                     12165031597), # 12.17GB, avg file size 136.69MB
   ("fsize_db",                        386260476875), # 386.26GB, avg file size 3.17GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        52.162),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -22296,7 +22296,7 @@ samples_2017["/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD
   ("nof_db_events",                   9994191),
   ("fsize_local",                     13796690231), # 13.80GB, avg file size 136.60MB
   ("fsize_db",                        429884785891), # 429.88GB, avg file size 3.38GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        52.162),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -22338,7 +22338,7 @@ samples_2017["/WWToLNuQQ_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFal
   ("nof_db_events",                   8785360),
   ("fsize_local",                     12237486463), # 12.24GB, avg file size 137.50MB
   ("fsize_db",                        386842370187), # 386.84GB, avg file size 3.87GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        52.162),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -22422,7 +22422,7 @@ samples_2017["/WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-
   ("nof_db_events",                   2000000),
   ("fsize_local",                     2808729583), # 2.81GB, avg file size 133.75MB
   ("fsize_db",                        89197790862), # 89.20GB, avg file size 3.72GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        53.923),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -22464,7 +22464,7 @@ samples_2017["/WWTo4Q_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17
   ("nof_db_events",                   1976360),
   ("fsize_local",                     2788817270), # 2.79GB, avg file size 139.44MB
   ("fsize_db",                        88368465560), # 88.37GB, avg file size 3.40GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        53.923),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -22507,7 +22507,7 @@ samples_2017["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-
   ("fsize_local",                     15017353998), # 15.02GB, avg file size 135.29MB
   ("fsize_db",                        478392232798), # 478.39GB, avg file size 3.65GB
   ("use_it",                          True),
-  ("xsection",                        5.07234),
+  ("xsection",                        4.43),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -22549,7 +22549,7 @@ samples_2017["/WZTo3LNu_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr20
   ("fsize_local",                     1247407049), # 1.25GB, avg file size 124.74MB
   ("fsize_db",                        42009768335), # 42.01GB, avg file size 1.02GB
   ("use_it",                          False),
-  ("xsection",                        5.07234),
+  ("xsection",                        4.43),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -22922,11 +22922,11 @@ samples_2017["/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-
   ("nof_db_files",                    406),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 25787580),
+  ("nof_tree_events",                 27582164),
   ("nof_db_events",                   27582164),
-  ("fsize_local",                     40582557999), # 40.58GB, avg file size 146.51MB
+  ("fsize_local",                     43407580839), # 43.41GB, avg file size 156.71MB
   ("fsize_db",                        1286368112175), # 1.29TB, avg file size 3.17GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        6.37968),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -22938,7 +22938,7 @@ samples_2017["/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Aug12/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2017v2_2019Aug12_WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190812_143638"),
         ("selection", "*"),
-        ("blacklist", [17, 18, 29, 45, 49, 57, 74, 78, 89, 92, 132, 139, 150, 163, 178, 213, 259, 268]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -23011,7 +23011,7 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018
   ("fsize_local",                     8606468057), # 8.61GB, avg file size 121.22MB
   ("fsize_db",                        292257995604), # 292.26GB, avg file size 3.65GB
   ("use_it",                          True),
-  ("xsection",                        1.325),
+  ("xsection",                        1.256),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23053,7 +23053,7 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018
   ("fsize_local",                     120658382981), # 120.66GB, avg file size 122.50MB
   ("fsize_db",                        4014158215850), # 4.01TB, avg file size 3.56GB
   ("use_it",                          True),
-  ("xsection",                        1.325),
+  ("xsection",                        1.256),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23095,7 +23095,7 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018
   ("fsize_local",                     107728225767), # 107.73GB, avg file size 121.73MB
   ("fsize_db",                        3665584889110), # 3.67TB, avg file size 2.26GB
   ("use_it",                          True),
-  ("xsection",                        1.325),
+  ("xsection",                        1.256),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23136,7 +23136,7 @@ samples_2017["/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2
   ("nof_db_events",                   8744768),
   ("fsize_local",                     11564692616), # 11.56GB, avg file size 131.42MB
   ("fsize_db",                        380491063113), # 380.49GB, avg file size 3.40GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        0.6008),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -23178,7 +23178,7 @@ samples_2017["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-
   ("nof_db_events",                   27840918),
   ("fsize_local",                     43847773878), # 43.85GB, avg file size 156.60MB
   ("fsize_db",                        1296656277482), # 1.30TB, avg file size 3.17GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        3.7),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -23930,9 +23930,9 @@ samples_2017["/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mi
   ("nof_db_files",                    342),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 20675268),
+  ("nof_tree_events",                 20774848),
   ("nof_db_events",                   20774848),
-  ("fsize_local",                     39614301416), # 39.61GB, avg file size 189.54MB
+  ("fsize_local",                     39805904071), # 39.81GB, avg file size 190.46MB
   ("fsize_db",                        984472671147), # 984.47GB, avg file size 2.88GB
   ("use_it",                          False),
   ("xsection",                        21195.2),
@@ -23946,7 +23946,7 @@ samples_2017["/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17Mi
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2017v2_2019Jul24_QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190724_035532"),
         ("selection", "*"),
-        ("blacklist", [98]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -24140,9 +24140,9 @@ samples_2017["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17M
   ("nof_db_files",                    389),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 15022520),
+  ("nof_tree_events",                 15720252),
   ("nof_db_events",                   17114527),
-  ("fsize_local",                     42330231842), # 42.33GB, avg file size 246.11MB
+  ("fsize_local",                     44296288720), # 44.30GB, avg file size 257.54MB
   ("fsize_db",                        1061424382303), # 1.06TB, avg file size 2.73GB
   ("use_it",                          False),
   ("xsection",                        3.27549),
@@ -24156,7 +24156,7 @@ samples_2017["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17M
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2017v2_2019Jul24_QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190724_040238"),
         ("selection", "*"),
-        ("blacklist", [9, 37, 40, 45, 55, 58, 68, 88, 91, 93, 95, 111, 121, 123, 125, 126, 129, 131, 135, 151, 161]),
+        ("blacklist", [9, 40, 45, 55, 58, 68, 93, 95, 111, 126, 129, 135, 151, 161]),
       ]),
     ]
   ),
@@ -24182,9 +24182,9 @@ samples_2017["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17M
   ("nof_db_files",                    257),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 7412826),
+  ("nof_tree_events",                 9105652),
   ("nof_db_events",                   11596693),
-  ("fsize_local",                     21344401054), # 21.34GB, avg file size 182.43MB
+  ("fsize_local",                     26219628997), # 26.22GB, avg file size 224.10MB
   ("fsize_db",                        741261028289), # 741.26GB, avg file size 2.88GB
   ("use_it",                          False),
   ("xsection",                        1.079),
@@ -24198,7 +24198,7 @@ samples_2017["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17M
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Jul24/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2017v2_2019Jul24_QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190724_040445"),
         ("selection", "*"),
-        ("blacklist", [2, 4, 6, 7, 8, 11, 14, 15, 17, 18, 19, 25, 26, 29, 31, 32, 34, 40, 41, 43, 44, 45, 46, 47, 51, 52, 54, 58, 62, 64, 65, 66, 72, 75, 78, 82, 83, 86, 89, 92, 95, 106]),
+        ("blacklist", [2, 6, 7, 8, 14, 15, 25, 26, 29, 34, 41, 43, 45, 46, 47, 52, 58, 62, 66, 72, 75, 78, 86, 92, 106]),
       ]),
     ]
   ),
@@ -24224,7 +24224,7 @@ samples_2017["sum_events"] = [
   [ 'TTTT',                                            'TTTT_PSweights',                                   ],
   [ 'DY3JetsToLL_M-50',                                'DY3JetsToLL_M-50_ext1',                            ],
   [ 'ST_t-channel_top_4f_inclusiveDecays',             'ST_t-channel_top_4f_inclusiveDecays_PSweights',    ],
-  [ 'DYJetsToLL_M-4to50_HT-100to200',                  'DYJetsToLL_M-4to50_HT-100to200_ext1',              ],
+  [ 'GluGluHToTauTau',                                 'GluGluHToTauTau_ext1',                             ],
   [ 'WWToLNuQQ',                                       'WWToLNuQQ_ext1',                                  'WWToLNuQQ_PSweights_ext1',                         ],
   [ 'TTToHadronic',                                    'TTToHadronic_PSweights',                           ],
   [ 'TTWJetsToLNu',                                    'TTWJetsToLNu_PSweights',                           ],
@@ -24236,7 +24236,6 @@ samples_2017["sum_events"] = [
   [ 'DYJetsToLL_M50_HT200to400',                       'DYJetsToLL_M50_HT200to400_ext1',                   ],
   [ 'DYJetsToLL_M-4to50_HT-600toInf',                  'DYJetsToLL_M-4to50_HT-600toInf_ext1',              ],
   [ 'WWTo4Q',                                          'WWTo4Q_PSweights_ext1',                            ],
-  [ 'GluGluHToTauTau',                                 'GluGluHToTauTau_ext1',                             ],
   [ 'VBFHToGG_M125',                                   'VBFHToGG_M125_PSWeights_ext1',                     ],
   [ 'DY2JetsToLL_M-50',                                'DY2JetsToLL_M-50_ext1',                            ],
   [ 'TTZToLL_M10',                                     'TTZToLL_M10_PSweights',                            ],
@@ -24256,5 +24255,6 @@ samples_2017["sum_events"] = [
   [ 'DYJetsToLL_M50_HT400to600',                       'DYJetsToLL_M50_HT400to600_ext1',                   ],
   [ 'DYJetsToLL_M-50',                                 'DYJetsToLL_M-50_ext1',                             ],
   [ 'DYJetsToLL_M-50_amcatnloFXFX',                    'DYJetsToLL_M-50_amcatnloFXFX_ext1',                ],
+  [ 'DYJetsToLL_M-4to50_HT-100to200',                  'DYJetsToLL_M-4to50_HT-100to200_ext1',              ],
 ]
 

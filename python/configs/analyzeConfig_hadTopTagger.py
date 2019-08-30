@@ -77,7 +77,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
     """
 
     for sample_name, sample_info in self.samples.items():
-      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+      if not sample_info["use_it"]:
         continue
       process_name = sample_info["process_name_specific"]
       key_dir = getKey(process_name)
@@ -118,13 +118,13 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
 
     inputFileLists = {}
     for sample_name, sample_info in self.samples.items():
-      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+      if not sample_info["use_it"]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
       inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job)
 
     for sample_name, sample_info in self.samples.items():
-      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+      if not sample_info["use_it"]:
         continue
       process_name = sample_info["process_name_specific"]
       logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
