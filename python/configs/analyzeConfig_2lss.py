@@ -144,9 +144,8 @@ class analyzeConfig_2lss(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares", "tHq", "tHW", "VH", "ggH", "qqH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares", "tHq", "tHW", "VH", "ggH", "qqH", "HH", "TTWH", "TTZH" ]
 
-    #self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "Convs", "data_fakes", "fakes_mc", "data_flips", "flips_mc" ]
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
       if sample_category == "signal" :  sample_category = "ttH"
@@ -165,7 +164,7 @@ class analyzeConfig_2lss(analyzeConfig):
               samples_categories_MC.append("%s_%s" % (sample_category, decayMode))
             else:
               samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
-    self.prep_dcard_processesToCopy = samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc", "data_flips", "flips_mc"  ]
+    self.prep_dcard_processesToCopy = ["data_obs"] + samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc", "data_flips", "flips_mc"  ]
     self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "TTZH", "TTWH" ] + [ "Convs", "data_fakes", "data_flips" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
@@ -559,7 +558,6 @@ class analyzeConfig_2lss(analyzeConfig):
                   processes_input_base.append("%s_%s" % (sample_category, decayMode))
                 else:
                   processes_input_base.append("%s_%s_%s" % (sample_category, coupling, decayMode))
-
 
           # sum fake background contributions for the total of all MC samples
           # input processes: TT1l0g1j, TT0l1g1j, TT0l0g2j; ...

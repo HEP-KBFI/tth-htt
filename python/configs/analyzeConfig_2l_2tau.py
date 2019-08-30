@@ -205,10 +205,10 @@ class analyzeConfig_2l_2tau(analyzeConfig):
               samples_categories_MC.append("%s_%s" % (sample_category, decayMode))
             else:
               samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
-    self.prep_dcard_processesToCopy = samples_categories_MC + [ "data_fakes", "fakes_mc", "data_obs" ]
+    self.prep_dcard_processesToCopy = ["data_obs"] + samples_categories_MC + [ "data_fakes", "fakes_mc", "data_obs" ]
     self.histogramDir_prep_dcard = "2l_2tau_sumOS_Tight"
     self.histogramDir_prep_dcard_SS = "2l_2tau_sumSS_Tight"
-    self.make_plots_backgrounds = [  "tHq", "tHW" ] + [ "Convs", "data_fakes" ] # "TTW", "TTZ", "TTWW", "EWK", "Rares",
+    self.make_plots_backgrounds = [  "tHq", "tHW" ] + [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "Convs", "data_fakes" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_2l_2tau_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_2l_2tau_cfg.py") #TODO
 

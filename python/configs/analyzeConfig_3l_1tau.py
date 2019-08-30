@@ -186,7 +186,6 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
-    #self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "Convs", "data_fakes", "fakes_mc" ]
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
       if sample_category == "signal" :  sample_category = "ttH"
@@ -205,6 +204,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
               samples_categories_MC.append("%s_%s" % (sample_category, decayMode))
             else:
               samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
+    self.prep_dcard_processesToCopy = ["data_obs"] + samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc" ]
     self.histogramDir_prep_dcard = "3l_1tau_OS_lepTight_hadTauTight"
     self.histogramDir_prep_dcard_SS = "3l_1tau_SS_lepTight_hadTauTight"
     self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ]

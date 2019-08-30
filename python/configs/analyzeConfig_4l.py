@@ -160,7 +160,7 @@ class analyzeConfig_4l(analyzeConfig):
               samples_categories_MC.append("%s_%s" % (sample_category, decayMode))
             else:
               samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
-    self.prep_dcard_processesToCopy = samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc", "data_obs" ]
+    self.prep_dcard_processesToCopy = ["data_obs"] + samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc", "data_obs" ]
     self.histogramDir_prep_dcard = "4l_OS_Tight"
     self.histogramDir_prep_dcard_SS = "4l_SS_Tight"
     self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ]
