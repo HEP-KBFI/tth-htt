@@ -402,7 +402,7 @@ class analyzeConfig_ZZctrl(analyzeConfig):
                   'apply_hlt_filter'         : self.hlt_filter,
                   'syncGenMatch'             : syncGenMatch,
                   'useNonNominal'            : self.use_nonnominal,
-                  'useObjectMultiplicity'    : self.do_sync,
+                  'useObjectMultiplicity'    : self.era in ['2018'],
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)
 
