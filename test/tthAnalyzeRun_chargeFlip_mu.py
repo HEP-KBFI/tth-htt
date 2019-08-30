@@ -16,7 +16,7 @@ sys_choices      = [ 'full' ] + systematics.an_chargeFlip_mu_opts
 systematics.full = systematics.an_chargeFlip_mu
 
 parser = tthAnalyzeParser()
-parser.add_sys(sys_choices)
+parser.add_sys(sys_choices, default_choice = 'full')
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
