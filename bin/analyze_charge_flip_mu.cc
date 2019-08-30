@@ -339,10 +339,10 @@ int main(int argc, char* argv[])
   std::string charge_and_leptonSelectionSS = Form("%s_%s", "SS", leptonSelection_string.data());
   std::string charge_and_leptonSelectionOS = Form("%s_%s", "OS", leptonSelection_string.data());
   MuonHistManager preselMuonHistManagerSS(makeHistManager_cfg(process_string,
-    Form("charge_flip_%s/presel/muons", charge_and_leptonSelectionSS.data()), era_string, central_or_shift));
+    Form("charge_flip_%s/presel/muons", charge_and_leptonSelectionSS.data()), era_string, central_or_shift, "allHistograms"));
   preselMuonHistManagerSS.bookHistograms(fs);
   MuonHistManager preselMuonHistManagerOS(makeHistManager_cfg(process_string,
-    Form("charge_flip_%s/presel/muons", charge_and_leptonSelectionOS.data()), era_string, central_or_shift));
+    Form("charge_flip_%s/presel/muons", charge_and_leptonSelectionOS.data()), era_string, central_or_shift, "allHistograms"));
   preselMuonHistManagerOS.bookHistograms(fs);
 
   struct selHistManagerType
@@ -1245,10 +1245,15 @@ int main(int argc, char* argv[])
         assert(gp0->pt() >= gp1->pt());
         if (gp0->pt() >= 10 && gp0->pt() < 25) stLeadPtGen = "L";
         else if (gp0->pt() >= 25 && gp0->pt() < 50) stLeadPtGen = "M";
-        else if (gp0->pt() > 50) stLeadPtGen = "H";
+        else if (gp0->pt() >= 50) stLeadPtGen = "H";
+        else{
+          std::cout << "PT<10 " << gp0->pt() << " " << gp1->pt() << std::endl;
+          stLeadPtGen = "L";
+          //assert(0);
+        }
         if (gp1->pt() >= 10 && gp1->pt() < 25) stSubPtGen = "L";
         else if (gp1->pt() >= 25 && gp1->pt() < 50) stSubPtGen = "M";
-        else if (gp1->pt() > 50) stSubPtGen = "H";
+        else if (gp1->pt() >= 50) stSubPtGen = "H";
         else{
           std::cout << "PT<10 " << gp0->pt() << " " << gp1->pt() << std::endl; 
           stSubPtGen = "L";
@@ -1267,7 +1272,7 @@ int main(int argc, char* argv[])
         }
         std::string categoryGen = Form("%s_%s%s", stEtaGen.data(), stLeadPtGen.data(), stSubPtGen.data());
         std::string charge_catGen = ( isCharge_SS ) ? "SS" : "OS";
-        histos_2gen[charge_catGen][categoryGen.data()][process_string]->Fill(mass_ll, evtWeight);
+        histos_2gen[charge_catGen][categoryGen][process_string]->Fill(mass_ll, evtWeight);
         histos_2gen[charge_catGen]["total"][process_string]->Fill(mass_ll, evtWeight);
       }
     }
