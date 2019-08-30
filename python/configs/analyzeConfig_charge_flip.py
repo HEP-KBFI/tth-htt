@@ -119,7 +119,9 @@ class analyzeConfig_charge_flip(analyzeConfig):
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"]:
         continue
+
       process_name = sample_info["process_name_specific"]
+      sample_category = sample_info["sample_category"]
       is_mc = (sample_info["type"] == "mc")
 
       logging.info("Building dictionaries for sample %s..." % process_name)
