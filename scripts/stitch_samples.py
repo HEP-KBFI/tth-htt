@@ -742,7 +742,7 @@ parser.add_argument('-o', '--output',
 )
 parser.add_argument('-w', '--do-wjet-parts',
   dest = 'do_wjet_parts', action = 'store_true', default = False,
-  help = 'R|Enable verbose output',
+  help = 'R|Stitch W+jets samples split in half',
 )
 args = parser.parse_args()
 
