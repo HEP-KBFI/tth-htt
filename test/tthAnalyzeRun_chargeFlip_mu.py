@@ -59,7 +59,7 @@ for sample_name, sample_info in samples.items():
   if sample_info["use_it"] == False: continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1mu", "2mu" ]
-  if sample_info["process_name_specific"].startswith("DYJetsToLL"):
+  if sample_info["process_name_specific"].startswith("DY"):
     sample_info["sample_category"] = "DY"
   elif sample_info["process_name_specific"].startswith("TTTo") and sample_info["sample_category"] == "TT":
     sample_info["sample_category"] = "TTbar"
