@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
-  const bool isMC_VH = process_string == "VH";
+  const bool isMC_VH = process_string == "VH" || process_string == "ggH" || process_string == "qqH";
   const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
 
@@ -768,21 +768,6 @@ int main(int argc, char* argv[])
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
 
 //--- declare histograms
-  struct preselHistManagerType
-  {
-    ElectronHistManager* electrons_;
-    MuonHistManager* muons_;
-    HadTauHistManager* hadTaus_;
-    JetHistManager* jets_;
-    JetHistManager* BJets_loose_;
-    JetHistManager* BJets_medium_;
-    MEtHistManager* met_;
-    MEtFilterHistManager* metFilters_;
-    EvtHistManager_2los_1tau* evt_;
-    EvtYieldHistManager* evtYield_;
-  };
-  typedef std::map<int, preselHistManagerType*> int_to_preselHistManagerMap;
-  std::map<int, int_to_preselHistManagerMap> preselHistManagers;
   struct selHistManagerType
   {
     ElectronHistManager* electrons_;
@@ -831,42 +816,6 @@ int main(int argc, char* argv[])
       int idxLepton = leptonGenMatch_definition->idx_;
       int idxHadTau = hadTauGenMatch_definition->idx_;
 
-      preselHistManagerType* preselHistManager = new preselHistManagerType();
-      preselHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/presel/electrons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
-      preselHistManager->electrons_->bookHistograms(fs);
-      preselHistManager->muons_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/presel/muons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
-      preselHistManager->muons_->bookHistograms(fs);
-      preselHistManager->hadTaus_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/presel/hadTaus", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
-      preselHistManager->hadTaus_->bookHistograms(fs);
-      preselHistManager->jets_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/presel/jets", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
-      preselHistManager->jets_->bookHistograms(fs);
-      preselHistManager->BJets_loose_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/presel/BJets_loose", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
-      preselHistManager->BJets_loose_->bookHistograms(fs);
-      preselHistManager->BJets_medium_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/presel/BJets_medium", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
-      preselHistManager->BJets_medium_->bookHistograms(fs);
-      preselHistManager->met_ = new MEtHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/presel/met", histogramDir.data()), era_string, central_or_shift));
-      preselHistManager->met_->bookHistograms(fs);
-      preselHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/presel/metFilters", histogramDir.data()), era_string, central_or_shift));
-      preselHistManager->metFilters_->bookHistograms(fs);
-      preselHistManager->evt_ = new EvtHistManager_2los_1tau(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/presel/evt", histogramDir.data()), era_string, central_or_shift));
-      preselHistManager->evt_->bookHistograms(fs);
-      edm::ParameterSet cfg_EvtYieldHistManager_presel = makeHistManager_cfg(process_and_genMatch,
-        Form("%s/presel/evtYield", histogramDir.data()), era_string, central_or_shift, "allHistograms");
-      cfg_EvtYieldHistManager_presel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
-      cfg_EvtYieldHistManager_presel.addParameter<bool>("isMC", isMC);
-      preselHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_presel);
-      preselHistManager->evtYield_->bookHistograms(fs);
-      preselHistManagers[idxLepton][idxHadTau] = preselHistManager;
-
       selHistManagerType* selHistManager = new selHistManagerType();
       selHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/electrons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
@@ -913,9 +862,12 @@ int main(int argc, char* argv[])
 
       for(const std::string & evt_cat_str: evt_cat_strs)
       {
+        std::string proc0 = process_string;
+        if ( process_string == "signal") proc0 = "ttH";
+        if ( process_string == "signal_ctcvcp" ) proc0 = "ttH_ctcvcp";
         const std::string process_string_new = evt_cat_str == default_cat_str ?
-          process_string + "_" :
-          process_string + "_" + evt_cat_str + "_"
+          proc0 :
+          proc0 + evt_cat_str
         ;
         const std::string process_and_genMatchName = boost::replace_all_copy(
           process_and_genMatch, process_string, process_string_new
@@ -1506,36 +1458,6 @@ int main(int argc, char* argv[])
     const RecoMEt met = metReader->read();
     const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptonsFull, fakeableHadTausFull, selJets);
     const double met_LD = compMEt_LD(met.p4(), mht_p4);
-
-    const RecoLepton* preselLepton_OS = 0;
-    //const RecoLepton* preselLepton_SS = 0;
-    if ( preselLepton_lead->charge()*selHadTau->charge() < 0. ) {
-      preselLepton_OS = preselLepton_lead;
-      //preselLepton_SS = preselLepton_sublead;
-    } else if ( preselLepton_sublead->charge()*selHadTau->charge() < 0. ) {
-      preselLepton_OS = preselLepton_sublead;
-      //preselLepton_SS = preselLepton_lead;
-    }
-    double mTauTauVis_presel = ( preselLepton_OS ) ? (preselLepton_OS->p4() + selHadTau->p4()).mass() : -1.;
-
-//--- fill histograms with events passing preselection
-    preselHistManagerType* preselHistManager = preselHistManagers[idxPreselLepton_genMatch][idxSelHadTau_genMatch];
-    assert(preselHistManager != 0);
-    preselHistManager->electrons_->fillHistograms(preselElectrons, 1.);
-    preselHistManager->muons_->fillHistograms(preselMuons, 1.);
-    preselHistManager->hadTaus_->fillHistograms(selHadTaus, 1.);
-    preselHistManager->jets_->fillHistograms(selJets, 1.);
-    preselHistManager->BJets_loose_->fillHistograms(selBJets_loose, 1.);
-    preselHistManager->BJets_medium_->fillHistograms(selBJets_medium, 1.);
-    preselHistManager->met_->fillHistograms(met, mht_p4, met_LD, 1.);
-    preselHistManager->metFilters_->fillHistograms(metFilters, 1.);
-    preselHistManager->evt_->fillHistograms(
-      preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
-      selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      -1., -1., -1., -1., -1., -1.,
-      mTauTauVis_presel, -1.,-1.,  -1., -1.,
-      1.);
-    preselHistManager->evtYield_->fillHistograms(eventInfo, 1.);
 
 //--- apply final event selection
     // require exactly two leptons passing tight selection criteria of final event selection
