@@ -167,7 +167,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "DY", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK",  "WZ", "ZZ", "Rares", "DY", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
@@ -402,7 +402,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
             is_mc = (sample_info["type"] == "mc")
 
             for central_or_shift in self.central_or_shifts:
-              
+
               if central_or_shift != "central":
                 isFR_shape_shift = (central_or_shift in systematics.FR_all)
                 if not ((lepton_and_hadTau_selection == "Fakeable" and isFR_shape_shift) or lepton_and_hadTau_selection == "Tight"):
@@ -419,7 +419,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
               key_analyze_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, central_or_shift)
 
               for jobId in inputFileList.keys():
-                
+
                 analyze_job_tuple = (process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, central_or_shift, jobId)
                 key_analyze_job = getKey(*analyze_job_tuple)
                 ntupleFiles = inputFileList[jobId]
@@ -553,11 +553,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
                         lepton_and_hadTau_genMatches = []
                         lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_nonfakes)
                         if sample_category in self.procsWithDecayModes :
-                          #X: this I leave as it was originaly, is it on purpose that we duplicate fakes and conversions to H processes?
-                          # everything that is done for ttH I do to all H processes, they should be treated equally
-                          lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_flips)
                           lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_Convs)
-                          lepton_and_hadTau_genMatches.extend(self.lepton_and_hadTau_genMatches_fakes)
                         copy_genMatches = lepton_and_hadTau_genMatches
                       elif genMatch_category == "fake":
                         copy_genMatches = self.lepton_and_hadTau_genMatches_fakes
