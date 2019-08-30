@@ -509,6 +509,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'triggers_e_cfg'           : "leptonFR_triggers['{}']['{}']".format(self.era, 'e'),
             'lep_mva_cut_e'            : float(self.lep_mva_cut_e),
             'lep_mva_cut_mu'           : float(self.lep_mva_cut_mu),
+            'useObjectMultiplicity'    : self.era in ['2018'],
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 

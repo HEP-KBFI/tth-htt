@@ -83,6 +83,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
     isDEBUG = cms.bool(False),
     applyMETFilters = cms.bool(True),
     hasLHE = cms.bool(True),
+    useObjectMultiplicity = cms.bool(True),
 
     evtWeight = cms.PSet(
         apply = cms.bool(False),

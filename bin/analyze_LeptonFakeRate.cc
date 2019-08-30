@@ -10,6 +10,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterReader.h" // MEtFilterReader
+#include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicity.h" // ObjectMultiplicity
+#include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicityReader.h" // ObjectMultiplicityReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
@@ -470,6 +472,7 @@ main(int argc,
   const int era = get_era(era_string);
   const bool isMC    = cfg_analyze.getParameter<bool>("isMC");
   const bool hasLHE  = cfg_analyze.getParameter<bool>("hasLHE");
+  const bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
 
   const std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   const double lumiScale           = process_string != "data_obs" ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
@@ -658,6 +661,13 @@ main(int argc,
   }
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree->registerReader(&eventInfoReader);
+
+  ObjectMultiplicity objectMultiplicity;
+  ObjectMultiplicityReader objectMultiplicityReader(&objectMultiplicity);
+  if(useObjectMultiplicity)
+  {
+    inputTree -> registerReader(&objectMultiplicityReader);
+  }
 
   std::vector<hltPath_LeptonFakeRate *> triggers_all;
   triggers_all.insert(triggers_all.end(), triggers_e.begin(), triggers_e.end());
@@ -1007,6 +1017,18 @@ main(int argc,
       if(inputTree -> isOpen())
       {
         std::cout << "input File = " << inputTree -> getCurrentFileName() << '\n';
+      }
+    }
+
+    if(useObjectMultiplicity)
+    {
+      if(objectMultiplicity.getNRecoLepton(kLoose) != 1)
+      {
+        if(isDEBUG || run_lumi_eventSelector)
+        {
+          std::cout << "event " << eventInfo.str() << " FAILS preliminary object multiplicity cuts\n";
+        }
+        continue;
       }
     }
 
