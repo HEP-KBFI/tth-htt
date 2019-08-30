@@ -79,10 +79,6 @@ elif mode == "test":
       "ggH",
       "qqH",
       "VH",
-      #"EWK",
-      #"WW",
-      #"WZ",
-      #"ZZ",
       "tHq",
       "tHW"
     ]:
@@ -139,13 +135,13 @@ if __name__ == '__main__':
     executable_addFakes       = "addBackgroundLeptonFakes",
     histograms_to_fit         = {
       "EventCounter"                              : {},
-      "numJets"                                   : {},
+      #"numJets"                                   : {},
       "mvaDiscr_2lss"                             : {},
       "mvaOutput_2los_1tau_ttbar"                 : {},
-      "mvaOutput_2los_1tau_SUM"                   : {},
+      #"mvaOutput_2los_1tau_SUM"                   : {},
       "mvaDiscr_2los_1tau"                        : {},
       "mTauTauVis"                                : {},
-      "mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var" : {},
+      #"mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var" : {},
     },
     select_rle_output         = True,
     dry_run                   = dry_run,

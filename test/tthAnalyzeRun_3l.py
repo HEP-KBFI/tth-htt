@@ -80,10 +80,6 @@ elif mode == "test":
       "ggH",
       "qqH",
       "VH",
-      "EWK",
-      "WW",
-      "WZ",
-      "ZZ",
       "tHq",
       "tHW"
     ]:
