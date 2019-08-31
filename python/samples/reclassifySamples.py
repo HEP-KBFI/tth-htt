@@ -30,11 +30,12 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton, samples_era_
       sample_info["has_LHE"] = False
 
     if sample_info["process_name_specific"].startswith('signal') and 'hh' in sample_info["process_name_specific"]:
-      if is_nonresonant(sample_info["sample_category"], require_sm = True):
+      if is_nonresonant(sample_info["sample_category"]) and 'node_sm' in sample_info["process_name_specific"]:
         sample_info["use_it"] = True
         sample_info["sample_category"] = "HH"
         sample_info["xsection"] *= 0.03345 # HH processes are normalized to 1 pb -> change it to the SM XS
       else:
-        sample_info["use_it"] = False
+        # remove the HH sample for safety reasons
+        del samples[sample_name]
 
   return samples
