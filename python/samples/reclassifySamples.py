@@ -36,3 +36,5 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton, samples_era_
         sample_info["xsection"] *= 0.03345 # HH processes are normalized to 1 pb -> change it to the SM XS
       else:
         sample_info["use_it"] = False
+
+  return samples
