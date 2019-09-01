@@ -3,9 +3,9 @@ from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2018 import samples_201
 bdt_samples = [
   "ttHToNonbb_M125_powheg",
   "THQ_ctcvcp",
-  "THW_ctcvcp"
-  "TTZJets_LO",
-  "TTWJets_LO",
+  "THW_ctcvcp",
+  "TTZJets_LO_ext1",
+  "TTWJets_LO_ext1",
   "TTTo2L2Nu",
   "TTToSemiLeptonic",
   "TTToHadronic",
