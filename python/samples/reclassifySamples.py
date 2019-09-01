@@ -4,17 +4,21 @@ import collections
 import itertools
 import copy
 
-def reclassifySamples(samples_era_base, samples_era_hh_multilepton, samples_era_hh_bbww):
+def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, samples_era_hh_bbww = None):
   sum_events_base = copy.deepcopy(samples_era_base['sum_events'])
-  sum_events_hh_multilepton = copy.deepcopy(samples_era_hh_multilepton['sum_events'])
-  sum_events_hh_bbww = copy.deepcopy(samples_era_hh_bbww['sum_events'])
+  sum_events_hh_multilepton = copy.deepcopy(samples_era_hh_multilepton['sum_events']) if samples_era_hh_multilepton else []
+  sum_events_hh_bbww = copy.deepcopy(samples_era_hh_bbww['sum_events']) if samples_era_hh_bbww else []
 
   del samples_era_base['sum_events']
-  del samples_era_hh_multilepton['sum_events']
-  del samples_era_hh_bbww['sum_events']
+  if samples_era_hh_multilepton:
+    del samples_era_hh_multilepton['sum_events']
+  if samples_era_hh_bbww:
+    del samples_era_hh_bbww['sum_events']
 
   samples = collections.OrderedDict(itertools.chain(
-    samples_era_base.items(), samples_era_hh_multilepton.items(), samples_era_hh_bbww.items()
+    samples_era_base.items(),
+    samples_era_hh_multilepton.items() if samples_era_hh_multilepton else [],
+    samples_era_hh_bbww.items() if samples_era_hh_bbww else [],
   ))
 
   samples['sum_events'] = sum_events_base + sum_events_hh_multilepton + sum_events_hh_bbww
