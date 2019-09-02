@@ -87,16 +87,16 @@ for sample_name, sample_info in samples.items():
   if era == "2016":
     if sample_name.startswith('/SingleElectron'):
       # SingleElectron excluded since no 1e triggers used
+      #TODO verify claim
       sample_info["use_it"] = False
   elif era == "2017":
     if sample_name.startswith(('/DoubleEG/Run', '/SingleElectron/Run2017B')):
       # DoubleEG excluded since no 2e triggers used
       # SingleElectron B run excluded since no useful triggers present in that dataset
       sample_info["use_it"] = False
-  elif era == "2018":
-    if sample_name.startswith('/DoubleEG/Run'):
-      # DoubleEG excluded since no 2e triggers used
-      sample_info["use_it"] = False
+
+  if sample_info["sample_category"] == "HH":
+    sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.info(
