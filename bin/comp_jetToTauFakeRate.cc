@@ -236,7 +236,7 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'absEtaBins' !!\n";  
   vdouble ptBins = cfg_comp.getParameter<vdouble>("ptBins");
   TArrayD ptBins_array = convertToTArrayD(ptBins);
-  vint decayModes = cfg_comp.getParameter<vint>("decaModes");
+  vint decayModes = cfg_comp.getParameter<vint>("decayModes");
   if ( decayModes.size() < 1 ) throw cms::Exception("comp_jetToTauFakeRate") 
     << "Invalid Configuration parameter 'decayModes' !!\n";
   

@@ -104,13 +104,6 @@ class analyzeConfig_4l(analyzeConfig):
     self.hadTauVeto_selection_part2 = hadTauVeto_selection
     self.applyFakeRateWeights = applyFakeRateWeights
     run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
-    if self.era not in [ '2016', '2017', '2018' ]:
-      logging.warning('mcClosure for lepton FR not possible for era %s' % self.era)
-      run_mcClosure = False
-    if run_mcClosure:
-      # Run MC closure jobs only if the analysis is run w/ (at least some) systematic uncertainties
-      # self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_all" ]) #TODO
-      pass
 
     self.lepton_genMatches = [ "4l0g0j", "3l1g0j", "3l0g1j", "2l2g0j", "2l1g1j", "2l0g2j",
                                "1l3g0j", "1l2g1j", "1l1g2j", "1l0g3j", "0l4g0j", "0l3g1j",
@@ -131,8 +124,10 @@ class analyzeConfig_4l(analyzeConfig):
           self.lepton_genMatches_fakes.append(lepton_genMatch)
       if run_mcClosure:
         self.lepton_selections.extend([ "Fakeable_mcClosure_e", "Fakeable_mcClosure_m" ])
+      self.central_or_shifts_fr = systematics.FRe_shape + systematics.FRm_shape
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
+    self.pruneSystematics()
 
     self.chargeSumSelections = chargeSumSelections
 
@@ -238,9 +233,11 @@ class analyzeConfig_4l(analyzeConfig):
                 if central_or_shift_or_dummy in [ "hadd", "addBackgrounds" ] and process_name_or_dummy in [ "hadd" ]:
                   continue
                 if central_or_shift_or_dummy != "central" and central_or_shift_or_dummy not in central_or_shift_extensions:
-                  isFR_shape_shift = (central_or_shift_or_dummy in systematics.FR_all)
+                  isFR_shape_shift = (central_or_shift_or_dummy in self.central_or_shifts_fr)
                   if not ((lepton_selection == "Fakeable" and chargeSumSelection == "OS" and isFR_shape_shift) or
                           (lepton_selection == "Tight"    and chargeSumSelection == "OS")):
+                    continue
+                  if isFR_shape_shift and lepton_selection == "Tight":
                     continue
                   if not is_mc and not isFR_shape_shift:
                     continue
@@ -342,9 +339,11 @@ class analyzeConfig_4l(analyzeConfig):
             for central_or_shift in self.central_or_shifts:
 
               if central_or_shift != "central":
-                isFR_shape_shift = (central_or_shift in systematics.FR_all)
+                isFR_shape_shift = (central_or_shift in self.central_or_shifts_fr)
                 if not ((lepton_selection == "Fakeable" and chargeSumSelection == "OS" and isFR_shape_shift) or
                         (lepton_selection == "Tight"    and chargeSumSelection == "OS")):
+                  continue
+                if isFR_shape_shift and lepton_selection == "Tight":
                   continue
                 if not is_mc and not isFR_shape_shift:
                   continue

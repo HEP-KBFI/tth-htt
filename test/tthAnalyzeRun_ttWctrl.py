@@ -14,7 +14,7 @@ import getpass
 
 mode_choices     = [ 'default', 'sync', 'sync_wMEM' ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts
-systematics.full = systematics.an_common
+systematics.full = systematics.an_extended
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)

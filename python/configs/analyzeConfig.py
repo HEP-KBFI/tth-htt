@@ -190,6 +190,7 @@ class analyzeConfig(object):
         if len(self.central_or_shifts) > 1:
             self.central_or_shifts.remove('central')
             self.central_or_shifts = [ 'central' ] + self.central_or_shifts
+        self.central_or_shifts_fr = []
         #------------------------------------------------------------------------
         self.era = era
         self.do_l1prefiring = self.era != "2018"
@@ -855,6 +856,17 @@ class analyzeConfig(object):
           ])
 
         return lines
+
+    def pruneSystematics(self):
+        assert(self.central_or_shifts_fr)
+        central_or_shifts_fr_remove = [
+            central_or_shift for central_or_shift in systematics.FR_all if central_or_shift not in self.central_or_shifts_fr
+        ]
+        if central_or_shifts_fr_remove:
+            logging.warning("Disabling the following systematics: {}".format(', '.join(central_or_shifts_fr_remove)))
+            self.central_or_shifts = [
+               central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shifts_fr_remove
+            ]
 
     def createCfg_copyHistograms(self, jobOptions):
         """Create python configuration file for the copyHistograms executable (split the ROOT files produced by hadd_stage1 into separate ROOT files, one for each event category)

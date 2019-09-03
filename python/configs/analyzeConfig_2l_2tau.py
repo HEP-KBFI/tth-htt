@@ -113,13 +113,6 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     self.lepton_charge_selections = lepton_charge_selections
     self.hadTau_charge_selections = hadTau_charge_selections
     run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
-    if self.era not in [ '2016', '2017', '2018' ]:
-      logging.warning('mcClosure for lepton FR not possible for era %s' % self.era)
-      run_mcClosure = False
-    if run_mcClosure:
-      # Run MC closure jobs only if the analysis is run w/ (at least some) systematic uncertainties
-      #self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_all" ]) #TODO
-      pass
 
     self.lepton_genMatches = [ "2l0g0j", "1l1g0j", "1l0g1j", "0l2g0j", "0l1g1j", "0l0g2j" ]
     self.hadTau_genMatches = [ "2t0e0m0j", "1t1e0m0j", "1t0e1m0j", "1t0e0m1j", "0t2e0m0j", "0t1e1m0j", "0t1e0m1j", "0t0e2m0j", "0t0e1m1j", "0t0e0m2j" ]
@@ -145,6 +138,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
             self.lepton_and_hadTau_genMatches_fakes.append(lepton_and_hadTau_genMatch)
       if run_mcClosure:
         self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_e", "Fakeable_mcClosure_m", "Fakeable_mcClosure_t" ])
+      self.central_or_shifts_fr = systematics.FR_all
     elif applyFakeRateWeights == "2lepton":
       self.apply_leptonGenMatching = True
       self.apply_hadTauGenMatching = True
@@ -163,6 +157,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
             self.lepton_and_hadTau_genMatches_fakes.append(lepton_and_hadTau_genMatch)
       if run_mcClosure:
         self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_e", "Fakeable_mcClosure_m" ])
+      # in this regime data-to-MC SFs of jet-to-tau FR are applied and therefore the relevant systematics have to be preserved
+      self.central_or_shifts_fr = systematics.FR_all
     elif applyFakeRateWeights == "2tau":
       self.apply_leptonGenMatching = True
       self.apply_hadTauGenMatching = True
@@ -176,8 +172,10 @@ class analyzeConfig_2l_2tau(analyzeConfig):
             self.lepton_and_hadTau_genMatches_fakes.append(hadTau_genMatch)
       if run_mcClosure:
         self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_t" ])
+      self.central_or_shifts_fr = systematics.FR_t
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
+    self.pruneSystematics()
 
     self.chargeSumSelections = chargeSumSelections
 
@@ -317,9 +315,13 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                     if central_or_shift_or_dummy in [ "hadd", "addBackgrounds" ] and process_name_or_dummy in [ "hadd" ]:
                       continue
                     if central_or_shift_or_dummy != "central" and central_or_shift_or_dummy not in central_or_shift_extensions:
-                      isFR_shape_shift = (central_or_shift_or_dummy in systematics.FR_all)
+                      isFR_shape_shift = (central_or_shift_or_dummy in self.central_or_shifts_fr)
                       if not ((lepton_and_hadTau_selection == "Fakeable" and chargeSumSelection == "OS" and isFR_shape_shift) or
                               (lepton_and_hadTau_selection == "Tight"    and chargeSumSelection == "OS")):
+                        continue
+                      if isFR_shape_shift and lepton_and_hadTau_selection == "Tight" and \
+                         not (self.applyFakeRateWeights == "2lepton" and central_or_shift_or_dummy in systematics.FR_t and is_mc):
+                        # If the FRs are applied only to the leptons, the tau FR is compensated with data-to-MC SF, even in the SR
                         continue
                       if not is_mc and not isFR_shape_shift:
                         continue
@@ -440,9 +442,13 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                 for central_or_shift in self.central_or_shifts:
 
                   if central_or_shift != "central":
-                    isFR_shape_shift = (central_or_shift in systematics.FR_all)
+                    isFR_shape_shift = (central_or_shift in self.central_or_shifts_fr)
                     if not ((lepton_and_hadTau_selection == "Fakeable" and chargeSumSelection == "OS" and isFR_shape_shift) or
                             (lepton_and_hadTau_selection == "Tight"    and chargeSumSelection == "OS")):
+                      continue
+                    if isFR_shape_shift and lepton_and_hadTau_selection == "Tight" and \
+                       not (self.applyFakeRateWeights == "2lepton" and central_or_shift in systematics.FR_t and is_mc):
+                      # If the FRs are applied only to the leptons, the tau FR is compensated with data-to-MC SF, even in the SR
                       continue
                     if not is_mc and not isFR_shape_shift:
                       continue
