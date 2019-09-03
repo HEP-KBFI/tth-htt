@@ -343,8 +343,14 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
   def addToMakefile_backgrounds_from_data(self, lines_makefile):
-    self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_hadd_stage1", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds)
-    self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds_sum")
+    ## --- OLD LINES -- ##
+    #self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_hadd_stage1", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds)
+    #self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds_sum")
+    #self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_LeptonFakeRate", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_LeptonFakeRate, self.jobOptions_addBackgrounds_LeptonFakeRate)
+    #self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_Convs_LeptonFakeRate", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
+    ## --- NEW LINES --- ##
+    self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_hadd_stage1")
+    self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds)
     self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_LeptonFakeRate", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_LeptonFakeRate, self.jobOptions_addBackgrounds_LeptonFakeRate)
     self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_Convs_LeptonFakeRate", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
 

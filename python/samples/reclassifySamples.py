@@ -42,4 +42,9 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
         # remove the HH sample for safety reasons
         del samples[sample_name]
 
+    # disable Tau PD by default -- to avoid double-counting the data events in all analysis channels but 0l+2tau
+    # where the PD is the only one enabled
+    if sample_name.startswith('/Tau/'):
+      sample_info["use_it"] = False
+
   return samples

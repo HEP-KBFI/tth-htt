@@ -63,6 +63,8 @@ for sample_name, sample_info in samples.items():
     sample_info["triggers"] = [ "1e", "1mu", "1e1mu" ]
   if sample_name.startswith(("/DoubleMuon/", "/DoubleEG/", "/Tau/")) and sample_name.find("PromptReco") == -1:
       sample_info["use_it"] = False
+  if sample_info["sample_category"] == "HH":
+    sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.info(
