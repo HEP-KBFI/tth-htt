@@ -961,7 +961,7 @@ int main(int argc, char* argv[])
       }
     }
     cutFlowTable.update("object multiplicity");
-    cutFlowHistManager->fillHistograms("object multiplicity", lumiScale);
+    if (!FullSyst) cutFlowHistManager->fillHistograms("object multiplicity", lumiScale);
 
 //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
