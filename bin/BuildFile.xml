@@ -325,6 +325,7 @@
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
 <bin file="makePlots.cc" name="makePlots">
+  <use   name="libpng"/>
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
