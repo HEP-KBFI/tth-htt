@@ -794,8 +794,8 @@ class analyzeConfig_3l(analyzeConfig):
 
     logging.info("Creating Makefile")
     lines_makefile = []
-    #self.addToMakefile_analyze(lines_makefile)
-    #self.addToMakefile_hadd_stage1(lines_makefile)
+    self.addToMakefile_analyze(lines_makefile)
+    self.addToMakefile_hadd_stage1(lines_makefile)
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
