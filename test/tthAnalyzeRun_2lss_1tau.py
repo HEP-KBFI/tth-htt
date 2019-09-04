@@ -30,6 +30,7 @@ parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
+parser.add_sideband()
 args = parser.parse_args()
 
 # Common arguments
@@ -55,6 +56,7 @@ files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
+sideband          = args.sideband
 
 # Use the arguments
 central_or_shifts = []
@@ -69,27 +71,19 @@ gen_matching_by_index = (gen_matching == 'by_index')
 
 MEMbranch                = ''
 lepton_charge_selections = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
-chargeSumSelections      = [ "OS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
 hadTau_selection         = "dR03mvaLoose"
+
+if sideband == 'disabled':
+  chargeSumSelections = [ "OS" ]
+elif sideband == 'enabled':
+  chargeSumSelections = [ "OS", "SS" ]
+elif sideband == 'only':
+  chargeSumSelections = [ "SS" ]
+else:
+  raise ValueError("Invalid choice for the sideband: %s" % sideband)
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-elif mode == "test":
-  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if not sample_info["sample_category"] in [
-      "signal",
-      "TTWH",
-      "TTZH",
-      "HH",
-      "ggH",
-      "qqH",
-      "VH",
-      "tHq",
-      "tHW"
-    ]:
-      sample_info["use_it"] = False
 elif mode == "addMEM":
   samples = load_samples(era, suffix = "addMEM_preselected_2lss1tau" if use_preselected else "addMEM_2lss1tau")
   MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)

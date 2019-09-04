@@ -136,6 +136,13 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Analysis type (choices: %s)' % tthAnalyzeParser.cat(modes),
     )
 
+  def add_sideband(self):
+    self.add_argument('-B', '--sideband',
+      type = str, dest = 'sideband', metavar = 'choice', default = 'disabled', required = False,
+      choices = [ 'disabled', 'enabled', 'only' ],
+      help = 'R|Sideband choice',
+    )
+
   def add_sys(self, sys_choices, default_choice = 'central'):
     self.add_argument('-s', '--systematics',
       type = str, nargs = '+', dest = 'systematics', metavar = 'mode', choices = sys_choices, default = [ default_choice ],

@@ -26,6 +26,7 @@ parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
+parser.add_sideband()
 args = parser.parse_args()
 
 # Common arguments
@@ -50,6 +51,7 @@ files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
+sideband          = args.sideband
 
 # Use the arguments
 central_or_shifts = []
@@ -62,13 +64,19 @@ lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
-chargeSumSelections = [ "OS", "SS" ]
+if sideband == 'disabled':
+  chargeSumSelections = [ "OS" ]
+elif sideband == 'enabled':
+  chargeSumSelections = [ "OS", "SS" ]
+elif sideband == 'only':
+  chargeSumSelections = [ "SS" ]
+else:
+  raise ValueError("Invalid choice for the sideband: %s" % sideband)
 
 if mode == "default":
   samples = load_samples(era)
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = 'BDT')
-  chargeSumSelections = [ "OS" ]
 elif mode == "sync":
   samples = load_samples(era, suffix = 'sync' if use_nonnominal else 'sync_nom')
 else:
