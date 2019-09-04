@@ -156,7 +156,12 @@ Data_to_MC_CorrectionInterface_2017::getSF_hadTauID_and_Iso() const
   {
     if(hadTau_genPdgId_[idxHadTau] == 15)
     {
-      sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau]);
+      switch(tauIDSF_option_)
+      {
+        case TauIDSFsys::central:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau]);         break;
+        case TauIDSFsys::shiftUp:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Up");   break;
+        case TauIDSFsys::shiftDown: sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Down"); break;
+      }
     }
   }
   return sf;

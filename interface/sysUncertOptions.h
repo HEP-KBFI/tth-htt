@@ -118,6 +118,12 @@ enum class FRmt
   shiftUp, shiftDown,
 };
 
+enum class TauIDSFsys
+{
+  central,
+  shiftUp, shiftDown,
+};
+
 enum class TriggerSFsys
 {
   central,
@@ -213,6 +219,9 @@ getEToTauFR_option(const std::string & central_or_shift);
 
 FRmt
 getMuToTauFR_option(const std::string & central_or_shift);
+
+TauIDSFsys
+getTauIDSFsys_option(const std::string & central_or_shift);
 
 TriggerSFsys
 getTriggerSF_option(const std::string & central_or_shift);

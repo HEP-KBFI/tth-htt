@@ -551,6 +551,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                 return False
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):     return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):     return False
+      if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel:                return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False):

@@ -112,6 +112,8 @@ protected:
   TauID hadTauId_;
   std::string tauIDSF_str_;
   std::string tauIDSF_level_str_;
+  TauIDSFsys tauIDSF_option_;
+
   int hadTauSelection_antiElectron_[4];
   int hadTauSelection_antiMuon_[4];
   FRet eToTauFakeRate_option_;

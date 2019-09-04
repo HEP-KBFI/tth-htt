@@ -15,6 +15,7 @@
 
 Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const edm::ParameterSet & cfg)
   : hadTauSelection_(-1)
+  , tauIDSF_option_(TauIDSFsys::central)
   , eToTauFakeRate_option_(FRet::central)
   , muToTauFakeRate_option_(FRmt::central)
   , triggerSF_option_(TriggerSFsys::central)
@@ -73,6 +74,7 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const e
   eToTauFakeRate_option_ = getEToTauFR_option(central_or_shift);
   muToTauFakeRate_option_ = getMuToTauFR_option(central_or_shift);
   triggerSF_option_ = getTriggerSF_option(central_or_shift);
+  tauIDSF_option_ = getTauIDSFsys_option(central_or_shift);
 
   if(hadTauId_ == TauID::DeepTau2017v2VSjet ||
      hadTauId_ == TauID::MVAoldDM2017v2     ||
