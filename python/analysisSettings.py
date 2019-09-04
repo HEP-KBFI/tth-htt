@@ -225,8 +225,8 @@ class systematics(object):
 
   an_leptonFR        =    central +  JES +  JER           + UnclusteredEn
   an_leptonFR_opts   = [ "central", "JES", "JER",          "UnclusteredEn" ]
-  an_jetToTauFR      =    central +  JES         + tauES
-  an_jetToTauFR_opts = [ "central", "JES", "JER",          "UnclusteredEn" ]
+  an_jetToTauFR      =    central +  JES         + tauES                   + tauIDSF
+  an_jetToTauFR_opts = [ "central", "JES", "JER",          "UnclusteredEn", "tauIDSF" ]
   an_addMEM          =    central +  JES +  JER +  tauES +  UnclusteredEn
   an_addMEM_opts     = [ "central", "JES", "JER", "tauES", "UnclusteredEn" ]
 
