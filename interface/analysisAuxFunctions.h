@@ -233,6 +233,9 @@ get_era(const std::string & eraString);
 std::string
 get_era(int era);
 
+TauID
+get_tau_id_enum(const std::string & tauId_str);
+
 int
 get_tau_id_wp_int(const std::string & tauId_str);
 

@@ -124,15 +124,22 @@ get_era(int era)
   }
 }
 
-int
-get_tau_id_wp_int(const std::string & tauId_str)
+TauID
+get_tau_id_enum(const std::string & tauId_str)
 {
   const std::string wp_type = tauId_str.substr(0, 7);
   if(! TauID_PyMap.count(wp_type))
   {
     throw cmsException(__func__, __LINE__) << "Unrecognizable tau ID selection: " << tauId_str;
   }
-  return get_tau_id_wp_int(TauID_PyMap.at(wp_type), tauId_str.substr(7));
+  return TauID_PyMap.at(wp_type);
+}
+
+int
+get_tau_id_wp_int(const std::string & tauId_str)
+{
+
+  return get_tau_id_wp_int(get_tau_id_enum(tauId_str), tauId_str.substr(7));
 }
 
 int

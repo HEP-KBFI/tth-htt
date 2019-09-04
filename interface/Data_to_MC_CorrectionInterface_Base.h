@@ -7,7 +7,9 @@
 
 // forward declarations
 class TFile;
+class TauIDSFTool;
 class lutWrapperBase;
+enum class TauID;
 
 class Data_to_MC_CorrectionInterface_Base
 {
@@ -106,12 +108,17 @@ protected:
 
   std::map<std::string, TFile *> inputFiles_;
 
-  int hadTauSelection_; // 1: VVLoose, 2: VLoose, 3: Loose, 4: Medium, 5: Tight, 6: VTight
+  int hadTauSelection_;
+  TauID hadTauId_;
+  std::string tauIDSF_str_;
+  std::string tauIDSF_level_str_;
   int hadTauSelection_antiElectron_[4];
   int hadTauSelection_antiMuon_[4];
   FRet eToTauFakeRate_option_;
   FRmt muToTauFakeRate_option_;
   TriggerSFsys triggerSF_option_;
+
+  TauIDSFTool * tauIdSFs_;
 
   std::size_t numLeptons_;
   std::vector<int> lepton_type_;

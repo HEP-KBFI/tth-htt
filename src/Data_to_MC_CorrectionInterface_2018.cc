@@ -3,6 +3,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // as_integer()
 
+#include "TauPOG/TauIDSFs/interface/TauIDSFTool.h" // TauIDSFTool
+
 #include <cmath> // std::fabs(), std::sqrt()
 
 Data_to_MC_CorrectionInterface_2018::Data_to_MC_CorrectionInterface_2018(const edm::ParameterSet & cfg)
@@ -14,10 +16,14 @@ Data_to_MC_CorrectionInterface_2018::Data_to_MC_CorrectionInterface_2018(const e
   ;
 #endif
 #pragma message "Setting data-to-MC corrections to 1 in 2018"
+
+  tauIdSFs_ = new TauIDSFTool(2018, tauIDSF_str_, tauIDSF_level_str_, false);
 }
 
 Data_to_MC_CorrectionInterface_2018::~Data_to_MC_CorrectionInterface_2018()
-{}
+{
+  delete tauIdSFs_;
+}
 
 double
 Data_to_MC_CorrectionInterface_2018::getWeight_leptonTriggerEff() const
@@ -47,25 +53,13 @@ double
 Data_to_MC_CorrectionInterface_2018::getSF_hadTauID_and_Iso() const
 {
   double sf = 1.;
-  double sfErr = 0.;
-  const auto square = [](double value) -> double { return value * value; };
   for(std::size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau)
   {
     if(hadTau_genPdgId_[idxHadTau] == 15)
     {
-      // CV: take data/MC (SF) measured for MVA-based tau ID with dR = 0.5 from
-      //       https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV#Measurement_in_Z_tautau_events ("2018")
-      //     as the SF for MVA-based tau ID with dR = 0.3 have not been measured yet.
-      if     (hadTauSelection_ == 1) { sf *= 0.86; sfErr += square(0.04); } // dR03mvaVVLoose
-      else if(hadTauSelection_ == 2) { sf *= 0.90; sfErr += square(0.03); } // dR03mvaVLoose
-      else if(hadTauSelection_ == 3) { sf *= 0.90; sfErr += square(0.03); } // dR03mvaLoose
-      else if(hadTauSelection_ == 4) { sf *= 0.90; sfErr += square(0.02); } // dR03mvaMedium
-      else if(hadTauSelection_ == 5) { sf *= 0.90; sfErr += square(0.02); } // dR03mvaTight
-      else if(hadTauSelection_ == 6) { sf *= 0.89; sfErr += square(0.02); } // dR03mvaVTight
-      else if(hadTauSelection_ == 7) { sf *= 0.89; sfErr += square(0.02); } // dR03mvaVVTight
+      sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau]);
     }
   }
-  sfErr = std::sqrt(sfErr);
   return sf;
 }
 

@@ -6,6 +6,7 @@
 <use   name="tthAnalysis/tthMEM"/>
 <use   name="tthAnalysis/MEMmultilepton"/>
 <use   name="TauAnalysisTools/TauTriggerSFs"/>
+<use   name="TauPOG/TauIDSFs"/>
 <use   name="PhysicsTools/TensorFlow"/>
 <use   name="root"/>
 <use   name="roottmva"/>
