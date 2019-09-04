@@ -136,9 +136,9 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Analysis type (choices: %s)' % tthAnalyzeParser.cat(modes),
     )
 
-  def add_sideband(self):
+  def add_sideband(self, default_choice = 'disabled'):
     self.add_argument('-B', '--sideband',
-      type = str, dest = 'sideband', metavar = 'choice', default = 'disabled', required = False,
+      type = str, dest = 'sideband', metavar = 'choice', default = default_choice, required = False,
       choices = [ 'disabled', 'enabled', 'only' ],
       help = 'R|Sideband choice',
     )
