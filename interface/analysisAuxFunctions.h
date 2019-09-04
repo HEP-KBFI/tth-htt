@@ -247,18 +247,17 @@ std::string
 get_tau_id_wp_str(TauID tauID,
                   int wp_int);
 
-/**
- * @brief Auxiliary function used for sorting leptons by decreasing pT
- * @param Given pair of leptons
- * @return True, if first lepton has higher pT; false if second lepton has higher pT
- */
-
 double
 min_Deta_fwdJet_jet(Particle::LorentzVector FwdJet, std::vector<const RecoJet *> selJets);
 
 Particle::LorentzVector
 HighestEtaFwdJet(std::vector<const RecoJet *> selJetsForward);
 
+/**
+ * @brief Auxiliary function used for sorting leptons by decreasing pT
+ * @param Given pair of leptons
+ * @return True, if first lepton has higher pT; false if second lepton has higher pT
+ */
 bool
 isHigherPt(const Particle * particle1,
            const Particle * particle2);
@@ -353,6 +352,11 @@ getHadTau_genPdgId(const RecoHadTau * hadTau);
 
 double
 get_BtagWeight(const std::vector<const RecoJet *> & jets);
+
+double
+getHadTauEScorrFactor(int era,
+                      int decayMode,
+                      int central_or_shift);
 
 /**
  * @brief Compute MHT

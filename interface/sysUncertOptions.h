@@ -95,6 +95,7 @@ enum
 
 enum
 {
+  kHadTauPt_uncorrected,
   kHadTauPt_central,
   kHadTauPt_shiftUp, kHadTauPt_shiftDown,
 };

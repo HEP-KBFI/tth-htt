@@ -18,6 +18,7 @@ class RecoHadTau
 public:
   RecoHadTau() = default;
   RecoHadTau(const GenHadTau & particle,
+             Double_t corrFactor,
              Double_t dxy,
              Double_t dz,
              Int_t decayMode,
@@ -51,6 +52,7 @@ public:
    * @brief Funtions to access data-members
    * @return Values of data-members
    */
+  Double_t corrFactor() const;
   Double_t dxy() const;
   Double_t dz() const;
   Int_t decayMode() const;
@@ -81,6 +83,7 @@ public:
   friend class RecoHadTauWriter;
 
 protected:
+  Double_t corrFactor_; ///< correction factor for the tau energy scale
   Double_t dxy_;        ///< d_{xy}, distance in the transverse plane w.r.t PV
   Double_t dz_;         ///< d_{z}, distance on the z axis w.r.t PV
   Int_t decayMode_;     ///< tau decay mode (5x(nof charged pions - 1) - (nof neutral pions))

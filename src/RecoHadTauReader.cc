@@ -220,23 +220,19 @@ RecoHadTauReader::read() const
     hadTaus.reserve(nHadTaus);
     for(Int_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau)
     {
-      Float_t hadTau_pt = -1.;
-      switch(hadTauPt_option_)
-      {
-        case kHadTauPt_central:   hadTau_pt =        gInstance->hadTau_pt_[idxHadTau]; break;
-        case kHadTauPt_shiftUp:   hadTau_pt = 1.03 * gInstance->hadTau_pt_[idxHadTau]; break;
-        case kHadTauPt_shiftDown: hadTau_pt = 0.97 * gInstance->hadTau_pt_[idxHadTau]; break;
-        default: throw cmsException(this) << "Invalid tau ES option: " << hadTauPt_option_;
-      }
+      const double corrFactor = getHadTauEScorrFactor(era_, gInstance->hadTau_decayMode_[idxHadTau], hadTauPt_option_);
+      const double hadTau_pt   = gInstance->hadTau_pt_  [idxHadTau] * corrFactor;
+      const double hadTau_mass = gInstance->hadTau_mass_[idxHadTau] * corrFactor;
 
       hadTaus.push_back({
         {
           hadTau_pt,
           gInstance->hadTau_eta_[idxHadTau],
           gInstance->hadTau_phi_[idxHadTau],
-          gInstance->hadTau_mass_[idxHadTau],
+          hadTau_mass,
           gInstance->hadTau_charge_[idxHadTau]
         },
+        corrFactor,
         gInstance->hadTau_dxy_[idxHadTau],
         gInstance->hadTau_dz_[idxHadTau],
         gInstance->hadTau_decayMode_[idxHadTau],

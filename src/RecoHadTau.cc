@@ -5,6 +5,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // TauID, as_integer(), cmsException()
 
 RecoHadTau::RecoHadTau(const GenHadTau & particle,
+                       Double_t corrFactor,
                        Double_t dxy,
                        Double_t dz,
                        Int_t decayMode,
@@ -18,6 +19,7 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
                        UChar_t  genPartFlav,
                        Int_t genMatchIdx)
   : GenHadTau(particle)
+  , corrFactor_(corrFactor)
   , dxy_(dxy)
   , dz_(dz)
   , decayMode_(decayMode)
@@ -75,6 +77,12 @@ void
 RecoHadTau::set_genJet(const GenJet * genJet)
 {
   genJet_.reset(genJet);
+}
+
+Double_t
+RecoHadTau::corrFactor() const
+{
+  return corrFactor_;
 }
 
 Double_t

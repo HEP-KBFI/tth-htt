@@ -151,10 +151,13 @@ void RecoHadTauWriter::write(const std::vector<const RecoHadTau *> & hadTaus)
   {
     const RecoHadTau * hadTau = hadTaus[idxHadTau];
     assert(hadTau);
-    hadTau_pt_[idxHadTau] = hadTau->pt();
+    const double corrFactor = hadTau->corrFactor();
+    const Double_t hadTau_pt = hadTau->pt() / corrFactor;
+    const Double_t hadTau_mass = hadTau->mass() / corrFactor;
+    hadTau_pt_[idxHadTau] = hadTau_pt;
     hadTau_eta_[idxHadTau] = hadTau->eta();
     hadTau_phi_[idxHadTau] = hadTau->phi();
-    hadTau_mass_[idxHadTau] = hadTau->mass();
+    hadTau_mass_[idxHadTau] = hadTau_mass;
     hadTau_charge_[idxHadTau] = hadTau->charge();
     hadTau_dxy_[idxHadTau] = hadTau->dxy();
     hadTau_dz_[idxHadTau] = hadTau->dz();

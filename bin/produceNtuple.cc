@@ -277,6 +277,7 @@ main(int argc,
   }
 
   RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, isMC, readGenObjects);
+  hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_uncorrected);
   inputTree -> registerReader(hadTauReader);
   const RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);

@@ -184,7 +184,7 @@ int main(int argc,
   const RecoElectronCollectionSelectorTight    tightElectronSelector   (era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, isMC, readGenObjects);
-  hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_central);
+  hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_uncorrected);
   hadTauReader->setBranchAddresses(inputTree);
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose    preselHadTauSelector  (era);
