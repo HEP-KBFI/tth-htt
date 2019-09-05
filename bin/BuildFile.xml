@@ -494,20 +494,6 @@
   <use   name="boost"/>
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
-<bin file="analyze_hadTopTagger_gen.cc" name="analyze_hadTopTagger_gen">
-  <use   name="FWCore/FWLite"/>
-  <use   name="FWCore/ParameterSet"/>
-  <use   name="FWCore/PythonParameterSet"/>
-  <use   name="FWCore/Utilities"/>
-  <use   name="DataFormats/FWLite"/>
-  <use   name="DataFormats/Math"/>
-  <use   name="PhysicsTools/FWLite"/>
-  <use   name="tthAnalysis/HiggsToTauTau"/>
-  <use   name="root"/>
-  <use   name="roottmva"/>
-  <use   name="boost"/>
-  <Flags CXXFLAGS="-g -Wshadow -Werror"/>
-</bin>
 <bin file="minimal_hdfs_read.cc" name="minimal_hdfs_read">
   <Flags CXXFLAGS="-g -Wshadow -Werror -Wno-comment"/>
   <use   name="root"/>
