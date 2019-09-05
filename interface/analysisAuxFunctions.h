@@ -211,6 +211,21 @@ get_BtagWP(int era,
 template <typename ObjectType>
 std::vector<ObjectType>
 selectObjects(int objectSelection,
+              const std::vector<ObjectType> & fakeableObjects,
+              const std::vector<ObjectType> & tightObjects)
+{
+  switch(objectSelection)
+  {
+    case kFakeable: return fakeableObjects;
+    case kTight:    return tightObjects;
+    default:        throw cmsException(__func__, __LINE__) << "Invalid selection: " << objectSelection;
+  }
+}
+
+//--- selector class
+template <typename ObjectType>
+std::vector<ObjectType>
+selectObjects(int objectSelection,
               const std::vector<ObjectType> & preselObjects,
               const std::vector<ObjectType> & fakeableObjects,
               const std::vector<ObjectType> & tightObjects)

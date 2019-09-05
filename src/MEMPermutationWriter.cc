@@ -16,18 +16,16 @@
 
 MEMPermutationWriter::~MEMPermutationWriter()
 {
-  for(auto & kv: hadTauSelectorsLoose_)
+  for(auto & kv: hadTauSelectorsFakeable_)
   {
-    if(hadTauSelectorsLoose_[kv.first])
-    {
-      delete hadTauSelectorsLoose_[kv.first];
-      hadTauSelectorsLoose_[kv.first] = nullptr;
-    }
     if(hadTauSelectorsFakeable_[kv.first])
     {
       delete hadTauSelectorsFakeable_[kv.first];
       hadTauSelectorsFakeable_[kv.first] = nullptr;
     }
+  }
+  for(auto & kv: hadTauSelectorsTight_)
+  {
     if(hadTauSelectorsTight_[kv.first])
     {
       delete hadTauSelectorsTight_[kv.first];
@@ -127,12 +125,6 @@ MEMPermutationWriter::setBranchNames(TTree * tree,
   // initialize the selector classes
   for(const std::string & hadTauWorkingPoint: hadTauWorkingPoints_)
   {
-    hadTauSelectorsLoose_[hadTauWorkingPoint] = new RecoHadTauCollectionSelectorLoose(era);
-    hadTauSelectorsLoose_[hadTauWorkingPoint] -> set(hadTauWorkingPoint);
-    hadTauSelectorsLoose_[hadTauWorkingPoint] -> set_min_antiElectron(-1);
-    hadTauSelectorsLoose_[hadTauWorkingPoint] -> set_min_antiMuon(-1);
-    hadTauSelectorsLoose_[hadTauWorkingPoint] -> set_min_pt(18.);
-
     hadTauSelectorsFakeable_[hadTauWorkingPoint] = new RecoHadTauCollectionSelectorFakeable(era);
     hadTauSelectorsFakeable_[hadTauWorkingPoint] -> set(hadTauWorkingPoint);
     hadTauSelectorsFakeable_[hadTauWorkingPoint] -> set_min_antiElectron(-1);
@@ -252,7 +244,6 @@ MEMPermutationWriter::write(const std::array<const std::vector<const RecoLepton*
             // pick the had tau selector
             switch(hadTauSelection_idx)
             {
-              case kLoose:    return (*hadTauSelectorsLoose_   [hadTauWorkingPoint])(cleanedHadTaus);
               case kFakeable: return (*hadTauSelectorsFakeable_[hadTauWorkingPoint])(cleanedHadTaus);
               case kTight:    return (*hadTauSelectorsTight_   [hadTauWorkingPoint])(cleanedHadTaus);
               default:        throw cmsException(this, __func__) << "Unexpected had tau selection: " << hadTauSelection_idx;

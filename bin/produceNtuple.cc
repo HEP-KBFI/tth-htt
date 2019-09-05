@@ -19,9 +19,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronWriter.h" // RecoElectronWriter
@@ -276,25 +274,25 @@ main(int argc,
   inputTree -> registerReader(hadTauReader);
   const RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
-  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
-  preselHadTauSelector.set_if_looser(hadTauSelection_tauIDwp);
-  preselHadTauSelector.set_min_antiElectron(-1);
-  preselHadTauSelector.set_min_antiMuon(-1);
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
+  fakeableHadTauSelector.set_if_looser(hadTauSelection_tauIDwp);
+  fakeableHadTauSelector.set_min_antiElectron(-1);
+  fakeableHadTauSelector.set_min_antiMuon(-1);
   // CV: lower thresholds on hadronic taus by 2 GeV 
   //     with respect to thresholds applied on analysis level 
   //     to allow for tau-ES uncertainties to be estimated
   const double minPt_hadTau = 18.;
-  preselHadTauSelector.set_min_pt(minPt_hadTau);
+  fakeableHadTauSelector.set_min_pt(minPt_hadTau);
 
   // construct tau selectors that are needed for counting the multiplicities of taus passing each tau ID & WP
-  std::map<TauID, std::map<int, RecoHadTauCollectionSelectorLoose *>> multplicityHadTauSelectors;
+  std::map<TauID, std::map<int, RecoHadTauCollectionSelectorFakeable *>> multplicityHadTauSelectors;
   for(const auto & kv: TauID_PyMap)
   {
     multplicityHadTauSelectors[kv.second] = {};
     const int max_level = TauID_levels.at(kv.second);
     for(int level = 1; level <= max_level; ++level)
     {
-      multplicityHadTauSelectors[kv.second][level] = new RecoHadTauCollectionSelectorLoose(era, -1, isDEBUG);
+      multplicityHadTauSelectors[kv.second][level] = new RecoHadTauCollectionSelectorFakeable(era, -1, isDEBUG);
       multplicityHadTauSelectors[kv.second][level]->set(kv.first + TauID_level_strings.at(max_level).at(level - 1));
       multplicityHadTauSelectors[kv.second][level]->set_min_antiElectron(-1);
       multplicityHadTauSelectors[kv.second][level]->set_min_antiMuon(-1);
@@ -490,7 +488,7 @@ main(int argc,
   MEMPermutationWriter memPermutationWriter;
   memPermutationWriter
     .setLepSelection       (leptonSelection, kTight)
-    .setHadTauSelection    (kLoose,          kTight)
+    .setHadTauSelection    (kFakeable,       kTight)
     .setHadTauWorkingPoints(hadTauSelection_tauIDwp)
   ;
   MEMPermutationWriter memPermutationWriter_tauLess;
@@ -702,8 +700,8 @@ main(int argc,
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau *> hadTau_ptrs = convert_to_ptrs(hadTaus);
     const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    const std::vector<const RecoHadTau *> preselHadTaus = preselHadTauSelector  (cleanedHadTaus, isHigherPt);
-    const std::vector<const RecoHadTau *> & selHadTaus = preselHadTaus;
+    const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector  (cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> & selHadTaus = fakeableHadTaus;
 
     ObjectMultiplicity objectMultiplicity;
     objectMultiplicity.setNRecoMuon    (preselMuons.size(),     fakeableMuons.size(),     tightMuons.size());
@@ -713,7 +711,7 @@ main(int argc,
       const int max_level = TauID_levels.at(kv.second);
       for(int level = 1; level <= max_level; ++level)
       {
-        const RecoHadTauCollectionSelectorLoose & hadTauSelector = *multplicityHadTauSelectors.at(kv.second).at(level);
+        const RecoHadTauCollectionSelectorFakeable & hadTauSelector = *multplicityHadTauSelectors.at(kv.second).at(level);
         const std::vector<const RecoHadTau *> multiplicityHadTaus = hadTauSelector(cleanedHadTaus, isHigherPt);
         objectMultiplicity.setNRecoHadTau(kv.second, level, multiplicityHadTaus.size());
       }
@@ -806,7 +804,7 @@ main(int argc,
       if(run_lumi_eventSelector || isDEBUG)
       {
         std::cout << "event FAILS selHadTaus selection\n";
-        printCollection("preselHadTaus", preselHadTaus);
+        printCollection("fakeableHadTaus", fakeableHadTaus);
         printCollection("selHadTaus", selHadTaus);
       }
       continue;
@@ -944,7 +942,7 @@ main(int argc,
     hltPathWriter_instance.write(triggers);
     muonWriter->write(preselMuons);
     electronWriter->write(preselElectronsUncleaned);
-    hadTauWriter->write(preselHadTaus);
+    hadTauWriter->write(fakeableHadTaus);
     jetWriter->write(selJets);
     metWriter->write(met);
 

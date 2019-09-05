@@ -55,7 +55,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -991,10 +990,6 @@ int main(int argc, char* argv[])
   inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
-  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
-  preselHadTauSelector.set_if_looser(hadTauSelection_part2);
-  preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
   fakeableHadTauSelector.set_if_looser(hadTauSelection_part2);
   fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
@@ -1193,12 +1188,10 @@ int main(int argc, char* argv[])
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> selHadTaus;
-    if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
-    else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
+    if      ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
     else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
     else assert(0);
     selHadTaus = pickFirstNobjects(selHadTaus, 1);
@@ -1271,9 +1264,9 @@ int main(int argc, char* argv[])
         electronGenMatcher.addGenHadTauMatch       (preselElectrons, genHadTaus);
         electronGenMatcher.addGenJetMatch          (preselElectrons, genJets);
 
-        hadTauGenMatcher.addGenLeptonMatchByIndex(preselHadTaus, hadTauGenMatch, GenParticleType::kGenAnyLepton);
-        hadTauGenMatcher.addGenHadTauMatch       (preselHadTaus, genHadTaus);
-        hadTauGenMatcher.addGenJetMatch          (preselHadTaus, genJets);
+        hadTauGenMatcher.addGenLeptonMatchByIndex(cleanedHadTaus, hadTauGenMatch, GenParticleType::kGenAnyLepton);
+        hadTauGenMatcher.addGenHadTauMatch       (cleanedHadTaus, genHadTaus);
+        hadTauGenMatcher.addGenJetMatch          (cleanedHadTaus, genJets);
 
         jetGenMatcher.addGenLeptonMatch    (selJets, genLeptons);
         jetGenMatcher.addGenHadTauMatch    (selJets, genHadTaus);
@@ -1289,9 +1282,9 @@ int main(int argc, char* argv[])
         electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
         electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
 
-        hadTauGenMatcher.addGenLeptonMatch(preselHadTaus, genLeptons);
-        hadTauGenMatcher.addGenHadTauMatch(preselHadTaus, genHadTaus);
-        hadTauGenMatcher.addGenJetMatch   (preselHadTaus, genJets);
+        hadTauGenMatcher.addGenLeptonMatch(cleanedHadTaus, genLeptons);
+        hadTauGenMatcher.addGenHadTauMatch(cleanedHadTaus, genHadTaus);
+        hadTauGenMatcher.addGenJetMatch   (cleanedHadTaus, genJets);
 
         jetGenMatcher.addGenLeptonMatch(selJets, genLeptons);
         jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus);

@@ -44,7 +44,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -602,34 +601,34 @@ int main(int argc, char* argv[])
     
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
-    std::vector<RecoMuon> muons = muonReader->read();
-    std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
-    std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
-    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
-    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
-    std::vector<const RecoMuon*> selMuons = selectObjects(
+    const std::vector<RecoMuon> muons = muonReader->read();
+    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
+    const std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
+    const std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
+    const std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
+    const std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
+    const std::vector<const RecoMuon*> selMuons = selectObjects(
       leptonSelection, preselMuons, fakeableMuons, tightMuons
     );
 
-    std::vector<RecoElectron> electrons = electronReader->read();
-    std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
-    std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
-    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
-    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
-    std::vector<const RecoElectron*> selElectrons = selectObjects(
+    const std::vector<RecoElectron> electrons = electronReader->read();
+    const std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
+    const std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
+    const std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
+    const std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    const std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
+    const std::vector<const RecoElectron*> selElectrons = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
     );
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
-    std::vector<RecoJet> jets = jetReader->read();
-    std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
+    const std::vector<RecoJet> jets = jetReader->read();
+    const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
+    const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
       jetCleanerByIndex(jet_ptrs, fakeableMuons, fakeableElectrons) :
       jetCleaner       (jet_ptrs, fakeableMuons, fakeableElectrons)
     ;
-    std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
+    const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     if(isMC && redoGenMatching && ! fillGenEvtHistograms)
