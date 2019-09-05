@@ -847,7 +847,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.addToMakefile_hadd_stage1(lines_makefile)
     self.addToMakefile_backgrounds_from_data(lines_makefile) ## this step now does both e Conv, data_fakes and fakes_mc computation
     # self.addToMakefile_backgrounds_from_MC(lines_makefile)
-    self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = " ".join([ "phony_addBackgrounds_LeptonFakeRate", "phony_addBackgrounds_Convs_LeptonFakeRate" ]))
+    self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = " ".join([
+      "phony_addBackgrounds_LeptonFakeRate", "phony_addBackgrounds_Convs_LeptonFakeRate", "phony_addBackgrounds_sum"
+    ]))
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_combine(lines_makefile)
     self.addToMakefile_comp_LeptonFakeRate(lines_makefile)
