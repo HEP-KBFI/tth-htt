@@ -118,12 +118,7 @@ main(int argc,
 
   const std::string leptonSelection_string = cfg_produceNtuple.getParameter<std::string>("leptonSelection");
   const int leptonSelection = get_selection(leptonSelection_string);
-
-  const std::string hadTauSelection_string = cfg_produceNtuple.getParameter<std::string>("hadTauSelection");
-  const std::vector<std::string> hadTauSelection_parts = edm::tokenize(hadTauSelection_string, "|");
-  assert(hadTauSelection_parts.size());
-  const int hadTauSelection = get_selection(hadTauSelection_parts[0]);
-  const std::string hadTauSelection_tauIDwp = hadTauSelection_parts[1];
+  const std::string hadTauSelection_tauIDwp = cfg_produceNtuple.getParameter<std::string>("hadTauWP");
 
   const std::string branchName_electrons  = cfg_produceNtuple.getParameter<std::string>("branchName_electrons");
   const std::string branchName_muons      = cfg_produceNtuple.getParameter<std::string>("branchName_muons");
@@ -285,21 +280,11 @@ main(int argc,
   preselHadTauSelector.set_if_looser(hadTauSelection_tauIDwp);
   preselHadTauSelector.set_min_antiElectron(-1);
   preselHadTauSelector.set_min_antiMuon(-1);
-  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
-  fakeableHadTauSelector.set_if_looser(hadTauSelection_tauIDwp);
-  fakeableHadTauSelector.set_min_antiElectron(-1);
-  fakeableHadTauSelector.set_min_antiMuon(-1);
-  RecoHadTauCollectionSelectorTight tightHadTauSelector(era, -1, isDEBUG);
-  tightHadTauSelector.set(hadTauSelection_tauIDwp);
-  tightHadTauSelector.set_min_antiElectron(-1);
-  tightHadTauSelector.set_min_antiMuon(-1);
   // CV: lower thresholds on hadronic taus by 2 GeV 
   //     with respect to thresholds applied on analysis level 
   //     to allow for tau-ES uncertainties to be estimated
   const double minPt_hadTau = 18.;
   preselHadTauSelector.set_min_pt(minPt_hadTau);
-  fakeableHadTauSelector.set_min_pt(minPt_hadTau);
-  tightHadTauSelector.set_min_pt(minPt_hadTau);
 
   // construct tau selectors that are needed for counting the multiplicities of taus passing each tau ID & WP
   std::map<TauID, std::map<int, RecoHadTauCollectionSelectorLoose *>> multplicityHadTauSelectors;
@@ -505,7 +490,7 @@ main(int argc,
   MEMPermutationWriter memPermutationWriter;
   memPermutationWriter
     .setLepSelection       (leptonSelection, kTight)
-    .setHadTauSelection    (hadTauSelection, kTight)
+    .setHadTauSelection    (kLoose,          kTight)
     .setHadTauWorkingPoints(hadTauSelection_tauIDwp)
   ;
   MEMPermutationWriter memPermutationWriter_tauLess;
@@ -717,12 +702,8 @@ main(int argc,
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau *> hadTau_ptrs = convert_to_ptrs(hadTaus);
     const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    const std::vector<const RecoHadTau *> preselHadTaus   = preselHadTauSelector  (cleanedHadTaus, isHigherPt);
-    const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
-    const std::vector<const RecoHadTau *> tightHadTaus    = tightHadTauSelector   (cleanedHadTaus, isHigherPt);
-    const std::vector<const RecoHadTau *> selHadTaus = selectObjects(
-      hadTauSelection, preselHadTaus, fakeableHadTaus, tightHadTaus
-    );
+    const std::vector<const RecoHadTau *> preselHadTaus = preselHadTauSelector  (cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> & selHadTaus = preselHadTaus;
 
     ObjectMultiplicity objectMultiplicity;
     objectMultiplicity.setNRecoMuon    (preselMuons.size(),     fakeableMuons.size(),     tightMuons.size());

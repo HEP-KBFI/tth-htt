@@ -167,7 +167,6 @@ if preselection:
       'applyHLTcut'                : True,
     }
   leptonSelection = 'Fakeable'
-  hadTauSelection = 'Fakeable'
   hadTauWP = 'dR03mvaVLoose&deepVSjVLoose' # override user preference
 else:
   preselection_cuts = {
@@ -183,10 +182,7 @@ else:
     'applyHLTcut'               : False,
   }
   leptonSelection = 'Loose'
-  hadTauSelection = 'Loose'
   hadTauWP = args.tau_id_wp
-
-hadTauSelectionAndWP = '%s|%s' % (hadTauSelection, hadTauWP)
 
 if __name__ == '__main__':
   logging.info("Preselection: %s" % ("enabled" if preselection else "disabled"))
@@ -203,7 +199,7 @@ if __name__ == '__main__':
     era                   = era,
     preselection_cuts     = preselection_cuts,
     leptonSelection       = leptonSelection,
-    hadTauSelection       = hadTauSelectionAndWP,
+    hadTauWP              = hadTauWP,
     check_output_files    = check_output_files,
     running_method        = running_method,
     version               = version,

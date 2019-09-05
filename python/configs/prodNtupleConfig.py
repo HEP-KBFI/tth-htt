@@ -56,7 +56,7 @@ class prodNtupleConfig:
              era,
              preselection_cuts,
              leptonSelection,
-             hadTauSelection,
+             hadTauWP,
              check_output_files,
              running_method,
              version,
@@ -81,7 +81,7 @@ class prodNtupleConfig:
         self.era                   = era
         self.preselection_cuts     = preselection_cuts
         self.leptonSelection       = leptonSelection
-        self.hadTauSelection       = hadTauSelection
+        self.hadTauWP              = hadTauWP
         self.check_output_files    = check_output_files
         self.verbose               = verbose
         self.dry_run               = dry_run
@@ -188,7 +188,7 @@ class prodNtupleConfig:
             "process.produceNtuple.isMC                       = cms.bool(%s)"     % jobOptions['is_mc'],
             "process.produceNtuple.redoGenMatching            = cms.bool(%s)"     % (not self.skip_tools_step),
             "process.produceNtuple.leptonSelection            = cms.string('%s')" % self.leptonSelection,
-            "process.produceNtuple.hadTauSelection            = cms.string('%s')" % self.hadTauSelection,
+            "process.produceNtuple.hadTauWP                   = cms.string('%s')" % self.hadTauWP,
             "process.produceNtuple.random_seed                = cms.uint32(%i)"   % jobOptions['random_seed'],
             "process.produceNtuple.isDEBUG                    = cms.bool(%s)"     % self.isDebug,
             "process.produceNtuple.useNonNominal              = cms.bool(%s)"     % self.use_nonnominal,
