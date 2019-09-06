@@ -27,6 +27,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         jet_maxPt,
         jet_minAbsEta,
         jet_maxAbsEta,
+        hadTau_selection_tight,
         hadTau_selection_denominator,
         hadTau_selections_numerator,
         absEtaBins,
@@ -81,6 +82,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.jet_minAbsEta = jet_minAbsEta
     self.jet_maxAbsEta = jet_maxAbsEta
 
+    self.hadTau_selection_tight = hadTau_selection_tight
     self.hadTau_selection_denominator = hadTau_selection_denominator
     self.hadTau_selections_numerator = hadTau_selections_numerator
 
@@ -114,6 +116,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       'jet_maxPt',
       'jet_minAbsEta',
       'jet_maxAbsEta',
+      'hadTau_selection_tight',
       'hadTauSelection_denominator',
       'hadTauSelections_numerator',
       'absEtaBins',
@@ -295,6 +298,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               'jet_maxPt'                   : self.jet_maxPt,
               'jet_minAbsEta'               : self.jet_minAbsEta,
               'jet_maxAbsEta'               : self.jet_maxAbsEta,
+              'hadTau_selection_tight'      : self.hadTau_selection_tight,
               'hadTauSelection_denominator' : self.hadTau_selection_denominator,
               'hadTauSelections_numerator'  : self.hadTau_selections_numerator,
               'absEtaBins'                  : self.absEtaBins,

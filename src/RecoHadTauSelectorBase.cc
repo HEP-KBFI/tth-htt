@@ -274,6 +274,8 @@ RecoHadTauSelectorBase::set_if_looser(const std::string & cut)
 bool
 RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
 {
+  assert(! cut_.empty());
+
   if(hadTau.pt() < min_pt_)
   {
     if(debug_)
@@ -354,6 +356,16 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
       min_id_mva_cuts.push_back(kv.first);
     }
   }
+  std::vector<TauID> min_raw_mva_cuts;
+  for(const auto & kv: min_raw_mva_)
+  {
+    if(kv.second > DEFAULT_TAUID_RAW_VALUE)
+    {
+      min_raw_mva_cuts.push_back(kv.first);
+    }
+  }
+  assert(! min_id_mva_cuts.empty() || ! min_raw_mva_cuts.empty());
+
   if(! min_id_mva_cuts.empty() &&
      std::none_of(min_id_mva_cuts.begin(), min_id_mva_cuts.end(),
        [this, &hadTau](TauID tauId) -> bool
@@ -383,14 +395,6 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
     return false;
   }
 
-  std::vector<TauID> min_raw_mva_cuts;
-  for(const auto & kv: min_raw_mva_)
-  {
-    if(kv.second > DEFAULT_TAUID_RAW_VALUE)
-    {
-      min_raw_mva_cuts.push_back(kv.first);
-    }
-  }
   if(! min_raw_mva_cuts.empty() &&
      std::none_of(min_raw_mva_cuts.begin(), min_raw_mva_cuts.end(),
        [this, &hadTau](TauID tauId) -> bool

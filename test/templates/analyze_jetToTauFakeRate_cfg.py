@@ -41,6 +41,7 @@ process.analyze_jetToTauFakeRate = cms.PSet(
     jet_minAbsEta = cms.double(-1.),
     jet_maxAbsEta = cms.double(-1.),
 
+    hadTau_selection_tight = cms.string(''),
     hadTauSelection_denominator = cms.string(''),
     hadTauSelections_numerator = cms.vstring(),
 

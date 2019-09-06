@@ -15,6 +15,9 @@ public:
                           bool set_selection_flags = true);
   ~RecoHadTauSelectorTight() {}
 
+  bool
+  set_if_looser(const std::string & cut);
+
   bool operator()(const RecoHadTau & hadTau) const;
 
   friend class RecoHadTauCollectionSelector<RecoHadTauSelectorTight>;

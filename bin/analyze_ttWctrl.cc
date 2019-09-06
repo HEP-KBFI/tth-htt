@@ -406,7 +406,7 @@ int main(int argc, char* argv[])
   fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   fakeableHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorTight hadTauSelector(era);
-  if ( hadTauSelection_part2 != "" ) hadTauSelector.set(hadTauSelection_part2);
+  hadTauSelector.set(hadTauSelection_part2);
   hadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   hadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 

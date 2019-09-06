@@ -85,6 +85,7 @@ if __name__ == '__main__':
     jet_maxPt                        = 1.e+6,
     jet_minAbsEta                    = -1.,
     jet_maxAbsEta                    = 2.3,
+    hadTau_selection_tight           = "dR03mvaLoose",
     hadTau_selection_denominator     = tau_id_wp,
     hadTau_selections_numerator      = [
       "dR03mvaVLoose",

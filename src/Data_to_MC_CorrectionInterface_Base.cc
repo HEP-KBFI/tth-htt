@@ -36,7 +36,10 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const e
   , hadTau_eta_(4)
 {
   const std::string hadTauSelection_string = cfg.getParameter<std::string>("hadTauSelection");
-  setHadTauSelection(hadTauSelection_string);
+  if(hadTauSelection_string != "disabled")
+  {
+    setHadTauSelection(hadTauSelection_string);
+  }
 
   for(int idxHadTau = 0; idxHadTau < 4; ++idxHadTau)
   {

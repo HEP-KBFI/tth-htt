@@ -343,6 +343,7 @@ int main(int argc, char* argv[])
   double jet_minAbsEta = cfg_analyze.getParameter<double>("jet_minAbsEta");
   double jet_maxAbsEta = cfg_analyze.getParameter<double>("jet_maxAbsEta");
 
+  std::string hadTau_selection_tight = cfg_analyze.getParameter<std::string>("hadTau_selection_tight");
   std::string hadTauSelection_denominator = cfg_analyze.getParameter<std::string>("hadTauSelection_denominator");
   vstring hadTauSelections_numerator = cfg_analyze.getParameter<vstring>("hadTauSelections_numerator");
   std::cout << "hadTauSelection:" << std::endl;
@@ -399,7 +400,7 @@ int main(int argc, char* argv[])
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
-  cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", "dR03mvaTight");
+  cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTau_selection_tight); // has no effect (will be overwritten)
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
@@ -502,10 +503,11 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorFakeable preselHadTauSelector(era);
-  preselHadTauSelector.set_if_looser(hadTauSelection_denominator);
+  preselHadTauSelector.set(hadTauSelection_denominator);
   preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
+  tightHadTauSelector.set(hadTau_selection_tight);
   tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 
