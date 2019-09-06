@@ -84,9 +84,7 @@ if mode == "default":
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
-
   samples = load_samples(era, suffix = "BDT")
-  hadTau_selection         = "dR03mvaLoose"
   hadTau_selection_relaxed = "dR03mvaVLoose"
 elif mode == "sync":
   if use_preselected:

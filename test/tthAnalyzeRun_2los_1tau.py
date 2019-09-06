@@ -63,32 +63,15 @@ do_sync = mode == 'sync'
 lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
+
 hadTau_selection = "dR03mvaLoose"
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-elif mode == "test":
-  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if not sample_info["sample_category"] in [
-      "signal",
-      "TTWH",
-      "TTZH",
-      "HH",
-      "ggH",
-      "qqH",
-      "VH",
-      "tHq",
-      "tHW"
-    ]:
-      sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
-
   samples = load_samples(era, suffix = "BDT")
-  hadTau_selection         = "dR03mvaTight"
   hadTau_selection_relaxed = "dR03mvaLoose"
 elif mode == "sync":
   if use_preselected:

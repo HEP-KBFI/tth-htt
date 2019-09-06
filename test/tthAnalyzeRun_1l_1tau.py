@@ -62,31 +62,13 @@ do_sync = mode.startswith('sync')
 lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
+
 hadTau_selection = "dR03mvaMedium"
 
 if mode == "default":
   samples = load_samples(era)
-elif mode == "test":
-  samples = load_samples(era)
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if not sample_info["sample_category"] in [
-      "signal",
-      "TTWH",
-      "TTZH",
-      "HH",
-      "ggH",
-      "qqH",
-      "VH",
-      "tHq",
-      "tHW"
-    ]:
-      sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT_DY")
-  # CV: check if BDT training statistics is sufficient with nominal tau ID working point
-  #     before relaxing tau ID working point
-  hadTau_selection         = "dR03mvaLoose"
   hadTau_selection_relaxed = "dR03mvaLoose"
 elif mode == "sync":
   samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")

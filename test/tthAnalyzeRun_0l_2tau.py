@@ -84,9 +84,7 @@ if mode == "default":
       sample_info["use_it"] = True
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT_DY")
-  hadTau_selection = "dR03mvaLoose"
   hadTau_selection_relaxed = "dR03mvaVLoose"
-
 elif mode == "sync":
   samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
 else:
@@ -137,18 +135,18 @@ if __name__ == '__main__':
     # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
     histograms_to_fit                     = {
-      "EventCounter"             : {},
-      "numJets"                  : {},
-      "mvaOutput_0l_2tau_ttbar"  : {},
-      "mvaOutput_0l_2tau_HTT_tt" : {},
-      "mvaOutput_0l_2tau_HTT_ttv": {},
-      "mvaOutput_0l_2tau_HTT_sum": {},
-      "mvaDiscr_0l_2tau_HTT"     : {},
+      "EventCounter"                 : {},
+      "numJets"                      : {},
+      "mvaOutput_0l_2tau_ttbar"      : {},
+      "mvaOutput_0l_2tau_HTT_tt"     : {},
+      "mvaOutput_0l_2tau_HTT_ttv"    : {},
+      "mvaOutput_0l_2tau_HTT_sum"    : {},
+      "mvaDiscr_0l_2tau_HTT"         : {},
       "mvaOutput_0l_2tau_HTT_sum_dy" : {},
-      "mva_Boosted_AK8"          : {},
-      "mva_Updated"              : {},
-      "mTauTauVis"               : {},
-      "mTauTau"                  : {},
+      "mva_Boosted_AK8"              : {},
+      "mva_Updated"                  : {},
+      "mTauTauVis"                   : {},
+      "mTauTau"                      : {},
     },
     select_rle_output                     = True,
     dry_run                               = dry_run,

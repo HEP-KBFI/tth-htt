@@ -67,7 +67,6 @@ lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
-hadTau_selection_relaxed = ""
 hadTau_selection = "dR03mvaMedium"
 
 if sideband == 'disabled':
@@ -84,9 +83,7 @@ if mode == "default":
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
-
   samples = load_samples(era, suffix = "BDT")
-  hadTau_selection         = "dR03mvaMedium"
   hadTau_selection_relaxed = "dR03mvaVVLoose"
 elif mode == "sync":
   if use_preselected:

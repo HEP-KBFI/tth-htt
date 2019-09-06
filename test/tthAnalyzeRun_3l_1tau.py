@@ -83,28 +83,20 @@ hadTau_selection = "dR03mvaLoose"
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-
 elif mode == "addMEM":
   samples = load_samples(era, suffix = "addMEM_preselected_3l1tau" if use_preselected else "addMEM_3l1tau")
   MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
-
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
-
   samples = load_samples(era, suffix = "BDT")
-  hadTau_selection         = "dR03mvaTight"
   hadTau_selection_relaxed = "dR03mvaVVLoose"
-
 elif mode == "forBDTtraining_afterAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
-
   samples = load_samples(era, suffix = "BDT_addMEM_3l1tau")
-  hadTau_selection         = "dR03mvaTight"
   hadTau_selection_relaxed = "dR03mvaVVLoose"
   MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_{}'.format(hadTau_selection_relaxed)
-
 elif mode.startswith("sync"):
   if mode == "sync_wMEM":
     samples = load_samples(era, suffix = "addMEM_preselected_sync" if use_preselected else "addMEM_sync")
