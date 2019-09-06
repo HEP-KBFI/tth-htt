@@ -67,6 +67,12 @@ public:
   {
     this->selector_.set_min_antiMuon(min_antiMuon);
   }
+
+  void
+  disable_deeptau_lepton()
+  {
+    this->selector_.disable_deeptau_lepton();
+  }
 };
 
 #endif // RECOHADTAUCOLLECTIONSELECTOR_H

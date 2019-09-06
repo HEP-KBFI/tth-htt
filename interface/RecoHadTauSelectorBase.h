@@ -51,6 +51,9 @@ public:
   get_deeptau_lepton() const;
 
   void
+  disable_deeptau_lepton();
+
+  void
   set(const std::string & cut);
 
   const std::string &
@@ -84,6 +87,7 @@ protected:
   Int_t min_antiElectron_;                ///< lower cut threshold on discriminator against electrons
   Int_t min_antiMuon_;                    ///< lower cut threshold on discriminator against muons
   bool apply_deeptau_lepton_;             ///< apply loosest cut of DeepTau anti-e and anti-mu discriminators
+  bool disable_deeptau_lepton_;           ///< flag to completely turn of anti-e and anti-mu discriminators
   std::string cut_;
 
   ///< nominal WP for each tau ID discriminator in fakeable selection

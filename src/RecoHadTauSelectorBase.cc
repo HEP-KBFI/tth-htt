@@ -27,6 +27,7 @@ RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
   , min_antiElectron_(DEFAULT_TAUID_ID_VALUE)
   , min_antiMuon_(DEFAULT_TAUID_ID_VALUE)
   , apply_deeptau_lepton_(false)
+  , disable_deeptau_lepton_(false)
 {
   for(const auto & kv: TauID_levels)
   {
@@ -116,6 +117,12 @@ RecoHadTauSelectorBase::get_deeptau_lepton() const
 }
 
 void
+RecoHadTauSelectorBase::disable_deeptau_lepton()
+{
+  disable_deeptau_lepton_ = true;
+}
+
+void
 RecoHadTauSelectorBase::set(const std::string & cut)
 {
   if(cut.empty())
@@ -148,7 +155,7 @@ RecoHadTauSelectorBase::set(const std::string & cut)
     apply_deeptau_lepton_ |= tauId == TauID::DeepTau2017v2VSjet;
   }
 
-  apply_deeptau_lepton_ &= cut_parts.size() == 1;
+  apply_deeptau_lepton_ &= cut_parts.size() == 1 && ! disable_deeptau_lepton_;
   if(apply_deeptau_lepton_)
   {
     // If the DeepTau ID discriminator is the only tau ID we're cutting on, then we should also cut on the loosest
