@@ -96,7 +96,7 @@ if __name__ == '__main__':
     ],
     absEtaBins                       = [ -1., 1.479, 9.9 ],
     ptBins                           = [ 20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200. ],
-    decayModes                       = [ -1, 0, 1, 10 ],
+    decayModes                       = [ -1, 0, 1, 2, 5, 6, 10, 11 ],
     jet_cleaning_by_index            = jet_cleaning_by_index,
     gen_matching_by_index            = gen_matching_by_index,
     central_or_shifts                = central_or_shifts,

@@ -193,11 +193,14 @@ struct denominatorHistManagers
   void fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight)					 
   {
     bool isSelected_decayMode = false;
-    if ( decayMode_ ==  -1                             ) isSelected_decayMode = true;
-    if ( decayMode_ ==   0 && hadTau.decayMode() ==  0 ) isSelected_decayMode = true;
-    if ( decayMode_ ==   1 && hadTau.decayMode() ==  1 ) isSelected_decayMode = true;
-    if ( decayMode_ ==   1 && hadTau.decayMode() ==  2 ) isSelected_decayMode = true;
-    if ( decayMode_ ==  10 && hadTau.decayMode() == 10 ) isSelected_decayMode = true;
+    if ( decayMode_ ==  -1                                                           ) isSelected_decayMode = true;
+    if ( decayMode_ ==   0 &&  hadTau.decayMode() ==  0                              ) isSelected_decayMode = true;
+    if ( decayMode_ ==   1 && (hadTau.decayMode() ==  1 || hadTau.decayMode() ==  2) ) isSelected_decayMode = true;
+    if ( decayMode_ ==   2 && (hadTau.decayMode() ==  1 || hadTau.decayMode() ==  2) ) isSelected_decayMode = true;
+    if ( decayMode_ ==   5 && (hadTau.decayMode() ==  5 || hadTau.decayMode() ==  6) ) isSelected_decayMode = true;
+    if ( decayMode_ ==   6 && (hadTau.decayMode() ==  5 || hadTau.decayMode() ==  6) ) isSelected_decayMode = true;
+    if ( decayMode_ ==  10 &&  hadTau.decayMode() == 10                              ) isSelected_decayMode = true;
+    if ( decayMode_ ==  11 &&  hadTau.decayMode() == 11                              ) isSelected_decayMode = true;
     if ( jet.absEta() > minAbsEta_ && jet.absEta() < maxAbsEta_ && isSelected_decayMode ) {
       jetHistManager_->fillHistograms(jet, evtWeight);
       if ( isMC_ ) {
