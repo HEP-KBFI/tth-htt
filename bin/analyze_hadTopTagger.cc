@@ -54,7 +54,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -404,30 +403,26 @@ int main(int argc, char* argv[])
 
     //std::cout << "before load jets"  << std::endl;
 //--- build collections of jets and select subset of jets passing b-tagging criteria
-    std::vector<RecoJet> jets = jetReader->read();
-    std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> selJets;
-    selJets = jetSelector(jet_ptrs, isHigherPt);
-    std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(selJets);
-    std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(selJets);
+    const std::vector<RecoJet> jets = jetReader->read();
+    const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
+    const std::vector<const RecoJet*> selJets = jetSelector(jet_ptrs, isHigherPt);
+    const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(selJets);
+    const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(selJets);
     //std::cout << "after load jets"  << std::endl;
 //--- build collections of jets reconstructed by hep-top-tagger (HTTv2) algorithm
-    std::vector<RecoJetHTTv2> jetsHTTv2 = jetReaderHTTv2->read();
-    std::vector<const RecoJetHTTv2*> jet_ptrsHTTv2raw = convert_to_ptrs(jetsHTTv2);
-    std::vector<const RecoJetHTTv2*> jet_ptrsHTTv2;
-    jet_ptrsHTTv2 =  jetSelectorHTTv2(jet_ptrsHTTv2raw, isHigherPt);
+    const std::vector<RecoJetHTTv2> jetsHTTv2 = jetReaderHTTv2->read();
+    const std::vector<const RecoJetHTTv2*> jet_ptrsHTTv2raw = convert_to_ptrs(jetsHTTv2);
+    const std::vector<const RecoJetHTTv2*> jet_ptrsHTTv2 = jetSelectorHTTv2(jet_ptrsHTTv2raw, isHigherPt);
     //std::cout << "after load HTT "<< jet_ptrsHTTv2raw.size()<< " " <<  jet_ptrsHTTv2 .size() << std::endl;
 
 //--- build collections of jets reconstructed by anti-kT algorithm with dR=0.8 (AK8)
-    std::vector<RecoJetAK8> jetsAK8 = jetReaderAK8->read();
-    std::vector<const RecoJetAK8*> jet_ptrsAK8raw = convert_to_ptrs(jetsAK8);
-    std::vector<const RecoJetAK8*> jet_ptrsAK8;
-    jet_ptrsAK8 = jetSelectorAK8(jet_ptrsAK8raw , isHigherPt);
+    const std::vector<RecoJetAK8> jetsAK8 = jetReaderAK8->read();
+    const std::vector<const RecoJetAK8*> jet_ptrsAK8raw = convert_to_ptrs(jetsAK8);
+    const std::vector<const RecoJetAK8*> jet_ptrsAK8 = jetSelectorAK8(jet_ptrsAK8raw , isHigherPt);
     //std::cout << "after load ak8"  << std::endl;
 
     // cleaned RecoJet collection from AK8 as well -- to keep b-tag ordering consistent in cat2
-    std::vector<const RecoJet*> cleanedJets;
-    cleanedJets = jetCleaner(selJets, jet_ptrsAK8);
+    const std::vector<const RecoJet*> cleanedJets = jetCleaner(selJets, jet_ptrsAK8);
 
     // natural selection of all ttH(multilepton categories)
     bool passJetSel = false;

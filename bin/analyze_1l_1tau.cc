@@ -50,7 +50,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -472,10 +471,6 @@ int main(int argc, char* argv[])
   inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
-  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
-  preselHadTauSelector.set_if_looser(hadTauSelection_part2);
-  preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
   fakeableHadTauSelector.set_if_looser(hadTauSelection_part2);
   fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
@@ -486,7 +481,6 @@ int main(int argc, char* argv[])
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   switch(hadTauSelection)
   {
-    case kLoose:    tauLevel = std::min(tauLevel, get_tau_id_wp_int(preselHadTauSelector.getSelector().get()));   break;
     case kFakeable: tauLevel = std::min(tauLevel, get_tau_id_wp_int(fakeableHadTauSelector.getSelector().get())); break;
     case kTight:    tauLevel = std::min(tauLevel, get_tau_id_wp_int(tightHadTauSelector.getSelector().get()));    break;
     default: assert(0);
@@ -875,18 +869,15 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     "object multiplicity",
     "trigger",
     ">= 1 presel lepton",
-    //"presel lepton trigger match",
-    ">= 1 presel tau",
+    ">= 1 fakeable tau",
     ">= 2 jets",
-    ">= 2 loose b-jets || 1 medium b-jet (1)",
+    ">= 2 loose b-jets || 1 medium b-jet",
     ">= 1 sel lepton",
     "<= 1 tight leptons",
-    //"fakeable lepton trigger match",
     ">= 1 sel tau",
     "<= 1 veto taus",
     "HLT filter matching",
     ">= 4 jets",
-    ">= 2 loose b-jets || 1 medium b-jet (2)",
     "m(ll) > 12 GeV",
     Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu),
     Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton),
@@ -1076,12 +1067,12 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
-    std::vector<RecoMuon> muons = muonReader->read();
-    std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
-    std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons, isHigherConePt);
-    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons, isHigherConePt);
-    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(fakeableMuons, isHigherConePt);
+    const std::vector<RecoMuon> muons = muonReader->read();
+    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
+    const std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
+    const std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons, isHigherConePt);
+    const std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons, isHigherConePt);
+    const std::vector<const RecoMuon*> tightMuons = tightMuonSelector(fakeableMuons, isHigherConePt);
     if(isDEBUG || run_lumi_eventSelector)
     {
       printCollection("preselMuons",   preselMuons);
@@ -1089,13 +1080,13 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       printCollection("tightMuons",    tightMuons);
     }
 
-    std::vector<RecoElectron> electrons = electronReader->read();
-    std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
-    std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
-    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherConePt);
-    std::vector<const RecoElectron*> preselElectronsUncleaned = preselElectronSelector(electron_ptrs, isHigherConePt);
-    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons, isHigherConePt);
-    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(fakeableElectrons, isHigherConePt);
+    const std::vector<RecoElectron> electrons = electronReader->read();
+    const std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
+    const std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
+    const std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherConePt);
+    const std::vector<const RecoElectron*> preselElectronsUncleaned = preselElectronSelector(electron_ptrs, isHigherConePt);
+    const std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons, isHigherConePt);
+    const std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(fakeableElectrons, isHigherConePt);
     if(isDEBUG || run_lumi_eventSelector)
     {
       printCollection("preselElectrons",   preselElectrons);
@@ -1104,14 +1095,14 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       printCollection("tightElectrons",    tightElectrons);
     }
 
-    std::vector<const RecoLepton*> preselLeptonsFull = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
-    std::vector<const RecoLepton*> preselLeptonsFullUncleaned = mergeLeptonCollections(preselElectronsUncleaned, preselMuons, isHigherConePt);
-    std::vector<const RecoLepton*> fakeableLeptonsFull = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherConePt);
-    std::vector<const RecoLepton*> tightLeptonsFull = mergeLeptonCollections(tightElectrons, tightMuons, isHigherConePt);
+    const std::vector<const RecoLepton*> preselLeptonsFull = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
+    const std::vector<const RecoLepton*> preselLeptonsFullUncleaned = mergeLeptonCollections(preselElectronsUncleaned, preselMuons, isHigherConePt);
+    const std::vector<const RecoLepton*> fakeableLeptonsFull = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherConePt);
+    const std::vector<const RecoLepton*> tightLeptonsFull = mergeLeptonCollections(tightElectrons, tightMuons, isHigherConePt);
 
-    std::vector<const RecoLepton*> preselLeptons = pickFirstNobjects(preselLeptonsFull, 1);
-    std::vector<const RecoLepton*> fakeableLeptons = pickFirstNobjects(fakeableLeptonsFull, 1);
-    std::vector<const RecoLepton*> tightLeptons = getIntersection(fakeableLeptons, tightLeptonsFull, isHigherConePt);
+    const std::vector<const RecoLepton*> preselLeptons = pickFirstNobjects(preselLeptonsFull, 1);
+    const std::vector<const RecoLepton*> fakeableLeptons = pickFirstNobjects(fakeableLeptonsFull, 1);
+    const std::vector<const RecoLepton*> tightLeptons = getIntersection(fakeableLeptons, tightLeptonsFull, isHigherConePt);
 
     std::vector<const RecoLepton*> selLeptons;
     std::vector<const RecoMuon*> selMuons;
@@ -1131,24 +1122,21 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       assert(electronSelection != kLoose && muonSelection != kLoose);
       selMuons = selectObjects(muonSelection, preselMuons, fakeableMuons, tightMuons);
       selElectrons = selectObjects(electronSelection, preselElectrons, fakeableElectrons, tightElectrons);
-      std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
+      const std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
       selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
     }
 
-    std::vector<RecoHadTau> hadTaus = hadTauReader->read();
-    std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
-    std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    std::vector<const RecoHadTau*> preselHadTausFull = preselHadTauSelector(cleanedHadTaus, isHigherPt);
-    std::vector<const RecoHadTau*> fakeableHadTausFull = fakeableHadTauSelector(preselHadTausFull, isHigherPt);
-    std::vector<const RecoHadTau*> tightHadTausFull = tightHadTauSelector(fakeableHadTausFull, isHigherPt);
+    const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
+    const std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
+    const std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
+    const std::vector<const RecoHadTau*> fakeableHadTausFull = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau*> tightHadTausFull = tightHadTauSelector(fakeableHadTausFull, isHigherPt);
 
-    std::vector<const RecoHadTau*> preselHadTaus = pickFirstNobjects(preselHadTausFull, 1);
-    std::vector<const RecoHadTau*> fakeableHadTaus = pickFirstNobjects(fakeableHadTausFull, 1);
-    std::vector<const RecoHadTau*> tightHadTaus = getIntersection(fakeableHadTaus, tightHadTausFull, isHigherPt);
-    std::vector<const RecoHadTau*> selHadTaus = selectObjects(hadTauSelection, preselHadTaus, fakeableHadTaus, tightHadTaus);
+    const std::vector<const RecoHadTau*> fakeableHadTaus = pickFirstNobjects(fakeableHadTausFull, 1);
+    const std::vector<const RecoHadTau*> tightHadTaus = getIntersection(fakeableHadTaus, tightHadTausFull, isHigherPt);
+    const std::vector<const RecoHadTau*> selHadTaus = selectObjects(hadTauSelection, fakeableHadTaus, tightHadTaus);
     if(isDEBUG || run_lumi_eventSelector)
     {
-      printCollection("preselHadTaus",   preselHadTaus);
       printCollection("fakeableHadTaus", fakeableHadTaus);
       printCollection("tightHadTaus",    tightHadTaus);
     }
@@ -1162,18 +1150,18 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     }
 
     // CV: veto events containing more than one tau passing the VTight WP, to avoid overlap with the 1l+1tau category
-    std::vector<const RecoHadTau*> vetoHadTaus = vetoHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau*> vetoHadTaus = vetoHadTauSelector(cleanedHadTaus, isHigherPt);
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
-    std::vector<RecoJet> jets = jetReader->read();
-    std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
+    const std::vector<RecoJet> jets = jetReader->read();
+    const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
+    const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
       jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, fakeableHadTausFull) :
       jetCleaner       (jet_ptrs, fakeableLeptonsFull, fakeableHadTausFull)
     ;
-    std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
-    std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
-    std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
+    const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
+    const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
+    const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selJetsForward = jetSelectorForward(cleanedJets, isHigherPt);
     if(isDEBUG || run_lumi_eventSelector)
     {
@@ -1182,12 +1170,11 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     }
 
 //--- build collections of jets reconstructed by anti-kT algorithm with dR=0.8 (AK8)
-    std::vector<RecoJetAK8> jetsAK8 = jetReaderAK8->read();
-    std::vector<const RecoJetAK8*> jet_ptrsAK8raw1 = convert_to_ptrs(jetsAK8);
-    std::vector<const RecoJetAK8*> jet_ptrsAK8raw = jetSelectorAK8(jet_ptrsAK8raw1, isHigherPt);;
-    std::vector<const RecoJetAK8*> jet_ptrsAK8 = jetCleanerAK8SubJets(jet_ptrsAK8raw, fakeableMuons, fakeableElectrons, selHadTaus);
-    std::vector<const RecoJet*> cleanedJets_fromAK8;
-    cleanedJets_fromAK8 = jetCleaner_large8(selJets, jet_ptrsAK8);
+    const std::vector<RecoJetAK8> jetsAK8 = jetReaderAK8->read();
+    const std::vector<const RecoJetAK8*> jet_ptrsAK8raw1 = convert_to_ptrs(jetsAK8);
+    const std::vector<const RecoJetAK8*> jet_ptrsAK8raw = jetSelectorAK8(jet_ptrsAK8raw1, isHigherPt);;
+    const std::vector<const RecoJetAK8*> jet_ptrsAK8 = jetCleanerAK8SubJets(jet_ptrsAK8raw, fakeableMuons, fakeableElectrons, selHadTaus);
+    const std::vector<const RecoJet*> cleanedJets_fromAK8 = jetCleaner_large8(selJets, jet_ptrsAK8);
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     if(isMC && redoGenMatching && ! fillGenEvtHistograms)
@@ -1230,9 +1217,9 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         electronGenMatcher.addGenHadTauMatch       (preselElectrons, genHadTaus);
         electronGenMatcher.addGenJetMatch          (preselElectrons, genJets);
 
-        hadTauGenMatcher.addGenLeptonMatchByIndex(preselHadTaus, hadTauGenMatch, GenParticleType::kGenAnyLepton);
-        hadTauGenMatcher.addGenHadTauMatch       (preselHadTaus, genHadTaus);
-        hadTauGenMatcher.addGenJetMatch          (preselHadTaus, genJets);
+        hadTauGenMatcher.addGenLeptonMatchByIndex(cleanedHadTaus, hadTauGenMatch, GenParticleType::kGenAnyLepton);
+        hadTauGenMatcher.addGenHadTauMatch       (cleanedHadTaus, genHadTaus);
+        hadTauGenMatcher.addGenJetMatch          (cleanedHadTaus, genJets);
 
         jetGenMatcher.addGenLeptonMatch    (selJets, genLeptons);
         jetGenMatcher.addGenHadTauMatch    (selJets, genHadTaus);
@@ -1249,9 +1236,9 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
         electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
 
-        hadTauGenMatcher.addGenLeptonMatch(preselHadTaus, genLeptons);
-        hadTauGenMatcher.addGenHadTauMatch(preselHadTaus, genHadTaus);
-        hadTauGenMatcher.addGenJetMatch   (preselHadTaus, genJets);
+        hadTauGenMatcher.addGenLeptonMatch(fakeableHadTaus, genLeptons);
+        hadTauGenMatcher.addGenHadTauMatch(fakeableHadTaus, genHadTaus);
+        hadTauGenMatcher.addGenJetMatch   (fakeableHadTaus, genJets);
 
         jetGenMatcher.addGenLeptonMatch(selJets, genLeptons);
         jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus);
@@ -1285,24 +1272,24 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     cutFlowTable.update("presel lepton trigger match", evtWeight_inclusive);
     cutFlowHistManager->fillHistograms("presel lepton trigger match", evtWeight_inclusive);*/
 
-    // require presence of at least two hadronic taus passing loose preselection criteria
-    // (do not veto events with more than two loosely selected hadronic tau candidates,
-    //  as sample of hadronic tau candidates passing loose preselection criteria contains significant contamination from jets)
-    if ( !(preselHadTausFull.size() >= 1) ) continue;
-    cutFlowTable.update(">= 1 presel tau", evtWeight_inclusive);
-    cutFlowHistManager->fillHistograms(">= 1 presel tau", evtWeight_inclusive);
-    const RecoHadTau* preselHadTau = preselHadTausFull[0];
-    const hadTauChargeFlipGenMatchEntry& preselHadTau_genMatch = getHadTauChargeFlipGenMatch(hadTauGenMatch_definitions, preselHadTau);
-    int idxPreselHadTau_genMatch = preselHadTau_genMatch.idx_;
-    assert(idxPreselHadTau_genMatch != kGen_HadTauUndefined1);
+    // require presence of at least one hadronic tau passing fakeable preselection criteria
+    // (do not veto events with more than one fakeable selected hadronic tau candidates,
+    //  as sample of hadronic tau candidates passing fakeable preselection criteria contains significant contamination from jets)
+    if ( !(fakeableHadTausFull.size() >= 1) ) continue;
+    cutFlowTable.update(">= 1 fakeable tau", evtWeight_inclusive);
+    cutFlowHistManager->fillHistograms(">= 1 fakeable tau", evtWeight_inclusive);
+    const RecoHadTau* fakeableHadTau = fakeableHadTaus[0];
+    const hadTauChargeFlipGenMatchEntry& fakeableHadTau_genMatch = getHadTauChargeFlipGenMatch(hadTauGenMatch_definitions, fakeableHadTau);
+    int idxFakeableHadTau_genMatch = fakeableHadTau_genMatch.idx_;
+    assert(idxFakeableHadTau_genMatch != kGen_HadTauUndefined1);
 
     // apply requirement on jets (incl. b-tagged jets) on preselection level
     if ( !(selJets.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 jets", evtWeight_inclusive);
     cutFlowHistManager->fillHistograms(">= 2 jets", evtWeight_inclusive);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
-    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (1)", evtWeight_inclusive);
-    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)", evtWeight_inclusive);
+    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet", evtWeight_inclusive);
+    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet", evtWeight_inclusive);
 
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
@@ -1538,16 +1525,6 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     }
     cutFlowTable.update(">= 4 jets", evtWeight);
     cutFlowHistManager->fillHistograms(">= 4 jets", evtWeight);
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) )
-    {
-      if(run_lumi_eventSelector)
-      {
-        std::cout << "event " << eventInfo.str() << " FAILS to have at least 2 loose or 1 medium jet(s)\n";
-      }
-      continue;
-    }
-    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
-    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
 
     const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptonsFullUncleaned);
     if ( failsLowMassVeto ) {
@@ -1837,90 +1814,6 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     const double mbb           = ( selBJets_medium.size() >= 2 ) ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
     const double mbb_loose     = ( selBJets_loose.size()  >= 2 ) ? (selBJets_loose[0]->p4()  + selBJets_loose[1]->p4()).mass()  : -1.;
 
-/*
-//--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Matthias for 1l_1tau category
-    const std::map<std::string, double> mvaInputsplainKin_ttV = {
-      { "avg_dr_jet",         avg_dr_jet         },
-      { "dr_taus",            dr_taus            },
-      { "ptmiss",             ptmiss             },
-      { "lep_conePt",         lep_conePt         },
-      { "mT_lep",             mT_lep             },
-      { "mTauTauVis",         mTauTauVis         },
-      { "mindr_lep_jet",      mindr_lep_jet      },
-      { "mindr_tau1_jet",     mindr_tau1_jet     },
-      { "dr_lep_tau_ss",      dr_lep_tau_ss      },
-      { "dr_lep_tau_sublead", dr_lep_tau_sublead },
-      { "costS_tau",          costS_tau          },
-      { "tau1_pt",            tau1_pt            },
-      { "tau2_pt",            tau2_pt            },
-    };
-    const double mvaOutput_plainKin_ttV = mva_plainKin_ttV(mvaInputsplainKin_ttV);
-
-    const std::map<std::string, double> mvaInputsplainKin_tt = {
-      { "avg_dr_jet",     avg_dr_jet       },
-      { "dr_taus",        dr_taus          },
-      { "ptmiss",         ptmiss           },
-      { "mT_lep",         mT_lep           },
-      { "nJet",           nJet             },
-      { "mTauTauVis",     mTauTauVis       },
-      { "mindr_lep_jet",  mindr_lep_jet    },
-      { "mindr_tau1_jet", mindr_tau1_jet   },
-      { "mindr_tau2_jet", mindr_tau2_jet   },
-      { "dr_lep_tau_lead", dr_lep_tau_lead },
-      { "nBJetLoose",     nBJetLoose       },
-      { "tau1_pt",        tau1_pt          },
-      { "tau2_pt",        tau2_pt          },
-    };
-    const double mvaOutput_plainKin_tt = mva_plainKin_tt(mvaInputsplainKin_tt);
-
-    const std::map<std::string, double> mvaInputVariables_plainKin_1B = {
-      { "BDTtt",  mvaOutput_plainKin_ttV },
-      { "BDTttV", mvaOutput_plainKin_tt },
-    };
-    const double mvaOutput_plainKin_1B_VT = mva_2lss_plainKin_1B_VT(mvaInputVariables_plainKin_1B);
-
-    const std::map<std::string, double> mvaInputsHTT_sum = {
-      { "avg_dr_jet",      avg_dr_jet      },
-      { "dr_taus",         dr_taus         },
-      { "ptmiss",          ptmiss          },
-      { "lep_conePt",      lep_conePt      },
-      { "mT_lep",          mT_lep          },
-      { "mTauTauVis",      mTauTauVis      },
-      { "mindr_lep_jet",   mindr_lep_jet   },
-      { "mindr_tau1_jet",  mindr_tau1_jet  },
-      { "mindr_tau2_jet",  mindr_tau2_jet  },
-      { "dr_lep_tau_ss",   dr_lep_tau_ss   },
-      { "dr_lep_tau_lead", dr_lep_tau_lead },
-      { "costS_tau",       costS_tau       },
-      { "nBJetLoose",      nBJetLoose      },
-      { "tau1_pt",         tau1_pt         },
-      { "tau2_pt",         tau2_pt         },
-      { "HTT",             HTT             },
-      { "HadTop_pt",       HadTop_pt       },
-    };
-    const double mvaOutput_HTT_SUM_VT = mva_HTT_sum_VT(mvaInputsHTT_sum);
-
-    const std::map<std::string, double> mvaInputsplainKin_sum = {
-      {"avg_dr_jet",      avg_dr_jet      },
-      {"dr_taus",         dr_taus         },
-      {"ptmiss",          ptmiss          },
-      {"lep_conePt",      lep_conePt      },
-      {"mT_lep",          mT_lep          },
-      {"mTauTauVis",      mTauTauVis      },
-      {"mindr_lep_jet",   mindr_lep_jet   },
-      {"mindr_tau1_jet",  mindr_tau1_jet  },
-      {"mindr_tau2_jet",  mindr_tau2_jet  },
-      {"nJet",           nJet             },
-      {"dr_lep_tau_ss",   dr_lep_tau_ss   },
-      {"dr_lep_tau_lead", dr_lep_tau_lead },
-      {"costS_tau",       costS_tau       },
-      {"nBJetLoose",      nBJetLoose      },
-      {"tau1_pt",         tau1_pt         },
-      {"tau2_pt",         tau2_pt         },
-    };
-    const double mvaOutput_plainKin_SUM_VT = mva_plainKin_sum_VT(mvaInputsplainKin_sum);
- */
-
   const std::map<std::string, double> mvaInputVariables_mva_XGB_1l_1tau_16_variables{
    {"mindr_lep_jet",    std::min(10., comp_mindr_lep1_jet(*selLepton, selJets))},
    {"mindr_tau_jet",    TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets))},
@@ -2185,7 +2078,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         snm->read(selLeptons);
         snm->read(preselMuons,     fakeableMuons,     tightMuons);
         snm->read(preselElectrons, fakeableElectrons, tightElectrons);
-        snm->read(preselHadTausFull);
+        snm->read(fakeableHadTausFull);
         snm->read(selJets);
 
         snm->read({ triggers_1e, triggers_1e1tau, triggers_1mu, triggers_1mu1tau });

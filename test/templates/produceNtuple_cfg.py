@@ -20,7 +20,7 @@ process.produceNtuple = cms.PSet(
     era = cms.string(''),
 
     leptonSelection = cms.string(''),
-    hadTauSelection = cms.string(''),
+    hadTauWP        = cms.string(''),
 
     minNumLeptons             = cms.int32(-1),
     minNumHadTaus             = cms.int32(-1),
