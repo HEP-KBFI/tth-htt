@@ -781,6 +781,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
               os.fsync(postfit_script_file.fileno())
             add_chmodX(postfit_script_path)
 
+      key_prep_dcard_dir = getKey("prepareDatacards")
       fit_value_file = os.path.join(combine_output_dir, 'fit_values.txt')
       makefile_template_file = os.path.join(jinja_template_dir, 'Makefile_postFit.template')
       makefile_template = open(makefile_template_file, 'r').read()
@@ -790,8 +791,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         numerator_histogram = self.numerator_histogram,
         denominator_histogram = self.denominator_histogram,
         scripts_dir = self.dirs[DKEY_SCRIPTS],
-        numerator_datacard = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % self.numerator_histogram),
-        denominator_datacard = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % self.denominator_histogram),
+        numerator_datacard = os.path.join(self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_%s.root" % self.numerator_histogram),
+        denominator_datacard = os.path.join(self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_%s.root" % self.denominator_histogram),
         output_dir = combine_output_dir,
         numerator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonFakeRate_%s' % self.numerator_histogram),
         denominator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonFakeRate_%s' % self.denominator_histogram),
