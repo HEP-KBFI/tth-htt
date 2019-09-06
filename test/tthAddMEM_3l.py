@@ -18,7 +18,6 @@ parser = tthAnalyzeParser(isAddMEM = True)
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_nonnominal()
-parser.add_tau_id_wp()
 parser.add_use_home(False)
 parser.add_jet_cleaning()
 parser.add_argument('-n', '--max-mem-integrations',

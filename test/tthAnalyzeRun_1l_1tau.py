@@ -22,6 +22,7 @@ parser.add_sys(sys_choices)
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_tau_id_wp()
+parser.add_tau_id()
 parser.add_hlt_filter()
 parser.add_files_per_job(files_per_job = 2)
 parser.add_use_home()
@@ -51,6 +52,7 @@ files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
+tau_id            = args.tau_id
 
 # Use the arguments
 central_or_shifts = []
@@ -63,13 +65,27 @@ lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
-hadTau_selection = "dR03mvaMedium"
+hadTauWP_map = {
+  'dR03mva' : 'Medium',
+  'deepVSj' : 'Medium',
+}
+hadTau_selection = tau_id + hadTauWP_map[tau_id]
+
+hadTauWP_veto_map = {
+  'dR03mva' : 'Medium',
+  'deepVSj' : 'Medium',
+}
+hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == "default":
   samples = load_samples(era)
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT_DY")
-  hadTau_selection_relaxed = "dR03mvaLoose"
+  hadTauWP_map_relaxed = {
+    'dR03mva' : 'Loose',
+    'deepVSj' : 'Loose',
+  }
+  hadTau_selection_relaxed = tau_id + hadTauWP_map_relaxed[tau_id]
 elif mode == "sync":
   samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
 else:
@@ -112,7 +128,7 @@ if __name__ == '__main__':
     cfgFile_analyze                       = "analyze_1l_1tau_cfg.py",
     samples                               = samples,
     hadTau_selection                      = hadTau_selection,
-    hadTau_selection_veto                 = "dR03mvaMedium", # To avoid overlap w/ 1l+2tau SR
+    hadTau_selection_veto                 = hadTau_selection_veto,
     chargeSumSelections                   = [ "disabled" ], # CV: setting chargeSumSelections to 'disabled' will run OS and SS lepton+tau charge selections as separate categories
     applyFakeRateWeights                  = "2L",
     jet_cleaning_by_index                 = jet_cleaning_by_index,

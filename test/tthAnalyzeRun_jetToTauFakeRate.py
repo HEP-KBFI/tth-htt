@@ -17,7 +17,7 @@ systematics.full = systematics.an_jetToTauFR
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp("dR03mvaVVLoose")
+parser.add_tau_id_wp(required = True, choices = [ 'dR03mvaVVLoose', 'dR03mvaVLoose', 'deepVSjVVVLoose' ])
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
@@ -56,6 +56,25 @@ lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
+tau_id = tau_id_wp[:7]
+hadTau_selection_tight_map = {
+  'dR03mva' : 'Loose',
+  'deepVSj' : 'Loose',
+}
+hadTau_selection_tight = tau_id + hadTau_selection_tight_map[tau_id]
+
+hadTau_WP_range = [ 'VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight' ]
+hadTau_denominator_wp = tau_id_wp[7:]
+hadTau_numerators = [
+  tau_id + hadTau_WP_range[idx] for idx in range(hadTau_WP_range.index(hadTau_denominator_wp) + 1, len(hadTau_WP_range))
+]
+assert(tau_id_wp not in hadTau_numerators)
+logging.info(
+  'Using {} for the denomintor and the following tau ID WPs for the numerator: {}'.format(
+    tau_id_wp,
+    ', '.join(hadTau_numerators)),
+)
+
 samples = load_samples(era)
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
@@ -85,16 +104,9 @@ if __name__ == '__main__':
     jet_maxPt                        = 1.e+6,
     jet_minAbsEta                    = -1.,
     jet_maxAbsEta                    = 2.3,
-    hadTau_selection_tight           = "dR03mvaLoose",
+    hadTau_selection_tight           = hadTau_selection_tight,
     hadTau_selection_denominator     = tau_id_wp,
-    hadTau_selections_numerator      = [
-      "dR03mvaVLoose",
-      "dR03mvaLoose",
-      "dR03mvaMedium",
-      "dR03mvaTight",
-      "dR03mvaVTight",
-      "dR03mvaVVTight",
-    ],
+    hadTau_selections_numerator      = hadTau_numerators,
     absEtaBins                       = [ -1., 1.479, 9.9 ],
     ptBins                           = [ 20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200. ],
     decayModes                       = [ -1, 0, 1, 2, 5, 6, 10, 11 ],

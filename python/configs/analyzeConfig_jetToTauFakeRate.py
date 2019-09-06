@@ -153,6 +153,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       lines.append("process.comp_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
       lines.append("process.comp_jetToTauFakeRate.ptBins = cms.vdouble(%s)" % jobOptions['ptBins'])
       lines.append("process.comp_jetToTauFakeRate.decayModes = cms.vint32(%s)" % jobOptions['decayModes'])
+      lines.append("process.comp_jetToTauFakeRate.hadTauSelections = cms.vstring(%s)" % jobOptions['hadTauSelections'])
       lines.append("process.comp_jetToTauFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
       create_cfg(self.cfgFile_comp_jetToTauFakeRate, jobOptions['cfgFile_modified'], lines)
 
@@ -347,6 +348,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         'absEtaBins' : self.absEtaBins,
         'ptBins' : self.ptBins,
         'decayModes' : self.decayModes,
+        'hadTauSelections' : self.hadTau_selections_numerator,
         'plots_outputFileName' : os.path.join(self.dirs[key_comp_jetToTauFakeRate_dir][DKEY_PLOT], "comp_jetToTauFakeRate.png")
       }
       self.createCfg_comp_jetToTauFakeRate(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job])

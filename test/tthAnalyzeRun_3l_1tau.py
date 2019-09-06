@@ -25,6 +25,7 @@ parser.add_preselect()
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_tau_id_wp()
+parser.add_tau_id()
 parser.add_hlt_filter()
 parser.add_files_per_job()
 parser.add_use_home()
@@ -57,6 +58,7 @@ use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 sideband          = args.sideband
+tau_id            = args.tau_id
 
 # Use the arguments
 central_or_shifts = []
@@ -78,8 +80,13 @@ elif sideband == 'only':
 else:
   raise ValueError("Invalid choice for the sideband: %s" % sideband)
 
-MEMbranch        = ''
-hadTau_selection = "dR03mvaLoose"
+MEMbranch = ''
+
+hadTauWP_map = {
+  'dR03mva' : 'Loose',
+  'deepVSj' : 'Loose',
+}
+hadTau_selection = tau_id + hadTauWP_map[tau_id]
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
@@ -90,12 +97,20 @@ elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT")
-  hadTau_selection_relaxed = "dR03mvaVVLoose"
+  hadTauWP_map_relaxed = {
+    'dR03mva' : 'VVLoose',
+    'deepVSj' : 'VVLoose',
+  }
+  hadTau_selection_relaxed = tau_id + hadTauWP_map_relaxed[tau_id]
 elif mode == "forBDTtraining_afterAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT_addMEM_3l1tau")
-  hadTau_selection_relaxed = "dR03mvaVVLoose"
+  hadTauWP_map_relaxed = {
+    'dR03mva' : 'VVLoose',
+    'deepVSj' : 'VVLoose',
+  }
+  hadTau_selection_relaxed = tau_id + hadTauWP_map_relaxed[tau_id]
   MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_{}'.format(hadTau_selection_relaxed)
 elif mode.startswith("sync"):
   if mode == "sync_wMEM":

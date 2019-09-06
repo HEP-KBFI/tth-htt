@@ -534,7 +534,7 @@ class analyzeConfig(object):
         self.hadTau_selection_relaxed = hadTau_selection_relaxed
         if self.hadTau_selection_relaxed == "dR03mvaVLoose":
             pass
-        if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
+        elif self.hadTau_selection_relaxed == "dR03mvaVVLoose":
             self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
         self.isBDTtraining = True
 

@@ -78,6 +78,7 @@ parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_hlt_filter()
 parser.add_tau_id_wp()
+parser.add_tau_id()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
@@ -119,6 +120,7 @@ hlt_filter        = args.hlt_filter
 systematics_label = args.systematics
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
+tau_id            = args.tau_id
 
 # Custom arguments
 channels = args.channels
@@ -148,6 +150,7 @@ if __name__ == '__main__':
     use_nonnominal     = use_nonnominal,
     hlt_filter         = hlt_filter,
     tau_id_wp          = tau_id_wp,
+    tau_id             = tau_id,
     use_home           = use_home,
     systematics_label  = systematics_label,
     jet_cleaning       = jet_cleaning,

@@ -19,7 +19,8 @@ parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
 parser.add_rle_select()
 parser.add_nonnominal()
-parser.add_tau_id_wp("dR03mvaVLoose")
+parser.add_tau_id_wp()
+parser.add_tau_id()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
@@ -30,8 +31,8 @@ parser.add_argument('-o', '--output-tree',
 parser.add_argument('-M', '--with-mem',
   dest = 'with_mem', action = 'store_true', default = False, help = 'R|Use Ntuple w/ MEM included',
 )
-parser.add_argument('-t', '--tau-wp-ak8',
-  type = str, dest = 'tau_wp_ak8', metavar = 'wp', default = 'dR03mvaMedium', required = False,
+parser.add_argument('-T', '--tau-wp-ak8',
+  type = str, dest = 'tau_wp_ak8', metavar = 'wp', default = '', required = False,
   help = 'R|Tau ID WP of the taus that are used in the cleaning of AK8 jets',
 )
 args = parser.parse_args()
@@ -55,6 +56,7 @@ tau_id_wp         = args.tau_id_wp
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
+tau_id            = args.tau_id
 
 # Custom arguments
 output_tree = args.output_tree
@@ -69,6 +71,22 @@ for systematic_label in systematics_label:
       central_or_shifts.append(central_or_shift)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
+
+hadTau_WP_map = {
+  'dR03mva' : 'VLoose',
+  'deepVSj' : 'VLoose',
+}
+hadTau_WP = tau_id + hadTau_WP_map[tau_id]
+if tau_id_wp:
+  hadTau_WP = tau_id_wp
+
+hadTau_WP_ak8_map = {
+  'dR03mva' : 'Medium',
+  'deepVSj' : 'Medium',
+}
+hadTau_WP_ak8 = tau_id + hadTau_WP_ak8_map[tau_id]
+if tau_wp_ak8:
+  hadTau_WP_ak8 = tau_wp_ak8
 
 if with_mem:
   samples = load_samples(era, suffix = "addMEM_sync" if use_nonnominal else "addMEM_sync_nom")
@@ -100,8 +118,8 @@ if __name__ == '__main__':
     dry_run                 = dry_run,
     isDebug                 = debug,
     rle_select              = rle_select,
-    hadTauSelection_tauIdWP = tau_id_wp,
-    hadTauAk8Clean_tauIdWP  = tau_wp_ak8,
+    hadTauSelection_tauIdWP = hadTau_WP,
+    hadTauAk8Clean_tauIdWP  = hadTau_WP_ak8,
     jet_cleaning_by_index   = jet_cleaning_by_index,
     gen_matching_by_index   = gen_matching_by_index,
     central_or_shifts       = central_or_shifts,

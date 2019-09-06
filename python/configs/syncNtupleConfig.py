@@ -65,6 +65,7 @@ class syncNtupleConfig:
         use_nonnominal,
         hlt_filter,
         tau_id_wp,
+        tau_id,
         use_home,
         systematics_label,
         jet_cleaning,
@@ -108,6 +109,8 @@ class syncNtupleConfig:
       additional_args += " -O"
     if hlt_filter:
       additional_args += " -H"
+    if tau_id:
+      additional_args += " -t %s" % tau_id
     if self.running_method:
       additional_args += " -R %s" % self.running_method
 
