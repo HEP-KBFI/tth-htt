@@ -94,6 +94,8 @@ elif mode == "forBDTtraining":
     'dR03mva' : 'VVLoose',
     'deepVSj' : 'VVLoose',
   }
+  if args.tau_id_wp:
+    tau_id = args.tau_id[:7]
   hadTau_selection_relaxed = tau_id + hadTauWP_map_relaxed[tau_id]
 elif mode == "sync":
   if use_preselected:

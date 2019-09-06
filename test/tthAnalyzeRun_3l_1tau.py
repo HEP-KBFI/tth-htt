@@ -101,6 +101,8 @@ elif mode == "forBDTtraining_beforeAddMEM":
     'dR03mva' : 'VVLoose',
     'deepVSj' : 'VVLoose',
   }
+  if args.tau_id_wp:
+    tau_id = args.tau_id[:7]
   hadTau_selection_relaxed = tau_id + hadTauWP_map_relaxed[tau_id]
 elif mode == "forBDTtraining_afterAddMEM":
   if use_preselected:
@@ -110,6 +112,8 @@ elif mode == "forBDTtraining_afterAddMEM":
     'dR03mva' : 'VVLoose',
     'deepVSj' : 'VVLoose',
   }
+  if args.tau_id_wp:
+    tau_id = args.tau_id[:7]
   hadTau_selection_relaxed = tau_id + hadTauWP_map_relaxed[tau_id]
   MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_{}'.format(hadTau_selection_relaxed)
 elif mode.startswith("sync"):

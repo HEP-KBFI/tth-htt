@@ -84,7 +84,9 @@ elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT")
-  hadTau_selection_relaxed = hadTau_selection
+  if args.tau_id_wp:
+    tau_id = args.tau_id[:7]
+  hadTau_selection_relaxed = tau_id + hadTauWP_map[tau_id]
 elif mode == "sync":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples in sync")
