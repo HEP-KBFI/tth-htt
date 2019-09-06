@@ -7,7 +7,7 @@
 
 #include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
-std::map<TauID, std::string> RecoHadTauSelectorBase::nominal_fakeable_wp_ = {
+const std::map<TauID, std::string> RecoHadTauSelectorBase::nominal_fakeable_wp_ = {
   { TauID::MVAoldDM2017v2,     "VLoose"   },
   { TauID::MVAoldDMdR032017v2, "VLoose"   },
   { TauID::DeepTau2017v2VSjet, "VVVLoose" },
@@ -26,6 +26,7 @@ RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
   , apply_decayModeFinding_(true)
   , min_antiElectron_(DEFAULT_TAUID_ID_VALUE)
   , min_antiMuon_(DEFAULT_TAUID_ID_VALUE)
+  , apply_deeptau_lepton_(false)
 {
   for(const auto & kv: TauID_levels)
   {
@@ -108,16 +109,22 @@ RecoHadTauSelectorBase::get_min_antiMuon() const
   return min_antiMuon_;
 }
 
+bool
+RecoHadTauSelectorBase::get_deeptau_lepton() const
+{
+  return apply_deeptau_lepton_;
+}
+
 void
 RecoHadTauSelectorBase::set(const std::string & cut)
 {
   if(cut.empty())
   {
-    return;
+    throw cmsException(this, __func__, __LINE__) << "Empty cut supplied";
   }
 
+  apply_deeptau_lepton_ = false;
   const std::vector<std::string> cut_parts = edm::tokenize(cut, TAU_WP_SEPARATOR);
-
   for(const std::string & cut_part: cut_parts)
   {
     const std::string mva_type = cut_part.substr(0, 7);
@@ -138,7 +145,18 @@ RecoHadTauSelectorBase::set(const std::string & cut)
       apply_decayModeFinding_ = false;
       decayMode_blacklist_ = { 5, 6 }; // exclude DMs 5 & 6
     }
+    apply_deeptau_lepton_ |= tauId == TauID::DeepTau2017v2VSjet;
   }
+
+  apply_deeptau_lepton_ &= cut_parts.size() == 1;
+  if(apply_deeptau_lepton_)
+  {
+    // If the DeepTau ID discriminator is the only tau ID we're cutting on, then we should also cut on the loosest
+    // WP of antt-e and anti-mu tau ID discriminators; if there are more tau IDs than just DeepTau ID, then we should
+    // avoid cutting on these extra discriminators.
+    std::cout << "Applying additional loosest anti-e and anti-mu DeepTau discriminator cuts\n";
+  }
+
   cut_ = cut;
 }
 
@@ -400,6 +418,26 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
       }
     }
     return false;
+  }
+
+  if(apply_deeptau_lepton_)
+  {
+    if(hadTau.id_mva(TauID::DeepTau2017v2VSmu) < 1)
+    {
+      if(debug_)
+      {
+        std::cout << "FAILS DeepTau anti-mu MVA cut (" << hadTau.id_mva(TauID::DeepTau2017v2VSmu) << ")\n";
+      }
+      return false;
+    }
+    if(hadTau.id_mva(TauID::DeepTau2017v2VSe) < 1)
+    {
+      if(debug_)
+      {
+        std::cout << "FAILS DeepTau anti-e MVA cut (" << hadTau.id_mva(TauID::DeepTau2017v2VSe) << ")\n";
+      }
+      return false;
+    }
   }
 
   if(hadTau.antiElectron() < min_antiElectron_)

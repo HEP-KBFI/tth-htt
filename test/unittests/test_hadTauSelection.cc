@@ -76,6 +76,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("dR03mvaVVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == "dR03mvaVVLoose");
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -84,6 +85,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("dR03mvaVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == "dR03mvaVLoose");
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -92,6 +94,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("dR03mvaLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == "dR03mvaLoose");
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -100,6 +103,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("dR03mvaMedium");
     CPPUNIT_ASSERT(selector.getSelector().get() == "dR03mvaMedium");
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -108,6 +112,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("dR03mvaTight");
     CPPUNIT_ASSERT(selector.getSelector().get() == "dR03mvaTight");
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -116,6 +121,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("dR03mvaVTight");
     CPPUNIT_ASSERT(selector.getSelector().get() == "dR03mvaVTight");
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -124,6 +130,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("dR03mvaVVTight");
     CPPUNIT_ASSERT(selector.getSelector().get() == "dR03mvaVVTight");
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   //
@@ -134,6 +141,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("deepVSjVVVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == "deepVSjVVVLoose");
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -142,6 +150,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("deepVSjVVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == "deepVSjVVLoose");
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -150,6 +159,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("deepVSjVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == "deepVSjVLoose");
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -158,6 +168,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("deepVSjLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == "deepVSjLoose");
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -166,6 +177,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("deepVSjMedium");
     CPPUNIT_ASSERT(selector.getSelector().get() == "deepVSjMedium");
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -174,6 +186,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("deepVSjTight");
     CPPUNIT_ASSERT(selector.getSelector().get() == "deepVSjTight");
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -182,6 +195,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("deepVSjVTight");
     CPPUNIT_ASSERT(selector.getSelector().get() == "deepVSjVTight");
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -190,6 +204,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("deepVSjVVTight");
     CPPUNIT_ASSERT(selector.getSelector().get() == "deepVSjVVTight");
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   //
@@ -200,6 +215,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("dR03mvaVVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == "dR03mvaVVLoose");
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -208,6 +224,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("dR03mvaVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DR03MVA);
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -216,6 +233,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("dR03mvaLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DR03MVA);
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -224,6 +242,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("dR03mvaMedium");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DR03MVA);
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -232,6 +251,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("dR03mvaTight");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DR03MVA);
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -240,6 +260,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("dR03mvaVTight");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DR03MVA);
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -248,6 +269,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("dR03mvaVVTight");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DR03MVA);
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   //
@@ -258,6 +280,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("deepVSjVVVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DEEPVSJ);
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -266,6 +289,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("deepVSjVVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DEEPVSJ);
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -274,6 +298,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("deepVSjVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DEEPVSJ);
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -282,6 +307,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("deepVSjLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DEEPVSJ);
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -290,6 +316,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("deepVSjMedium");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DEEPVSJ);
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -298,6 +325,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("deepVSjTight");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DEEPVSJ);
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -306,6 +334,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("deepVSjVTight");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DEEPVSJ);
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -314,6 +343,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("deepVSjVVTight");
     CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DEEPVSJ);
+    CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 
   //
@@ -324,6 +354,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set("dR03mvaVVLoose&dR05mvaVVLoose&deepVSjVVVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == "dR03mvaVVLoose&dR05mvaVVLoose&deepVSjVVVLoose");
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 
   void
@@ -332,6 +363,7 @@ public:
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("dR03mvaVVLoose&dR05mvaVVLoose&deepVSjVVVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get() == "dR03mvaVVLoose&dR05mvaVVLoose&deepVSjVVVLoose");
+    CPPUNIT_ASSERT(! selector.getSelector().get_deeptau_lepton());
   }
 };
 
