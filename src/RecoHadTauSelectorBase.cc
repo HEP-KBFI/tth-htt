@@ -7,6 +7,12 @@
 
 #include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
+std::map<TauID, std::string> RecoHadTauSelectorBase::nominal_fakeable_wp_ = {
+  { TauID::MVAoldDM2017v2,     "VLoose"   },
+  { TauID::MVAoldDMdR032017v2, "VLoose"   },
+  { TauID::DeepTau2017v2VSjet, "VVVLoose" },
+};
+
 RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
                                                int index,
                                                bool debug,
@@ -151,12 +157,20 @@ RecoHadTauSelectorBase::set_if_looser(const std::string & cut)
   }
   std::cout << "Attempting to replace cut from '" << cut_ << "' to '" << cut << "'\n";
 
-  // if the old cut is an OR of multiple WPs, then throw an error; otherwise loop over individual cuts and decide:
-  // i) if the MVA WP from the new cut is strictly looser than the old WP, then replace it w/ the new WP
-  // ii) if the MVA WP from the new cut is not strictly looser than the old WP, then keep the cut as is
+  // 0) if the old cut is an OR of multiple WPs, then throw an error
+  // 1) if the new cut is an OR of multiple WPs, then override the old WP with the new WPs (use case: Ntuple production)
+  // 2) if the MVA IDs of old and new cut are the same (default use case):
+  //   i) if the MVA WP from the new cut is strictly looser than the old WP, then replace it w/ the new WP (use case: BDT training)
+  //   ii) if the MVA WP from the new cut is not strictly looser than the old WP, then keep the cut as is (default use case)
+  // 3) if the MVA IDs of old and new cut are different (use case: switching from MVAv2 to DeepTau ID):
+  //   i) if the new cut is strictly looser than the nominal fakeable WP of the new tau ID, then override the old WP (use case: BDT training)
+  //   ii) if the new cut is the same or tighter than the nominal fakeable WP of the new tau ID, then override the old WP
+  //       with the nominal fakeable WP of the new tau ID (default use case)
+
   const std::vector<std::string> cut_parts_old = edm::tokenize(cut_, TAU_WP_SEPARATOR);
   if(cut_parts_old.size() != 1)
   {
+    // case 0:
     throw cmsException(this, __func__, __LINE__)
         << "Can overwrite a single tau ID WP but got more of them: " << boost::algorithm::join(cut_parts_old, ", ")
      ;
@@ -168,34 +182,66 @@ RecoHadTauSelectorBase::set_if_looser(const std::string & cut)
 
   std::string cut_new = "";
   const std::vector<std::string> cut_parts = edm::tokenize(cut, TAU_WP_SEPARATOR);
-  for(const std::string & cut_part: cut_parts)
+  if(cut_parts.size() > 1)
   {
-    const std::string mva_new = cut_part.substr(0, 7);
+    // case 1:
+    cut_new = cut;
+  }
+  else if(cut_parts.size() == 1)
+  {
+    const std::string mva_new = cut.substr(0, 7);
     const TauID tauId_new = TauID_PyMap.at(mva_new);
+    const std::string wp_new  = cut.substr(7);
+    const int wp_int_new = get_tau_id_wp_int(tauId_new, wp_new);
 
-    std::string cut_part_new = cut_part;
     if(tauId_new == tauId_old)
     {
-      const std::string wp_new  = cut_part.substr(7);
-      const int wp_int_new = get_tau_id_wp_int(tauId_new, wp_new);
+      // case 2
       if(wp_int_new < wp_int_old)
       {
-        cut_part_new = mva_old + wp_new;
+        // case 2.i
+        cut_new = mva_old + wp_new;
         std::cout << "Relaxing old cut for '" << mva_new << "' from '" << wp_old << "' to '" << wp_new << "'\n";
       }
       else
       {
-        cut_part_new = mva_old + wp_old;
+        // case 2.ii
+        cut_new = mva_old + wp_old;
         std::cout << "Keeping old cut for '" << mva_new << "' at '" << wp_old << "'\n";
       }
     }
-
-    if(! cut_new.empty())
+    else
     {
-      cut_new += TAU_WP_SEPARATOR;
+      // case 3
+      if(! nominal_fakeable_wp_.count(tauId_new))
+      {
+        throw cmsException(this, __func__, __LINE__)
+          << "Cannot change tau ID WP because fakeable nominal WP missing for tau ID: " << mva_new
+        ;
+      }
+      std::cout << "Changing from '" << mva_new << "' to '" << mva_old << "'\n";
+      const std::string new_nominal_fakeable_wp = nominal_fakeable_wp_.at(tauId_new);
+      const int new_nominal_fakeable_wp_int = get_tau_id_wp_int(tauId_new, new_nominal_fakeable_wp);
+      if(new_nominal_fakeable_wp_int < wp_int_new)
+      {
+        // case 3.i
+        std::cout << "Relaxing the nominal fakeable WP of '" << mva_new << "' from '" << wp_new << "' to '" << new_nominal_fakeable_wp << "'\n";
+
+        cut_new = mva_new + new_nominal_fakeable_wp;
+      }
+      else
+      {
+        // case 3.ii
+        std::cout << "Keeping the nominal fakeable WP of '" << mva_new << "' at '" << new_nominal_fakeable_wp << "'\n";
+        cut_new = mva_new + wp_new;
+      }
     }
-    cut_new += cut_part_new;
   }
+  else
+  {
+    throw cmsException(this, __func__, __LINE__) << "Empty cut supplied";
+  }
+  assert(! cut_new.empty());
 
   if(cut_ != cut_new)
   {

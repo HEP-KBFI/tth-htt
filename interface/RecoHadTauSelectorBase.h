@@ -81,6 +81,9 @@ protected:
   Int_t min_antiElectron_;                ///< lower cut threshold on discriminator against electrons
   Int_t min_antiMuon_;                    ///< lower cut threshold on discriminator against muons
   std::string cut_;
+
+  ///< nominal WP for each tau ID discriminator in fakeable selection
+  static std::map<TauID, std::string> nominal_fakeable_wp_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoHadTauSelectorBase_h
