@@ -1,0 +1,7 @@
+<flags ADD_SUBDIR="1" />
+<bin file="unittests/CppUnit_testdriver.cc,unittests/test_hadTauSelection.cc" name="testHadTauSelection">
+  <use name="DataFormats/Math" />
+  <use name="tthAnalysis/HiggsToTauTau" />
+  <use name="cppunit" />
+  <Flags CXXFLAGS="-g0 -O3 -ggdb0 -Wall -Wextra -Wpedantic -Werror" />
+</bin>
