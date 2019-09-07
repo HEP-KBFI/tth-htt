@@ -335,6 +335,7 @@ RecoJetReader::read() const
         gInstance->jet_puId_[idxJet],
         gInstance->jet_genMatchIdx_[idxJet],
         gInstance->jet_jetIdx_[idxJet],
+        btag_,
       });
 
       RecoJet & jet = jets.back();

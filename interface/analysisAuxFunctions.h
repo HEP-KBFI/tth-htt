@@ -369,6 +369,10 @@ double
 get_BtagWeight(const std::vector<const RecoJet *> & jets);
 
 double
+get_BtagWeight(const std::vector<const RecoJet *> & jets,
+               int central_or_shift);
+
+double
 getHadTauEScorrFactor(int era,
                       int decayMode,
                       int central_or_shift);

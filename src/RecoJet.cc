@@ -16,7 +16,8 @@ RecoJet::RecoJet(const GenJet & jet,
                  Int_t jetId,
                  Int_t puId,
                  Int_t genMatchIdx,
-                 Int_t idx)
+                 Int_t idx,
+                 Btag btag)
   : RecoJetBase(jet, idx)
   , jetCharge_(charge)
   , BtagCSV_(BtagCSV)
@@ -28,6 +29,7 @@ RecoJet::RecoJet(const GenJet & jet,
   , jetId_(jetId)
   , puId_(puId)
   , genMatchIdx_(genMatchIdx)
+  , btag_(btag)
 {}
 
 RecoJet::~RecoJet()
@@ -61,6 +63,19 @@ Double_t
 RecoJet::BtagWeight() const
 {
   return BtagWeight_;
+}
+
+Double_t
+RecoJet::BtagWeight(Btag btag,
+                    int central_or_shift) const
+{
+  return BtagWeight_systematics_.at(btag).at(central_or_shift);
+}
+
+Double_t
+RecoJet::BtagWeight(int central_or_shift) const
+{
+  return BtagWeight(btag_, central_or_shift);
 }
 
 Double_t

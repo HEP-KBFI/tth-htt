@@ -200,6 +200,18 @@ get_BtagWeight(const std::vector<const RecoJet *> & jets)
 }
 
 double
+get_BtagWeight(const std::vector<const RecoJet *> & jets,
+               int central_or_shift)
+{
+  double btag_weight = 1.;
+  for(const RecoJet * jet: jets)
+  {
+    btag_weight *= jet->BtagWeight(central_or_shift);
+  }
+  return btag_weight;
+}
+
+double
 getHadTauEScorrFactor(int era,
                       int decayMode,
                       int central_or_shift)

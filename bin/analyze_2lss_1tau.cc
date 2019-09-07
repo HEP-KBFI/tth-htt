@@ -101,6 +101,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 #include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tH_weight_str()
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
@@ -243,6 +244,7 @@ int main(int argc, char* argv[])
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
+  std::vector<std::string> central_or_shift_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shift_local");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
@@ -253,6 +255,11 @@ int main(int argc, char* argv[])
   bool apply_hadTauFakeRateSF = cfg_analyze.getParameter<bool>("apply_hadTauFakeRateSF");
   const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
+
+  if(! central_or_shift_local.empty())
+  {
+    assert(central_or_shift == "central");
+  }
 
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
@@ -276,10 +283,10 @@ int main(int argc, char* argv[])
   const int jetToLeptonFakeRate_option        = getJetToLeptonFR_option(central_or_shift);
   const int hadTauPt_option                   = getHadTauPt_option     (central_or_shift);
   const int jetToTauFakeRate_option           = getJetToTauFR_option   (central_or_shift);
-  const int lheScale_option                   = getLHEscale_option     (central_or_shift);
-  const int jetBtagSF_option                  = getBTagWeight_option   (central_or_shift);
-  const PUsys puSys_option                    = getPUsys_option        (central_or_shift);
-  const L1PreFiringWeightSys l1PreFire_option = getL1PreFiringWeightSys_option(central_or_shift);
+//  const int lheScale_option                   = getLHEscale_option     (central_or_shift);
+//  const int jetBtagSF_option                  = getBTagWeight_option   (central_or_shift);
+//  const PUsys puSys_option                    = getPUsys_option        (central_or_shift);
+  //const L1PreFiringWeightSys l1PreFire_option = getL1PreFiringWeightSys_option(central_or_shift);
 
   const int met_option   = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC);
   const int jetPt_option = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC);
@@ -289,11 +296,11 @@ int main(int argc, char* argv[])
        " -> jetToLeptonFakeRate_option = " << jetToLeptonFakeRate_option   << "\n"
        " -> hadTauPt_option            = " << hadTauPt_option              << "\n"
        " -> jetToTauFakeRate_option    = " << jetToTauFakeRate_option      << "\n"
-       " -> lheScale_option            = " << lheScale_option              << "\n"
-       " -> jetBtagSF_option           = " << jetBtagSF_option             << "\n"
+//       " -> lheScale_option            = " << lheScale_option              << "\n"
+//       " -> jetBtagSF_option           = " << jetBtagSF_option             << "\n"
        " -> met_option                 = " << met_option                   << "\n"
        " -> jetPt_option               = " << jetPt_option                 << "\n"
-       " -> l1PreFire_option           = " << as_integer(l1PreFire_option) << '\n'
+//       " -> l1PreFire_option           = " << as_integer(l1PreFire_option) << '\n'
   ;
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
@@ -301,7 +308,7 @@ int main(int argc, char* argv[])
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
-  cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
+//  cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -410,7 +417,7 @@ int main(int argc, char* argv[])
     const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
     evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
   }
-  EventInfoReader eventInfoReader(&eventInfo, puSys_option);
+  EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 
   ObjectMultiplicity objectMultiplicity;
@@ -432,7 +439,7 @@ int main(int argc, char* argv[])
   L1PreFiringWeightReader * l1PreFiringWeightReader = nullptr;
   if(apply_l1PreFireWeight)
   {
-    l1PreFiringWeightReader = new L1PreFiringWeightReader(era, l1PreFire_option);
+    l1PreFiringWeightReader = new L1PreFiringWeightReader(era);
     inputTree->registerReader(l1PreFiringWeightReader);
   }
 
@@ -485,7 +492,7 @@ int main(int argc, char* argv[])
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
-  jetReader->setBranchName_BtagWeight(jetBtagSF_option);
+//  jetReader->setBranchName_BtagWeight(jetBtagSF_option);
   inputTree -> registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
@@ -1017,25 +1024,25 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       if(genMatchToJetReader)      jetGenMatch = genMatchToJetReader->read();
     }
 
-    double evtWeight_inclusive = 1.;
     double evtWeight_tH_nom = 1.;
+    EvtWeightRecorder evtWeightRecorder(central_or_shift_local);
     if(isMC)
     {
-      if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
-      if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
+      if(apply_genWeight)         evtWeightRecorder *= boost::math::sign(eventInfo.genWeight);
+      if(eventWeightManager)      evtWeightRecorder *= eventWeightManager->getWeight();
+      if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
       lheInfoReader->read();
-      evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
-      evtWeight_inclusive *= eventInfo.pileupWeight;
+      evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
+      evtWeightRecorder.record_puWeight(&eventInfo);
 
       evtWeight_tH_nom = eventInfo.genWeight_tH();
-      evtWeight_inclusive *= evtWeight_tH_nom;
+      evtWeightRecorder *= evtWeight_tH_nom;
 
-      evtWeight_inclusive *= lumiScale;
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      evtWeightRecorder *= lumiScale;
+      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive());
       if(eventWeightManager)
       {
-        genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+        genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeightRecorder.get_inclusive());
       }
     }
 
@@ -1389,22 +1396,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
     double evtWeight = 1.;
-    double btagWeight = 1.;
     if ( isMC ) {
-      evtWeight *= evtWeight_inclusive;
-      btagWeight = get_BtagWeight(selJets);
-      evtWeight *= btagWeight;
-      if ( isDEBUG ) {
-        std::cout << "lumiScale = " << lumiScale << std::endl;
-        if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
-        std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
-        std::cout << "btagWeight = " << btagWeight << std::endl;
-      }
+      evtWeight *= evtWeightRecorder.get_inclusive();
+      evtWeightRecorder.record_btagWeight(selJets);
+      evtWeight *= evtWeightRecorder.get_btag();
     }
 
     double weight_data_to_MC_correction = 1.;
-    double triggerWeight = 1.;
-    double leptonSF_weight = 1.;
     double tauSF_weight = 1.;
     if ( isMC ) {
       dataToMCcorrectionInterface->setLeptons(
@@ -1412,41 +1410,34 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->eta());
 
 //--- apply data/MC corrections for trigger efficiency
-      double sf_triggerEff = dataToMCcorrectionInterface->getSF_leptonTriggerEff();
-      if ( isDEBUG ) {
-        std::cout << "sf_triggerEff = " << sf_triggerEff << std::endl;
-      }
-      triggerWeight *= sf_triggerEff;
-      weight_data_to_MC_correction *= sf_triggerEff;
+      evtWeightRecorder.record_leptonTriggerEff(dataToMCcorrectionInterface);
+      weight_data_to_MC_correction *= evtWeightRecorder.get_sf_triggerEff();
 
 //--- apply data/MC corrections for efficiencies for lepton to pass loose identification and isolation criteria
-      leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
+      evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose());
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
       if ( electronSelection == kFakeable && muonSelection == kFakeable ) {
-        leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose());
       } else if ( electronSelection >= kFakeable && muonSelection >= kFakeable ) {
         // apply loose-to-tight lepton ID SFs if either of the following is true:
         // 1) both electron and muon selections are tight -> corresponds to SR
         // 2) electron selection is relaxed to fakeable and muon selection is kept as tight -> corresponds to MC closure w/ relaxed e selection
         // 3) muon selection is relaxed to fakeable and electron selection is kept as tight -> corresponds to MC closure w/ relaxed mu selection
         // we allow (2) and (3) so that the MC closure regions would more compatible w/ the SR (1) in comparison
-        leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge();
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge());
       }
-      weight_data_to_MC_correction *= leptonSF_weight;
 
 //--- apply data/MC corrections for hadronic tau identification efficiency
 //    and for e->tau and mu->tau misidentification rates
       int selHadTau_genPdgId = getHadTau_genPdgId(selHadTau);
       dataToMCcorrectionInterface->setHadTaus(selHadTau_genPdgId, selHadTau->pt(), selHadTau->eta());
-      tauSF_weight *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
-      tauSF_weight *= dataToMCcorrectionInterface->getSF_eToTauFakeRate();
-      tauSF_weight *= dataToMCcorrectionInterface->getSF_muToTauFakeRate();
-      weight_data_to_MC_correction *= tauSF_weight;
-      if ( isDEBUG ) {
-        std::cout << "weight_data_to_MC_correction = " << weight_data_to_MC_correction << std::endl;
-      }
+      evtWeightRecorder.record_hadTauID_and_Iso(dataToMCcorrectionInterface);
+      evtWeightRecorder.record_eToTauFakeRate(dataToMCcorrectionInterface);
+      evtWeightRecorder.record_muToTauFakeRate(dataToMCcorrectionInterface);
+      tauSF_weight *= evtWeightRecorder.get_tauSF();
+      weight_data_to_MC_correction *= evtWeightRecorder.get_tauSF();
 
       evtWeight *= weight_data_to_MC_correction;
     }
@@ -1506,25 +1497,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
     cutFlowTable.update("<= 2 tight leptons", evtWeight);
     cutFlowHistManager->fillHistograms("<= 2 tight leptons", evtWeight);
-    /*// require that trigger paths match event category (with event category based on fakeableLeptons)
-    if ( !((fakeableElectrons.size() >= 2 &&                              (selTrigger_2e    || selTrigger_1e                  )) ||
-           (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-           (                                 fakeableMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given fakeableLepton multiplicity." << std::endl;
-        std::cout << " (#fakeableElectrons = " << fakeableElectrons.size()
-                  << ", #fakeableMuons = " << fakeableMuons.size()
-                  << ", selTrigger_2mu = " << selTrigger_2mu
-                  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
-                  << ", selTrigger_2e = " << selTrigger_2e
-                  << ", selTrigger_1mu = " << selTrigger_1mu
-                  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("fakeable lepton trigger match", evtWeight);
-    cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);
-    */
 
 //--- apply HLT filter
     if(apply_hlt_filter)
@@ -2174,16 +2146,16 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
     selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
     selHistManager->weights_->fillHistograms("pileupWeight", eventInfo.pileupWeight);
-    selHistManager->weights_->fillHistograms("triggerWeight", triggerWeight);
+    selHistManager->weights_->fillHistograms("triggerWeight", evtWeightRecorder.get_sf_triggerEff());
     selHistManager->weights_->fillHistograms("data_to_MC_correction", weight_data_to_MC_correction);
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
 
     if ( isMC ) {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive());
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
       if(eventWeightManager)
       {
-        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeightRecorder.get_inclusive());
       }
     }
 
@@ -2409,10 +2381,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       // mvaOutput_plainKin_1B_M not filled
 
       snm->read(weight_fakeRate,                        FloatVariableType::FR_weight);
-      snm->read(triggerWeight,                          FloatVariableType::triggerSF_weight);
-      snm->read(leptonSF_weight,                        FloatVariableType::leptonSF_weight);
+      snm->read(evtWeightRecorder.get_sf_triggerEff(),  FloatVariableType::triggerSF_weight);
+      snm->read(evtWeightRecorder.get_leptonSF(),       FloatVariableType::leptonSF_weight);
       snm->read(tauSF_weight,                           FloatVariableType::tauSF_weight);
-      snm->read(btagWeight,                             FloatVariableType::bTagSF_weight);
+      snm->read(evtWeightRecorder.get_btag(),           FloatVariableType::bTagSF_weight);
       snm->read(eventInfo.pileupWeight,                 FloatVariableType::PU_weight);
       snm->read(boost::math::sign(eventInfo.genWeight), FloatVariableType::MC_weight);
 

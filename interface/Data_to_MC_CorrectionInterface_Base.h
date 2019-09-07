@@ -49,6 +49,9 @@ public:
   // data/MC correction for electron and muon trigger efficiency
   virtual double
   getSF_leptonTriggerEff() const;
+
+  virtual double
+  getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const;
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
@@ -74,10 +77,19 @@ public:
   getSF_hadTauID_and_Iso() const;
 
   virtual double
+  getSF_hadTauID_and_Iso(TauIDSFsys central_or_shift) const;
+
+  virtual double
   getSF_eToTauFakeRate() const;
 
   virtual double
+  getSF_eToTauFakeRate(FRet central_or_shift) const;
+
+  virtual double
   getSF_muToTauFakeRate() const;
+
+  virtual double
+  getSF_muToTauFakeRate(FRmt central_or_shift) const;
   //-----------------------------------------------------------------------------
 
 protected:

@@ -152,6 +152,12 @@ Data_to_MC_CorrectionInterface_2016::getWeight_leptonTriggerEff() const
 double
 Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff() const
 {
+  return getSF_leptonTriggerEff(triggerSF_option_);
+}
+
+double
+Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
+{
   double sf = 1.;
 
   if(numElectrons_ == 1 && numMuons_ == 0)
@@ -189,12 +195,18 @@ Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff() const
 double
 Data_to_MC_CorrectionInterface_2016::getSF_hadTauID_and_Iso() const
 {
+  return getSF_hadTauID_and_Iso(tauIDSF_option_);
+}
+
+double
+Data_to_MC_CorrectionInterface_2016::getSF_hadTauID_and_Iso(TauIDSFsys central_or_shift) const
+{
   double sf = 1.;
   for(std::size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau)
   {
     if(hadTau_genPdgId_[idxHadTau] == 15)
     {
-      switch(tauIDSF_option_)
+      switch(central_or_shift)
       {
         case TauIDSFsys::central:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau]);         break;
         case TauIDSFsys::shiftUp:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Up");   break;
@@ -207,6 +219,12 @@ Data_to_MC_CorrectionInterface_2016::getSF_hadTauID_and_Iso() const
 
 double
 Data_to_MC_CorrectionInterface_2016::getSF_eToTauFakeRate() const
+{
+  return getSF_eToTauFakeRate(eToTauFakeRate_option_);
+}
+
+double
+Data_to_MC_CorrectionInterface_2016::getSF_eToTauFakeRate(FRet central_or_shift) const
 {
   // CV: e->tau misidentification rate has not yet been measured in 2016 data,
   //     use data/MC corrections measured in 2015 data for both data-taking periods
@@ -260,14 +278,14 @@ Data_to_MC_CorrectionInterface_2016::getSF_eToTauFakeRate() const
         }
       }
 
-      switch(eToTauFakeRate_option_)
+      switch(central_or_shift)
       {
         case FRet::shiftUp:   sf_tmp += sfErr; break;
         case FRet::shiftDown: sf_tmp -= sfErr; break;
         case FRet::central:                    break;
         default:              throw cmsException(this, __func__, __LINE__)
                                 << "Invalid parameter 'central_or_shift' = "
-                                << as_integer(eToTauFakeRate_option_)
+                                << as_integer(central_or_shift)
                               ;
       }
 
@@ -280,6 +298,12 @@ Data_to_MC_CorrectionInterface_2016::getSF_eToTauFakeRate() const
 
 double
 Data_to_MC_CorrectionInterface_2016::getSF_muToTauFakeRate() const
+{
+  return getSF_muToTauFakeRate(muToTauFakeRate_option_);
+}
+
+double
+Data_to_MC_CorrectionInterface_2016::getSF_muToTauFakeRate(FRmt central_or_shift) const
 {
   double sf = 1.;
   for(std::size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau)
@@ -319,14 +343,14 @@ Data_to_MC_CorrectionInterface_2016::getSF_muToTauFakeRate() const
         }
       }
 
-      switch(muToTauFakeRate_option_)
+      switch(central_or_shift)
       {
         case FRmt::shiftUp:   sf_tmp += sfErr; break;
         case FRmt::shiftDown: sf_tmp -= sfErr; break;
         case FRmt::central:                    break;
         default:              throw cmsException(this, __func__, __LINE__)
                                 << "Invalid parameter 'central_or_shift' = "
-                                << as_integer(muToTauFakeRate_option_)
+                                << as_integer(central_or_shift)
                               ;
       }
 

@@ -74,6 +74,7 @@ process.analyze_2lss_1tau = cms.PSet(
 
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
+    central_or_shift_local = cms.vstring(),
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),

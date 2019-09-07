@@ -9,12 +9,16 @@
 std::map<std::string, int> L1PreFiringWeightReader::numInstances_;
 std::map<std::string, L1PreFiringWeightReader*> L1PreFiringWeightReader::instances_;
 
+L1PreFiringWeightReader::L1PreFiringWeightReader(int era)
+  : L1PreFiringWeightReader(era, L1PreFiringWeightSys::nominal)
+{}
+
 L1PreFiringWeightReader::L1PreFiringWeightReader(int era,
                                                  L1PreFiringWeightSys option)
   : era_(era)
   , option_(option)
   , branchName_l1PreFiringWeight_("L1PreFiringWeight")
-  , l1PreFiringWeight_(1.)
+  , l1PreFiringWeight_nominal_(1.)
 {
   setBranchNames();
 }
@@ -47,24 +51,27 @@ L1PreFiringWeightReader::setBranchAddresses(TTree * tree)
 {
   if(era_ != kEra_2018)
   {
-    const std::string branchName = [this]() -> std::string
-    {
-      switch(option_)
-      {
-        case L1PreFiringWeightSys::nominal: return Form("%s_Nom", branchName_l1PreFiringWeight_.data());
-        case L1PreFiringWeightSys::up:      return Form("%s_Up",  branchName_l1PreFiringWeight_.data());
-        case L1PreFiringWeightSys::down:    return Form("%s_Dn",  branchName_l1PreFiringWeight_.data());
-      }
-      assert(0);
-    }();
-
     BranchAddressInitializer bai(tree);
-    bai.setBranchAddress(l1PreFiringWeight_, branchName, 1.);
+    bai.setBranchAddress(l1PreFiringWeight_nominal_, Form("%s_Nom", branchName_l1PreFiringWeight_.data()), 1.);
+    bai.setBranchAddress(l1PreFiringWeight_up_,      Form("%s_Up",  branchName_l1PreFiringWeight_.data()), 1.);
+    bai.setBranchAddress(l1PreFiringWeight_down_,    Form("%s_Dn",  branchName_l1PreFiringWeight_.data()), 1.);
   }
 }
 
 double
 L1PreFiringWeightReader::getWeight() const
 {
-  return l1PreFiringWeight_;
+  return getWeight(option_);
+}
+
+double
+L1PreFiringWeightReader::getWeight(L1PreFiringWeightSys option) const
+{
+  switch(option)
+  {
+    case L1PreFiringWeightSys::nominal: return l1PreFiringWeight_nominal_; break;
+    case L1PreFiringWeightSys::up:      return l1PreFiringWeight_up_;      break;
+    case L1PreFiringWeightSys::down:    return l1PreFiringWeight_down_;    break;
+    default: throw cmsException(this, __func__, __LINE__) << "Invalid option";
+  }
 }

@@ -32,7 +32,8 @@ public:
           Int_t jetId,
           Int_t puId,
           Int_t genMatchIdx,
-          Int_t idx);
+          Int_t idx,
+          Btag btag);
 
   virtual ~RecoJet();
 
@@ -44,6 +45,8 @@ public:
   Double_t BtagCSV() const;
   Double_t BtagCSV(Btag btag) const;
   Double_t BtagWeight() const;
+  Double_t BtagWeight(int central_or_shift) const;
+  Double_t BtagWeight(Btag btag, int central_or_shift) const;
   Double_t QGDiscr() const;
   Double_t pullEta() const;
   Double_t pullPhi() const;
@@ -70,6 +73,7 @@ protected:
   Int_t jetId_;         ///< jet ID, as explained in https://twiki.cern.ch/twiki/bin/view/CMS/JetID
   Int_t puId_;          ///< pileup jet ID, as explained in https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
   Int_t genMatchIdx_;   ///< index to gen jet
+  Btag btag_;           ///< default b-tagging discriminant
 
   //---------------------------------------------------------
   // CV: needed by RecoJetWriter

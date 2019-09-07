@@ -40,7 +40,6 @@ public:
   const std::string branchName_PV_ndof;
   const std::string branchName_genHiggsDecayMode;
   const std::string branchName_genWeight;
-  const std::string branchName_puWeight;
   const std::string branchName_LHEReweightingWeight;
   const std::string branchName_nLHEReweightingWeight;
 };
