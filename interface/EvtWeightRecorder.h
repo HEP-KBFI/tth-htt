@@ -32,7 +32,7 @@ public:
   get(const std::string & central_or_shift) const;
 
   double
-  get_inclusive() const;
+  get_inclusive(const std::string & central_or_shift = "") const;
 
   double
   get_genWeight() const;
@@ -47,13 +47,13 @@ public:
   get_nom_tH_weight() const;
 
   double
-  get_puWeight() const;
+  get_puWeight(const std::string & central_or_shift = "") const;
 
   double
-  get_l1PreFiringWeight() const;
+  get_l1PreFiringWeight(const std::string & central_or_shift = "") const;
 
   double
-  get_lheScaleWeight() const;
+  get_lheScaleWeight(const std::string & central_or_shift = "") const;
 
   double
   get_leptonSF() const;
@@ -65,16 +65,16 @@ public:
   get_data_to_MC_correction() const;
 
   double
-  get_btag() const;
+  get_btag(const std::string & central_or_shift = "") const;
 
   double
-  get_sf_triggerEff() const;
+  get_sf_triggerEff(const std::string & central_or_shift = "") const;
 
   double
-  get_tauSF() const;
+  get_tauSF(const std::string & central_or_shift = "") const;
 
   double
-  get_FR() const;
+  get_FR(const std::string & central_or_shift = "") const;
 
   void
   record_genWeight(double genWeight);
@@ -163,6 +163,7 @@ protected:
                         int leptonPdgId,
                         std::map<int, double> & weights_FR_lepton);
 
+  bool isMC_;
   double genWeight_;
   double auxWeight_;
   double lumiScale_;
@@ -184,6 +185,7 @@ protected:
   std::map<int, double> weights_SF_hadTau_lead_;
   std::map<int, double> weights_FR_lepton_lead_;
   std::map<int, double> weights_FR_lepton_sublead_;
+  std::map<std::string, double> weights_FR_;
 };
 
 #endif
