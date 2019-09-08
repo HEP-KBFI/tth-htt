@@ -1224,10 +1224,6 @@ main(int argc,
 
       if(isDEBUG)
       {
-        if(apply_genWeight)
-        {
-          std::cout << "genWeight    = " << boost::math::sign(eventInfo.genWeight) << '\n';
-        }
         std::cout << "lumiScale    = " << lumiScale              << "\n"
                      "pileupWeight = " << eventInfo.pileupWeight << "\n"
                      "btagWeight   = " << btagWeight             << '\n';
