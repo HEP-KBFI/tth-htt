@@ -457,6 +457,7 @@ int main(int argc, char* argv[])
   );
   const std::vector<std::string> cuts = {
     "run:ls:event selection",
+    "object multiplicity",
     "trigger",
     "= 2 presel electrons",
     "presel electron trigger match",
@@ -490,6 +491,8 @@ int main(int argc, char* argv[])
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo) ) {
       continue;
     }
+    cutFlowTable.update("run:ls:event selection");
+    cutFlowHistManager->fillHistograms("run:ls:event selection", lumiScale);
 
     if(useObjectMultiplicity)
     {
@@ -502,6 +505,8 @@ int main(int argc, char* argv[])
         continue;
       }
     }
+    cutFlowTable.update("object multiplicity");
+    cutFlowHistManager->fillHistograms("object multiplicity", lumiScale);
 
 //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
@@ -992,7 +997,8 @@ int main(int argc, char* argv[])
             << inputTree -> getFileCount() << ")\n"
             << " analyzed = " << analyzedEntries << '\n'
             << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")\n\n";
-
+  cutFlowTable.print(std::cout);
+  std::cout << std::endl;
   delete dataToMCcorrectionInterface;
 
   delete run_lumi_eventSelector;
