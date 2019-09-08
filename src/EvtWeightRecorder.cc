@@ -16,11 +16,17 @@ EvtWeightRecorder::EvtWeightRecorder()
   , leptonSF_(1.)
 {}
 
-EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or_shifts)
+EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or_shifts,
+                                     bool isMC)
   : central_(1.)
   , leptonSF_(1.)
   , central_or_shifts_(central_or_shifts)
-{}
+{
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    checkOptionValidity(central_or_shift, isMC);
+  }
+}
 
 double
 EvtWeightRecorder::get(const std::string & central_or_shift) const

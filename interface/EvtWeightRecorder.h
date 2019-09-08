@@ -25,7 +25,8 @@ class EvtWeightRecorder
 {
 public:
   EvtWeightRecorder();
-  EvtWeightRecorder(const std::vector<std::string> & central_or_shifts);
+  EvtWeightRecorder(const std::vector<std::string> & central_or_shifts,
+                    bool isMC);
 
   double
   get(const std::string & central_or_shift) const;
