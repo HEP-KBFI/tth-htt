@@ -35,22 +35,64 @@ public:
   get_inclusive() const;
 
   double
+  get_genWeight() const;
+
+  double
+  get_auxWeight() const;
+
+  double
+  get_lumiScale() const;
+
+  double
+  get_nom_tH_weight() const;
+
+  double
+  get_puWeight() const;
+
+  double
+  get_l1PreFiringWeight() const;
+
+  double
+  get_lheScaleWeight() const;
+
+  double
+  get_leptonSF() const;
+
+  double
+  get_chargeMisIdProb() const;
+
+  double
+  get_data_to_MC_correction() const;
+
+  double
   get_btag() const;
 
   double
   get_sf_triggerEff() const;
 
   double
-  get_leptonSF() const;
-
-  double
   get_tauSF() const;
 
-  EvtWeightRecorder &
-  operator*=(double weight);
+  double
+  get_FR() const;
+
+  void
+  record_genWeight(double genWeight);
+
+  void
+  record_auxWeight(double auxWeight);
+
+  void
+  record_lumiScale(double lumiScale);
+
+  void
+  record_nom_tH_weight(double nom_tH_weight);
 
   void
   record_leptonSF(double weight);
+
+  void
+  record_chargeMisIdProb(double weight);
 
   void
   record_l1PrefireWeight(const L1PreFiringWeightReader * const l1PreFiringWeightReader);
@@ -99,6 +141,18 @@ public:
                                 int leptonPdgId);
 
   void
+  compute_FR_2l1tau(bool passesTight_lepton_lead,
+                    bool passesTight_lepton_sublead,
+                    bool passesTight_hadTau);
+
+  void
+  compute_FR_2l(bool passesTight_lepton_lead,
+                bool passesTight_lepton_sublead);
+
+  void
+  compute_FR_1tau();
+
+  void
   reset();
 
 protected:
@@ -109,8 +163,12 @@ protected:
                         int leptonPdgId,
                         std::map<int, double> & weights_FR_lepton);
 
-  double central_;
+  double genWeight_;
+  double auxWeight_;
+  double lumiScale_;
+  double nom_tH_weight_;
   double leptonSF_;
+  double chargeMisIdProb_;
   std::vector<std::string> central_or_shifts_;
   std::map<std::string, double> weights_;
 

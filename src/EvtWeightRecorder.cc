@@ -12,14 +12,22 @@
 #include <cassert> // assert()
 
 EvtWeightRecorder::EvtWeightRecorder()
-  : central_(1.)
+  : genWeight_(1.)
+  , auxWeight_(1.)
+  , lumiScale_(1.)
+  , nom_tH_weight_(1.)
   , leptonSF_(1.)
+  , chargeMisIdProb_(1.)
 {}
 
 EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or_shifts,
                                      bool isMC)
-  : central_(1.)
+  : genWeight_(1.)
+  , auxWeight_(1.)
+  , lumiScale_(1.)
+  , nom_tH_weight_(1.)
   , leptonSF_(1.)
+  , chargeMisIdProb_(1.)
   , central_or_shifts_(central_or_shifts)
 {
   for(const std::string & central_or_shift: central_or_shifts_)
@@ -35,26 +43,72 @@ EvtWeightRecorder::get(const std::string & central_or_shift) const
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift;
   }
+
+  // TODO: multiply inclusive, btagging, data-to-MC corrections (trigger eff SF, lepton SF, tauSF), FR weight, data/MC SF of jet->tau FR, charge mis-id
+
   return weights_.at(central_or_shift);
 }
 
 double
 EvtWeightRecorder::get_inclusive() const
 {
-  double inclusive = central_;
-  if(weights_l1PreFiring_.count(L1PreFiringWeightSys::nominal))
-  {
-    inclusive *= weights_l1PreFiring_.at(L1PreFiringWeightSys::nominal);
-  }
-  if(weights_lheScale_.count(kLHE_scale_central))
-  {
-    inclusive *= weights_lheScale_.at(kLHE_scale_central);
-  }
+  return genWeight_ * auxWeight_ * lumiScale_ * nom_tH_weight_ *
+         get_puWeight() * get_l1PreFiringWeight() * get_lheScaleWeight()
+  ;
+}
+
+double
+EvtWeightRecorder::get_genWeight() const
+{
+  return genWeight_;
+}
+
+double
+EvtWeightRecorder::get_auxWeight() const
+{
+  return auxWeight_;
+}
+
+double
+EvtWeightRecorder::get_lumiScale() const
+{
+  return lumiScale_;
+}
+
+double
+EvtWeightRecorder::get_nom_tH_weight() const
+{
+  return nom_tH_weight_;
+}
+
+double
+EvtWeightRecorder::get_puWeight() const
+{
   if(weights_pu_.count(PUsys::central))
   {
-    inclusive *= weights_pu_.at(PUsys::central);
+    return  weights_pu_.at(PUsys::central);
   }
-  return inclusive;
+  return 1.;
+}
+
+double
+EvtWeightRecorder::get_l1PreFiringWeight() const
+{
+  if(weights_l1PreFiring_.count(L1PreFiringWeightSys::nominal))
+  {
+    return weights_l1PreFiring_.at(L1PreFiringWeightSys::nominal);
+  }
+  return 1.;
+}
+
+double
+EvtWeightRecorder::get_lheScaleWeight() const
+{
+  if(weights_lheScale_.count(kLHE_scale_central))
+  {
+    return weights_lheScale_.at(kLHE_scale_central);
+  }
+  return 1.;
 }
 
 double
@@ -84,6 +138,18 @@ EvtWeightRecorder::get_leptonSF() const
 }
 
 double
+EvtWeightRecorder::get_chargeMisIdProb() const
+{
+  return chargeMisIdProb_;
+}
+
+double
+EvtWeightRecorder::get_data_to_MC_correction() const
+{
+  return 1.;
+}
+
+double
 EvtWeightRecorder::get_tauSF() const
 {
   double tauSF_weight = 1.;
@@ -99,21 +165,50 @@ EvtWeightRecorder::get_tauSF() const
   {
     tauSF_weight *= weights_muToTauFakeRate_.count(FRmt::central);
   }
+  // multiply with data/MC SF
   return tauSF_weight;
 }
 
-EvtWeightRecorder &
-EvtWeightRecorder::operator*=(double weight)
+double
+EvtWeightRecorder::get_FR() const
 {
-  central_ *= weight;
-  return *this;
+  return 1.;
+}
+
+void
+EvtWeightRecorder::record_genWeight(double genWeight)
+{
+  genWeight_ = genWeight;
+}
+
+void
+EvtWeightRecorder::record_auxWeight(double auxWeight)
+{
+  auxWeight_ = auxWeight;
+}
+
+void
+EvtWeightRecorder::record_lumiScale(double lumiScale)
+{
+  lumiScale_ = lumiScale;
+}
+
+void
+EvtWeightRecorder::record_nom_tH_weight(double nom_tH_weight)
+{
+  nom_tH_weight_ = nom_tH_weight;
 }
 
 void
 EvtWeightRecorder::record_leptonSF(double weight)
 {
-  leptonSF_ *= weight;
-  central_ *= weight;
+  leptonSF_ = weight;
+}
+
+void
+EvtWeightRecorder::record_chargeMisIdProb(double weight)
+{
+  chargeMisIdProb_ = weight;
 }
 
 void
@@ -331,6 +426,32 @@ EvtWeightRecorder::record_jetToLepton_FR_sublead(const LeptonFakeRateInterface *
                                                  int leptonPdgId_sublead)
 {
   record_jetToLepton_FR(leptonFakeRateInterface, leptonPt_sublead, leptonAbsEta_sublead, leptonPdgId_sublead, weights_FR_lepton_sublead_);
+}
+
+void
+EvtWeightRecorder::compute_FR_2l1tau(bool passesTight_lepton_lead,
+                                     bool passesTight_lepton_sublead,
+                                     bool passesTight_hadTau)
+{
+//  getWeight_3L(
+//            prob_fake_lepton_lead, passesTight_lepton_lead,
+//            prob_fake_lepton_sublead, passesTight_lepton_sublead,
+//            prob_fake_hadTau, passesTight_hadTau);
+}
+
+void
+EvtWeightRecorder::compute_FR_2l(bool passesTight_lepton_lead,
+                                 bool passesTight_lepton_sublead)
+{
+//  weight_fakeRate = getWeight_2L(
+//    prob_fake_lepton_lead, passesTight_lepton_lead,
+//    prob_fake_lepton_sublead, passesTight_lepton_sublead);
+}
+
+void
+EvtWeightRecorder::compute_FR_1tau()
+{
+//  weight_fakeRate = prob_fake_hadTau;
 }
 
 void
