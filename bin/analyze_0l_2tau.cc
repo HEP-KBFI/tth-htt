@@ -241,7 +241,6 @@ int main(int argc, char* argv[])
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
   checkOptionValidity(central_or_shift, isMC);
-  const int hadTauPt_option                   = getHadTauPt_option            (central_or_shift);
   const int jetToTauFakeRate_option           = getJetToTauFR_option          (central_or_shift);
   const int lheScale_option                   = getLHEscale_option            (central_or_shift);
   const int jetBtagSF_option                  = getBTagWeight_option          (central_or_shift);
@@ -250,8 +249,9 @@ int main(int argc, char* argv[])
   const int dyMCNormScaleFactors_option       = getDYMCNormScaleFactors_option(central_or_shift);
   const L1PreFiringWeightSys l1PreFire_option = getL1PreFiringWeightSys_option(central_or_shift);
 
-  const int met_option   = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC);
-  const int jetPt_option = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC);
+  const int met_option      = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC);
+  const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC);
+  const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected      : getHadTauPt_option(central_or_shift);
 
   std::cout
     << "central_or_shift = "                << central_or_shift             << "\n"
