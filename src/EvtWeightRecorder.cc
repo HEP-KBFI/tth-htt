@@ -42,21 +42,19 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
 double
 EvtWeightRecorder::get(const std::string & central_or_shift) const
 {
-  if(! weights_.count(central_or_shift))
-  {
-    throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift;
-  }
-
-  // TODO: multiply inclusive, btagging, data-to-MC corrections (trigger eff SF, lepton SF, tauSF), FR weight, data/MC SF of jet->tau FR, charge mis-id
-
-  return weights_.at(central_or_shift);
+  // TODO OPTIMIZE
+  return (isMC_ ? get_inclusive(central_or_shift) * get_data_to_MC_correction(central_or_shift) : 1.) *
+         get_FR(central_or_shift) * chargeMisIdProb_
+  ;
 }
 
 double
 EvtWeightRecorder::get_inclusive(const std::string & central_or_shift) const
 {
-  return genWeight_ * auxWeight_ * lumiScale_ * nom_tH_weight_ *
-         get_puWeight(central_or_shift) * get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift)
+  // TODO OPTIMIZE
+  return isMC_ ? genWeight_ * auxWeight_ * lumiScale_ * nom_tH_weight_ * get_puWeight(central_or_shift) *
+                 get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift)
+               : 1.
   ;
 }
 
@@ -87,10 +85,13 @@ EvtWeightRecorder::get_nom_tH_weight() const
 double
 EvtWeightRecorder::get_puWeight(const std::string & central_or_shift) const
 {
-  const PUsys puSys_option = central_or_shift.empty() ? PUsys::central : getPUsys_option(central_or_shift);
-  if(weights_pu_.count(puSys_option))
+  if(isMC_)
   {
-    return  weights_pu_.at(puSys_option);
+    const PUsys puSys_option = central_or_shift.empty() ? PUsys::central : getPUsys_option(central_or_shift);
+    if(weights_pu_.count(puSys_option))
+    {
+      return  weights_pu_.at(puSys_option);
+    }
   }
   return 1.;
 }
@@ -98,13 +99,16 @@ EvtWeightRecorder::get_puWeight(const std::string & central_or_shift) const
 double
 EvtWeightRecorder::get_l1PreFiringWeight(const std::string & central_or_shift) const
 {
-  const L1PreFiringWeightSys l1PreFire_option = central_or_shift.empty() ?
-    L1PreFiringWeightSys::nominal :
-    getL1PreFiringWeightSys_option(central_or_shift)
-  ;
-  if(weights_l1PreFiring_.count(l1PreFire_option))
+  if(isMC_)
   {
-    return weights_l1PreFiring_.at(l1PreFire_option);
+    const L1PreFiringWeightSys l1PreFire_option = central_or_shift.empty() ?
+      L1PreFiringWeightSys::nominal :
+      getL1PreFiringWeightSys_option(central_or_shift)
+    ;
+    if(weights_l1PreFiring_.count(l1PreFire_option))
+    {
+      return weights_l1PreFiring_.at(l1PreFire_option);
+    }
   }
   return 1.;
 }
@@ -112,10 +116,13 @@ EvtWeightRecorder::get_l1PreFiringWeight(const std::string & central_or_shift) c
 double
 EvtWeightRecorder::get_lheScaleWeight(const std::string & central_or_shift) const
 {
-  const int lheScale_option = central_or_shift.empty() ? kLHE_scale_central : getLHEscale_option(central_or_shift);
-  if(weights_lheScale_.count(lheScale_option))
+  if(isMC_)
   {
-    return weights_lheScale_.at(lheScale_option);
+    const int lheScale_option = central_or_shift.empty() ? kLHE_scale_central : getLHEscale_option(central_or_shift);
+    if(weights_lheScale_.count(lheScale_option))
+    {
+      return weights_lheScale_.at(lheScale_option);
+    }
   }
   return 1.;
 }
@@ -123,10 +130,13 @@ EvtWeightRecorder::get_lheScaleWeight(const std::string & central_or_shift) cons
 double
 EvtWeightRecorder::get_btag(const std::string & central_or_shift) const
 {
-  const int jetBtagSF_option = central_or_shift.empty() ? kBtag_central : getBTagWeight_option(central_or_shift);
-  if(weights_btag_.count(jetBtagSF_option))
+  if(isMC_)
   {
-    return weights_btag_.at(jetBtagSF_option);
+    const int jetBtagSF_option = central_or_shift.empty() ? kBtag_central : getBTagWeight_option(central_or_shift);
+    if(weights_btag_.count(jetBtagSF_option))
+    {
+      return weights_btag_.at(jetBtagSF_option);
+    }
   }
   return 1.;
 }
@@ -134,10 +144,13 @@ EvtWeightRecorder::get_btag(const std::string & central_or_shift) const
 double
 EvtWeightRecorder::get_sf_triggerEff(const std::string & central_or_shift) const
 {
-  const TriggerSFsys triggerSF_option = central_or_shift.empty() ? TriggerSFsys::central : getTriggerSF_option(central_or_shift);
-  if(weights_leptonTriggerEff_.count(triggerSF_option))
+  if(isMC_)
   {
-    return weights_leptonTriggerEff_.at(triggerSF_option);
+    const TriggerSFsys triggerSF_option = central_or_shift.empty() ? TriggerSFsys::central : getTriggerSF_option(central_or_shift);
+    if(weights_leptonTriggerEff_.count(triggerSF_option))
+    {
+      return weights_leptonTriggerEff_.at(triggerSF_option);
+    }
   }
   return 1.;
 }
@@ -145,7 +158,7 @@ EvtWeightRecorder::get_sf_triggerEff(const std::string & central_or_shift) const
 double
 EvtWeightRecorder::get_leptonSF() const
 {
-  return leptonSF_;
+  return isMC_ ? leptonSF_ : 1.;
 }
 
 double
@@ -155,34 +168,37 @@ EvtWeightRecorder::get_chargeMisIdProb() const
 }
 
 double
-EvtWeightRecorder::get_data_to_MC_correction() const
+EvtWeightRecorder::get_data_to_MC_correction(const std::string & central_or_shift) const
 {
-  return 1.;
+  return isMC_ ? get_sf_triggerEff(central_or_shift) * get_leptonSF() * get_tauSF(central_or_shift) : 1.;
 }
 
 double
 EvtWeightRecorder::get_tauSF(const std::string & central_or_shift) const
 {
   double tauSF_weight = 1.;
-  const TauIDSFsys tauIDSF_option = central_or_shift.empty() ? TauIDSFsys::central : getTauIDSFsys_option(central_or_shift);
-  if(weights_hadTauID_and_Iso_.count(tauIDSF_option))
+  if(isMC_)
   {
-    tauSF_weight *= weights_hadTauID_and_Iso_.at(tauIDSF_option);
-  }
-  const FRet eToTauFakeRate_option = central_or_shift.empty() ? FRet::central : getEToTauFR_option(central_or_shift);
-  if(weights_eToTauFakeRate_.count(eToTauFakeRate_option))
-  {
-    tauSF_weight *= weights_eToTauFakeRate_.at(eToTauFakeRate_option);
-  }
-  const FRmt muToTauFakeRate_option = central_or_shift.empty() ? FRmt::central : getMuToTauFR_option(central_or_shift);
-  if(weights_muToTauFakeRate_.count(muToTauFakeRate_option))
-  {
-    tauSF_weight *= weights_muToTauFakeRate_.at(muToTauFakeRate_option);
-  }
-  const int jetToTauFakeRate_option = central_or_shift.empty() ? kFRjt_central : getJetToTauFR_option(central_or_shift);
-  if(weights_SF_hadTau_lead_.count(jetToTauFakeRate_option))
-  {
-    tauSF_weight *= weights_SF_hadTau_lead_.at(jetToTauFakeRate_option);
+    const TauIDSFsys tauIDSF_option = central_or_shift.empty() ? TauIDSFsys::central : getTauIDSFsys_option(central_or_shift);
+    if(weights_hadTauID_and_Iso_.count(tauIDSF_option))
+    {
+      tauSF_weight *= weights_hadTauID_and_Iso_.at(tauIDSF_option);
+    }
+    const FRet eToTauFakeRate_option = central_or_shift.empty() ? FRet::central : getEToTauFR_option(central_or_shift);
+    if(weights_eToTauFakeRate_.count(eToTauFakeRate_option))
+    {
+      tauSF_weight *= weights_eToTauFakeRate_.at(eToTauFakeRate_option);
+    }
+    const FRmt muToTauFakeRate_option = central_or_shift.empty() ? FRmt::central : getMuToTauFR_option(central_or_shift);
+    if(weights_muToTauFakeRate_.count(muToTauFakeRate_option))
+    {
+      tauSF_weight *= weights_muToTauFakeRate_.at(muToTauFakeRate_option);
+    }
+    const int jetToTauFakeRate_option = central_or_shift.empty() ? kFRjt_central : getJetToTauFR_option(central_or_shift);
+    if(weights_SF_hadTau_lead_.count(jetToTauFakeRate_option))
+    {
+      tauSF_weight *= weights_SF_hadTau_lead_.at(jetToTauFakeRate_option);
+    }
   }
   return tauSF_weight;
 }
@@ -217,6 +233,7 @@ EvtWeightRecorder::record_auxWeight(double auxWeight)
 void
 EvtWeightRecorder::record_lumiScale(double lumiScale)
 {
+  assert(isMC_);
   lumiScale_ = lumiScale;
 }
 
@@ -537,10 +554,3 @@ EvtWeightRecorder::compute_FR_1tau()
     weights_FR_[weightKey] = getWeight_1L(weights_FR_lepton_lead_.at(jetToTauFakeRate_option));
   }
 }
-
-void
-EvtWeightRecorder::reset()
-{
-  weights_.clear();
-}
-

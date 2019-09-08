@@ -62,7 +62,7 @@ public:
   get_chargeMisIdProb() const;
 
   double
-  get_data_to_MC_correction() const;
+  get_data_to_MC_correction(const std::string & central_or_shift = "") const;
 
   double
   get_btag(const std::string & central_or_shift = "") const;
@@ -152,9 +152,6 @@ public:
   void
   compute_FR_1tau();
 
-  void
-  reset();
-
 protected:
   void
   record_jetToLepton_FR(const LeptonFakeRateInterface * const leptonFakeRateInterface,
@@ -171,7 +168,6 @@ protected:
   double leptonSF_;
   double chargeMisIdProb_;
   std::vector<std::string> central_or_shifts_;
-  std::map<std::string, double> weights_;
 
   std::map<L1PreFiringWeightSys, double> weights_l1PreFiring_;
   std::map<int, double> weights_lheScale_;

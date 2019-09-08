@@ -275,7 +275,7 @@ int main(int argc, char* argv[])
 
   const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
   const bool applyAdditionalEvtWeight = additionalEvtWeight.getParameter<bool>("apply");
-  EvtWeightManager * eventWeightManager = nullptr; // TODO
+  EvtWeightManager * eventWeightManager = nullptr; // TODO: stitching weights depend on the choice of systematics (L1prefire, PU, LHE scale)
   if(applyAdditionalEvtWeight)
   {
     eventWeightManager = new EvtWeightManager(additionalEvtWeight);
@@ -1026,7 +1026,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
       evtWeightRecorder.record_puWeight(&eventInfo);
       evtWeightRecorder.record_nom_tH_weight(eventInfo.genWeight_tH());
-      evtWeightRecorder.record_lumiScale(lumiScale); // TODO: depends on the choice of systematics
+      evtWeightRecorder.record_lumiScale(lumiScale); // TODO: depends on the choice of systematics (L1prefire, PU, LHE scale)
       for(const std::string & central_or_shift: central_or_shift_local)
       {
         genEvtHistManager_beforeCuts[central_or_shift]->fillHistograms(
@@ -2031,28 +2031,29 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     for(const std::string & central_or_shift: central_or_shift_local)
     {
       selHistManagerType* selHistManager = selHistManagers[central_or_shift][idxSelLepton_genMatch][idxSelHadTau_genMatch];
-      assert(selHistManager != 0);
-      selHistManager->electrons_->fillHistograms(selElectrons, evtWeightRecorder.get(central_or_shift));
-      selHistManager->muons_->fillHistograms(selMuons, evtWeightRecorder.get(central_or_shift));
-      selHistManager->hadTaus_->fillHistograms(selHadTaus, evtWeightRecorder.get(central_or_shift));
-      selHistManager->jets_->fillHistograms(selJets, evtWeightRecorder.get(central_or_shift));
-      selHistManager->leadJet_->fillHistograms(selJets, evtWeightRecorder.get(central_or_shift));
-      selHistManager->subleadJet_->fillHistograms(selJets, evtWeightRecorder.get(central_or_shift));
-      selHistManager->BJets_loose_->fillHistograms(selBJets_loose, evtWeightRecorder.get(central_or_shift));
-      selHistManager->leadBJet_loose_->fillHistograms(selBJets_loose, evtWeightRecorder.get(central_or_shift));
-      selHistManager->subleadBJet_loose_->fillHistograms(selBJets_loose, evtWeightRecorder.get(central_or_shift));
-      selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeightRecorder.get(central_or_shift));
-      selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeightRecorder.get(central_or_shift));
-      selHistManager->metFilters_->fillHistograms(metFilters, evtWeightRecorder.get(central_or_shift));
-      selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputVariables_HTT_SUM, evtWeightRecorder.get(central_or_shift));
+      const double evtWeight = evtWeightRecorder.get(central_or_shift);
+      assert(selHistManager);
+      selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
+      selHistManager->muons_->fillHistograms(selMuons, evtWeight);
+      selHistManager->hadTaus_->fillHistograms(selHadTaus, evtWeight);
+      selHistManager->jets_->fillHistograms(selJets, evtWeight);
+      selHistManager->leadJet_->fillHistograms(selJets, evtWeight);
+      selHistManager->subleadJet_->fillHistograms(selJets, evtWeight);
+      selHistManager->BJets_loose_->fillHistograms(selBJets_loose, evtWeight);
+      selHistManager->leadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
+      selHistManager->subleadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
+      selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
+      selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
+      selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
+      selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputVariables_HTT_SUM, evtWeight);
 
       std::map<std::string, double> tH_weight_map;
       for(const std::string & evt_cat_str: evt_cat_strs)
       {
         const std::string evt_cat_str_query = evt_cat_str == default_cat_str ? get_tH_SM_str() : evt_cat_str;
         tH_weight_map[evt_cat_str] = isMC_tH ?
-          evtWeightRecorder.get(central_or_shift) / evtWeightRecorder.get_nom_tH_weight() * eventInfo.genWeight_tH(evt_cat_str_query):
-          evtWeightRecorder.get(central_or_shift)
+          evtWeight / evtWeightRecorder.get_nom_tH_weight() * eventInfo.genWeight_tH(evt_cat_str_query):
+          evtWeight
         ;
       }
       for(const auto & kv: tH_weight_map)
@@ -2108,23 +2109,23 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           }
         }
       }
-      selHistManager->evtYield_->fillHistograms(eventInfo, evtWeightRecorder.get(central_or_shift));
+      selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
       selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
       selHistManager->weights_->fillHistograms("pileupWeight", evtWeightRecorder.get_puWeight(central_or_shift));
       selHistManager->weights_->fillHistograms("triggerWeight", evtWeightRecorder.get_sf_triggerEff(central_or_shift));
-      selHistManager->weights_->fillHistograms("data_to_MC_correction", evtWeightRecorder.get_data_to_MC_correction());
+      selHistManager->weights_->fillHistograms("data_to_MC_correction", evtWeightRecorder.get_data_to_MC_correction(central_or_shift));
       selHistManager->weights_->fillHistograms("fakeRate", evtWeightRecorder.get_FR(central_or_shift));
 
       if ( isMC ) {
         genEvtHistManager_afterCuts[central_or_shift]->fillHistograms(
           genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift)
         );
-        lheInfoHistManager[central_or_shift]->fillHistograms(*lheInfoReader, evtWeightRecorder.get(central_or_shift));
+        lheInfoHistManager[central_or_shift]->fillHistograms(*lheInfoReader, evtWeight);
         if(eventWeightManager)
         {
           genEvtHistManager_afterCuts[central_or_shift]->fillHistograms(
             eventWeightManager, evtWeightRecorder.get_inclusive(central_or_shift)
-          ); // TODO
+          );
         }
       }
     }
