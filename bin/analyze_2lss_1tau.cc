@@ -280,8 +280,8 @@ int main(int argc, char* argv[])
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
   checkOptionValidity(central_or_shift, isMC);
-  const int jetToLeptonFakeRate_option        = getJetToLeptonFR_option(central_or_shift);
-  const int jetToTauFakeRate_option           = getJetToTauFR_option   (central_or_shift);
+//  const int jetToLeptonFakeRate_option        = getJetToLeptonFR_option(central_or_shift);
+//  const int jetToTauFakeRate_option           = getJetToTauFR_option   (central_or_shift);
 //  const int lheScale_option                   = getLHEscale_option     (central_or_shift);
 //  const int jetBtagSF_option                  = getBTagWeight_option   (central_or_shift);
 //  const PUsys puSys_option                    = getPUsys_option        (central_or_shift);
@@ -293,9 +293,9 @@ int main(int argc, char* argv[])
 
   std::cout
     << "central_or_shift = "               << central_or_shift             << "\n"
-       " -> jetToLeptonFakeRate_option = " << jetToLeptonFakeRate_option   << "\n"
+//       " -> jetToLeptonFakeRate_option = " << jetToLeptonFakeRate_option   << "\n"
        " -> hadTauPt_option            = " << hadTauPt_option              << "\n"
-       " -> jetToTauFakeRate_option    = " << jetToTauFakeRate_option      << "\n"
+//       " -> jetToTauFakeRate_option    = " << jetToTauFakeRate_option      << "\n"
 //       " -> lheScale_option            = " << lheScale_option              << "\n"
 //       " -> jetBtagSF_option           = " << jetBtagSF_option             << "\n"
        " -> met_option                 = " << met_option                   << "\n"
@@ -331,14 +331,14 @@ int main(int argc, char* argv[])
   LeptonFakeRateInterface* leptonFakeRateInterface = 0;
   if ( applyFakeRateWeights == kFR_2lepton || applyFakeRateWeights == kFR_3L ) {
     edm::ParameterSet cfg_leptonFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("leptonFakeRateWeight");
-    leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight, jetToLeptonFakeRate_option);
+    leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight);
   }
 
   JetToTauFakeRateInterface* jetToTauFakeRateInterface = 0;
   if ( applyFakeRateWeights == kFR_3L || applyFakeRateWeights == kFR_1tau || apply_hadTauFakeRateSF ) {
     edm::ParameterSet cfg_hadTauFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("hadTauFakeRateWeight");
     cfg_hadTauFakeRateWeight.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
-    jetToTauFakeRateInterface = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight, jetToTauFakeRate_option);
+    jetToTauFakeRateInterface = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight);
   }
   std::cout << "Applying jetToTauFakeRate fake rate weights = " << applyFakeRateWeights_string << " (" << applyFakeRateWeights << ")\n";
 
@@ -1026,6 +1026,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
     double evtWeight_tH_nom = 1.;
     EvtWeightRecorder evtWeightRecorder(central_or_shift_local);
+    // TODO: encapsulate all event level weights to this class
     if(isMC)
     {
       if(apply_genWeight)         evtWeightRecorder *= boost::math::sign(eventInfo.genWeight);
@@ -1038,7 +1039,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       evtWeight_tH_nom = eventInfo.genWeight_tH();
       evtWeightRecorder *= evtWeight_tH_nom;
 
-      evtWeightRecorder *= lumiScale;
+      evtWeightRecorder *= lumiScale; // TODO: depends on the choice of systematics
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive());
       if(eventWeightManager)
       {
@@ -1382,8 +1383,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update(">= 2 sel leptons", 1.);
-    cutFlowHistManager->fillHistograms(">= 2 sel leptons", 1.);
+    cutFlowTable.update(">= 2 sel leptons", lumiScale);
+    cutFlowHistManager->fillHistograms(">= 2 sel leptons", lumiScale);
     const RecoLepton* selLepton_lead = selLeptons[0];
     int selLepton_lead_type = getLeptonType(selLepton_lead->pdgId());
     const RecoLepton* selLepton_sublead = selLeptons[1];
@@ -1451,15 +1452,22 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     double prob_fake_lepton_sublead = 1.;
     double prob_fake_hadTau = 1.;
     if ( leptonFakeRateInterface ) {
-      if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-      else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-      else assert(0);
-      if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-      else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-      else assert(0);
+      evtWeightRecorder.record_jetToLepton_FR_lead(
+        leptonFakeRateInterface, selLepton_lead->cone_pt(), selLepton_lead->absEta(), std::abs(selLepton_lead->pdgId())
+      );
+      evtWeightRecorder.record_jetToLepton_FR_sublead(
+        leptonFakeRateInterface, selLepton_sublead->cone_pt(), selLepton_sublead->absEta(), std::abs(selLepton_sublead->pdgId())
+      );
+//      if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+//      else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+//      else assert(0);
+//      if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+//      else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+//      else assert(0);
     }
     if ( jetToTauFakeRateInterface ) {
-      prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
+      evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau->pt(), selHadTau->absEta());
+//      prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
     }
 
     if ( !selectBDT ) {
@@ -1478,6 +1486,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       evtWeight *= weight_fakeRate;
       // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
       if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton())) {
+        evtWeightRecorder.record_jetToTau_SF_lead(jetToTauFakeRateInterface, selHadTau->pt(), selHadTau->absEta());
         double weight_data_to_MC_correction_hadTau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
         if ( isDEBUG ) {
           std::cout << "weight_data_to_MC_correction_hadTau = " << weight_data_to_MC_correction_hadTau << std::endl;
@@ -1664,7 +1673,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         }
         continue;
       }
-      evtWeight *= prob_chargeMisId_applied;
+      evtWeightRecorder *= prob_chargeMisId_applied;
     }
     cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton-pair OS/SS charge", evtWeight);

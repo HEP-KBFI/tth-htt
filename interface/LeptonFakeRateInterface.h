@@ -23,16 +23,26 @@ public:
               double electronAbsEta) const;
 
   double
+  getWeight_e(double electronPt,
+              double electronAbsEta,
+              int central_or_shift) const;
+
+  double
   getWeight_mu(double muonPt,
                double muonAbsEta) const;
+
+  double
+  getWeight_mu(double muonPt,
+               double muonAbsEta,
+               int central_or_shift) const;
 
 private:
   int central_or_shift_;
 
   std::map<std::string, TFile *> inputFiles_;
 
-  lutWrapperBase * lutFakeRate_e_;
-  lutWrapperBase * lutFakeRate_mu_;
+  std::map<int, lutWrapperBase *> lutFakeRate_e_;
+  std::map<int, lutWrapperBase *> lutFakeRate_mu_;
 };
 
 #endif

@@ -19,16 +19,36 @@ public:
                  double hadTauAbsEta_lead) const;
 
   double
+  getWeight_lead(double hadTauPt_lead,
+                 double hadTauAbsEta_lead,
+                 int central_or_shift) const;
+
+  double
   getWeight_sublead(double hadTauPt_sublead,
                     double hadTauAbsEta_sublead) const;
 
   double
+  getWeight_sublead(double hadTauPt_sublead,
+                    double hadTauAbsEta_sublead,
+                    int central_or_shift) const;
+
+  double
   getWeight_third(double hadTauPt_third,
                   double hadTauAbsEta_third) const;
+
+  double
+  getWeight_third(double hadTauPt_third,
+                  double hadTauAbsEta_third,
+                  int central_or_shift) const;
   
   double
   getWeight_fourth(double hadTauPt_fourth,
-		   double hadTauAbsEta_fourth) const;
+                   double hadTauAbsEta_fourth) const;
+
+  double
+  getWeight_fourth(double hadTauPt_fourth,
+                   double hadTauAbsEta_fourth,
+                   int central_or_shift) const;
 
   // jet->tau fake-rate scale factors (ratio of jet->tau fake-rates in data and MC simulation);
   // to be applied to simulated events in case data-driven "fake" background estimation is applied to leptons only
@@ -37,16 +57,37 @@ public:
              double hadTauAbsEta_lead) const;
 
   double
+  getSF_lead(double hadTauPt_lead,
+             double hadTauAbsEta_lead,
+             int central_or_shift) const;
+
+  double
   getSF_sublead(double hadTauPt_sublead,
                 double hadTauAbsEta_sublead) const;
+
+  double
+  getSF_sublead(double hadTauPt_sublead,
+                double hadTauAbsEta_sublead,
+                int central_or_shift) const;
 
   double
   getSF_third(double hadTauPt_third,
               double hadTauAbsEta_third) const;
 
   double
+  getSF_third(double hadTauPt_third,
+              double hadTauAbsEta_third,
+              int central_or_shift) const;
+
+  double
   getSF_fourth(double hadTauPt_fourth,
-	       double hadTauAbsEta_fourth) const;
+               double hadTauAbsEta_fourth) const;
+
+  double
+  getSF_fourth(double hadTauPt_fourth,
+               double hadTauAbsEta_fourth,
+               int central_or_shift) const;
+
 protected:
   enum { kWeight, kSF };
 
@@ -54,18 +95,20 @@ protected:
   getWeight_or_SF(double hadTauPt_lead,
                   double hadTauAbsEta_lead,
                   int mode,
-                  int order) const;
+                  int order,
+                  int central_or_shift) const;
 
 private:
   TFile * inputFile_;
-  std::vector<JetToTauFakeRateWeightEntry*> jetToTauFakeRateWeights_lead_;
+  std::map<int, std::vector<JetToTauFakeRateWeightEntry*>> jetToTauFakeRateWeights_lead_;
   bool isInitialized_lead_;
-  std::vector<JetToTauFakeRateWeightEntry*> jetToTauFakeRateWeights_sublead_;
+  std::map<int, std::vector<JetToTauFakeRateWeightEntry*>> jetToTauFakeRateWeights_sublead_;
   bool isInitialized_sublead_;
-  std::vector<JetToTauFakeRateWeightEntry*> jetToTauFakeRateWeights_third_;
+  std::map<int, std::vector<JetToTauFakeRateWeightEntry*>> jetToTauFakeRateWeights_third_;
   bool isInitialized_third_;
-  std::vector<JetToTauFakeRateWeightEntry*> jetToTauFakeRateWeights_fourth_;
+  std::map<int, std::vector<JetToTauFakeRateWeightEntry*>> jetToTauFakeRateWeights_fourth_;
   bool isInitialized_fourth_;
+  int central_or_shift_;
 };
 
 #endif

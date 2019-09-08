@@ -497,35 +497,35 @@ class analyzeConfig(object):
         self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_%s_NC" % suffix
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_%s" % suffix
 
-        leptonFakeRateWeight_histogramName_e_suffix = ''
-        leptonFakeRateWeight_histogramName_mu_suffix = ''
-        if central_or_shift == "CMS_ttHl_FRe_shape_ptUp":
-            leptonFakeRateWeight_histogramName_e_suffix = '_pt1'
-        elif central_or_shift == "CMS_ttHl_FRe_shape_ptDown":
-            leptonFakeRateWeight_histogramName_e_suffix = '_pt2'
-        elif central_or_shift == "CMS_ttHl_FRe_shape_normUp":
-            leptonFakeRateWeight_histogramName_e_suffix = '_up'
-        elif central_or_shift == "CMS_ttHl_FRe_shape_normDown":
-            leptonFakeRateWeight_histogramName_e_suffix = '_down'
-        elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelUp":
-            leptonFakeRateWeight_histogramName_e_suffix = '_be1'
-        elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelDown":
-            leptonFakeRateWeight_histogramName_e_suffix = '_be2'
-        elif central_or_shift == "CMS_ttHl_FRm_shape_ptUp":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_pt1'
-        elif central_or_shift == "CMS_ttHl_FRm_shape_ptDown":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_pt2'
-        elif central_or_shift == "CMS_ttHl_FRm_shape_normUp":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_up'
-        elif central_or_shift == "CMS_ttHl_FRm_shape_normDown":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_down'
-        elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelUp":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
-        elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelDown":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
-
-        self.leptonFakeRateWeight_histogramName_e  += leptonFakeRateWeight_histogramName_e_suffix
-        self.leptonFakeRateWeight_histogramName_mu += leptonFakeRateWeight_histogramName_mu_suffix
+        # leptonFakeRateWeight_histogramName_e_suffix = ''
+        # leptonFakeRateWeight_histogramName_mu_suffix = ''
+        # if central_or_shift == "CMS_ttHl_FRe_shape_ptUp":
+        #     leptonFakeRateWeight_histogramName_e_suffix = '_pt1'
+        # elif central_or_shift == "CMS_ttHl_FRe_shape_ptDown":
+        #     leptonFakeRateWeight_histogramName_e_suffix = '_pt2'
+        # elif central_or_shift == "CMS_ttHl_FRe_shape_normUp":
+        #     leptonFakeRateWeight_histogramName_e_suffix = '_up'
+        # elif central_or_shift == "CMS_ttHl_FRe_shape_normDown":
+        #     leptonFakeRateWeight_histogramName_e_suffix = '_down'
+        # elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelUp":
+        #     leptonFakeRateWeight_histogramName_e_suffix = '_be1'
+        # elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelDown":
+        #     leptonFakeRateWeight_histogramName_e_suffix = '_be2'
+        # elif central_or_shift == "CMS_ttHl_FRm_shape_ptUp":
+        #     leptonFakeRateWeight_histogramName_mu_suffix = '_pt1'
+        # elif central_or_shift == "CMS_ttHl_FRm_shape_ptDown":
+        #     leptonFakeRateWeight_histogramName_mu_suffix = '_pt2'
+        # elif central_or_shift == "CMS_ttHl_FRm_shape_normUp":
+        #     leptonFakeRateWeight_histogramName_mu_suffix = '_up'
+        # elif central_or_shift == "CMS_ttHl_FRm_shape_normDown":
+        #     leptonFakeRateWeight_histogramName_mu_suffix = '_down'
+        # elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelUp":
+        #     leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
+        # elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelDown":
+        #     leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
+        #
+        # self.leptonFakeRateWeight_histogramName_e  += leptonFakeRateWeight_histogramName_e_suffix
+        # self.leptonFakeRateWeight_histogramName_mu += leptonFakeRateWeight_histogramName_mu_suffix
 
     def set_BDT_training(self, hadTau_selection_relaxed):
         """Run analysis with loose selection criteria for leptons and hadronic taus,

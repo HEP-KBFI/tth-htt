@@ -16,7 +16,7 @@ namespace
                                     const std::string & hadTauSelection,
                                     const edm::ParameterSet & cfg,
                                     int central_or_shift,
-                                    std::vector<JetToTauFakeRateWeightEntry *> & jetToTauFakeRateWeights,
+                                    std::map<int, std::vector<JetToTauFakeRateWeightEntry *>> & jetToTauFakeRateWeights,
                                     bool & isInitialized)
   {
     const vdouble absEtaBins = cfg.getParameter<vdouble>("absEtaBins");
@@ -35,7 +35,11 @@ namespace
       JetToTauFakeRateWeightEntry * jetToTauFakeRateWeight = new JetToTauFakeRateWeightEntry(
         absEtaMin, absEtaMax, hadTauSelection, inputFile, cfg, central_or_shift
       );
-      jetToTauFakeRateWeights.push_back(jetToTauFakeRateWeight);
+      if(! jetToTauFakeRateWeights.count(central_or_shift))
+      {
+        jetToTauFakeRateWeights[central_or_shift] = {};
+      }
+      jetToTauFakeRateWeights[central_or_shift].push_back(jetToTauFakeRateWeight);
     }
 
     isInitialized = true;
@@ -44,65 +48,83 @@ namespace
 
 JetToTauFakeRateInterface::JetToTauFakeRateInterface(const edm::ParameterSet & cfg,
                                                      int central_or_shift)
-  : inputFile_(nullptr),
-    isInitialized_lead_(false),
-    isInitialized_sublead_(false),
-    isInitialized_third_(false),
-    isInitialized_fourth_(false)
+  : inputFile_(nullptr)
+  , isInitialized_lead_(false)
+  , isInitialized_sublead_(false)
+  , isInitialized_third_(false)
+  , isInitialized_fourth_(false)
+  , central_or_shift_(central_or_shift)
 {
   const std::string inputFileName = cfg.getParameter<std::string>("inputFileName");
   inputFile_ = openFile(LocalFileInPath(inputFileName));
 
   const std::string hadTauSelection = cfg.getParameter<std::string>("hadTauSelection");
 
-  const auto initializeJetToTauFRWeights = [&, this](const edm::ParameterSet & cfg_prio,
-                                                     std::vector<JetToTauFakeRateWeightEntry *> & jetToTauFakeRateWeights_prio,
-                                                     bool & isInitialized) -> void
+  const auto initializeJetToTauFRWeights = [&, this](
+    const edm::ParameterSet & cfg_prio,
+    std::map<int, std::vector<JetToTauFakeRateWeightEntry *>> & jetToTauFakeRateWeights_prio,
+    bool & isInitialized,
+    int FRjt_option) -> void
   {
     initializeJetToTauFakeRateWeights(
-      inputFile_, hadTauSelection, cfg_prio, central_or_shift, jetToTauFakeRateWeights_prio, isInitialized
+      inputFile_, hadTauSelection, cfg_prio, FRjt_option, jetToTauFakeRateWeights_prio, isInitialized
     );
   };
 
-  if(cfg.exists("lead"))
+  for(int FRjt_option = kFRjt_central; FRjt_option <= kFRjt_shapeDown; ++FRjt_option)
   {
-    const edm::ParameterSet cfg_lead = cfg.getParameter<edm::ParameterSet>("lead");
-    initializeJetToTauFRWeights(cfg_lead, jetToTauFakeRateWeights_lead_, isInitialized_lead_);
-  }
-  if(cfg.exists("sublead"))
-  {
-    const edm::ParameterSet cfg_sublead = cfg.getParameter<edm::ParameterSet>("sublead");
-    initializeJetToTauFRWeights(cfg_sublead, jetToTauFakeRateWeights_sublead_, isInitialized_sublead_);
-  }
-  if(cfg.exists("third"))
-  {
-    const edm::ParameterSet cfg_third = cfg.getParameter<edm::ParameterSet>("third");
-    initializeJetToTauFRWeights(cfg_third, jetToTauFakeRateWeights_third_, isInitialized_third_);
-  }
-  if(cfg.exists("fourth"))
-  {
-    const edm::ParameterSet cfg_fourth = cfg.getParameter<edm::ParameterSet>("fourth");
-    initializeJetToTauFRWeights(cfg_fourth, jetToTauFakeRateWeights_fourth_, isInitialized_fourth_);
+    if(cfg.exists("lead"))
+    {
+      const edm::ParameterSet cfg_lead = cfg.getParameter<edm::ParameterSet>("lead");
+      initializeJetToTauFRWeights(cfg_lead, jetToTauFakeRateWeights_lead_, isInitialized_lead_, FRjt_option);
+    }
+    if(cfg.exists("sublead"))
+    {
+      const edm::ParameterSet cfg_sublead = cfg.getParameter<edm::ParameterSet>("sublead");
+      initializeJetToTauFRWeights(cfg_sublead, jetToTauFakeRateWeights_sublead_, isInitialized_sublead_, FRjt_option);
+    }
+    if(cfg.exists("third"))
+    {
+      const edm::ParameterSet cfg_third = cfg.getParameter<edm::ParameterSet>("third");
+      initializeJetToTauFRWeights(cfg_third, jetToTauFakeRateWeights_third_, isInitialized_third_, FRjt_option);
+    }
+    if(cfg.exists("fourth"))
+    {
+      const edm::ParameterSet cfg_fourth = cfg.getParameter<edm::ParameterSet>("fourth");
+      initializeJetToTauFRWeights(cfg_fourth, jetToTauFakeRateWeights_fourth_, isInitialized_fourth_, FRjt_option);
+    }
   }
 }
 
 JetToTauFakeRateInterface::~JetToTauFakeRateInterface()
 {
-  for(JetToTauFakeRateWeightEntry * & it: jetToTauFakeRateWeights_lead_)
+  for(auto & kv: jetToTauFakeRateWeights_lead_)
   {
-    delete it;
+    for(JetToTauFakeRateWeightEntry * & it: kv.second)
+    {
+      delete it;
+    }
   }
-  for(JetToTauFakeRateWeightEntry * & it: jetToTauFakeRateWeights_sublead_)
+  for(auto & kv: jetToTauFakeRateWeights_sublead_)
   {
-    delete it;
+    for(JetToTauFakeRateWeightEntry * & it: kv.second)
+    {
+      delete it;
+    }
   }
-  for(JetToTauFakeRateWeightEntry * & it: jetToTauFakeRateWeights_third_)
+  for(auto & kv: jetToTauFakeRateWeights_third_)
   {
-    delete it;
+    for(JetToTauFakeRateWeightEntry * & it: kv.second)
+    {
+      delete it;
+    }
   }
-  for(JetToTauFakeRateWeightEntry * & it: jetToTauFakeRateWeights_fourth_)
+  for(auto & kv: jetToTauFakeRateWeights_fourth_)
   {
-    delete it;
+    for(JetToTauFakeRateWeightEntry * & it: kv.second)
+    {
+      delete it;
+    }
   }
   delete inputFile_;
 }
@@ -111,73 +133,138 @@ double
 JetToTauFakeRateInterface::getWeight_lead(double hadTauPt_lead,
                                           double hadTauAbsEta_lead) const
 {
-  return getWeight_or_SF(hadTauPt_lead, hadTauAbsEta_lead, kWeight, 0);
+  return getWeight_lead(hadTauPt_lead, hadTauAbsEta_lead, central_or_shift_);
+}
+
+double
+JetToTauFakeRateInterface::getWeight_lead(double hadTauPt_lead,
+                                          double hadTauAbsEta_lead,
+                                          int central_or_shift) const
+{
+  return getWeight_or_SF(hadTauPt_lead, hadTauAbsEta_lead, kWeight, 0, central_or_shift);
 }
 
 double
 JetToTauFakeRateInterface::getWeight_sublead(double hadTauPt_sublead,
                                              double hadTauAbsEta_sublead) const
 {
-  return getWeight_or_SF(hadTauPt_sublead, hadTauAbsEta_sublead, kWeight, 1);
+  return getWeight_sublead(hadTauPt_sublead, hadTauAbsEta_sublead, central_or_shift_);
+}
+
+double
+JetToTauFakeRateInterface::getWeight_sublead(double hadTauPt_sublead,
+                                             double hadTauAbsEta_sublead,
+                                             int central_or_shift) const
+{
+  return getWeight_or_SF(hadTauPt_sublead, hadTauAbsEta_sublead, kWeight, 1, central_or_shift);
 }
 
 double
 JetToTauFakeRateInterface::getWeight_third(double hadTauPt_third,
                                            double hadTauAbsEta_third) const
 {
-  return getWeight_or_SF(hadTauPt_third, hadTauAbsEta_third, kWeight, 2);
+  return getWeight_third(hadTauPt_third, hadTauAbsEta_third, central_or_shift_);
+}
+
+double
+JetToTauFakeRateInterface::getWeight_third(double hadTauPt_third,
+                                           double hadTauAbsEta_third,
+                                           int central_or_shift) const
+{
+  return getWeight_or_SF(hadTauPt_third, hadTauAbsEta_third, kWeight, 2, central_or_shift);
 }
 
 double
 JetToTauFakeRateInterface::getWeight_fourth(double hadTauPt_fourth,
-					    double hadTauAbsEta_fourth) const
+                                            double hadTauAbsEta_fourth) const
 {
-  return getWeight_or_SF(hadTauPt_fourth, hadTauAbsEta_fourth, kWeight, 3);
+  return getWeight_fourth(hadTauPt_fourth, hadTauAbsEta_fourth, central_or_shift_);
+}
+
+double
+JetToTauFakeRateInterface::getWeight_fourth(double hadTauPt_fourth,
+                                            double hadTauAbsEta_fourth,
+                                            int central_or_shift) const
+{
+  return getWeight_or_SF(hadTauPt_fourth, hadTauAbsEta_fourth, kWeight, 3, central_or_shift);
 }
 
 double
 JetToTauFakeRateInterface::getSF_lead(double hadTauPt_lead,
                                       double hadTauAbsEta_lead) const
 {
-  return getWeight_or_SF(hadTauPt_lead, hadTauAbsEta_lead, kSF, 0);
+  return getSF_lead(hadTauPt_lead, hadTauAbsEta_lead, central_or_shift_);
+}
+
+double
+JetToTauFakeRateInterface::getSF_lead(double hadTauPt_lead,
+                                      double hadTauAbsEta_lead,
+                                      int central_or_shift) const
+{
+  return getWeight_or_SF(hadTauPt_lead, hadTauAbsEta_lead, kSF, 0, central_or_shift);
 }
 
 double
 JetToTauFakeRateInterface::getSF_sublead(double hadTauPt_sublead,
                                          double hadTauAbsEta_sublead) const
 {
-  return getWeight_or_SF(hadTauPt_sublead, hadTauAbsEta_sublead, kSF, 1);
+  return getSF_sublead(hadTauPt_sublead, hadTauAbsEta_sublead, central_or_shift_);
+}
+
+double
+JetToTauFakeRateInterface::getSF_sublead(double hadTauPt_sublead,
+                                         double hadTauAbsEta_sublead,
+                                         int central_or_shift) const
+{
+  return getWeight_or_SF(hadTauPt_sublead, hadTauAbsEta_sublead, kSF, 1, central_or_shift);
 }
 
 double
 JetToTauFakeRateInterface::getSF_third(double hadTauPt_third,
                                        double hadTauAbsEta_third) const
 {
-  return getWeight_or_SF(hadTauPt_third, hadTauAbsEta_third, kSF, 2);
+  return getSF_third(hadTauPt_third, hadTauAbsEta_third, central_or_shift_);
+}
+
+double
+JetToTauFakeRateInterface::getSF_third(double hadTauPt_third,
+                                       double hadTauAbsEta_third,
+                                       int central_or_shift) const
+{
+  return getWeight_or_SF(hadTauPt_third, hadTauAbsEta_third, kSF, 2, central_or_shift);
 }
 
 double
 JetToTauFakeRateInterface::getSF_fourth(double hadTauPt_fourth,
-					double hadTauAbsEta_fourth) const
+                                        double hadTauAbsEta_fourth) const
 {
-  return getWeight_or_SF(hadTauPt_fourth, hadTauAbsEta_fourth, kSF, 3);
+  return getSF_fourth(hadTauPt_fourth, hadTauAbsEta_fourth, central_or_shift_);
+}
+
+double
+JetToTauFakeRateInterface::getSF_fourth(double hadTauPt_fourth,
+                                        double hadTauAbsEta_fourth,
+                                        int central_or_shift) const
+{
+  return getWeight_or_SF(hadTauPt_fourth, hadTauAbsEta_fourth, kSF, 3, central_or_shift);
 }
 
 double
 JetToTauFakeRateInterface::getWeight_or_SF(double hadTauPt,
                                            double hadTauAbsEta,
                                            int mode,
-                                           int order) const
+                                           int order,
+                                           int central_or_shift) const
 {
   std::string name;
   bool isInitialized = false;
   std::vector<JetToTauFakeRateWeightEntry *> j2tFRweights;
   switch(order)
   {
-    case 0: name = "leading";    isInitialized = isInitialized_lead_;    j2tFRweights = jetToTauFakeRateWeights_lead_;    break;
-    case 1: name = "subleading"; isInitialized = isInitialized_sublead_; j2tFRweights = jetToTauFakeRateWeights_sublead_; break;
-    case 2: name = "third";      isInitialized = isInitialized_third_;   j2tFRweights = jetToTauFakeRateWeights_third_;   break;
-    case 3: name = "fourth";     isInitialized = isInitialized_fourth_;  j2tFRweights = jetToTauFakeRateWeights_fourth_;  break;  
+    case 0: name = "leading";    isInitialized = isInitialized_lead_;    j2tFRweights = jetToTauFakeRateWeights_lead_.at(central_or_shift);    break;
+    case 1: name = "subleading"; isInitialized = isInitialized_sublead_; j2tFRweights = jetToTauFakeRateWeights_sublead_.at(central_or_shift); break;
+    case 2: name = "third";      isInitialized = isInitialized_third_;   j2tFRweights = jetToTauFakeRateWeights_third_.at(central_or_shift);   break;
+    case 3: name = "fourth";     isInitialized = isInitialized_fourth_;  j2tFRweights = jetToTauFakeRateWeights_fourth_.at(central_or_shift);  break;
     default: assert(0);
   }
 
