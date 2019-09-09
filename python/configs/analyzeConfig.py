@@ -191,6 +191,8 @@ class analyzeConfig(object):
             self.central_or_shifts.remove('central')
             self.central_or_shifts = [ 'central' ] + self.central_or_shifts
         self.central_or_shifts_fr = []
+        self.central_or_shifts_internal = []
+        self.central_or_shifts_external = []
         #------------------------------------------------------------------------
         self.era = era
         self.do_l1prefiring = self.era != "2018"
@@ -677,6 +679,7 @@ class analyzeConfig(object):
             'isMC',
             'hasLHE',
             'central_or_shift',
+            'central_or_shifts_local',
             'evtCategories',
             'leptonSelection',
             'electronSelection',
@@ -868,6 +871,22 @@ class analyzeConfig(object):
             self.central_or_shifts = [
                central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shifts_fr_remove
             ]
+
+    def internalizeSystematics(self):
+      assert(self.central_or_shifts)
+      self.central_or_shifts_internal = [
+        central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.an_internal
+      ]
+      self.central_or_shifts_external = [
+        central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in systematics.an_internal
+      ]
+      if "central" not in self.central_or_shifts_internal:
+        self.central_or_shifts_internal = [ "central" ] + self.central_or_shifts_internal
+      if "central" not in self.central_or_shifts_external:
+        self.central_or_shifts_external = [ "central" ] + self.central_or_shifts_external
+      logging.info("Separated internal systematics: {}".format(', '.join(self.central_or_shifts_internal)))
+      logging.info("Separated external systematics: {}".format(', '.join(self.central_or_shifts_external)))
+
 
     def createCfg_copyHistograms(self, jobOptions):
         """Create python configuration file for the copyHistograms executable (split the ROOT files produced by hadd_stage1 into separate ROOT files, one for each event category)

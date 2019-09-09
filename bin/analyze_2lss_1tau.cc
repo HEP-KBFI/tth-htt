@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
   std::string central_or_shift_main = cfg_analyze.getParameter<std::string>("central_or_shift");
-  std::vector<std::string> central_or_shift_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shift_local");
+  std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
@@ -256,14 +256,14 @@ int main(int argc, char* argv[])
   const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
-  if(! central_or_shift_local.empty())
+  if(! central_or_shifts_local.empty())
   {
     assert(central_or_shift_main == "central");
-    assert(std::find(central_or_shift_local.cbegin(), central_or_shift_local.cend(), "central") != central_or_shift_local.cend());
+    assert(std::find(central_or_shifts_local.cbegin(), central_or_shifts_local.cend(), "central") != central_or_shifts_local.cend());
   }
   else
   {
-    central_or_shift_local = { central_or_shift_main };
+    central_or_shifts_local = { central_or_shift_main };
   }
 
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
@@ -698,7 +698,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   std::map<std::string, GenEvtHistManager*> genEvtHistManager_beforeCuts;
   std::map<std::string, GenEvtHistManager*> genEvtHistManager_afterCuts;
   std::map<std::string, LHEInfoHistManager*> lheInfoHistManager;
-  for(const std::string & central_or_shift: central_or_shift_local)
+  for(const std::string & central_or_shift: central_or_shifts_local)
   {
     for(const leptonChargeFlipGenMatchEntry & leptonGenMatch_definition: leptonGenMatch_definitions)
     {
@@ -1016,7 +1016,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       if(genMatchToJetReader)      jetGenMatch = genMatchToJetReader->read();
     }
 
-    EvtWeightRecorder evtWeightRecorder(central_or_shift_local, isMC);
+    EvtWeightRecorder evtWeightRecorder(central_or_shifts_local, isMC);
     if(isMC)
     {
       if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
@@ -1027,7 +1027,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       evtWeightRecorder.record_puWeight(&eventInfo);
       evtWeightRecorder.record_nom_tH_weight(eventInfo.genWeight_tH());
       evtWeightRecorder.record_lumiScale(lumiScale); // TODO: depends on the choice of systematics (L1prefire, PU, LHE scale)
-      for(const std::string & central_or_shift: central_or_shift_local)
+      for(const std::string & central_or_shift: central_or_shifts_local)
       {
         genEvtHistManager_beforeCuts[central_or_shift]->fillHistograms(
           genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift)
@@ -2028,7 +2028,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     const double mvaOutput_2lss_1tau_HTTMEM_SUM_M = mva_2lss_1tau_HTTMEM_SUM_M(mvaInputVariables_HTTMEM_SUM);
 
 //--- fill histograms with events passing final selection
-    for(const std::string & central_or_shift: central_or_shift_local)
+    for(const std::string & central_or_shift: central_or_shifts_local)
     {
       selHistManagerType* selHistManager = selHistManagers[central_or_shift][idxSelLepton_genMatch][idxSelHadTau_genMatch];
       const double evtWeight = evtWeightRecorder.get(central_or_shift);
@@ -2399,7 +2399,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   std::cout << std::endl;
 
   std::cout << "sel. Entries by gen. matching:" << std::endl;
-  for(const std::string & central_or_shift: central_or_shift_local)
+  for(const std::string & central_or_shift: central_or_shifts_local)
   {
     std::cout << "central_or_shift = " << central_or_shift << '\n';
     for(const leptonChargeFlipGenMatchEntry & leptonGenMatch_definition: leptonGenMatch_definitions)
@@ -2445,7 +2445,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
   delete hadTopTagger;
 
-  for(const std::string & central_or_shift: central_or_shift_local)
+  for(const std::string & central_or_shift: central_or_shifts_local)
   {
     delete genEvtHistManager_beforeCuts[central_or_shift];
     delete genEvtHistManager_afterCuts[central_or_shift];
