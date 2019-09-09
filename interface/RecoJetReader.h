@@ -39,6 +39,9 @@ public:
   void
   read_ptMass_systematics(bool flag);
 
+  void
+  read_btag_systematics(bool flag);
+
   /**
    * @brief Call tree->SetBranchAddress for all RecoJet branches
    */
@@ -99,6 +102,7 @@ protected:
   int btag_central_or_shift_;
   int ptMassOption_;
   bool read_ptMass_systematics_;
+  bool read_btag_systematics_;
 
   UInt_t nJets_;
   Float_t * jet_eta_;

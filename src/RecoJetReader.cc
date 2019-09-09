@@ -35,6 +35,7 @@ RecoJetReader::RecoJetReader(int era,
   , btag_central_or_shift_(kBtag_central)
   , ptMassOption_(isMC_ ? kJetMET_central : kJetMET_central_nonNominal)
   , read_ptMass_systematics_(false)
+  , read_btag_systematics_(false)
   , jet_eta_(nullptr)
   , jet_phi_(nullptr)
   , jet_charge_(nullptr)
@@ -139,6 +140,12 @@ void
 RecoJetReader::read_ptMass_systematics(bool flag)
 {
   read_ptMass_systematics_ = flag;
+}
+
+void
+RecoJetReader::read_btag_systematics(bool flag)
+{
+  read_btag_systematics_ = flag;
 }
 
 void
@@ -253,19 +260,20 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     {
       bai.setBranchAddress(jet_BtagCSVs_[kv.first], kv.second);
     }
+
     for(const auto & kv: branchNames_BtagWeight_systematics_)
     {
       for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
       {
-        if(! read_ptMass_systematics_ && idxShift != btag_central_or_shift_)
+        if(read_btag_systematics_ || (! read_btag_systematics_ && idxShift == btag_central_or_shift_))
         {
-          continue;
+          bai.setBranchAddress(
+            jet_BtagWeights_systematics_[kv.first][idxShift], isMC_ ? branchNames_BtagWeight_systematics_[kv.first][idxShift] : "", 1.
+          );
         }
-        bai.setBranchAddress(
-          jet_BtagWeights_systematics_[kv.first][idxShift], isMC_ ? branchNames_BtagWeight_systematics_[kv.first][idxShift] : "", 1.
-        );
       }
     }
+
     bai.setBranchAddress(jet_QGDiscr_, branchName_QGDiscr_, 1.);
     bai.setBranchAddress(jet_pullEta_, branchName_pullEta_);
     bai.setBranchAddress(jet_pullPhi_, branchName_pullPhi_);
@@ -340,12 +348,16 @@ RecoJetReader::read() const
 
       RecoJet & jet = jets.back();
 
-      if(isMC_ && read_ptMass_systematics_)
+      if(isMC_)
       {
         for(const auto & kv: gInstance->jet_BtagWeights_systematics_)
         {
           for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
           {
+            if(! read_btag_systematics_ && idxShift != btag_central_or_shift_)
+            {
+              continue;
+            }
             if(gInstance->jet_BtagWeights_systematics_.at(kv.first).count(idxShift))
             {
               jet.BtagWeight_systematics_[kv.first][idxShift] = gInstance->jet_BtagWeights_systematics_.at(kv.first).at(idxShift)[idxJet];
