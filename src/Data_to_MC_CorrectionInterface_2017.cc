@@ -90,7 +90,10 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXptYabsEta
   ));
 
-  tauIdSFs_ = new TauIDSFTool(2017, tauIDSF_str_, tauIDSF_level_str_, false);
+  if(applyHadTauSF_)
+  {
+    tauIdSFs_ = new TauIDSFTool(2017, tauIDSF_str_, tauIDSF_level_str_, false);
+  }
 }
 
 Data_to_MC_CorrectionInterface_2017::~Data_to_MC_CorrectionInterface_2017()
@@ -164,15 +167,18 @@ double
 Data_to_MC_CorrectionInterface_2017::getSF_hadTauID_and_Iso(TauIDSFsys central_or_shift) const
 {
   double sf = 1.;
-  for(std::size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau)
+  if(applyHadTauSF_)
   {
-    if(hadTau_genPdgId_[idxHadTau] == 15)
+    for(std::size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau)
     {
-      switch(central_or_shift)
+      if(hadTau_genPdgId_[idxHadTau] == 15)
       {
-        case TauIDSFsys::central:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau]);         break;
-        case TauIDSFsys::shiftUp:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Up");   break;
-        case TauIDSFsys::shiftDown: sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Down"); break;
+        switch(central_or_shift)
+        {
+          case TauIDSFsys::central:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau]);         break;
+          case TauIDSFsys::shiftUp:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Up");   break;
+          case TauIDSFsys::shiftDown: sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Down"); break;
+        }
       }
     }
   }
