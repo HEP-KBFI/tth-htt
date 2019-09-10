@@ -16,7 +16,6 @@ EvtWeightRecorder::EvtWeightRecorder()
   : isMC_(false)
   , genWeight_(1.)
   , auxWeight_(1.)
-  , lumiScale_(1.)
   , nom_tH_weight_(1.)
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
@@ -27,7 +26,6 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
   : isMC_(isMC)
   , genWeight_(1.)
   , auxWeight_(1.)
-  , lumiScale_(1.)
   , nom_tH_weight_(1.)
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
@@ -52,8 +50,9 @@ double
 EvtWeightRecorder::get_inclusive(const std::string & central_or_shift) const
 {
   // TODO OPTIMIZE
-  return isMC_ ? genWeight_ * auxWeight_ * lumiScale_ * nom_tH_weight_ * get_puWeight(central_or_shift) *
-                 get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift)
+  return isMC_ ? genWeight_ * auxWeight_ * get_lumiScale(central_or_shift) * nom_tH_weight_ *
+                 get_puWeight(central_or_shift) * get_l1PreFiringWeight(central_or_shift) *
+                 get_lheScaleWeight(central_or_shift)
                : 1.
   ;
 }
@@ -71,9 +70,13 @@ EvtWeightRecorder::get_auxWeight() const
 }
 
 double
-EvtWeightRecorder::get_lumiScale() const
+EvtWeightRecorder::get_lumiScale(const std::string & central_or_shift) const
 {
-  return lumiScale_;
+  if(isMC_ && lumiScale_.count(central_or_shift))
+  {
+    return lumiScale_.at(central_or_shift);
+  }
+  return 1.;
 }
 
 double
@@ -231,10 +234,16 @@ EvtWeightRecorder::record_auxWeight(double auxWeight)
 }
 
 void
-EvtWeightRecorder::record_lumiScale(double lumiScale)
+EvtWeightRecorder::record_lumiScale(const edm::VParameterSet & lumiScales)
 {
   assert(isMC_);
-  lumiScale_ = lumiScale;
+  lumiScale_.clear();
+  for(const edm::ParameterSet lumiScale: lumiScales)
+  {
+    const std::string central_or_shift = lumiScale.getParameter<std::string>("central_or_shift");
+    const double nof_events = lumiScale.getParameter<double>("lumi");
+    lumiScale_[central_or_shift] = nof_events;
+  }
 }
 
 void

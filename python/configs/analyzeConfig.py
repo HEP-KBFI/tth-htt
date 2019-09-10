@@ -15,6 +15,7 @@ import os
 import uuid
 import inspect
 import copy
+import collections
 
 LEP_MVA_WPS = {
   'default' : 'mu=0.85;e=0.80',
@@ -581,51 +582,48 @@ class analyzeConfig(object):
         if 'central_or_shift' not in jobOptions:
           jobOptions['central_or_shift'] = 'central'
         if 'lumiScale' not in jobOptions:
-          nof_events_label = ''
-          nof_events_idx = -1
+          nof_events = collections.OrderedDict()
+          central_or_shifts = self.central_or_shifts_internal + [ jobOptions['central_or_shift'] ]
+          for central_or_shift in central_or_shifts:
+            if is_mc:
+              nof_events_label = ''
+              nof_events_idx = -1
 
-          if is_mc:
-            # Convention: CountWeighted includes the sign of genWeight, CountFullWeighted includes the full genWeight
-            # If L1 prefiring weights are enabled, then L1PrefireNom suffix is added
-            count_suffix = "L1PrefireNom" if self.do_l1prefiring else ""
+              # Convention: CountWeighted includes the sign of genWeight, CountFullWeighted includes the full genWeight
+              # If L1 prefiring weights are enabled, then L1PrefireNom suffix is added
+              count_suffix = "L1PrefireNom" if self.do_l1prefiring else ""
+              if central_or_shift == systematics.PU_().up:
+                nof_events_label = 'CountWeighted{}'.format(count_suffix)
+                nof_events_idx = 1 # PU weight up
+              elif central_or_shift == systematics.PU_().down:
+                nof_events_label = 'CountWeighted{}'.format(count_suffix)
+                nof_events_idx = 2 # PU weight down
+              elif central_or_shift in systematics.LHE().x1_up:
+                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_idx = 5 # muR=1   muF=2
+              elif central_or_shift in systematics.LHE().y1_up:
+                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_idx = 7 # muR=2   muF=1
+              elif central_or_shift in systematics.LHE().x1_down:
+                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_idx = 3 # muR=1   muF=0.5
+              elif central_or_shift in systematics.LHE().y1_down:
+                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_idx = 1 # muR=0.5 muF=1
+              elif central_or_shift in systematics.L1PreFiring_().up:
+                nof_events_label = 'CountWeightedL1Prefire'
+                nof_events_idx = 1  # L1 prefiring weight up
+              elif central_or_shift in systematics.L1PreFiring_().down:
+                nof_events_label = 'CountWeightedL1Prefire'
+                nof_events_idx = 2  # L1 prefiring weight down
+              elif central_or_shift == jobOptions['central_or_shift']:
+                nof_events_label = 'CountWeighted{}'.format(count_suffix)
+                nof_events_idx = 0 # central
 
-            central_or_shift = jobOptions['central_or_shift']
-            if central_or_shift == systematics.PU_().up:
-              nof_events_label = 'CountWeighted{}'.format(count_suffix)
-              nof_events_idx = 1 # PU weight up
-            elif central_or_shift == systematics.PU_().down:
-              nof_events_label = 'CountWeighted{}'.format(count_suffix)
-              nof_events_idx = 2 # PU weight down
-            elif central_or_shift in systematics.LHE().x1_up:
-              nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
-              nof_events_idx = 5 # muR=1   muF=2
-            elif central_or_shift in systematics.LHE().y1_up:
-              nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
-              nof_events_idx = 7 # muR=2   muF=1
-            elif central_or_shift in systematics.LHE().x1_down:
-              nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
-              nof_events_idx = 3 # muR=1   muF=0.5
-            elif central_or_shift in systematics.LHE().y1_down:
-              nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
-              nof_events_idx = 1 # muR=0.5 muF=1
-            elif central_or_shift in systematics.L1PreFiring_().up:
-              nof_events_label = 'CountWeightedL1Prefire'
-              nof_events_idx = 1  # L1 prefiring weight up
-            elif central_or_shift in systematics.L1PreFiring_().down:
-              nof_events_label = 'CountWeightedL1Prefire'
-              nof_events_idx = 2  # L1 prefiring weight down
-            else:
-              nof_events_label = 'CountWeighted{}'.format(count_suffix)
-              nof_events_idx = 0 # central
-          else:
-            nof_events_label = 'Count'
-            nof_events_idx = 0
-
-          stitch_histogram_name = '{}_{}'.format(nof_events_label, nof_events_idx)
-          assert(nof_events_label)
-          assert(nof_events_idx >= 0)
-          nof_events = sample_info["nof_events"][nof_events_label][nof_events_idx]
-          assert(nof_events > 0)
+              if nof_events_idx >= 0 and nof_events_label:
+                nof_events[central_or_shift] = sample_info["nof_events"][nof_events_label][nof_events_idx]
+                assert(nof_events[central_or_shift] > 0)
+                stitch_histogram_name = '{}_{}'.format(nof_events_label, nof_events_idx) #TODO change later
 
           nof_reweighting = sample_info['nof_reweighting']
           if sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and nof_reweighting > 0:
@@ -670,7 +668,13 @@ class analyzeConfig(object):
                 tH_weights.append(tHweight)
               jobOptions['tHweights'] = tH_weights
 
-          jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / nof_events if (self.use_lumi and is_mc) else 1.
+          if is_mc and self.use_lumi:
+            jobOptions['lumiScale'] = [
+              cms.PSet(
+                central_or_shift = cms.string(central_or_shift),
+                lumi             = cms.double(sample_info["xsection"] * self.lumi / nof_events[central_or_shift]),
+              ) for central_or_shift in nof_events
+            ]
         if 'hasLHE' not in jobOptions:
             jobOptions['hasLHE'] = sample_info['has_LHE']
 

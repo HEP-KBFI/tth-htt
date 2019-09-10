@@ -1,9 +1,7 @@
 #ifndef tthAnalysis_HiggsToTauTau_EvtWeightRecorder_h
 #define tthAnalysis_HiggsToTauTau_EvtWeightRecorder_h
 
-#include <vector> // std::vector<>
-#include <string> // std::string
-#include <map> // std::map<,>
+#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::VParameterSet
 
 // forward declarations
 class L1PreFiringWeightReader;
@@ -41,7 +39,7 @@ public:
   get_auxWeight() const;
 
   double
-  get_lumiScale() const;
+  get_lumiScale(const std::string & central_or_shift = "") const;
 
   double
   get_nom_tH_weight() const;
@@ -83,7 +81,7 @@ public:
   record_auxWeight(double auxWeight);
 
   void
-  record_lumiScale(double lumiScale);
+  record_lumiScale(const edm::VParameterSet & lumiScales);
 
   void
   record_nom_tH_weight(double nom_tH_weight);
@@ -163,7 +161,7 @@ protected:
   bool isMC_;
   double genWeight_;
   double auxWeight_;
-  double lumiScale_;
+  std::map<std::string, double> lumiScale_;
   double nom_tH_weight_;
   double leptonSF_;
   double chargeMisIdProb_;
