@@ -528,15 +528,15 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           self.outputFile_hadd_stage1[key_hadd_stage1_job] = os.path.join(self.dirs[key_hadd_stage1_dir][DKEY_HIST],
                                                                           "hadd_stage1_%s.root" % process_name)
 
-      # initialize input and output file names for hadd_stage1_5
-      key_hadd_stage1_job = getKey(process_name)
-      key_hadd_stage1_5_dir = getKey("hadd")
-      key_hadd_stage1_5_job = getKey('')
-      if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
-        self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
-      for key_hadd_stage1 in self.outputFile_hadd_stage1.keys():
-        self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
-      self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job] = os.path.join(self.dirs[key_hadd_stage1_5_dir][DKEY_HIST], "hadd_stage1_5.root" )
+    # initialize input and output file names for hadd_stage1_5
+    key_hadd_stage1_job = getKey(process_name)
+    key_hadd_stage1_5_dir = getKey("hadd")
+    key_hadd_stage1_5_job = getKey('')
+    if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
+      self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
+    for key_hadd_stage1_job in self.outputFile_hadd_stage1.keys():
+      self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
+    self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job] = os.path.join(self.dirs[key_hadd_stage1_5_dir][DKEY_HIST], "hadd_stage1_5.root" )
 
     # sum fake contributions for the total of all MC samples
     # input processes: TTj,... ## HERE !!
