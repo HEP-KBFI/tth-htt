@@ -23,6 +23,10 @@ public:
   double
   getWeight(const std::vector<GenParticle> & genTauLeptons) const;
 
+  double
+  getWeight(const std::vector<GenParticle> & genTauLeptons,
+            int central_or_shift) const;
+
 protected:
   int era_;
   int central_or_shift_;

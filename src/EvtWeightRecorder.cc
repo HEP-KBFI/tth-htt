@@ -7,6 +7,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h"
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h"
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h"
+#include "tthAnalysis/HiggsToTauTau/interface/DYMCNormScaleFactors.h"
+#include "tthAnalysis/HiggsToTauTau/interface/DYMCReweighting.h"
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h"
@@ -37,7 +39,6 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
 double
 EvtWeightRecorder::get(const std::string & central_or_shift) const
 {
-  // TODO OPTIMIZE
   return (isMC_ ? get_inclusive(central_or_shift) * get_data_to_MC_correction(central_or_shift) : 1.) *
          get_FR(central_or_shift) * chargeMisIdProb_
   ;
@@ -46,10 +47,10 @@ EvtWeightRecorder::get(const std::string & central_or_shift) const
 double
 EvtWeightRecorder::get_inclusive(const std::string & central_or_shift) const
 {
-  // TODO OPTIMIZE
   return isMC_ ? genWeight_ * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
-                 get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift)
+                 get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) *
+                 get_dy_norm(central_or_shift) * get_dy_rwgt(central_or_shift)
                : 1.
   ;
 }
@@ -95,7 +96,7 @@ EvtWeightRecorder::get_puWeight(const std::string & central_or_shift) const
 {
   if(isMC_)
   {
-    const PUsys puSys_option = central_or_shift.empty() ? PUsys::central : getPUsys_option(central_or_shift);
+    const PUsys puSys_option = getPUsys_option(central_or_shift);
     if(weights_pu_.count(puSys_option))
     {
       return  weights_pu_.at(puSys_option);
@@ -107,12 +108,9 @@ EvtWeightRecorder::get_puWeight(const std::string & central_or_shift) const
 double
 EvtWeightRecorder::get_l1PreFiringWeight(const std::string & central_or_shift) const
 {
-  if(isMC_)
+  if(isMC_ && ! weights_l1PreFiring_.empty())
   {
-    const L1PreFiringWeightSys l1PreFire_option = central_or_shift.empty() ?
-      L1PreFiringWeightSys::nominal :
-      getL1PreFiringWeightSys_option(central_or_shift)
-    ;
+    const L1PreFiringWeightSys l1PreFire_option = getL1PreFiringWeightSys_option(central_or_shift);
     if(weights_l1PreFiring_.count(l1PreFire_option))
     {
       return weights_l1PreFiring_.at(l1PreFire_option);
@@ -124,9 +122,9 @@ EvtWeightRecorder::get_l1PreFiringWeight(const std::string & central_or_shift) c
 double
 EvtWeightRecorder::get_lheScaleWeight(const std::string & central_or_shift) const
 {
-  if(isMC_)
+  if(isMC_ && ! weights_lheScale_.empty())
   {
-    const int lheScale_option = central_or_shift.empty() ? kLHE_scale_central : getLHEscale_option(central_or_shift);
+    const int lheScale_option = getLHEscale_option(central_or_shift);
     if(weights_lheScale_.count(lheScale_option))
     {
       return weights_lheScale_.at(lheScale_option);
@@ -138,9 +136,9 @@ EvtWeightRecorder::get_lheScaleWeight(const std::string & central_or_shift) cons
 double
 EvtWeightRecorder::get_btag(const std::string & central_or_shift) const
 {
-  if(isMC_)
+  if(isMC_ && ! weights_btag_.empty())
   {
-    const int jetBtagSF_option = central_or_shift.empty() ? kBtag_central : getBTagWeight_option(central_or_shift);
+    const int jetBtagSF_option = getBTagWeight_option(central_or_shift);
     if(weights_btag_.count(jetBtagSF_option))
     {
       return weights_btag_.at(jetBtagSF_option);
@@ -150,11 +148,39 @@ EvtWeightRecorder::get_btag(const std::string & central_or_shift) const
 }
 
 double
+EvtWeightRecorder::get_dy_rwgt(const std::string & central_or_shift) const
+{
+  if(isMC_ && ! weights_dy_rwgt_.empty())
+  {
+    const int dyMCReweighting_option = getDYMCReweighting_option(central_or_shift);
+    if(weights_dy_rwgt_.count(dyMCReweighting_option))
+    {
+      return weights_dy_rwgt_.at(dyMCReweighting_option);
+    }
+  }
+  return 1.;
+}
+
+double
+EvtWeightRecorder::get_dy_norm(const std::string & central_or_shift) const
+{
+  if(isMC_ && ! weights_dy_norm_.empty())
+  {
+    const int dyMCNormScaleFactors_option = getDYMCNormScaleFactors_option(central_or_shift);
+    if(weights_dy_norm_.count(dyMCNormScaleFactors_option))
+    {
+      return weights_dy_norm_.at(dyMCNormScaleFactors_option);
+    }
+  }
+  return 1.;
+}
+
+double
 EvtWeightRecorder::get_sf_triggerEff(const std::string & central_or_shift) const
 {
-  if(isMC_)
+  if(isMC_ && ! weights_leptonTriggerEff_.empty())
   {
-    const TriggerSFsys triggerSF_option = central_or_shift.empty() ? TriggerSFsys::central : getTriggerSF_option(central_or_shift);
+    const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift);
     if(weights_leptonTriggerEff_.count(triggerSF_option))
     {
       return weights_leptonTriggerEff_.at(triggerSF_option);
@@ -187,22 +213,22 @@ EvtWeightRecorder::get_tauSF(const std::string & central_or_shift) const
   double tauSF_weight = 1.;
   if(isMC_)
   {
-    const TauIDSFsys tauIDSF_option = central_or_shift.empty() ? TauIDSFsys::central : getTauIDSFsys_option(central_or_shift);
+    const TauIDSFsys tauIDSF_option = getTauIDSFsys_option(central_or_shift);
     if(weights_hadTauID_and_Iso_.count(tauIDSF_option))
     {
       tauSF_weight *= weights_hadTauID_and_Iso_.at(tauIDSF_option);
     }
-    const FRet eToTauFakeRate_option = central_or_shift.empty() ? FRet::central : getEToTauFR_option(central_or_shift);
+    const FRet eToTauFakeRate_option = getEToTauFR_option(central_or_shift);
     if(weights_eToTauFakeRate_.count(eToTauFakeRate_option))
     {
       tauSF_weight *= weights_eToTauFakeRate_.at(eToTauFakeRate_option);
     }
-    const FRmt muToTauFakeRate_option = central_or_shift.empty() ? FRmt::central : getMuToTauFR_option(central_or_shift);
+    const FRmt muToTauFakeRate_option = getMuToTauFR_option(central_or_shift);
     if(weights_muToTauFakeRate_.count(muToTauFakeRate_option))
     {
       tauSF_weight *= weights_muToTauFakeRate_.at(muToTauFakeRate_option);
     }
-    const int jetToTauFakeRate_option = central_or_shift.empty() ? kFRjt_central : getJetToTauFR_option(central_or_shift);
+    const int jetToTauFakeRate_option = getJetToTauFR_option(central_or_shift);
     if(weights_SF_hadTau_lead_.count(jetToTauFakeRate_option))
     {
       tauSF_weight *= weights_SF_hadTau_lead_.at(jetToTauFakeRate_option);
@@ -214,8 +240,8 @@ EvtWeightRecorder::get_tauSF(const std::string & central_or_shift) const
 double
 EvtWeightRecorder::get_FR(const std::string & central_or_shift) const
 {
-  const int jetToLeptonFakeRate_option = central_or_shift.empty() ? kFRl_central : getJetToLeptonFR_option(central_or_shift);
-  const int jetToTauFakeRate_option = central_or_shift.empty() ? kFRjt_central : getJetToTauFR_option(central_or_shift);
+  const int jetToLeptonFakeRate_option = getJetToLeptonFR_option(central_or_shift);
+  const int jetToTauFakeRate_option = getJetToTauFR_option(central_or_shift);
   const std::string weightKey = jetToLeptonFakeRate_option == kFRl_central && jetToTauFakeRate_option == kFRjt_central ? "central" : central_or_shift;
   if(weights_FR_.count(weightKey))
   {
@@ -242,6 +268,45 @@ EvtWeightRecorder::record_auxWeight(const EvtWeightManager * const evtWeightMana
       evtWeightManager->getWeight(central_or_shift) :
       evtWeightManager->getWeight()
     ;
+  }
+}
+
+void
+EvtWeightRecorder::record_dy_rwgt(const DYMCReweighting * const dyReweighting,
+                                  const std::vector<GenParticle> & genTauLeptons)
+{
+  assert(isMC_);
+  weights_dy_rwgt_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const int dyMCReweighting_option = getDYMCReweighting_option(central_or_shift);
+    if(weights_dy_rwgt_.count(dyMCReweighting_option))
+    {
+      continue;
+    }
+    weights_dy_norm_[dyMCReweighting_option] = dyReweighting->getWeight(genTauLeptons, dyMCReweighting_option);
+  }
+}
+
+void
+EvtWeightRecorder::record_dy_norm(const DYMCNormScaleFactors * const dyNormScaleFactors,
+                                  const std::vector<GenParticle> & genTauLeptons,
+                                  int nJets,
+                                  int nBLoose,
+                                  int nBMedium)
+{
+  assert(isMC_);
+  weights_dy_norm_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const int dyMCNormScaleFactors_option = getDYMCNormScaleFactors_option(central_or_shift);
+    if(weights_dy_norm_.count(dyMCNormScaleFactors_option))
+    {
+      continue;
+    }
+    weights_dy_rwgt_[dyMCNormScaleFactors_option] = dyNormScaleFactors->getWeight(
+      genTauLeptons, nJets, nBLoose, nBMedium, dyMCNormScaleFactors_option
+    );
   }
 }
 

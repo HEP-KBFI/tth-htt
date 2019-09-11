@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_EvtWeightRecorder_h
 #define tthAnalysis_HiggsToTauTau_EvtWeightRecorder_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h"
+
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::VParameterSet
 
 // forward declarations
@@ -14,6 +16,8 @@ class LeptonFakeRateInterface;
 class RecoLepton;
 class RecoHadTau;
 class EvtWeightManager;
+class DYMCReweighting;
+class DYMCNormScaleFactors;
 
 enum class L1PreFiringWeightSys;
 enum class PUsys;
@@ -69,6 +73,12 @@ public:
   get_btag(const std::string & central_or_shift = "") const;
 
   double
+  get_dy_rwgt(const std::string & central_or_shift = "") const;
+
+  double
+  get_dy_norm(const std::string & central_or_shift = "") const;
+
+  double
   get_sf_triggerEff(const std::string & central_or_shift = "") const;
 
   double
@@ -82,6 +92,17 @@ public:
 
   void
   record_auxWeight(const EvtWeightManager * const evtWeightManager);
+
+  void
+  record_dy_rwgt(const DYMCReweighting * const dyReweighting,
+                 const std::vector<GenParticle> & genTauLeptons);
+
+  void
+  record_dy_norm(const DYMCNormScaleFactors * const dyNormScaleFactors,
+                 const std::vector<GenParticle> & genTauLeptons,
+                 int nJets,
+                 int nBLoose,
+                 int nBMedium);
 
   void
   record_lumiScale(const edm::VParameterSet & lumiScales);
@@ -165,6 +186,8 @@ protected:
   std::map<L1PreFiringWeightSys, double> weights_l1PreFiring_;
   std::map<int, double> weights_lheScale_;
   std::map<PUsys, double> weights_pu_;
+  std::map<int, double> weights_dy_norm_;
+  std::map<int, double> weights_dy_rwgt_;
   std::map<int, double> weights_btag_;
   std::map<TriggerSFsys, double> weights_leptonTriggerEff_;
   std::map<TauIDSFsys, double> weights_hadTauID_and_Iso_;

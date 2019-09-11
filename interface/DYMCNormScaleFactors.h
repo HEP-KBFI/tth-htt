@@ -23,6 +23,13 @@ public:
             int nBLoose,
             int nBMedium) const;
 
+  double
+  getWeight(const std::vector<GenParticle> & genTauLeptons,
+            int nJets,
+            int nBLoose,
+            int nBMedium,
+            int central_or_shift) const;
+
 protected:
   int era_;
   int central_or_shift_;

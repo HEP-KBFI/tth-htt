@@ -59,6 +59,13 @@ DYMCReweighting::~DYMCReweighting()
 double
 DYMCReweighting::getWeight(const std::vector<GenParticle> & genTauLeptons) const
 {
+  return getWeight(genTauLeptons, central_or_shift_);
+}
+
+double
+DYMCReweighting::getWeight(const std::vector<GenParticle> & genTauLeptons,
+                           int central_or_shift) const
+{
   const GenParticle * genTauLeptonPlus = nullptr;
   const GenParticle * genTauLeptonMinus = nullptr;
   for(const GenParticle & genTauLepton: genTauLeptons)
@@ -93,7 +100,7 @@ DYMCReweighting::getWeight(const std::vector<GenParticle> & genTauLeptons) const
   }
 
   double retVal = 1.;
-  switch(central_or_shift_)
+  switch(central_or_shift)
   {
     case kDYMCReweighting_central:   retVal = weight;          break;
     case kDYMCReweighting_shiftUp:   retVal = weight * weight; break;
