@@ -582,10 +582,15 @@ class analyzeConfig(object):
         if 'central_or_shift' not in jobOptions:
           jobOptions['central_or_shift'] = 'central'
         if 'lumiScale' not in jobOptions:
+
+          nof_reweighting = sample_info['nof_reweighting']
+          use_th_weights = is_mc and sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and nof_reweighting > 0
           nof_events = collections.OrderedDict()
-          central_or_shifts = self.central_or_shifts_internal + [ jobOptions['central_or_shift'] ]
-          for central_or_shift in central_or_shifts:
-            if is_mc:
+          tH_weights_map = {}
+
+          if is_mc:
+            central_or_shifts = self.central_or_shifts_internal + [ jobOptions['central_or_shift'] ]
+            for central_or_shift in central_or_shifts:
               nof_events_label = ''
               nof_events_idx = -1
 
@@ -625,48 +630,37 @@ class analyzeConfig(object):
                 assert(nof_events[central_or_shift] > 0)
                 stitch_histogram_name = '{}_{}'.format(nof_events_label, nof_events_idx) #TODO change later
 
-          nof_reweighting = sample_info['nof_reweighting']
-          if sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and nof_reweighting > 0:
-            missing_reweighting =  set(self.thIdxs) - set(range(-1, nof_reweighting))
+                if use_th_weights and central_or_shift not in tH_weights_map:
+                  missing_reweighting =  set(self.thIdxs) - set(range(-1, nof_reweighting))
 
-            if missing_reweighting:
-              logging.warning("Could not find the following weights for {}: {}".format(
-                sample_info["process_name_specific"],
-                ", ".join(map(str, missing_reweighting))
-              ))
-            else:
-              # record the weight for the default case (corresponds to no reweighting weight, i.e. idx of -1)
-              tHweight_default = copy.deepcopy(find_tHweight(tHweights, -1))
-              tHweight_default.weight = cms.double(1.)
-              tH_weights = [ tHweight_default ]
+                  if missing_reweighting:
+                    logging.warning("Could not find the following weights for {}: {}".format(
+                      sample_info["process_name_specific"],
+                      ", ".join(map(str, missing_reweighting))
+                    ))
+                  else:
+                    # record the weight for the default case (corresponds to no reweighting weight, i.e. idx of -1)
+                    tHweight_default = copy.deepcopy(find_tHweight(tHweights, -1))
+                    tHweight_default.weight = cms.double(1.)
+                    tHweight_default.central_or_shift = cms.string(central_or_shift)
+                    tH_weights_map[central_or_shift] = [ tHweight_default ]
 
-              for idx in self.thIdxs:
-                if idx < 0:
-                  # we've already recorded the weight for the default case
-                  logging.info(
-                    "Process {}, weight index {}: the default/actual # events is {}".format(
-                      sample_info["process_name_specific"], idx, nof_events
-                    )
-                  )
-                  continue
-                if idx in missing_reweighting:
-                  continue
+                    for idx in self.thIdxs:
+                      if idx < 0:
+                        # we've already recorded the weight for the default case
+                        continue
+                      if idx in missing_reweighting:
+                        continue
 
-                nof_events_rwgt = sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]
-                tHweight = copy.deepcopy(find_tHweight(tHweights, idx))
-                assert(nof_events_rwgt >= 0)
-                if nof_events_rwgt == 0:
-                  assert(float(tHweight.kt.configValue()) == 0. and sample_info['sample_category'] == 'signal_ctcvcp')
-                final_reweighting = (float(nof_events) / nof_events_rwgt) if nof_events_rwgt > 0. else 0.
-                logging.info(
-                  "Process {}, weight index {}: the default # events is {}, but actual # events is {} "
-                  "-> final weight is {:.6f}".format(
-                    sample_info["process_name_specific"], idx, nof_events, nof_events_rwgt, final_reweighting
-                  )
-                )
-                tHweight.weight = cms.double(final_reweighting)
-                tH_weights.append(tHweight)
-              jobOptions['tHweights'] = tH_weights
+                      nof_events_rwgt = sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]
+                      tHweight = copy.deepcopy(find_tHweight(tHweights, idx))
+                      assert(nof_events_rwgt >= 0)
+                      if nof_events_rwgt == 0:
+                        assert(float(tHweight.kt.configValue()) == 0. and sample_info['sample_category'] == 'signal_ctcvcp')
+                      final_reweighting = (float(nof_events[central_or_shift]) / nof_events_rwgt) if nof_events_rwgt > 0. else 0.
+                      tHweight.weight = cms.double(final_reweighting)
+                      tHweight.central_or_shift = cms.string(central_or_shift)
+                      tH_weights_map[central_or_shift].append(tHweight)
 
           if is_mc and self.use_lumi:
             jobOptions['lumiScale'] = [
@@ -675,6 +669,12 @@ class analyzeConfig(object):
                 lumi             = cms.double(sample_info["xsection"] * self.lumi / nof_events[central_or_shift]),
               ) for central_or_shift in nof_events
             ]
+          if use_th_weights:
+            tH_weights = []
+            for central_or_shift in tH_weights_map:
+              tH_weights.extend(tH_weights_map[central_or_shift])
+            jobOptions['tHweights'] = tH_weights
+
         if 'hasLHE' not in jobOptions:
             jobOptions['hasLHE'] = sample_info['has_LHE']
 

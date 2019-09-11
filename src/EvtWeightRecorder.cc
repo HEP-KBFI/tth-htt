@@ -16,7 +16,6 @@ EvtWeightRecorder::EvtWeightRecorder()
   : isMC_(false)
   , genWeight_(1.)
   , auxWeight_(1.)
-  , nom_tH_weight_(1.)
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
 {}
@@ -26,7 +25,6 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
   : isMC_(isMC)
   , genWeight_(1.)
   , auxWeight_(1.)
-  , nom_tH_weight_(1.)
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
   , central_or_shifts_(central_or_shifts)
@@ -50,7 +48,7 @@ double
 EvtWeightRecorder::get_inclusive(const std::string & central_or_shift) const
 {
   // TODO OPTIMIZE
-  return isMC_ ? genWeight_ * auxWeight_ * get_lumiScale(central_or_shift) * nom_tH_weight_ *
+  return isMC_ ? genWeight_ * auxWeight_ * get_lumiScale(central_or_shift) * get_nom_tH_weight(central_or_shift) *
                  get_puWeight(central_or_shift) * get_l1PreFiringWeight(central_or_shift) *
                  get_lheScaleWeight(central_or_shift)
                : 1.
@@ -80,9 +78,13 @@ EvtWeightRecorder::get_lumiScale(const std::string & central_or_shift) const
 }
 
 double
-EvtWeightRecorder::get_nom_tH_weight() const
+EvtWeightRecorder::get_nom_tH_weight(const std::string & central_or_shift) const
 {
-  return nom_tH_weight_;
+  if(isMC_ && nom_tH_weight_.count(central_or_shift))
+  {
+    return nom_tH_weight_.at(central_or_shift);
+  }
+  return 1.;
 }
 
 double
@@ -238,7 +240,7 @@ EvtWeightRecorder::record_lumiScale(const edm::VParameterSet & lumiScales)
 {
   assert(isMC_);
   lumiScale_.clear();
-  for(const edm::ParameterSet lumiScale: lumiScales)
+  for(const edm::ParameterSet & lumiScale: lumiScales)
   {
     const std::string central_or_shift = lumiScale.getParameter<std::string>("central_or_shift");
     const double nof_events = lumiScale.getParameter<double>("lumi");
@@ -247,10 +249,17 @@ EvtWeightRecorder::record_lumiScale(const edm::VParameterSet & lumiScales)
 }
 
 void
-EvtWeightRecorder::record_nom_tH_weight(double nom_tH_weight)
+EvtWeightRecorder::record_nom_tH_weight(const EventInfo * const eventInfo)
 {
   assert(isMC_);
-  nom_tH_weight_ = nom_tH_weight;
+  nom_tH_weight_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    nom_tH_weight_[central_or_shift] = eventInfo->has_central_or_shift(central_or_shift) ?
+      eventInfo->genWeight_tH(central_or_shift) :
+      eventInfo->genWeight_tH()
+    ;
+  }
 }
 
 void

@@ -36,6 +36,7 @@ EventInfo::EventInfo(bool is_mc,
   , PV_ndof(0.)
   , is_signal_(is_signal)
   , is_mc_(is_mc)
+  , central_or_shift_("central")
   , nLHEReweightingWeight(0)
   , LHEReweightingWeight(nullptr)
   , LHEReweightingWeight_max(69)
@@ -94,7 +95,7 @@ EventInfo::~EventInfo()
 double
 EventInfo::genWeight_tH() const
 {
-  return genWeight_tH(get_tH_SM_str());
+  return genWeight_tH(central_or_shift_);
 }
 
 double
@@ -102,21 +103,34 @@ EventInfo::genWeight_tH(double kv,
                         double kt,
                         double cosa) const
 {
-  return genWeight_tH(get_tH_weight_str(kv, kt, cosa));
+  return genWeight_tH(central_or_shift_, get_tH_weight_str(kv, kt, cosa));
 }
 
 double
-EventInfo::genWeight_tH(const std::string & name) const
+EventInfo::genWeight_tH(const std::string & central_or_shift) const
+{
+  return genWeight_tH(central_or_shift, get_tH_SM_str());
+}
+
+double
+EventInfo::genWeight_tH(const std::string & central_or_shfit,
+                        const std::string & name) const
 {
   if(tH_sf.empty())
   {
     return 1.;
   }
-  if(! tH_sf.count(name))
+  if(! tH_sf.count(central_or_shfit))
   {
-    throw cmsException(this, __func__, __LINE__) << "Invalid coupling requested: " << name;
+    throw cmsException(this, __func__, __LINE__) << "No such central or shift option: " << central_or_shfit;
   }
-  const std::pair<int, double> & settings = tH_sf.at(name);
+  if(! tH_sf.at(central_or_shfit).count(name))
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "Invalid coupling requested for central or shift option " << central_or_shfit << ": " << name
+    ;
+  }
+  const std::pair<int, double> & settings = tH_sf.at(central_or_shfit).at(name);
   assert(settings.first < static_cast<int>(nLHEReweightingWeight));
 
   return (settings.first >= 0 ? LHEReweightingWeight[settings.first] : 1.) * settings.second;
@@ -135,6 +149,7 @@ EventInfo::loadWeight_tH(const std::vector<edm::ParameterSet> & cfg)
       cfg_entry.getParameter<double>("cosa")     :
       std::numeric_limits<double>::quiet_NaN()
     ;
+    const std::string central_or_shift = cfg_entry.getParameter<std::string>("central_or_shift");
     const int idx = cfg_entry.getParameter<int>("idx");
     const std::string name = get_tH_weight_str(kt, kv, cosa);
 
@@ -146,11 +161,16 @@ EventInfo::loadWeight_tH(const std::vector<edm::ParameterSet> & cfg)
     {
       assert(std::get<2>(kt_kv_cosa) == cosa);
     }
+    if(! has_central_or_shift(central_or_shift))
+    {
+      tH_sf[central_or_shift] = {};
+    }
 
-    assert(! tH_sf.count(name));
-    tH_sf[name] = std::pair<int, double>(idx, weight);
+    assert(! tH_sf.at(central_or_shift).count(name));
+    tH_sf[central_or_shift][name] = std::pair<int, double>(idx, weight);
     std::cout
       << "Loaded weight '" << name << "': kt = " << kt << " & kv = " << kv << " & cosa = " << cosa
+      << " for systematic option " << central_or_shift
       << " -> weight = " << weight <<" @ idx = " << idx << '\n'
     ;
   }
@@ -159,9 +179,20 @@ EventInfo::loadWeight_tH(const std::vector<edm::ParameterSet> & cfg)
 std::vector<std::string>
 EventInfo::getWeight_tH_str(bool include_sm) const
 {
+  return getWeight_tH_str(central_or_shift_, include_sm);
+}
+
+std::vector<std::string>
+EventInfo::getWeight_tH_str(const std::string & central_or_shift,
+                            bool include_sm) const
+{
   std::vector<std::string> names;
   const std::string sm_str = get_tH_SM_str();
-  for(const auto & kv: tH_sf)
+  if(! has_central_or_shift(central_or_shift))
+  {
+    throw cmsException(this, __func__, __LINE__) << "No such central or shift option: " << central_or_shift;
+  }
+  for(const auto & kv: tH_sf.at(central_or_shift))
   {
     if(! include_sm && kv.first == sm_str)
     {
@@ -170,6 +201,18 @@ EventInfo::getWeight_tH_str(bool include_sm) const
     names.push_back(kv.first);
   }
   return names;
+}
+
+void
+EventInfo::set_central_or_shift(const std::string & central_or_shift)
+{
+  central_or_shift_ = central_or_shift;
+}
+
+bool
+EventInfo::has_central_or_shift(const std::string & central_or_shift) const
+{
+  return tH_sf.count(central_or_shift);
 }
 
 bool

@@ -44,7 +44,7 @@ public:
   get_lumiScale(const std::string & central_or_shift = "") const;
 
   double
-  get_nom_tH_weight() const;
+  get_nom_tH_weight(const std::string & central_or_shift = "") const;
 
   double
   get_puWeight(const std::string & central_or_shift = "") const;
@@ -86,7 +86,7 @@ public:
   record_lumiScale(const edm::VParameterSet & lumiScales);
 
   void
-  record_nom_tH_weight(double nom_tH_weight);
+  record_nom_tH_weight(const EventInfo * const eventInfo);
 
   void
   record_leptonSF(double weight);
@@ -156,7 +156,7 @@ protected:
   double genWeight_;
   double auxWeight_;
   std::map<std::string, double> lumiScale_;
-  double nom_tH_weight_;
+  std::map<std::string, double> nom_tH_weight_;
   double leptonSF_;
   double chargeMisIdProb_;
   std::vector<std::string> central_or_shifts_;
