@@ -488,7 +488,6 @@ void
 EvtWeightRecorder::record_jetToTau_FR_lead(const JetToTauFakeRateInterface * const jetToTauFakeRateInterface,
                                            const RecoHadTau * const hadTau_lead)
 {
-  assert(isMC_);
   const double hadTauPt_lead = hadTau_lead->pt();
   const double hadTauAbsEta_lead = hadTau_lead->absEta();
   weights_FR_hadTau_lead_.clear();
