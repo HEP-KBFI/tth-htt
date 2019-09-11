@@ -13,6 +13,7 @@ class JetToTauFakeRateInterface;
 class LeptonFakeRateInterface;
 class RecoLepton;
 class RecoHadTau;
+class EvtWeightManager;
 
 enum class L1PreFiringWeightSys;
 enum class PUsys;
@@ -38,7 +39,7 @@ public:
   get_genWeight() const;
 
   double
-  get_auxWeight() const;
+  get_auxWeight(const std::string & central_or_shift = "") const;
 
   double
   get_lumiScale(const std::string & central_or_shift = "") const;
@@ -80,7 +81,7 @@ public:
   record_genWeight(double genWeight);
 
   void
-  record_auxWeight(double auxWeight);
+  record_auxWeight(const EvtWeightManager * const evtWeightManager);
 
   void
   record_lumiScale(const edm::VParameterSet & lumiScales);
@@ -154,7 +155,7 @@ protected:
 
   bool isMC_;
   double genWeight_;
-  double auxWeight_;
+  std::map<std::string, double> auxWeight_;
   std::map<std::string, double> lumiScale_;
   std::map<std::string, double> nom_tH_weight_;
   double leptonSF_;

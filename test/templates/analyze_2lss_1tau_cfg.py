@@ -129,11 +129,11 @@ process.analyze_2lss_1tau = cms.PSet(
     evtWeight = cms.PSet(
         apply = cms.bool(False),
         histogramFile = cms.string(''),
-        histogramName = cms.string(''),
         branchNameXaxis = cms.string(''),
         branchNameYaxis = cms.string(''),
         branchTypeXaxis = cms.string(''),
         branchTypeYaxis = cms.string(''),
+        histograms = cms.VPSet(),
     ),
     tHweights = cms.VPSet(),
 )

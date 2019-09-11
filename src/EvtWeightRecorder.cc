@@ -6,6 +6,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_Base.h"
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h"
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h"
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h"
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h"
@@ -15,7 +16,6 @@
 EvtWeightRecorder::EvtWeightRecorder()
   : isMC_(false)
   , genWeight_(1.)
-  , auxWeight_(1.)
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
 {}
@@ -24,7 +24,6 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
                                      bool isMC)
   : isMC_(isMC)
   , genWeight_(1.)
-  , auxWeight_(1.)
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
   , central_or_shifts_(central_or_shifts)
@@ -48,9 +47,9 @@ double
 EvtWeightRecorder::get_inclusive(const std::string & central_or_shift) const
 {
   // TODO OPTIMIZE
-  return isMC_ ? genWeight_ * auxWeight_ * get_lumiScale(central_or_shift) * get_nom_tH_weight(central_or_shift) *
-                 get_puWeight(central_or_shift) * get_l1PreFiringWeight(central_or_shift) *
-                 get_lheScaleWeight(central_or_shift)
+  return isMC_ ? genWeight_ * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift) *
+                 get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
+                 get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift)
                : 1.
   ;
 }
@@ -62,9 +61,13 @@ EvtWeightRecorder::get_genWeight() const
 }
 
 double
-EvtWeightRecorder::get_auxWeight() const
+EvtWeightRecorder::get_auxWeight(const std::string & central_or_shift) const
 {
-  return auxWeight_;
+  if(isMC_ && auxWeight_.count(central_or_shift))
+  {
+    return auxWeight_.at(central_or_shift);
+  }
+  return 1.;
 }
 
 double
@@ -229,10 +232,17 @@ EvtWeightRecorder::record_genWeight(double genWeight)
 }
 
 void
-EvtWeightRecorder::record_auxWeight(double auxWeight)
+EvtWeightRecorder::record_auxWeight(const EvtWeightManager * const evtWeightManager)
 {
   assert(isMC_);
-  auxWeight_ = auxWeight;
+  auxWeight_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    auxWeight_[central_or_shift] = evtWeightManager->has_central_or_shift(central_or_shift) ?
+      evtWeightManager->getWeight(central_or_shift) :
+      evtWeightManager->getWeight()
+    ;
+  }
 }
 
 void

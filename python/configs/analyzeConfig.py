@@ -561,7 +561,7 @@ class analyzeConfig(object):
         process_string = 'process.analyze_%s' % self.channel
         current_function_name = inspect.stack()[0][3]
 
-        stitch_histogram_name = ''
+        stitch_histogram_names = {}
         is_mc = (sample_info["type"] == "mc")
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
@@ -630,7 +630,7 @@ class analyzeConfig(object):
               if nof_events_idx >= 0 and nof_events_label:
                 nof_events[central_or_shift] = sample_info["nof_events"][nof_events_label][nof_events_idx]
                 assert(nof_events[central_or_shift] > 0)
-                stitch_histogram_name = '{}_{}'.format(nof_events_label, nof_events_idx) #TODO change later
+                stitch_histogram_names[central_or_shift] = '{}_{}'.format(nof_events_label, nof_events_idx)
 
                 if use_th_weights and central_or_shift not in tH_weights_map:
                   missing_reweighting =  set(self.thIdxs) - set(range(-1, nof_reweighting))
@@ -854,8 +854,8 @@ class analyzeConfig(object):
               raise RuntimeError("Not enough information available to preapre jobs for sync Ntuple production")
 
         if sample_info['process_name_specific'] in self.stitching_args:
+          assert(stitch_histogram_names)
           process_stitching_args = self.stitching_args[sample_info['process_name_specific']]
-          histogram_name = '%s/%s' % (process_stitching_args['histogram_path'], stitch_histogram_name)
           branch_name_xaxis = process_stitching_args['branch_name_xaxis']
           branch_name_yaxis = process_stitching_args['branch_name_yaxis']
           branch_type_xaxis = process_stitching_args['branch_type_xaxis']
@@ -863,12 +863,20 @@ class analyzeConfig(object):
           lines.extend([
             "{}.{:<{len}} = cms.bool({})".format    (process_string, 'evtWeight.apply',           True,                  len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.histogramFile',   self.stitched_weights, len = max_option_len),
-            "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.histogramName',   histogram_name,        len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchNameXaxis', branch_name_xaxis,     len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchNameYaxis', branch_name_yaxis,     len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchTypeXaxis', branch_type_xaxis,     len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchTypeYaxis', branch_type_yaxis,     len = max_option_len),
+            "{}.{:<{len}} = cms.VPSet([".format     (process_string, 'evtWeight.histograms',      branch_type_yaxis,     len = max_option_len),
           ])
+          for central_or_shift in stitch_histogram_names:
+            lines.extend([
+              "  cms.PSet(",
+              "    central_or_shift = cms.string('{}'),".format(central_or_shift),
+              "    histogramName = cms.string('{}/{}'),".format(process_stitching_args['histogram_path'], stitch_histogram_names[central_or_shift]),
+              "  ),",
+            ])
+          lines.extend("])")
 
         return lines
 
