@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
 from tthAnalysis.HiggsToTauTau.common import logging
 from tthAnalysis.HiggsToTauTau.samples.stitch import get_branch_type
 
-from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxs, find_tHweight
+from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxsNoCP, find_tHweight
 
 import FWCore.ParameterSet.Config as cms
 
@@ -388,7 +388,7 @@ class analyzeConfig(object):
         self.dirs = {}
 
         tH_SM_str = get_tH_SM_str()
-        self.thIdxs = thIdxs
+        self.thIdxs = thIdxsNoCP
         self.thcouplings = list(filter(
           lambda tH_str: tH_str != tH_SM_str,
           map(
