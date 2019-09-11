@@ -147,10 +147,10 @@ run_wrapped_executable() {
 
     CMSSW_SEARCH_PATH="$JOB_DIR:{{ cmssw_base_dir }}/src"
 
-    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &>> $EXECUTABLE_LOG_FILE"
-    {{ exec_name }} {{ command_line_parameter }} &>> $EXECUTABLE_LOG_FILE
+    echo "Execute command: /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &>> $EXECUTABLE_LOG_FILE"
+    /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &>> $EXECUTABLE_LOG_FILE
     EXIT_CODE=$?
-    echo "Command {{ exec_name }} exited with code $EXIT_CODE"
+    echo "Command /usr/bin/time --verbose {{ exec_name }} exited with code $EXIT_CODE"
 
     echo "Time is: `date`"
 
