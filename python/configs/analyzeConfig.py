@@ -740,6 +740,9 @@ class analyzeConfig(object):
             'tHweights',
             'useObjectMultiplicity',
         ]
+        jobOptions_typeMapping = {
+          'central_or_shifts_local' : 'cms.vstring(%s)',
+        }
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
 
@@ -776,7 +779,9 @@ class analyzeConfig(object):
             if jobOptions_key not in jobOptions: continue # temporary?
             jobOptions_val = jobOptions[jobOptions_key]
             jobOptions_expr = ""
-            if type(jobOptions_val) == bool:
+            if jobOptions_key in jobOptions_typeMapping:
+              jobOptions_expr = jobOptions_typeMapping[jobOptions_key]
+            elif type(jobOptions_val) == bool:
                 jobOptions_expr = "cms.bool(%s)"
             elif type(jobOptions_val) == int:
                 jobOptions_expr = "cms.int32(%s)"
