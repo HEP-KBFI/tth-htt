@@ -402,10 +402,11 @@ EvtWeightRecorder::record_muToTauFakeRate(const Data_to_MC_CorrectionInterface_B
 
 void
 EvtWeightRecorder::record_jetToTau_FR_lead(const JetToTauFakeRateInterface * const jetToTauFakeRateInterface,
-                                           double hadTauPt_lead,
-                                           double hadTauAbsEta_lead)
+                                           const RecoHadTau * const hadTau_lead)
 {
   assert(isMC_);
+  const double hadTauPt_lead = hadTau_lead->pt();
+  const double hadTauAbsEta_lead = hadTau_lead->absEta();
   weights_FR_hadTau_lead_.clear();
   for(const std::string & central_or_shift: central_or_shifts_)
   {
@@ -422,10 +423,11 @@ EvtWeightRecorder::record_jetToTau_FR_lead(const JetToTauFakeRateInterface * con
 
 void
 EvtWeightRecorder::record_jetToTau_SF_lead(const JetToTauFakeRateInterface * const jetToTauFakeRateInterface,
-                                           double hadTauPt_lead,
-                                           double hadTauAbsEta_lead)
+                                           const RecoHadTau * const hadTau_lead)
 {
   assert(isMC_);
+  const double hadTauPt_lead = hadTau_lead->pt();
+  const double hadTauAbsEta_lead = hadTau_lead->absEta();
   weights_SF_hadTau_lead_.clear();
   for(const std::string & central_or_shift: central_or_shifts_)
   {
@@ -442,11 +444,12 @@ EvtWeightRecorder::record_jetToTau_SF_lead(const JetToTauFakeRateInterface * con
 
 void
 EvtWeightRecorder::record_jetToLepton_FR(const LeptonFakeRateInterface * const leptonFakeRateInterface,
-                                         double leptonPt,
-                                         double leptonAbsEta,
-                                         int leptonPdgId,
+                                         const RecoLepton * const lepton,
                                          std::map<int, double> & weights_FR_lepton)
 {
+  const int leptonPdgId = std::abs(lepton->pdgId());
+  const double leptonPt = lepton->cone_pt();
+  const double leptonAbsEta = lepton->absEta();
   assert(leptonPdgId == 11 || leptonPdgId == 13);
   weights_FR_lepton.clear();
   for(const std::string & central_or_shift: central_or_shifts_)
@@ -487,20 +490,16 @@ EvtWeightRecorder::record_jetToLepton_FR(const LeptonFakeRateInterface * const l
 
 void
 EvtWeightRecorder::record_jetToLepton_FR_lead(const LeptonFakeRateInterface * const leptonFakeRateInterface,
-                                              double leptonPt_lead,
-                                              double leptonAbsEta_lead,
-                                              int leptonPdgId_lead)
+                                              const RecoLepton * const lepton_lead)
 {
-  record_jetToLepton_FR(leptonFakeRateInterface, leptonPt_lead, leptonAbsEta_lead, leptonPdgId_lead, weights_FR_lepton_lead_);
+  record_jetToLepton_FR(leptonFakeRateInterface, lepton_lead, weights_FR_lepton_lead_);
 }
 
 void
 EvtWeightRecorder::record_jetToLepton_FR_sublead(const LeptonFakeRateInterface * const leptonFakeRateInterface,
-                                                 double leptonPt_sublead,
-                                                 double leptonAbsEta_sublead,
-                                                 int leptonPdgId_sublead)
+                                                 const RecoLepton * const lepton_sublead)
 {
-  record_jetToLepton_FR(leptonFakeRateInterface, leptonPt_sublead, leptonAbsEta_sublead, leptonPdgId_sublead, weights_FR_lepton_sublead_);
+  record_jetToLepton_FR(leptonFakeRateInterface, lepton_sublead, weights_FR_lepton_sublead_);
 }
 
 void

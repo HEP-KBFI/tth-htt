@@ -1417,16 +1417,12 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     double prob_fake_hadTau = 1.;
     if(leptonFakeRateInterface)
     {
-      evtWeightRecorder.record_jetToLepton_FR_lead(
-        leptonFakeRateInterface, selLepton_lead->cone_pt(), selLepton_lead->absEta(), std::abs(selLepton_lead->pdgId())
-      );
-      evtWeightRecorder.record_jetToLepton_FR_sublead(
-        leptonFakeRateInterface, selLepton_sublead->cone_pt(), selLepton_sublead->absEta(), std::abs(selLepton_sublead->pdgId())
-      );
+      evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selLepton_lead);
+      evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selLepton_sublead);
     }
     if(jetToTauFakeRateInterface)
     {
-      evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau->pt(), selHadTau->absEta());
+      evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau);
     }
 
     if(! selectBDT)
@@ -1446,7 +1442,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
       if(isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()))
       {
-        evtWeightRecorder.record_jetToTau_SF_lead(jetToTauFakeRateInterface, selHadTau->pt(), selHadTau->absEta());
+        evtWeightRecorder.record_jetToTau_SF_lead(jetToTauFakeRateInterface, selHadTau);
       }
     }
 

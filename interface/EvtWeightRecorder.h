@@ -11,6 +11,8 @@ class RecoJet;
 class Data_to_MC_CorrectionInterface_Base;
 class JetToTauFakeRateInterface;
 class LeptonFakeRateInterface;
+class RecoLepton;
+class RecoHadTau;
 
 enum class L1PreFiringWeightSys;
 enum class PUsys;
@@ -118,25 +120,19 @@ public:
 
   void
   record_jetToTau_FR_lead(const JetToTauFakeRateInterface * const jetToTauFakeRateInterface,
-                          double hadTauPt_lead,
-                          double hadTauAbsEta_lead);
+                          const RecoHadTau * const hadTau_lead);
 
   void
   record_jetToTau_SF_lead(const JetToTauFakeRateInterface * const jetToTauFakeRateInterface,
-                          double hadTauPt_lead,
-                          double hadTauAbsEta_lead);
+                          const RecoHadTau * const hadTau_lead);
 
   void
   record_jetToLepton_FR_lead(const LeptonFakeRateInterface * const leptonFakeRateInterface,
-                             double leptonPt_lead,
-                             double leptonAbsEta_lead,
-                             int leptonPdgId);
+                             const RecoLepton * const lepton_lead);
 
   void
   record_jetToLepton_FR_sublead(const LeptonFakeRateInterface * const leptonFakeRateInterface,
-                                double leptonPt_sublead,
-                                double leptonAbsEta_sublead,
-                                int leptonPdgId);
+                                const RecoLepton * const lepton_sublead);
 
   void
   compute_FR_2l1tau(bool passesTight_lepton_lead,
@@ -153,9 +149,7 @@ public:
 protected:
   void
   record_jetToLepton_FR(const LeptonFakeRateInterface * const leptonFakeRateInterface,
-                        double leptonPt,
-                        double leptonAbsEta,
-                        int leptonPdgId,
+                        const RecoLepton * const lepton,
                         std::map<int, double> & weights_FR_lepton);
 
   bool isMC_;
