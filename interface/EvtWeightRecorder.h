@@ -37,28 +37,28 @@ public:
   get(const std::string & central_or_shift) const;
 
   double
-  get_inclusive(const std::string & central_or_shift = "") const;
+  get_inclusive(const std::string & central_or_shift) const;
 
   double
   get_genWeight() const;
 
   double
-  get_auxWeight(const std::string & central_or_shift = "") const;
+  get_auxWeight(const std::string & central_or_shift) const;
 
   double
-  get_lumiScale(const std::string & central_or_shift = "") const;
+  get_lumiScale(const std::string & central_or_shift) const;
 
   double
-  get_nom_tH_weight(const std::string & central_or_shift = "") const;
+  get_nom_tH_weight(const std::string & central_or_shift) const;
 
   double
-  get_puWeight(const std::string & central_or_shift = "") const;
+  get_puWeight(const std::string & central_or_shift) const;
 
   double
-  get_l1PreFiringWeight(const std::string & central_or_shift = "") const;
+  get_l1PreFiringWeight(const std::string & central_or_shift) const;
 
   double
-  get_lheScaleWeight(const std::string & central_or_shift = "") const;
+  get_lheScaleWeight(const std::string & central_or_shift) const;
 
   double
   get_leptonSF() const;
@@ -67,25 +67,25 @@ public:
   get_chargeMisIdProb() const;
 
   double
-  get_data_to_MC_correction(const std::string & central_or_shift = "") const;
+  get_data_to_MC_correction(const std::string & central_or_shift) const;
 
   double
-  get_btag(const std::string & central_or_shift = "") const;
+  get_btag(const std::string & central_or_shift) const;
 
   double
-  get_dy_rwgt(const std::string & central_or_shift = "") const;
+  get_dy_rwgt(const std::string & central_or_shift) const;
 
   double
-  get_dy_norm(const std::string & central_or_shift = "") const;
+  get_dy_norm(const std::string & central_or_shift) const;
 
   double
-  get_sf_triggerEff(const std::string & central_or_shift = "") const;
+  get_sf_triggerEff(const std::string & central_or_shift) const;
 
   double
-  get_tauSF(const std::string & central_or_shift = "") const;
+  get_tauSF(const std::string & central_or_shift) const;
 
   double
-  get_FR(const std::string & central_or_shift = "") const;
+  get_FR(const std::string & central_or_shift) const;
 
   void
   record_genWeight(double genWeight);
