@@ -456,21 +456,31 @@ EvtWeightRecorder::record_jetToLepton_FR(const LeptonFakeRateInterface * const l
     {
       continue;
     }
-    if(leptonPdgId == 11 &&
-       (jetToLeptonFakeRate_option == kFRl_central ||
-        (jetToLeptonFakeRate_option >= kFRe_shape_ptUp && jetToLeptonFakeRate_option <= kFRe_shape_eta_barrelDown)))
+    if(leptonPdgId == 11)
     {
+      int jetToLeptonFakeRate_option_e = jetToLeptonFakeRate_option;
+      if(jetToLeptonFakeRate_option_e >= kFRm_shape_ptUp && jetToLeptonFakeRate_option_e <= kFRm_shape_eta_barrelDown)
+      {
+        jetToLeptonFakeRate_option_e = kFRl_central;
+      }
       weights_FR_lepton[jetToLeptonFakeRate_option] = leptonFakeRateInterface->getWeight_e(
-        leptonPt, leptonAbsEta, jetToLeptonFakeRate_option
+        leptonPt, leptonAbsEta, jetToLeptonFakeRate_option_e
       );
     }
-    else if(leptonPdgId == 13 &&
-            (jetToLeptonFakeRate_option == kFRl_central ||
-            (jetToLeptonFakeRate_option >= kFRm_shape_ptUp && jetToLeptonFakeRate_option <= kFRm_shape_eta_barrelDown)))
+    else if(leptonPdgId == 13)
     {
+      int jetToLeptonFakeRate_option_m = jetToLeptonFakeRate_option;
+      if(jetToLeptonFakeRate_option_m >= kFRe_shape_ptUp && jetToLeptonFakeRate_option_m <= kFRe_shape_eta_barrelDown)
+      {
+        jetToLeptonFakeRate_option_m = kFRl_central;
+      }
       weights_FR_lepton[jetToLeptonFakeRate_option] = leptonFakeRateInterface->getWeight_mu(
-        leptonPt, leptonAbsEta, jetToLeptonFakeRate_option
+        leptonPt, leptonAbsEta, jetToLeptonFakeRate_option_m
       );
+    }
+    else
+    {
+      throw cmsException(this, __func__, __LINE__) << "Invalid PDG ID: " << leptonPdgId;
     }
   }
 }

@@ -1026,7 +1026,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
       evtWeightRecorder.record_puWeight(&eventInfo);
       evtWeightRecorder.record_nom_tH_weight(eventInfo.genWeight_tH());
-      evtWeightRecorder.record_lumiScale(lumiScale); // TODO: depends on the choice of systematics (L1prefire, PU, LHE scale)
+      evtWeightRecorder.record_lumiScale(lumiScale);
       for(const std::string & central_or_shift: central_or_shifts_local)
       {
         genEvtHistManager_beforeCuts[central_or_shift]->fillHistograms(
