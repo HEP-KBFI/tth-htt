@@ -50,7 +50,7 @@ EvtWeightRecorder::get_inclusive(const std::string & central_or_shift) const
   return isMC_ ? genWeight_ * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
                  get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) *
-                 get_dy_norm(central_or_shift) * get_dy_rwgt(central_or_shift)
+                 get_dy_rwgt(central_or_shift)
                : 1.
   ;
 }
@@ -204,7 +204,10 @@ EvtWeightRecorder::get_chargeMisIdProb() const
 double
 EvtWeightRecorder::get_data_to_MC_correction(const std::string & central_or_shift) const
 {
-  return isMC_ ? get_sf_triggerEff(central_or_shift) * get_leptonSF() * get_tauSF(central_or_shift) : 1.;
+  return isMC_ ? get_sf_triggerEff(central_or_shift) * get_leptonSF() * get_tauSF(central_or_shift) *
+                 get_dy_norm(central_or_shift)
+               : 1.
+  ;
 }
 
 double
@@ -284,7 +287,7 @@ EvtWeightRecorder::record_dy_rwgt(const DYMCReweighting * const dyReweighting,
     {
       continue;
     }
-    weights_dy_norm_[dyMCReweighting_option] = dyReweighting->getWeight(genTauLeptons, dyMCReweighting_option);
+    weights_dy_rwgt_[dyMCReweighting_option] = dyReweighting->getWeight(genTauLeptons, dyMCReweighting_option);
   }
 }
 
@@ -304,7 +307,7 @@ EvtWeightRecorder::record_dy_norm(const DYMCNormScaleFactors * const dyNormScale
     {
       continue;
     }
-    weights_dy_rwgt_[dyMCNormScaleFactors_option] = dyNormScaleFactors->getWeight(
+    weights_dy_norm_[dyMCNormScaleFactors_option] = dyNormScaleFactors->getWeight(
       genTauLeptons, nJets, nBLoose, nBMedium, dyMCNormScaleFactors_option
     );
   }
