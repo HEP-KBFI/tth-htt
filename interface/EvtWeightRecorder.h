@@ -168,6 +168,10 @@ public:
   void
   compute_FR_1tau();
 
+  friend std::ostream &
+  operator<<(std::ostream & os,
+             const EvtWeightRecorder & evtWeightRecorder);
+
 protected:
   void
   record_jetToLepton_FR(const LeptonFakeRateInterface * const leptonFakeRateInterface,

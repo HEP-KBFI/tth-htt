@@ -1735,6 +1735,11 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowTable.update("signal region veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
 
+    if(isDEBUG || run_lumi_eventSelector)
+    {
+      std::cout << "Event weights:\n" << evtWeightRecorder << '\n';
+    }
+
     MEMOutput_2lss_1tau memOutput_2lss_1tau_matched;
     if ( memReader ) {
       std::vector<MEMOutput_2lss_1tau> memOutputs_2lss_1tau = memReader->read();

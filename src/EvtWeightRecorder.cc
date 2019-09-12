@@ -205,7 +205,7 @@ double
 EvtWeightRecorder::get_data_to_MC_correction(const std::string & central_or_shift) const
 {
   return isMC_ ? get_sf_triggerEff(central_or_shift) * get_leptonSF() * get_tauSF(central_or_shift) *
-                 get_dy_norm(central_or_shift)
+                 get_btag(central_or_shift) * get_dy_norm(central_or_shift)
                : 1.
   ;
 }
@@ -657,4 +657,34 @@ EvtWeightRecorder::compute_FR_1tau()
     }
     weights_FR_[weightKey] = getWeight_1L(weights_FR_lepton_lead_.at(jetToTauFakeRate_option));
   }
+}
+
+std::ostream &
+operator<<(std::ostream & os,
+           const EvtWeightRecorder & evtWeightRecorder)
+{
+  for(const std::string & central_or_shift: evtWeightRecorder.central_or_shifts_)
+  {
+    os << "central_or_shift = " << central_or_shift                                                     << "\n"
+          "  genWeight             = " << evtWeightRecorder.get_genWeight()                             << "\n"
+          "  stitching weight      = " << evtWeightRecorder.get_auxWeight(central_or_shift)             << "\n"
+          "  lumiScale             = " << evtWeightRecorder.get_lumiScale(central_or_shift)             << "\n"
+          "  nominal tH weight     = " << evtWeightRecorder.get_nom_tH_weight(central_or_shift)         << "\n"
+          "  PU weight             = " << evtWeightRecorder.get_puWeight(central_or_shift)              << "\n"
+          "  L1 prefiring weight   = " << evtWeightRecorder.get_l1PreFiringWeight(central_or_shift)     << "\n"
+          "  LHE scale weight      = " << evtWeightRecorder.get_lheScaleWeight(central_or_shift)        << "\n"
+          "  DY reweighting weight = " << evtWeightRecorder.get_dy_rwgt(central_or_shift)               << "\n"
+          "  inclusive weight      = " << evtWeightRecorder.get_inclusive(central_or_shift)             << "\n"
+          "  trigger eff SF        = " << evtWeightRecorder.get_sf_triggerEff(central_or_shift)         << "\n"
+          "  lepton SF             = " << evtWeightRecorder.get_leptonSF()                              << "\n"
+          "  tau SF                = " << evtWeightRecorder.get_tauSF(central_or_shift)                 << "\n"
+          "  DY norm weight        = " << evtWeightRecorder.get_dy_norm(central_or_shift)               << "\n"
+          "  btag weight           = " << evtWeightRecorder.get_btag(central_or_shift)                  << "\n"
+          "  data/MC correction    = " << evtWeightRecorder.get_data_to_MC_correction(central_or_shift) << "\n"
+          "  FR weight             = " << evtWeightRecorder.get_FR(central_or_shift)                    << "\n"
+          "  charge mis-ID prob    = " << evtWeightRecorder.get_chargeMisIdProb()                       << "\n"
+          "  final weight          = " << evtWeightRecorder.get(central_or_shift)                       << '\n'
+   ;
+  }
+  return os;
 }
