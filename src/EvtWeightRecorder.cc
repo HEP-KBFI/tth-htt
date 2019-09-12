@@ -13,6 +13,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h"
 
+#include <algorithm>
 #include <cassert> // assert()
 
 EvtWeightRecorder::EvtWeightRecorder()
@@ -20,20 +21,24 @@ EvtWeightRecorder::EvtWeightRecorder()
   , genWeight_(1.)
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
+  , central_or_shift_("central")
 {}
 
 EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or_shifts,
+                                     const std::string & central_or_shift,
                                      bool isMC)
   : isMC_(isMC)
   , genWeight_(1.)
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
+  , central_or_shift_(central_or_shift)
   , central_or_shifts_(central_or_shifts)
 {
-  for(const std::string & central_or_shift: central_or_shifts_)
+  for(const std::string & central_or_shift_option: central_or_shifts_)
   {
-    checkOptionValidity(central_or_shift, isMC);
+    checkOptionValidity(central_or_shift_option, isMC);
   }
+  assert(std::find(central_or_shifts_.cbegin(), central_or_shifts_.cend(), central_or_shift_) != central_or_shifts_.cend());
 }
 
 double
@@ -323,6 +328,14 @@ EvtWeightRecorder::record_lumiScale(const edm::VParameterSet & lumiScales)
     const std::string central_or_shift = lumiScale.getParameter<std::string>("central_or_shift");
     const double nof_events = lumiScale.getParameter<double>("lumi");
     lumiScale_[central_or_shift] = nof_events;
+  }
+  assert(lumiScale_.count(central_or_shift_));
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    if(! lumiScale_.count(central_or_shift))
+    {
+      lumiScale_[central_or_shift] = lumiScale_.at(central_or_shift_);
+    }
   }
 }
 

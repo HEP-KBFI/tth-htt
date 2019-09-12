@@ -31,6 +31,7 @@ class EvtWeightRecorder
 public:
   EvtWeightRecorder();
   EvtWeightRecorder(const std::vector<std::string> & central_or_shifts,
+                    const std::string & central_or_shift,
                     bool isMC);
 
   double
@@ -185,6 +186,7 @@ protected:
   std::map<std::string, double> nom_tH_weight_;
   double leptonSF_;
   double chargeMisIdProb_;
+  std::string central_or_shift_;
   std::vector<std::string> central_or_shifts_;
 
   std::map<L1PreFiringWeightSys, double> weights_l1PreFiring_;

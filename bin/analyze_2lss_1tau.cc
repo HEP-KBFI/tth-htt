@@ -958,7 +958,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     {
       continue;
     }
-    EvtWeightRecorder evtWeightRecorder(central_or_shifts_local, isMC);
+    EvtWeightRecorder evtWeightRecorder(central_or_shifts_local, central_or_shift_main, isMC);
     cutFlowTable.update("run:ls:event selection", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("run:ls:event selection", evtWeightRecorder.get(central_or_shift_main));
 
