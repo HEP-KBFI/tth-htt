@@ -47,6 +47,12 @@ public:
   int
   get_min_antiMuon() const;
 
+  bool
+  get_deeptau_lepton() const;
+
+  void
+  disable_deeptau_lepton();
+
   void
   set(const std::string & cut);
 
@@ -80,7 +86,12 @@ protected:
   std::map<TauID, Double_t> min_raw_mva_; ///< lower cut threshold on raw output of MVA-based tau id
   Int_t min_antiElectron_;                ///< lower cut threshold on discriminator against electrons
   Int_t min_antiMuon_;                    ///< lower cut threshold on discriminator against muons
+  bool apply_deeptau_lepton_;             ///< apply loosest cut of DeepTau anti-e and anti-mu discriminators
+  bool disable_deeptau_lepton_;           ///< flag to completely turn of anti-e and anti-mu discriminators
   std::string cut_;
+
+  ///< nominal WP for each tau ID discriminator in fakeable selection
+  static const std::map<TauID, std::string> nominal_fakeable_wp_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoHadTauSelectorBase_h

@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
 from tthAnalysis.HiggsToTauTau.common import logging
 from tthAnalysis.HiggsToTauTau.samples.stitch import get_branch_type
 
-from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxs, find_tHweight
+from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxsNoCP, find_tHweight
 
 import FWCore.ParameterSet.Config as cms
 
@@ -385,7 +385,7 @@ class analyzeConfig(object):
         self.dirs = {}
 
         tH_SM_str = get_tH_SM_str()
-        self.thIdxs = thIdxs
+        self.thIdxs = thIdxsNoCP
         self.thcouplings = list(filter(
           lambda tH_str: tH_str != tH_SM_str,
           map(
@@ -534,7 +534,7 @@ class analyzeConfig(object):
         self.hadTau_selection_relaxed = hadTau_selection_relaxed
         if self.hadTau_selection_relaxed == "dR03mvaVLoose":
             pass
-        if self.hadTau_selection_relaxed == "dR03mvaVVLoose":
+        elif self.hadTau_selection_relaxed == "dR03mvaVVLoose":
             self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
         self.isBDTtraining = True
 

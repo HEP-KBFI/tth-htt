@@ -27,6 +27,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         jet_maxPt,
         jet_minAbsEta,
         jet_maxAbsEta,
+        hadTau_selection_tight,
         hadTau_selection_denominator,
         hadTau_selections_numerator,
         absEtaBins,
@@ -81,6 +82,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.jet_minAbsEta = jet_minAbsEta
     self.jet_maxAbsEta = jet_maxAbsEta
 
+    self.hadTau_selection_tight = hadTau_selection_tight
     self.hadTau_selection_denominator = hadTau_selection_denominator
     self.hadTau_selections_numerator = hadTau_selections_numerator
 
@@ -114,6 +116,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       'jet_maxPt',
       'jet_minAbsEta',
       'jet_maxAbsEta',
+      'hadTau_selection_tight',
       'hadTauSelection_denominator',
       'hadTauSelections_numerator',
       'absEtaBins',
@@ -150,6 +153,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       lines.append("process.comp_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
       lines.append("process.comp_jetToTauFakeRate.ptBins = cms.vdouble(%s)" % jobOptions['ptBins'])
       lines.append("process.comp_jetToTauFakeRate.decayModes = cms.vint32(%s)" % jobOptions['decayModes'])
+      lines.append("process.comp_jetToTauFakeRate.hadTauSelections = cms.vstring(%s)" % jobOptions['hadTauSelections'])
       lines.append("process.comp_jetToTauFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
       create_cfg(self.cfgFile_comp_jetToTauFakeRate, jobOptions['cfgFile_modified'], lines)
 
@@ -295,6 +299,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               'jet_maxPt'                   : self.jet_maxPt,
               'jet_minAbsEta'               : self.jet_minAbsEta,
               'jet_maxAbsEta'               : self.jet_maxAbsEta,
+              'hadTau_selection_tight'      : self.hadTau_selection_tight,
               'hadTauSelection_denominator' : self.hadTau_selection_denominator,
               'hadTauSelections_numerator'  : self.hadTau_selections_numerator,
               'absEtaBins'                  : self.absEtaBins,
@@ -343,6 +348,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         'absEtaBins' : self.absEtaBins,
         'ptBins' : self.ptBins,
         'decayModes' : self.decayModes,
+        'hadTauSelections' : self.hadTau_selections_numerator,
         'plots_outputFileName' : os.path.join(self.dirs[key_comp_jetToTauFakeRate_dir][DKEY_PLOT], "comp_jetToTauFakeRate.png")
       }
       self.createCfg_comp_jetToTauFakeRate(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job])

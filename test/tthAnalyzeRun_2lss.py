@@ -26,6 +26,7 @@ parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
+parser.add_tau_id()
 args = parser.parse_args()
 
 # Common arguments
@@ -50,6 +51,7 @@ files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
+tau_id            = args.tau_id
 
 # Use the arguments
 central_or_shifts = []
@@ -63,6 +65,12 @@ jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
 lepton_charge_selections = [ "OS", "SS" ]
+
+hadTauWP_veto_map = {
+  'dR03mva' : 'Loose',
+  'deepVSj' : 'Loose',
+}
+hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == "default":
   samples = load_samples(era)
@@ -101,7 +109,7 @@ if __name__ == '__main__':
     samples                   = samples,
     MEMbranch                 = None, # CV: MEM not implemented for 2lss channel yet
     lepton_charge_selections  = lepton_charge_selections,
-    hadTauVeto_selection      = "dR03mvaLoose", # veto events containing taus that pass tau ID WP applied in 2lss+1tau channel,
+    hadTauVeto_selection      = hadTau_selection_veto,
     applyFakeRateWeights      = "2lepton",
     jet_cleaning_by_index     = jet_cleaning_by_index,
     gen_matching_by_index     = gen_matching_by_index,

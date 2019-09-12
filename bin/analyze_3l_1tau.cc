@@ -277,15 +277,15 @@ int main(int argc, char* argv[])
 
   checkOptionValidity(central_or_shift, isMC);
   const int jetToLeptonFakeRate_option        = getJetToLeptonFR_option       (central_or_shift);
-  const int hadTauPt_option                   = getHadTauPt_option            (central_or_shift);
   const int jetToTauFakeRate_option           = getJetToTauFR_option          (central_or_shift);
   const int lheScale_option                   = getLHEscale_option            (central_or_shift);
   const int jetBtagSF_option                  = getBTagWeight_option          (central_or_shift);
   const PUsys puSys_option                    = getPUsys_option               (central_or_shift);
   const L1PreFiringWeightSys l1PreFire_option = getL1PreFiringWeightSys_option(central_or_shift);
 
-  const int met_option   = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC);
-  const int jetPt_option = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC);
+  const int met_option      = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC);
+  const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC);
+  const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected      : getHadTauPt_option(central_or_shift);
 
   std::cout
     << "central_or_shift = "               << central_or_shift             << "\n"
@@ -477,7 +477,7 @@ int main(int argc, char* argv[])
   tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauSelectorTight tightHadTauFilter(era, -1, isDEBUG);
-  tightHadTauFilter.set("dR03mvaMedium");
+  tightHadTauFilter.set(hadTauSelection_part2);
   tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
   switch(hadTauSelection)

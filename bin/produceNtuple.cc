@@ -275,7 +275,8 @@ main(int argc,
   const RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
-  fakeableHadTauSelector.set_if_looser(hadTauSelection_tauIDwp);
+  fakeableHadTauSelector.disable_deeptau_lepton();
+  fakeableHadTauSelector.set(hadTauSelection_tauIDwp);
   fakeableHadTauSelector.set_min_antiElectron(-1);
   fakeableHadTauSelector.set_min_antiMuon(-1);
   // CV: lower thresholds on hadronic taus by 2 GeV 
@@ -293,6 +294,7 @@ main(int argc,
     for(int level = 1; level <= max_level; ++level)
     {
       multplicityHadTauSelectors[kv.second][level] = new RecoHadTauCollectionSelectorFakeable(era, -1, isDEBUG);
+      multplicityHadTauSelectors[kv.second][level]->disable_deeptau_lepton();
       multplicityHadTauSelectors[kv.second][level]->set(kv.first + TauID_level_strings.at(max_level).at(level - 1));
       multplicityHadTauSelectors[kv.second][level]->set_min_antiElectron(-1);
       multplicityHadTauSelectors[kv.second][level]->set_min_antiMuon(-1);

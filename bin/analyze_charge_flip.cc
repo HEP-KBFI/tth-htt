@@ -44,8 +44,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
@@ -86,8 +84,6 @@ typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
 
 enum { kFR_disabled, kFR_2lepton };
-
-const std::string hadTauSelection = "dR03mvaMedium"; // CV: dummy value that has no effect, but is required by Data_to_MC_CorrectionInterface
 
 int getBinIdx_pT_and_absEta(double pT, double absEta)
 {
@@ -200,7 +196,7 @@ int main(int argc, char* argv[])
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
-  cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection); 
+  cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", "disabled");
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
@@ -461,6 +457,7 @@ int main(int argc, char* argv[])
   );
   const std::vector<std::string> cuts = {
     "run:ls:event selection",
+    "object multiplicity",
     "trigger",
     "= 2 presel electrons",
     "presel electron trigger match",
@@ -494,6 +491,8 @@ int main(int argc, char* argv[])
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo) ) {
       continue;
     }
+    cutFlowTable.update("run:ls:event selection");
+    cutFlowHistManager->fillHistograms("run:ls:event selection", lumiScale);
 
     if(useObjectMultiplicity)
     {
@@ -506,6 +505,8 @@ int main(int argc, char* argv[])
         continue;
       }
     }
+    cutFlowTable.update("object multiplicity");
+    cutFlowHistManager->fillHistograms("object multiplicity", lumiScale);
 
 //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
@@ -996,7 +997,8 @@ int main(int argc, char* argv[])
             << inputTree -> getFileCount() << ")\n"
             << " analyzed = " << analyzedEntries << '\n'
             << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")\n\n";
-
+  cutFlowTable.print(std::cout);
+  std::cout << std::endl;
   delete dataToMCcorrectionInterface;
 
   delete run_lumi_eventSelector;

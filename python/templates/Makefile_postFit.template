@@ -3,7 +3,7 @@ SHELL := /bin/bash
 
 all: {{ fit_values }}
 
-cp_files: {{ numerator_datacard }} {{ denominator_datacard }}
+cp_files:
 	mkdir -p {{ output_dir }}/shapes/electron/
 	cp -f {{ numerator_datacard }} {{ output_dir }}/shapes/electron/.
 	mkdir -p {{ output_dir }}/shapes/muon/

@@ -7,6 +7,12 @@
 
 #include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
+const std::map<TauID, std::string> RecoHadTauSelectorBase::nominal_fakeable_wp_ = {
+  { TauID::MVAoldDM2017v2,     "VLoose"   },
+  { TauID::MVAoldDMdR032017v2, "VLoose"   },
+  { TauID::DeepTau2017v2VSjet, "VVVLoose" },
+};
+
 RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
                                                int index,
                                                bool debug,
@@ -20,6 +26,8 @@ RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
   , apply_decayModeFinding_(true)
   , min_antiElectron_(DEFAULT_TAUID_ID_VALUE)
   , min_antiMuon_(DEFAULT_TAUID_ID_VALUE)
+  , apply_deeptau_lepton_(false)
+  , disable_deeptau_lepton_(false)
 {
   for(const auto & kv: TauID_levels)
   {
@@ -102,16 +110,28 @@ RecoHadTauSelectorBase::get_min_antiMuon() const
   return min_antiMuon_;
 }
 
+bool
+RecoHadTauSelectorBase::get_deeptau_lepton() const
+{
+  return apply_deeptau_lepton_;
+}
+
+void
+RecoHadTauSelectorBase::disable_deeptau_lepton()
+{
+  disable_deeptau_lepton_ = true;
+}
+
 void
 RecoHadTauSelectorBase::set(const std::string & cut)
 {
   if(cut.empty())
   {
-    return;
+    throw cmsException(this, __func__, __LINE__) << "Empty cut supplied";
   }
 
+  apply_deeptau_lepton_ = false;
   const std::vector<std::string> cut_parts = edm::tokenize(cut, TAU_WP_SEPARATOR);
-
   for(const std::string & cut_part: cut_parts)
   {
     const std::string mva_type = cut_part.substr(0, 7);
@@ -132,7 +152,18 @@ RecoHadTauSelectorBase::set(const std::string & cut)
       apply_decayModeFinding_ = false;
       decayMode_blacklist_ = { 5, 6 }; // exclude DMs 5 & 6
     }
+    apply_deeptau_lepton_ |= tauId == TauID::DeepTau2017v2VSjet;
   }
+
+  apply_deeptau_lepton_ &= cut_parts.size() == 1 && ! disable_deeptau_lepton_;
+  if(apply_deeptau_lepton_)
+  {
+    // If the DeepTau ID discriminator is the only tau ID we're cutting on, then we should also cut on the loosest
+    // WP of antt-e and anti-mu tau ID discriminators; if there are more tau IDs than just DeepTau ID, then we should
+    // avoid cutting on these extra discriminators.
+    std::cout << "Applying additional loosest anti-e and anti-mu DeepTau discriminator cuts\n";
+  }
+
   cut_ = cut;
 }
 
@@ -151,12 +182,20 @@ RecoHadTauSelectorBase::set_if_looser(const std::string & cut)
   }
   std::cout << "Attempting to replace cut from '" << cut_ << "' to '" << cut << "'\n";
 
-  // if the old cut is an OR of multiple WPs, then throw an error; otherwise loop over individual cuts and decide:
-  // i) if the MVA WP from the new cut is strictly looser than the old WP, then replace it w/ the new WP
-  // ii) if the MVA WP from the new cut is not strictly looser than the old WP, then keep the cut as is
+  // 0) if the old cut is an OR of multiple WPs, then throw an error
+  // 1) if the new cut is an OR of multiple WPs, then override the old WP with the new WPs (use case: Ntuple production)
+  // 2) if the MVA IDs of old and new cut are the same (default use case):
+  //   i) if the MVA WP from the new cut is strictly looser than the old WP, then replace it w/ the new WP (use case: BDT training)
+  //   ii) if the MVA WP from the new cut is not strictly looser than the old WP, then keep the cut as is (default use case)
+  // 3) if the MVA IDs of old and new cut are different (use case: switching from MVAv2 to DeepTau ID):
+  //   i) if the new cut is strictly looser than the nominal fakeable WP of the new tau ID, then override the old WP (use case: BDT training)
+  //   ii) if the new cut is the same or tighter than the nominal fakeable WP of the new tau ID, then override the old WP
+  //       with the nominal fakeable WP of the new tau ID (default use case)
+
   const std::vector<std::string> cut_parts_old = edm::tokenize(cut_, TAU_WP_SEPARATOR);
   if(cut_parts_old.size() != 1)
   {
+    // case 0:
     throw cmsException(this, __func__, __LINE__)
         << "Can overwrite a single tau ID WP but got more of them: " << boost::algorithm::join(cut_parts_old, ", ")
      ;
@@ -168,34 +207,66 @@ RecoHadTauSelectorBase::set_if_looser(const std::string & cut)
 
   std::string cut_new = "";
   const std::vector<std::string> cut_parts = edm::tokenize(cut, TAU_WP_SEPARATOR);
-  for(const std::string & cut_part: cut_parts)
+  if(cut_parts.size() > 1)
   {
-    const std::string mva_new = cut_part.substr(0, 7);
+    // case 1:
+    cut_new = cut;
+  }
+  else if(cut_parts.size() == 1)
+  {
+    const std::string mva_new = cut.substr(0, 7);
     const TauID tauId_new = TauID_PyMap.at(mva_new);
+    const std::string wp_new  = cut.substr(7);
+    const int wp_int_new = get_tau_id_wp_int(tauId_new, wp_new);
 
-    std::string cut_part_new = cut_part;
     if(tauId_new == tauId_old)
     {
-      const std::string wp_new  = cut_part.substr(7);
-      const int wp_int_new = get_tau_id_wp_int(tauId_new, wp_new);
+      // case 2
       if(wp_int_new < wp_int_old)
       {
-        cut_part_new = mva_old + wp_new;
+        // case 2.i
+        cut_new = mva_old + wp_new;
         std::cout << "Relaxing old cut for '" << mva_new << "' from '" << wp_old << "' to '" << wp_new << "'\n";
       }
       else
       {
-        cut_part_new = mva_old + wp_old;
+        // case 2.ii
+        cut_new = mva_old + wp_old;
         std::cout << "Keeping old cut for '" << mva_new << "' at '" << wp_old << "'\n";
       }
     }
-
-    if(! cut_new.empty())
+    else
     {
-      cut_new += TAU_WP_SEPARATOR;
+      // case 3
+      if(! nominal_fakeable_wp_.count(tauId_new))
+      {
+        throw cmsException(this, __func__, __LINE__)
+          << "Cannot change tau ID WP because fakeable nominal WP missing for tau ID: " << mva_new
+        ;
+      }
+      std::cout << "Changing from '" << mva_new << "' to '" << mva_old << "'\n";
+      const std::string new_nominal_fakeable_wp = nominal_fakeable_wp_.at(tauId_new);
+      const int new_nominal_fakeable_wp_int = get_tau_id_wp_int(tauId_new, new_nominal_fakeable_wp);
+      if(new_nominal_fakeable_wp_int < wp_int_new)
+      {
+        // case 3.i
+        std::cout << "Relaxing the nominal fakeable WP of '" << mva_new << "' from '" << wp_new << "' to '" << new_nominal_fakeable_wp << "'\n";
+
+        cut_new = mva_new + new_nominal_fakeable_wp;
+      }
+      else
+      {
+        // case 3.ii
+        std::cout << "Keeping the nominal fakeable WP of '" << mva_new << "' at '" << new_nominal_fakeable_wp << "'\n";
+        cut_new = mva_new + wp_new;
+      }
     }
-    cut_new += cut_part_new;
   }
+  else
+  {
+    throw cmsException(this, __func__, __LINE__) << "Empty cut supplied";
+  }
+  assert(! cut_new.empty());
 
   if(cut_ != cut_new)
   {
@@ -210,6 +281,8 @@ RecoHadTauSelectorBase::set_if_looser(const std::string & cut)
 bool
 RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
 {
+  assert(! cut_.empty());
+
   if(hadTau.pt() < min_pt_)
   {
     if(debug_)
@@ -290,6 +363,16 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
       min_id_mva_cuts.push_back(kv.first);
     }
   }
+  std::vector<TauID> min_raw_mva_cuts;
+  for(const auto & kv: min_raw_mva_)
+  {
+    if(kv.second > DEFAULT_TAUID_RAW_VALUE)
+    {
+      min_raw_mva_cuts.push_back(kv.first);
+    }
+  }
+  assert(! min_id_mva_cuts.empty() || ! min_raw_mva_cuts.empty());
+
   if(! min_id_mva_cuts.empty() &&
      std::none_of(min_id_mva_cuts.begin(), min_id_mva_cuts.end(),
        [this, &hadTau](TauID tauId) -> bool
@@ -319,14 +402,6 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
     return false;
   }
 
-  std::vector<TauID> min_raw_mva_cuts;
-  for(const auto & kv: min_raw_mva_)
-  {
-    if(kv.second > DEFAULT_TAUID_RAW_VALUE)
-    {
-      min_raw_mva_cuts.push_back(kv.first);
-    }
-  }
   if(! min_raw_mva_cuts.empty() &&
      std::none_of(min_raw_mva_cuts.begin(), min_raw_mva_cuts.end(),
        [this, &hadTau](TauID tauId) -> bool
@@ -354,6 +429,26 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
       }
     }
     return false;
+  }
+
+  if(apply_deeptau_lepton_)
+  {
+    if(hadTau.id_mva(TauID::DeepTau2017v2VSmu) < 1)
+    {
+      if(debug_)
+      {
+        std::cout << "FAILS DeepTau anti-mu MVA cut (" << hadTau.id_mva(TauID::DeepTau2017v2VSmu) << ")\n";
+      }
+      return false;
+    }
+    if(hadTau.id_mva(TauID::DeepTau2017v2VSe) < 1)
+    {
+      if(debug_)
+      {
+        std::cout << "FAILS DeepTau anti-e MVA cut (" << hadTau.id_mva(TauID::DeepTau2017v2VSe) << ")\n";
+      }
+      return false;
+    }
   }
 
   if(hadTau.antiElectron() < min_antiElectron_)

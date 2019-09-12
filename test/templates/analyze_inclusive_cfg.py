@@ -59,8 +59,8 @@ process.analyze_inclusive = cms.PSet(
     apply_offline_e_trigger_cuts_1mu1tau = cms.bool(True),
     apply_offline_e_trigger_cuts_1e1tau = cms.bool(True),
 
-    hadTauSelection_tauIdWP = cms.string('dR03mvaVLoose'),
-    hadTauAk8Clean_tauIdWP =  cms.string('dR03mvaMedium'),
+    hadTauSelection_tauIdWP = cms.string(''),
+    hadTauAk8Clean_tauIdWP =  cms.string(''),
 
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),

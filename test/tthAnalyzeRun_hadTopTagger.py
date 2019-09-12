@@ -13,8 +13,9 @@ import getpass
 # E.g.: ./test/tthAnalyzeRun_hadTopTagger.py -v 2017Dec13 -e 2017
 
 parser = tthAnalyzeParser()
-parser.add_tau_id_wp('dR03mvaLoose')
-parser.add_files_per_job()
+parser.add_tau_id_wp()
+parser.add_tau_id()
+parser.add_files_per_job(files_per_job = 3)
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
@@ -34,13 +35,22 @@ running_method     = args.running_method
 
 # Additional arguments
 tau_id_wp     = args.tau_id_wp
-files_per_job = 3 #args.files_per_job # HTT files are fat
+files_per_job = args.files_per_job
 use_home      = args.use_home
 jet_cleaning  = args.jet_cleaning
-gen_matching      = args.gen_matching
+gen_matching  = args.gen_matching
+tau_id        = args.tau_id
+
+hadTau_WP_map = {
+  'dR03mva' : 'Loose',
+  'deepVSj' : 'Loose',
+}
+hadTau_WP = tau_id + hadTau_WP_map[tau_id]
+if tau_id_wp:
+  hadTau_WP = tau_id_wp
 
 # Use the arguments
-hadTau_selection = "Tight|%s" % tau_id_wp
+hadTau_selection = "Tight|%s" % hadTau_WP
 lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')

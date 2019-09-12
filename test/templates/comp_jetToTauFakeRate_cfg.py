@@ -24,13 +24,7 @@ process.comp_jetToTauFakeRate = cms.PSet(
 
     processMC = cms.string("TTj"),
 
-    hadTauSelections = cms.vstring(
-        "dR03mvaLoose",
-        "dR03mvaMedium",
-        "dR03mvaTight",
-        "dR03mvaVTight",
-        "dR03mvaVVTight"
-    ),
+    hadTauSelections = cms.vstring(),
 
     absEtaBins = cms.vdouble(),
     ptBins = cms.vdouble(),

@@ -26,6 +26,7 @@ parser.add_gen_matching()
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_hlt_filter()
+parser.add_tau_id()
 args = parser.parse_args()
 
 # Common arguments
@@ -50,6 +51,7 @@ use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
+tau_id            = args.tau_id
 
 # Use the arguments
 central_or_shifts = []
@@ -61,6 +63,12 @@ do_sync = mode.startswith('sync')
 lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
+
+hadTauWP_veto_map = {
+  'dR03mva' : 'Loose',
+  'deepVSj' : 'Loose',
+}
+hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == 'default':
   samples = load_samples(era)
@@ -89,7 +97,7 @@ if __name__ == '__main__':
     executable_analyze                    = "analyze_WZctrl",
     cfgFile_analyze                       = "analyze_WZctrl_cfg.py",
     samples                               = samples,
-    hadTauVeto_selection                  = "dR03mvaLoose",
+    hadTauVeto_selection                  = hadTau_selection_veto,
     applyFakeRateWeights                  = "3lepton",
     jet_cleaning_by_index                 = jet_cleaning_by_index,
     gen_matching_by_index                 = gen_matching_by_index,

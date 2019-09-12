@@ -25,6 +25,7 @@ parser.add_preselect()
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_tau_id_wp()
+parser.add_tau_id()
 parser.add_hlt_filter()
 parser.add_files_per_job()
 parser.add_use_home()
@@ -57,6 +58,7 @@ use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 sideband          = args.sideband
+tau_id            = args.tau_id
 
 # Use the arguments
 central_or_shifts = []
@@ -71,7 +73,18 @@ gen_matching_by_index = (gen_matching == 'by_index')
 
 MEMbranch                = ''
 lepton_charge_selections = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
-hadTau_selection         = "dR03mvaLoose"
+
+hadTauWP_map = {
+  'dR03mva' : 'Loose',
+  'deepVSj' : 'Loose',
+}
+hadTau_selection = tau_id + hadTauWP_map[tau_id]
+
+hadTauWP_veto_map = {
+  'dR03mva' : 'Medium',
+  'deepVSj' : 'Medium',
+}
+hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if sideband == 'disabled':
   chargeSumSelections = [ "OS" ]
@@ -87,23 +100,21 @@ if mode == "default":
 elif mode == "addMEM":
   samples = load_samples(era, suffix = "addMEM_preselected_2lss1tau" if use_preselected else "addMEM_2lss1tau")
   MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
-
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
-
   samples = load_samples(era, suffix = "BDT")
-  hadTau_selection         = "dR03mvaLoose"
-  hadTau_selection_relaxed = "dR03mvaLoose"
-
+  if args.tau_id_wp:
+    tau_id = args.tau_id[:7]
+  hadTau_selection_relaxed = tau_id + hadTauWP_map[tau_id]
 elif mode == "forBDTtraining_afterAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT_addMEM_2lss1tau")
-  hadTau_selection         = "dR03mvaLoose"
-  hadTau_selection_relaxed = "dR03mvaLoose"
-  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_{}'.format(hadTau_selection)
-
+  if args.tau_id_wp:
+    tau_id = args.tau_id[:7]
+  hadTau_selection_relaxed = tau_id + hadTauWP_map[tau_id]
+  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_{}'.format(hadTau_selection_relaxed)
 elif mode.startswith("sync"):
   if mode == "sync_wMEM":
     if use_preselected:
@@ -150,7 +161,7 @@ if __name__ == '__main__':
     MEMbranch                 = MEMbranch,
     lepton_charge_selections  = lepton_charge_selections,
     hadTau_selection          = hadTau_selection,
-    hadTau_selection_veto     = "dR03mvaMedium", # To avoid overlap w/ 2l+2tau SR
+    hadTau_selection_veto     = hadTau_selection_veto,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
     applyFakeRateWeights      = "2lepton",

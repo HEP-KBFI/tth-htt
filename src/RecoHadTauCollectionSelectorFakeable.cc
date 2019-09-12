@@ -9,13 +9,18 @@ RecoHadTauSelectorFakeable::RecoHadTauSelectorFakeable(int era,
                                                        bool set_selection_flags)
   : RecoHadTauSelectorBase(era, index, debug, set_selection_flags)
 {
-  switch(era)
+  const TauID tauId = TauID::MVAoldDMdR032017v2;
+  std::string tauId_str = "";
+  for(const auto & kv: TauID_PyMap)
   {
-    case kEra_2016:
-    case kEra_2018:
-    case kEra_2017: set("dR03mvaVLoose"); break;
-    default: throw cmsException(this) << "Invalid era = " << era;
+    if(kv.second == tauId)
+    {
+      tauId_str = kv.first;
+      break;
+    }
   }
+  assert(! tauId_str.empty());
+  set(tauId_str + nominal_fakeable_wp_.at(tauId));
 }
 
 void

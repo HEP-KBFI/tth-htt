@@ -26,6 +26,7 @@ parser.add_modes(mode_choices.keys())
 parser.add_sys(sys_choices)
 parser.add_nonnominal()
 parser.add_tau_id_wp()
+parser.add_tau_id()
 parser.add_use_home(False)
 parser.add_jet_cleaning()
 parser.add_argument('-i', '--integration-points',
@@ -59,6 +60,7 @@ systematics_label = args.systematics
 use_nonnominal    = args.original_central
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
+tau_id            = args.tau_id
 
 # Custom arguments
 integration_points   = args.integration_points
@@ -77,21 +79,32 @@ version            = "%s_%s_%s_%s" % (
 )
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 
+hadTauSelection = "Tight"
+
 if mode == 'default':
   samples = load_samples(era)
   leptonSelection = "Fakeable"
-  hadTauSelection = "Tight"
-  hadTauWP = "dR03mvaLoose"
+  hadTauWP_map = {
+    'dR03mva' : 'Loose',
+    'deepVSj' : 'Loose',
+  }
+  hadTauWP = tau_id + hadTauWP_map[tau_id]
 elif mode == 'bdt':
   samples = load_samples(era, suffix = "BDT")
   leptonSelection = "Loose"
-  hadTauSelection = "Tight"
-  hadTauWP = "dR03mvaVVLoose"
+  hadTauWP_map = {
+    'dR03mva' : 'VVLoose',
+    'deepVSj' : 'VVVLoose',
+  }
+  hadTauWP = tau_id + hadTauWP_map[tau_id]
 elif mode == 'sync':
   samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
   leptonSelection = "Fakeable"
-  hadTauSelection = "Tight"
-  hadTauWP = "dR03mvaLoose"
+  hadTauWP_map = {
+    'dR03mva' : 'Loose',
+    'deepVSj' : 'Loose',
+  }
+  hadTauWP = tau_id + hadTauWP_map[tau_id]
 else:
   raise ValueError("Invalid mode: %s" % mode)
 

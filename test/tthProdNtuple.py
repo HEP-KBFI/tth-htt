@@ -91,7 +91,10 @@ elif mode == 'hh_bbww_sync':
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}.root'.format(era)
   )
 elif mode == 'hh':
-  samples = load_samples(era, preselection, base = 'hh_multilepton')
+  if preselection:
+    raise ValueError("Preselection not possible for %s mode" % mode)
+
+  samples = load_samples(era, False, base = 'hh_multilepton')
   pileup = os.path.join(
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_{}.root'.format(era)
   )
@@ -112,7 +115,7 @@ elif mode == 'hh_wjets':
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_wjets_{}.root'.format(era)
   )
 else:
-  samples = load_samples(era, preselection)
+  samples = load_samples(era, preselection, suffix = 'base')
 
 if era == "2016":
   golden_json = golden_json_2016
@@ -139,33 +142,18 @@ for sample_name, sample_entry in samples.items():
     raise ValueError("Invalid mode: %s" % mode)
 
 if preselection:
-  if mode == 'hh':
-    # valid only for HH->4tau analysis; for HH->4W->2lss/3l channel the cuts do not apply
-    preselection_cuts = {
-      'minNumLeptons'             : -1,
-      'minNumHadTaus'             : -1,
-      'minNumLeptons_and_HadTaus' : 4,
-      'minNumJets'                : -1,
-      'minNumBJets_loose'         : -1,
-      'minNumBJets_medium'        : -1,
-      'maxNumBJets_loose'         : 1,
-      'maxNumBJets_medium'        : 0,
-      'applyJetEtaCut'            : False,
-      'applyHLTcut'               : True,
-    }
-  else:
-    preselection_cuts = {
-      'minNumLeptons'              : -1,
-      'minNumHadTaus'              : -1,
-      'minNumLeptons_and_HadTaus'  : 2,
-      'minNumJets'                 : -1,
-      'minNumBJets_loose'          : -1,
-      'minNumBJets_medium'         : -1,
-      'maxNumBJets_loose'          : -1,
-      'maxNumBJets_medium'         : -1,
-      'applyJetEtaCut'             : False,
-      'applyHLTcut'                : True,
-    }
+  preselection_cuts = {
+    'minNumLeptons'              : -1,
+    'minNumHadTaus'              : -1,
+    'minNumLeptons_and_HadTaus'  :  2,
+    'minNumJets'                 : -1,
+    'minNumBJets_loose'          : -1,
+    'minNumBJets_medium'         : -1,
+    'maxNumBJets_loose'          : -1,
+    'maxNumBJets_medium'         : -1,
+    'applyJetEtaCut'             : False,
+    'applyHLTcut'                : True,
+  }
   leptonSelection = 'Fakeable'
   hadTauWP = 'dR03mvaVLoose&deepVSjVLoose' # override user preference
 else:

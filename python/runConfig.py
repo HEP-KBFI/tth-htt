@@ -96,10 +96,11 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Do not submit the jobs, just generate the necessary shell scripts' if isAddMEM else \
              'R|Run addMEM without actually computing the MEM score',
     )
+    running_method_choices = [ 'sbatch', 'makefile' ]
     self.add_argument('-R', '--running-method',
       type = str, dest = 'running_method', metavar = 'method', default = 'sbatch', required = False,
-      choices = [ 'sbatch', 'makefile' ],
-      help = 'R|Running method',
+      choices = running_method_choices,
+      help = 'R|Running method (choices: %s)' % tthAnalyzeParser.cat(running_method_choices),
     )
     self.add_argument('-J', '--num-parallel-jobs',
       type = positive_int_type, dest = 'num_parallel_jobs', metavar = 'number', required = False,
@@ -137,10 +138,11 @@ class tthAnalyzeParser(argparse.ArgumentParser):
     )
 
   def add_sideband(self, default_choice = 'disabled'):
+    sideband_choices = [ 'disabled', 'enabled', 'only' ]
     self.add_argument('-B', '--sideband',
       type = str, dest = 'sideband', metavar = 'choice', default = default_choice, required = False,
-      choices = [ 'disabled', 'enabled', 'only' ],
-      help = 'R|Sideband choice',
+      choices = sideband_choices,
+      help = 'R|Sideband (choices: %s)' % tthAnalyzeParser.cat(sideband_choices),
     )
 
   def add_sys(self, sys_choices, default_choice = 'central'):
@@ -168,10 +170,17 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Use original central (i.e. non-nominal) values for jet/MET pt & mass/phi',
     )
 
-  def add_tau_id_wp(self, default_wp = ''):
+  def add_tau_id_wp(self, default_wp = '', required = False, choices = []):
     self.add_argument('-w', '--tau-id-wp',
-      type = str, dest = 'tau_id_wp', metavar = 'tau ID WP', default = default_wp, required = False,
-      help = 'R|Overwrite tau ID working point',
+      type = str, dest = 'tau_id_wp', metavar = 'tau ID WP', default = default_wp, required = required, choices = choices,
+      help = 'R|Overwrite tau ID working point (choices: %s)' % tthAnalyzeParser.cat(choices),
+    )
+
+  def add_tau_id(self, default_id = 'dR03mva'):
+    choices = [ 'dR03mva', 'deepVSj' ]
+    self.add_argument('-t', '--tau-id',
+      type = str, dest = 'tau_id', metavar = 'tau ID', default = default_id, required = False, choices = choices,
+      help = 'R|Tau ID discriminant (choices: %s)' % tthAnalyzeParser.cat(choices),
     )
 
   def add_hlt_filter(self):
@@ -193,21 +202,21 @@ class tthAnalyzeParser(argparse.ArgumentParser):
     self.add_argument('-L', '--lepton-mva-wp',
       type = str, dest = 'lep_mva_wp', metavar = 'lepton MVA WP', choices = list(LEP_MVA_WPS.keys()),
       required = not bool(default_wp), default = default_wp,
-      help = 'R|Lepton MVA WP',
+      help = 'R|Lepton MVA WP (choices: %s)' % tthAnalyzeParser.cat(list(LEP_MVA_WPS.keys())),
     )
 
   def add_jet_cleaning(self, default_jet_cleaning = 'by_index'):
+    choices = [ 'by_index', 'by_dr' ]
     self.add_argument('-q', '--jet-cleaning',
-      type = str, dest = 'jet_cleaning', metavar = 'method', default = default_jet_cleaning, required = False,
-      choices = [ 'by_index', 'by_dr' ],
-      help = 'R|Jet cleaning method',
+      type = str, dest = 'jet_cleaning', metavar = 'method', default = default_jet_cleaning, required = False, choices = choices,
+      help = 'R|Jet cleaning method (choices: %s)' % tthAnalyzeParser.cat(choices),
     )
   
   def add_gen_matching(self, default_gen_matching = 'by_index'):
+    choices = [ 'by_index', 'by_dr' ]
     self.add_argument('-g', '--gen-matching',
-      type = str, dest = 'gen_matching', metavar = 'method', default = default_gen_matching, required = False,
-      choices = [ 'by_index', 'by_dr' ],
-      help = 'R|Method of gen matching',
+      type = str, dest = 'gen_matching', metavar = 'method', default = default_gen_matching, required = False, choices = choices,
+      help = 'R|Method of gen matching (choices: %s)' % tthAnalyzeParser.cat(choices),
     )
 
   @staticmethod

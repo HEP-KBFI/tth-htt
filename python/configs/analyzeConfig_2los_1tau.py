@@ -30,10 +30,6 @@ class analyzeConfig_2los_1tau(analyzeConfig):
 
      Sets up a folder structure by defining full path names; no directory creation is delegated here.
 
-     Args specific to analyzeConfig_2los_1tau:
-       lepton_selections: either `Tight`, `Loose` or `Fakeable`
-       hadTau_selection: either `dR05iso[Loose|Medium|Tight]` or `dR03mva[Medium|Tight|VTight|VVTight]`
-
      See $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/analyzeConfig.py
      for documentation of further Args.
 

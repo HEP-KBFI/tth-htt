@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_LeptonFakeRate import analy
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging, load_samples
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples, load_samples_stitched
 
 import os
 import sys
@@ -68,6 +68,7 @@ elif mode == 'sync':
 else:
   raise ValueError('Invalid mode: %s' % mode)
 
+samples = load_samples_stitched(samples, era, load_dy = True, load_wjets = True)
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
 

@@ -29,6 +29,7 @@ parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_sideband()
+parser.add_tau_id()
 args = parser.parse_args()
 
 # Common arguments
@@ -54,6 +55,7 @@ use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 sideband          = args.sideband
+tau_id            = args.tau_id
 
 # Use the arguments
 central_or_shifts = []
@@ -65,6 +67,12 @@ do_sync = mode.startswith('sync')
 lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
+
+hadTauWP_veto_map = {
+  'dR03mva' : 'Loose',
+  'deepVSj' : 'Loose',
+}
+hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if sideband == 'disabled':
   chargeSumSelections = [ "OS" ]
@@ -113,7 +121,7 @@ if __name__ == '__main__':
     cfgFile_analyze                       = "analyze_3l_cfg.py",
     samples                               = samples,
     MEMbranch                             = None, # CV: MEM not implemented for 3l channel yet
-    hadTauVeto_selection                  = "dR03mvaLoose", # veto events containing taus that pass tau ID WP applied in 3l+1tau channel,
+    hadTauVeto_selection                  = hadTau_selection_veto,
     applyFakeRateWeights                  = "3lepton",
     chargeSumSelections                   = chargeSumSelections,
     jet_cleaning_by_index                 = jet_cleaning_by_index,

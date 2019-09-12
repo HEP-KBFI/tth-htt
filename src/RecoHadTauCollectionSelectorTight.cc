@@ -8,20 +8,18 @@ RecoHadTauSelectorTight::RecoHadTauSelectorTight(int era,
                                                  bool debug,
                                                  bool set_selection_flags)
   : RecoHadTauSelectorBase(era, index, debug, set_selection_flags)
-{ 
-  switch(era)
-  {
-    case kEra_2016:
-    case kEra_2018:
-    case kEra_2017: set("dR03mvaLoose"); break;
-    default: throw cmsException(this) << "Invalid era = " << era;
-  }
-}
+{}
 
 void
 RecoHadTauSelectorTight::set_selection_flags(const RecoHadTau & hadTau) const
 {
   hadTau.set_isTight();
+}
+
+bool
+RecoHadTauSelectorTight::set_if_looser(const std::string & cut)
+{
+  throw cmsException(this, __func__, __LINE__) << "Invalid call";
 }
 
 bool
