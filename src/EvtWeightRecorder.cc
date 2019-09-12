@@ -640,9 +640,10 @@ EvtWeightRecorder::compute_FR_2l(bool passesTight_lepton_lead,
   for(const std::string & central_or_shift: central_or_shifts_)
   {
     const int jetToLeptonFakeRate_option = getJetToLeptonFR_option(central_or_shift);
+    const int jetToTauFakeRate_option = getJetToTauFR_option(central_or_shift);
     assert(weights_FR_lepton_lead_.count(jetToLeptonFakeRate_option));
     assert(weights_FR_lepton_sublead_.count(jetToLeptonFakeRate_option));
-    const std::string weightKey = jetToLeptonFakeRate_option == kFRl_central ? "central" : central_or_shift;
+    const std::string weightKey = jetToLeptonFakeRate_option == kFRl_central && jetToTauFakeRate_option == kFRjt_central ? "central" : central_or_shift;
     if(weights_FR_.count(weightKey))
     {
       continue;
@@ -661,9 +662,10 @@ EvtWeightRecorder::compute_FR_1tau()
   weights_FR_.clear();
   for(const std::string & central_or_shift: central_or_shifts_)
   {
+    const int jetToLeptonFakeRate_option = getJetToLeptonFR_option(central_or_shift);
     const int jetToTauFakeRate_option = getJetToTauFR_option(central_or_shift);
     assert(weights_FR_hadTau_lead_.count(jetToTauFakeRate_option));
-    const std::string weightKey = jetToTauFakeRate_option == kFRjt_central ? "central" : central_or_shift;
+    const std::string weightKey = jetToLeptonFakeRate_option == kFRl_central && jetToTauFakeRate_option == kFRjt_central ? "central" : central_or_shift;
     if(weights_FR_.count(weightKey))
     {
       continue;
