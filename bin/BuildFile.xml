@@ -353,6 +353,7 @@
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
 <bin file="comp_jetToTauFakeRate.cc" name="comp_jetToTauFakeRate">
+  <use   name="libpng"/>
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
