@@ -500,36 +500,6 @@ class analyzeConfig(object):
         self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_%s_NC" % suffix
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_%s" % suffix
 
-        # leptonFakeRateWeight_histogramName_e_suffix = ''
-        # leptonFakeRateWeight_histogramName_mu_suffix = ''
-        # if central_or_shift == "CMS_ttHl_FRe_shape_ptUp":
-        #     leptonFakeRateWeight_histogramName_e_suffix = '_pt1'
-        # elif central_or_shift == "CMS_ttHl_FRe_shape_ptDown":
-        #     leptonFakeRateWeight_histogramName_e_suffix = '_pt2'
-        # elif central_or_shift == "CMS_ttHl_FRe_shape_normUp":
-        #     leptonFakeRateWeight_histogramName_e_suffix = '_up'
-        # elif central_or_shift == "CMS_ttHl_FRe_shape_normDown":
-        #     leptonFakeRateWeight_histogramName_e_suffix = '_down'
-        # elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelUp":
-        #     leptonFakeRateWeight_histogramName_e_suffix = '_be1'
-        # elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelDown":
-        #     leptonFakeRateWeight_histogramName_e_suffix = '_be2'
-        # elif central_or_shift == "CMS_ttHl_FRm_shape_ptUp":
-        #     leptonFakeRateWeight_histogramName_mu_suffix = '_pt1'
-        # elif central_or_shift == "CMS_ttHl_FRm_shape_ptDown":
-        #     leptonFakeRateWeight_histogramName_mu_suffix = '_pt2'
-        # elif central_or_shift == "CMS_ttHl_FRm_shape_normUp":
-        #     leptonFakeRateWeight_histogramName_mu_suffix = '_up'
-        # elif central_or_shift == "CMS_ttHl_FRm_shape_normDown":
-        #     leptonFakeRateWeight_histogramName_mu_suffix = '_down'
-        # elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelUp":
-        #     leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
-        # elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelDown":
-        #     leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
-        #
-        # self.leptonFakeRateWeight_histogramName_e  += leptonFakeRateWeight_histogramName_e_suffix
-        # self.leptonFakeRateWeight_histogramName_mu += leptonFakeRateWeight_histogramName_mu_suffix
-
     def set_BDT_training(self, hadTau_selection_relaxed):
         """Run analysis with loose selection criteria for leptons and hadronic taus,
            for the purpose of preparing event list files for BDT training.
@@ -563,6 +533,8 @@ class analyzeConfig(object):
 
         stitch_histogram_names = {}
         is_mc = (sample_info["type"] == "mc")
+        use_th_weights = self.runTHweights(sample_info)
+
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
         if 'isMC' not in jobOptions:
@@ -584,12 +556,11 @@ class analyzeConfig(object):
         if 'lumiScale' not in jobOptions:
 
           nof_reweighting = sample_info['nof_reweighting']
-          use_th_weights = is_mc and sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and nof_reweighting > 0
           nof_events = collections.OrderedDict()
           tH_weights_map = {}
 
           if is_mc:
-            if jobOptions['central_or_shift'] == "central":
+            if jobOptions['central_or_shift'] == "central" and not use_th_weights:
               central_or_shifts = self.central_or_shifts_internal + [ jobOptions['central_or_shift'] ]
             else:
               central_or_shifts = [ jobOptions['central_or_shift'] ]
@@ -751,7 +722,8 @@ class analyzeConfig(object):
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
 
-        if not isHTT and not self.do_sync : lines = [
+        if not isHTT and not self.do_sync:
+          lines = [
             "# Filled in %s" % current_function_name,
             "process.fwliteInput.fileNames = cms.vstring(%s)"  % jobOptions['ntupleFiles'],
             "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
@@ -761,7 +733,8 @@ class analyzeConfig(object):
             "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era,     len = max_option_len),
             "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era,     len = max_option_len),
         ]
-        elif self.do_sync : lines = [
+        elif self.do_sync:
+          lines = [
             "# Filled in %s" % current_function_name,
             "process.fwliteInput.fileNames = cms.vstring(%s)"  % jobOptions['ntupleFiles'],
             "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
@@ -771,7 +744,8 @@ class analyzeConfig(object):
             "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era,     len = max_option_len),
             "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era,     len = max_option_len),
         ]
-        else : lines = [
+        else:
+          lines = [
             "# Filled in %s" % current_function_name,
             "process.fwliteInput.fileNames = cms.vstring(%s)"  % jobOptions['ntupleFiles'],
             "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
@@ -779,7 +753,16 @@ class analyzeConfig(object):
             "{}.{:<{len}} = cms.bool({})".format            (process_string, 'redoGenMatching',       'False',       len = max_option_len),
             "{}.{:<{len}} = cms.bool({})".format            (process_string, 'isDEBUG',                self.isDebug, len = max_option_len),
         ]
-        lines += ["{}.{:<{len}} = cms.bool({})".format            (process_string, 'FullSyst',   'False' if len(self.central_or_shifts) == 1 else 'True', len = max_option_len),]
+        lines.append(
+          "{}.{:<{len}} = cms.bool({})".format(
+            process_string,
+            'FullSyst',
+            jobOptions['central_or_shift'] != 'central' and \
+            jobOptions['central_or_shift'] in self.central_or_shifts_internal and \
+            use_th_weights,
+            len = max_option_len
+          )
+        )
         for jobOptions_key in jobOptions_keys:
             if jobOptions_key not in jobOptions: continue # temporary?
             jobOptions_val = jobOptions[jobOptions_key]
@@ -909,6 +892,10 @@ class analyzeConfig(object):
       logging.info("Separated internal systematics: {}".format(', '.join(self.central_or_shifts_internal)))
       logging.info("Separated external systematics: {}".format(', '.join(self.central_or_shifts_external)))
 
+    def runTHweights(self, sample_info):
+        return sample_info["type"] == "mc" and \
+               sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and \
+               sample_info['nof_reweighting'] > 0
 
     def createCfg_copyHistograms(self, jobOptions):
         """Create python configuration file for the copyHistograms executable (split the ROOT files produced by hadd_stage1 into separate ROOT files, one for each event category)

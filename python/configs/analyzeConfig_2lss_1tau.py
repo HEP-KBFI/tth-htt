@@ -325,7 +325,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                 continue
 
               central_or_shift_extensions = [ "", "hadd", "addBackgrounds" ]
-              central_or_shifts_extended = central_or_shift_extensions + self.central_or_shifts_external
+              central_or_shift_dedicated = self.central_or_shifts if self.runTHweights(sample_info) else self.central_or_shifts_external
+              central_or_shifts_extended = central_or_shift_extensions + central_or_shift_dedicated
               for central_or_shift_or_dummy in central_or_shifts_extended:
                 process_name_extended = [ process_name, "hadd" ]
                 for process_name_or_dummy in process_name_extended:
@@ -447,15 +448,17 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
               sample_category = sample_info["sample_category"]
               is_mc = (sample_info["type"] == "mc")
+              use_th_weights = self.runTHweights(sample_info)
 
-              for central_or_shift in self.central_or_shifts_external:
+              central_or_shift_dedicated = self.central_or_shifts if use_th_weights else self.central_or_shifts_external
+              for central_or_shift in central_or_shift_dedicated:
                 if not self.accept_systematics(
                       central_or_shift, is_mc, lepton_and_hadTau_selection, lepton_charge_selection, sample_category, sample_name
                     ):
                   continue
 
                 central_or_shifts_local = []
-                if central_or_shift == "central":
+                if central_or_shift == "central" and not use_th_weights:
                   for central_or_shift_local in self.central_or_shifts_internal:
                     if self.accept_systematics(
                           central_or_shift_local, is_mc, lepton_and_hadTau_selection, lepton_charge_selection, sample_category, sample_name
