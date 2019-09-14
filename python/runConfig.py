@@ -219,6 +219,18 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Method of gen matching (choices: %s)' % tthAnalyzeParser.cat(choices),
     )
 
+  def add_stitched(self, use_dy = False, use_wj = False):
+    choices = [ 'dy', 'wjets' ]
+    default = []
+    if use_dy:
+      default.append('dy')
+    if use_wj:
+      default.append('wjets')
+    self.add_argument('-u', '--use-stitched',
+      type = str, dest = 'use_stitched', metavar = 'process', default = default, required = False, choices = choices,
+      help = 'R|Load stitched samples (choices: %s)' % tthAnalyzeParser.cat(choices),
+    )
+
   @staticmethod
   def cat(choices):
     return ', '.join(map(lambda choice: "'%s'" % str(choice), choices))

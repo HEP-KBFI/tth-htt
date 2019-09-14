@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_charge_flip import analyzeC
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging, load_samples
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples, load_samples_stitched
 
 import os
 import sys
@@ -22,6 +22,7 @@ parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching(default_gen_matching = 'by_dr')
+parser.add_stitched()
 args = parser.parse_args()
 
 # Common arguments
@@ -42,6 +43,7 @@ files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
+use_stitched      = args.use_stitched
 
 # Use the arguments
 central_or_shifts = []
@@ -54,6 +56,7 @@ jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
 samples = load_samples(era)
+samples = load_samples_stitched(samples, era, load_dy = 'dy' in use_stitched, load_wjets = 'wjets' in use_stitched)
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
