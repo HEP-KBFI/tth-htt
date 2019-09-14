@@ -21,7 +21,7 @@ parser.add_sys(sys_choices, default_choice = 'full')
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
-parser.add_gen_matching()
+parser.add_gen_matching(default_gen_matching = 'by_dr')
 args = parser.parse_args()
 
 # Common arguments
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     histograms_to_fit     = {
       "mass_ll" : {},
     },
-    select_rle_output     = False,
+    select_rle_output     = True,
     dry_run               = dry_run,
     isDebug               = debug,
     use_home              = use_home,

@@ -27,7 +27,9 @@ template <typename Trec>
 class ParticleCollectionGenMatcher
 {
 public:
-  ParticleCollectionGenMatcher() {}
+  ParticleCollectionGenMatcher(bool isDEBUG = false)
+    : isDEBUG_(isDEBUG)
+  {}
   ~ParticleCollectionGenMatcher() {}
 
   /**
@@ -37,9 +39,10 @@ public:
   addGenLeptonMatch(const std::vector<const Trec *> & recParticles,
                     const std::vector<GenLepton> & genLeptons,
                     double dRmax = 0.3,
-                    double maxDPtRel = 0.5) const
+                    double minDPtRel = -0.5,
+                    double maxDPtRel = +0.5) const
   {
-    return addGenMatch<GenLepton, GenLeptonLinker>(recParticles, genLeptons, dRmax, maxDPtRel, genLeptonLinker_);
+    return addGenMatch<GenLepton, GenLeptonLinker>(recParticles, genLeptons, dRmax, minDPtRel, maxDPtRel, genLeptonLinker_);
   }
 
   void
@@ -120,6 +123,23 @@ protected:
               const Tlinker & linker,
               const std::vector<unsigned char> & genPartFlavs = {}) const
   {
+    return addGenMatch<Tgen, Tlinker>(
+      recParticles, genParticles, dRmax, -maxDPtRel, maxDPtRel, linker, genPartFlavs
+    );
+  }
+
+  template <typename Tgen,
+            typename Tlinker>
+  void
+  addGenMatch(const std::vector<const Trec *> & recParticles,
+              const std::vector<Tgen> & genParticles,
+              double dRmax,
+              double minDPtRel,
+              double maxDPtRel,
+              const Tlinker & linker,
+              const std::vector<unsigned char> & genPartFlavs = {}) const
+  {
+    assert(minDPtRel < 0. && maxDPtRel > 0.);
     for(const Trec * recParticle: recParticles)
     {
       if(recParticle->hasAnyGenMatch())
@@ -129,13 +149,15 @@ protected:
       }
       Tgen * bestMatch = nullptr;
       double dR_bestMatch = 1.e+3;
+      double dPtRel_bestMatch = 1.e+3;
 
       for(const Tgen & genParticle: genParticles)
       {
         const double dR = deltaR(
           recParticle->eta(), recParticle->phi(), genParticle.eta(), genParticle.phi()
         );
-        bool passesConstraints = std::abs(recParticle->pt() - genParticle.pt()) / genParticle.pt() < maxDPtRel;
+        const double dPtRel = (recParticle->pt() - genParticle.pt()) / genParticle.pt();
+        bool passesConstraints = minDPtRel < dPtRel && dPtRel < maxDPtRel;
         if(passesConstraints && typeid(Trec) != typeid(RecoJet) && ! genPartFlavs.empty())
         {
           passesConstraints &=
@@ -146,15 +168,31 @@ protected:
         {
           bestMatch = const_cast<Tgen *>(&genParticle);
           dR_bestMatch = dR;
+          dPtRel_bestMatch = dPtRel;
         }
       }
 
       if(bestMatch)
       {
+        if(isDEBUG_)
+        {
+          std::cout
+            << "Found gen match with dR = " << dR_bestMatch << " and dPtRel = " << dPtRel_bestMatch << " between "
+               "reconstructed object...\n" << *recParticle << "\n... and generator level object...\n" << *bestMatch
+            << '\n'
+          ;
+        }
         // forbid the same gen particle to be matched to another reco particle
         bestMatch->setMatchedToReco();
         Trec * recParticle_nonconst = const_cast<Trec *>(recParticle);
         linker(*recParticle_nonconst, bestMatch);
+      }
+      else if(isDEBUG_)
+      {
+        std::cout
+          << "Did not find gen match for reconstructed object in gen particle collection '" << typeid (Tgen).name()
+          << "' (size = " << genParticles.size() << "):\n" << *recParticle << '\n'
+        ;
       }
     }
   }
@@ -247,8 +285,25 @@ protected:
 
         if(hasGenAbsPdgIdMatch && hasGenPartFlavMatch)
         {
+          if(isDEBUG_)
+          {
+            const double dR_bestMatch = deltaR(recParticle->eta(), recParticle->phi(), genMatch->eta(), genMatch->phi());
+            const double dPtRel_bestMatch = (recParticle->pt() - genMatch->pt()) / genMatch->pt();
+            std::cout
+              << "Found gen match with dR = " << dR_bestMatch << " and dPtRel = " << dPtRel_bestMatch << " between "
+                 "reconstructed object...\n" << recParticle << "\n... and generator level object...\n" << *genMatch
+              << '\n'
+            ;
+          }
           Trec * recParticle_nonconst = const_cast<Trec *>(recParticle);
           linker(*recParticle_nonconst, genMatch);
+        }
+        else if(isDEBUG_)
+        {
+          std::cout
+            << "Did not find gen match for reconstructed object in gen particle collection '" << typeid (Tgen).name()
+            << "' (size = " << genParticles.size() << ":\n" << *recParticle << '\n'
+          ;
         }
       }
     }
@@ -313,6 +368,8 @@ protected:
     }
   };
   GenJetLinker genJetLinker_;
+
+  bool isDEBUG_;
 };
 
 typedef ParticleCollectionGenMatcher<RecoElectron> RecoElectronCollectionGenMatcher;

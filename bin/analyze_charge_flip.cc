@@ -304,7 +304,7 @@ int main(int argc, char* argv[])
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   inputTree->registerReader(electronReader);
-  RecoElectronCollectionGenMatcher electronGenMatcher;
+  RecoElectronCollectionGenMatcher electronGenMatcher(isDEBUG);
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
@@ -676,7 +676,15 @@ int main(int argc, char* argv[])
         muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
         muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
 
-        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons);
+        // A lot of the electron pT from Z->ee decay may be carried away by bremsstrahlung photon at the generator
+        // level. The bremsstrahlung photon is included to the reconstruction of the electron, but the generator level
+        // electrons that are considered in the gen matching are final state electrons, ie electrons after
+        // the bremsstrahlung. This is not accounted for in NanoAOD and has to be corrected for the purpose of this
+        // analysis. The solution is to redo the gen matching between reconstructed and gen electrons by allowing
+        // the pT of reconstructed electrons to be twice as high as the pT of gen electrons for them to be gen-matched.
+        // In rare instances, the bremsstrahlung photons may carry away more than half of the mother electron's pT and
+        // the gen matching would still fail.
+        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons, 0.3, -0.5, 1.00);
         electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
         electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
         electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
