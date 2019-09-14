@@ -676,15 +676,15 @@ int main(int argc, char* argv[])
         muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
         muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
 
-        // A lot of the electron pT from Z->ee decay may be carried away by bremsstrahlung photon at the generator
-        // level. The bremsstrahlung photon is included to the reconstruction of the electron, but the generator level
-        // electrons that are considered in the gen matching are final state electrons, ie electrons after
-        // the bremsstrahlung. This is not accounted for in NanoAOD and has to be corrected for the purpose of this
-        // analysis. The solution is to redo the gen matching between reconstructed and gen electrons by allowing
-        // the pT of reconstructed electrons to be twice as high as the pT of gen electrons for them to be gen-matched.
-        // In rare instances, the bremsstrahlung photons may carry away more than half of the mother electron's pT and
-        // the gen matching would still fail.
-        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons, 0.3, -0.5, 1.00);
+        // Some of the electron pT may be carried away by bremsstrahlung photon at the generator level. Altough
+        // the bremsstrahlung photon is included in the reconstruction of the electron, the generator level
+        // electrons that are considered in the gen matching are final state electrons which have already undergone
+        // bremsstrahlung. This is not accounted for in NanoAOD and has to be corrected for the purpose of this
+        // analysis. The solution here is to redo the gen matching between reconstructed and gen electrons by allowing
+        // the pT of reconstructed electrons to be four times as high as the pT of gen electrons for them to be gen-matched.
+        // This matches with the previous implementation of our gen-matching, where we required the ratio of gen pT
+        // to reco pT be greater than 0.25.
+        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons, 0.3, -0.5, 3.00);
         electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
         electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
         electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
