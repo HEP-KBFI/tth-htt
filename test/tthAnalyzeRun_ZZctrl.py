@@ -12,7 +12,7 @@ import getpass
 
 # E.g.: ./test/tthAnalyzeRun_ZZctrl.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
+mode_choices     = [ 'default', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -85,8 +85,6 @@ else:
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-elif mode == "forBDTtraining":
-  samples = load_samples(era, suffix = 'BDT')
 elif mode == "sync":
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:

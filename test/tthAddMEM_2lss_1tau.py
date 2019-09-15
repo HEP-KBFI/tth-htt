@@ -92,6 +92,8 @@ if mode == 'default':
   }
   hadTauWP = tau_id + hadTauWP_map[tau_id]
 elif mode == 'bdt':
+  if use_preselected:
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT")
   leptonSelection = "Loose"
   hadTauWP_map = {

@@ -91,6 +91,8 @@ if mode == "default":
     if sample_info["process_name_specific"].startswith("DYBBJetsToLL_M-50"):
       sample_info["use_it"] = True
 elif mode == "forBDTtraining":
+  if use_preselected:
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT_DY")
   hadTauWP_map_relaxed = {
     'dR03mva' : 'VLoose',

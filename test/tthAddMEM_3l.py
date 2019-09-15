@@ -64,6 +64,8 @@ if mode == 'default':
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
   leptonSelection = "Fakeable"
 elif mode == 'bdt':
+  if use_preselected:
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT")
   leptonSelection = "Loose"
 elif mode == 'sync':
