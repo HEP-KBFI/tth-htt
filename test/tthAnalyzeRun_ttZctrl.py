@@ -19,6 +19,7 @@ systematics.full = systematics.an_extended
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
+parser.add_preselect()
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
@@ -45,6 +46,7 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+use_preselected   = args.use_preselected
 lep_mva_wp        = args.lep_mva_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
@@ -73,11 +75,14 @@ hadTauWP_veto_map = {
 hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == 'default':
-  samples = load_samples(era)
+  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 elif mode == 'sync_wMEM':
   samples = load_samples(era, suffix = 'addMEM_sync' if use_nonnominal else 'addMEM_sync_nom')
 elif mode == 'sync':
-  samples = load_samples(era, suffix = 'sync' if use_nonnominal else 'sync_nom')
+  sample_suffix = "sync" if use_nonnominal else "sync_nom"
+  if use_preselected:
+    sample_suffix = "preselected_{}".format(sample_suffix)
+  samples = load_samples(era, suffix = sample_suffix)
 else:
   raise ValueError("Invalid mode: %s" % mode)
 

@@ -12,12 +12,12 @@ import getpass
 
 # E.g.: ./test/tthAnalyzeRun_chargeFlip.py -v 2017Dec13 -e 2017
 
-era_choices      = ['2017']
 sys_choices      = [ 'full' ] + systematics.an_chargeFlip_e_opts
 systematics.full = systematics.an_chargeFlip_e
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices, default_choice = 'full')
+parser.add_preselect()
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
@@ -39,6 +39,7 @@ running_method     = args.running_method
 
 # Additional arguments
 systematics_label = args.systematics
+use_preselected   = args.use_preselected
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
@@ -55,7 +56,7 @@ lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
-samples = load_samples(era)
+samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 samples = load_samples_stitched(samples, era, load_dy = 'dy' in use_stitched, load_wjets = 'wjets' in use_stitched)
 
 for sample_name, sample_info in samples.items():

@@ -83,6 +83,7 @@ parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_sys(sys_choices)
+parser.add_preselect()
 parser.add_argument('-c', '--channels',
   type = str, nargs = '+', dest = 'channels', metavar = 'channel', choices = channel_choices,
   default = channel_choices, required = False,
@@ -118,6 +119,7 @@ tau_id_wp         = args.tau_id_wp
 use_home          = args.use_home
 hlt_filter        = args.hlt_filter
 systematics_label = args.systematics
+use_preselected   = args.use_preselected
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 tau_id            = args.tau_id
@@ -153,6 +155,7 @@ if __name__ == '__main__':
     tau_id             = tau_id,
     use_home           = use_home,
     systematics_label  = systematics_label,
+    use_preselected    = use_preselected,
     jet_cleaning       = jet_cleaning,
     gen_matching       = gen_matching,
   )
