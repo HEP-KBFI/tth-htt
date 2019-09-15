@@ -859,6 +859,7 @@ main(int argc,
 
       genLeptonWriter->write(convert_to_GenParticle(genLeptons));
       genHadTauWriter->write(convert_to_GenParticle(genHadTaus));
+      genJetWriter   ->write(convert_to_GenParticle(genJets));
 
       if(genMatchingByIndex)
       {
@@ -892,9 +893,7 @@ main(int argc,
       else
       {
         const std::vector<GenPhoton> genPhotons = genPhotonReader->read();
-
         genPhotonWriter->write(convert_to_GenParticle(genPhotons));
-        genJetWriter   ->write(convert_to_GenParticle(genJets));
 
         std::vector<GenLepton> genElectrons;
         std::vector<GenLepton> genMuons;
