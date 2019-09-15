@@ -86,6 +86,8 @@ else:
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 elif mode == "forBDTtraining":
+  if use_preselected:
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT")
 elif mode == "sync":
   sample_suffix = "sync" if use_nonnominal else "sync_nom"

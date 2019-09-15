@@ -77,7 +77,7 @@ hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 if mode == 'default':
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 elif mode == 'sync_wMEM':
-  samples = load_samples(era, suffix = 'addMEM_sync' if use_nonnominal else 'addMEM_sync_nom')
+  samples = load_samples(era, suffix = 'addMEM_3l_sync' if use_nonnominal else 'addMEM_3l_sync_nom')
 elif mode == 'sync':
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:

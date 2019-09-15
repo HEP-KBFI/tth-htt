@@ -116,16 +116,13 @@ elif mode == "forBDTtraining_afterAddMEM":
     tau_id = args.tau_id[:7]
   hadTau_selection_relaxed = tau_id + hadTauWP_map_relaxed[tau_id]
   MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_{}'.format(hadTau_selection_relaxed)
-elif mode.startswith("sync"):
-  if mode == "sync_wMEM":
-    samples = load_samples(era, suffix = "addMEM_preselected_sync" if use_preselected else "addMEM_sync")
-  elif mode == "sync":
-    sample_suffix = "sync" if use_nonnominal else "sync_nom"
-    if use_preselected:
-      sample_suffix = "preselected_{}".format(sample_suffix)
-    samples = load_samples(era, suffix = sample_suffix)
-  else:
-    raise ValueError("Invalid mode: %s" % mode)
+elif mode == "sync_wMEM":
+  samples = load_samples(era, suffix = "addMEM_3l1tau_sync" if use_nonnominal else "addMEM_3l1tau_sync_nom")
+elif mode == "sync":
+  sample_suffix = "sync" if use_nonnominal else "sync_nom"
+  if use_preselected:
+    sample_suffix = "preselected_{}".format(sample_suffix)
+  samples = load_samples(era, suffix = sample_suffix)
 else:
   raise ValueError("Invalid mode: %s" % mode)
 

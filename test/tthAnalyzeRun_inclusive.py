@@ -28,9 +28,6 @@ parser.add_argument('-o', '--output-tree',
   type = str, dest = 'output_tree', metavar = 'name', default = 'syncTree', required = False,
   help = 'R|Output TTree name',
 )
-parser.add_argument('-M', '--with-mem',
-  dest = 'with_mem', action = 'store_true', default = False, help = 'R|Use Ntuple w/ MEM included',
-)
 parser.add_argument('-T', '--tau-wp-ak8',
   type = str, dest = 'tau_wp_ak8', metavar = 'wp', default = '', required = False,
   help = 'R|Tau ID WP of the taus that are used in the cleaning of AK8 jets',
@@ -60,7 +57,6 @@ tau_id            = args.tau_id
 
 # Custom arguments
 output_tree = args.output_tree
-with_mem    = args.with_mem
 tau_wp_ak8  = args.tau_wp_ak8
 
 # Use the arguments
@@ -88,10 +84,7 @@ hadTau_WP_ak8 = tau_id + hadTau_WP_ak8_map[tau_id]
 if tau_wp_ak8:
   hadTau_WP_ak8 = tau_wp_ak8
 
-if with_mem:
-  samples = load_samples(era, suffix = "addMEM_sync" if use_nonnominal else "addMEM_sync_nom")
-else:
-  samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
+samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
 
 if __name__ == '__main__':
   if sample_filter:

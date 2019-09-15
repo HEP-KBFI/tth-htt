@@ -82,6 +82,8 @@ hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 elif mode == "forBDTtraining":
+  if use_preselected:
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT_DY")
   hadTauWP_map_relaxed = {
     'dR03mva' : 'Loose',

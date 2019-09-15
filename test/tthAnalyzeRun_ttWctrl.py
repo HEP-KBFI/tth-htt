@@ -12,7 +12,7 @@ import getpass
 
 # E.g.: ./test/tthAnalyzeRun_ttWctrl.py -v 2017Dec13 -e 2017
 
-mode_choices     = [ 'default', 'sync', 'sync_wMEM' ]
+mode_choices     = [ 'default', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts
 systematics.full = systematics.an_extended
 
@@ -74,8 +74,6 @@ hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == 'default':
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-elif mode == 'sync_wMEM':
-  samples = load_samples(era, suffix = 'addMEM_sync' if use_nonnominal else 'addMEM_sync_nom')
 elif mode == 'sync':
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:

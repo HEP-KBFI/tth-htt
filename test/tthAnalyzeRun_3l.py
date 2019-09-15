@@ -91,12 +91,16 @@ elif mode == "addMEM":
   samples = load_samples(era, suffix = "addMEM_3l")
   MEMbranch = 'memObjects_3l_lepFakeable'
 elif mode == "forBDTtraining_beforeAddMEM":
+  if use_preselected:
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT")
 elif mode == "forBDTtraining_afterAddMEM":
+  if use_preselected:
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT_addMEM_3l")
   MEMbranch = 'memObjects_3l_lepFakeable'
 elif mode == "sync_wMEM":
-  samples = load_samples(era, suffix = "addMEM_sync")
+  samples = load_samples(era, suffix = "addMEM_3l_sync" if use_nonnominal else "addMEM_3l_sync_nom")
 elif mode == "sync":
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:
