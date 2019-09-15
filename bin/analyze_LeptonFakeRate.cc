@@ -39,6 +39,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017, getBTagWeight_option()
@@ -475,7 +476,7 @@ main(int argc,
   const bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
 
   const std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
-  const double lumiScale           = process_string != "data_obs" ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
+  edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   const bool apply_genWeight       = cfg_analyze.getParameter<bool>("apply_genWeight");
   const bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
   const bool fillGenEvtHistograms  = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
@@ -624,22 +625,19 @@ main(int argc,
   if(applyAdditionalEvtWeight)
   {
     eventWeightManager = new EvtWeightManager(additionalEvtWeight);
+    eventWeightManager->set_central_or_shift(central_or_shift);
   }
 
   checkOptionValidity(central_or_shift, isMC);
-  const int jetPt_option                      = getJet_option       (central_or_shift, isMC);
-  const int lheScale_option                   = getLHEscale_option  (central_or_shift);
-  const int jetBtagSF_option                  = getBTagWeight_option(central_or_shift);
-  const int met_option                        = getMET_option       (central_or_shift, isMC);
-  const L1PreFiringWeightSys l1PreFire_option = getL1PreFiringWeightSys_option(central_or_shift);
+  const int jetPt_option    = getJet_option(central_or_shift, isMC);
+  const int met_option      = getMET_option(central_or_shift, isMC);
+  const int hadTauPt_option = getHadTauPt_option(central_or_shift);
 
   std::cout
-    << "central_or_shift = "     << central_or_shift             << "\n"
-       " -> lheScale_option  = " << lheScale_option              << "\n"
-       " -> jetBtagSF_option = " << jetBtagSF_option             << "\n"
-       " -> met_option       = " << met_option                   << "\n"
-       " -> jetPt_option     = " << jetPt_option                 << "\n"
-       " -> l1PreFire_option = " << as_integer(l1PreFire_option) << '\n'
+    << "central_or_shift = "    << central_or_shift << "\n"
+       " -> met_option      = " << met_option       << "\n"
+       " -> jetPt_option    = " << jetPt_option     << "\n"
+       " -> hadTauPt_option = " << hadTauPt_option  << '\n'
   ;
 
   fwlite::InputSource inputFiles(cfg);
@@ -657,6 +655,7 @@ main(int argc,
   const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
   if((isMC_tH || isSignal) && ! tHweights.empty())
   {
+    eventInfo.set_central_or_shift(central_or_shift);
     eventInfo.loadWeight_tH(tHweights);
   }
   EventInfoReader eventInfoReader(&eventInfo);
@@ -687,7 +686,7 @@ main(int argc,
   L1PreFiringWeightReader * l1PreFiringWeightReader = nullptr;
   if(apply_l1PreFireWeight)
   {
-    l1PreFiringWeightReader = new L1PreFiringWeightReader(era, l1PreFire_option);
+    l1PreFiringWeightReader = new L1PreFiringWeightReader(era);
     inputTree->registerReader(l1PreFiringWeightReader);
   }
 
@@ -715,7 +714,7 @@ main(int argc,
 
   RecoJetReader * jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
-  jetReader->setBranchName_BtagWeight(jetBtagSF_option);
+  jetReader->read_btag_systematics(central_or_shift != "central");
   inputTree->registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner_dR04(0.4, isDEBUG);

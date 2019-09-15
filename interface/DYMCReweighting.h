@@ -13,7 +13,6 @@ class DYMCReweighting
 {
 public:
   DYMCReweighting(int era,
-                  int dyMCReweighting_option,
                   bool debug = false);
   ~DYMCReweighting();
 
@@ -21,15 +20,11 @@ public:
   // cf. slides 7-11 of presentation by Alexei Raspereza in HTT meeting on October 10th 2018
   // (https://indico.cern.ch/event/762837/contributions/3172618/attachments/1731302/2798220/Recoils_20181010.pdf )
   double
-  getWeight(const std::vector<GenParticle> & genTauLeptons) const;
-
-  double
   getWeight(const std::vector<GenParticle> & genTauLeptons,
             int central_or_shift) const;
 
 protected:
   int era_;
-  int central_or_shift_;
   bool debug_;
   std::map<std::string, TFile *> inputFiles_;
   lutWrapperBase * weights_;

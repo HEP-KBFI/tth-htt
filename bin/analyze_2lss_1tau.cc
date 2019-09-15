@@ -1435,9 +1435,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
     bool passesTight_hadTau = isMatched(*selHadTau, tightHadTausFull);
 
-    double prob_fake_lepton_lead = 1.;
-    double prob_fake_lepton_sublead = 1.;
-    double prob_fake_hadTau = 1.;
     if(leptonFakeRateInterface)
     {
       evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selLepton_lead);
@@ -2219,10 +2216,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           ("lep1_genLepPt",                  lep1_genLepPt)
           ("lep2_genLepPt",                  lep2_genLepPt)
           ("tau_genTauPt",                   tau_genTauPt)
-          ("lep1_fake_prob",                 selLepton_lead->genLepton() ? 1.0 : prob_fake_lepton_lead)
-          ("lep2_fake_prob",                 selLepton_sublead->genLepton()? 1.0 : prob_fake_lepton_sublead)
-          ("tau_fake_prob",                  selHadTau->genHadTau() || selHadTau->genLepton() ? 1.0 : prob_fake_hadTau)
-          ("tau_fake_test",                  selHadTau->genHadTau() ? 1.0 : prob_fake_hadTau)
+          ("lep1_fake_prob",                 selLepton_lead->genLepton() ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main))
+          ("lep2_fake_prob",                 selLepton_sublead->genLepton()? 1.0 : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main))
+          ("tau_fake_prob",                  selHadTau->genHadTau() || selHadTau->genLepton() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
+          ("tau_fake_test",                  selHadTau->genHadTau() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
           ("Hj_tagger",                      mvaOutput_Hj_tagger)
 
           ("hadtruth",               hadtruth)
@@ -2479,11 +2476,14 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
   delete hadTopTagger;
 
-  for(const std::string & central_or_shift: central_or_shifts_local)
+  if(isMC)
   {
-    delete genEvtHistManager_beforeCuts[central_or_shift];
-    delete genEvtHistManager_afterCuts[central_or_shift];
-    delete lheInfoHistManager[central_or_shift];
+    for(const std::string & central_or_shift: central_or_shifts_local)
+    {
+      delete genEvtHistManager_beforeCuts[central_or_shift];
+      delete genEvtHistManager_afterCuts[central_or_shift];
+      delete lheInfoHistManager[central_or_shift];
+    }
   }
   delete l1PreFiringWeightReader;
   delete cutFlowHistManager;

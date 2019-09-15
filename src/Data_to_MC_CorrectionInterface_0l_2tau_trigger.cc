@@ -71,11 +71,23 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::setHadTaus(double hadTau1_pt, do
 double
 Data_to_MC_CorrectionInterface_0l_2tau_trigger::getWeight_triggerEff() const
 {
+  return getWeight_triggerEff(triggerSF_option_);
+}
+
+double
+Data_to_MC_CorrectionInterface_0l_2tau_trigger::getWeight_triggerEff(TriggerSFsys central_or_shift) const
+{
   assert(0);
 }
 
 double
 Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff() const
+{
+  return getSF_triggerEff(triggerSF_option_);
+}
+
+double
+Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff(TriggerSFsys central_or_shift) const
 {
   if(isDEBUG_)
   {
@@ -87,8 +99,8 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff() const
   double eff_2tau_tauLeg2_data = 0.;
   double eff_2tau_tauLeg2_mc   = 0.;
 
-  const auto getTriggerEfficiencyDataFunc = aux::getTriggerFuncData(triggerSF_option_);
-  const auto getTriggerEfficiencyMCFunc   = aux::getTriggerFuncMC(triggerSF_option_);
+  const auto getTriggerEfficiencyDataFunc = aux::getTriggerFuncData(central_or_shift);
+  const auto getTriggerEfficiencyMCFunc   = aux::getTriggerFuncMC(central_or_shift);
   assert(getTriggerEfficiencyDataFunc);
   assert(getTriggerEfficiencyMCFunc);
 

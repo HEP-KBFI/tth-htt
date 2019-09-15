@@ -78,6 +78,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 #include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // format_vstring
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
@@ -361,7 +362,7 @@ int main(int argc, char* argv[])
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
-  double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
+  edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
@@ -375,27 +376,22 @@ int main(int argc, char* argv[])
   if(applyAdditionalEvtWeight)
   {
     eventWeightManager = new EvtWeightManager(additionalEvtWeight);
+    eventWeightManager->set_central_or_shift(central_or_shift);
   }
 
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
   checkOptionValidity(central_or_shift, isMC);
-  const int jetPt_option                      = getJet_option                 (central_or_shift, isMC);
-  const int hadTauPt_option                   = getHadTauPt_option            (central_or_shift);
-  const int lheScale_option                   = getLHEscale_option            (central_or_shift);
-  const int jetBtagSF_option                  = getBTagWeight_option          (central_or_shift);
-  const int met_option                        = getMET_option                 (central_or_shift, isMC);
-  const L1PreFiringWeightSys l1PreFire_option = getL1PreFiringWeightSys_option(central_or_shift);
+  const int jetPt_option    = getJet_option     (central_or_shift, isMC);
+  const int hadTauPt_option = getHadTauPt_option(central_or_shift);
+  const int met_option      = getMET_option     (central_or_shift, isMC);
 
   std::cout
     << "central_or_shift = "     << central_or_shift             << "\n"
        " -> hadTauPt_option  = " << hadTauPt_option              << "\n"
-       " -> lheScale_option  = " << lheScale_option              << "\n"
-       " -> jetBtagSF_option = " << jetBtagSF_option             << "\n"
        " -> met_option       = " << met_option                   << "\n"
-       " -> jetPt_option     = " << jetPt_option                 << "\n"
-       " -> l1PreFire_option = " << as_integer(l1PreFire_option) << '\n'
+       " -> jetPt_option     = " << jetPt_option                 << '\n'
   ;
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
@@ -403,7 +399,6 @@ int main(int argc, char* argv[])
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTau_selection_tight); // has no effect (will be overwritten)
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
-  cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -453,6 +448,7 @@ int main(int argc, char* argv[])
   const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
   if((isMC_tH || isSignal) && ! tHweights.empty())
   {
+    eventInfo.set_central_or_shift(central_or_shift);
     eventInfo.loadWeight_tH(tHweights);
   }
   EventInfoReader eventInfoReader(&eventInfo);
@@ -476,7 +472,7 @@ int main(int argc, char* argv[])
   L1PreFiringWeightReader * l1PreFiringWeightReader = nullptr;
   if(apply_l1PreFireWeight)
   {
-    l1PreFiringWeightReader = new L1PreFiringWeightReader(era, l1PreFire_option);
+    l1PreFiringWeightReader = new L1PreFiringWeightReader(era);
     inputTree->registerReader(l1PreFiringWeightReader);
   }
 
@@ -513,7 +509,7 @@ int main(int argc, char* argv[])
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
-  jetReader->setBranchName_BtagWeight(jetBtagSF_option);
+  jetReader->read_btag_systematics(central_or_shift != "central");
   inputTree->registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);

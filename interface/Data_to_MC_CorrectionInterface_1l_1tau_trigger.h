@@ -39,12 +39,18 @@ public:
   // trigger efficiency turn-on curves for MC
   double
   getWeight_triggerEff() const;
+
+  double
+  getWeight_triggerEff(TriggerSFsys central_or_shift) const;
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
   // data/MC correction for trigger efficiency 
   double
   getSF_triggerEff() const;
+
+  double
+  getSF_triggerEff(TriggerSFsys central_or_shift) const;
   //-----------------------------------------------------------------------------
 
 protected:

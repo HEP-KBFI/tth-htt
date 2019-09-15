@@ -83,6 +83,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_geral.h" // isGenMatchedJetTriplet tags
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_internal.h" // isGenMatchedJetTriplet
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
@@ -162,6 +163,7 @@ int main(int argc, char* argv[])
   if(applyAdditionalEvtWeight)
   {
     eventWeightManager = new EvtWeightManager(additionalEvtWeight);
+    eventWeightManager->set_central_or_shift(central_or_shift);
   }
 
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
@@ -169,13 +171,13 @@ int main(int argc, char* argv[])
 
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
   checkOptionValidity(central_or_shift, isMC);
-  const int jetPt_option     = getJet_option       (central_or_shift, isMC);
-  const int jetBtagSF_option = getBTagWeight_option(central_or_shift);
+  const int jetPt_option = getJet_option(central_or_shift, isMC);
+  const int met_option   = getMET_option(central_or_shift, isMC);
 
   std::cout
-    << "central_or_shift = "               << central_or_shift           << "\n"
-       " -> jetBtagSF_option           = " << jetBtagSF_option           << "\n"
-       " -> jetPt_option               = " << jetPt_option               << '\n'
+    << "central_or_shift = " << central_or_shift << "\n"
+       " -> met_option   = " << met_option       << "\n"
+       " -> jetPt_option = " << jetPt_option     << '\n'
   ;
 
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
@@ -231,7 +233,7 @@ int main(int argc, char* argv[])
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
-  jetReader->setBranchName_BtagWeight(jetBtagSF_option);
+  jetReader->read_btag_systematics(central_or_shift != "central");
   inputTree -> registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionSelector jetSelector(era);

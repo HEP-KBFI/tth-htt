@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_2lss_1tau import analyzeCon
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging, load_samples
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples, load_samples_stitched
 
 import os
 import sys
@@ -124,6 +124,8 @@ elif mode == "sync":
   samples = load_samples(era, suffix = sample_suffix)
 else:
   raise ValueError("Invalid mode: %s" % mode)
+
+samples = load_samples_stitched(samples, era, load_dy = True, load_wjets = True)
 
 if __name__ == '__main__':
   logging.info(

@@ -87,6 +87,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 #include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tH_weight_str()
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
@@ -147,6 +148,7 @@ int main(int argc, char* argv[])
   const bool isMC_VH = process_string == "VH";
   const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
+  const bool fullSyst = cfg_analyze.getParameter<bool>("FullSyst");
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -207,8 +209,9 @@ int main(int argc, char* argv[])
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
-  std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
-  double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
+  std::string central_or_shift_main = cfg_analyze.getParameter<std::string>("central_or_shift");
+  std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
+  edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
@@ -217,6 +220,16 @@ int main(int argc, char* argv[])
   MEtFilterSelector metFilterSelector(cfgMEtFilter, isMC);
   const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
+
+  if(! central_or_shifts_local.empty())
+  {
+    assert(central_or_shift_main == "central");
+    assert(std::find(central_or_shifts_local.cbegin(), central_or_shifts_local.cend(), "central") != central_or_shifts_local.cend());
+  }
+  else
+  {
+    central_or_shifts_local = { central_or_shift_main };
+  }
 
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
@@ -230,31 +243,22 @@ int main(int argc, char* argv[])
   if(applyAdditionalEvtWeight)
   {
     eventWeightManager = new EvtWeightManager(additionalEvtWeight);
+    eventWeightManager->set_central_or_shift(central_or_shift_main);
   }
 
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
-  checkOptionValidity(central_or_shift, isMC);
-  const int jetToLeptonFakeRate_option        = getJetToLeptonFR_option       (central_or_shift);
-  const int lheScale_option                   = getLHEscale_option            (central_or_shift);
-  const int jetBtagSF_option                  = getBTagWeight_option          (central_or_shift);
-  const PUsys puSys_option                    = getPUsys_option               (central_or_shift);
-  const L1PreFiringWeightSys l1PreFire_option = getL1PreFiringWeightSys_option(central_or_shift);
-
-  const int met_option      = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC);
-  const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC);
-  const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected      : getHadTauPt_option(central_or_shift);
+  checkOptionValidity(central_or_shift_main, isMC);
+  const int met_option      = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift_main, isMC);
+  const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift_main, isMC);
+  const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected      : getHadTauPt_option(central_or_shift_main);
 
   std::cout
-    << "central_or_shift = "               << central_or_shift             << "\n"
-       " -> jetToLeptonFakeRate_option = " << jetToLeptonFakeRate_option   << "\n"
-       " -> hadTauPt_option            = " << hadTauPt_option              << "\n"
-       " -> lheScale_option            = " << lheScale_option              << "\n"
-       " -> jetBtagSF_option           = " << jetBtagSF_option             << "\n"
-       " -> met_option                 = " << met_option                   << "\n"
-       " -> jetPt_option               = " << jetPt_option                 << "\n"
-       " -> l1PreFire_option           = " << as_integer(l1PreFire_option) << '\n'
+    << "central_or_shift = "    << central_or_shift_main << "\n"
+       " -> hadTauPt_option = " << hadTauPt_option       << "\n"
+       " -> met_option      = " << met_option            << "\n"
+       " -> jetPt_option    = " << jetPt_option          << '\n'
   ;
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
@@ -262,7 +266,6 @@ int main(int argc, char* argv[])
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
-  cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -283,7 +286,7 @@ int main(int argc, char* argv[])
   LeptonFakeRateInterface* leptonFakeRateInterface = 0;
   if ( applyFakeRateWeights == kFR_2lepton ) {
     edm::ParameterSet cfg_leptonFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("leptonFakeRateWeight");
-    leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight, jetToLeptonFakeRate_option);
+    leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight);
   }
 
   std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
@@ -349,11 +352,12 @@ int main(int argc, char* argv[])
   const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
   if((isMC_tH || isMC_signal) && ! tHweights.empty())
   {
+    eventInfo.set_central_or_shift(central_or_shift_main);
     eventInfo.loadWeight_tH(tHweights);
     const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
     evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
   }
-  EventInfoReader eventInfoReader(&eventInfo, puSys_option);
+  EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 
   ObjectMultiplicity objectMultiplicity;
@@ -375,7 +379,7 @@ int main(int argc, char* argv[])
   L1PreFiringWeightReader * l1PreFiringWeightReader = nullptr;
   if(apply_l1PreFireWeight)
   {
-    l1PreFiringWeightReader = new L1PreFiringWeightReader(era, l1PreFire_option);
+    l1PreFiringWeightReader = new L1PreFiringWeightReader(era);
     inputTree->registerReader(l1PreFiringWeightReader);
   }
 
@@ -412,7 +416,7 @@ int main(int argc, char* argv[])
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
-  jetReader->setBranchName_BtagWeight(jetBtagSF_option);
+  jetReader->read_btag_systematics(central_or_shifts_local.size() > 1 || central_or_shift_main != "central");
   inputTree -> registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);

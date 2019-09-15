@@ -13,15 +13,8 @@ class DYMCNormScaleFactors
 {
 public:
   DYMCNormScaleFactors(int era,
-                       int dyMCNormScaleFactors_option,
                        bool debug = false);
   ~DYMCNormScaleFactors();
-
-  double
-  getWeight(const std::vector<GenParticle> & genTauLeptons,
-            int nJets,
-            int nBLoose,
-            int nBMedium) const;
 
   double
   getWeight(const std::vector<GenParticle> & genTauLeptons,
@@ -32,7 +25,6 @@ public:
 
 protected:
   int era_;
-  int central_or_shift_;
   bool debug_;
 
 };

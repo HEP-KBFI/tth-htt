@@ -7,10 +7,8 @@
 #include <TFile.h> // TFile
 
 DYMCReweighting::DYMCReweighting(int era,
-                                 int central_or_shift,
                                  bool debug)
   : era_(era)
-  , central_or_shift_(central_or_shift)
   , debug_(debug)
   , weights_(nullptr)
 {
@@ -54,12 +52,6 @@ DYMCReweighting::~DYMCReweighting()
   {
     delete kv.second;
   }
-}
-
-double
-DYMCReweighting::getWeight(const std::vector<GenParticle> & genTauLeptons) const
-{
-  return getWeight(genTauLeptons, central_or_shift_);
 }
 
 double

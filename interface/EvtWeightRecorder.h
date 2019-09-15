@@ -18,6 +18,9 @@ class RecoHadTau;
 class EvtWeightManager;
 class DYMCReweighting;
 class DYMCNormScaleFactors;
+class Data_to_MC_CorrectionInterface_0l_2tau_trigger;
+class Data_to_MC_CorrectionInterface_1l_1tau_trigger;
+class Data_to_MC_CorrectionInterface_1l_2tau_trigger;
 
 enum class L1PreFiringWeightSys;
 enum class PUsys;
@@ -133,6 +136,15 @@ public:
   record_leptonTriggerEff(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface);
 
   void
+  record_tauTriggerEff(const Data_to_MC_CorrectionInterface_0l_2tau_trigger * const dataToMCcorrectionInterface_0l_2tau_trigger);
+
+  void
+  record_tauTriggerEff(const Data_to_MC_CorrectionInterface_1l_1tau_trigger * const dataToMCcorrectionInterface_1l_1tau_trigger);
+
+  void
+  record_tauTriggerEff(const Data_to_MC_CorrectionInterface_1l_2tau_trigger * const dataToMCcorrectionInterface_1l_2tau_trigger);
+
+  void
   record_hadTauID_and_Iso(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface);
 
   void
@@ -146,8 +158,16 @@ public:
                           const RecoHadTau * const hadTau_lead);
 
   void
+  record_jetToTau_FR_sublead(const JetToTauFakeRateInterface * const jetToTauFakeRateInterface,
+                             const RecoHadTau * const hadTau_sublead);
+
+  void
   record_jetToTau_SF_lead(const JetToTauFakeRateInterface * const jetToTauFakeRateInterface,
                           const RecoHadTau * const hadTau_lead);
+
+  void
+  record_jetToTau_SF_sublead(const JetToTauFakeRateInterface * const jetToTauFakeRateInterface,
+                             const RecoHadTau * const hadTau_sublead);
 
   void
   record_jetToLepton_FR_lead(const LeptonFakeRateInterface * const leptonFakeRateInterface,
@@ -156,6 +176,12 @@ public:
   void
   record_jetToLepton_FR_sublead(const LeptonFakeRateInterface * const leptonFakeRateInterface,
                                 const RecoLepton * const lepton_sublead);
+
+  void
+  compute_FR_2l2tau(bool passesTight_lepton_lead,
+                    bool passesTight_lepton_sublead,
+                    bool passesTight_hadTau_lead,
+                    bool passesTight_hadTau_sublead);
 
   void
   compute_FR_2l1tau(bool passesTight_lepton_lead,
@@ -167,7 +193,32 @@ public:
                 bool passesTight_lepton_sublead);
 
   void
+  compute_FR_1l2tau(bool passesTight_lepton,
+                    bool passesTight_hadTau_lead,
+                    bool passesTight_hadTau_sublead);
+
+  void
+  compute_FR_1l1tau(bool passesTight_lepton,
+                    bool passesTight_hadTau);
+
+  void
   compute_FR_1tau();
+
+  void
+  compute_FR_2tau(bool passesTight_hadTau_lead,
+                  bool passesTight_hadTau_sublead);
+
+  double
+  get_jetToLepton_FR_lead(const std::string & central_or_shift);
+
+  double
+  get_jetToLepton_FR_sublead(const std::string & central_or_shift);
+
+  double
+  get_jetToTau_FR_lead(const std::string & central_or_shift);
+
+  double
+  get_jetToTau_FR_sublead(const std::string & central_or_shift);
 
   friend std::ostream &
   operator<<(std::ostream & os,
@@ -196,11 +247,14 @@ protected:
   std::map<int, double> weights_dy_rwgt_;
   std::map<int, double> weights_btag_;
   std::map<TriggerSFsys, double> weights_leptonTriggerEff_;
+  std::map<TriggerSFsys, double> weights_tauTriggerEff_;
   std::map<TauIDSFsys, double> weights_hadTauID_and_Iso_;
   std::map<FRet, double> weights_eToTauFakeRate_;
   std::map<FRmt, double> weights_muToTauFakeRate_;
   std::map<int, double> weights_FR_hadTau_lead_;
+  std::map<int, double> weights_FR_hadTau_sublead_;
   std::map<int, double> weights_SF_hadTau_lead_;
+  std::map<int, double> weights_SF_hadTau_sublead_;
   std::map<int, double> weights_FR_lepton_lead_;
   std::map<int, double> weights_FR_lepton_sublead_;
   std::map<std::string, double> weights_FR_;
