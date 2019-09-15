@@ -377,7 +377,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         for hadTau_charge_selection in self.hadTau_charge_selections:
 
           for sample_name, sample_info in self.samples.items():
-            if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+            if not sample_info["use_it"]:
               continue
             process_name = sample_info["process_name_specific"]
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
