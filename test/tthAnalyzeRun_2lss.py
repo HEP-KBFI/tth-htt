@@ -19,6 +19,7 @@ systematics.full = systematics.an_extended
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
+parser.add_preselect()
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_hlt_filter()
@@ -44,6 +45,7 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+use_preselected   = args.use_preselected
 rle_select        = os.path.expanduser(args.rle_select)
 use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
@@ -73,14 +75,17 @@ hadTauWP_veto_map = {
 hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == "default":
-  samples = load_samples(era)
+  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT")
   lepton_charge_selections = [ "SS" ]
 elif mode == "sync_wMEM":
   samples = load_samples(era, suffix = "addMEM_sync")
 elif mode == "sync":
-  samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
+  sample_suffix = "sync" if use_nonnominal else "sync_nom"
+  if use_preselected:
+    sample_suffix = "preselected_{}".format(sample_suffix)
+  samples = load_samples(era, suffix = sample_suffix)
 else:
   raise ValueError("Invalid mode: %s" % mode)
 

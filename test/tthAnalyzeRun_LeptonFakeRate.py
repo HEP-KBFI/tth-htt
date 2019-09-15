@@ -28,6 +28,7 @@ parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
+parser.add_stitched(use_dy = True, use_wj = True)
 args = parser.parse_args()
 
 # Common arguments
@@ -50,6 +51,7 @@ files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
+use_stitched      = args.use_stitched
 
 # Use the arguments
 central_or_shifts = []
@@ -68,7 +70,7 @@ elif mode == 'sync':
 else:
   raise ValueError('Invalid mode: %s' % mode)
 
-samples = load_samples_stitched(samples, era, load_dy = True, load_wjets = True)
+samples = load_samples_stitched(samples, era, load_dy = 'dy' in use_stitched, load_wjets = 'wjets' in use_stitched)
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
 

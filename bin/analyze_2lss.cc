@@ -1057,16 +1057,23 @@ int main(int argc, char* argv[])
 //    the ranking of the triggers is as follows: 2mu, 1e1mu, 2e, 1mu, 1e
 // CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
     if ( !isMC && !isDEBUG ) {
-      if ( selTrigger_1e && (isTriggered_2e || isTriggered_1mu || isTriggered_2mu || isTriggered_1e1mu) ) {
+      if ( selTrigger_1e && (isTriggered_1mu || isTriggered_2mu || isTriggered_1e1mu) ) {
 	if ( run_lumi_eventSelector ) {
-      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
 	  std::cout << " (selTrigger_1e = " << selTrigger_1e
-		    << ", isTriggered_2e = " << isTriggered_2e
 		    << ", isTriggered_1mu = " << isTriggered_1mu
 		    << ", isTriggered_2mu = " << isTriggered_2mu
 		    << ", isTriggered_1e1mu = " << isTriggered_1e1mu << ")" << std::endl;
 	}
 	continue;
+      }
+      if ( selTrigger_1e && isTriggered_2e && era != kEra_2018 ) {
+        if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+          std::cout << " (selTrigger_1e = " << selTrigger_1e
+                    << ", isTriggered_2e = " << isTriggered_2e << ")" << std::endl;
+        }
+        continue;
       }
       if ( selTrigger_2e && (isTriggered_2mu || isTriggered_1e1mu) ) {
 	if ( run_lumi_eventSelector ) {

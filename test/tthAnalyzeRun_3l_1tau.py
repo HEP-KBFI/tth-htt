@@ -120,9 +120,10 @@ elif mode.startswith("sync"):
   if mode == "sync_wMEM":
     samples = load_samples(era, suffix = "addMEM_preselected_sync" if use_preselected else "addMEM_sync")
   elif mode == "sync":
+    sample_suffix = "sync" if use_nonnominal else "sync_nom"
     if use_preselected:
-      raise ValueError("Makes no sense to use preselected samples in sync")
-    samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
+      sample_suffix = "preselected_{}".format(sample_suffix)
+    samples = load_samples(era, suffix = sample_suffix)
   else:
     raise ValueError("Invalid mode: %s" % mode)
 else:

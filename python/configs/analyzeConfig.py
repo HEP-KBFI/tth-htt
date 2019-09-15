@@ -202,7 +202,7 @@ class analyzeConfig(object):
           for central_or_shift in systematics.L1PreFiring:
             self.central_or_shifts.remove(central_or_shift)
         # ------------------------------------------------------------------------
-        self.do_dymc_sys = self.channel == "0l_2tau" and era != "2018"
+        self.do_dymc_sys = self.channel == "0l_2tau"
         for dymc_sys in [ systematics.DYMCReweighting, systematics.DYMCNormScaleFactors ]:
           if (set(dymc_sys) & set(self.central_or_shifts)) == set(dymc_sys) and not self.do_dymc_sys:
             logging.warning('Removing systematics from {} era: {}'.format(self.era, ', '.join(dymc_sys)))
@@ -722,37 +722,19 @@ class analyzeConfig(object):
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
 
-        if not isHTT and not self.do_sync:
-          lines = [
-            "# Filled in %s" % current_function_name,
-            "process.fwliteInput.fileNames = cms.vstring(%s)"  % jobOptions['ntupleFiles'],
-            "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
-            "{}.{:<{len}} = cms.string('{}')".format        (process_string, 'era',                    self.era,     len = max_option_len),
-            "{}.{:<{len}} = cms.bool({})".format            (process_string, 'redoGenMatching',       'False',       len = max_option_len),
-            "{}.{:<{len}} = cms.bool({})".format            (process_string, 'isDEBUG',                self.isDebug, len = max_option_len),
-            "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era,     len = max_option_len),
-            "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era,     len = max_option_len),
+        lines = [
+          "# Filled in %s" % current_function_name,
+          "process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'],
+          "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
+          "{}.{:<{len}} = cms.string('{}')".format(process_string, 'era',             self.era,                       len = max_option_len),
+          "{}.{:<{len}} = cms.bool({})".format    (process_string, 'redoGenMatching', not self.gen_matching_by_index, len = max_option_len),
+          "{}.{:<{len}} = cms.bool({})".format    (process_string, 'isDEBUG',         self.isDebug,                   len = max_option_len),
         ]
-        elif self.do_sync:
-          lines = [
-            "# Filled in %s" % current_function_name,
-            "process.fwliteInput.fileNames = cms.vstring(%s)"  % jobOptions['ntupleFiles'],
-            "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
-            "{}.{:<{len}} = cms.string('{}')".format        (process_string, 'era',                    self.era,     len = max_option_len),
-            "{}.{:<{len}} = cms.bool({})".format            (process_string, 'redoGenMatching',       'False',       len = max_option_len),
-            "{}.{:<{len}} = cms.bool({})".format            (process_string, 'isDEBUG',                self.isDebug, len = max_option_len),
-            "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era,     len = max_option_len),
-            "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era,     len = max_option_len),
-        ]
-        else:
-          lines = [
-            "# Filled in %s" % current_function_name,
-            "process.fwliteInput.fileNames = cms.vstring(%s)"  % jobOptions['ntupleFiles'],
-            "process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']),
-            "{}.{:<{len}} = cms.string('{}')".format        (process_string, 'era',                    self.era,     len = max_option_len),
-            "{}.{:<{len}} = cms.bool({})".format            (process_string, 'redoGenMatching',       'False',       len = max_option_len),
-            "{}.{:<{len}} = cms.bool({})".format            (process_string, 'isDEBUG',                self.isDebug, len = max_option_len),
-        ]
+        if (not isHTT and not self.do_sync) or self.do_sync:
+          lines.extend([
+            "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era, len = max_option_len),
+            "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era, len = max_option_len),
+          ])
         lines.append(
           "{}.{:<{len}} = cms.bool({})".format(
             process_string,

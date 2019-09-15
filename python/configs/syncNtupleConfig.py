@@ -68,6 +68,7 @@ class syncNtupleConfig:
         tau_id,
         use_home,
         systematics_label,
+        use_preselected,
         jet_cleaning,
         gen_matching,
         project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau'),
@@ -111,6 +112,8 @@ class syncNtupleConfig:
       additional_args += " -H"
     if tau_id:
       additional_args += " -t %s" % tau_id
+    if tau_id_wp:
+      additional_args += " -w %s" % tau_id_wp
     if self.running_method:
       additional_args += " -R %s" % self.running_method
 
@@ -139,8 +142,8 @@ class syncNtupleConfig:
       ))
 
       cmd_args = common_args if 'inclusive' not in channel else inclusive_args
-      if tau_id_wp and 'tau' in channel:
-        additional_args += " -w %s" % tau_id_wp
+      if 'inclusive' not in channel:
+        additional_args += " -p %s" % use_preselected
 
       channel_cmd_create = '%s %s 2>%s 1>%s' % \
                            (channel_script, cmd_args, channel_errlog_create, channel_outlog_create)

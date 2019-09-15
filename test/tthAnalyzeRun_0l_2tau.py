@@ -19,6 +19,7 @@ systematics.full = systematics.an_common
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
+parser.add_preselect()
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_tau_id_wp()
@@ -46,6 +47,7 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+use_preselected   = args.use_preselected
 rle_select        = os.path.expanduser(args.rle_select)
 use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
@@ -83,7 +85,7 @@ else:
   raise ValueError("Invalid choice for the sideband: %s" % sideband)
 
 if mode == "default":
-  samples = load_samples(era)
+  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
   for sample_name, sample_info in samples.items():
     if sample_name == 'sum_events': continue
     if sample_info["process_name_specific"].startswith("DYBBJetsToLL_M-50"):
@@ -98,7 +100,10 @@ elif mode == "forBDTtraining":
     tau_id = args.tau_id[:7]
   hadTau_selection_relaxed = tau_id + hadTauWP_map_relaxed[tau_id]
 elif mode == "sync":
-  samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
+  sample_suffix = "sync" if use_nonnominal else "sync_nom"
+  if use_preselected:
+    sample_suffix = "preselected_{}".format(sample_suffix)
+  samples = load_samples(era, suffix = sample_suffix)
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
