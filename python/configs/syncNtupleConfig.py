@@ -118,8 +118,6 @@ class syncNtupleConfig:
       additional_args += " -R %s" % self.running_method
 
     inclusive_args = '-v %s -e %s' % (version, era)
-    if with_mem:
-      inclusive_args += ' -M'
 
     inclusive_args += additional_args
     common_args    += additional_args

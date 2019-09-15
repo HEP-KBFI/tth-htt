@@ -12,7 +12,7 @@ import getpass
 
 # E.g. to run: ./test/tthAnalyzeRun_2lss.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'sync_wMEM' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -81,8 +81,6 @@ elif mode == "forBDTtraining":
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT")
   lepton_charge_selections = [ "SS" ]
-elif mode == "sync_wMEM":
-  samples = load_samples(era, suffix = "addMEM_sync")
 elif mode == "sync":
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:

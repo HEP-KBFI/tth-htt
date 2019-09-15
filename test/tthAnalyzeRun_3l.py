@@ -100,7 +100,7 @@ elif mode == "forBDTtraining_afterAddMEM":
   samples = load_samples(era, suffix = "BDT_addMEM_3l")
   MEMbranch = 'memObjects_3l_lepFakeable'
 elif mode == "sync_wMEM":
-  samples = load_samples(era, suffix = "addMEM_sync")
+  samples = load_samples(era, suffix = "addMEM_3l_sync" if use_nonnominal else "addMEM_3l_sync_nom")
 elif mode == "sync":
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:
