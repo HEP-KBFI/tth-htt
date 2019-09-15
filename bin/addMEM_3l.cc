@@ -408,53 +408,56 @@ int main(int argc,
 
               int idxPermutation = -1;
 
-	      const std::vector<const RecoLepton*> selLeptons_forCleaning = { selLepton_lead, selLepton_sublead, selLepton_third };
-	      const std::vector<const RecoJet *> selJets_mem_cleaned = jetCleaningByIndex ?
+              const std::vector<const RecoLepton*> selLeptons_forCleaning = { selLepton_lead, selLepton_sublead, selLepton_third };
+              const std::vector<const RecoJet *> selJets_mem_cleaned = jetCleaningByIndex ?
                 jetCleanerByIndex(selJets_mem, selLeptons_forCleaning) :
                 jetCleaner       (selJets_mem, selLeptons_forCleaning)
               ;
-	      if(selJets_mem_cleaned.size() >= 2)
+              if(selJets_mem_cleaned.size() >= 2)
               {
-		++idxPermutation;
-		if(idxPermutation < maxPermutations_addMEM_3l)
+                ++idxPermutation;
+                if(idxPermutation < maxPermutations_addMEM_3l)
                 {
-		  std::cout << "computing MEM for " << eventInfo
-                            << " (idxPermutation = " << idxPermutation << "):\n"
-                               "inputs:\n"
-                            << " leading lepton:     " << *(static_cast<const ChargedParticle *>(selLepton_lead))
-			    << " subleading lepton:  " << *(static_cast<const ChargedParticle *>(selLepton_sublead))
-			    << " third lepton:      " << *(static_cast<const ChargedParticle *>(selLepton_third))
-			    << " MET:"                << met_mem << '\n';
-                  printCollection("cleaned MEM jets", selJets_mem_cleaned);
-
-		  MEMOutput_3l memOutput_3l;
-		  if(dryRun)
+                  if(isDEBUG)
                   {
-		    memOutput_3l.fillInputs(selLepton_lead, selLepton_sublead, selLepton_third);
+                    std::cout << "computing MEM for " << eventInfo
+                              << " (idxPermutation = " << idxPermutation << "):\n"
+                                 "inputs:\n"
+                              << " leading lepton:    " << *(static_cast<const ChargedParticle *>(selLepton_lead))
+                              << " subleading lepton: " << *(static_cast<const ChargedParticle *>(selLepton_sublead))
+                              << " third lepton:      " << *(static_cast<const ChargedParticle *>(selLepton_third))
+                              << " MET:"                << met_mem << '\n';
+                    printCollection("cleaned MEM jets", selJets_mem_cleaned);
                   }
-		  else
+
+                  MEMOutput_3l memOutput_3l;
+                  if(dryRun)
+                  {
+                    memOutput_3l.fillInputs(selLepton_lead, selLepton_sublead, selLepton_third);
+                  }
+                  else
                   {
                     memOutput_3l = memInterface_3l(
                       selLepton_lead, selLepton_sublead, selLepton_third,
                       met_mem, selJets_mem_cleaned
                     );
                   }
-		  memOutput_3l.eventInfo_ = eventInfo;
-		  std::cout << "output: (" << central_or_shift << "): " << memOutput_3l;
-		  memOutputs_3l[central_or_shift].push_back(memOutput_3l);
+                  memOutput_3l.eventInfo_ = eventInfo;
+                  std::cout << "output: (" << central_or_shift << "): " << memOutput_3l;
+                  memOutputs_3l[central_or_shift].push_back(memOutput_3l);
                 } // idxPermutation < maxPermutations_addMEM_3l
-		else if(idxPermutation == maxPermutations_addMEM_3l) // CV: print warning only once per event
+                else if(idxPermutation == maxPermutations_addMEM_3l) // CV: print warning only once per event
                 {
-		  std::cout << "Warning in " << eventInfo << ":\n"
+                  std::cout << "Warning in " << eventInfo << ":\n"
                                "Number of permutations exceeds 'maxPermutations_addMEM_3l' = "
                             << maxPermutations_addMEM_3l << " --> skipping MEM computation after "
                             << maxPermutations_addMEM_3l << " permutations !!\n";
-		}
+                }
               } // selJets_mem_cleaned.size() >= 2
 
-  	      if(isDEBUG)
+                if(isDEBUG)
               {
-	        std::cout << "#memOutputs_3l = " << memOutputs_3l[central_or_shift].size() << '\n';
+                std::cout << "#memOutputs_3l = " << memOutputs_3l[central_or_shift].size() << '\n';
               }
             } // central_or_shift
           } // selLepton_third_idx
