@@ -8,9 +8,9 @@
 #include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
 const std::map<TauID, std::string> RecoHadTauSelectorBase::nominal_fakeable_wp_ = {
-  { TauID::MVAoldDM2017v2,     "VLoose"   },
-  { TauID::MVAoldDMdR032017v2, "VLoose"   },
-  { TauID::DeepTau2017v2VSjet, "VVVLoose" },
+  { TauID::MVAoldDM2017v2,     "VLoose"  },
+  { TauID::MVAoldDMdR032017v2, "VLoose"  },
+  { TauID::DeepTau2017v2VSjet, "VVLoose" },
 };
 
 RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
