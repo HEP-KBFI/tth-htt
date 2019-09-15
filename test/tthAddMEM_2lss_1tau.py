@@ -24,6 +24,7 @@ mode_choices = {
 parser = tthAnalyzeParser(isAddMEM = True)
 parser.add_modes(mode_choices.keys())
 parser.add_sys(sys_choices)
+parser.add_preselect()
 parser.add_nonnominal()
 parser.add_tau_id_wp()
 parser.add_tau_id()
@@ -57,6 +58,7 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+use_preselected   = args.use_preselected
 use_nonnominal    = args.original_central
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
@@ -82,7 +84,7 @@ jet_cleaning_by_index = (jet_cleaning == 'by_index')
 hadTauSelection = "Tight"
 
 if mode == 'default':
-  samples = load_samples(era)
+  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
   leptonSelection = "Fakeable"
   hadTauWP_map = {
     'dR03mva' : 'Loose',
@@ -98,7 +100,10 @@ elif mode == 'bdt':
   }
   hadTauWP = tau_id + hadTauWP_map[tau_id]
 elif mode == 'sync':
-  samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
+  sample_suffix = "sync" if use_nonnominal else "sync_nom"
+  if use_preselected:
+    sample_suffix = "preselected_{}".format(sample_suffix)
+  samples = load_samples(era, suffix = sample_suffix)
   leptonSelection = "Fakeable"
   hadTauWP_map = {
     'dR03mva' : 'Loose',

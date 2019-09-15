@@ -17,6 +17,7 @@ systematics.full     = systematics.an_addMEM
 parser = tthAnalyzeParser(isAddMEM = True)
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
+parser.add_preselect()
 parser.add_nonnominal()
 parser.add_use_home(False)
 parser.add_jet_cleaning()
@@ -42,6 +43,7 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+use_preselected   = args.use_preselected
 use_nonnominal    = args.original_central
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
@@ -59,13 +61,16 @@ version = "%s_%s_%s" % (version, mode, 'nonNom' if use_nonnominal else 'nom')
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 
 if mode == 'default':
-  samples = load_samples(era)
+  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
   leptonSelection = "Fakeable"
 elif mode == 'bdt':
   samples = load_samples(era, suffix = "BDT")
   leptonSelection = "Loose"
 elif mode == 'sync':
-  samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
+  sample_suffix = "sync" if use_nonnominal else "sync_nom"
+  if use_preselected:
+    sample_suffix = "preselected_{}".format(sample_suffix)
+  samples = load_samples(era, suffix = sample_suffix)
   leptonSelection = "Fakeable"
 else:
   raise ValueError("Invalid mode: %s" % mode)
