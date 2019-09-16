@@ -530,7 +530,6 @@ class analyzeConfig_2los_1tau(analyzeConfig):
               for decayMode in decays :
                 for coupling in couplings :
                   if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
-                  if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
                   # sum non-fake and fake contributions for each MC sample separately
                   genMatch_categories = [ "nonfake", "Convs", "fake" ]
                   # in case fake background method is applied to leptons only,

@@ -565,7 +565,6 @@ class analyzeConfig_2lss(analyzeConfig):
             decays = [""]
             if sample_category in self.procsWithDecayModes : decays += self.decayModes
             couplings = [""]
-            if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
             for decayMode in decays :
               for coupling in couplings :
                 if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
