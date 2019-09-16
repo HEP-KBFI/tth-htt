@@ -1313,19 +1313,6 @@ int main(int argc, char* argv[])
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined2);
 
-    // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
-    /* X: This cut is not applied for Legacy because we have these events on the tH-selection
-    if ( !(selJets.size() >= 2) ) {
-      if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selJets selection (1)." << std::endl;
-	printCollection("selJets", selJets);
-      }
-      continue;
-    }
-    cutFlowTable.update(">= 2 jets");
-    cutFlowHistManager->fillHistograms(">= 2 jets", lumiScale);
-    */
-
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
     const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptonsFull, fakeableHadTaus, selJets);
