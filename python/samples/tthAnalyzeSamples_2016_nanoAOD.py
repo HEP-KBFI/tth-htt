@@ -23203,9 +23203,9 @@ samples_2016["/Tau/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
   ("nof_db_files",                    395),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 55878787),
+  ("nof_tree_events",                 55977425),
   ("nof_db_events",                   58348773),
-  ("fsize_local",                     60064584664), # 60.06GB, avg file size 108.81MB
+  ("fsize_local",                     60172569025), # 60.17GB, avg file size 109.01MB
   ("fsize_db",                        1503064310845), # 1.50TB, avg file size 3.81GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -23217,7 +23217,7 @@ samples_2016["/Tau/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep05/Tau/2016v3_2019Sep05_Tau__Run2016E-17Jul2018-v1/190904_212040"),
         ("selection", "*"),
-        ("blacklist", [238]),
+        ("blacklist", []),
       ]),
     ]
   ),
