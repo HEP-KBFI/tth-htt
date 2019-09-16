@@ -803,7 +803,7 @@ int main(int argc, char* argv[])
       evtWeightRecorder.record_lumiScale(lumiScale);
       for(const std::string & central_or_shift: central_or_shifts_local)
       {
-        if((central_or_shift != central_or_shift_main && evt_cat_strs.size() > 1) || fullSyst)
+        if((central_or_shift != central_or_shift_main && evt_cat_strs.size() > 1))
         {
           continue;
         }
