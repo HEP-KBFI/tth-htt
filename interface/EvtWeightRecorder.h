@@ -178,6 +178,14 @@ public:
                                 const RecoLepton * const lepton_sublead);
 
   void
+  record_jetToLepton_FR_third(const LeptonFakeRateInterface * const leptonFakeRateInterface,
+                              const RecoLepton * const lepton_third);
+
+  void
+  record_jetToLepton_FR_fourth(const LeptonFakeRateInterface * const leptonFakeRateInterface,
+                               const RecoLepton * const lepton_fourth);
+
+  void
   compute_FR_2l2tau(bool passesTight_lepton_lead,
                     bool passesTight_lepton_sublead,
                     bool passesTight_hadTau_lead,
@@ -191,6 +199,23 @@ public:
   void
   compute_FR_2l(bool passesTight_lepton_lead,
                 bool passesTight_lepton_sublead);
+
+  void
+  compute_FR_3l(bool passesTight_lepton_lead,
+                bool passesTight_lepton_sublead,
+                bool passesTight_lepton_third);
+
+  void
+  compute_FR_4l(bool passesTight_lepton_lead,
+                bool passesTight_lepton_sublead,
+                bool passesTight_lepton_third,
+                bool passesTight_lepton_fourth);
+
+  void
+  compute_FR_3l1tau(bool passesTight_lepton_lead,
+                    bool passesTight_lepton_sublead,
+                    bool passesTight_lepton_third,
+                    bool passesTight_hadTau);
 
   void
   compute_FR_1l2tau(bool passesTight_lepton,
@@ -213,6 +238,12 @@ public:
 
   double
   get_jetToLepton_FR_sublead(const std::string & central_or_shift);
+
+  double
+  get_jetToLepton_FR_third(const std::string & central_or_shift);
+
+  double
+  get_jetToLepton_FR_fourth(const std::string & central_or_shift);
 
   double
   get_jetToTau_FR_lead(const std::string & central_or_shift);
@@ -257,6 +288,8 @@ protected:
   std::map<int, double> weights_SF_hadTau_sublead_;
   std::map<int, double> weights_FR_lepton_lead_;
   std::map<int, double> weights_FR_lepton_sublead_;
+  std::map<int, double> weights_FR_lepton_third_;
+  std::map<int, double> weights_FR_lepton_fourth_;
   std::map<std::string, double> weights_FR_;
 };
 
