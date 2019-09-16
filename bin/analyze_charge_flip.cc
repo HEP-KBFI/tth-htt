@@ -309,7 +309,7 @@ int main(int argc, char* argv[])
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
-  jetReader->read_btag_systematics(central_or_shift != "central");
+  jetReader->read_btag_systematics(central_or_shift != "central" && isMC);
   inputTree->registerReader(jetReader);
   RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
   RecoJetCollectionCleanerByIndex jetCleanerByIndex(isDEBUG);
