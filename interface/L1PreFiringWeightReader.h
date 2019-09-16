@@ -21,8 +21,6 @@ class L1PreFiringWeightReader
 {
 public:
   L1PreFiringWeightReader(int era);
-  L1PreFiringWeightReader(int era,
-                          L1PreFiringWeightSys option);
   ~L1PreFiringWeightReader();
 
   /**
@@ -30,9 +28,6 @@ public:
    */
   void
   setBranchAddresses(TTree * tree) override;
-
-  double
-  getWeight() const;
 
   double
   getWeight(L1PreFiringWeightSys option) const;
@@ -45,7 +40,6 @@ protected:
    setBranchNames();
 
   int era_;
-  L1PreFiringWeightSys option_;
 
   std::string branchName_l1PreFiringWeight_;
 

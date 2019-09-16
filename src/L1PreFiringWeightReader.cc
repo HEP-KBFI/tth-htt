@@ -10,13 +10,7 @@ std::map<std::string, int> L1PreFiringWeightReader::numInstances_;
 std::map<std::string, L1PreFiringWeightReader*> L1PreFiringWeightReader::instances_;
 
 L1PreFiringWeightReader::L1PreFiringWeightReader(int era)
-  : L1PreFiringWeightReader(era, L1PreFiringWeightSys::nominal)
-{}
-
-L1PreFiringWeightReader::L1PreFiringWeightReader(int era,
-                                                 L1PreFiringWeightSys option)
   : era_(era)
-  , option_(option)
   , branchName_l1PreFiringWeight_("L1PreFiringWeight")
   , l1PreFiringWeight_nominal_(1.)
 {
@@ -56,12 +50,6 @@ L1PreFiringWeightReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(l1PreFiringWeight_up_,      Form("%s_Up",  branchName_l1PreFiringWeight_.data()), 1.);
     bai.setBranchAddress(l1PreFiringWeight_down_,    Form("%s_Dn",  branchName_l1PreFiringWeight_.data()), 1.);
   }
-}
-
-double
-L1PreFiringWeightReader::getWeight() const
-{
-  return getWeight(option_);
 }
 
 double

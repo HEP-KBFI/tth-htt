@@ -7,9 +7,7 @@
 
 #include <iostream> // std::cout
 
-LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg,
-                                                 int central_or_shift)
-  : central_or_shift_(central_or_shift)
+LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
 {
   const std::string inputFileName    = cfg.getParameter<std::string>("inputFileName");
   const std::string histogramName_e  = cfg.getParameter<std::string>("histogramName_e");
@@ -68,13 +66,6 @@ LeptonFakeRateInterface::~LeptonFakeRateInterface()
 
 double
 LeptonFakeRateInterface::getWeight_e(double electronPt,
-                                     double electronAbsEta) const
-{
-  return getWeight_e(electronPt, electronAbsEta, central_or_shift_);
-}
-
-double
-LeptonFakeRateInterface::getWeight_e(double electronPt,
                                      double electronAbsEta,
                                      int central_or_shift) const
 {
@@ -83,13 +74,6 @@ LeptonFakeRateInterface::getWeight_e(double electronPt,
     throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift;
   }
   return lutFakeRate_e_.at(central_or_shift)->getSF(electronPt, electronAbsEta);
-}
-
-double
-LeptonFakeRateInterface::getWeight_mu(double muonPt,
-                                      double muonAbsEta) const
-{
-  return getWeight_mu(muonPt, muonAbsEta, central_or_shift_);
 }
 
 double

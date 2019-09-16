@@ -153,12 +153,6 @@ Data_to_MC_CorrectionInterface_2016::getWeight_leptonTriggerEff() const
 }
 
 double
-Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff() const
-{
-  return getSF_leptonTriggerEff(triggerSF_option_);
-}
-
-double
 Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
   double sf = 1.;
@@ -196,12 +190,6 @@ Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central
 }
 
 double
-Data_to_MC_CorrectionInterface_2016::getSF_hadTauID_and_Iso() const
-{
-  return getSF_hadTauID_and_Iso(tauIDSF_option_);
-}
-
-double
 Data_to_MC_CorrectionInterface_2016::getSF_hadTauID_and_Iso(TauIDSFsys central_or_shift) const
 {
   double sf = 1.;
@@ -221,12 +209,6 @@ Data_to_MC_CorrectionInterface_2016::getSF_hadTauID_and_Iso(TauIDSFsys central_o
     }
   }
   return sf;
-}
-
-double
-Data_to_MC_CorrectionInterface_2016::getSF_eToTauFakeRate() const
-{
-  return getSF_eToTauFakeRate(eToTauFakeRate_option_);
 }
 
 double
@@ -300,12 +282,6 @@ Data_to_MC_CorrectionInterface_2016::getSF_eToTauFakeRate(FRet central_or_shift)
     }
   }
   return sf;
-}
-
-double
-Data_to_MC_CorrectionInterface_2016::getSF_muToTauFakeRate() const
-{
-  return getSF_muToTauFakeRate(muToTauFakeRate_option_);
 }
 
 double

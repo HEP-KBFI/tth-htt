@@ -22,7 +22,6 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
   , era_(get_era(era_str_))
   , hadTauSelection_(cfg.getParameter<std::string>("hadTauSelection"))
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
-  , triggerSF_option_(getTriggerSF_option(cfg.getParameter<std::string>("central_or_shift")))
   , lepton_type_(-1)
   , lepton_pt_(0.)
   , lepton_eta_(0.)
@@ -133,21 +132,9 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::setHadTaus(double hadTau1_pt, do
 }
 
 double
-Data_to_MC_CorrectionInterface_1l_2tau_trigger::getWeight_triggerEff() const
-{
-  return getWeight_triggerEff(triggerSF_option_);
-}
-
-double
 Data_to_MC_CorrectionInterface_1l_2tau_trigger::getWeight_triggerEff(TriggerSFsys central_or_shift) const
 {
   assert(0);
-}
-
-double
-Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
-{
-  return getSF_triggerEff(triggerSF_option_);
 }
 
 double

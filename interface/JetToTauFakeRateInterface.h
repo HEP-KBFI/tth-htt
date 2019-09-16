@@ -9,23 +9,14 @@
 class JetToTauFakeRateInterface
 {
 public:
-  JetToTauFakeRateInterface(const edm::ParameterSet & cfg,
-                            int central_or_shift = kFRjt_central);
+  JetToTauFakeRateInterface(const edm::ParameterSet & cfg);
   ~JetToTauFakeRateInterface();
 
   // jet->tau fake-rates (product of fake-rates in MC, determined in bins of tau candidate pT and eta, and data/MC scale factors)
   double
   getWeight_lead(double hadTauPt_lead,
-                 double hadTauAbsEta_lead) const;
-
-  double
-  getWeight_lead(double hadTauPt_lead,
                  double hadTauAbsEta_lead,
                  int central_or_shift) const;
-
-  double
-  getWeight_sublead(double hadTauPt_sublead,
-                    double hadTauAbsEta_sublead) const;
 
   double
   getWeight_sublead(double hadTauPt_sublead,
@@ -34,16 +25,8 @@ public:
 
   double
   getWeight_third(double hadTauPt_third,
-                  double hadTauAbsEta_third) const;
-
-  double
-  getWeight_third(double hadTauPt_third,
                   double hadTauAbsEta_third,
                   int central_or_shift) const;
-  
-  double
-  getWeight_fourth(double hadTauPt_fourth,
-                   double hadTauAbsEta_fourth) const;
 
   double
   getWeight_fourth(double hadTauPt_fourth,
@@ -54,16 +37,8 @@ public:
   // to be applied to simulated events in case data-driven "fake" background estimation is applied to leptons only
   double
   getSF_lead(double hadTauPt_lead,
-             double hadTauAbsEta_lead) const;
-
-  double
-  getSF_lead(double hadTauPt_lead,
              double hadTauAbsEta_lead,
              int central_or_shift) const;
-
-  double
-  getSF_sublead(double hadTauPt_sublead,
-                double hadTauAbsEta_sublead) const;
 
   double
   getSF_sublead(double hadTauPt_sublead,
@@ -72,16 +47,8 @@ public:
 
   double
   getSF_third(double hadTauPt_third,
-              double hadTauAbsEta_third) const;
-
-  double
-  getSF_third(double hadTauPt_third,
               double hadTauAbsEta_third,
               int central_or_shift) const;
-
-  double
-  getSF_fourth(double hadTauPt_fourth,
-               double hadTauAbsEta_fourth) const;
 
   double
   getSF_fourth(double hadTauPt_fourth,
@@ -108,7 +75,6 @@ private:
   bool isInitialized_third_;
   std::map<int, std::vector<JetToTauFakeRateWeightEntry*>> jetToTauFakeRateWeights_fourth_;
   bool isInitialized_fourth_;
-  int central_or_shift_;
 };
 
 #endif

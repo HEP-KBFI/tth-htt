@@ -16,10 +16,6 @@
 Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const edm::ParameterSet & cfg)
   : hadTauSelection_(-1)
   , hadTauId_(TauID::MVAoldDMdR032017v2)
-  , tauIDSF_option_(TauIDSFsys::central)
-  , eToTauFakeRate_option_(FRet::central)
-  , muToTauFakeRate_option_(FRmt::central)
-  , triggerSF_option_(TriggerSFsys::central)
   , tauIdSFs_(nullptr)
   , applyHadTauSF_(true)
   , numLeptons_(0)
@@ -74,13 +70,6 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const e
       }
     }
   }
-
-//  const std::string central_or_shift = cfg.getParameter<std::string>("central_or_shift");
-
-//  eToTauFakeRate_option_ = getEToTauFR_option(central_or_shift);
-//  muToTauFakeRate_option_ = getMuToTauFR_option(central_or_shift);
-//  triggerSF_option_ = getTriggerSF_option(central_or_shift);
-//  tauIDSF_option_ = getTauIDSFsys_option(central_or_shift);
 
   if(applyHadTauSF_)
   {
@@ -240,12 +229,6 @@ Data_to_MC_CorrectionInterface_Base::getWeight_leptonTriggerEff() const
 }
 
 double
-Data_to_MC_CorrectionInterface_Base::getSF_leptonTriggerEff() const
-{
-  return getSF_leptonTriggerEff(triggerSF_option_);
-}
-
-double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
   throw cmsException(this, __func__, __LINE__)
@@ -306,12 +289,6 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
 }
 
 double
-Data_to_MC_CorrectionInterface_Base::getSF_hadTauID_and_Iso() const
-{
-  return getSF_hadTauID_and_Iso(tauIDSF_option_);
-}
-
-double
 Data_to_MC_CorrectionInterface_Base::getSF_hadTauID_and_Iso(TauIDSFsys central_or_shift) const
 {
   throw cmsException(this, __func__, __LINE__)
@@ -320,23 +297,11 @@ Data_to_MC_CorrectionInterface_Base::getSF_hadTauID_and_Iso(TauIDSFsys central_o
 }
 
 double
-Data_to_MC_CorrectionInterface_Base::getSF_eToTauFakeRate() const
-{
-  return getSF_eToTauFakeRate(eToTauFakeRate_option_);
-}
-
-double
 Data_to_MC_CorrectionInterface_Base::getSF_eToTauFakeRate(FRet central_or_shift) const
 {
   throw cmsException(this, __func__, __LINE__)
     << "Cannot call from base class"
   ;
-}
-
-double
-Data_to_MC_CorrectionInterface_Base::getSF_muToTauFakeRate() const
-{
-  return getSF_muToTauFakeRate(muToTauFakeRate_option_);
 }
 
 double

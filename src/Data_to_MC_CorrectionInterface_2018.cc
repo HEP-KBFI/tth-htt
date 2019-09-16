@@ -41,12 +41,6 @@ Data_to_MC_CorrectionInterface_2018::getWeight_leptonTriggerEff() const
 }
 
 double
-Data_to_MC_CorrectionInterface_2018::getSF_leptonTriggerEff() const
-{
-  return getSF_leptonTriggerEff(triggerSF_option_);
-}
-
-double
 Data_to_MC_CorrectionInterface_2018::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
 #if 0
@@ -56,12 +50,6 @@ Data_to_MC_CorrectionInterface_2018::getSF_leptonTriggerEff(TriggerSFsys central
 #endif
 #pragma message "Setting data-to-MC corrections to 1 in 2018"
   return 1.;
-}
-
-double
-Data_to_MC_CorrectionInterface_2018::getSF_hadTauID_and_Iso() const
-{
-  return getSF_hadTauID_and_Iso(tauIDSF_option_);
 }
 
 double
@@ -84,12 +72,6 @@ Data_to_MC_CorrectionInterface_2018::getSF_hadTauID_and_Iso(TauIDSFsys central_o
     }
   }
   return sf;
-}
-
-double
-Data_to_MC_CorrectionInterface_2018::getSF_eToTauFakeRate() const
-{
-  return getSF_eToTauFakeRate(eToTauFakeRate_option_);
 }
 
 double
@@ -164,12 +146,6 @@ Data_to_MC_CorrectionInterface_2018::getSF_eToTauFakeRate(FRet central_or_shift)
     }
   }
   return sf;
-}
-
-double
-Data_to_MC_CorrectionInterface_2018::getSF_muToTauFakeRate() const
-{
-  return getSF_muToTauFakeRate(muToTauFakeRate_option_);
 }
 
 double

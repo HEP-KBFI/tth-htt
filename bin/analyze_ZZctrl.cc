@@ -1478,19 +1478,10 @@ int main(int argc, char* argv[])
       double lep3_genLepPt = ( selLepton_third->genLepton()   ) ? selLepton_third->genLepton()->pt()   : 0.;
       double lep4_genLepPt = ( selLepton_fourth->genLepton()  ) ? selLepton_fourth->genLepton()->pt()  : 0.;
 
-      //FR weights for bdt ntuple
-      double prob_fake_lepton_lead = 1.;
-      if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-      else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-      double prob_fake_lepton_sublead = 1.;
-      if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-      else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-      double prob_fake_lepton_third = 1.;
-      if      ( std::abs(selLepton_third->pdgId()) == 11 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_e(selLepton_third->cone_pt(), selLepton_third->absEta());
-      else if ( std::abs(selLepton_third->pdgId()) == 13 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_mu(selLepton_third->cone_pt(), selLepton_third->absEta());
-      double prob_fake_lepton_fourth = 1.;
-      if      ( std::abs(selLepton_fourth->pdgId()) == 11 ) prob_fake_lepton_fourth = leptonFakeRateInterface->getWeight_e(selLepton_fourth->cone_pt(), selLepton_fourth->absEta());
-      else if ( std::abs(selLepton_fourth->pdgId()) == 13 ) prob_fake_lepton_fourth = leptonFakeRateInterface->getWeight_mu(selLepton_fourth->cone_pt(), selLepton_fourth->absEta());
+      double prob_fake_lepton_lead = evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
+      double prob_fake_lepton_sublead = evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
+      double prob_fake_lepton_third = evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main);
+      double prob_fake_lepton_fourth = evtWeightRecorder.get_jetToLepton_FR_fourth(central_or_shift_main);
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",             selLepton_lead -> pt())

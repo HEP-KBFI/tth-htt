@@ -31,17 +31,11 @@ public:
   //-----------------------------------------------------------------------------
   // trigger efficiency turn-on curves for Spring16 non-reHLT MC (not yet implemented)
   double
-  getWeight_triggerEff() const;
-
-  double
   getWeight_triggerEff(TriggerSFsys central_or_shift) const;
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
   // data/MC correction for trigger efficiency 
-  double
-  getSF_triggerEff() const;
-
   double
   getSF_triggerEff(TriggerSFsys central_or_shift) const;
   //-----------------------------------------------------------------------------
@@ -57,7 +51,6 @@ protected:
   int era_;
   std::string hadTauSelection_;
   bool isDEBUG_;
-  TriggerSFsys triggerSF_option_;
 
   bool isTriggered_2tau_;
 

@@ -20,9 +20,6 @@ public:
   //-----------------------------------------------------------------------------
   // data/MC correction for electron and muon trigger efficiency
   double
-  getSF_leptonTriggerEff() const override;
-
-  double
   getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const override;
   //-----------------------------------------------------------------------------
 
@@ -30,19 +27,10 @@ public:
   // data/MC corrections for hadronic tau identification efficiency,
   // and for e->tau and mu->tau misidentification rates
   double
-  getSF_hadTauID_and_Iso() const override;
-
-  double
   getSF_hadTauID_and_Iso(TauIDSFsys central_or_shift) const override;
 
   double
-  getSF_eToTauFakeRate() const override;
-
-  double
   getSF_eToTauFakeRate(FRet central_or_shift) const override;
-
-  double
-  getSF_muToTauFakeRate() const override;
 
   double
   getSF_muToTauFakeRate(FRmt central_or_shift) const override;

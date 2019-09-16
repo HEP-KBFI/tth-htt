@@ -46,14 +46,12 @@ namespace
   }
 }
 
-JetToTauFakeRateInterface::JetToTauFakeRateInterface(const edm::ParameterSet & cfg,
-                                                     int central_or_shift)
+JetToTauFakeRateInterface::JetToTauFakeRateInterface(const edm::ParameterSet & cfg)
   : inputFile_(nullptr)
   , isInitialized_lead_(false)
   , isInitialized_sublead_(false)
   , isInitialized_third_(false)
   , isInitialized_fourth_(false)
-  , central_or_shift_(central_or_shift)
 {
   const std::string inputFileName = cfg.getParameter<std::string>("inputFileName");
   inputFile_ = openFile(LocalFileInPath(inputFileName));
@@ -131,24 +129,10 @@ JetToTauFakeRateInterface::~JetToTauFakeRateInterface()
 
 double
 JetToTauFakeRateInterface::getWeight_lead(double hadTauPt_lead,
-                                          double hadTauAbsEta_lead) const
-{
-  return getWeight_lead(hadTauPt_lead, hadTauAbsEta_lead, central_or_shift_);
-}
-
-double
-JetToTauFakeRateInterface::getWeight_lead(double hadTauPt_lead,
                                           double hadTauAbsEta_lead,
                                           int central_or_shift) const
 {
   return getWeight_or_SF(hadTauPt_lead, hadTauAbsEta_lead, kWeight, 0, central_or_shift);
-}
-
-double
-JetToTauFakeRateInterface::getWeight_sublead(double hadTauPt_sublead,
-                                             double hadTauAbsEta_sublead) const
-{
-  return getWeight_sublead(hadTauPt_sublead, hadTauAbsEta_sublead, central_or_shift_);
 }
 
 double
@@ -161,24 +145,10 @@ JetToTauFakeRateInterface::getWeight_sublead(double hadTauPt_sublead,
 
 double
 JetToTauFakeRateInterface::getWeight_third(double hadTauPt_third,
-                                           double hadTauAbsEta_third) const
-{
-  return getWeight_third(hadTauPt_third, hadTauAbsEta_third, central_or_shift_);
-}
-
-double
-JetToTauFakeRateInterface::getWeight_third(double hadTauPt_third,
                                            double hadTauAbsEta_third,
                                            int central_or_shift) const
 {
   return getWeight_or_SF(hadTauPt_third, hadTauAbsEta_third, kWeight, 2, central_or_shift);
-}
-
-double
-JetToTauFakeRateInterface::getWeight_fourth(double hadTauPt_fourth,
-                                            double hadTauAbsEta_fourth) const
-{
-  return getWeight_fourth(hadTauPt_fourth, hadTauAbsEta_fourth, central_or_shift_);
 }
 
 double
@@ -191,24 +161,10 @@ JetToTauFakeRateInterface::getWeight_fourth(double hadTauPt_fourth,
 
 double
 JetToTauFakeRateInterface::getSF_lead(double hadTauPt_lead,
-                                      double hadTauAbsEta_lead) const
-{
-  return getSF_lead(hadTauPt_lead, hadTauAbsEta_lead, central_or_shift_);
-}
-
-double
-JetToTauFakeRateInterface::getSF_lead(double hadTauPt_lead,
                                       double hadTauAbsEta_lead,
                                       int central_or_shift) const
 {
   return getWeight_or_SF(hadTauPt_lead, hadTauAbsEta_lead, kSF, 0, central_or_shift);
-}
-
-double
-JetToTauFakeRateInterface::getSF_sublead(double hadTauPt_sublead,
-                                         double hadTauAbsEta_sublead) const
-{
-  return getSF_sublead(hadTauPt_sublead, hadTauAbsEta_sublead, central_or_shift_);
 }
 
 double
@@ -221,24 +177,10 @@ JetToTauFakeRateInterface::getSF_sublead(double hadTauPt_sublead,
 
 double
 JetToTauFakeRateInterface::getSF_third(double hadTauPt_third,
-                                       double hadTauAbsEta_third) const
-{
-  return getSF_third(hadTauPt_third, hadTauAbsEta_third, central_or_shift_);
-}
-
-double
-JetToTauFakeRateInterface::getSF_third(double hadTauPt_third,
                                        double hadTauAbsEta_third,
                                        int central_or_shift) const
 {
   return getWeight_or_SF(hadTauPt_third, hadTauAbsEta_third, kSF, 2, central_or_shift);
-}
-
-double
-JetToTauFakeRateInterface::getSF_fourth(double hadTauPt_fourth,
-                                        double hadTauAbsEta_fourth) const
-{
-  return getSF_fourth(hadTauPt_fourth, hadTauAbsEta_fourth, central_or_shift_);
 }
 
 double
