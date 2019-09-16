@@ -1078,22 +1078,26 @@ main(int argc,
     }
   
 //--- fill generator level histograms (before cuts)
-    double evtWeight_inclusive = 1.;
+    EvtWeightRecorder evtWeightRecorder({central_or_shift}, central_or_shift, isMC);
     if(isMC)
     {
-      if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
-      if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
+      if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
+      if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
+      if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
       lheInfoReader->read();
-      evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
-      evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= lumiScale;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
+      evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
+      evtWeightRecorder.record_puWeight(&eventInfo);
+      evtWeightRecorder.record_nom_tH_weight(&eventInfo);
+      evtWeightRecorder.record_lumiScale(lumiScale);
 
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      genEvtHistManager_beforeCuts->fillHistograms(
+        genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift)
+      );
       if(eventWeightManager)
       {
-        genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+        genEvtHistManager_beforeCuts->fillHistograms(
+          eventWeightManager, evtWeightRecorder.get_inclusive(central_or_shift)
+        );
       }
     }
 
@@ -1207,34 +1211,13 @@ main(int argc,
       }
       continue;
     }
-  
 
-//--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
-//   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
-//    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
-    double evtWeight = 1.;
-    if(isMC)
-    {
-      evtWeight *= evtWeight_inclusive;
-
-      // changed b-tag jet collection to selJets_dR04 from selJets_dR07 here
-      const double btagWeight = get_BtagWeight(selJets_dR04);
-      evtWeight *= btagWeight;
-
-      if(isDEBUG)
-      {
-        std::cout << "lumiScale    = " << lumiScale              << "\n"
-                     "pileupWeight = " << eventInfo.pileupWeight << "\n"
-                     "btagWeight   = " << btagWeight             << '\n';
-      }
-    }
-  
-    if(preselElectrons.size() >= 1) cutFlowTable_e.update (">= 1 presel/Loose electron", evtWeight);
-    if(preselMuons.size()     >= 1) cutFlowTable_mu.update(">= 1 presel/Loose muon",     evtWeight);
+    if(preselElectrons.size() >= 1) cutFlowTable_e.update (">= 1 presel/Loose electron", evtWeightRecorder.get(central_or_shift));
+    if(preselMuons.size()     >= 1) cutFlowTable_mu.update(">= 1 presel/Loose muon",     evtWeightRecorder.get(central_or_shift));
   
     if(apply_met_filters)
       {
-        metFilterHistManager->fillHistograms(metFilter, evtWeight);
+        metFilterHistManager->fillHistograms(metFilter, evtWeightRecorder.get(central_or_shift));
         if(! metFilterSelector(metFilter))
           {
             if(run_lumi_eventSelector)
@@ -1243,8 +1226,8 @@ main(int argc,
               }
             continue;
           }
-        cutFlowTable_e.update ("MEt filter", evtWeight);
-        cutFlowTable_mu.update("MEt filter", evtWeight);
+        cutFlowTable_e.update ("MEt filter", evtWeightRecorder.get(central_or_shift));
+        cutFlowTable_mu.update("MEt filter", evtWeightRecorder.get(central_or_shift));
       }
 
     bool isTriggered_1e = false;
@@ -1488,11 +1471,14 @@ main(int argc,
       }
     }
 
-    double evtWeight_trigger = 1.0;
-
     // prescale weight
     if(isMC)
     {
+//--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
+//   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
+//    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
+      evtWeightRecorder.record_btagWeight(selJets);
+
       double prob_all_trigger_fail = 1.0;
       for(const hltPath_LeptonFakeRate * const hltPath_iter: triggers_all)
       {
@@ -1500,10 +1486,9 @@ main(int argc,
         {
           prob_all_trigger_fail *= (1. - (1. / hltPath_iter->getPrescale()));
         }
-      } 
-      evtWeight_trigger = 1.0 - prob_all_trigger_fail;
+      }
+      evtWeightRecorder.record_prescale(1.0 - prob_all_trigger_fail);
     }
-    evtWeight *= evtWeight_trigger;
 
     // fill histograms for muons
     for(const RecoMuon * const preselMuon_ptr: preselMuons) // loop over preselMuons
@@ -1547,14 +1532,14 @@ main(int argc,
       if(histograms_incl_beforeCuts_num != nullptr && histograms_incl_afterCuts_num != nullptr &&
          histograms_binned_beforeCuts_num != nullptr && histograms_binned_afterCuts_num != nullptr)
       {
-        histograms_incl_beforeCuts_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight);
-        fillHistograms(*histograms_binned_beforeCuts_num, preselMuon, met.pt(), mT, mT_fix, evtWeight, &cutFlowTable_mu);
+        histograms_incl_beforeCuts_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
+        fillHistograms(*histograms_binned_beforeCuts_num, preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_mu);
 
         if(mT_fix < 15.)
         {
-          cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV", evtWeight);
-          histograms_incl_afterCuts_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight);
-          fillHistograms(*histograms_binned_afterCuts_num, preselMuon, met.pt(), mT, mT_fix, evtWeight, &cutFlowTable_mu);
+          cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV", evtWeightRecorder.get(central_or_shift));
+          histograms_incl_afterCuts_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
+          fillHistograms(*histograms_binned_afterCuts_num, preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_mu);
         }
       }
 
@@ -1579,14 +1564,14 @@ main(int argc,
       if(histograms_incl_beforeCuts_den != nullptr && histograms_incl_afterCuts_den != nullptr &&
          histograms_binned_beforeCuts_den != nullptr && histograms_binned_afterCuts_den != nullptr)
       {
-        histograms_incl_beforeCuts_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight);
-        fillHistograms(*histograms_binned_beforeCuts_den, preselMuon, met.pt(), mT, mT_fix, evtWeight, &cutFlowTable_mu);
+        histograms_incl_beforeCuts_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
+        fillHistograms(*histograms_binned_beforeCuts_den, preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_mu);
 
         if(mT_fix < 15.)
         {
-          cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV", evtWeight);
-          histograms_incl_afterCuts_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight);
-          fillHistograms(*histograms_binned_afterCuts_den, preselMuon, met.pt(), mT, mT_fix, evtWeight, &cutFlowTable_mu);
+          cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV", evtWeightRecorder.get(central_or_shift));
+          histograms_incl_afterCuts_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
+          fillHistograms(*histograms_binned_afterCuts_den, preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_mu);
         }
       }
     }
@@ -1634,14 +1619,14 @@ main(int argc,
       if(histograms_incl_beforeCuts_num != nullptr && histograms_incl_afterCuts_num != nullptr &&
          histograms_binned_beforeCuts_num != nullptr && histograms_binned_afterCuts_num != nullptr)
       {
-        histograms_incl_beforeCuts_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight);
-        fillHistograms(*histograms_binned_beforeCuts_num, preselElectron, met.pt(), mT, mT_fix, evtWeight, &cutFlowTable_e);
+        histograms_incl_beforeCuts_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
+        fillHistograms(*histograms_binned_beforeCuts_num, preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_e);
 
         if(mT_fix < 15.)
         {
-          cutFlowTable_e.update("mT_fix(electron, MET) < 15 GeV", evtWeight);
-          histograms_incl_afterCuts_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight);
-          fillHistograms(*histograms_binned_afterCuts_num, preselElectron, met.pt(), mT, mT_fix, evtWeight, &cutFlowTable_e);
+          cutFlowTable_e.update("mT_fix(electron, MET) < 15 GeV", evtWeightRecorder.get(central_or_shift));
+          histograms_incl_afterCuts_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
+          fillHistograms(*histograms_binned_afterCuts_num, preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_e);
         }
       }
 
@@ -1667,14 +1652,14 @@ main(int argc,
       if(histograms_incl_beforeCuts_den != nullptr && histograms_incl_afterCuts_den != nullptr &&
          histograms_binned_beforeCuts_den != nullptr && histograms_binned_afterCuts_den != nullptr)
       {
-        histograms_incl_beforeCuts_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight);
-        fillHistograms(*histograms_binned_beforeCuts_den, preselElectron, met.pt(), mT, mT_fix, evtWeight, &cutFlowTable_e);
+        histograms_incl_beforeCuts_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
+        fillHistograms(*histograms_binned_beforeCuts_den, preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_e);
 
         if(mT_fix < 15.)
         {
-          cutFlowTable_e.update("mT_fix(electron, MET) < 15 GeV", evtWeight);
-          histograms_incl_afterCuts_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight);
-          fillHistograms(*histograms_binned_afterCuts_den, preselElectron, met.pt(), mT, mT_fix, evtWeight, &cutFlowTable_e);
+          cutFlowTable_e.update("mT_fix(electron, MET) < 15 GeV", evtWeightRecorder.get(central_or_shift));
+          histograms_incl_afterCuts_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
+          fillHistograms(*histograms_binned_afterCuts_den, preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_e);
         }
       }
     }
@@ -1690,22 +1675,24 @@ main(int argc,
       continue;
     }
 
-    fillWithOverFlow(histogram_met_pt,  met.pt(),  evtWeight);
-    fillWithOverFlow(histogram_met_phi, met.phi(), evtWeight);
+    fillWithOverFlow(histogram_met_pt,  met.pt(),  evtWeightRecorder.get(central_or_shift));
+    fillWithOverFlow(histogram_met_phi, met.phi(), evtWeightRecorder.get(central_or_shift));
 
 //--- fill generator level histograms (after cuts)
     if(isMC)
     {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
-      lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
+      genEvtHistManager_afterCuts->fillHistograms(
+        genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift)
+      );
+      lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeightRecorder.get(central_or_shift));
       if(eventWeightManager)
       {
-        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeightRecorder.get_inclusive(central_or_shift));
       }
     }
 
     ++selectedEntries;
-    selectedEntries_weighted += evtWeight;
+    selectedEntries_weighted += evtWeightRecorder.get(central_or_shift);
     histogram_selectedEntries->Fill(0.);
   }
 

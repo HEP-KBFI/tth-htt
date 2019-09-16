@@ -756,22 +756,26 @@ int main(int argc, char* argv[])
       if(genMatchToJetReader)      jetGenMatch = genMatchToJetReader->read();
     }
 
-    double evtWeight_inclusive = 1.;
+    EvtWeightRecorder evtWeightRecorder({central_or_shift}, central_or_shift, isMC);
     if(isMC)
     {
-      if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
-      if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
+      if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
+      if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
+      if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
       lheInfoReader->read();
-      evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
-      evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= lumiScale;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
+      evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
+      evtWeightRecorder.record_puWeight(&eventInfo);
+      evtWeightRecorder.record_nom_tH_weight(&eventInfo);
+      evtWeightRecorder.record_lumiScale(lumiScale);
 
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      genEvtHistManager_beforeCuts->fillHistograms(
+        genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift)
+      );
       if(eventWeightManager)
       {
-        genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+        genEvtHistManager_beforeCuts->fillHistograms(
+          eventWeightManager, evtWeightRecorder.get_inclusive(central_or_shift)
+        );
       }
     }
 
@@ -956,24 +960,27 @@ int main(int argc, char* argv[])
     const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, selHadTaus, selJets);
     const double met_LD = compMEt_LD(met.p4(), mht_p4);
 
+    if(isMC)
+    {
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
-//   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
+//   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
-    double evtWeight = 1.;
-    if ( isMC ) {
-      evtWeight *= evtWeight_inclusive;
-      evtWeight *= get_BtagWeight(selJets);
-    }
+      evtWeightRecorder.record_btagWeight(selJets);
 
-    if ( isMC ) {
       dataToMCcorrectionInterface->setLeptons(
         preselLepton_lead_type, preselLepton_lead->pt(), preselLepton_lead->eta(), 
-	preselLepton_sublead_type, preselLepton_sublead->pt(), preselLepton_sublead->eta());
+        preselLepton_sublead_type, preselLepton_sublead->pt(), preselLepton_sublead->eta()
+      );
 
 //--- apply data/MC corrections for trigger efficiency,
-//    and efficiencies for lepton to pass loose identification and isolation criteria      
-      evtWeight *= dataToMCcorrectionInterface->getSF_leptonTriggerEff();
-      evtWeight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
+//    and efficiencies for lepton to pass loose identification and isolation criteria
+      evtWeightRecorder.record_leptonTriggerEff(dataToMCcorrectionInterface);
+
+      evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose());
+
+//--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
+//    to also pass the tight identification and isolation criteria
+      evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge());
     }
 
 //--- apply final event selection 
@@ -982,7 +989,8 @@ int main(int argc, char* argv[])
     if ( !(selLeptons.size() == 2) ) {
       continue;
     }
-    cutFlowTable.update("2 sel leptons", evtWeight);
+    cutFlowTable.update("2 sel leptons", evtWeightRecorder.get(central_or_shift));
+
     const RecoLepton* selLepton_lead = selLeptons[0];
     const RecoLepton* selLepton_sublead = selLeptons[1];
 
@@ -995,7 +1003,7 @@ int main(int argc, char* argv[])
     if ( !(selLepton_e && selLepton_mu) ) {
       continue;
     }
-    cutFlowTable.update("1 sel electron + 1 sel muon", evtWeight);
+    cutFlowTable.update("1 sel electron + 1 sel muon", evtWeightRecorder.get(central_or_shift));
 
     double m_ll = (selLepton_lead->p4() + selLepton_sublead->p4()).mass();
     double m_bb = -1.;
@@ -1014,7 +1022,7 @@ int main(int argc, char* argv[])
 	   (                                 fakeableMuons.size() >= 2 &&  selTrigger_1mu                                      )) ) {
       continue;
     } 
-    cutFlowTable.update("fakeable lepton trigger match", evtWeight);
+    cutFlowTable.update("fakeable lepton trigger match", evtWeightRecorder.get(central_or_shift));
 
 //--- apply HLT filter
     if(apply_hlt_filter)
@@ -1029,31 +1037,31 @@ int main(int argc, char* argv[])
         continue;
       }
     }
-    cutFlowTable.update("HLT filter matching", evtWeight);
+    cutFlowTable.update("HLT filter matching", evtWeightRecorder.get(central_or_shift));
 
     // apply requirement on jets (incl. b-tagged jets) 
     if ( !(selJets.size() >= 2) ) {
       continue;
     }
-    cutFlowTable.update(">= 2 jets", evtWeight);
+    cutFlowTable.update(">= 2 jets", evtWeightRecorder.get(central_or_shift));
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       continue;
     }
-    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet", evtWeight);
+    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet", evtWeightRecorder.get(central_or_shift));
 
     const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptonsUncleaned);
     if(failsLowMassVeto)
     {
       continue;
     }
-    cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
+    cutFlowTable.update("m(ll) > 12 GeV", evtWeightRecorder.get(central_or_shift));
 
     const double minPt_lead = 25.;
     const double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
     if ( !(selLepton_lead->cone_pt() > minPt_lead && selLepton_sublead->cone_pt() > minPt_sublead) ) {
       continue;
     }
-    cutFlowTable.update("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
+    cutFlowTable.update("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeightRecorder.get(central_or_shift));
 
     bool isCharge_SS = selLepton_lead->charge()*selLepton_sublead->charge() > 0;
     bool isCharge_OS = selLepton_lead->charge()*selLepton_sublead->charge() < 0;
@@ -1063,29 +1071,24 @@ int main(int argc, char* argv[])
     if ( chargeSelection == kSS && isCharge_OS ) {
       continue;
     }
-    cutFlowTable.update(Form("lepton-pair %s charge", chargeSelection_string.data()), evtWeight);
+    cutFlowTable.update(Form("lepton-pair %s charge", chargeSelection_string.data()), evtWeightRecorder.get(central_or_shift));
 
     if ( selLepton_lead->is_electron() && selLepton_sublead->is_electron() ) {
       if ( met_LD < 30. ) {
 	continue;
       }
     }
-    cutFlowTable.update("met LD > 30 GeV", evtWeight);
+    cutFlowTable.update("met LD > 30 GeV", evtWeightRecorder.get(central_or_shift));
 
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {
 	continue;
       }
     }
-    cutFlowTable.update("MEt filters", evtWeight);
-
-//--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
-//    to also pass the tight identification and isolation criteria
-    if ( isMC ) {
-      evtWeight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge();
-    }   
+    cutFlowTable.update("MEt filters", evtWeightRecorder.get(central_or_shift));
 
 //--- fill histograms with events passing final selection 
+    const double evtWeight = evtWeightRecorder.get(central_or_shift);
     selMuonHistManager.fillHistograms(selMuons, evtWeight);
     selElectronHistManager.fillHistograms(selElectrons, evtWeight);
     selHadTauHistManager.fillHistograms(selHadTaus, evtWeight);
@@ -1201,11 +1204,13 @@ int main(int argc, char* argv[])
     }
 
     if ( isMC ) {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      genEvtHistManager_afterCuts->fillHistograms(
+        genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift)
+      );
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
       if(eventWeightManager)
       {
-        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeightRecorder.get_inclusive(central_or_shift));
       }
     }
 

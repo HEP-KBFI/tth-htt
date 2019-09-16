@@ -673,22 +673,26 @@ int main(int argc, char* argv[])
       if(genMatchToJetReader)      jetGenMatch = genMatchToJetReader->read();
     }
 
-    double evtWeight_inclusive = 1.;
+    EvtWeightRecorder evtWeightRecorder({central_or_shift}, central_or_shift, isMC);
     if(isMC)
     {
-      if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
-      if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
+      if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
+      if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
+      if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
       lheInfoReader->read();
-      evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
-      evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= lumiScale;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
+      evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
+      evtWeightRecorder.record_puWeight(&eventInfo);
+      evtWeightRecorder.record_nom_tH_weight(&eventInfo);
+      evtWeightRecorder.record_lumiScale(lumiScale);
 
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      genEvtHistManager_beforeCuts->fillHistograms(
+        genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift)
+      );
       if(eventWeightManager)
       {
-        genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+        genEvtHistManager_beforeCuts->fillHistograms(
+          eventWeightManager, evtWeightRecorder.get_inclusive(central_or_shift)
+        );
       }
     }
 
@@ -704,7 +708,7 @@ int main(int argc, char* argv[])
 			  << ", selTrigger_2mu = " << isTriggered_2mu << ")" << std::endl;
 			    //std::cout << hltPaths_isTriggered(triggers_1mu) << " " << isMC << " " << hltPaths_isTriggered(triggers_2mu) << " " << use_triggers_1mu << " " << use_triggers_2mu << std::endl;			 
         }
-        if (central_or_shift == "central") fail_counter->Fill("Trigger", 1);
+        fail_counter->Fill("Trigger", evtWeightRecorder.get(central_or_shift));
         continue;
     }
     
@@ -718,7 +722,7 @@ int main(int argc, char* argv[])
 	        std::cout << " (selTrigger_1mu = " << selTrigger_1mu 
 		          << ", isTriggered_2mu = " << isTriggered_2mu << ")" << std::endl;
 	      }
-        if (central_or_shift == "central") fail_counter->Fill("Trig_2mu1mu", 1);
+        fail_counter->Fill("Trig_2mu1mu", evtWeightRecorder.get(central_or_shift));
 	      continue; 
       }
   }
@@ -827,7 +831,7 @@ int main(int argc, char* argv[])
 	      std::cout << " #preselMuons = " << preselMuons.size() 
 		        << std::endl;
       }
-      if (central_or_shift == "central") fail_counter->Fill("2mu", 1);
+      fail_counter->Fill("2mu", evtWeightRecorder.get(central_or_shift));
       continue;
     }
     const RecoLepton* preselLepton_lead = preselLeptons[0];
@@ -846,7 +850,7 @@ int main(int argc, char* argv[])
 	      std::cout << " (#preselElectrons = " << preselElectrons.size() 
            << ")" << std::endl;
       }
-      if (central_or_shift == "central") fail_counter->Fill("0e", 1);
+      fail_counter->Fill("0e", evtWeightRecorder.get(central_or_shift));
       continue;
     }
     // require that trigger paths match event category (with event category based on preselLeptons);
@@ -857,35 +861,38 @@ int main(int argc, char* argv[])
 		        << ", selTrigger_1mu = " << selTrigger_1mu 
 		        << ", selTrigger_2mu = " << selTrigger_2mu << ")" << std::endl;
       }
-      if (central_or_shift == "central") fail_counter->Fill("2mu_trig", 1);
+      fail_counter->Fill("2mu_trig", evtWeightRecorder.get(central_or_shift));
       continue;
     }
-    
-    /*if ( selHadTaus.size() >= 1 ) {
-    const RecoHadTau* selHadTau = selHadTaus[0];
-    const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau);
-    int idxSelHadTau_genMatch = selHadTau_genMatch.idx_;
-    assert(idxSelHadTau_genMatch != kGen_HadTauUndefined1);
-    }*/
 
+   if(isMC)
+   {
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
-//   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
+//   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
-    double evtWeight = 1.;
-    if ( isMC ) {
-      evtWeight *= evtWeight_inclusive;
-      evtWeight *= get_BtagWeight(selJets);
-    }
+      evtWeightRecorder.record_btagWeight(selJets);
 
-   if ( isMC ) {
       dataToMCcorrectionInterface->setLeptons(
         preselLepton_lead_type, preselLepton_lead->pt(), preselLepton_lead->eta(), 
-	preselLepton_sublead_type, preselLepton_sublead->pt(), preselLepton_sublead->eta());
+        preselLepton_sublead_type, preselLepton_sublead->pt(), preselLepton_sublead->eta()
+      );
 
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria      
-      evtWeight *= dataToMCcorrectionInterface->getSF_leptonTriggerEff();
-      evtWeight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
+      evtWeightRecorder.record_leptonTriggerEff(dataToMCcorrectionInterface);
+
+      evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose());
+
+//--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
+//    to also pass the tight identification and isolation criteria
+      if(leptonSelection == kFakeable)
+      {
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose());
+      }
+      else if(leptonSelection == kTight)
+      {
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge());
+      }
     } 
   
 //--- apply final event selection
@@ -904,7 +911,7 @@ int main(int argc, char* argv[])
 	        std::cout << (*preselMuons[idxPreSelMuon]);
 	      }
       }
-      if (central_or_shift == "central") fail_counter->Fill("2mu_sel", 1);
+      fail_counter->Fill("2mu_sel", evtWeightRecorder.get(central_or_shift));
       continue;
     }
     
@@ -915,7 +922,7 @@ int main(int argc, char* argv[])
 		        << ", selTrigger_1mu = " << selTrigger_1mu 
 		        << ", selTrigger_2mu = " << selTrigger_2mu << ")" << std::endl;
       }
-      if (central_or_shift == "central") fail_counter->Fill("2mu_sel_trig", 1);
+      fail_counter->Fill("2mu_sel_trig", evtWeightRecorder.get(central_or_shift));
       continue;
     }
 
@@ -924,7 +931,7 @@ int main(int argc, char* argv[])
 	      std::cout << "event FAILS selection for selElectron = 0." << std::endl; 
 	      std::cout << " (#selElectrons = " << selElectrons.size() << ")" << std::endl;
       }
-      if (central_or_shift == "central") fail_counter->Fill("0e_sel", 1);
+      fail_counter->Fill("0e_sel", evtWeightRecorder.get(central_or_shift));
       continue;
     }
 
@@ -1007,7 +1014,7 @@ int main(int argc, char* argv[])
 	      std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead
 		        << ", subleading selLepton pT = " << selLepton_sublead->pt() << ", minPt_sublead = " << minPt_sublead << ")" << std::endl;
       }
-      fail_counter->Fill("pT_mu", 1);
+      fail_counter->Fill("pT_mu", evtWeightRecorder.get(central_or_shift));
       continue;
     }
     
@@ -1032,22 +1039,11 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    //cutFlowTable.update("tight lepton charge", evtWeight);
-    fail_counter->Fill("tight_charge", 1);
+    fail_counter->Fill("tight_charge", evtWeightRecorder.get(central_or_shift));
     
       
     bool isCharge_SS = selLepton_lead->charge()*selLepton_sublead->charge() > 0;
     bool isCharge_OS = selLepton_lead->charge()*selLepton_sublead->charge() < 0;
-
-//--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
-//    to also pass the tight identification and isolation criteria
-    if ( isMC ) {
-      if ( leptonSelection == kFakeable ) {
-	evtWeight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
-      } else if ( leptonSelection == kTight ) {
-        evtWeight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge();
-      }
-    }
 
 //--- fill histograms with events passing final selection
 //--- Calclulate mass of lepton system
@@ -1098,7 +1094,7 @@ int main(int argc, char* argv[])
 	      std::cout << "event FAILS dilepton mass selection." << std::endl;
 	      std::cout << " (dilepton mass = " << mass_ll << ")" << std::endl;
       }
-      if (central_or_shift == "central") fail_counter->Fill("m_ll", 1);
+      fail_counter->Fill("m_ll", evtWeightRecorder.get(central_or_shift));
       continue;
     }
     
@@ -1106,6 +1102,7 @@ int main(int argc, char* argv[])
     Int_t nBJetsLoose = selBJets_loose.size();
     Int_t nBJetsMedium = selBJets_medium.size();
     
+    const double evtWeight = evtWeightRecorder.get(central_or_shift);
     if (std::strncmp(process_string.data(), "DY", 2) == 0){    //Split DY
       const GenLepton *gp0 = preselMuons[0]->genLepton();
       const GenLepton *gp1 = preselMuons[1]->genLepton();
@@ -1128,7 +1125,6 @@ int main(int argc, char* argv[])
             mass_ll = mass_ll + 0.5 * (mass_ll - mass_ll_gen);
           }
         }
-        //std::cout << "After:  " << mass_ll << std::endl;
         histos[charge_cat][category.data()]["DY"]["mass_ll"]->Fill(mass_ll, evtWeight);
         histos[charge_cat]["total"]["DY"]["mass_ll"]->Fill(mass_ll, evtWeight);
         if (central_or_shift == "central"){
@@ -1141,9 +1137,9 @@ int main(int argc, char* argv[])
           histos_2D[charge_cat][category.data()]["DY"]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight);
           histos_2D[charge_cat]["total"]["DY"]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight);
           histos_2D[charge_cat][category.data()]["DY"]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight);
-          histos_2D[charge_cat]["total"]["DY"]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight);  
+          histos_2D[charge_cat]["total"]["DY"]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight);
           histos_2D[charge_cat][category.data()]["DY"]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight);
-          histos_2D[charge_cat]["total"]["DY"]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight);  
+          histos_2D[charge_cat]["total"]["DY"]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight);
           
           histos[charge_cat][category.data()]["DY"]["nJets"]->Fill(nJets, evtWeight);
           histos[charge_cat]["total"]["DY"]["nJets"]->Fill(nJets, evtWeight);
@@ -1165,11 +1161,11 @@ int main(int argc, char* argv[])
           histos_2D[charge_cat][category.data()]["DY_fake"]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
           histos_2D[charge_cat]["total"]["DY_fake"]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
           histos_2D[charge_cat][category.data()]["DY_fake"]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight);
-          histos_2D[charge_cat]["total"]["DY_fake"]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight); 
+          histos_2D[charge_cat]["total"]["DY_fake"]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight);
           histos_2D[charge_cat][category.data()]["DY_fake"]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight);
-          histos_2D[charge_cat]["total"]["DY_fake"]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight); 
+          histos_2D[charge_cat]["total"]["DY_fake"]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight);
           histos_2D[charge_cat][category.data()]["DY_fake"]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight);
-          histos_2D[charge_cat]["total"]["DY_fake"]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight); 
+          histos_2D[charge_cat]["total"]["DY_fake"]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight);
           histos[charge_cat][category.data()]["DY_fake"]["nJets"]->Fill(nJets, evtWeight);
           histos[charge_cat]["total"]["DY_fake"]["nJets"]->Fill(nJets, evtWeight);
           histos[charge_cat][category.data()]["DY_fake"]["nBJetsLoose"]->Fill(nBJetsLoose, evtWeight);
@@ -1190,11 +1186,11 @@ int main(int argc, char* argv[])
         histos_2D[charge_cat][category.data()][process_string]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
         histos_2D[charge_cat]["total"][process_string]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
         histos_2D[charge_cat][category.data()][process_string]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight);
-        histos_2D[charge_cat]["total"][process_string]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight); 
+        histos_2D[charge_cat]["total"][process_string]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight);
         histos_2D[charge_cat][category.data()][process_string]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight);
-        histos_2D[charge_cat]["total"][process_string]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight); 
+        histos_2D[charge_cat]["total"][process_string]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight);
         histos_2D[charge_cat][category.data()][process_string]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight);
-        histos_2D[charge_cat]["total"][process_string]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight); 
+        histos_2D[charge_cat]["total"][process_string]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight);
         histos[charge_cat][category.data()][process_string]["nJets"]->Fill(nJets, evtWeight);
         histos[charge_cat]["total"][process_string]["nJets"]->Fill(nJets, evtWeight);
         histos[charge_cat][category.data()][process_string]["nBJetsLoose"]->Fill(nBJetsLoose, evtWeight);
@@ -1281,11 +1277,11 @@ int main(int argc, char* argv[])
       preselMuonHistManagerOS.fillHistograms(preselMuons, evtWeight);
 
     if ( isMC ) {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift));
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
       if(eventWeightManager)
       {
-        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeightRecorder.get_inclusive(central_or_shift));
       }
     }
     

@@ -24,6 +24,7 @@ EvtWeightRecorder::EvtWeightRecorder()
   , genWeight_(1.)
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
+  , prescale_(1.)
   , central_or_shift_("central")
 {}
 
@@ -34,6 +35,7 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
   , genWeight_(1.)
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
+  , prescale_(1.)
   , central_or_shift_(central_or_shift)
   , central_or_shifts_(central_or_shifts)
 {
@@ -47,7 +49,7 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
 double
 EvtWeightRecorder::get(const std::string & central_or_shift) const
 {
-  return (isMC_ ? get_inclusive(central_or_shift) * get_data_to_MC_correction(central_or_shift) : 1.) *
+  return (isMC_ ? get_inclusive(central_or_shift) * get_data_to_MC_correction(central_or_shift) * prescale_ : 1.) *
          get_FR(central_or_shift) * chargeMisIdProb_
   ;
 }
@@ -376,6 +378,13 @@ void
 EvtWeightRecorder::record_chargeMisIdProb(double weight)
 {
   chargeMisIdProb_ = weight;
+}
+
+void
+EvtWeightRecorder::record_prescale(double weight)
+{
+  assert(isMC_);
+  prescale_ = weight;
 }
 
 void

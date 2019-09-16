@@ -480,7 +480,7 @@ int main(int argc, char* argv[])
     if ( isCentral ) {
       histogram_analyzedEntries->Fill(0.);
     }
-
+    EvtWeightRecorder evtWeightRecorder({central_or_shift}, central_or_shift, isMC);
     if ( isDEBUG ) {
       std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
     }
@@ -488,8 +488,8 @@ int main(int argc, char* argv[])
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo) ) {
       continue;
     }
-    cutFlowTable.update("run:ls:event selection");
-    cutFlowHistManager->fillHistograms("run:ls:event selection", lumiScale);
+    cutFlowTable.update("run:ls:event selection", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("run:ls:event selection", evtWeightRecorder.get(central_or_shift));
 
     if(useObjectMultiplicity)
     {
@@ -502,8 +502,8 @@ int main(int argc, char* argv[])
         continue;
       }
     }
-    cutFlowTable.update("object multiplicity");
-    cutFlowHistManager->fillHistograms("object multiplicity", lumiScale);
+    cutFlowTable.update("object multiplicity", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("object multiplicity", evtWeightRecorder.get(central_or_shift));
 
 //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
@@ -539,22 +539,25 @@ int main(int argc, char* argv[])
       if(genMatchToElectronReader) electronGenMatch = genMatchToElectronReader->read();
     }
 
-    double evtWeight_inclusive = 1.;
     if(isMC)
     {
-      if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
-      if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
+      if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
+      if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
+      if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
       lheInfoReader->read();
-      evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
-      evtWeight_inclusive *= eventInfo.pileupWeight;
-      evtWeight_inclusive *= lumiScale;
-      evtWeight_inclusive *= eventInfo.genWeight_tH();
+      evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
+      evtWeightRecorder.record_puWeight(&eventInfo);
+      evtWeightRecorder.record_nom_tH_weight(&eventInfo);
+      evtWeightRecorder.record_lumiScale(lumiScale);
 
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      genEvtHistManager_beforeCuts->fillHistograms(
+        genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift)
+      );
       if(eventWeightManager)
       {
-        genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+        genEvtHistManager_beforeCuts->fillHistograms(
+          eventWeightManager, evtWeightRecorder.get_inclusive(central_or_shift)
+        );
       }
     }
 
@@ -585,8 +588,8 @@ int main(int argc, char* argv[])
 	continue; 
       }
     }
-    cutFlowTable.update("trigger");
-    cutFlowHistManager->fillHistograms("trigger", lumiScale);
+    cutFlowTable.update("trigger", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("trigger", evtWeightRecorder.get(central_or_shift));
 
     if ( (selTrigger_2e && !apply_offline_e_trigger_cuts_2e) ||
 	 (selTrigger_1e && !apply_offline_e_trigger_cuts_1e) ) {
@@ -699,8 +702,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("= 2 presel electrons");
-    cutFlowHistManager->fillHistograms("= 2 presel electrons", lumiScale);
+    cutFlowTable.update("= 2 presel electrons", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("= 2 presel electrons", evtWeightRecorder.get(central_or_shift));
     
     // require that trigger paths match event category (with event category based on preselLeptons);
     if ( preselElectrons.size() == 2 && !(selTrigger_1e || selTrigger_2e) ) {
@@ -712,8 +715,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("presel electron trigger match");
-    cutFlowHistManager->fillHistograms("presel electron trigger match", lumiScale);
+    cutFlowTable.update("presel electron trigger match", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("presel electron trigger match", evtWeightRecorder.get(central_or_shift));
 
     // require exactly zero preselected muons
     if ( !(preselMuons.size() == 0) ) {
@@ -724,17 +727,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("= 0 presel muons");
-    cutFlowHistManager->fillHistograms("= 0 presel muons", lumiScale);
-
-//--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
-//   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
-//    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
-    double evtWeight = 1.;
-    if ( isMC ) {
-      evtWeight *= evtWeight_inclusive;
-      evtWeight *= get_BtagWeight(selJets);
-    }
+    cutFlowTable.update("= 0 presel muons", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("= 0 presel muons", evtWeightRecorder.get(central_or_shift));
 
 //--- apply final event selection
 
@@ -754,8 +748,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("= 2 sel electrons");
-    cutFlowHistManager->fillHistograms("= 2 sel electrons", evtWeight);
+    cutFlowTable.update("= 2 sel electrons", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("= 2 sel electrons", evtWeightRecorder.get(central_or_shift));
 
     // require that trigger paths match event category (with event category based on selLeptons);
     if ( selElectrons.size() == 2 && !(selTrigger_1e || selTrigger_2e) ) {
@@ -767,8 +761,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("sel electron trigger match");
-    cutFlowHistManager->fillHistograms("sel electron trigger match", evtWeight);
+    cutFlowTable.update("sel electron trigger match", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("sel electron trigger match", evtWeightRecorder.get(central_or_shift));
 
     const RecoElectron* selElectron_lead = selElectrons[0];
     const GenLepton* genElectron_lead = 0;
@@ -866,8 +860,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("lead electron pT > 25 GeV && sublead electron pT > 15 GeV");
-    cutFlowHistManager->fillHistograms("lead electron pT > 25 GeV && sublead electron pT > 15 GeV", evtWeight);
+    cutFlowTable.update("lead electron pT > 25 GeV && sublead electron pT > 15 GeV", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("lead electron pT > 25 GeV && sublead electron pT > 15 GeV", evtWeightRecorder.get(central_or_shift));
     
     bool failsTightChargeCut = false;
     for ( std::vector<const RecoElectron*>::const_iterator electron = selElectrons.begin();
@@ -880,8 +874,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("tight electron charge");
-    cutFlowHistManager->fillHistograms("tight electron charge", evtWeight);
+    cutFlowTable.update("tight electron charge", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("tight electron charge", evtWeightRecorder.get(central_or_shift));
 
     if ( !(m_ee > 60. && m_ee < 120.) ) {
       if ( run_lumi_eventSelector ) {
@@ -889,57 +883,62 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("60 < m(ee) < 120 GeV");
-    cutFlowHistManager->fillHistograms("60 < m(ee) < 120 GeV", evtWeight);
+    cutFlowTable.update("60 < m(ee) < 120 GeV", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("60 < m(ee) < 120 GeV", evtWeightRecorder.get(central_or_shift));
           
     bool isCharge_SS = selElectron_lead_charge*selElectron_sublead_charge > 0;
     bool isCharge_OS = selElectron_lead_charge*selElectron_sublead_charge < 0;
 
-    if ( isMC ) {
+    if(isMC)
+    {
+//--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
+//   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
+//    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
+      evtWeightRecorder.record_btagWeight(selJets);
+
       dataToMCcorrectionInterface->setLeptons(
         kElectron, selElectron_lead_p4.pt(), selElectron_lead_p4.eta(), 
 	kElectron, selElectron_sublead_p4.pt(), selElectron_sublead_p4.eta());
 
 //--- apply data/MC corrections for trigger efficiency,
-//    and efficiencies for lepton to pass loose identification and isolation criteria      
-      evtWeight *= dataToMCcorrectionInterface->getSF_leptonTriggerEff();
-      evtWeight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
+//    and efficiencies for lepton to pass loose identification and isolation criteria
+      evtWeightRecorder.record_leptonTriggerEff(dataToMCcorrectionInterface);
+
+      evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose());
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
-      double weight_data_to_MC_correction_tight = 1.;
-    
-      if ( leptonSelection == kFakeable ) {
-	weight_data_to_MC_correction_tight = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
-      } else if ( leptonSelection == kTight ) {
-        weight_data_to_MC_correction_tight = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge();
+      if(leptonSelection == kFakeable)
+      {
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose());
       }
-      evtWeight *= weight_data_to_MC_correction_tight;
-              
-      double weight_fakeRate = 1.;
-      if ( applyFakeRateWeights == kFR_2lepton) {
-        double prob_fake_electron_lead = leptonFakeRateInterface->getWeight_e(selElectron_lead_tmp->cone_pt(), selElectron_lead_tmp->absEta());
+      else if(leptonSelection == kTight)
+      {
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge());
+      }
+
+      if(applyFakeRateWeights == kFR_2lepton)
+      {
+        evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selElectron_lead_tmp);
+        evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selElectron_sublead_tmp);
         bool passesTight_electron_lead = isMatched(*selElectron_lead_tmp, tightElectrons);
-        double prob_fake_electron_sublead = leptonFakeRateInterface->getWeight_e(selElectron_sublead_tmp->cone_pt(), selElectron_sublead_tmp->absEta());
         bool passesTight_electron_sublead = isMatched(*selElectron_sublead_tmp, tightElectrons);
-        weight_fakeRate = getWeight_2L(
-	  prob_fake_electron_lead, passesTight_electron_lead, 
-	  prob_fake_electron_sublead, passesTight_electron_sublead);
-        evtWeight *= weight_fakeRate;
+        evtWeightRecorder.compute_FR_2l(passesTight_electron_lead, passesTight_electron_sublead);
       }
     }
 
 //--- fill histograms with events passing final selection
+    const double evtWeight = evtWeightRecorder.get(central_or_shift);
     evtHistManager.fillHistograms(selElectron_lead_p4, selElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
-    if ( isZee ) {    
+    if ( isZee ) {
       bool isDY = (isGenElectron_lead && isGenElectron_sublead);
       if ( isDY ) {
 	if ( genElectron_lead_p4.pt() > genElectron_sublead_p4.pt() ) {
-	  evtHistManager_DY_genCategory->fillHistograms(genElectron_lead_p4, genElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
+          evtHistManager_DY_genCategory->fillHistograms(genElectron_lead_p4, genElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
 	} else {
-	  evtHistManager_DY_genCategory->fillHistograms(genElectron_sublead_p4, genElectron_lead_p4, m_ee, isCharge_SS, evtWeight);
+          evtHistManager_DY_genCategory->fillHistograms(genElectron_sublead_p4, genElectron_lead_p4, m_ee, isCharge_SS, evtWeight);
 	}
-	evtHistManager_DY_recCategory->fillHistograms(selElectron_lead_p4, selElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
+        evtHistManager_DY_recCategory->fillHistograms(selElectron_lead_p4, selElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
  
 	if ( central_or_shift == "central" ) {
 	  TH1* histogram_gen = 0;
@@ -947,31 +946,31 @@ int main(int argc, char* argv[])
 	  else if ( isCharge_OS ) histogram_gen = histogram_gen_OS;
 	  else assert(0);
 	  double genElectron_lead_absEta = std::fabs(genElectron_lead_p4.eta());
-	  fillWithOverFlow(histogram_gen, genElectron_lead_p4.pt(), genElectron_lead_absEta, evtWeight);
+          fillWithOverFlow(histogram_gen, genElectron_lead_p4.pt(), genElectron_lead_absEta, evtWeight);
 	  double genElectron_sublead_absEta = std::fabs(genElectron_sublead_p4.eta());
-	  fillWithOverFlow(histogram_gen, genElectron_sublead_p4.pt(), genElectron_sublead_absEta, evtWeight);
+          fillWithOverFlow(histogram_gen, genElectron_sublead_p4.pt(), genElectron_sublead_absEta, evtWeight);
 	  
-	  histogram_prob_charge_flip_gen->FillWeighted(selElectron_lead_charge != genElectron_lead_charge, evtWeight, genElectron_lead_p4.pt(), genElectron_lead_absEta);
-	  histogram_prob_charge_flip_gen->FillWeighted(selElectron_sublead_charge != genElectron_sublead_charge, evtWeight, genElectron_sublead_p4.pt(), genElectron_sublead_absEta);
+          histogram_prob_charge_flip_gen->FillWeighted(selElectron_lead_charge != genElectron_lead_charge, evtWeight, genElectron_lead_p4.pt(), genElectron_lead_absEta);
+          histogram_prob_charge_flip_gen->FillWeighted(selElectron_sublead_charge != genElectron_sublead_charge, evtWeight, genElectron_sublead_p4.pt(), genElectron_sublead_absEta);
     selElectron_lead_absEta = std::fabs(selElectron_lead_p4.eta());
-	  histogram_prob_charge_flip_gen_rec->FillWeighted(selElectron_lead_charge != genElectron_lead_charge, evtWeight, selElectron_lead_p4.pt(), selElectron_lead_absEta);
+          histogram_prob_charge_flip_gen_rec->FillWeighted(selElectron_lead_charge != genElectron_lead_charge, evtWeight, selElectron_lead_p4.pt(), selElectron_lead_absEta);
     selElectron_sublead_absEta = std::fabs(selElectron_sublead_p4.eta());
-	  histogram_prob_charge_flip_gen_rec->FillWeighted(selElectron_sublead_charge != genElectron_sublead_charge, evtWeight, selElectron_sublead_p4.pt(), selElectron_sublead_absEta);
+          histogram_prob_charge_flip_gen_rec->FillWeighted(selElectron_sublead_charge != genElectron_sublead_charge, evtWeight, selElectron_sublead_p4.pt(), selElectron_sublead_absEta);
 	  
 	  int idxBin_lead_gen = getBinIdx_pT_and_absEta(genElectron_lead_p4.pt(), genElectron_lead_absEta);
 	  int idxBin_lead_rec = getBinIdx_pT_and_absEta(selElectron_lead_p4.pt(), selElectron_lead_absEta);      
-	  histogram_idxBin_pT_and_eta_rec_vs_gen->Fill(idxBin_lead_gen, idxBin_lead_rec, evtWeight);
-	  if      ( isCharge_SS ) histogram_idxBin_pT_and_eta_rec_vs_gen_SS->Fill(idxBin_lead_gen, idxBin_lead_rec, evtWeight);
-	  else if ( isCharge_OS ) histogram_idxBin_pT_and_eta_rec_vs_gen_OS->Fill(idxBin_lead_gen, idxBin_lead_rec, evtWeight);
+          histogram_idxBin_pT_and_eta_rec_vs_gen->Fill(idxBin_lead_gen, idxBin_lead_rec, evtWeight);
+          if      ( isCharge_SS ) histogram_idxBin_pT_and_eta_rec_vs_gen_SS->Fill(idxBin_lead_gen, idxBin_lead_rec, evtWeight);
+          else if ( isCharge_OS ) histogram_idxBin_pT_and_eta_rec_vs_gen_OS->Fill(idxBin_lead_gen, idxBin_lead_rec, evtWeight);
 	  int idxBin_sublead_gen = getBinIdx_pT_and_absEta(genElectron_sublead_p4.pt(), genElectron_sublead_absEta);
 	  int idxBin_sublead_rec = getBinIdx_pT_and_absEta(selElectron_sublead_p4.pt(), selElectron_sublead_absEta);
-	  histogram_idxBin_pT_and_eta_rec_vs_gen->Fill(idxBin_sublead_gen, idxBin_sublead_rec, evtWeight);
-	  if      ( isCharge_SS ) histogram_idxBin_pT_and_eta_rec_vs_gen_SS->Fill(idxBin_sublead_gen, idxBin_sublead_rec, evtWeight);
-	  else if ( isCharge_OS ) histogram_idxBin_pT_and_eta_rec_vs_gen_OS->Fill(idxBin_sublead_gen, idxBin_sublead_rec, evtWeight);
+          histogram_idxBin_pT_and_eta_rec_vs_gen->Fill(idxBin_sublead_gen, idxBin_sublead_rec, evtWeight);
+          if      ( isCharge_SS ) histogram_idxBin_pT_and_eta_rec_vs_gen_SS->Fill(idxBin_sublead_gen, idxBin_sublead_rec, evtWeight);
+          else if ( isCharge_OS ) histogram_idxBin_pT_and_eta_rec_vs_gen_OS->Fill(idxBin_sublead_gen, idxBin_sublead_rec, evtWeight);
 	}
       } else {
 	// DY_fake
-	evtHistManager_DY_fake->fillHistograms(selElectron_lead_p4, selElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
+        evtHistManager_DY_fake->fillHistograms(selElectron_lead_p4, selElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
       }
     }
 
@@ -979,11 +978,11 @@ int main(int argc, char* argv[])
     else if ( isCharge_OS ) preselElectronHistManagerOS.fillHistograms(preselElectrons, evtWeight);
 
     if ( isMC ) {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
+      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift));
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
       if(eventWeightManager)
       {
-        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeightRecorder.get_inclusive(central_or_shift));
       }
     }
 
