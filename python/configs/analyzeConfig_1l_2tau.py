@@ -146,6 +146,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
     self.pruneSystematics()
+    self.internalizeSystematics()
 
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
@@ -191,6 +192,20 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.lepton_and_hadTau_selections = [ "forBDTtraining" ]
     self.lepton_and_hadTau_frWeights  = [ "disabled" ]
     super(analyzeConfig_1l_2tau, self).set_BDT_training(hadTau_selection_relaxed)
+
+  def accept_systematics(self, central_or_shift, is_mc, lepton_and_hadTau_selection, hadTau_charge_selection, sample_category, sample_name):
+    if central_or_shift != "central":
+      isFR_shape_shift = (central_or_shift in self.central_or_shifts_fr)
+      if not ((lepton_and_hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
+              (lepton_and_hadTau_selection == "Tight" and hadTau_charge_selection == "OS")):
+        return False
+      if isFR_shape_shift and lepton_and_hadTau_selection == "Tight":
+        return False
+      if not is_mc and not isFR_shape_shift:
+        return False
+      if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
+        return False
+    return True
 
   def createCfg_analyze(self, jobOptions, sample_info, lepton_and_hadTau_selection):
     """Create python configuration file for the analyze_1l_2tau executable (analysis code)
@@ -265,24 +280,19 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
           for hadTau_charge_selection in self.hadTau_charge_selections:
             central_or_shift_extensions = ["", "hadd", "addBackgrounds"]
-            central_or_shifts_extended = central_or_shift_extensions + self.central_or_shifts
+            central_or_shift_dedicated = self.central_or_shifts if self.runTHweights(sample_info) else self.central_or_shifts_external
+            central_or_shifts_extended = central_or_shift_extensions + central_or_shift_dedicated
             for central_or_shift_or_dummy in central_or_shifts_extended:
               process_name_extended = [ process_name, "hadd" ]
               for process_name_or_dummy in process_name_extended:
                 if central_or_shift_or_dummy in [ "hadd", "addBackgrounds" ] and process_name_or_dummy in [ "hadd" ]:
                   continue
-                if central_or_shift_or_dummy != "central" and central_or_shift_or_dummy not in central_or_shift_extensions:
-                  isFR_shape_shift = (central_or_shift_or_dummy in self.central_or_shifts_fr)
-                  if not ((lepton_and_hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
-                          (lepton_and_hadTau_selection == "Tight"    and hadTau_charge_selection == "OS")):
-                    continue
-                  if isFR_shape_shift and lepton_and_hadTau_selection == "Tight":
-                    continue
-                  if not is_mc and not isFR_shape_shift:
-                    continue
 
-                  if not self.accept_central_or_shift(central_or_shift_or_dummy, sample_category, sample_name):
-                    continue
+                if central_or_shift_or_dummy not in central_or_shift_extensions and not self.accept_systematics(
+                      central_or_shift_or_dummy, is_mc, lepton_and_hadTau_selection, hadTau_charge_selection,
+                      sample_category, sample_name
+                    ):
+                  continue
 
                 key_dir = getKey(process_name_or_dummy, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift_or_dummy)
                 for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
@@ -385,21 +395,22 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
             sample_category = sample_info["sample_category"]
             is_mc = (sample_info["type"] == "mc")
+            use_th_weights = self.runTHweights(sample_info)
 
-            for central_or_shift in self.central_or_shifts:
-
-              if central_or_shift != "central":
-                isFR_shape_shift = (central_or_shift in self.central_or_shifts_fr)
-                if not ((lepton_and_hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
-                        (lepton_and_hadTau_selection == "Tight"    and hadTau_charge_selection == "OS")):
-                  continue
-                if isFR_shape_shift and lepton_and_hadTau_selection == "Tight":
-                  continue
-                if not is_mc and not isFR_shape_shift:
-                  continue
-
-              if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
+            central_or_shift_dedicated = self.central_or_shifts if use_th_weights else self.central_or_shifts_external
+            for central_or_shift in central_or_shift_dedicated:
+              if not self.accept_systematics(
+                  central_or_shift, is_mc, lepton_and_hadTau_selection, hadTau_charge_selection, sample_category, sample_name
+              ):
                 continue
+
+              central_or_shifts_local = []
+              if central_or_shift == "central" and not use_th_weights:
+                for central_or_shift_local in self.central_or_shifts_internal:
+                  if self.accept_systematics(
+                      central_or_shift_local, is_mc, lepton_and_hadTau_selection, hadTau_charge_selection, sample_category, sample_name
+                  ):
+                    central_or_shifts_local.append(central_or_shift_local)
 
               logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (lepton_and_hadTau_selection_and_frWeight, central_or_shift))
 
@@ -468,6 +479,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   'hadTauChargeSelection'    : hadTau_charge_selection,
                   'applyFakeRateWeights'     : applyFakeRateWeights,
                   'central_or_shift'         : central_or_shift,
+                  'central_or_shifts_local'  : central_or_shifts_local,
                   'selectBDT'                : self.isBDTtraining,
                   'syncOutput'               : syncOutput,
                   'syncTree'                 : syncTree,

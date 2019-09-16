@@ -246,7 +246,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         return False
       if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
         return False
-
     return True
 
   def createCfg_analyze(self, jobOptions, sample_info, lepton_and_hadTau_selection):

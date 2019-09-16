@@ -126,6 +126,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
     self.pruneSystematics()
+    self.internalizeSystematics()
 
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addFakes
@@ -176,6 +177,20 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     lines = super(analyzeConfig_ttWctrl, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
+  def accept_systematics(self, central_or_shift, is_mc, lepton_selection, lepton_charge_selection, sample_category, sample_name):
+    if central_or_shift != "central":
+      isFR_shape_shift = (central_or_shift in self.central_or_shifts_fr)
+      if not ((lepton_selection == "Fakeable" and lepton_charge_selection == "SS" and isFR_shape_shift) or
+              (lepton_selection == "Tight" and lepton_charge_selection == "SS")):
+        return False
+      if isFR_shape_shift and lepton_selection == "Tight":
+        return False
+      if not is_mc and not isFR_shape_shift:
+        return False
+      if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
+        return False
+    return True
+
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
     """
@@ -204,24 +219,18 @@ class analyzeConfig_ttWctrl(analyzeConfig):
               continue
 
             central_or_shift_extensions = ["", "hadd", "addBackgrounds"]
-            central_or_shifts_extended = central_or_shift_extensions + self.central_or_shifts
+            central_or_shift_dedicated = self.central_or_shifts if self.runTHweights(sample_info) else self.central_or_shifts_external
+            central_or_shifts_extended = central_or_shift_extensions + central_or_shift_dedicated
             for central_or_shift_or_dummy in central_or_shifts_extended:
               process_name_extended = [ process_name, "hadd" ]
               for process_name_or_dummy in process_name_extended:
                 if central_or_shift_or_dummy in [ "hadd", "addBackgrounds" ] and process_name_or_dummy in [ "hadd" ]:
                   continue
-                if central_or_shift_or_dummy != "central" and central_or_shift_or_dummy not in central_or_shift_extensions:
-                  isFR_shape_shift = (central_or_shift_or_dummy in self.central_or_shifts_fr)
-                  if not ((lepton_selection == "Fakeable" and lepton_charge_selection == "SS" and isFR_shape_shift) or
-                          (lepton_selection == "Tight"    and lepton_charge_selection == "SS")):
-                    continue
-                  if isFR_shape_shift and lepton_selection == "Tight":
-                    continue
-                  if not is_mc and not isFR_shape_shift:
-                    continue
 
-                  if not self.accept_central_or_shift(central_or_shift_or_dummy, sample_category, sample_name):
-                    continue
+                if central_or_shift_or_dummy not in central_or_shift_extensions and not self.accept_systematics(
+                    central_or_shift_or_dummy, is_mc, lepton_selection, lepton_charge_selection, sample_category, sample_name
+                ):
+                  continue
 
                 key_dir = getKey(process_name_or_dummy, lepton_selection_and_frWeight, lepton_charge_selection, central_or_shift_or_dummy)
                 for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
@@ -315,21 +324,23 @@ class analyzeConfig_ttWctrl(analyzeConfig):
             sample_category = sample_info["sample_category"]
             is_mc = (sample_info["type"] == "mc")
             is_signal = sample_category in self.signalProcs
+            use_th_weights = self.runTHweights(sample_info)
 
-            for central_or_shift in self.central_or_shifts:
-              
-              if central_or_shift != "central":
-                isFR_shape_shift = (central_or_shift in self.central_or_shifts_fr)
-                if not ((lepton_selection == "Fakeable" and lepton_charge_selection == "SS" and isFR_shape_shift) or
-                        (lepton_selection == "Tight"    and lepton_charge_selection == "SS")):
-                  continue
-                if isFR_shape_shift and lepton_selection == "Tight":
-                  continue
-                if not is_mc and not isFR_shape_shift:
-                  continue
-
-              if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
+            central_or_shift_dedicated = self.central_or_shifts if use_th_weights else self.central_or_shifts_external
+            for central_or_shift in central_or_shift_dedicated:
+              if not self.accept_systematics(
+                  central_or_shift, is_mc, lepton_selection, lepton_charge_selection, sample_category, sample_name
+              ):
                 continue
+
+              central_or_shifts_local = []
+              if central_or_shift == "central" and not use_th_weights:
+                for central_or_shift_local in self.central_or_shifts_internal:
+                  if self.accept_systematics(
+                      central_or_shift_local, is_mc, lepton_selection, lepton_charge_selection, sample_category,
+                      sample_name
+                  ):
+                    central_or_shifts_local.append(central_or_shift_local)
 
               logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (lepton_selection_and_frWeight, central_or_shift))
 
@@ -398,6 +409,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
                   'hadTauSelection_veto'     : hadTauVeto_selection,
                   'applyFakeRateWeights'     : self.applyFakeRateWeights if not lepton_selection == "Tight" else "disabled",
                   'central_or_shift'         : central_or_shift,
+                  'central_or_shifts_local'  : central_or_shifts_local,
                   'syncOutput'               : syncOutput,
                   'syncTree'                 : syncTree,
                   'syncRLE'                  : syncRLE,
