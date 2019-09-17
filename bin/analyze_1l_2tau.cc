@@ -178,7 +178,6 @@ int main(int argc, char* argv[])
   const bool isMC_VH = process_string == "VH" || process_string == "ggH" || process_string == "qqH";
   const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
-  const bool fullSyst = cfg_analyze.getParameter<bool>("FullSyst");
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -662,7 +661,7 @@ int main(int argc, char* argv[])
   std::map<std::string, std::map<int, std::map<int, selHistManagerType*>>> selHistManagers;
   for(const std::string & central_or_shift: central_or_shifts_local)
   {
-    const bool skipBooking = (central_or_shift != central_or_shift_main && evt_cat_strs.size() > 1) || fullSyst;
+    const bool skipBooking = central_or_shift != central_or_shift_main;
     for(const leptonGenMatchEntry & leptonGenMatch_definition: leptonGenMatch_definitions)
     {
       for(const hadTauGenMatchEntry & hadTauGenMatch_definition: hadTauGenMatch_definitions)
@@ -719,13 +718,17 @@ int main(int argc, char* argv[])
           selHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_and_genMatch,
             Form("%s/sel/metFilters", histogramDir.data()), era_string, central_or_shift));
           selHistManager->metFilters_->bookHistograms(fs);
+          selHistManager->mvaInputVariables_HTT_sum_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
+            Form("%s/sel/mvaInputs_HTT_sum", histogramDir.data()), era_string, central_or_shift));
+          selHistManager->mvaInputVariables_HTT_sum_->bookHistograms(fs, mvaInputVariables_HTT_sumSort);
         }
-        selHistManager->mvaInputVariables_HTT_sum_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
-          Form("%s/sel/mvaInputs_HTT_sum", histogramDir.data()), era_string, central_or_shift));
-        selHistManager->mvaInputVariables_HTT_sum_->bookHistograms(fs, mvaInputVariables_HTT_sumSort);
 
-          for(const std::string & evt_cat_str: evt_cat_strs)
+        for(const std::string & evt_cat_str: evt_cat_strs)
         {
+          if(skipBooking && evt_cat_str != default_cat_str)
+          {
+            continue;
+          }
           std::string proc0 = process_string;
           if ( process_string == "signal") proc0 = "ttH";
           if ( process_string == "signal_ctcvcp" ) proc0 = "ttH_ctcvcp";
@@ -769,6 +772,10 @@ int main(int argc, char* argv[])
 
             for(const std::string & evt_cat_str: evt_cat_strs)
             {
+              if(skipBooking && evt_cat_str != default_cat_str)
+              {
+                continue;
+              }
               const std::string process_string_new = evt_cat_str == default_cat_str ?
                 process_string:
                 process_string + "_" + evt_cat_str
@@ -1010,7 +1017,7 @@ int main(int argc, char* argv[])
       evtWeightRecorder.record_lumiScale(lumiScale);
       for(const std::string & central_or_shift: central_or_shifts_local)
       {
-        if((central_or_shift != central_or_shift_main && evt_cat_strs.size() > 1) || fullSyst)
+        if(central_or_shift != central_or_shift_main)
         {
           continue;
         }
@@ -1716,7 +1723,7 @@ int main(int argc, char* argv[])
 //--- fill histograms with events passing final selection
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
-      const bool skipFilling = (central_or_shift != central_or_shift_main && evt_cat_strs.size() > 1) || fullSyst;
+      const bool skipFilling = central_or_shift != central_or_shift_main;
       selHistManagerType* selHistManager = selHistManagers[central_or_shift][idxSelLepton_genMatch][idxSelHadTau_genMatch];
       assert(selHistManager != 0);
       const double evtWeight = evtWeightRecorder.get(central_or_shift);
@@ -1736,14 +1743,18 @@ int main(int argc, char* argv[])
         selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
         selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
         selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
+        selHistManager->mvaInputVariables_HTT_sum_->fillHistograms(mvaInputsHTT_sum, evtWeight);
       }
-      selHistManager->mvaInputVariables_HTT_sum_->fillHistograms(mvaInputsHTT_sum, evtWeight);
 
       const std::string central_or_shift_tH = eventInfo.has_central_or_shift(central_or_shift) ? central_or_shift : central_or_shift_main;
       const double evtWeight_tH_nom = evtWeightRecorder.get_nom_tH_weight(central_or_shift_tH);
       std::map<std::string, double> tH_weight_map;
       for(const std::string & evt_cat_str: evt_cat_strs)
       {
+        if(skipFilling && evt_cat_str != default_cat_str)
+        {
+          continue;
+        }
         const std::string evt_cat_str_query = evt_cat_str == default_cat_str ? get_tH_SM_str() : evt_cat_str;
         tH_weight_map[evt_cat_str] = isMC_tH ?
           evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(central_or_shift_tH, evt_cat_str_query):
@@ -1818,7 +1829,7 @@ int main(int argc, char* argv[])
         evtWeight
       );
 
-      if(isMC && !skipFilling)
+      if(isMC && ! skipFilling)
       {
         genEvtHistManager_afterCuts[central_or_shift]->fillHistograms(
           genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift)
@@ -2067,16 +2078,18 @@ int main(int argc, char* argv[])
 
   delete hadTopTagger;
 
-  if(isMC)
+  for(auto & kv: genEvtHistManager_beforeCuts)
   {
-    for(const std::string & central_or_shift: central_or_shifts_local)
-    {
-      delete genEvtHistManager_beforeCuts[central_or_shift];
-      delete genEvtHistManager_afterCuts[central_or_shift];
-      delete lheInfoHistManager[central_or_shift];
-    }
+    delete kv.second;
   }
-
+  for(auto & kv: genEvtHistManager_afterCuts)
+  {
+    delete kv.second;
+  }
+  for(auto & kv: lheInfoHistManager)
+  {
+    delete kv.second;
+  }
   delete l1PreFiringWeightReader;
   delete cutFlowHistManager;
   delete eventWeightManager;

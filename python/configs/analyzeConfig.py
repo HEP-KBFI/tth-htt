@@ -735,16 +735,6 @@ class analyzeConfig(object):
             "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era, len = max_option_len),
             "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era, len = max_option_len),
           ])
-        lines.append(
-          "{}.{:<{len}} = cms.bool({})".format(
-            process_string,
-            'FullSyst',
-            jobOptions['central_or_shift'] != 'central' and \
-            jobOptions['central_or_shift'] in self.central_or_shifts_internal and \
-            use_th_weights,
-            len = max_option_len
-          )
-        )
         for jobOptions_key in jobOptions_keys:
             if jobOptions_key not in jobOptions: continue # temporary?
             jobOptions_val = jobOptions[jobOptions_key]
@@ -875,9 +865,7 @@ class analyzeConfig(object):
       logging.info("Separated external systematics: {}".format(', '.join(self.central_or_shifts_external)))
 
     def runTHweights(self, sample_info):
-        return sample_info["type"] == "mc" and \
-               sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and \
-               sample_info['nof_reweighting'] > 0
+        return False
 
     def createCfg_copyHistograms(self, jobOptions):
         """Create python configuration file for the copyHistograms executable (split the ROOT files produced by hadd_stage1 into separate ROOT files, one for each event category)

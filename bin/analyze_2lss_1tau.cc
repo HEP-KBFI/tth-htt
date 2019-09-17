@@ -162,7 +162,6 @@ int main(int argc, char* argv[])
   const bool isMC_VH = process_string == "VH" || process_string == "ggH" || process_string == "qqH";
   const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
-  const bool fullSyst = cfg_analyze.getParameter<bool>("FullSyst");
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -704,7 +703,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   std::map<std::string, LHEInfoHistManager*> lheInfoHistManager;
   for(const std::string & central_or_shift: central_or_shifts_local)
   {
-    const bool skipBooking = (central_or_shift != central_or_shift_main && evt_cat_strs.size() > 1) || fullSyst;
+    const bool skipBooking = central_or_shift != central_or_shift_main;
     for(const leptonChargeFlipGenMatchEntry & leptonGenMatch_definition: leptonGenMatch_definitions)
     {
       for(const hadTauGenMatchEntry & hadTauGenMatch_definition: hadTauGenMatch_definitions)
@@ -760,11 +759,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
             Form("%s/sel/mvaInputs_2lss", histogramDir.data()), era_string, central_or_shift));
           selHistManager->mvaInputVariables_2lss_->bookHistograms(fs, mvaInputVariables_2lss);
         }
-//        selHistManager->mvaInputVariables_2lss_1tau_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
-//          Form("%s/sel/mvaInputs_2lss_1tau", histogramDir.data()), era_string, central_or_shift));
 
         for(const std::string & evt_cat_str: evt_cat_strs)
         {
+          if(skipBooking && evt_cat_str != default_cat_str)
+          {
+            continue;
+          }
           std::string proc0 = process_string;
           if ( process_string == "signal") proc0 = "ttH";
           if ( process_string == "signal_ctcvcp" ) proc0 = "ttH_ctcvcp";
@@ -807,6 +808,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
             for(const std::string & evt_cat_str: evt_cat_strs)
             {
+              if(skipBooking && evt_cat_str != default_cat_str)
+              {
+                continue;
+              }
               const std::string process_string_new = evt_cat_str == default_cat_str ?
                 process_string:
                 process_string + "_" + evt_cat_str
@@ -836,7 +841,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "triggerWeight", "data_to_MC_correction", "fakeRate" });
         }
         selHistManagers[central_or_shift][idxLepton][idxHadTau] = selHistManager;
-
       }
     }
 
@@ -1041,7 +1045,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       evtWeightRecorder.record_lumiScale(lumiScale);
       for(const std::string & central_or_shift: central_or_shifts_local)
       {
-        if((central_or_shift != central_or_shift_main && evt_cat_strs.size() > 1) || fullSyst)
+        if(central_or_shift != central_or_shift_main)
         {
           continue;
         }
@@ -2051,7 +2055,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 //--- fill histograms with events passing final selection
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
-      const bool skipFilling = (central_or_shift != central_or_shift_main && evt_cat_strs.size() > 1) || fullSyst;
+      const bool skipFilling = central_or_shift != central_or_shift_main;
       selHistManagerType* selHistManager = selHistManagers[central_or_shift][idxSelLepton_genMatch][idxSelHadTau_genMatch];
       const double evtWeight = evtWeightRecorder.get(central_or_shift);
       assert(selHistManager);
@@ -2077,6 +2081,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       std::map<std::string, double> tH_weight_map;
       for(const std::string & evt_cat_str: evt_cat_strs)
       {
+        if(skipFilling && evt_cat_str != default_cat_str)
+        {
+          continue;
+        }
         const std::string evt_cat_str_query = evt_cat_str == default_cat_str ? get_tH_SM_str() : evt_cat_str;
         tH_weight_map[evt_cat_str] = isMC_tH ?
           evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(central_or_shift_tH, evt_cat_str_query):
@@ -2476,14 +2484,17 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
   delete hadTopTagger;
 
-  if(isMC)
+  for(auto & kv: genEvtHistManager_beforeCuts)
   {
-    for(const std::string & central_or_shift: central_or_shifts_local)
-    {
-      delete genEvtHistManager_beforeCuts[central_or_shift];
-      delete genEvtHistManager_afterCuts[central_or_shift];
-      delete lheInfoHistManager[central_or_shift];
-    }
+    delete kv.second;
+  }
+  for(auto & kv: genEvtHistManager_afterCuts)
+  {
+    delete kv.second;
+  }
+  for(auto & kv: lheInfoHistManager)
+  {
+    delete kv.second;
   }
   delete l1PreFiringWeightReader;
   delete cutFlowHistManager;
