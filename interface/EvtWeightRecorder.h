@@ -41,7 +41,7 @@ public:
   double
   get(const std::string & central_or_shift) const;
 
-  double
+  virtual double
   get_inclusive(const std::string & central_or_shift) const;
 
   double
