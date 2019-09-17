@@ -3,14 +3,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
-EventInfoReader::EventInfoReader(PUsys puSys_option,
-                                 bool read_genHiggsDecayMode,
+EventInfoReader::EventInfoReader(bool read_genHiggsDecayMode,
                                  bool read_puWeight)
-  : EventInfoReader(nullptr, puSys_option, read_genHiggsDecayMode, read_puWeight)
+  : EventInfoReader(nullptr, read_genHiggsDecayMode, read_puWeight)
 {}
 
 EventInfoReader::EventInfoReader(EventInfo * info,
-                                 PUsys puSys_option,
                                  bool read_genHiggsDecayMode,
                                  bool read_puWeight)
   : read_genHiggsDecayMode_(read_genHiggsDecayMode)
