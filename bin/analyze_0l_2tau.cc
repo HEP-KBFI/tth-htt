@@ -1307,7 +1307,7 @@ int main(int argc, char* argv[])
     {
       assert(jetToTauFakeRateInterface);
       evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau_lead);
-      evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau_sublead);
+      evtWeightRecorder.record_jetToTau_FR_sublead(jetToTauFakeRateInterface, selHadTau_sublead);
       bool passesTight_hadTau_lead = isMatched(*selHadTau_lead, tightHadTausFull);
       bool passesTight_hadTau_sublead = isMatched(*selHadTau_sublead, tightHadTausFull);
       evtWeightRecorder.compute_FR_2tau(passesTight_hadTau_lead, passesTight_hadTau_sublead);
