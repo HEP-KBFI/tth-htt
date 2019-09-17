@@ -36,6 +36,7 @@ public:
   EvtWeightRecorder(const std::vector<std::string> & central_or_shifts,
                     const std::string & central_or_shift,
                     bool isMC);
+  virtual ~EvtWeightRecorder() {}
 
   double
   get(const std::string & central_or_shift) const;
@@ -85,7 +86,7 @@ public:
   double
   get_sf_triggerEff(const std::string & central_or_shift) const;
 
-  double
+  virtual double
   get_tauSF(const std::string & central_or_shift) const;
 
   double
