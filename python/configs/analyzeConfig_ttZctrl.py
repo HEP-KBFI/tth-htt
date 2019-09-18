@@ -384,7 +384,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
                 'lep_mva_cut_e'            : float(self.lep_mva_cut_e),
                 'lep_mva_cut_mu'           : float(self.lep_mva_cut_mu),
                 'syncGenMatch'             : syncGenMatch,
-                'useObjectMultiplicity'    : self.era in ['2018'],
+                'useObjectMultiplicity'    : True,
               }
               self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)
 

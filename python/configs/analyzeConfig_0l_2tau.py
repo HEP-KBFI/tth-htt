@@ -192,7 +192,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         return False
       if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
         return False
-      return True
+    return True
 
   def createCfg_analyze(self, jobOptions, sample_info, hadTau_selection):
     """Create python configuration file for the analyze_0l_2tau executable (analysis code)
@@ -445,7 +445,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,
                   'syncGenMatch'             : syncGenMatch,
-                  'useObjectMultiplicity'    : self.era in ['2018'],
+                  'useObjectMultiplicity'    : True,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, hadTau_selection)
 
