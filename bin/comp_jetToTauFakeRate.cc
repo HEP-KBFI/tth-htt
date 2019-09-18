@@ -21,7 +21,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/compFakeRateAuxFunctions.h" // compFakeRate
 #include "tthAnalysis/HiggsToTauTau/interface/graphAuxFunctions.h" // compRatioGraph
-#include "tthAnalysis/HiggsToTauTau/interface/fitAuxFunctions.h" // EigenVector_and_Value, compEigenVectors_and_Values, fitFunction_and_legendEntry, makeControlPlot_fit
+#include "tthAnalysis/HiggsToTauTau/interface/fitAuxFunctions.h" // EigenVector_and_Value, compEigenVectors_and_Values, fitFunction_and_legendEntry, makeControlPlot_graphs, makeControlPlot_fit
 
 #include <TFile.h>
 #include <TH1.h>
