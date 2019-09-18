@@ -221,7 +221,7 @@ makeControlPlot_graphs(TGraphAsymmErrors * graph_data,
   }
   if(idx != std::string::npos)
   {
-    canvas->Print(outputFileName_plot.append(std::string(outputFileName, idx)).data());
+    canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
   }
   canvas->Print(std::string(outputFileName_plot).append(".png").data());
   canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
