@@ -196,7 +196,7 @@ EvtWeightRecorder::get_sf_triggerEff(const std::string & central_or_shift) const
     {
       sf_triggerEff *= weights_leptonTriggerEff_.at(triggerSF_option);
     }
-    if(weights_tauTriggerEff_.at(triggerSF_option))
+    if(weights_tauTriggerEff_.count(triggerSF_option))
     {
       sf_triggerEff *= weights_tauTriggerEff_.at(triggerSF_option);
     }

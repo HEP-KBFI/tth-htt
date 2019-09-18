@@ -52,12 +52,13 @@ void GenMatchInterface::initialize()
   genMatchDefinition_nonfakes_    = nullptr;
   genMatchDefinition_gentau_      = nullptr;
   genMatchDefinition_faketau_     = nullptr;
+  idx_ = 0;
   if ( !(numLeptons_ >= 1 || numHadTaus_ >= 1) ) 
   {
     throw cmsException(__func__, __LINE__)
       << " Invalid configuration parameters 'numLeptons' = " << numLeptons_ << " and 'numHadTaus' = " << numHadTaus_ << " !!";
   }
-  addGenMatchDefinition("fake");
+  addGenMatchDefinition("_fake");
   genMatchDefinition_fakes_ = &genMatchDefinitions_.back();
   if ( useFlips_ )
   {
@@ -66,21 +67,21 @@ void GenMatchInterface::initialize()
       throw cmsException(__func__, __LINE__)
         << " Invalid configuration parameters 'numLeptons' = " << numLeptons_ << " and 'useFlips' = " << useFlips_ << " !!";
     }
-    addGenMatchDefinition("flip");
+    addGenMatchDefinition("_flip");
     genMatchDefinition_flips_ = &genMatchDefinitions_.back();
   }
   if ( numLeptons_ >= 1 )
   {
-    addGenMatchDefinition("Convs");
+    addGenMatchDefinition("_Convs");
     genMatchDefinition_conversions_ = &genMatchDefinitions_.back();
   }
   addGenMatchDefinition(""); // non-fake
   genMatchDefinition_nonfakes_ = &genMatchDefinitions_.back();
   if ( useGenTau_and_FakeTau_ )
   {
-    addGenMatchDefinition("gentau");
+    addGenMatchDefinition("_gentau");
     genMatchDefinition_gentau_ = &genMatchDefinitions_.back();
-    addGenMatchDefinition("faketau");
+    addGenMatchDefinition("_faketau");
     genMatchDefinition_faketau_ = &genMatchDefinitions_.back();
   }
 }
