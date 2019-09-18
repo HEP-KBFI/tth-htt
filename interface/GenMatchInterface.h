@@ -32,7 +32,7 @@ class GenMatchInterface
   GenMatchInterface(unsigned numHadTaus, bool apply_hadTauGenMatching);
   ~GenMatchInterface();
 
-  const std::vector<GenMatchEntry>& getGenMatchDefinitions() const;
+  std::vector<const GenMatchEntry*> getGenMatchDefinitions() const;
   
   std::vector<const GenMatchEntry*> getGenMatch(const std::vector<const RecoLepton*>& selLeptons, const std::vector<const RecoHadTau*>& selHadTaus);
   std::vector<const GenMatchEntry*> getGenMatch(const std::vector<const RecoLepton*>& selLeptons);
@@ -51,7 +51,7 @@ class GenMatchInterface
   void addGenMatchDefinition(const std::string& name);
   int idx_;
 
-  std::vector<GenMatchEntry> genMatchDefinitions_;
+  std::vector<const GenMatchEntry*> genMatchDefinitions_;
   const GenMatchEntry* genMatchDefinition_fakes_;
   const GenMatchEntry* genMatchDefinition_flips_;
   const GenMatchEntry* genMatchDefinition_conversions_;

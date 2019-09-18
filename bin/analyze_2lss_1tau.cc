@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
   const int muonSelection     = get_selection(muonSelection_string);
 
   bool apply_leptonGenMatching = cfg_analyze.getParameter<bool>("apply_leptonGenMatching");
-  std::vector<leptonChargeFlipGenMatchEntry> leptonGenMatch_definitions = getLeptonChargeFlipGenMatch_definitions_2lepton(apply_leptonGenMatching);
+  std::vector<leptonChargeFlipGenMatchEntry> leptonGenMatch_definitions = getLeptonChargeFlipGenMatch_definitions_2lepton(true);
   std::cout << "leptonGenMatch_definitions:" << std::endl;
   std::cout << leptonGenMatch_definitions;
 
@@ -227,7 +227,7 @@ int main(int argc, char* argv[])
   std::string hadTauSelection_veto = cfg_analyze.getParameter<std::string>("hadTauSelection_veto");
 
   bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
-  std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(apply_hadTauGenMatching);
+  std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(true);
   std::cout << "hadTauGenMatch_definitions:" << std::endl;
   std::cout << hadTauGenMatch_definitions;
 
@@ -272,7 +272,6 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
-  const vstring syncNtuple_genMatch = syncNtuple_cfg.getParameter<vstring>("genMatch");
   const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
@@ -707,13 +706,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   for(const std::string & central_or_shift: central_or_shifts_local)
   {
     const bool skipBooking = central_or_shift != central_or_shift_main;
-    const std::vector<GenMatchEntry>& genMatchDefinitions = genMatchInterface.getGenMatchDefinitions();
-    for (const GenMatchEntry & genMatchDefinition : genMatchDefinitions)
+    std::vector<const GenMatchEntry*> genMatchDefinitions = genMatchInterface.getGenMatchDefinitions();
+    for (const GenMatchEntry * genMatchDefinition : genMatchDefinitions)
     {
       std::string process_and_genMatch = process_string;
-      process_and_genMatch += genMatchDefinition.getName();
+      process_and_genMatch += genMatchDefinition->getName();
 
-      int idxLepton_and_HadTau = genMatchDefinition.getIdx();
+      int idxLepton_and_HadTau = genMatchDefinition->getIdx();
 
       selHistManagerType* selHistManager = new selHistManagerType();
       if(! skipBooking)
@@ -800,7 +799,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
             if ( process_string == "signal_ctcvcp" ) decayMode_and_genMatch = "ttH_ctcvcp_";
           }
           decayMode_and_genMatch += decayMode_evt;
-	  decayMode_and_genMatch += genMatchDefinition.getName();
+	  decayMode_and_genMatch += genMatchDefinition->getName();
 
           for(const std::string & evt_cat_str: evt_cat_strs)
           {
@@ -836,11 +835,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           Form("%s/sel/weights", histogramDir.data()), era_string, central_or_shift));
         selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "triggerWeight", "data_to_MC_correction", "fakeRate" });
       }
-std::cout << "break-point 1 reached" << std::endl;
-std::cout << "process_and_genMatch = " << process_and_genMatch << std::endl;
-std::cout << "idxLepton_and_HadTau = " << idxLepton_and_HadTau << std::endl;
       selHistManagers[central_or_shift][idxLepton_and_HadTau] = selHistManager;
-std::cout << "break-point 2 reached" << std::endl;
     }
   
     if(isMC && ! skipBooking)
@@ -2044,20 +2039,17 @@ std::cout << "break-point 2 reached" << std::endl;
     };
     const double mvaOutput_2lss_1tau_HTTMEM_SUM_M = mva_2lss_1tau_HTTMEM_SUM_M(mvaInputVariables_HTTMEM_SUM);
 
+//--- retrieve gen-matching flags
+    std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons, selHadTaus);
+
 //--- fill histograms with events passing final selection
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
-std::cout << "break-point A.1 reached" << std::endl;
       const double evtWeight = evtWeightRecorder.get(central_or_shift);
-std::cout << "break-point A.2 reached" << std::endl;
       const bool skipFilling = central_or_shift != central_or_shift_main;
-      std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons, selHadTaus);
       for (const GenMatchEntry* genMatch : genMatches)
       {
-std::cout << "break-point 3 reached" << std::endl;
-std::cout << "genMatch->getIdx() = " << genMatch->getIdx() << std::endl;
         selHistManagerType* selHistManager = selHistManagers[central_or_shift][genMatch->getIdx()];
-std::cout << "break-point 4 reached" << std::endl;
         assert(selHistManager);
         if(! skipFilling)
         {
@@ -2149,11 +2141,8 @@ std::cout << "break-point 4 reached" << std::endl;
           selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
 	  selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
 	  selHistManager->weights_->fillHistograms("pileupWeight", evtWeightRecorder.get_puWeight(central_or_shift));
-std::cout << "break-point B.1 reached" << std::endl;
 	  selHistManager->weights_->fillHistograms("triggerWeight", evtWeightRecorder.get_sf_triggerEff(central_or_shift));
-std::cout << "break-point B.2 reached" << std::endl;
 	  selHistManager->weights_->fillHistograms("data_to_MC_correction", evtWeightRecorder.get_data_to_MC_correction(central_or_shift));
-std::cout << "break-point B.3 reached" << std::endl;
 	  selHistManager->weights_->fillHistograms("fakeRate", evtWeightRecorder.get_FR(central_or_shift));
         }
       }
@@ -2183,9 +2172,14 @@ std::cout << "break-point B.3 reached" << std::endl;
     double memOutput_ttZ=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ()     : -100.;
     double memOutput_ttZ_Zll=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ_Zll() : -100.;
 
-    const bool isGenMatched = isMC &&
-      contains(syncNtuple_genMatch, selLepton_genMatch.name_ + "&" + selHadTau_genMatch.name_)
-    ;
+    bool isGenMatched = false;
+    if ( isMC ) 
+    {
+      for (const GenMatchEntry* genMatch : genMatches)
+      {
+	if ( genMatch->getName() == "" ) isGenMatched = true; // non-fake
+      }
+    }
 
     if ( bdt_filler ) {
 
@@ -2424,9 +2418,9 @@ std::cout << "break-point B.3 reached" << std::endl;
     ++selectedEntries;
     selectedEntries_weighted += evtWeightRecorder.get(central_or_shift_main);
     std::string process_and_genMatch = process_string;
-    if ( apply_leptonGenMatching ) process_and_genMatch += selLepton_genMatch.name_;
-    if ( apply_leptonGenMatching && apply_hadTauGenMatching ) process_and_genMatch += "&";
-    if ( apply_hadTauGenMatching ) process_and_genMatch += selHadTau_genMatch.name_;
+    process_and_genMatch += selLepton_genMatch.name_;
+    process_and_genMatch += "&";
+    process_and_genMatch += selHadTau_genMatch.name_;
     ++selectedEntries_byGenMatchType[process_and_genMatch]; 
     selectedEntries_weighted_byGenMatchType[process_and_genMatch] += evtWeightRecorder.get(central_or_shift_main);
     histogram_selectedEntries->Fill(0.);
@@ -2456,9 +2450,9 @@ std::cout << "break-point B.3 reached" << std::endl;
       for(const hadTauGenMatchEntry & hadTauGenMatch_definition: hadTauGenMatch_definitions)
       {
         std::string process_and_genMatch = process_string;
-        if ( apply_leptonGenMatching ) process_and_genMatch += leptonGenMatch_definition.name_;
-        if ( apply_leptonGenMatching && apply_hadTauGenMatching ) process_and_genMatch += "&";
-        if ( apply_hadTauGenMatching ) process_and_genMatch += hadTauGenMatch_definition.name_;
+        process_and_genMatch += leptonGenMatch_definition.name_;
+        process_and_genMatch += "&";
+        process_and_genMatch += hadTauGenMatch_definition.name_;
         std::cout << " " << process_and_genMatch << " = " << selectedEntries_byGenMatchType[process_and_genMatch]
 		  << " (weighted = " << selectedEntries_weighted_byGenMatchType[process_and_genMatch] << ")" << std::endl;
       }

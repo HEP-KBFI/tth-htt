@@ -42,7 +42,12 @@ GenMatchInterface::GenMatchInterface(unsigned numHadTaus, bool apply_hadTauGenMa
 }
 
 GenMatchInterface::~GenMatchInterface()
-{}
+{
+  for ( std::vector<const GenMatchEntry*>::iterator it = genMatchDefinitions_.begin(); it != genMatchDefinitions_.end(); ++it )
+  {
+    delete (*it);
+  }
+}
 
 void GenMatchInterface::initialize()
 {
@@ -59,7 +64,7 @@ void GenMatchInterface::initialize()
       << " Invalid configuration parameters 'numLeptons' = " << numLeptons_ << " and 'numHadTaus' = " << numHadTaus_ << " !!";
   }
   addGenMatchDefinition("_fake");
-  genMatchDefinition_fakes_ = &genMatchDefinitions_.back();
+  genMatchDefinition_fakes_ = genMatchDefinitions_.back();
   if ( useFlips_ )
   {
     if ( !(numLeptons_ >= 1) )
@@ -68,32 +73,32 @@ void GenMatchInterface::initialize()
         << " Invalid configuration parameters 'numLeptons' = " << numLeptons_ << " and 'useFlips' = " << useFlips_ << " !!";
     }
     addGenMatchDefinition("_flip");
-    genMatchDefinition_flips_ = &genMatchDefinitions_.back();
+    genMatchDefinition_flips_ = genMatchDefinitions_.back();
   }
   if ( numLeptons_ >= 1 )
   {
     addGenMatchDefinition("_Convs");
-    genMatchDefinition_conversions_ = &genMatchDefinitions_.back();
+    genMatchDefinition_conversions_ = genMatchDefinitions_.back();
   }
   addGenMatchDefinition(""); // non-fake
-  genMatchDefinition_nonfakes_ = &genMatchDefinitions_.back();
+  genMatchDefinition_nonfakes_ = genMatchDefinitions_.back();
   if ( useGenTau_and_FakeTau_ )
   {
     addGenMatchDefinition("_gentau");
-    genMatchDefinition_gentau_ = &genMatchDefinitions_.back();
+    genMatchDefinition_gentau_ = genMatchDefinitions_.back();
     addGenMatchDefinition("_faketau");
-    genMatchDefinition_faketau_ = &genMatchDefinitions_.back();
+    genMatchDefinition_faketau_ = genMatchDefinitions_.back();
   }
 }
 
 void 
 GenMatchInterface::addGenMatchDefinition(const std::string& name)
 {
-  genMatchDefinitions_.push_back(GenMatchEntry(name, idx_));
+  genMatchDefinitions_.push_back(new GenMatchEntry(name, idx_));
   ++idx_;
 }
 
-const std::vector<GenMatchEntry>& 
+std::vector<const GenMatchEntry*> 
 GenMatchInterface::getGenMatchDefinitions() const
 {
   return genMatchDefinitions_;
@@ -102,10 +107,10 @@ GenMatchInterface::getGenMatchDefinitions() const
 std::vector<const GenMatchEntry*> 
 GenMatchInterface::getGenMatch(const std::vector<const RecoLepton*>& selLeptons, const std::vector<const RecoHadTau*>& selHadTaus)
 {
-  int selLeptons_numGenMatchedLeptons;
-  int selLeptons_numChargeFlippedGenMatchedLeptons;
-  int selLeptons_numGenMatchedPhotons;
-  int selLeptons_numGenMatchedJets;
+  int selLeptons_numGenMatchedLeptons              = 0;
+  int selLeptons_numChargeFlippedGenMatchedLeptons = 0;
+  int selLeptons_numGenMatchedPhotons              = 0;
+  int selLeptons_numGenMatchedJets                 = 0;
   assert(selLeptons.size() >= numLeptons_);
   if ( useFlips_ )
   {

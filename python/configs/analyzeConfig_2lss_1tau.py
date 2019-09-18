@@ -122,13 +122,13 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       self.central_or_shifts_fr = systematics.FR_all
     elif applyFakeRateWeights == "2lepton":
       self.apply_leptonGenMatching = True
-      self.apply_hadTauGenMatching = True
+      self.apply_hadTauGenMatching = False
       if run_mcClosure:
         self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_e", "Fakeable_mcClosure_m" ])
       # in this regime data-to-MC SFs of jet-to-tau FR are applied and therefore the relevant systematics have to be preserved
       self.central_or_shifts_fr = systematics.FR_all
     elif applyFakeRateWeights == "1tau":
-      self.apply_leptonGenMatching = True
+      self.apply_leptonGenMatching = False
       self.apply_hadTauGenMatching = True
       if run_mcClosure:
         self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_t" ])
@@ -507,7 +507,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     'apply_hlt_filter'         : self.hlt_filter,
                     'useNonNominal'            : self.use_nonnominal,
                     'fillGenEvtHistograms'     : True,
-                    ##'syncGenMatch'             : syncGenMatch,
+                    'syncGenMatch'             : [], # CV: temporarily kept until all channels switch to new gen-matching logic
                     'useObjectMultiplicity'    : True,
                   }
                   self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_and_hadTau_selection)
