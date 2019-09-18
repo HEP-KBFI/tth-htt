@@ -562,7 +562,7 @@ class analyzeConfig(object):
           tH_weights_map = {}
 
           if is_mc:
-            if jobOptions['central_or_shift'] == "central" and not use_th_weights:
+            if jobOptions['central_or_shift'] == "central":# and not use_th_weights:
               central_or_shifts = self.central_or_shifts_internal + [ jobOptions['central_or_shift'] ]
             else:
               central_or_shifts = [ jobOptions['central_or_shift'] ]
