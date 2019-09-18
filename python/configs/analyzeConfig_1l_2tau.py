@@ -1,6 +1,6 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList, is_dymc_reweighting
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import re
@@ -377,7 +377,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         for hadTau_charge_selection in self.hadTau_charge_selections:
 
           for sample_name, sample_info in self.samples.items():
-            if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+            if not sample_info["use_it"]:
               continue
             process_name = sample_info["process_name_specific"]
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
@@ -595,7 +595,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
             decays = [""]
             if sample_category in self.procsWithDecayModes : decays += self.decayModes
             couplings = [""]
-            if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
             for decayMode in decays :
               for coupling in couplings :
                 if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue

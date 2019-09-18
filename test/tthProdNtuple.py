@@ -115,7 +115,7 @@ elif mode == 'hh_wjets':
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_wjets_{}.root'.format(era)
   )
 else:
-  samples = load_samples(era, preselection, suffix = 'base')
+  samples = load_samples(era, preselection, suffix = 'base' if preselection else '')
 
 if era == "2016":
   golden_json = golden_json_2016

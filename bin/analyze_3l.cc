@@ -1034,18 +1034,24 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       bool selTrigger_SingleElectron = selTrigger_1e;
       bool selTrigger_SingleMuon = selTrigger_1mu;
       bool selTrigger_DoubleEG = selTrigger_2e || selTrigger_3e;
-      //bool selTrigger_DoubleMuon = selTrigger_2mu || selTrigger_3mu;
       bool selTrigger_MuonEG = selTrigger_1e1mu || selTrigger_2e1mu || selTrigger_1e2mu;
-      if ( selTrigger_SingleElectron && (isTriggered_DoubleEG || isTriggered_SingleMuon || isTriggered_DoubleMuon || isTriggered_MuonEG) ) {
+      if ( selTrigger_SingleElectron && (isTriggered_SingleMuon || isTriggered_DoubleMuon || isTriggered_MuonEG) ) {
 	if ( run_lumi_eventSelector ) {
-      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
 	  std::cout << " (selTrigger_SingleElectron = " << selTrigger_SingleElectron
-		    << ", isTriggered_DoubleEG = " << isTriggered_DoubleEG
 		    << ", isTriggered_SingleMuon = " << isTriggered_SingleMuon
 		    << ", isTriggered_DoubleMuon = " << isTriggered_DoubleMuon
 		    << ", isTriggered_MuonEG = " << isTriggered_MuonEG << ")" << std::endl;
 	}
 	continue;
+      }
+      if ( selTrigger_SingleElectron && isTriggered_DoubleEG && era != kEra_2018 ) {
+        if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+          std::cout << " (selTrigger_SingleElectron = " << selTrigger_SingleElectron
+                    << ", isTriggered_DoubleEG = " << isTriggered_DoubleEG << ")" << std::endl;
+        }
+        continue;
       }
       if ( selTrigger_DoubleEG && (isTriggered_DoubleMuon || isTriggered_MuonEG) ) {
 	if ( run_lumi_eventSelector ) {

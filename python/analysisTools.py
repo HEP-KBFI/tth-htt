@@ -115,7 +115,10 @@ def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, i
     createFile(makefileName, lines_makefile_with_header)
 
 def is_dymc_reweighting(dbs_name):
-  return dbs_name.startswith('/DY') and 'M-50' in dbs_name and not dbs_name.startswith('/DYBB')
+  return dbs_name.startswith('/DY')       and \
+         'M-50' in dbs_name               and \
+         not dbs_name.startswith('/DYBB') and \
+         'amcatnloFXFX' not in dbs_name
 
 def split_stitched(samples_to_stitch, startstring):
     assert(startstring in [ 'DY', 'W' ])

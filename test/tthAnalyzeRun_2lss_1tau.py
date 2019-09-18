@@ -13,7 +13,7 @@ import getpass
 # E.g. to run: ./test/tthAnalyzeRun_2lss_1tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices         = [
-  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM', 'test'
+  'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM',
 ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
@@ -98,7 +98,7 @@ else:
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 elif mode == "addMEM":
-  samples = load_samples(era, suffix = "addMEM_preselected_2lss1tau" if use_preselected else "addMEM_2lss1tau")
+  samples = load_samples(era, suffix = "addMEM_2lss1tau")
   MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
@@ -115,24 +115,15 @@ elif mode == "forBDTtraining_afterAddMEM":
     tau_id = args.tau_id[:7]
   hadTau_selection_relaxed = tau_id + hadTauWP_map[tau_id]
   MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_{}'.format(hadTau_selection_relaxed)
-elif mode.startswith("sync"):
-  if mode == "sync_wMEM":
-    if use_preselected:
-      raise ValueError("Makes no sense to use preselected samples in sync")
-    samples = load_samples(era, suffix = "addMEM_sync" if use_nonnominal else "addMEM_sync_nom")
-  elif mode == "sync":
-    if use_preselected:
-      raise ValueError("Makes no sense to use preselected samples in sync")
-    samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
-  else:
-    raise ValueError("Invalid mode: %s" % mode)
+elif mode == "sync_wMEM":
+  samples = load_samples(era, suffix = "addMEM_2lss1tau_sync" if use_nonnominal else "addMEM_2lss1tau_sync_nom")
+elif mode == "sync":
+  sample_suffix = "sync" if use_nonnominal else "sync_nom"
+  if use_preselected:
+    sample_suffix = "preselected_{}".format(sample_suffix)
+  samples = load_samples(era, suffix = sample_suffix)
 else:
   raise ValueError("Invalid mode: %s" % mode)
-
-for sample_name, sample_info in samples.items():
-  if sample_name == 'sum_events': continue
-  if sample_name.startswith('/Tau/Run'):
-    sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.info(

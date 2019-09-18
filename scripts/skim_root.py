@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+from tthAnalysis.HiggsToTauTau.common import load_samples
 
 from dump_rle_parallel import dump_rle_parallel
 
@@ -62,7 +62,7 @@ def cleanup(dir_name, exit = False):
   if exit:
     sys.exit(1)
 
-def skim(in_filename, out_filename, entry_list, tree_name = "tree"):
+def skim(in_filename, out_filename, entry_list, tree_name = "Events"):
   '''
   Args:
     in_filename:  string,    Path to the input ROOT file
@@ -191,6 +191,8 @@ if __name__ == '__main__':
   group = parser.add_mutually_exclusive_group()
   parser.add_argument('-i', '--input', metavar = 'file', required = True, type = str, default = '',
                       help = 'R|Path to RLE numbers')
+  parser.add_argument('-e', '--era', metavar = 'era', required = True, type = str, choices = [ '2016', '2017', '2018' ],
+                      help = 'R|Era')
   parser.add_argument('-s', '--sample-name', metavar = 'name', required = True, type = str, default = '',
                       help = 'R|Sample name')
   parser.add_argument('-o', '--output', metavar = 'file', required = True, type = str, default = '',
@@ -205,6 +207,8 @@ if __name__ == '__main__':
                       help = 'R|Overwrite output file if it already exists')
   parser.add_argument('-c', '--clean', dest = 'clean', action = 'store_true', default = False,
                       help = 'R|Clean up RLE/tmp directory if it was created')
+  parser.add_argument('-p', '--post-processed', dest = 'post_processed', action = 'store_true', default = False,
+                      help = 'R|Skim post-processed samples')
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
                       help = 'R|Enable verbose printout')
   args = parser.parse_args()
@@ -213,7 +217,7 @@ if __name__ == '__main__':
     logging.getLogger().setLevel(logging.DEBUG)
 
   rle_filename = args.input
-  out_filename = args.output
+  out_filename = os.path.abspath(args.output)
   grep_dir     = args.directory
   sample_name  = args.sample_name
   force        = args.force
@@ -253,8 +257,11 @@ if __name__ == '__main__':
     sys.exit(1)
 
   # check if the provided sample name is in our 2016 py dictionary
+  samples = load_samples(args.era, is_postproc = args.post_processed)
   sample_key = ''
   for s_key, s_value in samples.iteritems():
+    if s_key == 'sum_events':
+      continue
     if s_value['process_name_specific'] == sample_name:
       sample_key = s_key
       break

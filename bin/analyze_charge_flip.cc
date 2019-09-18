@@ -304,7 +304,7 @@ int main(int argc, char* argv[])
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   inputTree->registerReader(electronReader);
-  RecoElectronCollectionGenMatcher electronGenMatcher;
+  RecoElectronCollectionGenMatcher electronGenMatcher(isDEBUG);
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
@@ -579,7 +579,7 @@ int main(int argc, char* argv[])
 //    the ranking of the triggers is as follows: 2mu, 1e1mu, 2e, 1mu, 1e
 // CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
     if ( !isMC ) {
-      if ( selTrigger_1e && isTriggered_2e ) {
+      if ( selTrigger_1e && isTriggered_2e && era != kEra_2018 ) {
 	if ( run_lumi_eventSelector ) {
 	  std::cout << "event FAILS trigger selection." << std::endl; 
 	  std::cout << " (selTrigger_1e = " << selTrigger_1e 
@@ -676,7 +676,15 @@ int main(int argc, char* argv[])
         muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
         muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
 
-        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons);
+        // Some of the electron pT may be carried away by bremsstrahlung photon at the generator level. Altough
+        // the bremsstrahlung photon is included in the reconstruction of the electron, the generator level
+        // electrons that are considered in the gen matching are final state electrons which have already undergone
+        // bremsstrahlung. This is not accounted for in NanoAOD and has to be corrected for the purpose of this
+        // analysis. The solution here is to redo the gen matching between reconstructed and gen electrons by allowing
+        // the pT of reconstructed electrons to be four times as high as the pT of gen electrons for them to be gen-matched.
+        // This matches with the previous implementation of our gen-matching, where we required the ratio of gen pT
+        // to reco pT be greater than 0.25.
+        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons, 0.3, -0.5, 3.00);
         electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
         electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
         electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);

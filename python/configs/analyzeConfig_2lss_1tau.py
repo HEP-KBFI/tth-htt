@@ -1,6 +1,6 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList, is_dymc_reweighting
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import re
@@ -675,7 +675,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
               decays = [""]
               if sample_category in self.procsWithDecayModes : decays += self.decayModes
               couplings = [""]
-              if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
               for decayMode in decays :
                 for coupling in couplings :
                   if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
@@ -699,7 +698,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             sample_categories.extend(self.signalProcs)
             processes_input = []
             for process_input_base in processes_input_base:
-              processes_input.append("%s_fake" % processes_input_base)
+              processes_input.append("%s_fake" % process_input_base)
             self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
               'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
               'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_lep%s_sum%s_cfg.py" % addBackgrounds_job_fakes_tuple),
@@ -721,7 +720,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             sample_categories.extend(self.signalProcs)
             processes_input = []
             for process_input_base in processes_input_base:
-              processes_input.append("%s_flip" % processes_input_base)
+              processes_input.append("%s_flip" % process_input_base)
             self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_flips] = {
               'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
               'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_lep%s_sum%s_cfg.py" % addBackgrounds_job_flips_tuple),
@@ -743,7 +742,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             sample_categories.extend(self.signalProcs)
             processes_input = []
             for process_input_base in processes_input_base:
-              processes_input.append("%s_Convs" % processes_input_base)
+              processes_input.append("%s_Convs" % process_input_base)
             self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_Convs] = {
               'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
               'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_lep%s_sum%s_cfg.py" % addBackgrounds_job_Convs_tuple),

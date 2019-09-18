@@ -2,6 +2,7 @@
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
+from tthAnalysis.HiggsToTauTau.common import load_samples
 
 import argparse
 import os
@@ -64,6 +65,8 @@ if __name__ == '__main__':
                      help = 'R|Path to ROOT file the RLE numbers of which will be dumped')
   group.add_argument('-s', '--sample', metavar = 'name', required = False, type = str, default = 'all',
                      help = 'R|Sample the RLE numbers of which will be dumped (default: all)')
+  parser.add_argument('-E', '--era', metavar = 'era', required = False, type = str, choices = [ '2016', '2017', '2018' ],
+                      help = 'R|Era')
   parser.add_argument('-o', '--output', metavar = 'path', required = False, type = str, default = '',
                       help = 'R|Directory (or file if -i/--input is used) where the list of RLE numbers will be saved')
   parser.add_argument('-t', '--tree', metavar = 'name', required = False, type = str, default = 'Events',
@@ -76,6 +79,8 @@ if __name__ == '__main__':
                       help = 'R|Name of the event branch')
   parser.add_argument('-f', '--force', dest = 'force', action = 'store_true', default = False,
                       help = 'R|Force the creation of output directory if missing')
+  parser.add_argument('-p', '--post-processed', dest = 'post_processed', action = 'store_true', default = False,
+                      help = 'R|Skim post-processed samples')
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
                       help = 'R|Enable verbose printout')
   args = parser.parse_args()
@@ -107,7 +112,7 @@ if __name__ == '__main__':
 
   else:
 
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+    samples = load_samples(args.era, is_postproc = args.post_processed)
 
     output_dir = output
     if not check_dir(output_dir, use_force):
@@ -115,7 +120,7 @@ if __name__ == '__main__':
 
     idx = lambda x: int(x[x.rfind('_') + 1: x.rfind('.')])
 
-    sample_keys = { v['process_name_specific'] : k for k, v in samples.iteritems() }
+    sample_keys = { v['process_name_specific'] : k for k, v in samples.iteritems() if k != 'sum_events' }
     if args.sample:
       if args.sample not in sample_keys:
         raise ValueError("Unrecognized key: {sample_key}".format(sample_key = args.sample))
