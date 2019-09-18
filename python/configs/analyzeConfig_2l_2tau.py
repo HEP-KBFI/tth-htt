@@ -240,6 +240,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
         return False
       if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
         return False
+    return True
 
   def createCfg_analyze(self, jobOptions, sample_info, lepton_and_hadTau_selection):
     """Create python configuration file for the analyze_2l_2tau executable (analysis code)
