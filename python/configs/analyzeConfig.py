@@ -533,7 +533,9 @@ class analyzeConfig(object):
 
         stitch_histogram_names = {}
         is_mc = (sample_info["type"] == "mc")
-        use_th_weights = self.runTHweights(sample_info)
+        use_th_weights = sample_info["type"] == "mc" and \
+           sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and \
+           sample_info['nof_reweighting'] > 0
 
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
