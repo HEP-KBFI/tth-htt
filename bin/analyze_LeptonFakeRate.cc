@@ -707,7 +707,7 @@ main(int argc,
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
-  fakeableElectronSelector.getSelector().set_mvaTTH_wp(lep_mva_cut_mu);
+  fakeableElectronSelector.getSelector().set_mvaTTH_wp(lep_mva_cut_e);
   fakeableElectronSelector.enable_offline_e_trigger_cuts();
   tightElectronSelector.enable_offline_e_trigger_cuts();
   tightElectronSelector.getSelector().set_min_mvaTTH(lep_mva_cut_e);
