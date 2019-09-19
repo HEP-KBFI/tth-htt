@@ -516,15 +516,17 @@ class analyzeConfig(object):
             return central_or_shift
         return "central"
 
-    def accept_central_or_shift(self, central_or_shift, sample_category, sample_name):
-      if central_or_shift in systematics.LHE().ttH            and sample_category not in self.signalProcs:  return False
-      if central_or_shift in systematics.LHE().tHq            and sample_category != "tHq":                 return False
-      if central_or_shift in systematics.LHE().tHW            and sample_category != "tHW":                 return False
-      if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]: return False
-      if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                 return False
-      if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):     return False
-      if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):     return False
-      if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():        return False
+    def accept_central_or_shift(self, central_or_shift, sample_category, sample_name, has_LHE = False):
+      tth_categories = self.signalProcs + [ "TTH" ]
+      if central_or_shift in systematics.LHE().ttH            and sample_category not in tth_categories:      return False
+      if central_or_shift in systematics.LHE().tHq            and sample_category != "tHq":                   return False
+      if central_or_shift in systematics.LHE().tHW            and sample_category != "tHW":                   return False
+      if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]:   return False
+      if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                   return False
+      if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):       return False
+      if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):       return False
+      if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():          return False
+      if central_or_shift in systematics.LHE().hh and not (sample_category.startswith("signal") and has_LHE): return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False):
