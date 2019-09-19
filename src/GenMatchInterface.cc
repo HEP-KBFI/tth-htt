@@ -112,18 +112,16 @@ GenMatchInterface::getGenMatch(const std::vector<const RecoLepton*>& selLeptons,
   int selLeptons_numGenMatchedPhotons              = 0;
   int selLeptons_numGenMatchedJets                 = 0;
   assert(selLeptons.size() >= numLeptons_);
-  if ( useFlips_ )
+  for ( size_t idxLepton = 0; idxLepton < numLeptons_; ++idxLepton ) 
   {
-    for ( const RecoLepton* selLepton : selLeptons )
-    {
-      countLeptonGenMatches(selLepton, selLeptons_numGenMatchedLeptons, selLeptons_numGenMatchedPhotons, selLeptons_numGenMatchedJets);
-    }
-  }
-  else
-  {
-    for ( const RecoLepton* selLepton : selLeptons )
+    const RecoLepton* selLepton = selLeptons[idxLepton];
+    if ( useFlips_ )
     {
       countLeptonChargeFlipGenMatches(selLepton, selLeptons_numGenMatchedLeptons, selLeptons_numChargeFlippedGenMatchedLeptons, selLeptons_numGenMatchedPhotons, selLeptons_numGenMatchedJets);
+    }
+    else
+    {
+      countLeptonGenMatches(selLepton, selLeptons_numGenMatchedLeptons, selLeptons_numGenMatchedPhotons, selLeptons_numGenMatchedJets);
     }
   }
   
@@ -132,8 +130,9 @@ GenMatchInterface::getGenMatch(const std::vector<const RecoLepton*>& selLeptons,
   int selHadTaus_numGenMatchedMuons     = 0;
   int selHadTaus_numGenMatchedJets      = 0;
   assert(selHadTaus.size() >= numHadTaus_);
-  for ( const RecoHadTau* selHadTau : selHadTaus )
+  for ( size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau ) 
   {
+    const RecoHadTau* selHadTau = selHadTaus[idxHadTau];
     countHadTauGenMatches(selHadTau, selHadTaus_numGenMatchedHadTaus, selHadTaus_numGenMatchedElectrons, selHadTaus_numGenMatchedMuons, selHadTaus_numGenMatchedJets);
   }
 
