@@ -477,6 +477,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
                   'fillGenEvtHistograms'     : True,
                   'syncGenMatch'             : [], # CV: temporarily kept until all channels switch to new gen-matching logic
                   'useObjectMultiplicity'    : True,
+                  'evtCategories'            : self.categories,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_and_hadTau_selection)
 
