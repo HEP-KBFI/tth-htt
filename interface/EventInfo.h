@@ -105,6 +105,9 @@ protected:
 
   static std::vector<std::string>
   getDecayModes(const std::map<std::string, Int_t> & decayMode_idString);
+
+  void
+  copy(const EventInfo & eventInfo);
 };
 
 #endif // EventInfo_H
