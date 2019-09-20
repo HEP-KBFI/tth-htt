@@ -59,6 +59,8 @@ class addMEMConfig:
             dry_run,
             use_nonnominal,
             use_home,
+            method_mem,
+            method_hme,
             channel,
             pool_id = ''
           ):
@@ -103,6 +105,8 @@ class addMEMConfig:
         self.dry_run = dry_run
         self.use_nonnominal = use_nonnominal
         self.use_home = use_home
+        self.method_mem = method_mem
+        self.method_hme = method_hme
         self.pool_id = pool_id if pool_id else uuid.uuid4()
 
         self.workingDir = os.getcwd()
