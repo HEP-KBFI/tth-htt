@@ -329,12 +329,104 @@ void computeShapes4tH()
   // t-channel tH production, with decay H->tautau
   //
   // histograms used as "basis" histograms
-
+  std::string histogramName_tHq_htt_1p0_1p0              = "tHq_htt";
+  TH1*        histogram_tHq_htt_1p0_1p0                  = loadHistogram(inputFile, "", histogramName_tHq_htt_1p0_1p0);
+  std::string histogramName_tHq_htt_0p0_1p0              = "tHq_kt_0_kv_1_htt";
+  TH1*        histogram_tHq_htt_0p0_1p0                  = loadHistogram(inputFile, "", histogramName_tHq_htt_0p0_1p0);
+  std::string histogramName_tHq_htt_2p0_1p0              = "tHq_kt_2_kv_1_htt";
+  TH1*        histogram_tHq_htt_2p0_1p0                  = loadHistogram(inputFile, "", histogramName_tHq_htt_2p0_1p0);
 
   // histograms used as reference for testing
+  std::string histogramName_tHq_htt_m2p0_1p0             = "tHq_kt_m2_kv_1_htt";
+  TH1*        histogram_tHq_htt_m2p0_1p0                 = loadHistogram(inputFile, "", histogramName_tHq_htt_m2p0_1p0);
+  std::string histogramName_tHq_htt_m1p0_1p0             = "tHq_kt_m1_kv_1_htt";
+  TH1*        histogram_tHq_htt_m1p0_1p0                 = loadHistogram(inputFile, "", histogramName_tHq_htt_m1p0_1p0);
+  std::string histogramName_tHq_htt_0p5_1p0              = "tHq_kt_0p5_kv_1_htt";
+  TH1*        histogram_tHq_htt_0p5_1p0                  = loadHistogram(inputFile, "", histogramName_tHq_htt_0p5_1p0);
+  std::string histogramName_tHq_htt_3p0_1p0              = "tHq_kt_3_kv_1_htt";
+  TH1*        histogram_tHq_htt_3p0_1p0                  = loadHistogram(inputFile, "", histogramName_tHq_htt_3p0_1p0);
+
+  // Scale reference histograms to proper cross section.
+  // This step is neccessary, as the reference histograms for tHq and tHW signals
+  // are normalized to the SM cross section for all values of kappa_t and kappa_V !!
+  TH1*        histogram_tHq_htt_1p0_1p0_scaled           = scaleHistogram(histogram_tHq_htt_1p0_1p0,  +1.0, 1.0, kTHQ, kScale);
+  TH1*        histogram_tHq_htt_0p0_1p0_scaled           = scaleHistogram(histogram_tHq_htt_0p0_1p0,   0.0, 1.0, kTHQ, kScale);
+  TH1*        histogram_tHq_htt_2p0_1p0_scaled           = scaleHistogram(histogram_tHq_htt_2p0_1p0,  +2.0, 1.0, kTHQ, kScale);
+  TH1*        histogram_tHq_htt_m2p0_1p0_scaled          = scaleHistogram(histogram_tHq_htt_m2p0_1p0, -2.0, 1.0, kTHQ, kScale);
+  TH1*        histogram_tHq_htt_m1p0_1p0_scaled          = scaleHistogram(histogram_tHq_htt_m1p0_1p0, -1.0, 1.0, kTHQ, kScale);
+  TH1*        histogram_tHq_htt_0p5_1p0_scaled           = scaleHistogram(histogram_tHq_htt_0p5_1p0,  +0.5, 1.0, kTHQ, kScale);
+  TH1*        histogram_tHq_htt_3p0_1p0_scaled           = scaleHistogram(histogram_tHq_htt_3p0_1p0,  +3.0, 1.0, kTHQ, kScale);
+
+  // computed histograms
+  TH1*        histogram_tHq_htt_1p0_1p0_computed_scaled  = computeHistogram(histogram_tHq_htt_1p0_1p0_scaled, histogram_tHq_htt_0p0_1p0_scaled, histogram_tHq_htt_2p0_1p0_scaled, "tHq_kt_1_kv_1_htt_computed",   +1.0, +1.0, kTHQ);
+  TH1*        histogram_tHq_htt_0p0_1p0_computed_scaled  = computeHistogram(histogram_tHq_htt_1p0_1p0_scaled, histogram_tHq_htt_0p0_1p0_scaled, histogram_tHq_htt_2p0_1p0_scaled, "tHq_kt_0_kv_1_htt_computed",    0.0, +1.0, kTHQ);
+  TH1*        histogram_tHq_htt_2p0_1p0_computed_scaled  = computeHistogram(histogram_tHq_htt_1p0_1p0_scaled, histogram_tHq_htt_0p0_1p0_scaled, histogram_tHq_htt_2p0_1p0_scaled, "tHq_kt_2_kv_1_htt_computed",   +2.0, +1.0, kTHQ);
+  
+  TH1*        histogram_tHq_htt_m2p0_1p0_computed_scaled = computeHistogram(histogram_tHq_htt_1p0_1p0_scaled, histogram_tHq_htt_0p0_1p0_scaled, histogram_tHq_htt_2p0_1p0_scaled, "tHq_kt_m2_kv_1_htt_computed",  -2.0, +1.0, kTHQ); 
+  TH1*        histogram_tHq_htt_m1p0_1p0_computed_scaled = computeHistogram(histogram_tHq_htt_1p0_1p0_scaled, histogram_tHq_htt_0p0_1p0_scaled, histogram_tHq_htt_2p0_1p0_scaled, "tHq_kt_m1_kv_1_htt_computed",  -1.0, +1.0, kTHQ); 
+  TH1*        histogram_tHq_htt_0p5_1p0_computed_scaled  = computeHistogram(histogram_tHq_htt_1p0_1p0_scaled, histogram_tHq_htt_0p0_1p0_scaled, histogram_tHq_htt_2p0_1p0_scaled, "tHq_kt_0p5_kv_1_htt_computed", +0.5, +1.0, kTHQ); 
+  TH1*        histogram_tHq_htt_3p0_1p0_computed_scaled  = computeHistogram(histogram_tHq_htt_1p0_1p0_scaled, histogram_tHq_htt_0p0_1p0_scaled, histogram_tHq_htt_2p0_1p0_scaled, "tHq_kt_3_kv_1_htt_computed",   +3.0, +1.0, kTHQ);
+
+  TH1*        histogram_tHq_htt_1p0_1p0_computed         = scaleHistogram(histogram_tHq_htt_1p0_1p0_computed_scaled,  +1.0, 1.0, kTHQ, kUnscale);
+  TH1*        histogram_tHq_htt_0p0_1p0_computed         = scaleHistogram(histogram_tHq_htt_0p0_1p0_computed_scaled,   0.0, 1.0, kTHQ, kUnscale);
+  TH1*        histogram_tHq_htt_2p0_1p0_computed         = scaleHistogram(histogram_tHq_htt_2p0_1p0_computed_scaled,  +2.0, 1.0, kTHQ, kUnscale);
+
+  TH1*        histogram_tHq_htt_m2p0_1p0_computed        = scaleHistogram(histogram_tHq_htt_m2p0_1p0_computed_scaled, -2.0, 1.0, kTHQ, kUnscale);
+  TH1*        histogram_tHq_htt_m1p0_1p0_computed        = scaleHistogram(histogram_tHq_htt_m1p0_1p0_computed_scaled, -1.0, 1.0, kTHQ, kUnscale);
+  TH1*        histogram_tHq_htt_0p5_1p0_computed         = scaleHistogram(histogram_tHq_htt_0p5_1p0_computed_scaled,  +0.5, 1.0, kTHQ, kUnscale);
+  TH1*        histogram_tHq_htt_3p0_1p0_computed         = scaleHistogram(histogram_tHq_htt_3p0_1p0_computed_scaled,  +3.0, 1.0, kTHQ, kUnscale);
 
   // make control plots
+  showHistograms(800, 900,
+		 histogram_tHq_htt_1p0_1p0,           "Reference",
+		 histogram_tHq_htt_1p0_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHq_htt_1p0_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHq_htt_0p0_1p0,           "Reference",
+		 histogram_tHq_htt_0p0_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHq_htt_0p0_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHq_htt_2p0_1p0,           "Reference",
+		 histogram_tHq_htt_2p0_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHq_htt_2p0_1p0.png");
 
+  showHistograms(800, 900,
+		 histogram_tHq_htt_m2p0_1p0,          "Reference",
+		 histogram_tHq_htt_m2p0_1p0_computed, "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHq_htt_m2p0_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHq_htt_m1p0_1p0,          "Reference",
+		 histogram_tHq_htt_m1p0_1p0_computed, "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHq_htt_m1p0_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHq_htt_0p5_1p0,           "Reference",
+		 histogram_tHq_htt_0p5_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHq_htt_0p5_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHq_htt_3p0_1p0,           "Reference",
+		 histogram_tHq_htt_3p0_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHq_htt_3p0_1p0.png");
   //-------------------------------------------------------------------------------------------------
   
   //-------------------------------------------------------------------------------------------------
@@ -445,23 +537,210 @@ void computeShapes4tH()
   // tH production in association with a W boson, with decay H->tautau
   //
   // histograms used as "basis" histograms
+  std::string histogramName_tHW_htt_1p0_1p0              = "tHW_htt";
+  TH1*        histogram_tHW_htt_1p0_1p0                  = loadHistogram(inputFile, "", histogramName_tHW_htt_1p0_1p0);
+  std::string histogramName_tHW_htt_0p0_1p0              = "tHW_kt_0_kv_1_htt";
+  TH1*        histogram_tHW_htt_0p0_1p0                  = loadHistogram(inputFile, "", histogramName_tHW_htt_0p0_1p0);
+  std::string histogramName_tHW_htt_2p0_1p0              = "tHW_kt_2_kv_1_htt";
+  TH1*        histogram_tHW_htt_2p0_1p0                  = loadHistogram(inputFile, "", histogramName_tHW_htt_2p0_1p0);
 
-  
   // histograms used as reference for testing
+  std::string histogramName_tHW_htt_m2p0_1p0             = "tHW_kt_m2_kv_1_htt";
+  TH1*        histogram_tHW_htt_m2p0_1p0                 = loadHistogram(inputFile, "", histogramName_tHW_htt_m2p0_1p0);
+  std::string histogramName_tHW_htt_m1p0_1p0             = "tHW_kt_m1_kv_1_htt";
+  TH1*        histogram_tHW_htt_m1p0_1p0                 = loadHistogram(inputFile, "", histogramName_tHW_htt_m1p0_1p0);
+  std::string histogramName_tHW_htt_0p5_1p0              = "tHW_kt_0p5_kv_1_htt";
+  TH1*        histogram_tHW_htt_0p5_1p0                  = loadHistogram(inputFile, "", histogramName_tHW_htt_0p5_1p0);
+  std::string histogramName_tHW_htt_3p0_1p0              = "tHW_kt_3_kv_1_htt";
+  TH1*        histogram_tHW_htt_3p0_1p0                  = loadHistogram(inputFile, "", histogramName_tHW_htt_3p0_1p0);
 
+  // Scale reference histograms to proper cross section.
+  // This step is neccessary, as the reference histograms for tHW and tHW signals
+  // are normalized to the SM cross section for all values of kappa_t and kappa_V !!
+  TH1*        histogram_tHW_htt_1p0_1p0_scaled           = scaleHistogram(histogram_tHW_htt_1p0_1p0,  +1.0, 1.0, kTHW, kScale);
+  TH1*        histogram_tHW_htt_0p0_1p0_scaled           = scaleHistogram(histogram_tHW_htt_0p0_1p0,   0.0, 1.0, kTHW, kScale);
+  TH1*        histogram_tHW_htt_2p0_1p0_scaled           = scaleHistogram(histogram_tHW_htt_2p0_1p0,  +2.0, 1.0, kTHW, kScale);
+  TH1*        histogram_tHW_htt_m2p0_1p0_scaled          = scaleHistogram(histogram_tHW_htt_m2p0_1p0, -2.0, 1.0, kTHW, kScale);
+  TH1*        histogram_tHW_htt_m1p0_1p0_scaled          = scaleHistogram(histogram_tHW_htt_m1p0_1p0, -1.0, 1.0, kTHW, kScale);
+  TH1*        histogram_tHW_htt_0p5_1p0_scaled           = scaleHistogram(histogram_tHW_htt_0p5_1p0,  +0.5, 1.0, kTHW, kScale);
+  TH1*        histogram_tHW_htt_3p0_1p0_scaled           = scaleHistogram(histogram_tHW_htt_3p0_1p0,  +3.0, 1.0, kTHW, kScale);
+
+  // computed histograms
+  TH1*        histogram_tHW_htt_1p0_1p0_computed_scaled  = computeHistogram(histogram_tHW_htt_1p0_1p0_scaled, histogram_tHW_htt_0p0_1p0_scaled, histogram_tHW_htt_2p0_1p0_scaled, "tHW_kt_1_kv_1_htt_computed",   +1.0, +1.0, kTHW);
+  TH1*        histogram_tHW_htt_0p0_1p0_computed_scaled  = computeHistogram(histogram_tHW_htt_1p0_1p0_scaled, histogram_tHW_htt_0p0_1p0_scaled, histogram_tHW_htt_2p0_1p0_scaled, "tHW_kt_0_kv_1_htt_computed",    0.0, +1.0, kTHW);
+  TH1*        histogram_tHW_htt_2p0_1p0_computed_scaled  = computeHistogram(histogram_tHW_htt_1p0_1p0_scaled, histogram_tHW_htt_0p0_1p0_scaled, histogram_tHW_htt_2p0_1p0_scaled, "tHW_kt_2_kv_1_htt_computed",   +2.0, +1.0, kTHW);
+  
+  TH1*        histogram_tHW_htt_m2p0_1p0_computed_scaled = computeHistogram(histogram_tHW_htt_1p0_1p0_scaled, histogram_tHW_htt_0p0_1p0_scaled, histogram_tHW_htt_2p0_1p0_scaled, "tHW_kt_m2_kv_1_htt_computed",  -2.0, +1.0, kTHW); 
+  TH1*        histogram_tHW_htt_m1p0_1p0_computed_scaled = computeHistogram(histogram_tHW_htt_1p0_1p0_scaled, histogram_tHW_htt_0p0_1p0_scaled, histogram_tHW_htt_2p0_1p0_scaled, "tHW_kt_m1_kv_1_htt_computed",  -1.0, +1.0, kTHW); 
+  TH1*        histogram_tHW_htt_0p5_1p0_computed_scaled  = computeHistogram(histogram_tHW_htt_1p0_1p0_scaled, histogram_tHW_htt_0p0_1p0_scaled, histogram_tHW_htt_2p0_1p0_scaled, "tHW_kt_0p5_kv_1_htt_computed", +0.5, +1.0, kTHW); 
+  TH1*        histogram_tHW_htt_3p0_1p0_computed_scaled  = computeHistogram(histogram_tHW_htt_1p0_1p0_scaled, histogram_tHW_htt_0p0_1p0_scaled, histogram_tHW_htt_2p0_1p0_scaled, "tHW_kt_3_kv_1_htt_computed",   +3.0, +1.0, kTHW);
+
+  TH1*        histogram_tHW_htt_1p0_1p0_computed         = scaleHistogram(histogram_tHW_htt_1p0_1p0_computed_scaled,  +1.0, 1.0, kTHW, kUnscale);
+  TH1*        histogram_tHW_htt_0p0_1p0_computed         = scaleHistogram(histogram_tHW_htt_0p0_1p0_computed_scaled,   0.0, 1.0, kTHW, kUnscale);
+  TH1*        histogram_tHW_htt_2p0_1p0_computed         = scaleHistogram(histogram_tHW_htt_2p0_1p0_computed_scaled,  +2.0, 1.0, kTHW, kUnscale);
+
+  TH1*        histogram_tHW_htt_m2p0_1p0_computed        = scaleHistogram(histogram_tHW_htt_m2p0_1p0_computed_scaled, -2.0, 1.0, kTHW, kUnscale);
+  TH1*        histogram_tHW_htt_m1p0_1p0_computed        = scaleHistogram(histogram_tHW_htt_m1p0_1p0_computed_scaled, -1.0, 1.0, kTHW, kUnscale);
+  TH1*        histogram_tHW_htt_0p5_1p0_computed         = scaleHistogram(histogram_tHW_htt_0p5_1p0_computed_scaled,  +0.5, 1.0, kTHW, kUnscale);
+  TH1*        histogram_tHW_htt_3p0_1p0_computed         = scaleHistogram(histogram_tHW_htt_3p0_1p0_computed_scaled,  +3.0, 1.0, kTHW, kUnscale);
+
+  // make control plots
+  showHistograms(800, 900,
+		 histogram_tHW_htt_1p0_1p0,           "Reference",
+		 histogram_tHW_htt_1p0_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_htt_1p0_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHW_htt_0p0_1p0,           "Reference",
+		 histogram_tHW_htt_0p0_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_htt_0p0_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHW_htt_2p0_1p0,           "Reference",
+		 histogram_tHW_htt_2p0_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_htt_2p0_1p0.png");
+
+  showHistograms(800, 900,
+		 histogram_tHW_htt_m2p0_1p0,          "Reference",
+		 histogram_tHW_htt_m2p0_1p0_computed, "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_htt_m2p0_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHW_htt_m1p0_1p0,          "Reference",
+		 histogram_tHW_htt_m1p0_1p0_computed, "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_htt_m1p0_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHW_htt_0p5_1p0,           "Reference",
+		 histogram_tHW_htt_0p5_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_htt_0p5_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHW_htt_3p0_1p0,           "Reference",
+		 histogram_tHW_htt_3p0_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_htt_3p0_1p0.png");
   //-------------------------------------------------------------------------------------------------
   
   //-------------------------------------------------------------------------------------------------
   // tH production in association with a W boson, with decay H->WW
   //
   // histograms used as "basis" histograms
+  std::string histogramName_tHW_hww_1p0_1p0              = "tHW_hww";
+  TH1*        histogram_tHW_hww_1p0_1p0                  = loadHistogram(inputFile, "", histogramName_tHW_hww_1p0_1p0);
+  std::string histogramName_tHW_hww_0p0_1p0              = "tHW_kt_0_kv_1_hww";
+  TH1*        histogram_tHW_hww_0p0_1p0                  = loadHistogram(inputFile, "", histogramName_tHW_hww_0p0_1p0);
+  std::string histogramName_tHW_hww_2p0_1p0              = "tHW_kt_2_kv_1_hww";
+  TH1*        histogram_tHW_hww_2p0_1p0                  = loadHistogram(inputFile, "", histogramName_tHW_hww_2p0_1p0);
 
   // histograms used as reference for testing
+  std::string histogramName_tHW_hww_m2p0_1p0             = "tHW_kt_m2_kv_1_hww";
+  TH1*        histogram_tHW_hww_m2p0_1p0                 = loadHistogram(inputFile, "", histogramName_tHW_hww_m2p0_1p0);
+  std::string histogramName_tHW_hww_m1p0_1p0             = "tHW_kt_m1_kv_1_hww";
+  TH1*        histogram_tHW_hww_m1p0_1p0                 = loadHistogram(inputFile, "", histogramName_tHW_hww_m1p0_1p0);
+  std::string histogramName_tHW_hww_0p5_1p0              = "tHW_kt_0p5_kv_1_hww";
+  TH1*        histogram_tHW_hww_0p5_1p0                  = loadHistogram(inputFile, "", histogramName_tHW_hww_0p5_1p0);
+  std::string histogramName_tHW_hww_3p0_1p0              = "tHW_kt_3_kv_1_hww";
+  TH1*        histogram_tHW_hww_3p0_1p0                  = loadHistogram(inputFile, "", histogramName_tHW_hww_3p0_1p0);
 
+  // Scale reference histograms to proper cross section.
+  // This step is neccessary, as the reference histograms for tHW and tHW signals
+  // are normalized to the SM cross section for all values of kappa_t and kappa_V !!
+  TH1*        histogram_tHW_hww_1p0_1p0_scaled           = scaleHistogram(histogram_tHW_hww_1p0_1p0,  +1.0, 1.0, kTHW, kScale);
+  TH1*        histogram_tHW_hww_0p0_1p0_scaled           = scaleHistogram(histogram_tHW_hww_0p0_1p0,   0.0, 1.0, kTHW, kScale);
+  TH1*        histogram_tHW_hww_2p0_1p0_scaled           = scaleHistogram(histogram_tHW_hww_2p0_1p0,  +2.0, 1.0, kTHW, kScale);
+  TH1*        histogram_tHW_hww_m2p0_1p0_scaled          = scaleHistogram(histogram_tHW_hww_m2p0_1p0, -2.0, 1.0, kTHW, kScale);
+  TH1*        histogram_tHW_hww_m1p0_1p0_scaled          = scaleHistogram(histogram_tHW_hww_m1p0_1p0, -1.0, 1.0, kTHW, kScale);
+  TH1*        histogram_tHW_hww_0p5_1p0_scaled           = scaleHistogram(histogram_tHW_hww_0p5_1p0,  +0.5, 1.0, kTHW, kScale);
+  TH1*        histogram_tHW_hww_3p0_1p0_scaled           = scaleHistogram(histogram_tHW_hww_3p0_1p0,  +3.0, 1.0, kTHW, kScale);
+
+  // computed histograms
+  TH1*        histogram_tHW_hww_1p0_1p0_computed_scaled  = computeHistogram(histogram_tHW_hww_1p0_1p0_scaled, histogram_tHW_hww_0p0_1p0_scaled, histogram_tHW_hww_2p0_1p0_scaled, "tHW_kt_1_kv_1_hww_computed",   +1.0, +1.0, kTHW);
+  TH1*        histogram_tHW_hww_0p0_1p0_computed_scaled  = computeHistogram(histogram_tHW_hww_1p0_1p0_scaled, histogram_tHW_hww_0p0_1p0_scaled, histogram_tHW_hww_2p0_1p0_scaled, "tHW_kt_0_kv_1_hww_computed",    0.0, +1.0, kTHW);
+  TH1*        histogram_tHW_hww_2p0_1p0_computed_scaled  = computeHistogram(histogram_tHW_hww_1p0_1p0_scaled, histogram_tHW_hww_0p0_1p0_scaled, histogram_tHW_hww_2p0_1p0_scaled, "tHW_kt_2_kv_1_hww_computed",   +2.0, +1.0, kTHW);
+  
+  TH1*        histogram_tHW_hww_m2p0_1p0_computed_scaled = computeHistogram(histogram_tHW_hww_1p0_1p0_scaled, histogram_tHW_hww_0p0_1p0_scaled, histogram_tHW_hww_2p0_1p0_scaled, "tHW_kt_m2_kv_1_hww_computed",  -2.0, +1.0, kTHW); 
+  TH1*        histogram_tHW_hww_m1p0_1p0_computed_scaled = computeHistogram(histogram_tHW_hww_1p0_1p0_scaled, histogram_tHW_hww_0p0_1p0_scaled, histogram_tHW_hww_2p0_1p0_scaled, "tHW_kt_m1_kv_1_hww_computed",  -1.0, +1.0, kTHW); 
+  TH1*        histogram_tHW_hww_0p5_1p0_computed_scaled  = computeHistogram(histogram_tHW_hww_1p0_1p0_scaled, histogram_tHW_hww_0p0_1p0_scaled, histogram_tHW_hww_2p0_1p0_scaled, "tHW_kt_0p5_kv_1_hww_computed", +0.5, +1.0, kTHW); 
+  TH1*        histogram_tHW_hww_3p0_1p0_computed_scaled  = computeHistogram(histogram_tHW_hww_1p0_1p0_scaled, histogram_tHW_hww_0p0_1p0_scaled, histogram_tHW_hww_2p0_1p0_scaled, "tHW_kt_3_kv_1_hww_computed",   +3.0, +1.0, kTHW);
+
+  TH1*        histogram_tHW_hww_1p0_1p0_computed         = scaleHistogram(histogram_tHW_hww_1p0_1p0_computed_scaled,  +1.0, 1.0, kTHW, kUnscale);
+  TH1*        histogram_tHW_hww_0p0_1p0_computed         = scaleHistogram(histogram_tHW_hww_0p0_1p0_computed_scaled,   0.0, 1.0, kTHW, kUnscale);
+  TH1*        histogram_tHW_hww_2p0_1p0_computed         = scaleHistogram(histogram_tHW_hww_2p0_1p0_computed_scaled,  +2.0, 1.0, kTHW, kUnscale);
+
+  TH1*        histogram_tHW_hww_m2p0_1p0_computed        = scaleHistogram(histogram_tHW_hww_m2p0_1p0_computed_scaled, -2.0, 1.0, kTHW, kUnscale);
+  TH1*        histogram_tHW_hww_m1p0_1p0_computed        = scaleHistogram(histogram_tHW_hww_m1p0_1p0_computed_scaled, -1.0, 1.0, kTHW, kUnscale);
+  TH1*        histogram_tHW_hww_0p5_1p0_computed         = scaleHistogram(histogram_tHW_hww_0p5_1p0_computed_scaled,  +0.5, 1.0, kTHW, kUnscale);
+  TH1*        histogram_tHW_hww_3p0_1p0_computed         = scaleHistogram(histogram_tHW_hww_3p0_1p0_computed_scaled,  +3.0, 1.0, kTHW, kUnscale);
+
+  // make control plots
+  showHistograms(800, 900,
+		 histogram_tHW_hww_1p0_1p0,           "Reference",
+		 histogram_tHW_hww_1p0_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_hww_1p0_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHW_hww_0p0_1p0,           "Reference",
+		 histogram_tHW_hww_0p0_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_hww_0p0_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHW_hww_2p0_1p0,           "Reference",
+		 histogram_tHW_hww_2p0_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_hww_2p0_1p0.png");
+
+  showHistograms(800, 900,
+		 histogram_tHW_hww_m2p0_1p0,          "Reference",
+		 histogram_tHW_hww_m2p0_1p0_computed, "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_hww_m2p0_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHW_hww_m1p0_1p0,          "Reference",
+		 histogram_tHW_hww_m1p0_1p0_computed, "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_hww_m1p0_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHW_hww_0p5_1p0,           "Reference",
+		 histogram_tHW_hww_0p5_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_hww_0p5_1p0.png");
+  showHistograms(800, 900,
+		 histogram_tHW_hww_3p0_1p0,           "Reference",
+		 histogram_tHW_hww_3p0_1p0_computed,  "Computed",
+		 xAxisTitle, 1.10,
+		 true, 1.e-4, 1.e+4, yAxisTitle, 1.30,
+		 0.64, 0.78,
+		 "plots/computeShapes4tH_tHW_hww_3p0_1p0.png");
   //-------------------------------------------------------------------------------------------------
-
-
-
+  
   delete inputFile;
 }
 
