@@ -447,7 +447,7 @@ int main(int argc,
         for(std::size_t selLepton_sublead_idx = selLepton_lead_idx + 1; selLepton_sublead_idx < selLeptons.size(); ++selLepton_sublead_idx)
         {
           const RecoLepton * selLepton_sublead = selLeptons[selLepton_sublead_idx];
-          for(const std::string central_or_shift: central_or_shifts)
+          for(const std::string & central_or_shift: central_or_shifts)
           {
             checkOptionValidity(central_or_shift, isMC);
             const int jetPt_option    = getJet_option     (central_or_shift, isMC);

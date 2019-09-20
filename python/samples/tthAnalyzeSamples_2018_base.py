@@ -14618,7 +14618,7 @@ samples_2018["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-1
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2019Aug24_mc_woPresel_nom_all/ntuples/THW_ctcvcp"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [16]),
       ]),
     ]
   ),

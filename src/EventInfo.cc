@@ -46,13 +46,20 @@ EventInfo::EventInfo(bool is_mc,
 }
 
 EventInfo::EventInfo(const EventInfo & eventInfo)
-  : LHEReweightingWeight_max(eventInfo.LHEReweightingWeight_max)
+  : EventInfo()
 {
-  *this = eventInfo;
+  copy(eventInfo);
 }
 
 EventInfo &
 EventInfo::operator=(const EventInfo & eventInfo)
+{
+  copy(eventInfo);
+  return *this;
+}
+
+void
+EventInfo::copy(const EventInfo & eventInfo)
 {
   run                 = eventInfo.run;
   lumi                = eventInfo.lumi;
@@ -85,8 +92,6 @@ EventInfo::operator=(const EventInfo & eventInfo)
     is_owner = true;
     std::memcpy(LHEReweightingWeight, eventInfo.LHEReweightingWeight, nLHEReweightingWeight);
   }
-
-  return *this;
 }
 
 EventInfo::~EventInfo()
