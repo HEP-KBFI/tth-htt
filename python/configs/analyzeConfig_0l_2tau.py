@@ -55,6 +55,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
         jet_cleaning_by_index,
         gen_matching_by_index,
         central_or_shifts,
+        evtCategories,
         max_files_per_job,
         era,
         use_lumi,
@@ -154,13 +155,10 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.select_rle_output = select_rle_output
     self.hlt_filter = hlt_filter
 
-    self.categories = [
-      "0l_2tau",
-      #"0l_2tau_0bM_0j", "0l_2tau_1bM_0j", "0l_2tau_2bM_0j",
-      #"0l_2tau_0bM_1j", "0l_2tau_1bM_1j", "0l_2tau_2bM_1j",
-      #"0l_2tau_0bM_2j", "0l_2tau_1bM_2j", "0l_2tau_2bM_2j"
-      ]  ## N.B.: Inclusive category in a member of this list
+    self.categories = evtCategories
     self.category_inclusive = "0l_2tau"
+    if self.category_inclusive not in self.categories:
+      self.categories.append(self.category_inclusive)
 
   def set_BDT_training(self, hadTau_selection_relaxed):
     """Run analysis with loose selection criteria for hadronic taus,
@@ -435,6 +433,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'fillGenEvtHistograms'     : True,
                   'syncGenMatch'             : [], # CV: temporarily kept until all channels switch to new gen-matching logic
                   'useObjectMultiplicity'    : True,
+                  'evtCategories'            : self.categories,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, hadTau_selection)
 
