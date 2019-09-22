@@ -38,7 +38,7 @@ HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
   const bool do_scan = cfg.getParameter<bool>("do_scan");
 
   // read the python file that we're about to execute
-  const std::string applicationLoadPath = LocalFileInPath("tthAnalysis/HiggsToTauTau/python/do_weight.py").fullPath();
+  const std::string applicationLoadPath = LocalFileInPath("hhAnalysis/multilepton/python/do_weight.py").fullPath();
   std::ifstream applicationLoadFile(applicationLoadPath);
   std::string applicationLoadStr;
 
