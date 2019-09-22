@@ -7,6 +7,7 @@ import os
 import jinja2
 import uuid
 import sys
+import collections
 
 DEPENDENCIES = [
     "",  # CMSSW_BASE/src
@@ -117,6 +118,8 @@ class syncNtupleConfig:
     if self.running_method:
       additional_args += " -R %s" % self.running_method
 
+    cr_channels = { channel : False for channel in [ '3l', '4l' ] }
+
     inclusive_args = '-v %s -e %s' % (version, era)
 
     inclusive_args += additional_args
@@ -125,10 +128,20 @@ class syncNtupleConfig:
     create_if_not_exists(config_dir)
     create_if_not_exists(output_dir)
 
-    self.channel_info = {}
+    channels_extended = collections.OrderedDict()
+    cr_channels = [ '3l', '4l' ]
     for channel in channels:
+      channels_extended[channel] = ''
+      if channel in cr_channels:
+        channels_extended[channel + 'ctrl'] = ' -c'
+
+    self.channel_info = {}
+    for channel in channels_extended:
       input_file = os.path.join(final_output_dir, '%s.root' % channel)
-      channel_script = executable_pattern % channel
+      executable_channel = channel
+      if channel.replace('ctrl', '') in cr_channels:
+        executable_channel = channel.replace('ctrl', '')
+      channel_script = executable_pattern % executable_channel
 
       channel_makefile = os.path.join(config_dir, 'Makefile_%s' % channel)
       channel_outlog   = os.path.join(config_dir, 'stdout_sync_%s.log' % channel)
@@ -141,7 +154,8 @@ class syncNtupleConfig:
 
       cmd_args = common_args if 'inclusive' not in channel else inclusive_args
       if 'inclusive' not in channel:
-        additional_args += " -p %s" % use_preselected
+        cmd_args += " -p %s" % use_preselected
+      cmd_args += channels_extended[channel]
 
       channel_cmd_create = '%s %s 2>%s 1>%s' % \
                            (channel_script, cmd_args, channel_errlog_create, channel_outlog_create)

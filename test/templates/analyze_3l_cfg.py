@@ -74,6 +74,7 @@ process.analyze_3l = cms.PSet(
     minNumJets = cms.int32(2),
 
     isMC = cms.bool(True),
+    isControlRegion = cms.bool(False),
     central_or_shift = cms.string(''),
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),

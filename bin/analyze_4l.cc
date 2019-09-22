@@ -150,6 +150,7 @@ int main(int argc, char* argv[])
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
+  const bool isControlRegion = cfg_analyze.getParameter<bool>("isControlRegion");
 
   // single lepton triggers
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
@@ -1323,7 +1324,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("sel lepton charge", evtWeightRecorder.get(central_or_shift_main));
 
     const bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull);
-    if(failsZbosonMassVeto)
+    if(failsZbosonMassVeto != isControlRegion)
     {
       if(run_lumi_eventSelector)
       {

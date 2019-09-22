@@ -31,6 +31,7 @@ parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_sideband()
 parser.add_tau_id()
+parser.add_control_region()
 args = parser.parse_args()
 
 # Common arguments
@@ -58,6 +59,7 @@ jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 sideband          = args.sideband
 tau_id            = args.tau_id
+control_region    = args.control_region
 
 # Use the arguments
 central_or_shifts = []
@@ -138,6 +140,7 @@ if __name__ == '__main__':
     central_or_shifts                     = central_or_shifts,
     max_files_per_job                     = files_per_job,
     era                                   = era,
+    isControlRegion                       = control_region,
     use_lumi                              = True,
     lumi                                  = lumi,
     check_output_files                    = check_output_files,
