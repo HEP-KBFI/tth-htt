@@ -425,6 +425,19 @@ int main(int argc, char* argv[])
     histogram_idxBin_pT_and_eta_rec_vs_gen_SS->Sumw2();
   }
 
+  TH2* histogram_pT_gen_vs_rec_meeAbove100_ePtAvobe50 = 0;
+  TH2* histogram_pT_gen_vs_rec_meeAbove100_BBHH = 0;
+  TH2* histogram_pT_gen_vs_rec_meeAbove100_EEHH = 0;
+  TH2* histogram_pT_gen_vs_rec_meeAbove100_BEHH = 0;
+  if ( isZee && central_or_shift == "central" ) {
+    TDirectory* subdir = createSubdirectory_recursively(fs, "DY", false);
+    subdir->cd();
+    histogram_pT_gen_vs_rec_meeAbove100_ePtAvobe50 = new TH2D("pT_gen_vs_rec_meeAbove100_ePtAvobe50", "pT_gen_vs_rec_meeAbove100_ePtAvobe50", 200,0,200, 200,0,200);
+    histogram_pT_gen_vs_rec_meeAbove100_BBHH = new TH2D("pT_gen_vs_rec_meeAbove100_BBHH", "pT_gen_vs_rec_meeAbove100_BBHH", 200,0,200, 200,0,200);
+    histogram_pT_gen_vs_rec_meeAbove100_EEHH = new TH2D("pT_gen_vs_rec_meeAbove100_EEHH", "pT_gen_vs_rec_meeAbove100_EEHH", 200,0,200, 200,0,200);
+    histogram_pT_gen_vs_rec_meeAbove100_BEHH = new TH2D("pT_gen_vs_rec_meeAbove100_BEHH", "pT_gen_vs_rec_meeAbove100_BEHH", 200,0,200, 200,0,200);    
+  }
+
   GenEvtHistManager* genEvtHistManager_beforeCuts = 0;
   GenEvtHistManager* genEvtHistManager_afterCuts = 0;
   LHEInfoHistManager* lheInfoHistManager = 0;
@@ -459,6 +472,9 @@ int main(int argc, char* argv[])
     "run:ls:event selection",
     "object multiplicity",
     "trigger",
+    "trigger 1e",
+    "trigger 2e",
+    "trigger 1e && 2e",
     "= 2 presel electrons",
     "presel electron trigger match",
     "= 0 presel muons",
@@ -467,6 +483,9 @@ int main(int argc, char* argv[])
     "lead electron pT > 25 GeV && sublead electron pT > 15 GeV",
     "tight electron charge",
     "60 < m(ee) < 120 GeV",
+    "selectedEvt_1eTrig",
+    "selectedEvt_2eTrig",
+    "selectedEvt 1e && 2eTrig",
   };
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
@@ -590,6 +609,19 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("trigger");
     cutFlowHistManager->fillHistograms("trigger", lumiScale);
+
+    if (selTrigger_1e) {
+      cutFlowTable.update("trigger 1e");
+      cutFlowHistManager->fillHistograms("trigger 1e", lumiScale);
+    }
+    if (selTrigger_2e) {
+      cutFlowTable.update("trigger 2e");
+      cutFlowHistManager->fillHistograms("trigger 2e", lumiScale);
+    }
+    if (selTrigger_1e && selTrigger_2e) {
+      cutFlowTable.update("trigger 1e && 2e");
+      cutFlowHistManager->fillHistograms("trigger 1e && 2e", lumiScale);
+    }
 
     if ( (selTrigger_2e && !apply_offline_e_trigger_cuts_2e) ||
 	 (selTrigger_1e && !apply_offline_e_trigger_cuts_1e) ) {
@@ -890,11 +922,24 @@ int main(int argc, char* argv[])
       if ( run_lumi_eventSelector ) {
       	std::cout << "event FAILS mass window requirement." << std::endl;
       }
-      continue;
+      continue; 
     }
     cutFlowTable.update("60 < m(ee) < 120 GeV");
     cutFlowHistManager->fillHistograms("60 < m(ee) < 120 GeV", evtWeight);
-          
+
+        if (selTrigger_1e) {
+      cutFlowTable.update("selectedEvt_1eTrig");
+      cutFlowHistManager->fillHistograms("selectedEvt_1eTrig", evtWeight);
+    }
+    if (selTrigger_2e) {
+      cutFlowTable.update("selectedEvt_2eTrig");
+      cutFlowHistManager->fillHistograms("selectedEvt_2eTrig", evtWeight);
+    }
+     if (selTrigger_1e && selTrigger_2e) {
+      cutFlowTable.update("selectedEvt 1e && 2eTrig");
+      cutFlowHistManager->fillHistograms("selectedEvt 1e && 2eTrig", evtWeight);
+    }
+     
     bool isCharge_SS = selElectron_lead_charge*selElectron_sublead_charge > 0;
     bool isCharge_OS = selElectron_lead_charge*selElectron_sublead_charge < 0;
 
@@ -971,6 +1016,24 @@ int main(int argc, char* argv[])
 	  histogram_idxBin_pT_and_eta_rec_vs_gen->Fill(idxBin_sublead_gen, idxBin_sublead_rec, evtWeight);
 	  if      ( isCharge_SS ) histogram_idxBin_pT_and_eta_rec_vs_gen_SS->Fill(idxBin_sublead_gen, idxBin_sublead_rec, evtWeight);
 	  else if ( isCharge_OS ) histogram_idxBin_pT_and_eta_rec_vs_gen_OS->Fill(idxBin_sublead_gen, idxBin_sublead_rec, evtWeight);
+
+	  //---- DY mountain-like tail above mee >100
+	  int binIdx_lead    = getBinIdx_pT_and_absEta(selElectron_lead_p4.pt(),    selElectron_lead_p4.eta());
+	  int binIdx_sublead = getBinIdx_pT_and_absEta(selElectron_sublead_p4.pt(), selElectron_sublead_p4.eta());
+	  if ( (binIdx_lead    == 3 || binIdx_lead    == 6) &&
+	       (binIdx_sublead == 3 || binIdx_sublead == 6)) { // lead.pt > 50 && sublead.pt > 50	  
+	    if (m_ee >= 100.) {
+	      histogram_pT_gen_vs_rec_meeAbove100_ePtAvobe50->Fill(genElectron_lead_p4.pt(), selElectron_lead_p4.pt(), evtWeight);
+	      if (binIdx_lead == 3 && binIdx_sublead == 3) {
+		histogram_pT_gen_vs_rec_meeAbove100_BBHH->Fill(genElectron_lead_p4.pt(), selElectron_lead_p4.pt(), evtWeight);
+	      } else if (binIdx_lead == 6 && binIdx_sublead == 6) {
+		histogram_pT_gen_vs_rec_meeAbove100_EEHH->Fill(genElectron_lead_p4.pt(), selElectron_lead_p4.pt(), evtWeight);
+	      } else {
+		histogram_pT_gen_vs_rec_meeAbove100_BEHH->Fill(genElectron_lead_p4.pt(), selElectron_lead_p4.pt(), evtWeight);
+	      }
+	    }
+	  }
+	  
 	}
       } else {
 	// DY_fake
