@@ -1797,21 +1797,9 @@ int main(int argc, char* argv[])
         }
 
         std::vector<std::string> categories;
-        if(selJets.size() >= 4){
-          if   ( selBJets_medium.size() >= 2 ) categories.push_back("0l_2tau_2bM_2j");
-          if   ( selBJets_medium.size() >= 1 ) categories.push_back("0l_2tau_1bM_2j");
-          else                                 categories.push_back("0l_2tau_0bM_2j");
-        }
-        if(selJets.size() >= 3){
-          if   ( selBJets_medium.size() >= 2 ) categories.push_back("0l_2tau_2bM_1j");
-          if   ( selBJets_medium.size() >= 1 ) categories.push_back("0l_2tau_1bM_1j");
-          else                                 categories.push_back("0l_2tau_0bM_1j");
-        }
-        if(selJets.size() >= 2){
-          if   ( selBJets_medium.size() >= 2 ) categories.push_back("0l_2tau_2bM_0j");
-          if   ( selBJets_medium.size() >= 1 ) categories.push_back("0l_2tau_1bM_0j");
-          else                                 categories.push_back("0l_2tau_0bM_0j");
-        }
+        if   ( selBJets_medium.size() >= 2 ) categories.push_back("0l_2tau_2bM_2j");
+        if   ( selBJets_medium.size() >= 1 ) categories.push_back("0l_2tau_1bM_2j");
+        else                                 categories.push_back("0l_2tau_0bM_2j");
         for(const std::string & category: categories)
         {
           selHistManager->evt_in_categories_[category]->fillHistograms(

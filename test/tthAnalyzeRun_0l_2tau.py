@@ -112,14 +112,10 @@ else:
 evtCategories = None
 if mode == "default" and len(central_or_shifts) <= 1:
   evtCategories = [
-    "0l_2tau_0bM_0j", "0l_2tau_1bM_0j", "0l_2tau_2bM_0j",
-    "0l_2tau_0bM_1j", "0l_2tau_1bM_1j", "0l_2tau_2bM_1j",
     "0l_2tau_0bM_2j", "0l_2tau_1bM_2j", "0l_2tau_2bM_2j",
   ]
 else:
-  evtCategories = [
-    "0l_2tau_0bM_2j", "0l_2tau_1bM_2j", "0l_2tau_2bM_2j",
-  ]
+  evtCategories = []
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
