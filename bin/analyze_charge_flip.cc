@@ -611,16 +611,16 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("trigger", evtWeightRecorder.get(central_or_shift));
 
     if (selTrigger_1e) {
-      cutFlowTable.update("trigger 1e");
-      cutFlowHistManager->fillHistograms("trigger 1e", lumiScale);
+      cutFlowTable.update("trigger 1e", evtWeightRecorder.get(central_or_shift));
+      cutFlowHistManager->fillHistograms("trigger 1e", evtWeightRecorder.get(central_or_shift));
     }
     if (selTrigger_2e) {
-      cutFlowTable.update("trigger 2e");
-      cutFlowHistManager->fillHistograms("trigger 2e", lumiScale);
+      cutFlowTable.update("trigger 2e", evtWeightRecorder.get(central_or_shift));
+      cutFlowHistManager->fillHistograms("trigger 2e", evtWeightRecorder.get(central_or_shift));
     }
     if (selTrigger_1e && selTrigger_2e) {
-      cutFlowTable.update("trigger 1e && 2e");
-      cutFlowHistManager->fillHistograms("trigger 1e && 2e", lumiScale);
+      cutFlowTable.update("trigger 1e && 2e", evtWeightRecorder.get(central_or_shift));
+      cutFlowHistManager->fillHistograms("trigger 1e && 2e", evtWeightRecorder.get(central_or_shift));
     }
 
     if ( (selTrigger_2e && !apply_offline_e_trigger_cuts_2e) ||
