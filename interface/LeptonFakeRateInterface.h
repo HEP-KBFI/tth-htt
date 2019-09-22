@@ -14,25 +14,24 @@ class TFile;
 class LeptonFakeRateInterface
 {
 public:
-  LeptonFakeRateInterface(const edm::ParameterSet & cfg,
-                          int central_or_shift = kFRl_central);
+  LeptonFakeRateInterface(const edm::ParameterSet & cfg);
   ~LeptonFakeRateInterface();
 
   double
   getWeight_e(double electronPt,
-              double electronAbsEta) const;
-
+              double electronAbsEta,
+              int central_or_shift) const;
   double
   getWeight_mu(double muonPt,
-               double muonAbsEta) const;
+               double muonAbsEta,
+               int central_or_shift) const;
 
 private:
-  int central_or_shift_;
 
   std::map<std::string, TFile *> inputFiles_;
 
-  lutWrapperBase * lutFakeRate_e_;
-  lutWrapperBase * lutFakeRate_mu_;
+  std::map<int, lutWrapperBase *> lutFakeRate_e_;
+  std::map<int, lutWrapperBase *> lutFakeRate_mu_;
 };
 
 #endif

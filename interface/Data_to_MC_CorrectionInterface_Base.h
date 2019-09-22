@@ -48,7 +48,7 @@ public:
   //-----------------------------------------------------------------------------
   // data/MC correction for electron and muon trigger efficiency
   virtual double
-  getSF_leptonTriggerEff() const;
+  getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const;
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
@@ -71,13 +71,13 @@ public:
   // data/MC corrections for hadronic tau identification efficiency,
   // and for e->tau and mu->tau misidentification rates
   virtual double
-  getSF_hadTauID_and_Iso() const;
+  getSF_hadTauID_and_Iso(TauIDSFsys central_or_shift) const;
 
   virtual double
-  getSF_eToTauFakeRate() const;
+  getSF_eToTauFakeRate(FRet central_or_shift) const;
 
   virtual double
-  getSF_muToTauFakeRate() const;
+  getSF_muToTauFakeRate(FRmt central_or_shift) const;
   //-----------------------------------------------------------------------------
 
 protected:
@@ -112,13 +112,9 @@ protected:
   TauID hadTauId_;
   std::string tauIDSF_str_;
   std::string tauIDSF_level_str_;
-  TauIDSFsys tauIDSF_option_;
 
   int hadTauSelection_antiElectron_[4];
   int hadTauSelection_antiMuon_[4];
-  FRet eToTauFakeRate_option_;
-  FRmt muToTauFakeRate_option_;
-  TriggerSFsys triggerSF_option_;
 
   TauIDSFTool * tauIdSFs_;
   bool applyHadTauSF_;

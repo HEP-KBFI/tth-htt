@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoWriter.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
 
 EventInfoWriter::EventInfoWriter()
   : EventInfoWriter(false, false, "")
@@ -16,9 +17,11 @@ EventInfoWriter::EventInfoWriter(bool is_signal,
   branchName_event_   = Form(pattern.data(), "event");
   branchName_PV_ndof_ = Form(pattern.data(), "PV_ndof");
 
-  branchName_genHiggsDecayMode_ = is_signal ? Form(pattern.data(), "genHiggsDecayMode") : "";
-  branchName_genWeight_         = is_mc     ? Form(pattern.data(), "genWeight")         : "";
-  branchName_pileupWeight_      = is_mc     ? Form(pattern.data(), "puWeight")          : "";
+  branchName_genHiggsDecayMode_ = is_signal ? Form(pattern.data(), "genHiggsDecayMode")                         : "";
+  branchName_genWeight_         = is_mc     ? Form(pattern.data(), "genWeight")                                 : "";
+  branchName_pileupWeight_      = is_mc     ? Form(pattern.data(), getBranchName_pileup(PUsys::central).data()) : "";
+  branchName_pileupWeightUp_    = is_mc     ? Form(pattern.data(), getBranchName_pileup(PUsys::up).data())      : "";
+  branchName_pileupWeightDown_  = is_mc     ? Form(pattern.data(), getBranchName_pileup(PUsys::down).data())    : "";
 
   const std::string LHEReweightingWeight_base = "LHEReweightingWeight";
   branchName_LHEReweightingWeight  = is_mc ? Form(pattern.data(), LHEReweightingWeight_base.data())              : "";
@@ -44,7 +47,15 @@ EventInfoWriter::setBranches(TTree * tree)
   }
   if(! branchName_pileupWeight_.empty())
   {
-    bai.setBranch(eventInfo_.pileupWeight, branchName_pileupWeight_);
+    bai.setBranch(eventInfo_.pileupWeight,     branchName_pileupWeight_);
+  }
+  if(! branchName_pileupWeightUp_.empty())
+  {
+    bai.setBranch(eventInfo_.pileupWeightUp,   branchName_pileupWeightUp_);
+  }
+  if(! branchName_pileupWeightDown_.empty())
+  {
+    bai.setBranch(eventInfo_.pileupWeightDown, branchName_pileupWeightDown_);
   }
   if(! branchName_nLHEReweightingWeight.empty())
   {

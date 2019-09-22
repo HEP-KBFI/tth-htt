@@ -74,7 +74,8 @@ process.analyze_2lss_1tau = cms.PSet(
 
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
-    lumiScale = cms.double(1.),
+    central_or_shift_local = cms.vstring(),
+    lumiScale = cms.VPSet(),
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),
     apply_hlt_filter = cms.bool(False),
@@ -128,11 +129,11 @@ process.analyze_2lss_1tau = cms.PSet(
     evtWeight = cms.PSet(
         apply = cms.bool(False),
         histogramFile = cms.string(''),
-        histogramName = cms.string(''),
         branchNameXaxis = cms.string(''),
         branchNameYaxis = cms.string(''),
         branchTypeXaxis = cms.string(''),
         branchTypeYaxis = cms.string(''),
+        histograms = cms.VPSet(),
     ),
     tHweights = cms.VPSet(),
 )

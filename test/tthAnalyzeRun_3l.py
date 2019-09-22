@@ -21,6 +21,7 @@ systematics.full = systematics.an_extended
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
+parser.add_preselect()
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_hlt_filter()
@@ -47,6 +48,7 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+use_preselected   = args.use_preselected
 rle_select        = os.path.expanduser(args.rle_select)
 use_nonnominal    = args.original_central
 hlt_filter        = args.hlt_filter
@@ -84,19 +86,26 @@ else:
   raise ValueError("Invalid choice for the sideband: %s" % sideband)
 
 if mode == "default":
-  samples = load_samples(era)
+  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 elif mode == "addMEM":
   samples = load_samples(era, suffix = "addMEM_3l")
   MEMbranch = 'memObjects_3l_lepFakeable'
 elif mode == "forBDTtraining_beforeAddMEM":
+  if use_preselected:
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT")
 elif mode == "forBDTtraining_afterAddMEM":
+  if use_preselected:
+    raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT_addMEM_3l")
   MEMbranch = 'memObjects_3l_lepFakeable'
 elif mode == "sync_wMEM":
-  samples = load_samples(era, suffix = "addMEM_sync")
+  samples = load_samples(era, suffix = "addMEM_3l_sync" if use_nonnominal else "addMEM_3l_sync_nom")
 elif mode == "sync":
-  samples = load_samples(era, suffix = "sync" if use_nonnominal else "sync_nom")
+  sample_suffix = "sync" if use_nonnominal else "sync_nom"
+  if use_preselected:
+    sample_suffix = "preselected_{}".format(sample_suffix)
+  samples = load_samples(era, suffix = sample_suffix)
 else:
   raise ValueError("Invalid mode: %s" % mode)
 

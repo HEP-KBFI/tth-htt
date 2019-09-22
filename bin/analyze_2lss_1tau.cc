@@ -82,6 +82,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_geral.h" // isGenMatchedJetTriplet tags
 #include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // getLeptonGenMatch_definitions_1lepton, getLeptonGenMatch_string, getLeptonGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_1tau, getHadTauGenMatch_string, getHadTauGenMatch_int
+#include "tthAnalysis/HiggsToTauTau/interface/GenMatchInterface.h" // GenMatchInterface
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L, getWeight_3L
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_isTriggered, hltPaths_delete
@@ -101,6 +102,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 #include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tH_weight_str()
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
@@ -209,7 +211,7 @@ int main(int argc, char* argv[])
   const int muonSelection     = get_selection(muonSelection_string);
 
   bool apply_leptonGenMatching = cfg_analyze.getParameter<bool>("apply_leptonGenMatching");
-  std::vector<leptonChargeFlipGenMatchEntry> leptonGenMatch_definitions = getLeptonChargeFlipGenMatch_definitions_2lepton(apply_leptonGenMatching);
+  std::vector<leptonChargeFlipGenMatchEntry> leptonGenMatch_definitions = getLeptonChargeFlipGenMatch_definitions_2lepton(true);
   std::cout << "leptonGenMatch_definitions:" << std::endl;
   std::cout << leptonGenMatch_definitions;
 
@@ -225,9 +227,11 @@ int main(int argc, char* argv[])
   std::string hadTauSelection_veto = cfg_analyze.getParameter<std::string>("hadTauSelection_veto");
 
   bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
-  std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(apply_hadTauGenMatching);
+  std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(true);
   std::cout << "hadTauGenMatch_definitions:" << std::endl;
   std::cout << hadTauGenMatch_definitions;
+
+  GenMatchInterface genMatchInterface(2, apply_leptonGenMatching, true, 1, apply_hadTauGenMatching);
 
   std::string chargeSumSelection_string = cfg_analyze.getParameter<std::string>("chargeSumSelection");
   int chargeSumSelection = -1;
@@ -242,8 +246,9 @@ int main(int argc, char* argv[])
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
-  std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
-  double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
+  std::string central_or_shift_main = cfg_analyze.getParameter<std::string>("central_or_shift");
+  std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
+  edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
@@ -254,10 +259,19 @@ int main(int argc, char* argv[])
   const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal");
   const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
+  if(! central_or_shifts_local.empty())
+  {
+    assert(central_or_shift_main == "central");
+    assert(std::find(central_or_shifts_local.cbegin(), central_or_shifts_local.cend(), "central") != central_or_shifts_local.cend());
+  }
+  else
+  {
+    central_or_shifts_local = { central_or_shift_main };
+  }
+
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
-  const vstring syncNtuple_genMatch = syncNtuple_cfg.getParameter<vstring>("genMatch");
   const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
@@ -267,33 +281,22 @@ int main(int argc, char* argv[])
   if(applyAdditionalEvtWeight)
   {
     eventWeightManager = new EvtWeightManager(additionalEvtWeight);
+    eventWeightManager->set_central_or_shift(central_or_shift_main);
   }
 
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
-  checkOptionValidity(central_or_shift, isMC);
-  const int jetToLeptonFakeRate_option        = getJetToLeptonFR_option       (central_or_shift);
-  const int jetToTauFakeRate_option           = getJetToTauFR_option          (central_or_shift);
-  const int lheScale_option                   = getLHEscale_option            (central_or_shift);
-  const int jetBtagSF_option                  = getBTagWeight_option          (central_or_shift);
-  const PUsys puSys_option                    = getPUsys_option               (central_or_shift);
-  const L1PreFiringWeightSys l1PreFire_option = getL1PreFiringWeightSys_option(central_or_shift);
-
-  const int met_option      = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC);
-  const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC);
-  const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected      : getHadTauPt_option(central_or_shift);
+  checkOptionValidity(central_or_shift_main, isMC);
+  const int met_option      = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift_main, isMC);
+  const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift_main, isMC);
+  const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected      : getHadTauPt_option(central_or_shift_main);
 
   std::cout
-    << "central_or_shift = "               << central_or_shift             << "\n"
-       " -> jetToLeptonFakeRate_option = " << jetToLeptonFakeRate_option   << "\n"
-       " -> hadTauPt_option            = " << hadTauPt_option              << "\n"
-       " -> jetToTauFakeRate_option    = " << jetToTauFakeRate_option      << "\n"
-       " -> lheScale_option            = " << lheScale_option              << "\n"
-       " -> jetBtagSF_option           = " << jetBtagSF_option             << "\n"
-       " -> met_option                 = " << met_option                   << "\n"
-       " -> jetPt_option               = " << jetPt_option                 << "\n"
-       " -> l1PreFire_option           = " << as_integer(l1PreFire_option) << '\n'
+    << "central_or_shift    = " << central_or_shift_main << "\n"
+       " -> hadTauPt_option = " << hadTauPt_option       << "\n"
+       " -> met_option      = " << met_option            << "\n"
+       " -> jetPt_option    = " << jetPt_option          << '\n'
   ;
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
@@ -301,7 +304,6 @@ int main(int argc, char* argv[])
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
-  cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -324,14 +326,14 @@ int main(int argc, char* argv[])
   LeptonFakeRateInterface* leptonFakeRateInterface = 0;
   if ( applyFakeRateWeights == kFR_2lepton || applyFakeRateWeights == kFR_3L ) {
     edm::ParameterSet cfg_leptonFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("leptonFakeRateWeight");
-    leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight, jetToLeptonFakeRate_option);
+    leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight);
   }
 
   JetToTauFakeRateInterface* jetToTauFakeRateInterface = 0;
   if ( applyFakeRateWeights == kFR_3L || applyFakeRateWeights == kFR_1tau || apply_hadTauFakeRateSF ) {
     edm::ParameterSet cfg_hadTauFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("hadTauFakeRateWeight");
     cfg_hadTauFakeRateWeight.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
-    jetToTauFakeRateInterface = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight, jetToTauFakeRate_option);
+    jetToTauFakeRateInterface = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight);
   }
   std::cout << "Applying jetToTauFakeRate fake rate weights = " << applyFakeRateWeights_string << " (" << applyFakeRateWeights << ")\n";
 
@@ -406,11 +408,12 @@ int main(int argc, char* argv[])
   const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
   if((isMC_tH || isMC_signal) && ! tHweights.empty())
   {
+    eventInfo.set_central_or_shift(central_or_shift_main);
     eventInfo.loadWeight_tH(tHweights);
-    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str();
+    const std::vector<std::string> evt_cat_tH_strs = eventInfo.getWeight_tH_str(central_or_shift_main);
     evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_tH_strs.begin(), evt_cat_tH_strs.end());
   }
-  EventInfoReader eventInfoReader(&eventInfo, puSys_option);
+  EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 
   ObjectMultiplicity objectMultiplicity;
@@ -432,7 +435,7 @@ int main(int argc, char* argv[])
   L1PreFiringWeightReader * l1PreFiringWeightReader = nullptr;
   if(apply_l1PreFireWeight)
   {
-    l1PreFiringWeightReader = new L1PreFiringWeightReader(era, l1PreFire_option);
+    l1PreFiringWeightReader = new L1PreFiringWeightReader(era);
     inputTree->registerReader(l1PreFiringWeightReader);
   }
 
@@ -485,7 +488,7 @@ int main(int argc, char* argv[])
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
-  jetReader->setBranchName_BtagWeight(jetBtagSF_option);
+  jetReader->read_btag_systematics((central_or_shifts_local.size() > 1 || central_or_shift_main != "central") && isMC);
   inputTree -> registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
@@ -696,67 +699,71 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     WeightHistManager* weights_;
   };
 
-  typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
-  std::map<int, int_to_selHistManagerMap> selHistManagers;
-  for ( std::vector<leptonChargeFlipGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
-        leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {
-    for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
-          hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
-
+  std::map<std::string, std::map<int, selHistManagerType*>> selHistManagers;
+  std::map<std::string, GenEvtHistManager*> genEvtHistManager_beforeCuts;
+  std::map<std::string, GenEvtHistManager*> genEvtHistManager_afterCuts;
+  std::map<std::string, LHEInfoHistManager*> lheInfoHistManager;
+  for(const std::string & central_or_shift: central_or_shifts_local)
+  {
+    const bool skipBooking = central_or_shift != central_or_shift_main;
+    std::vector<const GenMatchEntry*> genMatchDefinitions = genMatchInterface.getGenMatchDefinitions();
+    for (const GenMatchEntry * genMatchDefinition : genMatchDefinitions)
+    {
       std::string process_and_genMatch = process_string;
-      if ( apply_leptonGenMatching ) process_and_genMatch += leptonGenMatch_definition->name_;
-      if ( apply_leptonGenMatching && apply_hadTauGenMatching ) process_and_genMatch += "&";
-      if ( apply_hadTauGenMatching ) process_and_genMatch += hadTauGenMatch_definition->name_;
+      process_and_genMatch += genMatchDefinition->getName();
 
-      int idxLepton = leptonGenMatch_definition->idx_;
-      int idxHadTau = hadTauGenMatch_definition->idx_;
+      int idxLepton_and_HadTau = genMatchDefinition->getIdx();
 
       selHistManagerType* selHistManager = new selHistManagerType();
-      //selHistManager->evt_->LoadMaps(nstart, ntarget);
-      selHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/electrons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
-      selHistManager->electrons_->bookHistograms(fs);
-      selHistManager->muons_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/muons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
-      selHistManager->muons_->bookHistograms(fs);
-      selHistManager->hadTaus_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/hadTaus", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
-      selHistManager->hadTaus_->bookHistograms(fs);
-      selHistManager->jets_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/jets", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
-      selHistManager->jets_->bookHistograms(fs);
-      selHistManager->leadJet_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/leadJet", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 0));
-      selHistManager->leadJet_->bookHistograms(fs);
-      selHistManager->subleadJet_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/subleadJet", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 1));
-      selHistManager->subleadJet_->bookHistograms(fs);
-      selHistManager->BJets_loose_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/BJets_loose", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
-      selHistManager->BJets_loose_->bookHistograms(fs);
-      selHistManager->leadBJet_loose_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/leadBJet_loose", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 0));
-      selHistManager->leadBJet_loose_->bookHistograms(fs);
-      selHistManager->subleadBJet_loose_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/subleadBJet_loose", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 1));
-      selHistManager->subleadBJet_loose_->bookHistograms(fs);
-      selHistManager->BJets_medium_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/BJets_medium", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
-      selHistManager->BJets_medium_->bookHistograms(fs);
-      selHistManager->met_ = new MEtHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/met", histogramDir.data()), era_string, central_or_shift));
-      selHistManager->met_->bookHistograms(fs);
-      selHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/metFilters", histogramDir.data()), era_string, central_or_shift));
-      selHistManager->metFilters_->bookHistograms(fs);
-      selHistManager->mvaInputVariables_2lss_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/mvaInputs_2lss", histogramDir.data()), era_string, central_or_shift));
-      selHistManager->mvaInputVariables_2lss_->bookHistograms(fs, mvaInputVariables_2lss);
-      selHistManager->mvaInputVariables_2lss_1tau_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/mvaInputs_2lss_1tau", histogramDir.data()), era_string, central_or_shift));
+      if(! skipBooking)
+      {
+        selHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/electrons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
+        selHistManager->electrons_->bookHistograms(fs);
+        selHistManager->muons_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/muons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
+        selHistManager->muons_->bookHistograms(fs);
+        selHistManager->hadTaus_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/hadTaus", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
+        selHistManager->hadTaus_->bookHistograms(fs);
+        selHistManager->jets_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/jets", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
+        selHistManager->jets_->bookHistograms(fs);
+        selHistManager->leadJet_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/leadJet", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 0));
+        selHistManager->leadJet_->bookHistograms(fs);
+        selHistManager->subleadJet_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/subleadJet", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 1));
+        selHistManager->subleadJet_->bookHistograms(fs);
+        selHistManager->BJets_loose_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/BJets_loose", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
+        selHistManager->BJets_loose_->bookHistograms(fs);
+        selHistManager->leadBJet_loose_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/leadBJet_loose", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 0));
+        selHistManager->leadBJet_loose_->bookHistograms(fs);
+        selHistManager->subleadBJet_loose_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/subleadBJet_loose", histogramDir.data()), era_string, central_or_shift, "minimalHistograms", 1));
+        selHistManager->subleadBJet_loose_->bookHistograms(fs);
+        selHistManager->BJets_medium_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/BJets_medium", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
+        selHistManager->BJets_medium_->bookHistograms(fs);
+        selHistManager->met_ = new MEtHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/met", histogramDir.data()), era_string, central_or_shift));
+        selHistManager->met_->bookHistograms(fs);
+        selHistManager->metFilters_ = new MEtFilterHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/metFilters", histogramDir.data()), era_string, central_or_shift));
+        selHistManager->metFilters_->bookHistograms(fs);
+        selHistManager->mvaInputVariables_2lss_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/mvaInputs_2lss", histogramDir.data()), era_string, central_or_shift));
+        selHistManager->mvaInputVariables_2lss_->bookHistograms(fs, mvaInputVariables_2lss);
+      }
 
       for(const std::string & evt_cat_str: evt_cat_strs)
       {
+        if(skipBooking && evt_cat_str != default_cat_str)
+        {
+          continue;
+        }
         std::string proc0 = process_string;
         if ( process_string == "signal") proc0 = "ttH";
         if ( process_string == "signal_ctcvcp" ) proc0 = "ttH_ctcvcp";
@@ -769,7 +776,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         );
 
         selHistManager->evt_[evt_cat_str] = new EvtHistManager_2lss_1tau(makeHistManager_cfg(
-          process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+          process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift,
+          skipBooking ? "minimalHistograms" : "allHistograms"
         ));
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
@@ -791,13 +799,14 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
             if ( process_string == "signal_ctcvcp" ) decayMode_and_genMatch = "ttH_ctcvcp_";
           }
           decayMode_and_genMatch += decayMode_evt;
-
-          if(apply_leptonGenMatching)                            decayMode_and_genMatch += leptonGenMatch_definition -> name_;
-          if(apply_leptonGenMatching && apply_hadTauGenMatching) decayMode_and_genMatch += "&";
-          if(apply_hadTauGenMatching)                            decayMode_and_genMatch += hadTauGenMatch_definition -> name_;
+	  decayMode_and_genMatch += genMatchDefinition->getName();
 
           for(const std::string & evt_cat_str: evt_cat_strs)
           {
+            if(skipBooking && evt_cat_str != default_cat_str)
+            {
+              continue;
+            }
             const std::string process_string_new = evt_cat_str == default_cat_str ?
               process_string:
               process_string + "_" + evt_cat_str
@@ -807,44 +816,45 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
             );
 
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_2lss_1tau(makeHistManager_cfg(
-              decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+              decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift,
+              skipBooking ? "minimalHistograms" : "allHistograms"
             ));
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
           }
         }
       }
-      edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/evtYield", histogramDir.data()), era_string, central_or_shift);
-      cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
-      cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);
-      selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_sel);
-      selHistManager->evtYield_->bookHistograms(fs);
-      selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
-        Form("%s/sel/weights", histogramDir.data()), era_string, central_or_shift));
-      selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "triggerWeight", "data_to_MC_correction", "fakeRate" });
-      selHistManagers[idxLepton][idxHadTau] = selHistManager;
-
+      if(! skipBooking)
+      {
+        edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/evtYield", histogramDir.data()), era_string, central_or_shift);
+        cfg_EvtYieldHistManager_sel.addParameter<edm::ParameterSet>("runPeriods", cfg_EvtYieldHistManager);
+	cfg_EvtYieldHistManager_sel.addParameter<bool>("isMC", isMC);
+	selHistManager->evtYield_ = new EvtYieldHistManager(cfg_EvtYieldHistManager_sel);
+	selHistManager->evtYield_->bookHistograms(fs);
+	selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
+          Form("%s/sel/weights", histogramDir.data()), era_string, central_or_shift));
+        selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "triggerWeight", "data_to_MC_correction", "fakeRate" });
+      }
+      selHistManagers[central_or_shift][idxLepton_and_HadTau] = selHistManager;
     }
-  }
-
-  GenEvtHistManager* genEvtHistManager_beforeCuts = 0;
-  GenEvtHistManager* genEvtHistManager_afterCuts = 0;
-  LHEInfoHistManager* lheInfoHistManager = 0;
-  if ( isMC ) {
-    genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_string,
-      Form("%s/unbiased/genEvt", histogramDir.data()), era_string, central_or_shift));
-    genEvtHistManager_beforeCuts->bookHistograms(fs);
-    genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_string,
-      Form("%s/sel/genEvt", histogramDir.data()), era_string, central_or_shift));
-    genEvtHistManager_afterCuts->bookHistograms(fs);
-    lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string,
-      Form("%s/sel/lheInfo", histogramDir.data()), era_string, central_or_shift));
-    lheInfoHistManager->bookHistograms(fs);
-
-    if(eventWeightManager)
+  
+    if(isMC && ! skipBooking)
     {
-      genEvtHistManager_beforeCuts->bookHistograms(fs, eventWeightManager);
-      genEvtHistManager_afterCuts->bookHistograms(fs, eventWeightManager);
+      genEvtHistManager_beforeCuts[central_or_shift] = new GenEvtHistManager(makeHistManager_cfg(process_string,
+        Form("%s/unbiased/genEvt", histogramDir.data()), era_string, central_or_shift));
+      genEvtHistManager_beforeCuts[central_or_shift]->bookHistograms(fs);
+      genEvtHistManager_afterCuts[central_or_shift] = new GenEvtHistManager(makeHistManager_cfg(process_string,
+        Form("%s/sel/genEvt", histogramDir.data()), era_string, central_or_shift));
+      genEvtHistManager_afterCuts[central_or_shift]->bookHistograms(fs);
+      lheInfoHistManager[central_or_shift] = new LHEInfoHistManager(makeHistManager_cfg(process_string,
+        Form("%s/sel/lheInfo", histogramDir.data()), era_string, central_or_shift));
+      lheInfoHistManager[central_or_shift]->bookHistograms(fs);
+
+      if(eventWeightManager)
+      {
+        genEvtHistManager_beforeCuts[central_or_shift]->bookHistograms(fs, eventWeightManager);
+        genEvtHistManager_afterCuts[central_or_shift]->bookHistograms(fs, eventWeightManager);
+      }
     }
   }
 
@@ -855,7 +865,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
   if ( selectBDT ) {
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
-      makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), era_string, central_or_shift)
+      makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), era_string, central_or_shift_main)
     );
     bdt_filler->register_variable<float_type>(
       "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet",
@@ -898,11 +908,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
+  std::map<std::string, int> selectedEntries_byGenMatchType;             // key = process_and_genMatch
+  std::map<std::string, double> selectedEntries_weighted_byGenMatchType; // key = process_and_genMatch
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   cutFlowTableType cutFlowTable;
   const edm::ParameterSet cutFlowTableCfg = makeHistManager_cfg(
-    process_string, Form("%s/sel/cutFlow", histogramDir.data()), era_string, central_or_shift
+    process_string, Form("%s/sel/cutFlow", histogramDir.data()), era_string, central_or_shift_main
   );
   const std::vector<std::string> cuts = {
     "run:ls:event selection",
@@ -946,9 +958,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     {
       continue;
     }
-
-    cutFlowTable.update("run:ls:event selection");
-    cutFlowHistManager->fillHistograms("run:ls:event selection", lumiScale);
+    EvtWeightRecorder evtWeightRecorder(central_or_shifts_local, central_or_shift_main, isMC);
+    cutFlowTable.update("run:ls:event selection", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("run:ls:event selection", evtWeightRecorder.get(central_or_shift_main));
 
     if ( isDEBUG ) {
       std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
@@ -976,8 +988,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         continue;
       }
     }
-    cutFlowTable.update("object multiplicity");
-    cutFlowHistManager->fillHistograms("object multiplicity", lumiScale);
+    cutFlowTable.update("object multiplicity", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("object multiplicity", evtWeightRecorder.get(central_or_shift_main));
 
 //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
@@ -1017,25 +1029,31 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       if(genMatchToJetReader)      jetGenMatch = genMatchToJetReader->read();
     }
 
-    double evtWeight_inclusive = 1.;
-    double evtWeight_tH_nom = 1.;
     if(isMC)
     {
-      if(apply_genWeight)         evtWeight_inclusive *= boost::math::sign(eventInfo.genWeight);
-      if(eventWeightManager)      evtWeight_inclusive *= eventWeightManager->getWeight();
-      if(l1PreFiringWeightReader) evtWeight_inclusive *= l1PreFiringWeightReader->getWeight();
+      if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
+      if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
+      if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
       lheInfoReader->read();
-      evtWeight_inclusive *= lheInfoReader->getWeight_scale(lheScale_option);
-      evtWeight_inclusive *= eventInfo.pileupWeight;
-
-      evtWeight_tH_nom = eventInfo.genWeight_tH();
-      evtWeight_inclusive *= evtWeight_tH_nom;
-
-      evtWeight_inclusive *= lumiScale;
-      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
-      if(eventWeightManager)
+      evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
+      evtWeightRecorder.record_puWeight(&eventInfo);
+      evtWeightRecorder.record_nom_tH_weight(&eventInfo);
+      evtWeightRecorder.record_lumiScale(lumiScale);
+      for(const std::string & central_or_shift: central_or_shifts_local)
       {
-        genEvtHistManager_beforeCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+        if(central_or_shift != central_or_shift_main)
+        {
+          continue;
+        }
+        genEvtHistManager_beforeCuts[central_or_shift]->fillHistograms(
+          genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift)
+        );
+        if(eventWeightManager)
+        {
+          genEvtHistManager_beforeCuts[central_or_shift]->fillHistograms(
+            eventWeightManager, evtWeightRecorder.get_inclusive(central_or_shift)
+          );
+        }
       }
     }
 
@@ -1052,7 +1070,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     bool selTrigger_1e1mu = use_triggers_1e1mu && isTriggered_1e1mu;
 
     //--- build collections of generator level particles
-    //std::cout << "built gen variable" << std::endl;
     std::vector<GenParticle> genTopQuarks;
     std::vector<GenParticle> genBJets;
     std::vector<GenParticle> genWBosons;
@@ -1128,8 +1145,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         continue;
       }
     }
-    cutFlowTable.update("trigger");
-    cutFlowHistManager->fillHistograms("trigger", lumiScale);
+    cutFlowTable.update("trigger", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("trigger", evtWeightRecorder.get(central_or_shift_main));
 
     if ( (selTrigger_2mu   && !apply_offline_e_trigger_cuts_2mu)   ||
          (selTrigger_1mu   && !apply_offline_e_trigger_cuts_1mu)   ||
@@ -1326,33 +1343,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update(">= 2 presel leptons");
-    cutFlowHistManager->fillHistograms(">= 2 presel leptons", lumiScale);
-    const RecoLepton* preselLepton_lead = preselLeptonsFull[0];
-    const RecoLepton* preselLepton_sublead = preselLeptonsFull[1];
-    const leptonChargeFlipGenMatchEntry& preselLepton_genMatch = getLeptonChargeFlipGenMatch(leptonGenMatch_definitions, preselLepton_lead, preselLepton_sublead);
-    int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
-    assert(idxPreselLepton_genMatch != kGen_LeptonUndefined2);
-
-    /*// require that trigger paths match event category (with event category based on preselLeptons)
-    if ( !((preselElectrons.size() >= 2 &&                            (selTrigger_2e    || selTrigger_1e                  )) ||
-           (preselElectrons.size() >= 1 && preselMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-           (                               preselMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given preselLepton multiplicity." << std::endl;
-        std::cout << " (#preselElectrons = " << preselElectrons.size()
-                  << ", #preselMuons = " << preselMuons.size()
-                  << ", selTrigger_2mu = " << selTrigger_2mu
-                  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
-                  << ", selTrigger_2e = " << selTrigger_2e
-                  << ", selTrigger_1mu = " << selTrigger_1mu
-                  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("presel lepton trigger match");
-    cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
-    */
+    cutFlowTable.update(">= 2 presel leptons", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms(">= 2 presel leptons", evtWeightRecorder.get(central_or_shift_main));
 
     if ( !(selHadTaus.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
@@ -1361,14 +1353,12 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update(">= 1 sel tau");
-    cutFlowHistManager->fillHistograms(">= 1 sel tau", lumiScale);
+    cutFlowTable.update(">= 1 sel tau", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms(">= 1 sel tau", evtWeightRecorder.get(central_or_shift_main));
 
     const RecoHadTau* selHadTau = selHadTaus[0];
     const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau);
-    int idxSelHadTau_genMatch = selHadTau_genMatch.idx_;
-    assert(idxSelHadTau_genMatch != kGen_HadTauUndefined1);
-
+    
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
     const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptonsFull, fakeableHadTausFull, selJets);
@@ -1382,126 +1372,90 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update(">= 2 sel leptons", 1.);
-    cutFlowHistManager->fillHistograms(">= 2 sel leptons", 1.);
+    cutFlowTable.update(">= 2 sel leptons", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms(">= 2 sel leptons", evtWeightRecorder.get(central_or_shift_main));
     const RecoLepton* selLepton_lead = selLeptons[0];
     int selLepton_lead_type = getLeptonType(selLepton_lead->pdgId());
     const RecoLepton* selLepton_sublead = selLeptons[1];
     int selLepton_sublead_type = getLeptonType(selLepton_sublead->pdgId());
     const leptonChargeFlipGenMatchEntry& selLepton_genMatch = getLeptonChargeFlipGenMatch(leptonGenMatch_definitions, selLepton_lead, selLepton_sublead);
-    int idxSelLepton_genMatch = selLepton_genMatch.idx_;
-    assert(idxSelLepton_genMatch != kGen_LeptonUndefined2);
 
+    if(isMC)
+    {
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
-    double evtWeight = 1.;
-    double btagWeight = 1.;
-    if ( isMC ) {
-      evtWeight *= evtWeight_inclusive;
-      btagWeight = get_BtagWeight(selJets);
-      evtWeight *= btagWeight;
-      if ( isDEBUG ) {
-        std::cout << "lumiScale = " << lumiScale << std::endl;
-        if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
-        std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
-        std::cout << "btagWeight = " << btagWeight << std::endl;
-      }
-    }
+      evtWeightRecorder.record_btagWeight(selJets);
 
-    double weight_data_to_MC_correction = 1.;
-    double triggerWeight = 1.;
-    double leptonSF_weight = 1.;
-    double tauSF_weight = 1.;
-    if ( isMC ) {
       dataToMCcorrectionInterface->setLeptons(
         selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->eta(),
-        selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->eta());
+        selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->eta()
+      );
 
 //--- apply data/MC corrections for trigger efficiency
-      double sf_triggerEff = dataToMCcorrectionInterface->getSF_leptonTriggerEff();
-      if ( isDEBUG ) {
-        std::cout << "sf_triggerEff = " << sf_triggerEff << std::endl;
-      }
-      triggerWeight *= sf_triggerEff;
-      weight_data_to_MC_correction *= sf_triggerEff;
+      evtWeightRecorder.record_leptonTriggerEff(dataToMCcorrectionInterface);
 
 //--- apply data/MC corrections for efficiencies for lepton to pass loose identification and isolation criteria
-      leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
+      evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose());
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
-      if ( electronSelection == kFakeable && muonSelection == kFakeable ) {
-        leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
-      } else if ( electronSelection >= kFakeable && muonSelection >= kFakeable ) {
+      if(electronSelection == kFakeable && muonSelection == kFakeable)
+      {
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose());
+      }
+      else if(electronSelection >= kFakeable && muonSelection >= kFakeable)
+      {
         // apply loose-to-tight lepton ID SFs if either of the following is true:
         // 1) both electron and muon selections are tight -> corresponds to SR
         // 2) electron selection is relaxed to fakeable and muon selection is kept as tight -> corresponds to MC closure w/ relaxed e selection
         // 3) muon selection is relaxed to fakeable and electron selection is kept as tight -> corresponds to MC closure w/ relaxed mu selection
         // we allow (2) and (3) so that the MC closure regions would more compatible w/ the SR (1) in comparison
-        leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge();
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge());
       }
-      weight_data_to_MC_correction *= leptonSF_weight;
 
 //--- apply data/MC corrections for hadronic tau identification efficiency
 //    and for e->tau and mu->tau misidentification rates
-      int selHadTau_genPdgId = getHadTau_genPdgId(selHadTau);
-      dataToMCcorrectionInterface->setHadTaus(selHadTau_genPdgId, selHadTau->pt(), selHadTau->eta());
-      tauSF_weight *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
-      tauSF_weight *= dataToMCcorrectionInterface->getSF_eToTauFakeRate();
-      tauSF_weight *= dataToMCcorrectionInterface->getSF_muToTauFakeRate();
-      weight_data_to_MC_correction *= tauSF_weight;
-      if ( isDEBUG ) {
-        std::cout << "weight_data_to_MC_correction = " << weight_data_to_MC_correction << std::endl;
-      }
-
-      evtWeight *= weight_data_to_MC_correction;
+      dataToMCcorrectionInterface->setHadTaus(getHadTau_genPdgId(selHadTau), selHadTau->pt(), selHadTau->eta());
+      evtWeightRecorder.record_hadTauID_and_Iso(dataToMCcorrectionInterface);
+      evtWeightRecorder.record_eToTauFakeRate(dataToMCcorrectionInterface);
+      evtWeightRecorder.record_muToTauFakeRate(dataToMCcorrectionInterface);
     }
 
     bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
     bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
     bool passesTight_hadTau = isMatched(*selHadTau, tightHadTausFull);
 
-    double weight_fakeRate = 1.;
-    double prob_fake_lepton_lead = 1.;
-    double prob_fake_lepton_sublead = 1.;
-    double prob_fake_hadTau = 1.;
-    if ( leptonFakeRateInterface ) {
-      if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-      else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-      else assert(0);
-      if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-      else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-      else assert(0);
+    if(leptonFakeRateInterface)
+    {
+      evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selLepton_lead);
+      evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selLepton_sublead);
     }
-    if ( jetToTauFakeRateInterface ) {
-      prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
+    if(jetToTauFakeRateInterface)
+    {
+      evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau);
     }
 
-    if ( !selectBDT ) {
-      if ( applyFakeRateWeights == kFR_3L ) {
-        weight_fakeRate = getWeight_3L(
-          prob_fake_lepton_lead, passesTight_lepton_lead,
-          prob_fake_lepton_sublead, passesTight_lepton_sublead,
-          prob_fake_hadTau, passesTight_hadTau);
-      } else if ( applyFakeRateWeights == kFR_2lepton) {
-        weight_fakeRate = getWeight_2L(
-          prob_fake_lepton_lead, passesTight_lepton_lead,
-          prob_fake_lepton_sublead, passesTight_lepton_sublead);
-      } else if ( applyFakeRateWeights == kFR_1tau ){
-        weight_fakeRate = prob_fake_hadTau;
+    if(! selectBDT)
+    {
+      if(applyFakeRateWeights == kFR_3L)
+      {
+        evtWeightRecorder.compute_FR_2l1tau(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_hadTau);
       }
-      evtWeight *= weight_fakeRate;
+      else if(applyFakeRateWeights == kFR_2lepton)
+      {
+        evtWeightRecorder.compute_FR_2l(passesTight_lepton_lead, passesTight_lepton_sublead);
+      }
+      else if (applyFakeRateWeights == kFR_1tau)
+      {
+        evtWeightRecorder.compute_FR_1tau();
+      }
       // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
-      if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton())) {
-        double weight_data_to_MC_correction_hadTau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
-        if ( isDEBUG ) {
-          std::cout << "weight_data_to_MC_correction_hadTau = " << weight_data_to_MC_correction_hadTau << std::endl;
-        }
-        tauSF_weight *= weight_data_to_MC_correction_hadTau;
-        evtWeight *= weight_data_to_MC_correction_hadTau;
+      if(isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()))
+      {
+        evtWeightRecorder.record_jetToTau_SF_lead(jetToTauFakeRateInterface, selHadTau);
       }
-    } // end if !selectBDT
+    }
 
     // require exactly two leptons passing tight selection criteria, to avoid overlap with other channels
     if ( !(tightLeptonsFull.size() <= 2) ) {
@@ -1511,27 +1465,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update("<= 2 tight leptons", evtWeight);
-    cutFlowHistManager->fillHistograms("<= 2 tight leptons", evtWeight);
-    /*// require that trigger paths match event category (with event category based on fakeableLeptons)
-    if ( !((fakeableElectrons.size() >= 2 &&                              (selTrigger_2e    || selTrigger_1e                  )) ||
-           (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-           (                                 fakeableMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given fakeableLepton multiplicity." << std::endl;
-        std::cout << " (#fakeableElectrons = " << fakeableElectrons.size()
-                  << ", #fakeableMuons = " << fakeableMuons.size()
-                  << ", selTrigger_2mu = " << selTrigger_2mu
-                  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
-                  << ", selTrigger_2e = " << selTrigger_2e
-                  << ", selTrigger_1mu = " << selTrigger_1mu
-                  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("fakeable lepton trigger match", evtWeight);
-    cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);
-    */
+    cutFlowTable.update("<= 2 tight leptons", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("<= 2 tight leptons", evtWeightRecorder.get(central_or_shift_main));
 
 //--- apply HLT filter
     if(apply_hlt_filter)
@@ -1552,8 +1487,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         continue;
       }
     }
-    cutFlowTable.update("HLT filter matching", evtWeight);
-    cutFlowHistManager->fillHistograms("HLT filter matching", evtWeight);
+    cutFlowTable.update("HLT filter matching", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("HLT filter matching", evtWeightRecorder.get(central_or_shift_main));
 
     const bool ttH_like = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && (selJets.size() >= 3);
     const bool tH_like = (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1);
@@ -1572,8 +1507,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update("Hadronic selection", evtWeight);
-    cutFlowHistManager->fillHistograms("Hadronic selection", evtWeight);
+    cutFlowTable.update("Hadronic selection", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("Hadronic selection", evtWeightRecorder.get(central_or_shift_main));
 
     // veto events containing more than one tau passing the Medium WP, to avoid overlap with the 2l+2tau category
     // we want to keep all cuts consistent in SR and fake CR, to obtain a consistent estimate of the fake background
@@ -1584,8 +1519,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update("<= 1 veto taus", evtWeight);
-    cutFlowHistManager->fillHistograms("<= 1 veto taus", evtWeight);
+    cutFlowTable.update("<= 1 veto taus", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("<= 1 veto taus", evtWeightRecorder.get(central_or_shift_main));
 
     const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptonsFullUncleaned);
     if ( failsLowMassVeto ) {
@@ -1594,8 +1529,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
-    cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
+    cutFlowTable.update("m(ll) > 12 GeV", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeightRecorder.get(central_or_shift_main));
 
     const double minPt_lead = 25.;
     const double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
@@ -1607,8 +1542,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
-    cutFlowHistManager->fillHistograms("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
+    cutFlowTable.update("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeightRecorder.get(central_or_shift_main));
 
     bool failsTightChargeCut = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton = fakeableLeptons.begin();
@@ -1639,8 +1574,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       //if (!selectBDT)
       continue;
     }
-    cutFlowTable.update("tight lepton charge", evtWeight);
-    cutFlowHistManager->fillHistograms("tight lepton charge", evtWeight);
+    cutFlowTable.update("tight lepton charge", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("tight lepton charge", evtWeightRecorder.get(central_or_shift_main));
 
     bool isLeptonCharge_SS = selLepton_lead->charge()*selLepton_sublead->charge() > 0;
     bool isLeptonCharge_OS = selLepton_lead->charge()*selLepton_sublead->charge() < 0;
@@ -1699,10 +1634,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         }
         continue;
       }
-      evtWeight *= prob_chargeMisId_applied;
+      evtWeightRecorder.record_chargeMisIdProb(prob_chargeMisId_applied);
     }
-    cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
-    cutFlowHistManager->fillHistograms("sel lepton-pair OS/SS charge", evtWeight);
+    cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("sel lepton-pair OS/SS charge", evtWeightRecorder.get(central_or_shift_main));
 
     if ( apply_lepton_and_hadTauCharge_cut ) {
       if ( !((chargeSumSelection == kOS && std::abs(selLepton_lead->charge() + selLepton_sublead->charge() + selHadTau->charge()) == 1) ||
@@ -1715,8 +1650,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         }
         continue;
       }
-      cutFlowTable.update(Form("sel lepton+tau %s charge", chargeSumSelection_string.data()), evtWeight);
-      cutFlowHistManager->fillHistograms("sel lepton+tau charge", evtWeight);
+      cutFlowTable.update(Form("sel lepton+tau %s charge", chargeSumSelection_string.data()), evtWeightRecorder.get(central_or_shift_main));
+      cutFlowHistManager->fillHistograms("sel lepton+tau charge", evtWeightRecorder.get(central_or_shift_main));
     }
 
     const bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull) || (
@@ -1731,8 +1666,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update("Z-boson mass veto", evtWeight);
-    cutFlowHistManager->fillHistograms("Z-boson mass veto", evtWeight);
+    cutFlowTable.update("Z-boson mass veto", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("Z-boson mass veto", evtWeightRecorder.get(central_or_shift_main));
     if ( !(selLepton_lead->is_muon() || selLepton_sublead->is_muon() || met_LD >= 30.) ) {
       if ( run_lumi_eventSelector ) {
           std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
@@ -1741,8 +1676,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update("met LD > 30 GeV", evtWeight);
-    cutFlowHistManager->fillHistograms("met LD > 30 GeV", evtWeight);
+    cutFlowTable.update("met LD > 30 GeV", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("met LD > 30 GeV", evtWeightRecorder.get(central_or_shift_main));
 
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {
@@ -1752,8 +1687,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 	continue;
       }
     }
-    cutFlowTable.update("MEt filters", evtWeight);
-    cutFlowHistManager->fillHistograms("MEt filters", evtWeight);
+    cutFlowTable.update("MEt filters", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("MEt filters", evtWeightRecorder.get(central_or_shift_main));
 
     if (isMC) {
       if((selLepton_lead->genLepton() && selLepton_lead->charge() != selLepton_lead->genLepton()->charge()) ||
@@ -1768,8 +1703,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         continue;
       }
     }
-    cutFlowTable.update("sel lepton-pair gen=rec charge match", evtWeight);
-    cutFlowHistManager->fillHistograms("sel lepton-pair gen=rec charge match", evtWeight);
+    cutFlowTable.update("sel lepton-pair gen=rec charge match", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("sel lepton-pair gen=rec charge match", evtWeightRecorder.get(central_or_shift_main));
 
 
     bool failsSignalRegionVeto = false;
@@ -1792,8 +1727,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue; // CV: avoid overlap with signal region
     }
-    cutFlowTable.update("signal region veto", evtWeight);
-    cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
+    cutFlowTable.update("signal region veto", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
+
+    if(isDEBUG || run_lumi_eventSelector)
+    {
+      std::cout << "Event weights:\n" << evtWeightRecorder << '\n';
+    }
 
     MEMOutput_2lss_1tau memOutput_2lss_1tau_matched;
     if ( memReader ) {
@@ -2099,98 +2039,126 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     };
     const double mvaOutput_2lss_1tau_HTTMEM_SUM_M = mva_2lss_1tau_HTTMEM_SUM_M(mvaInputVariables_HTTMEM_SUM);
 
-//--- fill histograms with events passing final selection
-    selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
-    assert(selHistManager != 0);
-    selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
-    selHistManager->muons_->fillHistograms(selMuons, evtWeight);
-    selHistManager->hadTaus_->fillHistograms(selHadTaus, evtWeight);
-    selHistManager->jets_->fillHistograms(selJets, evtWeight);
-    selHistManager->leadJet_->fillHistograms(selJets, evtWeight);
-    selHistManager->subleadJet_->fillHistograms(selJets, evtWeight);
-    selHistManager->BJets_loose_->fillHistograms(selBJets_loose, evtWeight);
-    selHistManager->leadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
-    selHistManager->subleadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
-    selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
-    selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
-    selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
-    selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputVariables_HTT_SUM, evtWeight);
+//--- retrieve gen-matching flags
+    std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons, selHadTaus);
 
-    std::map<std::string, double> tH_weight_map;
-    for(const std::string & evt_cat_str: evt_cat_strs)
+//--- fill histograms with events passing final selection
+    for(const std::string & central_or_shift: central_or_shifts_local)
     {
-      const std::string evt_cat_str_query = evt_cat_str == default_cat_str ? get_tH_SM_str() : evt_cat_str;
-      tH_weight_map[evt_cat_str] = isMC_tH ?
-        evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(evt_cat_str_query):
-        evtWeight
-      ;
-    }
-    for(const auto & kv: tH_weight_map)
-    {
-      selHistManager->evt_[kv.first]->fillHistograms(
-        selElectrons.size(),
-        selMuons.size(),
-        selHadTaus.size(),
-        selJets.size(),
-        selBJets_loose.size(),
-        selBJets_medium.size(),
-        kv.second,
-        mvaOutput_2lss_ttV,
-        mvaOutput_2lss_tt,
-        mvaOutput_2lss_1tau_plainKin_tt,
-        mvaOutput_2lss_1tau_plainKin_ttV,
-        mvaOutput_2lss_1tau_plainKin_1B_M,
-        mvaOutput_2lss_1tau_plainKin_SUM_M,
-        mvaOutput_2lss_1tau_HTT_SUM_M,
-        mvaOutput_2lss_1tau_HTTMEM_SUM_M,
-        mTauTauVis1_sel,
-        mTauTauVis2_sel,
-        memOutput_LR
-      );
-    }
-    if ( isSignal ) {
-      const std::string decayModeStr = eventInfo.getDecayModeString();
-      if ( ( isMC_tH || isMC_VH ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
-      if(! decayModeStr.empty())
+      const double evtWeight = evtWeightRecorder.get(central_or_shift);
+      const bool skipFilling = central_or_shift != central_or_shift_main;
+      for (const GenMatchEntry* genMatch : genMatches)
       {
+        selHistManagerType* selHistManager = selHistManagers[central_or_shift][genMatch->getIdx()];
+        assert(selHistManager);
+        if(! skipFilling)
+        {
+          selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
+          selHistManager->muons_->fillHistograms(selMuons, evtWeight);
+          selHistManager->hadTaus_->fillHistograms(selHadTaus, evtWeight);
+          selHistManager->jets_->fillHistograms(selJets, evtWeight);
+          selHistManager->leadJet_->fillHistograms(selJets, evtWeight);
+          selHistManager->subleadJet_->fillHistograms(selJets, evtWeight);
+          selHistManager->BJets_loose_->fillHistograms(selBJets_loose, evtWeight);
+          selHistManager->leadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
+          selHistManager->subleadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
+          selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
+          selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
+          selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
+          selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputVariables_HTT_SUM, evtWeight);
+        }
+
+        const std::string central_or_shift_tH = eventInfo.has_central_or_shift(central_or_shift) ? central_or_shift : central_or_shift_main;
+        const double evtWeight_tH_nom = evtWeightRecorder.get_nom_tH_weight(central_or_shift_tH);
+        std::map<std::string, double> tH_weight_map;
+        for(const std::string & evt_cat_str: evt_cat_strs)
+        {
+          if(skipFilling && evt_cat_str != default_cat_str)
+          {
+            continue;
+          }
+          const std::string evt_cat_str_query = evt_cat_str == default_cat_str ? get_tH_SM_str() : evt_cat_str;
+          tH_weight_map[evt_cat_str] = isMC_tH ?
+            evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(central_or_shift_tH, evt_cat_str_query):
+            evtWeight
+          ;
+        }
         for(const auto & kv: tH_weight_map)
         {
-          selHistManager->evt_in_decayModes_[kv.first][decayModeStr]->fillHistograms(
+          selHistManager->evt_[kv.first]->fillHistograms(
             selElectrons.size(),
             selMuons.size(),
-            selHadTaus.size(),
-            selJets.size(),
-            selBJets_loose.size(),
-            selBJets_medium.size(),
-            kv.second,
-            mvaOutput_2lss_ttV,
-            mvaOutput_2lss_tt,
-            mvaOutput_2lss_1tau_plainKin_tt,
-            mvaOutput_2lss_1tau_plainKin_ttV,
-            mvaOutput_2lss_1tau_plainKin_1B_M,
-            mvaOutput_2lss_1tau_plainKin_SUM_M,
-            mvaOutput_2lss_1tau_HTT_SUM_M,
-            mvaOutput_2lss_1tau_HTTMEM_SUM_M,
-            mTauTauVis1_sel,
-            mTauTauVis2_sel,
-            memOutput_LR
-          );
+	    selHadTaus.size(),
+	    selJets.size(),
+	    selBJets_loose.size(),
+	    selBJets_medium.size(),
+	    kv.second,
+	    mvaOutput_2lss_ttV,
+	    mvaOutput_2lss_tt,
+	    mvaOutput_2lss_1tau_plainKin_tt,
+	    mvaOutput_2lss_1tau_plainKin_ttV,
+	    mvaOutput_2lss_1tau_plainKin_1B_M,
+	    mvaOutput_2lss_1tau_plainKin_SUM_M,
+	    mvaOutput_2lss_1tau_HTT_SUM_M,
+	    mvaOutput_2lss_1tau_HTTMEM_SUM_M,
+	    mTauTauVis1_sel,
+	    mTauTauVis2_sel,
+	    memOutput_LR
+         );
+        } 
+        if ( isSignal ) {
+          const std::string decayModeStr = eventInfo.getDecayModeString();
+          if ( ( isMC_tH || isMC_VH ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
+          if(! decayModeStr.empty())
+          {
+            for(const auto & kv: tH_weight_map)
+            {
+              selHistManager->evt_in_decayModes_[kv.first][decayModeStr]->fillHistograms(
+                selElectrons.size(),
+		selMuons.size(),
+		selHadTaus.size(),
+		selJets.size(),
+		selBJets_loose.size(),
+		selBJets_medium.size(),
+		kv.second,
+		mvaOutput_2lss_ttV,
+		mvaOutput_2lss_tt,
+		mvaOutput_2lss_1tau_plainKin_tt,
+		mvaOutput_2lss_1tau_plainKin_ttV,
+		mvaOutput_2lss_1tau_plainKin_1B_M,
+		mvaOutput_2lss_1tau_plainKin_SUM_M,
+		mvaOutput_2lss_1tau_HTT_SUM_M,
+		mvaOutput_2lss_1tau_HTTMEM_SUM_M,
+		mTauTauVis1_sel,
+		mTauTauVis2_sel,
+		memOutput_LR
+              );
+            }
+          }
+        }
+        if(! skipFilling)
+        {
+          selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
+	  selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
+	  selHistManager->weights_->fillHistograms("pileupWeight", evtWeightRecorder.get_puWeight(central_or_shift));
+	  selHistManager->weights_->fillHistograms("triggerWeight", evtWeightRecorder.get_sf_triggerEff(central_or_shift));
+	  selHistManager->weights_->fillHistograms("data_to_MC_correction", evtWeightRecorder.get_data_to_MC_correction(central_or_shift));
+	  selHistManager->weights_->fillHistograms("fakeRate", evtWeightRecorder.get_FR(central_or_shift));
         }
       }
-    }
-    selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
-    selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
-    selHistManager->weights_->fillHistograms("pileupWeight", eventInfo.pileupWeight);
-    selHistManager->weights_->fillHistograms("triggerWeight", triggerWeight);
-    selHistManager->weights_->fillHistograms("data_to_MC_correction", weight_data_to_MC_correction);
-    selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
 
-    if ( isMC ) {
-      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeight_inclusive);
-      lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
-      if(eventWeightManager)
+      if(isMC && ! skipFilling)
       {
-        genEvtHistManager_afterCuts->fillHistograms(eventWeightManager, evtWeight_inclusive);
+        genEvtHistManager_afterCuts[central_or_shift]->fillHistograms(
+          genElectrons, genMuons, genHadTaus, genPhotons, genJets, evtWeightRecorder.get_inclusive(central_or_shift)
+        );
+	lheInfoHistManager[central_or_shift]->fillHistograms(*lheInfoReader, evtWeight);
+	if(eventWeightManager)
+        {
+          genEvtHistManager_afterCuts[central_or_shift]->fillHistograms(
+            eventWeightManager, evtWeightRecorder.get_inclusive(central_or_shift)
+          );
+        }
       }
     }
 
@@ -2204,9 +2172,14 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     double memOutput_ttZ=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ()     : -100.;
     double memOutput_ttZ_Zll=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ_Zll() : -100.;
 
-    const bool isGenMatched = isMC &&
-      contains(syncNtuple_genMatch, selLepton_genMatch.name_ + "&" + selHadTau_genMatch.name_)
-    ;
+    bool isGenMatched = false;
+    if ( isMC ) 
+    {
+      for (const GenMatchEntry* genMatch : genMatches)
+      {
+	if ( genMatch->getName() == "" ) isGenMatched = true; // non-fake
+      }
+    }
 
     if ( bdt_filler ) {
 
@@ -2249,10 +2222,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           ("lep1_genLepPt",                  lep1_genLepPt)
           ("lep2_genLepPt",                  lep2_genLepPt)
           ("tau_genTauPt",                   tau_genTauPt)
-          ("lep1_fake_prob",                 selLepton_lead->genLepton() ? 1.0 : prob_fake_lepton_lead)
-          ("lep2_fake_prob",                 selLepton_sublead->genLepton()? 1.0 : prob_fake_lepton_sublead)
-          ("tau_fake_prob",                  selHadTau->genHadTau() || selHadTau->genLepton() ? 1.0 : prob_fake_hadTau)
-          ("tau_fake_test",                  selHadTau->genHadTau() ? 1.0 : prob_fake_hadTau)
+          ("lep1_fake_prob",                 selLepton_lead->genLepton() ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main))
+          ("lep2_fake_prob",                 selLepton_sublead->genLepton()? 1.0 : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main))
+          ("tau_fake_prob",                  selHadTau->genHadTau() || selHadTau->genLepton() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
+          ("tau_fake_test",                  selHadTau->genHadTau() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
           ("Hj_tagger",                      mvaOutput_Hj_tagger)
 
           ("hadtruth",               hadtruth)
@@ -2262,7 +2235,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           ("genTopPt_CSVsort4rd",             genTopPt_CSVsort4rd)
 
           ("genWeight",                      eventInfo.genWeight)
-          ("evtWeight",                      evtWeight)
+          ("evtWeight",                      evtWeightRecorder.get(central_or_shift_main))
           ("nJet",                           nJet25_Recl)
           ("nLep",                           selLeptons.size())
           ("nTau",                           selHadTaus.size())
@@ -2415,13 +2388,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       // mvaOutput_plainKin_SUM_M not filled
       // mvaOutput_plainKin_1B_M not filled
 
-      snm->read(weight_fakeRate,                        FloatVariableType::FR_weight);
-      snm->read(triggerWeight,                          FloatVariableType::triggerSF_weight);
-      snm->read(leptonSF_weight,                        FloatVariableType::leptonSF_weight);
-      snm->read(tauSF_weight,                           FloatVariableType::tauSF_weight);
-      snm->read(btagWeight,                             FloatVariableType::bTagSF_weight);
-      snm->read(eventInfo.pileupWeight,                 FloatVariableType::PU_weight);
-      snm->read(boost::math::sign(eventInfo.genWeight), FloatVariableType::MC_weight);
+      snm->read(evtWeightRecorder.get_FR(central_or_shift_main),             FloatVariableType::FR_weight);
+      snm->read(evtWeightRecorder.get_sf_triggerEff(central_or_shift_main),  FloatVariableType::triggerSF_weight);
+      snm->read(evtWeightRecorder.get_leptonSF(),                            FloatVariableType::leptonSF_weight);
+      snm->read(evtWeightRecorder.get_tauSF(central_or_shift_main),          FloatVariableType::tauSF_weight);
+      snm->read(evtWeightRecorder.get_btag(central_or_shift_main),           FloatVariableType::bTagSF_weight);
+      snm->read(evtWeightRecorder.get_puWeight(central_or_shift_main),       FloatVariableType::PU_weight);
+      snm->read(evtWeightRecorder.get_genWeight(),                           FloatVariableType::MC_weight);
 
       snm->read(memOutput_ttH,                          FloatVariableType::Integral_ttH);
       snm->read(memOutput_ttZ,                          FloatVariableType::Integral_ttZ);
@@ -2443,7 +2416,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
 
     ++selectedEntries;
-    selectedEntries_weighted += evtWeight;
+    selectedEntries_weighted += evtWeightRecorder.get(central_or_shift_main);
+    std::string process_and_genMatch = process_string;
+    process_and_genMatch += selLepton_genMatch.name_;
+    process_and_genMatch += "&";
+    process_and_genMatch += selHadTau_genMatch.name_;
+    ++selectedEntries_byGenMatchType[process_and_genMatch]; 
+    selectedEntries_weighted_byGenMatchType[process_and_genMatch] += evtWeightRecorder.get(central_or_shift_main);
     histogram_selectedEntries->Fill(0.);
   }
 
@@ -2463,21 +2442,20 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   std::cout << std::endl;
 
   std::cout << "sel. Entries by gen. matching:" << std::endl;
-  for ( std::vector<leptonChargeFlipGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
-        leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {
-    for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
-          hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
-
-      std::string process_and_genMatch = process_string;
-      if ( apply_leptonGenMatching ) process_and_genMatch += leptonGenMatch_definition->name_;
-      if ( apply_leptonGenMatching && apply_hadTauGenMatching ) process_and_genMatch += "&";
-      if ( apply_hadTauGenMatching ) process_and_genMatch += hadTauGenMatch_definition->name_;
-
-      int idxLepton = leptonGenMatch_definition->idx_;
-      int idxHadTau = hadTauGenMatch_definition->idx_;
-
-      const TH1* histogram_EventCounter = selHistManagers[idxLepton][idxHadTau]->evt_[default_cat_str]->getHistogram_EventCounter();
-      std::cout << " " << process_and_genMatch << " = " << histogram_EventCounter->GetEntries() << " (weighted = " << histogram_EventCounter->Integral() << ")" << std::endl;
+  for(const std::string & central_or_shift: central_or_shifts_local)
+  {
+    std::cout << "central_or_shift = " << central_or_shift << '\n';
+    for(const leptonChargeFlipGenMatchEntry & leptonGenMatch_definition: leptonGenMatch_definitions)
+    {
+      for(const hadTauGenMatchEntry & hadTauGenMatch_definition: hadTauGenMatch_definitions)
+      {
+        std::string process_and_genMatch = process_string;
+        process_and_genMatch += leptonGenMatch_definition.name_;
+        process_and_genMatch += "&";
+        process_and_genMatch += hadTauGenMatch_definition.name_;
+        std::cout << " " << process_and_genMatch << " = " << selectedEntries_byGenMatchType[process_and_genMatch]
+		  << " (weighted = " << selectedEntries_weighted_byGenMatchType[process_and_genMatch] << ")" << std::endl;
+      }
     }
   }
   std::cout << std::endl;
@@ -2506,9 +2484,18 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
   delete hadTopTagger;
 
-  delete genEvtHistManager_beforeCuts;
-  delete genEvtHistManager_afterCuts;
-  delete lheInfoHistManager;
+  for(auto & kv: genEvtHistManager_beforeCuts)
+  {
+    delete kv.second;
+  }
+  for(auto & kv: genEvtHistManager_afterCuts)
+  {
+    delete kv.second;
+  }
+  for(auto & kv: lheInfoHistManager)
+  {
+    delete kv.second;
+  }
   delete l1PreFiringWeightReader;
   delete cutFlowHistManager;
   delete eventWeightManager;

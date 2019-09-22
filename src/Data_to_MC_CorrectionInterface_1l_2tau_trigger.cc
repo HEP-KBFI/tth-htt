@@ -22,7 +22,6 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
   , era_(get_era(era_str_))
   , hadTauSelection_(cfg.getParameter<std::string>("hadTauSelection"))
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
-  , triggerSF_option_(getTriggerSF_option(cfg.getParameter<std::string>("central_or_shift")))
   , lepton_type_(-1)
   , lepton_pt_(0.)
   , lepton_eta_(0.)
@@ -133,13 +132,13 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::setHadTaus(double hadTau1_pt, do
 }
 
 double
-Data_to_MC_CorrectionInterface_1l_2tau_trigger::getWeight_triggerEff() const
+Data_to_MC_CorrectionInterface_1l_2tau_trigger::getWeight_triggerEff(TriggerSFsys central_or_shift) const
 {
   assert(0);
 }
 
 double
-Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
+Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff(TriggerSFsys central_or_shift) const
 {
   if(isDEBUG_)
   {
@@ -158,8 +157,8 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
   bool isTriggered_1l     = false;
   bool isTriggered_1l1tau = false;
 
-  const auto getTriggerEfficiencyDataFunc = aux::getTriggerFuncData(triggerSF_option_);
-  const auto getTriggerEfficiencyMCFunc   = aux::getTriggerFuncMC(triggerSF_option_);
+  const auto getTriggerEfficiencyDataFunc = aux::getTriggerFuncData(central_or_shift);
+  const auto getTriggerEfficiencyMCFunc   = aux::getTriggerFuncMC(central_or_shift);
   assert(getTriggerEfficiencyDataFunc);
   assert(getTriggerEfficiencyMCFunc);
 

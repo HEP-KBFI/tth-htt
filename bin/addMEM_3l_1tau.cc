@@ -203,6 +203,8 @@ int main(int argc,
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
   //     to allow systematic uncertainty on JEC to be estimated on analysis level
   jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
+  jetReader->read_ptMass_systematics(isMC);
+  jetReader->read_btag_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
   const RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
   const RecoJetCollectionCleanerByIndex jetCleanerByIndex(isDEBUG);
@@ -432,7 +434,7 @@ int main(int argc,
           for(std::size_t selLepton_third_idx = selLepton_sublead_idx + 1; selLepton_third_idx < selLeptons.size(); ++selLepton_third_idx)
           {
             const RecoLepton * selLepton_third = selLeptons[selLepton_third_idx];
-            for(const std::string central_or_shift: central_or_shifts)
+            for(const std::string & central_or_shift: central_or_shifts)
             {
               checkOptionValidity(central_or_shift, isMC);
               const int jetPt_option    = getJet_option     (central_or_shift, isMC);

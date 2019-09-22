@@ -41,6 +41,8 @@ protected:
   std::string branchName_genHiggsDecayMode_;
   std::string branchName_genWeight_;
   std::string branchName_pileupWeight_;
+  std::string branchName_pileupWeightUp_;
+  std::string branchName_pileupWeightDown_;
   std::string branchName_LHEReweightingWeight;
   std::string branchName_nLHEReweightingWeight;
 

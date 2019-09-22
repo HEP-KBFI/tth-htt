@@ -12,11 +12,9 @@ class EventInfoReader
   : public ReaderBase
 {
 public:
-  explicit EventInfoReader(PUsys puSys_option = PUsys::central,
-                           bool read_genHiggsDecayMode = true,
+  explicit EventInfoReader(bool read_genHiggsDecayMode = true,
                            bool read_puWeight = true);
   explicit EventInfoReader(EventInfo * info,
-                           PUsys puSys_option = PUsys::central,
                            bool read_genHiggsDecayMode = true,
                            bool read_puWeight = true);
   ~EventInfoReader() override;
@@ -40,7 +38,6 @@ public:
   const std::string branchName_PV_ndof;
   const std::string branchName_genHiggsDecayMode;
   const std::string branchName_genWeight;
-  const std::string branchName_puWeight;
   const std::string branchName_LHEReweightingWeight;
   const std::string branchName_nLHEReweightingWeight;
 };

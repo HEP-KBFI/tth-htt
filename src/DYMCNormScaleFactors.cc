@@ -8,10 +8,8 @@
 #include <TFile.h> // TFile
 
 DYMCNormScaleFactors::DYMCNormScaleFactors(int era,
-                                           int central_or_shift,
                                            bool debug)
   : era_(era)
-  , central_or_shift_(central_or_shift)
   , debug_(debug)
 {}
 
@@ -22,7 +20,8 @@ double
 DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
                                 int nJets,
                                 int nBLoose,
-                                int nBMedium) const
+                                int nBMedium,
+                                int central_or_shift) const
 {
   const GenParticle * genTauLeptonPlus = nullptr;
   const GenParticle * genTauLeptonMinus = nullptr;
@@ -69,7 +68,7 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
     }
   }
   double retVal = 1.;
-  switch(central_or_shift_)
+  switch(central_or_shift)
   {
     case kDYMCNormScaleFactors_central:   retVal = weight;           break;
     case kDYMCNormScaleFactors_shiftUp:   retVal = 2 * weight - 1.0; break;  // cover difference of SFs from Z->ee and Z->mumu

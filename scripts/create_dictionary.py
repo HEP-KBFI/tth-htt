@@ -517,7 +517,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
       continue
     entries_valid.append(entry)
 
-  digit_regex = re.compile(r"tree_(?P<i>\d+)\.root")
+  digit_regex = re.compile(r"tree_(?P<i>\d+)\.root$")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
   is_rwgt = meta_dict[key]['sample_category'] in [ "tHq", "tHW", "signal_ctcvcp" ]
 

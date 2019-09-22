@@ -27,6 +27,8 @@ public:
   Int_t     genHiggsDecayMode;   ///< Higgs decay mode (only if ttH signal MC)
   Float_t   genWeight;           ///< generator-level weight (only if MC)
   Float_t   pileupWeight;        ///< pile-up weight (only if MC)
+  Float_t   pileupWeightUp;      ///< pile-up weight up-shifted (only if MC)
+  Float_t   pileupWeightDown;    ///< pile-up weight down-shifted (only if MC)
   Float_t   PV_ndof;             ///< number of degree of freedom of the main primary vertex
 
   double
@@ -38,13 +40,27 @@ public:
                double cosa) const;
 
   double
-  genWeight_tH(const std::string & name) const;
+  genWeight_tH(const std::string & central_or_shift) const;
+
+  double
+  genWeight_tH(const std::string & central_or_shift,
+               const std::string & name) const;
 
   void
   loadWeight_tH(const std::vector<edm::ParameterSet> & cfg);
 
   std::vector<std::string>
+  getWeight_tH_str(const std::string & central_or_shift,
+                   bool include_sm = false) const;
+
+  std::vector<std::string>
   getWeight_tH_str(bool include_sm = false) const;
+
+  void
+  set_central_or_shift(const std::string & central_or_shift);
+
+  bool
+  has_central_or_shift(const std::string & central_or_shift) const;
 
   bool
   is_signal() const;
@@ -74,13 +90,14 @@ public:
 protected:
   bool is_signal_;
   bool is_mc_;
+  std::string central_or_shift_;
 
   UInt_t nLHEReweightingWeight;
   Float_t * LHEReweightingWeight;
   const unsigned int LHEReweightingWeight_max;
   bool is_owner;
 
-  std::map<std::string, std::pair<int, double>> tH_sf;
+  std::map<std::string, std::map<std::string, std::pair<int, double>>> tH_sf;
   static const std::map<std::string, Int_t> decayMode_idString_singleHiggs;
 
   std::string
@@ -88,6 +105,9 @@ protected:
 
   static std::vector<std::string>
   getDecayModes(const std::map<std::string, Int_t> & decayMode_idString);
+
+  void
+  copy(const EventInfo & eventInfo);
 };
 
 #endif // EventInfo_H

@@ -246,7 +246,10 @@ class systematics(object):
 
   # Karl: for HH analysis only
   lhe_hh = LHE().full_hh
-  an_common_hh      =    central +  JES +  JER +  tauES +  tauIDSF +  UnclusteredEn +  btag +  FR_t +  lhe_hh +  triggerSF +  PU +  DYMCReweighting
-  an_common_opts_hh = [ "central", "JES", "JER", "tauES", "tauIDSF", "UnclusteredEn", "btag", "FR_t", "lhe_hh", "triggerSF", "PU", "DYMCReweighting" ]
+  an_common_hh      =    central +  JES +  JER +  tauES +  tauIDSF +  UnclusteredEn +  btag +  FR_t +  lhe_hh +  triggerSF +  PU +  DYMCReweighting  + DYMCNormScaleFactors
+  an_common_opts_hh = [ "central", "JES", "JER", "tauES", "tauIDSF", "UnclusteredEn", "btag", "FR_t", "lhe_hh", "triggerSF", "PU", "DYMCReweighting", "DYMCNormScaleFactors" ]
   an_extended_hh      = an_common_hh      +    FRe_shape +  FRm_shape
   an_extended_opts_hh = an_common_opts_hh + [ "FRe_shape", "FRm_shape" ]
+
+  an_internal      =    central +  tauIDSF +  btag +  FR_t +  lhe +  triggerSF +  PU +  L1PreFiring +  FRe_shape +  FRm_shape +  DYMCReweighting  + DYMCNormScaleFactors
+  an_internal_opts = [ "central", "tauIDSF", "btag", "FR_t", "lhe", "triggerSF", "PU", "L1PreFiring", "FRe_shape", "FRm_shape", "DYMCReweighting", "DYMCNormScaleFactors" ]

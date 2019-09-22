@@ -7,7 +7,21 @@
 EvtHistManager_2lss_1tau::EvtHistManager_2lss_1tau(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)
   , era_(get_era(cfg.getParameter<std::string>("era")))
+  , option_(kOption_undefined)
 {
+  const std::string option_string = cfg.getParameter<std::string>("option");
+  if(option_string == "allHistograms")
+  {
+    option_ = kOption_allHistograms;
+  }
+  else if(option_string == "minimalHistograms")
+  {
+    option_ = kOption_minimalHistograms;
+  }
+  else
+  {
+    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string;
+  }
   const std::vector<std::string> sysOpts_central = {
     "numElectrons",
     "numMuons",
@@ -55,25 +69,28 @@ EvtHistManager_2lss_1tau::getHistogram_EventCounter() const
 
 void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory & dir)
 {
-  histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,  +4.5);
-  histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,  +4.5);
-  histogram_numHadTaus_      = book1D(dir, "numHadTaus",      "numHadTaus",       5, -0.5,  +4.5);
-  histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
-  histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
-  histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
+  if(option_ == kOption_allHistograms)
+  {
+    histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,  +4.5);
+    histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,  +4.5);
+    histogram_numHadTaus_      = book1D(dir, "numHadTaus",      "numHadTaus",       5, -0.5,  +4.5);
+    histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
+    histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
+    histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
 
-  histogram_mvaOutput_2lss_ttV_ = book1D(dir, "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttV", 40, -1., +1.);
-  histogram_mvaOutput_2lss_tt_  = book1D(dir, "mvaOutput_2lss_tt",  "mvaOutput_2lss_tt",  40, -1., +1.);
+    histogram_mvaOutput_2lss_ttV_ = book1D(dir, "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttV", 40, -1., +1.);
+    histogram_mvaOutput_2lss_tt_  = book1D(dir, "mvaOutput_2lss_tt",  "mvaOutput_2lss_tt",  40, -1., +1.);
 
-  histogram_mvaOutput_2lss_1tau_plainKin_tt_            = book1D(dir, "mvaOutput_2lss_1tau_plainKin_tt",            "mvaOutput_2lss_1tau_plainKin_tt",            100, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_plainKin_ttV_           = book1D(dir, "mvaOutput_2lss_1tau_plainKin_ttV",           "mvaOutput_2lss_1tau_plainKin_ttV",           100, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_plainKin_1B_M_          = book1D(dir, "mvaOutput_2lss_1tau_plainKin_1B_M",          "mvaOutput_2lss_1tau_plainKin_1B_M",          100, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_         = book1D(dir, "mvaOutput_2lss_1tau_plainKin_SUM_M",         "mvaOutput_2lss_1tau_plainKin_SUM_M",         100, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin_ = book1D(dir, "mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin", "mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin", 100, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_HTT_SUM_M_              = book1D(dir, "mvaOutput_2lss_1tau_HTT_SUM_M",              "mvaOutput_2lss_1tau_HTT_SUM_M",              100, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_HTT_SUM_M_noRebin_      = book1D(dir, "mvaOutput_2lss_1tau_HTT_SUM_M_noRebin",      "mvaOutput_2lss_1tau_HTT_SUM_M_noRebin",      100, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_           = book1D(dir, "mvaOutput_2lss_1tau_HTTMEM_SUM_M",           "mvaOutput_2lss_1tau_HTTMEM_SUM_M",           100, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin_   = book1D(dir, "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin",   "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin",   100, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_plainKin_tt_            = book1D(dir, "mvaOutput_2lss_1tau_plainKin_tt",            "mvaOutput_2lss_1tau_plainKin_tt",            100, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_plainKin_ttV_           = book1D(dir, "mvaOutput_2lss_1tau_plainKin_ttV",           "mvaOutput_2lss_1tau_plainKin_ttV",           100, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_plainKin_1B_M_          = book1D(dir, "mvaOutput_2lss_1tau_plainKin_1B_M",          "mvaOutput_2lss_1tau_plainKin_1B_M",          100, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_         = book1D(dir, "mvaOutput_2lss_1tau_plainKin_SUM_M",         "mvaOutput_2lss_1tau_plainKin_SUM_M",         100, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin_ = book1D(dir, "mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin", "mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin", 100, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_HTT_SUM_M_              = book1D(dir, "mvaOutput_2lss_1tau_HTT_SUM_M",              "mvaOutput_2lss_1tau_HTT_SUM_M",              100, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_HTT_SUM_M_noRebin_      = book1D(dir, "mvaOutput_2lss_1tau_HTT_SUM_M_noRebin",      "mvaOutput_2lss_1tau_HTT_SUM_M_noRebin",      100, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_           = book1D(dir, "mvaOutput_2lss_1tau_HTTMEM_SUM_M",           "mvaOutput_2lss_1tau_HTTMEM_SUM_M",           100, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin_   = book1D(dir, "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin",   "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin",   100, -1., +1.);
+  }
 
   Float_t binsx[12]  = { 0.0, 0.14, 0.18, 0.22, 0.28, 0.32, 0.35, 0.38, 0.43, 0.47, 0.53, 1.0 };
   histogram_final_  = book1D(dir, "mvaOutput_final",  "mvaOutput_final", 11, binsx);
@@ -108,25 +125,28 @@ EvtHistManager_2lss_1tau::fillHistograms(int numElectrons,
 {
   const double evtWeightErr = 0.;
 
-  fillWithOverFlow(histogram_numElectrons_,    numElectrons,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numMuons_,        numMuons,        evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numHadTaus_,      numHadTaus,      evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
+  if(option_ == kOption_allHistograms)
+  {
+    fillWithOverFlow(histogram_numElectrons_,    numElectrons,    evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numMuons_,        numMuons,        evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numHadTaus_,      numHadTaus,      evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_2lss_ttV_, mvaOutput_2lss_ttV, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_tt_,  mvaOutput_2lss_tt,  evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mvaOutput_2lss_ttV_, mvaOutput_2lss_ttV, evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mvaOutput_2lss_tt_,  mvaOutput_2lss_tt,  evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_plainKin_tt_,            mvaOutput_2lss_1tau_plainKin_tt,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_plainKin_ttV_,           mvaOutput_2lss_1tau_plainKin_ttV,   evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_plainKin_1B_M_,          mvaOutput_2lss_1tau_plainKin_1B_M,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_,         mvaOutput_2lss_1tau_plainKin_SUM_M, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin_, mvaOutput_2lss_1tau_plainKin_SUM_M, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin_,   mvaOutput_2lss_1tau_HTTMEM_SUM_M,   evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_,           mvaOutput_2lss_1tau_HTTMEM_SUM_M,   evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_HTT_SUM_M_noRebin_,      mvaOutput_2lss_1tau_HTT_SUM_M,      evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_HTT_SUM_M_,              mvaOutput_2lss_1tau_HTT_SUM_M,      evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mvaOutput_2lss_1tau_plainKin_tt_,            mvaOutput_2lss_1tau_plainKin_tt,    evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mvaOutput_2lss_1tau_plainKin_ttV_,           mvaOutput_2lss_1tau_plainKin_ttV,   evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mvaOutput_2lss_1tau_plainKin_1B_M_,          mvaOutput_2lss_1tau_plainKin_1B_M,  evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_,         mvaOutput_2lss_1tau_plainKin_SUM_M, evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin_, mvaOutput_2lss_1tau_plainKin_SUM_M, evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin_,   mvaOutput_2lss_1tau_HTTMEM_SUM_M,   evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_,           mvaOutput_2lss_1tau_HTTMEM_SUM_M,   evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mvaOutput_2lss_1tau_HTT_SUM_M_noRebin_,      mvaOutput_2lss_1tau_HTT_SUM_M,      evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mvaOutput_2lss_1tau_HTT_SUM_M_,              mvaOutput_2lss_1tau_HTT_SUM_M,      evtWeight, evtWeightErr);
+  }
   fillWithOverFlow(histogram_final_,                                      mvaOutput_2lss_1tau_HTT_SUM_M,      evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mTauTauVis_,   mTauTauVis1,  evtWeight, evtWeightErr);

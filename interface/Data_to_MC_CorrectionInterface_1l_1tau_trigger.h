@@ -38,13 +38,13 @@ public:
   //-----------------------------------------------------------------------------
   // trigger efficiency turn-on curves for MC
   double
-  getWeight_triggerEff() const;
+  getWeight_triggerEff(TriggerSFsys central_or_shift) const;
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
   // data/MC correction for trigger efficiency 
   double
-  getSF_triggerEff() const;
+  getSF_triggerEff(TriggerSFsys central_or_shift) const;
   //-----------------------------------------------------------------------------
 
 protected:
@@ -72,7 +72,6 @@ protected:
   int era_;
   std::string hadTauSelection_;
   bool isDEBUG_;
-  TriggerSFsys triggerSF_option_;
 
   bool isTriggered_1e_;
   bool isTriggered_1e1tau_;

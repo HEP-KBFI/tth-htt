@@ -7,10 +7,8 @@
 #include <TFile.h> // TFile
 
 DYMCReweighting::DYMCReweighting(int era,
-                                 int central_or_shift,
                                  bool debug)
   : era_(era)
-  , central_or_shift_(central_or_shift)
   , debug_(debug)
   , weights_(nullptr)
 {
@@ -57,7 +55,8 @@ DYMCReweighting::~DYMCReweighting()
 }
 
 double
-DYMCReweighting::getWeight(const std::vector<GenParticle> & genTauLeptons) const
+DYMCReweighting::getWeight(const std::vector<GenParticle> & genTauLeptons,
+                           int central_or_shift) const
 {
   const GenParticle * genTauLeptonPlus = nullptr;
   const GenParticle * genTauLeptonMinus = nullptr;
@@ -93,7 +92,7 @@ DYMCReweighting::getWeight(const std::vector<GenParticle> & genTauLeptons) const
   }
 
   double retVal = 1.;
-  switch(central_or_shift_)
+  switch(central_or_shift)
   {
     case kDYMCReweighting_central:   retVal = weight;          break;
     case kDYMCReweighting_shiftUp:   retVal = weight * weight; break;

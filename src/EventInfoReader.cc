@@ -3,14 +3,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
-EventInfoReader::EventInfoReader(PUsys puSys_option,
-                                 bool read_genHiggsDecayMode,
+EventInfoReader::EventInfoReader(bool read_genHiggsDecayMode,
                                  bool read_puWeight)
-  : EventInfoReader(nullptr, puSys_option, read_genHiggsDecayMode, read_puWeight)
+  : EventInfoReader(nullptr, read_genHiggsDecayMode, read_puWeight)
 {}
 
 EventInfoReader::EventInfoReader(EventInfo * info,
-                                 PUsys puSys_option,
                                  bool read_genHiggsDecayMode,
                                  bool read_puWeight)
   : read_genHiggsDecayMode_(read_genHiggsDecayMode)
@@ -22,7 +20,6 @@ EventInfoReader::EventInfoReader(EventInfo * info,
   , branchName_PV_ndof("PV_ndof")
   , branchName_genHiggsDecayMode("genHiggsDecayMode")
   , branchName_genWeight("genWeight")
-  , branchName_puWeight(getBranchName_pileup(puSys_option))
   , branchName_LHEReweightingWeight("LHEReweightingWeight")
   , branchName_nLHEReweightingWeight(Form("n%s", branchName_LHEReweightingWeight.data()))
 {}
@@ -52,7 +49,9 @@ EventInfoReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(info_ -> genWeight, branchName_genWeight);
     if(read_puWeight_)
     {
-      bai.setBranchAddress(info_ -> pileupWeight, branchName_puWeight);
+      bai.setBranchAddress(info_ -> pileupWeight, getBranchName_pileup(PUsys::central));
+      bai.setBranchAddress(info_ -> pileupWeightUp, getBranchName_pileup(PUsys::up));
+      bai.setBranchAddress(info_ -> pileupWeightDown, getBranchName_pileup(PUsys::down));
     }
   }
   if(info_ -> is_mc() && ! info_ -> tH_sf.empty())

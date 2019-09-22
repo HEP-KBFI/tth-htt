@@ -216,7 +216,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.cfgFile_comp_LeptonFakeRate = os.path.join(self.template_dir, "comp_LeptonFakeRate_cfg.py")
     self.jobOptions_comp_LeptonFakeRate = {}
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "VH" ]
+    self.nonfake_backgrounds = [ "TT", "EWK", "Rares", "QCD"]
     self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "signal", "TTWW", "tHq", "tHW", "VH", "ttH_hbb", "data_fakes" ]
     self.histogramDir_prep_dcard = "LeptonFakeRate"
     self.prep_dcard = prep_dcard
@@ -515,7 +515,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'triggers_e_cfg'           : "leptonFR_triggers['{}']['{}']".format(self.era, 'e'),
             'lep_mva_cut_e'            : float(self.lep_mva_cut_e),
             'lep_mva_cut_mu'           : float(self.lep_mva_cut_mu),
-            'useObjectMultiplicity'    : self.era in ['2018'],
+            'useObjectMultiplicity'    : True,
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 

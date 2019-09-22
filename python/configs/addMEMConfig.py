@@ -132,8 +132,7 @@ class addMEMConfig:
 
         del self.samples['sum_events']
         for sample_name, sample_info in self.samples.items():
-            if not sample_info["use_it"] or \
-                sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+            if not sample_info["use_it"]:
                 continue
             process_name = sample_info["process_name_specific"]
             key_dir = getKey(sample_name)
@@ -375,8 +374,7 @@ class addMEMConfig:
         # consider more than 1 file per jobs -- the jobs are splitted by MEM integration anyways
 
         for sample_name, sample_info in self.samples.items():
-            if not sample_info["use_it"] or \
-              sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+            if not sample_info["use_it"]:
                 continue
 
             if not os.path.exists(sample_info['local_paths'][0]['path']):

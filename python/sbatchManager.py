@@ -183,7 +183,7 @@ class sbatchManager:
         self.logFileDir     = None
         queue_environ = os.environ.get('SBATCH_PRIORITY')
         verbose_environ = os.environ.get('SBATCH_VERBOSE')
-        self.sbatch_exclude = os.environ.get('SBATCH_EXCLUDE')
+        sbatch_exclude = os.environ.get('SBATCH_EXCLUDE')
         self.queue             = queue_environ if queue_environ else "small"
         self.poll_interval     = 30
         self.queuedJobs        = []
@@ -197,13 +197,18 @@ class sbatchManager:
         self.sbatchArgs        = ''
         self.datetime          = datetime.datetime.now().strftime('%m/%d/%y-%H:%M:%S')
         self.dry_run           = dry_run
-        self.max_mem           = '1800M'
+        self.max_mem           = ''
         self.use_home          = use_home
         self.max_resubmissions = max_resubmissions
         self.min_file_size     = min_file_size
 
-        if self.sbatch_exclude:
-            self.sbatchArgs += ' -x {}'.format(self.sbatch_exclude)
+        sbatch_exclude_nodes = [ "comp-d-058" ]
+        if sbatch_exclude:
+            sbatch_exclude_nodes += sbatch_exclude.split(",")
+            sbatch_exclude_nodes = list(set(sbatch_exclude_nodes))
+
+        if sbatch_exclude_nodes:
+            self.sbatchArgs += ' -x {}'.format(",".join(sbatch_exclude_nodes))
 
         verbose = bool(verbose_environ) if verbose_environ else verbose
         if verbose:
@@ -417,13 +422,13 @@ class sbatchManager:
         wrapper_log_file, executable_log_file = get_log_version((wrapper_log_file, executable_log_file))
 
         sbatch_command = "sbatch --partition={partition} --output={output} --comment='{comment}' " \
-                         "--mem={max_mem} {args} {cmd}".format(
+                         "{max_mem} {args} {cmd}".format(
           partition = self.queue,
           output    = wrapper_log_file,
           comment   = self.pool_id,
           args      = self.sbatchArgs,
           cmd       = scriptFile,
-          max_mem   = self.max_mem,
+          max_mem   = '--mem={}'.format(self.max_mem) if self.max_mem else '',
         )
 
         two_pow_sixteen = 65536

@@ -128,10 +128,10 @@ run_wrapped_executable() {
 
     echo "Time is: `date`"
 
-    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $EXECUTABLE_LOG_FILE"
-    {{ exec_name }} {{ command_line_parameter }} &> $EXECUTABLE_LOG_FILE
+    echo "Execute command: /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &> $EXECUTABLE_LOG_FILE"
+    /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &> $EXECUTABLE_LOG_FILE
     EXIT_CODE=$?
-    echo "Command {{ exec_name }} exited with code $EXIT_CODE"
+    echo "Command /usr/bin/time --verbose {{ exec_name }} exited with code $EXIT_CODE"
 
     IO_GREP=$(grep "SysError in <TFile::ReadBuffer>" $EXECUTABLE_LOG_FILE | grep "(Input/output error)" | wc -l)
     MISSING_FILE_GREP=$(grep "Error in <TFile::TFile>" $EXECUTABLE_LOG_FILE | grep "does not exist" | wc -l)

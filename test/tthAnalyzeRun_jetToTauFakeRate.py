@@ -17,7 +17,7 @@ systematics.full = systematics.an_jetToTauFR
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp(required = True, choices = [ 'dR03mvaVVLoose', 'dR03mvaVLoose', 'deepVSjVVVLoose' ])
+parser.add_tau_id_wp(required = True, choices = [ 'dR03mvaVVLoose', 'dR03mvaVLoose', 'deepVSjVVVLoose', 'deepVSjVVLoose' ])
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()

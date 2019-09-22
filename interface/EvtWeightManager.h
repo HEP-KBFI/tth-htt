@@ -24,22 +24,43 @@ public:
   setBranchAddresses(TTree * tree) override;
 
   double
+  getWeight(const std::string & central_or_shift) const;
+
+  double
   getWeight() const;
 
   int
   getDimension() const;
 
   TH1 *
+  getHistogram_1D(const std::string & central_or_shift) const;
+
+  TH1 *
   getHistogram_1D() const;
+
+  TH2 *
+  getHistogram_2D(const std::string & central_or_shift) const;
 
   TH2 *
   getHistogram_2D() const;
 
   int
+  getBinIdx_1D(const std::string & central_or_shift) const;
+
+  int
   getBinIdx_1D() const;
 
   std::pair<int, int>
+  getBinIdx_2D(const std::string & central_or_shift) const;
+
+  std::pair<int, int>
   getBinIdx_2D() const;
+
+  void
+  set_central_or_shift(const std::string & central_or_shift);
+
+  bool
+  has_central_or_shift(const std::string & central_or_shift) const;
 
 protected:
   std::string binnedHistogram_varName_x_;
@@ -53,10 +74,11 @@ protected:
   Float_t var_y_float_;
 
   TFile * histogram_file_;
-  TH1 * binnedHistogram_1var_;
-  TH2 * binnedHistogram_2var_;
+  std::map<std::string, TH1 *> binnedHistogram_1var_;
+  std::map<std::string, TH2 *> binnedHistogram_2var_;
 
   bool isDebug_;
+  std::string central_or_shift_;
 };
 
 #endif // EVTWEIGHTMANAGER_H

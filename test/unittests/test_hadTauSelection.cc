@@ -8,7 +8,7 @@
 #define SELECTOR_DBG true
 
 #define FAKEABLE_DR03MVA "dR03mvaVLoose"
-#define FAKEABLE_DEEPVSJ "deepVSjVVVLoose"
+#define FAKEABLE_DEEPVSJ "deepVSjVVLoose"
 
 class Test_tthHadTauSelection
   : public CppUnit::TestFixture
@@ -301,7 +301,7 @@ public:
   {
     RecoHadTauCollectionSelectorFakeable selector(SELECTOR_ERA, -1, SELECTOR_DBG);
     selector.set_if_looser("deepVSjVVVLoose");
-    CPPUNIT_ASSERT(selector.getSelector().get() == FAKEABLE_DEEPVSJ);
+    CPPUNIT_ASSERT(selector.getSelector().get() == "deepVSjVVVLoose");
     CPPUNIT_ASSERT(selector.getSelector().get_deeptau_lepton());
   }
 

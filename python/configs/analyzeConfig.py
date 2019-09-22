@@ -15,6 +15,7 @@ import os
 import uuid
 import inspect
 import copy
+import collections
 
 LEP_MVA_WPS = {
   'default' : 'mu=0.85;e=0.80',
@@ -191,6 +192,8 @@ class analyzeConfig(object):
             self.central_or_shifts.remove('central')
             self.central_or_shifts = [ 'central' ] + self.central_or_shifts
         self.central_or_shifts_fr = []
+        self.central_or_shifts_internal = []
+        self.central_or_shifts_external = []
         #------------------------------------------------------------------------
         self.era = era
         self.do_l1prefiring = self.era != "2018"
@@ -497,36 +500,6 @@ class analyzeConfig(object):
         self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_%s_NC" % suffix
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_%s" % suffix
 
-        leptonFakeRateWeight_histogramName_e_suffix = ''
-        leptonFakeRateWeight_histogramName_mu_suffix = ''
-        if central_or_shift == "CMS_ttHl_FRe_shape_ptUp":
-            leptonFakeRateWeight_histogramName_e_suffix = '_pt1'
-        elif central_or_shift == "CMS_ttHl_FRe_shape_ptDown":
-            leptonFakeRateWeight_histogramName_e_suffix = '_pt2'
-        elif central_or_shift == "CMS_ttHl_FRe_shape_normUp":
-            leptonFakeRateWeight_histogramName_e_suffix = '_up'
-        elif central_or_shift == "CMS_ttHl_FRe_shape_normDown":
-            leptonFakeRateWeight_histogramName_e_suffix = '_down'
-        elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelUp":
-            leptonFakeRateWeight_histogramName_e_suffix = '_be1'
-        elif central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelDown":
-            leptonFakeRateWeight_histogramName_e_suffix = '_be2'
-        elif central_or_shift == "CMS_ttHl_FRm_shape_ptUp":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_pt1'
-        elif central_or_shift == "CMS_ttHl_FRm_shape_ptDown":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_pt2'
-        elif central_or_shift == "CMS_ttHl_FRm_shape_normUp":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_up'
-        elif central_or_shift == "CMS_ttHl_FRm_shape_normDown":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_down'
-        elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelUp":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_be1'
-        elif central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelDown":
-            leptonFakeRateWeight_histogramName_mu_suffix = '_be2'
-
-        self.leptonFakeRateWeight_histogramName_e  += leptonFakeRateWeight_histogramName_e_suffix
-        self.leptonFakeRateWeight_histogramName_mu += leptonFakeRateWeight_histogramName_mu_suffix
-
     def set_BDT_training(self, hadTau_selection_relaxed):
         """Run analysis with loose selection criteria for leptons and hadronic taus,
            for the purpose of preparing event list files for BDT training.
@@ -543,23 +516,30 @@ class analyzeConfig(object):
             return central_or_shift
         return "central"
 
-    def accept_central_or_shift(self, central_or_shift, sample_category, sample_name):
-      if central_or_shift in systematics.LHE().ttH            and sample_category not in self.signalProcs:  return False
-      if central_or_shift in systematics.LHE().tHq            and sample_category != "tHq":                 return False
-      if central_or_shift in systematics.LHE().tHW            and sample_category != "tHW":                 return False
+    def accept_central_or_shift(self, central_or_shift, sample_category, sample_name, has_LHE = False):
+      tth_categories = self.signalProcs + [ "TTH" ]
+      if central_or_shift in systematics.LHE().ttH            and sample_category not in tth_categories:    return False
+      if central_or_shift in systematics.LHE().tHq            and sample_category not in [ "tHq", "TH" ]:   return False
+      if central_or_shift in systematics.LHE().tHW            and sample_category not in [ "tHW", "TH" ]:   return False
       if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]: return False
       if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                 return False
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):     return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):     return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():        return False
+      if central_or_shift in systematics.LHE().hh and \
+          not ((sample_category.startswith("signal") or sample_category == "HH") and has_LHE): return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False):
         process_string = 'process.analyze_%s' % self.channel
         current_function_name = inspect.stack()[0][3]
 
-        stitch_histogram_name = ''
+        stitch_histogram_names = {}
         is_mc = (sample_info["type"] == "mc")
+        use_th_weights = sample_info["type"] == "mc" and \
+           sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and \
+           sample_info['nof_reweighting'] > 0
+
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
         if 'isMC' not in jobOptions:
@@ -579,96 +559,103 @@ class analyzeConfig(object):
         if 'central_or_shift' not in jobOptions:
           jobOptions['central_or_shift'] = 'central'
         if 'lumiScale' not in jobOptions:
-          nof_events_label = ''
-          nof_events_idx = -1
-
-          if is_mc:
-            # Convention: CountWeighted includes the sign of genWeight, CountFullWeighted includes the full genWeight
-            # If L1 prefiring weights are enabled, then L1PrefireNom suffix is added
-            count_suffix = "L1PrefireNom" if self.do_l1prefiring else ""
-
-            central_or_shift = jobOptions['central_or_shift']
-            if central_or_shift == systematics.PU_().up:
-              nof_events_label = 'CountWeighted{}'.format(count_suffix)
-              nof_events_idx = 1 # PU weight up
-            elif central_or_shift == systematics.PU_().down:
-              nof_events_label = 'CountWeighted{}'.format(count_suffix)
-              nof_events_idx = 2 # PU weight down
-            elif central_or_shift in systematics.LHE().x1_up:
-              nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
-              nof_events_idx = 5 # muR=1   muF=2
-            elif central_or_shift in systematics.LHE().y1_up:
-              nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
-              nof_events_idx = 7 # muR=2   muF=1
-            elif central_or_shift in systematics.LHE().x1_down:
-              nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
-              nof_events_idx = 3 # muR=1   muF=0.5
-            elif central_or_shift in systematics.LHE().y1_down:
-              nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
-              nof_events_idx = 1 # muR=0.5 muF=1
-            elif central_or_shift in systematics.L1PreFiring_().up:
-              nof_events_label = 'CountWeightedL1Prefire'
-              nof_events_idx = 1  # L1 prefiring weight up
-            elif central_or_shift in systematics.L1PreFiring_().down:
-              nof_events_label = 'CountWeightedL1Prefire'
-              nof_events_idx = 2  # L1 prefiring weight down
-            else:
-              nof_events_label = 'CountWeighted{}'.format(count_suffix)
-              nof_events_idx = 0 # central
-          else:
-            nof_events_label = 'Count'
-            nof_events_idx = 0
-
-          stitch_histogram_name = '{}_{}'.format(nof_events_label, nof_events_idx)
-          assert(nof_events_label)
-          assert(nof_events_idx >= 0)
-          nof_events = sample_info["nof_events"][nof_events_label][nof_events_idx]
-          assert(nof_events > 0)
 
           nof_reweighting = sample_info['nof_reweighting']
-          if sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and nof_reweighting > 0:
-            missing_reweighting =  set(self.thIdxs) - set(range(-1, nof_reweighting))
+          nof_events = collections.OrderedDict()
+          tH_weights_map = {}
 
-            if missing_reweighting:
-              logging.warning("Could not find the following weights for {}: {}".format(
-                sample_info["process_name_specific"],
-                ", ".join(map(str, missing_reweighting))
-              ))
+          if is_mc:
+            if jobOptions['central_or_shift'] == "central":# and not use_th_weights:
+              central_or_shifts = self.central_or_shifts_internal + [ jobOptions['central_or_shift'] ]
             else:
-              # record the weight for the default case (corresponds to no reweighting weight, i.e. idx of -1)
-              tHweight_default = copy.deepcopy(find_tHweight(tHweights, -1))
-              tHweight_default.weight = cms.double(1.)
-              tH_weights = [ tHweight_default ]
+              central_or_shifts = [ jobOptions['central_or_shift'] ]
+            for central_or_shift in central_or_shifts:
+              if not self.accept_central_or_shift(central_or_shift, sample_info["sample_category"], sample_info["process_name_specific"]):
+                continue
+              nof_events_label = ''
+              nof_events_idx = -1
 
-              for idx in self.thIdxs:
-                if idx < 0:
-                  # we've already recorded the weight for the default case
-                  logging.info(
-                    "Process {}, weight index {}: the default/actual # events is {}".format(
-                      sample_info["process_name_specific"], idx, nof_events
-                    )
-                  )
-                  continue
-                if idx in missing_reweighting:
-                  continue
+              # Convention: CountWeighted includes the sign of genWeight, CountFullWeighted includes the full genWeight
+              # If L1 prefiring weights are enabled, then L1PrefireNom suffix is added
+              count_suffix = "L1PrefireNom" if self.do_l1prefiring else ""
+              if central_or_shift == systematics.PU_().up:
+                nof_events_label = 'CountWeighted{}'.format(count_suffix)
+                nof_events_idx = 1 # PU weight up
+              elif central_or_shift == systematics.PU_().down:
+                nof_events_label = 'CountWeighted{}'.format(count_suffix)
+                nof_events_idx = 2 # PU weight down
+              elif central_or_shift in systematics.LHE().x1_up:
+                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_idx = 5 # muR=1   muF=2
+              elif central_or_shift in systematics.LHE().y1_up:
+                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_idx = 7 # muR=2   muF=1
+              elif central_or_shift in systematics.LHE().x1_down:
+                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_idx = 3 # muR=1   muF=0.5
+              elif central_or_shift in systematics.LHE().y1_down:
+                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_idx = 1 # muR=0.5 muF=1
+              elif central_or_shift in systematics.L1PreFiring_().up:
+                nof_events_label = 'CountWeightedL1Prefire'
+                nof_events_idx = 1  # L1 prefiring weight up
+              elif central_or_shift in systematics.L1PreFiring_().down:
+                nof_events_label = 'CountWeightedL1Prefire'
+                nof_events_idx = 2  # L1 prefiring weight down
+              elif central_or_shift == jobOptions['central_or_shift']:
+                nof_events_label = 'CountWeighted{}'.format(count_suffix)
+                nof_events_idx = 0 # central
 
-                nof_events_rwgt = sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]
-                tHweight = copy.deepcopy(find_tHweight(tHweights, idx))
-                assert(nof_events_rwgt >= 0)
-                if nof_events_rwgt == 0:
-                  assert(float(tHweight.kt.configValue()) == 0. and sample_info['sample_category'] == 'signal_ctcvcp')
-                final_reweighting = (float(nof_events) / nof_events_rwgt) if nof_events_rwgt > 0. else 0.
-                logging.info(
-                  "Process {}, weight index {}: the default # events is {}, but actual # events is {} "
-                  "-> final weight is {:.6f}".format(
-                    sample_info["process_name_specific"], idx, nof_events, nof_events_rwgt, final_reweighting
-                  )
-                )
-                tHweight.weight = cms.double(final_reweighting)
-                tH_weights.append(tHweight)
-              jobOptions['tHweights'] = tH_weights
+              if nof_events_idx >= 0 and nof_events_label:
+                nof_events[central_or_shift] = sample_info["nof_events"][nof_events_label][nof_events_idx]
+                assert(nof_events[central_or_shift] > 0)
+                stitch_histogram_names[central_or_shift] = '{}_{}'.format(nof_events_label, nof_events_idx)
 
-          jobOptions['lumiScale'] = sample_info["xsection"] * self.lumi / nof_events if (self.use_lumi and is_mc) else 1.
+                if use_th_weights and central_or_shift not in tH_weights_map:
+                  missing_reweighting =  set(self.thIdxs) - set(range(-1, nof_reweighting))
+
+                  if missing_reweighting:
+                    logging.warning("Could not find the following weights for {}: {}".format(
+                      sample_info["process_name_specific"],
+                      ", ".join(map(str, missing_reweighting))
+                    ))
+                  else:
+                    # record the weight for the default case (corresponds to no reweighting weight, i.e. idx of -1)
+                    tHweight_default = copy.deepcopy(find_tHweight(tHweights, -1))
+                    tHweight_default.weight = cms.double(1.)
+                    tHweight_default.central_or_shift = cms.string(central_or_shift)
+                    tH_weights_map[central_or_shift] = [ tHweight_default ]
+
+                    for idx in self.thIdxs:
+                      if idx < 0:
+                        # we've already recorded the weight for the default case
+                        continue
+                      if idx in missing_reweighting:
+                        continue
+
+                      nof_events_rwgt = sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]
+                      tHweight = copy.deepcopy(find_tHweight(tHweights, idx))
+                      assert(nof_events_rwgt >= 0)
+                      if nof_events_rwgt == 0:
+                        assert(float(tHweight.kt.configValue()) == 0. and sample_info['sample_category'] == 'signal_ctcvcp')
+                      final_reweighting = (float(nof_events[central_or_shift]) / nof_events_rwgt) if nof_events_rwgt > 0. else 0.
+                      tHweight.weight = cms.double(final_reweighting)
+                      tHweight.central_or_shift = cms.string(central_or_shift)
+                      tH_weights_map[central_or_shift].append(tHweight)
+
+          if is_mc and self.use_lumi:
+            jobOptions['lumiScale'] = [
+              cms.PSet(
+                central_or_shift = cms.string(central_or_shift),
+                lumi             = cms.double(sample_info["xsection"] * self.lumi / nof_events[central_or_shift]),
+              ) for central_or_shift in nof_events
+            ]
+          if use_th_weights:
+            tH_weights = []
+            for central_or_shift in tH_weights_map:
+              tH_weights.extend(tH_weights_map[central_or_shift])
+            jobOptions['tHweights'] = tH_weights
+
         if 'hasLHE' not in jobOptions:
             jobOptions['hasLHE'] = sample_info['has_LHE']
 
@@ -677,6 +664,7 @@ class analyzeConfig(object):
             'isMC',
             'hasLHE',
             'central_or_shift',
+            'central_or_shifts_local',
             'evtCategories',
             'leptonSelection',
             'electronSelection',
@@ -733,6 +721,9 @@ class analyzeConfig(object):
             'tHweights',
             'useObjectMultiplicity',
         ]
+        jobOptions_typeMapping = {
+          'central_or_shifts_local' : 'cms.vstring(%s)',
+        }
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
 
@@ -749,12 +740,13 @@ class analyzeConfig(object):
             "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era, len = max_option_len),
             "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era, len = max_option_len),
           ])
-        lines += ["{}.{:<{len}} = cms.bool({})".format            (process_string, 'FullSyst',   'False' if len(self.central_or_shifts) == 1 else 'True', len = max_option_len),]
         for jobOptions_key in jobOptions_keys:
             if jobOptions_key not in jobOptions: continue # temporary?
             jobOptions_val = jobOptions[jobOptions_key]
             jobOptions_expr = ""
-            if type(jobOptions_val) == bool:
+            if jobOptions_key in jobOptions_typeMapping:
+              jobOptions_expr = jobOptions_typeMapping[jobOptions_key]
+            elif type(jobOptions_val) == bool:
                 jobOptions_expr = "cms.bool(%s)"
             elif type(jobOptions_val) == int:
                 jobOptions_expr = "cms.int32(%s)"
@@ -825,8 +817,8 @@ class analyzeConfig(object):
               raise RuntimeError("Not enough information available to preapre jobs for sync Ntuple production")
 
         if sample_info['process_name_specific'] in self.stitching_args:
+          assert(stitch_histogram_names)
           process_stitching_args = self.stitching_args[sample_info['process_name_specific']]
-          histogram_name = '%s/%s' % (process_stitching_args['histogram_path'], stitch_histogram_name)
           branch_name_xaxis = process_stitching_args['branch_name_xaxis']
           branch_name_yaxis = process_stitching_args['branch_name_yaxis']
           branch_type_xaxis = process_stitching_args['branch_type_xaxis']
@@ -834,12 +826,20 @@ class analyzeConfig(object):
           lines.extend([
             "{}.{:<{len}} = cms.bool({})".format    (process_string, 'evtWeight.apply',           True,                  len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.histogramFile',   self.stitched_weights, len = max_option_len),
-            "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.histogramName',   histogram_name,        len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchNameXaxis', branch_name_xaxis,     len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchNameYaxis', branch_name_yaxis,     len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchTypeXaxis', branch_type_xaxis,     len = max_option_len),
             "{}.{:<{len}} = cms.string('{}')".format(process_string, 'evtWeight.branchTypeYaxis', branch_type_yaxis,     len = max_option_len),
+            "{}.{:<{len}} = cms.VPSet([".format     (process_string, 'evtWeight.histograms',      branch_type_yaxis,     len = max_option_len),
           ])
+          for central_or_shift in stitch_histogram_names:
+            lines.extend([
+              "  cms.PSet(",
+              "    central_or_shift = cms.string('{}'),".format(central_or_shift),
+              "    histogramName = cms.string('{}/{}'),".format(process_stitching_args['histogram_path'], stitch_histogram_names[central_or_shift]),
+              "  ),",
+            ])
+          lines.extend("])")
 
         return lines
 
@@ -853,6 +853,24 @@ class analyzeConfig(object):
             self.central_or_shifts = [
                central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shifts_fr_remove
             ]
+
+    def internalizeSystematics(self):
+      assert(self.central_or_shifts)
+      self.central_or_shifts_internal = [
+        central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.an_internal
+      ]
+      self.central_or_shifts_external = [
+        central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in systematics.an_internal
+      ]
+      if "central" not in self.central_or_shifts_internal:
+        self.central_or_shifts_internal = [ "central" ] + self.central_or_shifts_internal
+      if "central" not in self.central_or_shifts_external:
+        self.central_or_shifts_external = [ "central" ] + self.central_or_shifts_external
+      logging.info("Separated internal systematics: {}".format(', '.join(self.central_or_shifts_internal)))
+      logging.info("Separated external systematics: {}".format(', '.join(self.central_or_shifts_external)))
+
+    def runTHweights(self, sample_info):
+        return False
 
     def createCfg_copyHistograms(self, jobOptions):
         """Create python configuration file for the copyHistograms executable (split the ROOT files produced by hadd_stage1 into separate ROOT files, one for each event category)

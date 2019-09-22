@@ -107,25 +107,16 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.applyFakeRateWeights = applyFakeRateWeights
     run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
 
-    self.hadTau_genMatches = [ "2t0e0m0j", "1t1e0m0j", "1t0e1m0j", "1t0e0m1j", "0t2e0m0j", "0t1e1m0j", "0t1e0m1j", "0t0e2m0j", "0t0e1m1j", "0t0e0m2j" ]
-
     self.apply_hadTauGenMatching = None
-    self.hadTau_genMatches_nonfakes = []
-    self.hadTau_genMatches_fakes = []
     if applyFakeRateWeights == "2tau":
-      self.apply_leptonGenMatching = False
       self.apply_hadTauGenMatching = True
-      for hadTau_genMatch in self.hadTau_genMatches:
-        if hadTau_genMatch.endswith("0j"):
-          self.hadTau_genMatches_nonfakes.append(hadTau_genMatch)
-        else:
-          self.hadTau_genMatches_fakes.append(hadTau_genMatch)
       if run_mcClosure:
         self.hadTau_selections.extend([ "Fakeable_mcClosure_t" ])
       self.central_or_shifts_fr = systematics.FR_t
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
     self.pruneSystematics()
+    self.internalizeSystematics()
 
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
@@ -178,6 +169,20 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.hadTau_selections = [ "forBDTtraining" ]
     self.hadTau_frWeights  = [ "disabled" ]
     super(analyzeConfig_0l_2tau, self).set_BDT_training(hadTau_selection_relaxed)
+
+  def accept_systematics(self, central_or_shift, is_mc, hadTau_selection, hadTau_charge_selection, sample_category, sample_name):
+    if central_or_shift != "central":
+      isFR_shape_shift = (central_or_shift in self.central_or_shifts_fr)
+      if not ((hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
+              (hadTau_selection == "Tight"    and hadTau_charge_selection == "OS")):
+        return False
+      if isFR_shape_shift and hadTau_selection == "Tight":
+        return False
+      if not is_mc and not isFR_shape_shift:
+        return False
+      if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
+        return False
+    return True
 
   def createCfg_analyze(self, jobOptions, sample_info, hadTau_selection):
     """Create python configuration file for the analyze_0l_2tau executable (analysis code)
@@ -247,23 +252,17 @@ class analyzeConfig_0l_2tau(analyzeConfig):
           hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
           for hadTau_charge_selection in self.hadTau_charge_selections:
             central_or_shift_extensions = ["", "hadd", "addBackgrounds"]
-            central_or_shifts_extended = central_or_shift_extensions + self.central_or_shifts
+            central_or_shift_dedicated = self.central_or_shifts if self.runTHweights(sample_info) else self.central_or_shifts_external
+            central_or_shifts_extended = central_or_shift_extensions + central_or_shift_dedicated
             for central_or_shift_or_dummy in central_or_shifts_extended:
               process_name_extended = [ process_name, "hadd" ]
               for process_name_or_dummy in process_name_extended:
                 if central_or_shift_or_dummy in [ "hadd", "addBackgrounds" ] and process_name_or_dummy in [ "hadd" ]:
                   continue
-                if central_or_shift_or_dummy != "central" and central_or_shift_or_dummy not in central_or_shift_extensions:
-                  isFR_shape_shift = (central_or_shift_or_dummy in self.central_or_shifts_fr)
-                  if not ((hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
-                          (hadTau_selection == "Tight"    and hadTau_charge_selection == "OS")):
-                    continue
-                  if isFR_shape_shift and hadTau_selection == "Tight":
-                    continue
-                  if not is_mc and not isFR_shape_shift:
-                    continue
 
-                if not self.accept_central_or_shift(central_or_shift_or_dummy, sample_category, sample_name):
+                if central_or_shift_or_dummy not in central_or_shift_extensions and not self.accept_systematics(
+                      central_or_shift_or_dummy, is_mc, hadTau_selection, hadTau_charge_selection, sample_category, sample_name
+                    ):
                   continue
 
                 key_dir = getKey(process_name_or_dummy, hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift_or_dummy)
@@ -314,7 +313,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
 
     inputFileLists = {}
     for sample_name, sample_info in self.samples.items():
-      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+      if not sample_info["use_it"]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
       inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job)
@@ -347,21 +346,23 @@ class analyzeConfig_0l_2tau(analyzeConfig):
 
             sample_category = sample_info["sample_category"]
             is_mc = (sample_info["type"] == "mc")
+            use_th_weights = self.runTHweights(sample_info)
 
-            for central_or_shift in self.central_or_shifts:
-
-              if central_or_shift != "central":
-                isFR_shape_shift = (central_or_shift in self.central_or_shifts_fr)
-                if not ((hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
-                        (hadTau_selection == "Tight"    and hadTau_charge_selection == "OS")):
-                  continue
-                if isFR_shape_shift and hadTau_selection == "Tight":
-                  continue
-                if not is_mc and not isFR_shape_shift:
-                  continue
-
-              if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
+            central_or_shift_dedicated = self.central_or_shifts if use_th_weights else self.central_or_shifts_external
+            for central_or_shift in central_or_shift_dedicated:
+              if not self.accept_systematics(
+                    central_or_shift, is_mc, hadTau_selection, hadTau_charge_selection, sample_category, sample_name
+                  ):
                 continue
+
+              central_or_shifts_local = []
+              if central_or_shift == "central" and not use_th_weights:
+                for central_or_shift_local in self.central_or_shifts_internal:
+                  if self.accept_systematics(
+                      central_or_shift_local, is_mc, hadTau_selection, hadTau_charge_selection,
+                      sample_category, sample_name
+                  ):
+                    central_or_shifts_local.append(central_or_shift_local)
 
               logging.info(" ... for '%s' and systematic uncertainty option '%s'" % (hadTau_selection_and_frWeight, central_or_shift))
 
@@ -379,7 +380,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
 
                 syncOutput = ''
                 syncTree = ''
-                syncGenMatch = self.hadTau_genMatches_nonfakes
                 if self.do_sync:
                   if hadTau_charge_selection != 'OS':
                     continue
@@ -425,6 +425,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'hadTauChargeSelection'    : hadTau_charge_selection,
                   'applyFakeRateWeights'     : applyFakeRateWeights,
                   'central_or_shift'         : central_or_shift,
+                  'central_or_shifts_local'  : central_or_shifts_local,
                   'selectBDT'                : self.isBDTtraining,
                   'syncOutput'               : syncOutput,
                   'syncTree'                 : syncTree,
@@ -432,8 +433,8 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'apply_hlt_filter'         : self.hlt_filter,
                   'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,
-                  'syncGenMatch'             : syncGenMatch,
-                  'useObjectMultiplicity'    : self.era in ['2018'],
+                  'syncGenMatch'             : [], # CV: temporarily kept until all channels switch to new gen-matching logic
+                  'useObjectMultiplicity'    : True,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, hadTau_selection)
 
@@ -450,88 +451,16 @@ class analyzeConfig_0l_2tau(analyzeConfig):
             if self.isBDTtraining or self.do_sync:
               continue
 
-            if is_mc:
-              logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
-              sample_categories = [ sample_category ]
-              for sample_category in sample_categories:
-                if sample_category == "signal" :  sample_category = "ttH"
-                if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
-                decays = [""]
-                if sample_category in self.procsWithDecayModes : decays += self.decayModes
-                couplings = [""]
-                if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
-                # sum non-fake and fake contributions for each MC sample separately
-                genMatch_categories = [ "nonfake", "fake"]
-                for decayMode in decays :
-                  for coupling in couplings :
-                    if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
-                    if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
-                    for genMatch_category in genMatch_categories:
-                      key_hadd_stage1_job = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
-                      key_addBackgrounds_dir = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection, "addBackgrounds")
-                      addBackgrounds_job_tuple = None
-                      processes_input = None
-                      process_output = None
-                      if genMatch_category == "nonfake":
-                        # sum non-fake contributions for each MC sample separately
-                        # input processes: TT4l0g0j; ...
-                        # output processes: TT; ...
-                        lepton_genMatches = []
-                        lepton_genMatches.extend(self.hadTau_genMatches_nonfakes)
-                        copy_genMatches = lepton_genMatches
-                      elif genMatch_category == "fake":
-                        copy_genMatches = self.hadTau_genMatches_fakes
-                      processes_input = []
-                      ## the SM tH's does not have the couplings
-                      if coupling == "" :
-                        if decayMode == "" :
-                          processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in copy_genMatches ]
-                          process_output = sample_category
-                        else :
-                          processes_input.extend([ "%s_%s%s" % (sample_category, decayMode, genMatch) for genMatch in copy_genMatches ])
-                          process_output = "%s_%s" % (sample_category, decayMode)
-                      else :
-                        # If there is coupling, there is decayMode
-                        processes_input.extend([ "%s_%s_%s%s" % (sample_category, coupling, decayMode, genMatch) for genMatch in copy_genMatches ])
-                        process_output = "%s_%s_%s" % (sample_category, coupling, decayMode)
-                      if genMatch_category in ["fake"] : process_output += "_" + genMatch_category
-                      addBackgrounds_job_tuple = (process_name, process_output, hadTau_selection_and_frWeight, hadTau_charge_selection)
-                      if processes_input:
-                        logging.info(" ...for genMatch option = '%s'" % genMatch_category)
-                        key_addBackgrounds_job = getKey(*addBackgrounds_job_tuple)
-                        cfgFile_modified = os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_%s_%s_cfg.py" % addBackgrounds_job_tuple)
-                        outputFile = os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackgrounds_%s_%s_%s_%s.root" % addBackgrounds_job_tuple)
-                        self.jobOptions_addBackgrounds[key_addBackgrounds_job] = {
-                          'inputFile' : self.outputFile_hadd_stage1[key_hadd_stage1_job],
-                          'cfgFile_modified' : cfgFile_modified,
-                          'outputFile' : outputFile,
-                          'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], os.path.basename(cfgFile_modified).replace("_cfg.py", ".log")),
-                          'categories' : [ getHistogramDir(category, hadTau_selection, hadTau_frWeight, hadTau_charge_selection) for category in self.categories],
-                          'processes_input' : processes_input,
-                          'process_output' : process_output
-                        }
-                        self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds[key_addBackgrounds_job])
-
-                        # initialize input and output file names for hadd_stage1_5
-                        key_hadd_stage1_5_dir = getKey("hadd", hadTau_selection_and_frWeight, hadTau_charge_selection)
-                        hadd_stage1_5_job_tuple = (hadTau_selection_and_frWeight, hadTau_charge_selection)
-                        key_hadd_stage1_5_job = getKey(*hadd_stage1_5_job_tuple)
-                        if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
-                          self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
-                        self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
-                        self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job] = os.path.join(self.dirs[key_hadd_stage1_5_dir][DKEY_HIST],
-                                                                                        "hadd_stage1_5_%s_%s.root" % hadd_stage1_5_job_tuple)
-
-            if self.isBDTtraining or self.do_sync:
-              continue
-
             # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
-            if not is_mc:
-              key_hadd_stage1_job = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
-              key_hadd_stage1_5_job = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
-              if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
-                self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
-              self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
+            key_hadd_stage1_job = getKey(process_name, hadTau_selection_and_frWeight, hadTau_charge_selection)
+            key_hadd_stage1_5_dir = getKey("hadd", hadTau_selection_and_frWeight, hadTau_charge_selection)
+            hadd_stage1_5_job_tuple = (hadTau_selection_and_frWeight, hadTau_charge_selection)
+            key_hadd_stage1_5_job = getKey(*hadd_stage1_5_job_tuple)
+            if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
+              self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
+            self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
+            self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job] = os.path.join(self.dirs[key_hadd_stage1_5_dir][DKEY_HIST],
+                                                                        "hadd_stage1_5_%s_%s.root"  % hadd_stage1_5_job_tuple)
 
           if self.isBDTtraining or self.do_sync:
             continue
@@ -548,7 +477,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
             decays = [""]
             if sample_category in self.procsWithDecayModes : decays += self.decayModes
             couplings = [""]
-            if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
             for decayMode in decays :
               for coupling in couplings :
                 if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
@@ -561,7 +489,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   processes_input_base.append("%s_%s_%s" % (sample_category, coupling, decayMode))
 
           # sum fake contributions for the total of all MC sample
-          # input processes: TT1t0e0m1j, TT0t1e0m1j, TT0t0e1m1j, TT0t0e0m2j; TTW1t0e0m1j,...
+          # input processes: TT_fake, TTW_fake, TTWW_fake, ...
           # output process: fakes_mc
           key_hadd_stage1_5_job = getKey(hadTau_selection_and_frWeight, hadTau_charge_selection)
           key_addBackgrounds_dir = getKey("addBackgrounds")

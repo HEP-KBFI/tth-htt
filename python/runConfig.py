@@ -152,9 +152,10 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Systematic uncertainties (choices: %s)' % tthAnalyzeParser.cat(sys_choices),
     )
 
-  def add_preselect(self):
+  def add_preselect(self, use_preselected = True):
     self.add_argument('-p', '--use-preselected',
-      dest = 'use_preselected', action = 'store_true', default = False,
+      type = lambda s: s.lower() in ['true', 't', 'yes', '1'], dest = 'use_preselected', metavar = 'option',
+      default = use_preselected, required = False,
       help = 'R|Use Ntuples which contains preselected events',
     )
 

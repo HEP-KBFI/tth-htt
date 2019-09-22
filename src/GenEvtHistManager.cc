@@ -137,7 +137,13 @@ GenEvtHistManager::bookHistograms(TFileDirectory & dir,
   {
     case 1:
     {
-      histogram_evtWeightManager_1D_ = static_cast<TH1 *>(eventWeightManager->getHistogram_1D()->Clone());
+      histogram_evtWeightManager_1D_ = static_cast<TH1 *>(
+        (
+          eventWeightManager->has_central_or_shift(central_or_shift_) ?
+          eventWeightManager->getHistogram_1D(central_or_shift_) :
+          eventWeightManager->getHistogram_1D()
+        )->Clone()
+      );
       histogram_evtWeightManager_1D_->Reset();
       histogram_evtWeightManager_1D_->SetName(Form(
         "%s%s",
@@ -158,7 +164,13 @@ GenEvtHistManager::bookHistograms(TFileDirectory & dir,
     }
     case 2:
     {
-      histogram_evtWeightManager_2D_ = static_cast<TH2 *>(eventWeightManager->getHistogram_2D()->Clone());
+      histogram_evtWeightManager_2D_ = static_cast<TH2 *>(
+        (
+          eventWeightManager->has_central_or_shift(central_or_shift_) ?
+          eventWeightManager->getHistogram_2D(central_or_shift_) :
+          eventWeightManager->getHistogram_2D()
+        )->Clone()
+      );
       histogram_evtWeightManager_2D_->Reset();
       histogram_evtWeightManager_2D_->SetName(Form(
         "%s%s",
@@ -188,14 +200,20 @@ GenEvtHistManager::fillHistograms(const EvtWeightManager * const eventWeightMana
   assert(eventWeightManager);
   if(histogram_evtWeightManager_1D_)
   {
-    const int bin_x = eventWeightManager->getBinIdx_1D();
+    const int bin_x = eventWeightManager->has_central_or_shift(central_or_shift_) ?
+      eventWeightManager->getBinIdx_1D(central_or_shift_) :
+      eventWeightManager->getBinIdx_1D()
+    ;
     const double binCenter_x = histogram_evtWeightManager_1D_->GetXaxis()->GetBinCenter(bin_x);
     histogram_evtWeightManager_1D_->Fill(binCenter_x, evtWeight);
     histogram_evtWeightManager_1D_counter_->Fill(binCenter_x, 1.);
   }
   else if(histogram_evtWeightManager_2D_)
   {
-    const std::pair<int, int> bin_xy = eventWeightManager->getBinIdx_2D();
+    const std::pair<int, int> bin_xy = eventWeightManager->has_central_or_shift(central_or_shift_) ?
+      eventWeightManager->getBinIdx_2D(central_or_shift_) :
+      eventWeightManager->getBinIdx_2D()
+    ;
     const double binCenter_x = histogram_evtWeightManager_2D_->GetXaxis()->GetBinCenter(bin_xy.first);
     const double binCenter_y = histogram_evtWeightManager_2D_->GetYaxis()->GetBinCenter(bin_xy.second);
     histogram_evtWeightManager_2D_->Fill(binCenter_x, binCenter_y, evtWeight);

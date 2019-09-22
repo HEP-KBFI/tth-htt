@@ -20,8 +20,7 @@ class L1PreFiringWeightReader
   : public ReaderBase
 {
 public:
-  L1PreFiringWeightReader(int era,
-                          L1PreFiringWeightSys option);
+  L1PreFiringWeightReader(int era);
   ~L1PreFiringWeightReader();
 
   /**
@@ -30,7 +29,8 @@ public:
   void
   setBranchAddresses(TTree * tree) override;
 
-  double getWeight() const;
+  double
+  getWeight(L1PreFiringWeightSys option) const;
 
 protected:
   /**
@@ -40,11 +40,12 @@ protected:
    setBranchNames();
 
   int era_;
-  L1PreFiringWeightSys option_;
 
   std::string branchName_l1PreFiringWeight_;
 
-  Float_t l1PreFiringWeight_;
+  Float_t l1PreFiringWeight_nominal_;
+  Float_t l1PreFiringWeight_up_;
+  Float_t l1PreFiringWeight_down_;
 
   // make sure that only one L1PreFiringWeightReader instance exists for a given branchName,
   // as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
