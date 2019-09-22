@@ -103,13 +103,13 @@ else:
 evtCategories = None
 if mode == "default" and len(central_or_shifts) <= 1:
   evtCategories = [
-    "1l_1tau",  "1l_1tau_OS",  "1l_1tau_SS",  "1l_1tau_OS_wChargeFlipWeights",
+                "1l_1tau_OS",  "1l_1tau_SS",  "1l_1tau_OS_wChargeFlipWeights",
     "1e_1tau",  "1e_1tau_SS",  "1e_1tau_OS",  "1e_1tau_OS_wChargeFlipWeights",
     "1mu_1tau", "1mu_1tau_SS", "1mu_1tau_OS", "1mu_1tau_OS_wChargeFlipWeights"
   ]
 else:
   evtCategories = [
-    "1l_1tau", "1l_1tau_OS", "1l_1tau_SS", "1l_1tau_OS_wChargeFlipWeights"
+    "1l_1tau_OS", "1l_1tau_SS", "1l_1tau_OS_wChargeFlipWeights"
   ]
 
 for sample_name, sample_info in samples.items():

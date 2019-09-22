@@ -750,6 +750,11 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       }
       for(const std::string & category: categories_evt)
       {
+        if(category == "1l_1tau")
+        {
+          // 1l_1tau subdirectory already created for the inclusive case
+          continue;
+        }
         selHistManager->evt_in_categories_and_decayModes_[category] = {};
         TString histogramDir_category = histogramDir.data();
         histogramDir_category.ReplaceAll("1l_1tau", category.data());
@@ -788,6 +793,11 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 
         for(const std::string & category: categories_evt)
         {
+          if(category == "1l_1tau")
+          {
+            // 1l_1tau subdirectory already created for the inclusive case
+            continue;
+          }
           TString histogramDir_category = histogramDir.data();
           histogramDir_category.ReplaceAll("1l_1tau", category.data());
           edm::ParameterSet cfg_EvtYieldHistManager_category = makeHistManager_cfg(process_and_genMatch,
