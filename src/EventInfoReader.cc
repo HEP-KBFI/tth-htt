@@ -22,6 +22,8 @@ EventInfoReader::EventInfoReader(EventInfo * info,
   , branchName_genWeight("genWeight")
   , branchName_LHEReweightingWeight("LHEReweightingWeight")
   , branchName_nLHEReweightingWeight(Form("n%s", branchName_LHEReweightingWeight.data()))
+  , branchName_gen_mHH("mHH_lhe")
+  , branchName_gen_cosThetaStar("cosThetaStar_lhe")
 {}
 
 EventInfoReader::~EventInfoReader()
@@ -59,6 +61,11 @@ EventInfoReader::setBranchAddresses(TTree * tree)
     BranchAddressInitializer bai_LHEReweight(tree, info_ -> LHEReweightingWeight_max);
     bai_LHEReweight.setBranchAddress(info_ -> nLHEReweightingWeight, branchName_nLHEReweightingWeight);
     bai_LHEReweight.setBranchAddress(info_ -> LHEReweightingWeight, branchName_LHEReweightingWeight);
+  }
+  if(info_ -> is_hh_nonresonant())
+  {
+    bai.setBranchAddress(info_ -> gen_mHH, branchName_gen_mHH);
+    bai.setBranchAddress(info_ -> gen_cosThetaStar, branchName_gen_cosThetaStar);
   }
 }
 
