@@ -32691,7 +32691,7 @@ samples_2016["/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16
       OD([
         ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Sep02_QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190902_172055"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [75]),
       ]),
     ]
   ),

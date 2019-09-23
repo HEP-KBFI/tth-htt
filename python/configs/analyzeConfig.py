@@ -530,8 +530,11 @@ class analyzeConfig(object):
           not ((sample_category.startswith("signal") or sample_category == "HH") and has_LHE): return False
       return True
 
-    def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False):
-        process_string = 'process.analyze_%s' % self.channel
+    def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False, dropCtrl = False):
+        channel_str = self.channel
+        if dropCtrl:
+          channel_str = channel_str.replace('ctrl', '')
+        process_string = 'process.analyze_{}'.format(channel_str)
         current_function_name = inspect.stack()[0][3]
 
         stitch_histogram_names = {}
@@ -673,6 +676,7 @@ class analyzeConfig(object):
             'lep_mva_cut_e',
             'chargeSumSelection',
             'histogramDir',
+            'isControlRegion',
             'lumiScale',
             'leptonChargeSelection',
             'hadTauChargeSelection',

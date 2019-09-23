@@ -73,8 +73,9 @@ process.analyze_4l = cms.PSet(
     minNumJets = cms.int32(2),
 
     isMC = cms.bool(True),
+    isControlRegion = cms.bool(False),
     central_or_shift = cms.string(''),
-    lumiScale = cms.double(1.),
+    lumiScale = cms.VPSet(),
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),
     apply_hlt_filter = cms.bool(False),
