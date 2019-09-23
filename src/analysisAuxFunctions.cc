@@ -682,7 +682,7 @@ get_key_list_hist(const EventInfo & eventInfo,
 }
 
 std::string
-get_prefix(const std::string process_string,
+get_prefix(const std::string & process_string,
            bool isMC_tH,
            bool isMC_HH,
            bool isMC_H,
