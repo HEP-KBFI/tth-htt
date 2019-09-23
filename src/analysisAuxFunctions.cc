@@ -10,6 +10,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // countHadTauGenMatches()
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kHadTauPt_*
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 
 #include <TMath.h> // TMath::Sqrt
 
@@ -586,4 +587,91 @@ isfailsHtoZZVeto(const std::vector<const RecoLepton *> & preselLeptons)
     }
   }
   return failsHtoZZVeto;
+}
+
+std::string
+get_key_hist(
+  EventInfo eventInfo,
+  std::vector<GenParticle>  genWBosons,
+  bool isMC_HH, bool isMC_VH,
+  bool isDebug
+)
+{
+  std::string decayModeStr;
+  if (!isMC_HH && ! isMC_VH) decayModeStr = eventInfo.getDecayModeString();
+  else if (isMC_HH) decayModeStr = eventInfo.getDiHiggsDecayModeString();
+  else if (isMC_VH)
+  {
+    int VH_pdgID = 0;
+    int count_Vs = 0;
+    if(isDebug) std::cout << "====================== " << decayModeStr << "\n";
+    std::string decayModeStrTest = eventInfo.getDecayModeString();
+    if ( decayModeStrTest == "hzg" || decayModeStrTest == "hmm" ) decayModeStrTest == "hzz";// for definitivess, that should be very rare
+    for ( unsigned int nn = 0 ; nn < genWBosons.size() ; nn++) {
+      if ( genWBosons[nn].statusFlags() == 4481 )
+      {
+        VH_pdgID = genWBosons[nn].pdgId();
+        count_Vs++;
+      }
+    }
+    if (count_Vs != 1) throw cmsException("analysisAuxFunctions", __LINE__) << "More than one gen V in VH, or not one gen V in VH or an weird decay mode" << count_Vs << " " << decayModeStrTest;
+
+    if (std::abs(VH_pdgID) == 23) decayModeStr = "ZH_" + decayModeStrTest;
+    else if (std::abs(VH_pdgID) == 24) decayModeStr = "WH_" + decayModeStrTest;
+    if (isDebug) std::cout << "count_Vs = " << count_Vs << " decayModeStrTest " << decayModeStrTest << "\n";
+  }
+  return decayModeStr;
+}
+
+std::vector<std::string> get_key_list_hist (
+  EventInfo eventInfo,
+  std::string process_and_genMatch,
+  bool isMC_HH, bool isMC_VH
+)
+{
+  std::vector<std::string> decayModes_evt;
+  if ( isMC_HH ) decayModes_evt = eventInfo.getDiHiggsDecayModes();
+  else {
+    if (!isMC_VH ) decayModes_evt = eventInfo.getDecayModes();
+    else
+    {
+      for(const std::string & evt_decay_str: eventInfo.getDecayModes())
+      {
+        std::string evt_decay_strTest = evt_decay_str;
+        if (evt_decay_strTest == "hzg" || evt_decay_strTest == "hmm" ) continue;
+        decayModes_evt.push_back("WH_" + evt_decay_strTest);
+      }
+      for(const std::string & evt_decay_str: eventInfo.getDecayModes())
+      {
+        std::string evt_decay_strTest = evt_decay_str;
+        if (evt_decay_strTest == "hzg" || evt_decay_strTest == "hmm" ) continue;
+        decayModes_evt.push_back("ZH_" + evt_decay_strTest);
+      }
+    }
+  }
+  std::cout<<" To make separation: " << process_and_genMatch << " in : ";
+  for(const std::string & evt_cat: decayModes_evt) std::cout<< evt_cat << " ";
+  std::cout<<"\n";
+  return  decayModes_evt;
+}
+
+std::string
+get_prefix(std::string process_string, bool isMC_tH,  bool isMC_HH, bool isMC_H, bool isMC_VH)
+{
+  std::string decayMode_and_genMatch;
+  if(isMC_tH ||  isMC_HH || isMC_H)
+  {
+    decayMode_and_genMatch = process_string;
+    decayMode_and_genMatch += "_";
+  }
+  else if (isMC_VH)
+  {
+    decayMode_and_genMatch = "";
+  }
+  else
+  {
+    if ( process_string == "signal") decayMode_and_genMatch = "ttH_";
+    if ( process_string == "signal_ctcvcp" ) decayMode_and_genMatch = "ttH_ctcvcp_";
+  }
+  return decayMode_and_genMatch;
 }

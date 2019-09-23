@@ -7,6 +7,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/TrigObj.h" // TrigObj
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 #include <DataFormats/Math/interface/LorentzVector.h> // math::PtEtaPhiMLorentzVector
@@ -618,6 +619,24 @@ isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons,
 
 bool
 isfailsHtoZZVeto(const std::vector<const RecoLepton *> & preselLeptons);
+
+std::string
+get_key_hist(
+  EventInfo eventInfo,
+  std::vector<GenParticle>  genWBosons,
+  bool isMC_HH, bool isMC_VH,
+  bool isDebug = false
+);
+
+std::vector<std::string>
+get_key_list_hist (
+  EventInfo eventInfo,
+  std::string process_and_genMatch,
+  bool isMC_HH, bool isMC_VH
+);
+
+std::string
+get_prefix(std::string process_string, bool isMC_tH,  bool isMC_HH, bool isMC_H, bool isMC_VH);
 
 /**
  * @brief Find generator-level jets produced in W->jj decay

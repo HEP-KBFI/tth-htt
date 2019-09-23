@@ -149,6 +149,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
       decays = [""]
       if sample_category in self.procsWithDecayModes : decays += self.decayModes
+      if "HH" in sample_category : decays += self.decayModes_HH
       couplings = [""]
       if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
       for decayMode in decays :
@@ -544,9 +545,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             sample_categories.extend(self.ttHProcs)
             for sample_category in sample_categories:
               if sample_category == "signal" :  sample_category = "ttH"
-              if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+              if sample_category == "signal_ctcvcp" :  continue
               decays = [""]
-              if sample_category in self.procsWithDecayModes : decays += self.decayModes
               couplings = [""]
               for decayMode in decays :
                 for coupling in couplings :
