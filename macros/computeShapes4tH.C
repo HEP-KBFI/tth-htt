@@ -115,29 +115,35 @@ TH1* computeHistogram(const TH1* histogram_1p0_1p0, const TH1* histogram_0p0_1p0
   return histogram_computed;
 } 
 
-TH1* compRatioHistogram(const std::string& ratioHistogramName, const TH1* numerator, const TH1* denominator)
+TH1* compRatioHistogram(const std::string& histogramName_ratio, const TH1* histogram_numerator, const TH1* histogram_denominator)
 {
-  TH1* histogramRatio = 0;
-  
-  if ( numerator->GetDimension() == denominator->GetDimension() &&
-       numerator->GetNbinsX() == denominator->GetNbinsX() ) {
-    histogramRatio = (TH1*)numerator->Clone(ratioHistogramName.data());
-    histogramRatio->Divide(denominator);
-    
-    int nBins = histogramRatio->GetNbinsX();
-    for ( int iBin = 1; iBin <= nBins; ++iBin ){
-      double binContent = histogramRatio->GetBinContent(iBin);
-      histogramRatio->SetBinContent(iBin, binContent - 1.);
+  TH1* histogram_ratio = 0;
+  if ( histogram_numerator->GetDimension() == histogram_denominator->GetDimension() &&
+       histogram_numerator->GetNbinsX()    == histogram_denominator->GetNbinsX()    ) {
+    histogram_ratio = (TH1*)histogram_numerator->Clone(histogramName_ratio.data());
+    histogram_ratio->Reset();
+    if ( !histogram_ratio->GetSumw2N() ) histogram_ratio->Sumw2();
+
+    int numBins = histogram_denominator->GetNbinsX();
+    for ( int idxBin = 0; idxBin <= (numBins + 1); ++idxBin ){
+      double binContent_numerator = histogram_numerator->GetBinContent(idxBin);
+      double binError_numerator = histogram_numerator->GetBinError(idxBin);
+
+      double binContent_denominator = histogram_denominator->GetBinContent(idxBin);
+      double binError_denominator = histogram_denominator->GetBinError(idxBin);
+
+      histogram_ratio->SetBinContent(idxBin, (binContent_numerator - binContent_denominator)/binContent_denominator);
+      histogram_ratio->SetBinError(idxBin, binError_numerator/binContent_denominator);
     }
     
-    histogramRatio->SetLineColor(numerator->GetLineColor());
-    histogramRatio->SetLineWidth(numerator->GetLineWidth());
-    histogramRatio->SetMarkerColor(numerator->GetMarkerColor());
-    histogramRatio->SetMarkerStyle(numerator->GetMarkerStyle());
-    histogramRatio->SetMarkerSize(numerator->GetMarkerSize());
+    histogram_ratio->SetLineColor(histogram_numerator->GetLineColor());
+    histogram_ratio->SetLineWidth(histogram_numerator->GetLineWidth());
+    histogram_ratio->SetMarkerColor(histogram_numerator->GetMarkerColor());
+    histogram_ratio->SetMarkerStyle(histogram_numerator->GetMarkerStyle());
+    histogram_ratio->SetMarkerSize(histogram_numerator->GetMarkerSize());
   }
 
-  return histogramRatio;
+  return histogram_ratio;
 }
 
 TGraphAsymmErrors* convertToGraph(const TH1* histogram, double offsetX = 0.15)
@@ -244,14 +250,14 @@ void showHistograms(double canvasSizeX, double canvasSizeY,
   bottomPad->Draw();
   bottomPad->cd();
 
-  std::string histogramName_computed_div_ref = std::string(histogram_computed->GetName()).append("_div_").append(histogram_ref->GetName());
-  TH1* histogram_computed_div_ref = compRatioHistogram(histogramName_computed_div_ref, histogram_computed, histogram_ref);
-  histogram_computed_div_ref->SetTitle("");
-  histogram_computed_div_ref->SetStats(false);
-  histogram_computed_div_ref->SetMinimum(-0.50);
-  histogram_computed_div_ref->SetMaximum(+0.50);
+  std::string histogramName_ref_div_ref = std::string(histogram_ref->GetName()).append("_div_").append(histogram_ref->GetName());
+  TH1* histogram_ref_div_ref = compRatioHistogram(histogramName_ref_div_ref, histogram_ref, histogram_ref);
+  histogram_ref_div_ref->SetTitle("");
+  histogram_ref_div_ref->SetStats(false);
+  histogram_ref_div_ref->SetMinimum(-0.50);
+  histogram_ref_div_ref->SetMaximum(+0.50);
   
-  TAxis* xAxis_bottom = histogram_computed_div_ref->GetXaxis();
+  TAxis* xAxis_bottom = histogram_ref_div_ref->GetXaxis();
   xAxis_bottom->SetTitle(xAxis_top->GetTitle());
   xAxis_bottom->SetLabelColor(1);
   xAxis_bottom->SetTitleColor(1);
@@ -261,7 +267,7 @@ void showHistograms(double canvasSizeX, double canvasSizeY,
   xAxis_bottom->SetLabelSize(0.08);
   xAxis_bottom->SetTickLength(0.055);
       
-  TAxis* yAxis_bottom = histogram_computed_div_ref->GetYaxis();
+  TAxis* yAxis_bottom = histogram_ref_div_ref->GetYaxis();
   yAxis_bottom->SetTitle(Form("#frac{%s - %s}{%s}", legendEntry_computed.data(), legendEntry_ref.data(), legendEntry_ref.data()));
   yAxis_bottom->SetTitleOffset(0.85);
   yAxis_bottom->SetNdivisions(505);
@@ -270,7 +276,10 @@ void showHistograms(double canvasSizeX, double canvasSizeY,
   yAxis_bottom->SetLabelSize(0.08);
   yAxis_bottom->SetTickLength(0.04);  
   
-  histogram_computed_div_ref->Draw("e1p");
+  histogram_ref_div_ref->Draw("e1p");
+
+  std::string histogramName_computed_div_ref = std::string(histogram_computed->GetName()).append("_div_").append(histogram_ref->GetName());
+  TH1* histogram_computed_div_ref = compRatioHistogram(histogramName_computed_div_ref, histogram_computed, histogram_ref);
 
   TGraph* graph_line = new TGraph(2);
   graph_line->SetPoint(0, xAxis_top->GetXmin(), 0.);
@@ -279,7 +288,11 @@ void showHistograms(double canvasSizeX, double canvasSizeY,
   graph_line->SetLineWidth(1);
   graph_line->Draw("L");
 
-  histogram_computed_div_ref->Draw("e1psame");
+  histogram_ref_div_ref->Draw("e1psame");
+
+  //histogram_computed_div_ref->Draw("e1psame");
+  TGraphAsymmErrors* graph_computed_div_ref = convertToGraph(histogram_computed_div_ref);
+  graph_computed_div_ref->Draw("P");
   
   canvas->Update();
   size_t idx = outputFileName.find_last_of('.');
@@ -293,7 +306,9 @@ void showHistograms(double canvasSizeX, double canvasSizeY,
   
   delete legend;
   delete graph_computed;
+  delete histogram_ref_div_ref;
   delete histogram_computed_div_ref;
+  delete graph_computed_div_ref;
   delete topPad;
   delete bottomPad;
   delete canvas;  
