@@ -428,7 +428,7 @@ class analyzeConfig(object):
         self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
         self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
         self.decayModes_HH = [ "tttt",  "zzzz",  "wwww",  "ttzz",  "ttww",  "zzww"]
-        self.procsWithDecayModes = self.ttHProcs + [ "VH", "tHW", "tHq", "ggH", "qqH", "TTWH", "TTZH" ]
+        self.procsWithDecayModes = self.ttHProcs + [ "WH", "ZH", "tHW", "tHq", "ggH", "qqH", "TTWH", "TTZH" ]
         self.prep_dcard_signals = self.signalProcs + self.ttHProcs + [
           "{}_{}".format(proc, decMode) for proc in self.ttHProcs for decMode in self.decayModes + [ 'fake' ]
         ] + [

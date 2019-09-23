@@ -128,7 +128,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "HH", "tHq", "tHW", "VH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "HH", "tHq", "tHW", "VH", "WH", "ZH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:

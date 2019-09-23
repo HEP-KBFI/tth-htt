@@ -121,7 +121,7 @@ class analyzeConfig_2lss(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "ggH", "qqH", "HH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "WH", "ZH", "ggH", "qqH", "HH", "TTWH", "TTZH" ]
 
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:

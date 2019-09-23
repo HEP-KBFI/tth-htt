@@ -142,7 +142,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK",  "WZ", "ZZ", "Rares", "DY", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK",  "WZ", "ZZ", "Rares", "DY", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
