@@ -27,7 +27,7 @@ class GenMatchEntry
 class GenMatchInterface
 {
  public:
-  GenMatchInterface(unsigned numLeptons, bool apply_leptonGenMatching, bool useFlips, unsigned numHadTaus, bool apply_hadTauGenMatching);
+  GenMatchInterface(unsigned numLeptons, bool apply_leptonGenMatching, bool useFlips, unsigned numHadTaus, bool apply_hadTauGenMatching, bool useFlipsHadTau = false);
   GenMatchInterface(unsigned numLeptons, bool apply_leptonGenMatching, bool useFlips);
   GenMatchInterface(unsigned numHadTaus, bool apply_hadTauGenMatching);
   ~GenMatchInterface();
@@ -42,6 +42,7 @@ class GenMatchInterface
   unsigned numLeptons_;
   bool apply_leptonGenMatching_;
   bool useFlips_;
+  bool useFlipsHadTau_;
   unsigned numHadTaus_;
   bool apply_hadTauGenMatching_;
   bool useGenTau_and_FakeTau_;

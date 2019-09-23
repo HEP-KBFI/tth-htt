@@ -8,10 +8,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // countLeptonGenMatches, countLeptonChargeFlipGenMatches
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // countHadTauGenMatches
 
-GenMatchInterface::GenMatchInterface(unsigned numLeptons, bool apply_leptonGenMatching, bool useFlips, unsigned numHadTaus, bool apply_hadTauGenMatching)
+GenMatchInterface::GenMatchInterface(unsigned numLeptons, bool apply_leptonGenMatching, bool useFlips, unsigned numHadTaus, bool apply_hadTauGenMatching, bool useFlipsHadTau)
   : numLeptons_(numLeptons)
   , apply_leptonGenMatching_(apply_leptonGenMatching)
   , useFlips_(useFlips)
+  , useFlipsHadTau_(useFlipsHadTau)
   , numHadTaus_(numHadTaus)
   , apply_hadTauGenMatching_(apply_hadTauGenMatching)
   , useGenTau_and_FakeTau_(numHadTaus >= 1 && !apply_hadTauGenMatching)
@@ -23,6 +24,7 @@ GenMatchInterface::GenMatchInterface(unsigned numLeptons, bool apply_leptonGenMa
   : numLeptons_(numLeptons)
   , apply_leptonGenMatching_(apply_leptonGenMatching)
   , useFlips_(useFlips)
+  , useFlipsHadTau_(false)
   , numHadTaus_(0)
   , apply_hadTauGenMatching_(false)
   , useGenTau_and_FakeTau_(false)
@@ -34,6 +36,7 @@ GenMatchInterface::GenMatchInterface(unsigned numHadTaus, bool apply_hadTauGenMa
   : numLeptons_(0)
   , apply_leptonGenMatching_(false)
   , useFlips_(false)
+  , useFlipsHadTau_(false)
   , numHadTaus_(numHadTaus)
   , apply_hadTauGenMatching_(apply_hadTauGenMatching)
   , useGenTau_and_FakeTau_(numHadTaus >= 1 && !apply_hadTauGenMatching)
@@ -69,11 +72,19 @@ void GenMatchInterface::initialize()
   {
     if ( !(numLeptons_ >= 1) )
     {
-      throw cmsException(__func__, __LINE__)
+      throw cmsException(this, __func__, __LINE__)
         << " Invalid configuration parameters 'numLeptons' = " << numLeptons_ << " and 'useFlips' = " << useFlips_ << " !!";
     }
     addGenMatchDefinition("_flip");
     genMatchDefinition_flips_ = genMatchDefinitions_.back();
+  }
+  if ( useFlipsHadTau_ )
+  {
+    if ( !(numHadTaus_ >= 1) )
+    {
+      throw cmsException(this, __func__, __LINE__)
+        << " Invalid configuration parameters 'numHadTaus' = " << numHadTaus_ << " and 'useFlipsHadTau' = " << useFlipsHadTau_ << " !!";
+    }
   }
   if ( numLeptons_ >= 1 )
   {
@@ -124,16 +135,24 @@ GenMatchInterface::getGenMatch(const std::vector<const RecoLepton*>& selLeptons,
       countLeptonGenMatches(selLepton, selLeptons_numGenMatchedLeptons, selLeptons_numGenMatchedPhotons, selLeptons_numGenMatchedJets);
     }
   }
-  
-  int selHadTaus_numGenMatchedHadTaus   = 0;
-  int selHadTaus_numGenMatchedElectrons = 0;
-  int selHadTaus_numGenMatchedMuons     = 0;
-  int selHadTaus_numGenMatchedJets      = 0;
+
+  int selHadTaus_numGenMatchedHadTaus              = 0;
+  int selHadTaus_numChargeFlippedGenMatchedHadTaus = 0;
+  int selHadTaus_numGenMatchedElectrons            = 0;
+  int selHadTaus_numGenMatchedMuons                = 0;
+  int selHadTaus_numGenMatchedJets                 = 0;
   assert(selHadTaus.size() >= numHadTaus_);
   for ( size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau ) 
   {
     const RecoHadTau* selHadTau = selHadTaus[idxHadTau];
-    countHadTauGenMatches(selHadTau, selHadTaus_numGenMatchedHadTaus, selHadTaus_numGenMatchedElectrons, selHadTaus_numGenMatchedMuons, selHadTaus_numGenMatchedJets);
+    if ( useFlipsHadTau_ )
+    {
+      countHadTauChargeFlipGenMatches(selHadTau, selHadTaus_numGenMatchedHadTaus, selHadTaus_numGenMatchedElectrons, selHadTaus_numGenMatchedMuons, selHadTaus_numChargeFlippedGenMatchedHadTaus, selHadTaus_numGenMatchedJets);
+    }
+    else
+    {
+      countHadTauGenMatches(selHadTau, selHadTaus_numGenMatchedHadTaus, selHadTaus_numGenMatchedElectrons, selHadTaus_numGenMatchedMuons, selHadTaus_numGenMatchedJets);
+    }
   }
 
   std::vector<const GenMatchEntry*> genMatches;
@@ -144,6 +163,11 @@ GenMatchInterface::getGenMatch(const std::vector<const RecoLepton*>& selLeptons,
     genMatches.push_back(genMatchDefinition_fakes_);
   }
   else if ( useFlips_ && selLeptons_numChargeFlippedGenMatchedLeptons >= 1 )
+  {
+    assert(genMatchDefinition_flips_);
+    genMatches.push_back(genMatchDefinition_flips_);
+  }
+  else if ( useFlipsHadTau_ && selHadTaus_numChargeFlippedGenMatchedHadTaus >= 1 )
   {
     assert(genMatchDefinition_flips_);
     genMatches.push_back(genMatchDefinition_flips_);

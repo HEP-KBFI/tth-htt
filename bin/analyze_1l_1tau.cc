@@ -248,7 +248,7 @@ int main(int argc, char* argv[])
   std::cout << "hadTauGenMatch_definitions:" << std::endl;
   std::cout << hadTauGenMatch_definitions;
 
-  GenMatchInterface genMatchInterface(1, apply_leptonGenMatching, true, 1, apply_hadTauGenMatching);
+  GenMatchInterface genMatchInterface(1, apply_leptonGenMatching, true, 1, apply_hadTauGenMatching, true);
 
   enum { kOS, kSS, kDisabled };
   std::string chargeSumSelection_string = cfg_analyze.getParameter<std::string>("chargeSumSelection");
@@ -2025,11 +2025,14 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       for(auto & kv: snmw)
       {
 	bool isGenMatched = false;
-        if ( isMC )
+        if(isMC)
         {
-          for (const GenMatchEntry* genMatch : genMatches)
+          for (const GenMatchEntry * genMatch: genMatches)
           {
-   	    if ( genMatch->getName() == "" ) isGenMatched = true; // non-fake
+            if(snmw.isGenMatched(kv.first, genMatch->getName()))
+            {
+              isGenMatched = true;
+            }
           }
         }
 

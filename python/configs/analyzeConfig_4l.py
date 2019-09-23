@@ -429,7 +429,6 @@ class analyzeConfig_4l(analyzeConfig):
                   'syncRLE'                  : syncRLE,
                   'fillGenEvtHistograms'     : True,
                   'apply_hlt_filter'         : self.hlt_filter,
-                  'syncGenMatch'             : [], # CV: temporarily kept until all channels switch to new gen-matching logic
                   'useNonNominal'            : self.use_nonnominal,
                   'useObjectMultiplicity'    : True,
                   'isControlRegion'          : self.isControlRegion,
