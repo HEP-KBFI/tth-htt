@@ -713,7 +713,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 
       if(isSignal)
       {
-        const vstring decayModes_evt = get_key_list_hist( eventInfo,  process_and_genMatch, isMC_HH, isMC_VH);
+        const vstring decayModes_evt = get_key_list_hist( eventInfo, isMC_HH, isMC_VH);
         for(const std::string & decayMode_evt: decayModes_evt)
         {
           if ( ( isMC_tH || isMC_H ) && ( decayMode_evt == "hzg" || decayMode_evt == "hmm" ) ) continue;
@@ -758,7 +758,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         selHistManager->evt_in_categories_[category]->bookHistograms(fs);
 
         if ( isSignal ) {
-          const vstring decayModes_evt = get_key_list_hist( eventInfo,  process_and_genMatch, isMC_HH, isMC_VH);
+          const vstring decayModes_evt = get_key_list_hist(eventInfo, isMC_HH, isMC_VH);
 
           for ( const std::string & decayMode_evt: decayModes_evt ) {
 

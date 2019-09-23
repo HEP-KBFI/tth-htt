@@ -724,7 +724,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 
       if(isSignal)
       {
-        const vstring decayModes_evt = get_key_list_hist( eventInfo,  process_and_genMatch, isMC_HH, isMC_VH);
+        const vstring decayModes_evt = get_key_list_hist(eventInfo, isMC_HH, isMC_VH);
         for(const std::string & decayMode_evt: decayModes_evt)
         {
           if((isMC_tH || isMC_VH ) && (decayMode_evt == "hzg" || decayMode_evt == "hmm"))
