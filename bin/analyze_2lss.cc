@@ -612,12 +612,11 @@ int main(int argc, char* argv[])
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_2lss_;
     std::map<std::string, EvtHistManager_2lss*> evt_;
-    std::map<std::string, EvtHistManager_2lss*> evt_in_categories_;
-    std::map<std::string, EvtHistManager_2lss*> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_;
-    std::map<std::string, std::map<std::string, EvtHistManager_2lss*>> evt_in_decayModes_;
+    std::map<std::string, std::map<std::string, EvtHistManager_2lss*>> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_;
 
-    std::map<std::string, std::map<std::string, EvtHistManager_2lss*>> evt_in_categories_and_decayModes_; // key = category, decayMode
-    std::map<std::string, std::map<std::string, EvtHistManager_2lss*>> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_;
+    std::map<std::string, std::map<std::string, EvtHistManager_2lss*>> evt_in_decayModes_;
+    std::map<std::string, std::map<std::string, std::map<std::string, EvtHistManager_2lss*>>> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_;
+
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
@@ -681,34 +680,6 @@ int main(int argc, char* argv[])
         selHistManager->mvaInputVariables_2lss_->bookHistograms(fs, mvaInputVariables_2lss);
       }
 
-      for(const std::string & evt_cat_str: evt_cat_strs)
-      {
-        if(skipBooking && evt_cat_str != default_cat_str)
-        {
-          continue;
-        }
-        std::string proc0 = process_string;
-        if ( process_string == "signal") proc0 = "ttH";
-        if ( process_string == "signal_ctcvcp" ) proc0 = "ttH_ctcvcp";
-        const std::string process_string_new = evt_cat_str == default_cat_str ?
-          proc0 :
-          proc0 + evt_cat_str
-        ;
-        const std::string process_and_genMatchName = boost::replace_all_copy(
-          process_and_genMatch, process_string, process_string_new
-        );
-
-        selHistManager->evt_[evt_cat_str] = new EvtHistManager_2lss(makeHistManager_cfg(
-          process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
-        ));
-        selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
-      }
-
-      const vstring categories_evt = {
-        "ee_neg", "ee_pos",
-        "em_bl_neg", "em_bl_pos", "em_bt_neg", "em_bt_pos",
-        "mm_bl_neg", "mm_bl_pos", "mm_bt_neg", "mm_bt_pos"
-      };
       const vstring categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4 = {
         "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_ee_bl",
         "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_ee_bt",
@@ -731,22 +702,37 @@ int main(int argc, char* argv[])
         "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bl",
         "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bt"
        };
-      for(const std::string & category: categories_evt)
-      {
-        TString histogramDir_category = histogramDir.data();
-        histogramDir_category.ReplaceAll("2lss", Form("2lss_%s", category.data()));
-        selHistManager->evt_in_categories_[category] = new EvtHistManager_2lss(makeHistManager_cfg(process_and_genMatch,
-          Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
-        selHistManager->evt_in_categories_[category]->bookHistograms(fs);
-      }
 
-      for(const std::string & category: categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4)
+      for(const std::string & evt_cat_str: evt_cat_strs)
       {
-        TString histogramDir_category = histogramDir.data();
-        histogramDir_category.ReplaceAll("2lss",  category.data());
-        selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_[category] = new EvtHistManager_2lss(makeHistManager_cfg(process_and_genMatch,
-          Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
-        selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_[category]->bookHistograms(fs);
+        if(skipBooking && evt_cat_str != default_cat_str)
+        {
+          continue;
+        }
+        std::string proc0 = process_string;
+        if ( process_string == "signal") proc0 = "ttH";
+        if ( process_string == "signal_ctcvcp" ) proc0 = "ttH_ctcvcp";
+        const std::string process_string_new = evt_cat_str == default_cat_str ?
+          proc0 :
+          proc0 + evt_cat_str
+        ;
+        const std::string process_and_genMatchName = boost::replace_all_copy(
+          process_and_genMatch, process_string, process_string_new
+        );
+
+        selHistManager->evt_[evt_cat_str] = new EvtHistManager_2lss(makeHistManager_cfg(
+          process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+        ));
+        selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
+
+        for(const std::string & category: categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4)
+        {
+          TString histogramDir_category = histogramDir.data();
+          histogramDir_category.ReplaceAll("2lss",  category.data());
+          selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_[evt_cat_str][category] = new EvtHistManager_2lss(makeHistManager_cfg(process_and_genMatch,
+            Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
+          selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_[evt_cat_str][category]->bookHistograms(fs);
+        }
       }
 
       if(isSignal)
@@ -781,26 +767,19 @@ int main(int argc, char* argv[])
               decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
             ));
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
+
+            for(const std::string category: categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4)
+            {
+              TString histogramDir_category = histogramDir.data();
+              histogramDir_category.ReplaceAll("2lss",  category.data());
+              selHistManager -> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[evt_cat_str][category][decayMode_evt] = new EvtHistManager_2lss(makeHistManager_cfg(
+                decayMode_and_genMatch, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift
+              ));
+              selHistManager -> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[evt_cat_str][category][decayMode_evt] -> bookHistograms(fs);
+            }
           }
 
-          for(const std::string & category: categories_evt)
-          {
-            TString histogramDir_category = histogramDir.data();
-            histogramDir_category.ReplaceAll("2lss", Form("2lss_%s", category.data()));
-            selHistManager -> evt_in_categories_and_decayModes_[category][decayMode_and_genMatch] = new EvtHistManager_2lss(makeHistManager_cfg(
-              decayMode_and_genMatch, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift
-            ));
-            selHistManager -> evt_in_categories_and_decayModes_[category][decayMode_and_genMatch] -> bookHistograms(fs);
-          }
-          for(const std::string category: categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4)
-          {
-            TString histogramDir_category = histogramDir.data();
-            histogramDir_category.ReplaceAll("2lss",  category.data());
-            selHistManager -> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[category][decayMode_evt] = new EvtHistManager_2lss(makeHistManager_cfg(
-              decayMode_and_genMatch, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift
-            ));
-            selHistManager -> evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[category][decayMode_evt] -> bookHistograms(fs);
-          }
+
         }
       }
       if(! skipBooking)
@@ -1841,29 +1820,6 @@ int main(int argc, char* argv[])
       else category_2lss_ttH_tH_4cat_onlyTHQ_v4 += "_bl";
     }
 
-//--- on the BDT categories we use only "ttH-selection"
-    std::string category;
-    if (ttH_like) {
-    if        (  selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron  ) {
-      category += "ee";
-      if      ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() < 0 ) category += "_neg";
-      else if ( selLepton_lead->charge() > 0 && selLepton_sublead->charge() > 0 ) category += "_pos";
-    } else if (  selLepton_lead_type == kMuon     && selLepton_sublead_type == kMuon      ) {
-      category += "mm";
-      if ( selBJets_medium.size() >= 2 ) category += "_bt";
-      else category += "_bl";
-      if      ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() < 0 ) category += "_neg";
-      else if ( selLepton_lead->charge() > 0 && selLepton_sublead->charge() > 0 ) category += "_pos";
-    } else if ( (selLepton_lead_type == kElectron && selLepton_sublead_type == kMuon    ) ||
-		(selLepton_lead_type == kMuon     && selLepton_sublead_type == kElectron) ) {
-      category += "em";
-      if ( selBJets_medium.size() >= 2 ) category += "_bt";
-      else category += "_bl";
-      if      ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() < 0 ) category += "_neg";
-      else if ( selLepton_lead->charge() > 0 && selLepton_sublead->charge() > 0 ) category += "_pos";
-    } else assert(0);
-    }
-
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
 
@@ -1929,25 +1885,8 @@ int main(int argc, char* argv[])
 	    mvaOutput_Hj_tagger,
 	    output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
           );
-        }
-        EvtHistManager_2lss* selHistManager_evt_category = selHistManager->evt_in_categories_[category];
-        if ( selHistManager_evt_category ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-          selHistManager_evt_category->fillHistograms(
-            selElectrons.size(),
-	    selMuons.size(),
-	    selHadTaus.size(),
-	    selJets.size(),
-	    selBJets_loose.size(),
-	    selBJets_medium.size(),
-	    evtWeight,
-	    mvaOutput_2lss_ttV,
-	    mvaOutput_2lss_ttbar,
-	    mvaDiscr_2lss,
-	    mvaOutput_Hj_tagger,
-	    output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
-          );
-        }
-        EvtHistManager_2lss* selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4 = selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_[category_2lss_ttH_tH_4cat_onlyTHQ_v4];
+
+        EvtHistManager_2lss* selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4 = selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_[kv.first][category_2lss_ttH_tH_4cat_onlyTHQ_v4];
         if ( selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4 ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
           selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4->fillHistograms(
             selElectrons.size(),
@@ -1963,6 +1902,7 @@ int main(int argc, char* argv[])
 	    mvaOutput_Hj_tagger,
 	    output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
           );
+        }
         }
 
         if ( isSignal ) {
@@ -1986,45 +1926,26 @@ int main(int argc, char* argv[])
 		mvaOutput_Hj_tagger,
 		output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
               );
-            }
+              std::string decayMode_and_genMatch = decayModeStr;
+              if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
 
-            std::string decayMode_and_genMatch = decayModeStr;
-            if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
-
-            EvtHistManager_2lss* selHistManager_evt_category_decMode = selHistManager->evt_in_categories_and_decayModes_[category][decayMode_and_genMatch];
-            if ( selHistManager_evt_category_decMode ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-              selHistManager_evt_category_decMode->fillHistograms(
-                selElectrons.size(),
-		selMuons.size(),
-		selHadTaus.size(),
-		selJets.size(),
-		selBJets_loose.size(),
-		selBJets_medium.size(),
-		evtWeight,
-		mvaOutput_2lss_ttV,
-		mvaOutput_2lss_ttbar,
-		mvaDiscr_2lss,
-		mvaOutput_Hj_tagger,
-		output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
-              );
+              EvtHistManager_2lss* selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes = selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[kv.first][category_2lss_ttH_tH_4cat_onlyTHQ_v4][decayModeStr];
+              if ( selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
+                selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes->fillHistograms(
+                  selElectrons.size(),
+                  selMuons.size(),
+                  selHadTaus.size(),
+                  selJets.size(),
+                  selBJets_loose.size(),
+                  selBJets_medium.size(),
+                  evtWeight,
+                  mvaOutput_2lss_ttV,
+                  mvaOutput_2lss_ttbar,
+                  mvaDiscr_2lss,
+                  mvaOutput_Hj_tagger,
+                  output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
+                );
               }
-
-            EvtHistManager_2lss* selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes = selHistManager->evt_in_categories_2lss_ttH_tH_4cat_onlyTHQ_v4_TF_and_decayModes_[category_2lss_ttH_tH_4cat_onlyTHQ_v4][decayModeStr];
-            if ( selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-              selHistManager_evt_category2lss_ttH_tH_4cat_onlyTHQ_v4_and_decayModes->fillHistograms(
-                selElectrons.size(),
-                selMuons.size(),
-                selHadTaus.size(),
-                selJets.size(),
-                selBJets_loose.size(),
-                selBJets_medium.size(),
-                evtWeight,
-                mvaOutput_2lss_ttV,
-                mvaOutput_2lss_ttbar,
-                mvaDiscr_2lss,
-                mvaOutput_Hj_tagger,
-                output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
-              );
             }
           }
         }
