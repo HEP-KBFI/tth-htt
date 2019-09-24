@@ -612,7 +612,7 @@ int main(int argc, char* argv[])
         ));
         if(isControlRegion)
         {
-          selHistManager->evt_[evt_cat_str]->setCRcategories(ctrl_categories);
+          selHistManager->evt_[evt_cat_str]->setCRcategories(fs, ctrl_categories);
         }
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
@@ -646,7 +646,7 @@ int main(int argc, char* argv[])
             ));
             if(isControlRegion)
             {
-              selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> setCRcategories(ctrl_categories);
+              selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> setCRcategories(fs, ctrl_categories);
             }
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
           }

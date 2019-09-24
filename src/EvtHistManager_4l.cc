@@ -39,21 +39,10 @@ EvtHistManager_4l::getHistogram_EventCounter() const
 }
 
 void
-EvtHistManager_4l::setCRcategories(const std::vector<std::string> & ctrl_categories)
+EvtHistManager_4l::setCRcategories(TFileDirectory & dir,
+                                   const std::vector<std::string> & ctrl_categories)
 {
   ctrl_cateories_ = ctrl_categories;
-}
-
-void
-EvtHistManager_4l::bookHistograms(TFileDirectory & dir)
-{
-  histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,  +4.5);
-  histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,  +4.5);
-  histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
-  histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
-  histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
-
-
   if(! ctrl_cateories_.empty())
   {
     histogram_ctrl_ = book1D(dir, "control", "control", ctrl_cateories_.size(), -0.5, ctrl_cateories_.size() - 0.5);
@@ -65,6 +54,16 @@ EvtHistManager_4l::bookHistograms(TFileDirectory & dir)
       }
     }
   }
+}
+
+void
+EvtHistManager_4l::bookHistograms(TFileDirectory & dir)
+{
+  histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,  +4.5);
+  histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,  +4.5);
+  histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
+  histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
+  histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }

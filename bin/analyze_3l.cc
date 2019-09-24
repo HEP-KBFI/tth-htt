@@ -613,6 +613,21 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     "output_NN_3l_ttH_tH_3cat_v8_rest_bl",
     "output_NN_3l_ttH_tH_3cat_v8_rest_bt"
   };
+  vstring ctrl_categories = { "other" };
+  for(int nbjets_ctrl = 0; nbjets_ctrl < 3; ++nbjets_ctrl)
+  {
+    for(int njets_ctrl = std::min(2, nbjets_ctrl + 1); njets_ctrl < std::min(nbjets_ctrl + 5, 6); ++njets_ctrl)
+    {
+      for(int nele_ctrl = 0; nele_ctrl < 4; ++nele_ctrl)
+      {
+        int nmu_ctrl = 3 - nele_ctrl;
+        const std::string ele_ctrl_str(nele_ctrl, 'e');
+        const std::string mu_ctrl_str(nmu_ctrl, 'm');
+        const std::string ctrl_category = Form("b%d_j%d_%s%s", nbjets_ctrl, njets_ctrl, ele_ctrl_str.data(), mu_ctrl_str.data());
+        ctrl_categories.push_back(ctrl_category);
+      }
+    }
+  }
 
   std::map<std::string, GenEvtHistManager*> genEvtHistManager_beforeCuts;
   std::map<std::string, GenEvtHistManager*> genEvtHistManager_afterCuts;
@@ -694,6 +709,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
         ));
         selHistManager->evt_[evt_cat_str]->bookCategories(fs, categories_TensorFlow_3l_ttH_tH_3cat_v8);
+        if(isControlRegion)
+        {
+          selHistManager->evt_[evt_cat_str]->setCRcategories(fs, ctrl_categories);
+        }
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
 
@@ -728,6 +747,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
               decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
             ));
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookCategories(fs, categories_TensorFlow_3l_ttH_tH_3cat_v8);
+            if(isControlRegion)
+            {
+              selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> setCRcategories(fs, ctrl_categories);
+            }
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
           }
         }
@@ -1796,6 +1819,26 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
 
 //--- fill histograms with events passing final selection
+    std::string ctrl_category = "other";
+    if(isControlRegion)
+    {
+      const int nbjets_ctrl = std::min(static_cast<int>(selBJets_medium.size()), 2);
+      const int njets_ctrl = std::max(std::min(static_cast<int>(selJets.size()), std::min(nbjets_ctrl + 4, 5)), std::min(2, nbjets_ctrl + 1));
+      const int nele_ctrl = std::count_if(
+        selLeptons.cbegin(), selLeptons.cend(), [](const RecoLepton * const lepton) -> bool { return lepton->is_electron(); }
+      );
+      const int nmu_ctrl = std::count_if(
+        selLeptons.cbegin(), selLeptons.cend(), [](const RecoLepton * const lepton) -> bool { return lepton->is_muon(); }
+      );
+      assert((nele_ctrl + nmu_ctrl) == 3);
+      const std::string ele_ctrl_str(nele_ctrl, 'e');
+      const std::string mu_ctrl_str(nmu_ctrl, 'm');
+      ctrl_category = Form("b%d_j%d_%s%s", nbjets_ctrl, njets_ctrl, ele_ctrl_str.data(), mu_ctrl_str.data());
+      if(std::find(ctrl_categories.cbegin(), ctrl_categories.cend(), ctrl_category) == ctrl_categories.cend())
+      {
+        throw cmsException("analyze_3l", __LINE__) << "Unexpected CR category: " << ctrl_category;
+      }
+    }
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
       const double evtWeight = evtWeightRecorder.get(central_or_shift);
@@ -1841,6 +1884,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           selHistManager->evt_[kv.first]->fillHistograms(
             selElectrons.size(), selMuons.size(), selHadTaus.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            ctrl_category,
             mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
             output_NN_3l_ttH_tH_3cat_v8, category,
             memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
@@ -1863,6 +1907,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
                 selJets.size(),
                 selBJets_loose.size(),
                 selBJets_medium.size(),
+                ctrl_category,
                 mvaOutput_3l_ttV,
                 mvaOutput_3l_ttbar,
                 mvaDiscr_3l,

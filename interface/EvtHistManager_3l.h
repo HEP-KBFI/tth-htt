@@ -26,6 +26,10 @@ class EvtHistManager_3l
   bookHistograms(TFileDirectory & dir) override;
 
   void
+  setCRcategories(TFileDirectory & dir,
+                  const std::vector<std::string> & ctrl_categories);
+
+  void
   bookCategories(TFileDirectory & dir,
                  const std::vector<std::string> & categories);
 
@@ -36,6 +40,7 @@ class EvtHistManager_3l
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
+                 const std::string & ctrl_category,
                  double mvaOutput_3l_ttV,
                  double mvaOutput_3l_ttbar,
                  double mvaDiscr_3l,
@@ -49,6 +54,7 @@ class EvtHistManager_3l
 
  private:
   int era_;
+  std::vector<std::string> ctrl_cateories_;
 
   TH1 * histogram_numElectrons_;
   TH1 * histogram_numMuons_;
@@ -75,6 +81,8 @@ class EvtHistManager_3l
   TH1 * histogram_memOutput_LR_;
   TH1 * histogram_mem_logCPUTime_;
   TH1 * histogram_mem_logRealTime_;
+
+  TH1 * histogram_ctrl_;
 
   TH1 * histogram_EventCounter_;
 };

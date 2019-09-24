@@ -20,7 +20,8 @@ class EvtHistManager_4l
   ~EvtHistManager_4l() {}
 
   void
-  setCRcategories(const std::vector<std::string> & ctrl_categories);
+  setCRcategories(TFileDirectory & dir,
+                  const std::vector<std::string> & ctrl_categories);
 
   /// book and fill histograms
   void
