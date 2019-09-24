@@ -19,6 +19,9 @@ class EvtHistManager_4l
   EvtHistManager_4l(const edm::ParameterSet & cfg);
   ~EvtHistManager_4l() {}
 
+  void
+  setCRcategories(const std::vector<std::string> & ctrl_categories);
+
   /// book and fill histograms
   void
   bookHistograms(TFileDirectory & dir) override;

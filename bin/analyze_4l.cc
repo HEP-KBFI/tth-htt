@@ -529,6 +529,14 @@ int main(int argc, char* argv[])
     WeightHistManager* weights_;
   };
 
+  const vstring ctrl_categories = {
+    "sfos_2",
+    "sfos_1_0j",
+    "sfos_1_1Mb",
+    "sfos_1_2Mb",
+    "other",
+  };
+
   std::map<std::string, GenEvtHistManager*> genEvtHistManager_beforeCuts;
   std::map<std::string, GenEvtHistManager*> genEvtHistManager_afterCuts;
   std::map<std::string, LHEInfoHistManager*> lheInfoHistManager;
@@ -602,6 +610,10 @@ int main(int argc, char* argv[])
         selHistManager->evt_[evt_cat_str] = new EvtHistManager_4l(makeHistManager_cfg(
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
         ));
+        if(isControlRegion)
+        {
+          selHistManager->evt_[evt_cat_str]->setCRcategories(ctrl_categories);
+        }
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
 
@@ -632,6 +644,10 @@ int main(int argc, char* argv[])
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_4l(makeHistManager_cfg(
               decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
             ));
+            if(isControlRegion)
+            {
+              selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> setCRcategories(ctrl_categories);
+            }
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
           }
         }
