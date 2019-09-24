@@ -52,6 +52,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_charge_flip.h" // EvtHistManager_charge_flip
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
+#include "tthAnalysis/HiggsToTauTau/interface/DYMCReweighting.h" // DYMCReweighting
+#include "tthAnalysis/HiggsToTauTau/interface/DYMCNormScaleFactors.h" // DYMCNormScaleFactors
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBTagWeight_option, isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
@@ -168,6 +170,8 @@ int main(int argc, char* argv[])
   bool isCentral = ( central_or_shift == "central" ) ? true : false;
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
+  bool apply_DYMCReweighting = cfg_analyze.getParameter<bool>("apply_DYMCReweighting");
+  bool apply_DYMCNormScaleFactors = cfg_analyze.getParameter<bool>("apply_DYMCNormScaleFactors");
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
 
   const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
@@ -190,6 +194,17 @@ int main(int argc, char* argv[])
        " -> met_option        = " << met_option        << "\n"
        " -> electronPt_option = " << electronPt_option << '\n'
   ;
+
+  DYMCReweighting * dyReweighting = nullptr;
+  if(apply_DYMCReweighting)
+  {
+    dyReweighting = new DYMCReweighting(era);
+  }
+  DYMCNormScaleFactors * dyNormScaleFactors = nullptr;
+  if(apply_DYMCNormScaleFactors)
+  {
+    dyNormScaleFactors = new DYMCNormScaleFactors(era);
+  }
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
@@ -222,6 +237,7 @@ int main(int argc, char* argv[])
   std::string branchName_muons = cfg_analyze.getParameter<std::string>("branchName_muons");
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
 
+  std::string branchName_genTauLeptons = cfg_analyze.getParameter<std::string>("branchName_genTauLeptons");
   std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
   std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
   std::string branchName_genPhotons = cfg_analyze.getParameter<std::string>("branchName_genPhotons");
@@ -314,6 +330,14 @@ int main(int argc, char* argv[])
   RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
   RecoJetCollectionCleanerByIndex jetCleanerByIndex(isDEBUG);
   RecoJetCollectionSelector jetSelector(era);
+  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
+  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
+
+  GenParticleReader* genTauLeptonReader = nullptr;
+  if ( isMC && (apply_DYMCReweighting || apply_DYMCNormScaleFactors)) {
+    genTauLeptonReader = new GenParticleReader(branchName_genTauLeptons);
+    inputTree->registerReader(genTauLeptonReader);
+  }
 
 //--- declare generator level information
   GenLeptonReader * genLeptonReader = nullptr;
@@ -558,9 +582,16 @@ int main(int argc, char* argv[])
       if(genMatchToElectronReader) electronGenMatch = genMatchToElectronReader->read();
     }
 
+    std::vector<GenParticle> genTauLeptons;
+    if(isMC && (apply_DYMCReweighting || apply_DYMCNormScaleFactors))
+    {
+      genTauLeptons = genTauLeptonReader->read();
+    }
+
     if(isMC)
     {
       if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
+      if(apply_DYMCReweighting)   evtWeightRecorder.record_dy_rwgt(dyReweighting, genTauLeptons);
       if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
       if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
       lheInfoReader->read();
@@ -662,6 +693,8 @@ int main(int argc, char* argv[])
       jetCleaner       (jet_ptrs, fakeableMuons, fakeableElectrons)
     ;
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
+    const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
+    const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     if(isMC && redoGenMatching && ! fillGenEvtHistograms)
@@ -937,6 +970,12 @@ int main(int argc, char* argv[])
 
     if(isMC)
     {
+      if(apply_DYMCNormScaleFactors)
+      {
+        evtWeightRecorder.record_dy_norm(
+          dyNormScaleFactors, genTauLeptons, selJets.size(), selBJets_loose.size(), selBJets_medium.size()
+        );
+      }
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
