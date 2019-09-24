@@ -23,6 +23,10 @@ class EvtHistManager_2lss
   bookHistograms(TFileDirectory & dir) override;
 
   void
+  bookCategories(TFileDirectory & dir,
+                 const std::vector<std::string> & categories);
+
+  void
   fillHistograms(int numElectrons,
                  int numMuons,
                  int numHadTaus,
@@ -30,14 +34,12 @@ class EvtHistManager_2lss
                  int numBJets_loose,
                  int numBJets_medium,
                  double evtWeight,
-                 //
                  double mvaOutput_2lss_ttV,
                  double mvaOutput_2lss_ttbar,
                  double mvaDiscr_2lss,
                  double mvaOutput_Hj_tagger,
-                 double output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
-                 std::string category_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
-               );
+                 double mvaOutput_category,
+                 const std::string & category);
 
   const TH1 *
   getHistogram_EventCounter() const;
@@ -63,7 +65,7 @@ class EvtHistManager_2lss
   TH1 * histogram_mvaDiscr_2lss_;
 
   TH1 * histogram_mvaOutput_Hj_tagger_;
-  std::vector<TH1 *> histogram_output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_;
+  std::map<std::string, TH1 *> histograms_by_category_;
 
   TH1 * histogram_EventCounter_;
 };

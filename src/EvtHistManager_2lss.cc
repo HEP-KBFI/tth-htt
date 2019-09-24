@@ -4,29 +4,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era(), kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-std::vector<std::string> categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4 = {
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_ee_bl",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_ee_bt",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_em_bl",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_em_bt",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_mm_bl",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_mm_bt",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_ee_bl",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_ee_bt",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_em_bl",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_em_bt",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_mm_bl",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_mm_bt",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_rest_bl",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_rest_bt",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_ee_bl",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_ee_bt",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_em_bl",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_em_bt",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bl",
-  "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bt"
-};
-
 EvtHistManager_2lss::EvtHistManager_2lss(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
   , era_(get_era(cfg.getParameter<std::string>("era")))
@@ -65,9 +42,18 @@ EvtHistManager_2lss::getHistogram_EventCounter() const
   return histogram_EventCounter_;
 }
 
-void EvtHistManager_2lss::bookHistograms(
-  TFileDirectory & dir
-)
+void
+EvtHistManager_2lss::bookCategories(TFileDirectory & dir,
+                                    const std::vector<std::string> & categories)
+{
+  for(const std::string & category: categories)
+  {
+    histograms_by_category_[category] = book1D(dir, category, category, 100,  0., +1.);
+  }
+}
+
+void
+EvtHistManager_2lss::bookHistograms(TFileDirectory & dir)
 {
   histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,  +4.5);
   histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,  +4.5);
@@ -79,12 +65,8 @@ void EvtHistManager_2lss::bookHistograms(
   histogram_mvaOutput_2lss_ttV_   = book1D(dir, "mvaOutput_2lss_ttV",   "mvaOutput_2lss_ttV",   40, -1., +1.);
   histogram_mvaOutput_2lss_ttbar_ = book1D(dir, "mvaOutput_2lss_ttbar", "mvaOutput_2lss_ttbar", 40, -1., +1.);
   histogram_mvaDiscr_2lss_        = book1D(dir, "mvaDiscr_2lss",        "mvaDiscr_2lss",         7,  0.5, 7.5);
+  histogram_mvaOutput_Hj_tagger_  = book1D(dir, "mvaOutput_Hj_tagger",  "mvaOutput_Hj_tagger",  20, -1., +1.);
 
-  histogram_mvaOutput_Hj_tagger_                   = book1D(dir, "mvaOutput_Hj_tagger",                   "mvaOutput_Hj_tagger",                   20, -1., +1.);
-  for(const std::string & evt_cat_str: categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4)
-  {
-  histogram_output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_.push_back(book1D(dir, evt_cat_str, evt_cat_str, 100,  0., +1.));
-  }
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
@@ -100,9 +82,8 @@ EvtHistManager_2lss::fillHistograms(int numElectrons,
                                     double mvaOutput_2lss_ttbar,
                                     double mvaDiscr_2lss,
                                     double mvaOutput_Hj_tagger,
-                                    double output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
-                                    std::string category_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
-                                  )
+                                    double mvaOutput_category,
+                                    const std::string & category)
 {
   const double evtWeightErr = 0.;
 
@@ -116,18 +97,13 @@ EvtHistManager_2lss::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mvaOutput_2lss_ttV_,   mvaOutput_2lss_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2lss_ttbar_, mvaOutput_2lss_ttbar, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaDiscr_2lss_,        mvaDiscr_2lss,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_Hj_tagger_,   mvaOutput_Hj_tagger, evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_Hj_tagger_,                   mvaOutput_Hj_tagger,                   evtWeight, evtWeightErr);
-
-  //std::cout<<" ====================\n";
-  for(TH1*  histo: histogram_output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_)
+  if(! histograms_by_category_.count(category))
   {
-
-    if (histo->GetName() == category_NN_2lss_ttH_tH_4cat_onlyTHQ_v4) {
-      fillWithOverFlow(histo, output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4, evtWeight, evtWeightErr);
-      //std::cout<<" histo->getName() " << histo->GetName() << " category_NN_2lss_ttH_tH_4cat_onlyTHQ_v4 " << category_NN_2lss_ttH_tH_4cat_onlyTHQ_v4 << "\n";
-    }
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category << "' was never booked";
   }
+  fillWithOverFlow(histograms_by_category_[category], mvaOutput_category, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

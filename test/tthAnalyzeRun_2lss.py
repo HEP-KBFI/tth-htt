@@ -76,7 +76,7 @@ hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-if mode == "testSignal"  :
+elif mode == "testSignal"  :
     samples = load_samples(era, suffix = "preselected" if use_preselected else "")
     for sample_name, sample_info in samples.items():
       if sample_name == 'sum_events': continue
