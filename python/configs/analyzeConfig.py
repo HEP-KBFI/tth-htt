@@ -889,7 +889,7 @@ class analyzeConfig(object):
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
-        lines.append("process.addBackgrounds.categories = cms.vstring(%s)" % jobOptions['categories'])
+        lines.append("process.copyHistograms.categories = cms.vstring(%s)" % jobOptions['categories'])
         create_cfg(self.cfgFile_copyHistograms, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_addBackgrounds(self, jobOptions):
