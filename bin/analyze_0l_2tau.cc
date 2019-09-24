@@ -745,7 +745,6 @@ int main(int argc, char* argv[])
             const std::string decayMode_and_genMatchName = boost::replace_all_copy(
               decayMode_and_genMatch, process_string, process_string_new
             );
-            std::cout<<" Booked: " << decayMode_and_genMatchName << "\n";
 
             selHistManager->evt_in_decayModes_[evt_cat_str][decayMode] = new EvtHistManager_0l_2tau(makeHistManager_cfg(
               decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
