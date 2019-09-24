@@ -600,13 +600,18 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_3l_;
     std::map<std::string, EvtHistManager_3l*> evt_;
-    std::map<std::string, EvtHistManager_3l*> evt_in_categories_;
-    std::map<std::string, EvtHistManager_3l*> evt_in_categories_3l_ttH_tH_3cat_v8_TF_;
     std::map<std::string, std::map<std::string, EvtHistManager_3l*>> evt_in_decayModes_;
-    std::map<std::string, std::map<std::string, EvtHistManager_3l*>> evt_in_categories_and_decayModes_; // key = category, decayMode
-    std::map<std::string, std::map<std::string, EvtHistManager_3l*>> evt_in_categories_3l_ttH_tH_3cat_v8_TF_and_decayModes_;
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
+  };
+
+  const vstring categories_TensorFlow_3l_ttH_tH_3cat_v8 = {
+    "output_NN_3l_ttH_tH_3cat_v8_ttH_bl",
+    "output_NN_3l_ttH_tH_3cat_v8_ttH_bt",
+    "output_NN_3l_ttH_tH_3cat_v8_tH_bl",
+    "output_NN_3l_ttH_tH_3cat_v8_tH_bt",
+    "output_NN_3l_ttH_tH_3cat_v8_rest_bl",
+    "output_NN_3l_ttH_tH_3cat_v8_rest_bt"
   };
 
   std::map<std::string, GenEvtHistManager*> genEvtHistManager_beforeCuts;
@@ -688,37 +693,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         selHistManager->evt_[evt_cat_str] = new EvtHistManager_3l(makeHistManager_cfg(
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
         ));
+        selHistManager->evt_[evt_cat_str]->bookCategories(fs, categories_TensorFlow_3l_ttH_tH_3cat_v8);
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
-      }
-
-      const vstring categories_evt = {
-        "bl_neg", "bl_pos", "bt_neg", "bt_pos"
-      };
-      for(const std::string & category: categories_evt)
-      {
-        TString histogramDir_category = histogramDir.data();
-        histogramDir_category.ReplaceAll("3l", Form("3l_%s", category.data()));
-        selHistManager->evt_in_categories_[category] = new EvtHistManager_3l(makeHistManager_cfg(
-          process_and_genMatch, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift
-        ));
-        selHistManager->evt_in_categories_[category]->bookHistograms(fs);
-      }
-      const vstring categories_TensorFlow_3l_ttH_tH_3cat_v8 = {
-        "output_NN_3l_ttH_tH_3cat_v8_ttH_bl",
-        "output_NN_3l_ttH_tH_3cat_v8_ttH_bt",
-        "output_NN_3l_ttH_tH_3cat_v8_tH_bl",
-        "output_NN_3l_ttH_tH_3cat_v8_tH_bt",
-        "output_NN_3l_ttH_tH_3cat_v8_rest_bl",
-        "output_NN_3l_ttH_tH_3cat_v8_rest_bt"
-      };
-      for(const std::string & category: categories_TensorFlow_3l_ttH_tH_3cat_v8)
-      {
-        TString histogramDir_category = histogramDir.data();
-        histogramDir_category.ReplaceAll("3l",  category.data());
-        selHistManager->evt_in_categories_3l_ttH_tH_3cat_v8_TF_[category] = new EvtHistManager_3l(makeHistManager_cfg(
-          process_and_genMatch, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift
-        ));
-        selHistManager->evt_in_categories_3l_ttH_tH_3cat_v8_TF_[category]->bookHistograms(fs);
       }
 
       if(isSignal)
@@ -734,46 +710,26 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           decayMode_and_genMatch += decayMode_evt;
 	  decayMode_and_genMatch += genMatchDefinition->getName();
 
-         for(const std::string & evt_cat_str: evt_cat_strs)
-         {
-           if(skipBooking && evt_cat_str != default_cat_str)
-           {
-             continue;
-           }
-           const std::string process_string_new = evt_cat_str == default_cat_str ?
-             process_string:
-             process_string + "_" + evt_cat_str
-           ;
-           const std::string decayMode_and_genMatchName = boost::replace_all_copy(
-             decayMode_and_genMatch, process_string, process_string_new
-           );
-
-           selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_3l(makeHistManager_cfg(
-             decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
-           ));
-           selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
-         }
-
-         for(const std::string & category: categories_evt)
-         {
-            TString histogramDir_category = histogramDir.data();
-            histogramDir_category.ReplaceAll("3l", Form("3l_%s", category.data()));
-            selHistManager -> evt_in_categories_and_decayModes_[category][decayMode_evt] = new EvtHistManager_3l(makeHistManager_cfg(
-              decayMode_and_genMatch, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift
-            ));
-            selHistManager -> evt_in_categories_and_decayModes_[category][decayMode_evt] -> bookHistograms(fs);
-          }
-
-          for(const std::string & category: categories_TensorFlow_3l_ttH_tH_3cat_v8)
+          for(const std::string & evt_cat_str: evt_cat_strs)
           {
-            TString histogramDir_category = histogramDir.data();
-            histogramDir_category.ReplaceAll("3l",  category.data());
-            selHistManager -> evt_in_categories_3l_ttH_tH_3cat_v8_TF_and_decayModes_[category][decayMode_evt] = new EvtHistManager_3l(makeHistManager_cfg(
-              decayMode_and_genMatch, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift
-            ));
-            selHistManager -> evt_in_categories_3l_ttH_tH_3cat_v8_TF_and_decayModes_[category][decayMode_evt] -> bookHistograms(fs);
-          }
+            if(skipBooking && evt_cat_str != default_cat_str)
+            {
+              continue;
+            }
+            const std::string process_string_new = evt_cat_str == default_cat_str ?
+              process_string:
+              process_string + "_" + evt_cat_str
+            ;
+            const std::string decayMode_and_genMatchName = boost::replace_all_copy(
+              decayMode_and_genMatch, process_string, process_string_new
+            );
 
+            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_3l(makeHistManager_cfg(
+              decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+            ));
+            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookCategories(fs, categories_TensorFlow_3l_ttH_tH_3cat_v8);
+            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
+          }
         }
       }
       if(! skipBooking)
@@ -1795,7 +1751,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       std::cout << std::endl;
     }
 
-    std::string category_3l_ttH_tH_3cat_v8_TF = "output_NN_3l_ttH_tH_3cat_v8_";
+    std::string category = "output_NN_3l_ttH_tH_3cat_v8_";
     double output_NN_3l_ttH_tH_3cat_v8 = -10.0;
     if (ttH_like || tH_like) {
 
@@ -1803,26 +1759,26 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"] >= mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"] &&\
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"] >= mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"]
       ) {
-        category_3l_ttH_tH_3cat_v8_TF += "ttH";
+        category += "ttH";
         output_NN_3l_ttH_tH_3cat_v8 = mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"];
       }
       if (
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"] >  mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"] &&\
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"] >= mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"]
       ) {
-        category_3l_ttH_tH_3cat_v8_TF += "tH";
+        category += "tH";
         output_NN_3l_ttH_tH_3cat_v8 = mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"];
         }
       if (
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"] > mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"] &&\
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"] > mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"]
       ) {
-        category_3l_ttH_tH_3cat_v8_TF += "rest";
+        category += "rest";
         output_NN_3l_ttH_tH_3cat_v8 = mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"];
         }
 
-      if (selBJets_medium.size() >= 2) category_3l_ttH_tH_3cat_v8_TF += "_bt";
-      else category_3l_ttH_tH_3cat_v8_TF += "_bl";
+      if (selBJets_medium.size() >= 2) category += "_bt";
+      else category += "_bl";
 
     } else assert(0);
 
@@ -1840,14 +1796,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
 
 //--- fill histograms with events passing final selection
-    std::string category;
-    if (ttH_like){ // Xanda: 2017 selection to normal categories - mind that the MET cut hemoval to tH_like interfere in the ttH_like events as wel
-    if ( selBJets_medium.size() >= 2 ) category += "_bt";
-    else category += "_bl";
-    if      ( sumLeptonCharge < 0 ) category += "_neg";
-    else if ( sumLeptonCharge > 0 ) category += "_pos";
-    }
-
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
       const double evtWeight = evtWeightRecorder.get(central_or_shift);
@@ -1892,32 +1840,12 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         {
           selHistManager->evt_[kv.first]->fillHistograms(
             selElectrons.size(), selMuons.size(), selHadTaus.size(),
-	    selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-	    mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
-	    output_NN_3l_ttH_tH_3cat_v8,
-	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-	    kv.second
+            selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
+            output_NN_3l_ttH_tH_3cat_v8, category,
+            memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
+            kv.second
           );
-        }
-        EvtHistManager_3l* selHistManager_evt_category = selHistManager->evt_in_categories_[category];
-        if ( selHistManager_evt_category ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-          selHistManager_evt_category->fillHistograms(
-            selElectrons.size(), selMuons.size(), selHadTaus.size(),
-	    selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-	    mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
-	    output_NN_3l_ttH_tH_3cat_v8,
-	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-	    evtWeight);
-        }
-        EvtHistManager_3l* selHistManager_evt_3l_ttH_tH_3cat_v8_TF = selHistManager->evt_in_categories_3l_ttH_tH_3cat_v8_TF_[category_3l_ttH_tH_3cat_v8_TF];
-        if ( selHistManager_evt_3l_ttH_tH_3cat_v8_TF ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-          selHistManager_evt_3l_ttH_tH_3cat_v8_TF->fillHistograms(
-            selElectrons.size(), selMuons.size(), selHadTaus.size(),
-	    selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-	    mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
-	    output_NN_3l_ttH_tH_3cat_v8,
-	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-	    evtWeight);
         }
 
         if(isSignal)
@@ -1930,56 +1858,22 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
             {
               selHistManager -> evt_in_decayModes_[kv.first][decayModeStr] -> fillHistograms(
                 selElectrons.size(),
-		selMuons.size(),
-		selHadTaus.size(),
-		selJets.size(),
-		selBJets_loose.size(),
-		selBJets_medium.size(),
-		mvaOutput_3l_ttV,
-		mvaOutput_3l_ttbar,
-		mvaDiscr_3l,
-		output_NN_3l_ttH_tH_3cat_v8,
-		memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-		kv.second
+                selMuons.size(),
+                selHadTaus.size(),
+                selJets.size(),
+                selBJets_loose.size(),
+                selBJets_medium.size(),
+                mvaOutput_3l_ttV,
+                mvaOutput_3l_ttbar,
+                mvaDiscr_3l,
+                output_NN_3l_ttH_tH_3cat_v8,
+                category,
+                memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
+                kv.second
               );
             }
             std::string decayMode_and_genMatch = decayModeStr;
             if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
-            EvtHistManager_3l* selHistManager_evt_category_decMode = selHistManager->evt_in_categories_and_decayModes_[category][decayMode_and_genMatch];
-            if ( selHistManager_evt_category_decMode ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-              selHistManager_evt_category_decMode->fillHistograms(
-                selElectrons.size(),
-                selMuons.size(),
-                selHadTaus.size(),
-                selJets.size(),
-		selBJets_loose.size(),
-		selBJets_medium.size(),
-		mvaOutput_3l_ttV,
-		mvaOutput_3l_ttbar,
-		mvaDiscr_3l,
-		output_NN_3l_ttH_tH_3cat_v8,
-		memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-		evtWeight
-              );
-            }
-
-            EvtHistManager_3l* selHistManager_evt_3l_ttH_tH_3cat_v8_TF_and_decayModes_ = selHistManager->evt_in_categories_3l_ttH_tH_3cat_v8_TF_and_decayModes_[category_3l_ttH_tH_3cat_v8_TF][decayModeStr];
-            if ( selHistManager_evt_3l_ttH_tH_3cat_v8_TF_and_decayModes_ ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-              selHistManager_evt_3l_ttH_tH_3cat_v8_TF_and_decayModes_->fillHistograms(
-                selElectrons.size(),
-		selMuons.size(),
-		selHadTaus.size(),
-		selJets.size(),
-		selBJets_loose.size(),
-		selBJets_medium.size(),
-		mvaOutput_3l_ttV,
-		mvaOutput_3l_ttbar,
-		mvaDiscr_3l,
-		output_NN_3l_ttH_tH_3cat_v8,
-		memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-		evtWeight
-	      );
-            }
           }
         }
         if(! skipFilling)
