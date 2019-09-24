@@ -473,6 +473,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
           for sample_category in sample_categories:
             if sample_category == "signal" :  sample_category = "ttH"
             if sample_category == "signal_ctcvcp" :  continue
+            if sample_category == "WH" or sample_category == "ZH" :  continue # in fakes we do not care about separation
             decays = [""]
             couplings = [""]
             for decayMode in decays :

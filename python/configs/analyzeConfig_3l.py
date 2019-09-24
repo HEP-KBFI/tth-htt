@@ -474,6 +474,7 @@ class analyzeConfig_3l(analyzeConfig):
           for sample_category in sample_categories:
             if sample_category == "signal" :  sample_category = "ttH"
             if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+            if sample_category == "WH" or sample_category == "ZH" :  continue # in fakes we do not care about separation
             decays = [""]
             if sample_category in self.procsWithDecayModes : decays += self.decayModes
             couplings = [""]
