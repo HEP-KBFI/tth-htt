@@ -1398,6 +1398,30 @@ int main(int argc, char* argv[])
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
 
 //--- fill histograms with events passing final selection
+    std::string ctrl_category = "other";
+    if(isControlRegion)
+    {
+      const int nofSFOSZbosonPairs = countZbosonSFOSpairs(preselLeptons);
+      if(nofSFOSZbosonPairs == 2)
+      {
+        ctrl_category = "sfos_2";
+      }
+      else if(nofSFOSZbosonPairs == 1)
+      {
+        if(selJets.size() == 0)
+        {
+          ctrl_category = "sfos_1_0j";
+        }
+        else if(selBJets_medium.size() == 1)
+        {
+          ctrl_category = "sfos_1_1Mb";
+        }
+        else if(selBJets_medium.size() >= 2)
+        {
+          ctrl_category = "sfos_1_2Mb";
+        }
+      }
+    }
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
       const double evtWeight = evtWeightRecorder.get(central_or_shift);
@@ -1441,6 +1465,7 @@ int main(int argc, char* argv[])
           selHistManager->evt_[kv.first]->fillHistograms(
             selElectrons.size(), selMuons.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            ctrl_category,
             kv.second
           );
         }
@@ -1458,6 +1483,7 @@ int main(int argc, char* argv[])
                 selJets.size(),
                 selBJets_loose.size(),
                 selBJets_medium.size(),
+                ctrl_category,
                 kv.second
               );
             }

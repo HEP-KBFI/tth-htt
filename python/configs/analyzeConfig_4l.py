@@ -148,8 +148,8 @@ class analyzeConfig_4l(analyzeConfig):
     self.histogramDir_prep_dcard = "{}_OS_Tight".format(self.channel)
     self.histogramDir_prep_dcard_SS = "{}_SS_Tight".format(self.channel)
     self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ]
-    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_{}_cfg.py".format(self.channel))
-    self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_{}_cfg.py".format(self.channel)) #TODO
+    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_4l_cfg.py")
+    self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_4l_cfg.py") #TODO
 
     self.select_rle_output = select_rle_output
     self.select_root_output = select_root_output

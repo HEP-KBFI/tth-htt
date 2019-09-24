@@ -29,6 +29,7 @@ class EvtHistManager_4l
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
+                 const std::string & ctrl_category,
                  double evtWeight);
 
   const TH1 *
@@ -36,6 +37,7 @@ class EvtHistManager_4l
 
  private:
   int era_;
+  std::vector<std::string> ctrl_cateories_;
 
   TH1 * histogram_numElectrons_;
   TH1 * histogram_numMuons_;
@@ -47,6 +49,8 @@ class EvtHistManager_4l
   // to avoid overlap with ttH, H->bb analysis (alternative: ttH, H->bb analysis adds hadronic tau veto)
   TH2 * histogram_numBJets_loose_vs_numJets_;
   TH2 * histogram_numBJets_medium_vs_numJets_;
+
+  TH1 * histogram_ctrl_;
 
   TH1 * histogram_EventCounter_;
 };
