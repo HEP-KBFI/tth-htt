@@ -35,7 +35,9 @@ class EvtHistManager_2lss
                  double mvaOutput_2lss_ttbar,
                  double mvaDiscr_2lss,
                  double mvaOutput_Hj_tagger,
-                 double output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4);
+                 double output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
+                 std::string category_NN_2lss_ttH_tH_4cat_onlyTHQ_v4
+               );
 
   const TH1 *
   getHistogram_EventCounter() const;
@@ -61,7 +63,7 @@ class EvtHistManager_2lss
   TH1 * histogram_mvaDiscr_2lss_;
 
   TH1 * histogram_mvaOutput_Hj_tagger_;
-  TH1 * histogram_output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_;
+  std::vector<TH1 *> histogram_output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_;
 
   TH1 * histogram_EventCounter_;
 };
