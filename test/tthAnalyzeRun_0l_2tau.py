@@ -96,7 +96,7 @@ if mode == "testSignal"  :
       if sample_name == 'sum_events': continue
       if sample_info["sample_category"] in [
       "HH",
-      "signal",
+      #"signal",
       "TTWH",
       "TTZH",
       "VH",
