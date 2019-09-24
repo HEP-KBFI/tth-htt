@@ -54,6 +54,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         jet_cleaning_by_index,
         gen_matching_by_index,
         central_or_shifts,
+        evtCategories,
         max_files_per_job,
         era,
         use_lumi,
@@ -158,6 +159,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_1l_2tau_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_1l_2tau_cfg.py") #TODO
 
+    self.categories = evtCategories
     self.select_rle_output = select_rle_output
     self.rle_select = rle_select
     self.use_nonnominal = use_nonnominal
@@ -457,6 +459,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   'applyFakeRateWeights'     : applyFakeRateWeights,
                   'central_or_shift'         : central_or_shift,
                   'central_or_shifts_local'  : central_or_shifts_local,
+                  'evtCategories'            : self.categories,
                   'selectBDT'                : self.isBDTtraining,
                   'syncOutput'               : syncOutput,
                   'syncTree'                 : syncTree,
