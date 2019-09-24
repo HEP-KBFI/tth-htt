@@ -1149,9 +1149,9 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">=N jets", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms(">= N jets", evtWeightRecorder.get(central_or_shift_main));
 
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
+    if ( !isControlRegion && !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
 	printCollection("selJets", selJets);
 	printCollection("selBJets_loose", selBJets_loose);
 	printCollection("selBJets_medium", selBJets_medium);
