@@ -731,6 +731,7 @@ class analyzeConfig(object):
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',
+          'evtCategories'           : 'cms.vstring(%s)',
         }
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
