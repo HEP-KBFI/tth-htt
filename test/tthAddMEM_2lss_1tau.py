@@ -101,6 +101,7 @@ elif mode == 'bdt':
     'deepVSj' : 'VVVLoose',
   }
   hadTauWP = tau_id + hadTauWP_map[tau_id]
+  hadTauSelection = "Fakeable"
 elif mode == 'sync':
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:
