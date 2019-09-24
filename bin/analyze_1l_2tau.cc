@@ -1774,9 +1774,9 @@ int main(int argc, char* argv[])
             }
           }
         }
-        selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
         if(! skipFilling)
         {
+          selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
           selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
           selHistManager->weights_->fillHistograms("pileupWeight", evtWeightRecorder.get_puWeight(central_or_shift));
           selHistManager->weights_->fillHistograms("data_to_MC_correction", evtWeightRecorder.get_data_to_MC_correction(central_or_shift));
