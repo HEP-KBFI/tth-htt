@@ -727,6 +727,7 @@ class analyzeConfig(object):
             'branchName_subJetsLS',
             'tHweights',
             'useObjectMultiplicity',
+            'minNumJets',
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',

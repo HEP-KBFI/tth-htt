@@ -432,6 +432,7 @@ class analyzeConfig_4l(analyzeConfig):
                   'useNonNominal'            : self.use_nonnominal,
                   'useObjectMultiplicity'    : True,
                   'isControlRegion'          : self.isControlRegion,
+                  'minNumJets'               : 0 if self.isControlRegion else 2,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)
 
