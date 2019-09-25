@@ -649,10 +649,9 @@ get_key_hist(const EventInfo & eventInfo,
     }
     if(count_Vs != 1)
     {
-      throw cmsException(__func__, __LINE__)
-        << "More than one gen V in VH, or not one gen V in VH or a weird decay mode "
-        << count_Vs << " " << decayModeStrTest
-      ;
+        std::cout<< "More than one gen V in VH, or not one gen V in VH or a weird decay mode "
+        << count_Vs << " " << decayModeStrTest << "\n";
+      ; // this case is extremelly rare, we can affort
     }
     if(VH_pdgID == 23)
     {
