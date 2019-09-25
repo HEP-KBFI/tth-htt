@@ -37,7 +37,8 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
       if is_nonresonant(sample_info["sample_category"]):
         sample_info["use_it"] = True
         sample_info["sample_category"] = "HH"
-        sample_info["xsection"] *= 0.03345 # HH processes are normalized to 1 pb -> change it to the SM XS
+        # SM XS taken from: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWGHH?rev=48#Current_recommendations_for_HH_c
+        sample_info["xsection"] *= 31.05 / 1000. # HH processes are normalized to 1 pb -> change it to the SM XS
       else:
         # remove the HH sample for safety reasons
         del samples[sample_name]
