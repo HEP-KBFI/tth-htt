@@ -522,7 +522,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
               if self.isBDTtraining or self.do_sync:
                 continue
 
-              # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
+              # add output files of hadd_stage1 to list of input files for hadd_stage1_5
               key_hadd_stage1_job = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
               key_hadd_stage1_5_dir = getKey("hadd", lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
               hadd_stage1_5_job_tuple = (lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
