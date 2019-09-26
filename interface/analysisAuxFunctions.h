@@ -617,6 +617,10 @@ bool
 isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons,
                       bool ignoreOS = false);
 
+int
+countZbosonSFOSpairs(const std::vector<const RecoLepton *> & preselLeptons,
+                     bool ignoreOS = false);
+
 bool
 isfailsHtoZZVeto(const std::vector<const RecoLepton *> & preselLeptons);
 

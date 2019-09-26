@@ -26,17 +26,27 @@ class EvtHistManager_3l
   bookHistograms(TFileDirectory & dir) override;
 
   void
+  setCRcategories(TFileDirectory & dir,
+                  const std::vector<std::string> & ctrl_categories);
+
+  void
+  bookCategories(TFileDirectory & dir,
+                 const std::vector<std::string> & categories);
+
+  void
   fillHistograms(int numElectrons,
                  int numMuons,
                  int numHadTaus,
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
+                 const std::string & ctrl_category,
                  double mvaOutput_3l_ttV,
                  double mvaOutput_3l_ttbar,
                  double mvaDiscr_3l,
-                 double output_NN_3l_ttH_tH_3cat_v8,
-		 const MEMOutput_3l * memOutput_3l,
+                 double mvaOutput_category,
+                 const std::string & category,
+                 const MEMOutput_3l * memOutput_3l,
                  double evtWeight);
 
   const TH1 *
@@ -44,6 +54,7 @@ class EvtHistManager_3l
 
  private:
   int era_;
+  std::vector<std::string> ctrl_cateories_;
 
   TH1 * histogram_numElectrons_;
   TH1 * histogram_numMuons_;
@@ -61,6 +72,8 @@ class EvtHistManager_3l
   TH1 * histogram_mvaOutput_3l_ttbar_;
   TH1 * histogram_mvaDiscr_3l_;
 
+  std::map<std::string, TH1 *> histograms_by_category_;
+
   TH1 * histogram_memOutput_isValid_;
   TH1 * histogram_memOutput_errorFlag_;
   TH1 * histogram_memOutput_logWeight_ttH_;
@@ -68,7 +81,8 @@ class EvtHistManager_3l
   TH1 * histogram_memOutput_LR_;
   TH1 * histogram_mem_logCPUTime_;
   TH1 * histogram_mem_logRealTime_;
-  TH1 * histogram_output_NN_3l_ttH_tH_3cat_v8_;
+
+  TH1 * histogram_ctrl_;
 
   TH1 * histogram_EventCounter_;
 };

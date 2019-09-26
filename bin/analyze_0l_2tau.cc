@@ -335,7 +335,6 @@ int main(int argc, char* argv[])
   std::string branchName_jetGenMatch      = cfg_analyze.getParameter<std::string>("branchName_jetGenMatch");
 
   std::string branchName_genTauLeptons = cfg_analyze.getParameter<std::string>("branchName_genTauLeptons");
-
   std::string branchName_genTopQuarks = cfg_analyze.getParameter<std::string>("branchName_genTopQuarks");
   std::string branchName_genBJets = cfg_analyze.getParameter<std::string>("branchName_genBJets");
   std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
@@ -745,7 +744,6 @@ int main(int argc, char* argv[])
             const std::string decayMode_and_genMatchName = boost::replace_all_copy(
               decayMode_and_genMatch, process_string, process_string_new
             );
-            std::cout<<" Booked: " << decayMode_and_genMatchName << "\n";
 
             selHistManager->evt_in_decayModes_[evt_cat_str][decayMode] = new EvtHistManager_0l_2tau(makeHistManager_cfg(
               decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift

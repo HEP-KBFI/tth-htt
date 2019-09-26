@@ -529,6 +529,14 @@ int main(int argc, char* argv[])
     WeightHistManager* weights_;
   };
 
+  const vstring ctrl_categories = {
+    "sfos_2",
+    "sfos_1_0j",
+    "sfos_1_1Mb",
+    "sfos_1_2Mb",
+    "other",
+  };
+
   std::map<std::string, GenEvtHistManager*> genEvtHistManager_beforeCuts;
   std::map<std::string, GenEvtHistManager*> genEvtHistManager_afterCuts;
   std::map<std::string, LHEInfoHistManager*> lheInfoHistManager;
@@ -602,6 +610,10 @@ int main(int argc, char* argv[])
         selHistManager->evt_[evt_cat_str] = new EvtHistManager_4l(makeHistManager_cfg(
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
         ));
+        if(isControlRegion)
+        {
+          selHistManager->evt_[evt_cat_str]->setCRcategories(fs, ctrl_categories);
+        }
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
 
@@ -632,6 +644,10 @@ int main(int argc, char* argv[])
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_4l(makeHistManager_cfg(
               decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
             ));
+            if(isControlRegion)
+            {
+              selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> setCRcategories(fs, ctrl_categories);
+            }
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
           }
         }
@@ -1149,9 +1165,9 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">=N jets", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms(">= N jets", evtWeightRecorder.get(central_or_shift_main));
 
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
+    if ( !isControlRegion && !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
 	printCollection("selJets", selJets);
 	printCollection("selBJets_loose", selBJets_loose);
 	printCollection("selBJets_medium", selBJets_medium);
@@ -1398,6 +1414,30 @@ int main(int argc, char* argv[])
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
 
 //--- fill histograms with events passing final selection
+    std::string ctrl_category = "other";
+    if(isControlRegion)
+    {
+      const int nofSFOSZbosonPairs = countZbosonSFOSpairs(preselLeptons);
+      if(nofSFOSZbosonPairs == 2)
+      {
+        ctrl_category = "sfos_2";
+      }
+      else if(nofSFOSZbosonPairs == 1)
+      {
+        if(selJets.size() == 0)
+        {
+          ctrl_category = "sfos_1_0j";
+        }
+        else if(selBJets_medium.size() == 1)
+        {
+          ctrl_category = "sfos_1_1Mb";
+        }
+        else if(selBJets_medium.size() >= 2)
+        {
+          ctrl_category = "sfos_1_2Mb";
+        }
+      }
+    }
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
       const double evtWeight = evtWeightRecorder.get(central_or_shift);
@@ -1441,6 +1481,7 @@ int main(int argc, char* argv[])
           selHistManager->evt_[kv.first]->fillHistograms(
             selElectrons.size(), selMuons.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            ctrl_category,
             kv.second
           );
         }
@@ -1458,6 +1499,7 @@ int main(int argc, char* argv[])
                 selJets.size(),
                 selBJets_loose.size(),
                 selBJets_medium.size(),
+                ctrl_category,
                 kv.second
               );
             }

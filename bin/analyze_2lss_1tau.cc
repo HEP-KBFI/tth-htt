@@ -2079,26 +2079,31 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         }
         for(const auto & kv: tH_weight_map)
         {
-          selHistManager->evt_[kv.first]->fillHistograms(
+
+          EvtHistManager_2lss_1tau* selHistManager_evt = selHistManager->evt_[kv.first];
+          if ( selHistManager_evt )
+          {
+          selHistManager_evt->fillHistograms(
             selElectrons.size(),
             selMuons.size(),
-	    selHadTaus.size(),
-	    selJets.size(),
-	    selBJets_loose.size(),
-	    selBJets_medium.size(),
-	    kv.second,
-	    mvaOutput_2lss_ttV,
-	    mvaOutput_2lss_tt,
-	    mvaOutput_2lss_1tau_plainKin_tt,
-	    mvaOutput_2lss_1tau_plainKin_ttV,
-	    mvaOutput_2lss_1tau_plainKin_1B_M,
-	    mvaOutput_2lss_1tau_plainKin_SUM_M,
-	    mvaOutput_2lss_1tau_HTT_SUM_M,
-	    mvaOutput_2lss_1tau_HTTMEM_SUM_M,
-	    mTauTauVis1_sel,
-	    mTauTauVis2_sel,
-	    memOutput_LR
+      	    selHadTaus.size(),
+      	    selJets.size(),
+      	    selBJets_loose.size(),
+      	    selBJets_medium.size(),
+      	    kv.second,
+      	    mvaOutput_2lss_ttV,
+      	    mvaOutput_2lss_tt,
+      	    mvaOutput_2lss_1tau_plainKin_tt,
+      	    mvaOutput_2lss_1tau_plainKin_ttV,
+      	    mvaOutput_2lss_1tau_plainKin_1B_M,
+      	    mvaOutput_2lss_1tau_plainKin_SUM_M,
+      	    mvaOutput_2lss_1tau_HTT_SUM_M,
+      	    mvaOutput_2lss_1tau_HTTMEM_SUM_M,
+      	    mTauTauVis1_sel,
+      	    mTauTauVis2_sel,
+      	    memOutput_LR
          );
+         }
         }
         if ( isSignal ) {
           std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
@@ -2107,26 +2112,30 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           {
             for(const auto & kv: tH_weight_map)
             {
-              selHistManager->evt_in_decayModes_[kv.first][decayModeStr]->fillHistograms(
+              EvtHistManager_2lss_1tau* selHistManager_evt_category_decayModes = selHistManager->evt_in_decayModes_[kv.first][decayModeStr];
+              if ( selHistManager_evt_category_decayModes )
+              {
+              selHistManager_evt_category_decayModes->fillHistograms(
                 selElectrons.size(),
-		selMuons.size(),
-		selHadTaus.size(),
-		selJets.size(),
-		selBJets_loose.size(),
-		selBJets_medium.size(),
-		kv.second,
-		mvaOutput_2lss_ttV,
-		mvaOutput_2lss_tt,
-		mvaOutput_2lss_1tau_plainKin_tt,
-		mvaOutput_2lss_1tau_plainKin_ttV,
-		mvaOutput_2lss_1tau_plainKin_1B_M,
-		mvaOutput_2lss_1tau_plainKin_SUM_M,
-		mvaOutput_2lss_1tau_HTT_SUM_M,
-		mvaOutput_2lss_1tau_HTTMEM_SUM_M,
-		mTauTauVis1_sel,
-		mTauTauVis2_sel,
-		memOutput_LR
+            		selMuons.size(),
+            		selHadTaus.size(),
+            		selJets.size(),
+            		selBJets_loose.size(),
+            		selBJets_medium.size(),
+            		kv.second,
+            		mvaOutput_2lss_ttV,
+            		mvaOutput_2lss_tt,
+            		mvaOutput_2lss_1tau_plainKin_tt,
+            		mvaOutput_2lss_1tau_plainKin_ttV,
+            		mvaOutput_2lss_1tau_plainKin_1B_M,
+            		mvaOutput_2lss_1tau_plainKin_SUM_M,
+            		mvaOutput_2lss_1tau_HTT_SUM_M,
+            		mvaOutput_2lss_1tau_HTTMEM_SUM_M,
+            		mTauTauVis1_sel,
+            		mTauTauVis2_sel,
+            		memOutput_LR
               );
+             }
             }
           }
         }

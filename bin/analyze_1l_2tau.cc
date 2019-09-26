@@ -252,6 +252,7 @@ int main(int argc, char* argv[])
   std::string central_or_shift_main = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
+  const vstring categories_evt = cfg_analyze.getParameter<vstring>("evtCategories");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_l1PreFireWeight = false; // FIXME cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
@@ -781,10 +782,6 @@ int main(int argc, char* argv[])
           }
         }
       }
-      vstring categories_evt = {
-        "1e_2tau_bloose", "1e_2tau_btight",
-        "1mu_2tau_bloose", "1mu_2tau_btight"
-      };
       for(const std::string & category: categories_evt)
       {
         TString histogramDir_category = histogramDir.data();
@@ -1777,9 +1774,9 @@ int main(int argc, char* argv[])
             }
           }
         }
-        selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
         if(! skipFilling)
         {
+          selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
           selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
           selHistManager->weights_->fillHistograms("pileupWeight", evtWeightRecorder.get_puWeight(central_or_shift));
           selHistManager->weights_->fillHistograms("data_to_MC_correction", evtWeightRecorder.get_data_to_MC_correction(central_or_shift));
@@ -1795,21 +1792,24 @@ int main(int argc, char* argv[])
         else if ( selMuons.size()     >= 1 && selBJets_medium.size() >= 1 ) category = "1mu_2tau_btight";
         else if ( selMuons.size()     >= 1                                ) category = "1mu_2tau_bloose";
         else assert(0);
-        if(! skipFilling)
+        if(std::find(categories_evt.cbegin(), categories_evt.cend(), category) != categories_evt.cend())
         {
-          selHistManager->electrons_in_categories_[category]->fillHistograms(selElectrons, evtWeight);
-          selHistManager->muons_in_categories_[category]->fillHistograms(selMuons, evtWeight);
-          selHistManager->hadTaus_in_categories_[category]->fillHistograms({ selHadTau_lead, selHadTau_sublead }, evtWeight);
-          selHistManager->leadHadTau_in_categories_[category]->fillHistograms({ selHadTau_lead }, evtWeight);
-          selHistManager->subleadHadTau_in_categories_[category]->fillHistograms({ selHadTau_sublead }, evtWeight);
+          if(! skipFilling)
+          {
+            selHistManager->electrons_in_categories_[category]->fillHistograms(selElectrons, evtWeight);
+            selHistManager->muons_in_categories_[category]->fillHistograms(selMuons, evtWeight);
+            selHistManager->hadTaus_in_categories_[category]->fillHistograms({ selHadTau_lead, selHadTau_sublead }, evtWeight);
+            selHistManager->leadHadTau_in_categories_[category]->fillHistograms({ selHadTau_lead }, evtWeight);
+            selHistManager->subleadHadTau_in_categories_[category]->fillHistograms({ selHadTau_sublead }, evtWeight);
+          }
+          selHistManager->evt_in_categories_[category]->fillHistograms(
+            preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
+            selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            mvaOutput_HTT_SUM_VT,
+            mTauTauVis,
+            evtWeight
+          );
         }
-        selHistManager->evt_in_categories_[category]->fillHistograms(
-          preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
-          selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-          mvaOutput_HTT_SUM_VT,
-          mTauTauVis,
-          evtWeight
-        );
       }
 
       if(isMC && ! skipFilling)

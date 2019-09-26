@@ -87,6 +87,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2017.h"
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2018.h"
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_1l_1tau_trigger.h" // Data_to_MC_CorrectionInterface_1l_1tau_trigger
+#include "tthAnalysis/HiggsToTauTau/interface/DYMCReweighting.h" // DYMCReweighting
+#include "tthAnalysis/HiggsToTauTau/interface/DYMCNormScaleFactors.h" // DYMCNormScaleFactors
 #include "tthAnalysis/HiggsToTauTau/interface/L1PreFiringWeightReader.h" // L1PreFiringWeightReader
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
@@ -267,6 +269,8 @@ int main(int argc, char* argv[])
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   const vstring categories_evt = cfg_analyze.getParameter<vstring>("evtCategories");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
+  bool apply_DYMCReweighting = cfg_analyze.getParameter<bool>("apply_DYMCReweighting");
+  bool apply_DYMCNormScaleFactors = cfg_analyze.getParameter<bool>("apply_DYMCNormScaleFactors");
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
@@ -312,6 +316,17 @@ int main(int argc, char* argv[])
        " -> met_option      = " << met_option            << "\n"
        " -> jetPt_option    = " << jetPt_option          << '\n'
   ;
+
+  DYMCReweighting * dyReweighting = nullptr;
+  if(apply_DYMCReweighting)
+  {
+    dyReweighting = new DYMCReweighting(era);
+  }
+  DYMCNormScaleFactors * dyNormScaleFactors = nullptr;
+  if(apply_DYMCNormScaleFactors)
+  {
+    dyNormScaleFactors = new DYMCNormScaleFactors(era);
+  }
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
@@ -371,6 +386,7 @@ int main(int argc, char* argv[])
   std::string branchName_hadTauGenMatch   = cfg_analyze.getParameter<std::string>("branchName_hadTauGenMatch");
   std::string branchName_jetGenMatch      = cfg_analyze.getParameter<std::string>("branchName_jetGenMatch");
 
+  std::string branchName_genTauLeptons = cfg_analyze.getParameter<std::string>("branchName_genTauLeptons");
   std::string branchName_genTopQuarks = cfg_analyze.getParameter<std::string>("branchName_genTopQuarks");
   std::string branchName_genBJets = cfg_analyze.getParameter<std::string>("branchName_genBJets");
   std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
@@ -516,6 +532,12 @@ int main(int argc, char* argv[])
   RecoJetCollectionCleanerAK8 jetCleanerAK8(0.8, isDEBUG); //to clean against leptons and hadronic taus
   RecoJetCollectionCleanerAK8SubJets jetCleanerAK8SubJets(0.4, isDEBUG); //to clean against leptons and hadronic taus
 
+  GenParticleReader* genTauLeptonReader = nullptr;
+  if ( isMC && (apply_DYMCReweighting || apply_DYMCNormScaleFactors)) {
+    genTauLeptonReader = new GenParticleReader(branchName_genTauLeptons);
+    inputTree->registerReader(genTauLeptonReader);
+  }
+
   GenParticleReader* genTopQuarkReader = new GenParticleReader(branchName_genTopQuarks);
   GenParticleReader* genBJetReader = new GenParticleReader(branchName_genBJets);
   GenParticleReader* genWBosonReader = new GenParticleReader(branchName_genWBosons);
@@ -626,7 +648,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     std::map<std::string, EvtHistManager_1l_1tau*> evt_;
     std::map<std::string, std::map<std::string, EvtHistManager_1l_1tau*>> evt_in_decayModes_;
     std::map<std::string, EvtHistManager_1l_1tau*> evt_in_categories_;
-    std::map<std::string, std::map<std::string, EvtHistManager_1l_1tau*>> evt_in_categories_and_decayModes_;
+    std::map<std::string, std::map<std::string, std::map<std::string, EvtHistManager_1l_1tau*>>> evt_in_categories_and_decayModes_;
     EvtYieldHistManager* evtYield_;
     std::map<std::string, EvtYieldHistManager*> evtYield_in_categories_;
     WeightHistManager* weights_;
@@ -763,13 +785,32 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
           for ( const std::string & decayMode_evt: decayModes_evt ) {
 
             if ( ( isMC_tH || isMC_H ) && ( decayMode_evt == "hzg" || decayMode_evt == "hmm" ) ) continue;
-            std::string decayMode_and_genMatch = get_prefix(process_string, isMC_tH,  isMC_HH, isMC_H, isMC_VH);
-            decayMode_and_genMatch += decayMode_evt;
-	    decayMode_and_genMatch += genMatchDefinition->getName();
+            selHistManager->evt_in_categories_and_decayModes_[category][decayMode_evt] = {};
 
-            selHistManager->evt_in_categories_and_decayModes_[category][decayMode_evt] = new EvtHistManager_1l_1tau(makeHistManager_cfg(decayMode_and_genMatch,
-              Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
-            selHistManager->evt_in_categories_and_decayModes_[category][decayMode_evt]->bookHistograms(fs);
+            for(const std::string & evt_cat_str: evt_cat_strs)
+            {
+              if(skipBooking && evt_cat_str != default_cat_str)
+              {
+                continue;
+              }
+
+              std::string decayMode_and_genMatch = get_prefix(process_string, isMC_tH,  isMC_HH, isMC_H, isMC_VH);
+              decayMode_and_genMatch += decayMode_evt;
+              decayMode_and_genMatch += genMatchDefinition->getName();
+
+              const std::string process_string_new = evt_cat_str == default_cat_str ?
+                process_string:
+                process_string + "_" + evt_cat_str
+              ;
+              const std::string decayMode_and_genMatchName = boost::replace_all_copy(
+                decayMode_and_genMatch, process_string, process_string_new
+              );
+
+              selHistManager->evt_in_categories_and_decayModes_[category][decayMode_evt][evt_cat_str] = new EvtHistManager_1l_1tau(
+                makeHistManager_cfg(decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift)
+              );
+              selHistManager->evt_in_categories_and_decayModes_[category][decayMode_evt][evt_cat_str]->bookHistograms(fs);
+            }
           }
         }
       }
@@ -986,9 +1027,16 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
       if(genMatchToJetReader)      jetGenMatch = genMatchToJetReader->read();
     }
 
+    std::vector<GenParticle> genTauLeptons;
+    if(isMC && (apply_DYMCReweighting || apply_DYMCNormScaleFactors))
+    {
+      genTauLeptons = genTauLeptonReader->read();
+    }
+
     if(isMC)
     {
       if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
+      if(apply_DYMCReweighting)   evtWeightRecorder.record_dy_rwgt(dyReweighting, genTauLeptons);
       if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
       if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
       lheInfoReader->read();
@@ -1358,6 +1406,12 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 
     if(isMC)
     {
+      if(apply_DYMCNormScaleFactors)
+      {
+        evtWeightRecorder.record_dy_norm(
+          dyNormScaleFactors, genTauLeptons, selJets.size(), selBJets_loose.size(), selBJets_medium.size()
+        );
+      }
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
@@ -1888,11 +1942,13 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         for(const std::string & category: categories)
         {
           double evtWeight_category = evtWeight;
+          double prob_chargeMisId_sum = 1.;
           if ( category.find("_wChargeFlipWeights") != std::string::npos ) {
-            double prob_chargeMisId_lepton = prob_chargeMisId(era, selLepton_type, selLepton->pt(), selLepton->eta());
-            double prob_chargeMisId_tau = 0.01; // CV: not implemented yet; take "guessed" value for now
-            evtWeight_category *= (prob_chargeMisId_lepton + prob_chargeMisId_tau);
+            const double prob_chargeMisId_lepton = prob_chargeMisId(era, selLepton_type, selLepton->pt(), selLepton->eta());
+            const double prob_chargeMisId_tau = 0.01; // CV: not implemented yet; take "guessed" value for now
+            prob_chargeMisId_sum = prob_chargeMisId_lepton + prob_chargeMisId_tau;
           }
+          evtWeight_category *= prob_chargeMisId_sum;
           if(selHistManager->evt_in_categories_.count(category))
           {
             selHistManager->evt_in_categories_[category]->fillHistograms(
@@ -1913,19 +1969,24 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
           {
             if( isSignal ) {
               std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
-              if ( !decayModeStr.empty() && !((isMC_tH || isMC_H) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ))) {
-                selHistManager->evt_in_categories_and_decayModes_[category][decayModeStr]->fillHistograms(
-                  selElectrons.size(),
-                  selMuons.size(),
-                  selHadTaus.size(),
-                  selJets.size(),
-                  selBJets_loose.size(),
-                  selBJets_medium.size(),
-                  mTauTauVis, mTauTau,
-                  Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
-                  mbb, mbb_loose,
-                  mvaOutput_1l_1tau_16_variables,
-                  evtWeight_category);
+              if ( !decayModeStr.empty() && !((isMC_tH || isMC_H) && ( decayModeStr == "hzg" || decayModeStr == "hmm" )))
+              {
+                for(const auto & kv: tH_weight_map)
+                {
+                  selHistManager->evt_in_categories_and_decayModes_[category][decayModeStr][kv.first]->fillHistograms(
+                    selElectrons.size(),
+                    selMuons.size(),
+                    selHadTaus.size(),
+                    selJets.size(),
+                    selBJets_loose.size(),
+                    selBJets_medium.size(),
+                    mTauTauVis, mTauTau,
+                    Pzeta, PzetaVis, PzetaComb, mT_lep, mT_tau,
+                    mbb, mbb_loose,
+                    mvaOutput_1l_1tau_16_variables,
+                    kv.second * prob_chargeMisId_sum
+                  );
+                }
               }
             }
           }

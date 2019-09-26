@@ -20,6 +20,7 @@ EvtHistManager_4l::EvtHistManager_4l(const edm::ParameterSet & cfg)
   };
   const std::vector<std::string> sysOpts_all = {
     "EventCounter",
+    "control",
   };
   for(const std::string & sysOpt: sysOpts_central)
   {
@@ -35,6 +36,24 @@ const TH1 *
 EvtHistManager_4l::getHistogram_EventCounter() const
 {
   return histogram_EventCounter_;
+}
+
+void
+EvtHistManager_4l::setCRcategories(TFileDirectory & dir,
+                                   const std::vector<std::string> & ctrl_categories)
+{
+  ctrl_cateories_ = ctrl_categories;
+  if(! ctrl_cateories_.empty())
+  {
+    histogram_ctrl_ = book1D(dir, "control", "control", ctrl_cateories_.size(), -0.5, ctrl_cateories_.size() - 0.5);
+    if(histogram_ctrl_)
+    {
+      for(std::size_t ctrl_idx = 0; ctrl_idx < ctrl_cateories_.size(); ++ctrl_idx)
+      {
+        histogram_ctrl_->GetXaxis()->SetBinLabel(ctrl_idx + 1, ctrl_cateories_.at(ctrl_idx).data());
+      }
+    }
+  }
 }
 
 void
@@ -55,6 +74,7 @@ EvtHistManager_4l::fillHistograms(int numElectrons,
                                   int numJets,
                                   int numBJets_loose,
                                   int numBJets_medium,
+                                  const std::string & ctrl_category,
                                   double evtWeight)
 {
   const double evtWeightErr = 0.;
@@ -64,6 +84,17 @@ EvtHistManager_4l::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
+
+  if(! ctrl_cateories_.empty())
+  {
+    const auto ctrl_it = std::find(ctrl_cateories_.cbegin(), ctrl_cateories_.cend(), ctrl_category);
+    if(ctrl_it == ctrl_cateories_.cend())
+    {
+      throw cmsException(this, __func__, __LINE__) << "Unrecognizable category: " << ctrl_category;
+    }
+    const int ctrl_idx = std::distance(ctrl_cateories_.cbegin(), ctrl_it);
+    fillWithOverFlow(histogram_ctrl_, ctrl_idx, evtWeight, evtWeightErr);
+  }
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

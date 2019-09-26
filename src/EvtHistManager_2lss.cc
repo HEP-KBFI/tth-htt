@@ -20,7 +20,6 @@ EvtHistManager_2lss::EvtHistManager_2lss(const edm::ParameterSet & cfg)
     "mvaOutput_2lss_ttV",
     "mvaOutput_2lss_ttbar",
     "mvaOutput_Hj_tagger",
-    "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4",
   };
   const std::vector<std::string> sysOpts_all = {
     "mvaDiscr_2lss",
@@ -49,6 +48,7 @@ EvtHistManager_2lss::bookCategories(TFileDirectory & dir,
   for(const std::string & category: categories)
   {
     histograms_by_category_[category] = book1D(dir, category, category, 100,  0., +1.);
+    central_or_shiftOptions_[category] = { "*" };
   }
 }
 

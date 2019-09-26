@@ -202,7 +202,7 @@ class analyzeConfig(object):
           for central_or_shift in systematics.L1PreFiring:
             self.central_or_shifts.remove(central_or_shift)
         # ------------------------------------------------------------------------
-        self.do_dymc_sys = self.channel == "0l_2tau"
+        self.do_dymc_sys = self.channel in [ "0l_2tau", "1l_1tau" ]
         for dymc_sys in [ systematics.DYMCReweighting, systematics.DYMCNormScaleFactors ]:
           if (set(dymc_sys) & set(self.central_or_shifts)) == set(dymc_sys) and not self.do_dymc_sys:
             logging.warning('Removing systematics from {} era: {}'.format(self.era, ', '.join(dymc_sys)))
@@ -730,9 +730,11 @@ class analyzeConfig(object):
             'hhWeight_cfg.denominator_file',
             'hhWeight_cfg.histtitle',
             'hhWeight_cfg.do_ktscan',
+            'minNumJets',
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',
+          'evtCategories'           : 'cms.vstring(%s)',
         }
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))

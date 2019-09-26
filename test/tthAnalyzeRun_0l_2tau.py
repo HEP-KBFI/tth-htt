@@ -90,7 +90,7 @@ if mode == "default":
     if sample_name == 'sum_events': continue
     if sample_info["process_name_specific"].startswith("DYBBJetsToLL_M-50"):
       sample_info["use_it"] = True
-if mode == "testSignal"  :
+elif mode == "testSignal":
     samples = load_samples(era, suffix = "preselected" if use_preselected else "")
     for sample_name, sample_info in samples.items():
       if sample_name == 'sum_events': continue

@@ -106,6 +106,14 @@ elif mode == "sync":
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
+evtCategories = None
+if mode == "default" and len(central_or_shifts) <= 1:
+  evtCategories = [
+    "1e_2tau_bloose", "1e_2tau_btight", "1mu_2tau_bloose", "1mu_2tau_btight",
+  ]
+else:
+  evtCategories = []
+
 if __name__ == '__main__':
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
@@ -133,6 +141,7 @@ if __name__ == '__main__':
     jet_cleaning_by_index                 = jet_cleaning_by_index,
     gen_matching_by_index                 = gen_matching_by_index,
     central_or_shifts                     = central_or_shifts,
+    evtCategories                         = evtCategories,
     max_files_per_job                     = files_per_job,
     era                                   = era,
     use_lumi                              = True,
