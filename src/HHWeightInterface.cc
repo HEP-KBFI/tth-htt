@@ -32,10 +32,12 @@ HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
 
   const std::string denominator_hist = cfg.getParameter<std::string>("denominator_file");
   const std::string applicationLoadFile_klScan = cfg.getParameter<std::string>("klScan_file");
+  const std::string applicationLoadFile_ktScan = cfg.getParameter<std::string>("ktScan_file");
   const std::string coefFile = cfg.getParameter<std::string>("coefFile");
   const std::string histtitle = cfg.getParameter<std::string>("histtitle");
   const bool isDEBUG = cfg.getParameter<bool>("isDEBUG");
   const bool do_scan = cfg.getParameter<bool>("do_scan");
+  const bool do_ktscan = cfg.getParameter<bool>("do_ktscan");
 
   // read the python file that we're about to execute
   const std::string applicationLoadPath = LocalFileInPath("hhAnalysis/multilepton/python/do_weight.py").fullPath();
@@ -90,8 +92,8 @@ HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
   // save the closest shape BM to use this value on the evaluation of a BDT
   if(do_scan)
   {
-    const std::string applicationLoadPath_klScan = LocalFileInPath(applicationLoadFile_klScan).fullPath();
-    std::ifstream inFile_kl_scan(applicationLoadPath_klScan);
+    const std::string applicationLoadPath_kl_kt_Scan = ( do_ktscan ) ? LocalFileInPath(applicationLoadFile_ktScan).fullPath() : LocalFileInPath(applicationLoadFile_klScan).fullPath();
+    std::ifstream inFile_kl_scan(applicationLoadPath_kl_kt_Scan);
 
     if(! inFile_kl_scan)
     {

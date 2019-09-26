@@ -727,6 +727,9 @@ class analyzeConfig(object):
             'branchName_subJetsLS',
             'tHweights',
             'useObjectMultiplicity',
+            'hhWeight_cfg.denominator_file',
+            'hhWeight_cfg.histtitle',
+            'hhWeight_cfg.do_ktscan',
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',
