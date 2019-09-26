@@ -29,24 +29,7 @@ process.addMEM_3l_1tau = cms.PSet(
     branchName_met = cms.string('MET'),
 
     copy_all_branches = cms.bool(True),
-
-    copy_histograms = cms.vstring(
-        "Count",
-        "CountPosWeight",
-        "CountNegWeight",
-        "CountWeighted",
-        "CountWeightedNoPU",
-        "CountFullWeighted",
-        "CountFullWeightedNoPU",
-        "CountWeightedLHEWeightScale",
-        "CountWeightedLHEWeightScaleNoPU",
-        "CountFullWeightedLHEWeightScale",
-        "CountFullWeightedLHEWeightScaleNoPU",
-        "CountWeightedLHEWeightPdf",
-        "CountWeightedLHEWeightPdfNoPU",
-        "CountFullWeightedLHEWeightPdf",
-        "CountFullWeightedLHEWeightPdfNoPU",
-    ),
+    copy_histograms = cms.vstring('Count.*'),
 
     selEventsFileName_input = cms.string(''),
     isDEBUG = cms.bool(False),
