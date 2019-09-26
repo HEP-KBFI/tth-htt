@@ -54,6 +54,7 @@
 #include <iostream> // std::cerr, std::fixed
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
 #include <assert.h> // assert
+#include <regex> // std::regex_match(), std::regex, std::smatch
 
 typedef std::vector<std::string> vstring;
 
@@ -104,6 +105,12 @@ int main(int argc,
   const std::string branchName_jets      = cfg_addMEM.getParameter<std::string>("branchName_jets");
   const std::string branchName_met       = cfg_addMEM.getParameter<std::string>("branchName_met");
   const vstring copy_histograms          = cfg_addMEM.getParameter<vstring>("copy_histograms");
+
+  std::vector<std::regex> copy_histograms_regex;
+  std::transform(
+    copy_histograms.begin(), copy_histograms.end(), std::back_inserter(copy_histograms_regex),
+    [](const std::string & copy_histogram_regex) -> std::regex { return std::regex(copy_histogram_regex); }
+  );
 
   const std::string era_string = cfg_addMEM.getParameter<std::string>("era");
   const int era = get_era(era_string);
@@ -576,6 +583,7 @@ int main(int argc,
 //--- copy histograms keeping track of number of processed events from input files to output file
   std::cout << "copying histograms:\n";
   std::map<std::string, TH1*> histograms;
+  std::smatch histogram_match;
   for(const std::string & inputFileName: inputFiles.files())
   {
     TFile* inputFile = new TFile(inputFileName.data());
@@ -584,8 +592,25 @@ int main(int argc,
       throw cms::Exception(argv[0]) << "Failed to open input File = '" << inputFileName << "' !!\n";
     }
 
-    for(const std::string & histogramName: copy_histograms)
+    TIter next(inputFile->GetListOfKeys());
+    TKey * key = nullptr;
+    while((key = static_cast<TKey *>(next())))
     {
+      const std::string histogramName = key->GetName();
+      bool is_match = false;
+      for(const std::regex & copy_histogram_regex: copy_histograms_regex)
+      {
+        if(std::regex_match(histogramName, histogram_match, copy_histogram_regex))
+        {
+          is_match = true;
+          break;
+        }
+      }
+      if(! is_match)
+      {
+        continue;
+      }
+
       if(inputFiles.files().size() > 1)
       {
         std::cout << ' ' << histogramName << " from input File = '" << inputFileName << "'\n";
@@ -594,31 +619,31 @@ int main(int argc,
       {
         std::cout << ' ' << histogramName << '\n';
       }
-      TH1* histogram_input = dynamic_cast<TH1*>(inputFile->Get(histogramName.data()));
+      TH1 * const histogram_input = dynamic_cast<TH1 *>(inputFile->Get(histogramName.data()));
       if(! histogram_input)
       {
         continue;
       }
 
-      TH1* histogram_output = histograms[histogramName];
+      TH1 * histogram_output = histograms[histogramName];
       if(histogram_output)
       {
         histogram_output->Add(histogram_input);
       }
       else
       {
-        if     (dynamic_cast<TH1F*>(histogram_input))
+        if(dynamic_cast<TH1F *>(histogram_input))
         {
-          histogram_output = fs.make<TH1F>(*(dynamic_cast<TH1F*>(histogram_input)));
+          histogram_output = fs.make<TH1F>(*(dynamic_cast<TH1F *>(histogram_input)));
         }
         else if(dynamic_cast<TH1D*>(histogram_input))
         {
-          histogram_output = fs.make<TH1D>(*(dynamic_cast<TH1D*>(histogram_input)));
+          histogram_output = fs.make<TH1D>(*(dynamic_cast<TH1D *>(histogram_input)));
         }
         assert(histogram_output);
         histograms[histogramName] = histogram_output;
-      } // ! histogram_output
-    } // histogramName
+      }
+    }
     delete inputFile;
   } // inputFileName
 
