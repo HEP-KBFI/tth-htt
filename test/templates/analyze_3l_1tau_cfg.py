@@ -86,7 +86,7 @@ process.analyze_3l_1tau = cms.PSet(
 
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
-    lumiScale = cms.double(1.),
+    lumiScale = cms.VPSet(),
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),
     apply_l1PreFireWeight = cms.bool(True),
@@ -109,6 +109,7 @@ process.analyze_3l_1tau = cms.PSet(
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genPhotons = cms.string('GenPhoton'),
     branchName_genJets = cms.string('GenJet'),
+    branchName_genWBosons = cms.string('GenVbosons'),
     branchName_muonGenMatch     = cms.string('MuonGenMatch'),
     branchName_electronGenMatch = cms.string('ElectronGenMatch'),
     branchName_hadTauGenMatch   = cms.string('TauGenMatch'),

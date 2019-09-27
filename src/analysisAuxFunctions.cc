@@ -10,6 +10,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // countHadTauGenMatches()
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kHadTauPt_*
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 
 #include <TMath.h> // TMath::Sqrt
 
@@ -542,6 +543,31 @@ isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons,
   return failsZbosonMassVeto;
 }
 
+int
+countZbosonSFOSpairs(const std::vector<const RecoLepton *> & preselLeptons,
+                     bool ignoreOS)
+{
+  int compatibleZbosonPairs = 0;
+  for(auto lepton1_it = preselLeptons.begin(); lepton1_it != preselLeptons.end(); ++lepton1_it)
+  {
+    const RecoLepton * lepton1 = *lepton1_it;
+    for(auto lepton2_it = lepton1_it + 1; lepton2_it != preselLeptons.end(); ++lepton2_it)
+    {
+      const RecoLepton * lepton2 = *lepton2_it;
+      if(ignoreOS || (! ignoreOS && lepton1->pdgId() == -lepton2->pdgId()))
+      {
+        // pair of same flavor leptons of opposite charge
+        const double mass = (lepton1->p4() + lepton2->p4()).mass();
+        if(std::fabs(mass - z_mass) < z_window )
+        {
+          ++compatibleZbosonPairs;
+        }
+      }
+    }
+  }
+  return compatibleZbosonPairs;
+}
+
 bool
 isfailsHtoZZVeto(const std::vector<const RecoLepton *> & preselLeptons)
 {
@@ -586,4 +612,126 @@ isfailsHtoZZVeto(const std::vector<const RecoLepton *> & preselLeptons)
     }
   }
   return failsHtoZZVeto;
+}
+
+std::string
+get_key_hist(const EventInfo & eventInfo,
+             const std::vector<GenParticle> & genWBosons,
+             bool isMC_HH,
+             bool isMC_VH,
+             bool isDebug)
+{
+  std::string decayModeStr;
+  if(! isMC_HH && ! isMC_VH)
+  {
+    decayModeStr = eventInfo.getDecayModeString();
+  }
+  else if(isMC_HH)
+  {
+    decayModeStr = eventInfo.getDiHiggsDecayModeString();
+  }
+  else if(isMC_VH)
+  {
+    int VH_pdgID = 0;
+    int count_Vs = 0;
+    std::string decayModeStrTest = eventInfo.getDecayModeString();
+    if ( decayModeStrTest == "hzg" || decayModeStrTest == "hmm")
+    {
+      decayModeStrTest = "hzz";// for definitivess, that should be very rare
+    }
+    for(std::size_t genWBosonIdx = 0 ; genWBosonIdx < genWBosons.size(); ++genWBosonIdx)
+    {
+      if(genWBosons[genWBosonIdx].statusFlags() == 4481)
+      {
+        VH_pdgID = std::abs(genWBosons[genWBosonIdx].pdgId());
+        ++count_Vs;
+      }
+    }
+    if(count_Vs != 1)
+    {
+        std::cout<< "More than one gen V in VH, or not one gen V in VH or a weird decay mode "
+        << count_Vs << " " << decayModeStrTest << "\n";
+      ; // this case is extremelly rare, we can affort
+    }
+    if(VH_pdgID == 23)
+    {
+      decayModeStr = "ZH_" + decayModeStrTest;
+    }
+    else if(VH_pdgID == 24)
+    {
+      decayModeStr = "WH_" + decayModeStrTest;
+    }
+
+    if(isDebug)
+    {
+      std::cout << "count_Vs = " << count_Vs << " decayModeStrTest " << decayModeStrTest << "\n";
+    }
+  }
+  return decayModeStr;
+}
+
+std::vector<std::string>
+get_key_list_hist(const EventInfo & eventInfo,
+                  bool isMC_HH,
+                  bool isMC_VH)
+{
+  std::vector<std::string> decayModes_evt;
+  if(isMC_HH)
+  {
+    decayModes_evt = eventInfo.getDiHiggsDecayModes();
+  }
+  else
+  {
+    if(! isMC_VH)
+    {
+      decayModes_evt = eventInfo.getDecayModes();
+    }
+    else
+    {
+      for(const std::string & evt_decay_str: eventInfo.getDecayModes())
+      {
+        std::string evt_decay_strTest = evt_decay_str;
+        if (evt_decay_strTest == "hzg" || evt_decay_strTest == "hmm" ) continue;
+        decayModes_evt.push_back("WH_" + evt_decay_strTest);
+      }
+      for(const std::string & evt_decay_str: eventInfo.getDecayModes())
+      {
+        std::string evt_decay_strTest = evt_decay_str;
+        if (evt_decay_strTest == "hzg" || evt_decay_strTest == "hmm" ) continue;
+        decayModes_evt.push_back("ZH_" + evt_decay_strTest);
+      }
+    }
+  }
+  return  decayModes_evt;
+}
+
+std::string
+get_prefix(const std::string & process_string,
+           bool isMC_tH,
+           bool isMC_HH,
+           bool isMC_H,
+           bool isMC_VH)
+{
+  std::string decayMode_and_genMatch;
+  if(isMC_tH ||  isMC_HH || isMC_H)
+  {
+    decayMode_and_genMatch = process_string;
+    decayMode_and_genMatch += "_";
+  }
+  else if(isMC_VH)
+  {
+    decayMode_and_genMatch = "";
+  }
+  else
+  {
+    if(process_string == "signal")
+    {
+      decayMode_and_genMatch = "ttH_";
+    }
+    else if(process_string == "signal_ctcvcp")
+    {
+      decayMode_and_genMatch = "ttH_ctcvcp_";
+    }
+  }
+  return decayMode_and_genMatch;
 }

@@ -21,12 +21,23 @@ const std::map<std::string, Int_t> EventInfo::decayMode_idString_singleHiggs =
   { "hmm",     13 },
 };
 
+const std::map<std::string, Int_t> EventInfo::decayMode_idString_diHiggs_multilepton =
+{
+  { "tttt",       15 },
+  { "zzzz",       23 },
+  { "wwww",       24 },
+  { "ttzz", 15000023 },
+  { "ttww", 15000024 },
+  { "zzww", 23000024 },
+};
+
 EventInfo::EventInfo()
   : EventInfo(false)
 {}
 
 EventInfo::EventInfo(bool is_mc,
-                     bool is_signal)
+                     bool is_signal,
+                     bool is_hh_nonresonant)
   : run(0)
   , lumi(0)
   , event(0)
@@ -34,8 +45,12 @@ EventInfo::EventInfo(bool is_mc,
   , genWeight(1.)
   , pileupWeight(1.)
   , PV_ndof(0.)
+  , genDiHiggsDecayMode(-1)
+  , gen_mHH(0.)
+  , gen_cosThetaStar(-2.)
   , is_signal_(is_signal)
   , is_mc_(is_mc)
+  , is_hh_nonresonant_(is_hh_nonresonant)
   , central_or_shift_("central")
   , nLHEReweightingWeight(0)
   , LHEReweightingWeight(nullptr)
@@ -43,6 +58,7 @@ EventInfo::EventInfo(bool is_mc,
   , is_owner(false)
 {
   assert(is_mc_ || ! is_signal_);
+  assert(is_mc_ || ! is_hh_nonresonant_);
 }
 
 EventInfo::EventInfo(const EventInfo & eventInfo)
@@ -70,6 +86,11 @@ EventInfo::copy(const EventInfo & eventInfo)
 
   is_signal_ = eventInfo.is_signal_;
   is_mc_     = eventInfo.is_mc_;
+
+  genDiHiggsDecayMode = eventInfo.genDiHiggsDecayMode;
+  is_hh_nonresonant_ = eventInfo.is_hh_nonresonant_;
+  gen_mHH = eventInfo.gen_mHH;
+  gen_cosThetaStar = eventInfo.gen_cosThetaStar;
 
   nLHEReweightingWeight = eventInfo.nLHEReweightingWeight;
   if(eventInfo.LHEReweightingWeight)
@@ -238,10 +259,22 @@ EventInfo::is_initialized() const
   return run != 0 && lumi != 0 && event != 0;
 }
 
+bool
+EventInfo::is_hh_nonresonant() const
+{
+  return is_hh_nonresonant_;
+}
+
 std::string
 EventInfo::getDecayModeString() const
 {
   return EventInfo::getDecayModeString(decayMode_idString_singleHiggs);
+}
+
+std::string
+EventInfo::getDiHiggsDecayModeString() const
+{
+  return EventInfo::getDecayModeString(decayMode_idString_diHiggs_multilepton);
 }
 
 std::string
@@ -268,6 +301,12 @@ std::vector<std::string>
 EventInfo::getDecayModes()
 {
   return getDecayModes(decayMode_idString_singleHiggs);
+}
+
+std::vector<std::string>
+EventInfo::getDiHiggsDecayModes()
+{
+  return getDecayModes(decayMode_idString_diHiggs_multilepton);
 }
 
 std::vector<std::string>

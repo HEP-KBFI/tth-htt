@@ -101,6 +101,7 @@
 #include "TLorentzVector.h"
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
+#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -176,9 +177,11 @@ int main(int argc, char* argv[])
   const bool isMC_tHq = process_string == "tHq";
   const bool isMC_tHW = process_string == "tHW";
   const bool isMC_tH = isMC_tHq || isMC_tHW;
-  const bool isMC_VH = process_string == "VH" || process_string == "ggH" || process_string == "qqH";
+  const bool isMC_VH = process_string == "VH";
+  const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
+  const bool isMC_HH = process_string == "HH";
   const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
-  const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
+  const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH || isMC_H;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -249,6 +252,7 @@ int main(int argc, char* argv[])
   std::string central_or_shift_main = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
+  const vstring categories_evt = cfg_analyze.getParameter<vstring>("evtCategories");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_l1PreFireWeight = false; // FIXME cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
@@ -272,7 +276,6 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
-  const vstring syncNtuple_genMatch = syncNtuple_cfg.getParameter<vstring>("genMatch");
   const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
@@ -747,22 +750,14 @@ int main(int argc, char* argv[])
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
 
-      const vstring decayModes_evt = eventInfo.getDecayModes();
       if(isSignal)
       {
+        const vstring decayModes_evt = get_key_list_hist(eventInfo, isMC_HH, isMC_VH);
+
         for(const std::string & decayMode_evt: decayModes_evt)
         {
-          if ( ( isMC_tH || isMC_VH ) && ( decayMode_evt == "hzg" || decayMode_evt == "hmm" ) ) continue;
-          std::string decayMode_and_genMatch;
-          if ( isMC_tH || isMC_VH ) {
-            decayMode_and_genMatch = process_string;
-            decayMode_and_genMatch += "_";
-          }
-          else
-          {
-            if ( process_string == "signal") decayMode_and_genMatch = "ttH_";
-            if ( process_string == "signal_ctcvcp" ) decayMode_and_genMatch = "ttH_ctcvcp_";
-          }
+          if ( ( isMC_tH || isMC_H ) && ( decayMode_evt == "hzg" || decayMode_evt == "hmm" ) ) continue;
+          std::string decayMode_and_genMatch = get_prefix(process_string, isMC_tH,  isMC_HH, isMC_H, isMC_VH);
           decayMode_and_genMatch += decayMode_evt;
 	  decayMode_and_genMatch += genMatchDefinition->getName();
 
@@ -787,10 +782,6 @@ int main(int argc, char* argv[])
           }
         }
       }
-      vstring categories_evt = {
-        "1e_2tau_bloose", "1e_2tau_btight",
-        "1mu_2tau_bloose", "1mu_2tau_btight"
-      };
       for(const std::string & category: categories_evt)
       {
         TString histogramDir_category = histogramDir.data();
@@ -1714,7 +1705,7 @@ int main(int argc, char* argv[])
       {
         selHistManagerType* selHistManager = selHistManagers[central_or_shift][genMatch->getIdx()];
         assert(selHistManager);
-      
+
         if(! skipFilling)
         {
           selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
@@ -1764,8 +1755,8 @@ int main(int argc, char* argv[])
         }
         if(isSignal)
         {
-          const std::string decayModeStr = eventInfo.getDecayModeString();
-          if ( ( isMC_tH || isMC_VH ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
+          std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
+          if ( ( isMC_tH || isMC_H ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
           if ( !decayModeStr.empty() ) {
             for(const auto & kv: tH_weight_map)
             {
@@ -1783,9 +1774,9 @@ int main(int argc, char* argv[])
             }
           }
         }
-        selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
         if(! skipFilling)
         {
+          selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
           selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
           selHistManager->weights_->fillHistograms("pileupWeight", evtWeightRecorder.get_puWeight(central_or_shift));
           selHistManager->weights_->fillHistograms("data_to_MC_correction", evtWeightRecorder.get_data_to_MC_correction(central_or_shift));
@@ -1801,21 +1792,24 @@ int main(int argc, char* argv[])
         else if ( selMuons.size()     >= 1 && selBJets_medium.size() >= 1 ) category = "1mu_2tau_btight";
         else if ( selMuons.size()     >= 1                                ) category = "1mu_2tau_bloose";
         else assert(0);
-        if(! skipFilling)
+        if(std::find(categories_evt.cbegin(), categories_evt.cend(), category) != categories_evt.cend())
         {
-          selHistManager->electrons_in_categories_[category]->fillHistograms(selElectrons, evtWeight);
-          selHistManager->muons_in_categories_[category]->fillHistograms(selMuons, evtWeight);
-          selHistManager->hadTaus_in_categories_[category]->fillHistograms({ selHadTau_lead, selHadTau_sublead }, evtWeight);
-          selHistManager->leadHadTau_in_categories_[category]->fillHistograms({ selHadTau_lead }, evtWeight);
-          selHistManager->subleadHadTau_in_categories_[category]->fillHistograms({ selHadTau_sublead }, evtWeight);
+          if(! skipFilling)
+          {
+            selHistManager->electrons_in_categories_[category]->fillHistograms(selElectrons, evtWeight);
+            selHistManager->muons_in_categories_[category]->fillHistograms(selMuons, evtWeight);
+            selHistManager->hadTaus_in_categories_[category]->fillHistograms({ selHadTau_lead, selHadTau_sublead }, evtWeight);
+            selHistManager->leadHadTau_in_categories_[category]->fillHistograms({ selHadTau_lead }, evtWeight);
+            selHistManager->subleadHadTau_in_categories_[category]->fillHistograms({ selHadTau_sublead }, evtWeight);
+          }
+          selHistManager->evt_in_categories_[category]->fillHistograms(
+            preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
+            selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            mvaOutput_HTT_SUM_VT,
+            mTauTauVis,
+            evtWeight
+          );
         }
-        selHistManager->evt_in_categories_[category]->fillHistograms(
-          preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
-          selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-          mvaOutput_HTT_SUM_VT,
-          mTauTauVis,
-          evtWeight
-        );
       }
 
       if(isMC && ! skipFilling)
@@ -1838,7 +1832,7 @@ int main(int argc, char* argv[])
     }
 
     bool isGenMatched = false;
-    if ( isMC ) 
+    if ( isMC )
     {
       for (const GenMatchEntry* genMatch : genMatches)
       {
@@ -2011,7 +2005,7 @@ int main(int argc, char* argv[])
     process_and_genMatch += selLepton_genMatch.name_;
     process_and_genMatch += "&";
     process_and_genMatch += selHadTau_genMatch.name_;
-    ++selectedEntries_byGenMatchType[process_and_genMatch]; 
+    ++selectedEntries_byGenMatchType[process_and_genMatch];
     selectedEntries_weighted_byGenMatchType[process_and_genMatch] += evtWeightRecorder.get(central_or_shift_main);
     histogram_selectedEntries->Fill(0.);
   }

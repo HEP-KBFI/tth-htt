@@ -52,9 +52,11 @@ process.analyze_LeptonFakeRate = cms.PSet(
 
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
-    lumiScale = cms.double(1.),
+    lumiScale = cms.VPSet(),
     apply_l1PreFireWeight = cms.bool(True),
     apply_genWeight = cms.bool(True),
+    apply_DYMCReweighting = cms.bool(False),
+    apply_DYMCNormScaleFactors = cms.bool(False),
     apply_met_filters = cms.bool(True),
     min_PV_ndof = cms.double(100.),
     cfgMEtFilter = cms.PSet(),
@@ -67,6 +69,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
 
+    branchName_genTauLeptons = cms.string('GenTau'),
     branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genPhotons = cms.string('GenPhoton'),

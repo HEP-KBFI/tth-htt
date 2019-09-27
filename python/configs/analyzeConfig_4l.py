@@ -16,8 +16,8 @@ def get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight):
   lepton_selection_and_frWeight = lepton_selection_and_frWeight.replace("|", "_")
   return lepton_selection_and_frWeight
 
-def getHistogramDir(lepton_selection, lepton_frWeight, chargeSumSelection):
-  histogramDir = "4l_%s_%s" % (chargeSumSelection, lepton_selection)
+def getHistogramDir(channel, lepton_selection, lepton_frWeight, chargeSumSelection):
+  histogramDir = "%s_%s_%s" % (channel, chargeSumSelection, lepton_selection)
   if lepton_selection.find("Fakeable") != -1:
     if lepton_frWeight == "enabled":
       histogramDir += "_wFakeRateWeights"
@@ -51,6 +51,7 @@ class analyzeConfig_4l(analyzeConfig):
         central_or_shifts,
         max_files_per_job,
         era,
+        isControlRegion,
         use_lumi,
         lumi,
         check_output_files,
@@ -76,7 +77,7 @@ class analyzeConfig_4l(analyzeConfig):
       configDir                 = configDir,
       outputDir                 = outputDir,
       executable_analyze        = executable_analyze,
-      channel                   = "4l",
+      channel                   = "4l{}".format('ctrl' if isControlRegion else ''),
       samples                   = samples,
       jet_cleaning_by_index     = jet_cleaning_by_index,
       gen_matching_by_index     = gen_matching_by_index,
@@ -121,7 +122,7 @@ class analyzeConfig_4l(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     samples_categories_MC = []
@@ -130,6 +131,7 @@ class analyzeConfig_4l(analyzeConfig):
       if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
       decays = [""]
       if sample_category in self.procsWithDecayModes : decays += self.decayModes
+      if "HH" in sample_category : decays += self.decayModes_HH
       couplings = [""]
       if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
       for decayMode in decays :
@@ -143,8 +145,8 @@ class analyzeConfig_4l(analyzeConfig):
             else:
               samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
     self.prep_dcard_processesToCopy = ["data_obs"] + samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc", "data_obs" ]
-    self.histogramDir_prep_dcard = "4l_OS_Tight"
-    self.histogramDir_prep_dcard_SS = "4l_SS_Tight"
+    self.histogramDir_prep_dcard = "{}_OS_Tight".format(self.channel)
+    self.histogramDir_prep_dcard_SS = "{}_SS_Tight".format(self.channel)
     self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_4l_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_4l_cfg.py") #TODO
@@ -156,6 +158,7 @@ class analyzeConfig_4l(analyzeConfig):
     self.hlt_filter = hlt_filter
 
     self.isBDTtraining = False
+    self.isControlRegion = isControlRegion
 
   def set_BDT_training(self):
     """Run analysis with loose selection criteria for leptons,
@@ -192,7 +195,7 @@ class analyzeConfig_4l(analyzeConfig):
     """
     lines = []
     lepton_frWeight = "disabled" if jobOptions['applyFakeRateWeights'] == "disabled" else "enabled"
-    jobOptions['histogramDir'] = getHistogramDir(lepton_selection, lepton_frWeight, jobOptions['chargeSumSelection'])
+    jobOptions['histogramDir'] = getHistogramDir(self.channel, lepton_selection, lepton_frWeight, jobOptions['chargeSumSelection'])
     if 'mcClosure' in lepton_selection:
       self.mcClosure_dir['%s_%s' % (lepton_selection, jobOptions['chargeSumSelection'])] = jobOptions['histogramDir']
 
@@ -201,7 +204,7 @@ class analyzeConfig_4l(analyzeConfig):
     jobOptions['leptonFakeRateWeight.histogramName_e'] = self.leptonFakeRateWeight_histogramName_e
     jobOptions['leptonFakeRateWeight.histogramName_mu'] = self.leptonFakeRateWeight_histogramName_mu
 
-    lines = super(analyzeConfig_4l, self).createCfg_analyze(jobOptions, sample_info)
+    lines = super(analyzeConfig_4l, self).createCfg_analyze(jobOptions, sample_info, dropCtrl = True)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):
@@ -426,9 +429,10 @@ class analyzeConfig_4l(analyzeConfig):
                   'syncRLE'                  : syncRLE,
                   'fillGenEvtHistograms'     : True,
                   'apply_hlt_filter'         : self.hlt_filter,
-                  'syncGenMatch'             : [], # CV: temporarily kept until all channels switch to new gen-matching logic
                   'useNonNominal'            : self.use_nonnominal,
                   'useObjectMultiplicity'    : True,
+                  'isControlRegion'          : self.isControlRegion,
+                  'minNumJets'               : 0 if self.isControlRegion else 2,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)
 
@@ -467,9 +471,9 @@ class analyzeConfig_4l(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           for sample_category in sample_categories:
             if sample_category == "signal" :  sample_category = "ttH"
-            if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+            if sample_category == "signal_ctcvcp" : continue
+            if sample_category == "WH" or sample_category == "ZH" :  continue # in fakes we do not care about separation
             decays = [""]
-            if sample_category in self.procsWithDecayModes : decays += self.decayModes
             couplings = [""]
             for decayMode in decays :
               for coupling in couplings :
@@ -500,7 +504,7 @@ class analyzeConfig_4l(analyzeConfig):
             'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_%s_cfg.py" % addBackgrounds_job_fakes_tuple),
             'outputFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackgrounds_%s_%s_%s.root" % addBackgrounds_job_fakes_tuple),
             'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], "addBackgrounds_%s_%s_%s.log" % addBackgrounds_job_fakes_tuple),
-            'categories' : [ getHistogramDir(lepton_selection, lepton_frWeight, chargeSumSelection) ],
+            'categories' : [ getHistogramDir(self.channel, lepton_selection, lepton_frWeight, chargeSumSelection) ],
             'processes_input' : processes_input,
             'process_output' : "fakes_mc"
           }
@@ -522,7 +526,7 @@ class analyzeConfig_4l(analyzeConfig):
             'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_%s_cfg.py" % addBackgrounds_job_Convs_tuple),
             'outputFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackgrounds_%s_%s_%s.root" % addBackgrounds_job_Convs_tuple),
             'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], "addBackgrounds_%s_%s_%s.log" % addBackgrounds_job_Convs_tuple),
-            'categories' : [ getHistogramDir(lepton_selection, lepton_frWeight, chargeSumSelection) ],
+            'categories' : [ getHistogramDir(self.channel, lepton_selection, lepton_frWeight, chargeSumSelection) ],
             'processes_input' : processes_input,
             'process_output' : "Convs"
           }
@@ -573,13 +577,13 @@ class analyzeConfig_4l(analyzeConfig):
       key_addFakes_dir = getKey("addBackgroundLeptonFakes")
       addFakes_job_tuple = (chargeSumSelection)
       key_addFakes_job = getKey("data_fakes", *addFakes_job_tuple)
-      category_sideband = "4l_%s_Fakeable_wFakeRateWeights" % chargeSumSelection
+      category_sideband = "{}_{}_Fakeable_wFakeRateWeights".format(self.channel, chargeSumSelection)
       self.jobOptions_addFakes[key_addFakes_job] = {
         'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
         'cfgFile_modified' : os.path.join(self.dirs[key_addFakes_dir][DKEY_CFGS], "addBackgroundLeptonFakes_%s_cfg.py" % addFakes_job_tuple),
         'outputFile' : os.path.join(self.dirs[key_addFakes_dir][DKEY_HIST], "addBackgroundLeptonFakes_%s.root" % addFakes_job_tuple),
         'logFile' : os.path.join(self.dirs[key_addFakes_dir][DKEY_LOGS], "addBackgroundLeptonFakes_%s.log" % addFakes_job_tuple),
-        'category_signal' : "4l_%s_Tight" % chargeSumSelection,
+        'category_signal' : "{}_{}_Tight".format(self.channel, chargeSumSelection),
         'category_sideband' : category_sideband
       }
       self.createCfg_addFakes(self.jobOptions_addFakes[key_addFakes_job])
@@ -670,7 +674,7 @@ class analyzeConfig_4l(analyzeConfig):
         'cfgFile_modified' : os.path.join(self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
         'outputFile' : os.path.join(self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s.png" % self.channel),
         'histogramDir' : self.histogramDir_prep_dcard,
-        'label' : "4l",
+        'label' : self.channel,
         'make_plots_backgrounds' : self.make_plots_backgrounds
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
@@ -683,7 +687,7 @@ class analyzeConfig_4l(analyzeConfig):
         'cfgFile_modified' : os.path.join(self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_SS_cfg.py" % self.channel),
         'outputFile' : os.path.join(self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_SS.png" % self.channel),
         'histogramDir' : self.histogramDir_prep_dcard_SS,
-        'label' : "4l SS",
+        'label' : "{} SS".format(self.channel),
         'make_plots_backgrounds' : self.make_plots_backgrounds
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])

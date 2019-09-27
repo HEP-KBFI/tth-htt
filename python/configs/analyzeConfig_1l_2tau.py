@@ -54,6 +54,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         jet_cleaning_by_index,
         gen_matching_by_index,
         central_or_shifts,
+        evtCategories,
         max_files_per_job,
         era,
         use_lumi,
@@ -128,7 +129,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "HH", "tHq", "tHW", "VH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "HH", "tHq", "tHW", "VH", "WH", "ZH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
@@ -136,6 +137,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
       decays = [""]
       if sample_category in self.procsWithDecayModes : decays += self.decayModes
+      if "HH" in sample_category : decays += self.decayModes_HH
       couplings = [""]
       if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
       for decayMode in decays :
@@ -157,6 +159,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_1l_2tau_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_1l_2tau_cfg.py") #TODO
 
+    self.categories = evtCategories
     self.select_rle_output = select_rle_output
     self.rle_select = rle_select
     self.use_nonnominal = use_nonnominal
@@ -456,6 +459,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   'applyFakeRateWeights'     : applyFakeRateWeights,
                   'central_or_shift'         : central_or_shift,
                   'central_or_shifts_local'  : central_or_shifts_local,
+                  'evtCategories'            : self.categories,
                   'selectBDT'                : self.isBDTtraining,
                   'syncOutput'               : syncOutput,
                   'syncTree'                 : syncTree,
@@ -463,7 +467,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   'apply_hlt_filter'         : self.hlt_filter,
                   'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,
-                  'syncGenMatch'             : [], # CV: temporarily kept until all channels switch to new gen-matching logic
                   'useObjectMultiplicity'    : True,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_and_hadTau_selection)
@@ -503,9 +506,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           for sample_category in sample_categories:
             if sample_category == "signal" :  sample_category = "ttH"
-            if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+            if sample_category == "signal_ctcvcp" :  continue
+            if sample_category == "WH" or sample_category == "ZH" :  continue # in fakes we do not care about separation
             decays = [""]
-            if sample_category in self.procsWithDecayModes : decays += self.decayModes
             couplings = [""]
             for decayMode in decays :
               for coupling in couplings :

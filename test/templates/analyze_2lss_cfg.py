@@ -58,7 +58,7 @@ process.analyze_2lss = cms.PSet(
 
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
-    lumiScale = cms.double(1.),
+    lumiScale = cms.VPSet(),
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),
     apply_l1PreFireWeight = cms.bool(True),
@@ -123,4 +123,14 @@ process.analyze_2lss = cms.PSet(
         branchTypeYaxis = cms.string(''),
     ),
     tHweights = cms.VPSet(),
+    hhWeight_cfg = cms.PSet(
+        denominator_file = cms.string(''),
+        klScan_file      = cms.string('hhAnalysis/multilepton/data/kl_scan.dat'),
+        ktScan_file      = cms.string('hhAnalysis/multilepton/data/kt_scan.dat'),
+        coefFile         = cms.string('HHStatAnalysis/AnalyticalModels/data/coefficientsByBin_extended_3M_costHHSim_19-4.txt'),
+        histtitle        = cms.string(''),
+        isDEBUG          = cms.bool(False),
+        do_scan          = cms.bool(True),
+        do_ktscan        = cms.bool(False),
+),
 )

@@ -41,9 +41,11 @@ process.analyze_charge_flip = cms.PSet(
 
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
-    lumiScale = cms.double(1.),
+    lumiScale = cms.VPSet(),
     apply_l1PreFireWeight = cms.bool(True),
     apply_genWeight = cms.bool(True),
+    apply_DYMCReweighting = cms.bool(False),
+    apply_DYMCNormScaleFactors = cms.bool(False),
 
     cfgMEtFilter = cms.PSet(),
     cfgEvtYieldHistManager = cms.PSet(),
@@ -52,6 +54,7 @@ process.analyze_charge_flip = cms.PSet(
     branchName_muons = cms.string('Muon'),
     branchName_jets = cms.string('Jet'),
 
+    branchName_genTauLeptons = cms.string('GenTau'),
     branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genPhotons = cms.string('GenPhoton'),

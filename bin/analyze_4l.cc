@@ -88,6 +88,7 @@
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
+#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -140,9 +141,11 @@ int main(int argc, char* argv[])
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
-  const bool isMC_VH = process_string == "VH" || process_string == "ggH" || process_string == "qqH";
+  const bool isMC_VH = process_string == "VH";
+  const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
+  const bool isMC_HH = process_string == "HH";
   const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
-  const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
+  const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH || isMC_H;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -150,6 +153,7 @@ int main(int argc, char* argv[])
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
+  const bool isControlRegion = cfg_analyze.getParameter<bool>("isControlRegion");
 
   // single lepton triggers
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
@@ -252,7 +256,6 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
-  const vstring syncNtuple_genMatch = syncNtuple_cfg.getParameter<vstring>("genMatch");
   const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
@@ -324,6 +327,7 @@ int main(int argc, char* argv[])
   std::string branchName_muonGenMatch     = cfg_analyze.getParameter<std::string>("branchName_muonGenMatch");
   std::string branchName_electronGenMatch = cfg_analyze.getParameter<std::string>("branchName_electronGenMatch");
   std::string branchName_jetGenMatch      = cfg_analyze.getParameter<std::string>("branchName_jetGenMatch");
+  std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
 
   const bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
   const bool genMatchingByIndex = cfg_analyze.getParameter<bool>("genMatchingByIndex");
@@ -494,6 +498,10 @@ int main(int argc, char* argv[])
     lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree -> registerReader(lheInfoReader);
   }
+  GenParticleReader* genWBosonReader = new GenParticleReader(branchName_genWBosons);
+  if ( isMC ) {
+	  inputTree -> registerReader(genWBosonReader);
+  }
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -519,6 +527,14 @@ int main(int argc, char* argv[])
     std::map<std::string, std::map<std::string, EvtHistManager_4l*>> evt_in_decayModes_;
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
+  };
+
+  const vstring ctrl_categories = {
+    "sfos_2",
+    "sfos_1_0j",
+    "sfos_1_1Mb",
+    "sfos_1_2Mb",
+    "other",
   };
 
   std::map<std::string, GenEvtHistManager*> genEvtHistManager_beforeCuts;
@@ -594,25 +610,20 @@ int main(int argc, char* argv[])
         selHistManager->evt_[evt_cat_str] = new EvtHistManager_4l(makeHistManager_cfg(
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
         ));
+        if(isControlRegion)
+        {
+          selHistManager->evt_[evt_cat_str]->setCRcategories(fs, ctrl_categories);
+        }
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
 
-      const vstring decayModes_evt = eventInfo.getDecayModes();
       if(isSignal)
       {
+        const vstring decayModes_evt = get_key_list_hist(eventInfo, isMC_HH, isMC_VH);
         for(const std::string & decayMode_evt: decayModes_evt)
         {
           if ( ( isMC_tH || isMC_VH ) && ( decayMode_evt == "hzg" || decayMode_evt == "hmm" ) ) continue;
-          std::string decayMode_and_genMatch;
-          if ( isMC_tH || isMC_VH ) {
-            decayMode_and_genMatch = process_string;
-            decayMode_and_genMatch += "_";
-          }
-          else
-          {
-            if ( process_string == "signal") decayMode_and_genMatch = "ttH_";
-            if ( process_string == "signal_ctcvcp" ) decayMode_and_genMatch = "ttH_ctcvcp_";
-          }
+          std::string decayMode_and_genMatch = get_prefix(process_string, isMC_tH,  isMC_HH, isMC_H, isMC_VH);
           decayMode_and_genMatch += decayMode_evt;
 	  decayMode_and_genMatch += genMatchDefinition->getName();
 
@@ -633,6 +644,10 @@ int main(int argc, char* argv[])
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_4l(makeHistManager_cfg(
               decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
             ));
+            if(isControlRegion)
+            {
+              selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> setCRcategories(fs, ctrl_categories);
+            }
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
           }
         }
@@ -887,6 +902,10 @@ int main(int argc, char* argv[])
 		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
       }
       continue;
+    }
+    std::vector<GenParticle> genWBosons;
+    if ( isMC ) {
+      genWBosons = genWBosonReader->read();
     }
 
 //--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
@@ -1146,9 +1165,9 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">=N jets", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms(">= N jets", evtWeightRecorder.get(central_or_shift_main));
 
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
+    if ( !isControlRegion && !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
 	printCollection("selJets", selJets);
 	printCollection("selBJets_loose", selBJets_loose);
 	printCollection("selBJets_medium", selBJets_medium);
@@ -1323,7 +1342,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("sel lepton charge", evtWeightRecorder.get(central_or_shift_main));
 
     const bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull);
-    if(failsZbosonMassVeto)
+    if(failsZbosonMassVeto != isControlRegion)
     {
       if(run_lumi_eventSelector)
       {
@@ -1395,6 +1414,30 @@ int main(int argc, char* argv[])
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
 
 //--- fill histograms with events passing final selection
+    std::string ctrl_category = "other";
+    if(isControlRegion)
+    {
+      const int nofSFOSZbosonPairs = countZbosonSFOSpairs(preselLeptons);
+      if(nofSFOSZbosonPairs == 2)
+      {
+        ctrl_category = "sfos_2";
+      }
+      else if(nofSFOSZbosonPairs == 1)
+      {
+        if(selJets.size() == 0)
+        {
+          ctrl_category = "sfos_1_0j";
+        }
+        else if(selBJets_medium.size() == 1)
+        {
+          ctrl_category = "sfos_1_1Mb";
+        }
+        else if(selBJets_medium.size() >= 2)
+        {
+          ctrl_category = "sfos_1_2Mb";
+        }
+      }
+    }
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
       const double evtWeight = evtWeightRecorder.get(central_or_shift);
@@ -1438,13 +1481,14 @@ int main(int argc, char* argv[])
           selHistManager->evt_[kv.first]->fillHistograms(
             selElectrons.size(), selMuons.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            ctrl_category,
             kv.second
           );
         }
         if(isSignal)
         {
-          const std::string decayModeStr = eventInfo.getDecayModeString();
-          if ( ( isMC_tH || isMC_VH ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
+          std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
+          if ( ( isMC_tH || isMC_H ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
           if(! decayModeStr.empty())
           {
             for(const auto & kv: tH_weight_map)
@@ -1455,6 +1499,7 @@ int main(int argc, char* argv[])
                 selJets.size(),
                 selBJets_loose.size(),
                 selBJets_medium.size(),
+                ctrl_category,
                 kv.second
               );
             }
@@ -1491,7 +1536,7 @@ int main(int argc, char* argv[])
     }
 
     bool isGenMatched = false;
-    if ( isMC ) 
+    if ( isMC )
     {
       for (const GenMatchEntry* genMatch : genMatches)
       {
@@ -1704,7 +1749,7 @@ int main(int argc, char* argv[])
     selectedEntries_weighted += evtWeightRecorder.get(central_or_shift_main);
     std::string process_and_genMatch = process_string;
     process_and_genMatch += selLepton_genMatch.name_;
-    ++selectedEntries_byGenMatchType[process_and_genMatch]; 
+    ++selectedEntries_byGenMatchType[process_and_genMatch];
     selectedEntries_weighted_byGenMatchType[process_and_genMatch] += evtWeightRecorder.get(central_or_shift_main);
     histogram_selectedEntries->Fill(0.);
   }

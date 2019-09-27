@@ -220,6 +220,12 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Method of gen matching (choices: %s)' % tthAnalyzeParser.cat(choices),
     )
 
+  def add_control_region(self):
+    self.add_argument('-c', '--control-region',
+      dest = 'control_region', action = 'store_true', default = False,
+      help = 'R|Run control region instead',
+    )
+
   def add_stitched(self, use_dy = False, use_wj = False):
     choices = [ 'dy', 'wjets' ]
     default = []

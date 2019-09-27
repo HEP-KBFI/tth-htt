@@ -106,6 +106,7 @@
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
+#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -160,9 +161,11 @@ int main(int argc, char* argv[])
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
-  const bool isMC_VH = process_string == "VH" || process_string == "ggH" || process_string == "qqH";
+  const bool isMC_VH = process_string == "VH";
+  const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
+  const bool isMC_HH = process_string == "HH";
   const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
-  const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
+  const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -782,22 +785,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
 
-      const vstring decayModes_evt = eventInfo.getDecayModes();
       if(isSignal)
       {
+        const vstring decayModes_evt = get_key_list_hist(eventInfo, isMC_HH, isMC_VH);
         for(const std::string & decayMode_evt: decayModes_evt)
         {
-          if ( ( isMC_tH || isMC_VH ) && ( decayMode_evt == "hzg" || decayMode_evt == "hmm" ) ) continue;
-          std::string decayMode_and_genMatch;
-          if ( isMC_tH || isMC_VH ) {
-            decayMode_and_genMatch = process_string;
-            decayMode_and_genMatch += "_";
-          }
-          else
-          {
-            if ( process_string == "signal") decayMode_and_genMatch = "ttH_";
-            if ( process_string == "signal_ctcvcp" ) decayMode_and_genMatch = "ttH_ctcvcp_";
-          }
+          if ( ( isMC_tH || isMC_H ) && ( decayMode_evt == "hzg" || decayMode_evt == "hmm" ) ) continue;
+          std::string decayMode_and_genMatch = get_prefix(process_string, isMC_tH,  isMC_HH, isMC_H, isMC_VH);
           decayMode_and_genMatch += decayMode_evt;
 	  decayMode_and_genMatch += genMatchDefinition->getName();
 
@@ -837,7 +831,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       selHistManagers[central_or_shift][idxLepton_and_HadTau] = selHistManager;
     }
-  
+
     if(isMC && ! skipBooking)
     {
       genEvtHistManager_beforeCuts[central_or_shift] = new GenEvtHistManager(makeHistManager_cfg(process_string,
@@ -1358,7 +1352,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
     const RecoHadTau* selHadTau = selHadTaus[0];
     const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau);
-    
+
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
     const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptonsFull, fakeableHadTausFull, selJets);
@@ -2085,54 +2079,63 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         }
         for(const auto & kv: tH_weight_map)
         {
-          selHistManager->evt_[kv.first]->fillHistograms(
+
+          EvtHistManager_2lss_1tau* selHistManager_evt = selHistManager->evt_[kv.first];
+          if ( selHistManager_evt )
+          {
+          selHistManager_evt->fillHistograms(
             selElectrons.size(),
             selMuons.size(),
-	    selHadTaus.size(),
-	    selJets.size(),
-	    selBJets_loose.size(),
-	    selBJets_medium.size(),
-	    kv.second,
-	    mvaOutput_2lss_ttV,
-	    mvaOutput_2lss_tt,
-	    mvaOutput_2lss_1tau_plainKin_tt,
-	    mvaOutput_2lss_1tau_plainKin_ttV,
-	    mvaOutput_2lss_1tau_plainKin_1B_M,
-	    mvaOutput_2lss_1tau_plainKin_SUM_M,
-	    mvaOutput_2lss_1tau_HTT_SUM_M,
-	    mvaOutput_2lss_1tau_HTTMEM_SUM_M,
-	    mTauTauVis1_sel,
-	    mTauTauVis2_sel,
-	    memOutput_LR
+      	    selHadTaus.size(),
+      	    selJets.size(),
+      	    selBJets_loose.size(),
+      	    selBJets_medium.size(),
+      	    kv.second,
+      	    mvaOutput_2lss_ttV,
+      	    mvaOutput_2lss_tt,
+      	    mvaOutput_2lss_1tau_plainKin_tt,
+      	    mvaOutput_2lss_1tau_plainKin_ttV,
+      	    mvaOutput_2lss_1tau_plainKin_1B_M,
+      	    mvaOutput_2lss_1tau_plainKin_SUM_M,
+      	    mvaOutput_2lss_1tau_HTT_SUM_M,
+      	    mvaOutput_2lss_1tau_HTTMEM_SUM_M,
+      	    mTauTauVis1_sel,
+      	    mTauTauVis2_sel,
+      	    memOutput_LR
          );
-        } 
+         }
+        }
         if ( isSignal ) {
-          const std::string decayModeStr = eventInfo.getDecayModeString();
-          if ( ( isMC_tH || isMC_VH ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
+          std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
+          if ( ( isMC_tH || isMC_H ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
           if(! decayModeStr.empty())
           {
             for(const auto & kv: tH_weight_map)
             {
-              selHistManager->evt_in_decayModes_[kv.first][decayModeStr]->fillHistograms(
+              EvtHistManager_2lss_1tau* selHistManager_evt_category_decayModes = selHistManager->evt_in_decayModes_[kv.first][decayModeStr];
+              if ( selHistManager_evt_category_decayModes )
+              {
+              selHistManager_evt_category_decayModes->fillHistograms(
                 selElectrons.size(),
-		selMuons.size(),
-		selHadTaus.size(),
-		selJets.size(),
-		selBJets_loose.size(),
-		selBJets_medium.size(),
-		kv.second,
-		mvaOutput_2lss_ttV,
-		mvaOutput_2lss_tt,
-		mvaOutput_2lss_1tau_plainKin_tt,
-		mvaOutput_2lss_1tau_plainKin_ttV,
-		mvaOutput_2lss_1tau_plainKin_1B_M,
-		mvaOutput_2lss_1tau_plainKin_SUM_M,
-		mvaOutput_2lss_1tau_HTT_SUM_M,
-		mvaOutput_2lss_1tau_HTTMEM_SUM_M,
-		mTauTauVis1_sel,
-		mTauTauVis2_sel,
-		memOutput_LR
+            		selMuons.size(),
+            		selHadTaus.size(),
+            		selJets.size(),
+            		selBJets_loose.size(),
+            		selBJets_medium.size(),
+            		kv.second,
+            		mvaOutput_2lss_ttV,
+            		mvaOutput_2lss_tt,
+            		mvaOutput_2lss_1tau_plainKin_tt,
+            		mvaOutput_2lss_1tau_plainKin_ttV,
+            		mvaOutput_2lss_1tau_plainKin_1B_M,
+            		mvaOutput_2lss_1tau_plainKin_SUM_M,
+            		mvaOutput_2lss_1tau_HTT_SUM_M,
+            		mvaOutput_2lss_1tau_HTTMEM_SUM_M,
+            		mTauTauVis1_sel,
+            		mTauTauVis2_sel,
+            		memOutput_LR
               );
+             }
             }
           }
         }
@@ -2173,7 +2176,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     double memOutput_ttZ_Zll=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ_Zll() : -100.;
 
     bool isGenMatched = false;
-    if ( isMC ) 
+    if ( isMC )
     {
       for (const GenMatchEntry* genMatch : genMatches)
       {
@@ -2421,7 +2424,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     process_and_genMatch += selLepton_genMatch.name_;
     process_and_genMatch += "&";
     process_and_genMatch += selHadTau_genMatch.name_;
-    ++selectedEntries_byGenMatchType[process_and_genMatch]; 
+    ++selectedEntries_byGenMatchType[process_and_genMatch];
     selectedEntries_weighted_byGenMatchType[process_and_genMatch] += evtWeightRecorder.get(central_or_shift_main);
     histogram_selectedEntries->Fill(0.);
   }

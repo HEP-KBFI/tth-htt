@@ -112,6 +112,7 @@
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
+#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -169,10 +170,13 @@ int main(int argc, char* argv[])
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
+  std::cout << "process_string " << process_string <<"\n";
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
-  const bool isMC_VH = process_string == "VH" || process_string == "ggH" || process_string == "qqH";
+  const bool isMC_VH = process_string == "VH";
+  const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
+  const bool isMC_HH = process_string == "HH";
   const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
-  const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
+  const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH || isMC_H ;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_t = histogramDir.find("mcClosure_t") != std::string::npos;
@@ -215,6 +219,7 @@ int main(int argc, char* argv[])
   std::string central_or_shift_main = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
+  const vstring categories_evt = cfg_analyze.getParameter<vstring>("evtCategories");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_DYMCReweighting = cfg_analyze.getParameter<bool>("apply_DYMCReweighting");
   bool apply_DYMCNormScaleFactors = cfg_analyze.getParameter<bool>("apply_DYMCNormScaleFactors");
@@ -240,7 +245,6 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
-  const vstring syncNtuple_genMatch = syncNtuple_cfg.getParameter<vstring>("genMatch");
   const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
@@ -331,7 +335,6 @@ int main(int argc, char* argv[])
   std::string branchName_jetGenMatch      = cfg_analyze.getParameter<std::string>("branchName_jetGenMatch");
 
   std::string branchName_genTauLeptons = cfg_analyze.getParameter<std::string>("branchName_genTauLeptons");
-
   std::string branchName_genTopQuarks = cfg_analyze.getParameter<std::string>("branchName_genTopQuarks");
   std::string branchName_genBJets = cfg_analyze.getParameter<std::string>("branchName_genBJets");
   std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
@@ -580,35 +583,6 @@ int main(int argc, char* argv[])
   TMVAInterface mva_0l_2tau_ttbar(mvaFileName_0l_2tau_ttbar, mvaInputVariables_0l_2tau_ttbar, std::vector<std::string>({ "tau1_mva", "tau2_mva" }));
 
   std::map<std::string, double> mvaInputs_ttbar;
-
-  //--- initialize XGBs used to discriminate ttH vs. ttbar
-  // Arun training
-  std::string xgbFileName_0l_2tau_ttbar = "tthAnalysis/HiggsToTauTau/data/0l_2tau_XGB_HTTWithKinFitReduced_evtLevelTT_TTH_19Var.pkl";
-  //--- initialize XGBs used to discriminate ttH vs. ttV
-  std::string xgbFileName_0l_2tau_ttv = "tthAnalysis/HiggsToTauTau/data/0l_2tau_XGB_HTTWithKinFitReduced_evtLevelTTV_TTH_16Var.pkl";
-  //--- initialize XGBs used to discriminate ttH vs. ttbar+ttV
-  std::string xgbFileName_0l_2tau_sum = "tthAnalysis/HiggsToTauTau/data/0l_2tau_XGB_HTTWithKinFitReduced_evtLevelSUM_TTH_19Var.pkl";
-  //--- initialize XGBs used to discriminate ttH vs. ttbar+ttV+DY
-  std::string xgbFileName_0l_2tau_sum_dy = "tthAnalysis/HiggsToTauTau/data/0l_2tau_XGB_HTTWithKinFitReduced_evtLevelSUMwDY_TTH_22Var.pkl";
-  std::vector<std::string> xgbInputVariables_0l_2tau_ttbar =
-    { "mindr_tau1_jet", "mindr_tau2_jet", "avg_dr_jet", "ptmiss", "htmiss", "tau1_pt", "tau2_pt", "tau1_eta", "tau2_eta",
-      "dr_taus", "mT_tau1", "mT_tau2", "mTauTauVis", "mTauTau", "HTT_wKinFit_top1", "HadTop1_pt", "HadTop1_eta", "HTT_wKinFit_top2",
-      "HadTop2_pt", "nJet"};
-  std::vector<std::string> xgbInputVariables_0l_2tau_ttv =
-    { "mindr_tau1_jet", "mindr_tau2_jet", "avg_dr_jet", "ptmiss", "htmiss", "tau1_pt", "tau2_pt", "tau1_eta", "tau2_eta",
-      "dr_taus", "mT_tau1", "mT_tau2", "mTauTauVis", "mTauTau", "HTT_wKinFit_top1", "HTT_wKinFit_top2", "nJet"};
-  std::vector<std::string> xgbInputVariables_0l_2tau_dy =
-    { "mindr_tau1_jet", "mindr_tau2_jet", "avg_dr_jet", "ptmiss", "htmiss", "tau1_pt", "tau2_pt", "tau1_eta", "tau2_eta",
-      "dr_taus", "mT_tau1", "mT_tau2", "mTauTauVis", "mTauTau", "HTT_wKinFit_top1", "HadTop1_pt", "HadTop1_eta", "HTT_wKinFit_top2",
-      "HadTop2_pt", "nJet", "nBJetLoose", "nBJetMedium"};
-
-  XGBInterface xgb_0l_2tau_ttbar(xgbFileName_0l_2tau_ttbar, xgbInputVariables_0l_2tau_ttbar);
-  XGBInterface xgb_0l_2tau_ttv(xgbFileName_0l_2tau_ttv, xgbInputVariables_0l_2tau_ttv);
-  XGBInterface xgb_0l_2tau_sum(xgbFileName_0l_2tau_sum, xgbInputVariables_0l_2tau_ttbar);
-  XGBInterface xgb_0l_2tau_sum_dy(xgbFileName_0l_2tau_sum_dy, xgbInputVariables_0l_2tau_dy);
-  std::map<std::string, double> xgbInputs_ttbar;
-  std::map<std::string, double> xgbInputs_ttv;
-  std::map<std::string, double> xgbInputs_dy;
   //2D map for ttbar vs ttV
   const LocalFileInPath mapFileName_fip("tthAnalysis/HiggsToTauTau/data/HTT_from20_to_10bins_relLepIDFalse_CumulativeBins.root");
   TFile * fmap = TFile::Open(mapFileName_fip.fullPath().c_str(), "read");
@@ -743,27 +717,17 @@ int main(int argc, char* argv[])
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
 
-      const vstring decayModes_evt = eventInfo.getDecayModes();
       if(isSignal)
       {
+        const vstring decayModes_evt = get_key_list_hist(eventInfo, isMC_HH, isMC_VH);
+
         for(const std::string & decayMode: decayModes_evt)
         {
-
-          if(( isMC_tH || isMC_VH ) && (decayMode == "hzg" || decayMode == "hmm" ))
+          if(( isMC_tH || isMC_H ) && (decayMode == "hzg" || decayMode == "hmm" ))
           {
             continue;
           }
-          std::string decayMode_and_genMatch;
-          if(isMC_tH || isMC_VH)
-          {
-            decayMode_and_genMatch = process_string;
-            decayMode_and_genMatch += "_";
-          }
-          else
-          {
-            if ( process_string == "signal") decayMode_and_genMatch = "ttH_";
-            if ( process_string == "signal_ctcvcp" ) decayMode_and_genMatch = "ttH_ctcvcp_";
-          }
+          std::string decayMode_and_genMatch = get_prefix(process_string, isMC_tH,  isMC_HH, isMC_H, isMC_VH);
           decayMode_and_genMatch += decayMode;
 	  decayMode_and_genMatch += genMatchDefinition->getName();
 
@@ -773,7 +737,7 @@ int main(int argc, char* argv[])
             {
               continue;
             }
-            const std::string process_string_new = evt_cat_str == default_cat_str ?
+            const std::string process_string_new = evt_cat_str == default_cat_str  ?
               process_string :
               process_string + "_" + evt_cat_str
             ;
@@ -788,14 +752,13 @@ int main(int argc, char* argv[])
           }
         }
       }
-      vstring categories_evt = {
-        "0l_2tau_0bM_0j", "0l_2tau_1bM_0j", "0l_2tau_2bM_0j",
-        "0l_2tau_0bM_1j", "0l_2tau_1bM_1j", "0l_2tau_2bM_1j",
-        "0l_2tau_0bM_2j", "0l_2tau_1bM_2j", "0l_2tau_2bM_2j"
-        //"0l_2tau_bloose", "0l_2tau_btight"
-      };
       for(const std::string & category: categories_evt)
       {
+        if(category == "0l_2tau")
+        {
+          // 0l_2tau subdirectory already created for the inclusive case
+          continue;
+        }
         TString histogramDir_category = histogramDir.data();
         histogramDir_category.ReplaceAll("0l_2tau", category.data());
         selHistManager->evt_in_categories_[category] = new EvtHistManager_0l_2tau(makeHistManager_cfg(process_and_genMatch,
@@ -916,6 +879,7 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     //if (!( eventInfo.event == 2983422 )) continue;
+    //if (analyzedEntries > 1000) continue;
     histogram_analyzedEntries->Fill(0.);
 
     if ( isDEBUG ) {
@@ -1421,7 +1385,7 @@ int main(int argc, char* argv[])
     double max_mvaOutput_HTT_CSVsort4rd = 0.;
     bool max_truth_HTT_CSVsort4rd = false;
     double HadTop_pt_CSVsort4rd = 0.;
-    double HadTop_eta_CSVsort4rd = 0.;
+    //double HadTop_eta_CSVsort4rd = 0.;
     double genTopPt_CSVsort4rd = 0.;
     double b_pt_1 = 0.1;
     double Wj1_pt_1 = 0.1;
@@ -1453,7 +1417,7 @@ int main(int argc, char* argv[])
       max_mvaOutput_HTT_CSVsort4rd = bdtResult.at(kXGB_CSVsort4rd);
       HadTop_pt_CSVsort4rd = HadTop_pt;
       genTopPt_CSVsort4rd = genTopPt_teste;
-      HadTop_eta_CSVsort4rd = std::fabs(((*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4()).eta());
+      //HadTop_eta_CSVsort4rd = std::fabs(((*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4()).eta());
       Wj1_pt_1 = (*selWJet1)->pt();
       Wj2_pt_1 = (*selWJet2)->pt();
       b_pt_1   = (*selBJet)->pt();
@@ -1595,78 +1559,16 @@ int main(int argc, char* argv[])
     check_mvaInputs(mvaInputs_ttbar, eventInfo);
 
     double mvaOutput_0l_2tau_ttbar = mva_0l_2tau_ttbar(mvaInputs_ttbar);
+    double mvaOutput_0l_2tau_HTT_tt = 1.0;
+    double mvaOutput_0l_2tau_HTT_sum = 1.0;
 
-    //--- compute output of BDTs used to discriminate ttH vs. ttbar and ttV training using XGB
-    xgbInputs_ttbar["mindr_tau1_jet"]       = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
-    xgbInputs_ttbar["mindr_tau2_jet"]       = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
-    xgbInputs_ttbar["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
-    xgbInputs_ttbar["ptmiss"]               = met.pt();
-    xgbInputs_ttbar["htmiss"]               = mht_p4.pt();
-    xgbInputs_ttbar["tau1_pt"]              = selHadTau_lead->pt();
-    xgbInputs_ttbar["tau2_pt"]              = selHadTau_sublead->pt();
-    xgbInputs_ttbar["tau1_eta"]             = selHadTau_lead->absEta();
-    xgbInputs_ttbar["tau2_eta"]             = selHadTau_sublead->absEta();
-    xgbInputs_ttbar["dr_taus"]              = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
-    xgbInputs_ttbar["mT_tau1"]              = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
-    xgbInputs_ttbar["mT_tau2"]              = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
-    xgbInputs_ttbar["mTauTauVis"]           = mTauTauVis;
-    xgbInputs_ttbar["mTauTau"]           = mTauTau;
-    xgbInputs_ttbar["HTT_wKinFit_top1"]     = max_mvaOutput_HTT_CSVsort4rd;
-    xgbInputs_ttbar["HadTop1_pt"]           = HadTop_pt_CSVsort4rd;
-    xgbInputs_ttbar["HadTop1_eta"]          = std::fabs(HadTop_eta_CSVsort4rd);
-    xgbInputs_ttbar["HTT_wKinFit_top2"]     = max_mvaOutput_HTT_CSVsort4rd_2;
-    xgbInputs_ttbar["HadTop2_pt"]           = HadTop_pt_CSVsort4rd;
-    xgbInputs_ttbar["nJet"]                 = selJets.size();
-    double mvaOutput_0l_2tau_HTT_tt = xgb_0l_2tau_ttbar(xgbInputs_ttbar);
-    double mvaOutput_0l_2tau_HTT_sum = xgb_0l_2tau_sum(xgbInputs_ttbar);
-
-    xgbInputs_ttv["mindr_tau1_jet"]       = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
-    xgbInputs_ttv["mindr_tau2_jet"]       = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
-    xgbInputs_ttv["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
-    xgbInputs_ttv["ptmiss"]               = met.pt();
-    xgbInputs_ttv["htmiss"]               = mht_p4.pt();
-    xgbInputs_ttv["tau1_pt"]              = selHadTau_lead->pt();
-    xgbInputs_ttv["tau2_pt"]              = selHadTau_sublead->pt();
-    xgbInputs_ttv["tau1_eta"]             = selHadTau_lead->absEta();
-    xgbInputs_ttv["tau2_eta"]             = selHadTau_sublead->absEta();
-    xgbInputs_ttv["dr_taus"]              = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
-    xgbInputs_ttv["mT_tau1"]              = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
-    xgbInputs_ttv["mT_tau2"]              = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
-    xgbInputs_ttv["mTauTauVis"]           = mTauTauVis;
-    xgbInputs_ttv["mTauTau"]           = mTauTau;
-    xgbInputs_ttv["HTT_wKinFit_top1"]     = max_mvaOutput_HTT_CSVsort4rd;
-    xgbInputs_ttv["HTT_wKinFit_top2"]     = max_mvaOutput_HTT_CSVsort4rd_2;
-    xgbInputs_ttv["nJet"]                 = selJets.size();
-    double mvaOutput_0l_2tau_HTT_ttv = xgb_0l_2tau_ttv(xgbInputs_ttv);
+    double mvaOutput_0l_2tau_HTT_ttv = 1.0;
 
     //Get 2D map values
     int ibin = hTargetBinning->FindBin(mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv);
-    float mvaDiscr_0l_2tau_HTT = hTargetBinning->GetBinContent(ibin);
+    float mvaDiscr_0l_2tau_HTT = 1.0;
 
-    //--- compute output of BDTs used to discriminate ttH vs. ttbar+ttV+DY training using XGB
-    xgbInputs_dy["mindr_tau1_jet"]       = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
-    xgbInputs_dy["mindr_tau2_jet"]       = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
-    xgbInputs_dy["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
-    xgbInputs_dy["ptmiss"]               = met.pt();
-    xgbInputs_dy["htmiss"]               = mht_p4.pt();
-    xgbInputs_dy["tau1_pt"]              = selHadTau_lead->pt();
-    xgbInputs_dy["tau2_pt"]              = selHadTau_sublead->pt();
-    xgbInputs_dy["tau1_eta"]             = selHadTau_lead->absEta();
-    xgbInputs_dy["tau2_eta"]             = selHadTau_sublead->absEta();
-    xgbInputs_dy["dr_taus"]              = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
-    xgbInputs_dy["mT_tau1"]              = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
-    xgbInputs_dy["mT_tau2"]              = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
-    xgbInputs_dy["mTauTauVis"]           = mTauTauVis;
-    xgbInputs_dy["mTauTau"]           = mTauTau;
-    xgbInputs_dy["HTT_wKinFit_top1"]     = max_mvaOutput_HTT_CSVsort4rd;
-    xgbInputs_dy["HadTop1_pt"]           = HadTop_pt_CSVsort4rd;
-    xgbInputs_dy["HadTop1_eta"]          = std::fabs(HadTop_eta_CSVsort4rd);
-    xgbInputs_dy["HTT_wKinFit_top2"]     = max_mvaOutput_HTT_CSVsort4rd_2;
-    xgbInputs_dy["HadTop2_pt"]           = HadTop_pt_CSVsort4rd;
-    xgbInputs_dy["nJet"]                 = selJets.size();
-    xgbInputs_dy["nBJetLoose"]           = selBJets_loose.size();
-    xgbInputs_dy["nBJetMedium"]          = selBJets_medium.size();
-    double mvaOutput_0l_2tau_HTT_sum_dy = xgb_0l_2tau_sum_dy(xgbInputs_dy);
+    double mvaOutput_0l_2tau_HTT_sum_dy = 1.0;
 
     double mva_Boosted_AK8 = 1.0;
 
@@ -1752,12 +1654,15 @@ int main(int argc, char* argv[])
           );
         }
         if ( isSignal ) {
-          const std::string decayModeStr = eventInfo.getDecayModeString();
-          if(! decayModeStr.empty() && !((isMC_tH || isMC_VH) && ( decayModeStr == "hzg" || decayModeStr == "hmm" )))
+          std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
+          if(! decayModeStr.empty() && !((isMC_tH || isMC_H) && ( decayModeStr == "hzg" || decayModeStr == "hmm" )))
           {
             for(const auto & kv: tH_weight_map)
             {
-              selHistManager->evt_in_decayModes_[kv.first][decayModeStr]->fillHistograms(
+              EvtHistManager_0l_2tau* selHistManager_evt_category_decayModes = selHistManager->evt_in_decayModes_[kv.first][decayModeStr];
+              if ( selHistManager_evt_category_decayModes )
+              {
+              selHistManager_evt_category_decayModes->fillHistograms(
                 preselElectrons.size(),
 		preselMuons.size(),
 		selHadTaus.size(),
@@ -1783,6 +1688,7 @@ int main(int argc, char* argv[])
 		kv.second
               );
             }
+            }
           }
         }
         if(! skipFilling)
@@ -1797,24 +1703,15 @@ int main(int argc, char* argv[])
         }
 
         std::vector<std::string> categories;
-        if(selJets.size() >= 4){
-          if   ( selBJets_medium.size() >= 2 ) categories.push_back("0l_2tau_2bM_2j");
-          if   ( selBJets_medium.size() >= 1 ) categories.push_back("0l_2tau_1bM_2j");
-          else                                 categories.push_back("0l_2tau_0bM_2j");
-        }
-        if(selJets.size() >= 3){
-          if   ( selBJets_medium.size() >= 2 ) categories.push_back("0l_2tau_2bM_1j");
-          if   ( selBJets_medium.size() >= 1 ) categories.push_back("0l_2tau_1bM_1j");
-          else                                 categories.push_back("0l_2tau_0bM_1j");
-        }
-        if(selJets.size() >= 2){
-          if   ( selBJets_medium.size() >= 2 ) categories.push_back("0l_2tau_2bM_0j");
-          if   ( selBJets_medium.size() >= 1 ) categories.push_back("0l_2tau_1bM_0j");
-          else                                 categories.push_back("0l_2tau_0bM_0j");
-        }
+        if   ( selBJets_medium.size() >= 2 ) categories.push_back("0l_2tau_2bM_2j");
+        if   ( selBJets_medium.size() >= 1 ) categories.push_back("0l_2tau_1bM_2j");
+        else                                 categories.push_back("0l_2tau_0bM_2j");
         for(const std::string & category: categories)
         {
-          selHistManager->evt_in_categories_[category]->fillHistograms(
+          EvtHistManager_0l_2tau* selHistManager_evt_category = selHistManager->evt_in_categories_[category];
+          if ( selHistManager_evt_category )
+          {
+          selHistManager_evt_category->fillHistograms(
             preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
 	    selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
 	    mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
@@ -1822,6 +1719,7 @@ int main(int argc, char* argv[])
 	    mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
 	    pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, evtWeight
           );
+          }
         }
       }
 
@@ -1845,7 +1743,7 @@ int main(int argc, char* argv[])
     }
 
     bool isGenMatched = false;
-    if ( isMC ) 
+    if ( isMC )
     {
       for (const GenMatchEntry* genMatch : genMatches)
       {
@@ -2031,7 +1929,7 @@ int main(int argc, char* argv[])
     selectedEntries_weighted += evtWeightRecorder.get(central_or_shift_main);
     std::string process_and_genMatch = process_string;
     process_and_genMatch += selHadTau_genMatch.name_;
-    ++selectedEntries_byGenMatchType[process_and_genMatch]; 
+    ++selectedEntries_byGenMatchType[process_and_genMatch];
     selectedEntries_weighted_byGenMatchType[process_and_genMatch] += evtWeightRecorder.get(central_or_shift_main);
     histogram_selectedEntries->Fill(0.);
   }

@@ -31,6 +31,14 @@ EvtHistManager_charge_flip::bookHistograms(TFileDirectory & dir)
     TH1 * const histogram_m_ee_SS = new TH1D(getHistogramName("mass_ll").data(), "m_{ll}", 60,  60., 120. );
     histogram_m_ee_SS->Sumw2();
     histograms_m_ee_SS_[category_eta_and_pT] = histogram_m_ee_SS;
+    
+    TH1 * const histogram_m_ee_SS_mllBelow100 = new TH1D(getHistogramName("mass_ll_Below100").data(), "m_{ll}", 40,  60., 100. );
+    histogram_m_ee_SS_mllBelow100->Sumw2();
+    histograms_m_ee_SS_mllBelow100_[category_eta_and_pT] = histogram_m_ee_SS_mllBelow100;
+    TH1 * const histogram_m_ee_SS_mllAbove100 = new TH1D(getHistogramName("mass_ll_Above100").data(), "m_{ll}", 20,  100., 120. );
+    histogram_m_ee_SS_mllAbove100->Sumw2();
+    histograms_m_ee_SS_mllAbove100_[category_eta_and_pT] = histogram_m_ee_SS_mllAbove100;
+     
 
     std::string subdirName_OS = Form("OS/%s/%s", category_eta_and_pT.data(), process_.data());
     if(! category_.empty())
@@ -42,6 +50,14 @@ EvtHistManager_charge_flip::bookHistograms(TFileDirectory & dir)
     TH1 * const histogram_m_ee_OS = new TH1D(getHistogramName("mass_ll").data(), "m_{ll}", 60,  60., 120. );
     histogram_m_ee_OS->Sumw2();
     histograms_m_ee_OS_[category_eta_and_pT] = histogram_m_ee_OS;
+
+    TH1 * const histogram_m_ee_OS_mllBelow100 = new TH1D(getHistogramName("mass_ll_Below100").data(), "m_{ll}", 40,  60., 100. );
+    histogram_m_ee_OS_mllBelow100->Sumw2();
+    histograms_m_ee_OS_mllBelow100_[category_eta_and_pT] = histogram_m_ee_OS_mllBelow100;
+    TH1 * const histogram_m_ee_OS_mllAbove100 = new TH1D(getHistogramName("mass_ll_Above100").data(), "m_{ll}", 20,  100., 120. );
+    histogram_m_ee_OS_mllAbove100->Sumw2();
+    histograms_m_ee_OS_mllAbove100_[category_eta_and_pT] = histogram_m_ee_OS_mllAbove100;
+    
   }
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
@@ -125,4 +141,16 @@ EvtHistManager_charge_flip::fillHistograms(const math::PtEtaPhiMLorentzVector & 
   fillWithOverFlow(histograms_m_ee_total, m_ee, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
+
+  const std::map<std::string, TH1 *> & histograms_m_ee_mllBelow100 = isCharge_SS ? histograms_m_ee_SS_mllBelow100_ : histograms_m_ee_OS_mllBelow100_;
+  const std::map<std::string, TH1 *> & histograms_m_ee_mllAbove100 = isCharge_SS ? histograms_m_ee_SS_mllAbove100_ : histograms_m_ee_OS_mllAbove100_;
+  if (m_ee < 100) {
+    histograms_m_ee_category = histograms_m_ee_mllBelow100.at(category);
+    assert(histograms_m_ee_category);
+    fillWithOverFlow(histograms_m_ee_category, m_ee, evtWeight, evtWeightErr);
+  } else {
+    histograms_m_ee_category = histograms_m_ee_mllAbove100.at(category);
+    assert(histograms_m_ee_category);
+    fillWithOverFlow(histograms_m_ee_category, m_ee, evtWeight, evtWeightErr);
+  }
 }

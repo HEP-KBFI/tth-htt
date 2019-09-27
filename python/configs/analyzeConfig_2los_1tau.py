@@ -131,7 +131,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
@@ -139,6 +139,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
       decays = [""]
       if sample_category in self.procsWithDecayModes : decays += self.decayModes
+      if "HH" in sample_category : decays += self.decayModes_HH
       couplings = [""]
       if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
       for decayMode in decays :
@@ -469,7 +470,6 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                 'apply_hlt_filter'         : self.hlt_filter,
                 'useNonNominal'            : self.use_nonnominal,
                 'fillGenEvtHistograms'     : True,
-                'syncGenMatch'             : [], # CV: temporarily kept until all channels switch to new gen-matching logic
                 'useObjectMultiplicity'    : True,
               }
               self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_and_hadTau_selection)
@@ -508,9 +508,9 @@ class analyzeConfig_2los_1tau(analyzeConfig):
         sample_categories.extend(self.ttHProcs)
         for sample_category in sample_categories:
           if sample_category == "signal" :  sample_category = "ttH"
-          if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+          if sample_category == "signal_ctcvcp" : continue
+          if sample_category == "WH" or sample_category == "ZH" :  continue # in fakes we do not care about separation
           decays = [""]
-          if sample_category in self.procsWithDecayModes : decays += self.decayModes
           couplings = [""]
           if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
           for decayMode in decays :

@@ -121,7 +121,7 @@ class analyzeConfig_2lss(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "ggH", "qqH", "HH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "WH", "ZH", "ggH", "qqH", "HH", "TTWH", "TTZH" ]
 
     samples_categories_MC = []
     for sample_category in self.nonfake_backgrounds + self.ttHProcs:
@@ -129,6 +129,7 @@ class analyzeConfig_2lss(analyzeConfig):
       if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
       decays = [""]
       if sample_category in self.procsWithDecayModes : decays += self.decayModes
+      if "HH" in sample_category : decays += self.decayModes_HH
       couplings = [""]
       if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
       for decayMode in decays :
@@ -203,6 +204,12 @@ class analyzeConfig_2lss(analyzeConfig):
     jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
     jobOptions['leptonFakeRateWeight.histogramName_e'] = self.leptonFakeRateWeight_histogramName_e
     jobOptions['leptonFakeRateWeight.histogramName_mu'] = self.leptonFakeRateWeight_histogramName_mu
+
+    if sample_info["sample_category"] == "HH":
+      assert('sample_category_hh' in sample_info)
+      jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/bbww/data/denom_{}.root'.format(self.era,)
+      jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
+      jobOptions['hhWeight_cfg.do_ktscan'] = True
 
     lines = super(analyzeConfig_2lss, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
@@ -437,7 +444,6 @@ class analyzeConfig_2lss(analyzeConfig):
                   'apply_hlt_filter'         : self.hlt_filter,
                   'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,
-                  'syncGenMatch'             : [], # CV: temporarily kept until all channels switch to new gen-matching logic
                   'useObjectMultiplicity'    : True,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)
@@ -477,9 +483,9 @@ class analyzeConfig_2lss(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           for sample_category in sample_categories:
             if sample_category == "signal" :  sample_category = "ttH"
-            if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
+            if sample_category == "signal_ctcvcp" : continue
+            if sample_category == "WH" or sample_category == "ZH" :  continue # in fakes we do not care about separation
             decays = [""]
-            if sample_category in self.procsWithDecayModes : decays += self.decayModes
             couplings = [""]
             for decayMode in decays :
               for coupling in couplings :

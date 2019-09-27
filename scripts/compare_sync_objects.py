@@ -40,6 +40,7 @@ ttH_tH_CHANNELS = [
   'syncTree_2lSS1tau_SR', 'syncTree_2lSS1tau_Fake', 'syncTree_2lSS1tau_Flip',
   'syncTree_2lSS_SR',     'syncTree_2lSS_Fake',     'syncTree_2lSS_Flip',
   'syncTree_3l_SR',       'syncTree_3l_Fake',
+  'syncTree_3lctrl_SR',   'syncTree_3lctrl_Fake',
 ]
 
 # Default placeholder value for a variable that is not filled in sync Ntuples

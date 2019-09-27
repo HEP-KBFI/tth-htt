@@ -12,7 +12,7 @@ import getpass
 
 # E.g.: ./test/tthAnalyzeRun_0l_2tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync', "testSignal" ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts
 systematics.full = systematics.an_common
 
@@ -90,6 +90,21 @@ if mode == "default":
     if sample_name == 'sum_events': continue
     if sample_info["process_name_specific"].startswith("DYBBJetsToLL_M-50"):
       sample_info["use_it"] = True
+elif mode == "testSignal":
+    samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+    for sample_name, sample_info in samples.items():
+      if sample_name == 'sum_events': continue
+      if sample_info["sample_category"] in [
+      "HH",
+      #"signal",
+      "TTWH",
+      "TTZH",
+      "VH",
+      "ggH",
+      "qqH"
+      ] and sample_info["use_it"] == True:
+        sample_info["use_it"] = True
+      else : sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -108,6 +123,14 @@ elif mode == "sync":
   samples = load_samples(era, suffix = sample_suffix)
 else:
   raise ValueError("Invalid mode: %s" % mode)
+
+evtCategories = None
+if mode == "default" and len(central_or_shifts) <= 1:
+  evtCategories = [
+    "0l_2tau_0bM_2j", "0l_2tau_1bM_2j", "0l_2tau_2bM_2j",
+  ]
+else:
+  evtCategories = []
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events': continue
@@ -143,6 +166,7 @@ if __name__ == '__main__':
     jet_cleaning_by_index                 = jet_cleaning_by_index,
     gen_matching_by_index                 = gen_matching_by_index,
     central_or_shifts                     = central_or_shifts,
+    evtCategories                         = evtCategories,
     max_files_per_job                     = files_per_job,
     era                                   = era,
     use_lumi                              = True,

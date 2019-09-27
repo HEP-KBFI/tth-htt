@@ -35,6 +35,12 @@ private:
   std::map<std::string, TH1 *> histograms_m_ee_SS_; // key = event category, based on pT and eta of the two electrons
   std::map<std::string, TH1 *> histograms_m_ee_OS_; // key = event category, based on pT and eta of the two electrons
 
+  std::map<std::string, TH1 *> histograms_m_ee_SS_mllBelow100_; //
+  std::map<std::string, TH1 *> histograms_m_ee_OS_mllBelow100_; //
+
+  std::map<std::string, TH1 *> histograms_m_ee_SS_mllAbove100_; //
+  std::map<std::string, TH1 *> histograms_m_ee_OS_mllAbove100_; //
+  
   TH1 * histogram_EventCounter_;
 };
 

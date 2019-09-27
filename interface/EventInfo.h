@@ -14,7 +14,8 @@ class EventInfo
 public:
   EventInfo();
   EventInfo(bool is_mc,
-            bool is_signal = false);
+            bool is_signal = false,
+            bool is_hh_nonresonant = false);
   EventInfo(const EventInfo & eventInfo);
   EventInfo &
   operator=(const EventInfo & eventInfo);
@@ -30,6 +31,9 @@ public:
   Float_t   pileupWeightUp;      ///< pile-up weight up-shifted (only if MC)
   Float_t   pileupWeightDown;    ///< pile-up weight down-shifted (only if MC)
   Float_t   PV_ndof;             ///< number of degree of freedom of the main primary vertex
+  Int_t     genDiHiggsDecayMode; ///< Decay mode of both Higgs bosons (only if HH signal MC)
+  Float_t   gen_mHH;             ///< LHE parton-level di-Higgs mass
+  Float_t   gen_cosThetaStar;    ///< LHE parton-level cos(theta*) variable
 
   double
   genWeight_tH() const;
@@ -69,13 +73,22 @@ public:
   is_mc() const;
 
   bool
+  is_hh_nonresonant() const;
+
+  bool
   is_initialized() const;
 
   std::string
   getDecayModeString() const;
 
+  std::string
+  getDiHiggsDecayModeString() const;
+
   static std::vector<std::string>
   getDecayModes();
+
+  static std::vector<std::string>
+  getDiHiggsDecayModes();
 
   std::string
   str() const;
@@ -90,15 +103,18 @@ public:
 protected:
   bool is_signal_;
   bool is_mc_;
+  bool is_hh_nonresonant_;
   std::string central_or_shift_;
 
   UInt_t nLHEReweightingWeight;
   Float_t * LHEReweightingWeight;
+
   const unsigned int LHEReweightingWeight_max;
   bool is_owner;
 
   std::map<std::string, std::map<std::string, std::pair<int, double>>> tH_sf;
   static const std::map<std::string, Int_t> decayMode_idString_singleHiggs;
+  static const std::map<std::string, Int_t> decayMode_idString_diHiggs_multilepton;
 
   std::string
   getDecayModeString(const std::map<std::string, Int_t> & decayMode_idString) const;

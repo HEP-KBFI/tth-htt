@@ -12,7 +12,7 @@ import getpass
 
 # E.g. to run: ./test/tthAnalyzeRun_2lss.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync', "testSignal"  ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -76,6 +76,21 @@ hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+elif mode == "testSignal"  :
+    samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+    for sample_name, sample_info in samples.items():
+      if sample_name == 'sum_events': continue
+      if sample_info["sample_category"] in [
+      "HH",
+      #"signal",
+      "TTWH",
+      "TTZH",
+      "VH",
+      "ggH",
+      "qqH"
+      ] and sample_info["use_it"] == True:
+        sample_info["use_it"] = True
+      else : sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -130,12 +145,28 @@ if __name__ == '__main__':
     executable_addFakes       = "addBackgroundLeptonFakes",
     executable_addFlips       = "addBackgroundLeptonFlips",
     histograms_to_fit         = {
-      "EventCounter"                          : {},
-      "numJets"                               : {},
-      "mvaOutput_2lss_ttV"                    : {},
-      "mvaOutput_2lss_ttbar"                  : {},
-      "mvaDiscr_2lss"                         : {},
-      "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4" : {},
+        "EventCounter"                          : {},
+        "mvaDiscr_2lss"                         : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_ee_bl" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_ee_bt" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_em_bl" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_em_bt" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_mm_bl" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_mm_bt" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_ee_bl" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_ee_bt" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_em_bl" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_em_bt" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_mm_bl" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_mm_bt" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_rest_bl" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_rest_bt" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_ee_bl" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_ee_bt" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_em_bl" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_em_bt" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bl" : {},
+        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bt" : {}
     },
     select_rle_output         = True,
     dry_run                   = dry_run,

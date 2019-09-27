@@ -40,6 +40,8 @@ public:
   const std::string branchName_genWeight;
   const std::string branchName_LHEReweightingWeight;
   const std::string branchName_nLHEReweightingWeight;
+  const std::string branchName_gen_mHH;
+  const std::string branchName_gen_cosThetaStar;
 };
 
 #endif // EventInfoReader_H

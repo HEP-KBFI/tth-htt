@@ -202,7 +202,7 @@ class analyzeConfig(object):
           for central_or_shift in systematics.L1PreFiring:
             self.central_or_shifts.remove(central_or_shift)
         # ------------------------------------------------------------------------
-        self.do_dymc_sys = self.channel == "0l_2tau"
+        self.do_dymc_sys = self.channel in [ "0l_2tau", "1l_1tau" ]
         for dymc_sys in [ systematics.DYMCReweighting, systematics.DYMCNormScaleFactors ]:
           if (set(dymc_sys) & set(self.central_or_shifts)) == set(dymc_sys) and not self.do_dymc_sys:
             logging.warning('Removing systematics from {} era: {}'.format(self.era, ', '.join(dymc_sys)))
@@ -427,9 +427,12 @@ class analyzeConfig(object):
         self.ttHProcs = [ "ttH" ]# , "ttH_ctcvcp" ]
         self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
         self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
-        self.procsWithDecayModes = self.ttHProcs + [ "VH", "tHW", "tHq", "ggH", "qqH" ]
+        self.decayModes_HH = [ "tttt",  "zzzz",  "wwww",  "ttzz",  "ttww",  "zzww"]
+        self.procsWithDecayModes = self.ttHProcs + [ "WH", "ZH", "tHW", "tHq", "ggH", "qqH", "TTWH", "TTZH" ]
         self.prep_dcard_signals = self.signalProcs + self.ttHProcs + [
           "{}_{}".format(proc, decMode) for proc in self.ttHProcs for decMode in self.decayModes + [ 'fake' ]
+        ] + [
+          "HH_{}".format(decMode)  for decMode in self.decayModes_HH + [ 'fake' ]
         ]
         self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
         self.make_plots_signal = "signal"
@@ -530,8 +533,11 @@ class analyzeConfig(object):
           not ((sample_category.startswith("signal") or sample_category == "HH") and has_LHE): return False
       return True
 
-    def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False):
-        process_string = 'process.analyze_%s' % self.channel
+    def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False, dropCtrl = False):
+        channel_str = self.channel
+        if dropCtrl:
+          channel_str = channel_str.replace('ctrl', '')
+        process_string = 'process.analyze_{}'.format(channel_str)
         current_function_name = inspect.stack()[0][3]
 
         stitch_histogram_names = {}
@@ -673,6 +679,7 @@ class analyzeConfig(object):
             'lep_mva_cut_e',
             'chargeSumSelection',
             'histogramDir',
+            'isControlRegion',
             'lumiScale',
             'leptonChargeSelection',
             'hadTauChargeSelection',
@@ -720,9 +727,14 @@ class analyzeConfig(object):
             'branchName_subJetsLS',
             'tHweights',
             'useObjectMultiplicity',
+            'hhWeight_cfg.denominator_file',
+            'hhWeight_cfg.histtitle',
+            'hhWeight_cfg.do_ktscan',
+            'minNumJets',
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',
+          'evtCategories'           : 'cms.vstring(%s)',
         }
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
@@ -882,7 +894,7 @@ class analyzeConfig(object):
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
-        lines.append("process.addBackgrounds.categories = cms.vstring(%s)" % jobOptions['categories'])
+        lines.append("process.copyHistograms.categories = cms.vstring(%s)" % jobOptions['categories'])
         create_cfg(self.cfgFile_copyHistograms, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_addBackgrounds(self, jobOptions):

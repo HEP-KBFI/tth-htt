@@ -97,6 +97,7 @@
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
+#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -151,9 +152,11 @@ int main(int argc, char* argv[])
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
-  const bool isMC_VH = process_string == "VH" || process_string == "ggH" || process_string == "qqH";
+  const bool isMC_VH = process_string == "VH";
+  const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
+  const bool isMC_HH = process_string == "HH";
   const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
-  const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
+  const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH || isMC_H;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -161,6 +164,7 @@ int main(int argc, char* argv[])
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
+  const bool isControlRegion = cfg_analyze.getParameter<bool>("isControlRegion");
 
   // single lepton triggers
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
@@ -263,7 +267,6 @@ int main(int argc, char* argv[])
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
-  const vstring syncNtuple_genMatch = syncNtuple_cfg.getParameter<vstring>("genMatch");
   const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   const bool do_sync = ! syncNtuple_tree.empty() && ! syncNtuple_output.empty();
 
@@ -332,6 +335,7 @@ int main(int argc, char* argv[])
   std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
   std::string branchName_genPhotons = cfg_analyze.getParameter<std::string>("branchName_genPhotons");
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
+  std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
 
   std::string branchName_muonGenMatch     = cfg_analyze.getParameter<std::string>("branchName_muonGenMatch");
   std::string branchName_electronGenMatch = cfg_analyze.getParameter<std::string>("branchName_electronGenMatch");
@@ -523,6 +527,10 @@ int main(int argc, char* argv[])
     lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree -> registerReader(lheInfoReader);
   }
+  GenParticleReader* genWBosonReader = new GenParticleReader(branchName_genWBosons);
+  if ( isMC ) {
+	  inputTree -> registerReader(genWBosonReader);
+  }
 
 HadTopTagger* hadTopTagger = new HadTopTagger();
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
@@ -592,14 +600,34 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_3l_;
     std::map<std::string, EvtHistManager_3l*> evt_;
-    std::map<std::string, EvtHistManager_3l*> evt_in_categories_;
-    std::map<std::string, EvtHistManager_3l*> evt_in_categories_3l_ttH_tH_3cat_v8_TF_;
     std::map<std::string, std::map<std::string, EvtHistManager_3l*>> evt_in_decayModes_;
-    std::map<std::string, std::map<std::string, EvtHistManager_3l*>> evt_in_categories_and_decayModes_; // key = category, decayMode
-    std::map<std::string, std::map<std::string, EvtHistManager_3l*>> evt_in_categories_3l_ttH_tH_3cat_v8_TF_and_decayModes_;
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
+
+  const vstring categories_TensorFlow_3l_ttH_tH_3cat_v8 = {
+    "output_NN_3l_ttH_tH_3cat_v8_ttH_bl",
+    "output_NN_3l_ttH_tH_3cat_v8_ttH_bt",
+    "output_NN_3l_ttH_tH_3cat_v8_tH_bl",
+    "output_NN_3l_ttH_tH_3cat_v8_tH_bt",
+    "output_NN_3l_ttH_tH_3cat_v8_rest_bl",
+    "output_NN_3l_ttH_tH_3cat_v8_rest_bt"
+  };
+  vstring ctrl_categories = { "other" };
+  for(int nbjets_ctrl = 0; nbjets_ctrl < 3; ++nbjets_ctrl)
+  {
+    for(int njets_ctrl = std::min(2, nbjets_ctrl + 1); njets_ctrl < std::min(nbjets_ctrl + 5, 6); ++njets_ctrl)
+    {
+      for(int nele_ctrl = 0; nele_ctrl < 4; ++nele_ctrl)
+      {
+        int nmu_ctrl = 3 - nele_ctrl;
+        const std::string ele_ctrl_str(nele_ctrl, 'e');
+        const std::string mu_ctrl_str(nmu_ctrl, 'm');
+        const std::string ctrl_category = Form("b%d_j%d_%s%s", nbjets_ctrl, njets_ctrl, ele_ctrl_str.data(), mu_ctrl_str.data());
+        ctrl_categories.push_back(ctrl_category);
+      }
+    }
+  }
 
   std::map<std::string, GenEvtHistManager*> genEvtHistManager_beforeCuts;
   std::map<std::string, GenEvtHistManager*> genEvtHistManager_afterCuts;
@@ -680,102 +708,51 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         selHistManager->evt_[evt_cat_str] = new EvtHistManager_3l(makeHistManager_cfg(
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
         ));
+        selHistManager->evt_[evt_cat_str]->bookCategories(fs, categories_TensorFlow_3l_ttH_tH_3cat_v8);
+        if(isControlRegion)
+        {
+          selHistManager->evt_[evt_cat_str]->setCRcategories(fs, ctrl_categories);
+        }
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
 
-      const vstring categories_evt = {
-        "bl_neg", "bl_pos", "bt_neg", "bt_pos"
-      };
-      for(const std::string & category: categories_evt)
-      {
-        TString histogramDir_category = histogramDir.data();
-        histogramDir_category.ReplaceAll("3l", Form("3l_%s", category.data()));
-        selHistManager->evt_in_categories_[category] = new EvtHistManager_3l(makeHistManager_cfg(
-          process_and_genMatch, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift
-        ));
-        selHistManager->evt_in_categories_[category]->bookHistograms(fs);
-      }
-      const vstring categories_TensorFlow_3l_ttH_tH_3cat_v8 = {
-        "output_NN_3l_ttH_tH_3cat_v8_ttH_bl",
-        "output_NN_3l_ttH_tH_3cat_v8_ttH_bt",
-        "output_NN_3l_ttH_tH_3cat_v8_tH_bl",
-        "output_NN_3l_ttH_tH_3cat_v8_tH_bt",
-        "output_NN_3l_ttH_tH_3cat_v8_rest_bl",
-        "output_NN_3l_ttH_tH_3cat_v8_rest_bt"
-      };
-      for(const std::string & category: categories_TensorFlow_3l_ttH_tH_3cat_v8)
-      {
-        TString histogramDir_category = histogramDir.data();
-        histogramDir_category.ReplaceAll("3l",  category.data());
-        selHistManager->evt_in_categories_3l_ttH_tH_3cat_v8_TF_[category] = new EvtHistManager_3l(makeHistManager_cfg(
-          process_and_genMatch, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift
-        ));
-        selHistManager->evt_in_categories_3l_ttH_tH_3cat_v8_TF_[category]->bookHistograms(fs);
-      }
-
-      const vstring decayModes_evt = eventInfo.getDecayModes();
       if(isSignal)
       {
+        const vstring decayModes_evt = get_key_list_hist(eventInfo, isMC_HH, isMC_VH);
         for(const std::string & decayMode_evt: decayModes_evt)
         {
           if((isMC_tH || isMC_VH ) && (decayMode_evt == "hzg" || decayMode_evt == "hmm"))
           {
             continue;
           }
-          std::string decayMode_and_genMatch;
-          if(isMC_tH || isMC_VH)
-          {
-            decayMode_and_genMatch = process_string;
-            decayMode_and_genMatch += "_";
-          }
-          else
-          {
-            if ( process_string == "signal") decayMode_and_genMatch = "ttH_";
-            if ( process_string == "signal_ctcvcp" ) decayMode_and_genMatch = "ttH_ctcvcp_";
-          }
+          std::string decayMode_and_genMatch = get_prefix(process_string, isMC_tH,  isMC_HH, isMC_H, isMC_VH);
           decayMode_and_genMatch += decayMode_evt;
 	  decayMode_and_genMatch += genMatchDefinition->getName();
 
-         for(const std::string & evt_cat_str: evt_cat_strs)
-         {
-           if(skipBooking && evt_cat_str != default_cat_str)
-           {
-             continue;
-           }
-           const std::string process_string_new = evt_cat_str == default_cat_str ?
-             process_string:
-             process_string + "_" + evt_cat_str
-           ;
-           const std::string decayMode_and_genMatchName = boost::replace_all_copy(
-             decayMode_and_genMatch, process_string, process_string_new
-           );
-
-           selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_3l(makeHistManager_cfg(
-             decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
-           ));
-           selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
-         }
-
-         for(const std::string & category: categories_evt)
-         {
-            TString histogramDir_category = histogramDir.data();
-            histogramDir_category.ReplaceAll("3l", Form("3l_%s", category.data()));
-            selHistManager -> evt_in_categories_and_decayModes_[category][decayMode_evt] = new EvtHistManager_3l(makeHistManager_cfg(
-              decayMode_and_genMatch, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift
-            ));
-            selHistManager -> evt_in_categories_and_decayModes_[category][decayMode_evt] -> bookHistograms(fs);
-          }
-
-          for(const std::string & category: categories_TensorFlow_3l_ttH_tH_3cat_v8)
+          for(const std::string & evt_cat_str: evt_cat_strs)
           {
-            TString histogramDir_category = histogramDir.data();
-            histogramDir_category.ReplaceAll("3l",  category.data());
-            selHistManager -> evt_in_categories_3l_ttH_tH_3cat_v8_TF_and_decayModes_[category][decayMode_evt] = new EvtHistManager_3l(makeHistManager_cfg(
-              decayMode_and_genMatch, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift
-            ));
-            selHistManager -> evt_in_categories_3l_ttH_tH_3cat_v8_TF_and_decayModes_[category][decayMode_evt] -> bookHistograms(fs);
-          }
+            if(skipBooking && evt_cat_str != default_cat_str)
+            {
+              continue;
+            }
+            const std::string process_string_new = evt_cat_str == default_cat_str ?
+              process_string:
+              process_string + "_" + evt_cat_str
+            ;
+            const std::string decayMode_and_genMatchName = boost::replace_all_copy(
+              decayMode_and_genMatch, process_string, process_string_new
+            );
 
+            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_3l(makeHistManager_cfg(
+              decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+            ));
+            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookCategories(fs, categories_TensorFlow_3l_ttH_tH_3cat_v8);
+            if(isControlRegion)
+            {
+              selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> setCRcategories(fs, ctrl_categories);
+            }
+            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
+          }
         }
       }
       if(! skipBooking)
@@ -1047,6 +1024,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
       }
       continue;
+    }
+    std::vector<GenParticle> genWBosons;
+    if ( isMC ) {
+      genWBosons = genWBosonReader->read();
     }
 
 //--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
@@ -1507,9 +1488,11 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     cutFlowHistManager->fillHistograms("sel lepton charge", evtWeightRecorder.get(central_or_shift_main));
 
     bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull);
-    if ( failsZbosonMassVeto ) {
-      if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto." << std::endl;
+    if((failsZbosonMassVeto != isControlRegion))
+    {
+      if(run_lumi_eventSelector)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS Z-boson veto\n";
       }
       continue;
     }
@@ -1791,7 +1774,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       std::cout << std::endl;
     }
 
-    std::string category_3l_ttH_tH_3cat_v8_TF = "output_NN_3l_ttH_tH_3cat_v8_";
+    std::string category = "output_NN_3l_ttH_tH_3cat_v8_";
     double output_NN_3l_ttH_tH_3cat_v8 = -10.0;
     if (ttH_like || tH_like) {
 
@@ -1799,26 +1782,26 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"] >= mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"] &&\
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"] >= mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"]
       ) {
-        category_3l_ttH_tH_3cat_v8_TF += "ttH";
+        category += "ttH";
         output_NN_3l_ttH_tH_3cat_v8 = mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"];
       }
       if (
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"] >  mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"] &&\
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"] >= mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"]
       ) {
-        category_3l_ttH_tH_3cat_v8_TF += "tH";
+        category += "tH";
         output_NN_3l_ttH_tH_3cat_v8 = mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"];
         }
       if (
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"] > mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"] &&\
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"] > mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"]
       ) {
-        category_3l_ttH_tH_3cat_v8_TF += "rest";
+        category += "rest";
         output_NN_3l_ttH_tH_3cat_v8 = mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"];
         }
 
-      if (selBJets_medium.size() >= 2) category_3l_ttH_tH_3cat_v8_TF += "_bt";
-      else category_3l_ttH_tH_3cat_v8_TF += "_bl";
+      if (selBJets_medium.size() >= 2) category += "_bt";
+      else category += "_bl";
 
     } else assert(0);
 
@@ -1836,14 +1819,26 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
 
 //--- fill histograms with events passing final selection
-    std::string category;
-    if (ttH_like){ // Xanda: 2017 selection to normal categories - mind that the MET cut hemoval to tH_like interfere in the ttH_like events as wel
-    if ( selBJets_medium.size() >= 2 ) category += "_bt";
-    else category += "_bl";
-    if      ( sumLeptonCharge < 0 ) category += "_neg";
-    else if ( sumLeptonCharge > 0 ) category += "_pos";
+    std::string ctrl_category = "other";
+    if(isControlRegion)
+    {
+      const int nbjets_ctrl = std::min(static_cast<int>(selBJets_medium.size()), 2);
+      const int njets_ctrl = std::max(std::min(static_cast<int>(selJets.size()), std::min(nbjets_ctrl + 4, 5)), std::min(2, nbjets_ctrl + 1));
+      const int nele_ctrl = std::count_if(
+        selLeptons.cbegin(), selLeptons.cend(), [](const RecoLepton * const lepton) -> bool { return lepton->is_electron(); }
+      );
+      const int nmu_ctrl = std::count_if(
+        selLeptons.cbegin(), selLeptons.cend(), [](const RecoLepton * const lepton) -> bool { return lepton->is_muon(); }
+      );
+      assert((nele_ctrl + nmu_ctrl) == 3);
+      const std::string ele_ctrl_str(nele_ctrl, 'e');
+      const std::string mu_ctrl_str(nmu_ctrl, 'm');
+      ctrl_category = Form("b%d_j%d_%s%s", nbjets_ctrl, njets_ctrl, ele_ctrl_str.data(), mu_ctrl_str.data());
+      if(std::find(ctrl_categories.cbegin(), ctrl_categories.cend(), ctrl_category) == ctrl_categories.cend())
+      {
+        throw cmsException("analyze_3l", __LINE__) << "Unexpected CR category: " << ctrl_category;
+      }
     }
-
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
       const double evtWeight = evtWeightRecorder.get(central_or_shift);
@@ -1888,94 +1883,42 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         {
           selHistManager->evt_[kv.first]->fillHistograms(
             selElectrons.size(), selMuons.size(), selHadTaus.size(),
-	    selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-	    mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
-	    output_NN_3l_ttH_tH_3cat_v8,
-	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-	    kv.second
+            selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            ctrl_category,
+            mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
+            output_NN_3l_ttH_tH_3cat_v8, category,
+            memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
+            kv.second
           );
-        }
-        EvtHistManager_3l* selHistManager_evt_category = selHistManager->evt_in_categories_[category];
-        if ( selHistManager_evt_category ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-          selHistManager_evt_category->fillHistograms(
-            selElectrons.size(), selMuons.size(), selHadTaus.size(),
-	    selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-	    mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
-	    output_NN_3l_ttH_tH_3cat_v8,
-	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-	    evtWeight);
-        }
-        EvtHistManager_3l* selHistManager_evt_3l_ttH_tH_3cat_v8_TF = selHistManager->evt_in_categories_3l_ttH_tH_3cat_v8_TF_[category_3l_ttH_tH_3cat_v8_TF];
-        if ( selHistManager_evt_3l_ttH_tH_3cat_v8_TF ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-          selHistManager_evt_3l_ttH_tH_3cat_v8_TF->fillHistograms(
-            selElectrons.size(), selMuons.size(), selHadTaus.size(),
-	    selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-	    mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
-	    output_NN_3l_ttH_tH_3cat_v8,
-	    memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-	    evtWeight);
         }
 
         if(isSignal)
         {
-          const std::string decayModeStr = eventInfo.getDecayModeString();
-          if ( ( isMC_tH || isMC_VH ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
+          std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
+          if ( ( isMC_tH || isMC_H ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
           if(! decayModeStr.empty())
           {
             for(const auto & kv: tH_weight_map)
             {
               selHistManager -> evt_in_decayModes_[kv.first][decayModeStr] -> fillHistograms(
                 selElectrons.size(),
-		selMuons.size(),
-		selHadTaus.size(),
-		selJets.size(),
-		selBJets_loose.size(),
-		selBJets_medium.size(),
-		mvaOutput_3l_ttV,
-		mvaOutput_3l_ttbar,
-		mvaDiscr_3l,
-		output_NN_3l_ttH_tH_3cat_v8,
-		memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-		kv.second
+                selMuons.size(),
+                selHadTaus.size(),
+                selJets.size(),
+                selBJets_loose.size(),
+                selBJets_medium.size(),
+                ctrl_category,
+                mvaOutput_3l_ttV,
+                mvaOutput_3l_ttbar,
+                mvaDiscr_3l,
+                output_NN_3l_ttH_tH_3cat_v8,
+                category,
+                memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
+                kv.second
               );
             }
             std::string decayMode_and_genMatch = decayModeStr;
             if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
-            EvtHistManager_3l* selHistManager_evt_category_decMode = selHistManager->evt_in_categories_and_decayModes_[category][decayMode_and_genMatch];
-            if ( selHistManager_evt_category_decMode ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-              selHistManager_evt_category_decMode->fillHistograms(
-                selElectrons.size(),
-                selMuons.size(),
-                selHadTaus.size(),
-                selJets.size(),
-		selBJets_loose.size(),
-		selBJets_medium.size(),
-		mvaOutput_3l_ttV,
-		mvaOutput_3l_ttbar,
-		mvaDiscr_3l,
-		output_NN_3l_ttH_tH_3cat_v8,
-		memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-		evtWeight
-              );
-            }
-
-            EvtHistManager_3l* selHistManager_evt_3l_ttH_tH_3cat_v8_TF_and_decayModes_ = selHistManager->evt_in_categories_3l_ttH_tH_3cat_v8_TF_and_decayModes_[category_3l_ttH_tH_3cat_v8_TF][decayModeStr];
-            if ( selHistManager_evt_3l_ttH_tH_3cat_v8_TF_and_decayModes_ ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
-              selHistManager_evt_3l_ttH_tH_3cat_v8_TF_and_decayModes_->fillHistograms(
-                selElectrons.size(),
-		selMuons.size(),
-		selHadTaus.size(),
-		selJets.size(),
-		selBJets_loose.size(),
-		selBJets_medium.size(),
-		mvaOutput_3l_ttV,
-		mvaOutput_3l_ttbar,
-		mvaDiscr_3l,
-		output_NN_3l_ttH_tH_3cat_v8,
-		memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-		evtWeight
-	      );
-            }
           }
         }
         if(! skipFilling)
@@ -2009,7 +1952,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
 
     bool isGenMatched = false;
-    if ( isMC ) 
+    if ( isMC )
     {
       for (const GenMatchEntry* genMatch : genMatches)
       {
@@ -2263,7 +2206,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     selectedEntries_weighted += evtWeightRecorder.get(central_or_shift_main);
     std::string process_and_genMatch = process_string;
     process_and_genMatch += selLepton_genMatch.name_;
-    ++selectedEntries_byGenMatchType[process_and_genMatch]; 
+    ++selectedEntries_byGenMatchType[process_and_genMatch];
     selectedEntries_weighted_byGenMatchType[process_and_genMatch] += evtWeightRecorder.get(central_or_shift_main);
     histogram_selectedEntries->Fill(0.);
   }
