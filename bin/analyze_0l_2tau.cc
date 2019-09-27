@@ -1648,7 +1648,10 @@ int main(int argc, char* argv[])
 
         for(const auto & kv: tH_weight_map)
         {
-          selHistManager->evt_[kv.first]->fillHistograms(
+          EvtHistManager_0l_2tau* selHistManager_evt = selHistManager->evt_[kv.first];
+          if ( selHistManager_evt )
+          {
+            selHistManager_evt->fillHistograms(
             preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
@@ -1656,6 +1659,7 @@ int main(int argc, char* argv[])
             mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
             pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, kv.second
           );
+          }
         }
         if ( isSignal ) {
           std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
