@@ -26,6 +26,10 @@ public:
   virtual void
   bookHistograms(TFileDirectory & dir) = 0;
 
+  /// manually write histograms to output file (usually not necessary, as histogram writing is done automatically when output file gets closed)
+  static void
+  writeHistograms();
+
 protected:
   TH1 *
   book1D(TFileDirectory & dir,
@@ -134,6 +138,9 @@ protected:
 
   std::vector<TH1 *> histograms_;
   std::vector<TH2 *> histograms_2d_;
+
+  // global list of all histograms (1d and 2d) booked by analysis job 
+  static std::map<TDirectory *, std::vector<TH1 *>> gHistograms_;
 };
 
 edm::ParameterSet
