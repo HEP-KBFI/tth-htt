@@ -2466,8 +2466,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
 //--- manually write histograms to output file
   fs.file().cd();
-  histogram_analyzedEntries->Write();
-  histogram_selectedEntries->Write();
+  //histogram_analyzedEntries->Write();
+  //histogram_selectedEntries->Write();
   HistManagerBase::writeHistograms();
 
 //--- memory clean-up
