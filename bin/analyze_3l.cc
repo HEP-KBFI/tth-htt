@@ -1881,7 +1881,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         }
         for(const auto & kv: tH_weight_map)
         {
-          selHistManager->evt_[kv.first]->fillHistograms(
+          EvtHistManager_3l* selHistManager_evt = selHistManager->evt_[kv.first];
+          if ( selHistManager_evt )
+          {
+            selHistManager_evt->fillHistograms(
             selElectrons.size(), selMuons.size(), selHadTaus.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             ctrl_category,
@@ -1890,6 +1893,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
             memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
             kv.second
           );
+          }
         }
 
         if(isSignal)
@@ -1900,7 +1904,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           {
             for(const auto & kv: tH_weight_map)
             {
-              selHistManager -> evt_in_decayModes_[kv.first][decayModeStr] -> fillHistograms(
+              EvtHistManager_3l* selHistManager_evt_decay = selHistManager->evt_in_decayModes_[kv.first][decayModeStr];
+              if ( selHistManager_evt_decay )
+              {
+                selHistManager_evt_decay -> fillHistograms(
                 selElectrons.size(),
                 selMuons.size(),
                 selHadTaus.size(),
@@ -1916,6 +1923,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
                 memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
                 kv.second
               );
+              }
             }
             std::string decayMode_and_genMatch = decayModeStr;
             if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;

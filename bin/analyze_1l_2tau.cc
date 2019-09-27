@@ -1742,7 +1742,10 @@ int main(int argc, char* argv[])
         }
         for(const auto & kv: tH_weight_map)
         {
-          selHistManager->evt_[kv.first]->fillHistograms(
+          EvtHistManager_1l_2tau* selHistManager_evt = selHistManager->evt_[kv.first];
+          if ( selHistManager_evt )
+          {
+            selHistManager_evt->fillHistograms(
             selElectrons.size(),
             selMuons.size(),
             selHadTaus.size(),
@@ -1752,6 +1755,7 @@ int main(int argc, char* argv[])
             mvaOutput_HTT_SUM_VT,
             mTauTauVis,
             kv.second);
+          }
         }
         if(isSignal)
         {
@@ -1760,7 +1764,10 @@ int main(int argc, char* argv[])
           if ( !decayModeStr.empty() ) {
             for(const auto & kv: tH_weight_map)
             {
-              selHistManager->evt_in_decayModes_[kv.first][decayModeStr]->fillHistograms(
+              EvtHistManager_1l_2tau* selHistManager_evt_decay = selHistManager->evt_in_decayModes_[kv.first][decayModeStr];
+              if ( selHistManager_evt_decay )
+              {
+                selHistManager_evt_decay->fillHistograms(
                 selElectrons.size(),
                 selMuons.size(),
                 selHadTaus.size(),
@@ -1771,6 +1778,7 @@ int main(int argc, char* argv[])
                 mTauTauVis,
                 kv.second
               );
+              }
             }
           }
         }
