@@ -13,6 +13,7 @@
 #include <TError.h> // gErrorAbortLevel, kError
 #include <TMath.h> // TMath::
 #include <TH2.h> // TH2
+#include <TROOT.h> // TROOT
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -135,6 +136,9 @@ int main(int argc, char* argv[])
 {
 //--- throw an exception in case ROOT encounters an error
   gErrorAbortLevel = kError;
+
+//--- stop ROOT from keeping track of all histograms
+  TH1::AddDirectory(false);
 
 //--- parse command-line arguments
   if ( argc < 2 ) {
@@ -2463,6 +2467,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   }
   std::cout << std::endl;
 
+//--- manually write histograms to output file
+  fs.file().cd();
+  //histogram_analyzedEntries->Write();
+  //histogram_selectedEntries->Write();
+  HistManagerBase::writeHistograms();
+
+//--- memory clean-up
   delete dataToMCcorrectionInterface;
 
   delete leptonFakeRateInterface;

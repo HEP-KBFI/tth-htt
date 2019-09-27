@@ -13,6 +13,7 @@
 #include <TRandom3.h> // TRandom3
 #include <TH2.h> // TH2
 #include <TLorentzVector.h> // TLorentzVector
+#include <TROOT.h> // TROOT
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -163,6 +164,9 @@ int main(int argc, char* argv[])
 {
 //--- throw an exception in case ROOT encounters an error
   gErrorAbortLevel = kError;
+
+//--- stop ROOT from keeping track of all histograms
+  TH1::AddDirectory(false);
 
 //--- parse command-line arguments
   if ( argc < 2 ) {
@@ -2259,6 +2263,13 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
 
   std::cout << "countFat " << countFatTop << " " << countFatTopEntries << " " << countFatTopTruth << std::endl;
 
+//--- manually write histograms to output file
+  fs.file().cd();
+  //histogram_analyzedEntries->Write();
+  //histogram_selectedEntries->Write();
+  HistManagerBase::writeHistograms();
+
+//--- memory clean-up
   delete dataToMCcorrectionInterface;
   delete dataToMCcorrectionInterface_1l_1tau_trigger;
 
