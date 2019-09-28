@@ -98,6 +98,8 @@ else:
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 elif mode == "addMEM":
+  if not use_preselected:
+    raise ValueError("MEM branches can be read only from preselected Ntuples")
   samples = load_samples(era, suffix = "addMEM_2lss1tau")
   MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
 elif mode == "forBDTtraining_beforeAddMEM":
@@ -116,7 +118,10 @@ elif mode == "forBDTtraining_afterAddMEM":
   hadTau_selection_relaxed = tau_id + hadTauWP_map[tau_id]
   MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_{}'.format(hadTau_selection_relaxed)
 elif mode == "sync_wMEM":
+  if not use_preselected:
+    raise ValueError("MEM branches can be read only from preselected Ntuples")
   samples = load_samples(era, suffix = "addMEM_2lss1tau_sync" if use_nonnominal else "addMEM_2lss1tau_sync_nom")
+  MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
 elif mode == "sync":
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:
@@ -139,6 +144,8 @@ if __name__ == '__main__':
   if args.tau_id_wp:
     logging.info("Changing tau ID working point: %s -> %s" % (hadTau_selection, args.tau_id_wp))
     hadTau_selection = args.tau_id_wp
+    if MEMbranch:
+      MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
 
   configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version)
   outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version)
