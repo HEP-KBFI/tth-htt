@@ -435,12 +435,24 @@ int main(int argc,
       for(std::size_t selLepton_lead_idx = 0; selLepton_lead_idx < selLeptons.size(); ++selLepton_lead_idx)
       {
         const RecoLepton * selLepton_lead = selLeptons[selLepton_lead_idx];
+        if(isDEBUG)
+        {
+          std::cout << "selLepton_lead: " << *selLepton_lead << '\n';
+        }
         for(std::size_t selLepton_sublead_idx = selLepton_lead_idx + 1; selLepton_sublead_idx < selLeptons.size(); ++selLepton_sublead_idx)
         {
           const RecoLepton * selLepton_sublead = selLeptons[selLepton_sublead_idx];
+          if(isDEBUG)
+          {
+            std::cout << "selLepton_sublead: " << *selLepton_sublead << '\n';
+          }
           for(std::size_t selLepton_third_idx = selLepton_sublead_idx + 1; selLepton_third_idx < selLeptons.size(); ++selLepton_third_idx)
           {
             const RecoLepton * selLepton_third = selLeptons[selLepton_third_idx];
+            if(isDEBUG)
+            {
+              std::cout << "selLepton_third: " << *selLepton_third<< '\n';
+            }
             for(const std::string & central_or_shift: central_or_shifts)
             {
               checkOptionValidity(central_or_shift, isMC);
@@ -448,9 +460,15 @@ int main(int argc,
               const int hadTauPt_option = getHadTauPt_option(central_or_shift);
               const int met_option      = getMET_option     (central_or_shift, isMC);
 
-              if(jetPt_option    == kJetMET_central      &&
-                 hadTauPt_option == kHadTauPt_central &&
-                 met_option      == kJetMET_central      &&
+              if((
+                   (
+                     jetPt_option    == kJetMET_central   &&
+                     hadTauPt_option == kHadTauPt_central &&
+                     met_option      == kJetMET_central   &&
+                     ! useNonNominal_jetmet
+                   ) ||
+                  useNonNominal_jetmet
+                 ) &&
                  central_or_shift != "central")
               {
                 std::cout << "Skipping systematics: " << central_or_shift << '\n';
@@ -478,6 +496,10 @@ int main(int argc,
               const std::vector<RecoJet> jets_mem = jetReader->read();
               const std::vector<const RecoJet *> jet_ptrs_mem = convert_to_ptrs(jets_mem);
               const std::vector<const RecoJet *> selJets_mem  = jetSelector(jet_ptrs_mem);
+              if(isDEBUG)
+              {
+                printCollection("selJets_mem", selJets_mem);
+              }
 
               const RecoMEt met_mem = metReader->read();
 
@@ -485,12 +507,20 @@ int main(int argc,
 
               for (const RecoHadTau * selHadTau: selHadTaus_mem)
               {
+                if(isDEBUG)
+                {
+                  std::cout << "selHadTau: " << *selHadTau << '\n';
+                }
                 const std::vector<const RecoLepton*> selLeptons_forCleaning = { selLepton_lead, selLepton_sublead, selLepton_third };
                 const std::vector<const RecoHadTau *> selHadTaus_forCleaning = { selHadTau };
                 const std::vector<const RecoJet *> selJets_mem_cleaned = jetCleaningByIndex ?
                   jetCleanerByIndex(selJets_mem, selLeptons_forCleaning, selHadTaus_forCleaning) :
                   jetCleaner       (selJets_mem, selLeptons_forCleaning, selHadTaus_forCleaning)
                 ;
+                if(isDEBUG)
+                {
+                  printCollection("selJets_mem_cleaned", selJets_mem_cleaned);
+                }
                 if(selJets_mem_cleaned.size() >= 2)
                 {
                   ++idxPermutation;
