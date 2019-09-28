@@ -123,8 +123,8 @@ run_wrapped_executable() {
     echo "Create final log directory: mkdir -p $EXECUTABLE_LOG_DIR"
     mkdir -p $EXECUTABLE_LOG_DIR
 
-    cd {{ working_dir }}
     cd $JOB_DIR
+    echo "Current directory: $PWD"
 
     echo "Time is: `date`"
 
