@@ -456,9 +456,9 @@ int main(int argc,
             for(const std::string & central_or_shift: central_or_shifts)
             {
               checkOptionValidity(central_or_shift, isMC);
-              const int jetPt_option    = getJet_option     (central_or_shift, isMC);
-              const int hadTauPt_option = getHadTauPt_option(central_or_shift);
-              const int met_option      = getMET_option     (central_or_shift, isMC);
+              const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option     (central_or_shift, isMC);
+              const int hadTauPt_option = useNonNominal_jetmet ? kJetMET_central_nonNominal : getHadTauPt_option(central_or_shift);
+              const int met_option      = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option     (central_or_shift, isMC);
 
               if((
                    (
