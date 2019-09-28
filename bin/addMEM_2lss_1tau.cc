@@ -204,7 +204,7 @@ int main(int argc,
   const RecoElectronCollectionSelectorTight    tightElectronSelector   (era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, isMC, readGenObjects);
-  hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_uncorrected);
+  hadTauReader->setHadTauPt_central_or_shift(useNonNominal_jetmet ? kHadTauPt_uncorrected : kHadTauPt_central);
   hadTauReader->setBranchAddresses(inputTree);
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
@@ -484,9 +484,13 @@ int main(int argc,
               std::cout << "Skipping systematics: " << central_or_shift << '\n';
               continue;
             }
-            if(isDEBUG)
+            else if(isDEBUG)
             {
-              std::cout << "Attempting to evaluate the MEM score for systematics: " << central_or_shift << '\n';
+              std::cout << "Attempting to evaluate the MEM score for systematics: " << central_or_shift << "\n"
+                        << "jetPt_option    = " << jetPt_option    << "\n"
+                        << "hadTauPt_option = " << hadTauPt_option << "\n"
+                        << "met_option      = " << met_option      << '\n'
+              ;
             }
 
             jetReader->setPtMass_central_or_shift(jetPt_option);

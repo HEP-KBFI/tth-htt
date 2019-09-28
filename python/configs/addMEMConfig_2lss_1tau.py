@@ -98,7 +98,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
     lines.append("process.addMEM_2lss_1tau.isDEBUG = cms.bool(%s)" % self.isDebug)
     lines.append("process.addMEM_2lss_1tau.central_or_shift = cms.vstring(%s)" % self.central_or_shift)
     lines.append("process.addMEM_2lss_1tau.dryRun = cms.bool(%s)" % self.dry_run)
-    lines.append("process.addMEM_2lss_1tau.use_nonnominal = cms.bool(%s)" % self.use_nonnominal)
+    lines.append("process.addMEM_2lss_1tau.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     lines.append("process.addMEM_2lss_1tau.jetCleaningByIndex = cms.bool(%s)" % self.jet_cleaning_by_index)
 
     create_cfg(self.cfgFile_addMEM_original, cfgFile_modified, lines)

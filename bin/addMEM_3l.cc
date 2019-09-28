@@ -421,6 +421,13 @@ int main(int argc,
                 std::cout << "Skipping systematics: " << central_or_shift << '\n';
                 continue;
               }
+              else if(isDEBUG)
+              {
+                std::cout << "Attempting to evaluate the MEM score for systematics: " << central_or_shift << "\n"
+                          << "jetPt_option    = " << jetPt_option    << "\n"
+                          << "met_option      = " << met_option      << '\n'
+                ;
+              }
 
               jetReader   ->setPtMass_central_or_shift  (jetPt_option);
               metReader   ->setMEt_central_or_shift     (met_option);
