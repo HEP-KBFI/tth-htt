@@ -125,6 +125,7 @@ run_wrapped_executable() {
 
     cd $JOB_DIR
     echo "Current directory: $PWD"
+    echo "Contents of current directory:"
     ls -l $PWD
 
     echo "Time is: `date`"
