@@ -11,6 +11,8 @@
 #include <TString.h> // TString, Form
 #include <TMatrixD.h> // TMatrixD
 #include <TError.h> // gErrorAbortLevel, kError
+#include <TROOT.h> // TROOT
+
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -159,6 +161,9 @@ int main(int argc, char* argv[])
 {
 //--- throw an exception in case ROOT encounters an error
   gErrorAbortLevel = kError;
+
+//--- stop ROOT from keeping track of all histograms
+  TH1::AddDirectory(false);
 
 //--- parse command-line arguments
   if ( argc < 2 ) {
@@ -2060,7 +2065,10 @@ int main(int argc, char* argv[])
 
         for(const auto & kv: tH_weight_map)
         {
-          selHistManager->evt_[kv.first]->fillHistograms(
+          EvtHistManager_2los_1tau* selHistManager_evt = selHistManager->evt_[kv.first];
+          if ( selHistManager_evt )
+          {
+            selHistManager_evt->fillHistograms(
             selElectrons.size(), selMuons.size(), selHadTaus.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2los_1tau_ttV, mvaOutput_2los_1tau_ttbar, mvaDiscr_2los_1tau,
@@ -2069,6 +2077,7 @@ int main(int argc, char* argv[])
             mvaOutput_XGB_Updated, mvaOutput_XGB_Boosted_AK8,
             kv.second
           );
+          }
         }
         if(isSignal)
         {
@@ -2078,7 +2087,10 @@ int main(int argc, char* argv[])
           {
             for(const auto & kv: tH_weight_map)
             {
-              selHistManager -> evt_in_decayModes_[kv.first][decayModeStr] -> fillHistograms(
+              EvtHistManager_2los_1tau* selHistManager_evt_decay = selHistManager -> evt_in_decayModes_[kv.first][decayModeStr];
+              if ( selHistManager_evt_decay )
+              {
+               selHistManager_evt_decay-> fillHistograms(
                 selElectrons.size(),
                 selMuons.size(),
                 selHadTaus.size(),
@@ -2097,6 +2109,7 @@ int main(int argc, char* argv[])
                 mvaOutput_XGB_Updated, mvaOutput_XGB_Boosted_AK8,
                 kv.second
               );
+              }
             }
           }
         }
@@ -2401,6 +2414,13 @@ int main(int argc, char* argv[])
   }
   std::cout << std::endl;
 
+//--- manually write histograms to output file
+  fs.file().cd();
+  //histogram_analyzedEntries->Write();
+  //histogram_selectedEntries->Write();
+  HistManagerBase::writeHistograms();
+
+//--- memory clean-up
   delete dataToMCcorrectionInterface;
 
   delete leptonFakeRateInterface;

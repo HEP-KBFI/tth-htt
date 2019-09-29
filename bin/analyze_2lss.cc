@@ -13,6 +13,7 @@
 #include <TError.h> // gErrorAbortLevel, kError
 #include <TMath.h> // TMath::
 #include <TH2.h> // TH2
+#include <TROOT.h> // TROOT
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -132,6 +133,9 @@ int main(int argc, char* argv[])
 {
 //--- throw an exception in case ROOT encounters an error
   gErrorAbortLevel = kError;
+
+//--- stop ROOT from keeping track of all histograms
+  TH1::AddDirectory(false);
 
 //--- parse command-line arguments
   if ( argc < 2 ) {
@@ -750,7 +754,7 @@ int main(int argc, char* argv[])
 	  }
 	}
       }
-      
+
       if(isSignal)
       {
         const vstring decayModes_evt = get_key_list_hist(eventInfo, isMC_HH, isMC_VH);
@@ -1632,7 +1636,7 @@ int main(int argc, char* argv[])
 
     std::vector<double> WeightBM; // weights to do histograms for BMs
     std::vector<double> Weight_ktScan; // weights to do histograms for BMs
-    double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code  
+    double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
     if(HHWeight_calc)
     {
       WeightBM = HHWeight_calc->getJHEPWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
@@ -1653,7 +1657,7 @@ int main(int argc, char* argv[])
 	std::cout << "\n";
       }
     }
-    
+
 //--- compute variables BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar -- they will be used more than once -- Xanda
     double mindr_lep1_jet=comp_mindr_lep1_jet(*selLepton_lead, selJets);
     double mindr_lep2_jet=comp_mindr_lep2_jet(*selLepton_sublead, selJets);
@@ -1914,7 +1918,10 @@ int main(int argc, char* argv[])
         }
         for(const auto & kv: tH_weight_map)
         {
-          selHistManager->evt_[kv.first]->fillHistograms(
+          EvtHistManager_2lss* selHistManager_evt = selHistManager->evt_[kv.first];
+          if ( selHistManager_evt )
+          {
+            selHistManager_evt->fillHistograms(
             selElectrons.size(),
             selMuons.size(),
             selHadTaus.size(),
@@ -1929,6 +1936,7 @@ int main(int argc, char* argv[])
             output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
             category_2lss_ttH_tH_4cat_onlyTHQ_v4
           );
+          }
         }
 
 	if(! Weight_ktScan.empty()  )
@@ -1938,21 +1946,25 @@ int main(int argc, char* argv[])
 	    for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
 	    {
 	      double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
-	      selHistManager->evt_scan_[kv.first][scanIdx] ->fillHistograms(
-	        selElectrons.size(),
-		selMuons.size(),
-	        selHadTaus.size(),
-		selJets.size(),
-		selBJets_loose.size(),
-		selBJets_medium.size(),
-		evtWeight0,
-		mvaOutput_2lss_ttV,
-		mvaOutput_2lss_ttbar,
-		mvaDiscr_2lss,
-		mvaOutput_Hj_tagger,
-		output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
-		category_2lss_ttH_tH_4cat_onlyTHQ_v4
+        EvtHistManager_2lss* selHistManager_evt_scan = selHistManager->evt_scan_[kv.first][scanIdx];
+        if ( selHistManager_evt_scan )
+        {
+	      selHistManager_evt_scan->fillHistograms(
+        selElectrons.size(),
+        selMuons.size(),
+        selHadTaus.size(),
+        selJets.size(),
+        selBJets_loose.size(),
+        selBJets_medium.size(),
+        evtWeight0,
+        mvaOutput_2lss_ttV,
+        mvaOutput_2lss_ttbar,
+        mvaDiscr_2lss,
+        mvaOutput_Hj_tagger,
+        output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
+        category_2lss_ttH_tH_4cat_onlyTHQ_v4
 	       );
+         }
 	    }
 	  }
 	}
@@ -1963,7 +1975,10 @@ int main(int argc, char* argv[])
           {
             for(const auto & kv: tH_weight_map)
             {
-              selHistManager->evt_in_decayModes_[kv.first][decayModeStr]->fillHistograms(
+              EvtHistManager_2lss* selHistManager_evt_decay = selHistManager->evt_in_decayModes_[kv.first][decayModeStr];
+              if ( selHistManager_evt_decay )
+              {
+                selHistManager_evt_decay->fillHistograms(
                 selElectrons.size(),
                 selMuons.size(),
                 selHadTaus.size(),
@@ -1978,6 +1993,7 @@ int main(int argc, char* argv[])
                 output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
                 category_2lss_ttH_tH_4cat_onlyTHQ_v4
               );
+              }
               std::string decayMode_and_genMatch = decayModeStr;
               if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
             }
@@ -1987,22 +2003,26 @@ int main(int argc, char* argv[])
               {
        	       for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
 	       {
-		 double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
-		 selHistManager->evt_in_decayModes_scan_[kv.first][decayModeStr][scanIdx]->fillHistograms(
-		   selElectrons.size(),
-		   selMuons.size(),
-		   selHadTaus.size(),
-		   selJets.size(),
-		   selBJets_loose.size(),
-		   selBJets_medium.size(),
-		   evtWeight0,
-		   mvaOutput_2lss_ttV,
-		   mvaOutput_2lss_ttbar,
-		   mvaDiscr_2lss,
-		   mvaOutput_Hj_tagger,
-		   output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
-		   category_2lss_ttH_tH_4cat_onlyTHQ_v4
-		 );
+    		 double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
+         EvtHistManager_2lss* selHistManager_evt_decay_scan = selHistManager->evt_in_decayModes_scan_[kv.first][decayModeStr][scanIdx];
+         if ( selHistManager_evt_decay_scan )
+         {
+    		  selHistManager_evt_decay_scan->fillHistograms(
+    		   selElectrons.size(),
+    		   selMuons.size(),
+    		   selHadTaus.size(),
+    		   selJets.size(),
+    		   selBJets_loose.size(),
+    		   selBJets_medium.size(),
+    		   evtWeight0,
+    		   mvaOutput_2lss_ttV,
+    		   mvaOutput_2lss_ttbar,
+    		   mvaDiscr_2lss,
+    		   mvaOutput_Hj_tagger,
+    		   output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
+    		   category_2lss_ttH_tH_4cat_onlyTHQ_v4
+    		 );
+         }
 	       }
 	      }
 	    }
@@ -2316,6 +2336,13 @@ int main(int argc, char* argv[])
   std::cout << std::endl;
   std::cout << "Sum of weights "<< evtWeightSum << std::endl;
 
+//--- manually write histograms to output file
+  fs.file().cd();
+  //histogram_analyzedEntries->Write();
+  //histogram_selectedEntries->Write();
+  HistManagerBase::writeHistograms();
+
+//--- memory clean-up
   delete dataToMCcorrectionInterface;
 
   delete leptonFakeRateInterface;

@@ -13,7 +13,8 @@
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
 #include <TError.h> // gErrorAbortLevel, kError
-#include <TH2F.h>
+#include <TH2F.h> // TH2
+#include <TROOT.h> // TROOT
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -146,6 +147,9 @@ int main(int argc, char* argv[])
 {
 //--- throw an exception in case ROOT encounters an error
   gErrorAbortLevel = kError;
+
+//--- stop ROOT from keeping track of all histograms
+  TH1::AddDirectory(false);
 
 //--- parse command-line arguments
   if ( argc < 2 ) {
@@ -1724,7 +1728,10 @@ int main(int argc, char* argv[])
 
         for(const auto & kv: tH_weight_map)
         {
-          selHistManager->evt_[kv.first]->fillHistograms(
+          EvtHistManager_0l_2tau* selHistManager_evt = selHistManager->evt_[kv.first];
+          if ( selHistManager_evt )
+          {
+            selHistManager_evt->fillHistograms(
             preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
@@ -1732,6 +1739,7 @@ int main(int argc, char* argv[])
             mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
             pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, kv.second
           );
+          }
         }
 
 	if(! Weight_ktScan.empty()  )
@@ -2117,6 +2125,13 @@ int main(int argc, char* argv[])
   }
   std::cout << std::endl;
 
+//--- manually write histograms to output file
+  fs.file().cd();
+  //histogram_analyzedEntries->Write();
+  //histogram_selectedEntries->Write();
+  HistManagerBase::writeHistograms();
+
+//--- memory clean-up
   delete dataToMCcorrectionInterface;
 
   delete jetToTauFakeRateInterface;

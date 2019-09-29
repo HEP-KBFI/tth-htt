@@ -10,6 +10,7 @@
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
 #include <TError.h> // gErrorAbortLevel, kError
+#include <TROOT.h> // TROOT
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -126,6 +127,9 @@ int main(int argc, char* argv[])
 {
 //--- throw an exception in case ROOT encounters an error
   gErrorAbortLevel = kError;
+
+//--- stop ROOT from keeping track of all histograms
+  TH1::AddDirectory(false);
 
 //--- parse command-line arguments
   if ( argc < 2 ) {
@@ -1881,7 +1885,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         }
         for(const auto & kv: tH_weight_map)
         {
-          selHistManager->evt_[kv.first]->fillHistograms(
+          EvtHistManager_3l* selHistManager_evt = selHistManager->evt_[kv.first];
+          if ( selHistManager_evt )
+          {
+            selHistManager_evt->fillHistograms(
             selElectrons.size(), selMuons.size(), selHadTaus.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             ctrl_category,
@@ -1890,6 +1897,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
             memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
             kv.second
           );
+          }
         }
 
         if(isSignal)
@@ -1900,7 +1908,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           {
             for(const auto & kv: tH_weight_map)
             {
-              selHistManager -> evt_in_decayModes_[kv.first][decayModeStr] -> fillHistograms(
+              EvtHistManager_3l* selHistManager_evt_decay = selHistManager->evt_in_decayModes_[kv.first][decayModeStr];
+              if ( selHistManager_evt_decay )
+              {
+                selHistManager_evt_decay -> fillHistograms(
                 selElectrons.size(),
                 selMuons.size(),
                 selHadTaus.size(),
@@ -1916,6 +1927,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
                 memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
                 kv.second
               );
+              }
             }
             std::string decayMode_and_genMatch = decayModeStr;
             if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
@@ -2240,6 +2252,13 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   }
   std::cout << std::endl;
 
+//--- manually write histograms to output file
+  fs.file().cd();
+  //histogram_analyzedEntries->Write();
+  //histogram_selectedEntries->Write();
+  HistManagerBase::writeHistograms();
+
+//--- memory clean-up
   delete dataToMCcorrectionInterface;
 
   delete leptonFakeRateInterface;

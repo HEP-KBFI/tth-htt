@@ -12,6 +12,7 @@
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
 #include <TError.h> // gErrorAbortLevel, kError
+#include <TROOT.h> // TROOT
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
@@ -143,6 +144,9 @@ int main(int argc, char* argv[])
 {
 //--- throw an exception in case ROOT encounters an error
   gErrorAbortLevel = kError;
+
+//--- stop ROOT from keeping track of all histograms
+  TH1::AddDirectory(false);
 
 //--- parse command-line arguments
   if ( argc < 2 ) {
@@ -1694,7 +1698,10 @@ int main(int argc, char* argv[])
 
         for(const auto & kv: tH_weight_map)
         {
-          selHistManager->evt_[kv.first]->fillHistograms(
+          EvtHistManager_2l_2tau* selHistManager_evt = selHistManager->evt_[kv.first];
+          if ( selHistManager_evt )
+          {
+            selHistManager_evt->fillHistograms(
             selElectrons.size(), selMuons.size(), selHadTaus.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mTauTauVis,
@@ -1704,6 +1711,7 @@ int main(int argc, char* argv[])
             mvaOutput_plainKin_tt, mvaOutput_plainKin_ttV,
             mvaOutput_plainKin_SUM_VT, mvaOutput_plainKin_1B_VT
           );
+          }
         }
         if ( isSignal ) {
           std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
@@ -1712,7 +1720,10 @@ int main(int argc, char* argv[])
           {
             for(const auto & kv: tH_weight_map)
             {
-              selHistManager->evt_in_decayModes_[kv.first][decayModeStr]->fillHistograms(
+              EvtHistManager_2l_2tau* selHistManager_evt_decay = selHistManager->evt_in_decayModes_[kv.first][decayModeStr];
+              if ( selHistManager_evt_decay )
+              {
+              selHistManager_evt_decay->fillHistograms(
                 selElectrons.size(),
                 selMuons.size(),
                 selHadTaus.size(),
@@ -1726,6 +1737,7 @@ int main(int argc, char* argv[])
                 mvaOutput_plainKin_tt, mvaOutput_plainKin_ttV,
                 mvaOutput_plainKin_SUM_VT, mvaOutput_plainKin_1B_VT
               );
+              }
             }
           }
         }
@@ -2009,6 +2021,13 @@ int main(int argc, char* argv[])
   }
   std::cout << std::endl;
 
+//--- manually write histograms to output file
+  fs.file().cd();
+  //histogram_analyzedEntries->Write();
+  //histogram_selectedEntries->Write();
+  HistManagerBase::writeHistograms();
+
+//--- memory clean-up
   delete dataToMCcorrectionInterface;
 
   delete leptonFakeRateInterface;

@@ -144,6 +144,9 @@ run_wrapped_executable() {
     cd $JOB_DIR
 
     echo "Time is: `date`"
+    echo "Current directory: $PWD"
+    echo "Contents of current directory:"
+    ls -l $PWD
 
     CMSSW_SEARCH_PATH="$JOB_DIR:{{ cmssw_base_dir }}/src"
 

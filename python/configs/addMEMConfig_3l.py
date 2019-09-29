@@ -93,7 +93,7 @@ class addMEMConfig_3l(addMEMConfig):
     lines.append("process.addMEM_3l.isDEBUG = cms.bool(%s)" % self.isDebug)
     lines.append("process.addMEM_3l.central_or_shift = cms.vstring(%s)" % self.central_or_shift)
     lines.append("process.addMEM_3l.dryRun = cms.bool(%s)" % self.dry_run)
-    lines.append("process.addMEM_3l.use_nonnominal = cms.bool(%s)" % self.use_nonnominal)
+    lines.append("process.addMEM_3l.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     lines.append("process.addMEM_3l.jetCleaningByIndex = cms.bool(%s)" % self.jet_cleaning_by_index)
 
     create_cfg(self.cfgFile_addMEM_original, cfgFile_modified, lines)

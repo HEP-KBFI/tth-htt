@@ -5,11 +5,28 @@
 
 #include <TH2.h> // TH2D
 
+std::map<TDirectory *, std::vector<TH1 *>> HistManagerBase::gHistograms_;
+
 HistManagerBase::HistManagerBase(const edm::ParameterSet & cfg)
   : process_(cfg.getParameter<std::string>("process"))
   , category_(cfg.getParameter<std::string>("category"))
   , central_or_shift_(cfg.getParameter<std::string>("central_or_shift"))
 {}
+
+void
+HistManagerBase::writeHistograms()
+{
+  for ( std::map<TDirectory *, std::vector<TH1 *>>::iterator directory = gHistograms_.begin(); directory != gHistograms_.end(); ++directory )
+  {
+    assert(directory->first);
+    directory->first->cd();
+    for ( std::vector<TH1 *>::iterator histogram = directory->second.begin(); histogram != directory->second.end(); ++histogram ) 
+    {
+      assert(*histogram);
+      (*histogram)->Write();
+    }
+  }
+}
 
 TH1 *
 HistManagerBase::book1D(TFileDirectory & dir,
@@ -27,6 +44,7 @@ HistManagerBase::book1D(TFileDirectory & dir,
     retVal->Sumw2();
   }
   histograms_.push_back(retVal);
+  gHistograms_[subdir].push_back(retVal);
   return retVal;
 }
 
@@ -56,6 +74,7 @@ HistManagerBase::book1D(TFileDirectory & dir,
     retVal->Sumw2();
   }
   histograms_.push_back(retVal);
+  gHistograms_[subdir].push_back(retVal);
   return retVal;
 }
 
@@ -87,6 +106,7 @@ HistManagerBase::book1D(TFileDirectory & dir,
       retVal->Sumw2();
     }
     histograms_.push_back(retVal);
+    gHistograms_[subdir].push_back(retVal);
   }
   return retVal;
 }
@@ -123,6 +143,7 @@ HistManagerBase::book2D(TFileDirectory & dir,
       retVal->Sumw2();
     }
     histograms_2d_.push_back(retVal);
+    gHistograms_[subdir].push_back(retVal);
   }
   return retVal;
 }
@@ -161,6 +182,7 @@ HistManagerBase::book2D(TFileDirectory & dir,
       retVal->Sumw2();
     }
     histograms_2d_.push_back(retVal);
+    gHistograms_[subdir].push_back(retVal);
   }
   return retVal;
 }
@@ -197,6 +219,7 @@ HistManagerBase::book2D(TFileDirectory & dir,
       retVal->Sumw2();
     }
     histograms_2d_.push_back(retVal);
+    gHistograms_[subdir].push_back(retVal);
   }
   return retVal;
 }

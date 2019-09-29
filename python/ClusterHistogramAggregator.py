@@ -6,7 +6,7 @@ class ClusterHistogramAggregator:
         self,
         input_files = None,
         final_output_file = None,
-        max_input_files_per_job = 2,
+        max_input_files_per_job = 10,
         waitForJobs = True,
         sbatch_manager = None,
         auxDirName = None,
@@ -35,7 +35,7 @@ class ClusterHistogramAggregator:
         self,
         input_files = None,
         final_output_file = None,
-        max_input_files_per_job = 2,
+        max_input_files_per_job = 10,
         level = 0
     ):
 

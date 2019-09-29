@@ -61,6 +61,8 @@
 #include <TBenchmark.h> // TBenchmark
 #include <TH1.h> // TH1, TH1D
 #include <TMath.h> // TMath::Pi()
+#include <TROOT.h> // TROOT
+
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 #include <boost/algorithm/string/predicate.hpp> // boost::starts_with(), boost::ends_with()
@@ -438,6 +440,9 @@ main(int argc,
 {
 //--- throw an exception in case ROOT encounters an error
   gErrorAbortLevel = kError;
+
+//--- stop ROOT from keeping track of all histograms
+  TH1::AddDirectory(false);
 
 //--- parse command-line arguments
   if(argc < 2)
@@ -1735,7 +1740,7 @@ main(int argc,
     histogram_selectedEntries->Fill(0.);
   }
 
- std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
+  std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
             << " (limited by " << maxEvents << ") "
                "processed in " << inputTree -> getProcessedFileCount() << " file(s) "
                "(out of "      << inputTree -> getFileCount()          << ")\n"
@@ -1745,6 +1750,13 @@ main(int argc,
                "cut-flow table for electron events\n" << cutFlowTable_e  << "\n"
                "cut-flow table for muon events\n"     << cutFlowTable_mu << '\n';
 
+//--- manually write histograms to output file
+  fs.file().cd();
+  //histogram_analyzedEntries->Write();
+  //histogram_selectedEntries->Write();
+  HistManagerBase::writeHistograms();
+
+//--- memory clean-up
   delete muonReader;
   delete electronReader;
   delete jetReader;

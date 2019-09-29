@@ -242,7 +242,7 @@ def createScript_sbatch_hadd(
     pool_id                 = '',
     verbose                 = False,
     dry_run                 = False,
-    max_input_files_per_job = 5,
+    max_input_files_per_job = 10,
     use_home                = True,
     min_file_size           = 20000,
   ):
@@ -281,7 +281,7 @@ def generate_sbatch_lines_hadd(
     pool_id                 = '',
     verbose                 = False,
     dry_run                 = False,
-    max_input_files_per_job = 5,
+    max_input_files_per_job = 10,
     use_home                = True,
     min_file_size           = 20000,
   ):
