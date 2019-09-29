@@ -1748,7 +1748,7 @@ int main(int argc, char* argv[])
 	  {
 	    for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
 	    {
-	      double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
+	      double evtWeight0 = kv.second * Weight_ktScan[scanIdx] / HHWeight;
 	      selHistManager->evt_scan_[kv.first][scanIdx] ->fillHistograms(
 		preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
 		selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
@@ -1802,7 +1802,7 @@ int main(int argc, char* argv[])
 		{
 		  for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
 		    {
-		      double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
+		      double evtWeight0 = kv.second * Weight_ktScan[scanIdx] / HHWeight;
 		      selHistManager->evt_in_decayModes_scan_[kv.first][decayModeStr][scanIdx]->fillHistograms(
                         preselElectrons.size(),
 		        preselMuons.size(),

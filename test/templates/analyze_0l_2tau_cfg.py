@@ -127,5 +127,5 @@ process.analyze_0l_2tau = cms.PSet(
         isDEBUG          = cms.bool(False),
         do_scan          = cms.bool(True),
         do_ktscan        = cms.bool(False),
-),
+     ),
 )

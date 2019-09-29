@@ -224,11 +224,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       jobOptions['hadTauFakeRateWeight.applyFitFunction_lead'] = True # data-to-MC SF for the leading tau
       jobOptions['hadTauFakeRateWeight.applyFitFunction_sublead'] = True
       jobOptions['apply_hadTauFakeRateSF'] = True
-    if sample_info["sample_category"] == "HH":
-      assert('sample_category_hh' in sample_info)
-      jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/bbww/data/denom_{}.root'.format(self.era,) if sample_info["sample_category_hh"].find("2b") !=-1 else 'hhAnalysis/multilepton/data/denom_{}.root'.format(self.era,)
-      jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
-      jobOptions['hhWeight_cfg.do_ktscan'] = True
 
     lines = super(analyzeConfig_0l_2tau, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)

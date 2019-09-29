@@ -546,6 +546,12 @@ class analyzeConfig(object):
            sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and \
            sample_info['nof_reweighting'] > 0
 
+        if sample_info["sample_category"] == "HH": 
+          assert('sample_category_hh' in sample_info)
+          jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/bbww/data/denom_{}.root'.format(self.era,) if sample_info["sample_category_hh"].find("2b") !=-1 else 'hhAnalysis/multilepton/data/denom_{}.root'.format(self.era,)
+          jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
+          jobOptions['hhWeight_cfg.do_ktscan'] = True
+
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
         if 'isMC' not in jobOptions:

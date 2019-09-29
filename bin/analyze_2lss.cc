@@ -1944,26 +1944,26 @@ int main(int argc, char* argv[])
 	  {
 	    for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
 	    {
-	      double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
-        EvtHistManager_2lss* selHistManager_evt_scan = selHistManager->evt_scan_[kv.first][scanIdx];
-        if ( selHistManager_evt_scan )
-        {
-	      selHistManager_evt_scan->fillHistograms(
-        selElectrons.size(),
-        selMuons.size(),
-        selHadTaus.size(),
-        selJets.size(),
-        selBJets_loose.size(),
-        selBJets_medium.size(),
-        evtWeight0,
-        mvaOutput_2lss_ttV,
-        mvaOutput_2lss_ttbar,
-        mvaDiscr_2lss,
-        mvaOutput_Hj_tagger,
-        output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
-        category_2lss_ttH_tH_4cat_onlyTHQ_v4
-	       );
-         }
+	      double evtWeight0 = kv.second * Weight_ktScan[scanIdx] / HHWeight;
+	      EvtHistManager_2lss* selHistManager_evt_scan = selHistManager->evt_scan_[kv.first][scanIdx];
+	      if ( selHistManager_evt_scan )
+	      {
+		selHistManager_evt_scan->fillHistograms(
+		  selElectrons.size(),
+		  selMuons.size(),
+		  selHadTaus.size(),
+		  selJets.size(),
+		  selBJets_loose.size(),
+		  selBJets_medium.size(),
+		  evtWeight0,
+		  mvaOutput_2lss_ttV,
+		  mvaOutput_2lss_ttbar,
+		  mvaDiscr_2lss,
+		  mvaOutput_Hj_tagger,
+		  output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
+		  category_2lss_ttH_tH_4cat_onlyTHQ_v4
+	         );
+	      }
 	    }
 	  }
 	}
@@ -2002,10 +2002,10 @@ int main(int argc, char* argv[])
               {
        	       for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
 	       {
-    		 double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
-         EvtHistManager_2lss* selHistManager_evt_decay_scan = selHistManager->evt_in_decayModes_scan_[kv.first][decayModeStr][scanIdx];
-         if ( selHistManager_evt_decay_scan )
-         {
+    		 double evtWeight0 = kv.second * Weight_ktScan[scanIdx] / HHWeight;
+		 EvtHistManager_2lss* selHistManager_evt_decay_scan = selHistManager->evt_in_decayModes_scan_[kv.first][decayModeStr][scanIdx];
+		 if ( selHistManager_evt_decay_scan )
+		 {
     		  selHistManager_evt_decay_scan->fillHistograms(
     		   selElectrons.size(),
     		   selMuons.size(),
@@ -2020,8 +2020,8 @@ int main(int argc, char* argv[])
     		   mvaOutput_Hj_tagger,
     		   output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
     		   category_2lss_ttH_tH_4cat_onlyTHQ_v4
-    		 );
-         }
+    	          );
+		 }
 	       }
 	      }
 	    }
