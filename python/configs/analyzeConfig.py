@@ -934,10 +934,11 @@ class analyzeConfig(object):
         lines.append("        sideband = cms.string('%s')" % jobOptions['category_sideband'])
         lines.append("    )")
         lines.append(")")
+        nonfake_backgrounds = [ category for category in self.nonfake_backgrounds if category not in [ "WH", "ZH" ] ]
         processesToSubtract = []
-        processesToSubtract.extend(self.nonfake_backgrounds)
+        processesToSubtract.extend(nonfake_backgrounds)
         if '0l' not in self.channel:
-            processesToSubtract.extend([ "%s_Convs" % nonfake_background for nonfake_background in self.nonfake_backgrounds])
+            processesToSubtract.extend([ "%s_Convs" % nonfake_background for nonfake_background in nonfake_backgrounds])
         lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
