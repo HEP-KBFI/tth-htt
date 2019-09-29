@@ -16,7 +16,8 @@ class RecoJet;
 class MEMInterface_3l
 {
 public:
-  MEMInterface_3l(const std::string & configFileName);
+  MEMInterface_3l(const std::string & configFileName,
+                  int era);
   ~MEMInterface_3l();
 
   /**

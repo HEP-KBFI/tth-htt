@@ -280,7 +280,7 @@ int main(int argc,
   }
 
   LocalFileInPath memConfigFileName("tthAnalysis/HiggsToTauTau/data/addMEM_3l.cfg");
-  MEMInterface_3l memInterface_3l(memConfigFileName.fullPath());
+  MEMInterface_3l memInterface_3l(memConfigFileName.fullPath(), era);
 
   const int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
