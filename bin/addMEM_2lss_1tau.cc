@@ -209,9 +209,11 @@ int main(int argc,
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
   RecoHadTauCollectionSelectorTight    tightHadTauSelector   (era);
+  fakeableHadTauSelector.disable_deeptau_lepton();
   fakeableHadTauSelector.set_if_looser(hadTauSelection_part2);
   fakeableHadTauSelector.set_min_antiElectron(-1);
   fakeableHadTauSelector.set_min_antiMuon(-1);
+  tightHadTauSelector.disable_deeptau_lepton();
   tightHadTauSelector.set(hadTauSelection_part2);
   tightHadTauSelector.set_min_antiElectron(-1);
   tightHadTauSelector.set_min_antiMuon(-1);
@@ -371,8 +373,8 @@ int main(int argc,
     const std::vector<const RecoMuon *> muon_ptrs = convert_to_ptrs(muons);
     // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     const std::vector<const RecoMuon *> cleanedMuons  = muon_ptrs;
-    const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector  (cleanedMuons, isHigherConePt);
-    const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons, isHigherConePt);
+    const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector  (cleanedMuons,  isHigherConePt);
+    const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons,   isHigherConePt);
     const std::vector<const RecoMuon *> tightMuons    = tightMuonSelector   (fakeableMuons, isHigherConePt);
     const std::vector<const RecoMuon *> selMuons      = selectObjects(
       leptonSelection, preselMuons, fakeableMuons, tightMuons
@@ -385,10 +387,11 @@ int main(int argc,
     const std::vector<RecoElectron> electrons = electronReader->read();
     const std::vector<const RecoElectron *> electron_ptrs     = convert_to_ptrs(electrons);
     const std::vector<const RecoElectron *> cleanedElectrons  = electronCleaner(electron_ptrs, preselMuons);
-    const std::vector<const RecoElectron *> preselElectrons   = preselElectronSelector(cleanedElectrons, isHigherConePt);
-    const std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons, isHigherConePt);
-    const std::vector<const RecoElectron *> tightElectrons    = tightElectronSelector(fakeableElectrons, isHigherConePt);
-    const std::vector<const RecoElectron *> selElectrons      = selectObjects(
+    const std::vector<const RecoElectron *> preselElectronsUncleaned = preselElectronSelector  (electron_ptrs,     isHigherConePt);
+    const std::vector<const RecoElectron *> preselElectrons          = preselElectronSelector  (cleanedElectrons,  isHigherConePt);
+    const std::vector<const RecoElectron *> fakeableElectrons        = fakeableElectronSelector(preselElectrons,   isHigherConePt);
+    const std::vector<const RecoElectron *> tightElectrons           = tightElectronSelector   (fakeableElectrons, isHigherConePt);
+    const std::vector<const RecoElectron *> selElectrons             = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
     );
     if(isDEBUG)
@@ -429,7 +432,7 @@ int main(int argc,
     {
       eventInfoWriter->write(eventInfo);
       muonWriter->write(preselMuons);
-      electronWriter->write(preselElectrons);
+      electronWriter->write(preselElectronsUncleaned);
       hadTauWriter->write(fakeableHadTaus); // save central
       jetWriter->write(jet_ptrs); // save central
       metWriter->write(met); // save central
