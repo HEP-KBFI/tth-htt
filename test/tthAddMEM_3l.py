@@ -96,7 +96,7 @@ if __name__ == '__main__':
     check_output_files       = check_output_files,
     running_method           = running_method,
     max_files_per_job        = 1, # so that we'd have 1-1 correspondence b/w input and output files
-    mem_integrations_per_job = 50 if mode != 'sync' else 5,
+    mem_integrations_per_job = 50 if mode != 'sync' else 10,
     max_mem_integrations     = max_mem_integrations, # use -1 if you don't want to limit the nof MEM integrations
     num_parallel_jobs        = num_parallel_jobs,
     leptonSelection          = leptonSelection,
