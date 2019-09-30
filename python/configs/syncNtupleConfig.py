@@ -155,7 +155,7 @@ class syncNtupleConfig:
       cmd_args = common_args if 'inclusive' not in channel else inclusive_args
       if 'inclusive' not in channel:
         cmd_args += " -p %s" % use_preselected
-      cmd_args += ' -m %s' % ('sync_wMEM' if with_mem and channel in mem_channels else 'sync')
+        cmd_args += ' -m %s' % ('sync_wMEM' if with_mem and channel in mem_channels else 'sync')
       cmd_args += channels_extended[channel]
 
       channel_cmd_create = '%s %s 2>%s 1>%s' % \
