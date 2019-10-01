@@ -2160,7 +2160,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         // mT_met_lep4 not filled
 
         snm->read(mTauTauVis,                             FloatVariableType::mTauTauVis);
-        snm->read(mTauTauVis,                             FloatVariableType::mvis_l1tau);
+        snm->read(mTauTau,                                FloatVariableType::mTauTau);
         // mvis_l2tau not filled
 
         snm->read(mbb,                                    FloatVariableType::mbb);
