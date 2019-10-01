@@ -513,27 +513,15 @@ class analyzeConfig_1l_1tau(analyzeConfig):
 
           for category in self.categories:
             ## doing list of processes to make the hadd in _Convs and _fake
-            ## we could remove the tH ones with althernative couplings
             processes_input_base = []
             sample_categories = []
             sample_categories.extend(self.nonfake_backgrounds)
             sample_categories.extend(self.ttHProcs)
             for sample_category in sample_categories:
-                if sample_category == "signal" :  sample_category = "ttH"
+                if sample_category == "signal" :  continue
                 if sample_category == "signal_ctcvcp" : continue
                 if sample_category == "WH" or sample_category == "ZH" :  continue # in fakes we do not care about separation
-                decays = [""]
-                couplings = [""]
-                for decayMode in decays :
-                  for coupling in couplings :
-                    if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
-                    if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
-                    if coupling == "" and decayMode == "" :
-                      processes_input_base.append("%s" % sample_category)
-                    elif coupling == "" :
-                      processes_input_base.append("%s_%s" % (sample_category, decayMode))
-                    else:
-                      processes_input_base.append("%s_%s_%s" % (sample_category, coupling, decayMode))
+                processes_input_base.append("%s" % sample_category)
 
             # sum fake background contributions for the total of all MC sample
             # input processes: TT_fake, TTW_fake, TTWW_fake, ...
@@ -569,7 +557,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
             sample_categories.extend(self.signalProcs)
             processes_input = []
             for process_input_base in processes_input_base :
-              processes_input.append("%s_flips" % processes_input_base)
+              processes_input.append("%s_flips" % process_input_base)
             self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_flips] = {
               'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
               'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_%s_%s_cfg.py" % addBackgrounds_job_flips_tuple),
@@ -591,7 +579,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
             sample_categories.extend(self.signalProcs)
             processes_input = []
             for process_input_base in processes_input_base :
-              processes_input.append("%s_Convs" % processes_input_base)
+              processes_input.append("%s_Convs" % process_input_base)
             self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_Convs] = {
               'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
               'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_%s_%s_cfg.py" % addBackgrounds_job_Convs_tuple),
