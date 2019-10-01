@@ -1,25 +1,14 @@
 #!/usr/bin/env python
 
-import os
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 import collections
-import logging
-import sys
 import re
 import argparse
-import ROOT
 import array
-
-logging.basicConfig(
-  stream = sys.stdout,
-  level  = logging.INFO,
-  format = '%(asctime)s - %(levelname)s: %(message)s',
-)
-
-class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
-  def _split_lines(self, text, width):
-    if text.startswith('R|'):
-      return text[2:].splitlines()
-    return argparse.ArgumentDefaultsHelpFormatter._split_lines(self, text, width)
+import os.path
 
 OUTPUT_RLE = 'output_rle'
 REGEX_RLE = re.compile('^(\d+):(\d+):(\d+)$')
@@ -33,11 +22,12 @@ def get_input_paths(input_path_candidates):
     input_path = input_path_candidate
     if input_path_candidate.rstrip(os.path.sep).split(os.path.sep)[-1] != OUTPUT_RLE:
       input_path = os.path.join(input_path_candidate, OUTPUT_RLE)
-    if not os.path.isdir(input_path):
+    if not hdfs.isdir(input_path):
       raise ValueError("No such directory: %s" % input_path)
     input_paths.append(input_path)
-    input_path_channels = os.listdir(input_path)
-    for channel in input_path_channels:
+    input_path_channels = hdfs.listdir(input_path)
+    for input_path_subdir in input_path_channels:
+      channel = os.path.basename(input_path_subdir)
       if channel in channels:
         raise RuntimeError("Channel %s found in two areas: %s and %s" % (channel, input_path, channels[channel]))
       channels[channel] = input_path
@@ -46,21 +36,22 @@ def get_input_paths(input_path_candidates):
 def get_rles(input_paths):
   rles = collections.OrderedDict()
   for input_path in input_paths:
-    for channel_name in sorted(os.listdir(input_path)):
+    for channel_dir in sorted(hdfs.listdir(input_path)):
+      channel_name = os.path.basename(channel_dir)
       logging.debug('Found channel: {}'.format(channel_name))
-      channel_dir = os.path.join(input_path, channel_name)
       rles[channel_name] = collections.OrderedDict()
-      for region_name in sorted(os.listdir(channel_dir)):
+      for region_dir in sorted(hdfs.listdir(channel_dir)):
+        region_name = os.path.basename(region_dir)
         logging.debug('Found region {} in channel {}'.format(channel_name, region_name))
         rles[channel_name][region_name] = collections.OrderedDict()
-        region_dir = os.path.join(channel_dir, region_name)
-        for sample_name in sorted(os.listdir(region_dir)):
+        for sample_dir in sorted(hdfs.listdir(region_dir)):
+          sample_name = os.path.basename(sample_dir)
           if sample_name in SAMPLES_EXCLUDE:
             continue
           logging.debug('Found sample {} in region {} and channel {}'.format(sample_name, region_name, channel_name))
           rles[channel_name][region_name][sample_name] = collections.OrderedDict()
-          sample_dir = os.path.join(region_dir, sample_name)
-          for central_or_shift in sorted(os.listdir(sample_dir)):
+          for rle_dir in sorted(hdfs.listdir(sample_dir)):
+            central_or_shift = os.path.basename(rle_dir)
             if central_or_shift in SYSTEMATICS_EXCLUDE:
               continue
             logging.debug(
@@ -69,13 +60,11 @@ def get_rles(input_paths):
               )
             )
             rles[channel_name][region_name][sample_name][central_or_shift] = []
-            rle_dir = os.path.join(sample_dir, central_or_shift)
-            rle_basenames = sorted(os.listdir(rle_dir))
-            if not rle_basenames:
+            rle_filenames = sorted(hdfs.listdir(rle_dir))
+            if not rle_filenames:
               logging.warning('Directory {} is empty'.format(rle_dir))
               continue
-            for rle_basename in rle_basenames:
-              rle_filename = os.path.join(rle_dir, rle_basename)
+            for rle_filename in rle_filenames:
               if not rle_filename.endswith('.txt'):
                 raise RuntimeError("Unexpected extension in file: %s" % rle_filename)
               rle_arr = []
@@ -143,6 +132,7 @@ def build_rle_file(rles, output):
         tree.Fill()
       output_file.Write()
     logging.info('Found a total of {} events in channel {}'.format(event_count, channel))
+    logging.info('Wrote file {}'.format(output))
 
 def validate_data(rles):
   has_errors = False
@@ -238,6 +228,8 @@ def validate_channels(rles):
           )
         )
         has_errors = True
+  if not has_errors:
+    logging.info("No overlaps found between the signal regions of channels: {}".format(', '.join(rles.keys())))
   return has_errors
 
 if __name__ == '__main__':
@@ -263,9 +255,12 @@ if __name__ == '__main__':
   input_paths = get_input_paths(args.input)
   rles = get_rles(input_paths)
 
-  validate_data(rles)
-  validate_regions(rles)
-  validate_channels(rles)
+  data_errors = validate_data(rles)
+  region_errors = validate_regions(rles)
+  channel_errors = validate_channels(rles)
 
   if args.output:
-    build_rle_file(rles, args.output)
+    if data_errors or region_errors or channel_errors:
+      logging.error('Did not pass validation -> will not create file {}'.format(args.output))
+    else:
+      build_rle_file(rles, args.output)
