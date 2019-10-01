@@ -64,18 +64,28 @@ def get_rles(input_paths):
             if not rle_filenames:
               logging.warning('Directory {} is empty'.format(rle_dir))
               continue
+            rle_arr = []
             for rle_filename in rle_filenames:
               if not rle_filename.endswith('.txt'):
                 raise RuntimeError("Unexpected extension in file: %s" % rle_filename)
-              rle_arr = []
               with open(rle_filename, 'r') as rle_file:
                 for line in rle_file:
                   line_stripped = line.rstrip('\n')
                   if not REGEX_RLE.match(line_stripped):
                     raise RuntimeError("Unexpected line found in %s: %s" % (rle_filename, line_stripped))
-                  rle_arr.append(line_stripped)
-              logging.debug('Found {} events in file {}'.format(len(rle_arr), rle_filename))
-              rles[channel_name][region_name][sample_name][central_or_shift].extend(rle_arr)
+                  rle = line_stripped
+                  if rle in rle_arr:
+                    raise ValueError(
+                      "Duplicate event %s found in channel %s, region %s, sample %s, systematics %s" % \
+                      (rle, channel_name, region_name, sample_name, central_or_shift)
+                    )
+                  rle_arr.append(rle)
+            logging.debug(
+              'Found {} events in sample {}, region {}, systematics {}, channel {}'.format(
+                len(rle_arr), sample_name, region_name, central_or_shift, channel_name
+              )
+            )
+            rles[channel_name][region_name][sample_name][central_or_shift].extend(rle_arr)
   return rles
 
 def build_rle_file(rles, output):
@@ -259,8 +269,8 @@ if __name__ == '__main__':
   region_errors = validate_regions(rles)
   channel_errors = validate_channels(rles)
 
+  if data_errors or region_errors or channel_errors:
+    raise RuntimeError('Did not pass validation')
+
   if args.output:
-    if data_errors or region_errors or channel_errors:
-      logging.error('Did not pass validation -> will not create file {}'.format(args.output))
-    else:
-      build_rle_file(rles, args.output)
+    build_rle_file(rles, args.output)
