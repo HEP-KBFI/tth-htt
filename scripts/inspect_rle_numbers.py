@@ -145,8 +145,10 @@ def build_rle_file(rles, output):
     logging.info('Found a total of {} events in channel {}'.format(event_count, channel))
 
 def validate_data(rles):
+  has_errors = False
   for channel in rles:
     validation_set = collections.OrderedDict()
+    has_errors_channel = False
     for region in rles[channel]:
       validation_set[region] = collections.OrderedDict()
       for sample_name in rles[channel][region]:
@@ -160,12 +162,83 @@ def validate_data(rles):
               validation_set[region][rle][sample_name].append(central_or_shift)
             else:
               if validation_set[region][rle]:
-                raise RuntimeError(
-                  "Found duplicates in channel %s and region %s for event %s: %s and %s" % \
-                  (channel, region, rle, sample_name, ', '.join(validation_set[region][rle].keys()))
+                logging.error(
+                  "Found duplicates in channel {} and region {} for event {}: samples {} and {}".format(
+                    channel, region, rle, sample_name, ', '.join(validation_set[region][rle].keys())
+                  )
                 )
+                has_errors_channel = True
               validation_set[region][rle][sample_name] = [ central_or_shift ]
-      logging.debug('No overlapping data events found in channel {}'.format(channel))
+      if not has_errors_channel:
+        logging.info('No overlapping data events found in channel {} and region {}'.format(channel, region))
+      has_errors = has_errors or has_errors_channel
+  return has_errors
+
+def validate_regions(rles):
+  has_errors = False
+  for channel in rles:
+    validation_set = collections.OrderedDict()
+    for region in rles[channel]:
+      if 'Fakeable_mcClosure' in region:
+        continue
+      for sample_name in rles[channel][region]:
+        if sample_name not in validation_set:
+          validation_set[sample_name] = collections.OrderedDict()
+        for central_or_shift in rles[channel][region][sample_name]:
+          for rle in rles[channel][region][sample_name][central_or_shift]:
+            if rle not in validation_set[sample_name]:
+              validation_set[sample_name][rle] = collections.OrderedDict()
+            if region not in validation_set[sample_name][rle]:
+              validation_set[sample_name][rle][region] = []
+            validation_set[sample_name][rle][region].append(central_or_shift)
+    for sample_name in validation_set:
+      has_errors_sample = False
+      for rle in validation_set[sample_name]:
+        if len(validation_set[sample_name][rle]) > 1:
+          logging.error(
+            "Found duplicates in channel {} and sample {} for event {}: regions {}".format(
+              channel, sample_name, rle, ', '.join(validation_set[sample_name][rle].keys())
+            )
+          )
+          has_errors_sample = True
+      if not has_errors_sample:
+        logging.info('No overlapping events found between regions for sample {} in channel {}'.format(sample_name, channel))
+      has_errors = has_errors or has_errors_sample
+  return has_errors
+
+def validate_channels(rles):
+  validation_set = collections.OrderedDict()
+  for channel in rles:
+    for region in rles[channel]:
+      if 'Tight' not in region:
+        continue
+      for sample_name in rles[channel][region]:
+        if sample_name not in validation_set:
+          validation_set[sample_name] = collections.OrderedDict()
+        for central_or_shift in rles[channel][region][sample_name]:
+          for rle in rles[channel][region][sample_name][central_or_shift]:
+            if rle not in validation_set[sample_name]:
+              validation_set[sample_name][rle] = collections.OrderedDict()
+            validation_set[sample_name][rle][channel] = { 'region' : region, 'central_or_shift' : central_or_shift }
+  has_errors = False
+  for sample_name in validation_set:
+    for rle in validation_set[sample_name]:
+      if len(validation_set[sample_name][rle]) > 1:
+        logging.error(
+          "Found the same event {} from sample {} in multiple channels: {}".format(
+            rle,
+            sample_name,
+            ', '.join([
+              '%s (region %s, systematics %s)' % (
+                channel,
+                validation_set[sample_name][rle][channel]['region'],
+                validation_set[sample_name][rle][channel]['central_or_shift']
+              ) for channel in validation_set[sample_name][rle]
+            ])
+          )
+        )
+        has_errors = True
+  return has_errors
 
 if __name__ == '__main__':
 
@@ -190,11 +263,9 @@ if __name__ == '__main__':
   input_paths = get_input_paths(args.input)
   rles = get_rles(input_paths)
 
+  validate_data(rles)
+  validate_regions(rles)
+  validate_channels(rles)
+
   if args.output:
     build_rle_file(rles, args.output)
-
-  # find inconsistencies between data datasets
-  validate_data(rles)
-
-  #TODO find inconsistencies between different regions in the same channel
-  #TODO find inconsistencies between different channels
