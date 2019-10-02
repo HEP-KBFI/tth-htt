@@ -1992,7 +1992,7 @@ int main(int argc, char* argv[])
                 mvaOutput_Hj_tagger,
                 output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
                 category_2lss_ttH_tH_4cat_onlyTHQ_v4
-              );
+               );
               }
               std::string decayMode_and_genMatch = decayModeStr;
               if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
@@ -2004,9 +2004,9 @@ int main(int argc, char* argv[])
        	       for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
 	       {
     		 double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
-         EvtHistManager_2lss* selHistManager_evt_decay_scan = selHistManager->evt_in_decayModes_scan_[kv.first][decayModeStr][scanIdx];
-         if ( selHistManager_evt_decay_scan )
-         {
+		 EvtHistManager_2lss* selHistManager_evt_decay_scan = selHistManager->evt_in_decayModes_scan_[kv.first][decayModeStr][scanIdx];
+		 if ( selHistManager_evt_decay_scan )
+		 {
     		  selHistManager_evt_decay_scan->fillHistograms(
     		   selElectrons.size(),
     		   selMuons.size(),
@@ -2022,7 +2022,7 @@ int main(int argc, char* argv[])
     		   output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
     		   category_2lss_ttH_tH_4cat_onlyTHQ_v4
     		 );
-         }
+		 }
 	       }
 	      }
 	    }
