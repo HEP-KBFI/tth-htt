@@ -461,7 +461,10 @@ class _hdfs:
       nof_entries = ctypes.c_int()
       dir_ptr = self.lib.hdfsListDirectory(self.fs, path_obj.url, ctypes.byref(nof_entries))
       if not dir_ptr:
-        raise NoSuchPathException(path)
+        if self.isdir(path):
+          return []
+        else:
+          raise NoSuchPathException(path)
 
       entries = []
       for idx in range(nof_entries.value):
