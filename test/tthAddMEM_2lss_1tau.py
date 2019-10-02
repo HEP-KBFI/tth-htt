@@ -41,6 +41,11 @@ parser.add_argument('-n', '--max-mem-integrations',
   required = False,
   help = 'R|Maximum number of input files per one job (default: %i)' % max_mem_integrations
 )
+parser.add_argument('-F', '--rle-filter',
+  type = lambda s: s.lower() in ['true', 't', 'yes', '1'], dest = 'rle_filter', metavar = 'option', default = True,
+  required = False,
+  help = 'R|Apply RLE filter',
+)
 args = parser.parse_args()
 
 # Common arguments
@@ -67,6 +72,7 @@ tau_id            = args.tau_id
 # Custom arguments
 integration_points   = args.integration_points
 max_mem_integrations = args.max_mem_integrations
+rle_filter           = args.rle_filter
 
 # Use the arguments
 central_or_shifts = []
@@ -82,6 +88,7 @@ version            = "%s_%s_%s_%s" % (
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 
 hadTauSelection = "Tight"
+rle_filter_file = ''
 
 if mode == 'default':
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
@@ -91,6 +98,8 @@ if mode == 'default':
     'deepVSj' : 'VLoose',
   }
   hadTauWP = tau_id + hadTauWP_map[tau_id]
+  if rle_filter:
+    rle_filter_file = 'mem_{}_{}.root'.format(era, hadTauWP)
 elif mode == 'bdt':
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -102,6 +111,8 @@ elif mode == 'bdt':
   }
   hadTauWP = tau_id + hadTauWP_map[tau_id]
   hadTauSelection = "Fakeable"
+  if rle_filter:
+    rle_filter_file = 'mem_forBDTtraining_{}_{}.root'.format(era, hadTauWP)
 elif mode == 'sync':
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:
@@ -113,8 +124,17 @@ elif mode == 'sync':
     'deepVSj' : 'VLoose',
   }
   hadTauWP = tau_id + hadTauWP_map[tau_id]
+  if rle_filter:
+    rle_filter_file = 'mem_{}_{}.root'.format(era, hadTauWP)
 else:
   raise ValueError("Invalid mode: %s" % mode)
+
+if rle_filter_file:
+  rle_filter_file = os.path.join(
+    os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'HiggsToTauTau', 'data', 'mem', rle_filter_file
+  )
+  if not os.path.isfile(rle_filter_file):
+    raise ValueError("No such file: %s" % rle_filter_file)
 
 if __name__ == '__main__':
   logging.info(
@@ -152,6 +172,7 @@ if __name__ == '__main__':
     dry_run                  = dry_run,
     use_nonnominal           = use_nonnominal,
     use_home                 = use_home,
+    rle_filter_file          = rle_filter_file,
   )
 
   goodToGo = addMEMProduction.create()
