@@ -1441,6 +1441,17 @@ class analyzeConfig(object):
             if make_target_plot not in self.phoniesToAdd:
                 self.phoniesToAdd.append(make_target_plot)
 
+    def addToMakefile_validate(self, lines_makefile, make_dependency = "phony_analyze", single_channel = True):
+        """Validates the results
+        """
+        make_target_validate = "phony_validate"
+        lines_makefile.append("%s: %s" % (make_target_validate, make_dependency))
+        inspect_argument = '-w {}'.format(self.channel) if single_channel else ''
+        lines_makefile.append("\tinspect_rle_numbers.py -i %s %s" % (self.outputDir, inspect_argument))
+        lines_makefile.append("")
+        if make_target_validate not in self.phoniesToAdd:
+            self.phoniesToAdd.append(make_target_validate)
+
     def addToMakefile_outRoot(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the final condensed *.root output file
            containing a TTree of all selected event variables specific to a given channel.
