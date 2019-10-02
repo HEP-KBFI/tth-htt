@@ -74,7 +74,7 @@ gen_matching_by_index = (gen_matching == 'by_index')
 
 hadTauWP_veto_map = {
   'dR03mva' : 'Loose',
-  'deepVSj' : 'Loose',
+  'deepVSj' : 'VLoose',
 }
 hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 

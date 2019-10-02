@@ -71,7 +71,7 @@ if mode == 'default':
   leptonSelection = "Fakeable"
   hadTauWP_map = {
     'dR03mva' : 'Loose',
-    'deepVSj' : 'Loose',
+    'deepVSj' : 'VLoose',
   }
   hadTauWP = tau_id + hadTauWP_map[tau_id]
 elif mode == 'bdt':
@@ -93,7 +93,7 @@ elif mode == 'sync':
   leptonSelection = "Fakeable"
   hadTauWP_map = {
     'dR03mva' : 'Loose',
-    'deepVSj' : 'Loose',
+    'deepVSj' : 'VLoose',
   }
   hadTauWP = tau_id + hadTauWP_map[tau_id]
 else:

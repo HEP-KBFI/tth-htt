@@ -68,7 +68,7 @@ gen_matching_by_index = (gen_matching == 'by_index')
 
 hadTauWP_map = {
   'dR03mva' : 'Loose',
-  'deepVSj' : 'Loose',
+  'deepVSj' : 'VTight',
 }
 hadTau_selection = tau_id + hadTauWP_map[tau_id]
 
