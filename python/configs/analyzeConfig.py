@@ -759,8 +759,14 @@ class analyzeConfig(object):
             "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era, len = max_option_len),
           ])
         for jobOptions_key in jobOptions_keys:
-            if jobOptions_key not in jobOptions: continue # temporary?
+            if jobOptions_key not in jobOptions:
+              continue
             jobOptions_val = jobOptions[jobOptions_key]
+            if self.do_sync: # TEMPORARY !!
+                if jobOptions_key == 'applyFakeRateWeights':
+                    jobOptions_val = 'disabled'
+                elif jobOptions_key == 'apply_hadTauFakeRateSF':
+                    jobOptions_val = False
             jobOptions_expr = ""
             if jobOptions_key in jobOptions_typeMapping:
               jobOptions_expr = jobOptions_typeMapping[jobOptions_key]
