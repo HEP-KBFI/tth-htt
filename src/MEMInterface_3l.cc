@@ -14,7 +14,8 @@
 
 #include <algorithm> // std::sort(), std::min()
 
-MEMInterface_3l::MEMInterface_3l(const std::string & configFileName)
+MEMInterface_3l::MEMInterface_3l(const std::string & configFileName,
+                                 int era)
   : shyp_(nullptr)
   , hyp_(nullptr)
   , nPointsHyp_(nullptr)
@@ -29,6 +30,7 @@ MEMInterface_3l::MEMInterface_3l(const std::string & configFileName)
   ConfigParser cfgParser;
   cfgParser.LoadConfig(configFileName);
   cfgParser.GetHypotheses(&nhyp_, &shyp_, &hyp_, &nPointsHyp_, &index_hyp_);
+  cfgParser.SetCSVThreshold(get_BtagWP(era, Btag::kDeepJet, BtagWP::kLoose));
 
   hypIntegrator_->InitializeIntegrator(&cfgParser);
   MEMpermutations_ = new Permutations[nhyp_];

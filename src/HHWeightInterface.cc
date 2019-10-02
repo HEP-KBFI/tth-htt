@@ -6,6 +6,9 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"
+#if defined(__OPTIMIZE__)
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 #include <boost/algorithm/string.hpp> // boost::split(), boost::is_any_of()
 #pragma GCC diagnostic pop
 

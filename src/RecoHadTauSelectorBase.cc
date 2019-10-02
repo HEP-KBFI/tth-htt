@@ -152,7 +152,7 @@ RecoHadTauSelectorBase::set(const std::string & cut)
       apply_decayModeFinding_ = false;
       decayMode_blacklist_ = { 5, 6 }; // exclude DMs 5 & 6
     }
-    apply_deeptau_lepton_ |= tauId == TauID::DeepTau2017v2VSjet;
+    //apply_deeptau_lepton_ |= tauId == TauID::DeepTau2017v2VSjet;
   }
 
   apply_deeptau_lepton_ &= cut_parts.size() == 1 && ! disable_deeptau_lepton_;

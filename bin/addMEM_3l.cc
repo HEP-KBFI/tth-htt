@@ -225,7 +225,7 @@ int main(int argc,
     muonWriter = new RecoMuonWriter(era, isMC, Form("n%s", branchName_muons.data()), branchName_muons);
     muonWriter->setBranches(outputTree);
     electronWriter = new RecoElectronWriter(era, isMC, Form("n%s", branchName_electrons.data()), branchName_electrons);
-    electronWriter->writeUncorrected(useNonNominal);
+    electronWriter->writeUncorrected(false);
     electronWriter->setBranches(outputTree);
     jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
     jetWriter->setPtMass_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
@@ -280,7 +280,7 @@ int main(int argc,
   }
 
   LocalFileInPath memConfigFileName("tthAnalysis/HiggsToTauTau/data/addMEM_3l.cfg");
-  MEMInterface_3l memInterface_3l(memConfigFileName.fullPath());
+  MEMInterface_3l memInterface_3l(memConfigFileName.fullPath(), era);
 
   const int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
@@ -317,9 +317,9 @@ int main(int argc,
     const std::vector<const RecoMuon *> muon_ptrs = convert_to_ptrs(muons);
     // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     const std::vector<const RecoMuon *> cleanedMuons  = muon_ptrs;
-    const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector  (cleanedMuons);
-    const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons);
-    const std::vector<const RecoMuon *> tightMuons    = tightMuonSelector   (preselMuons);
+    const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector  (cleanedMuons,  isHigherConePt);
+    const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons,   isHigherConePt);
+    const std::vector<const RecoMuon *> tightMuons    = tightMuonSelector   (fakeableMuons, isHigherConePt);
     const std::vector<const RecoMuon *> selMuons      = selectObjects(
       leptonSelection, preselMuons, fakeableMuons, tightMuons
     );
@@ -330,11 +330,12 @@ int main(int argc,
 
     const std::vector<RecoElectron> electrons = electronReader->read();
     const std::vector<const RecoElectron *> electron_ptrs     = convert_to_ptrs(electrons);
-    const std::vector<const RecoElectron *> cleanedElectrons  = electronCleaner(electron_ptrs, fakeableMuons);
-    const std::vector<const RecoElectron *> preselElectrons   = preselElectronSelector(cleanedElectrons);
-    const std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    const std::vector<const RecoElectron *> tightElectrons    = tightElectronSelector(preselElectrons);
-    const std::vector<const RecoElectron *> selElectrons      = selectObjects(
+    const std::vector<const RecoElectron *> cleanedElectrons  = electronCleaner(electron_ptrs, preselMuons);
+    const std::vector<const RecoElectron *> preselElectronsUncleaned = preselElectronSelector  (electron_ptrs,     isHigherConePt);
+    const std::vector<const RecoElectron *> preselElectrons          = preselElectronSelector  (cleanedElectrons,  isHigherConePt);
+    const std::vector<const RecoElectron *> fakeableElectrons        = fakeableElectronSelector(preselElectrons,   isHigherConePt);
+    const std::vector<const RecoElectron *> tightElectrons           = tightElectronSelector   (fakeableElectrons, isHigherConePt);
+    const std::vector<const RecoElectron *> selElectrons             = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
     );
     if(isDEBUG)
@@ -362,7 +363,7 @@ int main(int argc,
     {
       eventInfoWriter->write(eventInfo);
       muonWriter->write(preselMuons);
-      electronWriter->write(preselElectrons);
+      electronWriter->write(preselElectronsUncleaned);
       jetWriter->write(jet_ptrs); // save central
       metWriter->write(met); // save central
 
@@ -380,7 +381,7 @@ int main(int argc,
     }
     if(maxPermutations_addMEM_3l >= 1)
     {
-      const std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons);
+      const std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
       for(std::size_t selLepton_lead_idx = 0; selLepton_lead_idx < selLeptons.size(); ++selLepton_lead_idx)
       {
         const RecoLepton * selLepton_lead = selLeptons[selLepton_lead_idx];
@@ -435,7 +436,7 @@ int main(int argc,
 //--- build the jet collections specifically for MEM evaluation
               const std::vector<RecoJet> jets_mem = jetReader->read();
               const std::vector<const RecoJet *> jet_ptrs_mem = convert_to_ptrs(jets_mem);
-              const std::vector<const RecoJet *> selJets_mem  = jetSelector(jet_ptrs_mem);
+              const std::vector<const RecoJet *> selJets_mem  = jetSelector(jet_ptrs_mem, isHigherPt);
               if(isDEBUG)
               {
                 printCollection("selJets_mem", selJets_mem);

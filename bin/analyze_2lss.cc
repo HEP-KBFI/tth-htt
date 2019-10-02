@@ -100,13 +100,16 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 #include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterface.h"
-#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
+#include "tthAnalysis/HiggsToTauTau/interface/mT2_2particle.h" // mT2_2particle
+#include "tthAnalysis/HiggsToTauTau/interface/mT2_3particle.h" // mT2_3particle
+
 #include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tH_weight_str()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterface.h" // HHWeightInterface
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 #include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
+#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -1685,6 +1688,61 @@ int main(int argc, char* argv[])
       min_Deta_leadfwdJet_jet = min_Deta_fwdJet_jet(leadFwdJet, selJets);
     }
 
+    double mT2_top_3particle = -1.;
+    double mT2_top_2particle = -1.;
+    double mT2_W = -1.;
+    const Particle::LorentzVector & selLeptonP4_lead = selLepton_lead->p4();
+    const Particle::LorentzVector & selLeptonP4_sublead = selLepton_sublead->p4();
+
+    if(selJets.size() >= 2)
+    {
+      const Particle::LorentzVector & selJetP4_Hbb_lead = selJets[0]->p4();
+      const Particle::LorentzVector & selJetP4_Hbb_sublead = selJets[1]->p4();
+      mT2_2particle mT2Algo_2particle;
+      const Particle::LorentzVector& metP4 = met.p4();
+      mT2Algo_2particle(
+        selLeptonP4_lead.px(), selLeptonP4_lead.py(), selLeptonP4_lead.mass(),
+        selLeptonP4_sublead.px(), selLeptonP4_sublead.py(), selLeptonP4_sublead.mass(),
+        metP4.px(), metP4.py(), 0.
+      );
+      mT2_W = mT2Algo_2particle.get_min_mT2();
+
+      const double cSumPx = selLeptonP4_lead.px() + selLeptonP4_sublead.px() + metP4.px();
+      const double cSumPy = selLeptonP4_lead.py() + selLeptonP4_sublead.py() + metP4.py();
+      mT2Algo_2particle(
+        selJetP4_Hbb_lead.px(), selJetP4_Hbb_lead.py(), selJetP4_Hbb_lead.mass(),
+        selJetP4_Hbb_sublead.px(), selJetP4_Hbb_sublead.py(), selJetP4_Hbb_sublead.mass(),
+        cSumPx, cSumPy, wBosonMass
+      );
+      mT2_top_2particle = mT2Algo_2particle.get_min_mT2();
+      mT2_3particle mT2Algo_3particle;
+      mT2Algo_3particle(
+        selJetP4_Hbb_lead.px(), selJetP4_Hbb_lead.py(), selJetP4_Hbb_lead.mass(),
+        selJetP4_Hbb_sublead.px(), selJetP4_Hbb_sublead.py(), selJetP4_Hbb_sublead.mass(),
+        selLeptonP4_lead.px(), selLeptonP4_lead.py(), selLeptonP4_lead.mass(),
+        selLeptonP4_sublead.px(), selLeptonP4_sublead.py(), selLeptonP4_sublead.mass(),
+        metP4.px(), metP4.py(), 0.
+      );
+      const double mT2_top_3particle_permutation1 = mT2Algo_3particle.get_min_mT2();
+      mT2Algo_3particle(
+       selJetP4_Hbb_lead.px(), selJetP4_Hbb_lead.py(), selJetP4_Hbb_lead.mass(),
+       selJetP4_Hbb_sublead.px(), selJetP4_Hbb_sublead.py(), selJetP4_Hbb_sublead.mass(),
+       selLeptonP4_sublead.px(), selLeptonP4_sublead.py(), selLeptonP4_sublead.mass(),
+       selLeptonP4_lead.px(), selLeptonP4_lead.py(), selLeptonP4_lead.mass(),
+       metP4.px(), metP4.py(), 0.
+      );
+      const double mT2_top_3particle_permutation2 = mT2Algo_3particle.get_min_mT2();
+
+      if(mT2_top_3particle_permutation1 <= mT2_top_3particle_permutation2)
+      {
+        mT2_top_3particle = mT2_top_3particle_permutation1;
+      }
+      else
+      {
+        mT2_top_3particle = mT2_top_3particle_permutation2;
+      }
+    }
+
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 2lss category of ttH multilepton analysis
     mvaInputs_2lss["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(selLepton_lead->eta()), std::fabs(selLepton_sublead->eta()));
@@ -2225,6 +2283,11 @@ int main(int argc, char* argv[])
       snm->read(mT_lep2,                                FloatVariableType::mT_met_lep2);
       // mT_met_lep3 not filled
       // mT_met_lep4 not filled
+      snm->read(massL(fakeableLeptons),                 FloatVariableType::massL);
+
+      snm->read(mT2_W,                                  FloatVariableType::mT2_W);
+      snm->read(mT2_top_2particle,                      FloatVariableType::mT2_top_2particle);
+      snm->read(mT2_top_3particle,                      FloatVariableType::mT2_top_3particle);
 
       // mTauTauVis not filled
       // mvis_l1tau not filled

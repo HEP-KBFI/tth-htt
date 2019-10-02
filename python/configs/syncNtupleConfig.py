@@ -92,8 +92,7 @@ class syncNtupleConfig:
     final_output_dir = os.path.join(output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)
 
-    common_args = "-m %s -v %s -e %s -s %s -y %s " % \
-      ('sync_wMEM' if with_mem else 'sync',  version, era, ' '.join(systematics_label), use_home)
+    common_args = "-v %s -e %s -s %s -y %s " % (version, era, ' '.join(systematics_label), use_home)
     if jet_cleaning:
       common_args += " -q %s " % jet_cleaning
     if gen_matching:
@@ -119,6 +118,7 @@ class syncNtupleConfig:
       additional_args += " -R %s" % self.running_method
 
     cr_channels = { channel : False for channel in [ '3l', '4l' ] }
+    mem_channels = [ '2lss_1tau' ]
 
     inclusive_args = '-v %s -e %s' % (version, era)
 
@@ -155,6 +155,7 @@ class syncNtupleConfig:
       cmd_args = common_args if 'inclusive' not in channel else inclusive_args
       if 'inclusive' not in channel:
         cmd_args += " -p %s" % use_preselected
+        cmd_args += ' -m %s' % ('sync_wMEM' if with_mem and channel in mem_channels else 'sync')
       cmd_args += channels_extended[channel]
 
       channel_cmd_create = '%s %s 2>%s 1>%s' % \

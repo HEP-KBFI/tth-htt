@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-09-28 12:15:09 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2017_sync.py -p /hdfs/local/karl/addMEM/2017/2019Sep26v2_sync_nonNom_full/final_ntuples/2lss_1tau -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_addMEM_2lss1tau_sync.py -M
+# file generated at 2019-10-01 01:02:03 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2017_sync.py -p /hdfs/local/karl/addMEM/2017/2019Sep30_sync_nonNom_full/final_ntuples/2lss_1tau -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_addMEM_2lss1tau_sync.py -M
 
 samples_2017 = OD()
 samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
@@ -18,9 +18,9 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
     'CountWeightedL1Prefire'                                     : [        21660,        21467,        21848, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [        22052,        22464,        22862,        21981,        21659,        21409,        20633,        19969,        19421, ],
   }),
-  ("nof_tree_events",                 13536),
+  ("nof_tree_events",                 14776),
   ("nof_db_events",                   9779592),
-  ("fsize_local",                     148443518), # 148.44MB, avg file size 148.44MB
+  ("fsize_local",                     184258677), # 184.26MB, avg file size 184.26MB
   ("fsize_db",                        625507074411), # 625.51GB, avg file size 3.01GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -32,7 +32,7 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/addMEM/2017/2019Sep26v2_sync_nonNom_full/final_ntuples/2lss_1tau/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/addMEM/2017/2019Sep30_sync_nonNom_full/final_ntuples/2lss_1tau/ttHJetToNonbb_M125_amcatnlo"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
