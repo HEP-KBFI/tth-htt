@@ -136,6 +136,10 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::mT_met_lep4],              "mT_lep4",
     floatMap[FloatVariableType::massL],                    "massL",
 
+    floatMap[FloatVariableType::mT2_W],                    "mT2_W",
+    floatMap[FloatVariableType::mT2_top_2particle],        "mT2_top_2particle",
+    floatMap[FloatVariableType::mT2_top_3particle],        "mT2_top_3particle",
+
     floatMap[FloatVariableType::mTauTauVis],               "mTauTauVis",
     floatMap[FloatVariableType::mTauTau],                  "mTauTau",
     floatMap[FloatVariableType::pZetaComb],                "pZetaComb",
