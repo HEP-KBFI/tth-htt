@@ -32,6 +32,7 @@ class RecoMuon;
 class RecoElectron;
 
 //--- declare constants
+const double wBosonMass = 80.379; // GeV
 const double z_mass   = 91.1876;
 const double z_window = 10.;
 const double met_coef =  0.6;

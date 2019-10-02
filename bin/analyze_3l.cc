@@ -2142,6 +2142,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       snm->read(mT_lep2,                                FloatVariableType::mT_met_lep2);
       snm->read(mT_lep3,                                FloatVariableType::mT_met_lep3);
       // mT_met_lep4 not filled
+      snm->read(massL(fakeableLeptons),                 FloatVariableType::massL);
 
       // mTauTauVis not filled
       // mvis_l1tau not filled
