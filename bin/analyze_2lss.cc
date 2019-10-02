@@ -1644,20 +1644,22 @@ int main(int argc, char* argv[])
     {
       WeightBM = HHWeight_calc->getJHEPWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
       Weight_ktScan = HHWeight_calc->getScanWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
-      //evtWeightRecorder.record_bm(WeightBM[0]); // SM by default
+
+      evtWeightRecorder.record_bm(WeightBM[0]); // SM by default
       HHWeight = WeightBM[0];
+
       if(isDEBUG)
       {
-	std::cout << "mhh = "              << eventInfo.gen_mHH          << " : "
-	  "cost "               << eventInfo.gen_cosThetaStar << " : "
-	  "weight = "           << HHWeight                   << '\n'
-	  ;
-	std::cout << "Calculated " << Weight_ktScan.size() << " scan weights\n";
-	for(std::size_t bm_list = 0; bm_list < Weight_ktScan.size(); ++bm_list)
-	  {
-	    std::cout << "line = " << bm_list << "; Weight = " <<  Weight_ktScan[bm_list] << '\n';
-	  }
-	std::cout << "\n";
+        std::cout << "mhh = " << eventInfo.gen_mHH          << " : "
+          "cost "             << eventInfo.gen_cosThetaStar << " : "
+          "weight = "         << HHWeight                   << '\n'
+        ;
+        std::cout << "Calculated " << Weight_ktScan.size() << " scan weights\n";
+        for(std::size_t bm_list = 0; bm_list < Weight_ktScan.size(); ++bm_list)
+        {
+          std::cout << "line = " << bm_list << "; Weight = " <<  Weight_ktScan[bm_list] << '\n';
+        }
+        std::cout << '\n';
       }
     }
 
@@ -1792,32 +1794,30 @@ int main(int argc, char* argv[])
     double Wj2_pt_CSVsort4rd_1 = 0.1;
     bool hadtruth = false;
     for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
-      //btag_iterator++;
       for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
-       if ( &(*selWJet1) == &(*selBJet) ) continue;
-       for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
-    if ( &(*selWJet2) == &(*selBJet) ) continue;
-    if ( &(*selWJet2) == &(*selWJet1) ) continue;
-    bool isGenMatched = false;
-    double genTopPt_teste = 0.;
-    const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti );
-    // genTopPt_teste is filled with the result of gen-matching
-    if ( isGenMatched ) hadtruth = true;
-    // save genpt of all options
-    double HadTop_pt = ((*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4()).pt();
+        if ( &(*selWJet1) == &(*selBJet) ) continue;
+        for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
+          if ( &(*selWJet2) == &(*selBJet) ) continue;
+          if ( &(*selWJet2) == &(*selWJet1) ) continue;
+          bool isGenMatched = false;
+          double genTopPt_teste = 0.;
+          const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti );
+          // genTopPt_teste is filled with the result of gen-matching
+          if ( isGenMatched ) hadtruth = true;
+          // save genpt of all options
+          double HadTop_pt = ((*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4()).pt();
 
-    if ( bdtResult.at(kXGB_CSVsort4rd) > max_mvaOutput_HTT_CSVsort4rd ) {
-      max_truth_HTT_CSVsort4rd = isGenMatched;
-      max_mvaOutput_HTT_CSVsort4rd = bdtResult.at(kXGB_CSVsort4rd);
-      HadTop_pt_CSVsort4rd = HadTop_pt;
-      genTopPt_CSVsort4rd = genTopPt_teste;
-      //HadTop_eta_CSVsort4rd = std::fabs(((*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4()).eta());
-      Wj1_pt_CSVsort4rd_1 = (*selWJet1)->pt();
-      Wj2_pt_CSVsort4rd_1 = (*selWJet2)->pt();
-      b_pt_CSVsort4rd_1   = (*selBJet)->pt();
-    }
-
-    }
+          if ( bdtResult.at(kXGB_CSVsort4rd) > max_mvaOutput_HTT_CSVsort4rd ) {
+            max_truth_HTT_CSVsort4rd = isGenMatched;
+            max_mvaOutput_HTT_CSVsort4rd = bdtResult.at(kXGB_CSVsort4rd);
+            HadTop_pt_CSVsort4rd = HadTop_pt;
+            genTopPt_CSVsort4rd = genTopPt_teste;
+            //HadTop_eta_CSVsort4rd = std::fabs(((*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4()).eta());
+            Wj1_pt_CSVsort4rd_1 = (*selWJet1)->pt();
+            Wj2_pt_CSVsort4rd_1 = (*selWJet2)->pt();
+            b_pt_CSVsort4rd_1   = (*selBJet)->pt();
+          }
+        }
       }
     }
 
@@ -1980,20 +1980,20 @@ int main(int argc, char* argv[])
           if ( selHistManager_evt )
           {
             selHistManager_evt->fillHistograms(
-            selElectrons.size(),
-            selMuons.size(),
-            selHadTaus.size(),
-            selJets.size(),
-            selBJets_loose.size(),
-            selBJets_medium.size(),
-            kv.second,
-            mvaOutput_2lss_ttV,
-            mvaOutput_2lss_ttbar,
-            mvaDiscr_2lss,
-            mvaOutput_Hj_tagger,
-            output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
-            category_2lss_ttH_tH_4cat_onlyTHQ_v4
-          );
+              selElectrons.size(),
+              selMuons.size(),
+              selHadTaus.size(),
+              selJets.size(),
+              selBJets_loose.size(),
+              selBJets_medium.size(),
+              kv.second,
+              mvaOutput_2lss_ttV,
+              mvaOutput_2lss_ttbar,
+              mvaDiscr_2lss,
+              mvaOutput_Hj_tagger,
+              output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
+              category_2lss_ttH_tH_4cat_onlyTHQ_v4
+            );
           }
         }
 
@@ -2004,25 +2004,25 @@ int main(int argc, char* argv[])
 	    for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
 	    {
 	      double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
-        EvtHistManager_2lss* selHistManager_evt_scan = selHistManager->evt_scan_[kv.first][scanIdx];
-        if ( selHistManager_evt_scan )
-        {
-	      selHistManager_evt_scan->fillHistograms(
-        selElectrons.size(),
-        selMuons.size(),
-        selHadTaus.size(),
-        selJets.size(),
-        selBJets_loose.size(),
-        selBJets_medium.size(),
-        evtWeight0,
-        mvaOutput_2lss_ttV,
-        mvaOutput_2lss_ttbar,
-        mvaDiscr_2lss,
-        mvaOutput_Hj_tagger,
-        output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
-        category_2lss_ttH_tH_4cat_onlyTHQ_v4
-	       );
-         }
+              EvtHistManager_2lss* selHistManager_evt_scan = selHistManager->evt_scan_[kv.first][scanIdx];
+              if ( selHistManager_evt_scan )
+              {
+                selHistManager_evt_scan->fillHistograms(
+                  selElectrons.size(),
+                  selMuons.size(),
+                  selHadTaus.size(),
+                  selJets.size(),
+                  selBJets_loose.size(),
+                  selBJets_medium.size(),
+                  evtWeight0,
+                  mvaOutput_2lss_ttV,
+                  mvaOutput_2lss_ttbar,
+                  mvaDiscr_2lss,
+                  mvaOutput_Hj_tagger,
+                  output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
+                  category_2lss_ttH_tH_4cat_onlyTHQ_v4
+                );
+              }
 	    }
 	  }
 	}
@@ -2037,52 +2037,52 @@ int main(int argc, char* argv[])
               if ( selHistManager_evt_decay )
               {
                 selHistManager_evt_decay->fillHistograms(
-                selElectrons.size(),
-                selMuons.size(),
-                selHadTaus.size(),
-                selJets.size(),
-                selBJets_loose.size(),
-                selBJets_medium.size(),
-                kv.second,
-                mvaOutput_2lss_ttV,
-                mvaOutput_2lss_ttbar,
-                mvaDiscr_2lss,
-                mvaOutput_Hj_tagger,
-                output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
-                category_2lss_ttH_tH_4cat_onlyTHQ_v4
-               );
+                  selElectrons.size(),
+                  selMuons.size(),
+                  selHadTaus.size(),
+                  selJets.size(),
+                  selBJets_loose.size(),
+                  selBJets_medium.size(),
+                  kv.second,
+                  mvaOutput_2lss_ttV,
+                  mvaOutput_2lss_ttbar,
+                  mvaDiscr_2lss,
+                  mvaOutput_Hj_tagger,
+                  output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
+                  category_2lss_ttH_tH_4cat_onlyTHQ_v4
+                );
               }
               std::string decayMode_and_genMatch = decayModeStr;
               if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
             }
 	    if(! Weight_ktScan.empty()  )
-	    {
+            {
 	      for(const auto & kv: tH_weight_map)
               {
-       	       for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
-	       {
-    		 double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
-		 EvtHistManager_2lss* selHistManager_evt_decay_scan = selHistManager->evt_in_decayModes_scan_[kv.first][decayModeStr][scanIdx];
-		 if ( selHistManager_evt_decay_scan )
-		 {
-    		  selHistManager_evt_decay_scan->fillHistograms(
-    		   selElectrons.size(),
-    		   selMuons.size(),
-    		   selHadTaus.size(),
-    		   selJets.size(),
-    		   selBJets_loose.size(),
-    		   selBJets_medium.size(),
-    		   evtWeight0,
-    		   mvaOutput_2lss_ttV,
-    		   mvaOutput_2lss_ttbar,
-    		   mvaDiscr_2lss,
-    		   mvaOutput_Hj_tagger,
-    		   output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
-    		   category_2lss_ttH_tH_4cat_onlyTHQ_v4
-    		 );
-		 }
-	       }
-	      }
+                for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
+                {
+                  double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
+                  EvtHistManager_2lss* selHistManager_evt_decay_scan = selHistManager->evt_in_decayModes_scan_[kv.first][decayModeStr][scanIdx];
+                  if ( selHistManager_evt_decay_scan )
+                  {
+                    selHistManager_evt_decay_scan->fillHistograms(
+                      selElectrons.size(),
+                      selMuons.size(),
+                      selHadTaus.size(),
+                      selJets.size(),
+                      selBJets_loose.size(),
+                      selBJets_medium.size(),
+                      evtWeight0,
+                      mvaOutput_2lss_ttV,
+                      mvaOutput_2lss_ttbar,
+                      mvaDiscr_2lss,
+                      mvaOutput_Hj_tagger,
+                      output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
+                      category_2lss_ttH_tH_4cat_onlyTHQ_v4
+                    );
+                  }
+                }
+              }
 	    }
 	  }
 	}

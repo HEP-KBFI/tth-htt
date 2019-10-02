@@ -25,6 +25,7 @@ EvtWeightRecorder::EvtWeightRecorder()
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
   , prescale_(1.)
+  , bm_weight_(1.)
   , central_or_shift_("central")
 {}
 
@@ -57,7 +58,7 @@ EvtWeightRecorder::get(const std::string & central_or_shift) const
 double
 EvtWeightRecorder::get_inclusive(const std::string & central_or_shift) const
 {
-  return isMC_ ? genWeight_ * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift) *
+  return isMC_ ? genWeight_ * bm_weight_ * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
                  get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) *
                  get_dy_rwgt(central_or_shift)
@@ -385,6 +386,13 @@ EvtWeightRecorder::record_prescale(double weight)
 {
   assert(isMC_);
   prescale_ = weight;
+}
+
+void
+EvtWeightRecorder::record_bm(double weight)
+{
+  assert(isMC_);
+  bm_weight_ = weight;
 }
 
 void
