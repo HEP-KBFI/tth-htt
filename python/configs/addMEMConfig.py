@@ -147,7 +147,7 @@ class addMEMConfig:
 
         self.cvmfs_error_log = {}
 
-    def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, isMC, cfgFile_modified):
+    def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, isMC, cfgFile_modified, whitelist = []):
         raise ValueError(
             "Function 'createCfg_addMEM' not implemented in derrived class !!")
 
@@ -240,7 +240,7 @@ class addMEMConfig:
         tools_createMakefile(self.makefile, targets, lines_makefile, self.filesToClean, self.is_sbatch)
         logging.info("Run it with:\tmake -f %s -j %i " % (self.makefile, self.num_parallel_jobs))
 
-    def memJobList(self, inputFileList):
+    def memJobList(self, inputFileList, rle_whitelist):
         '''
         Args:
           inputFileList:{ int, array of strings }; i.e. fileset* ID and the list of files
@@ -256,6 +256,7 @@ class addMEMConfig:
         '''
         memJobDict = {}
         jobId = 0
+        apply_rle_filter = bool(self.rle_filter_file)
         for filesetId, inputFileSet in inputFileList.iteritems():
             memJobDict_common = { 'fileset_id' : filesetId, 'input_fileset' : inputFileSet }
             ch = ROOT.TChain(self.treeName)
@@ -282,17 +283,30 @@ class addMEMConfig:
             evt_ranges = []
 
             counter, counter_arr = 0, []
-            nof_events_pass_counter, nof_events_pass = 0, []
-            nof_int_pass_counter,    nof_int_pass    = 0, []
-            nof_zero_integrations,   nof_events_zero = 0, []
+            nof_events_pass_counter, nof_events_pass  = 0, []
+            nof_int_pass_counter,    nof_int_pass     = 0, []
+            nof_zero_integrations,   nof_events_zero  = 0, []
+            whitelist_all,          whitelist_running = [], []
 
+            run                    = array.array('I', [0])
+            luminosityBlock        = array.array('I', [0])
+            event                  = array.array('L', [0])
             maxPermutations_addMEM = array.array('i', [0])
+            ch.SetBranchAddress("run",             run)
+            ch.SetBranchAddress("luminosityBlock", luminosityBlock)
+            ch.SetBranchAddress("event",           event)
             ch.SetBranchAddress(self.maxPermutations_branchName, maxPermutations_addMEM)
 
             for i in range(nof_entries):
                 ch.GetEntry(i)
                 if i > 0 and i % 10000 == 0:
                     logging.debug("Processing event %i/%i" % (i, nof_entries))
+
+                rle = ':'.join(map(lambda nr: str(nr[0]), [ run, luminosityBlock, event ]))
+                if apply_rle_filter:
+                    if rle not in rle_whitelist:
+                        continue
+                    whitelist_running.append(rle)
 
                 nof_integrations = maxPermutations_addMEM[0]
                 if nof_integrations < 0:
@@ -324,6 +338,11 @@ class addMEMConfig:
 
                     nof_events_zero.append(nof_zero_integrations)
                     nof_zero_integrations = 0
+
+                    if apply_rle_filter:
+                        whitelist_all.append(whitelist_running)
+                        whitelist_running = []
+
                 counter += nof_integrations
                 current_pos += 1
 
@@ -336,6 +355,8 @@ class addMEMConfig:
                 nof_events_pass.append(nof_events_pass_counter)
                 nof_int_pass.append(nof_int_pass_counter)
                 nof_events_zero.append(nof_zero_integrations)
+                if apply_rle_filter:
+                    whitelist_all.append(whitelist_running)
 
             # ensure that the event ranges won't overlap (i.e. there won't be any double-processing of any event)
             evt_ranges_cat = []
@@ -352,13 +373,49 @@ class addMEMConfig:
                     'nof_int_pass'    : nof_int_pass[i],
                     'nof_events_pass' : nof_events_pass[i],
                     'nof_zero'        : nof_events_zero[i],
+                    'whitelist'       : whitelist_all[i] if apply_rle_filter else [],
                 }, **memJobDict_common)
                 # we now have all event ranges per one file, let's add them to the dictionary
 
+            del ch
         return memJobDict
 
     def get_filter(self):
-        pass
+        rle_filter_file = ROOT.TFile.Open(self.rle_filter_file, 'read')
+        channel_dir = rle_filter_file.Get(self.channel)
+        sample_names = [ key.GetName() for key in channel_dir.GetListOfKeys() ]
+        rle_map = {}
+        for sample_name in sample_names:
+            rle_map[sample_name] = []
+            sample_tree = channel_dir.Get(sample_name)
+            run             = array.array('I', [0])
+            luminosityBlock = array.array('I', [0])
+            event           = array.array('L', [0])
+            sample_tree.SetBranchAddress("run",             run)
+            sample_tree.SetBranchAddress("luminosityBlock", luminosityBlock)
+            sample_tree.SetBranchAddress("event",           event)
+            nof_entries = sample_tree.GetEntries()
+            for entry_idx in range(nof_entries):
+                sample_tree.GetEntry(entry_idx)
+                rle = ':'.join(map(lambda nr: str(nr[0]), [ run, luminosityBlock, event ]))
+                assert(rle not in rle_map[sample_name])
+                rle_map[sample_name].append(rle)
+        rle_filter_file.Close()
+        rle_map_keys = set(rle_map.keys())
+        sample_keys = set(
+            sample_info["process_name_specific"] for sample_key, sample_info in self.samples.items() if sample_info["use_it"]
+        )
+        rle_map_keys_missing = list(sorted(sample_keys - rle_map_keys))
+        if rle_map_keys_missing:
+            raise RuntimeError(
+                "Missing samples from file %s: %s" % (self.rle_filter_file, ', '.join(rle_map_keys_missing))
+            )
+        sample_keys_missing = list(sorted(rle_map_keys - sample_keys))
+        if sample_keys_missing:
+            raise RuntimeError(
+                "Unexpected samples not found in file %s: %s" % (self.rle_filter_file, ', '.join(sample_keys_missing))
+            )
+        return rle_map
 
     def create(self):
         """Creates all necessary config files and runs the MEM -- either locally or on the batch system
@@ -390,6 +447,8 @@ class addMEMConfig:
             process_name = sample_info["process_name_specific"]
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_addMEM, process_name))
             is_mc = (sample_info["type"] == "mc")
+            if self.rle_filter_file:
+                assert(process_name in rle_filters)
 
             inputFileList = generateInputFileList(sample_info, self.max_files_per_job)
             # typically, the analysis ends here and starts looping b/c the smallest unit of work processes
@@ -399,7 +458,7 @@ class addMEMConfig:
             # so what we are going to do is to open each set of files in inputFileList, read the variable
             # requestMEM_*l_*tau and try to gather the event ranges such that each event range
             # performs up to mem_integrations_per_job integrations per job
-            memEvtRangeDict = self.memJobList(inputFileList)
+            memEvtRangeDict = self.memJobList(inputFileList, rle_filters[process_name] if self.rle_filter_file else [])
 
             for jobId in memEvtRangeDict.keys():
 
@@ -434,6 +493,7 @@ class addMEMConfig:
                     self.era,
                     is_mc,
                     self.cfgFiles_addMEM_modified[key_file],
+                    memEvtRangeDict[jobId]['whitelist'],
                 )
 
                 # associate the output file with the fileset_id
