@@ -125,7 +125,7 @@ elif mode == 'sync':
   }
   hadTauWP = tau_id + hadTauWP_map[tau_id]
   if rle_filter:
-    rle_filter_file = 'mem_{}_{}.root'.format(era, hadTauWP)
+    rle_filter_file = 'mem_sync_{}_{}.root'.format(era, hadTauWP)
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
