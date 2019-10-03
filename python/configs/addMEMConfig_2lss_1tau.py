@@ -27,6 +27,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
         dry_run,
         use_nonnominal,
         use_home,
+        rle_filter_file,
         pool_id = '',
       ):
     addMEMConfig.__init__(self,
@@ -50,6 +51,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
       use_nonnominal           = use_nonnominal,
       use_home                 = use_home,
       channel                  = "2lss_1tau",
+      rle_filter_file          = rle_filter_file,
       pool_id                  = pool_id,
     )
 

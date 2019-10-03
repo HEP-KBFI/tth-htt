@@ -759,8 +759,14 @@ class analyzeConfig(object):
             "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era, len = max_option_len),
           ])
         for jobOptions_key in jobOptions_keys:
-            if jobOptions_key not in jobOptions: continue # temporary?
+            if jobOptions_key not in jobOptions:
+              continue
             jobOptions_val = jobOptions[jobOptions_key]
+            if self.do_sync: # TEMPORARY !!
+                if jobOptions_key == 'applyFakeRateWeights':
+                    jobOptions_val = 'disabled'
+                elif jobOptions_key == 'apply_hadTauFakeRateSF':
+                    jobOptions_val = False
             jobOptions_expr = ""
             if jobOptions_key in jobOptions_typeMapping:
               jobOptions_expr = jobOptions_typeMapping[jobOptions_key]
@@ -1440,6 +1446,17 @@ class analyzeConfig(object):
             lines_makefile.append("")
             if make_target_plot not in self.phoniesToAdd:
                 self.phoniesToAdd.append(make_target_plot)
+
+    def addToMakefile_validate(self, lines_makefile, make_dependency = "phony_analyze", single_channel = True):
+        """Validates the results
+        """
+        make_target_validate = "phony_validate"
+        lines_makefile.append("%s: %s" % (make_target_validate, make_dependency))
+        inspect_argument = '-w {}'.format(self.channel) if single_channel else ''
+        lines_makefile.append("\tinspect_rle_numbers.py -i %s %s" % (self.outputDir, inspect_argument))
+        lines_makefile.append("")
+        if make_target_validate not in self.phoniesToAdd:
+            self.phoniesToAdd.append(make_target_validate)
 
     def addToMakefile_outRoot(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the final condensed *.root output file

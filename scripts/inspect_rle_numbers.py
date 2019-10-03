@@ -33,11 +33,17 @@ def get_input_paths(input_path_candidates):
       channels[channel] = input_path
   return input_paths
 
-def get_rles(input_paths):
+def get_rles(input_paths, whitelist, blacklist):
   rles = collections.OrderedDict()
   for input_path in input_paths:
     for channel_dir in sorted(hdfs.listdir(input_path)):
       channel_name = os.path.basename(channel_dir)
+      if whitelist and channel_name not in whitelist:
+        logging.info("Excluding channel: {}".format(channel_name))
+        continue
+      if channel_name in blacklist:
+        logging.info("Excluding channel: {}".format(channel_name))
+        continue
       logging.debug('Found channel: {}'.format(channel_name))
       rles[channel_name] = collections.OrderedDict()
       for region_dir in sorted(hdfs.listdir(channel_dir)):
@@ -224,6 +230,10 @@ def validate_channels(rles):
   for sample_name in validation_set:
     for rle in validation_set[sample_name]:
       if len(validation_set[sample_name][rle]) > 1:
+        if len(validation_set[sample_name][rle]) and \
+           '2los_1tau' in validation_set[sample_name][rle] and validation_set[sample_name][rle]['2los_1tau']['region'] == 'Tight' and \
+           '2lss_1tau' in validation_set[sample_name][rle] and validation_set[sample_name][rle]['2lss_1tau']['region'] == 'Tight_OS_OS':
+          continue
         logging.error(
           "Found the same event {} from sample {} in multiple channels: {}".format(
             rle,
@@ -255,6 +265,14 @@ if __name__ == '__main__':
     type = str, dest = 'output', metavar = 'file', required = False, default = '',
     help = 'R|Output ROOT file for MEM jobs',
   )
+  parser.add_argument('-w', '--whitelist',
+    type = str, dest = 'whitelist', metavar = 'channel', required = False, nargs = '+', default = [],
+    help = 'R|Channels to exclude from the validation',
+  )
+  parser.add_argument('-b', '--blacklist',
+    type = str, dest = 'blacklist', metavar = 'channel', required = False, nargs = '+', default = [],
+    help = 'R|Channels to validate',
+  )
   parser.add_argument('-v', '--verbose',
     dest = 'verbose', action = 'store_true', default = False,
     help = 'R|Enable verbose output',
@@ -263,7 +281,7 @@ if __name__ == '__main__':
 
   logging.getLogger().setLevel(logging.DEBUG if args.verbose else logging.INFO)
   input_paths = get_input_paths(args.input)
-  rles = get_rles(input_paths)
+  rles = get_rles(input_paths, args.whitelist, args.blacklist)
 
   data_errors = validate_data(rles)
   region_errors = validate_regions(rles)

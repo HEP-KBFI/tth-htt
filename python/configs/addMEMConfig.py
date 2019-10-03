@@ -60,6 +60,7 @@ class addMEMConfig:
             use_nonnominal,
             use_home,
             channel,
+            rle_filter_file = '',
             pool_id = ''
           ):
 
@@ -74,6 +75,7 @@ class addMEMConfig:
         self.era = era
         self.check_output_files = check_output_files
         self.channel = channel
+        self.rle_filter_file = rle_filter_file
         self.leptonSelection = leptonSelection
         self.hadTauSelection = hadTauSelection
         if self.hadTauSelection:
@@ -355,10 +357,12 @@ class addMEMConfig:
 
         return memJobDict
 
+    def get_filter(self):
+        pass
+
     def create(self):
         """Creates all necessary config files and runs the MEM -- either locally or on the batch system
         """
-        statistics = {}
 
         for key in self.dirs.keys():
             if type(self.dirs[key]) == dict:
@@ -373,6 +377,8 @@ class addMEMConfig:
         # print integrations per job as well!
         # consider more than 1 file per jobs -- the jobs are splitted by MEM integration anyways
 
+        rle_filters = self.get_filter() if self.rle_filter_file else {}
+        statistics = {}
         for sample_name, sample_info in self.samples.items():
             if not sample_info["use_it"]:
                 continue

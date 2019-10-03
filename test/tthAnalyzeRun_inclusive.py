@@ -70,7 +70,7 @@ gen_matching_by_index = (gen_matching == 'by_index')
 
 hadTau_WP_map = {
   'dR03mva' : 'VLoose',
-  'deepVSj' : 'VLoose',
+  'deepVSj' : 'VVLoose',
 }
 hadTau_WP = tau_id + hadTau_WP_map[tau_id]
 if tau_id_wp:

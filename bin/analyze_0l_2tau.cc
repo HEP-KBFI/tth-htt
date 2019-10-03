@@ -1432,27 +1432,26 @@ int main(int argc, char* argv[])
     double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
 
     if(HHWeight_calc)
+    {
+      WeightBM = HHWeight_calc->getJHEPWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
+      Weight_ktScan = HHWeight_calc->getScanWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
+      evtWeightRecorder.record_bm(WeightBM[0]); // SM by default
+
+      HHWeight = WeightBM[0];
+      if(isDEBUG)
       {
-	WeightBM = HHWeight_calc->getJHEPWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
-	Weight_ktScan = HHWeight_calc->getScanWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
-	//evtWeightRecorder.record_bm(WeightBM[0]); // SM by default
-
-	HHWeight = WeightBM[0];
-	if(isDEBUG)
-	  {
-	    std::cout << "mhh = "              << eventInfo.gen_mHH          << " : "
-	      "cost "               << eventInfo.gen_cosThetaStar << " : "
-	      "weight = "           << HHWeight                   << '\n'
-	      ;
-	    std::cout << "Calculated " << Weight_ktScan.size() << " scan weights\n";
-	    for(std::size_t bm_list = 0; bm_list < Weight_ktScan.size(); ++bm_list)
-	      {
-		std::cout << "line = " << bm_list << "; Weight = " <<  Weight_ktScan[bm_list] << '\n';
-	      }
-	    std::cout << "\n";
-	  }
+        std::cout << "mhh = " << eventInfo.gen_mHH          << " : "
+          "cost "             << eventInfo.gen_cosThetaStar << " : "
+          "weight = "         << HHWeight                   << '\n'
+        ;
+        std::cout << "Calculated " << Weight_ktScan.size() << " scan weights\n";
+        for(std::size_t bm_list = 0; bm_list < Weight_ktScan.size(); ++bm_list)
+        {
+          std::cout << "line = " << bm_list << "; Weight = " <<  Weight_ktScan[bm_list] << '\n';
+        }
+        std::cout << '\n';
       }
-
+    }
 
     //--- compute output of hadronic top tagger BDT
     // it returns the gen-triplets organized in top/anti-top
@@ -1695,20 +1694,20 @@ int main(int argc, char* argv[])
         {
           selHistManager->electrons_->fillHistograms(preselElectrons, evtWeight);
           selHistManager->muons_->fillHistograms(preselMuons, evtWeight);
-	  selHistManager->hadTaus_->fillHistograms({ selHadTau_lead, selHadTau_sublead }, evtWeight);
-	  selHistManager->leadHadTau_->fillHistograms({ selHadTau_lead }, evtWeight);
-	  selHistManager->subleadHadTau_->fillHistograms({ selHadTau_sublead }, evtWeight);
-	  selHistManager->jets_->fillHistograms(selJets, evtWeight);
-	  selHistManager->leadJet_->fillHistograms(selJets, evtWeight);
-	  selHistManager->subleadJet_->fillHistograms(selJets, evtWeight);
-	  selHistManager->BJets_loose_->fillHistograms(selBJets_loose, evtWeight);
-	  selHistManager->leadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
-	  selHistManager->subleadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
-	  selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
-	  selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
-	  selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
-	  selHistManager->mvaInputVariables_ttbar_->fillHistograms(mvaInputs_ttbar, evtWeight);
-	}
+          selHistManager->hadTaus_->fillHistograms({ selHadTau_lead, selHadTau_sublead }, evtWeight);
+          selHistManager->leadHadTau_->fillHistograms({ selHadTau_lead }, evtWeight);
+          selHistManager->subleadHadTau_->fillHistograms({ selHadTau_sublead }, evtWeight);
+          selHistManager->jets_->fillHistograms(selJets, evtWeight);
+          selHistManager->leadJet_->fillHistograms(selJets, evtWeight);
+          selHistManager->subleadJet_->fillHistograms(selJets, evtWeight);
+          selHistManager->BJets_loose_->fillHistograms(selBJets_loose, evtWeight);
+          selHistManager->leadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
+          selHistManager->subleadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
+          selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
+          selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
+          selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
+          selHistManager->mvaInputVariables_ttbar_->fillHistograms(mvaInputs_ttbar, evtWeight);
+        }
 
         const std::string central_or_shift_tH = eventInfo.has_central_or_shift(central_or_shift) ? central_or_shift : central_or_shift_main;
         const double evtWeight_tH_nom = evtWeightRecorder.get_nom_tH_weight(central_or_shift_tH);
@@ -1760,6 +1759,7 @@ int main(int argc, char* argv[])
 	    }
 	  }
 	}
+
         if ( isSignal ) {
           std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
           if(! decayModeStr.empty() && !((isMC_tH || isMC_H) && ( decayModeStr == "hzg" || decayModeStr == "hmm" )))
@@ -1770,33 +1770,33 @@ int main(int argc, char* argv[])
               if ( selHistManager_evt_category_decayModes )
               {
               selHistManager_evt_category_decayModes->fillHistograms(
-                preselElectrons.size(),
-		preselMuons.size(),
-		selHadTaus.size(),
-		selJets.size(),
-		selBJets_loose.size(),
-		selBJets_medium.size(),
-		mvaOutput_0l_2tau_ttbar,
-		mvaOutput_0l_2tau_HTT_tt,
-		mvaOutput_0l_2tau_HTT_ttv,
-		mvaOutput_0l_2tau_HTT_sum,
-		mvaOutput_0l_2tau_HTT_sum_dy,
-		mvaDiscr_0l_2tau_HTT,
-		mva_Boosted_AK8,
-		mva_Updated,
-		mTauTauVis,
-		mTauTau,
-		pZeta,
-		pZetaVis,
-		pZetaComb,
-		mT_tau1,
-		mbb,
-		mbb_loose,
-		kv.second
-              );
-	      }
+                  preselElectrons.size(),
+                  preselMuons.size(),
+                  selHadTaus.size(),
+                  selJets.size(),
+                  selBJets_loose.size(),
+                  selBJets_medium.size(),
+                  mvaOutput_0l_2tau_ttbar,
+                  mvaOutput_0l_2tau_HTT_tt,
+                  mvaOutput_0l_2tau_HTT_ttv,
+                  mvaOutput_0l_2tau_HTT_sum,
+                  mvaOutput_0l_2tau_HTT_sum_dy,
+                  mvaDiscr_0l_2tau_HTT,
+                  mva_Boosted_AK8,
+                  mva_Updated,
+                  mTauTauVis,
+                  mTauTau,
+                  pZeta,
+                  pZetaVis,
+                  pZetaComb,
+                  mT_tau1,
+                  mbb,
+                  mbb_loose,
+                  kv.second
+                );
+              }
             }
-	    if(! Weight_ktScan.empty() )
+            if(! Weight_ktScan.empty() )
             {
               for(const auto & kv: tH_weight_map)
 		{
@@ -1833,6 +1833,7 @@ int main(int argc, char* argv[])
 	    }
 	  }
 	}
+
         if(! skipFilling)
         {
           selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
@@ -1855,34 +1856,34 @@ int main(int argc, char* argv[])
           {
           selHistManager_evt_category->fillHistograms(
             preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
-	    selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-	    mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
-	    mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-	    mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
-	    pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, evtWeight
+            selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
+            mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
+            mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
+            pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, evtWeight
           );
           }
 
-	  if( ! Weight_ktScan.empty() )
-	  {
-	    for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
-	    {
-	      double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
-	      EvtHistManager_0l_2tau* selHistManager_evt_category_scan = selHistManager->evt_in_categories_scan_[category][scanIdx];
-	      if ( selHistManager_evt_category_scan )
-	      {
-		selHistManager_evt_category_scan->fillHistograms(
-		  preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
-		  selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-		  mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
-		  mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-		  mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
-		  pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, evtWeight0
-		 );
-	      }
-	    }
-	  }
-	}
+          if( ! Weight_ktScan.empty() )
+          {
+            for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
+            {
+              double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
+              EvtHistManager_0l_2tau* selHistManager_evt_category_scan = selHistManager->evt_in_categories_scan_[category][scanIdx];
+              if ( selHistManager_evt_category_scan )
+              {
+                selHistManager_evt_category_scan->fillHistograms(
+                  preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
+                  selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+                  mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
+                  mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
+                  mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
+                  pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, evtWeight0
+                 );
+              }
+            }
+          }
+        }
       }
 
       if(isMC && ! skipFilling)

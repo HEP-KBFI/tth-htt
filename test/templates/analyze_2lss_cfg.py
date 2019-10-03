@@ -132,5 +132,5 @@ process.analyze_2lss = cms.PSet(
         isDEBUG          = cms.bool(False),
         do_scan          = cms.bool(True),
         do_ktscan        = cms.bool(False),
-),
+    ),
 )
