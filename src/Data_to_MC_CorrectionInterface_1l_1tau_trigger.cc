@@ -22,6 +22,7 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::Data_to_MC_CorrectionInterface_1
   , era_(get_era(era_str_))
   , hadTauSelection_(cfg.getParameter<std::string>("hadTauSelection"))
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
+  , allowedDecayModes_({ 0, 1, 10 })
   , lepton_type_(-1)
   , lepton_pt_(0.)
   , lepton_eta_(0.)
@@ -162,7 +163,7 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::getSF_triggerEff(TriggerSFsys ce
 
     eff_1l1tau_tauLeg_data = 0.;
     eff_1l1tau_tauLeg_mc = 0.;
-    if(std::fabs(hadTau_eta_) <= 2.1)
+    if(std::fabs(hadTau_eta_) <= 2.1 && aux::hasDecayMode(allowedDecayModes_, hadTau_decayMode_))
     {
       eff_1l1tau_tauLeg_data = (effTrigger_1e1tau_tauLeg_->*getTriggerEfficiencyDataFunc)(hadTau_pt_, hadTau_eta_, hadTau_phi_, hadTau_decayMode_);
       eff_1l1tau_tauLeg_mc   = (effTrigger_1e1tau_tauLeg_->*getTriggerEfficiencyMCFunc)  (hadTau_pt_, hadTau_eta_, hadTau_phi_, hadTau_decayMode_);
@@ -184,7 +185,7 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::getSF_triggerEff(TriggerSFsys ce
 
     eff_1l1tau_tauLeg_data = 0.;
     eff_1l1tau_tauLeg_mc = 0.;
-    if(std::fabs(hadTau_eta_) <= 2.1)
+    if(std::fabs(hadTau_eta_) <= 2.1 && aux::hasDecayMode(allowedDecayModes_, hadTau_decayMode_))
     {
       eff_1l1tau_tauLeg_data = (effTrigger_1m1tau_tauLeg_->*getTriggerEfficiencyDataFunc)(hadTau_pt_, hadTau_eta_, hadTau_phi_, hadTau_decayMode_);
       eff_1l1tau_tauLeg_mc   = (effTrigger_1m1tau_tauLeg_->*getTriggerEfficiencyMCFunc)  (hadTau_pt_, hadTau_eta_, hadTau_phi_, hadTau_decayMode_);

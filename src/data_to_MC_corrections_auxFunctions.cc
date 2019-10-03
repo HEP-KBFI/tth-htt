@@ -7,6 +7,7 @@
 #include "TauAnalysisTools/TauTriggerSFs/interface/TauTriggerSFs2017.h" // TauTriggerSFs2017
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
+#include <boost/algorithm/string/predicate.hpp> // boost::ends_with()
 
 #include <cassert> // assert()
 
@@ -81,18 +82,18 @@ namespace aux
   std::string
   getHadTauSelectionLabel(const std::string & hadTauSelection)
   {
-    std::string hadTauSelection_TauTriggerSFs2017;
-    if     (hadTauSelection == "dR03mvaVVLoose") hadTauSelection_TauTriggerSFs2017 = "vloose"; // not measured for VVLoose in 2017
-    else if(hadTauSelection == "dR03mvaVLoose" ) hadTauSelection_TauTriggerSFs2017 = "vloose";
-    else if(hadTauSelection == "dR03mvaLoose"  ) hadTauSelection_TauTriggerSFs2017 = "loose";
-    else if(hadTauSelection == "dR03mvaMedium" ) hadTauSelection_TauTriggerSFs2017 = "medium";
-    else if(hadTauSelection == "dR03mvaTight"  ) hadTauSelection_TauTriggerSFs2017 = "tight";
-    else if(hadTauSelection == "dR03mvaVTight" ) hadTauSelection_TauTriggerSFs2017 = "vtight";
-    else if(hadTauSelection == "dR03mvaVVTight") hadTauSelection_TauTriggerSFs2017 = "vvtight";
+    std::string hadTauSelection_param;
+    if     (boost::ends_with(hadTauSelection, "VVLoose")) hadTauSelection_param = "vloose"; // not measured for VVLoose in 2017
+    else if(boost::ends_with(hadTauSelection, "VLoose" )) hadTauSelection_param = "vloose";
+    else if(boost::ends_with(hadTauSelection, "Loose"  )) hadTauSelection_param = "loose";
+    else if(boost::ends_with(hadTauSelection, "Medium" )) hadTauSelection_param = "medium";
+    else if(boost::ends_with(hadTauSelection, "Tight"  )) hadTauSelection_param = "tight";
+    else if(boost::ends_with(hadTauSelection, "VTight" )) hadTauSelection_param = "vtight";
+    else if(boost::ends_with(hadTauSelection, "VVTight")) hadTauSelection_param = "vvtight";
     else throw cmsException(__func__, __LINE__)
            << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection
          ;
-    return hadTauSelection_TauTriggerSFs2017;
+    return hadTauSelection_param;
   }
 
   std::string
@@ -144,6 +145,13 @@ namespace aux
     }
     const double sf = get_from_lut(corrections.at(hadTau_decayMode), hadTau_pt, hadTau_eta, isDEBUG);
     return sf;
+  }
+
+  bool
+  hasDecayMode(const std::vector<int> & allowedDecayModes,
+               int hadTau_decayMode)
+  {
+    return std::find(allowedDecayModes.cbegin(), allowedDecayModes.cend(), hadTau_decayMode) != allowedDecayModes.cend();
   }
 
   void
