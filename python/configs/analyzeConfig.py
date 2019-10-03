@@ -548,7 +548,14 @@ class analyzeConfig(object):
 
         if sample_info["sample_category"] == "HH": 
           assert('sample_category_hh' in sample_info)
-          jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/bbww/data/denom_{}.root'.format(self.era,) if sample_info["sample_category_hh"].find("2b") !=-1 else 'hhAnalysis/multilepton/data/denom_{}.root'.format(self.era,)
+          hhWeight_base = ''
+          if any(decayMode in sample_info['sample_category_hh'] for decayMode in [ 'bbvv', 'bbtt' ]):
+            hhWeight_base = 'bbww'
+          elif any(decayMode in sample_info['sample_category_hh'] for decayMode in [ 'tttt', 'wwtt', 'wwww' ]):
+            hhWeight_base = 'multilepton'
+          else:
+            raise ValueError("Uncrecongizable sample category: %s" % sample_info['sample_category_hh'])
+          jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
           jobOptions['hhWeight_cfg.do_ktscan'] = True
 
