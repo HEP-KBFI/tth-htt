@@ -207,7 +207,7 @@ class analyzeConfig_2lss(analyzeConfig):
 
     if sample_info["sample_category"] == "HH":
       assert('sample_category_hh' in sample_info)
-      jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/bbww/data/denom_{}.root'.format(self.era,)
+      jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/bbww/data/denom_{}.root'.format(self.era,) if sample_info["sample_category_hh"].find("2b") !=-1 else 'hhAnalysis/multilepton/data/denom_{}.root'.format(self.era,)                                 
       jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
       jobOptions['hhWeight_cfg.do_ktscan'] = True
 
