@@ -744,6 +744,7 @@ class analyzeConfig(object):
             'hhWeight_cfg.denominator_file',
             'hhWeight_cfg.histtitle',
             'hhWeight_cfg.do_ktscan',
+            'hhWeight_cfg.apply_rwgt',
             'minNumJets',
         ]
         jobOptions_typeMapping = {
