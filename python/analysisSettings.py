@@ -42,6 +42,8 @@ class systematics(object):
   triggerSF            = [ "CMS_ttHl_triggerUp",              "CMS_ttHl_triggerDown"              ]
   DYMCReweighting      = [ "CMS_ttHl_DYMCReweightingUp",      "CMS_ttHl_DYMCReweightingDown"      ]
   DYMCNormScaleFactors = [ "CMS_ttHl_DYMCNormScaleFactorsUp", "CMS_ttHl_DYMCNormScaleFactorsDown" ]
+  MET_ResponseSyst     = [ "MET_RespUp",                      "MET_RespDown"                      ]
+  MET_ResolutionSyst   = [ "MET_ResolUp",                     "MET_ResolDown"                     ]
 
   class L1PreFiring_(object):
     up   = "CMS_ttHl_l1PreFireUp"
@@ -223,8 +225,8 @@ class systematics(object):
 
   # Analysis-specific definitions
 
-  an_leptonFR        =    central +  JES +  JER           + UnclusteredEn
-  an_leptonFR_opts   = [ "central", "JES", "JER",          "UnclusteredEn" ]
+  an_leptonFR        =    central +  JES +  JER + MET_ResponseSyst + MET_ResolutionSyst          + UnclusteredEn
+  an_leptonFR_opts   = [ "central", "JES", "JER", "MET_ResponseSyst", "MET_ResolutionSyst"         "UnclusteredEn" ]
   an_jetToTauFR      =    central +  JES         + tauES                   + tauIDSF
   an_jetToTauFR_opts = [ "central", "JES", "JER",          "UnclusteredEn", "tauIDSF" ]
   an_addMEM          =    central +  JES +  JER +  tauES +  UnclusteredEn

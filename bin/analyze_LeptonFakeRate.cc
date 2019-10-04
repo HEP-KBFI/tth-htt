@@ -2,6 +2,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h" // RecoJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenMEtReader.h" // GenMEtReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
@@ -12,6 +13,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterReader.h" // MEtFilterReader
 #include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicity.h" // ObjectMultiplicity
 #include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicityReader.h" // ObjectMultiplicityReader
+#include "tthAnalysis/HiggsToTauTau/interface/METSystComp_LeptonFakeRate.h" // MET Response and resolution systematics
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
@@ -62,7 +64,7 @@
 #include <TH1.h> // TH1, TH1D
 #include <TMath.h> // TMath::Pi()
 #include <TROOT.h> // TROOT
-
+#include <Math/Vector3D.h> // Needed for ROOT::Math::XYZVector
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 #include <boost/algorithm/string/predicate.hpp> // boost::starts_with(), boost::ends_with()
@@ -583,11 +585,14 @@ main(int argc,
 
   const double lep_mva_cut_mu = cfg_analyze.getParameter<double>("lep_mva_cut_mu");
   const double lep_mva_cut_e  = cfg_analyze.getParameter<double>("lep_mva_cut_e");
+  const double METScaleSyst   = cfg_analyze.getParameter<double>("METScaleSyst");
 
+  
   const std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
   const std::string branchName_muons     = cfg_analyze.getParameter<std::string>("branchName_muons");
   const std::string branchName_jets      = cfg_analyze.getParameter<std::string>("branchName_jets");
   const std::string branchName_met       = cfg_analyze.getParameter<std::string>("branchName_met");
+  const std::string branchName_genmet       = cfg_analyze.getParameter<std::string>("branchName_genmet");
 
   const std::string branchName_genTauLeptons = cfg_analyze.getParameter<std::string>("branchName_genTauLeptons");
   const std::string branchName_genLeptons    = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
@@ -772,6 +777,8 @@ main(int argc,
   GenParticleReader * genMatchToMuonReader     = nullptr;
   GenParticleReader * genMatchToElectronReader = nullptr;
   GenParticleReader * genMatchToJetReader      = nullptr;
+  GenMEtReader * genmetReader  = nullptr;
+
   if(isMC)
   {
     if(! readGenObjects)
@@ -803,6 +810,8 @@ main(int argc,
         inputTree->registerReader(genPhotonReader);
       }
     }
+    genmetReader = new GenMEtReader(era, isMC, branchName_genmet); 
+    inputTree->registerReader(genmetReader);
     lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree->registerReader(lheInfoReader);
   }
@@ -1165,6 +1174,12 @@ main(int argc,
     std::vector<const RecoJet *> selJets_dR07 = jetSelector(cleanedJets_dR07);
 
     const RecoMEt met = metReader->read();
+    GenMEt genmet_tmp = GenMEt(0.,0.); // There is no MET Covariance stored in Ntuples
+    if(isMC && (genmetReader != nullptr)){
+      genmet_tmp = genmetReader->read();
+    }
+
+    const GenMEt genmet = genmet_tmp;    
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     if(isMC && redoGenMatching && ! fillGenEvtHistograms)
@@ -1466,6 +1481,7 @@ main(int argc,
       continue;
     }
 
+
     //--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
     //    the ranking of the triggers is as follows: 2mu, 2e, 1mu, 1e
     // CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
@@ -1534,6 +1550,7 @@ main(int argc,
       evtWeightRecorder.record_prescale(1.0 - prob_all_trigger_fail);
     }
 
+
     // fill histograms for muons
     for(const RecoMuon * const preselMuon_ptr: preselMuons) // loop over preselMuons
     {
@@ -1542,8 +1559,35 @@ main(int argc,
         break;
       }
       const RecoMuon & preselMuon = *preselMuon_ptr; 
-      const double mT     = comp_mT(preselMuon, met.pt(), met.phi());
-      const double mT_fix = comp_mT_fix(preselMuon, met.pt(), met.phi());
+      double Temp_mT = 0.;
+      double Temp_mT_fix = 0.;
+      const RecoLepton * const lepton_ptr = dynamic_cast<const RecoLepton *>(preselMuon_ptr);
+      if(isMC && (central_or_shift == "MET_RespUp")){
+      	const METSystComp_LeptonFakeRate & METSystComputer = METSystComp_LeptonFakeRate(*lepton_ptr, genmet, met, METScaleSyst, central_or_shift, false);
+	const RecoMEt met_mod = RecoMEt((METSystComputer.Get_MET_RespUp()).Rho(), (METSystComputer.Get_MET_RespUp()).Phi(), 0., 0., 0.);
+	Temp_mT     = comp_mT(preselMuon, met_mod.pt(), met_mod.phi());
+	Temp_mT_fix = comp_mT_fix(preselMuon, met_mod.pt(), met_mod.phi());
+      }else if(isMC && (central_or_shift == "MET_RespDown")){
+	const METSystComp_LeptonFakeRate & METSystComputer = METSystComp_LeptonFakeRate(*lepton_ptr, genmet, met, METScaleSyst, central_or_shift, false);
+	const RecoMEt met_mod = RecoMEt((METSystComputer.Get_MET_RespDown()).Rho(), (METSystComputer.Get_MET_RespDown()).Phi(), 0., 0., 0.);
+	Temp_mT     = comp_mT(preselMuon, met_mod.pt(), met_mod.phi());
+	Temp_mT_fix = comp_mT_fix(preselMuon, met_mod.pt(), met_mod.phi());
+      }else if(isMC && (central_or_shift == "MET_ResolUp")){
+	const METSystComp_LeptonFakeRate & METSystComputer = METSystComp_LeptonFakeRate(*lepton_ptr, genmet, met, METScaleSyst, central_or_shift, false);
+	const RecoMEt met_mod = RecoMEt((METSystComputer.Get_MET_ResolUp()).Rho(), (METSystComputer.Get_MET_ResolUp()).Phi(), 0., 0., 0.);
+	Temp_mT     = comp_mT(preselMuon, met_mod.pt(), met_mod.phi());
+	Temp_mT_fix = comp_mT_fix(preselMuon, met_mod.pt(), met_mod.phi());
+      }else if(isMC && (central_or_shift == "MET_ResolDown")){
+	const METSystComp_LeptonFakeRate & METSystComputer = METSystComp_LeptonFakeRate(*lepton_ptr, genmet, met, METScaleSyst, central_or_shift, false);
+	const RecoMEt met_mod = RecoMEt((METSystComputer.Get_MET_ResolDown()).Rho(), (METSystComputer.Get_MET_ResolDown()).Phi(), 0., 0., 0.);
+	Temp_mT     = comp_mT(preselMuon, met_mod.pt(), met_mod.phi());
+	Temp_mT_fix = comp_mT_fix(preselMuon, met_mod.pt(), met_mod.phi());
+      }else{
+	Temp_mT = comp_mT(preselMuon, met.pt(), met.phi());
+	Temp_mT_fix = comp_mT_fix(preselMuon, met.pt(), met.phi()); 
+      }  
+      const double mT     = Temp_mT;
+      const double mT_fix = Temp_mT_fix;
 
       // numerator histograms
       numerator_and_denominatorHistManagers * histograms_incl_beforeCuts_num = nullptr;
@@ -1628,10 +1672,36 @@ main(int argc,
       {
         break;
       }
-
       const RecoElectron & preselElectron = *preselElectron_ptr; 
-      const double mT     = comp_mT(preselElectron, met.pt(), met.phi());
-      const double mT_fix = comp_mT_fix(preselElectron, met.pt(), met.phi());
+      double Temp_mT = 0.;
+      double Temp_mT_fix = 0.;
+      const RecoLepton * const lepton_ptr = dynamic_cast<const RecoLepton *>(preselElectron_ptr);
+      if(isMC && (central_or_shift == "MET_RespUp")){
+      	const METSystComp_LeptonFakeRate & METSystComputer = METSystComp_LeptonFakeRate(*lepton_ptr, genmet, met, METScaleSyst, central_or_shift, false);
+	const RecoMEt met_mod = RecoMEt((METSystComputer.Get_MET_RespUp()).Rho(), (METSystComputer.Get_MET_RespUp()).Phi(), 0., 0., 0.);
+	Temp_mT     = comp_mT(preselElectron, met_mod.pt(), met_mod.phi());
+	Temp_mT_fix = comp_mT_fix(preselElectron, met_mod.pt(), met_mod.phi());
+      }else if(isMC && (central_or_shift == "MET_RespDown")){
+	const METSystComp_LeptonFakeRate & METSystComputer = METSystComp_LeptonFakeRate(*lepton_ptr, genmet, met, METScaleSyst, central_or_shift, false);
+	const RecoMEt met_mod = RecoMEt((METSystComputer.Get_MET_RespDown()).Rho(), (METSystComputer.Get_MET_RespDown()).Phi(), 0., 0., 0.);
+	Temp_mT     = comp_mT(preselElectron, met_mod.pt(), met_mod.phi());
+	Temp_mT_fix = comp_mT_fix(preselElectron, met_mod.pt(), met_mod.phi());
+      }else if(isMC && (central_or_shift == "MET_ResolUp")){
+	const METSystComp_LeptonFakeRate & METSystComputer = METSystComp_LeptonFakeRate(*lepton_ptr, genmet, met, METScaleSyst, central_or_shift, false);
+	const RecoMEt met_mod = RecoMEt((METSystComputer.Get_MET_ResolUp()).Rho(), (METSystComputer.Get_MET_ResolUp()).Phi(), 0., 0., 0.);
+	Temp_mT     = comp_mT(preselElectron, met_mod.pt(), met_mod.phi());
+	Temp_mT_fix = comp_mT_fix(preselElectron, met_mod.pt(), met_mod.phi());
+      }else if(isMC && (central_or_shift == "MET_ResolDown")){
+	const METSystComp_LeptonFakeRate & METSystComputer = METSystComp_LeptonFakeRate(*lepton_ptr, genmet, met, METScaleSyst, central_or_shift, false);
+	const RecoMEt met_mod = RecoMEt((METSystComputer.Get_MET_ResolDown()).Rho(), (METSystComputer.Get_MET_ResolDown()).Phi(), 0., 0., 0.);
+	Temp_mT     = comp_mT(preselElectron, met_mod.pt(), met_mod.phi());
+	Temp_mT_fix = comp_mT_fix(preselElectron, met_mod.pt(), met_mod.phi());
+      }else{
+	Temp_mT = comp_mT(preselElectron, met.pt(), met.phi());
+	Temp_mT_fix = comp_mT_fix(preselElectron, met.pt(), met.phi()); 
+      }  
+      const double mT     = Temp_mT;
+      const double mT_fix = Temp_mT_fix;
 
       numerator_and_denominatorHistManagers * histograms_incl_beforeCuts_num = nullptr;
       numerator_and_denominatorHistManagers * histograms_incl_afterCuts_num  = nullptr;
@@ -1761,6 +1831,7 @@ main(int argc,
   delete electronReader;
   delete jetReader;
   delete metReader;
+  delete genmetReader;
   delete genLeptonReader;
   delete genHadTauReader;
   delete genPhotonReader;
