@@ -114,7 +114,6 @@ process.analyze_3l = cms.PSet(
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
-        genMatch = cms.vstring(),
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
