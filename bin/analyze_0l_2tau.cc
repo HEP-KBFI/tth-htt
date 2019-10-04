@@ -616,10 +616,10 @@ int main(int argc, char* argv[])
 
 //--- HH scan
   const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
+  const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
   const HHWeightInterface * HHWeight_calc = nullptr;
   std::size_t Nscan = 0;
-
-  if(isMC_HH)
+  if(apply_HH_rwgt)
   {
     HHWeight_calc = new HHWeightInterface(hhWeight_cfg);
     Nscan = HHWeight_calc->get_nof_scans();
@@ -741,7 +741,7 @@ int main(int argc, char* argv[])
         ));
 	selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
 
-	if(isMC_HH)
+        if(apply_HH_rwgt)
 	{
 	  for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
 	  {
@@ -787,7 +787,7 @@ int main(int argc, char* argv[])
             ));
 	    selHistManager->evt_in_decayModes_[evt_cat_str][decayMode]->bookHistograms(fs);
 
-	    if(isMC_HH)
+            if(apply_HH_rwgt)
 	    {
 	      for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
 	      {
@@ -814,7 +814,7 @@ int main(int argc, char* argv[])
           Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
         selHistManager->evt_in_categories_[category]->bookHistograms(fs);
 
-	if(isMC_HH)
+        if(apply_HH_rwgt)
 	{
 	  for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
 	  {

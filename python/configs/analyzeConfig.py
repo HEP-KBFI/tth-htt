@@ -546,7 +546,7 @@ class analyzeConfig(object):
            sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and \
            sample_info['nof_reweighting'] > 0
 
-        if sample_info["sample_category"] == "HH": 
+        if sample_info["sample_category"] == "HH":
           assert('sample_category_hh' in sample_info)
           hhWeight_base = ''
           if any(decayMode in sample_info['sample_category_hh'] for decayMode in [ 'bbvv', 'bbtt' ]):
@@ -558,6 +558,7 @@ class analyzeConfig(object):
           jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
           jobOptions['hhWeight_cfg.do_ktscan'] = True
+          jobOptions['hhWeight_cfg.apply_rwgt'] = 'sm' not in sample_info["process_name_specific"]
 
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
