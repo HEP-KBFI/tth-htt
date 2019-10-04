@@ -52,7 +52,7 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
   if(selJets.size() < 3)
   {
     std::cerr << "Warning in <MEMInterface_2lss_1tau::operator()>: Failed to find three jets !!\n";
-    result.errorFlag_ = 1;
+    result.errorFlag_ = ADDMEM_2LSS1TAU_ERROR_JETMULTIPLICITY;
     return result;
   }
 
@@ -195,7 +195,7 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
   {
     std::cerr << "Warning in <MEMInterface_2lss_1tau::operator(): "
                  "Failed to invert MET covariance matrix (det=0) !!\n";
-    result.errorFlag_ = 1;
+    result.errorFlag_ = ADDMEM_2LSS1TAU_ERROR_MATRIXINVERSION;
     return result;
   }
 
@@ -252,7 +252,7 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
   }
   else
   {
-    result.errorFlag_ = 1;
+    result.errorFlag_ = ADDMEM_2LSS1TAU_ERROR;
     result.LR_        = -1.;
   }
 
@@ -264,7 +264,7 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
   }
   else
   {
-    result.errorFlag_ttZ_LR_ = 1;
+    result.errorFlag_ttZ_LR_ = ADDMEM_2LSS1TAU_ERROR;
     result.ttZ_LR_           = -1.;
   }
 
@@ -276,7 +276,7 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
   }
   else
   {
-    result.errorFlag_ttbar_LR_ = 1;
+    result.errorFlag_ttbar_LR_ = ADDMEM_2LSS1TAU_ERROR;
     result.ttbar_LR_           = -1.;
   }
 

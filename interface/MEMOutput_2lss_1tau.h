@@ -7,6 +7,13 @@
 
 #include <iostream>
 
+#define ADDMEM_2LSS1TAU_ERROR                 1
+#define ADDMEM_2LSS1TAU_ERROR_JETMULTIPLICITY 2
+#define ADDMEM_2LSS1TAU_ERROR_MATRIXINVERSION 3
+#define ADDMEM_2LSS1TAU_ERROR_SKIPPED         4
+#define ADDMEM_2LSS1TAU_ERROR_SKIPPED_NOPERM  5
+#define ADDMEM_2LSS1TAU_ERROR_NOPERM          6
+
 // forward declarations
 class RecoLepton;
 class RecoHadTau;
@@ -55,6 +62,7 @@ public:
   Float_t subleadLepton_phi_;
   Float_t hadTau_eta_;
   Float_t hadTau_phi_;
+  Int_t errorFlag_;
 protected:
   Int_t type_; // either 0 (fully reconstructed W->jj decay) or 1 (one jet from W->jj decay not reconstructed)
   Float_t weight_ttH_;
@@ -67,7 +75,6 @@ protected:
   Float_t cpuTime_;
   Float_t realTime_;
   Int_t isValid_;
-  Int_t errorFlag_;
   Int_t isValid_ttZ_LR_;
   Int_t errorFlag_ttZ_LR_;
   Int_t isValid_ttbar_LR_;

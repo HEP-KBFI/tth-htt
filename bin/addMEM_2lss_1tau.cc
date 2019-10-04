@@ -50,6 +50,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h" // branchEntryBaseType
 
 #include <boost/algorithm/string/predicate.hpp> // boost::algorithm::starts_with(), boost::algorithm::ends_with()
+#include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
 #include <iostream> // std::cerr, std::fixed
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
@@ -106,6 +107,13 @@ int main(int argc,
   const std::string branchName_jets      = cfg_addMEM.getParameter<std::string>("branchName_jets");
   const std::string branchName_met       = cfg_addMEM.getParameter<std::string>("branchName_met");
   const vstring copy_histograms          = cfg_addMEM.getParameter<vstring>("copy_histograms");
+  const vstring whitelist                = cfg_addMEM.getParameter<vstring>("whitelist");
+  const bool apply_whitelist             = cfg_addMEM.getParameter<bool>("apply_whitelist");
+
+  if(apply_whitelist)
+  {
+    std::cout << "Whitelisting the following events: " << boost::algorithm::join(whitelist, ", ") << '\n';
+  }
 
   std::vector<std::regex> copy_histograms_regex;
   std::transform(
@@ -448,151 +456,183 @@ int main(int argc,
     {
       std::cout << "Found " << maxPermutations_addMEM_2lss_1tau << " possible combination(s) to compute MEM\n";
     }
-    if(maxPermutations_addMEM_2lss_1tau >= 1)
+    if((apply_whitelist && contains(whitelist, eventInfo.str())) || ! apply_whitelist)
     {
-      const std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
-      for(std::size_t selLepton_lead_idx = 0; selLepton_lead_idx < selLeptons.size(); ++selLepton_lead_idx)
+      if(maxPermutations_addMEM_2lss_1tau >= 1)
       {
-        const RecoLepton * selLepton_lead = selLeptons[selLepton_lead_idx];
-        if(isDEBUG)
+        const std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
+        for(std::size_t selLepton_lead_idx = 0; selLepton_lead_idx < selLeptons.size(); ++selLepton_lead_idx)
         {
-          std::cout << "selLepton_lead: " << *selLepton_lead << '\n';
-        }
-        for(std::size_t selLepton_sublead_idx = selLepton_lead_idx + 1; selLepton_sublead_idx < selLeptons.size(); ++selLepton_sublead_idx)
-        {
-          const RecoLepton * selLepton_sublead = selLeptons[selLepton_sublead_idx];
+          const RecoLepton * selLepton_lead = selLeptons[selLepton_lead_idx];
           if(isDEBUG)
           {
-            std::cout << "selLepton_sublead: " << *selLepton_sublead << '\n';
+            std::cout << "selLepton_lead: " << *selLepton_lead << '\n';
           }
-
-          for(const std::string & central_or_shift: central_or_shifts)
+          for(std::size_t selLepton_sublead_idx = selLepton_lead_idx + 1; selLepton_sublead_idx < selLeptons.size(); ++selLepton_sublead_idx)
           {
-            checkOptionValidity(central_or_shift, isMC);
-            const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option     (central_or_shift, isMC);
-            const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected      : getHadTauPt_option(central_or_shift);
-            const int met_option      = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option     (central_or_shift, isMC);
-
-            if((
-                 (
-                   jetPt_option    == kJetMET_central   &&
-                   hadTauPt_option == kHadTauPt_central &&
-                   met_option      == kJetMET_central   &&
-                   ! useNonNominal_jetmet
-                 ) ||
-                useNonNominal_jetmet
-               ) &&
-               central_or_shift != "central")
-            {
-              std::cout << "Skipping systematics: " << central_or_shift << '\n';
-              continue;
-            }
-            else if(isDEBUG)
-            {
-              std::cout << "Attempting to evaluate the MEM score for systematics: " << central_or_shift << "\n"
-                        << "jetPt_option    = " << jetPt_option    << "\n"
-                        << "hadTauPt_option = " << hadTauPt_option << "\n"
-                        << "met_option      = " << met_option      << '\n'
-              ;
-            }
-
-            jetReader->setPtMass_central_or_shift(jetPt_option);
-            hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
-            metReader->setMEt_central_or_shift(met_option);
-
-      //--- build the jet and tau collections specifically for MEM evaluation
-            const std::vector<RecoHadTau> hadTaus_mem = hadTauReader->read();
-            const std::vector<const RecoHadTau *> hadTau_ptrs_mem     = convert_to_ptrs(hadTaus_mem);
-            const std::vector<const RecoHadTau *> cleanedHadTaus_mem  = hadTauCleaner(hadTau_ptrs_mem, preselMuons, preselElectrons);
-            const std::vector<const RecoHadTau *> fakeableHadTaus_mem = fakeableHadTauSelector(cleanedHadTaus_mem, isHigherPt);
-            const std::vector<const RecoHadTau *> tightHadTaus_mem    = tightHadTauSelector(fakeableHadTaus_mem, isHigherPt);
-            const std::vector<const RecoHadTau *> selHadTaus_mem      = selectObjects(
-              hadTauSelection, fakeableHadTaus_mem, tightHadTaus_mem
-            );
+            const RecoLepton * selLepton_sublead = selLeptons[selLepton_sublead_idx];
             if(isDEBUG)
             {
-              printCollection(central_or_shift + " selHadTaus", selHadTaus_mem);
+              std::cout << "selLepton_sublead: " << *selLepton_sublead << '\n';
             }
 
-            const std::vector<RecoJet> jets_mem = jetReader->read();
-            const std::vector<const RecoJet *> jet_ptrs_mem = convert_to_ptrs(jets_mem);
-            const std::vector<const RecoJet *> selJets_mem  = jetSelector(jet_ptrs_mem, isHigherPt);
-            if(isDEBUG)
+            for(const std::string & central_or_shift: central_or_shifts)
             {
-              printCollection("selJets_mem", selJets_mem);
-            }
+              checkOptionValidity(central_or_shift, isMC);
+              const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option     (central_or_shift, isMC);
+              const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected      : getHadTauPt_option(central_or_shift);
+              const int met_option      = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option     (central_or_shift, isMC);
 
-            const RecoMEt met_mem = metReader->read();
+              if((
+                   (
+                     jetPt_option    == kJetMET_central   &&
+                     hadTauPt_option == kHadTauPt_central &&
+                     met_option      == kJetMET_central   &&
+                     ! useNonNominal_jetmet
+                   ) ||
+                  useNonNominal_jetmet
+                 ) &&
+                 central_or_shift != "central")
+              {
+                std::cout << "Skipping systematics: " << central_or_shift << '\n';
+                continue;
+              }
+              else if(isDEBUG)
+              {
+                std::cout << "Attempting to evaluate the MEM score for systematics: " << central_or_shift << "\n"
+                          << "jetPt_option    = " << jetPt_option    << "\n"
+                          << "hadTauPt_option = " << hadTauPt_option << "\n"
+                          << "met_option      = " << met_option      << '\n'
+                ;
+              }
 
-//--- compute MEM values
-            int idxPermutation = -1;
+              jetReader->setPtMass_central_or_shift(jetPt_option);
+              hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
+              metReader->setMEt_central_or_shift(met_option);
 
-            for(const RecoHadTau * selHadTau: selHadTaus_mem)
-            {
+        //--- build the jet and tau collections specifically for MEM evaluation
+              const std::vector<RecoHadTau> hadTaus_mem = hadTauReader->read();
+              const std::vector<const RecoHadTau *> hadTau_ptrs_mem     = convert_to_ptrs(hadTaus_mem);
+              const std::vector<const RecoHadTau *> cleanedHadTaus_mem  = hadTauCleaner(hadTau_ptrs_mem, preselMuons, preselElectrons);
+              const std::vector<const RecoHadTau *> fakeableHadTaus_mem = fakeableHadTauSelector(cleanedHadTaus_mem, isHigherPt);
+              const std::vector<const RecoHadTau *> tightHadTaus_mem    = tightHadTauSelector(fakeableHadTaus_mem, isHigherPt);
+              const std::vector<const RecoHadTau *> selHadTaus_mem      = selectObjects(
+                hadTauSelection, fakeableHadTaus_mem, tightHadTaus_mem
+              );
               if(isDEBUG)
               {
-                std::cout << "selHadTau: " << *selHadTau << '\n';
+                printCollection(central_or_shift + " selHadTaus", selHadTaus_mem);
               }
-              const std::vector<const RecoLepton*> selLeptons_forCleaning = { selLepton_lead, selLepton_sublead };
-              const std::vector<const RecoHadTau *> selHadTaus_forCleaning = { selHadTau };
-              const std::vector<const RecoJet *> selJets_mem_cleaned = jetCleaningByIndex ?
-                jetCleanerByIndex(selJets_mem, selLeptons_forCleaning, selHadTaus_forCleaning) :
-                jetCleaner       (selJets_mem, selLeptons_forCleaning, selHadTaus_forCleaning)
-              ;
+
+              const std::vector<RecoJet> jets_mem = jetReader->read();
+              const std::vector<const RecoJet *> jet_ptrs_mem = convert_to_ptrs(jets_mem);
+              const std::vector<const RecoJet *> selJets_mem  = jetSelector(jet_ptrs_mem, isHigherPt);
               if(isDEBUG)
               {
-                printCollection("selJets_mem_cleaned", selJets_mem_cleaned);
+                printCollection("selJets_mem", selJets_mem);
               }
 
-              if(selJets_mem_cleaned.size() >= 3)
-              {
-                ++idxPermutation;
-                if(idxPermutation < maxPermutations_addMEM_2lss_1tau)
-                {
-                  std::cout << "computing MEM for " << eventInfo
-                            << " (idxPermutation = " << idxPermutation << "):\n"
-                               "inputs:\n"
-                            << " leading lepton:     " << *(static_cast<const ChargedParticle *>(selLepton_lead))
-                            << " subleading lepton:  " << *(static_cast<const ChargedParticle *>(selLepton_sublead))
-                            << " hadTau (charge = :"   << selHadTau -> charge() << ") "
-                                                       << *(static_cast<const Particle *>(selHadTau))
-                            << " MET:                " << met_mem << '\n';
-                  printCollection("cleaned MEM jets", selJets_mem_cleaned);
+              const RecoMEt met_mem = metReader->read();
 
-                  MEMOutput_2lss_1tau memOutput_2lss_1tau;
-                  if(dryRun)
-                  {
-                    memOutput_2lss_1tau.fillInputs(selLepton_lead, selLepton_sublead, selHadTau);
-                  }
-                  else
-                  {
-                    memOutput_2lss_1tau = memInterface_2lss_1tau(
-                      selLepton_lead, selLepton_sublead, selHadTau,
-                      met_mem, selJets_mem_cleaned
-                    );
-                  }
-                  memOutput_2lss_1tau.eventInfo_ = eventInfo;
-                  std::cout << "output (" << central_or_shift << "): " << memOutput_2lss_1tau;
-                  memOutputs_2lss_1tau[central_or_shift].push_back(memOutput_2lss_1tau);
-                } // idxPermutation < maxPermutations_addMEM_2lss_1tau
-                else if(idxPermutation == maxPermutations_addMEM_2lss_1tau) // CV: print warning only once per event
+  //--- compute MEM values
+              int idxPermutation = -1;
+
+              for(const RecoHadTau * selHadTau: selHadTaus_mem)
+              {
+                if(isDEBUG)
                 {
-                  std::cout << "Warning in " << eventInfo << ":\n"
-                               "Number of permutations exceeds 'maxPermutations_addMEM_2lss_1tau' = "
-                            << maxPermutations_addMEM_2lss_1tau << " --> skipping MEM computation after "
-                            << maxPermutations_addMEM_2lss_1tau << " permutations !!\n";
+                  std::cout << "selHadTau: " << *selHadTau << '\n';
                 }
-              } // selJets_mem_cleaned.size() >= 3
-            } // selHadTau
+                const std::vector<const RecoLepton*> selLeptons_forCleaning = { selLepton_lead, selLepton_sublead };
+                const std::vector<const RecoHadTau *> selHadTaus_forCleaning = { selHadTau };
+                const std::vector<const RecoJet *> selJets_mem_cleaned = jetCleaningByIndex ?
+                  jetCleanerByIndex(selJets_mem, selLeptons_forCleaning, selHadTaus_forCleaning) :
+                  jetCleaner       (selJets_mem, selLeptons_forCleaning, selHadTaus_forCleaning)
+                ;
+                if(isDEBUG)
+                {
+                  printCollection("selJets_mem_cleaned", selJets_mem_cleaned);
+                }
 
-            if(isDEBUG)
-            {
-              std::cout << "#memOutputs_2lss_1tau = " << memOutputs_2lss_1tau[central_or_shift].size() << '\n';
-            }
-          } // central_or_shift
-        } // selLepton_sublead_idx
-      } // selLepton_lead_idx
-    } // maxPermutations_addMEM_2lss_1tau >= 1
+                if(selJets_mem_cleaned.size() >= 3)
+                {
+                  ++idxPermutation;
+                  if(idxPermutation < maxPermutations_addMEM_2lss_1tau)
+                  {
+                    std::cout << "computing MEM for " << eventInfo
+                              << " (idxPermutation = " << idxPermutation << "):\n"
+                                 "inputs:\n"
+                              << " leading lepton:     " << *(static_cast<const ChargedParticle *>(selLepton_lead))
+                              << " subleading lepton:  " << *(static_cast<const ChargedParticle *>(selLepton_sublead))
+                              << " hadTau (charge = :"   << selHadTau -> charge() << ") "
+                                                         << *(static_cast<const Particle *>(selHadTau))
+                              << " MET:                " << met_mem << '\n';
+                    printCollection("cleaned MEM jets", selJets_mem_cleaned);
+
+                    MEMOutput_2lss_1tau memOutput_2lss_1tau;
+                    if(dryRun)
+                    {
+                      memOutput_2lss_1tau.fillInputs(selLepton_lead, selLepton_sublead, selHadTau);
+                    }
+                    else
+                    {
+                      memOutput_2lss_1tau = memInterface_2lss_1tau(
+                        selLepton_lead, selLepton_sublead, selHadTau,
+                        met_mem, selJets_mem_cleaned
+                      );
+                    }
+                    memOutput_2lss_1tau.eventInfo_ = eventInfo;
+                    std::cout << "output (" << central_or_shift << "): " << memOutput_2lss_1tau;
+                    memOutputs_2lss_1tau[central_or_shift].push_back(memOutput_2lss_1tau);
+                  } // idxPermutation < maxPermutations_addMEM_2lss_1tau
+                  else if(idxPermutation == maxPermutations_addMEM_2lss_1tau) // CV: print warning only once per event
+                  {
+                    std::cout << "Warning in " << eventInfo << ":\n"
+                                 "Number of permutations exceeds 'maxPermutations_addMEM_2lss_1tau' = "
+                              << maxPermutations_addMEM_2lss_1tau << " --> skipping MEM computation after "
+                              << maxPermutations_addMEM_2lss_1tau << " permutations !!\n";
+                  }
+                } // selJets_mem_cleaned.size() >= 3
+                else
+                {
+                  MEMOutput_2lss_1tau memOutput_2lss_1tau;
+                  memOutput_2lss_1tau.errorFlag_ = ADDMEM_2LSS1TAU_ERROR_JETMULTIPLICITY;
+                  memOutputs_2lss_1tau[central_or_shift].push_back(memOutput_2lss_1tau);
+                }
+              } // selHadTau
+
+              if(isDEBUG)
+              {
+                std::cout << "#memOutputs_2lss_1tau = " << memOutputs_2lss_1tau[central_or_shift].size() << '\n';
+              }
+            } // central_or_shift
+          } // selLepton_sublead_idx
+        } // selLepton_lead_idx
+      } // maxPermutations_addMEM_2lss_1tau >= 1
+      else
+      {
+        for(const std::string & central_or_shift: central_or_shifts)
+        {
+          MEMOutput_2lss_1tau memOutput_2lss_1tau;
+          memOutput_2lss_1tau.errorFlag_ = ADDMEM_2LSS1TAU_ERROR_NOPERM;
+          memOutputs_2lss_1tau[central_or_shift].push_back(memOutput_2lss_1tau);
+          memWriter[central_or_shift]->write(memOutputs_2lss_1tau[central_or_shift]);
+        }
+      }
+    } // apply_whitelist
+    else if(apply_whitelist && ! contains(whitelist, eventInfo.str()))
+    {
+      for(const std::string & central_or_shift: central_or_shifts)
+      {
+        MEMOutput_2lss_1tau memOutput_2lss_1tau;
+        memOutput_2lss_1tau.errorFlag_ = maxPermutations_addMEM_2lss_1tau >= 1 ?
+          ADDMEM_2LSS1TAU_ERROR_SKIPPED :
+          ADDMEM_2LSS1TAU_ERROR_SKIPPED_NOPERM
+        ;
+        memOutputs_2lss_1tau[central_or_shift].push_back(memOutput_2lss_1tau);
+        memWriter[central_or_shift]->write(memOutputs_2lss_1tau[central_or_shift]);
+      }
+    }
 
     for(const std::string & central_or_shift: central_or_shifts)
     {
