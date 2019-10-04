@@ -78,7 +78,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
         rle_select        = '',
         use_nonnominal    = False,
         hlt_filter        = False,
-        use_home          = True,
+        use_home          = False,
       ):
     analyzeConfig.__init__(self,
       configDir             = configDir,

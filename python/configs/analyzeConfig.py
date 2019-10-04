@@ -116,7 +116,7 @@ class analyzeConfig(object):
           do_sync                         = False,
           verbose                         = False,
           dry_run                         = False,
-          use_home                        = True,
+          use_home                        = False,
           isDebug                         = False,
           template_dir                    = None,
       ):

@@ -63,7 +63,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
         hlt_filter                = False,
         dry_run                   = False,
         isDebug                   = False,
-        use_home                  = True,
+        use_home                  = False,
         do_sync                   = False,
         use_nonnominal            = False,
         rle_select                = '',
