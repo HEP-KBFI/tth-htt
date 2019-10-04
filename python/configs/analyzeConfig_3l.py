@@ -72,7 +72,7 @@ class analyzeConfig_3l(analyzeConfig):
         rle_select                = '',
         use_nonnominal            = False,
         hlt_filter                = False,
-        use_home                  = True,
+        use_home                  = False,
       ):
     analyzeConfig.__init__(self,
       configDir                 = configDir,
@@ -569,6 +569,7 @@ class analyzeConfig_3l(analyzeConfig):
         self.addToMakefile_hadd_sync(lines_makefile)
       else:
         raise ValueError("Internal logic error")
+      self.addToMakefile_validate(lines_makefile)
       self.targets.extend(self.phoniesToAdd)
       self.createMakefile(lines_makefile)
       logging.info("Done.")
@@ -726,6 +727,7 @@ class analyzeConfig_3l(analyzeConfig):
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_add_syst_fakerate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
+    self.addToMakefile_validate(lines_makefile)
     self.createMakefile(lines_makefile)
 
     logging.info("Done.")

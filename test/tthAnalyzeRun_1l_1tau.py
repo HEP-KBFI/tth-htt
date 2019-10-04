@@ -80,7 +80,13 @@ hadTauWP_veto_map = {
 hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == "default":
-  samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+   for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if sample_info["sample_category"] in [
+      "data_obs"
+    ]:
+      sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -103,13 +109,11 @@ else:
 evtCategories = None
 if mode == "default" and len(central_or_shifts) <= 1:
   evtCategories = [
-                "1l_1tau_OS",  "1l_1tau_SS",  "1l_1tau_OS_wChargeFlipWeights",
-    "1e_1tau",  "1e_1tau_SS",  "1e_1tau_OS",  "1e_1tau_OS_wChargeFlipWeights",
-    "1mu_1tau", "1mu_1tau_SS", "1mu_1tau_OS", "1mu_1tau_OS_wChargeFlipWeights"
+    "1l_1tau" , "1l_1tau_OS", "1l_1tau_SS", "1l_1tau_OS_wChargeFlipWeights"
   ]
 else:
   evtCategories = [
-    "1l_1tau_OS", "1l_1tau_SS", "1l_1tau_OS_wChargeFlipWeights"
+    "1l_1tau" , "1l_1tau_OS", "1l_1tau_SS", "1l_1tau_OS_wChargeFlipWeights"
   ]
 
 for sample_name, sample_info in samples.items():
@@ -160,6 +164,7 @@ if __name__ == '__main__':
       "numJets"                           : {},
       "mTauTauVis"                        : {},
       "mTauTau"                           : {},
+      "mva_16Var"                         : {},
     },
     select_rle_output                     = True,
     dry_run                               = dry_run,

@@ -323,7 +323,11 @@ int main(int argc, char* argv[])
     case kEra_2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
     default: throw cmsException("analyze_1l_2tau", __LINE__) << "Invalid era = " << era;
   }
-  Data_to_MC_CorrectionInterface_1l_2tau_trigger* dataToMCcorrectionInterface_1l_2tau_trigger = new Data_to_MC_CorrectionInterface_1l_2tau_trigger(cfg_dataToMCcorrectionInterface);
+  Data_to_MC_CorrectionInterface_1l_2tau_trigger * dataToMCcorrectionInterface_1l_2tau_trigger = nullptr;
+  if(isMC)
+  {
+    dataToMCcorrectionInterface_1l_2tau_trigger = new Data_to_MC_CorrectionInterface_1l_2tau_trigger(cfg_dataToMCcorrectionInterface);
+  }
 
   std::string applyFakeRateWeights_string = cfg_analyze.getParameter<std::string>("applyFakeRateWeights");
   int applyFakeRateWeights = -1;

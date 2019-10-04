@@ -190,7 +190,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Apply HLT filter',
     )
 
-  def add_use_home(self, use_home = True):
+  def add_use_home(self, use_home = False):
     self.add_argument('-y', '--use-home',
       type = lambda s: s.lower() in ['true', 't', 'yes', '1'], dest = 'use_home', metavar = 'option',
       default = use_home, required = False,

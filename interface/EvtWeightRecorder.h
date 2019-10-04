@@ -125,6 +125,9 @@ public:
   record_prescale(double weight);
 
   void
+  record_bm(double weight);
+
+  void
   record_l1PrefireWeight(const L1PreFiringWeightReader * const l1PreFiringWeightReader);
 
   void
@@ -273,6 +276,7 @@ protected:
   double leptonSF_;
   double chargeMisIdProb_;
   double prescale_;
+  double bm_weight_;
   std::string central_or_shift_;
   std::vector<std::string> central_or_shifts_;
 

@@ -70,9 +70,10 @@ lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
+# Tau ID WPs for fakeable tau selection (needed for jet cleaning, MHT, MET LD)
 hadTauWP_veto_map = {
-  'dR03mva' : 'Loose',
-  'deepVSj' : 'Loose',
+  'dR03mva' : 'VLoose',
+  'deepVSj' : 'VVLoose',
 }
 hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 

@@ -84,7 +84,7 @@ MEMbranch = ''
 
 hadTauWP_map = {
   'dR03mva' : 'Loose',
-  'deepVSj' : 'Loose',
+  'deepVSj' : 'VLoose',
 }
 hadTau_selection = tau_id + hadTauWP_map[tau_id]
 

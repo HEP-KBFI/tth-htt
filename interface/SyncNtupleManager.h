@@ -53,7 +53,11 @@ enum class FloatVariableType
   mT_met_lep2,              ///< transverse mass of subleading lepton and MET (using reco pt)
   mT_met_lep3,              ///< transverse mass of trailing lepton and MET (using reco pt)
   mT_met_lep4,              ///< transverse mass of fourth lepton and MET (using reco pt)
-  massL,                    ///< transverse mass of highest pT dilepton pair passing loose selection
+  massL,                    ///< transverse mass of highest pT dilepton pair passing fakeable selection
+
+  mT2_W,                    ///< mT2 variables calculated from two leading jets
+  mT2_top_2particle,        ///< mT2 variables calculated from two leading leptons
+  mT2_top_3particle,        ///< best mT2 variables calculated from two leading jets or two leading leptons
 
   mTauTauVis,               ///< visible mass of the two selected taus
   mTauTau,

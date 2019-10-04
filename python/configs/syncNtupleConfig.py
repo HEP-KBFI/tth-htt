@@ -24,7 +24,7 @@ makeFileTemplate = '''
 .DEFAULT_GOAL := all
 SHELL := /bin/bash
 
-all: {{ output_file }}
+all: {{ output_file }} validate
 
 {{ output_file }}:{% for channel_output in channel_info %} {{channel_output}}{% endfor %}
 \t{{ hadd_script }} &> {{ hadd_wrapper_log }}
@@ -39,12 +39,15 @@ run:{% for channel_output, channel_cmd in channel_info.items() %}
 \t{{ channel_cmd['run'] }}
 {% endfor %}
 
+validate: {{ output_file }}
+\tinspect_rle_numbers.py -i {{ output_dir }} -w {{ validate_channels }}
+
 clean:
 {%- for channel_output, channel_cmd in channel_info.items() %}
 \t{{ channel_cmd['clean'] }}{% endfor %}
 \trm -f {{ output_file }}
 
-.PHONY: clean run
+.PHONY: clean run validate
 
 '''
 
@@ -89,7 +92,8 @@ class syncNtupleConfig:
     self.hadd_log_wrapper_path    = os.path.join(self.hadd_log_dir_path,    'hadd_sync_wrapper.log')
     self.hadd_log_executable_path = os.path.join(self.hadd_log_dir_path,    'hadd_sync_executable.log')
 
-    final_output_dir = os.path.join(output_dir, DKEY_SYNC)
+    self.output_dir = output_dir
+    final_output_dir = os.path.join(self.output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)
 
     common_args = "-v %s -e %s -s %s -y %s " % (version, era, ' '.join(systematics_label), use_home)
@@ -126,7 +130,7 @@ class syncNtupleConfig:
     common_args    += additional_args
 
     create_if_not_exists(config_dir)
-    create_if_not_exists(output_dir)
+    create_if_not_exists(self.output_dir)
 
     channels_extended = collections.OrderedDict()
     cr_channels = [ '3l', '4l' ]
@@ -135,8 +139,12 @@ class syncNtupleConfig:
       if channel in cr_channels:
         channels_extended[channel + 'ctrl'] = ' -c'
 
+    self.channels_to_validate = []
     self.channel_info = {}
     for channel in channels_extended:
+      if channel not in [ 'ttWctrl', 'ttZctrl', 'WZctrl', 'ZZctrl' ] and 'inclusive' not in channel:
+        self.channels_to_validate.append(channel)
+
       input_file = os.path.join(final_output_dir, '%s.root' % channel)
       executable_channel = channel
       if channel.replace('ctrl', '') in cr_channels:
@@ -168,10 +176,10 @@ class syncNtupleConfig:
         'clean'  : channel_cmd_clean,
       }
 
-    self.stdout_file_path = os.path.join(config_dir, "stdout_sync.log")
-    self.stderr_file_path = os.path.join(config_dir, "stderr_sync.log")
-    self.sw_ver_file_cfg  = os.path.join(config_dir, "VERSION_sync.log")
-    self.sw_ver_file_out  = os.path.join(output_dir, "VERSION_sync.log")
+    self.stdout_file_path = os.path.join(config_dir,      "stdout_sync.log")
+    self.stderr_file_path = os.path.join(config_dir,      "stderr_sync.log")
+    self.sw_ver_file_cfg  = os.path.join(config_dir,      "VERSION_sync.log")
+    self.sw_ver_file_out  = os.path.join(self.output_dir, "VERSION_sync.log")
     self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
       self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
     ))
@@ -196,6 +204,7 @@ class syncNtupleConfig:
         auxDirName              = '',
         pool_id                 = uuid.uuid4(),
         verbose                 = False,
+        max_input_files_per_job = len(self.channel_info),
         dry_run                 = self.dry_run,
         use_home                = self.use_home,
         min_file_size           = -1,
@@ -215,11 +224,13 @@ class syncNtupleConfig:
 
     with open(self.makefile_path, 'w') as makefile:
       makeFileContents = jinja2.Template(makeFileTemplate).render(
-        output_file      = self.final_output_file,
-        channel_info     = self.channel_info,
-        hadd_script      = self.hadd_script_path,
-        hadd_wrapper_log = self.hadd_log_wrapper_path,
-        additional_cmds  = additional_cmds,
+        output_file       = self.final_output_file,
+        channel_info      = self.channel_info,
+        hadd_script       = self.hadd_script_path,
+        hadd_wrapper_log  = self.hadd_log_wrapper_path,
+        additional_cmds   = additional_cmds,
+        validate_channels = ' '.join(self.channels_to_validate),
+        output_dir        = self.output_dir,
       )
       makefile.write(makeFileContents)
     logging.info("Created the makefile: %s" % self.makefile_path)

@@ -51,6 +51,10 @@ namespace aux
     return std::min(eff_data / std::max(1.e-6, eff_mc), 1.e+1);
   }
 
+  bool
+  hasDecayMode(const std::vector<int> & allowedDecayModes,
+               int hadTau_decayMode);
+
   void
   loadTriggerEff_1e_2016(vLutWrapperBase & effTrigger_1e_data,
                          vLutWrapperBase & effTrigger_1e_mc,

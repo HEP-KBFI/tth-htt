@@ -346,7 +346,12 @@ int main(int argc, char* argv[])
     case kEra_2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
     default: throw cmsException("analyze_1l_1tau", __LINE__) << "Invalid era = " << era;
   }
-  Data_to_MC_CorrectionInterface_1l_1tau_trigger* dataToMCcorrectionInterface_1l_1tau_trigger = new Data_to_MC_CorrectionInterface_1l_1tau_trigger(cfg_dataToMCcorrectionInterface);
+
+  Data_to_MC_CorrectionInterface_1l_1tau_trigger * dataToMCcorrectionInterface_1l_1tau_trigger = nullptr;
+  if(isMC)
+  {
+    dataToMCcorrectionInterface_1l_1tau_trigger = new Data_to_MC_CorrectionInterface_1l_1tau_trigger(cfg_dataToMCcorrectionInterface);
+  }
 
   std::string applyFakeRateWeights_string = cfg_analyze.getParameter<std::string>("applyFakeRateWeights");
   int applyFakeRateWeights = -1;
@@ -2160,7 +2165,7 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
         // mT_met_lep4 not filled
 
         snm->read(mTauTauVis,                             FloatVariableType::mTauTauVis);
-        snm->read(mTauTauVis,                             FloatVariableType::mvis_l1tau);
+        snm->read(mTauTau,                                FloatVariableType::mTauTau);
         // mvis_l2tau not filled
 
         snm->read(mbb,                                    FloatVariableType::mbb);

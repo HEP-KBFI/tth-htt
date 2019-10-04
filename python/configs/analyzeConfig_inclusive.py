@@ -25,7 +25,7 @@ class analyzeConfig_inclusive(analyzeConfig):
         gen_matching_by_index,
         central_or_shifts,
         use_nonnominal = False,
-        use_home       = True,
+        use_home       = False,
       ):
     analyzeConfig.__init__(self,
       configDir             = configDir,

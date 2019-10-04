@@ -27,6 +27,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
         dry_run,
         use_nonnominal,
         use_home,
+        rle_filter_file,
         pool_id = '',
       ):
     addMEMConfig.__init__(self,
@@ -50,6 +51,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
       use_nonnominal           = use_nonnominal,
       use_home                 = use_home,
       channel                  = "2lss_1tau",
+      rle_filter_file          = rle_filter_file,
       pool_id                  = pool_id,
     )
 
@@ -64,7 +66,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
     self.isDebug = isDebug
     self.central_or_shift = central_or_shift
 
-  def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, isMC, cfgFile_modified):
+  def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, isMC, cfgFile_modified, whitelist = []):
     """Create python configuration file for the addMEM_2lss_1tau executable (MEM code)
 
     Args:
@@ -100,5 +102,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
     lines.append("process.addMEM_2lss_1tau.dryRun = cms.bool(%s)" % self.dry_run)
     lines.append("process.addMEM_2lss_1tau.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     lines.append("process.addMEM_2lss_1tau.jetCleaningByIndex = cms.bool(%s)" % self.jet_cleaning_by_index)
+    lines.append("process.addMEM_2lss_1tau.apply_whitelist = cms.bool(%s)" % bool(self.rle_filter_file))
+    lines.append("process.addMEM_2lss_1tau.whitelist = cms.vstring(%s)" % whitelist)
 
     create_cfg(self.cfgFile_addMEM_original, cfgFile_modified, lines)

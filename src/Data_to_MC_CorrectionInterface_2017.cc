@@ -92,7 +92,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
 
   if(applyHadTauSF_)
   {
-    tauIdSFs_ = new TauIDSFTool(2017, tauIDSF_str_, tauIDSF_level_str_, false);
+    tauIdSFs_ = new TauIDSFTool("2017ReReco", tauIDSF_str_, tauIDSF_level_str_, false);
   }
 }
 

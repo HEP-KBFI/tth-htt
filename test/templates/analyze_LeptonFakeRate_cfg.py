@@ -49,6 +49,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
 
     lep_mva_cut_mu = cms.double(1.),
     lep_mva_cut_e  = cms.double(1.),
+    METScaleSyst   = cms.double(0.10), ## MET Syst set to 10%
 
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
@@ -68,6 +69,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
     branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
+    branchName_genmet = cms.string('GenMET'),
 
     branchName_genTauLeptons = cms.string('GenTau'),
     branchName_genLeptons = cms.string('GenLep'),
