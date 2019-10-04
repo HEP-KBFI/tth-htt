@@ -584,7 +584,7 @@ int main(int argc,
   }
   if(! missing_whitelisted.empty())
   {
-    throw cmsException("addMEM_2lss_1tau", __LINE__)
+    throw cmsException("addMEM_3l", __LINE__)
       << "Never processed the following whitelisted events: " << boost::algorithm::join(missing_whitelisted, ", ")
     ;
   }
