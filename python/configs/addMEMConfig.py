@@ -283,10 +283,10 @@ class addMEMConfig:
             evt_ranges = []
 
             counter, counter_arr = 0, []
-            nof_events_pass_counter, nof_events_pass  = 0, []
-            nof_int_pass_counter,    nof_int_pass     = 0, []
-            nof_zero_integrations,   nof_events_zero  = 0, []
-            whitelist_all,          whitelist_running = [], []
+            nof_events_pass_counter, nof_events_pass   = 0, []
+            nof_int_pass_counter,    nof_int_pass      = 0, []
+            nof_zero_integrations,   nof_events_zero   = 0, []
+            whitelist_all,           whitelist_running = [], []
 
             run                    = array.array('I', [0])
             luminosityBlock        = array.array('I', [0])
@@ -307,7 +307,8 @@ class addMEMConfig:
                 nof_integrations = maxPermutations_addMEM[0]
                 if apply_rle_filter:
                     if rle in rle_whitelist:
-                        whitelist_running.append(rle)
+                        if not (nof_integrations > 0):
+                            raise RuntimeError("Expected non-zero # integrations in event: %s" % rle)
                     else:
                         nof_integrations = 0
 
@@ -344,6 +345,9 @@ class addMEMConfig:
                     if apply_rle_filter:
                         whitelist_all.append(whitelist_running)
                         whitelist_running = []
+
+                if rle in rle_whitelist:
+                    whitelist_running.append(rle)
 
                 counter += nof_integrations
                 current_pos += 1
