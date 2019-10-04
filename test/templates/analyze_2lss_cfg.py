@@ -106,7 +106,6 @@ process.analyze_2lss = cms.PSet(
     syncNtuple = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
-        genMatch = cms.vstring(),
     ),
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
@@ -132,5 +131,5 @@ process.analyze_2lss = cms.PSet(
         isDEBUG          = cms.bool(False),
         do_scan          = cms.bool(True),
         do_ktscan        = cms.bool(False),
-),
+    ),
 )

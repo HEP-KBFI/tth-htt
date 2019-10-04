@@ -33,7 +33,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
                verbose           = False,
                dry_run           = True,
                isDebug           = False,
-               use_home          = True):
+               use_home          = False,
+            ):
     analyzeConfig.__init__(self,
       configDir             = configDir,
       outputDir             = outputDir,

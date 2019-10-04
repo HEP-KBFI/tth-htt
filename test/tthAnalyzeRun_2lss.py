@@ -12,7 +12,7 @@ import getpass
 
 # E.g. to run: ./test/tthAnalyzeRun_2lss.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync', "testSignal"  ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync'  ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -70,27 +70,12 @@ lepton_charge_selections = [ "OS", "SS" ]
 
 hadTauWP_veto_map = {
   'dR03mva' : 'Loose',
-  'deepVSj' : 'Loose',
+  'deepVSj' : 'VLoose',
 }
 hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-elif mode == "testSignal"  :
-    samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-    for sample_name, sample_info in samples.items():
-      if sample_name == 'sum_events': continue
-      if sample_info["sample_category"] in [
-      "HH",
-      #"signal",
-      "TTWH",
-      "TTZH",
-      "VH",
-      "ggH",
-      "qqH"
-      ] and sample_info["use_it"] == True:
-        sample_info["use_it"] = True
-      else : sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")

@@ -53,7 +53,11 @@ enum class FloatVariableType
   mT_met_lep2,              ///< transverse mass of subleading lepton and MET (using reco pt)
   mT_met_lep3,              ///< transverse mass of trailing lepton and MET (using reco pt)
   mT_met_lep4,              ///< transverse mass of fourth lepton and MET (using reco pt)
-  massL,                    ///< transverse mass of highest pT dilepton pair passing loose selection
+  massL,                    ///< transverse mass of highest pT dilepton pair passing fakeable selection
+
+  mT2_W,                    ///< mT2 variables calculated from two leading jets
+  mT2_top_2particle,        ///< mT2 variables calculated from two leading leptons
+  mT2_top_3particle,        ///< best mT2 variables calculated from two leading jets or two leading leptons
 
   mTauTauVis,               ///< visible mass of the two selected taus
   mTauTau,
@@ -308,6 +312,20 @@ protected:
   Int_t * tau_byVTightDeepTau2017v2VSjet;
   Int_t * tau_byVVTightDeepTau2017v2VSjet;
   Float_t * tau_byDeepTau2017v2VSjetraw;
+  Int_t * tau_byVVVLooseDeepTau2017v2VSe;
+  Int_t * tau_byVVLooseDeepTau2017v2VSe;
+  Int_t * tau_byVLooseDeepTau2017v2VSe;
+  Int_t * tau_byLooseDeepTau2017v2VSe;
+  Int_t * tau_byMediumDeepTau2017v2VSe;
+  Int_t * tau_byTightDeepTau2017v2VSe;
+  Int_t * tau_byVTightDeepTau2017v2VSe;
+  Int_t * tau_byVVTightDeepTau2017v2VSe;
+  Float_t * tau_byDeepTau2017v2VSeraw;
+  Int_t * tau_byVLooseDeepTau2017v2VSmu;
+  Int_t * tau_byLooseDeepTau2017v2VSmu;
+  Int_t * tau_byMediumDeepTau2017v2VSmu;
+  Int_t * tau_byTightDeepTau2017v2VSmu;
+  Float_t * tau_byDeepTau2017v2VSmuraw;
   Int_t * tau_againstMuonLoose3;
   Int_t * tau_againstMuonTight3;
   Int_t * tau_againstElectronVLooseMVA6;

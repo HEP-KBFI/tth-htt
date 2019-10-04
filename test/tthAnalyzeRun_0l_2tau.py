@@ -12,7 +12,7 @@ import getpass
 
 # E.g.: ./test/tthAnalyzeRun_0l_2tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync', "testSignal" ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts
 systematics.full = systematics.an_common
 
@@ -71,7 +71,7 @@ gen_matching_by_index = (gen_matching == 'by_index')
 
 hadTauWP_map = {
   'dR03mva' : 'Medium',
-  'deepVSj' : 'Medium',
+  'deepVSj' : 'Loose',
 }
 hadTau_selection = tau_id + hadTauWP_map[tau_id]
 
@@ -90,21 +90,6 @@ if mode == "default":
     if sample_name == 'sum_events': continue
     if sample_info["process_name_specific"].startswith("DYBBJetsToLL_M-50"):
       sample_info["use_it"] = True
-elif mode == "testSignal":
-    samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-    for sample_name, sample_info in samples.items():
-      if sample_name == 'sum_events': continue
-      if sample_info["sample_category"] in [
-      "HH",
-      #"signal",
-      "TTWH",
-      "TTZH",
-      "VH",
-      "ggH",
-      "qqH"
-      ] and sample_info["use_it"] == True:
-        sample_info["use_it"] = True
-      else : sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")

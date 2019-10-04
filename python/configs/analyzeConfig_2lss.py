@@ -68,7 +68,7 @@ class analyzeConfig_2lss(analyzeConfig):
         rle_select                = '',
         use_nonnominal            = False,
         hlt_filter                = False,
-        use_home                  = True,
+        use_home                  = False,
       ):
     analyzeConfig.__init__(self,
       configDir                 = configDir,
@@ -204,12 +204,6 @@ class analyzeConfig_2lss(analyzeConfig):
     jobOptions['leptonFakeRateWeight.inputFileName'] = self.leptonFakeRateWeight_inputFile
     jobOptions['leptonFakeRateWeight.histogramName_e'] = self.leptonFakeRateWeight_histogramName_e
     jobOptions['leptonFakeRateWeight.histogramName_mu'] = self.leptonFakeRateWeight_histogramName_mu
-
-    if sample_info["sample_category"] == "HH":
-      assert('sample_category_hh' in sample_info)
-      jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/bbww/data/denom_{}.root'.format(self.era,)
-      jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
-      jobOptions['hhWeight_cfg.do_ktscan'] = True
 
     lines = super(analyzeConfig_2lss, self).createCfg_analyze(jobOptions, sample_info)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
@@ -601,6 +595,7 @@ class analyzeConfig_2lss(analyzeConfig):
         self.addToMakefile_hadd_sync(lines_makefile)
       else:
         raise ValueError("Internal logic error")
+      self.addToMakefile_validate(lines_makefile)
       self.targets.extend(self.phoniesToAdd)
       self.createMakefile(lines_makefile)
       logging.info("Done.")
@@ -775,6 +770,7 @@ class analyzeConfig_2lss(analyzeConfig):
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_add_syst_fakerate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
+    self.addToMakefile_validate(lines_makefile)
     self.createMakefile(lines_makefile)
 
     logging.info("Done.")

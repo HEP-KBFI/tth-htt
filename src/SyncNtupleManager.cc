@@ -136,6 +136,10 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::mT_met_lep4],              "mT_lep4",
     floatMap[FloatVariableType::massL],                    "massL",
 
+    floatMap[FloatVariableType::mT2_W],                    "mT2_W",
+    floatMap[FloatVariableType::mT2_top_2particle],        "mT2_top_2particle",
+    floatMap[FloatVariableType::mT2_top_3particle],        "mT2_top_3particle",
+
     floatMap[FloatVariableType::mTauTauVis],               "mTauTauVis",
     floatMap[FloatVariableType::mTauTau],                  "mTauTau",
     floatMap[FloatVariableType::pZetaComb],                "pZetaComb",
@@ -322,6 +326,20 @@ SyncNtupleManager::initializeBranches()
     tau_byVTightDeepTau2017v2VSjet,                "byVTightDeepTau2017v2VSjet",
     tau_byVVTightDeepTau2017v2VSjet,               "byVVTightDeepTau2017v2VSjet",
     tau_byDeepTau2017v2VSjetraw,                   "byDeepTau2017v2VSjetraw",
+    tau_byVVVLooseDeepTau2017v2VSe,                "byVVVLooseDeepTau2017v2VSe",
+    tau_byVVLooseDeepTau2017v2VSe,                 "byVVLooseDeepTau2017v2VSe",
+    tau_byVLooseDeepTau2017v2VSe,                  "byVLooseDeepTau2017v2VSe",
+    tau_byLooseDeepTau2017v2VSe,                   "byLooseDeepTau2017v2VSe",
+    tau_byMediumDeepTau2017v2VSe,                  "byMediumDeepTau2017v2VSe",
+    tau_byTightDeepTau2017v2VSe,                   "byTightDeepTau2017v2VSe",
+    tau_byVTightDeepTau2017v2VSe,                  "byVTightDeepTau2017v2VSe",
+    tau_byVVTightDeepTau2017v2VSe,                 "byVVTightDeepTau2017v2VSe",
+    tau_byDeepTau2017v2VSeraw,                     "byDeepTau2017v2VSeraw",
+    tau_byVLooseDeepTau2017v2VSmu,                 "byVLooseDeepTau2017v2VSmu",
+    tau_byLooseDeepTau2017v2VSmu,                  "byLooseDeepTau2017v2VSmu",
+    tau_byMediumDeepTau2017v2VSmu,                 "byMediumDeepTau2017v2VSmu",
+    tau_byTightDeepTau2017v2VSmu,                  "byTightDeepTau2017v2VSmu",
+    tau_byDeepTau2017v2VSmuraw,                   "byDeepTau2017v2VSmuraw",
     tau_againstMuonLoose3,                         "againstMuonLoose3",
     tau_againstMuonTight3,                         "againstMuonTight3",
     tau_againstElectronVLooseMVA6,                 "againstElectronVLooseMVA6",
@@ -582,6 +600,24 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
     tau_byVVTightDeepTau2017v2VSjet[i] = idDeepTauVSjet >= 8 ? 1 : 0;
     tau_byDeepTau2017v2VSjetraw[i] = hadtau -> raw_mva(TauID::DeepTau2017v2VSjet);
 
+    const Int_t idDeepTauVSe = hadtau -> id_mva(TauID::DeepTau2017v2VSe);
+    tau_byVVVLooseDeepTau2017v2VSe[i] = idDeepTauVSe >= 1 ? 1 : 0;
+    tau_byVVLooseDeepTau2017v2VSe[i] = idDeepTauVSe >= 2 ? 1 : 0;
+    tau_byVLooseDeepTau2017v2VSe[i] = idDeepTauVSe >= 3 ? 1 : 0;
+    tau_byLooseDeepTau2017v2VSe[i] = idDeepTauVSe >= 4 ? 1 : 0;
+    tau_byMediumDeepTau2017v2VSe[i] = idDeepTauVSe >= 5 ? 1 : 0;
+    tau_byTightDeepTau2017v2VSe[i] = idDeepTauVSe >= 6 ? 1 : 0;
+    tau_byVTightDeepTau2017v2VSe[i] = idDeepTauVSe >= 7 ? 1 : 0;
+    tau_byVVTightDeepTau2017v2VSe[i] = idDeepTauVSe >= 8 ? 1 : 0;
+    tau_byDeepTau2017v2VSeraw[i] = hadtau -> raw_mva(TauID::DeepTau2017v2VSe);
+
+    const Int_t idDeepTauVSmu = hadtau -> id_mva(TauID::DeepTau2017v2VSmu);
+    tau_byVLooseDeepTau2017v2VSmu[i] = idDeepTauVSmu >= 1 ? 1 : 0;
+    tau_byLooseDeepTau2017v2VSmu[i] = idDeepTauVSmu >= 2 ? 1 : 0;
+    tau_byMediumDeepTau2017v2VSmu[i] = idDeepTauVSmu >= 3 ? 1 : 0;
+    tau_byTightDeepTau2017v2VSmu[i] = idDeepTauVSmu >= 4 ? 1 : 0;
+    tau_byDeepTau2017v2VSmuraw[i] = hadtau -> raw_mva(TauID::DeepTau2017v2VSmu);
+
     const Int_t idAntiMu = hadtau -> antiMuon();
     tau_againstMuonLoose3[i] = idAntiMu >= 1 ? 1 : 0;
     tau_againstMuonTight3[i] = idAntiMu >= 2 ? 1 : 0;
@@ -836,6 +872,20 @@ SyncNtupleManager::resetBranches()
     tau_byVTightDeepTau2017v2VSjet,
     tau_byVVTightDeepTau2017v2VSjet,
     tau_byDeepTau2017v2VSjetraw,
+    tau_byVVVLooseDeepTau2017v2VSe,
+    tau_byVVLooseDeepTau2017v2VSe,
+    tau_byVLooseDeepTau2017v2VSe,
+    tau_byLooseDeepTau2017v2VSe,
+    tau_byMediumDeepTau2017v2VSe,
+    tau_byTightDeepTau2017v2VSe,
+    tau_byVTightDeepTau2017v2VSe,
+    tau_byVVTightDeepTau2017v2VSe,
+    tau_byDeepTau2017v2VSeraw,
+    tau_byVLooseDeepTau2017v2VSmu,
+    tau_byLooseDeepTau2017v2VSmu,
+    tau_byMediumDeepTau2017v2VSmu,
+    tau_byTightDeepTau2017v2VSmu,
+    tau_byDeepTau2017v2VSmuraw,
     tau_againstMuonLoose3,
     tau_againstMuonTight3,
     tau_againstElectronVLooseMVA6,

@@ -73,12 +73,16 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const e
 
   if(applyHadTauSF_)
   {
-    if(hadTauId_ == TauID::DeepTau2017v2VSjet ||
-       hadTauId_ == TauID::MVAoldDM2017v2     ||
-       hadTauId_ == TauID::MVAoldDMdR032017v2  )
+    if(hadTauId_ == TauID::DeepTau2017v2VSjet)
+    {
+      tauIDSF_str_ = "DeepTau2017v2p1VSjet";
+      tauIDSF_level_str_ = TauID_level_strings.at(TauID_levels.at(hadTauId_)).at(hadTauSelection_);
+    }
+    else if(hadTauId_ == TauID::MVAoldDM2017v2     ||
+            hadTauId_ == TauID::MVAoldDMdR032017v2  )
     {
       tauIDSF_str_ = "MVAoldDM2017v2";
-      tauIDSF_level_str_ = TauID_level_strings.at(TauID_levels.at(TauID::MVAoldDM2017v2)).at(std::max(1, hadTauSelection_));
+      tauIDSF_level_str_ = TauID_level_strings.at(TauID_levels.at(hadTauId_)).at(std::max(1, hadTauSelection_));
     }
     else
     {

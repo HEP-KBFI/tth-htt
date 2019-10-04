@@ -51,6 +51,7 @@ protected:
   int era_;
   std::string hadTauSelection_;
   bool isDEBUG_;
+  std::vector<int> allowedDecayModes_;
 
   bool isTriggered_2tau_;
 

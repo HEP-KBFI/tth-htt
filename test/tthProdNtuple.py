@@ -155,7 +155,7 @@ if preselection:
     'applyHLTcut'                : True,
   }
   leptonSelection = 'Fakeable'
-  hadTauWP = 'dR03mvaVLoose&deepVSjVLoose' # override user preference
+  hadTauWP = 'dR03mvaVLoose&deepVSjVVLoose' # override user preference
 else:
   preselection_cuts = {
     'minNumLeptons'             : -1,

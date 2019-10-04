@@ -40,4 +40,6 @@ process.addMEM_2lss_1tau = cms.PSet(
     central_or_shift = cms.vstring(),
     useNonNominal = cms.bool(False),
     dryRun = cms.bool(False),
+    apply_whitelist = cms.bool(False),
+    whitelist = cms.vstring(),
 )

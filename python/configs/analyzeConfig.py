@@ -116,7 +116,7 @@ class analyzeConfig(object):
           do_sync                         = False,
           verbose                         = False,
           dry_run                         = False,
-          use_home                        = True,
+          use_home                        = False,
           isDebug                         = False,
           template_dir                    = None,
       ):
@@ -546,6 +546,19 @@ class analyzeConfig(object):
            sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and \
            sample_info['nof_reweighting'] > 0
 
+        if sample_info["sample_category"] == "HH": 
+          assert('sample_category_hh' in sample_info)
+          hhWeight_base = ''
+          if any(decayMode in sample_info['sample_category_hh'] for decayMode in [ 'bbvv', 'bbtt' ]):
+            hhWeight_base = 'bbww'
+          elif any(decayMode in sample_info['sample_category_hh'] for decayMode in [ 'tttt', 'wwtt', 'wwww' ]):
+            hhWeight_base = 'multilepton'
+          else:
+            raise ValueError("Uncrecongizable sample category: %s" % sample_info['sample_category_hh'])
+          jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
+          jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
+          jobOptions['hhWeight_cfg.do_ktscan'] = True
+
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
         if 'isMC' not in jobOptions:
@@ -753,8 +766,14 @@ class analyzeConfig(object):
             "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era, len = max_option_len),
           ])
         for jobOptions_key in jobOptions_keys:
-            if jobOptions_key not in jobOptions: continue # temporary?
+            if jobOptions_key not in jobOptions:
+              continue
             jobOptions_val = jobOptions[jobOptions_key]
+            if self.do_sync: # TEMPORARY !!
+                if jobOptions_key == 'applyFakeRateWeights':
+                    jobOptions_val = 'disabled'
+                elif jobOptions_key == 'apply_hadTauFakeRateSF':
+                    jobOptions_val = False
             jobOptions_expr = ""
             if jobOptions_key in jobOptions_typeMapping:
               jobOptions_expr = jobOptions_typeMapping[jobOptions_key]
@@ -960,7 +979,8 @@ class analyzeConfig(object):
         lines.append("    )")
         lines.append(")")
         processesToSubtract = [ "data_fakes" ]
-        processesToSubtract.extend([ "%s_Convs" % nonfake_background for nonfake_background in self.nonfake_backgrounds ])
+        nonfake_backgrounds = [category for category in self.nonfake_backgrounds if category not in [ "WH", "ZH" ]]
+        processesToSubtract.extend([ "%s_Convs" % nonfake_background for nonfake_background in nonfake_backgrounds ])
         lines.append("process.addBackgroundLeptonFlips.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFlips.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFlips, jobOptions['cfgFile_modified'], lines)
@@ -1433,6 +1453,17 @@ class analyzeConfig(object):
             lines_makefile.append("")
             if make_target_plot not in self.phoniesToAdd:
                 self.phoniesToAdd.append(make_target_plot)
+
+    def addToMakefile_validate(self, lines_makefile, make_dependency = "phony_analyze", single_channel = True):
+        """Validates the results
+        """
+        make_target_validate = "phony_validate"
+        lines_makefile.append("%s: %s" % (make_target_validate, make_dependency))
+        inspect_argument = '-w {}'.format(self.channel) if single_channel else ''
+        lines_makefile.append("\tinspect_rle_numbers.py -i %s %s" % (self.outputDir, inspect_argument))
+        lines_makefile.append("")
+        if make_target_validate not in self.phoniesToAdd:
+            self.phoniesToAdd.append(make_target_validate)
 
     def addToMakefile_outRoot(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the final condensed *.root output file

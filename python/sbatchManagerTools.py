@@ -24,7 +24,7 @@ def createScript_sbatch(
     dry_run           = False,
     validate_outputs  = True,
     min_file_size     = 20000,
-    use_home          = True,
+    use_home          = False,
   ):
     """Creates the python script necessary to submit analysis and/or Ntuple production jobs to the batch system
     """
@@ -75,7 +75,7 @@ def generate_sbatch_lines(
     dry_run           = False,
     validate_outputs  = True,
     min_file_size     = 20000,
-    use_home          = True,
+    use_home          = False,
   ):
     if not pool_id:
         raise ValueError('pool_id is empty')
@@ -243,7 +243,7 @@ def createScript_sbatch_hadd(
     verbose                 = False,
     dry_run                 = False,
     max_input_files_per_job = 10,
-    use_home                = True,
+    use_home                = False,
     min_file_size           = 20000,
   ):
     """Creates the python script necessary to submit 'hadd' jobs to the batch system
@@ -282,7 +282,7 @@ def generate_sbatch_lines_hadd(
     verbose                 = False,
     dry_run                 = False,
     max_input_files_per_job = 10,
-    use_home                = True,
+    use_home                = False,
     min_file_size           = 20000,
   ):
     template_vars = {

@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-09-29 22:31:21 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2016_sync.py -p /hdfs/local/karl/addMEM/2016/2019Sep29_sync_nonNom_full/final_ntuples/2lss_1tau -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_addMEM_2lss1tau_sync.py -M
+# file generated at 2019-10-01 01:01:51 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2016_sync.py -p /hdfs/local/karl/addMEM/2016/2019Sep30_sync_nonNom_full/final_ntuples/2lss_1tau -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_addMEM_2lss1tau_sync.py -M
 
 samples_2016 = OD()
 samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
@@ -18,9 +18,9 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/Run
     'CountWeightedL1Prefire'                                     : [        74500,        74063,        74935, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [        78871,        78049,        77758,        76398,        74500,        73120,        72084,        69606,        67647, ],
   }),
-  ("nof_tree_events",                 15075),
+  ("nof_tree_events",                 16264),
   ("nof_db_events",                   3981250),
-  ("fsize_local",                     207239621), # 207.24MB, avg file size 207.24MB
+  ("fsize_local",                     193094022), # 193.09MB, avg file size 193.09MB
   ("fsize_db",                        208884155497), # 208.88GB, avg file size 5.97GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -32,7 +32,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/addMEM/2016/2019Sep29_sync_nonNom_full/final_ntuples/2lss_1tau/ttHToNonbb_M125_powheg"),
+        ("path",      "/hdfs/local/karl/addMEM/2016/2019Sep30_sync_nonNom_full/final_ntuples/2lss_1tau/ttHToNonbb_M125_powheg"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
