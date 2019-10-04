@@ -7,6 +7,13 @@
 
 #include <iostream>
 
+#define ADDMEM_3L_ERROR                  1
+#define ADDMEM_3L_ERROR_JETMULTIPLICITY  2
+#define ADDMEM_3L_ERROR_BJETMULTIPLICITY 3
+#define ADDMEM_3L_ERROR_SKIPPED          4
+#define ADDMEM_3L_ERROR_SKIPPED_NOPERM   5
+#define ADDMEM_3L_ERROR_NOPERM           6
+
 // forward declarations
 class RecoLepton;
 
@@ -47,6 +54,7 @@ public:
   Float_t subleadLepton_phi_;
   Float_t thirdLepton_eta_;
   Float_t thirdLepton_phi_;
+  Int_t errorFlag_;
 protected:
   Float_t weight_ttH_; 
   Float_t kinfitscore_ttH_; 
@@ -56,7 +64,6 @@ protected:
   Float_t cpuTime_;
   Float_t realTime_;
   Int_t isValid_;
-  Int_t errorFlag_;
 };
 
 std::ostream& operator<<(std::ostream& stream,

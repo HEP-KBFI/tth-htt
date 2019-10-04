@@ -25,6 +25,7 @@ class addMEMConfig_3l(addMEMConfig):
         dry_run,
         use_nonnominal,
         use_home,
+        rle_filter_file,
         pool_id = '',
       ):
     addMEMConfig.__init__(self,
@@ -48,6 +49,7 @@ class addMEMConfig_3l(addMEMConfig):
       use_nonnominal           = use_nonnominal,
       use_home                 = use_home,
       channel                  = "3l",
+      rle_filter_file          = rle_filter_file,
       pool_id                  = pool_id,
     )
 
@@ -62,7 +64,7 @@ class addMEMConfig_3l(addMEMConfig):
     self.isDebug = isDebug
     self.central_or_shift = central_or_shift
 
-  def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, isMC, cfgFile_modified):
+  def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, isMC, cfgFile_modified, whitelist = []):
     """Create python configuration file for the addMEM_3l executable (MEM code)
 
     Args:
@@ -95,5 +97,7 @@ class addMEMConfig_3l(addMEMConfig):
     lines.append("process.addMEM_3l.dryRun = cms.bool(%s)" % self.dry_run)
     lines.append("process.addMEM_3l.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     lines.append("process.addMEM_3l.jetCleaningByIndex = cms.bool(%s)" % self.jet_cleaning_by_index)
+    lines.append("process.addMEM_3l.apply_whitelist = cms.bool(%s)" % bool(self.rle_filter_file))
+    lines.append("process.addMEM_3l.whitelist = cms.vstring(%s)" % whitelist)
 
     create_cfg(self.cfgFile_addMEM_original, cfgFile_modified, lines)

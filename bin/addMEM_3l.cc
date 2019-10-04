@@ -47,6 +47,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 
 #include <boost/algorithm/string/predicate.hpp> // boost::algorithm::starts_with(), boost::algorithm::ends_with()
+#include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
 #include <iostream> // std::cerr, std::fixed
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
@@ -101,6 +102,13 @@ int main(int argc,
   const std::string branchName_jets      = cfg_addMEM.getParameter<std::string>("branchName_jets");
   const std::string branchName_met       = cfg_addMEM.getParameter<std::string>("branchName_met");
   const vstring copy_histograms          = cfg_addMEM.getParameter<vstring>("copy_histograms");
+  const vstring whitelist                = cfg_addMEM.getParameter<vstring>("whitelist");
+  const bool apply_whitelist             = cfg_addMEM.getParameter<bool>("apply_whitelist");
+
+  if(apply_whitelist)
+  {
+    std::cout << "Whitelisting the following events: " << boost::algorithm::join(whitelist, ", ") << '\n';
+  }
 
   std::vector<std::regex> copy_histograms_regex;
   std::transform(
@@ -282,6 +290,7 @@ int main(int argc,
   LocalFileInPath memConfigFileName("tthAnalysis/HiggsToTauTau/data/addMEM_3l.cfg");
   MEMInterface_3l memInterface_3l(memConfigFileName.fullPath(), era);
 
+  std::vector<std::string> selected_whitelist;
   const int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
@@ -302,6 +311,10 @@ int main(int argc,
                 << " (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
+    if(apply_whitelist && contains(whitelist, eventInfo.str()))
+    {
+      selected_whitelist.push_back(eventInfo.str());
+    }
 
     cutFlowTable.update("read from file");
 
@@ -379,133 +392,165 @@ int main(int argc,
     {
       std::cout << "Found " << maxPermutations_addMEM_3l << " possible combination(s) to compute MEM\n";
     }
-    if(maxPermutations_addMEM_3l >= 1)
+    if((apply_whitelist && contains(whitelist, eventInfo.str())) || ! apply_whitelist)
     {
-      const std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
-      for(std::size_t selLepton_lead_idx = 0; selLepton_lead_idx < selLeptons.size(); ++selLepton_lead_idx)
+      if(maxPermutations_addMEM_3l >= 1)
       {
-        const RecoLepton * selLepton_lead = selLeptons[selLepton_lead_idx];
-        if(isDEBUG)
+        const std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
+        for(std::size_t selLepton_lead_idx = 0; selLepton_lead_idx < selLeptons.size(); ++selLepton_lead_idx)
         {
-          std::cout << "selLepton_lead: " << *selLepton_lead << '\n';
-        }
-        for(std::size_t selLepton_sublead_idx = selLepton_lead_idx + 1; selLepton_sublead_idx < selLeptons.size(); ++selLepton_sublead_idx)
-        { 
-          const RecoLepton * selLepton_sublead = selLeptons[selLepton_sublead_idx];
+          const RecoLepton * selLepton_lead = selLeptons[selLepton_lead_idx];
           if(isDEBUG)
           {
-            std::cout << "selLepton_sublead: " << *selLepton_sublead << '\n';
+            std::cout << "selLepton_lead: " << *selLepton_lead << '\n';
           }
-          for(std::size_t selLepton_third_idx = selLepton_sublead_idx + 1; selLepton_third_idx < selLeptons.size(); ++selLepton_third_idx)
+          for(std::size_t selLepton_sublead_idx = selLepton_lead_idx + 1; selLepton_sublead_idx < selLeptons.size(); ++selLepton_sublead_idx)
           {
-            const RecoLepton * selLepton_third = selLeptons[selLepton_third_idx];
+            const RecoLepton * selLepton_sublead = selLeptons[selLepton_sublead_idx];
             if(isDEBUG)
             {
-              std::cout << "selLepton_third: " << *selLepton_third<< '\n';
+              std::cout << "selLepton_sublead: " << *selLepton_sublead << '\n';
             }
-            for(const std::string & central_or_shift: central_or_shifts)
+            for(std::size_t selLepton_third_idx = selLepton_sublead_idx + 1; selLepton_third_idx < selLeptons.size(); ++selLepton_third_idx)
             {
-              checkOptionValidity(central_or_shift, isMC);
-              const int jetPt_option = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC);
-              const int met_option   = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC);
-
-              if((
-                   (
-                     jetPt_option    == kJetMET_central &&
-                     met_option      == kJetMET_central &&
-                     ! useNonNominal_jetmet
-                   ) ||
-                  useNonNominal_jetmet
-                 ) &&
-                 central_or_shift != "central")
-              {
-                std::cout << "Skipping systematics: " << central_or_shift << '\n';
-                continue;
-              }
-              else if(isDEBUG)
-              {
-                std::cout << "Attempting to evaluate the MEM score for systematics: " << central_or_shift << "\n"
-                          << "jetPt_option    = " << jetPt_option    << "\n"
-                          << "met_option      = " << met_option      << '\n'
-                ;
-              }
-
-              jetReader   ->setPtMass_central_or_shift  (jetPt_option);
-              metReader   ->setMEt_central_or_shift     (met_option);
-
-//--- build the jet collections specifically for MEM evaluation
-              const std::vector<RecoJet> jets_mem = jetReader->read();
-              const std::vector<const RecoJet *> jet_ptrs_mem = convert_to_ptrs(jets_mem);
-              const std::vector<const RecoJet *> selJets_mem  = jetSelector(jet_ptrs_mem, isHigherPt);
+              const RecoLepton * selLepton_third = selLeptons[selLepton_third_idx];
               if(isDEBUG)
               {
-                printCollection("selJets_mem", selJets_mem);
+                std::cout << "selLepton_third: " << *selLepton_third<< '\n';
               }
-
-              const RecoMEt met_mem = metReader->read();
-
-              int idxPermutation = -1;
-
-              const std::vector<const RecoLepton*> selLeptons_forCleaning = { selLepton_lead, selLepton_sublead, selLepton_third };
-              const std::vector<const RecoJet *> selJets_mem_cleaned = jetCleaningByIndex ?
-                jetCleanerByIndex(selJets_mem, selLeptons_forCleaning) :
-                jetCleaner       (selJets_mem, selLeptons_forCleaning)
-              ;
-              if(isDEBUG)
+              for(const std::string & central_or_shift: central_or_shifts)
               {
-                printCollection("selJets_mem_cleaned", selJets_mem_cleaned);
-              }
-              if(selJets_mem_cleaned.size() >= 2)
-              {
-                ++idxPermutation;
-                if(idxPermutation < maxPermutations_addMEM_3l)
-                {
-                  if(isDEBUG)
-                  {
-                    std::cout << "computing MEM for " << eventInfo
-                              << " (idxPermutation = " << idxPermutation << "):\n"
-                                 "inputs:\n"
-                              << " leading lepton:    " << *(static_cast<const ChargedParticle *>(selLepton_lead))
-                              << " subleading lepton: " << *(static_cast<const ChargedParticle *>(selLepton_sublead))
-                              << " third lepton:      " << *(static_cast<const ChargedParticle *>(selLepton_third))
-                              << " MET:"                << met_mem << '\n';
-                    printCollection("cleaned MEM jets", selJets_mem_cleaned);
-                  }
+                checkOptionValidity(central_or_shift, isMC);
+                const int jetPt_option = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC);
+                const int met_option   = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC);
 
-                  MEMOutput_3l memOutput_3l;
-                  if(dryRun)
-                  {
-                    memOutput_3l.fillInputs(selLepton_lead, selLepton_sublead, selLepton_third);
-                  }
-                  else
-                  {
-                    memOutput_3l = memInterface_3l(
-                      selLepton_lead, selLepton_sublead, selLepton_third,
-                      met_mem, selJets_mem_cleaned
-                    );
-                  }
-                  memOutput_3l.eventInfo_ = eventInfo;
-                  std::cout << "output: (" << central_or_shift << "): " << memOutput_3l;
-                  memOutputs_3l[central_or_shift].push_back(memOutput_3l);
-                } // idxPermutation < maxPermutations_addMEM_3l
-                else if(idxPermutation == maxPermutations_addMEM_3l) // CV: print warning only once per event
+                if((
+                     (
+                       jetPt_option    == kJetMET_central &&
+                       met_option      == kJetMET_central &&
+                       ! useNonNominal_jetmet
+                     ) ||
+                    useNonNominal_jetmet
+                   ) &&
+                   central_or_shift != "central")
                 {
-                  std::cout << "Warning in " << eventInfo << ":\n"
-                               "Number of permutations exceeds 'maxPermutations_addMEM_3l' = "
-                            << maxPermutations_addMEM_3l << " --> skipping MEM computation after "
-                            << maxPermutations_addMEM_3l << " permutations !!\n";
+                  std::cout << "Skipping systematics: " << central_or_shift << '\n';
+                  continue;
                 }
-              } // selJets_mem_cleaned.size() >= 2
+                else if(isDEBUG)
+                {
+                  std::cout << "Attempting to evaluate the MEM score for systematics: " << central_or_shift << "\n"
+                            << "jetPt_option    = " << jetPt_option    << "\n"
+                            << "met_option      = " << met_option      << '\n'
+                  ;
+                }
 
+                jetReader   ->setPtMass_central_or_shift  (jetPt_option);
+                metReader   ->setMEt_central_or_shift     (met_option);
+
+  //--- build the jet collections specifically for MEM evaluation
+                const std::vector<RecoJet> jets_mem = jetReader->read();
+                const std::vector<const RecoJet *> jet_ptrs_mem = convert_to_ptrs(jets_mem);
+                const std::vector<const RecoJet *> selJets_mem  = jetSelector(jet_ptrs_mem, isHigherPt);
                 if(isDEBUG)
-              {
-                std::cout << "#memOutputs_3l = " << memOutputs_3l[central_or_shift].size() << '\n';
-              }
-            } // central_or_shift
-          } // selLepton_third_idx
-        } // selLepton_sublead_idx
-      } // selLepton_lead_idx
-    } // maxPermutations_addMEM_3l >= 1
+                {
+                  printCollection("selJets_mem", selJets_mem);
+                }
+
+                const RecoMEt met_mem = metReader->read();
+
+                int idxPermutation = -1;
+
+                const std::vector<const RecoLepton*> selLeptons_forCleaning = { selLepton_lead, selLepton_sublead, selLepton_third };
+                const std::vector<const RecoJet *> selJets_mem_cleaned = jetCleaningByIndex ?
+                  jetCleanerByIndex(selJets_mem, selLeptons_forCleaning) :
+                  jetCleaner       (selJets_mem, selLeptons_forCleaning)
+                ;
+                if(isDEBUG)
+                {
+                  printCollection("selJets_mem_cleaned", selJets_mem_cleaned);
+                }
+                if(selJets_mem_cleaned.size() >= 2)
+                {
+                  ++idxPermutation;
+                  if(idxPermutation < maxPermutations_addMEM_3l)
+                  {
+                    if(isDEBUG)
+                    {
+                      std::cout << "computing MEM for " << eventInfo
+                                << " (idxPermutation = " << idxPermutation << "):\n"
+                                   "inputs:\n"
+                                << " leading lepton:    " << *(static_cast<const ChargedParticle *>(selLepton_lead))
+                                << " subleading lepton: " << *(static_cast<const ChargedParticle *>(selLepton_sublead))
+                                << " third lepton:      " << *(static_cast<const ChargedParticle *>(selLepton_third))
+                                << " MET:"                << met_mem << '\n';
+                      printCollection("cleaned MEM jets", selJets_mem_cleaned);
+                    }
+
+                    MEMOutput_3l memOutput_3l;
+                    if(dryRun)
+                    {
+                      memOutput_3l.fillInputs(selLepton_lead, selLepton_sublead, selLepton_third);
+                    }
+                    else
+                    {
+                      memOutput_3l = memInterface_3l(
+                        selLepton_lead, selLepton_sublead, selLepton_third,
+                        met_mem, selJets_mem_cleaned
+                      );
+                    }
+                    memOutput_3l.eventInfo_ = eventInfo;
+                    std::cout << "output: (" << central_or_shift << "): " << memOutput_3l;
+                    memOutputs_3l[central_or_shift].push_back(memOutput_3l);
+                  } // idxPermutation < maxPermutations_addMEM_3l
+                  else if(idxPermutation == maxPermutations_addMEM_3l) // CV: print warning only once per event
+                  {
+                    std::cout << "Warning in " << eventInfo << ":\n"
+                                 "Number of permutations exceeds 'maxPermutations_addMEM_3l' = "
+                              << maxPermutations_addMEM_3l << " --> skipping MEM computation after "
+                              << maxPermutations_addMEM_3l << " permutations !!\n";
+                  }
+                } // selJets_mem_cleaned.size() >= 2
+                else
+                {
+                  MEMOutput_3l memOutput_3l;
+                  memOutput_3l.errorFlag_ = ADDMEM_3L_ERROR_JETMULTIPLICITY;
+                  memOutputs_3l[central_or_shift].push_back(memOutput_3l);
+                }
+
+                  if(isDEBUG)
+                {
+                  std::cout << "#memOutputs_3l = " << memOutputs_3l[central_or_shift].size() << '\n';
+                }
+              } // central_or_shift
+            } // selLepton_third_idx
+          } // selLepton_sublead_idx
+        } // selLepton_lead_idx
+      } // maxPermutations_addMEM_3l >= 1
+      else
+      {
+        for(const std::string & central_or_shift: central_or_shifts)
+        {
+          MEMOutput_3l memOutput_3l;
+          memOutput_3l.errorFlag_ = ADDMEM_3L_ERROR_NOPERM;
+          memOutputs_3l[central_or_shift].push_back(memOutput_3l);
+          memWriter[central_or_shift]->write(memOutputs_3l[central_or_shift]);
+        }
+      }
+    } // apply_whitelist
+    else if(apply_whitelist && ! contains(whitelist, eventInfo.str()))
+    {
+      for(const std::string & central_or_shift: central_or_shifts)
+      {
+        MEMOutput_3l memOutput_3l;
+        memOutput_3l.errorFlag_ = maxPermutations_addMEM_3l >= 1 ?
+          ADDMEM_3L_ERROR_SKIPPED :
+          ADDMEM_3L_ERROR_SKIPPED_NOPERM
+        ;
+        memOutputs_3l[central_or_shift].push_back(memOutput_3l);
+        memWriter[central_or_shift]->write(memOutputs_3l[central_or_shift]);
+      }
+    }
 
     for(const std::string & central_or_shift: central_or_shifts)
     {

@@ -1775,14 +1775,14 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
                   << ", eta = "                << selLepton_lead->eta()
                   << ", phi = "                << selLepton_lead->phi()
                   << ", pdgId = "              << selLepton_lead->pdgId() << "\n"
-                  << "\tselLepton_sublead: pT = " << selLepton_sublead->pt()
+                     "\tselLepton_sublead: pT = " << selLepton_sublead->pt()
                   << ", eta = "                   << selLepton_sublead->eta()
                   << ", phi = "                   << selLepton_sublead->phi()
                   << ", pdgId = "                 << selLepton_sublead->pdgId() << "\n"
-                  << "\tselHadTau: pT = " << selHadTau->pt()
+                     "\tselHadTau: pT = " << selHadTau->pt()
                   << ", eta = "           << selHadTau->eta()
-                  << ", phi = "           << selHadTau->phi() << '\n'
-                  << "Number of MEM objects read: " << memOutputs_2lss_1tau.size() << '\n'
+                  << ", phi = "           << selHadTau->phi() << "\n"
+                     "Number of MEM objects read: " << memOutputs_2lss_1tau.size() << '\n'
         ;
         if(! memOutputs_2lss_1tau.empty())
         {
@@ -1791,9 +1791,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
             std::cout << "\t#" << mem_idx << " mem object;\n"
                       << "\t\tlead lepton eta = "    << memOutputs_2lss_1tau[mem_idx].leadLepton_eta_
                       << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].leadLepton_phi_ << "\n"
-                      << "\t\tsublead lepton eta = " << memOutputs_2lss_1tau[mem_idx].subleadLepton_eta_
+                         "\t\tsublead lepton eta = " << memOutputs_2lss_1tau[mem_idx].subleadLepton_eta_
                       << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].subleadLepton_phi_ << "\n"
-                      << "\t\thadronic tau eta = "   << memOutputs_2lss_1tau[mem_idx].hadTau_eta_
+                         "\t\thadronic tau eta = "   << memOutputs_2lss_1tau[mem_idx].hadTau_eta_
                       << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].hadTau_phi_ << '\n'
             ;
           }
@@ -1841,7 +1841,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           else
           {
             throw cmsException(argv[0], __LINE__)
-              << "Unrecognizable MEM error: " << memOutput_2lss_1tau_matched.errorFlag()
+              << "Failed with MEM error: " << memOutput_2lss_1tau_matched.errorFlag()
             ;
           }
         }

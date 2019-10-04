@@ -308,7 +308,8 @@ class addMEMConfig:
                 if apply_rle_filter:
                     if rle in rle_whitelist:
                         if not (nof_integrations > 0):
-                            raise RuntimeError("Expected non-zero # integrations in event: %s" % rle)
+                            logging.error("Expected non-zero # integrations in event {}, but got {}".format(rle, nof_integrations))
+                        nof_integrations = 1
                     else:
                         nof_integrations = 0
 

@@ -586,6 +586,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
 
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
+  bool ignoreMEMerrors = cfg_analyze.getParameter<bool>("ignoreMEMerrors");
 
 //--- declare histograms
   struct selHistManagerType
@@ -1592,34 +1593,85 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         memOutput_3l_matched = memOutput_3l;
         break;
       }
-      if ( ! memOutput_3l_matched.is_initialized() ) {
+      if(! memOutput_3l_matched.is_initialized())
+      {
         std::cout << "Warning in " << eventInfo << '\n';
         std::cout << "No MEMOutput_3l object found for:" << '\n'
                   << "\tselLepton_lead: pT = " << selLepton_lead -> pt()
                   << ", eta = "                << selLepton_lead -> eta()
                   << ", phi = "                << selLepton_lead -> phi()
-                  << ", pdgId = "              << selLepton_lead -> pdgId() << '\n'
-                  << "\tselLepton_sublead: pT = " << selLepton_sublead -> pt()
+                  << ", pdgId = "              << selLepton_lead -> pdgId() << "\n"
+                     "\tselLepton_sublead: pT = " << selLepton_sublead -> pt()
                   << ", eta = "                   << selLepton_sublead -> eta()
                   << ", phi = "                   << selLepton_sublead -> phi()
-                  << ", pdgId = "                 << selLepton_sublead -> pdgId() << '\n'
-                  << "\tselLepton_third: pT = " << selLepton_third -> pt()
+                  << ", pdgId = "                 << selLepton_sublead -> pdgId() << "\n"
+                     "\tselLepton_third: pT = " << selLepton_third -> pt()
                   << ", eta = "                 << selLepton_third -> eta()
                   << ", phi = "                 << selLepton_third -> phi()
-                  << ", pdgId = "               << selLepton_third -> pdgId() << '\n';
-      }
-      if ( memOutputs_3l.size() ) {
-        for ( unsigned mem_idx = 0; mem_idx < memOutputs_3l.size(); ++mem_idx ) {
-          std::cout << "\t#" << mem_idx << " mem object;\n"
-                    << "\t\tlead lepton eta = " << memOutputs_3l[mem_idx].leadLepton_eta_
-                    << "; phi = "               << memOutputs_3l[mem_idx].leadLepton_phi_ << '\n'
-                    << "\t\tsublead lepton eta = " << memOutputs_3l[mem_idx].subleadLepton_eta_
-                    << "; phi = "                  << memOutputs_3l[mem_idx].subleadLepton_phi_ << '\n'
-                    << "\t\tthird lepton eta = " << memOutputs_3l[mem_idx].thirdLepton_eta_
-                    << "; phi = "                << memOutputs_3l[mem_idx].thirdLepton_phi_ << '\n';
-	}
-      } else {
-        std::cout << "No MEM objects whatsoever\n";
+                  << ", pdgId = "               << selLepton_third -> pdgId() << '\n'
+        ;
+        if(! memOutputs_3l.empty())
+        {
+          for( unsigned mem_idx = 0; mem_idx < memOutputs_3l.size(); ++mem_idx)
+          {
+            std::cout << "\t#" << mem_idx << " mem object;\n"
+                      << "\t\tlead lepton eta = " << memOutputs_3l[mem_idx].leadLepton_eta_
+                      << "; phi = "               << memOutputs_3l[mem_idx].leadLepton_phi_ << "\n"
+                         "\t\tsublead lepton eta = " << memOutputs_3l[mem_idx].subleadLepton_eta_
+                      << "; phi = "                  << memOutputs_3l[mem_idx].subleadLepton_phi_ << "\n"
+                         "\t\tthird lepton eta = " << memOutputs_3l[mem_idx].thirdLepton_eta_
+                      << "; phi = "                << memOutputs_3l[mem_idx].thirdLepton_phi_ << '\n'
+            ;
+          }
+        }
+        else
+        {
+          if(! ignoreMEMerrors)
+          {
+            throw cmsException(argv[0], __LINE__) << "Event " << eventInfo.str() << " contains no MEM objects whatsoever";
+          }
+          else
+          {
+            std::cout << "Event " << eventInfo.str() << " contains no MEM objects whatsoever\n";
+          }
+        }
+        if(! ignoreMEMerrors)
+        {
+          if(memOutput_3l_matched.errorFlag() == ADDMEM_3L_ERROR_SKIPPED)
+          {
+            throw cmsException(argv[0], __LINE__)
+              << "MEM computation was skipped for event " << eventInfo.str()
+            ;
+          }
+          else if(memOutput_3l_matched.errorFlag() == ADDMEM_3L_ERROR_SKIPPED_NOPERM)
+          {
+            throw cmsException(argv[0], __LINE__)
+              << "MEM computation was skipped for event " << eventInfo.str() << " AND "
+                 "there were not enough MEM permutations in the first place"
+            ;
+          }
+          else if((memOutput_3l_matched.errorFlag() == ADDMEM_3L_ERROR_JETMULTIPLICITY ||
+                   memOutput_3l_matched.errorFlag() == ADDMEM_3L_ERROR_BJETMULTIPLICITY ) && ttH_like &&
+                  branchName_memOutput.find(central_or_shift_main) != std::string::npos)
+          {
+            throw cmsException(argv[0], __LINE__)
+              << "MEM did not find enough jets in event " << eventInfo.str() << " and for systematics "
+              << central_or_shift_main << " although there are " << selJets.size() << " jets selected in the event"
+            ;
+          }
+          else if(memOutput_3l_matched.errorFlag() == ADDMEM_3L_ERROR_NOPERM)
+          {
+            throw cmsException(argv[0], __LINE__)
+              << "MEM computation was skipped for event " << eventInfo.str() << " because not enough permutations found"
+            ;
+          }
+          else
+          {
+            throw cmsException(argv[0], __LINE__)
+              << "Failed with MEM error: " << memOutput_3l_matched.errorFlag()
+            ;
+          }
+        }
       }
     }
 
