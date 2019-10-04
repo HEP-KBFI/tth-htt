@@ -303,12 +303,14 @@ class addMEMConfig:
                     logging.debug("Processing event %i/%i" % (i, nof_entries))
 
                 rle = ':'.join(map(lambda nr: str(nr[0]), [ run, luminosityBlock, event ]))
-                if apply_rle_filter:
-                    if rle not in rle_whitelist:
-                        continue
-                    whitelist_running.append(rle)
 
                 nof_integrations = maxPermutations_addMEM[0]
+                if apply_rle_filter:
+                    if rle in rle_whitelist:
+                        whitelist_running.append(rle)
+                    else:
+                        nof_integrations = 0
+
                 if nof_integrations < 0:
                     nof_integrations = 0
 

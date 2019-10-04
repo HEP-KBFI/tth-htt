@@ -341,6 +341,7 @@ int main(int argc,
               << " to branch = '" << branchName_memOutput_cos << "'\n";
   }
 
+  std::vector<std::string> selected_whitelist;
   const int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
@@ -366,6 +367,10 @@ int main(int argc,
                 << " (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
+    if(apply_whitelist && contains(whitelist, eventInfo.str()))
+    {
+      selected_whitelist.push_back(eventInfo.str());
+    }
     
     cutFlowTable.update("read from file");
 
@@ -648,6 +653,24 @@ int main(int argc,
                " selected = "     << selectedEntries << "\n"
                "cut-flow table\n" << cutFlowTable << "\n"
                "output Tree:\n";
+  std::vector<std::string> missing_whitelisted;
+  if(apply_whitelist)
+  {
+    for(const std::string & whitelisted_rle: whitelist)
+    {
+      if(! contains(selected_whitelist, whitelisted_rle))
+      {
+        missing_whitelisted.push_back(whitelisted_rle);
+      }
+    }
+  }
+  if(! missing_whitelisted.empty())
+  {
+    throw cmsException("addMEM_2lss_1tau", __LINE__)
+      << "Never processed the following whitelisted events: " << boost::algorithm::join(missing_whitelisted, ", ")
+    ;
+  }
+
   if(isDEBUG)
   {
     outputTree->Print();
