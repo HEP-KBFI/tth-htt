@@ -2,6 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_MEMInterface_3l_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l.h" // MEMOutput_3l
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetSelectorBtagLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
 
 #include <string>
@@ -34,6 +35,7 @@ public:
              const std::vector<const RecoJet *> & selJets) const;
 
 private:
+  RecoJetSelectorBtagLoose jetSelectorBtagLoose_;
   int nhyp_;
   std::string * shyp_;
   int * hyp_;

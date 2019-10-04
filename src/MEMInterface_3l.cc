@@ -16,7 +16,8 @@
 
 MEMInterface_3l::MEMInterface_3l(const std::string & configFileName,
                                  int era)
-  : shyp_(nullptr)
+  : jetSelectorBtagLoose_(era)
+  , shyp_(nullptr)
   , hyp_(nullptr)
   , nPointsHyp_(nullptr)
   , index_hyp_(nullptr)
@@ -30,7 +31,7 @@ MEMInterface_3l::MEMInterface_3l(const std::string & configFileName,
   ConfigParser cfgParser;
   cfgParser.LoadConfig(configFileName);
   cfgParser.GetHypotheses(&nhyp_, &shyp_, &hyp_, &nPointsHyp_, &index_hyp_);
-  cfgParser.SetCSVThreshold(get_BtagWP(era, Btag::kDeepJet, BtagWP::kLoose));
+  cfgParser.SetCSVThreshold(jetSelectorBtagLoose_.get_min_BtagCSV());
 
   hypIntegrator_->InitializeIntegrator(&cfgParser);
   MEMpermutations_ = new Permutations[nhyp_];
@@ -81,9 +82,14 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
 
   const std::size_t maxNumJets = 10;
   const std::size_t numJets = selJets_sortedByBtagCSV.size();
+  std::size_t numBJets_loose = 0;
   for(std::size_t idxJet = 0; idxJet < std::min(numJets, maxNumJets); ++idxJet)
   {
     const RecoJet * selJet = selJets_sortedByBtagCSV[idxJet];
+    if ( jetSelectorBtagLoose_(*selJet) )
+    {
+      ++numBJets_loose;
+    }
     multiLepton.FillParticle("alljet", 0, getTLorentzVector(selJet->p4()), selJet->BtagCSV());
   }
 
@@ -91,6 +97,15 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
   metP4_tlorentzvector.SetPxPyPzE(met.pt() * std::cos(met.phi()), met.pt() * std::sin(met.phi()), 0., met.pt());
   multiLepton.mET = metP4_tlorentzvector;
   multiLepton.sumET = met.sumEt();
+
+  if ( numBJets_loose < 1 )
+  { 
+    // CV: according to Nicholas Chanon, the MEM code for the 3l channel fails (with a segmentation violation !!)
+    //     in case there is not at least one b-jet in the event 
+    std::cerr << "Warning in " << func_str << ": Failed to find at least one b-jet\n";
+    result.errorFlag_ = 1;
+    return result;
+  }
 
   clock_->Reset();
   clock_->Start(func_str.data());
