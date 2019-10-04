@@ -374,6 +374,7 @@ int main(int argc, char* argv[])
   std::string branchName_genQuarkFromTop = cfg_analyze.getParameter<std::string>("branchName_genQuarkFromTop");
 
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
+  bool ignoreMEMerrors = cfg_analyze.getParameter<bool>("ignoreMEMerrors");
 
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
@@ -1734,52 +1735,115 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
 
     MEMOutput_2lss_1tau memOutput_2lss_1tau_matched;
-    if ( memReader ) {
-      std::vector<MEMOutput_2lss_1tau> memOutputs_2lss_1tau = memReader->read();
-      for ( std::vector<MEMOutput_2lss_1tau>::const_iterator memOutput_2lss_1tau = memOutputs_2lss_1tau.begin();
-            memOutput_2lss_1tau != memOutputs_2lss_1tau.end(); ++memOutput_2lss_1tau ) {
+    if(memReader)
+    {
+      const std::vector<MEMOutput_2lss_1tau> memOutputs_2lss_1tau = memReader->read();
+      for(const MEMOutput_2lss_1tau & memOutput_2lss_1tau: memOutputs_2lss_1tau)
+      {
         const double selLepton_lead_dR = deltaR(
-          selLepton_lead->eta(), selLepton_lead->phi(),
-          memOutput_2lss_1tau->leadLepton_eta_, memOutput_2lss_1tau->leadLepton_phi_);
-        if ( selLepton_lead_dR > 1.e-2 ) continue;
+          selLepton_lead->eta(),               selLepton_lead->phi(),
+          memOutput_2lss_1tau.leadLepton_eta_, memOutput_2lss_1tau.leadLepton_phi_
+        );
+        if(selLepton_lead_dR > 1.e-2)
+        {
+          continue;
+        }
         const double selLepton_sublead_dR = deltaR(
-          selLepton_sublead->eta(), selLepton_sublead->phi(),
-          memOutput_2lss_1tau->subleadLepton_eta_, memOutput_2lss_1tau->subleadLepton_phi_);
-        if ( selLepton_sublead_dR > 1.e-2 ) continue;
+          selLepton_sublead->eta(),               selLepton_sublead->phi(),
+          memOutput_2lss_1tau.subleadLepton_eta_, memOutput_2lss_1tau.subleadLepton_phi_
+        );
+        if(selLepton_sublead_dR > 1.e-2)
+        {
+          continue;
+        }
         const double selHadTau_dR = deltaR(
           selHadTau->eta(), selHadTau->phi(),
-          memOutput_2lss_1tau->hadTau_eta_, memOutput_2lss_1tau->hadTau_phi_);
-        if ( selHadTau_dR > 1.e-2 ) continue;
-        memOutput_2lss_1tau_matched = (*memOutput_2lss_1tau);
+          memOutput_2lss_1tau.hadTau_eta_, memOutput_2lss_1tau.hadTau_phi_
+        );
+        if(selHadTau_dR > 1.e-2)
+        {
+          continue;
+        }
+        memOutput_2lss_1tau_matched = memOutput_2lss_1tau;
         break;
       }
-      if ( !memOutput_2lss_1tau_matched.is_initialized() ) {
+      if(! memOutput_2lss_1tau_matched.is_initialized())
+      {
         std::cout << "Warning in " << eventInfo << '\n'
                   << "No MEMOutput_2lss_1tau object found for:\n"
                   << "\tselLepton_lead: pT = " << selLepton_lead->pt()
                   << ", eta = "                << selLepton_lead->eta()
                   << ", phi = "                << selLepton_lead->phi()
-                  << ", pdgId = "              << selLepton_lead->pdgId() << '\n'
+                  << ", pdgId = "              << selLepton_lead->pdgId() << "\n"
                   << "\tselLepton_sublead: pT = " << selLepton_sublead->pt()
                   << ", eta = "                   << selLepton_sublead->eta()
                   << ", phi = "                   << selLepton_sublead->phi()
-                  << ", pdgId = "                 << selLepton_sublead->pdgId() << '\n'
+                  << ", pdgId = "                 << selLepton_sublead->pdgId() << "\n"
                   << "\tselHadTau: pT = " << selHadTau->pt()
                   << ", eta = "           << selHadTau->eta()
                   << ", phi = "           << selHadTau->phi() << '\n'
-                  << "Number of MEM objects read: " << memOutputs_2lss_1tau.size() << '\n';
-        if ( memOutputs_2lss_1tau.size() ) {
-          for ( unsigned mem_idx = 0; mem_idx < memOutputs_2lss_1tau.size(); ++mem_idx ) {
+                  << "Number of MEM objects read: " << memOutputs_2lss_1tau.size() << '\n'
+        ;
+        if(! memOutputs_2lss_1tau.empty())
+        {
+          for(unsigned mem_idx = 0; mem_idx < memOutputs_2lss_1tau.size(); ++mem_idx)
+          {
             std::cout << "\t#" << mem_idx << " mem object;\n"
-                      << "\t\tlead lepton eta = " << memOutputs_2lss_1tau[mem_idx].leadLepton_eta_
-                      << "; phi = "               << memOutputs_2lss_1tau[mem_idx].leadLepton_phi_ << '\n'
+                      << "\t\tlead lepton eta = "    << memOutputs_2lss_1tau[mem_idx].leadLepton_eta_
+                      << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].leadLepton_phi_ << "\n"
                       << "\t\tsublead lepton eta = " << memOutputs_2lss_1tau[mem_idx].subleadLepton_eta_
-                      << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].subleadLepton_phi_ << '\n'
-                      << "\t\thadronic tau eta = " << memOutputs_2lss_1tau[mem_idx].hadTau_eta_
-                      << "; phi = "                << memOutputs_2lss_1tau[mem_idx].hadTau_phi_ << '\n';
+                      << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].subleadLepton_phi_ << "\n"
+                      << "\t\thadronic tau eta = "   << memOutputs_2lss_1tau[mem_idx].hadTau_eta_
+                      << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].hadTau_phi_ << '\n'
+            ;
           }
-        } else {
-          std::cout << "Event contains no MEM objects whatsoever !!\n";
+        }
+        else
+        {
+          if(! ignoreMEMerrors)
+          {
+            throw cmsException(argv[0], __LINE__) << "Event " << eventInfo.str() << " contains no MEM objects whatsoever";
+          }
+          else
+          {
+            std::cout << "Event " << eventInfo.str() << " contains no MEM objects whatsoever\n";
+          }
+        }
+        if(! ignoreMEMerrors)
+        {
+          if(memOutput_2lss_1tau_matched.errorFlag() == ADDMEM_2LSS1TAU_ERROR_SKIPPED)
+          {
+            throw cmsException(argv[0], __LINE__)
+              << "MEM computation was skipped for event " << eventInfo.str()
+            ;
+          }
+          else if(memOutput_2lss_1tau_matched.errorFlag() == ADDMEM_2LSS1TAU_ERROR_SKIPPED_NOPERM)
+          {
+            throw cmsException(argv[0], __LINE__)
+              << "MEM computation was skipped for event " << eventInfo.str() << " AND "
+                 "there were not enough MEM permutations in the first place"
+            ;
+          }
+          else if(memOutput_2lss_1tau_matched.errorFlag() == ADDMEM_2LSS1TAU_ERROR_JETMULTIPLICITY && ttH_like &&
+                  branchName_memOutput.find(central_or_shift_main) != std::string::npos)
+          {
+            throw cmsException(argv[0], __LINE__)
+              << "MEM did not find enough jets in event " << eventInfo.str() << " and for systematics "
+              << central_or_shift_main << " although there are " << selJets.size() << " jets selected in the event"
+            ;
+          }
+          else if(memOutput_2lss_1tau_matched.errorFlag() == ADDMEM_2LSS1TAU_ERROR_NOPERM)
+          {
+            throw cmsException(argv[0], __LINE__)
+              << "MEM computation was skipped for event " << eventInfo.str() << " because not enough permutations found"
+            ;
+          }
+          else
+          {
+            throw cmsException(argv[0], __LINE__)
+              << "Unrecognizable MEM error: " << memOutput_2lss_1tau_matched.errorFlag()
+            ;
+          }
         }
       }
     }
@@ -1796,43 +1860,56 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
 
     // resolved HTT
-
     double max_mvaOutput_HTT_CSVsort4rd = 0.;
     bool max_truth_HTT_CSVsort4rd = false;
     double HadTop_pt_CSVsort4rd = 0.;
-    //double HadTop_eta_CSVsort4rd = 0.;
     double genTopPt_CSVsort4rd = 0.;
     double b_pt_CSVsort4rd_1 = 0.1;
     double Wj1_pt_CSVsort4rd_1 = 0.1;
     double Wj2_pt_CSVsort4rd_1 = 0.1;
     bool hadtruth = false;
-    for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
-      //btag_iterator++;
-      for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
-       if ( &(*selWJet1) == &(*selBJet) ) continue;
-       for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
-    if ( &(*selWJet2) == &(*selBJet) ) continue;
-    if ( &(*selWJet2) == &(*selWJet1) ) continue;
-    bool isGenMatched = false;
-    double genTopPt_teste = 0.;
-    const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti );
-    // genTopPt_teste is filled with the result of gen-matching
-    if ( isGenMatched ) hadtruth = true;
-    // save genpt of all options
-    double HadTop_pt = ((*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4()).pt();
+    for(std::vector<const RecoJet *>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet)
+    {
+      for(std::vector<const RecoJet *>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1)
+      {
+        if(&(*selWJet1) == &(*selBJet))
+        {
+          continue;
+        }
+        for(std::vector<const RecoJet *>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2)
+        {
+          if(&(*selWJet2) == &(*selBJet))
+          {
+            continue;
+          }
+          if(&(*selWJet2) == &(*selWJet1))
+          {
+            continue;
+          }
+          bool isGenMatched = false;
+          double genTopPt_teste = 0.;
+          const std::map<int, double> bdtResult = (*hadTopTagger)(
+            **selBJet, **selWJet1, **selWJet2, calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti
+          );
+          // genTopPt_teste is filled with the result of gen-matching
+          if(isGenMatched)
+          {
+            hadtruth = true;
+          }
+          // save genpt of all options
+          const double HadTop_pt = ((*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4()).pt();
 
-    if ( bdtResult.at(kXGB_CSVsort4rd) > max_mvaOutput_HTT_CSVsort4rd ) {
-      max_truth_HTT_CSVsort4rd = isGenMatched;
-      max_mvaOutput_HTT_CSVsort4rd = bdtResult.at(kXGB_CSVsort4rd);
-      HadTop_pt_CSVsort4rd = HadTop_pt;
-      genTopPt_CSVsort4rd = genTopPt_teste;
-      //HadTop_eta_CSVsort4rd = std::fabs(((*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4()).eta());
-      Wj1_pt_CSVsort4rd_1 = (*selWJet1)->pt();
-      Wj2_pt_CSVsort4rd_1 = (*selWJet2)->pt();
-      b_pt_CSVsort4rd_1   = (*selBJet)->pt();
-    }
-
-    }
+          if(bdtResult.at(kXGB_CSVsort4rd) > max_mvaOutput_HTT_CSVsort4rd)
+          {
+            max_truth_HTT_CSVsort4rd = isGenMatched;
+            max_mvaOutput_HTT_CSVsort4rd = bdtResult.at(kXGB_CSVsort4rd);
+            HadTop_pt_CSVsort4rd = HadTop_pt;
+            genTopPt_CSVsort4rd = genTopPt_teste;
+            Wj1_pt_CSVsort4rd_1 = (*selWJet1)->pt();
+            Wj2_pt_CSVsort4rd_1 = (*selWJet2)->pt();
+            b_pt_CSVsort4rd_1   = (*selBJet)->pt();
+          }
+        }
       }
     }
 
