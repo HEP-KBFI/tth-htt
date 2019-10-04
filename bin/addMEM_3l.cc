@@ -571,6 +571,24 @@ int main(int argc,
     outputTree->Print();
   }
 
+  std::vector<std::string> missing_whitelisted;
+  if(apply_whitelist)
+  {
+    for(const std::string & whitelisted_rle: whitelist)
+    {
+      if(! contains(selected_whitelist, whitelisted_rle))
+      {
+        missing_whitelisted.push_back(whitelisted_rle);
+      }
+    }
+  }
+  if(! missing_whitelisted.empty())
+  {
+    throw cmsException("addMEM_2lss_1tau", __LINE__)
+      << "Never processed the following whitelisted events: " << boost::algorithm::join(missing_whitelisted, ", ")
+    ;
+  }
+
   delete run_lumi_eventSelector;
   delete muonReader;
   delete electronReader;

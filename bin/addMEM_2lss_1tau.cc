@@ -653,6 +653,11 @@ int main(int argc,
                " selected = "     << selectedEntries << "\n"
                "cut-flow table\n" << cutFlowTable << "\n"
                "output Tree:\n";
+  if(isDEBUG)
+  {
+    outputTree->Print();
+  }
+
   std::vector<std::string> missing_whitelisted;
   if(apply_whitelist)
   {
@@ -669,11 +674,6 @@ int main(int argc,
     throw cmsException("addMEM_2lss_1tau", __LINE__)
       << "Never processed the following whitelisted events: " << boost::algorithm::join(missing_whitelisted, ", ")
     ;
-  }
-
-  if(isDEBUG)
-  {
-    outputTree->Print();
   }
 
   delete run_lumi_eventSelector;
