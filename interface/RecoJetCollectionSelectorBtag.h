@@ -24,6 +24,7 @@ public:
   double get_min_pt() const;
   double get_max_absEta() const;
   int get_min_jetId() const;
+  double get_min_BtagCSV() const;
 
   /**
    * @brief Check if jet given as function argument passes pT and eta cuts

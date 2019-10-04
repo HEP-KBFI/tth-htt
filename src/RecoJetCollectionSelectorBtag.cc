@@ -58,6 +58,12 @@ RecoJetSelectorBtag::get_min_jetId() const
   return min_jetId_;
 }
 
+double
+RecoJetSelectorBtag::get_min_BtagCSV() const
+{
+  return min_BtagCSV_;
+}
+
 RecoJetSelectorBtagLoose::RecoJetSelectorBtagLoose(int era,
                                                    int index,
                                                    bool debug)
