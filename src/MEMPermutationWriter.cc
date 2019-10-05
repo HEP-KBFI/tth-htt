@@ -200,21 +200,7 @@ MEMPermutationWriter::write(const std::array<const std::vector<const RecoLepton*
                             const std::vector<const RecoHadTau*> & cleanedHadTaus)
 {
   // compute if the event passes the Z boson veto
-  bool failsZbosonMassVeto = false;
-  const std::vector<const RecoLepton*> & fakeableLeptons = leptons.at(kFakeable);
-  for(std::size_t lepton1_idx = 0; lepton1_idx < fakeableLeptons.size(); ++lepton1_idx)
-  {
-    for(std::size_t lepton2_idx = lepton1_idx + 1; lepton2_idx < fakeableLeptons.size(); ++lepton2_idx)
-    {
-      const RecoLepton* lepton1 = fakeableLeptons.at(lepton1_idx);
-      const RecoLepton* lepton2 = fakeableLeptons.at(lepton2_idx);
-      const double mass = (lepton1->p4() + lepton2->p4()).mass();
-      if(lepton1->is_electron() && lepton2->is_electron() && std::fabs(mass - z_mass) < z_window)
-      {
-        failsZbosonMassVeto = true;
-      }
-    } // lepton2_idx
-  } // lepton1_idx
+  const bool failsZbosonMassVeto = isfailsZbosonMassVeto(leptons.at(kLoose));
 
   // get the b jets
   const std::vector<const RecoJet *> & selBJets_loose  = selBJets.at(0);
