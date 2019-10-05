@@ -621,7 +621,6 @@ int main(int argc,
           MEMOutput_2lss_1tau memOutput_2lss_1tau;
           memOutput_2lss_1tau.errorFlag_ = ADDMEM_2LSS1TAU_ERROR_NOPERM;
           memOutputs_2lss_1tau[central_or_shift].push_back(memOutput_2lss_1tau);
-          memWriter[central_or_shift]->write(memOutputs_2lss_1tau[central_or_shift]);
         }
       }
     } // apply_whitelist
@@ -635,7 +634,6 @@ int main(int argc,
           ADDMEM_2LSS1TAU_ERROR_SKIPPED_NOPERM
         ;
         memOutputs_2lss_1tau[central_or_shift].push_back(memOutput_2lss_1tau);
-        memWriter[central_or_shift]->write(memOutputs_2lss_1tau[central_or_shift]);
       }
     }
 
