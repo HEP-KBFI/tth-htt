@@ -503,19 +503,32 @@ main(int argc,
     .setLepSelection       (leptonSelection, kTight)
   ;
 
-  // add conditions for computing the nof MEM permutations in 2lss1tau and 3l1tau channels
-  // the arguments are: the name of the channel, minimum number of leptons, minimum number of hadronic taus
+  // Add conditions for computing the nof MEM permutations in 2lss1tau and 3l1tau channels
+  // the arguments are: the name of the channel, minimum number of leptons, minimum number of hadronic taus.
   memPermutationWriter
-    .addCondition("2lss_1tau", 2, 1)
+    .addCondition("2lss_1tau", 2, 1) // [*]
     .addCondition("3l_1tau",   3, 1)
   ;
+  // [*] Requires the event to have at least 1 medium b-jet or 2 loose b-jets. It excludes tH-like event category
+  //     in this channel, which is orthogonal to the selection of ttH-like category. Technically, addMEM_2lss_1tau
+  //     doesn't prohibit running on non-bjets, because the two leading jets with the highest b-tagging score are
+  //     selected. So, if we instead require the event to have at least 2 jets of which at least one passes for
+  //     loose b-jet definition (instead of 2 loose or 1 medium b-jet), we could compute the MEM score for tH-like
+  //     events as well.
   memPermutationWriter_tauLess
-    .addCondition("3l",        3, 0)
+    .addCondition("3l",        3, 0) // [*]
   ;
+  // [*] Requires the event to have at least 1 medium b-jet or 2 loose b-jets. It excludes tH-like event category
+  //     in this channel, which is orthogonal to the selection of ttH-like category. Technically, addMEM_3l *requires*
+  //     the events to have at least 2 jets of which at least one jet passes the loose b-tagging WP. So, if we instead
+  //     require the event to have at least 2 jets of which at least one passes for loose b-jet definition (instead of
+  //     2 loose or 1 medium b-jet), we could compute the MEM score for tH-like events as well.
   memPermutationWriter_hh
-    .addCondition("hh_bb2l",   2, 0)
-    .addCondition("hh_bb1l",   1, 0)
+    .addCondition("hh_bb2l",   2, 0, 0, 0) // [*]
+    .addCondition("hh_bb1l",   1, 0, 0, 0) // [*]
   ;
+  // [*] Set minimum number of loose and medium b-jets to 0, otherwise we exclude events from MEM computation
+  //     that fall into semi-/boosted categories.
   memPermutationWriter.setBranchNames(outputTree, era, true);
   memPermutationWriter_tauLess.setBranchNames(outputTree, era, true);
   memPermutationWriter_hh.setBranchNames(outputTree, era, true);
@@ -921,12 +934,12 @@ main(int argc,
         electronGenMatcher.addGenJetMatch(preselElectronsUncleaned, genJets);
 
         hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons);
-        hadTauGenMatcher.addGenHadTauMatch  (selHadTaus, genHadTaus);
-        hadTauGenMatcher.addGenJetMatch  (selHadTaus, genJets);
+        hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus);
+        hadTauGenMatcher.addGenJetMatch   (selHadTaus, genJets);
 
         jetGenMatcher.addGenLeptonMatch(selJets, genLeptons);
-        jetGenMatcher.addGenHadTauMatch     (selJets, genHadTaus);
-        jetGenMatcher.addGenJetMatch(selJets, genJets);
+        jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus);
+        jetGenMatcher.addGenJetMatch   (selJets, genJets);
       }
     }
 

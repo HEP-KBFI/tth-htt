@@ -8,8 +8,8 @@ class RecoJetSelectorForward
 {
 public:
   explicit RecoJetSelectorForward(int era,
-                           int index = -1,
-                           bool debug = false);
+                                  int index = -1,
+                                  bool debug = false);
   ~RecoJetSelectorForward() {}
 
   /**

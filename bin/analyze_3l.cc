@@ -1293,15 +1293,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     cutFlowHistManager->fillHistograms(">= 3 presel leptons", evtWeightRecorder.get(central_or_shift_main));
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
-    bool tH_like = false;
-    bool ttH_like = false;
-    if ((selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && ((int)selJets.size() >= 2)) ttH_like = true;
-    if (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1) tH_like = true;
-    if (
-      (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1)
-    ) tH_like = true;
-    bool passEvents = ttH_like || tH_like;
-    if(do_sync) passEvents = ttH_like || tH_like;
+    const bool tH_like  = (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1);
+    const bool ttH_like = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && selJets.size() >= 2;
+    const bool passEvents = ttH_like || tH_like;
     if ( !(passEvents) ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
