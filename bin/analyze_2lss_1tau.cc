@@ -1838,6 +1838,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
               << "MEM computation was skipped for event " << eventInfo.str() << " because not enough permutations found"
             ;
           }
+          else if(memOutput_2lss_1tau_matched.errorFlag() == ADDMEM_2LSS1TAU_ERROR_MATRIXINVERSION)
+          {
+            std::cout << "MEM computation failed because MET covariance matrix was not invertible\n";
+          }
           else
           {
             throw cmsException(argv[0], __LINE__)
