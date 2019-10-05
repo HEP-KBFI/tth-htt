@@ -92,7 +92,7 @@ MEMsample_base = "addMEM_3l_{}".format(hadTau_selection_veto)
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 elif mode == "addMEM":
-  samples = load_samples(era, suffix = )
+  samples = load_samples(era, suffix = MEMsample_base)
   MEMbranch = 'memObjects_3l_lepFakeable'
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
