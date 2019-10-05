@@ -93,6 +93,13 @@ enum
   kJetMET_UnclusteredEnUp,                       kJetMET_UnclusteredEnDown, // unclustered energy (only for MET)
 };
 
+enum class METSyst
+{
+  central,
+  respUp, respDown,
+  resolUp, resolDown,
+};
+
 enum
 {
   kHadTauPt_uncorrected,
@@ -208,6 +215,9 @@ getJet_option(const std::string & central_or_shift,
 int
 getMET_option(const std::string & central_or_shift,
               bool isMC);
+
+METSyst
+getMETsyst_option(const std::string & central_or_shift);
 
 int
 getHadTauPt_option(const std::string & central_or_shift);

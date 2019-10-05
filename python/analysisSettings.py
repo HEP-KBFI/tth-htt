@@ -225,8 +225,8 @@ class systematics(object):
 
   # Analysis-specific definitions
 
-  an_leptonFR        =    central +  JES +  JER + MET_ResponseSyst + MET_ResolutionSyst          + UnclusteredEn
-  an_leptonFR_opts   = [ "central", "JES", "JER", "MET_ResponseSyst", "MET_ResolutionSyst"         "UnclusteredEn" ]
+  an_leptonFR        =    central +  JES +  JER          + UnclusteredEn  + MET_ResponseSyst +  MET_ResolutionSyst
+  an_leptonFR_opts   = [ "central", "JES", "JER",         "UnclusteredEn", "MET_ResponseSyst", "MET_ResolutionSyst" ]
   an_jetToTauFR      =    central +  JES         + tauES                   + tauIDSF
   an_jetToTauFR_opts = [ "central", "JES", "JER",          "UnclusteredEn", "tauIDSF" ]
   an_addMEM          =    central +  JES +  JER +  tauES +  UnclusteredEn

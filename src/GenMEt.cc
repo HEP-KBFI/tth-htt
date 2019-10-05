@@ -66,6 +66,3 @@ std::ostream& operator<<(std::ostream& stream,
     " phi = " << met.phi() << "\n";
   return stream;
 }
-
-
-

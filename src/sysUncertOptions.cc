@@ -73,6 +73,17 @@ getMET_option(const std::string & central_or_shift,
   return central_or_shift_int;
 }
 
+METSyst
+getMETsyst_option(const std::string & central_or_shift)
+{
+  METSyst central_or_shift_int = METSyst::central;
+  if     (central_or_shift == "MET_RespUp")    central_or_shift_int = METSyst::respUp;
+  else if(central_or_shift == "MET_RespDown")  central_or_shift_int = METSyst::respDown;
+  else if(central_or_shift == "MET_ResolUp")   central_or_shift_int = METSyst::resolUp;
+  else if(central_or_shift == "MET_ResolDown") central_or_shift_int = METSyst::resolDown;
+  return central_or_shift_int;
+}
+
 int
 getHadTauPt_option(const std::string & central_or_shift)
 {

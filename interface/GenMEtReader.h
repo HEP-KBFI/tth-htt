@@ -1,12 +1,12 @@
 #ifndef tthAnalysis_HiggsToTauTau_GenMEtReader_h
 #define tthAnalysis_HiggsToTauTau_GenMEtReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase                                                                                                                   
-#include "tthAnalysis/HiggsToTauTau/interface/GenMEt.h" // GenMEt                                                                                                                         
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/GenMEt.h" // GenMEt
 
-#include <map> // std::map<,>                                                                                                                                                               
+#include <map> // std::map<,>
 
-// forward declarations                                                                                                                                                                     
+// forward declarations
 class TTree;
 
 class GenMEtReader
@@ -20,25 +20,25 @@ class GenMEtReader
                 const std::string & branchName_obj);
   ~GenMEtReader();
 
-  /**                                                                                                                                                                                       
-   * @brief Call tree->SetBranchAddress for all RecoMEt branches                                                                                                                            
+  /**
+   * @brief Call tree->SetBranchAddress for all RecoMEt branches
    */
   void
-    setBranchAddresses(TTree* tree) override;
+  setBranchAddresses(TTree * tree) override;
 
-  /**                                                                                                                                                                                       
-   * @brief Read branches from tree and use information to fill RecoMEt object                                                                                                              
-   * @return RecoMEt object                                                                                                                                                                 
+  /**
+   * @brief Read branches from tree and use information to fill RecoMEt object
+   * @return RecoMEt object
    */
   GenMEt
-    read() const;
+  read() const;
 
 protected:
-  /**                                                                                                                                                                                        
-   * @brief Initialize names of branches to be read from tree                                                                                                                               
+  /**
+   * @brief Initialize names of branches to be read from tree
    */
   void
-    setBranchNames();
+  setBranchNames();
 
   int era_;
   bool isMC_;
@@ -49,8 +49,8 @@ protected:
 
   GenMEt met_;
 
-  // CV: make sure that only one GenMEtReader instance exists for a given branchName,                                                                                                      
-  //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.                                                                                                  
+  // CV: make sure that only one GenMEtReader instance exists for a given branchName,
+  //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
   static std::map<std::string, int> numInstances_;
   static std::map<std::string, GenMEtReader *> instances_;
 };
