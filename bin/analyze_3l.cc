@@ -1602,11 +1602,14 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
                      "\tselLepton_third: pT = " << selLepton_third -> pt()
                   << ", eta = "                 << selLepton_third -> eta()
                   << ", phi = "                 << selLepton_third -> phi()
-                  << ", pdgId = "               << selLepton_third -> pdgId() << '\n'
+                  << ", pdgId = "               << selLepton_third -> pdgId() << "\n"
+                     "ttH-like = " << ttH_like << " "
+                     "tH-like = "  << tH_like  << '\n'
         ;
+        bool memSkipError = false;
         if(! memOutputs_3l.empty())
         {
-          for( unsigned mem_idx = 0; mem_idx < memOutputs_3l.size(); ++mem_idx)
+          for(unsigned mem_idx = 0; mem_idx < memOutputs_3l.size(); ++mem_idx)
           {
             std::cout << "\t#" << mem_idx << " mem object;\n"
                       << "\t\tlead lepton eta = " << memOutputs_3l[mem_idx].leadLepton_eta_
@@ -1616,55 +1619,55 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
                          "\t\tthird lepton eta = " << memOutputs_3l[mem_idx].thirdLepton_eta_
                       << "; phi = "                << memOutputs_3l[mem_idx].thirdLepton_phi_ << '\n'
             ;
+            if(memOutputs_3l[mem_idx].errorFlag() == ADDMEM_3L_ERROR_SKIPPED)
+            {
+              std::cout << "MEM computation was skipped for event " << eventInfo.str() << '\n';
+            }
+            else if(memOutputs_3l[mem_idx].errorFlag() == ADDMEM_3L_ERROR_SKIPPED_NOPERM)
+            {
+              std::cout
+                << "MEM computation was skipped for event " << eventInfo.str() << " AND "
+                   "there were not enough MEM permutations in the first place\n"
+              ;
+            }
+            else if(memOutputs_3l[mem_idx].errorFlag() == ADDMEM_3L_ERROR_JETMULTIPLICITY ||
+                    memOutputs_3l[mem_idx].errorFlag() == ADDMEM_3L_ERROR_BJETMULTIPLICITY )
+            {
+              if(ttH_like && branchName_memOutput.find(central_or_shift_main) != std::string::npos)
+              {
+                std::cout
+                  << "MEM did not find enough jets in event " << eventInfo.str() << " and for systematics "
+                  << central_or_shift_main << " although there are " << selJets.size() << " jets selected in the event\n"
+                ;
+              }
+              else
+              {
+                memSkipError = true;
+                std::cout
+                  << "MEM not available because the event is tH-like or the thresholds is jet selection have "
+                     "changed wrt the thresholds used in MEM computation\n"
+                ;
+              }
+            }
+            else if(memOutputs_3l[mem_idx].errorFlag() == ADDMEM_3L_ERROR_NOPERM)
+            {
+              std::cout
+                << "MEM computation was skipped for event " << eventInfo.str() << " because not enough permutations found\n"
+              ;
+            }
+            else
+            {
+              std::cout << "Failed with MEM error: " << memOutput_3l_matched.errorFlag() << '\n';
+            }
           }
         }
         else
         {
-          if(! ignoreMEMerrors)
-          {
-            throw cmsException(argv[0], __LINE__) << "Event " << eventInfo.str() << " contains no MEM objects whatsoever";
-          }
-          else
-          {
-            std::cout << "Event " << eventInfo.str() << " contains no MEM objects whatsoever\n";
-          }
+          std::cout << "Event " << eventInfo.str() << " contains no MEM objects whatsoever\n";
         }
-        if(! ignoreMEMerrors)
+        if(! ignoreMEMerrors && ! memSkipError)
         {
-          if(memOutput_3l_matched.errorFlag() == ADDMEM_3L_ERROR_SKIPPED)
-          {
-            throw cmsException(argv[0], __LINE__)
-              << "MEM computation was skipped for event " << eventInfo.str()
-            ;
-          }
-          else if(memOutput_3l_matched.errorFlag() == ADDMEM_3L_ERROR_SKIPPED_NOPERM)
-          {
-            throw cmsException(argv[0], __LINE__)
-              << "MEM computation was skipped for event " << eventInfo.str() << " AND "
-                 "there were not enough MEM permutations in the first place"
-            ;
-          }
-          else if((memOutput_3l_matched.errorFlag() == ADDMEM_3L_ERROR_JETMULTIPLICITY ||
-                   memOutput_3l_matched.errorFlag() == ADDMEM_3L_ERROR_BJETMULTIPLICITY ) && ttH_like &&
-                  branchName_memOutput.find(central_or_shift_main) != std::string::npos)
-          {
-            throw cmsException(argv[0], __LINE__)
-              << "MEM did not find enough jets in event " << eventInfo.str() << " and for systematics "
-              << central_or_shift_main << " although there are " << selJets.size() << " jets selected in the event"
-            ;
-          }
-          else if(memOutput_3l_matched.errorFlag() == ADDMEM_3L_ERROR_NOPERM)
-          {
-            throw cmsException(argv[0], __LINE__)
-              << "MEM computation was skipped for event " << eventInfo.str() << " because not enough permutations found"
-            ;
-          }
-          else
-          {
-            throw cmsException(argv[0], __LINE__)
-              << "Failed with MEM error: " << memOutput_3l_matched.errorFlag()
-            ;
-          }
+          throw cmsException(argv[0], __LINE__) << "No valid MEM output was found";
         }
       }
     }

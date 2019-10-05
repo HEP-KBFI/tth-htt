@@ -1782,8 +1782,11 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
                      "\tselHadTau: pT = " << selHadTau->pt()
                   << ", eta = "           << selHadTau->eta()
                   << ", phi = "           << selHadTau->phi() << "\n"
+                     "ttH-like = " << ttH_like << " "
+                     "tH-like = "  << tH_like  << "\n"
                      "Number of MEM objects read: " << memOutputs_2lss_1tau.size() << '\n'
         ;
+        bool memSkipError = false;
         if(! memOutputs_2lss_1tau.empty())
         {
           for(unsigned mem_idx = 0; mem_idx < memOutputs_2lss_1tau.size(); ++mem_idx)
@@ -1794,60 +1797,62 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
                          "\t\tsublead lepton eta = " << memOutputs_2lss_1tau[mem_idx].subleadLepton_eta_
                       << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].subleadLepton_phi_ << "\n"
                          "\t\thadronic tau eta = "   << memOutputs_2lss_1tau[mem_idx].hadTau_eta_
-                      << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].hadTau_phi_ << '\n'
+                      << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].hadTau_phi_ << "\n"
+                      << "error flag = "             << memOutputs_2lss_1tau[mem_idx].errorFlag() << '\n'
             ;
+            if(memOutputs_2lss_1tau[mem_idx].errorFlag() == ADDMEM_2LSS1TAU_ERROR_SKIPPED)
+            {
+              std::cout << "MEM computation was skipped for event " << eventInfo.str() << '\n';
+            }
+            else if(memOutputs_2lss_1tau[mem_idx].errorFlag() == ADDMEM_2LSS1TAU_ERROR_SKIPPED_NOPERM)
+            {
+              std::cout
+                << "MEM computation was skipped for event " << eventInfo.str() << " AND "
+                   "there were not enough MEM permutations in the first place\n"
+              ;
+            }
+            else if(memOutputs_2lss_1tau[mem_idx].errorFlag() == ADDMEM_2LSS1TAU_ERROR_JETMULTIPLICITY)
+            {
+              if(ttH_like && branchName_memOutput.find(central_or_shift_main) != std::string::npos)
+              {
+                std::cout
+                  << "MEM did not find enough jets in event " << eventInfo.str() << " and for systematics "
+                  << central_or_shift_main << " although there are " << selJets.size() << " jets selected in the event\n"
+                ;
+              }
+              else
+              {
+                memSkipError = true;
+                std::cout
+                  << "MEM not available because the event is tH-like or the objects have changed "
+                     "changed wrt the objects used in MEM computation due to systematics\n"
+                ;
+              }
+            }
+            else if(memOutputs_2lss_1tau[mem_idx].errorFlag() == ADDMEM_2LSS1TAU_ERROR_NOPERM)
+            {
+              std::cout
+                << "MEM computation was skipped for event " << eventInfo.str() << " because not enough permutations found\n"
+              ;
+            }
+            else if(memOutputs_2lss_1tau[mem_idx].errorFlag() == ADDMEM_2LSS1TAU_ERROR_MATRIXINVERSION)
+            {
+              memSkipError = true;
+              std::cout << "MEM computation failed because MET covariance matrix was not invertible\n";
+            }
+            else
+            {
+              std::cout << "Failed with MEM error: " << memOutput_2lss_1tau_matched.errorFlag() << '\n';
+            }
           }
         }
         else
         {
-          if(! ignoreMEMerrors)
-          {
-            throw cmsException(argv[0], __LINE__) << "Event " << eventInfo.str() << " contains no MEM objects whatsoever";
-          }
-          else
-          {
-            std::cout << "Event " << eventInfo.str() << " contains no MEM objects whatsoever\n";
-          }
+          std::cout << "Event " << eventInfo.str() << " contains no MEM objects whatsoever\n";
         }
-        if(! ignoreMEMerrors)
+        if(! ignoreMEMerrors && ! memSkipError)
         {
-          if(memOutput_2lss_1tau_matched.errorFlag() == ADDMEM_2LSS1TAU_ERROR_SKIPPED)
-          {
-            throw cmsException(argv[0], __LINE__)
-              << "MEM computation was skipped for event " << eventInfo.str()
-            ;
-          }
-          else if(memOutput_2lss_1tau_matched.errorFlag() == ADDMEM_2LSS1TAU_ERROR_SKIPPED_NOPERM)
-          {
-            throw cmsException(argv[0], __LINE__)
-              << "MEM computation was skipped for event " << eventInfo.str() << " AND "
-                 "there were not enough MEM permutations in the first place"
-            ;
-          }
-          else if(memOutput_2lss_1tau_matched.errorFlag() == ADDMEM_2LSS1TAU_ERROR_JETMULTIPLICITY && ttH_like &&
-                  branchName_memOutput.find(central_or_shift_main) != std::string::npos)
-          {
-            throw cmsException(argv[0], __LINE__)
-              << "MEM did not find enough jets in event " << eventInfo.str() << " and for systematics "
-              << central_or_shift_main << " although there are " << selJets.size() << " jets selected in the event"
-            ;
-          }
-          else if(memOutput_2lss_1tau_matched.errorFlag() == ADDMEM_2LSS1TAU_ERROR_NOPERM)
-          {
-            throw cmsException(argv[0], __LINE__)
-              << "MEM computation was skipped for event " << eventInfo.str() << " because not enough permutations found"
-            ;
-          }
-          else if(memOutput_2lss_1tau_matched.errorFlag() == ADDMEM_2LSS1TAU_ERROR_MATRIXINVERSION)
-          {
-            std::cout << "MEM computation failed because MET covariance matrix was not invertible\n";
-          }
-          else
-          {
-            throw cmsException(argv[0], __LINE__)
-              << "Failed with MEM error: " << memOutput_2lss_1tau_matched.errorFlag()
-            ;
-          }
+          throw cmsException(argv[0], __LINE__) << "No valid MEM output was found";
         }
       }
     }
