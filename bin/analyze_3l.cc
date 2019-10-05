@@ -1664,6 +1664,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         else
         {
           std::cout << "Event " << eventInfo.str() << " contains no MEM objects whatsoever\n";
+          memSkipError = tH_like;
         }
         if(! ignoreMEMerrors && ! memSkipError)
         {

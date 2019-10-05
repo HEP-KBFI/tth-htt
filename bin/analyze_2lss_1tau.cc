@@ -1849,6 +1849,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         else
         {
           std::cout << "Event " << eventInfo.str() << " contains no MEM objects whatsoever\n";
+          memSkipError = tH_like;
         }
         if(! ignoreMEMerrors && ! memSkipError)
         {
