@@ -1672,6 +1672,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         }
       }
     }
+    const double memOutput_LR  = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.LR()         : -1.;
+    const double memOutput_ttH = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttH() : -100.;
+    const double memOutput_tt  = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_tt()  : -100.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 3l category of ttH multilepton analysis
@@ -2072,9 +2075,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("mvaDiscr_3l",         mvaDiscr_3l)
 	  ("memOutput_isValid",   memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.isValid() : -1.)
 	  ("memOutput_errorFlag", memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.errorFlag() : -1.)
-	  ("memOutput_ttH",       memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttH() : -1.)
-	  ("memOutput_tt",        memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_tt() : -1.)
-	  ("memOutput_LR",        memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.LR() : -1.)
+          ("memOutput_ttH",       memOutput_ttH)
+          ("memOutput_tt",        memOutput_tt)
+          ("memOutput_LR",        memOutput_LR)
           ("lumiScale",           evtWeightRecorder.get_lumiScale(central_or_shift_main))
           ("genWeight",           eventInfo.genWeight)
           ("evtWeight",           evtWeightRecorder.get(central_or_shift_main))
@@ -2252,6 +2255,13 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       snm->read(mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"],  FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_ttH);
       snm->read(mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"],   FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_tH);
       snm->read(mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"], FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_rest);
+
+      snm->read(memOutput_ttH,                          FloatVariableType::Integral_ttH);
+      // Integral_ttZ not filled
+      // Integral_ttZ_Zll not filled
+      snm->read(memOutput_tt,                           FloatVariableType::Integral_ttbar);
+      // integration_type not filled
+      snm->read(memOutput_LR,                           FloatVariableType::MEM_LR);
 
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
