@@ -92,10 +92,19 @@ HadTopTagger::operator()(const RecoJet & recBJet,
     isGenMatched = genMatchingTop.at(kGenMatchedTriplet) || genMatchingAntiTop.at(kGenMatchedTriplet);
   }
 
+  const double btagDisc_b = recBJet.hasBtag (Btag::kDeepCSV) && recBJet.BtagCSV(Btag::kDeepCSV) != -3. ?
+    recBJet.BtagCSV(Btag::kDeepCSV) : recBJet.BtagCSV()
+  ;
+  const double btagDisc_Wj1 = recWJet1.hasBtag (Btag::kDeepCSV) && recWJet1.BtagCSV(Btag::kDeepCSV) != -3. ?
+    recWJet1.BtagCSV(Btag::kDeepCSV) : recWJet1.BtagCSV()
+  ;
+  const double btagDisc_Wj2 = recWJet2.hasBtag (Btag::kDeepCSV) && recWJet2.BtagCSV(Btag::kDeepCSV) != -3. ?
+    recWJet2.BtagCSV(Btag::kDeepCSV) : recWJet2.BtagCSV()
+  ;
   mvaInputsHTT = {
-    { "btagDisc_b",             recBJet.hasBtag (Btag::kDeepCSV) ? recBJet.BtagCSV (Btag::kDeepCSV) : recBJet.BtagCSV()  },
-    { "btagDisc_Wj1",           recWJet1.hasBtag(Btag::kDeepCSV) ? recWJet1.BtagCSV(Btag::kDeepCSV) : recWJet1.BtagCSV() },
-    { "btagDisc_Wj2",           recWJet2.hasBtag(Btag::kDeepCSV) ? recWJet2.BtagCSV(Btag::kDeepCSV) : recWJet2.BtagCSV() },
+    { "btagDisc_b",             btagDisc_b                                          },
+    { "btagDisc_Wj1",           btagDisc_Wj1                                        },
+    { "btagDisc_Wj2",           btagDisc_Wj2                                        },
     { "qg_Wj1",                 recWJet2.QGDiscr()                                  },
     { "qg_Wj2",                 recWJet2.QGDiscr()                                  },
     { "m_Wj1Wj2_div_m_bWj1Wj2", p4_Wj1Wj2.mass() / p4_bWj1Wj2.mass()                },
