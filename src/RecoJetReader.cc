@@ -168,10 +168,6 @@ RecoJetReader::setBranchNames()
 
     for(const auto & kv: BtagWP_map.at(era_))
     {
-      if(kv.first != Btag::kDeepJet)
-      {
-        continue;
-      }
       std::string btagName;
       switch(kv.first)
       {
@@ -256,10 +252,12 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_eta_, branchName_eta_);
     bai.setBranchAddress(jet_phi_, branchName_phi_);
     bai.setBranchAddress(jet_charge_, branchName_jetCharge_);
+    bai.ignoreErrors(true);
     for(const auto & kv: branchNames_btag_)
     {
-      bai.setBranchAddress(jet_BtagCSVs_[kv.first], kv.second);
+      bai.setBranchAddress(jet_BtagCSVs_[kv.first], kv.second, -3.);
     }
+    bai.ignoreErrors(false);
 
     for(const auto & kv: branchNames_BtagWeight_systematics_)
     {

@@ -3,6 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_internal.h" // isGenMatchedJetTriplet()
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions_geral.h" // kGen*
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Btag::kDeepCSV
 
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 
@@ -92,9 +93,9 @@ HadTopTagger::operator()(const RecoJet & recBJet,
   }
 
   mvaInputsHTT = {
-    { "btagDisc_b",             recBJet.BtagCSV()                                   },
-    { "btagDisc_Wj1",           recWJet1.BtagCSV()                                  },
-    { "btagDisc_Wj2",           recWJet2.BtagCSV()                                  },
+    { "btagDisc_b",             recBJet.hasBtag (Btag::kDeepCSV) ? recBJet.BtagCSV (Btag::kDeepCSV) : recBJet.BtagCSV()  },
+    { "btagDisc_Wj1",           recWJet1.hasBtag(Btag::kDeepCSV) ? recWJet1.BtagCSV(Btag::kDeepCSV) : recWJet1.BtagCSV() },
+    { "btagDisc_Wj2",           recWJet2.hasBtag(Btag::kDeepCSV) ? recWJet2.BtagCSV(Btag::kDeepCSV) : recWJet2.BtagCSV() },
     { "qg_Wj1",                 recWJet2.QGDiscr()                                  },
     { "qg_Wj2",                 recWJet2.QGDiscr()                                  },
     { "m_Wj1Wj2_div_m_bWj1Wj2", p4_Wj1Wj2.mass() / p4_bWj1Wj2.mass()                },
