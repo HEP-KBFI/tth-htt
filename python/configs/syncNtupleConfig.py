@@ -122,7 +122,7 @@ class syncNtupleConfig:
       additional_args += " -R %s" % self.running_method
 
     cr_channels = { channel : False for channel in [ '3l', '4l' ] }
-    mem_channels = [ '2lss_1tau' ]
+    mem_channels = [ '2lss_1tau', '3l', 'hh_bb2l' ]
 
     inclusive_args = '-v %s -e %s' % (version, era)
 
