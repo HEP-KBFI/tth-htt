@@ -510,7 +510,7 @@ main(int argc,
     .addCondition("3l_1tau",   3, 1)
   ;
   // [*] Requires the event to have at least 1 medium b-jet or 2 loose b-jets. It excludes tH-like event category
-  //     in this channel, which is orthogonal to the selection of ttH-like category. Technically, addMEM_2lss_1tau
+  //     in this channel, which is different to the selection of ttH-like category. Technically, addMEM_2lss_1tau
   //     doesn't prohibit running on non-bjets, because the two leading jets with the highest b-tagging score are
   //     selected. So, if we instead require the event to have at least 2 jets of which at least one passes for
   //     loose b-jet definition (instead of 2 loose or 1 medium b-jet), we could compute the MEM score for tH-like
@@ -519,7 +519,7 @@ main(int argc,
     .addCondition("3l",        3, 0) // [*]
   ;
   // [*] Requires the event to have at least 1 medium b-jet or 2 loose b-jets. It excludes tH-like event category
-  //     in this channel, which is orthogonal to the selection of ttH-like category. Technically, addMEM_3l *requires*
+  //     in this channel, which is different to the selection of ttH-like category. Technically, addMEM_3l *requires*
   //     the events to have at least 2 jets of which at least one jet passes the loose b-tagging WP. So, if we instead
   //     require the event to have at least 2 jets of which at least one passes for loose b-jet definition (instead of
   //     2 loose or 1 medium b-jet), we could compute the MEM score for tH-like events as well.
