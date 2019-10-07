@@ -87,10 +87,13 @@ elif sideband == 'only':
 else:
   raise ValueError("Invalid choice for the sideband: %s" % sideband)
 
+MEMsample_base = "addMEM_3l_{}".format(hadTau_selection_veto)
+MEMbranch      = ''
+
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 elif mode == "addMEM":
-  samples = load_samples(era, suffix = "addMEM_3l")
+  samples = load_samples(era, suffix = MEMsample_base)
   MEMbranch = 'memObjects_3l_lepFakeable'
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
@@ -99,10 +102,11 @@ elif mode == "forBDTtraining_beforeAddMEM":
 elif mode == "forBDTtraining_afterAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
-  samples = load_samples(era, suffix = "BDT_addMEM_3l")
+  samples = load_samples(era, suffix = "{}_BDT".format(MEMsample_base))
   MEMbranch = 'memObjects_3l_lepFakeable'
 elif mode == "sync_wMEM":
-  samples = load_samples(era, suffix = "addMEM_3l_sync" if use_nonnominal else "addMEM_3l_sync_nom")
+  samples = load_samples(era, suffix = "{}_sync{}".format(MEMsample_base, '' if use_nonnominal else "_nom"))
+  MEMbranch = 'memObjects_3l_lepFakeable'
 elif mode == "sync":
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:
@@ -131,7 +135,7 @@ if __name__ == '__main__':
     executable_analyze                    = "analyze_3l",
     cfgFile_analyze                       = "analyze_3l_cfg.py",
     samples                               = samples,
-    MEMbranch                             = None, # CV: MEM not implemented for 3l channel yet
+    MEMbranch                             = MEMbranch,
     hadTauVeto_selection                  = hadTau_selection_veto,
     applyFakeRateWeights                  = "3lepton",
     chargeSumSelections                   = chargeSumSelections,

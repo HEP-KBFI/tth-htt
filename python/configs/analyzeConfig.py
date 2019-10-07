@@ -515,8 +515,8 @@ class analyzeConfig(object):
         self.isBDTtraining = True
 
     def get_addMEM_systematics(self, central_or_shift):
-        if central_or_shift in systematics.an_addMEM:
-            return central_or_shift
+        #if central_or_shift in systematics.an_addMEM:
+        #    return central_or_shift
         return "central"
 
     def accept_central_or_shift(self, central_or_shift, sample_category, sample_name, has_LHE = False):

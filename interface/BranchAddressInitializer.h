@@ -13,17 +13,26 @@
 
 struct BranchAddressInitializer
 {
+public:
   BranchAddressInitializer(TTree * tree = nullptr,
                            int lenVar = -1,
                            const std::string & branchName_n = "")
     : tree_(tree)
     , lenVar_(lenVar)
     , branchName_n_(branchName_n)
+    , ignoreErrors_(false)
+    , inputBranchNamesFound_(false)
   {
     if(! tree_)
     {
       throw cmsException(this) << "No TTree provided!";
     }
+  }
+
+  void
+  ignoreErrors(bool flag)
+  {
+    ignoreErrors_ = flag;
   }
 
   template<typename T,
@@ -58,10 +67,10 @@ struct BranchAddressInitializer
                    const std::string & branchName,
                    U default_value = 0)
   {
-    if(! branchName.empty())
+    value = static_cast<T>(default_value);
+    if(! branchName.empty() && ! (ignoreErrors_ && ! hasBranchName(branchName)))
     {
       tree_ -> SetBranchAddress(branchName.data(), &value);
-      value = static_cast<T>(default_value);
     }
   }
 
@@ -78,7 +87,7 @@ struct BranchAddressInitializer
       address = new T[lenVar_];
       std::fill_n(address, lenVar_, static_cast<T>(default_value));
     }
-    if(! branchName.empty())
+    if(! branchName.empty() && ! (ignoreErrors_ && ! hasBranchName(branchName)))
     {
       tree_ -> SetBranchAddress(branchName.data(), address);
     }
@@ -91,9 +100,40 @@ struct BranchAddressInitializer
     return *this;
   }
 
+protected:
+  bool
+  hasBranchName(const std::string & branchName)
+  {
+    if(branchName.empty())
+    {
+      throw cmsException(this, __func__, __LINE__) << "Cannot search for an empty branch name";
+    }
+    if(! inputBranchNamesFound_)
+    {
+      const TObjArray * const tree_branches = tree_->GetListOfBranches();
+      const int tree_numBranches = tree_branches->GetEntries();
+      for(int idxBranch = 0; idxBranch < tree_numBranches; ++idxBranch)
+      {
+        const TBranch * const tree_branch = dynamic_cast<const TBranch * const>(tree_branches->At(idxBranch));
+        assert(tree_branch);
+        const std::string tree_branchName = tree_branch->GetName();
+        if(std::find(inputBranchNames_.cbegin(), inputBranchNames_.cend(), tree_branchName) != inputBranchNames_.cend())
+        {
+          throw cmsException(this, __func__, __LINE__) << "Found duplicate branch names in input TTree: " << tree_branchName;
+        }
+        inputBranchNames_.push_back(tree_branchName);
+      }
+      inputBranchNamesFound_ = true;
+    }
+    return std::find(inputBranchNames_.cbegin(), inputBranchNames_.cend(), branchName) != inputBranchNames_.cend();
+  }
+
   TTree * tree_;
   int lenVar_;
   std::string branchName_n_;
+  bool ignoreErrors_;
+  bool inputBranchNamesFound_;
+  std::vector<std::string> inputBranchNames_;
 };
 
 #endif // BRANCHADDRESSINITIALIZER_H

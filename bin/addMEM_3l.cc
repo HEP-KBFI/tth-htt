@@ -534,7 +534,6 @@ int main(int argc,
           MEMOutput_3l memOutput_3l;
           memOutput_3l.errorFlag_ = ADDMEM_3L_ERROR_NOPERM;
           memOutputs_3l[central_or_shift].push_back(memOutput_3l);
-          memWriter[central_or_shift]->write(memOutputs_3l[central_or_shift]);
         }
       }
     } // apply_whitelist
@@ -548,7 +547,6 @@ int main(int argc,
           ADDMEM_3L_ERROR_SKIPPED_NOPERM
         ;
         memOutputs_3l[central_or_shift].push_back(memOutput_3l);
-        memWriter[central_or_shift]->write(memOutputs_3l[central_or_shift]);
       }
     }
 

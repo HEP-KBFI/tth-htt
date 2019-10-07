@@ -101,10 +101,6 @@ RecoJetWriter::setBranchNames()
   branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
   for(const auto & kv: BtagWP_map.at(era_))
   {
-    if(kv.first != Btag::kDeepJet)
-    {
-      continue;
-    }
     std::string btagName;
     switch(kv.first)
     {
@@ -282,7 +278,7 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
     jet_charge_[idxJet] = jet->charge();
     for(const auto & kv: branchNames_btag_)
     {
-      jet_BtagCSVs_[kv.first][idxJet] = jet->BtagCSVs_.at(kv.first);
+      jet_BtagCSVs_[kv.first][idxJet] = jet->BtagCSVs_.count(kv.first) ? jet->BtagCSVs_.at(kv.first) : -1.;
     }
     jet_pullEta_[idxJet] = jet->pullEta();
     jet_pullPhi_[idxJet] = jet->pullPhi();
