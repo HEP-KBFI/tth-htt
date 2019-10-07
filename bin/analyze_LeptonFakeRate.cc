@@ -1199,7 +1199,12 @@ main(int argc,
       const RecoMEt met_mod = METSystComp_LeptonFakeRate(preselMuon_ptr, genmet, met, METScaleSyst, metSyst_option, isDEBUG);
       const double mT     = comp_mT    (preselMuon, met_mod.pt(), met_mod.phi());
       const double mT_fix = comp_mT_fix(preselMuon, met_mod.pt(), met_mod.phi());
-
+      if(isDEBUG) {
+	std::cout<< "mT (nominal) " << comp_mT(preselMuon, met.pt(), met.phi()) << std::endl;
+	std::cout<< "mT_fix (nominal) " << comp_mT_fix(preselMuon, met.pt(), met.phi()) << std::endl;
+	std::cout<< "mT " << mT_fix << std::endl;
+	std::cout<< "mT_fix " << mT_fix << std::endl;
+      }
       // numerator histograms
       numerator_and_denominatorHistManagers * histograms_incl_beforeCuts_num = nullptr;
       numerator_and_denominatorHistManagers * histograms_incl_afterCuts_num  = nullptr;
@@ -1287,7 +1292,12 @@ main(int argc,
       const RecoMEt met_mod = METSystComp_LeptonFakeRate(preselElectron_ptr, genmet, met, METScaleSyst, metSyst_option, isDEBUG);
       const double mT     = comp_mT    (preselElectron, met_mod.pt(), met_mod.phi());
       const double mT_fix = comp_mT_fix(preselElectron, met_mod.pt(), met_mod.phi());
-
+      if(isDEBUG) {
+	std::cout<< "mT (nominal) " << comp_mT(preselElectron, met.pt(), met.phi()) << std::endl;
+	std::cout<< "mT_fix (nominal) " << comp_mT_fix(preselElectron, met.pt(), met.phi()) << std::endl;
+	std::cout<< "mT " << mT_fix << std::endl;
+	std::cout<< "mT_fix " << mT_fix << std::endl;
+      }
       numerator_and_denominatorHistManagers * histograms_incl_beforeCuts_num = nullptr;
       numerator_and_denominatorHistManagers * histograms_incl_afterCuts_num  = nullptr;
       std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_beforeCuts_num = nullptr;
