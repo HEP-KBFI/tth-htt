@@ -74,25 +74,26 @@ hadTauWP_veto_map = {
 }
 hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 rle_filter_file = ''
+hadTauWP = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == 'default':
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
   leptonSelection = "Fakeable"
+  if rle_filter:
+    rle_filter_file = 'mem_{}_{}.root'.format(era, hadTauWP)
 elif mode == 'bdt':
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT")
   leptonSelection = "Loose"
-  hadTauWP = tau_id + hadTauWP_veto_map[tau_id]
   if rle_filter:
-    rle_filter_file = 'mem_{}_{}.root'.format(era, hadTauWP)
+    rle_filter_file = 'mem_forBDTtraining_{}_{}.root'.format(era, hadTauWP)
 elif mode == 'sync':
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:
     sample_suffix = "preselected_{}".format(sample_suffix)
   samples = load_samples(era, suffix = sample_suffix)
   leptonSelection = "Fakeable"
-  hadTauWP = tau_id + hadTauWP_veto_map[tau_id]
   if rle_filter:
     rle_filter_file = 'mem_sync_{}_{}.root'.format(era, hadTauWP)
 else:
