@@ -722,16 +722,9 @@ get_prefix(const std::string & process_string,
   {
     decayMode_and_genMatch = "";
   }
-  else
+  else if(process_string == "ttH" || process_string == "ttH_ctcvcp")
   {
-    if(process_string == "signal")
-    {
-      decayMode_and_genMatch = "ttH_";
-    }
-    else if(process_string == "signal_ctcvcp")
-    {
-      decayMode_and_genMatch = "ttH_ctcvcp_";
-    }
+    decayMode_and_genMatch = process_string + "_";
   }
   return decayMode_and_genMatch;
 }

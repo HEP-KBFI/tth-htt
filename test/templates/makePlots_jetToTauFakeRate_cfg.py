@@ -169,7 +169,7 @@ process.makePlots.distributions = cms.VPSet(
 )
 
 process.makePlots.nuisanceParameters.normalization = cms.PSet(
-    signal = cms.string("1.0 +/- 0.20"),
+    ttH = cms.string("1.0 +/- 0.20"),
     TT = cms.string("1.0 +/- 0.20"),
     TTW = cms.string("1.0 +/- 0.20"),
     TTWW = cms.string("1.0 +/- 0.20"),

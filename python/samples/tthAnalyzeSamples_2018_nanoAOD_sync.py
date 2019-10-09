@@ -1,12 +1,12 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-09-30 22:03:29 with the following command:
+# file generated at 2019-10-09 01:32:15 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018_sync.py -p /hdfs/local/karl/sync_ntuples/2018/nanoAODproduction/2019Sep30 -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_nanoAOD_sync.py -M
 
 samples_2018 = OD()
 samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "signal"),
+  ("sample_category",                 "ttH"),
   ("process_name_specific",           "ttHToNonbb_M125_powheg"),
   ("nof_files",                       1),
   ("nof_db_files",                    224),

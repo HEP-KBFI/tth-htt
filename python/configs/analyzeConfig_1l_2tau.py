@@ -130,26 +130,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "HH", "tHq", "tHW", "VH", "WH", "ZH", "ggH", "qqH", "TTWH", "TTZH" ]
-
-    samples_categories_MC = []
-    for sample_category in self.nonfake_backgrounds + self.ttHProcs:
-      if sample_category == "signal" :  sample_category = "ttH"
-      if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
-      decays = [""]
-      if sample_category in self.procsWithDecayModes : decays += self.decayModes
-      if "HH" in sample_category : decays += self.decayModes_HH
-      couplings = [""]
-      if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
-      for decayMode in decays :
-        for coupling in couplings :
-            if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
-            if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
-            if coupling == "" and decayMode == "" :
-              samples_categories_MC.append("%s" % sample_category)
-            elif coupling == "" :
-              samples_categories_MC.append("%s_%s" % (sample_category, decayMode))
-            else:
-              samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
+    samples_categories_MC = self.get_samples_categories_MC(self.nonfake_backgrounds)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc", "data_obs" ]
     self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ]
 
@@ -500,26 +481,10 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
           ## doing list of processes to make the hadd in _Convs and _fake
           ## we could remove the tH ones with althernative couplings
-          processes_input_base = []
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend(self.ttHProcs)
-          for sample_category in sample_categories:
-            if sample_category == "signal" :  sample_category = "ttH"
-            if sample_category == "signal_ctcvcp" :  continue
-            if sample_category == "WH" or sample_category == "ZH" :  continue # in fakes we do not care about separation
-            decays = [""]
-            couplings = [""]
-            for decayMode in decays :
-              for coupling in couplings :
-                if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
-                if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
-                if coupling == "" and decayMode == "" :
-                  processes_input_base.append("%s" % sample_category)
-                elif coupling == "" :
-                  processes_input_base.append("%s_%s" % (sample_category, decayMode))
-                else:
-                  processes_input_base.append("%s_%s_%s" % (sample_category, coupling, decayMode))
+          processes_input_base = self.get_processes_input_base(sample_categories)
 
           # sum fake background contributions for the total of all MC sample
           # input processes: TT_fake, TTW_fake, TTWW_fake, ...

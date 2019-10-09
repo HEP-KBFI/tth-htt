@@ -247,7 +247,7 @@ process.makePlots.distributions.extend([
 ])
 
 process.makePlots.nuisanceParameters.normalization = cms.PSet(
-    signal = cms.string("1.0 +/- 0.20"),
+    ttH = cms.string("1.0 +/- 0.20"),
     TT = cms.string("1.0 +/- 0.20"),
     tHq = cms.string("1.0 +/- 0.20"),
     tHW = cms.string("1.0 +/- 0.20"),
