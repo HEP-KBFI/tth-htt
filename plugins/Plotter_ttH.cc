@@ -107,7 +107,7 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
     } else if ( process.find("TTZ") != std::string::npos ) {
       histogramTTZ = histogramBackground;
       histogramTTZ_density = histogramBackground_density;
-    } else if ( process.find("signal") != std::string::npos ) {
+    } else if ( process.find("ttH") != std::string::npos ) {
       histogramTTH = histogramBackground;
       histogramTTH_density = histogramBackground_density;
     } else if ( process.find("TT") != std::string::npos ) {

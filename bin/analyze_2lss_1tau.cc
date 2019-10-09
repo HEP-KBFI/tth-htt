@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
   const bool isMC_VH = process_string == "VH";
   const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
   const bool isMC_HH = process_string == "HH";
-  const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
+  const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
@@ -772,12 +772,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         {
           continue;
         }
-        std::string proc0 = process_string;
-        if ( process_string == "signal") proc0 = "ttH";
-        if ( process_string == "signal_ctcvcp" ) proc0 = "ttH_ctcvcp";
         const std::string process_string_new = evt_cat_str == default_cat_str ?
-          proc0 :
-          proc0 + evt_cat_str
+          process_string :
+          process_string + evt_cat_str
         ;
         const std::string process_and_genMatchName = boost::replace_all_copy(
           process_and_genMatch, process_string, process_string_new

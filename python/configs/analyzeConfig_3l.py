@@ -128,24 +128,7 @@ class analyzeConfig_3l(analyzeConfig):
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
-    samples_categories_MC = []
-    for sample_category in self.nonfake_backgrounds + self.ttHProcs:
-      if sample_category == "signal" :  sample_category = "ttH"
-      if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
-      decays = [""]
-      if sample_category in self.procsWithDecayModes : decays += self.decayModes
-      couplings = [""]
-      if sample_category in ["tHq", "tHW"] : couplings += self.thcouplings
-      for decayMode in decays :
-        for coupling in couplings :
-            if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
-            if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
-            if coupling == "" and decayMode == "" :
-              samples_categories_MC.append("%s" % sample_category)
-            elif coupling == "" :
-              samples_categories_MC.append("%s_%s" % (sample_category, decayMode))
-            else:
-              samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
+    samples_categories_MC = self.get_samples_categories_MC(self.nonfake_backgrounds)
     self.prep_dcard_processesToCopy = ["data_obs"] + samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc" ]
     self.histogramDir_prep_dcard = "{}_OS_Tight".format(self.channel)
     self.histogramDir_prep_dcard_SS = "{}_SS_Tight".format(self.channel)
@@ -467,27 +450,10 @@ class analyzeConfig_3l(analyzeConfig):
 
           ## doing list of processes to make the hadd in _Convs and _fake
           ## we could remove the tH ones with althernative couplings
-          processes_input_base = []
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend(self.ttHProcs)
-          for sample_category in sample_categories:
-            if sample_category == "signal" :  sample_category = "ttH"
-            if sample_category == "signal_ctcvcp" :  sample_category = "ttH_ctcvcp"
-            if sample_category == "WH" or sample_category == "ZH" :  continue # in fakes we do not care about separation
-            decays = [""]
-            if sample_category in self.procsWithDecayModes : decays += self.decayModes
-            couplings = [""]
-            for decayMode in decays :
-              for coupling in couplings :
-                if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"] : continue
-                if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "" : continue
-                if coupling == "" and decayMode == "" :
-                  processes_input_base.append("%s" % sample_category)
-                elif coupling == "" :
-                  processes_input_base.append("%s_%s" % (sample_category, decayMode))
-                else:
-                  processes_input_base.append("%s_%s_%s" % (sample_category, coupling, decayMode))
+          processes_input_base = self.get_processes_input_base(sample_categories)
 
           # sum fake background contributions for the total of all MC sample
           # input processes: TT_fake, TTW_fake, TTWW_fake, ...
@@ -498,7 +464,7 @@ class analyzeConfig_3l(analyzeConfig):
           key_addBackgrounds_job_fakes = getKey(*addBackgrounds_job_fakes_tuple)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
-          sample_categories.extend(self.signalProcs)
+          sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base:
             processes_input.append("%s_fake" % process_input_base)
@@ -520,7 +486,7 @@ class analyzeConfig_3l(analyzeConfig):
           key_addBackgrounds_job_Convs = getKey(*addBackgrounds_job_Convs_tuple)
           sample_categories = []
           sample_categories.extend(self.nonfake_backgrounds)
-          sample_categories.extend(self.signalProcs)
+          sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base:
             processes_input.append("%s_Convs" % processes_input_base)

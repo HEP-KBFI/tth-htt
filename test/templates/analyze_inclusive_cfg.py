@@ -18,7 +18,7 @@ process.fwliteOutput = cms.PSet(
 
 process.analyze_inclusive = cms.PSet(
     treeName = cms.string('Events'),
-    process = cms.string('signal'),
+    process = cms.string('ttH'),
     era = cms.string('2017'),
 
     triggers_1e = cms.vstring(),

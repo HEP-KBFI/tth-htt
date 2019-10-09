@@ -147,7 +147,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       lines.append("    'TTWt', 'TTWl', ")
       lines.append("    'TTWWt', 'TTWWl', ")
       lines.append("    'TTZt', 'TTZl', ")
-      lines.append("    'signalt', 'signall'")
+      lines.append("    'ttHt', 'ttHl'")
       lines.append(")")
       lines.append("process.comp_jetToTauFakeRate.processMC = cms.string('TTj')")
       lines.append("process.comp_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])

@@ -423,19 +423,18 @@ class analyzeConfig(object):
         self.jobOptions_add_syst_dcard = {}
         self.cfgFile_add_syst_fakerate = os.path.join(self.template_dir, "addSystFakeRates_cfg.py")
         self.jobOptions_add_syst_fakerate = {}
-        self.signalProcs = [ "signal"] #, "signal_ctcvcp" ]
         self.ttHProcs = [ "ttH" ]# , "ttH_ctcvcp" ]
         self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
         self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
         self.decayModes_HH = [ "tttt",  "zzzz",  "wwww",  "ttzz",  "ttww",  "zzww"]
         self.procsWithDecayModes = self.ttHProcs + [ "WH", "ZH", "tHW", "tHq", "ggH", "qqH", "TTWH", "TTZH" ]
-        self.prep_dcard_signals = self.signalProcs + self.ttHProcs + [
+        self.prep_dcard_signals = self.ttHProcs + [
           "{}_{}".format(proc, decMode) for proc in self.ttHProcs for decMode in self.decayModes + [ 'fake' ]
         ] + [
           "HH_{}".format(decMode)  for decMode in self.decayModes_HH + [ 'fake' ]
         ]
         self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
-        self.make_plots_signal = "signal"
+        self.make_plots_signal = "ttH"
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
         self.jobOptions_make_plots = {}
         self.filesToClean = []
@@ -520,8 +519,7 @@ class analyzeConfig(object):
         return "central"
 
     def accept_central_or_shift(self, central_or_shift, sample_category, sample_name, has_LHE = False):
-      tth_categories = self.signalProcs + [ "TTH" ]
-      if central_or_shift in systematics.LHE().ttH            and sample_category not in tth_categories:    return False
+      if central_or_shift in systematics.LHE().ttH            and sample_category not in self.ttHProcs:     return False
       if central_or_shift in systematics.LHE().tHq            and sample_category not in [ "tHq", "TH" ]:   return False
       if central_or_shift in systematics.LHE().tHW            and sample_category not in [ "tHW", "TH" ]:   return False
       if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]: return False
@@ -543,7 +541,7 @@ class analyzeConfig(object):
         stitch_histogram_names = {}
         is_mc = (sample_info["type"] == "mc")
         use_th_weights = sample_info["type"] == "mc" and \
-           sample_info['sample_category'] in [ 'tHq', 'tHW', 'signal_ctcvcp', 'TH', 'TTH' ] and \
+           sample_info['sample_category'] in [ 'tHq', 'tHW', 'ttH_ctcvcp', 'TH', 'TTH' ] and \
            sample_info['nof_reweighting'] > 0
 
         if sample_info["sample_category"] == "HH":
@@ -657,7 +655,7 @@ class analyzeConfig(object):
                       tHweight = copy.deepcopy(find_tHweight(tHweights, idx))
                       assert(nof_events_rwgt >= 0)
                       if nof_events_rwgt == 0:
-                        assert(float(tHweight.kt.configValue()) == 0. and sample_info['sample_category'] == 'signal_ctcvcp')
+                        assert(float(tHweight.kt.configValue()) == 0. and sample_info['sample_category'] == 'ttH_ctcvcp')
                       final_reweighting = (float(nof_events[central_or_shift]) / nof_events_rwgt) if nof_events_rwgt > 0. else 0.
                       tHweight.weight = cms.double(final_reweighting)
                       tHweight.central_or_shift = cms.string(central_or_shift)
@@ -904,6 +902,54 @@ class analyzeConfig(object):
 
     def runTHweights(self, sample_info):
         return False
+
+    def get_samples_categories_MC(self, nonfake_backgrounds):
+        samples_categories_MC = []
+        for sample_category in nonfake_backgrounds + self.ttHProcs:
+            decays = [""]
+            if sample_category in self.procsWithDecayModes:
+                decays += self.decayModes
+            if "HH" in sample_category:
+                decays += self.decayModes_HH
+
+            couplings = [""]
+            if sample_category in ["tHq", "tHW"]:
+                couplings += self.thcouplings
+
+            for decayMode in decays:
+                for coupling in couplings:
+                  if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"]:
+                      continue
+                  if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "":
+                      continue
+                  if coupling == "" and decayMode == "":
+                      samples_categories_MC.append("%s" % sample_category)
+                  elif coupling == "":
+                      samples_categories_MC.append("%s_%s" % (sample_category, decayMode))
+                  else:
+                      samples_categories_MC.append("%s_%s_%s" % (sample_category, coupling, decayMode))
+        return samples_categories_MC
+
+    def get_processes_input_base(self, sample_categories):
+        processes_input_base = []
+        for sample_category in sample_categories:
+            if sample_category == "WH" or sample_category == "ZH":
+              continue  # in fakes we do not care about separation
+            decays = [""]
+            couplings = [""]
+            for decayMode in decays:
+                for coupling in couplings:
+                    if sample_category not in self.ttHProcs and decayMode in ["hmm", "hzg"]:
+                      continue
+                    if sample_category in ["tHq", "tHW"] and not coupling == "" and decayMode == "":
+                      continue
+                    if coupling == "" and decayMode == "":
+                        processes_input_base.append("%s" % sample_category)
+                    elif coupling == "":
+                        processes_input_base.append("%s_%s" % (sample_category, decayMode))
+                    else:
+                        processes_input_base.append("%s_%s_%s" % (sample_category, coupling, decayMode))
+        return processes_input_base
 
     def createCfg_copyHistograms(self, jobOptions):
         """Create python configuration file for the copyHistograms executable (split the ROOT files produced by hadd_stage1 into separate ROOT files, one for each event category)
