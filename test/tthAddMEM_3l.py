@@ -11,7 +11,7 @@ import getpass
 
 sys_choices          = [ 'full' ] + systematics.an_addMEM_opts
 mode_choices         = [ 'default', 'bdt', 'sync' ]
-max_mem_integrations = 100000
+max_mem_integrations = 1000000
 systematics.full     = systematics.an_addMEM
 
 parser = tthAnalyzeParser(isAddMEM = True)
