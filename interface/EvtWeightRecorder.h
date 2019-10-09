@@ -48,6 +48,9 @@ public:
   get_genWeight() const;
 
   double
+  get_bmWeight() const;
+
+  double
   get_auxWeight(const std::string & central_or_shift) const;
 
   double
