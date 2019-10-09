@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-03-19 02:47:56 with the following command:
+# file generated at 2019-10-09 01:26:34 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_sync_2018_RunIIAutumn18MiniAOD.txt -m python/samples/metaDict_2018_sync.py
 
 meta_dictionary = OD()
@@ -14,7 +14,7 @@ sum_events = {
 
 meta_dictionary["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
   ("crab_string",           ""),
-  ("sample_category",       "signal"),
+  ("sample_category",       "ttH"),
   ("process_name_specific", "ttHToNonbb_M125_powheg"),
   ("nof_db_events",         7525991),
   ("nof_db_files",          224),
@@ -27,5 +27,5 @@ meta_dictionary["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18Mini
 
 
 # event statistics by sample category:
-# signal: 7.53M
+# ttH: 7.53M
 

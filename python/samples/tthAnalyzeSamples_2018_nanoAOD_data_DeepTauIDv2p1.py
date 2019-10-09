@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-09-28 22:10:15 with the following command:
+# file generated at 2019-10-09 14:32:39 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018_DeepTauIDv2p1.py -p python/samples/sampleLocations_2018_nanoAOD_data_DeepTauIDv2p1.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_nanoAOD_data_DeepTauIDv2p1.py -M
 
 samples_2018 = OD()
@@ -1712,9 +1712,9 @@ samples_2018["/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"] = OD([
   ("nof_db_files",                    1556),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 107972995),
+  ("nof_tree_events",                 107883088),
   ("nof_db_events",                   110032072),
-  ("fsize_local",                     84363207296), # 84.36GB, avg file size 77.47MB
+  ("fsize_local",                     84298669278), # 84.30GB, avg file size 77.41MB
   ("fsize_db",                        3645461800472), # 3.65TB, avg file size 2.34GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -1726,7 +1726,7 @@ samples_2018["/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Aug29/SingleMuon/2018_2019Aug29_SingleMuon__Run2018C-17Sep2018-v1/190829_182920"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [731]),
       ]),
     ]
   ),
@@ -2405,9 +2405,9 @@ samples_2018["/SingleMuon/Run2018D-PromptReco-v2/MINIAOD"] = OD([
   ("nof_db_files",                    5533),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 492439637),
+  ("nof_tree_events",                 492637435),
   ("nof_db_events",                   506717754),
-  ("fsize_local",                     380263354180), # 380.26GB, avg file size 76.51MB
+  ("fsize_local",                     380425749612), # 380.43GB, avg file size 76.54MB
   ("fsize_db",                        17033911936949), # 17.03TB, avg file size 3.08GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -2419,7 +2419,7 @@ samples_2018["/SingleMuon/Run2018D-PromptReco-v2/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2018prompt_2019Aug29/SingleMuon/2018prompt_2019Aug29_SingleMuon__Run2018D-PromptReco-v2/190829_170008"),
         ("selection", "*"),
-        ("blacklist", [2163, 2294]),
+        ("blacklist", []),
       ]),
     ]
   ),

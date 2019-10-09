@@ -29,6 +29,12 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
     if not isinstance(sample_info, OD):
       continue
 
+    # temporary fix
+    if sample_info["sample_category"] == "ttH":
+      sample_info["sample_category"] = "signal"
+    if sample_info["sample_category"] == "ttH_ctcvcp":
+      sample_info["sample_category"] = "signal_ctcvcp"
+
     if 'CountWeightedLHEWeightScale' in sample_info["nof_events"] and \
         sample_info["nof_events"]['CountWeightedLHEWeightScale'] == [ 0 ]:
       sample_info["has_LHE"] = False
