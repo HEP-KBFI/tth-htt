@@ -619,7 +619,7 @@ int main(int argc, char* argv[])
   const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
   const HHWeightInterface * HHWeight_calc = nullptr;
   std::size_t Nscan = 0;
-  if(apply_HH_rwgt)
+  if(isMC_HH)
   {
     HHWeight_calc = new HHWeightInterface(hhWeight_cfg);
     Nscan = HHWeight_calc->get_nof_scans();
@@ -741,7 +741,7 @@ int main(int argc, char* argv[])
         ));
 	selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
 
-        if(apply_HH_rwgt)
+        if(isMC_HH)
 	{
 	  for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
 	  {
@@ -787,7 +787,7 @@ int main(int argc, char* argv[])
             ));
 	    selHistManager->evt_in_decayModes_[evt_cat_str][decayMode]->bookHistograms(fs);
 
-            if(apply_HH_rwgt)
+            if(isMC_HH)
 	    {
 	      for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
 	      {
@@ -814,7 +814,7 @@ int main(int argc, char* argv[])
           Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
         selHistManager->evt_in_categories_[category]->bookHistograms(fs);
 
-        if(apply_HH_rwgt)
+        if(isMC_HH)
 	{
 	  for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
 	  {
@@ -1439,7 +1439,7 @@ int main(int argc, char* argv[])
     {
       WeightBM = HHWeight_calc->getJHEPWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
       Weight_ktScan = HHWeight_calc->getScanWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
-      evtWeightRecorder.record_bm(WeightBM[0]); // SM by default
+      if(apply_HH_rwgt) evtWeightRecorder.record_bm(WeightBM[0]); // SM by default
 
       HHWeight = WeightBM[0];
       if(isDEBUG)
@@ -1624,6 +1624,9 @@ int main(int argc, char* argv[])
     //compute di-b-jet mass
     const double mbb             = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
     const double mbb_loose       = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
+    const double pt_HHvis_loose        = selBJets_loose.size() > 1 ? (selHadTau_lead->p4()+selHadTau_sublead->p4()+selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).pt() : -1.;
+    const double pt_HHvis_medium        = selBJets_medium.size() > 1 ? (selHadTau_lead->p4()+selHadTau_sublead->p4()+selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).pt() : -1.;
+
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 1l_2tau category
     mvaInputs_ttbar["nJet"]                 = selJets.size();
     mvaInputs_ttbar["nBJetLoose"]           = selBJets_loose.size();
@@ -1739,7 +1742,7 @@ int main(int argc, char* argv[])
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
             mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-            mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
+            mva_Boosted_AK8, mva_Updated, mTauTauVis, pt_HHvis_loose, pt_HHvis_medium, mTauTau,
             pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, kv.second
           );
           }
@@ -1751,13 +1754,13 @@ int main(int argc, char* argv[])
 	  {
 	    for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
 	    {
-	      double evtWeight0 = kv.second * Weight_ktScan[scanIdx] / HHWeight;
+	      double evtWeight0 = (apply_HH_rwgt) ? kv.second * Weight_ktScan[scanIdx] / HHWeight : kv.second * Weight_ktScan[scanIdx] ;
 	      selHistManager->evt_scan_[kv.first][scanIdx] ->fillHistograms(
 		preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
 		selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
 	        mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
 	        mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-	        mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
+	        mva_Boosted_AK8, mva_Updated, mTauTauVis, pt_HHvis_loose, pt_HHvis_medium, mTauTau,
 	        pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, evtWeight0
 	      );
 	    }
@@ -1789,6 +1792,8 @@ int main(int argc, char* argv[])
                   mva_Boosted_AK8,
                   mva_Updated,
                   mTauTauVis,
+		  pt_HHvis_loose, 
+		  pt_HHvis_medium,
                   mTauTau,
                   pZeta,
                   pZetaVis,
@@ -1806,7 +1811,7 @@ int main(int argc, char* argv[])
 		{
 		  for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
 		    {
-		      double evtWeight0 = kv.second * Weight_ktScan[scanIdx] / HHWeight;
+		      double evtWeight0 = (apply_HH_rwgt) ? kv.second * Weight_ktScan[scanIdx] / HHWeight : kv.second * Weight_ktScan[scanIdx];
 		      selHistManager->evt_in_decayModes_scan_[kv.first][decayModeStr][scanIdx]->fillHistograms(
                         preselElectrons.size(),
 		        preselMuons.size(),
@@ -1823,6 +1828,8 @@ int main(int argc, char* argv[])
 			mva_Boosted_AK8,
 			mva_Updated,
 			mTauTauVis,
+			pt_HHvis_loose, 
+			pt_HHvis_medium,
 			mTauTau,
 			pZeta,
 			pZetaVis,
@@ -1863,7 +1870,7 @@ int main(int argc, char* argv[])
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
             mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-            mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
+            mva_Boosted_AK8, mva_Updated, mTauTauVis, pt_HHvis_loose, pt_HHvis_medium, mTauTau,
             pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, evtWeight
           );
           }
@@ -1872,7 +1879,7 @@ int main(int argc, char* argv[])
           {
             for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
             {
-              double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
+              double evtWeight0 = (apply_HH_rwgt) ? evtWeight * Weight_ktScan[scanIdx] / HHWeight : evtWeight * Weight_ktScan[scanIdx];
               EvtHistManager_0l_2tau* selHistManager_evt_category_scan = selHistManager->evt_in_categories_scan_[category][scanIdx];
               if ( selHistManager_evt_category_scan )
               {
@@ -1881,7 +1888,7 @@ int main(int argc, char* argv[])
                   selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
                   mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
                   mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-                  mva_Boosted_AK8, mva_Updated, mTauTauVis, mTauTau,
+                  mva_Boosted_AK8, mva_Updated, mTauTauVis, pt_HHvis_loose, pt_HHvis_medium, mTauTau,
                   pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, evtWeight0
                  );
               }

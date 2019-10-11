@@ -41,6 +41,8 @@ public:
                  double mva_Boosted_AK8,
                  double mva_Updated,
                  double mTauTauVis,
+		 double pt_HHvis_loose, 
+		 double pt_HHvis_medium,
                  double mTauTau,
                  double Pzeta,
                  double PzetaVis,
@@ -78,6 +80,8 @@ private:
   TH1 * histogram_mva_Updated_;
 
   TH1 * histogram_mTauTauVis_;
+  TH1 * histogram_pt_HHvis_loose_;
+  TH1 * histogram_pt_HHvis_medium_;
   TH1 * histogram_mTauTau_;  
   TH1 * histogram_Pzeta_;
   TH1 * histogram_PzetaVis_;

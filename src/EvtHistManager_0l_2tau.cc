@@ -21,6 +21,8 @@ EvtHistManager_0l_2tau::EvtHistManager_0l_2tau(const edm::ParameterSet & cfg)
     "mvaOutput_0l_2tau_HTT_sum_dy",
     "mvaDiscr_0l_2tau_HTT",
     "mTauTauVis",
+    "pt_HHvis_loose", 
+    "pt_HHvis_medium",
     "mTauTau",
     "Pzeta",
     "PzetaVis",
@@ -72,6 +74,8 @@ EvtHistManager_0l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_mva_Updated_                  = book1D(dir, "mva_Updated",                  "mva_Updated",                   7,  0.,  1.);
 
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis",  40,    0.,   200.);
+  histogram_pt_HHvis_loose_ = book1D(dir, "pt_HHvis_loose", "pt_HHvis_loose",  40,    0.,   200.);
+  histogram_pt_HHvis_medium_ = book1D(dir, "pt_HHvis_medium", "pt_HHvis_medium",  40,    0.,   200.);
   histogram_mTauTau_    = book1D(dir, "mTauTau",    "mTauTau",     30,    0.,   300.);
   histogram_Pzeta_      = book1D(dir, "Pzeta",      "Pzeta",      100, -500.,  +500.);
   histogram_PzetaVis_   = book1D(dir, "PzetaVis",   "PzetaVis",    50,    0.,   500.);
@@ -101,6 +105,8 @@ EvtHistManager_0l_2tau::fillHistograms(int numElectrons,
                                        double mva_Boosted_AK8,
                                        double mva_Updated,
                                        double mTauTauVis,
+				       double pt_HHvis_loose,
+				       double pt_HHvis_medium,
                                        double mTauTau,
                                        double Pzeta,
                                        double PzetaVis,
@@ -129,6 +135,8 @@ EvtHistManager_0l_2tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mva_Updated_,                  mva_Updated,                  evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mTauTauVis_,      mTauTauVis,       evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_pt_HHvis_loose_,      pt_HHvis_loose,       evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_pt_HHvis_medium_,      pt_HHvis_medium,       evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mTauTau_,         mTauTau,          evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_Pzeta_,           Pzeta,            evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_PzetaVis_,        PzetaVis,         evtWeight, evtWeightErr);

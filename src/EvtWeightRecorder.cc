@@ -37,6 +37,7 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
   , prescale_(1.)
+  , bm_weight_(1.)
   , central_or_shift_(central_or_shift)
   , central_or_shifts_(central_or_shifts)
 {
