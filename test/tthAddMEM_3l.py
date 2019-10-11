@@ -11,7 +11,7 @@ import getpass
 
 sys_choices          = [ 'full' ] + systematics.an_addMEM_opts
 mode_choices         = [ 'default', 'bdt', 'sync' ]
-max_mem_integrations = 100000
+max_mem_integrations = 1000000
 systematics.full     = systematics.an_addMEM
 
 parser = tthAnalyzeParser(isAddMEM = True)
@@ -19,12 +19,18 @@ parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_preselect()
 parser.add_nonnominal()
+parser.add_tau_id()
 parser.add_use_home(False)
 parser.add_jet_cleaning()
 parser.add_argument('-n', '--max-mem-integrations',
   type = int, dest = 'max_mem_integrations', metavar = 'integer', default = max_mem_integrations,
   required = False,
   help = 'R|Maximum number of input files per one job (default: %i)' % max_mem_integrations
+)
+parser.add_argument('-F', '--rle-filter',
+  type = lambda s: s.lower() in ['true', 't', 'yes', '1'], dest = 'rle_filter', metavar = 'option', default = True,
+  required = False,
+  help = 'R|Apply RLE filter',
 )
 args = parser.parse_args()
 
@@ -46,10 +52,12 @@ systematics_label = args.systematics
 use_preselected   = args.use_preselected
 use_nonnominal    = args.original_central
 use_home          = args.use_home
+tau_id            = args.tau_id
 jet_cleaning      = args.jet_cleaning
 
 # Custom arguments
 max_mem_integrations = args.max_mem_integrations
+rle_filter           = args.rle_filter
 
 # Use the arguments
 central_or_shifts = []
@@ -60,22 +68,43 @@ for systematic_label in systematics_label:
 version = "%s_%s_%s" % (version, mode, 'nonNom' if use_nonnominal else 'nom')
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 
+hadTauWP_veto_map = {
+  'dR03mva' : 'Loose',
+  'deepVSj' : 'VLoose',
+}
+hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
+rle_filter_file = ''
+hadTauWP = tau_id + hadTauWP_veto_map[tau_id]
+
 if mode == 'default':
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
   leptonSelection = "Fakeable"
+  if rle_filter:
+    rle_filter_file = 'mem_{}_{}.root'.format(era, hadTauWP)
 elif mode == 'bdt':
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT")
   leptonSelection = "Loose"
+  if rle_filter:
+    rle_filter_file = 'mem_forBDTtraining_{}_{}.root'.format(era, hadTauWP)
 elif mode == 'sync':
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:
     sample_suffix = "preselected_{}".format(sample_suffix)
   samples = load_samples(era, suffix = sample_suffix)
   leptonSelection = "Fakeable"
+  if rle_filter:
+    rle_filter_file = 'mem_sync_{}_{}.root'.format(era, hadTauWP)
 else:
   raise ValueError("Invalid mode: %s" % mode)
+
+if rle_filter_file:
+  rle_filter_file = os.path.join(
+    os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'HiggsToTauTau', 'data', 'mem', rle_filter_file
+  )
+  if not os.path.isfile(rle_filter_file):
+    raise ValueError("No such file: %s" % rle_filter_file)
 
 if __name__ == '__main__':
   logging.info(
@@ -106,6 +135,7 @@ if __name__ == '__main__':
     dry_run                  = dry_run,
     use_nonnominal           = use_nonnominal,
     use_home                 = use_home,
+    rle_filter_file          = rle_filter_file,
   )
 
   goodToGo = addMEMProduction.create()

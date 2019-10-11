@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
   const bool isMC_VH = process_string == "VH";
   const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
   const bool isMC_HH = process_string == "HH";
-  const bool isMC_signal = process_string == "signal" || process_string == "signal_ctcvcp";
+  const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH || isMC_H;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
@@ -586,6 +586,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
 
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
+  bool ignoreMEMerrors = cfg_analyze.getParameter<bool>("ignoreMEMerrors");
 
 //--- declare histograms
   struct selHistManagerType
@@ -698,12 +699,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         {
           continue;
         }
-        std::string proc0 = process_string;
-        if ( process_string == "signal") proc0 = "ttH";
-        if ( process_string == "signal_ctcvcp" ) proc0 = "ttH_ctcvcp";
         const std::string process_string_new = evt_cat_str == default_cat_str ?
-          proc0 :
-          proc0 + evt_cat_str
+          process_string :
+          process_string + evt_cat_str
         ;
         const std::string process_and_genMatchName = boost::replace_all_copy(
           process_and_genMatch, process_string, process_string_new
@@ -1292,15 +1290,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     cutFlowHistManager->fillHistograms(">= 3 presel leptons", evtWeightRecorder.get(central_or_shift_main));
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
-    bool tH_like = false;
-    bool ttH_like = false;
-    if ((selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && ((int)selJets.size() >= 2)) ttH_like = true;
-    if (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1) tH_like = true;
-    if (
-      (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1)
-    ) tH_like = true;
-    bool passEvents = ttH_like || tH_like;
-    if(do_sync) passEvents = ttH_like || tH_like;
+    const bool tH_like  = (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1);
+    const bool ttH_like = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && selJets.size() >= 2;
+    const bool passEvents = ttH_like || tH_like;
     if ( !(passEvents) ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
@@ -1592,36 +1584,94 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         memOutput_3l_matched = memOutput_3l;
         break;
       }
-      if ( ! memOutput_3l_matched.is_initialized() ) {
+      if(! memOutput_3l_matched.is_initialized())
+      {
         std::cout << "Warning in " << eventInfo << '\n';
         std::cout << "No MEMOutput_3l object found for:" << '\n'
                   << "\tselLepton_lead: pT = " << selLepton_lead -> pt()
                   << ", eta = "                << selLepton_lead -> eta()
                   << ", phi = "                << selLepton_lead -> phi()
-                  << ", pdgId = "              << selLepton_lead -> pdgId() << '\n'
-                  << "\tselLepton_sublead: pT = " << selLepton_sublead -> pt()
+                  << ", pdgId = "              << selLepton_lead -> pdgId() << "\n"
+                     "\tselLepton_sublead: pT = " << selLepton_sublead -> pt()
                   << ", eta = "                   << selLepton_sublead -> eta()
                   << ", phi = "                   << selLepton_sublead -> phi()
-                  << ", pdgId = "                 << selLepton_sublead -> pdgId() << '\n'
-                  << "\tselLepton_third: pT = " << selLepton_third -> pt()
+                  << ", pdgId = "                 << selLepton_sublead -> pdgId() << "\n"
+                     "\tselLepton_third: pT = " << selLepton_third -> pt()
                   << ", eta = "                 << selLepton_third -> eta()
                   << ", phi = "                 << selLepton_third -> phi()
-                  << ", pdgId = "               << selLepton_third -> pdgId() << '\n';
-      }
-      if ( memOutputs_3l.size() ) {
-        for ( unsigned mem_idx = 0; mem_idx < memOutputs_3l.size(); ++mem_idx ) {
-          std::cout << "\t#" << mem_idx << " mem object;\n"
-                    << "\t\tlead lepton eta = " << memOutputs_3l[mem_idx].leadLepton_eta_
-                    << "; phi = "               << memOutputs_3l[mem_idx].leadLepton_phi_ << '\n'
-                    << "\t\tsublead lepton eta = " << memOutputs_3l[mem_idx].subleadLepton_eta_
-                    << "; phi = "                  << memOutputs_3l[mem_idx].subleadLepton_phi_ << '\n'
-                    << "\t\tthird lepton eta = " << memOutputs_3l[mem_idx].thirdLepton_eta_
-                    << "; phi = "                << memOutputs_3l[mem_idx].thirdLepton_phi_ << '\n';
-	}
-      } else {
-        std::cout << "No MEM objects whatsoever\n";
+                  << ", pdgId = "               << selLepton_third -> pdgId() << "\n"
+                     "ttH-like = " << ttH_like << " "
+                     "tH-like = "  << tH_like  << '\n'
+        ;
+        bool memSkipError = false;
+        if(! memOutputs_3l.empty())
+        {
+          for(unsigned mem_idx = 0; mem_idx < memOutputs_3l.size(); ++mem_idx)
+          {
+            std::cout << "\t#" << mem_idx << " mem object;\n"
+                      << "\t\tlead lepton eta = " << memOutputs_3l[mem_idx].leadLepton_eta_
+                      << "; phi = "               << memOutputs_3l[mem_idx].leadLepton_phi_ << "\n"
+                         "\t\tsublead lepton eta = " << memOutputs_3l[mem_idx].subleadLepton_eta_
+                      << "; phi = "                  << memOutputs_3l[mem_idx].subleadLepton_phi_ << "\n"
+                         "\t\tthird lepton eta = " << memOutputs_3l[mem_idx].thirdLepton_eta_
+                      << "; phi = "                << memOutputs_3l[mem_idx].thirdLepton_phi_ << '\n'
+            ;
+            if(memOutputs_3l[mem_idx].errorFlag() == ADDMEM_3L_ERROR_SKIPPED)
+            {
+              std::cout << "MEM computation was skipped for event " << eventInfo.str() << '\n';
+            }
+            else if(memOutputs_3l[mem_idx].errorFlag() == ADDMEM_3L_ERROR_SKIPPED_NOPERM)
+            {
+              std::cout
+                << "MEM computation was skipped for event " << eventInfo.str() << " AND "
+                   "there were not enough MEM permutations in the first place\n"
+              ;
+            }
+            else if(memOutputs_3l[mem_idx].errorFlag() == ADDMEM_3L_ERROR_JETMULTIPLICITY ||
+                    memOutputs_3l[mem_idx].errorFlag() == ADDMEM_3L_ERROR_BJETMULTIPLICITY )
+            {
+              if(ttH_like && branchName_memOutput.find(central_or_shift_main) != std::string::npos)
+              {
+                std::cout
+                  << "MEM did not find enough jets in event " << eventInfo.str() << " and for systematics "
+                  << central_or_shift_main << " although there are " << selJets.size() << " jets selected in the event\n"
+                ;
+              }
+              else
+              {
+                memSkipError = true;
+                std::cout
+                  << "MEM not available because the event is tH-like or the thresholds is jet selection have "
+                     "changed wrt the thresholds used in MEM computation\n"
+                ;
+              }
+            }
+            else if(memOutputs_3l[mem_idx].errorFlag() == ADDMEM_3L_ERROR_NOPERM)
+            {
+              std::cout
+                << "MEM computation was skipped for event " << eventInfo.str() << " because not enough permutations found\n"
+              ;
+            }
+            else
+            {
+              std::cout << "Failed with MEM error: " << memOutput_3l_matched.errorFlag() << '\n';
+            }
+          }
+        }
+        else
+        {
+          std::cout << "Event " << eventInfo.str() << " contains no MEM objects whatsoever\n";
+          memSkipError = tH_like;
+        }
+        if(! ignoreMEMerrors && ! memSkipError)
+        {
+          throw cmsException(argv[0], __LINE__) << "No valid MEM output was found";
+        }
       }
     }
+    const double memOutput_LR  = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.LR()         : -1.;
+    const double memOutput_ttH = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttH() : -100.;
+    const double memOutput_tt  = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_tt()  : -100.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 3l category of ttH multilepton analysis
@@ -2022,9 +2072,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("mvaDiscr_3l",         mvaDiscr_3l)
 	  ("memOutput_isValid",   memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.isValid() : -1.)
 	  ("memOutput_errorFlag", memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.errorFlag() : -1.)
-	  ("memOutput_ttH",       memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttH() : -1.)
-	  ("memOutput_tt",        memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_tt() : -1.)
-	  ("memOutput_LR",        memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.LR() : -1.)
+          ("memOutput_ttH",       memOutput_ttH)
+          ("memOutput_tt",        memOutput_tt)
+          ("memOutput_LR",        memOutput_LR)
           ("lumiScale",           evtWeightRecorder.get_lumiScale(central_or_shift_main))
           ("genWeight",           eventInfo.genWeight)
           ("evtWeight",           evtWeightRecorder.get(central_or_shift_main))
@@ -2202,6 +2252,13 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       snm->read(mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"],  FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_ttH);
       snm->read(mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_tH"],   FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_tH);
       snm->read(mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"], FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_rest);
+
+      snm->read(memOutput_ttH,                          FloatVariableType::Integral_ttH);
+      // Integral_ttZ not filled
+      // Integral_ttZ_Zll not filled
+      snm->read(memOutput_tt,                           FloatVariableType::Integral_ttbar);
+      // integration_type not filled
+      snm->read(memOutput_LR,                           FloatVariableType::MEM_LR);
 
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 

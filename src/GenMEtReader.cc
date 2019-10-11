@@ -1,8 +1,7 @@
-#include "tthAnalysis/HiggsToTauTau/interface/GenMEtReader.h" // GenMEtReader  
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_MEt()                                                                                                
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()                                                                                                             
-#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()                                                                        
-#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kJetMET_*                                                                                                              
+#include "tthAnalysis/HiggsToTauTau/interface/GenMEtReader.h" // GenMEtReader
+
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> GenMEtReader::numInstances_;
 std::map<std::string, GenMEtReader *> GenMEtReader::instances_;
@@ -46,7 +45,6 @@ GenMEtReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-
 void
 GenMEtReader::setBranchAddresses(TTree * tree)
 {
@@ -64,11 +62,6 @@ GenMEtReader::read() const
   const GenMEtReader * const gInstance = instances_[branchName_obj_];
   assert(gInstance);
   GenMEt met = met_;
-  met.update(); // update p4                                                                                                                                                        
+  met.update(); // update p4
   return met;
 }
-
-
-
-
-

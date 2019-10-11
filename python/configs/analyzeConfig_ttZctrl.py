@@ -297,7 +297,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
 
           sample_category = sample_info["sample_category"]
           is_mc = (sample_info["type"] == "mc")
-          is_signal = sample_category in self.signalProcs
+          is_signal = sample_category in self.ttHProcs
           use_th_weights = self.runTHweights(sample_info)
 
           central_or_shift_dedicated = self.central_or_shifts if use_th_weights else self.central_or_shifts_external
@@ -404,8 +404,6 @@ class analyzeConfig_ttZctrl(analyzeConfig):
             logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
 
             sample_categories = [ sample_category ]
-            if is_signal:
-              sample_categories.append("ttH{}".format(sample_category[len('signal'):]))
             for sample_category in sample_categories:
               # sum non-fake and fake contributions for each MC sample separately
               genMatch_categories = [ "nonfake", "Convs", "fake" ]
@@ -419,13 +417,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
                   # sum non-fake contributions for each MC sample separately
                   # input processes: TT3l0g0j,...
                   # output processes: TT; ...
-                  if sample_category in self.signalProcs:
-                    lepton_genMatches = []
-                    lepton_genMatches.extend(self.lepton_genMatches_nonfakes)
-                    lepton_genMatches.extend(self.lepton_genMatches_Convs)
-                    lepton_genMatches.extend(self.lepton_genMatches_fakes)
-                    processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in lepton_genMatches ]
-                  elif sample_category in self.procsWithDecayModes :
+                  if sample_category in self.procsWithDecayModes :
                     lepton_genMatches = []
                     lepton_genMatches.extend(self.lepton_genMatches_nonfakes)
                     if sample_category in self.ttHProcs : lepton_genMatches.extend(self.lepton_genMatches_Convs)
@@ -444,9 +436,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
                   # sum fake contributions for each MC sample separately
                   # input processes: TT2l1g0j, TT1l2g0j, TT0l3g0j; ...
                   # output processes: TT_Convs; ...
-                  if sample_category in self.signalProcs:
-                    processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_Convs ]
-                  elif sample_category in self.procsWithDecayModes :
+                  if sample_category in self.procsWithDecayModes :
                     processes_input = []
                     ## X: save also the process without the decay modes: do we need?
                     if sample_category not in self.ttHProcs :
@@ -462,9 +452,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
                   # sum fake contributions for each MC sample separately
                   # input processes: TT2l0g1j, TT1l1g1j, TT1l0g2j, TT0l2g1j, TT0l1g2j, TT0l0g3j; ...
                   # output processes: TT_fake; ...
-                  if sample_category in self.signalProcs:
-                    processes_input = [ "%s%s" % (sample_category, genMatch) for genMatch in self.lepton_genMatches_fakes ]
-                  elif sample_category in self.procsWithDecayModes :
+                  if sample_category in self.procsWithDecayModes :
                     processes_input = []
                     ## X: save also the process without the decay modes: do we need?
                     if sample_category not in self.ttHProcs :
@@ -520,7 +508,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
         key_addBackgrounds_job_fakes = getKey(*addBackgrounds_job_fakes_tuple)
         sample_categories = []
         sample_categories.extend(self.nonfake_backgrounds)
-        sample_categories.extend(self.signalProcs)
+        sample_categories.extend(self.ttHProcs)
         processes_input = []
         for sample_category in sample_categories:
           processes_input.append("%s_fake" % sample_category)
@@ -542,7 +530,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
         key_addBackgrounds_job_Convs = getKey(*addBackgrounds_job_Convs_tuple)
         sample_categories = []
         sample_categories.extend(self.nonfake_backgrounds)
-        sample_categories.extend(self.signalProcs)
+        sample_categories.extend(self.ttHProcs)
         processes_input = []
         for sample_category in sample_categories:
           processes_input.append("%s_Convs" % sample_category)

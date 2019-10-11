@@ -217,7 +217,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.jobOptions_comp_LeptonFakeRate = {}
 
     self.nonfake_backgrounds = [ "TT", "EWK", "Rares", "QCD"]
-    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "signal", "TTWW", "tHq", "tHW", "VH", "ttH_hbb", "data_fakes" ]
+    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "ttH", "TTWW", "tHq", "tHW", "VH", "ttH_hbb", "data_fakes" ]
     self.histogramDir_prep_dcard = "LeptonFakeRate"
     self.prep_dcard = prep_dcard
 
@@ -546,7 +546,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     key_addBackgrounds_job_sum = getKey("fakes_mc")
     sample_categories = []
     sample_categories.extend(self.nonfake_backgrounds)
-    sample_categories.extend(self.signalProcs)
+    sample_categories.extend(self.ttHProcs)
     processes_input = []
     for sample_category in sample_categories:
       processes_input.append("%sj" % sample_category)

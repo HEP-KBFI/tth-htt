@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-10-09 01:32:22 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2018_sync.py -p /hdfs/local/karl/ttHNtupleProduction/2018/2019Oct06v2_woPresel_nonNom_sync/ntuples -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_sync.py -M
+# file generated at 2019-10-09 01:32:05 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2018_sync.py -p /hdfs/local/karl/addMEM/2018/2019Oct06V3_sync_nonNom_full/final_ntuples/2lss_1tau -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_addMEM_2lss1tau_dR03mvaLoose_sync.py -M
 
 samples_2018 = OD()
 samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] = OD([
@@ -15,9 +15,9 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
     'CountWeighted'                                              : [        61658,        61657,        61653, ],
     'CountWeightedLHEWeightScale'                                : [        89702,        87072,        85058,        63176,        61658,        60528,        51747,        50385,        49346, ],
   }),
-  ("nof_tree_events",                 63000),
+  ("nof_tree_events",                 13715),
   ("nof_db_events",                   7525991),
-  ("fsize_local",                     612718777), # 612.72MB, avg file size 612.72MB
+  ("fsize_local",                     141412376), # 141.41MB, avg file size 141.41MB
   ("fsize_db",                        469867184231), # 469.87GB, avg file size 2.10GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -29,7 +29,7 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2019Oct06v2_woPresel_nonNom_sync/ntuples/ttHToNonbb_M125_powheg"),
+        ("path",      "/hdfs/local/karl/addMEM/2018/2019Oct06V3_sync_nonNom_full/final_ntuples/2lss_1tau/ttHToNonbb_M125_powheg"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -42,11 +42,7 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
     # not computed
   ]),
   ("missing_hlt_paths",            [
-    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
-    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
-    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
-    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
-    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+
   ]),
   ("hlt_paths",                    [
     # not computed

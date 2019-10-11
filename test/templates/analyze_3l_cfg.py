@@ -119,6 +119,7 @@ process.analyze_3l = cms.PSet(
     isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
     useObjectMultiplicity = cms.bool(False),
+    ignoreMEMerrors = cms.bool(False),
 
     evtWeight = cms.PSet(
         apply = cms.bool(False),

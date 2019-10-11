@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-09-26 16:41:05 with the following command:
+# file generated at 2019-10-09 02:41:21 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2016.py -p python/samples/sampleLocations_2016.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_base.py -M
 
 samples_2016 = OD()
@@ -12317,11 +12317,11 @@ samples_2016["/DoubleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("nof_files",                       39),
   ("nof_db_files",                    451),
   ("nof_events",                      {
-    'Count'                                                      : [     78550935, ],
+    'Count'                                                      : [     76478554, ],
   }),
-  ("nof_tree_events",                 78550935),
+  ("nof_tree_events",                 76478554),
   ("nof_db_events",                   82535526),
-  ("fsize_local",                     31628902654), # 31.63GB, avg file size 811.00MB
+  ("fsize_local",                     30831641336), # 30.83GB, avg file size 790.55MB
   ("fsize_db",                        1734998896105), # 1.73TB, avg file size 3.85GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -12333,7 +12333,7 @@ samples_2016["/DoubleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Sep17_data_woPresel_nom_all/ntuples/DoubleMuon_Run2016B_17Jul2018_ver2_v1"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [20]),
       ]),
     ]
   ),
@@ -18755,14 +18755,14 @@ samples_2016["/MuonEG/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "MuonEG_Run2016F_17Jul2018_v1"),
-  ("nof_files",                       8),
+  ("nof_files",                       7),
   ("nof_db_files",                    159),
   ("nof_events",                      {
-    'Count'                                                      : [     15897683, ],
+    'Count'                                                      : [     14450485, ],
   }),
-  ("nof_tree_events",                 15897683),
+  ("nof_tree_events",                 14450485),
   ("nof_db_events",                   16002165),
-  ("fsize_local",                     8469599030), # 8.47GB, avg file size 1.06GB
+  ("fsize_local",                     7691708920), # 7.69GB, avg file size 1.10GB
   ("fsize_db",                        468379134344), # 468.38GB, avg file size 2.95GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -24618,7 +24618,7 @@ samples_2016["/Tau/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
 
 samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "signal"),
+  ("sample_category",                 "ttH"),
   ("process_name_specific",           "ttHJetToNonbb_M125_amcatnlo_ext1"),
   ("nof_files",                       11),
   ("nof_db_files",                    90),
@@ -24666,7 +24666,7 @@ samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/Ru
 
 samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "signal"),
+  ("sample_category",                 "ttH"),
   ("process_name_specific",           "ttHToNonbb_M125_powheg"),
   ("nof_files",                       4),
   ("nof_db_files",                    35),
@@ -24714,7 +24714,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/Run
 
 samples_2016["/ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
-  ("sample_category",                 "signal_ctcvcp"),
+  ("sample_category",                 "ttH_ctcvcp"),
   ("process_name_specific",           "TTH_4f_ctcvcp"),
   ("nof_files",                       19),
   ("nof_db_files",                    149),
@@ -24725,261 +24725,6 @@ samples_2016["/ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIISummer16MiniAOD
     'CountWeightedL1PrefireNom'                                  : [      9268601,      9266799,      9270288, ],
     'CountWeightedL1Prefire'                                     : [      9268601,      9217258,      9319758, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     12198030,     11345256,     10594094,      9966102,      9268601,      8655263,      8295798,      7715464,      7204463, ],
-    'CountWeighted_rwgt0'                                        : [     85198488,     85195939,     85197648, ],
-    'CountWeightedLHEWeightScale_rwgt0'                          : [    112153858,    104284370,     97354460,     91632430,     85198488,     79539508,     76276640,     70919534,     66207492, ],
-    'CountWeightedL1PrefireNom_rwgt0'                            : [     83420548,     83417785,     83422274, ],
-    'CountWeightedL1Prefire_rwgt0'                               : [     83420548,     82960244,     83881357, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt0'              : [    109783183,    102108000,     95345875,     89694498,     83420548,     77897515,     74662534,     69438850,     64840122, ],
-    'CountWeighted_rwgt1'                                        : [     37862435,     37850701,     37874685, ],
-    'CountWeightedLHEWeightScale_rwgt1'                          : [     49845775,     46347599,     43269097,     40725761,     37862435,     35350804,     33900520,     31519945,     29425549, ],
-    'CountWeightedL1PrefireNom_rwgt1'                            : [     37074403,     37067195,     37081152, ],
-    'CountWeightedL1Prefire_rwgt1'                               : [     37074403,     36869031,     37279032, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt1'              : [     48792120,     45381026,     42376374,     39864409,     37074403,     34621050,     33183190,     30861856,     28817854, ],
-    'CountWeighted_rwgt2'                                        : [     21299622,     21298985,     21299412, ],
-    'CountWeightedLHEWeightScale_rwgt2'                          : [     28038465,     26071092,     24338615,     22908107,     21299622,     19884877,     19069160,     17729883,     16551873, ],
-    'CountWeightedL1PrefireNom_rwgt2'                            : [     20855137,     20854446,     20855568, ],
-    'CountWeightedL1Prefire_rwgt2'                               : [     20855137,     20740061,     20970339, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt2'              : [     27445796,     25527000,     23836469,     22423624,     20855137,     19474379,     18665634,     17359712,     16210031, ],
-    'CountWeighted_rwgt3'                                        : [     14792306,     14790145,     14790846, ],
-    'CountWeightedLHEWeightScale_rwgt3'                          : [     19471186,     18104597,     16901978,     15908408,     14792306,     13808873,     13242387,     12312413,     11494416, ],
-    'CountWeightedL1PrefireNom_rwgt3'                            : [     14483224,     14481737,     14482799, ],
-    'CountWeightedL1Prefire_rwgt3'                               : [     14483224,     14403124,     14563141, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt3'              : [     19059583,     17726952,     16553238,     15571908,     14483224,     13523813,     12962174,     12055330,     11257029, ],
-    'CountWeighted_rwgt4'                                        : [      5324905,      5324746,      5324853, ],
-    'CountWeightedLHEWeightScale_rwgt4'                          : [      7009616,      6517773,      6084654,      5727027,      5324905,      4971219,      4767290,      4432471,      4137968, ],
-    'CountWeightedL1PrefireNom_rwgt4'                            : [      5213784,      5213612,      5213892, ],
-    'CountWeightedL1Prefire_rwgt4'                               : [      5213784,      5185015,      5242585, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt4'              : [      6861449,      6381750,      5959117,      5605906,      5213784,      4868595,      4666408,      4339928,      4052508, ],
-    'CountWeighted_rwgt5'                                        : [      2366402,      2365669,      2367168, ],
-    'CountWeightedLHEWeightScale_rwgt5'                          : [      3115361,      2896725,      2704319,      2545360,      2366402,      2209425,      2118783,      1969997,      1839097, ],
-    'CountWeightedL1PrefireNom_rwgt5'                            : [      2317150,      2316700,      2317572, ],
-    'CountWeightedL1Prefire_rwgt5'                               : [      2317150,      2304314,      2329940, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt5'              : [      3049508,      2836314,      2648523,      2491526,      2317150,      2163816,      2073949,      1928866,      1801116, ],
-    'CountWeighted_rwgt6'                                        : [       591601,       591417,       591792, ],
-    'CountWeightedLHEWeightScale_rwgt6'                          : [       778840,       724181,       676080,       636340,       591601,       552356,       529696,       492499,       459774, ],
-    'CountWeightedL1PrefireNom_rwgt6'                            : [       579288,       579175,       579393, ],
-    'CountWeightedL1Prefire_rwgt6'                               : [       579288,       576079,       582485, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt6'              : [       762377,       709079,       662131,       622881,       579288,       540954,       518487,       482217,       450279, ],
-    'CountWeighted_rwgt7'                                        : [            0,            0,            0, ],
-    'CountWeightedLHEWeightScale_rwgt7'                          : [            0,            0,            0,            0,            0,            0,            0,            0,            0, ],
-    'CountWeightedL1PrefireNom_rwgt7'                            : [            0,            0,            0, ],
-    'CountWeightedL1Prefire_rwgt7'                               : [            0,            0,            0, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt7'              : [            0,            0,            0,            0,            0,            0,            0,            0,            0, ],
-    'CountWeighted_rwgt8'                                        : [       591601,       591417,       591792, ],
-    'CountWeightedLHEWeightScale_rwgt8'                          : [       778840,       724181,       676080,       636340,       591601,       552356,       529696,       492499,       459774, ],
-    'CountWeightedL1PrefireNom_rwgt8'                            : [       579288,       579175,       579393, ],
-    'CountWeightedL1Prefire_rwgt8'                               : [       579288,       576079,       582485, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt8'              : [       762377,       709079,       662131,       622881,       579288,       540954,       518487,       482217,       450279, ],
-    'CountWeighted_rwgt9'                                        : [      2366402,      2365669,      2367168, ],
-    'CountWeightedLHEWeightScale_rwgt9'                          : [      3115361,      2896725,      2704319,      2545360,      2366402,      2209425,      2118783,      1969997,      1839097, ],
-    'CountWeightedL1PrefireNom_rwgt9'                            : [      2317150,      2316700,      2317572, ],
-    'CountWeightedL1Prefire_rwgt9'                               : [      2317150,      2304314,      2329940, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt9'              : [      3049508,      2836314,      2648523,      2491526,      2317150,      2163816,      2073949,      1928866,      1801116, ],
-    'CountWeighted_rwgt10'                                       : [      5324905,      5324746,      5324853, ],
-    'CountWeightedLHEWeightScale_rwgt10'                         : [      7009616,      6517773,      6084654,      5727027,      5324905,      4971219,      4767290,      4432471,      4137968, ],
-    'CountWeightedL1PrefireNom_rwgt10'                           : [      5213784,      5213612,      5213892, ],
-    'CountWeightedL1Prefire_rwgt10'                              : [      5213784,      5185015,      5242585, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt10'             : [      6861449,      6381750,      5959117,      5605906,      5213784,      4868595,      4666408,      4339928,      4052508, ],
-    'CountWeighted_rwgt11'                                       : [      9465609,      9462675,      9468671, ],
-    'CountWeightedLHEWeightScale_rwgt11'                         : [     12461444,     11586900,     10817274,     10181440,      9465609,      8837701,      8475130,      7879986,      7356387, ],
-    'CountWeightedL1PrefireNom_rwgt11'                           : [      9268601,      9266799,      9270288, ],
-    'CountWeightedL1Prefire_rwgt11'                              : [      9268601,      9217258,      9319758, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt11'             : [     12198030,     11345256,     10594094,      9966102,      9268601,      8655263,      8295798,      7715464,      7204463, ],
-    'CountWeighted_rwgt12'                                       : [     14792306,     14790145,     14790846, ],
-    'CountWeightedLHEWeightScale_rwgt12'                         : [     19471186,     18104597,     16901978,     15908408,     14792306,     13808873,     13242387,     12312413,     11494416, ],
-    'CountWeightedL1PrefireNom_rwgt12'                           : [     14483224,     14481737,     14482799, ],
-    'CountWeightedL1Prefire_rwgt12'                              : [     14483224,     14403124,     14563141, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt12'             : [     19059583,     17726952,     16553238,     15571908,     14483224,     13523813,     12962174,     12055330,     11257029, ],
-    'CountWeighted_rwgt13'                                       : [     21299622,     21298985,     21299412, ],
-    'CountWeightedLHEWeightScale_rwgt13'                         : [     28038465,     26071092,     24338615,     22908107,     21299622,     19884877,     19069160,     17729883,     16551873, ],
-    'CountWeightedL1PrefireNom_rwgt13'                           : [     20855137,     20854446,     20855568, ],
-    'CountWeightedL1Prefire_rwgt13'                              : [     20855137,     20740061,     20970339, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt13'             : [     27445796,     25527000,     23836469,     22423624,     20855137,     19474379,     18665634,     17359712,     16210031, ],
-    'CountWeighted_rwgt14'                                       : [     37862435,     37850701,     37874685, ],
-    'CountWeightedLHEWeightScale_rwgt14'                         : [     49845775,     46347599,     43269097,     40725761,     37862435,     35350804,     33900520,     31519945,     29425549, ],
-    'CountWeightedL1PrefireNom_rwgt14'                           : [     37074403,     37067195,     37081152, ],
-    'CountWeightedL1Prefire_rwgt14'                              : [     37074403,     36869031,     37279032, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt14'             : [     48792120,     45381026,     42376374,     39864409,     37074403,     34621050,     33183190,     30861856,     28817854, ],
-    'CountWeighted_rwgt15'                                       : [     85198488,     85195939,     85197648, ],
-    'CountWeightedLHEWeightScale_rwgt15'                         : [    112153858,    104284370,     97354460,     91632430,     85198488,     79539508,     76276640,     70919534,     66207492, ],
-    'CountWeightedL1PrefireNom_rwgt15'                           : [     83420548,     83417785,     83422274, ],
-    'CountWeightedL1Prefire_rwgt15'                              : [     83420548,     82960244,     83881357, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt15'             : [    109783183,    102108000,     95345875,     89694498,     83420548,     77897515,     74662534,     69438850,     64840122, ],
-    'CountWeighted_rwgt17'                                       : [     37862435,     37850701,     37874685, ],
-    'CountWeightedLHEWeightScale_rwgt17'                         : [     49845775,     46347599,     43269097,     40725761,     37862435,     35350804,     33900520,     31519945,     29425549, ],
-    'CountWeightedL1PrefireNom_rwgt17'                           : [     37074403,     37067195,     37081152, ],
-    'CountWeightedL1Prefire_rwgt17'                              : [     37074403,     36869031,     37279032, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt17'             : [     48792120,     45381026,     42376374,     39864409,     37074403,     34621050,     33183190,     30861856,     28817854, ],
-    'CountWeighted_rwgt19'                                       : [     14792306,     14790145,     14790846, ],
-    'CountWeightedLHEWeightScale_rwgt19'                         : [     19471186,     18104597,     16901978,     15908408,     14792306,     13808873,     13242387,     12312413,     11494416, ],
-    'CountWeightedL1PrefireNom_rwgt19'                           : [     14483224,     14481737,     14482799, ],
-    'CountWeightedL1Prefire_rwgt19'                              : [     14483224,     14403124,     14563141, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt19'             : [     19059583,     17726952,     16553238,     15571908,     14483224,     13523813,     12962174,     12055330,     11257029, ],
-    'CountWeighted_rwgt20'                                       : [      9465609,      9462675,      9468671, ],
-    'CountWeightedLHEWeightScale_rwgt20'                         : [     12461444,     11586900,     10817274,     10181440,      9465609,      8837701,      8475130,      7879986,      7356387, ],
-    'CountWeightedL1PrefireNom_rwgt20'                           : [      9268601,      9266799,      9270288, ],
-    'CountWeightedL1Prefire_rwgt20'                              : [      9268601,      9217258,      9319758, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt20'             : [     12198030,     11345256,     10594094,      9966102,      9268601,      8655263,      8295798,      7715464,      7204463, ],
-    'CountWeighted_rwgt22'                                       : [      2366402,      2365669,      2367168, ],
-    'CountWeightedLHEWeightScale_rwgt22'                         : [      3115361,      2896725,      2704319,      2545360,      2366402,      2209425,      2118783,      1969997,      1839097, ],
-    'CountWeightedL1PrefireNom_rwgt22'                           : [      2317150,      2316700,      2317572, ],
-    'CountWeightedL1Prefire_rwgt22'                              : [      2317150,      2304314,      2329940, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt22'             : [      3049508,      2836314,      2648523,      2491526,      2317150,      2163816,      2073949,      1928866,      1801116, ],
-    'CountWeighted_rwgt23'                                       : [       591601,       591417,       591792, ],
-    'CountWeightedLHEWeightScale_rwgt23'                         : [       778840,       724181,       676080,       636340,       591601,       552356,       529696,       492499,       459774, ],
-    'CountWeightedL1PrefireNom_rwgt23'                           : [       579288,       579175,       579393, ],
-    'CountWeightedL1Prefire_rwgt23'                              : [       579288,       576079,       582485, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt23'             : [       762377,       709079,       662131,       622881,       579288,       540954,       518487,       482217,       450279, ],
-    'CountWeighted_rwgt25'                                       : [       591601,       591417,       591792, ],
-    'CountWeightedLHEWeightScale_rwgt25'                         : [       778840,       724181,       676080,       636340,       591601,       552356,       529696,       492499,       459774, ],
-    'CountWeightedL1PrefireNom_rwgt25'                           : [       579288,       579175,       579393, ],
-    'CountWeightedL1Prefire_rwgt25'                              : [       579288,       576079,       582485, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt25'             : [       762377,       709079,       662131,       622881,       579288,       540954,       518487,       482217,       450279, ],
-    'CountWeighted_rwgt26'                                       : [      2366402,      2365669,      2367168, ],
-    'CountWeightedLHEWeightScale_rwgt26'                         : [      3115361,      2896725,      2704319,      2545360,      2366402,      2209425,      2118783,      1969997,      1839097, ],
-    'CountWeightedL1PrefireNom_rwgt26'                           : [      2317150,      2316700,      2317572, ],
-    'CountWeightedL1Prefire_rwgt26'                              : [      2317150,      2304314,      2329940, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt26'             : [      3049508,      2836314,      2648523,      2491526,      2317150,      2163816,      2073949,      1928866,      1801116, ],
-    'CountWeighted_rwgt28'                                       : [      9465609,      9462675,      9468671, ],
-    'CountWeightedLHEWeightScale_rwgt28'                         : [     12461444,     11586900,     10817274,     10181440,      9465609,      8837701,      8475130,      7879986,      7356387, ],
-    'CountWeightedL1PrefireNom_rwgt28'                           : [      9268601,      9266799,      9270288, ],
-    'CountWeightedL1Prefire_rwgt28'                              : [      9268601,      9217258,      9319758, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt28'             : [     12198030,     11345256,     10594094,      9966102,      9268601,      8655263,      8295798,      7715464,      7204463, ],
-    'CountWeighted_rwgt29'                                       : [     14792306,     14790145,     14790846, ],
-    'CountWeightedLHEWeightScale_rwgt29'                         : [     19471186,     18104597,     16901978,     15908408,     14792306,     13808873,     13242387,     12312413,     11494416, ],
-    'CountWeightedL1PrefireNom_rwgt29'                           : [     14483224,     14481737,     14482799, ],
-    'CountWeightedL1Prefire_rwgt29'                              : [     14483224,     14403124,     14563141, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt29'             : [     19059583,     17726952,     16553238,     15571908,     14483224,     13523813,     12962174,     12055330,     11257029, ],
-    'CountWeighted_rwgt31'                                       : [     37862435,     37850701,     37874685, ],
-    'CountWeightedLHEWeightScale_rwgt31'                         : [     49845775,     46347599,     43269097,     40725761,     37862435,     35350804,     33900520,     31519945,     29425549, ],
-    'CountWeightedL1PrefireNom_rwgt31'                           : [     37074403,     37067195,     37081152, ],
-    'CountWeightedL1Prefire_rwgt31'                              : [     37074403,     36869031,     37279032, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt31'             : [     48792120,     45381026,     42376374,     39864409,     37074403,     34621050,     33183190,     30861856,     28817854, ],
-    'CountWeighted_rwgt33'                                       : [     85198488,     85195939,     85197648, ],
-    'CountWeightedLHEWeightScale_rwgt33'                         : [    112153858,    104284370,     97354460,     91632430,     85198488,     79539508,     76276640,     70919534,     66207492, ],
-    'CountWeightedL1PrefireNom_rwgt33'                           : [     83420548,     83417785,     83422274, ],
-    'CountWeightedL1Prefire_rwgt33'                              : [     83420548,     82960244,     83881357, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt33'             : [    109783183,    102108000,     95345875,     89694498,     83420548,     77897515,     74662534,     69438850,     64840122, ],
-    'CountWeighted_rwgt34'                                       : [     37862435,     37850701,     37874685, ],
-    'CountWeightedLHEWeightScale_rwgt34'                         : [     49845775,     46347599,     43269097,     40725761,     37862435,     35350804,     33900520,     31519945,     29425549, ],
-    'CountWeightedL1PrefireNom_rwgt34'                           : [     37074403,     37067195,     37081152, ],
-    'CountWeightedL1Prefire_rwgt34'                              : [     37074403,     36869031,     37279032, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt34'             : [     48792120,     45381026,     42376374,     39864409,     37074403,     34621050,     33183190,     30861856,     28817854, ],
-    'CountWeighted_rwgt36'                                       : [     14792306,     14790145,     14790846, ],
-    'CountWeightedLHEWeightScale_rwgt36'                         : [     19471186,     18104597,     16901978,     15908408,     14792306,     13808873,     13242387,     12312413,     11494416, ],
-    'CountWeightedL1PrefireNom_rwgt36'                           : [     14483224,     14481737,     14482799, ],
-    'CountWeightedL1Prefire_rwgt36'                              : [     14483224,     14403124,     14563141, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt36'             : [     19059583,     17726952,     16553238,     15571908,     14483224,     13523813,     12962174,     12055330,     11257029, ],
-    'CountWeighted_rwgt46'                                       : [     14792306,     14790145,     14790846, ],
-    'CountWeightedLHEWeightScale_rwgt46'                         : [     19471186,     18104597,     16901978,     15908408,     14792306,     13808873,     13242387,     12312413,     11494416, ],
-    'CountWeightedL1PrefireNom_rwgt46'                           : [     14483224,     14481737,     14482799, ],
-    'CountWeightedL1Prefire_rwgt46'                              : [     14483224,     14403124,     14563141, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt46'             : [     19059583,     17726952,     16553238,     15571908,     14483224,     13523813,     12962174,     12055330,     11257029, ],
-    'CountWeighted_rwgt48'                                       : [     37862435,     37850701,     37874685, ],
-    'CountWeightedLHEWeightScale_rwgt48'                         : [     49845775,     46347599,     43269097,     40725761,     37862435,     35350804,     33900520,     31519945,     29425549, ],
-    'CountWeightedL1PrefireNom_rwgt48'                           : [     37074403,     37067195,     37081152, ],
-    'CountWeightedL1Prefire_rwgt48'                              : [     37074403,     36869031,     37279032, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt48'             : [     48792120,     45381026,     42376374,     39864409,     37074403,     34621050,     33183190,     30861856,     28817854, ],
-    'CountWeighted_rwgt49'                                       : [     85198488,     85195939,     85197648, ],
-    'CountWeightedLHEWeightScale_rwgt49'                         : [    112153858,    104284370,     97354460,     91632430,     85198488,     79539508,     76276640,     70919534,     66207492, ],
-    'CountWeightedL1PrefireNom_rwgt49'                           : [     83420548,     83417785,     83422274, ],
-    'CountWeightedL1Prefire_rwgt49'                              : [     83420548,     82960244,     83881357, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt49'             : [    109783183,    102108000,     95345875,     89694498,     83420548,     77897515,     74662534,     69438850,     64840122, ],
-    'CountWeighted_rwgt50'                                       : [      8001495,      8001598,      8001378, ],
-    'CountWeightedLHEWeightScale_rwgt50'                         : [     10547725,      9794823,      9133709,      8616699,      8001495,      7461397,      7171928,      6659788,      6210213, ],
-    'CountWeightedL1PrefireNom_rwgt50'                           : [      7833262,      7833202,      7833272, ],
-    'CountWeightedL1Prefire_rwgt50'                              : [      7833262,      7789637,      7876842, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt50'             : [     10323014,      9588992,      8943941,      8433034,      7833262,      7306294,      7019001,      6519704,      6081062, ],
-    'CountWeighted_rwgt51'                                       : [      6690383,      6690529,      6690227, ],
-    'CountWeightedLHEWeightScale_rwgt51'                         : [      8835068,      8191037,      7627186,      7216494,      6690383,      6229832,      6005750,      5567868,      5184570, ],
-    'CountWeightedL1PrefireNom_rwgt51'                           : [      6548419,      6548443,      6548372, ],
-    'CountWeightedL1Prefire_rwgt51'                              : [      6548419,      6511616,      6585185, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt51'             : [      8645007,      8017315,      7467321,      7061175,      6548419,      6099190,      5876445,      5449670,      5075803, ],
-    'CountWeighted_rwgt52'                                       : [      5533490,      5533668,      5533266, ],
-    'CountWeightedLHEWeightScale_rwgt52'                         : [      7323875,      6775921,      6297869,      5980989,      5533490,      5143115,      4976719,      4604340,      4279531, ],
-    'CountWeightedL1PrefireNom_rwgt52'                           : [      5414702,      5414786,      5414567, ],
-    'CountWeightedL1Prefire_rwgt52'                              : [      5414702,      5383919,      5445456, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt52'             : [      7164378,      6630527,      6164387,      5850690,      5414702,      5034061,      4868261,      4505469,      4188756, ],
-    'CountWeighted_rwgt53'                                       : [      4530805,      4531034,      4530510, ],
-    'CountWeightedLHEWeightScale_rwgt53'                         : [      6014123,      5549446,      5145754,      4910164,      4530805,      4201260,      4084875,      3769282,      3495162, ],
-    'CountWeightedL1PrefireNom_rwgt53'                           : [      4432110,      4432265,      4431888, ],
-    'CountWeightedL1Prefire_rwgt53'                              : [      4432110,      4406543,      4457648, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt53'             : [      5881129,      5428603,      5035140,      4801548,      4432110,      4110918,      3994485,      3687155,      3419979, ],
-    'CountWeighted_rwgt54'                                       : [      3682361,      3682630,      3682030, ],
-    'CountWeightedLHEWeightScale_rwgt54'                         : [      4905841,      4511633,      4170876,      4004073,      3682361,      3404300,      3330217,      3062673,      2831441, ],
-    'CountWeightedL1PrefireNom_rwgt54'                           : [      3600669,      3600875,      3600390, ],
-    'CountWeightedL1Prefire_rwgt54'                              : [      3600669,      3579524,      3621797, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt54'             : [      4795272,      4411573,      4079614,      3913800,      3600669,      3329786,      3255120,      2994709,      2769452, ],
-    'CountWeighted_rwgt55'                                       : [      2988164,      2988463,      2987796, ],
-    'CountWeightedLHEWeightScale_rwgt55'                         : [      3999044,      3662488,      3373222,      3262705,      2988164,      2752220,      2712749,      2484517,      2288388, ],
-    'CountWeightedL1PrefireNom_rwgt55'                           : [      2920381,      2920636,      2920058, ],
-    'CountWeightedL1Prefire_rwgt55'                              : [      2920381,      2902845,      2937900, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt55'             : [      3906814,      3579427,      3297788,      3187441,      2920381,      2690661,      2650163,      2428150,      2237194, ],
-    'CountWeighted_rwgt56'                                       : [      2448213,      2448532,      2447811, ],
-    'CountWeightedLHEWeightScale_rwgt56'                         : [      3293725,      3002019,      2752805,      2686051,      2448213,      2245030,      2232479,      2034830,      1865994, ],
-    'CountWeightedL1PrefireNom_rwgt56'                           : [      2391248,      2391534,      2390882, ],
-    'CountWeightedL1Prefire_rwgt56'                              : [      2391248,      2376521,      2405959, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt56'             : [      3215766,      2932184,      2689682,      2622466,      2391248,      2193545,      2179624,      1987481,      1823198, ],
-    'CountWeighted_rwgt57'                                       : [      2062505,      2062848,      2062085, ],
-    'CountWeightedLHEWeightScale_rwgt57'                         : [      2789896,      2530223,      2309620,      2274135,      2062505,      1882731,      1889406,      1713606,      1564274, ],
-    'CountWeightedL1PrefireNom_rwgt57'                           : [      2013272,      2013586,      2012880, ],
-    'CountWeightedL1Prefire_rwgt57'                              : [      2013272,      2000555,      2025976, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt57'             : [      2722127,      2469832,      2255298,      2218887,      2013272,      1838445,      1843502,      1672695,      1527475, ],
-    'CountWeighted_rwgt58'                                       : [      1831054,      1831407,      1830622, ],
-    'CountWeightedLHEWeightScale_rwgt58'                         : [      2487551,      2247110,      2043676,      2026949,      1831054,      1665324,      1683535,      1520845,      1383216, ],
-    'CountWeightedL1PrefireNom_rwgt58'                           : [      1786458,      1786786,      1786051, ],
-    'CountWeightedL1Prefire_rwgt58'                              : [      1786458,      1774945,      1797957, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt58'             : [      2425897,      2192386,      1994635,      1976709,      1786458,      1625356,      1641803,      1483801,      1350015, ],
-    'CountWeighted_rwgt59'                                       : [      1753853,      1754212,      1753416, ],
-    'CountWeightedLHEWeightScale_rwgt59'                         : [      2386699,      2152675,      1954973,      1944499,      1753853,      1592813,      1614866,      1456553,      1322828, ],
-    'CountWeightedL1PrefireNom_rwgt59'                           : [      1710805,      1711139,      1710392, ],
-    'CountWeightedL1Prefire_rwgt59'                              : [      1710805,      1699694,      1721904, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt59'             : [      2327087,      2099843,      1907693,      1895927,      1710805,      1554285,      1574524,      1420797,      1290829, ],
-    'CountWeighted_rwgt60'                                       : [      1830916,      1831273,      1830479, ],
-    'CountWeightedLHEWeightScale_rwgt60'                         : [      2487356,      2246937,      2043528,      2026794,      1830916,      1665205,      1683408,      1520732,      1383119, ],
-    'CountWeightedL1PrefireNom_rwgt60'                           : [      1786324,      1786653,      1785917, ],
-    'CountWeightedL1Prefire_rwgt60'                              : [      1786324,      1774812,      1797824, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt60'             : [      2425708,      2192218,      1994490,      1976557,      1786324,      1625242,      1641677,      1483691,      1349920, ],
-    'CountWeighted_rwgt61'                                       : [      2062238,      2062582,      2061813, ],
-    'CountWeightedLHEWeightScale_rwgt61'                         : [      2789507,      2529886,      2309325,      2273830,      2062238,      1882494,      1889155,      1713386,      1564081, ],
-    'CountWeightedL1PrefireNom_rwgt61'                           : [      2013011,      2013322,      2012619, ],
-    'CountWeightedL1Prefire_rwgt61'                              : [      2013011,      2000297,      2025712, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt61'             : [      2721748,      2469504,      2255009,      2218590,      2013011,      1838213,      1843256,      1672482,      1527287, ],
-    'CountWeighted_rwgt62'                                       : [      2447816,      2448147,      2447412, ],
-    'CountWeightedLHEWeightScale_rwgt62'                         : [      3293159,      3001526,      2752367,      2685603,      2447816,      2244684,      2232110,      2034506,      1865714, ],
-    'CountWeightedL1PrefireNom_rwgt62'                           : [      2390864,      2391151,      2390502, ],
-    'CountWeightedL1Prefire_rwgt62'                              : [      2390864,      2376144,      2405570, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt62'             : [      3215214,      2931701,      2689261,      2622025,      2390864,      2193210,      2179264,      1987167,      1822925, ],
-    'CountWeighted_rwgt63'                                       : [      2987660,      2987970,      2987286, ],
-    'CountWeightedLHEWeightScale_rwgt63'                         : [      3998319,      3661851,      3372666,      3262123,      2987660,      2751779,      2712281,      2484110,      2288025, ],
-    'CountWeightedL1PrefireNom_rwgt63'                           : [      2919889,      2920141,      2919569, ],
-    'CountWeightedL1Prefire_rwgt63'                              : [      2919889,      2902362,      2937403, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt63'             : [      3906107,      3578809,      3297250,      3186872,      2919889,      2690233,      2649706,      2427754,      2236841, ],
-    'CountWeighted_rwgt64'                                       : [      3681769,      3682044,      3681425, ],
-    'CountWeightedLHEWeightScale_rwgt64'                         : [      4904990,      4510884,      4170218,      4003394,      3681769,      3403780,      3329661,      3062185,      2831016, ],
-    'CountWeightedL1PrefireNom_rwgt64'                           : [      3600092,      3600294,      3599814, ],
-    'CountWeightedL1Prefire_rwgt64'                              : [      3600092,      3578950,      3621212, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt64'             : [      4794435,      4410841,      4078969,      3913136,      3600092,      3329281,      3254580,      2994238,      2769038, ],
-    'CountWeighted_rwgt65'                                       : [      4530141,      4530389,      4529841, ],
-    'CountWeightedLHEWeightScale_rwgt65'                         : [      6013177,      5548619,      5145031,      4909407,      4530141,      4200684,      4084257,      3768742,      3494689, ],
-    'CountWeightedL1PrefireNom_rwgt65'                           : [      4431468,      4431616,      4431250, ],
-    'CountWeightedL1Prefire_rwgt65'                              : [      4431468,      4405909,      4456999, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt65'             : [      5880206,      5427801,      5034432,      4800806,      4431468,      4110356,      3993884,      3686626,      3419516, ],
-    'CountWeighted_rwgt66'                                       : [      5532806,      5532996,      5532563, ],
-    'CountWeightedLHEWeightScale_rwgt66'                         : [      7322877,      6775054,      6297106,      5980200,      5532806,      5142507,      4976085,      4603780,      4279039, ],
-    'CountWeightedL1PrefireNom_rwgt66'                           : [      5414035,      5414115,      5413898, ],
-    'CountWeightedL1Prefire_rwgt66'                              : [      5414035,      5383260,      5444783, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt66'             : [      7163415,      6629690,      6163650,      5849918,      5414035,      5033467,      4867643,      4504930,      4188278, ],
-    'CountWeighted_rwgt67'                                       : [      6689728,      6689880,      6689549, ],
-    'CountWeightedLHEWeightScale_rwgt67'                         : [      8834112,      8190203,      7626454,      7215744,      6689728,      6229253,      6005136,      5567333,      5184099, ],
-    'CountWeightedL1PrefireNom_rwgt67'                           : [      6547779,      6547788,      6547727, ],
-    'CountWeightedL1Prefire_rwgt67'                              : [      6547779,      6510983,      6584541, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt67'             : [      8644076,      8016506,      7466611,      7060444,      6547779,      6098626,      5875845,      5449153,      5075343, ],
-    'CountWeighted_rwgt68'                                       : [      8000956,      8001075,      8000826, ],
-    'CountWeightedLHEWeightScale_rwgt68'                         : [     10546950,      9794149,      9133118,      8616082,      8000956,      7460932,      7171433,      6659344,      6209828, ],
-    'CountWeightedL1PrefireNom_rwgt68'                           : [      7832736,      7832680,      7832751, ],
-    'CountWeightedL1Prefire_rwgt68'                              : [      7832736,      7789116,      7876312, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom_rwgt68'             : [     10322263,      9588330,      8943358,      8432420,      7832736,      7305837,      7018513,      6519273,      6080686, ],
   }),
   ("nof_tree_events",                 9466700),
   ("nof_db_events",                   9566400),
@@ -24991,7 +24736,7 @@ samples_2016["/ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIISummer16MiniAOD
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
   ("LHE_set",                         "LHA IDs 306000 - 306102 -> NNPDF31_nnlo_hessian_pdfas PDF set, expecting 103 weights (counted 103 weights)"),
-  ("nof_reweighting",                 69),
+  ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
@@ -27478,7 +27223,7 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer1
   ("fsize_local",                     58044641730), # 58.04GB, avg file size 9.67GB
   ("fsize_db",                        285619884616), # 285.62GB, avg file size 5.83GB
   ("use_it",                          True),
-  ("xsection",                        0.2432),
+  ("xsection",                        0.2072),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -27526,7 +27271,7 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer1
   ("fsize_local",                     58999926252), # 59.00GB, avg file size 9.83GB
   ("fsize_db",                        290237477462), # 290.24GB, avg file size 6.05GB
   ("use_it",                          True),
-  ("xsection",                        0.2432),
+  ("xsection",                        0.2072),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -27574,7 +27319,7 @@ samples_2016["/TTZToLL_M-1to10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
   ("fsize_local",                     2283816837), # 2.28GB, avg file size 2.28GB
   ("fsize_db",                        12037865155), # 12.04GB, avg file size 2.41GB
   ("use_it",                          True),
-  ("xsection",                        0.05324),
+  ("xsection",                        0.04537),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -27766,7 +27511,7 @@ samples_2016["/TTWW_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3
   ("fsize_local",                     1095053467), # 1.10GB, avg file size 1.10GB
   ("fsize_db",                        5758278541), # 5.76GB, avg file size 261.74MB
   ("use_it",                          True),
-  ("xsection",                        0.00698174),
+  ("xsection",                        0.006981),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -28146,7 +27891,7 @@ samples_2016["/ST_tWll_5f_LO_13TeV-MadGraph-pythia8/RunIISummer16MiniAODv3-PUMor
   ("fsize_local",                     485993642), # 485.99MB, avg file size 485.99MB
   ("fsize_db",                        2471279251), # 2.47GB, avg file size 2.47GB
   ("use_it",                          True),
-  ("xsection",                        0.011016),
+  ("xsection",                        0.01096),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -28722,7 +28467,7 @@ samples_2016["/TTWH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3
   ("fsize_local",                     1124506005), # 1.12GB, avg file size 1.12GB
   ("fsize_db",                        5876783273), # 5.88GB, avg file size 309.30MB
   ("use_it",                          True),
-  ("xsection",                        0.00114),
+  ("xsection",                        0.001582),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -28770,7 +28515,7 @@ samples_2016["/TTZH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3
   ("fsize_local",                     1129929066), # 1.13GB, avg file size 1.13GB
   ("fsize_db",                        6060088194), # 6.06GB, avg file size 242.40MB
   ("use_it",                          True),
-  ("xsection",                        0.0011305),
+  ("xsection",                        0.001535),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -28818,7 +28563,7 @@ samples_2016["/WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3
   ("fsize_local",                     1825356913), # 1.83GB, avg file size 1.83GB
   ("fsize_db",                        9387450023), # 9.39GB, avg file size 4.69GB
   ("use_it",                          True),
-  ("xsection",                        0.2154),
+  ("xsection",                        0.2086),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -28914,7 +28659,7 @@ samples_2016["/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PU
   ("fsize_local",                     1936178792), # 1.94GB, avg file size 1.94GB
   ("fsize_db",                        10093638437), # 10.09GB, avg file size 3.36GB
   ("use_it",                          True),
-  ("xsection",                        0.05565),
+  ("xsection",                        0.05701),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -29058,7 +28803,7 @@ samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
   ("fsize_local",                     20102231869), # 20.10GB, avg file size 3.35GB
   ("fsize_db",                        148377698646), # 148.38GB, avg file size 3.30GB
   ("use_it",                          True),
-  ("xsection",                        464.7),
+  ("xsection",                        464.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -29106,7 +28851,7 @@ samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
   ("fsize_local",                     40655131800), # 40.66GB, avg file size 3.70GB
   ("fsize_db",                        299146793202), # 299.15GB, avg file size 4.10GB
   ("use_it",                          True),
-  ("xsection",                        464.7),
+  ("xsection",                        464.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -29154,7 +28899,7 @@ samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
   ("fsize_local",                     48551162846), # 48.55GB, avg file size 3.73GB
   ("fsize_db",                        357306491523), # 357.31GB, avg file size 3.97GB
   ("use_it",                          True),
-  ("xsection",                        464.7),
+  ("xsection",                        464.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -29298,7 +29043,7 @@ samples_2016["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISumm
   ("fsize_local",                     47225646666), # 47.23GB, avg file size 9.45GB
   ("fsize_db",                        235015310414), # 235.02GB, avg file size 5.60GB
   ("use_it",                          True),
-  ("xsection",                        4.13755),
+  ("xsection",                        4.215),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -29346,7 +29091,7 @@ samples_2016["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISumm
   ("fsize_local",                     93961062799), # 93.96GB, avg file size 7.83GB
   ("fsize_db",                        476687878413), # 476.69GB, avg file size 5.74GB
   ("use_it",                          True),
-  ("xsection",                        4.13755),
+  ("xsection",                        4.215),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -29490,7 +29235,7 @@ samples_2016["/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISummer16M
   ("fsize_local",                     1149258907), # 1.15GB, avg file size 1.15GB
   ("fsize_db",                        6297855563), # 6.30GB, avg file size 3.15GB
   ("use_it",                          True),
-  ("xsection",                        0.0492899),
+  ("xsection",                        0.04926),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -29536,7 +29281,7 @@ samples_2016["/WWTo2L2Nu_DoubleScattering_13TeV-pythia8/RunIISummer16MiniAODv3-P
   ("fsize_local",                     3868373315), # 3.87GB, avg file size 1.93GB
   ("fsize_db",                        28740400603), # 28.74GB, avg file size 3.59GB
   ("use_it",                          True),
-  ("xsection",                        0.20147),
+  ("xsection",                        0.2232),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -29728,7 +29473,7 @@ samples_2016["/TTWZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3
   ("fsize_local",                     1081690464), # 1.08GB, avg file size 1.08GB
   ("fsize_db",                        5738630560), # 5.74GB, avg file size 286.93MB
   ("use_it",                          True),
-  ("xsection",                        0.0024455),
+  ("xsection",                        0.003884),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -29776,7 +29521,7 @@ samples_2016["/TTZZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3
   ("fsize_local",                     1078451480), # 1.08GB, avg file size 1.08GB
   ("fsize_db",                        5745057480), # 5.75GB, avg file size 261.14MB
   ("use_it",                          True),
-  ("xsection",                        0.0013865),
+  ("xsection",                        0.001982),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30052,16 +29797,16 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunII
   ("nof_files",                       57),
   ("nof_db_files",                    287),
   ("nof_events",                      {
-    'Count'                                                      : [     52225275, ],
-    'CountWeighted'                                              : [     38005149,     37998746,     38007851, ],
-    'CountWeightedLHEWeightScale'                                : [     32458709,     39136485,     41413451,     30744783,     38004574,     41707975,     29456039,     37138705,     41903043, ],
-    'CountWeightedL1PrefireNom'                                  : [     37976102,     37968939,     37979786, ],
-    'CountWeightedL1Prefire'                                     : [     37976102,     37967388,     37984765, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     32431662,     39105826,     41381104,     30719701,     37975506,     41676625,     29432611,     37111114,     41872681, ],
+    'Count'                                                      : [     51792999, ],
+    'CountWeighted'                                              : [     37691200,     37684543,     37694014, ],
+    'CountWeightedLHEWeightScale'                                : [     32190550,     38813199,     41071353,     30490754,     37690635,     41363349,     29212647,     36831874,     41556793, ],
+    'CountWeightedL1PrefireNom'                                  : [     37662387,     37654984,     37666176, ],
+    'CountWeightedL1Prefire'                                     : [     37662387,     37653743,     37670980, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     32163720,     38782788,     41039268,     30465874,     37661800,     41332252,     29189409,     36804507,     41526677, ],
   }),
-  ("nof_tree_events",                 52225275),
+  ("nof_tree_events",                 51792999),
   ("nof_db_events",                   40364234),
-  ("fsize_local",                     121378570344), # 121.38GB, avg file size 2.13GB
+  ("fsize_local",                     120372614774), # 120.37GB, avg file size 2.11GB
   ("fsize_db",                        946826425333), # 946.83GB, avg file size 3.30GB
   ("use_it",                          False),
   ("xsection",                        18610.0),
@@ -30075,7 +29820,7 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunII
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Sep17_mc_woPresel_nom_all/ntuples/DYJetsToLL_M-10to50_amcatnloFXFX_ext1"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [56]),
       ]),
     ]
   ),
@@ -30112,7 +29857,7 @@ samples_2016["/DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   ("fsize_local",                     129337823958), # 129.34GB, avg file size 3.23GB
   ("fsize_db",                        1114603185048), # 1.11TB, avg file size 3.77GB
   ("use_it",                          False),
-  ("xsection",                        835.906),
+  ("xsection",                        859.68),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30160,7 +29905,7 @@ samples_2016["/DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   ("fsize_local",                     95110126477), # 95.11GB, avg file size 3.40GB
   ("fsize_db",                        571063486084), # 571.06GB, avg file size 3.97GB
   ("use_it",                          False),
-  ("xsection",                        442.659),
+  ("xsection",                        455.25),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30208,7 +29953,7 @@ samples_2016["/DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   ("fsize_local",                     23019550014), # 23.02GB, avg file size 4.60GB
   ("fsize_db",                        157220526981), # 157.22GB, avg file size 4.37GB
   ("use_it",                          False),
-  ("xsection",                        108.72),
+  ("xsection",                        111.81),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30256,7 +30001,7 @@ samples_2016["/DY4JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   ("fsize_local",                     12328748570), # 12.33GB, avg file size 4.11GB
   ("fsize_db",                        74436479210), # 74.44GB, avg file size 4.14GB
   ("use_it",                          False),
-  ("xsection",                        41.9326),
+  ("xsection",                        43.12),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30304,7 +30049,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("fsize_local",                     5008481374), # 5.01GB, avg file size 2.50GB
   ("fsize_db",                        32622487452), # 32.62GB, avg file size 4.66GB
   ("use_it",                          False),
-  ("xsection",                        255.622),
+  ("xsection",                        262.89),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30352,7 +30097,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("fsize_local",                     42631297125), # 42.63GB, avg file size 4.74GB
   ("fsize_db",                        278893599730), # 278.89GB, avg file size 3.98GB
   ("use_it",                          False),
-  ("xsection",                        255.622),
+  ("xsection",                        262.89),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30400,7 +30145,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("fsize_local",                     6565684566), # 6.57GB, avg file size 3.28GB
   ("fsize_db",                        39497917957), # 39.50GB, avg file size 4.39GB
   ("use_it",                          False),
-  ("xsection",                        43.2937),
+  ("xsection",                        44.52),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30448,7 +30193,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("fsize_local",                     13057026994), # 13.06GB, avg file size 4.35GB
   ("fsize_db",                        78367782998), # 78.37GB, avg file size 3.73GB
   ("use_it",                          False),
-  ("xsection",                        43.2937),
+  ("xsection",                        44.52),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30496,7 +30241,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("fsize_local",                     7660107195), # 7.66GB, avg file size 3.83GB
   ("fsize_db",                        44119485779), # 44.12GB, avg file size 5.51GB
   ("use_it",                          False),
-  ("xsection",                        4.16546),
+  ("xsection",                        4.284),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30544,7 +30289,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("fsize_local",                     7304714309), # 7.30GB, avg file size 7.30GB
   ("fsize_db",                        90110016244), # 90.11GB, avg file size 5.01GB
   ("use_it",                          False),
-  ("xsection",                        4.16546),
+  ("xsection",                        4.284),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30592,7 +30337,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("fsize_local",                     8465598353), # 8.47GB, avg file size 4.23GB
   ("fsize_db",                        49930642077), # 49.93GB, avg file size 6.24GB
   ("use_it",                          False),
-  ("xsection",                        1.25745),
+  ("xsection",                        1.293),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30640,7 +30385,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("fsize_local",                     16714938913), # 16.71GB, avg file size 5.57GB
   ("fsize_db",                        98595971175), # 98.60GB, avg file size 6.57GB
   ("use_it",                          False),
-  ("xsection",                        1.25745),
+  ("xsection",                        1.293),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30832,7 +30577,7 @@ samples_2016["/DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("fsize_local",                     120001994324), # 120.00GB, avg file size 2.45GB
   ("fsize_db",                        1975229807254), # 1.98TB, avg file size 4.16GB
   ("use_it",                          False),
-  ("xsection",                        1021.76),
+  ("xsection",                        1023.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30880,7 +30625,7 @@ samples_2016["/DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("fsize_local",                     88587793670), # 88.59GB, avg file size 5.21GB
   ("fsize_db",                        665323381795), # 665.32GB, avg file size 4.62GB
   ("use_it",                          False),
-  ("xsection",                        357.38),
+  ("xsection",                        357.77),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30928,7 +30673,7 @@ samples_2016["/DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("fsize_local",                     35566907078), # 35.57GB, avg file size 5.93GB
   ("fsize_db",                        212438796731), # 212.44GB, avg file size 4.43GB
   ("use_it",                          False),
-  ("xsection",                        130.483),
+  ("xsection",                        130.63),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -30976,7 +30721,7 @@ samples_2016["/DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("fsize_local",                     31323062132), # 31.32GB, avg file size 6.26GB
   ("fsize_db",                        169839944436), # 169.84GB, avg file size 5.66GB
   ("use_it",                          False),
-  ("xsection",                        51.261),
+  ("xsection",                        51.259),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31024,7 +30769,7 @@ samples_2016["/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("fsize_local",                     14410533991), # 14.41GB, avg file size 4.80GB
   ("fsize_db",                        99023772526), # 99.02GB, avg file size 4.95GB
   ("use_it",                          False),
-  ("xsection",                        187.661),
+  ("xsection",                        188.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31072,7 +30817,7 @@ samples_2016["/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("fsize_local",                     50605698229), # 50.61GB, avg file size 5.62GB
   ("fsize_db",                        299870117814), # 299.87GB, avg file size 4.11GB
   ("use_it",                          False),
-  ("xsection",                        187.661),
+  ("xsection",                        188.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31120,7 +30865,7 @@ samples_2016["/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("fsize_local",                     7109135579), # 7.11GB, avg file size 7.11GB
   ("fsize_db",                        39589451138), # 39.59GB, avg file size 3.30GB
   ("use_it",                          False),
-  ("xsection",                        56.7125),
+  ("xsection",                        56.76),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31168,7 +30913,7 @@ samples_2016["/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("fsize_local",                     48377435322), # 48.38GB, avg file size 6.91GB
   ("fsize_db",                        353330107045), # 353.33GB, avg file size 5.20GB
   ("use_it",                          False),
-  ("xsection",                        56.7125),
+  ("xsection",                        56.76),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31216,7 +30961,7 @@ samples_2016["/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("fsize_local",                     9229091845), # 9.23GB, avg file size 4.61GB
   ("fsize_db",                        49969495510), # 49.97GB, avg file size 5.55GB
   ("use_it",                          False),
-  ("xsection",                        8.14632),
+  ("xsection",                        8.1533),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31264,7 +31009,7 @@ samples_2016["/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("fsize_local",                     48761401646), # 48.76GB, avg file size 8.13GB
   ("fsize_db",                        405134119563), # 405.13GB, avg file size 5.33GB
   ("use_it",                          False),
-  ("xsection",                        8.14632),
+  ("xsection",                        8.1533),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31312,7 +31057,7 @@ samples_2016["/DYJetsToLL_M-50_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("fsize_local",                     76176986039), # 76.18GB, avg file size 8.46GB
   ("fsize_db",                        422117016594), # 422.12GB, avg file size 4.10GB
   ("use_it",                          False),
-  ("xsection",                        2.04208),
+  ("xsection",                        2.0529),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31360,7 +31105,7 @@ samples_2016["/DYJetsToLL_M-50_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythi
   ("fsize_local",                     25582541105), # 25.58GB, avg file size 8.53GB
   ("fsize_db",                        142376357906), # 142.38GB, avg file size 5.08GB
   ("use_it",                          False),
-  ("xsection",                        0.941759),
+  ("xsection",                        0.94619),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31408,7 +31153,7 @@ samples_2016["/DYJetsToLL_M-50_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pyth
   ("fsize_local",                     5928410931), # 5.93GB, avg file size 5.93GB
   ("fsize_db",                        34502618926), # 34.50GB, avg file size 4.31GB
   ("use_it",                          False),
-  ("xsection",                        0.225008),
+  ("xsection",                        0.22562),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31456,7 +31201,7 @@ samples_2016["/DYJetsToLL_M-50_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythi
   ("fsize_local",                     4064298000), # 4.06GB, avg file size 4.06GB
   ("fsize_db",                        24982088640), # 24.98GB, avg file size 6.25GB
   ("use_it",                          False),
-  ("xsection",                        0.00407668),
+  ("xsection",                        0.0041047),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31504,7 +31249,7 @@ samples_2016["/DYBBJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISum
   ("fsize_local",                     14758858676), # 14.76GB, avg file size 4.92GB
   ("fsize_db",                        95636695840), # 95.64GB, avg file size 5.31GB
   ("use_it",                          False),
-  ("xsection",                        14.5973),
+  ("xsection",                        14.6),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31744,7 +31489,7 @@ samples_2016["/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16M
   ("fsize_local",                     164100855083), # 164.10GB, avg file size 3.57GB
   ("fsize_db",                        1272250366716), # 1.27TB, avg file size 3.83GB
   ("use_it",                          False),
-  ("xsection",                        9446.75),
+  ("xsection",                        9442.49),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31792,7 +31537,7 @@ samples_2016["/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16M
   ("fsize_local",                     132740824263), # 132.74GB, avg file size 4.28GB
   ("fsize_db",                        915792344848), # 915.79GB, avg file size 3.88GB
   ("use_it",                          False),
-  ("xsection",                        3254.61),
+  ("xsection",                        3252.49),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31840,7 +31585,7 @@ samples_2016["/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16M
   ("fsize_local",                     170680090095), # 170.68GB, avg file size 3.97GB
   ("fsize_db",                        922766000017), # 922.77GB, avg file size 4.10GB
   ("use_it",                          False),
-  ("xsection",                        3254.61),
+  ("xsection",                        3252.49),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31888,7 +31633,7 @@ samples_2016["/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16M
   ("fsize_local",                     103215685421), # 103.22GB, avg file size 5.16GB
   ("fsize_db",                        651868160870), # 651.87GB, avg file size 4.26GB
   ("use_it",                          False),
-  ("xsection",                        1155.56),
+  ("xsection",                        1153.42),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31936,7 +31681,7 @@ samples_2016["/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16M
   ("fsize_local",                     263593465698), # 263.59GB, avg file size 4.71GB
   ("fsize_db",                        1299953115847), # 1.30TB, avg file size 4.47GB
   ("use_it",                          False),
-  ("xsection",                        1155.56),
+  ("xsection",                        1153.42),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -31984,7 +31729,7 @@ samples_2016["/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16M
   ("fsize_local",                     49818772269), # 49.82GB, avg file size 6.23GB
   ("fsize_db",                        340719143876), # 340.72GB, avg file size 4.21GB
   ("use_it",                          False),
-  ("xsection",                        634.665),
+  ("xsection",                        634.05),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32032,7 +31777,7 @@ samples_2016["/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16M
   ("fsize_local",                     122476562010), # 122.48GB, avg file size 6.45GB
   ("fsize_db",                        700950462106), # 700.95GB, avg file size 4.90GB
   ("use_it",                          False),
-  ("xsection",                        634.665),
+  ("xsection",                        634.05),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32080,7 +31825,7 @@ samples_2016["/WJetsToLNu_HT-70To100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunI
   ("fsize_local",                     45969791482), # 45.97GB, avg file size 4.18GB
   ("fsize_db",                        309269762266), # 309.27GB, avg file size 3.82GB
   ("use_it",                          False),
-  ("xsection",                        1506.19),
+  ("xsection",                        1504.92),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32128,7 +31873,7 @@ samples_2016["/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("fsize_local",                     52529317440), # 52.53GB, avg file size 5.25GB
   ("fsize_db",                        328826822871), # 328.83GB, avg file size 4.57GB
   ("use_it",                          False),
-  ("xsection",                        1625.42),
+  ("xsection",                        1625.08),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32176,7 +31921,7 @@ samples_2016["/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("fsize_local",                     155279048339), # 155.28GB, avg file size 5.18GB
   ("fsize_db",                        976194222117), # 976.19GB, avg file size 4.32GB
   ("use_it",                          False),
-  ("xsection",                        1625.42),
+  ("xsection",                        1625.08),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32224,7 +31969,7 @@ samples_2016["/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("fsize_local",                     256938818528), # 256.94GB, avg file size 4.76GB
   ("fsize_db",                        1278081592124), # 1.28TB, avg file size 4.52GB
   ("use_it",                          False),
-  ("xsection",                        1625.42),
+  ("xsection",                        1625.08),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32272,7 +32017,7 @@ samples_2016["/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("fsize_local",                     32309157089), # 32.31GB, avg file size 6.46GB
   ("fsize_db",                        188183889815), # 188.18GB, avg file size 4.48GB
   ("use_it",                          False),
-  ("xsection",                        477.71),
+  ("xsection",                        477.96),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32320,7 +32065,7 @@ samples_2016["/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("fsize_local",                     91741141662), # 91.74GB, avg file size 6.12GB
   ("fsize_db",                        533651324579), # 533.65GB, avg file size 4.81GB
   ("use_it",                          False),
-  ("xsection",                        477.71),
+  ("xsection",                        477.96),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32368,7 +32113,7 @@ samples_2016["/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("fsize_local",                     160505534556), # 160.51GB, avg file size 5.73GB
   ("fsize_db",                        749970418257), # 749.97GB, avg file size 4.84GB
   ("use_it",                          False),
-  ("xsection",                        477.71),
+  ("xsection",                        477.96),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32416,7 +32161,7 @@ samples_2016["/WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("fsize_local",                     15142411464), # 15.14GB, avg file size 7.57GB
   ("fsize_db",                        85028221355), # 85.03GB, avg file size 4.48GB
   ("use_it",                          False),
-  ("xsection",                        67.4866),
+  ("xsection",                        67.441),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32464,7 +32209,7 @@ samples_2016["/WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("fsize_local",                     44653087501), # 44.65GB, avg file size 7.44GB
   ("fsize_db",                        248677347048), # 248.68GB, avg file size 4.88GB
   ("use_it",                          False),
-  ("xsection",                        67.4866),
+  ("xsection",                        67.441),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32512,7 +32257,7 @@ samples_2016["/WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("fsize_local",                     28013204061), # 28.01GB, avg file size 7.00GB
   ("fsize_db",                        176087256349), # 176.09GB, avg file size 5.34GB
   ("use_it",                          False),
-  ("xsection",                        15.0931),
+  ("xsection",                        15.096),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32560,7 +32305,7 @@ samples_2016["/WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("fsize_local",                     123516575488), # 123.52GB, avg file size 8.23GB
   ("fsize_db",                        694236154129), # 694.24GB, avg file size 5.60GB
   ("use_it",                          False),
-  ("xsection",                        15.0931),
+  ("xsection",                        15.096),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32608,7 +32353,7 @@ samples_2016["/WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Ru
   ("fsize_local",                     13396960380), # 13.40GB, avg file size 6.70GB
   ("fsize_db",                        76241472857), # 76.24GB, avg file size 4.77GB
   ("use_it",                          False),
-  ("xsection",                        6.31517),
+  ("xsection",                        6.3626),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32656,7 +32401,7 @@ samples_2016["/WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Ru
   ("fsize_local",                     47591837550), # 47.59GB, avg file size 7.93GB
   ("fsize_db",                        310009927010), # 310.01GB, avg file size 5.17GB
   ("use_it",                          False),
-  ("xsection",                        6.31517),
+  ("xsection",                        6.3626),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32704,7 +32449,7 @@ samples_2016["/WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/R
   ("fsize_local",                     2214638037), # 2.21GB, avg file size 2.21GB
   ("fsize_db",                        13089950528), # 13.09GB, avg file size 4.36GB
   ("use_it",                          False),
-  ("xsection",                        1.26299),
+  ("xsection",                        1.2658),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32752,7 +32497,7 @@ samples_2016["/WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/R
   ("fsize_local",                     55493502646), # 55.49GB, avg file size 7.93GB
   ("fsize_db",                        356245076053), # 356.25GB, avg file size 5.24GB
   ("use_it",                          False),
-  ("xsection",                        1.26299),
+  ("xsection",                        1.2658),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32800,7 +32545,7 @@ samples_2016["/WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Ru
   ("fsize_local",                     2357475667), # 2.36GB, avg file size 2.36GB
   ("fsize_db",                        15307944970), # 15.31GB, avg file size 3.06GB
   ("use_it",                          False),
-  ("xsection",                        0.00944087),
+  ("xsection",                        0.009405),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32848,7 +32593,7 @@ samples_2016["/WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Ru
   ("fsize_local",                     15671856685), # 15.67GB, avg file size 7.84GB
   ("fsize_db",                        140626699613), # 140.63GB, avg file size 5.63GB
   ("use_it",                          False),
-  ("xsection",                        0.00944087),
+  ("xsection",                        0.009405),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32944,7 +32689,7 @@ samples_2016["/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcR
   ("fsize_local",                     10557811780), # 10.56GB, avg file size 5.28GB
   ("fsize_db",                        65976939838), # 65.98GB, avg file size 3.67GB
   ("use_it",                          False),
-  ("xsection",                        52.162),
+  ("xsection",                        50.45),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32992,7 +32737,7 @@ samples_2016["/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcR
   ("fsize_local",                     35159915912), # 35.16GB, avg file size 5.02GB
   ("fsize_db",                        223926394138), # 223.93GB, avg file size 2.83GB
   ("use_it",                          False),
-  ("xsection",                        52.162),
+  ("xsection",                        50.45),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33040,7 +32785,7 @@ samples_2016["/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniA
   ("fsize_local",                     29483088159), # 29.48GB, avg file size 4.91GB
   ("fsize_db",                        172027673160), # 172.03GB, avg file size 4.53GB
   ("use_it",                          False),
-  ("xsection",                        52.162),
+  ("xsection",                        50.45),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33088,7 +32833,7 @@ samples_2016["/WWTo4Q_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2
   ("fsize_local",                     11500519924), # 11.50GB, avg file size 5.75GB
   ("fsize_db",                        67489035622), # 67.49GB, avg file size 4.82GB
   ("use_it",                          False),
-  ("xsection",                        53.923),
+  ("xsection",                        52.15),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33232,7 +32977,7 @@ samples_2016["/WZTo3LNu_0Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/R
   ("fsize_local",                     1629372860), # 1.63GB, avg file size 1.63GB
   ("fsize_db",                        14858474111), # 14.86GB, avg file size 2.97GB
   ("use_it",                          False),
-  ("xsection",                        2.73916),
+  ("xsection",                        2.3986),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33280,7 +33025,7 @@ samples_2016["/WZTo3LNu_0Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunI
   ("fsize_local",                     2421642628), # 2.42GB, avg file size 2.42GB
   ("fsize_db",                        16240886055), # 16.24GB, avg file size 3.25GB
   ("use_it",                          False),
-  ("xsection",                        0.694696),
+  ("xsection",                        0.6067),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33328,7 +33073,7 @@ samples_2016["/WZTo3LNu_1Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/R
   ("fsize_local",                     2060077187), # 2.06GB, avg file size 2.06GB
   ("fsize_db",                        15275534008), # 15.28GB, avg file size 3.06GB
   ("use_it",                          False),
-  ("xsection",                        0.528953),
+  ("xsection",                        0.46107),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33376,7 +33121,7 @@ samples_2016["/WZTo3LNu_1Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunI
   ("fsize_local",                     2784536457), # 2.78GB, avg file size 2.78GB
   ("fsize_db",                        17028271215), # 17.03GB, avg file size 4.26GB
   ("use_it",                          False),
-  ("xsection",                        0.369211),
+  ("xsection",                        0.3226),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33424,7 +33169,7 @@ samples_2016["/WZTo3LNu_2Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/R
   ("fsize_local",                     13781090150), # 13.78GB, avg file size 4.59GB
   ("fsize_db",                        89887588430), # 89.89GB, avg file size 4.73GB
   ("use_it",                          False),
-  ("xsection",                        0.178643),
+  ("xsection",                        0.15607),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33472,7 +33217,7 @@ samples_2016["/WZTo3LNu_2Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunI
   ("fsize_local",                     16085666913), # 16.09GB, avg file size 5.36GB
   ("fsize_db",                        95514909835), # 95.51GB, avg file size 5.62GB
   ("use_it",                          False),
-  ("xsection",                        0.072328),
+  ("xsection",                        0.06314),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33520,7 +33265,7 @@ samples_2016["/WZTo3LNu_3Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/R
   ("fsize_local",                     17983748759), # 17.98GB, avg file size 5.99GB
   ("fsize_db",                        102029703019), # 102.03GB, avg file size 4.08GB
   ("use_it",                          False),
-  ("xsection",                        0.0775276),
+  ("xsection",                        0.06769),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33568,7 +33313,7 @@ samples_2016["/WZTo3LNu_3Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunI
   ("fsize_local",                     27496174455), # 27.50GB, avg file size 6.87GB
   ("fsize_db",                        113650549747), # 113.65GB, avg file size 6.31GB
   ("use_it",                          False),
-  ("xsection",                        0.103658),
+  ("xsection",                        0.090512),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33616,7 +33361,7 @@ samples_2016["/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv
   ("fsize_local",                     202277249779), # 202.28GB, avg file size 5.47GB
   ("fsize_db",                        919865006859), # 919.87GB, avg file size 4.67GB
   ("use_it",                          False),
-  ("xsection",                        6.37968),
+  ("xsection",                        5.6),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33664,7 +33409,7 @@ samples_2016["/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniA
   ("fsize_local",                     144872246950), # 144.87GB, avg file size 5.79GB
   ("fsize_db",                        833536776680), # 833.54GB, avg file size 4.43GB
   ("use_it",                          False),
-  ("xsection",                        11.66),
+  ("xsection",                        10.71),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33808,7 +33553,7 @@ samples_2016["/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17
   ("fsize_local",                     42080965096), # 42.08GB, avg file size 4.68GB
   ("fsize_db",                        286633172052), # 286.63GB, avg file size 3.87GB
   ("use_it",                          False),
-  ("xsection",                        0.6008),
+  ("xsection",                        0.564),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33856,7 +33601,7 @@ samples_2016["/ZZTo2L2Nu_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMori
   ("fsize_local",                     228878367266), # 228.88GB, avg file size 4.67GB
   ("fsize_db",                        1556906583517), # 1.56TB, avg file size 4.30GB
   ("use_it",                          False),
-  ("xsection",                        0.6008),
+  ("xsection",                        0.564),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33904,7 +33649,7 @@ samples_2016["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv
   ("fsize_local",                     93015326862), # 93.02GB, avg file size 5.81GB
   ("fsize_db",                        536411748052), # 536.41GB, avg file size 4.19GB
   ("use_it",                          False),
-  ("xsection",                        3.7),
+  ("xsection",                        5.52),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33996,7 +33741,7 @@ samples_2016["/QCD_Pt_20to30_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniA
   ("fsize_local",                     31779309938), # 31.78GB, avg file size 2.65GB
   ("fsize_db",                        312373360334), # 312.37GB, avg file size 3.81GB
   ("use_it",                          False),
-  ("xsection",                        305561.0),
+  ("xsection",                        305400.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34088,7 +33833,7 @@ samples_2016["/QCD_Pt_80to170_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16Mini
   ("fsize_local",                     79779418742), # 79.78GB, avg file size 5.32GB
   ("fsize_db",                        533420873496), # 533.42GB, avg file size 4.64GB
   ("use_it",                          False),
-  ("xsection",                        33813.5),
+  ("xsection",                        33820.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34124,17 +33869,17 @@ samples_2016["/QCD_Pt_170to250_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16Min
   ("nof_files",                       10),
   ("nof_db_files",                    87),
   ("nof_events",                      {
-    'Count'                                                      : [      9862070, ],
-    'CountWeighted'                                              : [      9863000,      9860656,      9861720, ],
-    'CountWeightedL1PrefireNom'                                  : [      9466634,      9465246,      9466134, ],
-    'CountWeightedL1Prefire'                                     : [      9466634,      9373965,      9559527, ],
+    'Count'                                                      : [      8862285, ],
+    'CountWeighted'                                              : [      8862870,      8860935,      8861569, ],
+    'CountWeightedL1PrefireNom'                                  : [      8506745,      8505666,      8506142, ],
+    'CountWeightedL1Prefire'                                     : [      8506745,      8423484,      8590208, ],
   }),
-  ("nof_tree_events",                 9862070),
+  ("nof_tree_events",                 8862285),
   ("nof_db_events",                   9862070),
-  ("fsize_local",                     63888791909), # 63.89GB, avg file size 6.39GB
+  ("fsize_local",                     57407719917), # 57.41GB, avg file size 5.74GB
   ("fsize_db",                        399943710216), # 399.94GB, avg file size 4.60GB
   ("use_it",                          False),
-  ("xsection",                        2129.17),
+  ("xsection",                        2130.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34145,7 +33890,7 @@ samples_2016["/QCD_Pt_170to250_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16Min
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Sep17_mc_woPresel_nom_all/ntuples/QCD_Pt170to250_bcToE"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [2]),
       ]),
     ]
   ),
@@ -34180,7 +33925,7 @@ samples_2016["/QCD_Pt_250toInf_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16Min
   ("fsize_local",                     70145548992), # 70.15GB, avg file size 7.01GB
   ("fsize_db",                        435506733560), # 435.51GB, avg file size 4.49GB
   ("use_it",                          False),
-  ("xsection",                        562.899),
+  ("xsection",                        563.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34226,7 +33971,7 @@ samples_2016["/QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16
   ("fsize_local",                     28857275262), # 28.86GB, avg file size 2.89GB
   ("fsize_db",                        252735055673), # 252.74GB, avg file size 3.42GB
   ("use_it",                          False),
-  ("xsection",                        4911560.0),
+  ("xsection",                        4912000.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34272,7 +34017,7 @@ samples_2016["/QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16
   ("fsize_local",                     17566445694), # 17.57GB, avg file size 3.51GB
   ("fsize_db",                        134869337617), # 134.87GB, avg file size 3.97GB
   ("use_it",                          False),
-  ("xsection",                        6417530.0),
+  ("xsection",                        6420000.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34318,7 +34063,7 @@ samples_2016["/QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16
   ("fsize_local",                     25108407231), # 25.11GB, avg file size 3.59GB
   ("fsize_db",                        192959364085), # 192.96GB, avg file size 3.86GB
   ("use_it",                          False),
-  ("xsection",                        6417530.0),
+  ("xsection",                        6420000.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34364,7 +34109,7 @@ samples_2016["/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16
   ("fsize_local",                     98161716519), # 98.16GB, avg file size 4.27GB
   ("fsize_db",                        687785839317), # 687.79GB, avg file size 4.02GB
   ("use_it",                          False),
-  ("xsection",                        1987020.0),
+  ("xsection",                        1988000.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34410,7 +34155,7 @@ samples_2016["/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16
   ("fsize_local",                     101252442319), # 101.25GB, avg file size 4.22GB
   ("fsize_db",                        713692515456), # 713.69GB, avg file size 4.17GB
   ("use_it",                          False),
-  ("xsection",                        1987020.0),
+  ("xsection",                        1988000.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34686,7 +34431,7 @@ samples_2016["/QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer
   ("fsize_local",                     53194234467), # 53.19GB, avg file size 6.65GB
   ("fsize_db",                        318661638327), # 318.66GB, avg file size 5.06GB
   ("use_it",                          False),
-  ("xsection",                        1099.5),
+  ("xsection",                        1100.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34732,7 +34477,7 @@ samples_2016["/QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISumme
   ("fsize_local",                     9285995040), # 9.29GB, avg file size 1.86GB
   ("fsize_db",                        114361119790), # 114.36GB, avg file size 3.69GB
   ("use_it",                          False),
-  ("xsection",                        2809320.0),
+  ("xsection",                        2811000.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34778,7 +34523,7 @@ samples_2016["/QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISumme
   ("fsize_local",                     109170574229), # 109.17GB, avg file size 2.43GB
   ("fsize_db",                        904037890950), # 904.04GB, avg file size 3.88GB
   ("use_it",                          False),
-  ("xsection",                        2530520.0),
+  ("xsection",                        2531000.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34916,7 +34661,7 @@ samples_2016["/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISumm
   ("fsize_local",                     73244196289), # 73.24GB, avg file size 5.23GB
   ("fsize_db",                        497967273393), # 497.97GB, avg file size 4.83GB
   ("use_it",                          False),
-  ("xsection",                        88604.2),
+  ("xsection",                        88620.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -34962,7 +34707,7 @@ samples_2016["/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISumm
   ("fsize_local",                     52079927226), # 52.08GB, avg file size 5.21GB
   ("fsize_db",                        351978029896), # 351.98GB, avg file size 4.40GB
   ("use_it",                          False),
-  ("xsection",                        88604.2),
+  ("xsection",                        88620.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35008,7 +34753,7 @@ samples_2016["/QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     47047155793), # 47.05GB, avg file size 5.88GB
   ("fsize_db",                        307470051834), # 307.47GB, avg file size 5.21GB
   ("use_it",                          False),
-  ("xsection",                        21195.2),
+  ("xsection",                        21190.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35054,7 +34799,7 @@ samples_2016["/QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     71042403133), # 71.04GB, avg file size 5.92GB
   ("fsize_db",                        464564032830), # 464.56GB, avg file size 4.55GB
   ("use_it",                          False),
-  ("xsection",                        21195.2),
+  ("xsection",                        21190.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35100,7 +34845,7 @@ samples_2016["/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     44473184144), # 44.47GB, avg file size 6.35GB
   ("fsize_db",                        337373205537), # 337.37GB, avg file size 5.44GB
   ("use_it",                          False),
-  ("xsection",                        7022.81),
+  ("xsection",                        7020.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35146,7 +34891,7 @@ samples_2016["/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     60897100609), # 60.90GB, avg file size 6.09GB
   ("fsize_db",                        399116745624), # 399.12GB, avg file size 5.62GB
   ("use_it",                          False),
-  ("xsection",                        7022.81),
+  ("xsection",                        7020.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35192,7 +34937,7 @@ samples_2016["/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     132398043297), # 132.40GB, avg file size 6.62GB
   ("fsize_db",                        840579326313), # 840.58GB, avg file size 5.35GB
   ("use_it",                          False),
-  ("xsection",                        7022.81),
+  ("xsection",                        7020.0),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35238,7 +34983,7 @@ samples_2016["/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     59119430080), # 59.12GB, avg file size 7.39GB
   ("fsize_db",                        375174129111), # 375.17GB, avg file size 5.28GB
   ("use_it",                          False),
-  ("xsection",                        620.297),
+  ("xsection",                        620.2),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35284,7 +35029,7 @@ samples_2016["/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     122494623377), # 122.49GB, avg file size 7.21GB
   ("fsize_db",                        777723059467), # 777.72GB, avg file size 6.17GB
   ("use_it",                          False),
-  ("xsection",                        620.297),
+  ("xsection",                        620.2),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35330,7 +35075,7 @@ samples_2016["/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     234890309512), # 234.89GB, avg file size 6.71GB
   ("fsize_db",                        1162027704606), # 1.16TB, avg file size 6.32GB
   ("use_it",                          False),
-  ("xsection",                        620.297),
+  ("xsection",                        620.2),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35376,7 +35121,7 @@ samples_2016["/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     31307754964), # 31.31GB, avg file size 7.83GB
   ("fsize_db",                        201761244068), # 201.76GB, avg file size 4.92GB
   ("use_it",                          False),
-  ("xsection",                        59.0886),
+  ("xsection",                        59.06),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35422,7 +35167,7 @@ samples_2016["/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     44575153288), # 44.58GB, avg file size 7.43GB
   ("fsize_db",                        287008158384), # 287.01GB, avg file size 6.67GB
   ("use_it",                          False),
-  ("xsection",                        59.0886),
+  ("xsection",                        59.06),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35468,7 +35213,7 @@ samples_2016["/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     77582418390), # 77.58GB, avg file size 7.76GB
   ("fsize_db",                        498631831955), # 498.63GB, avg file size 6.56GB
   ("use_it",                          False),
-  ("xsection",                        59.0886),
+  ("xsection",                        59.06),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35514,7 +35259,7 @@ samples_2016["/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     32517756821), # 32.52GB, avg file size 6.50GB
   ("fsize_db",                        211608983257), # 211.61GB, avg file size 6.41GB
   ("use_it",                          False),
-  ("xsection",                        18.2102),
+  ("xsection",                        18.2),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35560,7 +35305,7 @@ samples_2016["/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     48431542089), # 48.43GB, avg file size 8.07GB
   ("fsize_db",                        315127671581), # 315.13GB, avg file size 6.30GB
   ("use_it",                          False),
-  ("xsection",                        18.2102),
+  ("xsection",                        18.2),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35606,7 +35351,7 @@ samples_2016["/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISum
   ("fsize_local",                     80370100169), # 80.37GB, avg file size 8.04GB
   ("fsize_db",                        525881357149), # 525.88GB, avg file size 4.96GB
   ("use_it",                          False),
-  ("xsection",                        18.2102),
+  ("xsection",                        18.2),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35652,7 +35397,7 @@ samples_2016["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISu
   ("fsize_local",                     32125980097), # 32.13GB, avg file size 8.03GB
   ("fsize_db",                        218078166039), # 218.08GB, avg file size 5.32GB
   ("use_it",                          False),
-  ("xsection",                        3.27549),
+  ("xsection",                        3.276),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35698,7 +35443,7 @@ samples_2016["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISu
   ("fsize_local",                     49983696033), # 49.98GB, avg file size 7.14GB
   ("fsize_db",                        330161425748), # 330.16GB, avg file size 7.02GB
   ("use_it",                          False),
-  ("xsection",                        3.27549),
+  ("xsection",                        3.276),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),
@@ -35744,7 +35489,7 @@ samples_2016["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISu
   ("fsize_local",                     82863540197), # 82.86GB, avg file size 8.29GB
   ("fsize_db",                        549916645891), # 549.92GB, avg file size 6.32GB
   ("use_it",                          False),
-  ("xsection",                        3.27549),
+  ("xsection",                        3.276),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         False),

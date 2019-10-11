@@ -9,6 +9,7 @@ MEMOutput_3l::MEMOutput_3l()
   , subleadLepton_phi_(0.)
   , thirdLepton_eta_(0.)
   , thirdLepton_phi_(0.)
+  , errorFlag_(0)
   , weight_ttH_(-1.)
   , kinfitscore_ttH_(-1.)
   , weight_tt_(-1.)
@@ -17,7 +18,6 @@ MEMOutput_3l::MEMOutput_3l()
   , cpuTime_(-1.)
   , realTime_(-1.)
   , isValid_(0)
-  , errorFlag_(0)
 {}
 
 void

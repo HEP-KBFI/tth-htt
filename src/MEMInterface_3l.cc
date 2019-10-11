@@ -68,7 +68,7 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
   if(selJets.size() < 2)
   {
     std::cerr << "Warning in " << func_str << ": Failed to find two jets\n";
-    result.errorFlag_ = 1;
+    result.errorFlag_ = ADDMEM_3L_ERROR_JETMULTIPLICITY;
     return result;
   }
 
@@ -103,7 +103,7 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
     // CV: according to Nicholas Chanon, the MEM code for the 3l channel fails (with a segmentation violation !!)
     //     in case there is not at least one b-jet in the event 
     std::cerr << "Warning in " << func_str << ": Failed to find at least one b-jet\n";
-    result.errorFlag_ = 1;
+    result.errorFlag_ = ADDMEM_3L_ERROR_BJETMULTIPLICITY;
     return result;
   }
 
@@ -159,7 +159,7 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
   }
   else
   {
-    result.errorFlag_ = 1;
+    result.errorFlag_ = ADDMEM_3L_ERROR;
     result.LR_        = -1.;
   }
 

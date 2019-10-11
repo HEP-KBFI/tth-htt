@@ -49,55 +49,55 @@ cb = ch.CombineHarvester()
 sig_procs = ['data_fakes']
 
 bkg_procs = {
-    'e_tight_incl': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_tight_absEtaLt1_5_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_tight_absEtaLt1_5_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_tight_absEtaLt1_5_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_tight_absEtaLt1_5_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_tight_absEtaLt1_5_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_tight_absEta1_5to9_9_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_tight_absEta1_5to9_9_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_tight_absEta1_5to9_9_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_tight_absEta1_5to9_9_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_tight_absEta1_5to9_9_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_incl': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_absEtaLt1_5_Pt10_0to15_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_absEtaLt1_5_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_absEtaLt1_5_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_absEtaLt1_5_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_absEtaLt1_5_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_absEtaLt1_5_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_absEta1_5to9_9_Pt10_0to15_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_absEta1_5to9_9_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_absEta1_5to9_9_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_absEta1_5to9_9_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_absEta1_5to9_9_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_tight_absEta1_5to9_9_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
+    'e_tight_incl': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_tight_absEtaLt1_5_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_tight_absEtaLt1_5_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_tight_absEtaLt1_5_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_tight_absEtaLt1_5_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_tight_absEtaLt1_5_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_tight_absEta1_5to9_9_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_tight_absEta1_5to9_9_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_tight_absEta1_5to9_9_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_tight_absEta1_5to9_9_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_tight_absEta1_5to9_9_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_incl': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_absEtaLt1_5_Pt10_0to15_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_absEtaLt1_5_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_absEtaLt1_5_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_absEtaLt1_5_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_absEtaLt1_5_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_absEtaLt1_5_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_absEta1_5to9_9_Pt10_0to15_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_absEta1_5to9_9_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_absEta1_5to9_9_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_absEta1_5to9_9_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_absEta1_5to9_9_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_tight_absEta1_5to9_9_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
 
-    'e_fakeable_incl': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_fakeable_absEtaLt1_5_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_fakeable_absEtaLt1_5_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_fakeable_absEtaLt1_5_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_fakeable_absEtaLt1_5_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_fakeable_absEtaLt1_5_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_fakeable_absEta1_5to9_9_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_fakeable_absEta1_5to9_9_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_fakeable_absEta1_5to9_9_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_fakeable_absEta1_5to9_9_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'e_fakeable_absEta1_5to9_9_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_incl': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_absEtaLt1_5_Pt10_0to15_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_absEtaLt1_5_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_absEtaLt1_5_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_absEtaLt1_5_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_absEtaLt1_5_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_absEtaLt1_5_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_absEta1_5to9_9_Pt10_0to15_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_absEta1_5to9_9_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_absEta1_5to9_9_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_absEta1_5to9_9_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_absEta1_5to9_9_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal'],
-    'mu_fakeable_absEta1_5to9_9_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal']
+    'e_fakeable_incl': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_fakeable_absEtaLt1_5_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_fakeable_absEtaLt1_5_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_fakeable_absEtaLt1_5_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_fakeable_absEtaLt1_5_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_fakeable_absEtaLt1_5_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_fakeable_absEta1_5to9_9_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_fakeable_absEta1_5to9_9_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_fakeable_absEta1_5to9_9_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_fakeable_absEta1_5to9_9_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'e_fakeable_absEta1_5to9_9_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_incl': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_absEtaLt1_5_Pt10_0to15_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_absEtaLt1_5_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_absEtaLt1_5_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_absEtaLt1_5_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_absEtaLt1_5_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_absEtaLt1_5_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_absEta1_5to9_9_Pt10_0to15_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_absEta1_5to9_9_Pt15_0to20_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_absEta1_5to9_9_Pt20_0to30_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_absEta1_5to9_9_Pt30_0to45_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_absEta1_5to9_9_Pt45_0to65_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH'],
+    'mu_fakeable_absEta1_5to9_9_Pt65_0to100000_0': ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH']
 }
 
 ### BELOW FIRST ENTRY NUMBER (0) IS $BINID AND SECOND 'STRING LABEL' IS $BIN
@@ -347,8 +347,8 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
         (channels, ['TTZ'], 1.2))
 
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
-    cb, 'signal_unc', 'lnN', ch.SystMap('channel', 'process')
-        (channels, ['signal'], 2.0))
+    cb, 'ttH_unc', 'lnN', ch.SystMap('channel', 'process')
+        (channels, ['ttH'], 2.0))
 
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
     cb, 'Rares_unc', 'lnN', ch.SystMap('channel', 'process')
@@ -370,15 +370,15 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
 
 cb.cp().AddSyst(  ## CORREL ACROSS $CHANNEL, CORREL ACROSS $BIN 
         cb, 'CMS_ttHl_JES', 'shape', ch.SystMap('channel', 'process')
-            (channels, ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal','data_fakes'], 1.00)) 
+            (channels, ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH','data_fakes'], 1.00))
 
 cb.cp().AddSyst(  ## CORREL ACROSS $CHANNEL, CORREL ACROSS $BIN 
         cb, 'CMS_ttHl_JER', 'shape', ch.SystMap('channel', 'process')
-            (channels, ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal','data_fakes'], 1.00)) 
+            (channels, ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH','data_fakes'], 1.00))
 
 cb.cp().AddSyst(  ## CORREL ACROSS $CHANNEL, CORREL ACROSS $BIN 
         cb, 'CMS_ttHl_UnclusteredEn', 'shape', ch.SystMap('channel', 'process')
-            (channels, ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal','data_fakes'], 1.00)) 
+            (channels, ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'ttH','data_fakes'], 1.00))
 
 
 

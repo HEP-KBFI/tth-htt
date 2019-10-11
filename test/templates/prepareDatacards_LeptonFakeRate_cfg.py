@@ -22,7 +22,7 @@ process.prepareDatacards = cms.PSet(
 
     sf_signal = cms.double(1.),
     signals = cms.vstring(
-        "signal",
+        "ttH",
     ),
 
     categories = cms.VPSet(),

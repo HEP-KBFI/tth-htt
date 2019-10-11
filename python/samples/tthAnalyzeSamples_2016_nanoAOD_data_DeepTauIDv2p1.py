@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-09-28 21:32:27 with the following command:
+# file generated at 2019-10-09 08:48:28 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2016_DeepTauIDv2p1.py -p python/samples/sampleLocations_2016_nanoAOD_data_DeepTauIDv2p1.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_nanoAOD_data_DeepTauIDv2p1.py -M
 
 samples_2016 = OD()

@@ -95,12 +95,14 @@ elif sideband == 'only':
 else:
   raise ValueError("Invalid choice for the sideband: %s" % sideband)
 
+MEMsample_base = "addMEM_2lss1tau_{}".format(hadTau_selection)
+
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 elif mode == "addMEM":
   if not use_preselected:
     raise ValueError("MEM branches can be read only from preselected Ntuples")
-  samples = load_samples(era, suffix = "addMEM_2lss1tau")
+  samples = load_samples(era, suffix = MEMsample_base)
   MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
@@ -112,7 +114,7 @@ elif mode == "forBDTtraining_beforeAddMEM":
 elif mode == "forBDTtraining_afterAddMEM":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
-  samples = load_samples(era, suffix = "BDT_addMEM_2lss1tau")
+  samples = load_samples(era, suffix = "{}_BDT".format(MEMsample_base))
   if args.tau_id_wp:
     tau_id = args.tau_id[:7]
   hadTau_selection_relaxed = tau_id + hadTauWP_map[tau_id]
@@ -120,7 +122,7 @@ elif mode == "forBDTtraining_afterAddMEM":
 elif mode == "sync_wMEM":
   if not use_preselected:
     raise ValueError("MEM branches can be read only from preselected Ntuples")
-  samples = load_samples(era, suffix = "addMEM_2lss1tau_sync" if use_nonnominal else "addMEM_2lss1tau_sync_nom")
+  samples = load_samples(era, suffix = "{}_sync{}".format(MEMsample_base, '' if use_nonnominal else "_nom"))
   MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
 elif mode == "sync":
   sample_suffix = "sync" if use_nonnominal else "sync_nom"

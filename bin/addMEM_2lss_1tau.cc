@@ -621,7 +621,6 @@ int main(int argc,
           MEMOutput_2lss_1tau memOutput_2lss_1tau;
           memOutput_2lss_1tau.errorFlag_ = ADDMEM_2LSS1TAU_ERROR_NOPERM;
           memOutputs_2lss_1tau[central_or_shift].push_back(memOutput_2lss_1tau);
-          memWriter[central_or_shift]->write(memOutputs_2lss_1tau[central_or_shift]);
         }
       }
     } // apply_whitelist
@@ -635,7 +634,6 @@ int main(int argc,
           ADDMEM_2LSS1TAU_ERROR_SKIPPED_NOPERM
         ;
         memOutputs_2lss_1tau[central_or_shift].push_back(memOutput_2lss_1tau);
-        memWriter[central_or_shift]->write(memOutputs_2lss_1tau[central_or_shift]);
       }
     }
 
@@ -653,6 +651,11 @@ int main(int argc,
                " selected = "     << selectedEntries << "\n"
                "cut-flow table\n" << cutFlowTable << "\n"
                "output Tree:\n";
+  if(isDEBUG)
+  {
+    outputTree->Print();
+  }
+
   std::vector<std::string> missing_whitelisted;
   if(apply_whitelist)
   {
@@ -669,11 +672,6 @@ int main(int argc,
     throw cmsException("addMEM_2lss_1tau", __LINE__)
       << "Never processed the following whitelisted events: " << boost::algorithm::join(missing_whitelisted, ", ")
     ;
-  }
-
-  if(isDEBUG)
-  {
-    outputTree->Print();
   }
 
   delete run_lumi_eventSelector;
