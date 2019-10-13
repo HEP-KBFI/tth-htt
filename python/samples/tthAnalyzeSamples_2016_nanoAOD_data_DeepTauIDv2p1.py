@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-10-09 08:48:28 with the following command:
+# file generated at 2019-10-14 00:56:51 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2016_DeepTauIDv2p1.py -p python/samples/sampleLocations_2016_nanoAOD_data_DeepTauIDv2p1.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_nanoAOD_data_DeepTauIDv2p1.py -M
 
 samples_2016 = OD()
@@ -3073,9 +3073,9 @@ samples_2016["/SingleElectron/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("nof_db_files",                    1188),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 151610700),
+  ("nof_tree_events",                 152098617),
   ("nof_db_events",                   153363109),
-  ("fsize_local",                     128716093870), # 128.72GB, avg file size 84.91MB
+  ("fsize_local",                     129130340743), # 129.13GB, avg file size 85.18MB
   ("fsize_db",                        4194700440526), # 4.19TB, avg file size 3.53GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -3087,7 +3087,7 @@ samples_2016["/SingleElectron/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Aug29/SingleElectron/2016v3_2019Aug29_SingleElectron__Run2016G-17Jul2018-v1/190829_134234"),
         ("selection", "*"),
-        ("blacklist", [569, 591, 961, 1209, 1262]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -6709,9 +6709,9 @@ samples_2016["/SingleMuon/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("nof_db_files",                    462),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 64950501),
+  ("nof_tree_events",                 65047318),
   ("nof_db_events",                   65489554),
-  ("fsize_local",                     49449215126), # 49.45GB, avg file size 76.43MB
+  ("fsize_local",                     49524710739), # 49.52GB, avg file size 76.55MB
   ("fsize_db",                        1528356133432), # 1.53TB, avg file size 3.31GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -6723,7 +6723,7 @@ samples_2016["/SingleMuon/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Aug29/SingleMuon/2016v3_2019Aug29_SingleMuon__Run2016F-17Jul2018-v1/190829_140826"),
         ("selection", "*"),
-        ("blacklist", [372]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -18356,9 +18356,9 @@ samples_2016["/MuonEG/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("nof_db_files",                    192),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 22902135),
+  ("nof_tree_events",                 23211183),
   ("nof_db_events",                   23482352),
-  ("fsize_local",                     23630971256), # 23.63GB, avg file size 102.30MB
+  ("fsize_local",                     23950292507), # 23.95GB, avg file size 103.68MB
   ("fsize_db",                        640329332178), # 640.33GB, avg file size 3.34GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -18370,7 +18370,7 @@ samples_2016["/MuonEG/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Aug29/MuonEG/2016v3_2019Aug29_MuonEG__Run2016D-17Jul2018-v1/190829_150054"),
         ("selection", "*"),
-        ("blacklist", [43, 54, 222]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -18934,9 +18934,9 @@ samples_2016["/MuonEG/Run2016E-17Jul2018-v2/MINIAOD"] = OD([
   ("nof_db_files",                    209),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 21240420),
+  ("nof_tree_events",                 21705301),
   ("nof_db_events",                   22519303),
-  ("fsize_local",                     22239814549), # 22.24GB, avg file size 104.41MB
+  ("fsize_local",                     22724742559), # 22.72GB, avg file size 106.69MB
   ("fsize_db",                        643811921361), # 643.81GB, avg file size 3.08GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -18948,7 +18948,7 @@ samples_2016["/MuonEG/Run2016E-17Jul2018-v2/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Aug29/MuonEG/2016v3_2019Aug29_MuonEG__Run2016E-17Jul2018-v2/190829_150403"),
         ("selection", "*"),
-        ("blacklist", [6, 13, 30, 74]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -23203,9 +23203,9 @@ samples_2016["/Tau/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
   ("nof_db_files",                    395),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 55645865),
+  ("nof_tree_events",                 55977425),
   ("nof_db_events",                   58348773),
-  ("fsize_local",                     59821704067), # 59.82GB, avg file size 108.37MB
+  ("fsize_local",                     60172712396), # 60.17GB, avg file size 109.01MB
   ("fsize_db",                        1503064310845), # 1.50TB, avg file size 3.81GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -23217,7 +23217,7 @@ samples_2016["/Tau/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Aug29/Tau/2016v3_2019Aug29_Tau__Run2016E-17Jul2018-v1/190829_162943"),
         ("selection", "*"),
-        ("blacklist", [288, 428, 452]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -25072,9 +25072,9 @@ samples_2016["/Tau/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("nof_db_files",                    602),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 73344748),
+  ("nof_tree_events",                 75409819),
   ("nof_db_events",                   76758754),
-  ("fsize_local",                     79239444050), # 79.24GB, avg file size 107.96MB
+  ("fsize_local",                     81468164452), # 81.47GB, avg file size 110.99MB
   ("fsize_db",                        2153991942771), # 2.15TB, avg file size 3.58GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -25086,7 +25086,7 @@ samples_2016["/Tau/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Aug29/Tau/2016v3_2019Aug29_Tau__Run2016H-17Jul2018-v1/190829_153912"),
         ("selection", "*"),
-        ("blacklist", [102, 117, 136, 192, 206, 247, 382, 435, 447, 478, 482, 495, 521, 522, 528, 567, 591, 647, 697, 708, 710]),
+        ("blacklist", []),
       ]),
     ]
   ),
