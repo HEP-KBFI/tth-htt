@@ -122,8 +122,10 @@ enum class FloatVariableType
 
 //--- MEM variables
   Integral_ttH,             ///< ttH weight
-  Integral_ttZ,             ///< ttZ (Ztautau) weight
-  Integral_ttZ_Zll,         ///< ttZ Z->ll weight
+  Integral_tHq,             ///< tHq weight (specific to 3l channel)  
+  Integral_ttW,             ///< ttW weight (specific to 3l channel)    
+  Integral_ttZ,             ///< ttZ weight (3l channel) / ttZ, Z->tautau weight (2lss_1tau channel)
+  Integral_ttZ_Zll,         ///< ttZ, Z->ll weight (specific to 2lss_1tau channel)
   Integral_ttbar,           ///< ttbar weight
   integration_type,
   MEM_LR,                   ///< MEM likelihood ratio (the final score)

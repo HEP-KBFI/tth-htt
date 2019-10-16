@@ -806,7 +806,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       "avg_dr_jet", "ptmiss",  "htmiss", "met_LD",
       "dr_leps",
       "lumiScale", "genWeight", "evtWeight",
-      "memOutput_isValid", "memOutput_errorFlag", "memOutput_ttH", "memOutput_tt", "memOutput_LR",
+      "memOutput_isValid", "memOutput_errorFlag", "memOutput_ttH", "memOutput_tHq", "memOutput_ttW", "memOutput_ttZ", "memOutput_tt", "memOutput_LR",
       "lep1_genLepPt", "lep2_genLepPt", "lep3_genLepPt",
       "lep1_fake_prob", "lep2_fake_prob", "lep3_fake_prob",
       "lep1_frWeight", "lep2_frWeight", "lep3_frWeight",
@@ -1671,6 +1671,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     const double memOutput_LR  = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.LR()         : -1.;
     const double memOutput_ttH = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttH() : -100.;
+    const double memOutput_tHq = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_tHq() : -100.;
+    const double memOutput_ttW = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttW() : -100.;
+    const double memOutput_ttZ = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttZ() : -100.;
     const double memOutput_tt  = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_tt()  : -100.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
@@ -2073,6 +2076,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 	  ("memOutput_isValid",   memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.isValid() : -1.)
 	  ("memOutput_errorFlag", memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.errorFlag() : -1.)
           ("memOutput_ttH",       memOutput_ttH)
+          ("memOutput_tHq",       memOutput_tHq)
+          ("memOutput_ttW",       memOutput_ttW)
+          ("memOutput_ttZ",       memOutput_ttZ)
           ("memOutput_tt",        memOutput_tt)
           ("memOutput_LR",        memOutput_LR)
           ("lumiScale",           evtWeightRecorder.get_lumiScale(central_or_shift_main))
@@ -2254,7 +2260,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       snm->read(mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"], FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_rest);
 
       snm->read(memOutput_ttH,                          FloatVariableType::Integral_ttH);
-      // Integral_ttZ not filled
+      snm->read(memOutput_tHq,                          FloatVariableType::Integral_tHq);
+      snm->read(memOutput_ttW,                          FloatVariableType::Integral_ttW);
+      snm->read(memOutput_ttZ,                          FloatVariableType::Integral_ttZ);
       // Integral_ttZ_Zll not filled
       snm->read(memOutput_tt,                           FloatVariableType::Integral_ttbar);
       // integration_type not filled

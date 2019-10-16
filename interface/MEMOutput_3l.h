@@ -29,6 +29,12 @@ public:
    */
   inline Float_t weight_ttH()       const { return weight_ttH_; }
   inline Float_t kinfitscore_ttH()  const { return kinfitscore_ttH_; }
+  inline Float_t weight_tHq()       const { return weight_tHq_; }
+  inline Float_t kinfitscore_tHq()  const { return kinfitscore_tHq_; }
+  inline Float_t weight_ttW()       const { return weight_ttW_; }
+  inline Float_t kinfitscore_ttW()  const { return kinfitscore_ttW_; }
+  inline Float_t weight_ttZ()       const { return weight_ttZ_; }
+  inline Float_t kinfitscore_ttZ()  const { return kinfitscore_ttZ_; }
   inline Float_t weight_tt()        const { return weight_tt_; }
   inline Float_t kinfitscore_tt()   const { return kinfitscore_tt_; }
   inline Float_t LR()               const { return LR_; }
@@ -58,6 +64,12 @@ public:
 protected:
   Float_t weight_ttH_; 
   Float_t kinfitscore_ttH_; 
+  Float_t weight_tHq_; 
+  Float_t kinfitscore_tHq_; 
+  Float_t weight_ttW_; 
+  Float_t kinfitscore_ttW_; 
+  Float_t weight_ttZ_; 
+  Float_t kinfitscore_ttZ_; 
   Float_t weight_tt_; 
   Float_t kinfitscore_tt_; 
   Float_t LR_;

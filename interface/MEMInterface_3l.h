@@ -43,8 +43,8 @@ private:
   int * index_hyp_;
   mutable HypIntegrator * hypIntegrator_;
   mutable Permutations * MEMpermutations_;
-  mutable Permutations * MEMpermutationsTTH_;
-  mutable Permutations * MEMpermutationsTTbar_;
+  mutable Permutations * MEMpermutations_ttH_;
+  mutable Permutations * MEMpermutations_tt_;
   TBenchmark * clock_;
 };
 

@@ -208,6 +208,8 @@ SyncNtupleManager::initializeBranches()
 
 //--- MEM variables
     floatMap[FloatVariableType::Integral_ttH],             "Integral_ttH",
+    floatMap[FloatVariableType::Integral_tHq],             "Integral_tHq",
+    floatMap[FloatVariableType::Integral_ttW],             "Integral_ttW",
     floatMap[FloatVariableType::Integral_ttZ],             "Integral_ttZ",
     floatMap[FloatVariableType::Integral_ttZ_Zll],         "Integral_ttZ_Zll",
     floatMap[FloatVariableType::Integral_ttbar],           "Integral_ttbar",
