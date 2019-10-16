@@ -119,7 +119,8 @@ protected:
         const std::string tree_branchName = tree_branch->GetName();
         if(std::find(inputBranchNames_.cbegin(), inputBranchNames_.cend(), tree_branchName) != inputBranchNames_.cend())
         {
-          throw cmsException(this, __func__, __LINE__) << "Found duplicate branch names in input TTree: " << tree_branchName;
+          std::cout << "Found duplicate branch names in input TTree: " << tree_branchName << '\n';
+          continue;
         }
         inputBranchNames_.push_back(tree_branchName);
       }
