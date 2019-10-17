@@ -18,6 +18,12 @@ MEMOutputWriter_3l::MEMOutputWriter_3l(const std::string & branchName_num,
   , thirdLepton_phi_(nullptr)
   , weight_ttH_(nullptr)
   , kinfitscore_ttH_(nullptr)
+  , weight_tHq_(nullptr)
+  , kinfitscore_tHq_(nullptr)
+  , weight_ttW_(nullptr)
+  , kinfitscore_ttW_(nullptr)
+  , weight_ttZ_(nullptr)
+  , kinfitscore_ttZ_(nullptr)
   , weight_tt_(nullptr)
   , kinfitscore_tt_(nullptr)
   , LR_(nullptr)
@@ -42,6 +48,12 @@ MEMOutputWriter_3l::~MEMOutputWriter_3l()
   delete[] thirdLepton_phi_;
   delete[] weight_ttH_;
   delete[] kinfitscore_ttH_;
+  delete[] weight_tHq_;
+  delete[] kinfitscore_tHq_;
+  delete[] weight_ttW_;
+  delete[] kinfitscore_ttW_;
+  delete[] weight_ttZ_;
+  delete[] kinfitscore_ttZ_;
   delete[] weight_tt_;
   delete[] kinfitscore_tt_;
   delete[] LR_;
@@ -64,6 +76,12 @@ void MEMOutputWriter_3l::setBranchNames()
   branchName_thirdLepton_phi_ = Form("%s_%s", branchName_obj_.data(), "thirdLepton_phi");
   branchName_weight_ttH_ = Form("%s_%s", branchName_obj_.data(), "weight_ttH");
   branchName_kinfitscore_ttH_ = Form("%s_%s", branchName_obj_.data(), "kinfitscore_ttH");
+  branchName_weight_tHq_ = Form("%s_%s", branchName_obj_.data(), "weight_tHq");
+  branchName_kinfitscore_tHq_ = Form("%s_%s", branchName_obj_.data(), "kinfitscore_tHq");
+  branchName_weight_ttW_ = Form("%s_%s", branchName_obj_.data(), "weight_ttW");
+  branchName_kinfitscore_ttW_ = Form("%s_%s", branchName_obj_.data(), "kinfitscore_ttW");
+  branchName_weight_ttZ_ = Form("%s_%s", branchName_obj_.data(), "weight_ttZ");
+  branchName_kinfitscore_ttZ_ = Form("%s_%s", branchName_obj_.data(), "kinfitscore_ttZ");
   branchName_weight_tt_ = Form("%s_%s", branchName_obj_.data(), "weight_tt");
   branchName_kinfitscore_tt_ = Form("%s_%s", branchName_obj_.data(), "kinfitscore_tt");
   branchName_LR_ = Form("%s_%s", branchName_obj_.data(), "LR");
@@ -89,6 +107,12 @@ MEMOutputWriter_3l::setBranches(TTree * tree)
   bai.setBranch(thirdLepton_phi_, branchName_thirdLepton_phi_);
   bai.setBranch(weight_ttH_, branchName_weight_ttH_);
   bai.setBranch(kinfitscore_ttH_, branchName_kinfitscore_ttH_);
+  bai.setBranch(weight_tHq_, branchName_weight_tHq_);
+  bai.setBranch(kinfitscore_tHq_, branchName_kinfitscore_tHq_);
+  bai.setBranch(weight_ttW_, branchName_weight_ttW_);
+  bai.setBranch(kinfitscore_ttW_, branchName_kinfitscore_ttW_);
+  bai.setBranch(weight_ttZ_, branchName_weight_ttZ_);
+  bai.setBranch(kinfitscore_ttZ_, branchName_kinfitscore_ttZ_);
   bai.setBranch(weight_tt_, branchName_weight_tt_);
   bai.setBranch(kinfitscore_tt_, branchName_kinfitscore_tt_);
   bai.setBranch(LR_, branchName_LR_);
@@ -123,6 +147,12 @@ void MEMOutputWriter_3l::write(const std::vector<MEMOutput_3l> & memOutputs)
     thirdLepton_phi_[idxMEMOutput] = memOutput.thirdLepton_phi_;
     weight_ttH_[idxMEMOutput] = memOutput.weight_ttH();
     kinfitscore_ttH_[idxMEMOutput] = memOutput.kinfitscore_ttH();
+    weight_tHq_[idxMEMOutput] = memOutput.weight_tHq();
+    kinfitscore_tHq_[idxMEMOutput] = memOutput.kinfitscore_tHq();
+    weight_ttW_[idxMEMOutput] = memOutput.weight_ttW();
+    kinfitscore_ttW_[idxMEMOutput] = memOutput.kinfitscore_ttW();
+    weight_ttZ_[idxMEMOutput] = memOutput.weight_ttZ();
+    kinfitscore_ttZ_[idxMEMOutput] = memOutput.kinfitscore_ttZ();
     weight_tt_[idxMEMOutput] = memOutput.weight_tt();
     kinfitscore_tt_[idxMEMOutput] = memOutput.kinfitscore_tt();
     LR_[idxMEMOutput] = memOutput.LR();

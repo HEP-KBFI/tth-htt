@@ -1,20 +1,21 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-10-09 07:49:07 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2016.py -p python/samples/sampleLocations_2016_nanoAOD.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_nanoAOD.py -M
+# file generated at 2019-10-17 20:45:14 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2016_DeepTauIDv2p1.py -p /hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_data_DeepTauIDv2p1.py -M
 
 samples_2016 = OD()
 samples_2016["/SingleElectron/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleElectron_Run2016B_17Jul2018_ver2_v1"),
-  ("nof_files",                       2383),
+  ("nof_files",                       120),
   ("nof_db_files",                    1560),
   ("nof_events",                      {
+    'Count'                                                      : [    240044046, ],
   }),
-  ("nof_tree_events",                 239451658),
+  ("nof_tree_events",                 240044046),
   ("nof_db_events",                   246440440),
-  ("fsize_local",                     200299966377), # 200.30GB, avg file size 84.05MB
+  ("fsize_local",                     109823715863), # 109.82GB, avg file size 915.20MB
   ("fsize_db",                        5824699722422), # 5.82TB, avg file size 3.73GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -24,77 +25,21 @@ samples_2016["/SingleElectron/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/SingleElectron/2016v3_2019Jun23_SingleElectron__Run2016B-17Jul2018_ver2-v1/190623_100527"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleElectron_Run2016B_17Jul2018_ver2_v1"),
         ("selection", "*"),
-        ("blacklist", [227, 881, 1174, 1403, 1535, 2370]),
+        ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
-    "HLT_TkMu50",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_AK8PFJet140",
-    "HLT_AK8PFJet200",
-    "HLT_AK8PFJet260",
-    "HLT_AK8PFJet320",
-    "HLT_AK8PFJet40",
-    "HLT_AK8PFJet400",
-    "HLT_AK8PFJet450",
-    "HLT_AK8PFJet500",
-    "HLT_AK8PFJet60",
-    "HLT_AK8PFJet80",
-    "HLT_DiCentralPFJet170",
-    "HLT_DiCentralPFJet170_CFMax0p1",
-    "HLT_DiCentralPFJet220_CFMax0p3",
-    "HLT_DiCentralPFJet330_CFMax0p5",
-    "HLT_DiCentralPFJet430",
-    "HLT_DoubleMu3_PFMET50",
-    "HLT_DoubleMu3_Trk_Tau3mu",
-    "HLT_Ele15_IsoVVVL_PFHT400",
-    "HLT_Ele15_IsoVVVL_PFHT400_PFMET50",
-    "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_L1JetTauSeeded",
-    "HLT_Ele27_WPTight_Gsf_L1JetTauSeeded",
-    "HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded",
-    "HLT_Ele50_IsoVVVL_PFHT400",
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
-    "HLT_L1BptxMinus",
-    "HLT_L1BptxPlus",
-    "HLT_L1NotBptxOR",
-    "HLT_L1SingleMu16",
-    "HLT_L1SingleMu18",
-    "HLT_Mu15_IsoVVVL_PFHT400",
-    "HLT_Mu15_IsoVVVL_PFHT400_PFMET50",
-    "HLT_Mu17_Mu8_SameSign",
-    "HLT_Mu20_Mu10_SameSign",
-    "HLT_Mu50_IsoVVVL_PFHT400",
-    "HLT_Mu8_TrkIsoVVL_DiPFJet40_DEta3p5_MJJ750_HTT300_PFMETNoMu60",
-    "HLT_PFMET170_BeamHaloCleaned",
-    "HLT_PFTau120_eta2p1",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Physics_part2",
-    "HLT_Physics_part3",
-    "HLT_SingleCentralPFJet170_CFMax0p1",
-    "HLT_TkMu50",
-    "HLT_TripleMu_5_3_3",
-    "HLT_VLooseIsoPFTau120_Trk50_eta2p1",
-    "HLT_VLooseIsoPFTau140_Trk50_eta2p1",
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap",
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap_TCDS",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
     "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
     "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
@@ -644,13 +589,14 @@ samples_2016["/SingleElectron/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleElectron_Run2016C_17Jul2018_v1"),
-  ("nof_files",                       950),
+  ("nof_files",                       48),
   ("nof_db_files",                    674),
   ("nof_events",                      {
+    'Count'                                                      : [     93326652, ],
   }),
-  ("nof_tree_events",                 93141405),
+  ("nof_tree_events",                 93326652),
   ("nof_db_events",                   97259854),
-  ("fsize_local",                     81270837223), # 81.27GB, avg file size 85.55MB
+  ("fsize_local",                     45498230121), # 45.50GB, avg file size 947.88MB
   ("fsize_db",                        2468399083535), # 2.47TB, avg file size 3.66GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -660,9 +606,9 @@ samples_2016["/SingleElectron/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/SingleElectron/2016v3_2019Jun23_SingleElectron__Run2016C-17Jul2018-v1/190623_100907"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleElectron_Run2016C_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [126, 218]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -670,24 +616,7 @@ samples_2016["/SingleElectron/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_BTagMu_AK8Jet300_Mu5",
-    "HLT_BTagMu_DiJet170_Mu5",
-    "HLT_Ele250_CaloIdVT_GsfTrkIdT",
-    "HLT_Ele300_CaloIdVT_GsfTrkIdT",
-    "HLT_L1FatEvents_part0",
-    "HLT_L1FatEvents_part1",
-    "HLT_L1FatEvents_part2",
-    "HLT_L1FatEvents_part3",
-    "HLT_PFMET170_JetIdCleaned",
-    "HLT_PFMET170_NoiseCleaned",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Physics_part2",
-    "HLT_Physics_part3",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -1248,13 +1177,14 @@ samples_2016["/SingleElectron/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleElectron_Run2016D_17Jul2018_v1"),
-  ("nof_files",                       1489),
+  ("nof_files",                       75),
   ("nof_db_files",                    966),
   ("nof_events",                      {
+    'Count'                                                      : [    146495223, ],
   }),
   ("nof_tree_events",                 146495223),
   ("nof_db_events",                   148167727),
-  ("fsize_local",                     126455824632), # 126.46GB, avg file size 84.93MB
+  ("fsize_local",                     70580676864), # 70.58GB, avg file size 941.08MB
   ("fsize_db",                        3691667568613), # 3.69TB, avg file size 3.82GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -1264,7 +1194,7 @@ samples_2016["/SingleElectron/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug06/SingleElectron/2016v3_2019Aug06_SingleElectron__Run2016D-17Jul2018-v1/190806_151954"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleElectron_Run2016D_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1274,7 +1204,7 @@ samples_2016["/SingleElectron/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap_copy",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -1826,13 +1756,14 @@ samples_2016["/SingleElectron/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleElectron_Run2016E_17Jul2018_v1"),
-  ("nof_files",                       1137),
+  ("nof_files",                       57),
   ("nof_db_files",                    819),
   ("nof_events",                      {
+    'Count'                                                      : [    113169852, ],
   }),
-  ("nof_tree_events",                 112882941),
+  ("nof_tree_events",                 113169852),
   ("nof_db_events",                   117321545),
-  ("fsize_local",                     101644581561), # 101.64GB, avg file size 89.40MB
+  ("fsize_local",                     57159803503), # 57.16GB, avg file size 1.00GB
   ("fsize_db",                        3064391977370), # 3.06TB, avg file size 3.74GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -1842,33 +1773,20 @@ samples_2016["/SingleElectron/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug07/SingleElectron/2016v3_2019Aug07_SingleElectron__Run2016E-17Jul2018-v1/190807_165107"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleElectron_Run2016E_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [775, 989, 1058]),
+        ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
-    "HLT_HT550_DisplacedDijet80_Inclusive",
-    "HLT_IsoMu21_eta2p1_LooseIsoPFTau50_Trk30_eta2p1_SingleL1",
-    "HLT_PFMET100_PFMHT100_IDTight_BeamHaloCleaned",
-    "HLT_PFMET170_HBHE_BeamHaloCleaned",
-    "HLT_PFMETTypeOne190_HBHE_BeamHaloCleaned",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
     "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
@@ -2429,13 +2347,14 @@ samples_2016["/SingleElectron/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleElectron_Run2016F_17Jul2018_v1"),
-  ("nof_files",                       698),
+  ("nof_files",                       35),
   ("nof_db_files",                    499),
   ("nof_events",                      {
+    'Count'                                                      : [     70143321, ],
   }),
   ("nof_tree_events",                 70143321),
   ("nof_db_events",                   70593532),
-  ("fsize_local",                     61144685120), # 61.14GB, avg file size 87.60MB
+  ("fsize_local",                     33720849560), # 33.72GB, avg file size 963.45MB
   ("fsize_db",                        1875539738457), # 1.88TB, avg file size 3.76GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -2445,61 +2364,21 @@ samples_2016["/SingleElectron/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/SingleElectron/2016v3_2019Jun23_SingleElectron__Run2016F-17Jul2018-v1/190623_101522"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleElectron_Run2016F_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_DiCentralPFJet55_PFMET110",
-    "HLT_DoubleMediumIsoPFTau32_Trk1_eta2p1_Reg",
-    "HLT_Ele20_eta2p1_WPLoose_Gsf_LooseIsoPFTau28",
-    "HLT_Ele22_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele22_eta2p1_WPLoose_Gsf_LooseIsoPFTau29",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele27_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele32_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele36_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL",
-    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL",
-    "HLT_Mu3er_PFHT140_PFMET125",
-    "HLT_Mu6_PFHT200_PFMET80_BTagCSV_p067",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_PFHT250_DiPFJetAve90_PFAlphaT0p55",
-    "HLT_PFHT300_DiPFJetAve90_PFAlphaT0p53",
-    "HLT_PFHT350_DiPFJetAve90_PFAlphaT0p52",
-    "HLT_PFHT400_DiPFJetAve90_PFAlphaT0p51",
-    "HLT_PFMET120_BTagCSV_p067",
-    "HLT_Photon90_CaloIdL_PFHT500",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Rsq0p02_MR300_TriPFJet80_60_40_BTagCSV_p063_p20_Mbb60_200",
-    "HLT_Rsq0p02_MR300_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_Rsq0p02_MR400_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_Rsq0p02_MR450_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_RsqMR240_Rsq0p09_MR200",
-    "HLT_RsqMR240_Rsq0p09_MR200_4jet",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
   ("hlt_paths",                    [
     "HLT_AK4CaloJet100",
@@ -3069,13 +2948,14 @@ samples_2016["/SingleElectron/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleElectron_Run2016G_17Jul2018_v1"),
-  ("nof_files",                       1516),
+  ("nof_files",                       76),
   ("nof_db_files",                    1188),
   ("nof_events",                      {
+    'Count'                                                      : [    152098617, ],
   }),
   ("nof_tree_events",                 152098617),
   ("nof_db_events",                   153363109),
-  ("fsize_local",                     129130570903), # 129.13GB, avg file size 85.18MB
+  ("fsize_local",                     70965380781), # 70.97GB, avg file size 933.76MB
   ("fsize_db",                        4194700440526), # 4.19TB, avg file size 3.53GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -3085,7 +2965,7 @@ samples_2016["/SingleElectron/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/SingleElectron/2016v3_2019Jul24_SingleElectron__Run2016G-17Jul2018-v1/190724_151601"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleElectron_Run2016G_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -3095,35 +2975,7 @@ samples_2016["/SingleElectron/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_L1FatEvents_part2",
-    "HLT_L1FatEvents_part3",
-    "HLT_L1MinimumBiasHF_OR_part0",
-    "HLT_L1MinimumBiasHF_OR_part1",
-    "HLT_L1MinimumBiasHF_OR_part2",
-    "HLT_L1MinimumBiasHF_OR_part3",
-    "HLT_L1MinimumBiasHF_OR_part4",
-    "HLT_L1MinimumBiasHF_OR_part5",
-    "HLT_L1MinimumBiasHF_OR_part6",
-    "HLT_L1MinimumBiasHF_OR_part7",
-    "HLT_L1MinimumBiasHF_OR_part8",
-    "HLT_L1MinimumBiasHF_OR_part9",
-    "HLT_PixelTracks_Multiplicity110ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity135ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity160ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity60ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity85ForEndOfFill",
-    "HLT_ZeroBias_FirstBXAfterTrain",
-    "HLT_ZeroBias_FirstBXAfterTrain_copy",
-    "HLT_ZeroBias_FirstCollisionInTrain",
-    "HLT_ZeroBias_FirstCollisionInTrain_BRIL",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
-    "HLT_ZeroBias_part5",
-    "HLT_ZeroBias_part6",
-    "HLT_ZeroBias_part7",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -3695,13 +3547,14 @@ samples_2016["/SingleElectron/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleElectron_Run2016H_17Jul2018_v1"),
-  ("nof_files",                       1253),
+  ("nof_files",                       63),
   ("nof_db_files",                    968),
   ("nof_events",                      {
+    'Count'                                                      : [    126926517, ],
   }),
-  ("nof_tree_events",                 126638187),
+  ("nof_tree_events",                 126926517),
   ("nof_db_events",                   128854598),
-  ("fsize_local",                     110570506325), # 110.57GB, avg file size 88.24MB
+  ("fsize_local",                     61870978436), # 61.87GB, avg file size 982.08MB
   ("fsize_db",                        3618123957596), # 3.62TB, avg file size 3.74GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -3711,9 +3564,9 @@ samples_2016["/SingleElectron/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/SingleElectron/2016v3_2019Jun23_SingleElectron__Run2016H-17Jul2018-v1/190623_101957"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleElectron_Run2016H_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [547, 915, 1029]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -3721,34 +3574,7 @@ samples_2016["/SingleElectron/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_DiJetVBF_PassThrough",
-    "HLT_DiJetVBFMu_PassThrough",
-    "HLT_Ele145_CaloIdVT_GsfTrkIdT",
-    "HLT_Ele200_CaloIdVT_GsfTrkIdT",
-    "HLT_IsoMu24_eta2p1",
-    "HLT_IsoTkMu24_eta2p1",
-    "HLT_L1BptxMinus",
-    "HLT_L1BptxPlus",
-    "HLT_L1MinimumBiasHF_OR",
-    "HLT_L1MinimumBiasHF_OR_part0",
-    "HLT_L1MinimumBiasHF_OR_part1",
-    "HLT_L1MinimumBiasHF_OR_part2",
-    "HLT_L1MinimumBiasHF_OR_part3",
-    "HLT_L1MinimumBiasHF_OR_part4",
-    "HLT_L1MinimumBiasHF_OR_part5",
-    "HLT_L1MinimumBiasHF_OR_part6",
-    "HLT_L1MinimumBiasHF_OR_part7",
-    "HLT_L1MinimumBiasHF_OR_part8",
-    "HLT_L1MinimumBiasHF_OR_part9",
-    "HLT_L1NotBptxOR",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
-    "HLT_ZeroBias_part5",
-    "HLT_ZeroBias_part6",
-    "HLT_ZeroBias_part7",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg",
@@ -4284,13 +4110,14 @@ samples_2016["/SingleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleMuon_Run2016B_17Jul2018_ver2_v1"),
-  ("nof_files",                       1512),
+  ("nof_files",                       76),
   ("nof_db_files",                    915),
   ("nof_events",                      {
+    'Count'                                                      : [    154054252, ],
   }),
-  ("nof_tree_events",                 153963077),
+  ("nof_tree_events",                 154054252),
   ("nof_db_events",                   158145722),
-  ("fsize_local",                     112967670235), # 112.97GB, avg file size 74.71MB
+  ("fsize_local",                     66827054139), # 66.83GB, avg file size 879.30MB
   ("fsize_db",                        3182003654301), # 3.18TB, avg file size 3.48GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -4300,77 +4127,21 @@ samples_2016["/SingleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/SingleMuon/2016v3_2019Jun23_SingleMuon__Run2016B-17Jul2018_ver2-v1/190623_102635"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleMuon_Run2016B_17Jul2018_ver2_v1"),
         ("selection", "*"),
-        ("blacklist", [168]),
+        ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
-    "HLT_TkMu50",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_AK8PFJet140",
-    "HLT_AK8PFJet200",
-    "HLT_AK8PFJet260",
-    "HLT_AK8PFJet320",
-    "HLT_AK8PFJet40",
-    "HLT_AK8PFJet400",
-    "HLT_AK8PFJet450",
-    "HLT_AK8PFJet500",
-    "HLT_AK8PFJet60",
-    "HLT_AK8PFJet80",
-    "HLT_DiCentralPFJet170",
-    "HLT_DiCentralPFJet170_CFMax0p1",
-    "HLT_DiCentralPFJet220_CFMax0p3",
-    "HLT_DiCentralPFJet330_CFMax0p5",
-    "HLT_DiCentralPFJet430",
-    "HLT_DoubleMu3_PFMET50",
-    "HLT_DoubleMu3_Trk_Tau3mu",
-    "HLT_Ele15_IsoVVVL_PFHT400",
-    "HLT_Ele15_IsoVVVL_PFHT400_PFMET50",
-    "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_L1JetTauSeeded",
-    "HLT_Ele27_WPTight_Gsf_L1JetTauSeeded",
-    "HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded",
-    "HLT_Ele50_IsoVVVL_PFHT400",
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
-    "HLT_L1BptxMinus",
-    "HLT_L1BptxPlus",
-    "HLT_L1NotBptxOR",
-    "HLT_L1SingleMu16",
-    "HLT_L1SingleMu18",
-    "HLT_Mu15_IsoVVVL_PFHT400",
-    "HLT_Mu15_IsoVVVL_PFHT400_PFMET50",
-    "HLT_Mu17_Mu8_SameSign",
-    "HLT_Mu20_Mu10_SameSign",
-    "HLT_Mu50_IsoVVVL_PFHT400",
-    "HLT_Mu8_TrkIsoVVL_DiPFJet40_DEta3p5_MJJ750_HTT300_PFMETNoMu60",
-    "HLT_PFMET170_BeamHaloCleaned",
-    "HLT_PFTau120_eta2p1",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Physics_part2",
-    "HLT_Physics_part3",
-    "HLT_SingleCentralPFJet170_CFMax0p1",
-    "HLT_TkMu50",
-    "HLT_TripleMu_5_3_3",
-    "HLT_VLooseIsoPFTau120_Trk50_eta2p1",
-    "HLT_VLooseIsoPFTau140_Trk50_eta2p1",
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap",
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap_TCDS",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
     "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
     "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
@@ -4920,13 +4691,14 @@ samples_2016["/SingleMuon/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleMuon_Run2016C_17Jul2018_v1"),
-  ("nof_files",                       651),
+  ("nof_files",                       33),
   ("nof_db_files",                    369),
   ("nof_events",                      {
+    'Count'                                                      : [     64718679, ],
   }),
-  ("nof_tree_events",                 64524254),
+  ("nof_tree_events",                 64718679),
   ("nof_db_events",                   67441308),
-  ("fsize_local",                     48151067884), # 48.15GB, avg file size 73.96MB
+  ("fsize_local",                     28565663769), # 28.57GB, avg file size 865.63MB
   ("fsize_db",                        1467179337613), # 1.47TB, avg file size 3.98GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -4936,9 +4708,9 @@ samples_2016["/SingleMuon/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/SingleMuon/2016v3_2019Jun23_SingleMuon__Run2016C-17Jul2018-v1/190623_102842"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleMuon_Run2016C_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [380, 542]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -4946,24 +4718,7 @@ samples_2016["/SingleMuon/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_BTagMu_AK8Jet300_Mu5",
-    "HLT_BTagMu_DiJet170_Mu5",
-    "HLT_Ele250_CaloIdVT_GsfTrkIdT",
-    "HLT_Ele300_CaloIdVT_GsfTrkIdT",
-    "HLT_L1FatEvents_part0",
-    "HLT_L1FatEvents_part1",
-    "HLT_L1FatEvents_part2",
-    "HLT_L1FatEvents_part3",
-    "HLT_PFMET170_JetIdCleaned",
-    "HLT_PFMET170_NoiseCleaned",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Physics_part2",
-    "HLT_Physics_part3",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -5524,13 +5279,14 @@ samples_2016["/SingleMuon/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleMuon_Run2016D_17Jul2018_v1"),
-  ("nof_files",                       975),
+  ("nof_files",                       49),
   ("nof_db_files",                    670),
   ("nof_events",                      {
+    'Count'                                                      : [     96657799, ],
   }),
-  ("nof_tree_events",                 96562334),
+  ("nof_tree_events",                 96657799),
   ("nof_db_events",                   98017996),
-  ("fsize_local",                     72143004023), # 72.14GB, avg file size 73.99MB
+  ("fsize_local",                     43024848470), # 43.02GB, avg file size 878.06MB
   ("fsize_db",                        2108617060387), # 2.11TB, avg file size 3.15GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -5540,9 +5296,9 @@ samples_2016["/SingleMuon/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/SingleMuon/2016v3_2019Jun23_SingleMuon__Run2016D-17Jul2018-v1/190623_103020"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleMuon_Run2016D_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [150]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -5550,7 +5306,7 @@ samples_2016["/SingleMuon/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap_copy",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -6102,13 +5858,14 @@ samples_2016["/SingleMuon/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleMuon_Run2016E_17Jul2018_v1"),
-  ("nof_files",                       873),
+  ("nof_files",                       44),
   ("nof_db_files",                    565),
   ("nof_events",                      {
+    'Count'                                                      : [     87378748, ],
   }),
   ("nof_tree_events",                 87378748),
   ("nof_db_events",                   90984718),
-  ("fsize_local",                     66923686424), # 66.92GB, avg file size 76.66MB
+  ("fsize_local",                     38972880362), # 38.97GB, avg file size 885.75MB
   ("fsize_db",                        2082420389420), # 2.08TB, avg file size 3.69GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -6118,33 +5875,20 @@ samples_2016["/SingleMuon/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/SingleMuon/2016v3_2019Jul24_SingleMuon__Run2016E-17Jul2018-v1/190724_154645"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleMuon_Run2016E_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
-    "HLT_HT550_DisplacedDijet80_Inclusive",
-    "HLT_IsoMu21_eta2p1_LooseIsoPFTau50_Trk30_eta2p1_SingleL1",
-    "HLT_PFMET100_PFMHT100_IDTight_BeamHaloCleaned",
-    "HLT_PFMET170_HBHE_BeamHaloCleaned",
-    "HLT_PFMETTypeOne190_HBHE_BeamHaloCleaned",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
     "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
@@ -6705,13 +6449,14 @@ samples_2016["/SingleMuon/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleMuon_Run2016F_17Jul2018_v1"),
-  ("nof_files",                       647),
+  ("nof_files",                       33),
   ("nof_db_files",                    462),
   ("nof_events",                      {
+    'Count'                                                      : [     65047318, ],
   }),
-  ("nof_tree_events",                 64947406),
+  ("nof_tree_events",                 65047318),
   ("nof_db_events",                   65489554),
-  ("fsize_local",                     49455086641), # 49.46GB, avg file size 76.44MB
+  ("fsize_local",                     28887375486), # 28.89GB, avg file size 875.38MB
   ("fsize_db",                        1528356133432), # 1.53TB, avg file size 3.31GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -6721,61 +6466,21 @@ samples_2016["/SingleMuon/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug08/SingleMuon/2016v3_2019Aug08_SingleMuon__Run2016F-17Jul2018-v1/190808_183941"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleMuon_Run2016F_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [585]),
+        ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_DiCentralPFJet55_PFMET110",
-    "HLT_DoubleMediumIsoPFTau32_Trk1_eta2p1_Reg",
-    "HLT_Ele20_eta2p1_WPLoose_Gsf_LooseIsoPFTau28",
-    "HLT_Ele22_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele22_eta2p1_WPLoose_Gsf_LooseIsoPFTau29",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele27_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele32_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele36_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL",
-    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL",
-    "HLT_Mu3er_PFHT140_PFMET125",
-    "HLT_Mu6_PFHT200_PFMET80_BTagCSV_p067",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_PFHT250_DiPFJetAve90_PFAlphaT0p55",
-    "HLT_PFHT300_DiPFJetAve90_PFAlphaT0p53",
-    "HLT_PFHT350_DiPFJetAve90_PFAlphaT0p52",
-    "HLT_PFHT400_DiPFJetAve90_PFAlphaT0p51",
-    "HLT_PFMET120_BTagCSV_p067",
-    "HLT_Photon90_CaloIdL_PFHT500",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Rsq0p02_MR300_TriPFJet80_60_40_BTagCSV_p063_p20_Mbb60_200",
-    "HLT_Rsq0p02_MR300_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_Rsq0p02_MR400_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_Rsq0p02_MR450_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_RsqMR240_Rsq0p09_MR200",
-    "HLT_RsqMR240_Rsq0p09_MR200_4jet",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
   ("hlt_paths",                    [
     "HLT_AK4CaloJet100",
@@ -7345,13 +7050,14 @@ samples_2016["/SingleMuon/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleMuon_Run2016G_17Jul2018_v1"),
-  ("nof_files",                       1468),
+  ("nof_files",                       74),
   ("nof_db_files",                    963),
   ("nof_events",                      {
+    'Count'                                                      : [    147941144, ],
   }),
-  ("nof_tree_events",                 147408002),
+  ("nof_tree_events",                 147941144),
   ("nof_db_events",                   149912248),
-  ("fsize_local",                     109889775863), # 109.89GB, avg file size 74.86MB
+  ("fsize_local",                     65050843727), # 65.05GB, avg file size 879.07MB
   ("fsize_db",                        3626074118840), # 3.63TB, avg file size 3.77GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -7361,9 +7067,9 @@ samples_2016["/SingleMuon/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/SingleMuon/2016v3_2019Jun23_SingleMuon__Run2016G-17Jul2018-v1/190623_103429"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleMuon_Run2016G_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [93, 707, 903, 952, 1001]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -7371,35 +7077,7 @@ samples_2016["/SingleMuon/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_L1FatEvents_part2",
-    "HLT_L1FatEvents_part3",
-    "HLT_L1MinimumBiasHF_OR_part0",
-    "HLT_L1MinimumBiasHF_OR_part1",
-    "HLT_L1MinimumBiasHF_OR_part2",
-    "HLT_L1MinimumBiasHF_OR_part3",
-    "HLT_L1MinimumBiasHF_OR_part4",
-    "HLT_L1MinimumBiasHF_OR_part5",
-    "HLT_L1MinimumBiasHF_OR_part6",
-    "HLT_L1MinimumBiasHF_OR_part7",
-    "HLT_L1MinimumBiasHF_OR_part8",
-    "HLT_L1MinimumBiasHF_OR_part9",
-    "HLT_PixelTracks_Multiplicity110ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity135ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity160ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity60ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity85ForEndOfFill",
-    "HLT_ZeroBias_FirstBXAfterTrain",
-    "HLT_ZeroBias_FirstBXAfterTrain_copy",
-    "HLT_ZeroBias_FirstCollisionInTrain",
-    "HLT_ZeroBias_FirstCollisionInTrain_BRIL",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
-    "HLT_ZeroBias_part5",
-    "HLT_ZeroBias_part6",
-    "HLT_ZeroBias_part7",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -7971,13 +7649,14 @@ samples_2016["/SingleMuon/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "SingleMuon_Run2016H_17Jul2018_v1"),
-  ("nof_files",                       1698),
+  ("nof_files",                       85),
   ("nof_db_files",                    1131),
   ("nof_events",                      {
+    'Count'                                                      : [    171137991, ],
   }),
-  ("nof_tree_events",                 170930803),
+  ("nof_tree_events",                 171137991),
   ("nof_db_events",                   174035164),
-  ("fsize_local",                     127165947097), # 127.17GB, avg file size 74.89MB
+  ("fsize_local",                     74729056462), # 74.73GB, avg file size 879.17MB
   ("fsize_db",                        4315722634882), # 4.32TB, avg file size 3.82GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -7987,9 +7666,9 @@ samples_2016["/SingleMuon/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep12/SingleMuon/2016v3_2019Sep12_SingleMuon__Run2016H-17Jul2018-v1/190912_091603"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/SingleMuon_Run2016H_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [60, 1027]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -7997,34 +7676,7 @@ samples_2016["/SingleMuon/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_DiJetVBF_PassThrough",
-    "HLT_DiJetVBFMu_PassThrough",
-    "HLT_Ele145_CaloIdVT_GsfTrkIdT",
-    "HLT_Ele200_CaloIdVT_GsfTrkIdT",
-    "HLT_IsoMu24_eta2p1",
-    "HLT_IsoTkMu24_eta2p1",
-    "HLT_L1BptxMinus",
-    "HLT_L1BptxPlus",
-    "HLT_L1MinimumBiasHF_OR",
-    "HLT_L1MinimumBiasHF_OR_part0",
-    "HLT_L1MinimumBiasHF_OR_part1",
-    "HLT_L1MinimumBiasHF_OR_part2",
-    "HLT_L1MinimumBiasHF_OR_part3",
-    "HLT_L1MinimumBiasHF_OR_part4",
-    "HLT_L1MinimumBiasHF_OR_part5",
-    "HLT_L1MinimumBiasHF_OR_part6",
-    "HLT_L1MinimumBiasHF_OR_part7",
-    "HLT_L1MinimumBiasHF_OR_part8",
-    "HLT_L1MinimumBiasHF_OR_part9",
-    "HLT_L1NotBptxOR",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
-    "HLT_ZeroBias_part5",
-    "HLT_ZeroBias_part6",
-    "HLT_ZeroBias_part7",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg",
@@ -8560,13 +8212,14 @@ samples_2016["/DoubleEG/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleEG_Run2016B_17Jul2018_ver2_v1"),
-  ("nof_files",                       1331),
+  ("nof_files",                       67),
   ("nof_db_files",                    922),
   ("nof_events",                      {
+    'Count'                                                      : [    136667457, ],
   }),
   ("nof_tree_events",                 136667457),
   ("nof_db_events",                   143073268),
-  ("fsize_local",                     119944659302), # 119.94GB, avg file size 90.12MB
+  ("fsize_local",                     62587384247), # 62.59GB, avg file size 934.14MB
   ("fsize_db",                        3464447064000), # 3.46TB, avg file size 3.76GB
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
@@ -8576,77 +8229,21 @@ samples_2016["/DoubleEG/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/DoubleEG/2016v3_2019Jul22_DoubleEG__Run2016B-17Jul2018_ver2-v1/190722_144558"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleEG_Run2016B_17Jul2018_ver2_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
-    "HLT_TkMu50",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_AK8PFJet140",
-    "HLT_AK8PFJet200",
-    "HLT_AK8PFJet260",
-    "HLT_AK8PFJet320",
-    "HLT_AK8PFJet40",
-    "HLT_AK8PFJet400",
-    "HLT_AK8PFJet450",
-    "HLT_AK8PFJet500",
-    "HLT_AK8PFJet60",
-    "HLT_AK8PFJet80",
-    "HLT_DiCentralPFJet170",
-    "HLT_DiCentralPFJet170_CFMax0p1",
-    "HLT_DiCentralPFJet220_CFMax0p3",
-    "HLT_DiCentralPFJet330_CFMax0p5",
-    "HLT_DiCentralPFJet430",
-    "HLT_DoubleMu3_PFMET50",
-    "HLT_DoubleMu3_Trk_Tau3mu",
-    "HLT_Ele15_IsoVVVL_PFHT400",
-    "HLT_Ele15_IsoVVVL_PFHT400_PFMET50",
-    "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_L1JetTauSeeded",
-    "HLT_Ele27_WPTight_Gsf_L1JetTauSeeded",
-    "HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded",
-    "HLT_Ele50_IsoVVVL_PFHT400",
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
-    "HLT_L1BptxMinus",
-    "HLT_L1BptxPlus",
-    "HLT_L1NotBptxOR",
-    "HLT_L1SingleMu16",
-    "HLT_L1SingleMu18",
-    "HLT_Mu15_IsoVVVL_PFHT400",
-    "HLT_Mu15_IsoVVVL_PFHT400_PFMET50",
-    "HLT_Mu17_Mu8_SameSign",
-    "HLT_Mu20_Mu10_SameSign",
-    "HLT_Mu50_IsoVVVL_PFHT400",
-    "HLT_Mu8_TrkIsoVVL_DiPFJet40_DEta3p5_MJJ750_HTT300_PFMETNoMu60",
-    "HLT_PFMET170_BeamHaloCleaned",
-    "HLT_PFTau120_eta2p1",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Physics_part2",
-    "HLT_Physics_part3",
-    "HLT_SingleCentralPFJet170_CFMax0p1",
-    "HLT_TkMu50",
-    "HLT_TripleMu_5_3_3",
-    "HLT_VLooseIsoPFTau120_Trk50_eta2p1",
-    "HLT_VLooseIsoPFTau140_Trk50_eta2p1",
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap",
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap_TCDS",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
     "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
     "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
@@ -9196,13 +8793,14 @@ samples_2016["/DoubleEG/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleEG_Run2016C_17Jul2018_v1"),
-  ("nof_files",                       454),
+  ("nof_files",                       23),
   ("nof_db_files",                    427),
   ("nof_events",                      {
+    'Count'                                                      : [     45523434, ],
   }),
   ("nof_tree_events",                 45523434),
   ("nof_db_events",                   47677856),
-  ("fsize_local",                     42319084015), # 42.32GB, avg file size 93.21MB
+  ("fsize_local",                     22612671926), # 22.61GB, avg file size 983.16MB
   ("fsize_db",                        1264015619729), # 1.26TB, avg file size 2.96GB
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
@@ -9212,7 +8810,7 @@ samples_2016["/DoubleEG/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep12/DoubleEG/2016v3_2019Sep12_DoubleEG__Run2016C-17Jul2018-v1/190912_091936"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleEG_Run2016C_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -9222,24 +8820,7 @@ samples_2016["/DoubleEG/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_BTagMu_AK8Jet300_Mu5",
-    "HLT_BTagMu_DiJet170_Mu5",
-    "HLT_Ele250_CaloIdVT_GsfTrkIdT",
-    "HLT_Ele300_CaloIdVT_GsfTrkIdT",
-    "HLT_L1FatEvents_part0",
-    "HLT_L1FatEvents_part1",
-    "HLT_L1FatEvents_part2",
-    "HLT_L1FatEvents_part3",
-    "HLT_PFMET170_JetIdCleaned",
-    "HLT_PFMET170_NoiseCleaned",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Physics_part2",
-    "HLT_Physics_part3",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -9800,13 +9381,14 @@ samples_2016["/DoubleEG/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleEG_Run2016D_17Jul2018_v1"),
-  ("nof_files",                       523),
+  ("nof_files",                       27),
   ("nof_db_files",                    471),
   ("nof_events",                      {
+    'Count'                                                      : [     52423951, ],
   }),
   ("nof_tree_events",                 52423951),
   ("nof_db_events",                   53324960),
-  ("fsize_local",                     49036073295), # 49.04GB, avg file size 93.76MB
+  ("fsize_local",                     26318626164), # 26.32GB, avg file size 974.76MB
   ("fsize_db",                        1380816107443), # 1.38TB, avg file size 2.93GB
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
@@ -9816,7 +9398,7 @@ samples_2016["/DoubleEG/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/DoubleEG/2016v3_2019Jun23_DoubleEG__Run2016D-17Jul2018-v1/190623_104246"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleEG_Run2016D_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -9826,7 +9408,7 @@ samples_2016["/DoubleEG/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap_copy",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -10378,13 +9960,14 @@ samples_2016["/DoubleEG/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleEG_Run2016E_17Jul2018_v1"),
-  ("nof_files",                       466),
+  ("nof_files",                       24),
   ("nof_db_files",                    375),
   ("nof_events",                      {
+    'Count'                                                      : [     47328841, ],
   }),
   ("nof_tree_events",                 47328841),
   ("nof_db_events",                   49877710),
-  ("fsize_local",                     45095167009), # 45.10GB, avg file size 96.77MB
+  ("fsize_local",                     23909753864), # 23.91GB, avg file size 996.24MB
   ("fsize_db",                        1347879387241), # 1.35TB, avg file size 3.59GB
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
@@ -10394,33 +9977,20 @@ samples_2016["/DoubleEG/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/DoubleEG/2016v3_2019Jul24_DoubleEG__Run2016E-17Jul2018-v1/190724_115302"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleEG_Run2016E_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
-    "HLT_HT550_DisplacedDijet80_Inclusive",
-    "HLT_IsoMu21_eta2p1_LooseIsoPFTau50_Trk30_eta2p1_SingleL1",
-    "HLT_PFMET100_PFMHT100_IDTight_BeamHaloCleaned",
-    "HLT_PFMET170_HBHE_BeamHaloCleaned",
-    "HLT_PFMETTypeOne190_HBHE_BeamHaloCleaned",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
     "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
@@ -10981,13 +10551,14 @@ samples_2016["/DoubleEG/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleEG_Run2016F_17Jul2018_v1"),
-  ("nof_files",                       332),
+  ("nof_files",                       17),
   ("nof_db_files",                    309),
   ("nof_events",                      {
+    'Count'                                                      : [     33972078, ],
   }),
   ("nof_tree_events",                 33972078),
   ("nof_db_events",                   34577629),
-  ("fsize_local",                     33242226028), # 33.24GB, avg file size 100.13MB
+  ("fsize_local",                     17646382822), # 17.65GB, avg file size 1.04GB
   ("fsize_db",                        980316863933), # 980.32GB, avg file size 3.17GB
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
@@ -10997,61 +10568,21 @@ samples_2016["/DoubleEG/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/DoubleEG/2016v3_2019Jun23_DoubleEG__Run2016F-17Jul2018-v1/190623_104700"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleEG_Run2016F_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_DiCentralPFJet55_PFMET110",
-    "HLT_DoubleMediumIsoPFTau32_Trk1_eta2p1_Reg",
-    "HLT_Ele20_eta2p1_WPLoose_Gsf_LooseIsoPFTau28",
-    "HLT_Ele22_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele22_eta2p1_WPLoose_Gsf_LooseIsoPFTau29",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele27_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele32_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele36_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL",
-    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL",
-    "HLT_Mu3er_PFHT140_PFMET125",
-    "HLT_Mu6_PFHT200_PFMET80_BTagCSV_p067",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_PFHT250_DiPFJetAve90_PFAlphaT0p55",
-    "HLT_PFHT300_DiPFJetAve90_PFAlphaT0p53",
-    "HLT_PFHT350_DiPFJetAve90_PFAlphaT0p52",
-    "HLT_PFHT400_DiPFJetAve90_PFAlphaT0p51",
-    "HLT_PFMET120_BTagCSV_p067",
-    "HLT_Photon90_CaloIdL_PFHT500",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Rsq0p02_MR300_TriPFJet80_60_40_BTagCSV_p063_p20_Mbb60_200",
-    "HLT_Rsq0p02_MR300_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_Rsq0p02_MR400_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_Rsq0p02_MR450_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_RsqMR240_Rsq0p09_MR200",
-    "HLT_RsqMR240_Rsq0p09_MR200_4jet",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
   ("hlt_paths",                    [
     "HLT_AK4CaloJet100",
@@ -11621,13 +11152,14 @@ samples_2016["/DoubleEG/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleEG_Run2016G_17Jul2018_v1"),
-  ("nof_files",                       748),
+  ("nof_files",                       38),
   ("nof_db_files",                    715),
   ("nof_events",                      {
+    'Count'                                                      : [     76538905, ],
   }),
   ("nof_tree_events",                 76538905),
   ("nof_db_events",                   78797031),
-  ("fsize_local",                     76345866135), # 76.35GB, avg file size 102.07MB
+  ("fsize_local",                     41101991635), # 41.10GB, avg file size 1.08GB
   ("fsize_db",                        2348342983856), # 2.35TB, avg file size 3.28GB
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
@@ -11637,7 +11169,7 @@ samples_2016["/DoubleEG/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep12/DoubleEG/2016v3_2019Sep12_DoubleEG__Run2016G-17Jul2018-v1/190912_093249"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleEG_Run2016G_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -11647,35 +11179,7 @@ samples_2016["/DoubleEG/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_L1FatEvents_part2",
-    "HLT_L1FatEvents_part3",
-    "HLT_L1MinimumBiasHF_OR_part0",
-    "HLT_L1MinimumBiasHF_OR_part1",
-    "HLT_L1MinimumBiasHF_OR_part2",
-    "HLT_L1MinimumBiasHF_OR_part3",
-    "HLT_L1MinimumBiasHF_OR_part4",
-    "HLT_L1MinimumBiasHF_OR_part5",
-    "HLT_L1MinimumBiasHF_OR_part6",
-    "HLT_L1MinimumBiasHF_OR_part7",
-    "HLT_L1MinimumBiasHF_OR_part8",
-    "HLT_L1MinimumBiasHF_OR_part9",
-    "HLT_PixelTracks_Multiplicity110ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity135ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity160ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity60ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity85ForEndOfFill",
-    "HLT_ZeroBias_FirstBXAfterTrain",
-    "HLT_ZeroBias_FirstBXAfterTrain_copy",
-    "HLT_ZeroBias_FirstCollisionInTrain",
-    "HLT_ZeroBias_FirstCollisionInTrain_BRIL",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
-    "HLT_ZeroBias_part5",
-    "HLT_ZeroBias_part6",
-    "HLT_ZeroBias_part7",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -12247,13 +11751,14 @@ samples_2016["/DoubleEG/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleEG_Run2016H_17Jul2018_v1"),
-  ("nof_files",                       804),
+  ("nof_files",                       41),
   ("nof_db_files",                    736),
   ("nof_events",                      {
+    'Count'                                                      : [     82569062, ],
   }),
-  ("nof_tree_events",                 82441748),
+  ("nof_tree_events",                 82569062),
   ("nof_db_events",                   85388734),
-  ("fsize_local",                     83728273135), # 83.73GB, avg file size 104.14MB
+  ("fsize_local",                     45371838096), # 45.37GB, avg file size 1.11GB
   ("fsize_db",                        2597544653398), # 2.60TB, avg file size 3.53GB
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
@@ -12263,9 +11768,9 @@ samples_2016["/DoubleEG/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep12/DoubleEG/2016v3_2019Sep12_DoubleEG__Run2016H-17Jul2018-v1/190912_092251"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleEG_Run2016H_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [52]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -12273,34 +11778,7 @@ samples_2016["/DoubleEG/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_DiJetVBF_PassThrough",
-    "HLT_DiJetVBFMu_PassThrough",
-    "HLT_Ele145_CaloIdVT_GsfTrkIdT",
-    "HLT_Ele200_CaloIdVT_GsfTrkIdT",
-    "HLT_IsoMu24_eta2p1",
-    "HLT_IsoTkMu24_eta2p1",
-    "HLT_L1BptxMinus",
-    "HLT_L1BptxPlus",
-    "HLT_L1MinimumBiasHF_OR",
-    "HLT_L1MinimumBiasHF_OR_part0",
-    "HLT_L1MinimumBiasHF_OR_part1",
-    "HLT_L1MinimumBiasHF_OR_part2",
-    "HLT_L1MinimumBiasHF_OR_part3",
-    "HLT_L1MinimumBiasHF_OR_part4",
-    "HLT_L1MinimumBiasHF_OR_part5",
-    "HLT_L1MinimumBiasHF_OR_part6",
-    "HLT_L1MinimumBiasHF_OR_part7",
-    "HLT_L1MinimumBiasHF_OR_part8",
-    "HLT_L1MinimumBiasHF_OR_part9",
-    "HLT_L1NotBptxOR",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
-    "HLT_ZeroBias_part5",
-    "HLT_ZeroBias_part6",
-    "HLT_ZeroBias_part7",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg",
@@ -12836,13 +12314,14 @@ samples_2016["/DoubleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleMuon_Run2016B_17Jul2018_ver2_v1"),
-  ("nof_files",                       771),
+  ("nof_files",                       39),
   ("nof_db_files",                    451),
   ("nof_events",                      {
+    'Count'                                                      : [     78550935, ],
   }),
-  ("nof_tree_events",                 78354451),
+  ("nof_tree_events",                 78550935),
   ("nof_db_events",                   82535526),
-  ("fsize_local",                     61713957576), # 61.71GB, avg file size 80.04MB
+  ("fsize_local",                     32626696587), # 32.63GB, avg file size 836.58MB
   ("fsize_db",                        1734998896105), # 1.73TB, avg file size 3.85GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -12852,77 +12331,21 @@ samples_2016["/DoubleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug03/DoubleMuon/2016v3_2019Aug03_DoubleMuon__Run2016B-17Jul2018_ver2-v1/190803_164200"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleMuon_Run2016B_17Jul2018_ver2_v1"),
         ("selection", "*"),
-        ("blacklist", [63, 668]),
+        ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
-    "HLT_TkMu50",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_AK8PFJet140",
-    "HLT_AK8PFJet200",
-    "HLT_AK8PFJet260",
-    "HLT_AK8PFJet320",
-    "HLT_AK8PFJet40",
-    "HLT_AK8PFJet400",
-    "HLT_AK8PFJet450",
-    "HLT_AK8PFJet500",
-    "HLT_AK8PFJet60",
-    "HLT_AK8PFJet80",
-    "HLT_DiCentralPFJet170",
-    "HLT_DiCentralPFJet170_CFMax0p1",
-    "HLT_DiCentralPFJet220_CFMax0p3",
-    "HLT_DiCentralPFJet330_CFMax0p5",
-    "HLT_DiCentralPFJet430",
-    "HLT_DoubleMu3_PFMET50",
-    "HLT_DoubleMu3_Trk_Tau3mu",
-    "HLT_Ele15_IsoVVVL_PFHT400",
-    "HLT_Ele15_IsoVVVL_PFHT400_PFMET50",
-    "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_L1JetTauSeeded",
-    "HLT_Ele27_WPTight_Gsf_L1JetTauSeeded",
-    "HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded",
-    "HLT_Ele50_IsoVVVL_PFHT400",
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
-    "HLT_L1BptxMinus",
-    "HLT_L1BptxPlus",
-    "HLT_L1NotBptxOR",
-    "HLT_L1SingleMu16",
-    "HLT_L1SingleMu18",
-    "HLT_Mu15_IsoVVVL_PFHT400",
-    "HLT_Mu15_IsoVVVL_PFHT400_PFMET50",
-    "HLT_Mu17_Mu8_SameSign",
-    "HLT_Mu20_Mu10_SameSign",
-    "HLT_Mu50_IsoVVVL_PFHT400",
-    "HLT_Mu8_TrkIsoVVL_DiPFJet40_DEta3p5_MJJ750_HTT300_PFMETNoMu60",
-    "HLT_PFMET170_BeamHaloCleaned",
-    "HLT_PFTau120_eta2p1",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Physics_part2",
-    "HLT_Physics_part3",
-    "HLT_SingleCentralPFJet170_CFMax0p1",
-    "HLT_TkMu50",
-    "HLT_TripleMu_5_3_3",
-    "HLT_VLooseIsoPFTau120_Trk50_eta2p1",
-    "HLT_VLooseIsoPFTau140_Trk50_eta2p1",
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap",
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap_TCDS",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
     "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
     "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
@@ -13472,13 +12895,14 @@ samples_2016["/DoubleMuon/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleMuon_Run2016C_17Jul2018_v1"),
-  ("nof_files",                       266),
+  ("nof_files",                       14),
   ("nof_db_files",                    203),
   ("nof_events",                      {
+    'Count'                                                      : [     26691984, ],
   }),
-  ("nof_tree_events",                 26589678),
+  ("nof_tree_events",                 26691984),
   ("nof_db_events",                   27934629),
-  ("fsize_local",                     22084156605), # 22.08GB, avg file size 83.02MB
+  ("fsize_local",                     11215399893), # 11.22GB, avg file size 801.10MB
   ("fsize_db",                        685464884246), # 685.46GB, avg file size 3.38GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -13488,9 +12912,9 @@ samples_2016["/DoubleMuon/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/DoubleMuon/2016v3_2019Jun23_DoubleMuon__Run2016C-17Jul2018-v1/190623_105917"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleMuon_Run2016C_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [173]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -13498,24 +12922,7 @@ samples_2016["/DoubleMuon/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_BTagMu_AK8Jet300_Mu5",
-    "HLT_BTagMu_DiJet170_Mu5",
-    "HLT_Ele250_CaloIdVT_GsfTrkIdT",
-    "HLT_Ele300_CaloIdVT_GsfTrkIdT",
-    "HLT_L1FatEvents_part0",
-    "HLT_L1FatEvents_part1",
-    "HLT_L1FatEvents_part2",
-    "HLT_L1FatEvents_part3",
-    "HLT_PFMET170_JetIdCleaned",
-    "HLT_PFMET170_NoiseCleaned",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Physics_part2",
-    "HLT_Physics_part3",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -14076,13 +13483,14 @@ samples_2016["/DoubleMuon/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleMuon_Run2016D_17Jul2018_v1"),
-  ("nof_files",                       331),
+  ("nof_files",                       17),
   ("nof_db_files",                    215),
   ("nof_events",                      {
+    'Count'                                                      : [     33279413, ],
   }),
-  ("nof_tree_events",                 33187523),
+  ("nof_tree_events",                 33279413),
   ("nof_db_events",                   33861745),
-  ("fsize_local",                     28376452699), # 28.38GB, avg file size 85.73MB
+  ("fsize_local",                     15258566969), # 15.26GB, avg file size 897.56MB
   ("fsize_db",                        806216066715), # 806.22GB, avg file size 3.75GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -14092,9 +13500,9 @@ samples_2016["/DoubleMuon/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep13/DoubleMuon/2016v3_2019Sep13_DoubleMuon__Run2016D-17Jul2018-v1/190913_092235"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleMuon_Run2016D_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [40]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -14102,7 +13510,7 @@ samples_2016["/DoubleMuon/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap_copy",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -14654,13 +14062,14 @@ samples_2016["/DoubleMuon/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleMuon_Run2016E_17Jul2018_v1"),
-  ("nof_files",                       264),
+  ("nof_files",                       14),
   ("nof_db_files",                    186),
   ("nof_events",                      {
+    'Count'                                                      : [     27025933, ],
   }),
   ("nof_tree_events",                 27025933),
   ("nof_db_events",                   28246946),
-  ("fsize_local",                     24051273512), # 24.05GB, avg file size 91.10MB
+  ("fsize_local",                     13174162780), # 13.17GB, avg file size 941.01MB
   ("fsize_db",                        708661336267), # 708.66GB, avg file size 3.81GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -14670,33 +14079,20 @@ samples_2016["/DoubleMuon/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/DoubleMuon/2016v3_2019Jun23_DoubleMuon__Run2016E-17Jul2018-v1/190623_110356"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleMuon_Run2016E_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
-    "HLT_HT550_DisplacedDijet80_Inclusive",
-    "HLT_IsoMu21_eta2p1_LooseIsoPFTau50_Trk30_eta2p1_SingleL1",
-    "HLT_PFMET100_PFMHT100_IDTight_BeamHaloCleaned",
-    "HLT_PFMET170_HBHE_BeamHaloCleaned",
-    "HLT_PFMETTypeOne190_HBHE_BeamHaloCleaned",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
     "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
@@ -15257,13 +14653,14 @@ samples_2016["/DoubleMuon/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleMuon_Run2016F_17Jul2018_v1"),
-  ("nof_files",                       196),
+  ("nof_files",                       10),
   ("nof_db_files",                    155),
   ("nof_events",                      {
+    'Count'                                                      : [     20178544, ],
   }),
   ("nof_tree_events",                 20178544),
   ("nof_db_events",                   20329921),
-  ("fsize_local",                     18272932918), # 18.27GB, avg file size 93.23MB
+  ("fsize_local",                     9975662035), # 9.98GB, avg file size 997.57MB
   ("fsize_db",                        529467236687), # 529.47GB, avg file size 3.42GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -15273,61 +14670,21 @@ samples_2016["/DoubleMuon/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/DoubleMuon/2016v3_2019Jul24_DoubleMuon__Run2016F-17Jul2018-v1/190724_094251"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleMuon_Run2016F_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_DiCentralPFJet55_PFMET110",
-    "HLT_DoubleMediumIsoPFTau32_Trk1_eta2p1_Reg",
-    "HLT_Ele20_eta2p1_WPLoose_Gsf_LooseIsoPFTau28",
-    "HLT_Ele22_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele22_eta2p1_WPLoose_Gsf_LooseIsoPFTau29",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele27_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele32_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele36_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL",
-    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL",
-    "HLT_Mu3er_PFHT140_PFMET125",
-    "HLT_Mu6_PFHT200_PFMET80_BTagCSV_p067",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_PFHT250_DiPFJetAve90_PFAlphaT0p55",
-    "HLT_PFHT300_DiPFJetAve90_PFAlphaT0p53",
-    "HLT_PFHT350_DiPFJetAve90_PFAlphaT0p52",
-    "HLT_PFHT400_DiPFJetAve90_PFAlphaT0p51",
-    "HLT_PFMET120_BTagCSV_p067",
-    "HLT_Photon90_CaloIdL_PFHT500",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Rsq0p02_MR300_TriPFJet80_60_40_BTagCSV_p063_p20_Mbb60_200",
-    "HLT_Rsq0p02_MR300_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_Rsq0p02_MR400_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_Rsq0p02_MR450_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_RsqMR240_Rsq0p09_MR200",
-    "HLT_RsqMR240_Rsq0p09_MR200_4jet",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
   ("hlt_paths",                    [
     "HLT_AK4CaloJet100",
@@ -15897,13 +15254,14 @@ samples_2016["/DoubleMuon/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleMuon_Run2016G_17Jul2018_v1"),
-  ("nof_files",                       433),
+  ("nof_files",                       22),
   ("nof_db_files",                    346),
   ("nof_events",                      {
+    'Count'                                                      : [     44581284, ],
   }),
   ("nof_tree_events",                 44581284),
   ("nof_db_events",                   45235604),
-  ("fsize_local",                     40765868453), # 40.77GB, avg file size 94.15MB
+  ("fsize_local",                     22573758410), # 22.57GB, avg file size 1.03GB
   ("fsize_db",                        1220292254108), # 1.22TB, avg file size 3.53GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -15913,7 +15271,7 @@ samples_2016["/DoubleMuon/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/DoubleMuon/2016v3_2019Jun23_DoubleMuon__Run2016G-17Jul2018-v1/190623_110805"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleMuon_Run2016G_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -15923,35 +15281,7 @@ samples_2016["/DoubleMuon/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_L1FatEvents_part2",
-    "HLT_L1FatEvents_part3",
-    "HLT_L1MinimumBiasHF_OR_part0",
-    "HLT_L1MinimumBiasHF_OR_part1",
-    "HLT_L1MinimumBiasHF_OR_part2",
-    "HLT_L1MinimumBiasHF_OR_part3",
-    "HLT_L1MinimumBiasHF_OR_part4",
-    "HLT_L1MinimumBiasHF_OR_part5",
-    "HLT_L1MinimumBiasHF_OR_part6",
-    "HLT_L1MinimumBiasHF_OR_part7",
-    "HLT_L1MinimumBiasHF_OR_part8",
-    "HLT_L1MinimumBiasHF_OR_part9",
-    "HLT_PixelTracks_Multiplicity110ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity135ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity160ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity60ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity85ForEndOfFill",
-    "HLT_ZeroBias_FirstBXAfterTrain",
-    "HLT_ZeroBias_FirstBXAfterTrain_copy",
-    "HLT_ZeroBias_FirstCollisionInTrain",
-    "HLT_ZeroBias_FirstCollisionInTrain_BRIL",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
-    "HLT_ZeroBias_part5",
-    "HLT_ZeroBias_part6",
-    "HLT_ZeroBias_part7",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -16523,13 +15853,14 @@ samples_2016["/DoubleMuon/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "DoubleMuon_Run2016H_17Jul2018_v1"),
-  ("nof_files",                       465),
+  ("nof_files",                       24),
   ("nof_db_files",                    378),
   ("nof_events",                      {
+    'Count'                                                      : [     48028641, ],
   }),
   ("nof_tree_events",                 48028641),
   ("nof_db_events",                   48912812),
-  ("fsize_local",                     44479309594), # 44.48GB, avg file size 95.65MB
+  ("fsize_local",                     24652008139), # 24.65GB, avg file size 1.03GB
   ("fsize_db",                        1339351184572), # 1.34TB, avg file size 3.54GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -16539,7 +15870,7 @@ samples_2016["/DoubleMuon/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/DoubleMuon/2016v3_2019Jun23_DoubleMuon__Run2016H-17Jul2018-v1/190623_111008"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/DoubleMuon_Run2016H_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16549,34 +15880,7 @@ samples_2016["/DoubleMuon/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_DiJetVBF_PassThrough",
-    "HLT_DiJetVBFMu_PassThrough",
-    "HLT_Ele145_CaloIdVT_GsfTrkIdT",
-    "HLT_Ele200_CaloIdVT_GsfTrkIdT",
-    "HLT_IsoMu24_eta2p1",
-    "HLT_IsoTkMu24_eta2p1",
-    "HLT_L1BptxMinus",
-    "HLT_L1BptxPlus",
-    "HLT_L1MinimumBiasHF_OR",
-    "HLT_L1MinimumBiasHF_OR_part0",
-    "HLT_L1MinimumBiasHF_OR_part1",
-    "HLT_L1MinimumBiasHF_OR_part2",
-    "HLT_L1MinimumBiasHF_OR_part3",
-    "HLT_L1MinimumBiasHF_OR_part4",
-    "HLT_L1MinimumBiasHF_OR_part5",
-    "HLT_L1MinimumBiasHF_OR_part6",
-    "HLT_L1MinimumBiasHF_OR_part7",
-    "HLT_L1MinimumBiasHF_OR_part8",
-    "HLT_L1MinimumBiasHF_OR_part9",
-    "HLT_L1NotBptxOR",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
-    "HLT_ZeroBias_part5",
-    "HLT_ZeroBias_part6",
-    "HLT_ZeroBias_part7",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg",
@@ -17112,13 +16416,14 @@ samples_2016["/MuonEG/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "MuonEG_Run2016B_17Jul2018_ver2_v1"),
-  ("nof_files",                       307),
+  ("nof_files",                       16),
   ("nof_db_files",                    249),
   ("nof_events",                      {
+    'Count'                                                      : [     31859603, ],
   }),
   ("nof_tree_events",                 31859603),
   ("nof_db_events",                   32727796),
-  ("fsize_local",                     32875988129), # 32.88GB, avg file size 107.09MB
+  ("fsize_local",                     17579587410), # 17.58GB, avg file size 1.10GB
   ("fsize_db",                        852219473708), # 852.22GB, avg file size 3.42GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -17128,77 +16433,21 @@ samples_2016["/MuonEG/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/MuonEG/2016v3_2019Jun23_MuonEG__Run2016B-17Jul2018_ver2-v1/190623_111212"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/MuonEG_Run2016B_17Jul2018_ver2_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
-    "HLT_TkMu50",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_AK8PFJet140",
-    "HLT_AK8PFJet200",
-    "HLT_AK8PFJet260",
-    "HLT_AK8PFJet320",
-    "HLT_AK8PFJet40",
-    "HLT_AK8PFJet400",
-    "HLT_AK8PFJet450",
-    "HLT_AK8PFJet500",
-    "HLT_AK8PFJet60",
-    "HLT_AK8PFJet80",
-    "HLT_DiCentralPFJet170",
-    "HLT_DiCentralPFJet170_CFMax0p1",
-    "HLT_DiCentralPFJet220_CFMax0p3",
-    "HLT_DiCentralPFJet330_CFMax0p5",
-    "HLT_DiCentralPFJet430",
-    "HLT_DoubleMu3_PFMET50",
-    "HLT_DoubleMu3_Trk_Tau3mu",
-    "HLT_Ele15_IsoVVVL_PFHT400",
-    "HLT_Ele15_IsoVVVL_PFHT400_PFMET50",
-    "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_L1JetTauSeeded",
-    "HLT_Ele27_WPTight_Gsf_L1JetTauSeeded",
-    "HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded",
-    "HLT_Ele50_IsoVVVL_PFHT400",
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
-    "HLT_L1BptxMinus",
-    "HLT_L1BptxPlus",
-    "HLT_L1NotBptxOR",
-    "HLT_L1SingleMu16",
-    "HLT_L1SingleMu18",
-    "HLT_Mu15_IsoVVVL_PFHT400",
-    "HLT_Mu15_IsoVVVL_PFHT400_PFMET50",
-    "HLT_Mu17_Mu8_SameSign",
-    "HLT_Mu20_Mu10_SameSign",
-    "HLT_Mu50_IsoVVVL_PFHT400",
-    "HLT_Mu8_TrkIsoVVL_DiPFJet40_DEta3p5_MJJ750_HTT300_PFMETNoMu60",
-    "HLT_PFMET170_BeamHaloCleaned",
-    "HLT_PFTau120_eta2p1",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Physics_part2",
-    "HLT_Physics_part3",
-    "HLT_SingleCentralPFJet170_CFMax0p1",
-    "HLT_TkMu50",
-    "HLT_TripleMu_5_3_3",
-    "HLT_VLooseIsoPFTau120_Trk50_eta2p1",
-    "HLT_VLooseIsoPFTau140_Trk50_eta2p1",
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap",
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap_TCDS",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
     "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
     "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
@@ -17748,13 +16997,14 @@ samples_2016["/MuonEG/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "MuonEG_Run2016C_17Jul2018_v1"),
-  ("nof_files",                       146),
+  ("nof_files",                       8),
   ("nof_db_files",                    112),
   ("nof_events",                      {
+    'Count'                                                      : [     14782554, ],
   }),
-  ("nof_tree_events",                 14680947),
+  ("nof_tree_events",                 14782554),
   ("nof_db_events",                   15405678),
-  ("fsize_local",                     15236879945), # 15.24GB, avg file size 104.36MB
+  ("fsize_local",                     8141548147), # 8.14GB, avg file size 1.02GB
   ("fsize_db",                        425478869475), # 425.48GB, avg file size 3.80GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -17764,9 +17014,9 @@ samples_2016["/MuonEG/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/MuonEG/2016v3_2019Jun23_MuonEG__Run2016C-17Jul2018-v1/190623_111420"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/MuonEG_Run2016C_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [51]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -17774,24 +17024,7 @@ samples_2016["/MuonEG/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_BTagMu_AK8Jet300_Mu5",
-    "HLT_BTagMu_DiJet170_Mu5",
-    "HLT_Ele250_CaloIdVT_GsfTrkIdT",
-    "HLT_Ele300_CaloIdVT_GsfTrkIdT",
-    "HLT_L1FatEvents_part0",
-    "HLT_L1FatEvents_part1",
-    "HLT_L1FatEvents_part2",
-    "HLT_L1FatEvents_part3",
-    "HLT_PFMET170_JetIdCleaned",
-    "HLT_PFMET170_NoiseCleaned",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Physics_part2",
-    "HLT_Physics_part3",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -18352,13 +17585,14 @@ samples_2016["/MuonEG/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "MuonEG_Run2016D_17Jul2018_v1"),
-  ("nof_files",                       231),
+  ("nof_files",                       12),
   ("nof_db_files",                    192),
   ("nof_events",                      {
+    'Count'                                                      : [     23211183, ],
   }),
   ("nof_tree_events",                 23211183),
   ("nof_db_events",                   23482352),
-  ("fsize_local",                     23950028305), # 23.95GB, avg file size 103.68MB
+  ("fsize_local",                     12720964759), # 12.72GB, avg file size 1.06GB
   ("fsize_db",                        640329332178), # 640.33GB, avg file size 3.34GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -18368,7 +17602,7 @@ samples_2016["/MuonEG/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/MuonEG/2016v3_2019Jul24_MuonEG__Run2016D-17Jul2018-v1/190724_154857"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/MuonEG_Run2016D_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18378,7 +17612,7 @@ samples_2016["/MuonEG/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap_copy",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -18930,13 +18164,14 @@ samples_2016["/MuonEG/Run2016E-17Jul2018-v2/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "MuonEG_Run2016E_17Jul2018_v2"),
-  ("nof_files",                       213),
+  ("nof_files",                       11),
   ("nof_db_files",                    209),
   ("nof_events",                      {
+    'Count'                                                      : [     21705301, ],
   }),
   ("nof_tree_events",                 21705301),
   ("nof_db_events",                   22519303),
-  ("fsize_local",                     22724955126), # 22.72GB, avg file size 106.69MB
+  ("fsize_local",                     11883141417), # 11.88GB, avg file size 1.08GB
   ("fsize_db",                        643811921361), # 643.81GB, avg file size 3.08GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -18946,7 +18181,7 @@ samples_2016["/MuonEG/Run2016E-17Jul2018-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/MuonEG/2016v3_2019Jul22_MuonEG__Run2016E-17Jul2018-v2/190722_141331"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/MuonEG_Run2016E_17Jul2018_v2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18956,13 +18191,7 @@ samples_2016["/MuonEG/Run2016E-17Jul2018-v2/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -19526,13 +18755,14 @@ samples_2016["/MuonEG/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "MuonEG_Run2016F_17Jul2018_v1"),
-  ("nof_files",                       155),
+  ("nof_files",                       8),
   ("nof_db_files",                    159),
   ("nof_events",                      {
+    'Count'                                                      : [     15897683, ],
   }),
   ("nof_tree_events",                 15897683),
   ("nof_db_events",                   16002165),
-  ("fsize_local",                     16693875968), # 16.69GB, avg file size 107.70MB
+  ("fsize_local",                     8741675500), # 8.74GB, avg file size 1.09GB
   ("fsize_db",                        468379134344), # 468.38GB, avg file size 2.95GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -19542,61 +18772,21 @@ samples_2016["/MuonEG/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/MuonEG/2016v3_2019Jul22_MuonEG__Run2016F-17Jul2018-v1/190722_142948"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/MuonEG_Run2016F_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_DiCentralPFJet55_PFMET110",
-    "HLT_DoubleMediumIsoPFTau32_Trk1_eta2p1_Reg",
-    "HLT_Ele20_eta2p1_WPLoose_Gsf_LooseIsoPFTau28",
-    "HLT_Ele22_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele22_eta2p1_WPLoose_Gsf_LooseIsoPFTau29",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele27_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele32_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele36_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL",
-    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL",
-    "HLT_Mu3er_PFHT140_PFMET125",
-    "HLT_Mu6_PFHT200_PFMET80_BTagCSV_p067",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_PFHT250_DiPFJetAve90_PFAlphaT0p55",
-    "HLT_PFHT300_DiPFJetAve90_PFAlphaT0p53",
-    "HLT_PFHT350_DiPFJetAve90_PFAlphaT0p52",
-    "HLT_PFHT400_DiPFJetAve90_PFAlphaT0p51",
-    "HLT_PFMET120_BTagCSV_p067",
-    "HLT_Photon90_CaloIdL_PFHT500",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Rsq0p02_MR300_TriPFJet80_60_40_BTagCSV_p063_p20_Mbb60_200",
-    "HLT_Rsq0p02_MR300_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_Rsq0p02_MR400_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_Rsq0p02_MR450_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_RsqMR240_Rsq0p09_MR200",
-    "HLT_RsqMR240_Rsq0p09_MR200_4jet",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
   ("hlt_paths",                    [
     "HLT_AK4CaloJet100",
@@ -20166,13 +19356,14 @@ samples_2016["/MuonEG/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "MuonEG_Run2016G_17Jul2018_v1"),
-  ("nof_files",                       325),
+  ("nof_files",                       17),
   ("nof_db_files",                    302),
   ("nof_events",                      {
+    'Count'                                                      : [     33573015, ],
   }),
   ("nof_tree_events",                 33573015),
   ("nof_db_events",                   33854612),
-  ("fsize_local",                     35767082086), # 35.77GB, avg file size 110.05MB
+  ("fsize_local",                     19025371342), # 19.03GB, avg file size 1.12GB
   ("fsize_db",                        1030361158821), # 1.03TB, avg file size 3.41GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -20182,7 +19373,7 @@ samples_2016["/MuonEG/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/MuonEG/2016v3_2019Jun23_MuonEG__Run2016G-17Jul2018-v1/190623_112253"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/MuonEG_Run2016G_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20192,35 +19383,7 @@ samples_2016["/MuonEG/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_L1FatEvents_part2",
-    "HLT_L1FatEvents_part3",
-    "HLT_L1MinimumBiasHF_OR_part0",
-    "HLT_L1MinimumBiasHF_OR_part1",
-    "HLT_L1MinimumBiasHF_OR_part2",
-    "HLT_L1MinimumBiasHF_OR_part3",
-    "HLT_L1MinimumBiasHF_OR_part4",
-    "HLT_L1MinimumBiasHF_OR_part5",
-    "HLT_L1MinimumBiasHF_OR_part6",
-    "HLT_L1MinimumBiasHF_OR_part7",
-    "HLT_L1MinimumBiasHF_OR_part8",
-    "HLT_L1MinimumBiasHF_OR_part9",
-    "HLT_PixelTracks_Multiplicity110ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity135ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity160ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity60ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity85ForEndOfFill",
-    "HLT_ZeroBias_FirstBXAfterTrain",
-    "HLT_ZeroBias_FirstBXAfterTrain_copy",
-    "HLT_ZeroBias_FirstCollisionInTrain",
-    "HLT_ZeroBias_FirstCollisionInTrain_BRIL",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
-    "HLT_ZeroBias_part5",
-    "HLT_ZeroBias_part6",
-    "HLT_ZeroBias_part7",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -20792,13 +19955,14 @@ samples_2016["/MuonEG/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "MuonEG_Run2016H_17Jul2018_v1"),
-  ("nof_files",                       278),
+  ("nof_files",                       14),
   ("nof_db_files",                    267),
   ("nof_events",                      {
+    'Count'                                                      : [     28812785, ],
   }),
   ("nof_tree_events",                 28812785),
   ("nof_db_events",                   29236516),
-  ("fsize_local",                     32659593704), # 32.66GB, avg file size 117.48MB
+  ("fsize_local",                     17884358692), # 17.88GB, avg file size 1.28GB
   ("fsize_db",                        915092396544), # 915.09GB, avg file size 3.43GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -20808,7 +19972,7 @@ samples_2016["/MuonEG/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep12/MuonEG/2016v3_2019Sep12_MuonEG__Run2016H-17Jul2018-v1/190912_092503"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/MuonEG_Run2016H_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20818,34 +19982,7 @@ samples_2016["/MuonEG/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_DiJetVBF_PassThrough",
-    "HLT_DiJetVBFMu_PassThrough",
-    "HLT_Ele145_CaloIdVT_GsfTrkIdT",
-    "HLT_Ele200_CaloIdVT_GsfTrkIdT",
-    "HLT_IsoMu24_eta2p1",
-    "HLT_IsoTkMu24_eta2p1",
-    "HLT_L1BptxMinus",
-    "HLT_L1BptxPlus",
-    "HLT_L1MinimumBiasHF_OR",
-    "HLT_L1MinimumBiasHF_OR_part0",
-    "HLT_L1MinimumBiasHF_OR_part1",
-    "HLT_L1MinimumBiasHF_OR_part2",
-    "HLT_L1MinimumBiasHF_OR_part3",
-    "HLT_L1MinimumBiasHF_OR_part4",
-    "HLT_L1MinimumBiasHF_OR_part5",
-    "HLT_L1MinimumBiasHF_OR_part6",
-    "HLT_L1MinimumBiasHF_OR_part7",
-    "HLT_L1MinimumBiasHF_OR_part8",
-    "HLT_L1MinimumBiasHF_OR_part9",
-    "HLT_L1NotBptxOR",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
-    "HLT_ZeroBias_part5",
-    "HLT_ZeroBias_part6",
-    "HLT_ZeroBias_part7",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg",
@@ -21381,13 +20518,14 @@ samples_2016["/Tau/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "Tau_Run2016B_17Jul2018_ver2_v1"),
-  ("nof_files",                       645),
+  ("nof_files",                       33),
   ("nof_db_files",                    478),
   ("nof_events",                      {
+    'Count'                                                      : [     66891163, ],
   }),
-  ("nof_tree_events",                 66794571),
+  ("nof_tree_events",                 66891163),
   ("nof_db_events",                   68727458),
-  ("fsize_local",                     70970757746), # 70.97GB, avg file size 110.03MB
+  ("fsize_local",                     49842838936), # 49.84GB, avg file size 1.51GB
   ("fsize_db",                        1623932565874), # 1.62TB, avg file size 3.40GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -21397,77 +20535,21 @@ samples_2016["/Tau/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep12/Tau/2016v3_2019Sep12_Tau__Run2016B-17Jul2018_ver2-v1/190912_092717"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/Tau_Run2016B_17Jul2018_ver2_v1"),
         ("selection", "*"),
-        ("blacklist", [274]),
+        ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
-    "HLT_TkMu50",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_AK8PFJet140",
-    "HLT_AK8PFJet200",
-    "HLT_AK8PFJet260",
-    "HLT_AK8PFJet320",
-    "HLT_AK8PFJet40",
-    "HLT_AK8PFJet400",
-    "HLT_AK8PFJet450",
-    "HLT_AK8PFJet500",
-    "HLT_AK8PFJet60",
-    "HLT_AK8PFJet80",
-    "HLT_DiCentralPFJet170",
-    "HLT_DiCentralPFJet170_CFMax0p1",
-    "HLT_DiCentralPFJet220_CFMax0p3",
-    "HLT_DiCentralPFJet330_CFMax0p5",
-    "HLT_DiCentralPFJet430",
-    "HLT_DoubleMu3_PFMET50",
-    "HLT_DoubleMu3_Trk_Tau3mu",
-    "HLT_Ele15_IsoVVVL_PFHT400",
-    "HLT_Ele15_IsoVVVL_PFHT400_PFMET50",
-    "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_L1JetTauSeeded",
-    "HLT_Ele27_WPTight_Gsf_L1JetTauSeeded",
-    "HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded",
-    "HLT_Ele50_IsoVVVL_PFHT400",
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
-    "HLT_L1BptxMinus",
-    "HLT_L1BptxPlus",
-    "HLT_L1NotBptxOR",
-    "HLT_L1SingleMu16",
-    "HLT_L1SingleMu18",
-    "HLT_Mu15_IsoVVVL_PFHT400",
-    "HLT_Mu15_IsoVVVL_PFHT400_PFMET50",
-    "HLT_Mu17_Mu8_SameSign",
-    "HLT_Mu20_Mu10_SameSign",
-    "HLT_Mu50_IsoVVVL_PFHT400",
-    "HLT_Mu8_TrkIsoVVL_DiPFJet40_DEta3p5_MJJ750_HTT300_PFMETNoMu60",
-    "HLT_PFMET170_BeamHaloCleaned",
-    "HLT_PFTau120_eta2p1",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Physics_part2",
-    "HLT_Physics_part3",
-    "HLT_SingleCentralPFJet170_CFMax0p1",
-    "HLT_TkMu50",
-    "HLT_TripleMu_5_3_3",
-    "HLT_VLooseIsoPFTau120_Trk50_eta2p1",
-    "HLT_VLooseIsoPFTau140_Trk50_eta2p1",
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap",
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap_TCDS",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
     "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
-    "HLT_IsoMu22_eta2p1",
-    "HLT_IsoTkMu22_eta2p1",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
     "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
@@ -22017,13 +21099,14 @@ samples_2016["/Tau/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "Tau_Run2016C_17Jul2018_v1"),
-  ("nof_files",                       351),
+  ("nof_files",                       18),
   ("nof_db_files",                    240),
   ("nof_events",                      {
+    'Count'                                                      : [     35255498, ],
   }),
   ("nof_tree_events",                 35255498),
   ("nof_db_events",                   36931473),
-  ("fsize_local",                     37463414313), # 37.46GB, avg file size 106.73MB
+  ("fsize_local",                     26586131018), # 26.59GB, avg file size 1.48GB
   ("fsize_db",                        914247099541), # 914.25GB, avg file size 3.81GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -22033,7 +21116,7 @@ samples_2016["/Tau/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep12/Tau/2016v3_2019Sep12_Tau__Run2016C-17Jul2018-v1/190912_092928"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/Tau_Run2016C_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22043,24 +21126,7 @@ samples_2016["/Tau/Run2016C-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_BTagMu_AK8Jet300_Mu5",
-    "HLT_BTagMu_DiJet170_Mu5",
-    "HLT_Ele250_CaloIdVT_GsfTrkIdT",
-    "HLT_Ele300_CaloIdVT_GsfTrkIdT",
-    "HLT_L1FatEvents_part0",
-    "HLT_L1FatEvents_part1",
-    "HLT_L1FatEvents_part2",
-    "HLT_L1FatEvents_part3",
-    "HLT_PFMET170_JetIdCleaned",
-    "HLT_PFMET170_NoiseCleaned",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Physics_part2",
-    "HLT_Physics_part3",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -22621,13 +21687,14 @@ samples_2016["/Tau/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "Tau_Run2016D_17Jul2018_v1"),
-  ("nof_files",                       558),
+  ("nof_files",                       28),
   ("nof_db_files",                    371),
   ("nof_events",                      {
+    'Count'                                                      : [     55883079, ],
   }),
   ("nof_tree_events",                 55883079),
   ("nof_db_events",                   56827771),
-  ("fsize_local",                     59015442289), # 59.02GB, avg file size 105.76MB
+  ("fsize_local",                     42006122335), # 42.01GB, avg file size 1.50GB
   ("fsize_db",                        1378195081954), # 1.38TB, avg file size 3.71GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -22637,7 +21704,7 @@ samples_2016["/Tau/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug03/Tau/2016v3_2019Aug03_Tau__Run2016D-17Jul2018-v1/190803_163521"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/Tau_Run2016D_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22647,7 +21714,7 @@ samples_2016["/Tau/Run2016D-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_ZeroBias_FirstCollisionAfterAbortGap_copy",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -23199,13 +22266,14 @@ samples_2016["/Tau/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "Tau_Run2016E_17Jul2018_v1"),
-  ("nof_files",                       552),
+  ("nof_files",                       28),
   ("nof_db_files",                    395),
   ("nof_events",                      {
+    'Count'                                                      : [     55977425, ],
   }),
-  ("nof_tree_events",                 55655211),
+  ("nof_tree_events",                 55977425),
   ("nof_db_events",                   58348773),
-  ("fsize_local",                     59830782064), # 59.83GB, avg file size 108.39MB
+  ("fsize_local",                     42054598325), # 42.05GB, avg file size 1.50GB
   ("fsize_db",                        1503064310845), # 1.50TB, avg file size 3.81GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -23215,33 +22283,20 @@ samples_2016["/Tau/Run2016E-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep05/Tau/2016v3_2019Sep05_Tau__Run2016E-17Jul2018-v1/190904_212040"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/Tau_Run2016E_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [110, 330, 336]),
+        ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
-    "HLT_HT550_DisplacedDijet80_Inclusive",
-    "HLT_IsoMu21_eta2p1_LooseIsoPFTau50_Trk30_eta2p1_SingleL1",
-    "HLT_PFMET100_PFMHT100_IDTight_BeamHaloCleaned",
-    "HLT_PFMET170_HBHE_BeamHaloCleaned",
-    "HLT_PFMETTypeOne190_HBHE_BeamHaloCleaned",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
     "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
@@ -23802,13 +22857,14 @@ samples_2016["/Tau/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "Tau_Run2016F_17Jul2018_v1"),
-  ("nof_files",                       394),
+  ("nof_files",                       20),
   ("nof_db_files",                    299),
   ("nof_events",                      {
+    'Count'                                                      : [     40276158, ],
   }),
-  ("nof_tree_events",                 40165201),
+  ("nof_tree_events",                 40276158),
   ("nof_db_events",                   40549716),
-  ("fsize_local",                     43171820802), # 43.17GB, avg file size 109.57MB
+  ("fsize_local",                     30326277747), # 30.33GB, avg file size 1.52GB
   ("fsize_db",                        1061371957054), # 1.06TB, avg file size 3.55GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -23818,61 +22874,21 @@ samples_2016["/Tau/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/Tau/2016v3_2019Jul22_Tau__Run2016F-17Jul2018-v1/190722_150212"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/Tau_Run2016F_17Jul2018_v1"),
         ("selection", "*"),
-        ("blacklist", [102]),
+        ("blacklist", []),
       ]),
     ]
   ),
   ("missing_completely",           [
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
+
   ]),
   ("missing_from_superset",        [
-    "HLT_DiCentralPFJet55_PFMET110",
-    "HLT_DoubleMediumIsoPFTau32_Trk1_eta2p1_Reg",
-    "HLT_Ele20_eta2p1_WPLoose_Gsf_LooseIsoPFTau28",
-    "HLT_Ele22_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele22_eta2p1_WPLoose_Gsf_LooseIsoPFTau29",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele27_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele32_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Ele36_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
-    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL",
-    "HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL",
-    "HLT_Mu3er_PFHT140_PFMET125",
-    "HLT_Mu6_PFHT200_PFMET80_BTagCSV_p067",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_PFHT250_DiPFJetAve90_PFAlphaT0p55",
-    "HLT_PFHT300_DiPFJetAve90_PFAlphaT0p53",
-    "HLT_PFHT350_DiPFJetAve90_PFAlphaT0p52",
-    "HLT_PFHT400_DiPFJetAve90_PFAlphaT0p51",
-    "HLT_PFMET120_BTagCSV_p067",
-    "HLT_Photon90_CaloIdL_PFHT500",
-    "HLT_Physics_part0",
-    "HLT_Physics_part1",
-    "HLT_Rsq0p02_MR300_TriPFJet80_60_40_BTagCSV_p063_p20_Mbb60_200",
-    "HLT_Rsq0p02_MR300_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_Rsq0p02_MR400_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_Rsq0p02_MR450_TriPFJet80_60_40_DoubleBTagCSV_p063_Mbb60_200",
-    "HLT_RsqMR240_Rsq0p09_MR200",
-    "HLT_RsqMR240_Rsq0p09_MR200_4jet",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20",
-    "HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1",
     "HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ",
-    "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ",
   ]),
   ("hlt_paths",                    [
     "HLT_AK4CaloJet100",
@@ -24442,13 +23458,14 @@ samples_2016["/Tau/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "Tau_Run2016G_17Jul2018_v1"),
-  ("nof_files",                       769),
+  ("nof_files",                       39),
   ("nof_db_files",                    678),
   ("nof_events",                      {
+    'Count'                                                      : [     78733260, ],
   }),
   ("nof_tree_events",                 78733260),
   ("nof_db_events",                   79578661),
-  ("fsize_local",                     83888872148), # 83.89GB, avg file size 109.09MB
+  ("fsize_local",                     59143244507), # 59.14GB, avg file size 1.52GB
   ("fsize_db",                        2161199426263), # 2.16TB, avg file size 3.19GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -24458,7 +23475,7 @@ samples_2016["/Tau/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep13/Tau/2016v3_2019Sep13_Tau__Run2016G-17Jul2018-v1/190913_173851"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/Tau_Run2016G_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -24468,35 +23485,7 @@ samples_2016["/Tau/Run2016G-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_L1FatEvents_part2",
-    "HLT_L1FatEvents_part3",
-    "HLT_L1MinimumBiasHF_OR_part0",
-    "HLT_L1MinimumBiasHF_OR_part1",
-    "HLT_L1MinimumBiasHF_OR_part2",
-    "HLT_L1MinimumBiasHF_OR_part3",
-    "HLT_L1MinimumBiasHF_OR_part4",
-    "HLT_L1MinimumBiasHF_OR_part5",
-    "HLT_L1MinimumBiasHF_OR_part6",
-    "HLT_L1MinimumBiasHF_OR_part7",
-    "HLT_L1MinimumBiasHF_OR_part8",
-    "HLT_L1MinimumBiasHF_OR_part9",
-    "HLT_PixelTracks_Multiplicity110ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity135ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity160ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity60ForEndOfFill",
-    "HLT_PixelTracks_Multiplicity85ForEndOfFill",
-    "HLT_ZeroBias_FirstBXAfterTrain",
-    "HLT_ZeroBias_FirstBXAfterTrain_copy",
-    "HLT_ZeroBias_FirstCollisionInTrain",
-    "HLT_ZeroBias_FirstCollisionInTrain_BRIL",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
-    "HLT_ZeroBias_part5",
-    "HLT_ZeroBias_part6",
-    "HLT_ZeroBias_part7",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg",
@@ -25068,13 +24057,14 @@ samples_2016["/Tau/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "Tau_Run2016H_17Jul2018_v1"),
-  ("nof_files",                       734),
+  ("nof_files",                       37),
   ("nof_db_files",                    602),
   ("nof_events",                      {
+    'Count'                                                      : [     75409819, ],
   }),
   ("nof_tree_events",                 75409819),
   ("nof_db_events",                   76758754),
-  ("fsize_local",                     81468367921), # 81.47GB, avg file size 110.99MB
+  ("fsize_local",                     57509585089), # 57.51GB, avg file size 1.55GB
   ("fsize_db",                        2153991942771), # 2.15TB, avg file size 3.58GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -25084,7 +24074,7 @@ samples_2016["/Tau/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/Tau/2016v3_2019Jul24_Tau__Run2016H-17Jul2018-v1/190724_100119"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Oct16_woPresel_nom_all/ntuples/Tau_Run2016H_17Jul2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25094,34 +24084,7 @@ samples_2016["/Tau/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
 
   ]),
   ("missing_from_superset",        [
-    "HLT_DiJetVBF_PassThrough",
-    "HLT_DiJetVBFMu_PassThrough",
-    "HLT_Ele145_CaloIdVT_GsfTrkIdT",
-    "HLT_Ele200_CaloIdVT_GsfTrkIdT",
-    "HLT_IsoMu24_eta2p1",
-    "HLT_IsoTkMu24_eta2p1",
-    "HLT_L1BptxMinus",
-    "HLT_L1BptxPlus",
-    "HLT_L1MinimumBiasHF_OR",
-    "HLT_L1MinimumBiasHF_OR_part0",
-    "HLT_L1MinimumBiasHF_OR_part1",
-    "HLT_L1MinimumBiasHF_OR_part2",
-    "HLT_L1MinimumBiasHF_OR_part3",
-    "HLT_L1MinimumBiasHF_OR_part4",
-    "HLT_L1MinimumBiasHF_OR_part5",
-    "HLT_L1MinimumBiasHF_OR_part6",
-    "HLT_L1MinimumBiasHF_OR_part7",
-    "HLT_L1MinimumBiasHF_OR_part8",
-    "HLT_L1MinimumBiasHF_OR_part9",
-    "HLT_L1NotBptxOR",
-    "HLT_ZeroBias_part0",
-    "HLT_ZeroBias_part1",
-    "HLT_ZeroBias_part2",
-    "HLT_ZeroBias_part3",
-    "HLT_ZeroBias_part4",
-    "HLT_ZeroBias_part5",
-    "HLT_ZeroBias_part6",
-    "HLT_ZeroBias_part7",
+
   ]),
   ("missing_hlt_paths",            [
     "HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg",
@@ -25653,8581 +24616,6 @@ samples_2016["/Tau/Run2016H-17Jul2018-v1/MINIAOD"] = OD([
   ]),
 ])
 
-samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ttH"),
-  ("process_name_specific",           "ttHJetToNonbb_M125_amcatnlo_ext1"),
-  ("nof_files",                       101),
-  ("nof_db_files",                    90),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 10058345),
-  ("nof_db_events",                   10058345),
-  ("fsize_local",                     32026560433), # 32.03GB, avg file size 317.09MB
-  ("fsize_db",                        528505950470), # 528.51GB, avg file size 5.87GB
-  ("use_it",                          True),
-  ("xsection",                        0.2118),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/2016v3_2019Jul24_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190724_155747"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ttH"),
-  ("process_name_specific",           "ttHToNonbb_M125_powheg"),
-  ("nof_files",                       40),
-  ("nof_db_files",                    35),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 3881610),
-  ("nof_db_events",                   3981250),
-  ("fsize_local",                     11894279271), # 11.89GB, avg file size 297.36MB
-  ("fsize_db",                        208884155497), # 208.88GB, avg file size 5.97GB
-  ("use_it",                          False),
-  ("xsection",                        0.2118),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/2016v3_2019Jul24_ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_155959"),
-        ("selection", "*"),
-        ("blacklist", [5]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ttH_ctcvcp"),
-  ("process_name_specific",           "TTH_4f_ctcvcp"),
-  ("nof_files",                       96),
-  ("nof_db_files",                    149),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9466700),
-  ("nof_db_events",                   9566400),
-  ("fsize_local",                     28311662796), # 28.31GB, avg file size 294.91MB
-  ("fsize_db",                        520020669375), # 520.02GB, avg file size 3.49GB
-  ("use_it",                          False),
-  ("xsection",                        0.5071),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 306000 - 306102 -> NNPDF31_nnlo_hessian_pdfas PDF set, expecting 103 weights (counted 103 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug06/ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/2016v3_2019Aug06_ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190806_173310"),
-        ("selection", "*"),
-        ("blacklist", [79]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/THQ_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "tHq"),
-  ("process_name_specific",           "THQ"),
-  ("nof_files",                       35),
-  ("nof_db_files",                    25),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 3495799),
-  ("nof_db_events",                   3495799),
-  ("fsize_local",                     8728722949), # 8.73GB, avg file size 249.39MB
-  ("fsize_db",                        158327042086), # 158.33GB, avg file size 6.33GB
-  ("use_it",                          False),
-  ("xsection",                        0.02313),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 50),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/THQ_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/2016v3_2019Jul24_THQ_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_153946"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/THQ_ctcvcp_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "tHq"),
-  ("process_name_specific",           "THQ_ctcvcp"),
-  ("nof_files",                       99),
-  ("nof_db_files",                    95),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9829911),
-  ("nof_db_events",                   9829911),
-  ("fsize_local",                     24942721513), # 24.94GB, avg file size 251.95MB
-  ("fsize_db",                        440044765353), # 440.04GB, avg file size 4.63GB
-  ("use_it",                          False),
-  ("xsection",                        0.07096),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 69),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/THQ_ctcvcp_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/2016v3_2019Jun23_THQ_ctcvcp_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_101426"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/THQ_ctcvcp_HIncl_M125_TuneCP5_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "tHq"),
-  ("process_name_specific",           "THQ_ctcvcp_CP5"),
-  ("nof_files",                       98),
-  ("nof_db_files",                    191),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9728596),
-  ("nof_db_events",                   9728596),
-  ("fsize_local",                     25062097032), # 25.06GB, avg file size 255.74MB
-  ("fsize_db",                        464344551509), # 464.34GB, avg file size 2.43GB
-  ("use_it",                          True),
-  ("xsection",                        0.07096),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 306000 - 306102 -> NNPDF31_nnlo_hessian_pdfas PDF set, expecting 103 weights (counted 103 weights)"),
-  ("nof_reweighting",                 69),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug07/THQ_ctcvcp_HIncl_M125_TuneCP5_13TeV-madgraph-pythia8/2016v3_2019Aug07_THQ_ctcvcp_HIncl_M125_TuneCP5_13TeV-madgraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190807_133628"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "tHW"),
-  ("process_name_specific",           "THW"),
-  ("nof_files",                       15),
-  ("nof_db_files",                    11),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1499200),
-  ("nof_db_events",                   1499200),
-  ("fsize_local",                     4827159898), # 4.83GB, avg file size 321.81MB
-  ("fsize_db",                        78915203633), # 78.92GB, avg file size 7.17GB
-  ("use_it",                          False),
-  ("xsection",                        0.005087),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 50),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/2016v3_2019Jul24_THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_185133"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/THW_ctcvcp_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "tHW"),
-  ("process_name_specific",           "THW_ctcvcp"),
-  ("nof_files",                       50),
-  ("nof_db_files",                    46),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 4983436),
-  ("nof_db_events",                   4983436),
-  ("fsize_local",                     16285113517), # 16.29GB, avg file size 325.70MB
-  ("fsize_db",                        264383773632), # 264.38GB, avg file size 5.75GB
-  ("use_it",                          False),
-  ("xsection",                        0.01561),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 69),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/THW_ctcvcp_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/2016v3_2019Jul24_THW_ctcvcp_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_185344"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/THW_ctcvcp_HIncl_M125_TuneCP5_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "tHW"),
-  ("process_name_specific",           "THW_ctcvcp_CP5"),
-  ("nof_files",                       51),
-  ("nof_db_files",                    127),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 4998296),
-  ("nof_db_events",                   4998296),
-  ("fsize_local",                     15413848534), # 15.41GB, avg file size 302.23MB
-  ("fsize_db",                        278606440203), # 278.61GB, avg file size 2.19GB
-  ("use_it",                          True),
-  ("xsection",                        0.01561),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
-  ("nof_reweighting",                 69),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug07/THW_ctcvcp_HIncl_M125_TuneCP5_13TeV-madgraph-pythia8/2016v3_2019Aug07_THW_ctcvcp_HIncl_M125_TuneCP5_13TeV-madgraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190807_133834"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v3/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ggH"),
-  ("process_name_specific",           "GluGluHToTauTau"),
-  ("nof_files",                       97),
-  ("nof_db_files",                    78),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9673200),
-  ("nof_db_events",                   9673200),
-  ("fsize_local",                     12356053909), # 12.36GB, avg file size 127.38MB
-  ("fsize_db",                        301793073376), # 301.79GB, avg file size 3.87GB
-  ("use_it",                          True),
-  ("xsection",                        3.0469),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/GluGluHToTauTau_M125_13TeV_powheg_pythia8/2016v3_2019Jul22_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v3/190722_175935"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ggH"),
-  ("process_name_specific",           "GluGluHToZZTo4L"),
-  ("nof_files",                       11),
-  ("nof_db_files",                    9),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 999800),
-  ("nof_db_events",                   999800),
-  ("fsize_local",                     1660224325), # 1.66GB, avg file size 150.93MB
-  ("fsize_db",                        35576764188), # 35.58GB, avg file size 3.95GB
-  ("use_it",                          True),
-  ("xsection",                        0.01297),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun16/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/2016v3_2019Jun16_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190616_163900"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ggH"),
-  ("process_name_specific",           "GluGluHToWWToLNuQQ_M125_ext1"),
-  ("nof_files",                       2),
-  ("nof_db_files",                    22),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 198000),
-  ("nof_db_events",                   198000),
-  ("fsize_local",                     263200932), # 263.20MB, avg file size 131.60MB
-  ("fsize_db",                        6500162934), # 6.50GB, avg file size 295.46MB
-  ("use_it",                          True),
-  ("xsection",                        4.5621),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug06/GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/2016v3_2019Aug06_GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190806_174239"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ggH"),
-  ("process_name_specific",           "GluGluHToWWTo2L2Nu_M125"),
-  ("nof_files",                       5),
-  ("nof_db_files",                    4),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 492200),
-  ("nof_db_events",                   492200),
-  ("fsize_local",                     658503634), # 658.50MB, avg file size 131.70MB
-  ("fsize_db",                        15435406262), # 15.44GB, avg file size 3.86GB
-  ("use_it",                          True),
-  ("xsection",                        1.1033),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug07/GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8/2016v3_2019Aug07_GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190807_134726"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ggH"),
-  ("process_name_specific",           "GluGluHToMuMu_M125"),
-  ("nof_files",                       20),
-  ("nof_db_files",                    34),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1991200),
-  ("nof_db_events",                   1991200),
-  ("fsize_local",                     2669308056), # 2.67GB, avg file size 133.47MB
-  ("fsize_db",                        63981899559), # 63.98GB, avg file size 1.88GB
-  ("use_it",                          True),
-  ("xsection",                        0.010571),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug07/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/2016v3_2019Aug07_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190807_134925"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ggH"),
-  ("process_name_specific",           "GluGluHToBB_M125"),
-  ("nof_files",                       10),
-  ("nof_db_files",                    7),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 972675),
-  ("nof_db_events",                   972675),
-  ("fsize_local",                     1448587151), # 1.45GB, avg file size 144.86MB
-  ("fsize_db",                        32270097687), # 32.27GB, avg file size 4.61GB
-  ("use_it",                          True),
-  ("xsection",                        28.293),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug07/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/2016v3_2019Aug07_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190807_135133"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ggH"),
-  ("process_name_specific",           "GluGluHToBB_M125_ext1"),
-  ("nof_files",                       39),
-  ("nof_db_files",                    31),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 3799373),
-  ("nof_db_events",                   3799373),
-  ("fsize_local",                     5654711972), # 5.65GB, avg file size 144.99MB
-  ("fsize_db",                        126249951405), # 126.25GB, avg file size 4.07GB
-  ("use_it",                          True),
-  ("xsection",                        28.293),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug06/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/2016v3_2019Aug06_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190806_173516"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ggH"),
-  ("process_name_specific",           "GluGluHToGG_M125_ext2"),
-  ("nof_files",                       9),
-  ("nof_db_files",                    7),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 812652),
-  ("nof_db_events",                   812652),
-  ("fsize_local",                     1060514493), # 1.06GB, avg file size 117.83MB
-  ("fsize_db",                        26217726562), # 26.22GB, avg file size 3.75GB
-  ("use_it",                          True),
-  ("xsection",                        0.11028),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug06/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/2016v3_2019Aug06_GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/190806_173750"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "qqH"),
-  ("process_name_specific",           "VBFHToTauTau"),
-  ("nof_files",                       16),
-  ("nof_db_files",                    15),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1499400),
-  ("nof_db_events",                   1499400),
-  ("fsize_local",                     2405016625), # 2.41GB, avg file size 150.31MB
-  ("fsize_db",                        50767229807), # 50.77GB, avg file size 3.38GB
-  ("use_it",                          True),
-  ("xsection",                        0.2372),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul17/VBFHToTauTau_M125_13TeV_powheg_pythia8/2016v3_2019Jul17_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190717_150407"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "qqH"),
-  ("process_name_specific",           "VBF_HToZZTo4L"),
-  ("nof_files",                       6),
-  ("nof_db_files",                    6),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 500000),
-  ("nof_db_events",                   500000),
-  ("fsize_local",                     1004748523), # 1.00GB, avg file size 167.46MB
-  ("fsize_db",                        19438723963), # 19.44GB, avg file size 3.24GB
-  ("use_it",                          True),
-  ("xsection",                        0.0010099),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug06/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/2016v3_2019Aug06_VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190806_173042"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "qqH"),
-  ("process_name_specific",           "VBFHToWWToLNuQQ_M125_ext1"),
-  ("nof_files",                       3),
-  ("nof_db_files",                    31),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 200000),
-  ("nof_db_events",                   200000),
-  ("fsize_local",                     338604185), # 338.60MB, avg file size 112.87MB
-  ("fsize_db",                        7289993844), # 7.29GB, avg file size 235.16MB
-  ("use_it",                          True),
-  ("xsection",                        0.35517),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug06/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/2016v3_2019Aug06_VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190806_172502"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "qqH"),
-  ("process_name_specific",           "VBFHToWWTo2L2Nu_M125"),
-  ("nof_files",                       2),
-  ("nof_db_files",                    1),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 100000),
-  ("nof_db_events",                   100000),
-  ("fsize_local",                     168594252), # 168.59MB, avg file size 84.30MB
-  ("fsize_db",                        3406704278), # 3.41GB, avg file size 3.41GB
-  ("use_it",                          True),
-  ("xsection",                        0.085894),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug06/VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8/2016v3_2019Aug06_VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190806_172055"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "qqH"),
-  ("process_name_specific",           "VBFHToMuMu_M125"),
-  ("nof_files",                       10),
-  ("nof_db_files",                    25),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 997600),
-  ("nof_db_events",                   997600),
-  ("fsize_local",                     1623176381), # 1.62GB, avg file size 162.32MB
-  ("fsize_db",                        36458351750), # 36.46GB, avg file size 1.46GB
-  ("use_it",                          True),
-  ("xsection",                        0.00082296),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug07/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/2016v3_2019Aug07_VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190807_135350"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "qqH"),
-  ("process_name_specific",           "VBFHToBB_M125"),
-  ("nof_files",                       10),
-  ("nof_db_files",                    11),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 997371),
-  ("nof_db_events",                   997371),
-  ("fsize_local",                     1648901815), # 1.65GB, avg file size 164.89MB
-  ("fsize_db",                        35502253347), # 35.50GB, avg file size 3.23GB
-  ("use_it",                          True),
-  ("xsection",                        2.2026),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug07/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/2016v3_2019Aug07_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190807_135527"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "qqH"),
-  ("process_name_specific",           "VBFHToBB_M125_ext1"),
-  ("nof_files",                       38),
-  ("nof_db_files",                    36),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 3774811),
-  ("nof_db_events",                   3774811),
-  ("fsize_local",                     6241858996), # 6.24GB, avg file size 164.26MB
-  ("fsize_db",                        134011208892), # 134.01GB, avg file size 3.72GB
-  ("use_it",                          True),
-  ("xsection",                        2.2026),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug07/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/2016v3_2019Aug07_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190807_135635"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "qqH"),
-  ("process_name_specific",           "VBFHToGG_M125_ext1"),
-  ("nof_files",                       20),
-  ("nof_db_files",                    14),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1999200),
-  ("nof_db_events",                   1999200),
-  ("fsize_local",                     2945963545), # 2.95GB, avg file size 147.30MB
-  ("fsize_db",                        66554715193), # 66.55GB, avg file size 4.75GB
-  ("use_it",                          True),
-  ("xsection",                        0.0085851),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug07/VBFHToGG_M125_13TeV_amcatnlo_pythia8/2016v3_2019Aug07_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190807_135809"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "qqH"),
-  ("process_name_specific",           "VBFHToGG_M125_ext2"),
-  ("nof_files",                       12),
-  ("nof_db_files",                    12),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1198800),
-  ("nof_db_events",                   1198800),
-  ("fsize_local",                     1765315083), # 1.77GB, avg file size 147.11MB
-  ("fsize_db",                        40048536582), # 40.05GB, avg file size 3.34GB
-  ("use_it",                          True),
-  ("xsection",                        0.0085851),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug07/VBFHToGG_M125_13TeV_amcatnlo_pythia8/2016v3_2019Aug07_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/190807_135952"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TTZ"),
-  ("process_name_specific",           "TTZToLL_M10_ext2"),
-  ("nof_files",                       59),
-  ("nof_db_files",                    49),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 5837781),
-  ("nof_db_events",                   5837781),
-  ("fsize_local",                     16741153793), # 16.74GB, avg file size 283.75MB
-  ("fsize_db",                        285619884616), # 285.62GB, avg file size 5.83GB
-  ("use_it",                          True),
-  ("xsection",                        0.2072),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/2016v3_2019Sep02_TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/190902_163406"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TTZ"),
-  ("process_name_specific",           "TTZToLL_M10_ext3"),
-  ("nof_files",                       60),
-  ("nof_db_files",                    48),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 5934228),
-  ("nof_db_events",                   5934228),
-  ("fsize_local",                     17016300183), # 17.02GB, avg file size 283.61MB
-  ("fsize_db",                        290237477462), # 290.24GB, avg file size 6.05GB
-  ("use_it",                          True),
-  ("xsection",                        0.2072),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/2016v3_2019Jul23_TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext3-v1/190723_164140"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTZToLL_M-1to10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TTZ"),
-  ("process_name_specific",           "TTZToLL_M-1to10"),
-  ("nof_files",                       3),
-  ("nof_db_files",                    5),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 246792),
-  ("nof_db_events",                   246792),
-  ("fsize_local",                     660373168), # 660.37MB, avg file size 220.12MB
-  ("fsize_db",                        12037865155), # 12.04GB, avg file size 2.41GB
-  ("use_it",                          True),
-  ("xsection",                        0.04537),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/TTZToLL_M-1to10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul24_TTZToLL_M-1to10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-94X_mcRun2_asymptotic_v3-v1/190724_152144"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ttZJets_13TeV_madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TTZ"),
-  ("process_name_specific",           "TTZJets_LO"),
-  ("nof_files",                       99),
-  ("nof_db_files",                    80),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9883364),
-  ("nof_db_events",                   9883364),
-  ("fsize_local",                     28877329122), # 28.88GB, avg file size 291.69MB
-  ("fsize_db",                        503856469288), # 503.86GB, avg file size 6.30GB
-  ("use_it",                          False),
-  ("xsection",                        0.8393),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun16/ttZJets_13TeV_madgraphMLM-pythia8/2016v3_2019Jun16_ttZJets_13TeV_madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190616_165930"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TTW"),
-  ("process_name_specific",           "TTWJetsToLNu_ext2"),
-  ("nof_files",                       32),
-  ("nof_db_files",                    31),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 3120397),
-  ("nof_db_events",                   3120397),
-  ("fsize_local",                     9079439550), # 9.08GB, avg file size 283.73MB
-  ("fsize_db",                        153765510942), # 153.77GB, avg file size 4.96GB
-  ("use_it",                          True),
-  ("xsection",                        0.196),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun16/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/2016v3_2019Jun16_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/190616_170409"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ttWJets_13TeV_madgraphMLM/RunIISummer16MiniAODv3-94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TTW"),
-  ("process_name_specific",           "TTWJets_LO"),
-  ("nof_files",                       68),
-  ("nof_db_files",                    60),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 6503526),
-  ("nof_db_events",                   6700440),
-  ("fsize_local",                     18472844453), # 18.47GB, avg file size 271.66MB
-  ("fsize_db",                        334741041696), # 334.74GB, avg file size 5.58GB
-  ("use_it",                          False),
-  ("xsection",                        0.6008),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/ttWJets_13TeV_madgraphMLM/2016v3_2019Jun23_ttWJets_13TeV_madgraphMLM__RunIISummer16MiniAODv3-94X_mcRun2_asymptotic_v3-v1/190623_102657"),
-        ("selection", "*"),
-        ("blacklist", [32, 52]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTWW_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TTWW"),
-  ("process_name_specific",           "TTWW_ext1"),
-  ("nof_files",                       1),
-  ("nof_db_files",                    22),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 98300),
-  ("nof_db_events",                   98300),
-  ("fsize_local",                     314634368), # 314.63MB, avg file size 314.63MB
-  ("fsize_db",                        5758278541), # 5.76GB, avg file size 261.74MB
-  ("use_it",                          True),
-  ("xsection",                        0.006981),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/TTWW_TuneCUETP8M2T4_13TeV-madgraph-pythia8/2016v3_2019Jul23_TTWW_TuneCUETP8M2T4_13TeV-madgraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190723_171154"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "ST_s-channel_4f_leptonDecays"),
-  ("nof_files",                       10),
-  ("nof_db_files",                    8),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1000000),
-  ("nof_db_events",                   1000000),
-  ("fsize_local",                     1659223512), # 1.66GB, avg file size 165.92MB
-  ("fsize_db",                        34802245951), # 34.80GB, avg file size 4.35GB
-  ("use_it",                          True),
-  ("xsection",                        3.364),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292001 - 292102 -> NNPDF30_nlo_nf_4_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/2016v3_2019Jun23_ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190623_103240"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ST_s-channel_4f_leptonDecays_13TeV_PSweights-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "ST_s-channel_4f_leptonDecays_PSweights"),
-  ("nof_files",                       74),
-  ("nof_db_files",                    228),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 5082400),
-  ("nof_db_events",                   9971200),
-  ("fsize_local",                     8504197067), # 8.50GB, avg file size 114.92MB
-  ("fsize_db",                        351816237888), # 351.82GB, avg file size 1.54GB
-  ("use_it",                          True),
-  ("xsection",                        3.364),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292001 - 292102 -> NNPDF30_nlo_nf_4_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/ST_s-channel_4f_leptonDecays_13TeV_PSweights-amcatnlo-pythia8/2016v3_2019Jun23_ST_s-channel_4f_leptonDecays_13TeV_PSweights-amcatnlo-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190623_103416"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "ST_t-channel_antitop_4f_inclusiveDecays"),
-  ("nof_files",                       389),
-  ("nof_db_files",                    298),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 38311427),
-  ("nof_db_events",                   38811017),
-  ("fsize_local",                     66116495429), # 66.12GB, avg file size 169.97MB
-  ("fsize_db",                        1415890534904), # 1.42TB, avg file size 4.75GB
-  ("use_it",                          True),
-  ("xsection",                        80.95),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292001 - 292102 -> NNPDF30_nlo_nf_4_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/2016v3_2019Jun23_ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asym/190623_103549"),
-        ("selection", "*"),
-        ("blacklist", [1, 2, 3, 4, 5]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ST_t-channel_antitop_4f_inclusiveDecays_13TeV_PSweights-powhegV2-madspin/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "ST_t-channel_antitop_4f_inclusiveDecays_PSweights"),
-  ("nof_files",                       397),
-  ("nof_db_files",                    532),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 39675800),
-  ("nof_db_events",                   39675800),
-  ("fsize_local",                     68430460315), # 68.43GB, avg file size 172.37MB
-  ("fsize_db",                        1461111384763), # 1.46TB, avg file size 2.75GB
-  ("use_it",                          True),
-  ("xsection",                        80.95),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292001 - 292102 -> NNPDF30_nlo_nf_4_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/ST_t-channel_antitop_4f_inclusiveDecays_13TeV_PSweights-powhegV2-madspin/2016v3_2019Sep02_ST_t-channel_antitop_4f_inclusiveDecays_13TeV_PSweights-powhegV2-madspin__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v/190902_162247"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "ST_t-channel_top_4f_inclusiveDecays"),
-  ("nof_files",                       939),
-  ("nof_db_files",                    499),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 85708320),
-  ("nof_db_events",                   67105876),
-  ("fsize_local",                     147754499336), # 147.75GB, avg file size 157.35MB
-  ("fsize_db",                        2452787667702), # 2.45TB, avg file size 4.92GB
-  ("use_it",                          True),
-  ("xsection",                        136.02),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292001 - 292102 -> NNPDF30_nlo_nf_4_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep16/2016v3_2019Sep02/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/2016v3_2019Sep02_CHUNK0_ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptoti/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "ST_tW_antitop_5f_inclusiveDecays_ext1"),
-  ("nof_files",                       70),
-  ("nof_db_files",                    58),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 6832426),
-  ("nof_db_events",                   6933094),
-  ("fsize_local",                     13072574198), # 13.07GB, avg file size 186.75MB
-  ("fsize_db",                        270415654176), # 270.42GB, avg file size 4.66GB
-  ("use_it",                          True),
-  ("xsection",                        35.85),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/2016v3_2019Jul23_ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190723_171013"),
-        ("selection", "*"),
-        ("blacklist", [24]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "ST_tW_top_5f_inclusiveDecays_ext1"),
-  ("nof_files",                       70),
-  ("nof_db_files",                    60),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 6952830),
-  ("nof_db_events",                   6952830),
-  ("fsize_local",                     13294142242), # 13.29GB, avg file size 189.92MB
-  ("fsize_db",                        271455083001), # 271.46GB, avg file size 4.52GB
-  ("use_it",                          True),
-  ("xsection",                        35.85),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/2016v3_2019Sep02_ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190902_162740"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ST_tWll_5f_LO_13TeV-MadGraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "ST_tWll"),
-  ("nof_files",                       1),
-  ("nof_db_files",                    1),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 50000),
-  ("nof_db_events",                   50000),
-  ("fsize_local",                     142921959), # 142.92MB, avg file size 142.92MB
-  ("fsize_db",                        2471279251), # 2.47GB, avg file size 2.47GB
-  ("use_it",                          True),
-  ("xsection",                        0.01096),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun16/ST_tWll_5f_LO_13TeV-MadGraph-pythia8/2016v3_2019Jun16_ST_tWll_5f_LO_13TeV-MadGraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190616_175846"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "TTTo2L2Nu"),
-  ("nof_files",                       680),
-  ("nof_db_files",                    778),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 67826800),
-  ("nof_db_events",                   67926800),
-  ("fsize_local",                     142475873291), # 142.48GB, avg file size 209.52MB
-  ("fsize_db",                        2988515757147), # 2.99TB, avg file size 3.84GB
-  ("use_it",                          False),
-  ("xsection",                        88.4),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/2016v3_2019Sep02_TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190902_163542"),
-        ("selection", "*"),
-        ("blacklist", [16]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "TTToSemiLeptonic"),
-  ("nof_files",                       1077),
-  ("nof_db_files",                    1105),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 107205500),
-  ("nof_db_events",                   107604800),
-  ("fsize_local",                     236065252478), # 236.07GB, avg file size 219.19MB
-  ("fsize_db",                        4847363049070), # 4.85TB, avg file size 4.39GB
-  ("use_it",                          False),
-  ("xsection",                        365.52),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/2016v3_2019Sep02_TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190902_163949"),
-        ("selection", "*"),
-        ("blacklist", [124, 568, 903, 943]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "TTToHadronic"),
-  ("nof_files",                       686),
-  ("nof_db_files",                    772),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 68418800),
-  ("nof_db_events",                   68518800),
-  ("fsize_local",                     154062648487), # 154.06GB, avg file size 224.58MB
-  ("fsize_db",                        3163848156807), # 3.16TB, avg file size 4.10GB
-  ("use_it",                          False),
-  ("xsection",                        377.85),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/2016v3_2019Jul23_TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190723_163429"),
-        ("selection", "*"),
-        ("blacklist", [391]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "TTJets_DiLept"),
-  ("nof_files",                       61),
-  ("nof_db_files",                    48),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 5968530),
-  ("nof_db_events",                   6068369),
-  ("fsize_local",                     13325295383), # 13.33GB, avg file size 218.45MB
-  ("fsize_db",                        258912481730), # 258.91GB, avg file size 5.39GB
-  ("use_it",                          True),
-  ("xsection",                        88.4),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun23_TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_110115"),
-        ("selection", "*"),
-        ("blacklist", [46]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "TTJets_DiLept_ext1"),
-  ("nof_files",                       248),
-  ("nof_db_files",                    208),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 24767666),
-  ("nof_db_events",                   24767666),
-  ("fsize_local",                     55291227544), # 55.29GB, avg file size 222.95MB
-  ("fsize_db",                        1057101408492), # 1.06TB, avg file size 5.08GB
-  ("use_it",                          True),
-  ("xsection",                        88.4),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun23_TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190623_110353"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "TTJets_SingleLeptFromT"),
-  ("nof_files",                       120),
-  ("nof_db_files",                    97),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 11957043),
-  ("nof_db_events",                   11957043),
-  ("fsize_local",                     27895170051), # 27.90GB, avg file size 232.46MB
-  ("fsize_db",                        527227071561), # 527.23GB, avg file size 5.44GB
-  ("use_it",                          True),
-  ("xsection",                        182.76),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul24_TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_152556"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "TTJets_SingleLeptFromT_ext1"),
-  ("nof_files",                       498),
-  ("nof_db_files",                    407),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 49564347),
-  ("nof_db_events",                   49664175),
-  ("fsize_local",                     115613578894), # 115.61GB, avg file size 232.16MB
-  ("fsize_db",                        2190287845746), # 2.19TB, avg file size 5.38GB
-  ("use_it",                          True),
-  ("xsection",                        182.76),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul22_TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190722_174321"),
-        ("selection", "*"),
-        ("blacklist", [117]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "TTJets_SingleLeptFromTbar"),
-  ("nof_files",                       120),
-  ("nof_db_files",                    112),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 11855625),
-  ("nof_db_events",                   11955887),
-  ("fsize_local",                     27659591172), # 27.66GB, avg file size 230.50MB
-  ("fsize_db",                        529159861432), # 529.16GB, avg file size 4.72GB
-  ("use_it",                          True),
-  ("xsection",                        182.76),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun23_TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_111039"),
-        ("selection", "*"),
-        ("blacklist", [66]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "TTJets_SingleLeptFromTbar_ext1"),
-  ("nof_files",                       679),
-  ("nof_db_files",                    366),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 61035059),
-  ("nof_db_events",                   48387865),
-  ("fsize_local",                     142507758971), # 142.51GB, avg file size 209.88MB
-  ("fsize_db",                        2131421738428), # 2.13TB, avg file size 5.82GB
-  ("use_it",                          True),
-  ("xsection",                        182.76),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep16/2016v3_2019Sep02/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Sep02_CHUNK0_TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", [201, 331, 333, 340, 392, 415]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "TTJets_amcatnloFXFX"),
-  ("nof_files",                       439),
-  ("nof_db_files",                    328),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 43245412),
-  ("nof_db_events",                   43845135),
-  ("fsize_local",                     106543509392), # 106.54GB, avg file size 242.70MB
-  ("fsize_db",                        1938885377318), # 1.94TB, avg file size 5.91GB
-  ("use_it",                          False),
-  ("xsection",                        831.76),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/2016v3_2019Sep02_TTJets_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190902_164739"),
-        ("selection", "*"),
-        ("blacklist", [10, 20, 30, 152, 402, 418]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "TTJets_madgraphMLM"),
-  ("nof_files",                       103),
-  ("nof_db_files",                    81),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 10199051),
-  ("nof_db_events",                   10199051),
-  ("fsize_local",                     24088450546), # 24.09GB, avg file size 233.87MB
-  ("fsize_db",                        450517597405), # 450.52GB, avg file size 5.56GB
-  ("use_it",                          False),
-  ("xsection",                        831.76),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul17/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul17_TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190717_145911"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTWH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TTWH"),
-  ("process_name_specific",           "TTWH_ext1"),
-  ("nof_files",                       2),
-  ("nof_db_files",                    19),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 100000),
-  ("nof_db_events",                   100000),
-  ("fsize_local",                     330953751), # 330.95MB, avg file size 165.48MB
-  ("fsize_db",                        5876783273), # 5.88GB, avg file size 309.30MB
-  ("use_it",                          True),
-  ("xsection",                        0.001582),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/TTWH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/2016v3_2019Jul23_TTWH_TuneCUETP8M2T4_13TeV-madgraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190723_120930"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTZH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TTZH"),
-  ("process_name_specific",           "TTZH_ext1"),
-  ("nof_files",                       1),
-  ("nof_db_files",                    25),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 97800),
-  ("nof_db_events",                   97800),
-  ("fsize_local",                     333873991), # 333.87MB, avg file size 333.87MB
-  ("fsize_db",                        6060088194), # 6.06GB, avg file size 242.40MB
-  ("use_it",                          True),
-  ("xsection",                        0.001535),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/TTZH_TuneCUETP8M2T4_13TeV-madgraph-pythia8/2016v3_2019Jul23_TTZH_TuneCUETP8M2T4_13TeV-madgraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190723_171403"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "WWW"),
-  ("nof_files",                       3),
-  ("nof_db_files",                    2),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 240000),
-  ("nof_db_events",                   240000),
-  ("fsize_local",                     500259540), # 500.26MB, avg file size 166.75MB
-  ("fsize_db",                        9387450023), # 9.39GB, avg file size 4.69GB
-  ("use_it",                          True),
-  ("xsection",                        0.2086),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292001 - 292102 -> NNPDF30_nlo_nf_4_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8/2016v3_2019Jul23_WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190723_100611"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "WWZ"),
-  ("nof_files",                       3),
-  ("nof_db_files",                    2),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 250000),
-  ("nof_db_events",                   250000),
-  ("fsize_local",                     564627609), # 564.63MB, avg file size 188.21MB
-  ("fsize_db",                        10137871549), # 10.14GB, avg file size 5.07GB
-  ("use_it",                          True),
-  ("xsection",                        0.1676),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292001 - 292102 -> NNPDF30_nlo_nf_4_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/2016v3_2019Jun23_WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_112402"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "WZZ"),
-  ("nof_files",                       3),
-  ("nof_db_files",                    3),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 246800),
-  ("nof_db_events",                   246800),
-  ("fsize_local",                     551732696), # 551.73MB, avg file size 183.91MB
-  ("fsize_db",                        10093638437), # 10.09GB, avg file size 3.36GB
-  ("use_it",                          True),
-  ("xsection",                        0.05701),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul17/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/2016v3_2019Jul17_WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190717_151447"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "ZZZ"),
-  ("nof_files",                       3),
-  ("nof_db_files",                    4),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 249237),
-  ("nof_db_events",                   249237),
-  ("fsize_local",                     513302730), # 513.30MB, avg file size 171.10MB
-  ("fsize_db",                        9637763887), # 9.64GB, avg file size 2.41GB
-  ("use_it",                          True),
-  ("xsection",                        0.01473),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/2016v3_2019Jun23_ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_112939"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZG_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "WZG"),
-  ("nof_files",                       10),
-  ("nof_db_files",                    8),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 998200),
-  ("nof_db_events",                   998200),
-  ("fsize_local",                     2028972343), # 2.03GB, avg file size 202.90MB
-  ("fsize_db",                        38928454526), # 38.93GB, avg file size 4.87GB
-  ("use_it",                          True),
-  ("xsection",                        0.04345),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292001 - 292102 -> NNPDF30_nlo_nf_4_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WZG_TuneCUETP8M1_13TeV-amcatnlo-pythia8/2016v3_2019Jun23_WZG_TuneCUETP8M1_13TeV-amcatnlo-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190623_113518"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "WGToLNuG_ext1"),
-  ("nof_files",                       51),
-  ("nof_db_files",                    45),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 5059865),
-  ("nof_db_events",                   5059865),
-  ("fsize_local",                     5947298521), # 5.95GB, avg file size 116.61MB
-  ("fsize_db",                        148377698646), # 148.38GB, avg file size 3.30GB
-  ("use_it",                          True),
-  ("xsection",                        464.8),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016v3_2019Sep02_WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190902_164944"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "WGToLNuG_ext2"),
-  ("nof_files",                       103),
-  ("nof_db_files",                    73),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 10133040),
-  ("nof_db_events",                   10231994),
-  ("fsize_local",                     11913340310), # 11.91GB, avg file size 115.66MB
-  ("fsize_db",                        299146793202), # 299.15GB, avg file size 4.10GB
-  ("use_it",                          True),
-  ("xsection",                        464.8),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016v3_2019Jun23_WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/190623_113927"),
-        ("selection", "*"),
-        ("blacklist", [67]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "WGToLNuG_ext3"),
-  ("nof_files",                       123),
-  ("nof_db_files",                    90),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 12219986),
-  ("nof_db_events",                   12219986),
-  ("fsize_local",                     14365541929), # 14.37GB, avg file size 116.79MB
-  ("fsize_db",                        357306491523), # 357.31GB, avg file size 3.97GB
-  ("use_it",                          True),
-  ("xsection",                        464.8),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016v3_2019Jul22_WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext3-v1/190722_181546"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "ZGTo2LG_ext1"),
-  ("nof_files",                       144),
-  ("nof_db_files",                    106),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 14071834),
-  ("nof_db_events",                   14372682),
-  ("fsize_local",                     19889209625), # 19.89GB, avg file size 138.12MB
-  ("fsize_db",                        462073274633), # 462.07GB, avg file size 4.36GB
-  ("use_it",                          True),
-  ("xsection",                        123.9),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016v3_2019Jun23_ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190623_114436"),
-        ("selection", "*"),
-        ("blacklist", [18, 33, 50]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TGJets_leptonDecays_13TeV_amcatnlo_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "TGJets"),
-  ("nof_files",                       69),
-  ("nof_db_files",                    62),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 6573296),
-  ("nof_db_events",                   6872721),
-  ("fsize_local",                     13250643530), # 13.25GB, avg file size 192.04MB
-  ("fsize_db",                        271354980749), # 271.35GB, avg file size 4.38GB
-  ("use_it",                          True),
-  ("xsection",                        1.018),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292001 - 292102 -> NNPDF30_nlo_nf_4_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/TGJets_leptonDecays_13TeV_amcatnlo_madspin_pythia8/2016v3_2019Jun23_TGJets_leptonDecays_13TeV_amcatnlo_madspin_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_115243"),
-        ("selection", "*"),
-        ("blacklist", [1, 3, 4]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "TTGJets"),
-  ("nof_files",                       49),
-  ("nof_db_files",                    42),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 4870911),
-  ("nof_db_events",                   4870911),
-  ("fsize_local",                     13337757354), # 13.34GB, avg file size 272.20MB
-  ("fsize_db",                        235015310414), # 235.02GB, avg file size 5.60GB
-  ("use_it",                          True),
-  ("xsection",                        4.215),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/2016v3_2019Jul24_TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_151936"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "TTGJets_ext1"),
-  ("nof_files",                       136),
-  ("nof_db_files",                    83),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9655326),
-  ("nof_db_events",                   9877942),
-  ("fsize_local",                     26490966752), # 26.49GB, avg file size 194.79MB
-  ("fsize_db",                        476687878413), # 476.69GB, avg file size 5.74GB
-  ("use_it",                          True),
-  ("xsection",                        4.215),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jun23/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/2016v3_2019Jun23_CHUNK0_TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", [2, 3, 4, 5, 17, 39, 41, 45, 46, 50, 51, 53, 55, 56, 70, 75, 78, 80]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/tZq_ll_4f_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "tZq_ll_4f_ext1"),
-  ("nof_files",                       137),
-  ("nof_db_files",                    117),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 13656784),
-  ("nof_db_events",                   13656784),
-  ("fsize_local",                     34260933382), # 34.26GB, avg file size 250.08MB
-  ("fsize_db",                        609340347890), # 609.34GB, avg file size 5.21GB
-  ("use_it",                          True),
-  ("xsection",                        0.07358),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292001 - 292102 -> NNPDF30_nlo_nf_4_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug06/tZq_ll_4f_13TeV-amcatnlo-pythia8/2016v3_2019Aug06_tZq_ll_4f_13TeV-amcatnlo-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190806_113651"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/tZq_ll_4f_PSweights_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "tZq_ll_4f_PSweights"),
-  ("nof_files",                       108),
-  ("nof_db_files",                    268),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 10680000),
-  ("nof_db_events",                   10780000),
-  ("fsize_local",                     26678961768), # 26.68GB, avg file size 247.03MB
-  ("fsize_db",                        484895614604), # 484.90GB, avg file size 1.81GB
-  ("use_it",                          True),
-  ("xsection",                        0.07358),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292001 - 292102 -> NNPDF30_nlo_nf_4_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/tZq_ll_4f_PSweights_13TeV-amcatnlo-pythia8/2016v3_2019Sep02_tZq_ll_4f_PSweights_13TeV-amcatnlo-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190902_165149"),
-        ("selection", "*"),
-        ("blacklist", [32]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "WpWpJJ_EWK_QCD"),
-  ("nof_files",                       2),
-  ("nof_db_files",                    2),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 149681),
-  ("nof_db_events",                   149681),
-  ("fsize_local",                     339787981), # 339.79MB, avg file size 169.89MB
-  ("fsize_db",                        6297855563), # 6.30GB, avg file size 3.15GB
-  ("use_it",                          True),
-  ("xsection",                        0.04926),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/2016v3_2019Jun23_WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190623_120854"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WWTo2L2Nu_DoubleScattering_13TeV-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "WWTo2L2Nu_DoubleScattering"),
-  ("nof_files",                       11),
-  ("nof_db_files",                    8),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 999367),
-  ("nof_db_events",                   999367),
-  ("fsize_local",                     1027555098), # 1.03GB, avg file size 93.41MB
-  ("fsize_db",                        28740400603), # 28.74GB, avg file size 3.59GB
-  ("use_it",                          True),
-  ("xsection",                        0.2232),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WWTo2L2Nu_DoubleScattering_13TeV-pythia8/2016v3_2019Jun23_WWTo2L2Nu_DoubleScattering_13TeV-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_121026"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "TTTT"),
-  ("nof_files",                       3),
-  ("nof_db_files",                    6),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 250000),
-  ("nof_db_events",                   250000),
-  ("fsize_local",                     1066847054), # 1.07GB, avg file size 355.62MB
-  ("fsize_db",                        17011686942), # 17.01GB, avg file size 2.84GB
-  ("use_it",                          True),
-  ("xsection",                        0.008213),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul17/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/2016v3_2019Jul17_TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190717_150053"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTTW_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "TTTW_ext1"),
-  ("nof_files",                       1),
-  ("nof_db_files",                    21),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 97200),
-  ("nof_db_events",                   97200),
-  ("fsize_local",                     354070964), # 354.07MB, avg file size 354.07MB
-  ("fsize_db",                        6214628717), # 6.21GB, avg file size 295.93MB
-  ("use_it",                          True),
-  ("xsection",                        0.000732),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/TTTW_TuneCUETP8M2T4_13TeV-madgraph-pythia8/2016v3_2019Jul22_TTTW_TuneCUETP8M2T4_13TeV-madgraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190722_134008"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTTJ_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "TTTJ_ext1"),
-  ("nof_files",                       2),
-  ("nof_db_files",                    15),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 100000),
-  ("nof_db_events",                   100000),
-  ("fsize_local",                     340425206), # 340.43MB, avg file size 170.21MB
-  ("fsize_db",                        6002230700), # 6.00GB, avg file size 400.15MB
-  ("use_it",                          True),
-  ("xsection",                        0.000397),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/TTTJ_TuneCUETP8M2T4_13TeV-madgraph-pythia8/2016v3_2019Jul22_TTTJ_TuneCUETP8M2T4_13TeV-madgraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190722_144759"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTWZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "TTWZ_ext1"),
-  ("nof_files",                       1),
-  ("nof_db_files",                    20),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 100000),
-  ("nof_db_events",                   100000),
-  ("fsize_local",                     312940435), # 312.94MB, avg file size 312.94MB
-  ("fsize_db",                        5738630560), # 5.74GB, avg file size 286.93MB
-  ("use_it",                          True),
-  ("xsection",                        0.003884),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul17/TTWZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8/2016v3_2019Jul17_TTWZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190717_150231"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/TTZZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "Rares"),
-  ("process_name_specific",           "TTZZ_ext1"),
-  ("nof_files",                       1),
-  ("nof_db_files",                    22),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 98400),
-  ("nof_db_events",                   98400),
-  ("fsize_local",                     313244781), # 313.24MB, avg file size 313.24MB
-  ("fsize_db",                        5745057480), # 5.75GB, avg file size 261.14MB
-  ("use_it",                          True),
-  ("xsection",                        0.001982),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/TTZZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8/2016v3_2019Jul23_TTZZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190723_164314"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "VH"),
-  ("process_name_specific",           "VHToNonbb_M125"),
-  ("nof_files",                       11),
-  ("nof_db_files",                    10),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1007898),
-  ("nof_db_events",                   1007898),
-  ("fsize_local",                     1846221846), # 1.85GB, avg file size 167.84MB
-  ("fsize_db",                        36259986064), # 36.26GB, avg file size 3.63GB
-  ("use_it",                          True),
-  ("xsection",                        0.9425),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/2016v3_2019Jul24_VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_154204"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "VH"),
-  ("process_name_specific",           "ZH_HToBB_ZToLL_ext1"),
-  ("nof_files",                       30),
-  ("nof_db_files",                    28),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2972920),
-  ("nof_db_events",                   2972920),
-  ("fsize_local",                     5936862049), # 5.94GB, avg file size 197.90MB
-  ("fsize_db",                        117275606767), # 117.28GB, avg file size 4.19GB
-  ("use_it",                          True),
-  ("xsection",                        0.05198),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/2016v3_2019Jul24_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190724_154339"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ZHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "VH"),
-  ("process_name_specific",           "ZHToTauTau"),
-  ("nof_files",                       6),
-  ("nof_db_files",                    7),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 599803),
-  ("nof_db_events",                   599803),
-  ("fsize_local",                     1050985024), # 1.05GB, avg file size 175.16MB
-  ("fsize_db",                        21471114314), # 21.47GB, avg file size 3.07GB
-  ("use_it",                          True),
-  ("xsection",                        0.05544),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/ZHToTauTau_M125_13TeV_powheg_pythia8/2016v3_2019Jun23_ZHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_123353"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-10to50"),
-  ("nof_files",                       352),
-  ("nof_db_files",                    264),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 35114961),
-  ("nof_db_events",                   35114961),
-  ("fsize_local",                     26323770768), # 26.32GB, avg file size 74.78MB
-  ("fsize_db",                        852575436868), # 852.58GB, avg file size 3.23GB
-  ("use_it",                          True),
-  ("xsection",                        18610.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun23_DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_123526"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-10to50_amcatnloFXFX"),
-  ("nof_files",                       681),
-  ("nof_db_files",                    483),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 67879630),
-  ("nof_db_events",                   67981236),
-  ("fsize_local",                     52646938865), # 52.65GB, avg file size 77.31MB
-  ("fsize_db",                        1594691281733), # 1.59TB, avg file size 3.30GB
-  ("use_it",                          False),
-  ("xsection",                        18610.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016v3_2019Sep02_DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190902_165432"),
-        ("selection", "*"),
-        ("blacklist", [547]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-10to50_amcatnloFXFX_ext1"),
-  ("nof_files",                       568),
-  ("nof_db_files",                    287),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 52225275),
-  ("nof_db_events",                   40364234),
-  ("fsize_local",                     40599704044), # 40.60GB, avg file size 71.48MB
-  ("fsize_db",                        946826425333), # 946.83GB, avg file size 3.30GB
-  ("use_it",                          False),
-  ("xsection",                        18610.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jun23/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016v3_2019Jun23_CHUNK0_DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DY1JetsToLL_M-10to50"),
-  ("nof_files",                       401),
-  ("nof_db_files",                    296),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 39558578),
-  ("nof_db_events",                   39958449),
-  ("fsize_local",                     38997920952), # 39.00GB, avg file size 97.25MB
-  ("fsize_db",                        1114603185048), # 1.11TB, avg file size 3.77GB
-  ("use_it",                          False),
-  ("xsection",                        859.68),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul22_DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190722_163821"),
-        ("selection", "*"),
-        ("blacklist", [10, 26, 38, 48]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DY2JetsToLL_M-10to50"),
-  ("nof_files",                       274),
-  ("nof_db_files",                    144),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 24749760),
-  ("nof_db_events",                   19461065),
-  ("fsize_local",                     27629789204), # 27.63GB, avg file size 100.84MB
-  ("fsize_db",                        571063486084), # 571.06GB, avg file size 3.97GB
-  ("use_it",                          False),
-  ("xsection",                        455.25),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jul24/DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul24_CHUNK0_DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DY3JetsToLL_M-10to50"),
-  ("nof_files",                       50),
-  ("nof_db_files",                    36),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 4964197),
-  ("nof_db_events",                   4964197),
-  ("fsize_local",                     6600206399), # 6.60GB, avg file size 132.00MB
-  ("fsize_db",                        157220526981), # 157.22GB, avg file size 4.37GB
-  ("use_it",                          False),
-  ("xsection",                        111.81),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul22_DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190722_185353"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DY4JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DY4JetsToLL_M-10to50"),
-  ("nof_files",                       21),
-  ("nof_db_files",                    18),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2087849),
-  ("nof_db_events",                   2087849),
-  ("fsize_local",                     3495745422), # 3.50GB, avg file size 166.46MB
-  ("fsize_db",                        74436479210), # 74.44GB, avg file size 4.14GB
-  ("use_it",                          False),
-  ("xsection",                        43.12),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/DY4JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul24_DY4JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_153006"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-5to50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-5to50_HT-100to200"),
-  ("nof_files",                       11),
-  ("nof_db_files",                    7),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1008250),
-  ("nof_db_events",                   1008250),
-  ("fsize_local",                     1393811148), # 1.39GB, avg file size 126.71MB
-  ("fsize_db",                        32622487452), # 32.62GB, avg file size 4.66GB
-  ("use_it",                          False),
-  ("xsection",                        262.89),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/DYJetsToLL_M-5to50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun23_DYJetsToLL_M-5to50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_125537"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-5to50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-5to50_HT-100to200_ext1"),
-  ("nof_files",                       86),
-  ("nof_db_files",                    70),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 8583596),
-  ("nof_db_events",                   8583596),
-  ("fsize_local",                     11841638183), # 11.84GB, avg file size 137.69MB
-  ("fsize_db",                        278893599730), # 278.89GB, avg file size 3.98GB
-  ("use_it",                          False),
-  ("xsection",                        262.89),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/DYJetsToLL_M-5to50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul24_DYJetsToLL_M-5to50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1/190724_151732"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-5to50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-5to50_HT-200to400"),
-  ("nof_files",                       11),
-  ("nof_db_files",                    9),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1045127),
-  ("nof_db_events",                   1045127),
-  ("fsize_local",                     1931054315), # 1.93GB, avg file size 175.55MB
-  ("fsize_db",                        39497917957), # 39.50GB, avg file size 4.39GB
-  ("use_it",                          False),
-  ("xsection",                        44.52),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun16/DYJetsToLL_M-5to50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun16_DYJetsToLL_M-5to50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190616_204514"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-5to50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-5to50_HT-200to400_ext1"),
-  ("nof_files",                       21),
-  ("nof_db_files",                    21),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2077880),
-  ("nof_db_events",                   2077880),
-  ("fsize_local",                     3836738753), # 3.84GB, avg file size 182.70MB
-  ("fsize_db",                        78367782998), # 78.37GB, avg file size 3.73GB
-  ("use_it",                          False),
-  ("xsection",                        44.52),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/DYJetsToLL_M-5to50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul24_DYJetsToLL_M-5to50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1/190724_170501"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-5to50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-5to50_HT-400to600"),
-  ("nof_files",                       11),
-  ("nof_db_files",                    8),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1016799),
-  ("nof_db_events",                   1016799),
-  ("fsize_local",                     2425491160), # 2.43GB, avg file size 220.50MB
-  ("fsize_db",                        44119485779), # 44.12GB, avg file size 5.51GB
-  ("use_it",                          False),
-  ("xsection",                        4.284),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/DYJetsToLL_M-5to50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul23_DYJetsToLL_M-5to50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190723_095821"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-5to50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-5to50_HT-400to600_ext1"),
-  ("nof_files",                       21),
-  ("nof_db_files",                    18),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 970881),
-  ("nof_db_events",                   2071405),
-  ("fsize_local",                     2314593261), # 2.31GB, avg file size 110.22MB
-  ("fsize_db",                        90110016244), # 90.11GB, avg file size 5.01GB
-  ("use_it",                          False),
-  ("xsection",                        4.284),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/DYJetsToLL_M-5to50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul23_DYJetsToLL_M-5to50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1/190723_162355"),
-        ("selection", "*"),
-        ("blacklist", [4, 5, 7, 9, 10, 12, 16, 17, 18, 19, 20]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-5to50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-5to50_HT-600toInf"),
-  ("nof_files",                       11),
-  ("nof_db_files",                    8),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1021077),
-  ("nof_db_events",                   1021077),
-  ("fsize_local",                     2787700077), # 2.79GB, avg file size 253.43MB
-  ("fsize_db",                        49930642077), # 49.93GB, avg file size 6.24GB
-  ("use_it",                          False),
-  ("xsection",                        1.293),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/DYJetsToLL_M-5to50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul24_DYJetsToLL_M-5to50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_112830"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-5to50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-5to50_HT-600toInf_ext1"),
-  ("nof_files",                       21),
-  ("nof_db_files",                    15),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2017380),
-  ("nof_db_events",                   2017380),
-  ("fsize_local",                     5503618197), # 5.50GB, avg file size 262.08MB
-  ("fsize_db",                        98595971175), # 98.60GB, avg file size 6.57GB
-  ("use_it",                          False),
-  ("xsection",                        1.293),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul17/DYJetsToLL_M-5to50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul17_DYJetsToLL_M-5to50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1/190717_145735"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-50_ext1"),
-  ("nof_files",                       691),
-  ("nof_db_files",                    360),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 63938073),
-  ("nof_db_events",                   49748967),
-  ("fsize_local",                     73393487033), # 73.39GB, avg file size 106.21MB
-  ("fsize_db",                        1453769168837), # 1.45TB, avg file size 4.04GB
-  ("use_it",                          False),
-  ("xsection",                        6077.22),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jul23/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul23_CHUNK0_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-50_ext2"),
-  ("nof_files",                       1304),
-  ("nof_db_files",                    701),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 96819775),
-  ("nof_db_events",                   96531428),
-  ("fsize_local",                     111416074131), # 111.42GB, avg file size 85.44MB
-  ("fsize_db",                        2831155987616), # 2.83TB, avg file size 4.04GB
-  ("use_it",                          False),
-  ("xsection",                        6077.22),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jun23/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun23_CHUNK0_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", [1, 2, 3, 4, 5, 39, 51, 79, 93, 114, 133, 147, 151, 152, 160, 161, 163, 188, 189, 196, 198, 199, 200, 201, 203, 204, 206, 208, 211, 215, 216, 227, 229, 230, 233, 235, 238, 248, 249, 252, 257, 260, 262, 264, 272, 273, 280, 282, 287, 288, 290, 291, 307, 308, 323, 331, 337, 344, 348, 352, 359, 360, 362, 387, 392, 398, 409, 414, 426, 445, 446, 458, 459, 461, 477, 478, 479, 481, 482, 483, 484, 487, 490, 491, 492, 493, 494, 495, 497, 498, 499, 501, 502, 505, 507, 508, 509, 510, 511, 512, 514, 516, 518, 521, 522, 523, 525, 526, 527, 528, 532, 534, 535, 536, 537, 539, 542, 543, 546, 548, 549, 550, 554, 555, 556, 560, 562, 563, 565, 566, 567, 568, 569, 570, 572, 575, 576, 578, 581, 589, 595, 607, 610, 612, 615, 617, 623, 625, 628, 631, 633, 634, 635, 636, 638, 639, 642, 643, 645, 647, 649, 650, 651, 652, 654, 656, 659, 663, 665, 670, 672, 673, 679, 680, 689, 692, 696, 698]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M-50_amcatnloFXFX_ext2"),
-  ("nof_files",                       1520),
-  ("nof_db_files",                    871),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 145915455),
-  ("nof_db_events",                   120777245),
-  ("fsize_local",                     180304375457), # 180.30GB, avg file size 118.62MB
-  ("fsize_db",                        3525213031335), # 3.53TB, avg file size 4.05GB
-  ("use_it",                          True),
-  ("xsection",                        6077.22),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jun23/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016v3_2019Jun23_CHUNK0_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", [1, 2, 3, 4, 5, 14, 310, 724, 746, 756, 792, 793, 830, 861, 867]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DY1JetsToLL_M-50"),
-  ("nof_files",                       499),
-  ("nof_db_files",                    475),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 27064699),
-  ("nof_db_events",                   63730337),
-  ("fsize_local",                     34330385866), # 34.33GB, avg file size 68.80MB
-  ("fsize_db",                        1975229807254), # 1.98TB, avg file size 4.16GB
-  ("use_it",                          False),
-  ("xsection",                        998.61),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jun23/DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun23_CHUNK0_DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", [1, 2, 3, 4, 5, 21, 32, 39, 69, 73, 86, 90, 92, 93, 95]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DY2JetsToLL_M-50"),
-  ("nof_files",                       199),
-  ("nof_db_files",                    144),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 16881690),
-  ("nof_db_events",                   19879279),
-  ("fsize_local",                     24823624060), # 24.82GB, avg file size 124.74MB
-  ("fsize_db",                        665323381795), # 665.32GB, avg file size 4.62GB
-  ("use_it",                          False),
-  ("xsection",                        349.25),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun30/DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun30_DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190629_222428"),
-        ("selection", "*"),
-        ("blacklist", [11, 45, 48, 70, 73, 74, 83, 88, 93, 95, 96, 98, 99, 100, 101, 102, 109, 129, 132, 133, 136, 153, 154, 156, 159, 160, 161, 165, 169, 170]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DY3JetsToLL_M-50"),
-  ("nof_files",                       59),
-  ("nof_db_files",                    48),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 5857441),
-  ("nof_db_events",                   5857441),
-  ("fsize_local",                     10026880980), # 10.03GB, avg file size 169.95MB
-  ("fsize_db",                        212438796731), # 212.44GB, avg file size 4.43GB
-  ("use_it",                          False),
-  ("xsection",                        127.52),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun24/DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun24_DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190624_140532"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DY4JetsToLL_M-50"),
-  ("nof_files",                       43),
-  ("nof_db_files",                    30),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 4197868),
-  ("nof_db_events",                   4197868),
-  ("fsize_local",                     8861356811), # 8.86GB, avg file size 206.08MB
-  ("fsize_db",                        169839944436), # 169.84GB, avg file size 5.66GB
-  ("use_it",                          False),
-  ("xsection",                        50.039),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul22_DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190722_151218"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M50_HT100to200"),
-  ("nof_files",                       28),
-  ("nof_db_files",                    20),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2351803),
-  ("nof_db_events",                   2751187),
-  ("fsize_local",                     4054638126), # 4.05GB, avg file size 144.81MB
-  ("fsize_db",                        99023772526), # 99.02GB, avg file size 4.95GB
-  ("use_it",                          False),
-  ("xsection",                        183.53),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul17/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul17_DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190717_151801"),
-        ("selection", "*"),
-        ("blacklist", [2, 3, 6, 25]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M50_HT100to200_ext1"),
-  ("nof_files",                       83),
-  ("nof_db_files",                    73),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 8265899),
-  ("nof_db_events",                   8265899),
-  ("fsize_local",                     14243399919), # 14.24GB, avg file size 171.61MB
-  ("fsize_db",                        299870117814), # 299.87GB, avg file size 4.11GB
-  ("use_it",                          False),
-  ("xsection",                        183.53),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul02/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul02_DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190702_094541"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M50_HT200to400"),
-  ("nof_files",                       10),
-  ("nof_db_files",                    12),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 962195),
-  ("nof_db_events",                   962195),
-  ("fsize_local",                     2091835423), # 2.09GB, avg file size 209.18MB
-  ("fsize_db",                        39589451138), # 39.59GB, avg file size 3.30GB
-  ("use_it",                          False),
-  ("xsection",                        55.411),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul02/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul02_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190702_094715"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M50_HT200to400_ext1"),
-  ("nof_files",                       87),
-  ("nof_db_files",                    68),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 6449915),
-  ("nof_db_events",                   8646942),
-  ("fsize_local",                     14008536717), # 14.01GB, avg file size 161.02MB
-  ("fsize_db",                        353330107045), # 353.33GB, avg file size 5.20GB
-  ("use_it",                          False),
-  ("xsection",                        55.411),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun24/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun24_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190624_135913"),
-        ("selection", "*"),
-        ("blacklist", [1, 2, 5, 9, 13, 27, 29, 30, 31, 41, 49, 50, 70, 74, 75, 76, 77, 78, 79, 80, 81, 85]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M50_HT400to600"),
-  ("nof_files",                       11),
-  ("nof_db_files",                    9),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1070454),
-  ("nof_db_events",                   1070454),
-  ("fsize_local",                     2860007889), # 2.86GB, avg file size 260.00MB
-  ("fsize_db",                        49969495510), # 49.97GB, avg file size 5.55GB
-  ("use_it",                          False),
-  ("xsection",                        7.9592),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun24/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun24_DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190624_135602"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M50_HT400to600_ext1"),
-  ("nof_files",                       87),
-  ("nof_db_files",                    76),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 5558254),
-  ("nof_db_events",                   8655207),
-  ("fsize_local",                     14847429398), # 14.85GB, avg file size 170.66MB
-  ("fsize_db",                        405134119563), # 405.13GB, avg file size 5.33GB
-  ("use_it",                          False),
-  ("xsection",                        7.9592),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun24/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun24_DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190624_135738"),
-        ("selection", "*"),
-        ("blacklist", [2, 6, 15, 20, 21, 22, 30, 34, 37, 40, 41, 42, 44, 45, 46, 47, 48, 49, 51, 56, 58, 61, 62, 69, 71, 72, 81, 82, 83, 85, 86]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M50_HT600to800"),
-  ("nof_files",                       84),
-  ("nof_db_files",                    103),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 8292957),
-  ("nof_db_events",                   8292957),
-  ("fsize_local",                     24272128008), # 24.27GB, avg file size 288.95MB
-  ("fsize_db",                        422117016594), # 422.12GB, avg file size 4.10GB
-  ("use_it",                          False),
-  ("xsection",                        2.0041),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/DYJetsToLL_M-50_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul23_DYJetsToLL_M-50_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190723_162145"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M50_HT800to1200"),
-  ("nof_files",                       27),
-  ("nof_db_files",                    28),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2673066),
-  ("nof_db_events",                   2673066),
-  ("fsize_local",                     8296493376), # 8.30GB, avg file size 307.28MB
-  ("fsize_db",                        142376357906), # 142.38GB, avg file size 5.08GB
-  ("use_it",                          False),
-  ("xsection",                        0.92367),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun30/DYJetsToLL_M-50_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun30_DYJetsToLL_M-50_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190629_223253"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M50_HT1200to2500"),
-  ("nof_files",                       6),
-  ("nof_db_files",                    8),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 596079),
-  ("nof_db_events",                   596079),
-  ("fsize_local",                     1965239879), # 1.97GB, avg file size 327.54MB
-  ("fsize_db",                        34502618926), # 34.50GB, avg file size 4.31GB
-  ("use_it",                          False),
-  ("xsection",                        0.22025),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/DYJetsToLL_M-50_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Sep02_DYJetsToLL_M-50_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190902_165844"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYJetsToLL_M-50_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYJetsToLL_M50_HT2500toInf"),
-  ("nof_files",                       4),
-  ("nof_db_files",                    4),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 399492),
-  ("nof_db_events",                   399492),
-  ("fsize_local",                     1396972388), # 1.40GB, avg file size 349.24MB
-  ("fsize_db",                        24982088640), # 24.98GB, avg file size 6.25GB
-  ("use_it",                          False),
-  ("xsection",                        0.0040070),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun16/DYJetsToLL_M-50_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun16_DYJetsToLL_M-50_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190616_213803"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/DYBBJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "DYBBJetsToLL_M-50"),
-  ("nof_files",                       26),
-  ("nof_db_files",                    18),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2454400),
-  ("nof_db_events",                   2554303),
-  ("fsize_local",                     4365089991), # 4.37GB, avg file size 167.89MB
-  ("fsize_db",                        95636695840), # 95.64GB, avg file size 5.31GB
-  ("use_it",                          False),
-  ("xsection",                        14.6),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun30/DYBBJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun30_DYBBJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190629_222637"),
-        ("selection", "*"),
-        ("blacklist", [13]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu"),
-  ("nof_files",                       242),
-  ("nof_db_files",                    174),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 23819932),
-  ("nof_db_events",                   24120319),
-  ("fsize_local",                     24299476828), # 24.30GB, avg file size 100.41MB
-  ("fsize_db",                        645881993756), # 645.88GB, avg file size 3.71GB
-  ("use_it",                          False),
-  ("xsection",                        61526.7),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun24/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016v3_2019Jun24_WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190624_141955"),
-        ("selection", "*"),
-        ("blacklist", [3, 90, 223]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_ext2"),
-  ("nof_files",                       3315),
-  ("nof_db_files",                    1690),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 290583875),
-  ("nof_db_events",                   237263153),
-  ("fsize_local",                     297123463202), # 297.12GB, avg file size 89.63MB
-  ("fsize_db",                        6349228046663), # 6.35TB, avg file size 3.76GB
-  ("use_it",                          False),
-  ("xsection",                        61526.7),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep16/2016v3_2019Sep02/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016v3_2019Sep02_CHUNK0_WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", [109, 353, 367, 699, 748, 769, 792, 793, 797, 799, 803, 808, 814, 817, 820, 825, 829, 834, 859, 861, 862, 870, 879, 892, 893, 901, 910, 913, 914, 918, 925, 927, 930, 932, 939, 940, 944, 946, 949, 950, 951, 954, 955, 956, 959, 967, 971, 973, 976, 981, 983, 990, 993, 995, 996, 1008, 1013, 1018, 1022, 1026, 1030, 1035, 1036, 1042, 1043, 1047, 1049, 1059, 1060, 1062, 1065, 1070, 1071, 1086, 1087, 1091, 1092, 1093, 1098, 1107, 1115, 1122, 1125, 1135, 1138, 1143, 1144, 1147, 1149, 1152, 1162, 1165, 1171, 1182, 1183, 1186, 1190, 1195, 1201, 1210, 1213, 1221, 1222, 1225, 1281, 1364, 1378, 1427, 1896, 1946, 2453, 2666, 2706, 2923, 2990]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_madgraphMLM"),
-  ("nof_files",                       296),
-  ("nof_db_files",                    215),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 28913560),
-  ("nof_db_events",                   29514020),
-  ("fsize_local",                     27284726481), # 27.28GB, avg file size 92.18MB
-  ("fsize_db",                        793704629539), # 793.70GB, avg file size 3.69GB
-  ("use_it",                          True),
-  ("xsection",                        61526.7),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun24/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun24_WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190624_142520"),
-        ("selection", "*"),
-        ("blacklist", [1, 2, 3, 4, 5, 207]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_madgraphMLM_ext2"),
-  ("nof_files",                       801),
-  ("nof_db_files",                    410),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 73872929),
-  ("nof_db_events",                   57402435),
-  ("fsize_local",                     69994669999), # 69.99GB, avg file size 87.38MB
-  ("fsize_db",                        1550134936304), # 1.55TB, avg file size 3.78GB
-  ("use_it",                          True),
-  ("xsection",                        61526.7),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jun24/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun24_CHUNK0_WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", [48]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "W1JetsToLNu"),
-  ("nof_files",                       454),
-  ("nof_db_files",                    332),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 45283121),
-  ("nof_db_events",                   45283121),
-  ("fsize_local",                     47061384262), # 47.06GB, avg file size 103.66MB
-  ("fsize_db",                        1272250366716), # 1.27TB, avg file size 3.83GB
-  ("use_it",                          False),
-  ("xsection",                        9442.49),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul24_W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190724_152802"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "W2JetsToLNu"),
-  ("nof_files",                       301),
-  ("nof_db_files",                    236),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 29765551),
-  ("nof_db_events",                   30064264),
-  ("fsize_local",                     37143668205), # 37.14GB, avg file size 123.40MB
-  ("fsize_db",                        915792344848), # 915.79GB, avg file size 3.88GB
-  ("use_it",                          False),
-  ("xsection",                        3252.49),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun24/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun24_W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190624_134913"),
-        ("selection", "*"),
-        ("blacklist", [82, 120, 297]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "W2JetsToLNu_ext1"),
-  ("nof_files",                       423),
-  ("nof_db_files",                    225),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 38662377),
-  ("nof_db_events",                   30374504),
-  ("fsize_local",                     48288297243), # 48.29GB, avg file size 114.16MB
-  ("fsize_db",                        922766000017), # 922.77GB, avg file size 4.10GB
-  ("use_it",                          False),
-  ("xsection",                        3252.49),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jun24/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun24_CHUNK0_W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "W3JetsToLNu"),
-  ("nof_files",                       199),
-  ("nof_db_files",                    153),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 19798117),
-  ("nof_db_events",                   19798117),
-  ("fsize_local",                     29314227615), # 29.31GB, avg file size 147.31MB
-  ("fsize_db",                        651868160870), # 651.87GB, avg file size 4.26GB
-  ("use_it",                          False),
-  ("xsection",                        1153.42),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun24/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun24_W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190624_140810"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "W3JetsToLNu_ext1"),
-  ("nof_files",                       557),
-  ("nof_db_files",                    291),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 50600926),
-  ("nof_db_events",                   39501912),
-  ("fsize_local",                     75017577305), # 75.02GB, avg file size 134.68MB
-  ("fsize_db",                        1299953115847), # 1.30TB, avg file size 4.47GB
-  ("use_it",                          False),
-  ("xsection",                        1153.42),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jul24/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul24_CHUNK0_W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "W4JetsToLNu"),
-  ("nof_files",                       92),
-  ("nof_db_files",                    81),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 7618560),
-  ("nof_db_events",                   9116657),
-  ("fsize_local",                     14225350768), # 14.23GB, avg file size 154.62MB
-  ("fsize_db",                        340719143876), # 340.72GB, avg file size 4.21GB
-  ("use_it",                          False),
-  ("xsection",                        634.05),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun23_W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_163633"),
-        ("selection", "*"),
-        ("blacklist", [1, 4, 5, 58, 79, 80, 81, 82, 84, 85, 86, 87, 88, 90, 91]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "W4JetsToLNu_ext2"),
-  ("nof_files",                       188),
-  ("nof_db_files",                    143),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 18751462),
-  ("nof_db_events",                   18751462),
-  ("fsize_local",                     34995571601), # 35.00GB, avg file size 186.15MB
-  ("fsize_db",                        700950462106), # 700.95GB, avg file size 4.90GB
-  ("use_it",                          False),
-  ("xsection",                        634.05),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul17/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul17_W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/190717_150542"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-70To100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT70To100"),
-  ("nof_files",                       101),
-  ("nof_db_files",                    81),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 10020533),
-  ("nof_db_events",                   10020533),
-  ("fsize_local",                     12785665666), # 12.79GB, avg file size 126.59MB
-  ("fsize_db",                        309269762266), # 309.27GB, avg file size 3.82GB
-  ("use_it",                          False),
-  ("xsection",                        1504.92),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/WJetsToLNu_HT-70To100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Sep02_WJetsToLNu_HT-70To100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190902_170358"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT100To200"),
-  ("nof_files",                       100),
-  ("nof_db_files",                    72),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9945478),
-  ("nof_db_events",                   9945478),
-  ("fsize_local",                     14856860164), # 14.86GB, avg file size 148.57MB
-  ("fsize_db",                        328826822871), # 328.83GB, avg file size 4.57GB
-  ("use_it",                          False),
-  ("xsection",                        1625.08),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul23_WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190723_104843"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT100To200_ext1"),
-  ("nof_files",                       296),
-  ("nof_db_files",                    226),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 29303346),
-  ("nof_db_events",                   29503700),
-  ("fsize_local",                     43771400095), # 43.77GB, avg file size 147.88MB
-  ("fsize_db",                        976194222117), # 976.19GB, avg file size 4.32GB
-  ("use_it",                          False),
-  ("xsection",                        1625.08),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun23_WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190623_170843"),
-        ("selection", "*"),
-        ("blacklist", [10, 274]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT100To200_ext2"),
-  ("nof_files",                       538),
-  ("nof_db_files",                    283),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 49263828),
-  ("nof_db_events",                   38593839),
-  ("fsize_local",                     73634164231), # 73.63GB, avg file size 136.87MB
-  ("fsize_db",                        1278081592124), # 1.28TB, avg file size 4.52GB
-  ("use_it",                          False),
-  ("xsection",                        1625.08),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep16/2016v3_2019Sep02/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Sep02_CHUNK0_WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", [148]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT200To400"),
-  ("nof_files",                       50),
-  ("nof_db_files",                    42),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 4963240),
-  ("nof_db_events",                   4963240),
-  ("fsize_local",                     9564964688), # 9.56GB, avg file size 191.30MB
-  ("fsize_db",                        188183889815), # 188.18GB, avg file size 4.48GB
-  ("use_it",                          False),
-  ("xsection",                        477.96),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun23_WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_171957"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT200To400_ext1"),
-  ("nof_files",                       142),
-  ("nof_db_files",                    111),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 14106492),
-  ("nof_db_events",                   14106492),
-  ("fsize_local",                     27189946507), # 27.19GB, avg file size 191.48MB
-  ("fsize_db",                        533651324579), # 533.65GB, avg file size 4.81GB
-  ("use_it",                          False),
-  ("xsection",                        477.96),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul22_WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190722_183311"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT200To400_ext2"),
-  ("nof_files",                       280),
-  ("nof_db_files",                    155),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 24743139),
-  ("nof_db_events",                   19914590),
-  ("fsize_local",                     47719680568), # 47.72GB, avg file size 170.43MB
-  ("fsize_db",                        749970418257), # 749.97GB, avg file size 4.84GB
-  ("use_it",                          False),
-  ("xsection",                        477.96),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep16/2016v3_2019Sep02/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Sep02_CHUNK0_WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", [16, 88, 191]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT400To600"),
-  ("nof_files",                       20),
-  ("nof_db_files",                    19),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1963464),
-  ("nof_db_events",                   1963464),
-  ("fsize_local",                     4748491593), # 4.75GB, avg file size 237.42MB
-  ("fsize_db",                        85028221355), # 85.03GB, avg file size 4.48GB
-  ("use_it",                          False),
-  ("xsection",                        67.441),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul22_WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190722_161926"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT400To600_ext1"),
-  ("nof_files",                       59),
-  ("nof_db_files",                    51),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 5796237),
-  ("nof_db_events",                   5796237),
-  ("fsize_local",                     14015491452), # 14.02GB, avg file size 237.55MB
-  ("fsize_db",                        248677347048), # 248.68GB, avg file size 4.88GB
-  ("use_it",                          False),
-  ("xsection",                        67.441),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul15/WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul15_WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190715_085308"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT600To800"),
-  ("nof_files",                       38),
-  ("nof_db_files",                    33),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 3380448),
-  ("nof_db_events",                   3779141),
-  ("fsize_local",                     9036809505), # 9.04GB, avg file size 237.81MB
-  ("fsize_db",                        176087256349), # 176.09GB, avg file size 5.34GB
-  ("use_it",                          False),
-  ("xsection",                        15.096),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun30/WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun30_WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190629_223637"),
-        ("selection", "*"),
-        ("blacklist", [5, 20, 25, 35]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT600To800_ext1"),
-  ("nof_files",                       150),
-  ("nof_db_files",                    124),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 14608586),
-  ("nof_db_events",                   14908339),
-  ("fsize_local",                     39040986463), # 39.04GB, avg file size 260.27MB
-  ("fsize_db",                        694236154129), # 694.24GB, avg file size 5.60GB
-  ("use_it",                          False),
-  ("xsection",                        15.096),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Sep02_WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190902_171434"),
-        ("selection", "*"),
-        ("blacklist", [67, 101, 124]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT800To1200"),
-  ("nof_files",                       16),
-  ("nof_db_files",                    16),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1544513),
-  ("nof_db_events",                   1544513),
-  ("fsize_local",                     4400353395), # 4.40GB, avg file size 275.02MB
-  ("fsize_db",                        76241472857), # 76.24GB, avg file size 4.77GB
-  ("use_it",                          False),
-  ("xsection",                        6.3626),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Sep02_WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190902_171610"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT800To1200_ext1"),
-  ("nof_files",                       63),
-  ("nof_db_files",                    60),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 5487145),
-  ("nof_db_events",                   6286023),
-  ("fsize_local",                     15629852106), # 15.63GB, avg file size 248.09MB
-  ("fsize_db",                        310009927010), # 310.01GB, avg file size 5.17GB
-  ("use_it",                          False),
-  ("xsection",                        6.3626),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun30/WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun30_WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190629_224228"),
-        ("selection", "*"),
-        ("blacklist", [16, 43, 47, 48, 53, 54, 55, 58]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT1200To2500"),
-  ("nof_files",                       3),
-  ("nof_db_files",                    3),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 244532),
-  ("nof_db_events",                   244532),
-  ("fsize_local",                     743555571), # 743.56MB, avg file size 247.85MB
-  ("fsize_db",                        13089950528), # 13.09GB, avg file size 4.36GB
-  ("use_it",                          False),
-  ("xsection",                        1.2658),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun24/WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun24_WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190624_134706"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT1200To2500_ext1"),
-  ("nof_files",                       67),
-  ("nof_db_files",                    68),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 6127168),
-  ("nof_db_events",                   6627909),
-  ("fsize_local",                     18603733449), # 18.60GB, avg file size 277.67MB
-  ("fsize_db",                        356245076053), # 356.25GB, avg file size 5.24GB
-  ("use_it",                          False),
-  ("xsection",                        1.2658),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul17/WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul17_WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190717_150822"),
-        ("selection", "*"),
-        ("blacklist", [18, 22, 31, 34, 63]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT2500ToInf"),
-  ("nof_files",                       3),
-  ("nof_db_files",                    5),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 253561),
-  ("nof_db_events",                   253561),
-  ("fsize_local",                     819943285), # 819.94MB, avg file size 273.31MB
-  ("fsize_db",                        15307944970), # 15.31GB, avg file size 3.06GB
-  ("use_it",                          False),
-  ("xsection",                        0.009405),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul22_WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190722_142931"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "EWK"),
-  ("process_name_specific",           "WJetsToLNu_HT2500ToInf_ext1"),
-  ("nof_files",                       24),
-  ("nof_db_files",                    25),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1685307),
-  ("nof_db_events",                   2384260),
-  ("fsize_local",                     5444759943), # 5.44GB, avg file size 226.86MB
-  ("fsize_db",                        140626699613), # 140.63GB, avg file size 5.63GB
-  ("use_it",                          False),
-  ("xsection",                        0.009405),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun23_WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190623_183817"),
-        ("selection", "*"),
-        ("blacklist", [3, 6, 8, 12, 18, 22, 23]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WWTo2L2Nu_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WW"),
-  ("process_name_specific",           "WWTo2L2Nu"),
-  ("nof_files",                       21),
-  ("nof_db_files",                    16),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1999000),
-  ("nof_db_events",                   1999000),
-  ("fsize_local",                     2819357651), # 2.82GB, avg file size 134.26MB
-  ("fsize_db",                        63758487635), # 63.76GB, avg file size 3.98GB
-  ("use_it",                          True),
-  ("xsection",                        12.2),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WWTo2L2Nu_13TeV-powheg/2016v3_2019Jun23_WWTo2L2Nu_13TeV-powheg__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_184354"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WW"),
-  ("process_name_specific",           "WWToLNuQQ"),
-  ("nof_files",                       20),
-  ("nof_db_files",                    18),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1999200),
-  ("nof_db_events",                   1999200),
-  ("fsize_local",                     2951531626), # 2.95GB, avg file size 147.58MB
-  ("fsize_db",                        65976939838), # 65.98GB, avg file size 3.67GB
-  ("use_it",                          False),
-  ("xsection",                        50.45),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WWToLNuQQ_13TeV-powheg/2016v3_2019Jun23_WWToLNuQQ_13TeV-powheg__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_184906"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WW"),
-  ("process_name_specific",           "WWToLNuQQ_ext1"),
-  ("nof_files",                       67),
-  ("nof_db_files",                    79),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 6655400),
-  ("nof_db_events",                   6655400),
-  ("fsize_local",                     9827613056), # 9.83GB, avg file size 146.68MB
-  ("fsize_db",                        223926394138), # 223.93GB, avg file size 2.83GB
-  ("use_it",                          False),
-  ("xsection",                        50.45),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/WWToLNuQQ_13TeV-powheg/2016v3_2019Jul24_WWToLNuQQ_13TeV-powheg__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190724_155409"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WW"),
-  ("process_name_specific",           "WWTo1L1Nu2Q"),
-  ("nof_files",                       53),
-  ("nof_db_files",                    38),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 5246469),
-  ("nof_db_events",                   5246469),
-  ("fsize_local",                     8166397278), # 8.17GB, avg file size 154.08MB
-  ("fsize_db",                        172027673160), # 172.03GB, avg file size 4.53GB
-  ("use_it",                          False),
-  ("xsection",                        50.45),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292001 - 292102 -> NNPDF30_nlo_nf_4_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun16/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/2016v3_2019Jun16_WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190616_230227"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WWTo4Q_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WW"),
-  ("process_name_specific",           "WWTo4Q"),
-  ("nof_files",                       20),
-  ("nof_db_files",                    14),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 1998400),
-  ("nof_db_events",                   1998400),
-  ("fsize_local",                     2979201218), # 2.98GB, avg file size 148.96MB
-  ("fsize_db",                        67489035622), # 67.49GB, avg file size 4.82GB
-  ("use_it",                          False),
-  ("xsection",                        52.15),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul17/WWTo4Q_13TeV-powheg/2016v3_2019Jul17_WWTo4Q_13TeV-powheg__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190717_151304"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WZ"),
-  ("process_name_specific",           "WZTo3LNu"),
-  ("nof_files",                       120),
-  ("nof_db_files",                    91),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 11928707),
-  ("nof_db_events",                   11928707),
-  ("fsize_local",                     17406285731), # 17.41GB, avg file size 145.05MB
-  ("fsize_db",                        374708263805), # 374.71GB, avg file size 4.12GB
-  ("use_it",                          True),
-  ("xsection",                        4.43),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016v3_2019Jul23_WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190723_164452"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WZ"),
-  ("process_name_specific",           "WZTo3LNu_powheg_ext1"),
-  ("nof_files",                       181),
-  ("nof_db_files",                    130),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 17901010),
-  ("nof_db_events",                   18000000),
-  ("fsize_local",                     24428668802), # 24.43GB, avg file size 134.97MB
-  ("fsize_db",                        565443889573), # 565.44GB, avg file size 4.35GB
-  ("use_it",                          False),
-  ("xsection",                        4.43),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/2016v3_2019Jun23_WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190623_191253"),
-        ("selection", "*"),
-        ("blacklist", [25]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZTo3LNu_0Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WZ"),
-  ("process_name_specific",           "WZTo3LNu_0Jets_MLL-4to50"),
-  ("nof_files",                       6),
-  ("nof_db_files",                    5),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 518917),
-  ("nof_db_events",                   518917),
-  ("fsize_local",                     535008451), # 535.01MB, avg file size 89.17MB
-  ("fsize_db",                        14858474111), # 14.86GB, avg file size 2.97GB
-  ("use_it",                          False),
-  ("xsection",                        2.3986),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WZTo3LNu_0Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun23_WZTo3LNu_0Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190623_192906"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZTo3LNu_0Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WZ"),
-  ("process_name_specific",           "WZTo3LNu_0Jets_MLL-50"),
-  ("nof_files",                       5),
-  ("nof_db_files",                    5),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 496684),
-  ("nof_db_events",                   496684),
-  ("fsize_local",                     702239526), # 702.24MB, avg file size 140.45MB
-  ("fsize_db",                        16240886055), # 16.24GB, avg file size 3.25GB
-  ("use_it",                          False),
-  ("xsection",                        0.6067),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun16/WZTo3LNu_0Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun16_WZTo3LNu_0Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190616_231731"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZTo3LNu_1Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WZ"),
-  ("process_name_specific",           "WZTo3LNu_1Jets_MLL-4to50"),
-  ("nof_files",                       5),
-  ("nof_db_files",                    5),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 469574),
-  ("nof_db_events",                   469574),
-  ("fsize_local",                     626252303), # 626.25MB, avg file size 125.25MB
-  ("fsize_db",                        15275534008), # 15.28GB, avg file size 3.06GB
-  ("use_it",                          False),
-  ("xsection",                        0.46107),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/WZTo3LNu_1Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul23_WZTo3LNu_1Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190723_120315"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZTo3LNu_1Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WZ"),
-  ("process_name_specific",           "WZTo3LNu_1Jets_MLL-50"),
-  ("nof_files",                       5),
-  ("nof_db_files",                    4),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 463539),
-  ("nof_db_events",                   463539),
-  ("fsize_local",                     816221365), # 816.22MB, avg file size 163.24MB
-  ("fsize_db",                        17028271215), # 17.03GB, avg file size 4.26GB
-  ("use_it",                          False),
-  ("xsection",                        0.3226),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun16/WZTo3LNu_1Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jun16_WZTo3LNu_1Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190616_232110"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZTo3LNu_2Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WZ"),
-  ("process_name_specific",           "WZTo3LNu_2Jets_MLL-4to50"),
-  ("nof_files",                       25),
-  ("nof_db_files",                    19),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2435926),
-  ("nof_db_events",                   2435926),
-  ("fsize_local",                     4108453013), # 4.11GB, avg file size 164.34MB
-  ("fsize_db",                        89887588430), # 89.89GB, avg file size 4.73GB
-  ("use_it",                          False),
-  ("xsection",                        0.15607),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul15/WZTo3LNu_2Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul15_WZTo3LNu_2Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190715_085127"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZTo3LNu_2Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WZ"),
-  ("process_name_specific",           "WZTo3LNu_2Jets_MLL-50"),
-  ("nof_files",                       23),
-  ("nof_db_files",                    17),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2180079),
-  ("nof_db_events",                   2280179),
-  ("fsize_local",                     4704265090), # 4.70GB, avg file size 204.53MB
-  ("fsize_db",                        95514909835), # 95.51GB, avg file size 5.62GB
-  ("use_it",                          False),
-  ("xsection",                        0.06314),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul02/WZTo3LNu_2Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul02_WZTo3LNu_2Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190702_094331"),
-        ("selection", "*"),
-        ("blacklist", [4]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZTo3LNu_3Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WZ"),
-  ("process_name_specific",           "WZTo3LNu_3Jets_MLL-4to50"),
-  ("nof_files",                       25),
-  ("nof_db_files",                    25),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2424269),
-  ("nof_db_events",                   2424269),
-  ("fsize_local",                     5342907188), # 5.34GB, avg file size 213.72MB
-  ("fsize_db",                        102029703019), # 102.03GB, avg file size 4.08GB
-  ("use_it",                          False),
-  ("xsection",                        0.06769),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/WZTo3LNu_3Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul24_WZTo3LNu_3Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190724_171022"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZTo3LNu_3Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WZ"),
-  ("process_name_specific",           "WZTo3LNu_3Jets_MLL-50"),
-  ("nof_files",                       34),
-  ("nof_db_files",                    18),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 3114624),
-  ("nof_db_events",                   2410585),
-  ("fsize_local",                     8164220107), # 8.16GB, avg file size 240.12MB
-  ("fsize_db",                        113650549747), # 113.65GB, avg file size 6.31GB
-  ("use_it",                          False),
-  ("xsection",                        0.090512),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 262000 - 262100 -> NNPDF30_lo_as_0130 PDF set, expecting 101 weights (counted 101 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jul24/WZTo3LNu_3Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Jul24_CHUNK0_WZTo3LNu_3Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WZ"),
-  ("process_name_specific",           "WZTo2L2Q"),
-  ("nof_files",                       362),
-  ("nof_db_files",                    197),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 33314586),
-  ("nof_db_events",                   26517272),
-  ("fsize_local",                     56713867952), # 56.71GB, avg file size 156.67MB
-  ("fsize_db",                        919865006859), # 919.87GB, avg file size 4.67GB
-  ("use_it",                          False),
-  ("xsection",                        5.6),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jul23/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2016v3_2019Jul23_CHUNK0_WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "WZ"),
-  ("process_name_specific",           "WZTo1L1Nu2Q"),
-  ("nof_files",                       244),
-  ("nof_db_files",                    188),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 24311445),
-  ("nof_db_events",                   24311445),
-  ("fsize_local",                     40891729245), # 40.89GB, avg file size 167.59MB
-  ("fsize_db",                        833536776680), # 833.54GB, avg file size 4.43GB
-  ("use_it",                          False),
-  ("xsection",                        10.71),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/2016v3_2019Jun23_WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_204203"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ZZ"),
-  ("process_name_specific",           "ZZTo4L"),
-  ("nof_files",                       67),
-  ("nof_db_files",                    50),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 6669988),
-  ("nof_db_events",                   6669988),
-  ("fsize_local",                     8752447531), # 8.75GB, avg file size 130.63MB
-  ("fsize_db",                        206407053220), # 206.41GB, avg file size 4.13GB
-  ("use_it",                          True),
-  ("xsection",                        1.256),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/ZZTo4L_13TeV_powheg_pythia8/2016v3_2019Sep02_ZZTo4L_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190902_171745"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ZZ"),
-  ("process_name_specific",           "ZZTo4L_amcatnloFXFX_ext1"),
-  ("nof_files",                       108),
-  ("nof_db_files",                    76),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 10711278),
-  ("nof_db_events",                   10711278),
-  ("fsize_local",                     14849423433), # 14.85GB, avg file size 137.49MB
-  ("fsize_db",                        328957846220), # 328.96GB, avg file size 4.33GB
-  ("use_it",                          False),
-  ("xsection",                        1.256),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/ZZTo4L_13TeV-amcatnloFXFX-pythia8/2016v3_2019Jul24_ZZTo4L_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190724_112154"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ZZ"),
-  ("process_name_specific",           "ZZTo2L2Nu"),
-  ("nof_files",                       90),
-  ("nof_db_files",                    74),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 8931750),
-  ("nof_db_events",                   8931750),
-  ("fsize_local",                     12643003455), # 12.64GB, avg file size 140.48MB
-  ("fsize_db",                        286633172052), # 286.63GB, avg file size 3.87GB
-  ("use_it",                          False),
-  ("xsection",                        0.564),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/ZZTo2L2Nu_13TeV_powheg_pythia8/2016v3_2019Jul23_ZZTo2L2Nu_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190723_101121"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ZZTo2L2Nu_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ZZ"),
-  ("process_name_specific",           "ZZTo2L2Nu_ext1"),
-  ("nof_files",                       488),
-  ("nof_db_files",                    362),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 48655100),
-  ("nof_db_events",                   48655100),
-  ("fsize_local",                     68820789639), # 68.82GB, avg file size 141.03MB
-  ("fsize_db",                        1556906583517), # 1.56TB, avg file size 4.30GB
-  ("use_it",                          False),
-  ("xsection",                        0.564),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug08/ZZTo2L2Nu_13TeV_powheg_pythia8_ext1/2016v3_2019Aug08_ZZTo2L2Nu_13TeV_powheg_pythia8_ext1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190808_190207"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "ZZ"),
-  ("process_name_specific",           "ZZTo2L2Q"),
-  ("nof_files",                       155),
-  ("nof_db_files",                    128),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 15462693),
-  ("nof_db_events",                   15462693),
-  ("fsize_local",                     26181844410), # 26.18GB, avg file size 168.92MB
-  ("fsize_db",                        536411748052), # 536.41GB, avg file size 4.19GB
-  ("use_it",                          False),
-  ("xsection",                        5.52),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("LHE_set",                         "LHA IDs 292201 - 292302 -> NNPDF30_nlo_nf_5_pdfas PDF set, expecting 103 weights (counted 102 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2016v3_2019Jul24_ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190724_130107"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt_15to20_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt15to20_bcToE"),
-  ("nof_files",                       27),
-  ("nof_db_files",                    21),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 2685602),
-  ("nof_db_events",                   2685602),
-  ("fsize_local",                     2166183830), # 2.17GB, avg file size 80.23MB
-  ("fsize_db",                        74364210723), # 74.36GB, avg file size 3.54GB
-  ("use_it",                          False),
-  ("xsection",                        186900.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun16/QCD_Pt_15to20_bcToE_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun16_QCD_Pt_15to20_bcToE_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190616_235054"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt_20to30_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt20to30_bcToE"),
-  ("nof_files",                       111),
-  ("nof_db_files",                    82),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 10987947),
-  ("nof_db_events",                   10987947),
-  ("fsize_local",                     9632832214), # 9.63GB, avg file size 86.78MB
-  ("fsize_db",                        312373360334), # 312.37GB, avg file size 3.81GB
-  ("use_it",                          False),
-  ("xsection",                        305400.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/QCD_Pt_20to30_bcToE_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul24_QCD_Pt_20to30_bcToE_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_115458"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt_30to80_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt30to80_bcToE"),
-  ("nof_files",                       154),
-  ("nof_db_files",                    119),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 15342783),
-  ("nof_db_events",                   15342783),
-  ("fsize_local",                     16128110292), # 16.13GB, avg file size 104.73MB
-  ("fsize_db",                        470284909238), # 470.28GB, avg file size 3.95GB
-  ("use_it",                          False),
-  ("xsection",                        361100.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/QCD_Pt_30to80_bcToE_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul23_QCD_Pt_30to80_bcToE_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190723_114436"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt_80to170_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_backup_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt80to170_bcToE_backup"),
-  ("nof_files",                       149),
-  ("nof_db_files",                    115),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 14851987),
-  ("nof_db_events",                   14851987),
-  ("fsize_local",                     22397845387), # 22.40GB, avg file size 150.32MB
-  ("fsize_db",                        533420873496), # 533.42GB, avg file size 4.64GB
-  ("use_it",                          False),
-  ("xsection",                        33820.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/QCD_Pt_80to170_bcToE_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul22_QCD_Pt_80to170_bcToE_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_backup_94X_mcRun2_asymptotic_v3-v2/190722_143145"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt_170to250_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt170to250_bcToE"),
-  ("nof_files",                       99),
-  ("nof_db_files",                    87),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9862070),
-  ("nof_db_events",                   9862070),
-  ("fsize_local",                     19511188636), # 19.51GB, avg file size 197.08MB
-  ("fsize_db",                        399943710216), # 399.94GB, avg file size 4.60GB
-  ("use_it",                          False),
-  ("xsection",                        2130.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/QCD_Pt_170to250_bcToE_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul22_QCD_Pt_170to250_bcToE_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190722_171048"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt_250toInf_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt250toInf_bcToE"),
-  ("nof_files",                       99),
-  ("nof_db_files",                    97),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9762193),
-  ("nof_db_events",                   9861593),
-  ("fsize_local",                     21994299946), # 21.99GB, avg file size 222.16MB
-  ("fsize_db",                        435506733560), # 435.51GB, avg file size 4.49GB
-  ("use_it",                          False),
-  ("xsection",                        563.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/QCD_Pt_250toInf_bcToE_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul22_QCD_Pt_250toInf_bcToE_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190722_183103"),
-        ("selection", "*"),
-        ("blacklist", [47]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt20to30_EMEnriched"),
-  ("nof_files",                       93),
-  ("nof_db_files",                    74),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9141078),
-  ("nof_db_events",                   9241500),
-  ("fsize_local",                     6833786635), # 6.83GB, avg file size 73.48MB
-  ("fsize_db",                        252735055673), # 252.74GB, avg file size 3.42GB
-  ("use_it",                          False),
-  ("xsection",                        4912000.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Sep02_QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190902_171922"),
-        ("selection", "*"),
-        ("blacklist", [54]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt30to50_EMEnriched"),
-  ("nof_files",                       48),
-  ("nof_db_files",                    34),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 4736443),
-  ("nof_db_events",                   4736443),
-  ("fsize_local",                     3963524485), # 3.96GB, avg file size 82.57MB
-  ("fsize_db",                        134869337617), # 134.87GB, avg file size 3.97GB
-  ("use_it",                          False),
-  ("xsection",                        6420000.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_230548"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt30to50_EMEnriched_ext1"),
-  ("nof_files",                       68),
-  ("nof_db_files",                    50),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 6772399),
-  ("nof_db_events",                   6772399),
-  ("fsize_local",                     5665291079), # 5.67GB, avg file size 83.31MB
-  ("fsize_db",                        192959364085), # 192.96GB, avg file size 3.86GB
-  ("use_it",                          False),
-  ("xsection",                        6420000.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul24_QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190724_113108"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt50to80_EMEnriched"),
-  ("nof_files",                       225),
-  ("nof_db_files",                    171),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 22356093),
-  ("nof_db_events",                   22455794),
-  ("fsize_local",                     22589876043), # 22.59GB, avg file size 100.40MB
-  ("fsize_db",                        687785839317), # 687.79GB, avg file size 4.02GB
-  ("use_it",                          False),
-  ("xsection",                        1988000.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul22_QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190722_172708"),
-        ("selection", "*"),
-        ("blacklist", [117]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt50to80_EMEnriched_ext1"),
-  ("nof_files",                       234),
-  ("nof_db_files",                    171),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 23233295),
-  ("nof_db_events",                   23333265),
-  ("fsize_local",                     23452610718), # 23.45GB, avg file size 100.22MB
-  ("fsize_db",                        713692515456), # 713.69GB, avg file size 4.17GB
-  ("use_it",                          False),
-  ("xsection",                        1988000.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Sep02_QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190902_172055"),
-        ("selection", "*"),
-        ("blacklist", [75]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt80to120_EMEnriched"),
-  ("nof_files",                       360),
-  ("nof_db_files",                    268),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 35826984),
-  ("nof_db_events",                   35926841),
-  ("fsize_local",                     45613162127), # 45.61GB, avg file size 126.70MB
-  ("fsize_db",                        1194513636207), # 1.19TB, avg file size 4.46GB
-  ("use_it",                          False),
-  ("xsection",                        366500.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190623_234812"),
-        ("selection", "*"),
-        ("blacklist", [324]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt80to120_EMEnriched_ext1"),
-  ("nof_files",                       420),
-  ("nof_db_files",                    309),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 41072733),
-  ("nof_db_events",                   41873363),
-  ("fsize_local",                     52243848806), # 52.24GB, avg file size 124.39MB
-  ("fsize_db",                        1391077094116), # 1.39TB, avg file size 4.50GB
-  ("use_it",                          False),
-  ("xsection",                        366500.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190624_000426"),
-        ("selection", "*"),
-        ("blacklist", [206, 364, 366, 369, 370, 377, 395, 417]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt120to170_EMEnriched"),
-  ("nof_files",                       361),
-  ("nof_db_files",                    281),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 31919549),
-  ("nof_db_events",                   36015016),
-  ("fsize_local",                     49022505903), # 49.02GB, avg file size 135.80MB
-  ("fsize_db",                        1288337214275), # 1.29TB, avg file size 4.58GB
-  ("use_it",                          False),
-  ("xsection",                        66510.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190624_001234"),
-        ("selection", "*"),
-        ("blacklist", [1, 2, 3, 4, 5, 257, 266, 272, 274, 281, 282, 284, 285, 297, 305, 306, 307, 308, 314, 322, 323, 325, 326, 327, 331, 332, 333, 334, 336, 337, 340, 341, 345, 349, 351, 352, 356, 357, 358, 359, 360]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt120to170_EMEnriched_ext1"),
-  ("nof_files",                       427),
-  ("nof_db_files",                    314),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 42463814),
-  ("nof_db_events",                   42563399),
-  ("fsize_local",                     65172925755), # 65.17GB, avg file size 152.63MB
-  ("fsize_db",                        1520724785350), # 1.52TB, avg file size 4.84GB
-  ("use_it",                          False),
-  ("xsection",                        66510.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190624_001613"),
-        ("selection", "*"),
-        ("blacklist", [324]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt170to300_EMEnriched"),
-  ("nof_files",                       116),
-  ("nof_db_files",                    95),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 11439962),
-  ("nof_db_events",                   11540163),
-  ("fsize_local",                     20904420766), # 20.90GB, avg file size 180.21MB
-  ("fsize_db",                        446095551951), # 446.10GB, avg file size 4.70GB
-  ("use_it",                          False),
-  ("xsection",                        16560.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul24_QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_182922"),
-        ("selection", "*"),
-        ("blacklist", [107]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt300toInf_EMEnriched"),
-  ("nof_files",                       74),
-  ("nof_db_files",                    63),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 7380341),
-  ("nof_db_events",                   7380341),
-  ("fsize_local",                     15779075962), # 15.78GB, avg file size 213.23MB
-  ("fsize_db",                        318661638327), # 318.66GB, avg file size 5.06GB
-  ("use_it",                          False),
-  ("xsection",                        1100.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul23_QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190723_163015"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt15to20_Mu5"),
-  ("nof_files",                       42),
-  ("nof_db_files",                    31),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 4141251),
-  ("nof_db_events",                   4141251),
-  ("fsize_local",                     3637438410), # 3.64GB, avg file size 86.61MB
-  ("fsize_db",                        114361119790), # 114.36GB, avg file size 3.69GB
-  ("use_it",                          False),
-  ("xsection",                        2811000.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190624_002400"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt20to30_Mu5"),
-  ("nof_files",                       446),
-  ("nof_db_files",                    233),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 40052187),
-  ("nof_db_events",                   31878740),
-  ("fsize_local",                     38296934910), # 38.30GB, avg file size 85.87MB
-  ("fsize_db",                        904037890950), # 904.04GB, avg file size 3.88GB
-  ("use_it",                          False),
-  ("xsection",                        2531000.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jun23/QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_CHUNK0_QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", [1, 22, 175, 188, 220]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt30to50_Mu5"),
-  ("nof_files",                       420),
-  ("nof_db_files",                    220),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 38108487),
-  ("nof_db_events",                   29954815),
-  ("fsize_local",                     41807006058), # 41.81GB, avg file size 99.54MB
-  ("fsize_db",                        897435138629), # 897.44GB, avg file size 4.08GB
-  ("use_it",                          False),
-  ("xsection",                        1367000.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jun23/QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_CHUNK0_QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", [189]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt50to80_Mu5"),
-  ("nof_files",                       197),
-  ("nof_db_files",                    145),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 19662175),
-  ("nof_db_events",                   19662175),
-  ("fsize_local",                     25893127655), # 25.89GB, avg file size 131.44MB
-  ("fsize_db",                        641727930379), # 641.73GB, avg file size 4.43GB
-  ("use_it",                          False),
-  ("xsection",                        377900.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul22/QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul22_QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190722_165435"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt80to120_Mu5"),
-  ("nof_files",                       140),
-  ("nof_db_files",                    103),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 13796213),
-  ("nof_db_events",                   13895437),
-  ("fsize_local",                     22231715120), # 22.23GB, avg file size 158.80MB
-  ("fsize_db",                        497967273393), # 497.97GB, avg file size 4.83GB
-  ("use_it",                          False),
-  ("xsection",                        88620.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul24_QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_180608"),
-        ("selection", "*"),
-        ("blacklist", [100]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt80to120_Mu5_ext1"),
-  ("nof_files",                       99),
-  ("nof_db_files",                    80),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9809949),
-  ("nof_db_events",                   9809949),
-  ("fsize_local",                     15807209047), # 15.81GB, avg file size 159.67MB
-  ("fsize_db",                        351978029896), # 351.98GB, avg file size 4.40GB
-  ("use_it",                          False),
-  ("xsection",                        88620.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190624_003737"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt120to170_Mu5"),
-  ("nof_files",                       80),
-  ("nof_db_files",                    59),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 7897731),
-  ("nof_db_events",                   7897731),
-  ("fsize_local",                     15045387354), # 15.05GB, avg file size 188.07MB
-  ("fsize_db",                        307470051834), # 307.47GB, avg file size 5.21GB
-  ("use_it",                          False),
-  ("xsection",                        21190.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul24_QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_170815"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_backup_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt120to170_Mu5_backup"),
-  ("nof_files",                       120),
-  ("nof_db_files",                    102),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 11912231),
-  ("nof_db_events",                   11912231),
-  ("fsize_local",                     22691299515), # 22.69GB, avg file size 189.09MB
-  ("fsize_db",                        464564032830), # 464.56GB, avg file size 4.55GB
-  ("use_it",                          False),
-  ("xsection",                        21190.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Sep02_QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_backup_94X_mcRun2_asymptotic_v3-v2/190902_172259"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt170to300_Mu5"),
-  ("nof_files",                       80),
-  ("nof_db_files",                    62),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 6649303),
-  ("nof_db_events",                   7947159),
-  ("fsize_local",                     14847932693), # 14.85GB, avg file size 185.60MB
-  ("fsize_db",                        337373205537), # 337.37GB, avg file size 5.44GB
-  ("use_it",                          False),
-  ("xsection",                        7020.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190624_004154"),
-        ("selection", "*"),
-        ("blacklist", [2, 3, 7, 8, 12, 23, 35, 40, 41, 52, 53, 59, 79]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt170to300_Mu5_ext1"),
-  ("nof_files",                       95),
-  ("nof_db_files",                    71),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9103146),
-  ("nof_db_events",                   9403072),
-  ("fsize_local",                     20327738251), # 20.33GB, avg file size 213.98MB
-  ("fsize_db",                        399116745624), # 399.12GB, avg file size 5.62GB
-  ("use_it",                          False),
-  ("xsection",                        7020.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190624_004358"),
-        ("selection", "*"),
-        ("blacklist", [4, 53, 60]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_backup_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt170to300_Mu5_backup"),
-  ("nof_files",                       199),
-  ("nof_db_files",                    157),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 19789673),
-  ("nof_db_events",                   19789673),
-  ("fsize_local",                     44181772309), # 44.18GB, avg file size 222.02MB
-  ("fsize_db",                        840579326313), # 840.58GB, avg file size 5.35GB
-  ("use_it",                          False),
-  ("xsection",                        7020.0),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Aug05/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Aug05_QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_backup_94X_mcRun2_asymptotic_v3-v2/190805_180131"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt300to470_Mu5"),
-  ("nof_files",                       80),
-  ("nof_db_files",                    71),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 7937590),
-  ("nof_db_events",                   7937590),
-  ("fsize_local",                     20311845682), # 20.31GB, avg file size 253.90MB
-  ("fsize_db",                        375174129111), # 375.17GB, avg file size 5.28GB
-  ("use_it",                          False),
-  ("xsection",                        620.2),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190624_004810"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt300to470_Mu5_ext1"),
-  ("nof_files",                       165),
-  ("nof_db_files",                    126),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 16462878),
-  ("nof_db_events",                   16462878),
-  ("fsize_local",                     42122449323), # 42.12GB, avg file size 255.29MB
-  ("fsize_db",                        777723059467), # 777.72GB, avg file size 6.17GB
-  ("use_it",                          False),
-  ("xsection",                        620.2),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul24_QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190724_180402"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt300to470_Mu5_ext2"),
-  ("nof_files",                       345),
-  ("nof_db_files",                    184),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 31538149),
-  ("nof_db_events",                   24605508),
-  ("fsize_local",                     80764937409), # 80.76GB, avg file size 234.10MB
-  ("fsize_db",                        1162027704606), # 1.16TB, avg file size 6.32GB
-  ("use_it",                          False),
-  ("xsection",                        620.2),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ntuples/2016/2016v3_2019Sep01/2016v3_2019Jul23/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul23_CHUNK0_QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/000000_000000"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt470to600_Mu5"),
-  ("nof_files",                       40),
-  ("nof_db_files",                    41),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 3871873),
-  ("nof_db_events",                   3972819),
-  ("fsize_local",                     10580271708), # 10.58GB, avg file size 264.51MB
-  ("fsize_db",                        201761244068), # 201.76GB, avg file size 4.92GB
-  ("use_it",                          False),
-  ("xsection",                        59.06),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul23_QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190723_105018"),
-        ("selection", "*"),
-        ("blacklist", [11]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt470to600_Mu5_ext1"),
-  ("nof_files",                       57),
-  ("nof_db_files",                    43),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 5668793),
-  ("nof_db_events",                   5668793),
-  ("fsize_local",                     15492247502), # 15.49GB, avg file size 271.79MB
-  ("fsize_db",                        287008158384), # 287.01GB, avg file size 6.67GB
-  ("use_it",                          False),
-  ("xsection",                        59.06),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190624_005917"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt470to600_Mu5_ext2"),
-  ("nof_files",                       99),
-  ("nof_db_files",                    76),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9847664),
-  ("nof_db_events",                   9847664),
-  ("fsize_local",                     26906119882), # 26.91GB, avg file size 271.78MB
-  ("fsize_db",                        498631831955), # 498.63GB, avg file size 6.56GB
-  ("use_it",                          False),
-  ("xsection",                        59.06),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul24_QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/190724_152351"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt600to800_Mu5"),
-  ("nof_files",                       41),
-  ("nof_db_files",                    33),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 4010136),
-  ("nof_db_events",                   4010136),
-  ("fsize_local",                     11348198267), # 11.35GB, avg file size 276.79MB
-  ("fsize_db",                        211608983257), # 211.61GB, avg file size 6.41GB
-  ("use_it",                          False),
-  ("xsection",                        18.2),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190624_010300"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt600to800_Mu5_ext1"),
-  ("nof_files",                       60),
-  ("nof_db_files",                    50),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 5971175),
-  ("nof_db_events",                   5971175),
-  ("fsize_local",                     16898148403), # 16.90GB, avg file size 281.64MB
-  ("fsize_db",                        315127671581), # 315.13GB, avg file size 6.30GB
-  ("use_it",                          False),
-  ("xsection",                        18.2),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Sep02/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Sep02_QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190902_172506"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_backup_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt600to800_Mu5_backup"),
-  ("nof_files",                       100),
-  ("nof_db_files",                    106),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9928218),
-  ("nof_db_events",                   9928218),
-  ("fsize_local",                     28094643732), # 28.09GB, avg file size 280.95MB
-  ("fsize_db",                        525881357149), # 525.88GB, avg file size 4.96GB
-  ("use_it",                          False),
-  ("xsection",                        18.2),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul24_QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_backup_94X_mcRun2_asymptotic_v3-v2/190724_180155"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt800to1000_Mu5"),
-  ("nof_files",                       40),
-  ("nof_db_files",                    41),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 3763277),
-  ("nof_db_events",                   3962749),
-  ("fsize_local",                     10991868820), # 10.99GB, avg file size 274.80MB
-  ("fsize_db",                        218078166039), # 218.08GB, avg file size 5.32GB
-  ("use_it",                          False),
-  ("xsection",                        3.276),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul24_QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190724_114916"),
-        ("selection", "*"),
-        ("blacklist", [10, 13]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt800to1000_Mu5_ext1"),
-  ("nof_files",                       61),
-  ("nof_db_files",                    47),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 6011849),
-  ("nof_db_events",                   6011849),
-  ("fsize_local",                     17557873968), # 17.56GB, avg file size 287.83MB
-  ("fsize_db",                        330161425748), # 330.16GB, avg file size 7.02GB
-  ("use_it",                          False),
-  ("xsection",                        3.276),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190624_010930"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt800to1000_Mu5_ext2"),
-  ("nof_files",                       100),
-  ("nof_db_files",                    87),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 9966149),
-  ("nof_db_events",                   9966149),
-  ("fsize_local",                     29105659932), # 29.11GB, avg file size 291.06MB
-  ("fsize_db",                        549916645891), # 549.92GB, avg file size 6.32GB
-  ("use_it",                          False),
-  ("xsection",                        3.276),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul24/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul24_QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/190724_115221"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt1000toInf_Mu5"),
-  ("nof_files",                       40),
-  ("nof_db_files",                    32),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 3889474),
-  ("nof_db_events",                   3990117),
-  ("fsize_local",                     11634706477), # 11.63GB, avg file size 290.87MB
-  ("fsize_db",                        227926254486), # 227.93GB, avg file size 7.12GB
-  ("use_it",                          False),
-  ("xsection",                        1.079),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jun23/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jun23_QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190624_011311"),
-        ("selection", "*"),
-        ("blacklist", [35]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
-samples_2016["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "QCD"),
-  ("process_name_specific",           "QCD_Pt1000toInf_Mu5_ext1"),
-  ("nof_files",                       97),
-  ("nof_db_files",                    101),
-  ("nof_events",                      {
-  }),
-  ("nof_tree_events",                 8737222),
-  ("nof_db_events",                   9638102),
-  ("fsize_local",                     26137568226), # 26.14GB, avg file size 269.46MB
-  ("fsize_db",                        551501199580), # 551.50GB, avg file size 5.46GB
-  ("use_it",                          False),
-  ("xsection",                        1.079),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
-  ("LHE_set",                         ""),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Jul23/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/2016v3_2019Jul23_QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190723_162505"),
-        ("selection", "*"),
-        ("blacklist", [3, 6, 7, 31, 32, 36, 45, 56, 74]),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
 samples_2016["sum_events"] = [
-  [ 'ST_s-channel_4f_leptonDecays',                    'ST_s-channel_4f_leptonDecays_PSweights',           ],
-  [ 'WJetsToLNu_HT400To600',                           'WJetsToLNu_HT400To600_ext1',                       ],
-  [ 'QCD_Pt80to120_Mu5',                               'QCD_Pt80to120_Mu5_ext1',                           ],
-  [ 'DYJetsToLL_M-10to50_amcatnloFXFX',                'DYJetsToLL_M-10to50_amcatnloFXFX_ext1',            ],
-  [ 'THW_ctcvcp',                                      'THW_ctcvcp_CP5',                                   ],
-  [ 'QCD_Pt80to120_EMEnriched',                        'QCD_Pt80to120_EMEnriched_ext1',                    ],
-  [ 'TTGJets',                                         'TTGJets_ext1',                                     ],
-  [ 'QCD_Pt50to80_EMEnriched',                         'QCD_Pt50to80_EMEnriched_ext1',                     ],
-  [ 'VBFHToBB_M125',                                   'VBFHToBB_M125_ext1',                               ],
-  [ 'WJetsToLNu_HT200To400',                           'WJetsToLNu_HT200To400_ext1',                      'WJetsToLNu_HT200To400_ext2',                       ],
-  [ 'ST_t-channel_antitop_4f_inclusiveDecays',         'ST_t-channel_antitop_4f_inclusiveDecays_PSweights',  ],
-  [ 'QCD_Pt120to170_Mu5',                              'QCD_Pt120to170_Mu5_backup',                        ],
-  [ 'TTJets_DiLept',                                   'TTJets_DiLept_ext1',                               ],
-  [ 'WJetsToLNu_madgraphMLM',                          'WJetsToLNu_madgraphMLM_ext2',                      ],
-  [ 'DYJetsToLL_M-5to50_HT-100to200',                  'DYJetsToLL_M-5to50_HT-100to200_ext1',              ],
-  [ 'W2JetsToLNu',                                     'W2JetsToLNu_ext1',                                 ],
-  [ 'TTZToLL_M10_ext2',                                'TTZToLL_M10_ext3',                                 ],
-  [ 'DYJetsToLL_M-5to50_HT-400to600',                  'DYJetsToLL_M-5to50_HT-400to600_ext1',              ],
-  [ 'THQ_ctcvcp',                                      'THQ_ctcvcp_CP5',                                   ],
-  [ 'WGToLNuG_ext1',                                   'WGToLNuG_ext2',                                   'WGToLNuG_ext3',                                    ],
-  [ 'VBFHToGG_M125_ext1',                              'VBFHToGG_M125_ext2',                               ],
-  [ 'W3JetsToLNu',                                     'W3JetsToLNu_ext1',                                 ],
-  [ 'ZZTo2L2Nu',                                       'ZZTo2L2Nu_ext1',                                   ],
-  [ 'DYJetsToLL_M50_HT200to400',                       'DYJetsToLL_M50_HT200to400_ext1',                   ],
-  [ 'QCD_Pt170to300_Mu5',                              'QCD_Pt170to300_Mu5_ext1',                         'QCD_Pt170to300_Mu5_backup',                        ],
-  [ 'WJetsToLNu_HT1200To2500',                         'WJetsToLNu_HT1200To2500_ext1',                     ],
-  [ 'TTJets_SingleLeptFromTbar',                       'TTJets_SingleLeptFromTbar_ext1',                   ],
-  [ 'QCD_Pt800to1000_Mu5',                             'QCD_Pt800to1000_Mu5_ext1',                        'QCD_Pt800to1000_Mu5_ext2',                         ],
-  [ 'WJetsToLNu',                                      'WJetsToLNu_ext2',                                  ],
-  [ 'WJetsToLNu_HT800To1200',                          'WJetsToLNu_HT800To1200_ext1',                      ],
-  [ 'DYJetsToLL_M-5to50_HT-600toInf',                  'DYJetsToLL_M-5to50_HT-600toInf_ext1',              ],
-  [ 'QCD_Pt300to470_Mu5',                              'QCD_Pt300to470_Mu5_ext1',                         'QCD_Pt300to470_Mu5_ext2',                          ],
-  [ 'QCD_Pt1000toInf_Mu5',                             'QCD_Pt1000toInf_Mu5_ext1',                         ],
-  [ 'QCD_Pt30to50_EMEnriched',                         'QCD_Pt30to50_EMEnriched_ext1',                     ],
-  [ 'WJetsToLNu_HT600To800',                           'WJetsToLNu_HT600To800_ext1',                       ],
-  [ 'DYJetsToLL_M50_HT100to200',                       'DYJetsToLL_M50_HT100to200_ext1',                   ],
-  [ 'DYJetsToLL_M50_HT400to600',                       'DYJetsToLL_M50_HT400to600_ext1',                   ],
-  [ 'GluGluHToBB_M125',                                'GluGluHToBB_M125_ext1',                            ],
-  [ 'DYJetsToLL_M-50_ext1',                            'DYJetsToLL_M-50_ext2',                             ],
-  [ 'WJetsToLNu_HT100To200',                           'WJetsToLNu_HT100To200_ext1',                      'WJetsToLNu_HT100To200_ext2',                       ],
-  [ 'WWToLNuQQ',                                       'WWToLNuQQ_ext1',                                   ],
-  [ 'DYJetsToLL_M-5to50_HT-200to400',                  'DYJetsToLL_M-5to50_HT-200to400_ext1',              ],
-  [ 'tZq_ll_4f_ext1',                                  'tZq_ll_4f_PSweights',                              ],
-  [ 'W4JetsToLNu',                                     'W4JetsToLNu_ext2',                                 ],
-  [ 'TTJets_SingleLeptFromT',                          'TTJets_SingleLeptFromT_ext1',                      ],
-  [ 'QCD_Pt600to800_Mu5',                              'QCD_Pt600to800_Mu5_ext1',                         'QCD_Pt600to800_Mu5_backup',                        ],
-  [ 'QCD_Pt470to600_Mu5',                              'QCD_Pt470to600_Mu5_ext1',                         'QCD_Pt470to600_Mu5_ext2',                          ],
-  [ 'WJetsToLNu_HT2500ToInf',                          'WJetsToLNu_HT2500ToInf_ext1',                      ],
-  [ 'QCD_Pt120to170_EMEnriched',                       'QCD_Pt120to170_EMEnriched_ext1',                   ],
 ]
 

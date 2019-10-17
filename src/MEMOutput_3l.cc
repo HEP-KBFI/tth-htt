@@ -12,6 +12,12 @@ MEMOutput_3l::MEMOutput_3l()
   , errorFlag_(0)
   , weight_ttH_(-1.)
   , kinfitscore_ttH_(-1.)
+  , weight_tHq_(-1.)
+  , kinfitscore_tHq_(-1.)
+  , weight_ttW_(-1.)
+  , kinfitscore_ttW_(-1.)
+  , weight_ttZ_(-1.)
+  , kinfitscore_ttZ_(-1.)  
   , weight_tt_(-1.)
   , kinfitscore_tt_(-1.)
   , LR_(-1.)
@@ -49,6 +55,9 @@ std::ostream& operator<<(std::ostream& stream,
             " phi = " << memOutput.thirdLepton_phi_         << "\n"
             " weights:\n"
             "  ttH = "        << memOutput.weight_ttH()     << " (kinfitscore = " << memOutput.kinfitscore_ttH() << ")\n"
+            "  tHq = "        << memOutput.weight_tHq()     << " (kinfitscore = " << memOutput.kinfitscore_tHq() << ")\n"
+            "  ttW = "        << memOutput.weight_ttW()     << " (kinfitscore = " << memOutput.kinfitscore_ttW() << ")\n"
+            "  ttZ = "        << memOutput.weight_ttZ()     << " (kinfitscore = " << memOutput.kinfitscore_ttZ() << ")\n"
             "  tt = "         << memOutput.weight_tt()      << " (kinfitscore = " << memOutput.kinfitscore_tt()  << ")\n"
             " LR = "          << memOutput.LR()             << "\n"
             " isValid = "     << memOutput.isValid()        << "\n"
