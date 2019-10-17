@@ -16,9 +16,16 @@ if __name__ == '__main__':
     type = str, dest = 'era', metavar = 'year', required = True, choices = [ '2016', '2017', '2018' ],
     help = 'R|Era',
   )
+  parser.add_argument('-s', '--suffix',
+    type = str, dest = 'suffix', metavar = 'string', required = False, default = '',
+    help = 'R|Suffix',
+  )
   args = parser.parse_args()
 
-  sample_module = importlib.import_module('tthAnalysis.HiggsToTauTau.samples.metaDict_{}'.format(args.era))
+  sample_module_str = 'tthAnalysis.HiggsToTauTau.samples.metaDict_{}'.format(args.era)
+  if args.suffix:
+    sample_module_str += '_{}'.format(args.suffix)
+  sample_module = importlib.import_module(sample_module_str)
   meta = getattr(sample_module, 'meta_dictionary')
 
   categories = collections.OrderedDict()
