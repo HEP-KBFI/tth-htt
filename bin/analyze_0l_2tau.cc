@@ -625,7 +625,7 @@ int main(int argc, char* argv[])
     Nscan = HHWeight_calc->get_nof_scans();
   }
   std::cout << "Number of points being scanned = " << Nscan << '\n';
-
+  float kt_scan[33] = {1.0,-6.0,-4.0,-3.0,-2.5,-2.0,-1.5,-1.333333,-1.25,-1.0,-0.833333,-0.75,-0.666666,-0.5,-0.333333,-0.25,-0.166666,0.001,0.166666,0.25,0.333333,0.5,0.666666,0.75,0.833333,1.25,1.333333,1.5,2.0,2.5,3.0,4.0,6.0};
 
 //--- declare histograms
   struct selHistManagerType
@@ -743,7 +743,8 @@ int main(int argc, char* argv[])
 	  for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
 	  {
 	      std::string process_and_genMatch_scanName = process_and_genMatchName + "_scan_";
-	      process_and_genMatch_scanName += std::to_string(bm_list);
+	      process_and_genMatch_scanName += std::to_string(kt_scan[bm_list]);
+	      process_and_genMatch_scanName.erase(process_and_genMatch_scanName.end()-4,process_and_genMatch_scanName.end());
 	      selHistManager -> evt_scan_[evt_cat_str][bm_list]  = new EvtHistManager_0l_2tau(makeHistManager_cfg(
 		process_and_genMatch_scanName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
 	      selHistManager -> evt_scan_[evt_cat_str][bm_list] -> bookHistograms(fs);
@@ -789,7 +790,8 @@ int main(int argc, char* argv[])
 	      for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
 	      {
 		std::string decayMode_and_genMatch_scanName = decayMode_and_genMatchName + "_scan_";
-		decayMode_and_genMatch_scanName += std::to_string(bm_list);
+		decayMode_and_genMatch_scanName += std::to_string(kt_scan[bm_list]);
+		decayMode_and_genMatch_scanName.erase(decayMode_and_genMatch_scanName.end()-4,decayMode_and_genMatch_scanName.end());
 		selHistManager -> evt_in_decayModes_scan_[evt_cat_str][decayMode][bm_list]  = new EvtHistManager_0l_2tau(makeHistManager_cfg(
 		  decayMode_and_genMatch_scanName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
 		selHistManager -> evt_in_decayModes_scan_[evt_cat_str][decayMode][bm_list] -> bookHistograms(fs);
@@ -816,7 +818,8 @@ int main(int argc, char* argv[])
 	  for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
 	  {
 	    std::string process_and_genMatch_scanName = process_and_genMatch + "_scan_";
-	    process_and_genMatch_scanName += std::to_string(bm_list);
+	    process_and_genMatch_scanName += std::to_string(kt_scan[bm_list]);
+	    process_and_genMatch_scanName.erase(process_and_genMatch_scanName.end()-4,process_and_genMatch_scanName.end());
 	    selHistManager -> evt_in_categories_scan_[category][bm_list]  = new EvtHistManager_0l_2tau(makeHistManager_cfg(
 	      process_and_genMatch_scanName, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
 	    selHistManager -> evt_in_categories_scan_[category][bm_list] -> bookHistograms(fs);
@@ -1434,7 +1437,7 @@ int main(int argc, char* argv[])
 
     if(HHWeight_calc)
     {
-      WeightBM = HHWeight_calc->getJHEPWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
+      WeightBM = HHWeight_calc->getScanWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
       Weight_ktScan = HHWeight_calc->getScanWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
       if(apply_HH_rwgt) evtWeightRecorder.record_bm(WeightBM[0]); // SM by default
 
