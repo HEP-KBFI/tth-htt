@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-09-28 20:27:22 with the following command:
-# find_samples.py -V -m python/samples/metaDict_2016_data_DeepTauIDv2p1.py -d ../NanoAOD/test/datasets/txt/datasets_data_2016_17Jul18.txt -p SingleElectron SingleMuon DoubleEG DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt -v 9_4_9 -r 2016 -C +17Jul2018 xDoubleEG/Run2016B-17Jul2018_ver1-v1 -c python/samples/sampleLocations_2016_nanoAOD_data_DeepTauIDv2p1.txt
+# file generated at 2019-10-17 23:15:07 with the following command:
+# find_samples.py -V -m python/samples/metaDict_2016_data_DeepTauIDv2p1.py -d ../NanoAOD/test/datasets/txt/datasets_data_2016_17Jul18.txt -p SingleElectron SingleMuon DoubleEG DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt -v 9_4_9 -r 2016 -C +17Jul2018 xDoubleEG/Run2016B-17Jul2018_ver1-v1 -c python/samples/sampleLocations_2016_nanoAOD_DeepTauIDv2p1.txt
 
 meta_dictionary = OD()
 
