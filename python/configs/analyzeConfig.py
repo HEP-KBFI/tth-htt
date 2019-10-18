@@ -52,11 +52,10 @@ DIRLIST = [
 ]
 
 kt_weights = []
-file = open(os.environ["CMSSW_BASE"] + "/src/hhAnalysis/multilepton/data/kt_scan.dat", "r")
-for line in file:
-    x = float(line.split()[1])
-    kt_weights += [ "kt_" + str("{:3.2f}".format(x)).replace(".", "p").replace("-", "m") ]
-print (kt_weights)
+with open(os.environ["CMSSW_BASE"] + "/src/hhAnalysis/multilepton/data/kt_scan.dat", "r") as file:
+    for line in file:
+        x = float(line.split()[1])
+        kt_weights += [ "kt_" + str("{:3.2f}".format(x)).replace(".", "p").replace("-", "m") ]
 
 def convert_lep_wp(float_str):
   return float_str.replace('.', '')
