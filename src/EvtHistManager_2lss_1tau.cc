@@ -67,6 +67,36 @@ EvtHistManager_2lss_1tau::getHistogram_EventCounter() const
   return histogram_EventCounter_;
 }
 
+void
+EvtHistManager_2lss_1tau::bookCategories(TFileDirectory & dir,
+                                  const std::vector<std::string> & categories_sig_1p2_rest_1_th_1p2,
+                                  const std::vector<std::string> & categories_sig_2_rest_2p2_th_2,
+                                  const std::vector<std::string> & categories_sig_2_rest_2_th_2,
+                                  const std::vector<std::string> & categories_sig_2_rest_2p5_th_2
+                                )
+{
+  for(const std::string & category: categories_sig_1p2_rest_1_th_1p2)
+  {
+    histograms_by_category_sig_1p2_rest_1_th_1p2_[category] = book1D(dir, category, category, 40,  0., +1.);
+    central_or_shiftOptions_[category] = { "*" };
+  }
+  for(const std::string & category: categories_sig_2_rest_2p2_th_2)
+  {
+    histograms_by_category_sig_2_rest_2p2_th_2_[category] = book1D(dir, category, category, 40,  0., +1.);
+    central_or_shiftOptions_[category] = { "*" };
+  }
+  for(const std::string & category: categories_sig_2_rest_2_th_2)
+  {
+    histograms_by_category_sig_2_rest_2_th_2_[category] = book1D(dir, category, category, 40,  0., +1.);
+    central_or_shiftOptions_[category] = { "*" };
+  }
+  for(const std::string & category: categories_sig_2_rest_2p5_th_2)
+  {
+    histograms_by_category_sig_2_rest_2p5_th_2_[category] = book1D(dir, category, category, 40,  0., +1.);
+    central_or_shiftOptions_[category] = { "*" };
+  }
+}
+
 void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory & dir)
 {
   if(option_ == kOption_allHistograms)
@@ -81,15 +111,15 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory & dir)
     histogram_mvaOutput_2lss_ttV_ = book1D(dir, "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttV", 40, -1., +1.);
     histogram_mvaOutput_2lss_tt_  = book1D(dir, "mvaOutput_2lss_tt",  "mvaOutput_2lss_tt",  40, -1., +1.);
 
-    histogram_mvaOutput_2lss_1tau_plainKin_tt_            = book1D(dir, "mvaOutput_2lss_1tau_plainKin_tt",            "mvaOutput_2lss_1tau_plainKin_tt",            100, -1., +1.);
-    histogram_mvaOutput_2lss_1tau_plainKin_ttV_           = book1D(dir, "mvaOutput_2lss_1tau_plainKin_ttV",           "mvaOutput_2lss_1tau_plainKin_ttV",           100, -1., +1.);
-    histogram_mvaOutput_2lss_1tau_plainKin_1B_M_          = book1D(dir, "mvaOutput_2lss_1tau_plainKin_1B_M",          "mvaOutput_2lss_1tau_plainKin_1B_M",          100, -1., +1.);
-    histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_         = book1D(dir, "mvaOutput_2lss_1tau_plainKin_SUM_M",         "mvaOutput_2lss_1tau_plainKin_SUM_M",         100, -1., +1.);
-    histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin_ = book1D(dir, "mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin", "mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin", 100, -1., +1.);
-    histogram_mvaOutput_2lss_1tau_HTT_SUM_M_              = book1D(dir, "mvaOutput_2lss_1tau_HTT_SUM_M",              "mvaOutput_2lss_1tau_HTT_SUM_M",              100, -1., +1.);
-    histogram_mvaOutput_2lss_1tau_HTT_SUM_M_noRebin_      = book1D(dir, "mvaOutput_2lss_1tau_HTT_SUM_M_noRebin",      "mvaOutput_2lss_1tau_HTT_SUM_M_noRebin",      100, -1., +1.);
-    histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_           = book1D(dir, "mvaOutput_2lss_1tau_HTTMEM_SUM_M",           "mvaOutput_2lss_1tau_HTTMEM_SUM_M",           100, -1., +1.);
-    histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin_   = book1D(dir, "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin",   "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin",   100, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_plainKin_tt_            = book1D(dir, "mvaOutput_2lss_1tau_plainKin_tt",            "mvaOutput_2lss_1tau_plainKin_tt",            40, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_plainKin_ttV_           = book1D(dir, "mvaOutput_2lss_1tau_plainKin_ttV",           "mvaOutput_2lss_1tau_plainKin_ttV",           40, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_plainKin_1B_M_          = book1D(dir, "mvaOutput_2lss_1tau_plainKin_1B_M",          "mvaOutput_2lss_1tau_plainKin_1B_M",          40, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_         = book1D(dir, "mvaOutput_2lss_1tau_plainKin_SUM_M",         "mvaOutput_2lss_1tau_plainKin_SUM_M",         40, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin_ = book1D(dir, "mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin", "mvaOutput_2lss_1tau_plainKin_SUM_M_noRebin", 40, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_HTT_SUM_M_              = book1D(dir, "mvaOutput_2lss_1tau_HTT_SUM_M",              "mvaOutput_2lss_1tau_HTT_SUM_M",              40, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_HTT_SUM_M_noRebin_      = book1D(dir, "mvaOutput_2lss_1tau_HTT_SUM_M_noRebin",      "mvaOutput_2lss_1tau_HTT_SUM_M_noRebin",      40, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_           = book1D(dir, "mvaOutput_2lss_1tau_HTTMEM_SUM_M",           "mvaOutput_2lss_1tau_HTTMEM_SUM_M",           40, -1., +1.);
+    histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin_   = book1D(dir, "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin",   "mvaOutput_2lss_1tau_HTTMEM_SUM_M_noRebin",   40, -1., +1.);
   }
 
   Float_t binsx[12]  = { 0.0, 0.14, 0.18, 0.22, 0.28, 0.32, 0.35, 0.38, 0.43, 0.47, 0.53, 1.0 };
@@ -121,7 +151,16 @@ EvtHistManager_2lss_1tau::fillHistograms(int numElectrons,
                                          double mvaOutput_2lss_1tau_HTTMEM_SUM_M,
                                          double mTauTauVis1,
                                          double mTauTauVis2,
-                                         double memOutput_LR)
+                                         double memOutput_LR,
+                                         const std::string & category_3l_sig_1p2_rest_1_th_1p2_TF,
+                                         double output_NN_sig_1p2_rest_1_th_1p2,
+                                         const std::string & category_sig_2_rest_2p2_th_2_TF,
+                                         double output_sig_2_rest_2p2_th_2,
+                                         const std::string & category_sig_2_rest_2_th_2_TF,
+                                         double output_NN_sig_2_rest_2_th_2,
+                                         const std::string & category_sig_2_rest_2p5_th_2_TF,
+                                         double output_NN_sig_2_rest_2p5_th_2
+                                       )
 {
   const double evtWeightErr = 0.;
 
@@ -155,4 +194,29 @@ EvtHistManager_2lss_1tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_memOutput_LR_, memOutput_LR, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
+
+  if(! histograms_by_category_sig_1p2_rest_1_th_1p2_.count(category_3l_sig_1p2_rest_1_th_1p2_TF))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_3l_sig_1p2_rest_1_th_1p2_TF << "' was never booked";
+  }
+  fillWithOverFlow(histograms_by_category_sig_1p2_rest_1_th_1p2_[category_3l_sig_1p2_rest_1_th_1p2_TF], output_NN_sig_1p2_rest_1_th_1p2, evtWeight, evtWeightErr);
+  //////////////////////////////////////////////////
+  if(! histograms_by_category_sig_2_rest_2p2_th_2_.count(category_sig_2_rest_2p2_th_2_TF))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_sig_2_rest_2p2_th_2_TF << "' was never booked";
+  }
+  fillWithOverFlow(histograms_by_category_sig_2_rest_2p2_th_2_[category_sig_2_rest_2p2_th_2_TF], output_sig_2_rest_2p2_th_2, evtWeight, evtWeightErr);
+  //////////////////////////////////////////////////
+  if(! histograms_by_category_sig_2_rest_2_th_2_.count(category_sig_2_rest_2_th_2_TF))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_sig_2_rest_2_th_2_TF << "' was never booked";
+  }
+  fillWithOverFlow(histograms_by_category_sig_2_rest_2_th_2_[category_sig_2_rest_2_th_2_TF], output_NN_sig_2_rest_2_th_2, evtWeight, evtWeightErr);
+  ////////////////////////////////////////////////
+  if(! histograms_by_category_sig_2_rest_2p5_th_2_.count(category_sig_2_rest_2p5_th_2_TF))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_sig_2_rest_2p5_th_2_TF << "' was never booked";
+  }
+  fillWithOverFlow(histograms_by_category_sig_2_rest_2p5_th_2_[category_sig_2_rest_2p5_th_2_TF], output_NN_sig_2_rest_2p5_th_2, evtWeight, evtWeightErr);
+
 }

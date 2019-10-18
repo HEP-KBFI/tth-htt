@@ -825,7 +825,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     );
     bdt_filler -> register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "lep3_isTight", "hadtruth",
-      "nElectron", "has_SFOS"
+      "nElectron", "has_SFOS", "nJetForward"
     );
     bdt_filler -> bookTree(fs);
   }
@@ -1171,9 +1171,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       assert(electronSelection != kLoose && muonSelection != kLoose);
       selMuons = selectObjects(muonSelection, preselMuons, fakeableMuons, tightMuons);
       selElectrons = selectObjects(electronSelection, preselElectrons, fakeableElectrons, tightElectrons);
-      std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
-      selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
+
     }
+    std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
+    if(!(electronSelection == muonSelection)) selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
 
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -1192,10 +1193,18 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
+    std::vector<const RecoJet*> cleanedJets;
+    if (!selectBDT) {
+      cleanedJets = jetCleaningByIndex ?
       jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, fakeableHadTaus) :
       jetCleaner       (jet_ptrs, fakeableLeptonsFull, fakeableHadTaus)
-    ;
+      ;
+    } else {
+      cleanedJets = jetCleaningByIndex ?
+      jetCleanerByIndex(jet_ptrs, selLeptons_full, fakeableHadTaus) :
+      jetCleaner       (jet_ptrs, selLeptons_full, fakeableHadTaus)
+      ;
+    }
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -2027,9 +2036,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       double lep2_genLepPt = ( selLepton_sublead->genLepton() ) ? selLepton_sublead->genLepton()->pt() : 0.;
       double lep3_genLepPt = ( selLepton_third->genLepton()   ) ? selLepton_third->genLepton()->pt()   : 0.;
 
-      double prob_fake_lepton_lead = evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
-      double prob_fake_lepton_sublead = evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
-      double prob_fake_lepton_third = evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main);
+      double prob_fake_lepton_lead = 1.0; // evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
+      double prob_fake_lepton_sublead = 1.0; // = evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
+      double prob_fake_lepton_third = 1.0; // = evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main);
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",             selLepton_lead -> pt())
@@ -2130,6 +2139,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("min_Deta_mostfwdJet_jet", min_Deta_mostfwdJet_jet)
           ("min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet)
           ("nElectron",                      selElectrons.size())
+          ("nJetForward",          selJetsForward.size())
 
         .fill()
       ;
