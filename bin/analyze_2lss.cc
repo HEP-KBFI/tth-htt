@@ -379,6 +379,20 @@ int main(int argc, char* argv[])
   EventInfo eventInfo(isMC, isSignal, isMC_HH_nonres);
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
+
+  //--- HH scan
+  const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
+  const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
+  const HHWeightInterface * HHWeight_calc = nullptr;
+  //std::cout << isMC_HH  << " " << hhWeight_cfg.getParameter<bool>("apply_rwgt") << '\n';
+  if(isMC_HH  && hhWeight_cfg.getParameter<bool>("apply_rwgt"))
+  {
+    HHWeight_calc = new HHWeightInterface(hhWeight_cfg);
+    evt_cat_strs = HHWeight_calc->get_nof_scans();
+  }
+  const size_t Nscan = evt_cat_strs.size();
+  std::cout << "Number of points being scanned = " << Nscan << '\n';
+
   const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
   if((isMC_tH || isMC_signal) && ! tHweights.empty())
   {
@@ -602,18 +616,6 @@ int main(int argc, char* argv[])
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
-
-//--- HH scan
-  const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
-  const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
-  const HHWeightInterface * HHWeight_calc = nullptr;
-  std::size_t Nscan = 0;
-  if(apply_HH_rwgt)
-  {
-    HHWeight_calc = new HHWeightInterface(hhWeight_cfg);
-    Nscan = HHWeight_calc->get_nof_scans();
-  }
-  std::cout << "Number of points being scanned = " << Nscan << '\n';
 
 //--- declare histograms
   struct selHistManagerType
@@ -1636,7 +1638,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
 
     std::vector<double> WeightBM; // weights to do histograms for BMs
-    std::vector<double> Weight_ktScan; // weights to do histograms for BMs
+    std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
     double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
     if(HHWeight_calc)
     {
@@ -1655,7 +1657,7 @@ int main(int argc, char* argv[])
         std::cout << "Calculated " << Weight_ktScan.size() << " scan weights\n";
         for(std::size_t bm_list = 0; bm_list < Weight_ktScan.size(); ++bm_list)
         {
-          std::cout << "line = " << bm_list << "; Weight = " <<  Weight_ktScan[bm_list] << '\n';
+          std::cout << "line = " << bm_list << " " << evt_cat_strs[bm_list] << "; Weight = " <<  Weight_ktScan[evt_cat_strs[bm_list]] << '\n';
         }
         std::cout << '\n';
       }
@@ -1963,11 +1965,17 @@ int main(int argc, char* argv[])
             continue;
           }
           const std::string evt_cat_str_query = evt_cat_str == default_cat_str ? get_tH_SM_str() : evt_cat_str;
-          tH_weight_map[evt_cat_str] = isMC_tH ?
-            evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(central_or_shift_tH, evt_cat_str_query):
-            evtWeight
-          ;
-	}
+          if ( isMC_tH )
+          {
+            tH_weight_map[evt_cat_str] = evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(central_or_shift_tH, evt_cat_str_query);
+          } else if ( isMC_HH )
+          {
+            tH_weight_map[evt_cat_str] = evtWeight * Weight_ktScan[evt_cat_str] / HHWeight;
+          } else
+          {
+            tH_weight_map[evt_cat_str] = evtWeight;
+          }
+	      }
         if(central_or_shift == central_or_shift_main)
         {
           tH_weight_map_main = tH_weight_map;
@@ -1994,36 +2002,6 @@ int main(int argc, char* argv[])
             );
           }
         }
-
-	if(! Weight_ktScan.empty()  )
-	{
-	  for(const auto & kv: tH_weight_map)
-	  {
-	    for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
-	    {
-	      double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
-              EvtHistManager_2lss* selHistManager_evt_scan = selHistManager->evt_scan_[kv.first][scanIdx];
-              if ( selHistManager_evt_scan )
-              {
-                selHistManager_evt_scan->fillHistograms(
-                  selElectrons.size(),
-                  selMuons.size(),
-                  selHadTaus.size(),
-                  selJets.size(),
-                  selBJets_loose.size(),
-                  selBJets_medium.size(),
-                  evtWeight0,
-                  mvaOutput_2lss_ttV,
-                  mvaOutput_2lss_ttbar,
-                  mvaDiscr_2lss,
-                  mvaOutput_Hj_tagger,
-                  output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
-                  category_2lss_ttH_tH_4cat_onlyTHQ_v4
-                );
-              }
-	    }
-	  }
-	}
 	if ( isSignal ) {
           std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
           if ( ( isMC_tH || isMC_H ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
@@ -2053,35 +2031,6 @@ int main(int argc, char* argv[])
               std::string decayMode_and_genMatch = decayModeStr;
               if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
             }
-	    if(! Weight_ktScan.empty()  )
-            {
-	      for(const auto & kv: tH_weight_map)
-              {
-                for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
-                {
-                  double evtWeight0 = evtWeight * Weight_ktScan[scanIdx] / HHWeight;
-                  EvtHistManager_2lss* selHistManager_evt_decay_scan = selHistManager->evt_in_decayModes_scan_[kv.first][decayModeStr][scanIdx];
-                  if ( selHistManager_evt_decay_scan )
-                  {
-                    selHistManager_evt_decay_scan->fillHistograms(
-                      selElectrons.size(),
-                      selMuons.size(),
-                      selHadTaus.size(),
-                      selJets.size(),
-                      selBJets_loose.size(),
-                      selBJets_medium.size(),
-                      evtWeight0,
-                      mvaOutput_2lss_ttV,
-                      mvaOutput_2lss_ttbar,
-                      mvaDiscr_2lss,
-                      mvaOutput_Hj_tagger,
-                      output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4,
-                      category_2lss_ttH_tH_4cat_onlyTHQ_v4
-                    );
-                  }
-                }
-              }
-	    }
 	  }
 	}
         if(! skipFilling)

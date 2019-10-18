@@ -51,6 +51,13 @@ DIRLIST = [
     DKEY_HADD_RT, DKEY_SYNC
 ]
 
+kt_weights = []
+file = open(os.environ["CMSSW_BASE"] + "/src/hhAnalysis/multilepton/data/kt_scan.dat", "r")
+for line in file:
+    x = float(line.split()[1])
+    kt_weights += [ "kt_" + str("{:3.2f}".format(x)).replace(".", "p").replace("-", "m") ]
+print (kt_weights)
+
 def convert_lep_wp(float_str):
   return float_str.replace('.', '')
 
@@ -556,7 +563,7 @@ class analyzeConfig(object):
           jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
           jobOptions['hhWeight_cfg.do_ktscan'] = True
-          jobOptions['hhWeight_cfg.apply_rwgt'] = 'sm' not in sample_info["process_name_specific"]
+          jobOptions['hhWeight_cfg.apply_rwgt'] = True 
 
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
@@ -915,6 +922,8 @@ class analyzeConfig(object):
             couplings = [""]
             if sample_category in ["tHq", "tHW"]:
                 couplings += self.thcouplings
+            if sample_category in ["HH"] :
+                couplings += kt_weights
 
             for decayMode in decays:
                 for coupling in couplings:

@@ -12,7 +12,7 @@ import getpass
 
 # E.g.: ./test/tthAnalyzeRun_0l_2tau.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync', 'test' ]
 sys_choices      = [ 'full' ] + systematics.an_common_opts
 systematics.full = systematics.an_common
 
@@ -101,6 +101,14 @@ elif mode == "forBDTtraining":
   if args.tau_id_wp:
     tau_id = args.tau_id[:7]
   hadTau_selection_relaxed = tau_id + hadTauWP_map_relaxed[tau_id]
+elif mode == "test":
+    samples = load_samples(era)
+    for sample_name, sample_info in samples.items():
+        if sample_name == 'sum_events': continue
+        if sample_info["sample_category"] == "HH" :
+            sample_info["use_it"] = True
+        else :
+            sample_info["use_it"] = False
 elif mode == "sync":
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:
