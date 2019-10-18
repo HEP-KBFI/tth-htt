@@ -50,6 +50,12 @@ protected:
   std::string branchName_thirdLepton_phi_;
   std::string branchName_weight_ttH_;
   std::string branchName_kinfitscore_ttH_;
+  std::string branchName_weight_tHq_;
+  std::string branchName_kinfitscore_tHq_;
+  std::string branchName_weight_ttW_;
+  std::string branchName_kinfitscore_ttW_;
+  std::string branchName_weight_ttZ_;
+  std::string branchName_kinfitscore_ttZ_;
   std::string branchName_weight_tt_;
   std::string branchName_kinfitscore_tt_;
   std::string branchName_LR_;
@@ -70,6 +76,12 @@ protected:
   Float_t * thirdLepton_phi_;
   Float_t * weight_ttH_;
   Float_t * kinfitscore_ttH_;
+  Float_t * weight_tHq_;
+  Float_t * kinfitscore_tHq_;
+  Float_t * weight_ttW_;
+  Float_t * kinfitscore_ttW_;
+  Float_t * weight_ttZ_;
+  Float_t * kinfitscore_ttZ_;
   Float_t * weight_tt_;
   Float_t * kinfitscore_tt_;
   Float_t * LR_;

@@ -10,6 +10,7 @@
 #include <type_traits> // std::enable_if<,>, std::is_arithmetic<>
 #include <string> // std::string
 #include <algorithm> // std::sort(), std::set_union(), std::fill_n()
+#include <iostream> // std::cout
 
 struct BranchAddressInitializer
 {
@@ -119,7 +120,8 @@ protected:
         const std::string tree_branchName = tree_branch->GetName();
         if(std::find(inputBranchNames_.cbegin(), inputBranchNames_.cend(), tree_branchName) != inputBranchNames_.cend())
         {
-          throw cmsException(this, __func__, __LINE__) << "Found duplicate branch names in input TTree: " << tree_branchName;
+          std::cout << "Found duplicate branch names in input TTree: " << tree_branchName << '\n';
+          continue;
         }
         inputBranchNames_.push_back(tree_branchName);
       }

@@ -613,7 +613,6 @@ int main(int argc, char* argv[])
   //2D map for ttbar vs ttV
   const LocalFileInPath mapFileName_fip("tthAnalysis/HiggsToTauTau/data/HTT_from20_to_10bins_relLepIDFalse_CumulativeBins.root");
   TFile * fmap = TFile::Open(mapFileName_fip.fullPath().c_str(), "read");
-  TH2F * hTargetBinning = static_cast<TH2F *>(fmap->Get("hTargetBinning"));
 
   // BDTs calculated by Xanda
   std::string mvaFileName_XGB_Updated = "tthAnalysis/HiggsToTauTau/data/BDTs_2017MC_postPAS/0l_2tau_XGB_Updated_evtLevelSUM_TTH_20Var.xml";
@@ -768,7 +767,6 @@ int main(int argc, char* argv[])
           std::string decayMode_and_genMatch = get_prefix(process_string, isMC_tH,  isMC_HH, isMC_H, isMC_VH);
           decayMode_and_genMatch += decayMode;
 	        decayMode_and_genMatch += genMatchDefinition->getName();
-          std::cout << decayMode_and_genMatch << "\n";
 
           for(const std::string & evt_cat_str: evt_cat_strs)
           {
@@ -989,8 +987,8 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     //if (!( eventInfo.event == 2983422 )) continue;
-    if (analyzedEntries > 1000) break;
-    //histogram_analyzedEntries->Fill(0.);
+    //if (analyzedEntries > 1000) break;
+    histogram_analyzedEntries->Fill(0.);
 
     if ( isDEBUG ) {
       std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
@@ -1595,7 +1593,6 @@ int main(int argc, char* argv[])
 
     // compute overlaps semi-boosted resolved / semi-boosted and boosted / ...
     bool resolved_and_semi_AK8 = false;
-    bool boosted_and_semi_AK8 = false;
 
     // -- semi-boosted hTT -- AK8
     double HTT_semi_boosted_fromAK8 = 0.;
@@ -1704,7 +1701,6 @@ int main(int argc, char* argv[])
     double mvaOutput_0l_2tau_HTT_ttv = 1.0;
 
     //Get 2D map values
-    int ibin = hTargetBinning->FindBin(mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv);
     float mvaDiscr_0l_2tau_HTT = 1.0;
 
     double mvaOutput_0l_2tau_HTT_sum_dy = 1.0;
@@ -1875,26 +1871,6 @@ int main(int argc, char* argv[])
             pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, evtWeight
           );
           }
-
-          /*if( ! Weight_ktScan.empty() )
-          {
-            for(std::size_t scanIdx = 0; scanIdx < Weight_ktScan.size(); ++scanIdx)
-            {
-              double evtWeight0 = (apply_HH_rwgt) ? evtWeight * Weight_ktScan[scanIdx] / HHWeight : evtWeight * Weight_ktScan[scanIdx];
-              EvtHistManager_0l_2tau* selHistManager_evt_category_scan = selHistManager->evt_in_categories_scan_[category][scanIdx];
-              if ( selHistManager_evt_category_scan )
-              {
-                selHistManager_evt_category_scan->fillHistograms(
-                  preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
-                  selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-                  mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
-                  mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-                  mva_Boosted_AK8, mva_Updated, mTauTauVis, pt_HHvis_loose, pt_HHvis_medium, mTauTau,
-                  pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, evtWeight0
-                 );
-              }
-            }
-          }*/
         }
       }
 

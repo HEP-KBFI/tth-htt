@@ -22,8 +22,8 @@ MEMInterface_3l::MEMInterface_3l(const std::string & configFileName,
   , nPointsHyp_(nullptr)
   , index_hyp_(nullptr)
   , hypIntegrator_(new HypIntegrator())
-  , MEMpermutationsTTH_(new Permutations())
-  , MEMpermutationsTTbar_(new Permutations())
+  , MEMpermutations_ttH_(new Permutations())
+  , MEMpermutations_tt_(new Permutations())
   , clock_(new TBenchmark())
 {
   std::cout << get_human_line(this) << '\n';
@@ -41,8 +41,8 @@ MEMInterface_3l::~MEMInterface_3l()
 {
   delete hypIntegrator_;
   delete[] MEMpermutations_;
-  delete MEMpermutationsTTH_;
-  delete MEMpermutationsTTbar_;
+  delete MEMpermutations_ttH_;
+  delete MEMpermutations_tt_;
   delete clock_;
 }
 
@@ -128,30 +128,62 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
   clock_->Show(func_str.data());
 
   result.fillInputs(selLepton_lead, selLepton_sublead, selLepton_third);
+  // CV: The mapping of indices to processes is defined in
+  //       https://github.com/nchanon/MEMmultilepton/blob/master/src/ConfigParser.cpp#L153-L223
+  //    (with "TTLL" corresponding to ttZ/gamma^*)
+  //     
+  //     The mapping is
+  //       ttH = 1 + 2 (H->WW->lnuqq and H->WW->lnulnu channels)
+  //       tHq = 9
+  //       ttW = 3 
+  //       ttZ = 0
+  //       tt  = 5 + 6 (dilepton and semi-lepton channels)
+ 
   if(index_hyp_[1] != -1 || index_hyp_[2] != -1)
   {
     CombineTwoHypotheses(
       &MEMpermutations_[index_hyp_[1]], index_hyp_[1],
       &MEMpermutations_[index_hyp_[2]], index_hyp_[2],
-      MEMpermutationsTTH_
+      MEMpermutations_ttH_
     );
-    result.weight_ttH_ = MEMpermutationsTTH_->resMEM_avgExl0.weight;
-    result.kinfitscore_ttH_ = MEMpermutationsTTH_->resKin_maxKinFit_Int.weight;
+    result.weight_ttH_ = MEMpermutations_ttH_->resMEM_avgExl0.weight;
+    result.kinfitscore_ttH_ = MEMpermutations_ttH_->resKin_maxKinFit_Int.weight;
+  }
+  if(index_hyp_[9] != -1)
+  {
+    const Permutations * MEMpermutations_tHq = &MEMpermutations_[index_hyp_[9]];
+    result.weight_tHq_ = MEMpermutations_tHq->resMEM_avgExl0.weight;
+    result.kinfitscore_tHq_ = MEMpermutations_tHq->resKin_maxKinFit_Int.weight;
+  }
+  if(index_hyp_[3] != -1)
+  {
+    const Permutations * MEMpermutations_ttW = &MEMpermutations_[index_hyp_[3]];
+    result.weight_ttW_ = MEMpermutations_ttW->resMEM_avgExl0.weight;
+    result.kinfitscore_ttW_ = MEMpermutations_ttW->resKin_maxKinFit_Int.weight;
+  }
+  if(index_hyp_[0] != -1)
+  {
+    const Permutations * MEMpermutations_ttZ = &MEMpermutations_[index_hyp_[0]];
+    result.weight_ttZ_ = MEMpermutations_ttZ->resMEM_avgExl0.weight;
+    result.kinfitscore_ttZ_ = MEMpermutations_ttZ->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[5] != -1 || index_hyp_[6] != -1)
   {
     CombineTwoHypotheses(
       &MEMpermutations_[index_hyp_[5]], index_hyp_[5],
       &MEMpermutations_[index_hyp_[6]], index_hyp_[6],
-      MEMpermutationsTTbar_
+      MEMpermutations_tt_
     );
-    result.weight_tt_ = MEMpermutationsTTbar_->resMEM_avgExl0.weight;
-    result.kinfitscore_tt_ = MEMpermutationsTTbar_->resKin_maxKinFit_Int.weight;
+    result.weight_tt_ = MEMpermutations_tt_->resMEM_avgExl0.weight;
+    result.kinfitscore_tt_ = MEMpermutations_tt_->resKin_maxKinFit_Int.weight;
   }
 
-  const double numerator = result.weight_ttH_;
-  const double k_tt = 1.;
-  const double denominator = result.weight_ttH_ + k_tt*result.weight_tt_;
+  const double k_tHq = 1.;
+  const double numerator = result.weight_ttH_ + k_tHq*result.weight_tHq_;
+  const double k_ttW = 1.;
+  const double k_ttZ = 1.;
+  const double k_tt  = 1.;
+  const double denominator = numerator + k_ttW*result.weight_ttW_ + k_ttZ*result.weight_ttZ_ + k_tt*result.weight_tt_;
   if(denominator > 0.)
   {
     result.isValid_ = 1;

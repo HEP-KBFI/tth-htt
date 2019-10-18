@@ -2769,6 +2769,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       snm->read(evtWeightRecorder.get_genWeight(),                           FloatVariableType::MC_weight);
 
       snm->read(memOutput_ttH,                          FloatVariableType::Integral_ttH);
+      // Integral_tHq not filled
+      // Integral_ttW not filled
       snm->read(memOutput_ttZ,                          FloatVariableType::Integral_ttZ);
       snm->read(memOutput_ttZ_Zll,                      FloatVariableType::Integral_ttZ_Zll);
       snm->read(memOutput_tt,                           FloatVariableType::Integral_ttbar);
