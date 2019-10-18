@@ -643,7 +643,8 @@ get_prefix(const std::string & process_string,
            bool isMC_HH,
            bool isMC_H,
            bool isMC_VH);
-
+           
+double comp_cosThetaS(const Particle::LorentzVector& hadTauP4_lead, const Particle::LorentzVector& hadTauP4_sublead);
 /**
  * @brief Find generator-level jets produced in W->jj decay
  *
