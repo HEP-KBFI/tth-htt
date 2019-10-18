@@ -72,6 +72,7 @@ public:
 
 protected:
   virtual void set_selection_flags(const RecoHadTau & hadTau) const = 0;
+  void reset();
 
   bool set_selection_flags_;
   bool debug_;                            ///< enable printout for debugging purposes
