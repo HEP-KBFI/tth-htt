@@ -69,6 +69,7 @@ class prodNtupleConfig:
              use_nonnominal,
              use_home,
              skip_tools_step,
+             do_sync,
              verbose = False,
              pool_id        = '',
           ):
@@ -107,6 +108,7 @@ class prodNtupleConfig:
         self.makefile          = os.path.join(self.configDir, "Makefile_prodNtuple")
         self.num_parallel_jobs = num_parallel_jobs
         self.skip_tools_step   = skip_tools_step
+        self.do_sync           = do_sync
         self.pool_id           = pool_id if pool_id else uuid.uuid4()
 
         self.workingDir = os.getcwd()
@@ -195,15 +197,16 @@ class prodNtupleConfig:
             "process.produceNtuple.genMatchingByIndex         = cms.bool(%s)"     % self.gen_matching_by_index,
             "process.produceNtuple.branchNames_triggers       = cms.vstring(%s)"  % jobOptions['triggers'],
             "process.fwliteInput.fileNames                    = cms.vstring(%s)"  % inputFiles_prepended,
-            "executable      = 'produceNtuple'",
-            "inputFiles      = %s" % jobOptions['inputFiles'],
-            "isMC            = %s" % str(jobOptions['is_mc']),
-            "isHHnonRes      = %s" % str(is_hh_nonres(jobOptions)),
-            "era             = %s" % str(self.era),
-            "pileup          = '%s'" % self.pileup,
-            "golden_json     = '%s'" % self.golden_json,
-            "process_name    = '%s'" % jobOptions['process_name'],
-            "skip_tools_step = %s" % self.skip_tools_step,
+            "executable          = 'produceNtuple'",
+            "inputFiles          = %s" % jobOptions['inputFiles'],
+            "isMC                = %s" % str(jobOptions['is_mc']),
+            "isHHnonRes          = %s" % str(is_hh_nonres(jobOptions)),
+            "era                 = %s" % str(self.era),
+            "pileup              = '%s'" % self.pileup,
+            "golden_json         = '%s'" % self.golden_json,
+            "process_name        = '%s'" % jobOptions['process_name'],
+            "skip_tools_step     = %s" % self.skip_tools_step,
+            "remove_intermediate = %s" % (not self.do_sync),
         ]
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 

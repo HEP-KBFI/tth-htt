@@ -36,10 +36,12 @@ PILEUP=$(python -c "execfile('$SCRIPT'); print(pileup)")
 PROCESS_NAME=$(python -c "execfile('$SCRIPT'); print(process_name)")
 GOLDEN_JSON=$(python -c "execfile('$SCRIPT'); print(golden_json)")
 SKIP_TOOLS_STEP=$(python -c "execfile('$SCRIPT'); print(skip_tools_step)")
+REMOVE_INTERMEDIATE=$(python -c "execfile('$SCRIPT'); print(remove_intermediate)")
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
 echo "Is MC? '$IS_MC'"
 echo "Skip tools step? '$SKIP_TOOLS_STEP'"
+echo "Remove intermediate file? '$REMOVE_INTERMEDIATE'"
 
 if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   echo "Executable '$EXECUTABLE' not in \$PATH";
@@ -80,8 +82,10 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
                        . $F_i
     fi
     test_exit_code $?
-    echo "Removing intermediate file $F_i"
-    rm -f $F_i
+    if [ "$REMOVE_INTERMEDIATE" == "True" ]; then
+      echo "Removing intermediate file $F_i";
+      rm -f $F_i;
+    fi
   done
   echo "Finished nanoAOD pre-processing at `date`"
 else
