@@ -1904,7 +1904,7 @@ int main(int argc, char* argv[])
 
     if(bdt_filler)
     {
-      const double cosThetaS_hadTau = comp_cosThetaS(selHadTau_lead->p4(), selHadTau_sublead->p4());
+      const double cosThetaS_hadTau = comp_cosThetaStar(selHadTau_lead->p4(), selHadTau_sublead->p4());
       //compute di-b-jet mass
 
       double mT2_top_3particle = -1.;

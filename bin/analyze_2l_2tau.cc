@@ -126,17 +126,6 @@ struct HadTauHistManagerWrapper_eta
   double etaMax_;
 };
 
-double comp_cosThetaS(const Particle::LorentzVector& hadTauP4_lead, const Particle::LorentzVector& hadTauP4_sublead)
-{
-  TLorentzVector hadTauP4tlv_lead;
-  hadTauP4tlv_lead.SetPtEtaPhiM(hadTauP4_lead.pt(), hadTauP4_lead.eta(), hadTauP4_lead.phi(), hadTauP4_lead.mass());
-  TLorentzVector hadTauP4tlv_sublead;
-  hadTauP4tlv_sublead.SetPtEtaPhiM(hadTauP4_sublead.pt(), hadTauP4_sublead.eta(), hadTauP4_sublead.phi(), hadTauP4_sublead.mass());
-  TLorentzVector hadTauBoost = hadTauP4tlv_lead;
-  return std::fabs(hadTauBoost.CosTheta());
-}
-
-
 /**
  * @brief Produce datacard and control plots for 2l_2tau category.
  */
@@ -1593,7 +1582,7 @@ int main(int argc, char* argv[])
     const int nJet        = selJets.size();
 
     const double mTauTauVis       = (selHadTau_lead->p4() + selHadTau_sublead->p4()).mass();
-    const double cosThetaS_hadTau = comp_cosThetaS(selHadTau_lead->p4(), selHadTau_sublead->p4());
+    const double cosThetaS_hadTau = comp_cosThetaStar(selHadTau_lead->p4(), selHadTau_sublead->p4());
     const double tau1_pt          = selHadTau_lead->pt();
     const double tau2_pt          = selHadTau_sublead->pt();
     const double tau2_eta         = selHadTau_sublead->eta();
@@ -1829,7 +1818,7 @@ int main(int argc, char* argv[])
       double cosThetaS_GenTau = -4.;
       if(selHadTau_lead->genHadTau() && selHadTau_sublead->genHadTau())
       {
-        cosThetaS_GenTau = comp_cosThetaS(selHadTau_lead->genHadTau()->p4(), selHadTau_sublead->genHadTau()->p4());
+        cosThetaS_GenTau = comp_cosThetaStar(selHadTau_lead->genHadTau()->p4(), selHadTau_sublead->genHadTau()->p4());
       }
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })

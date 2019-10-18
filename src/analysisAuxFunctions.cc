@@ -13,7 +13,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 
 #include <TMath.h> // TMath::Sqrt
-#include <TLorentzVector.h> // TLorentzVector
 #include <numeric> // std::accumulate()
 
 double
@@ -727,14 +726,4 @@ get_prefix(const std::string & process_string,
     decayMode_and_genMatch = process_string + "_";
   }
   return decayMode_and_genMatch;
-}
-
-double comp_cosThetaS(const Particle::LorentzVector& hadTauP4_lead, const Particle::LorentzVector& hadTauP4_sublead)
-{
-  TLorentzVector hadTauP4tlv_lead;
-  hadTauP4tlv_lead.SetPtEtaPhiM(hadTauP4_lead.pt(), hadTauP4_lead.eta(), hadTauP4_lead.phi(), hadTauP4_lead.mass());
-  TLorentzVector hadTauP4tlv_sublead;
-  hadTauP4tlv_sublead.SetPtEtaPhiM(hadTauP4_sublead.pt(), hadTauP4_sublead.eta(), hadTauP4_sublead.phi(), hadTauP4_sublead.mass());
-  TLorentzVector hadTauBoost = hadTauP4tlv_lead;
-  return std::fabs(hadTauBoost.CosTheta());
 }
