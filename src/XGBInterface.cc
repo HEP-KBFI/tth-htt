@@ -83,7 +83,7 @@ XGBInterface::XGBInterface(const std::string & mvaFileName_odd,
   , moduleMain_even_(nullptr)
   , mvaInputVariables_(mvaInputVariables)
   , Transform_Ptr_(nullptr)
-  , fitFunctionFileName_("")  
+  , fitFunctionFileName_("")
 {
   if(mode_ != Mode::k_odd_even)
   {
@@ -167,7 +167,7 @@ XGBInterface::XGBInterface(const std::string & mvaFileName,
     throw cmsException(this, __func__, __LINE__) << "Using wrong Mode for this constructor";
   }
 
-  Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map  
+  Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map
 
   // AC: limit number of threads running in python to one
   setenv("OMP_NUM_THREADS", "1", 0);
@@ -225,7 +225,7 @@ XGBInterface::XGBInterface(const std::string & mvaFileName_odd,
     throw cmsException(this, __func__, __LINE__) << "Using wrong Mode for this constructor";
   }
 
-  Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map  
+  Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map
 
   // AC: limit number of threads running in python to one
   setenv("OMP_NUM_THREADS", "1", 0);
@@ -294,7 +294,7 @@ XGBInterface::~XGBInterface()
   Py_XDECREF(pkldata_even_);
   Py_XDECREF(moduleMainString_even_);
   Py_XDECREF(moduleMain_even_);
-  
+
   delete Transform_Ptr_;
 }
 
@@ -391,7 +391,7 @@ XGBInterface::operator()(const std::map<std::string, double> & mvaInputs) const
   Py_XDECREF(args);
   Py_XDECREF(result);
 
-  std::cout << "XGB: mvaOutput " << mvaOutput << '\n';
+  //std::cout << "XGB: mvaOutput " << mvaOutput << '\n';
   return mvaOutput;
 }
 
@@ -432,7 +432,7 @@ XGBInterface::operator()(const std::map<std::string, double> & mvaInputs,
   PyObject * vecNames = vectorToTuple_String(vectorNamesVec);
   PyObject * func = nullptr;
   PyObject * args = nullptr;
-  
+
   if(event_number % 2)
   {
     func = PyObject_GetAttrString(moduleMain_odd_, "evaluate");
@@ -452,9 +452,7 @@ XGBInterface::operator()(const std::map<std::string, double> & mvaInputs,
   Py_XDECREF(func);
   Py_XDECREF(args);
   Py_XDECREF(result);
-  
+
   //std::cout << "XGB: mvaOutput " << mvaOutput << '\n';
   return mvaOutput;
 }
-
-
