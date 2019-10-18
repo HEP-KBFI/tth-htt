@@ -385,7 +385,7 @@ int main(int argc, char* argv[])
   const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
   const HHWeightInterface * HHWeight_calc = nullptr;
   //std::cout << isMC_HH  << " " << hhWeight_cfg.getParameter<bool>("apply_rwgt") << '\n';
-  if(isMC_HH  && hhWeight_cfg.getParameter<bool>("apply_rwgt"))
+  if(apply_HH_rwgt)
   {
     HHWeight_calc = new HHWeightInterface(hhWeight_cfg);
     evt_cat_strs = HHWeight_calc->get_nof_scans();
@@ -634,9 +634,7 @@ int main(int argc, char* argv[])
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_2lss_;
     std::map<std::string, EvtHistManager_2lss*> evt_;
-    std::map<std::string, std::map<int, EvtHistManager_2lss*>> evt_scan_;
     std::map<std::string, std::map<std::string, EvtHistManager_2lss*>> evt_in_decayModes_;
-    std::map<std::string, std::map<std::string, std::map<int, EvtHistManager_2lss*>>> evt_in_decayModes_scan_;
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
@@ -744,18 +742,6 @@ int main(int argc, char* argv[])
         selHistManager->evt_[evt_cat_str]->bookCategories(fs, categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4);
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
 
-        if(apply_HH_rwgt)
-	{
-	  for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
-	  {
-	    std::string process_and_genMatch_scanName = process_and_genMatchName + "_scan_";
-	    process_and_genMatch_scanName += std::to_string(bm_list);
-	    selHistManager -> evt_scan_[evt_cat_str][bm_list]  = new EvtHistManager_2lss(makeHistManager_cfg(
-	      process_and_genMatch_scanName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
-	    selHistManager->evt_scan_[evt_cat_str][bm_list]->bookCategories(fs, categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4);
-	    selHistManager -> evt_scan_[evt_cat_str][bm_list] -> bookHistograms(fs);
-	  }
-	}
       }
 
       if(isSignal)
@@ -792,18 +778,6 @@ int main(int argc, char* argv[])
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookCategories(fs, categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4);
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
 
-            if(apply_HH_rwgt)
-	    {
-	      for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
-	      {
-		std::string decayMode_and_genMatch_scanName = decayMode_and_genMatchName + "_scan_";
-		decayMode_and_genMatch_scanName += std::to_string(bm_list);
-		selHistManager -> evt_in_decayModes_scan_[evt_cat_str][decayMode_evt][bm_list]  = new EvtHistManager_2lss(makeHistManager_cfg(
-	         decayMode_and_genMatch_scanName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
-		selHistManager -> evt_in_decayModes_scan_[evt_cat_str][decayMode_evt][bm_list] -> bookCategories(fs, categories_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4);
-		selHistManager -> evt_in_decayModes_scan_[evt_cat_str][decayMode_evt][bm_list] -> bookHistograms(fs);
-	      }
-	    }
 	  }
 	}
       }
@@ -1968,7 +1942,7 @@ int main(int argc, char* argv[])
           if ( isMC_tH )
           {
             tH_weight_map[evt_cat_str] = evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(central_or_shift_tH, evt_cat_str_query);
-          } else if ( isMC_HH )
+          } else if (apply_HH_rwgt)
           {
             tH_weight_map[evt_cat_str] = evtWeight * Weight_ktScan[evt_cat_str] / HHWeight;
           } else

@@ -649,11 +649,9 @@ int main(int argc, char* argv[])
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_ttbar_;
     std::map<std::string, EvtHistManager_0l_2tau*> evt_;
-    std::map<std::string, std::map<int, EvtHistManager_0l_2tau*>> evt_scan_;
     std::map<std::string, std::map<std::string, EvtHistManager_0l_2tau*>> evt_in_decayModes_;
     std::map<std::string, std::map<std::string, std::map<int, EvtHistManager_0l_2tau*>>> evt_in_decayModes_scan_;
     std::map<std::string, EvtHistManager_0l_2tau*> evt_in_categories_;
-    std::map<std::string, std::map<int, EvtHistManager_0l_2tau*>> evt_in_categories_scan_;
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
@@ -741,17 +739,6 @@ int main(int argc, char* argv[])
         ));
 	      selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
 
-        if(isMC_HH)
-      	{
-      	  for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
-      	  {
-      	      std::string process_and_genMatch_scanName = process_and_genMatchName;
-      	      process_and_genMatch_scanName += std::to_string(bm_list);
-      	      selHistManager -> evt_scan_[evt_cat_str][bm_list]  = new EvtHistManager_0l_2tau(makeHistManager_cfg(
-      		    process_and_genMatch_scanName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
-      	      selHistManager -> evt_scan_[evt_cat_str][bm_list] -> bookHistograms(fs);
-      	  }
-      	}
       }
 
       if(isSignal)
@@ -787,17 +774,6 @@ int main(int argc, char* argv[])
             ));
 	    selHistManager->evt_in_decayModes_[evt_cat_str][decayMode]->bookHistograms(fs);
 
-            if(isMC_HH)
-	    {
-	      for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
-	      {
-		std::string decayMode_and_genMatch_scanName = decayMode_and_genMatchName;
-		decayMode_and_genMatch_scanName += std::to_string(bm_list);
-		selHistManager -> evt_in_decayModes_scan_[evt_cat_str][decayMode][bm_list]  = new EvtHistManager_0l_2tau(makeHistManager_cfg(
-		  decayMode_and_genMatch_scanName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
-		selHistManager -> evt_in_decayModes_scan_[evt_cat_str][decayMode][bm_list] -> bookHistograms(fs);
-	      }
-	    }
           }
         }
       }
@@ -814,17 +790,6 @@ int main(int argc, char* argv[])
           Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
         selHistManager->evt_in_categories_[category]->bookHistograms(fs);
 
-        if(isMC_HH)
-	{
-	  for(std::size_t bm_list = 0; bm_list < Nscan; bm_list++)
-	  {
-	    std::string process_and_genMatch_scanName = process_and_genMatch;
-	    process_and_genMatch_scanName += std::to_string(bm_list);
-	    selHistManager -> evt_in_categories_scan_[category][bm_list]  = new EvtHistManager_0l_2tau(makeHistManager_cfg(
-	      process_and_genMatch_scanName, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
-	    selHistManager -> evt_in_categories_scan_[category][bm_list] -> bookHistograms(fs);
-	  }
-	}
       }
       if(! skipBooking)
       {
@@ -861,13 +826,6 @@ int main(int argc, char* argv[])
       }
     }
   }
-
-  /*std::vector<std::string> kt_scan = {
-    "kt_m1p0", "kt_m3p0", "kt_m2p0", "kt_m1p5", "kt_m1p25", "kt_m0p75", "kt_m0p5", "kt_m0p25", "kt_0p001",
-    "kt_0p25", "kt_0p5", "kt_0p75", "kt_1p0", "kt_1p25", "kt_1p5", "kt_2p0", "kt_3p0", "kt_m1p33", "kt_m0p83",
-    "kt_m0p67", "kt_m0p33", "kt_m0p167", "kt_0p167", "kt_0p33", "kt_0p67", "kt_0p83", "kt_1p33", "kt_m6p0",
-    "kt_m4p0", "kt_m2p5", "kt_2p5", "kt_4p0", "kt_6p0"
-  };*/
 
   NtupleFillerBDT<float, int> * bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
@@ -1776,7 +1734,7 @@ int main(int argc, char* argv[])
           {
             tH_weight_map[evt_cat_str] = evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(central_or_shift_tH, evt_cat_str_query);
           }
-          else if ( isMC_HH )
+          else if ( apply_HH_rwgt )
           {
             tH_weight_map[evt_cat_str] = evtWeight * Weight_ktScan[evt_cat_str] / HHWeight;
           } else
@@ -2102,10 +2060,8 @@ int main(int argc, char* argv[])
           ("tau1_mva_id",    selHadTau_lead -> id_mva(TauID::MVAoldDMdR032017v2))
           ("tau2_mva_id",    selHadTau_sublead -> id_mva(TauID::MVAoldDMdR032017v2))
           (tH_weight_map)
-          //(kt_scan, Weight_ktScan, isMC_HH)
         .fill()
       ;
-      // xanda -- use the dictionary that saswati will write instead
 
     }
 
