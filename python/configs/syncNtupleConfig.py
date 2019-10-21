@@ -231,10 +231,14 @@ class syncNtupleConfig:
       )
 
     with open(self.makefile_path, 'w') as makefile:
+      hadd_script_cmd = '{}{}'.format(
+        'sleep 60\n\t' if self.running_method.lower() == 'makefile' else '',
+        self.hadd_script_path
+      )
       makeFileContents = jinja2.Template(makeFileTemplate).render(
         output_file       = self.final_output_file,
         channel_info      = self.channel_info,
-        hadd_script       = self.hadd_script_path,
+        hadd_script       = hadd_script_cmd,
         hadd_wrapper_log  = self.hadd_log_wrapper_path,
         additional_cmds   = additional_cmds,
         validate_channels = ' '.join(self.channels_to_validate),
