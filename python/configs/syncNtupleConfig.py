@@ -8,6 +8,7 @@ import jinja2
 import uuid
 import sys
 import collections
+import re
 
 DEPENDENCIES = [
     "",  # CMSSW_BASE/src
@@ -86,8 +87,9 @@ class syncNtupleConfig:
     self.use_home           = use_home
     executable_pattern = os.path.join(project_dir, 'test', file_pattern)
 
-    self.hadd_script_dir_path = os.path.join(config_dir, DKEY_SCRIPTS, DKEY_SYNC)
-    self.hadd_log_dir_path    = os.path.join(config_dir, DKEY_LOGS,    DKEY_SYNC,)
+    self.config_dir = config_dir
+    self.hadd_script_dir_path = os.path.join(self.config_dir, DKEY_SCRIPTS, DKEY_SYNC)
+    self.hadd_log_dir_path    = os.path.join(self.config_dir, DKEY_LOGS,    DKEY_SYNC,)
     self.hadd_script_path         = os.path.join(self.hadd_script_dir_path, 'hadd_sync.py')
     self.hadd_log_wrapper_path    = os.path.join(self.hadd_log_dir_path,    'hadd_sync_wrapper.log')
     self.hadd_log_executable_path = os.path.join(self.hadd_log_dir_path,    'hadd_sync_executable.log')
@@ -129,7 +131,7 @@ class syncNtupleConfig:
     inclusive_args += additional_args
     common_args    += additional_args
 
-    create_if_not_exists(config_dir)
+    create_if_not_exists(self.config_dir)
     create_if_not_exists(self.output_dir)
 
     channels_extended = collections.OrderedDict()
@@ -151,11 +153,11 @@ class syncNtupleConfig:
         executable_channel = channel.replace('ctrl', '')
       channel_script = executable_pattern % executable_channel
 
-      channel_makefile = os.path.join(config_dir, 'Makefile_%s' % channel)
-      channel_outlog   = os.path.join(config_dir, 'stdout_sync_%s.log' % channel)
-      channel_errlog   = os.path.join(config_dir, 'stderr_sync_%s.log' % channel)
-      channel_outlog_create = os.path.join(config_dir, 'stdout_sync_create_%s.log' % channel)
-      channel_errlog_create = os.path.join(config_dir, 'stderr_sync_create_%s.log' % channel)
+      channel_makefile = os.path.join(self.config_dir, 'Makefile_%s' % channel)
+      channel_outlog   = os.path.join(self.config_dir, 'stdout_sync_%s.log' % channel)
+      channel_errlog   = os.path.join(self.config_dir, 'stderr_sync_%s.log' % channel)
+      channel_outlog_create = os.path.join(self.config_dir, 'stdout_sync_create_%s.log' % channel)
+      channel_errlog_create = os.path.join(self.config_dir, 'stderr_sync_create_%s.log' % channel)
       channel_outlog, channel_errlog, channel_outlog_create, channel_errlog_create = get_log_version((
         channel_outlog, channel_errlog, channel_outlog_create, channel_errlog_create
       ))
@@ -169,28 +171,34 @@ class syncNtupleConfig:
       channel_cmd_create = '%s %s 2>%s 1>%s' % \
                            (channel_script, cmd_args, channel_errlog_create, channel_outlog_create)
       channel_cmd_run   = '$(MAKE) -j 5 -f %s all 2>%s 1>%s' % (channel_makefile, channel_errlog, channel_outlog)
-      channel_cmd_clean = '$(MAKE)      -f %s clean' % channel_makefile
+      channel_cmd_clean = '$(MAKE) -f %s clean' % channel_makefile
+      if self.running_method.lower() == "makefile":
+        channel_cmd_run = "\n\t".join([
+          "mkdir -p {}".format(channel),
+          channel_cmd_run.replace('$(MAKE)', '$(MAKE) -C {}'.format(channel)),
+          "rm -r {}".format(channel),
+        ])
       self.channel_info[input_file] = {
         'create' : channel_cmd_create,
         'run'    : channel_cmd_run,
         'clean'  : channel_cmd_clean,
       }
 
-    self.stdout_file_path = os.path.join(config_dir,      "stdout_sync.log")
-    self.stderr_file_path = os.path.join(config_dir,      "stderr_sync.log")
-    self.sw_ver_file_cfg  = os.path.join(config_dir,      "VERSION_sync.log")
+    self.stdout_file_path = os.path.join(self.config_dir,      "stdout_sync.log")
+    self.stderr_file_path = os.path.join(self.config_dir,      "stderr_sync.log")
+    self.sw_ver_file_cfg  = os.path.join(self.config_dir,      "VERSION_sync.log")
     self.sw_ver_file_out  = os.path.join(self.output_dir, "VERSION_sync.log")
     self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
       self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
     ))
-    self.makefile_path = os.path.join(config_dir, 'Makefile_sync')
+    self.makefile_path = os.path.join(self.config_dir, 'Makefile_sync')
     if suffix:
       self.makefile_path += "_{}".format(suffix)
 
   def create(self):
     create_if_not_exists(self.hadd_log_dir_path)
 
-    if self.running_method == 'sbatch':
+    if self.running_method.lower() == 'sbatch':
       create_if_not_exists(self.hadd_script_dir_path)
 
       createScript_sbatch_hadd(
@@ -248,8 +256,12 @@ class syncNtupleConfig:
       target = 'clean'
 
     nof_parallel_jobs = len(self.channel_info)
-    make_cmd          = "make -f %s -j %d %s 2>%s 1>%s" % \
+    make_cmd = "make -f %s -j %d %s 2>%s 1>%s" % \
       (self.makefile_path, nof_parallel_jobs, target, self.stderr_file_path, self.stdout_file_path)
+    if self.running_method.lower() == "makefile":
+      run_dir = re.sub('^/home', '/scratch', self.config_dir)
+      create_if_not_exists(run_dir)
+      make_cmd = re.sub('^make', 'make -C {}'.format(run_dir), make_cmd)
     logging.info("Running the make command: %s" % make_cmd)
     run_cmd(make_cmd)
     logging.info("All done")

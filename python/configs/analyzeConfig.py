@@ -1361,7 +1361,10 @@ class analyzeConfig(object):
                     scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]))
                     lines_makefile.append("\t%s %s" % ("python", scriptFile))
                 else:
-                    lines_makefile.append("\thadd -f %s %s" % (outputFiles[key], ' '.join(inputFiles[key])))
+                    outputFile_base = os.path.basename(outputFiles[key])
+                    lines_makefile.append("\thadd -f %s %s" % (outputFile_base, ' '.join(inputFiles[key])))
+                    if outputFile_base != outputFiles[key]:
+                        lines_makefile.append("\tmv %s %s" % (outputFile_base, outputFiles[key]))
             lines_makefile.append("")
             lines_makefile.append("%s: %s" % (make_target, " ".join(make_target_batches)))
         lines_makefile.append("")
