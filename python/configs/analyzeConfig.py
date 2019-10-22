@@ -51,12 +51,6 @@ DIRLIST = [
     DKEY_HADD_RT, DKEY_SYNC
 ]
 
-kt_weights = []
-with open(os.environ["CMSSW_BASE"] + "/src/hhAnalysis/multilepton/data/kt_scan.dat", "r") as file:
-    for line in file:
-        x = float(line.split()[1])
-        kt_weights += [ "kt_" + str("{:3.2f}".format(x)).replace(".", "p").replace("-", "m") ]
-
 def convert_lep_wp(float_str):
   return float_str.replace('.', '')
 
@@ -406,6 +400,17 @@ class analyzeConfig(object):
             [ copy.deepcopy(find_tHweight(tHweights, thIdx)) for thIdx in self.thIdxs ]
           )
         ))
+        self.kt_weights = []
+        with open(os.path.join(os.environ["CMSSW_BASE"], "src/hhAnalysis/multilepton/data/kt_scan.dat"), "r") as kt_file:
+          for line in kt_file:
+            kt_value = float(line.split()[1])
+            if kt_value == 1.0:
+              # SM
+              continue
+            self.kt_weights += [
+              "kt_" + str("{:3.2f}".format(kt_value)).replace(".", "p").replace("-", "m")
+            ]
+
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
         self.outputFile_hadd_stage1 = {}
@@ -922,7 +927,7 @@ class analyzeConfig(object):
             if sample_category in ["tHq", "tHW"]:
                 couplings += self.thcouplings
             if sample_category in ["HH"] :
-                couplings += kt_weights
+                couplings += self.kt_weights
 
             for decayMode in decays:
                 for coupling in couplings:
