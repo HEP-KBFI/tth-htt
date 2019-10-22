@@ -157,6 +157,8 @@ int main(int argc, char* argv[])
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
   const bool isMC_VH = process_string == "VH";
+  const bool isMC_WZ = process_string == "WZ";
+  const bool isMC_tHq = process_string == "tHq";
   const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
   const bool isMC_HH = process_string == "HH";
   const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
@@ -876,6 +878,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
+    //if (analyzedEntries > 2) break;
+    if ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) continue;
+    if ( (eventInfo.event % 2) && isMC_WZ ) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1193,18 +1198,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets;
-    if (!selectBDT) {
-      cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, fakeableHadTaus) :
-      jetCleaner       (jet_ptrs, fakeableLeptonsFull, fakeableHadTaus)
+    const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
+      jetCleanerByIndex(jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, fakeableHadTaus) :
+      jetCleaner       (jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, fakeableHadTaus)
       ;
-    } else {
-      cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, selLeptons_full, fakeableHadTaus) :
-      jetCleaner       (jet_ptrs, selLeptons_full, fakeableHadTaus)
-      ;
-    }
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -1907,7 +1904,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
-      const double evtWeight = evtWeightRecorder.get(central_or_shift);
+      double evtWeight = evtWeightRecorder.get(central_or_shift);
+      if ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) evtWeight *=3;
+      if ( (eventInfo.event % 2) && isMC_WZ ) evtWeight *=2;
       const bool skipFilling = central_or_shift != central_or_shift_main;
       for (const GenMatchEntry* genMatch : genMatches)
       {
