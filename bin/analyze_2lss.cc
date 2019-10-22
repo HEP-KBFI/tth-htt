@@ -389,7 +389,7 @@ int main(int argc, char* argv[])
   {
     HHWeight_calc = new HHWeightInterface(hhWeight_cfg);
     const std::vector<std::string> evt_cat_HH_strs = HHWeight_calc->get_scan_strs();
-    evt_cat_strs.insert(evt_cat_strs.end(), evt_cat_HH_strs.begin(), evt_cat_HH_strs.end());
+    evt_cat_strs = HHWeight_calc->get_scan_strs();
   }
   const size_t Nscan = evt_cat_strs.size();
   std::cout << "Number of points being scanned = " << Nscan << '\n';
