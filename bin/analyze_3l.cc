@@ -618,7 +618,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     "output_NN_3l_ttH_tH_3cat_v8_tH_bl",
     "output_NN_3l_ttH_tH_3cat_v8_tH_bt",
     "output_NN_3l_ttH_tH_3cat_v8_rest_bl",
-    "output_NN_3l_ttH_tH_3cat_v8_rest_bt"
+    "output_NN_3l_ttH_tH_3cat_v8_rest_bt",
+    "output_NN_3l_ttH_tH_3cat_v8_cr",
   };
   vstring ctrl_categories = { "other" };
   for(int nbjets_ctrl = 0; nbjets_ctrl < 3; ++nbjets_ctrl)
@@ -1299,9 +1300,11 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const bool tH_like  = (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1);
     const bool ttH_like = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && selJets.size() >= 2;
     const bool passEvents = ttH_like || tH_like;
-    if ( !(passEvents) ) {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
+    if(! passEvents && ! isControlRegion)
+    {
+      if(run_lumi_eventSelector)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection\n";
         printCollection("selJets", selJets);
         printCollection("selBJets_loose", selBJets_loose);
         printCollection("selBJets_medium", selBJets_medium);
@@ -1310,9 +1313,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     cutFlowTable.update("Hadronic selection", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("Hadronic selection", evtWeightRecorder.get(central_or_shift_main));
-
-    bool is_tH_like_and_not_ttH_like = false;
-    if ( tH_like && !ttH_like ) is_tH_like_and_not_ttH_like = true;
 
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
@@ -1514,7 +1514,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     cutFlowHistManager->fillHistograms("H->ZZ*->4l veto", evtWeightRecorder.get(central_or_shift_main));
 
     const bool isSameFlavor_OS_FO = isSFOS(fakeableLeptons);
-// is_tH_like_and_not_ttH_like
+    bool is_tH_like_and_not_ttH_like = tH_like && !ttH_like;
     double met_LD_cut = 0.;
     //if (tH_like && !do_sync) met_LD_cut = -1.;
     if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
@@ -1522,8 +1522,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     else                            met_LD_cut = 30.;
     if ( met_LD_cut > 0 && met_LD < met_LD_cut ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
-	std::cout << " (met_LD = " << met_LD << ", met_LD_cut = " << met_LD_cut << ")" << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
+        std::cout << " (met_LD = " << met_LD << ", met_LD_cut = " << met_LD_cut << ")" << std::endl;
       }
 
       if ( !tH_like ) continue; // MET LD cut not applied if tH_like
@@ -1808,10 +1808,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["avg_dr_jet"]                 = avg_dr_jet;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["ptmiss"] = met.pt();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["mbb_medium"] = mbb;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet1_pt"] = selJets[0]->pt();
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet1_pt"] = selJets.size() > 0 ? selJets[0]->pt() : 0;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["jet2_pt"] = selJets.size() > 1 ? selJets[1]->pt() : 0;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet3_pt"] = selJets.size() > 2 ?  selJets[2]->pt() : 0;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet4_pt"] = selJets.size() > 3 ?  selJets[3]->pt() : 0;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet3_pt"] = selJets.size() > 2 ? selJets[2]->pt() : 0;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet4_pt"] = selJets.size() > 3 ? selJets[3]->pt() : 0;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["max_lep_eta"] = max_lep_eta;
     //mvaInputs_3l_ttH_tH_3cat_v8_TF["lep_min_dr_jet"] = lep_min_dr_jet;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["lep1_mT"] = mT_lep1;
@@ -1839,7 +1839,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 
     std::string category = "output_NN_3l_ttH_tH_3cat_v8_";
     double output_NN_3l_ttH_tH_3cat_v8 = -10.0;
-    if (ttH_like || tH_like) {
+    if (passEvents) {
 
       if (
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"] >= mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"] &&\
@@ -1866,7 +1866,12 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       if (selBJets_medium.size() >= 2) category += "_bt";
       else category += "_bl";
 
-    } else assert(0);
+    }
+    else if(isControlRegion)
+    {
+      category += "cr";
+    }
+    else assert(0);
 
 
 //--- compute integer discriminant based on both BDT outputs,

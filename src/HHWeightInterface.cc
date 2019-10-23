@@ -134,7 +134,7 @@ HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
         {
           case 0:
             kl_scan.push_back(value);
-            if (!(do_ktscan)) to_store = value;
+            if (! do_ktscan) to_store = value;
             break;
           case 1:
             kt_scan.push_back(value);
@@ -154,7 +154,7 @@ HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
       if (isDEBUG) {
         std::cout << "prefix = " << prefix << "\n";
       }
-      values_string.push_back(prefix);
+      values_string.push_back(do_ktscan && to_store == 1.0 ? "default" : prefix);
     }
 
     if(isDEBUG)
@@ -181,7 +181,7 @@ HHWeightInterface::~HHWeightInterface()
 }
 
 std::vector<std::string>
-HHWeightInterface::get_nof_scans() const
+HHWeightInterface::get_scan_strs() const
 {
   return values_string;
 }

@@ -19,7 +19,7 @@ public:
    * @brief Number of scans
    */
   std::vector<std::string>
-  get_nof_scans() const;
+  get_scan_strs() const;
 
   /**
    * @brief Calculates HH weight (JHEP)
