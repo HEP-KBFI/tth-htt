@@ -15,6 +15,7 @@ EvtHistManager_1l_2tau::EvtHistManager_1l_2tau(const edm::ParameterSet & cfg)
     "numBJets_loose_vs_numJets",
     "numBJets_medium_vs_numJets",
     "mTauTauVis",
+    "mvaOutput_legacy"
   };
   const std::vector<std::string> sysOpts_all = {
     "mvaOutput_final",
@@ -48,6 +49,7 @@ EvtHistManager_1l_2tau::bookHistograms(TFileDirectory & dir)
 
   Float_t binsx[8] = { 0.0, 0.142857, 0.285714, 0.428571, 0.571429, 0.714286, 0.857143, 1.0 };
   histogram_final_ = book1D(dir, "mvaOutput_final", "mvaOutput_final", 7, binsx);
+  histogram_mvaOutput_legacy_ = book1D(dir, "mvaOutput_legacy", "mvaOutput_legacy", 7, binsx);
 
   histogram_mTauTauVis_   = book1D(dir, "mTauTauVis",   "mTauTauVis",  20,  0., 200.);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
@@ -62,6 +64,7 @@ EvtHistManager_1l_2tau::fillHistograms(int numElectrons,
                                        int numBJets_medium,
                                        double mvaOutput_HTT_SUM_VT,
                                        double mTauTauVis,
+                                       double mvaOutput_legacy,
                                        double evtWeight)
 {
   const double evtWeightErr = 0.;
@@ -74,6 +77,7 @@ EvtHistManager_1l_2tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_final_,                             mvaOutput_HTT_SUM_VT,      evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_legacy_,                  mvaOutput_legacy,      evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mTauTauVis_,   mTauTauVis, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_EventCounter_, 0.,         evtWeight, evtWeightErr);

@@ -580,14 +580,20 @@ int main(int argc, char* argv[])
   HadTopTagger* hadTopTagger = new HadTopTagger();
 
   // -- initialize eventlevel BDTs
-  std::string mvaFileName_plainKin_ttV ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_plainKin_evtLevelTTV_TTH_13Var.xml";
+  // data/NN_for_legacy_opt/1l_2tau.pkl
+  std::string mvaFileName_plainKin_ttV ="tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/1l_2tau.pkl";
   std::vector<std::string> mvaInputVariables_plainKin_ttVSort={
-    "avg_dr_jet", "dr_taus", "ptmiss", "lep_conePt", "mT_lep",
-    "mTauTauVis", "mindr_lep_jet", "mindr_tau1_jet",
-    "dr_lep_tau_ss", "dr_lep_tau_sublead", "costS_tau", "tau1_pt", "tau2_pt"
+    "tau1_pt", "tau2_pt", "dr_taus",
+    "dr_lep_tau_os", "dr_lep_tau_ss", "Lep_min_dr_jet",
+    "mTauTauVis", "costS_tau", "met_LD",
+    "res_HTT", "HadTop_pt", "mbb_loose",
+    "jet1_pt", "avg_dr_jet", "jet2_pt", "jet3_pt", "max_Lep_eta"
   };
-  TMVAInterface mva_plainKin_ttV(mvaFileName_plainKin_ttV, mvaInputVariables_plainKin_ttVSort);
-  mva_plainKin_ttV.enableBDTTransform();
+  XGBInterface mva_plainKin_ttV(
+    mvaFileName_plainKin_ttV,
+    mvaInputVariables_plainKin_ttVSort
+  );
+  //mva_plainKin_ttV.enableBDTTransform();
 
   std::string mvaFileName_plainKin_tt ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_plainKin_evtLevelTT_TTH_13Var.xml";
   std::vector<std::string> mvaInputVariables_plainKin_ttSort={
@@ -720,7 +726,7 @@ int main(int argc, char* argv[])
         selHistManager->metFilters_->bookHistograms(fs);
         selHistManager->mvaInputVariables_HTT_sum_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
           Form("%s/sel/mvaInputs_HTT_sum", histogramDir.data()), era_string, central_or_shift));
-        selHistManager->mvaInputVariables_HTT_sum_->bookHistograms(fs, mvaInputVariables_HTT_sumSort);
+        selHistManager->mvaInputVariables_HTT_sum_->bookHistograms(fs, mvaInputVariables_plainKin_ttVSort);
       }
 
       for(const std::string & evt_cat_str: evt_cat_strs)
@@ -1713,6 +1719,32 @@ int main(int argc, char* argv[])
     };
     const double mvaOutput_HTT_SUM_VT = mva_HTT_sum_VT(mvaInputsHTT_sum);
 
+    //"tau1_pt", "tau2_pt", "dr_taus",
+    //"dr_lep_tau_os", "dr_lep_tau_ss", "Lep_min_dr_jet",
+    //"mTauTauVis", "costS_tau", "met_LD",
+    //"res_HTT", "HadTop_pt", "mbb_loose",
+    //"jet1_pt", "avg_dr_jet", "jet2_pt", "jet3_pt", "max_Lep_eta"
+    const std::map<std::string, double> mvaInputs_legacy = {
+      { "tau1_pt",         tau1_pt         },
+      { "tau2_pt",         tau2_pt         },
+      { "dr_taus",         dr_taus         },
+      { "dr_lep_tau_os",   deltaR(selLepton->p4(), selHadTau_OS->p4())   },
+      { "dr_lep_tau_ss",   dr_lep_tau_ss   },
+      {"Lep_min_dr_jet", std::min({mindr_lep_jet, mindr_tau1_jet, mindr_tau2_jet})},
+      { "mTauTauVis",      mTauTauVis      },
+      { "costS_tau",       costS_tau       },
+      { "met_LD",          met_LD       },
+      { "res_HTT",         HTT             },
+      { "HadTop_pt",       HadTop_pt       },
+      { "mbb_loose",        selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : 0.},
+      { "jet1_pt",   selJets.size() > 0 ? selJets[0]->pt() : 0},
+      { "avg_dr_jet",      avg_dr_jet      },
+      { "jet2_pt",   selJets.size() > 0 ? selJets[1]->pt() : 0},
+      { "jet3_pt",   selJets.size() > 0 ? selJets[2]->pt() : 0},
+      { "max_Lep_eta",  std::max({selLepton->absEta(), selHadTau_lead->absEta(), selHadTau_sublead->absEta()})},
+    };
+    const double mvaOutput_legacy = mva_plainKin_ttV(mvaInputs_legacy);
+
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons, selHadTaus);
 
@@ -1742,7 +1774,7 @@ int main(int argc, char* argv[])
           selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
           selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
           selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
-          selHistManager->mvaInputVariables_HTT_sum_->fillHistograms(mvaInputsHTT_sum, evtWeight);
+          selHistManager->mvaInputVariables_HTT_sum_->fillHistograms(mvaInputs_legacy, evtWeight);
         }
 
         const std::string central_or_shift_tH = eventInfo.has_central_or_shift(central_or_shift) ? central_or_shift : central_or_shift_main;
@@ -1774,6 +1806,7 @@ int main(int argc, char* argv[])
             selBJets_medium.size(),
             mvaOutput_HTT_SUM_VT,
             mTauTauVis,
+            mvaOutput_legacy,
             kv.second);
           }
         }
@@ -1796,6 +1829,7 @@ int main(int argc, char* argv[])
                 selBJets_medium.size(),
                 mvaOutput_HTT_SUM_VT,
                 mTauTauVis,
+                mvaOutput_legacy,
                 kv.second
               );
               }
@@ -1835,6 +1869,7 @@ int main(int argc, char* argv[])
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mvaOutput_HTT_SUM_VT,
             mTauTauVis,
+            mvaOutput_legacy,
             evtWeight
           );
         }
