@@ -854,7 +854,6 @@ int main(int argc, char* argv[])
       "HTT_semi_boosted_fromAK8", "genTopPt_semi_boosted_fromAK8", "HadTop_pt_semi_boosted_fromAK8",
       "minDR_AK8_lep",
       "minDR_AK8subjets_lep",
-      "mva_Boosted_AK8", "mva_Updated",
       "lumiScale", "genWeight", "evtWeight",
       "cosThetaS_hadTau",
       "massL", "pZetaComb",
@@ -868,7 +867,7 @@ int main(int argc, char* argv[])
       "leadFwdJet_eta", "leadFwdJet_pt", "leadFwdJet_phi", "leadFwdJet_E",
       "mT2_W", "mT2_top_2particle", "mT2_top_3particle",
       "mbb_loose", "mbb_medium",
-      "lumiScale", "genWeight", "evtWeight",
+      "lumiScale", "genWeight",
       "selHadTau_lead_deepTauIDe",  "selHadTau_lead_deepTauIDmu", "selHadTau_lead_deepTauIDjet",
       "selHadTau_sublead_deepTauIDe", "selHadTau_sublead_deepTauIDmu", "selHadTau_sublead_deepTauIDjet",
       "selHadTau_lead_deepTauRawe", "selHadTau_lead_deepTauRawmu", "selHadTau_lead_deepTauRawjet",
@@ -1969,10 +1968,6 @@ int main(int argc, char* argv[])
           ("genTopPt_semi_boosted_fromAK8",            genTopPt_semi_boosted_fromAK8)
           ("HadTop_pt_semi_boosted_fromAK8",           HadTop_pt_semi_boosted_fromAK8)
           ("hadtruth_semi_boosted_fromAK8",          hadtruth_semi_boosted_fromAK8)
-
-          // Xanda: I still did not added those to datacards making
-          ("mva_Boosted_AK8", mva_Boosted_AK8)
-          ("mva_Updated",     mva_Updated)
 
           ("nJetForward",         selJetsForward.size())
           ("mT2_W",                         mT2_W)
