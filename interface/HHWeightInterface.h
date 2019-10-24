@@ -18,8 +18,8 @@ public:
   /**
    * @brief Number of scans
    */
-  std::size_t
-  get_nof_scans() const;
+  std::vector<std::string>
+  get_scan_strs() const;
 
   /**
    * @brief Calculates HH weight (JHEP)
@@ -32,7 +32,7 @@ public:
   /**
    * @brief Calculates HH weight (JHEP)
    */
-  std::vector<double>
+  std::map<std::string, double>
   getScanWeight(double mHH,
                 double cosThetaStar,
                 bool isDEBUG = false) const;
@@ -63,6 +63,7 @@ private:
   std::vector<double> cg_scan;
   std::vector<double> c2g_scan;
   std::vector<double> BM_klScan;
+  std::vector<std::string> values_string;
 
   TFile * fileHH;
   TH2 * sumEvt;

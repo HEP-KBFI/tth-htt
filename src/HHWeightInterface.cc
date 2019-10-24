@@ -19,6 +19,18 @@
 #include <TFile.h> // TH1
 #include <TH2.h> // TH2
 
+#include <sstream>
+#include <boost/algorithm/string/replace.hpp>
+
+template <typename T>
+std::string to_string_with_precision(const T a_value, const int n = 2)
+{
+    std::ostringstream out;
+    out.precision(n);
+    out << std::fixed << a_value;
+    return out.str();
+}
+
 const std::size_t HHWeightInterface::nof_JHEP = 13;
 const std::vector<double> HHWeightInterface::klJHEP   = { 1.0,     7.5,     1.0,     1.0,    -3.5,     1.0,     2.4,     5.0,    15.0,     1.0,    10.0,     2.4,    15.0     };
 const std::vector<double> HHWeightInterface::ktJHEP   = { 1.0,     1.0,     1.0,     1.0,     1.5,     1.0,     1.0,     1.0,     1.0,     1.0,     1.5,     1.0,     1.0     };
@@ -108,19 +120,26 @@ HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
       std::vector<std::string> line_split;
       boost::split(line_split, line, boost::is_any_of(" "));
       assert(line_split.size() == 7);
-
+      std::string prefix = ( do_ktscan ) ? "kt_" : "kl_";
       std::vector<double> values;
       std::transform(
         line_split.begin(), line_split.end(), std::back_inserter(values),
         [](const std::string & value_string) -> double { return std::stod(value_string); }
       );
+      double to_store = 1.0;
       for(std::size_t colIdx = 0; colIdx < values.size(); ++colIdx)
       {
         const double value = values[colIdx];
         switch(colIdx)
         {
-          case 0: kl_scan.push_back(value); break;
-          case 1: kt_scan.push_back(value); break;
+          case 0:
+            kl_scan.push_back(value);
+            if (! do_ktscan) to_store = value;
+            break;
+          case 1:
+            kt_scan.push_back(value);
+            if (do_ktscan) to_store = value;
+            break;
           case 2: c2_scan.push_back(value); break;
           case 3: cg_scan.push_back(value); break;
           case 4: c2g_scan.push_back(value); break;
@@ -129,6 +148,13 @@ HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
           default: assert(0);
         }
       }
+      prefix += to_string_with_precision(to_store); //  boost::lexical_cast<std::string>();
+      boost::replace_all(prefix, "-", "m");
+      boost::replace_all(prefix, ".", "p");
+      if (isDEBUG) {
+        std::cout << "prefix = " << prefix << "\n";
+      }
+      values_string.push_back(do_ktscan && to_store == 1.0 ? "default" : prefix);
     }
 
     if(isDEBUG)
@@ -154,10 +180,10 @@ HHWeightInterface::~HHWeightInterface()
   fileHH->Close();
 }
 
-std::size_t
-HHWeightInterface::get_nof_scans() const
+std::vector<std::string>
+HHWeightInterface::get_scan_strs() const
 {
-  return kl_scan.size();
+  return values_string;
 }
 
 double
@@ -212,7 +238,7 @@ HHWeightInterface::getJHEPWeight(double mHH,
   return WeightBM;
 }
 
-std::vector<double>
+std::map<std::string, double>
 HHWeightInterface::getScanWeight(double mHH,
                                  double cosThetaStar,
                                  bool isDEBUG) const
@@ -220,7 +246,7 @@ HHWeightInterface::getScanWeight(double mHH,
   const double denominator = getDenom(mHH, cosThetaStar);
 
   // This part is for any scan that we can decide at later stage on the analysis
-  std::vector<double> Weight_klScan;
+  std::map<std::string, double> Weight_klScan;
   for(std::size_t scanIdx = 0; scanIdx < Norm_klScan.size(); ++scanIdx)
   {
     PyObject* args_kl_scan_list = PyTuple_Pack(10,
@@ -235,9 +261,10 @@ HHWeightInterface::getScanWeight(double mHH,
       PyFloat_FromDouble(static_cast<double>(denominator)),
       modeldata_
     );
-    Weight_klScan.push_back(
-      PyFloat_AsDouble(PyObject_CallObject(func_Weight_, args_kl_scan_list))
-    );
+    Weight_klScan[values_string[scanIdx]] = PyFloat_AsDouble(PyObject_CallObject(func_Weight_, args_kl_scan_list));
+    //Weight_klScan.push_back(
+    //  PyFloat_AsDouble(PyObject_CallObject(func_Weight_, args_kl_scan_list))
+    //);
     Py_XDECREF(args_kl_scan_list);
   }
 
@@ -246,7 +273,7 @@ HHWeightInterface::getScanWeight(double mHH,
     std::cout << "Denominator = " << denominator << '\n';
     for(std::size_t scanIdx = 0; scanIdx < Weight_klScan.size(); ++scanIdx)
     {
-      std::cout << "Weight #" << scanIdx << " = " <<  Weight_klScan[scanIdx] << '\n';
+      std::cout << "Weight #" << scanIdx << " = " <<  values_string[scanIdx]<< " = " << Weight_klScan[values_string[scanIdx]] << '\n';
     }
   }
 

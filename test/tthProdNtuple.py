@@ -71,6 +71,7 @@ version = "%s_w%sPresel_%s_%s" % (
   version, ("" if preselection else "o"), "nonNom" if use_nonnominal else "nom", mode
 )
 gen_matching_by_index = (gen_matching == 'by_index')
+do_sync = 'sync' in mode
 
 if mode == 'sync':
   samples = load_samples(era, preselection, suffix = 'sync')
@@ -136,7 +137,7 @@ for sample_name, sample_entry in samples.items():
   elif mode.startswith('hh'):
     sample_entry['use_it'] = sample_entry['process_name_specific'].startswith('signal') and \
                              'hh' in sample_entry['process_name_specific']
-  elif 'sync' in mode or mode == 'all_except_forBDTtraining':
+  elif do_sync or mode == 'all_except_forBDTtraining':
     pass
   else:
     raise ValueError("Invalid mode: %s" % mode)
@@ -200,6 +201,7 @@ if __name__ == '__main__':
     use_nonnominal        = use_nonnominal,
     use_home              = use_home,
     skip_tools_step       = preselection,
+    do_sync               = do_sync,
   )
 
   num_jobs = ntupleProduction.create()

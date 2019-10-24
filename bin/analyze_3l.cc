@@ -157,6 +157,8 @@ int main(int argc, char* argv[])
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
   const bool isMC_VH = process_string == "VH";
+  const bool isMC_WZ = process_string == "WZ";
+  const bool isMC_tHq = process_string == "tHq";
   const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
   const bool isMC_HH = process_string == "HH";
   const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
@@ -616,7 +618,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     "output_NN_3l_ttH_tH_3cat_v8_tH_bl",
     "output_NN_3l_ttH_tH_3cat_v8_tH_bt",
     "output_NN_3l_ttH_tH_3cat_v8_rest_bl",
-    "output_NN_3l_ttH_tH_3cat_v8_rest_bt"
+    "output_NN_3l_ttH_tH_3cat_v8_rest_bt",
+    "output_NN_3l_ttH_tH_3cat_v8_cr",
   };
   vstring ctrl_categories = { "other" };
   for(int nbjets_ctrl = 0; nbjets_ctrl < 3; ++nbjets_ctrl)
@@ -825,7 +828,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     );
     bdt_filler -> register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "lep3_isTight", "hadtruth",
-      "nElectron", "has_SFOS"
+      "nElectron", "has_SFOS", "nJetForward"
     );
     bdt_filler -> bookTree(fs);
   }
@@ -876,6 +879,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
+    //if (analyzedEntries > 2) break;
+    if ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) continue;
+    if ( (eventInfo.event % 2) && isMC_WZ ) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1171,9 +1177,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       assert(electronSelection != kLoose && muonSelection != kLoose);
       selMuons = selectObjects(muonSelection, preselMuons, fakeableMuons, tightMuons);
       selElectrons = selectObjects(electronSelection, preselElectrons, fakeableElectrons, tightElectrons);
-      std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
-      selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
+
     }
+    std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
+    if(!(electronSelection == muonSelection)) selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
 
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -1193,9 +1200,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, fakeableHadTaus) :
-      jetCleaner       (jet_ptrs, fakeableLeptonsFull, fakeableHadTaus)
-    ;
+      jetCleanerByIndex(jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, fakeableHadTaus) :
+      jetCleaner       (jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, fakeableHadTaus)
+      ;
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -1293,9 +1300,11 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const bool tH_like  = (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1);
     const bool ttH_like = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && selJets.size() >= 2;
     const bool passEvents = ttH_like || tH_like;
-    if ( !(passEvents) ) {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
+    if(! passEvents && ! isControlRegion)
+    {
+      if(run_lumi_eventSelector)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection\n";
         printCollection("selJets", selJets);
         printCollection("selBJets_loose", selBJets_loose);
         printCollection("selBJets_medium", selBJets_medium);
@@ -1304,9 +1313,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     cutFlowTable.update("Hadronic selection", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("Hadronic selection", evtWeightRecorder.get(central_or_shift_main));
-
-    bool is_tH_like_and_not_ttH_like = false;
-    if ( tH_like && !ttH_like ) is_tH_like_and_not_ttH_like = true;
 
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
@@ -1508,7 +1514,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     cutFlowHistManager->fillHistograms("H->ZZ*->4l veto", evtWeightRecorder.get(central_or_shift_main));
 
     const bool isSameFlavor_OS_FO = isSFOS(fakeableLeptons);
-// is_tH_like_and_not_ttH_like
+    bool is_tH_like_and_not_ttH_like = tH_like && !ttH_like;
     double met_LD_cut = 0.;
     //if (tH_like && !do_sync) met_LD_cut = -1.;
     if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
@@ -1516,8 +1522,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     else                            met_LD_cut = 30.;
     if ( met_LD_cut > 0 && met_LD < met_LD_cut ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
-	std::cout << " (met_LD = " << met_LD << ", met_LD_cut = " << met_LD_cut << ")" << std::endl;
+        std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
+        std::cout << " (met_LD = " << met_LD << ", met_LD_cut = " << met_LD_cut << ")" << std::endl;
       }
 
       if ( !tH_like ) continue; // MET LD cut not applied if tH_like
@@ -1802,10 +1808,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["avg_dr_jet"]                 = avg_dr_jet;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["ptmiss"] = met.pt();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["mbb_medium"] = mbb;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet1_pt"] = selJets[0]->pt();
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet1_pt"] = selJets.size() > 0 ? selJets[0]->pt() : 0;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["jet2_pt"] = selJets.size() > 1 ? selJets[1]->pt() : 0;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet3_pt"] = selJets.size() > 2 ?  selJets[2]->pt() : 0;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet4_pt"] = selJets.size() > 3 ?  selJets[3]->pt() : 0;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet3_pt"] = selJets.size() > 2 ? selJets[2]->pt() : 0;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["jet4_pt"] = selJets.size() > 3 ? selJets[3]->pt() : 0;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["max_lep_eta"] = max_lep_eta;
     //mvaInputs_3l_ttH_tH_3cat_v8_TF["lep_min_dr_jet"] = lep_min_dr_jet;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["lep1_mT"] = mT_lep1;
@@ -1833,7 +1839,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 
     std::string category = "output_NN_3l_ttH_tH_3cat_v8_";
     double output_NN_3l_ttH_tH_3cat_v8 = -10.0;
-    if (ttH_like || tH_like) {
+    if (passEvents) {
 
       if (
         mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_ttH"] >= mvaOutput_3l_ttH_tH_3cat_v8_TF["predictions_rest"] &&\
@@ -1860,7 +1866,12 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       if (selBJets_medium.size() >= 2) category += "_bt";
       else category += "_bl";
 
-    } else assert(0);
+    }
+    else if(isControlRegion)
+    {
+      category += "cr";
+    }
+    else assert(0);
 
 
 //--- compute integer discriminant based on both BDT outputs,
@@ -1898,7 +1909,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
-      const double evtWeight = evtWeightRecorder.get(central_or_shift);
+      double evtWeight = evtWeightRecorder.get(central_or_shift);
+      if ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) evtWeight *=3;
+      if ( (eventInfo.event % 2) && isMC_WZ ) evtWeight *=2;
       const bool skipFilling = central_or_shift != central_or_shift_main;
       for (const GenMatchEntry* genMatch : genMatches)
       {
@@ -2030,9 +2043,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       double lep2_genLepPt = ( selLepton_sublead->genLepton() ) ? selLepton_sublead->genLepton()->pt() : 0.;
       double lep3_genLepPt = ( selLepton_third->genLepton()   ) ? selLepton_third->genLepton()->pt()   : 0.;
 
-      double prob_fake_lepton_lead = evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
-      double prob_fake_lepton_sublead = evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
-      double prob_fake_lepton_third = evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main);
+      double prob_fake_lepton_lead = 1.0; // evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
+      double prob_fake_lepton_sublead = 1.0; // = evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
+      double prob_fake_lepton_third = 1.0; // = evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main);
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",             selLepton_lead -> pt())
@@ -2136,6 +2149,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("min_Deta_mostfwdJet_jet", min_Deta_mostfwdJet_jet)
           ("min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet)
           ("nElectron",                      selElectrons.size())
+          ("nJetForward",          selJetsForward.size())
 
         .fill()
       ;

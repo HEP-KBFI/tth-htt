@@ -152,7 +152,7 @@ if __name__ == '__main__':
       "mvaOutput_plainKin_ttV"            : { 'quantile_rebin' : 4, 'quantile_in_fakes' : True }, # BDT1; quantiles in fakes
       "mvaOutput_plainKin_SUM_VT"         : { 'explicit_binning' : [ 0.0, 0.25, 0.50, 0.75, 1.0 ] }, # BDT3; quantiles in fakes
       "mvaOutput_plainKin_SUM_VT_noRebin" : {},
-      "mvaOutput_plainKin_1B_VT"          : {},
+      "mva_2l_2tau"                       : {},
       "mvaOutput_final"                   : {},
     },
     select_rle_output                     = True,

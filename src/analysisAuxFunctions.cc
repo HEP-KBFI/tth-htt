@@ -13,7 +13,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 
 #include <TMath.h> // TMath::Sqrt
-
 #include <numeric> // std::accumulate()
 
 double

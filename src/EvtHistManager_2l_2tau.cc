@@ -19,7 +19,7 @@ EvtHistManager_2l_2tau::EvtHistManager_2l_2tau(const edm::ParameterSet & cfg)
     "mTauTauVis",
     "mvaOutput_plainKin_tt",
     "mvaOutput_plainKin_ttV",
-    "mvaOutput_plainKin_1B_VT",
+    "mva_2l_2tau",
     "mvaOutput_plainKin_SUM_VT",
     "mvaOutput_plainKin_SUM_VT_noRebin",
   };
@@ -55,7 +55,7 @@ EvtHistManager_2l_2tau::bookHistograms(TFileDirectory & dir)
 
   histogram_mvaOutput_plainKin_tt_             = book1D(dir, "mvaOutput_plainKin_tt",             "mvaOutput_plainKin_tt",             100, 0.0, 1.0);
   histogram_mvaOutput_plainKin_ttV_            = book1D(dir, "mvaOutput_plainKin_ttV",            "mvaOutput_plainKin_ttV",            100, 0.0, 1.0);
-  histogram_mvaOutput_plainKin_1B_VT_          = book1D(dir, "mvaOutput_plainKin_1B_VT",          "mvaOutput_plainKin_1B_VT",          100, 0.0, 1.0);
+  histogram_mvaOutput_plainKin_1B_VT_          = book1D(dir, "mva_2l_2tau",          "mva_2l_2tau",          100, 0.0, 1.0);
   histogram_mvaOutput_plainKin_SUM_VT_         = book1D(dir, "mvaOutput_plainKin_SUM_VT",         "mvaOutput_plainKin_SUM_VT",         100, 0.0, 1.0);
   histogram_mvaOutput_plainKin_SUM_VT_noRebin_ = book1D(dir, "mvaOutput_plainKin_SUM_VT_noRebin", "mvaOutput_plainKin_SUM_VT_noRebin", 100, 0.0, 1.0);
 
@@ -78,7 +78,7 @@ EvtHistManager_2l_2tau::fillHistograms(int numElectrons,
                                        double mvaOutput_plainKin_tt,
                                        double mvaOutput_plainKin_ttV,
                                        double mvaOutput_plainKin_SUM_VT,
-                                       double mvaOutput_plainKin_1B_VT)
+                                       double mva_2l_2tau)
 {
   const double evtWeightErr = 0.;
 
@@ -97,7 +97,7 @@ EvtHistManager_2l_2tau::fillHistograms(int numElectrons,
 
   fillWithOverFlow(histogram_mvaOutput_plainKin_tt_,             mvaOutput_plainKin_tt,     evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_plainKin_ttV_,            mvaOutput_plainKin_ttV,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_plainKin_1B_VT_,          mvaOutput_plainKin_1B_VT,  evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_plainKin_1B_VT_,          mva_2l_2tau,  evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_VT_,         mvaOutput_plainKin_SUM_VT, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_VT_noRebin_, mvaOutput_plainKin_SUM_VT, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_final_,                             mvaOutput_plainKin_SUM_VT, evtWeight, evtWeightErr);

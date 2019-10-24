@@ -139,6 +139,8 @@ if __name__ == '__main__':
     histograms_to_fit                     = {
       "EventCounter" : {},
       "numJets"      : {},
+      "massL"        : {},
+      "mva_4l"       : {},
     },
     select_rle_output                     = True,
     select_root_output                    = False,

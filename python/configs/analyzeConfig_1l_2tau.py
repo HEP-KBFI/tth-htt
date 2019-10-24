@@ -315,12 +315,14 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       electron_selection = lepton_selection
       muon_selection = lepton_selection
 
-      if self.applyFakeRateWeights == "2tau":
+      if self.applyFakeRateWeights == "2tau" :
         lepton_selection = "Tight"
       hadTau_selection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
 
       if lepton_and_hadTau_selection == "forBDTtraining":
-        lepton_selection = "Tight"
+        lepton_selection = "Loose"
+        electron_selection = lepton_selection
+        muon_selection = lepton_selection
         hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
       elif lepton_and_hadTau_selection == "Fakeable_mcClosure_e":
         electron_selection = "Fakeable"

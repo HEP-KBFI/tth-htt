@@ -29,11 +29,7 @@ RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
   , apply_deeptau_lepton_(false)
   , disable_deeptau_lepton_(false)
 {
-  for(const auto & kv: TauID_levels)
-  {
-    min_id_mva_[kv.first] = DEFAULT_TAUID_ID_VALUE;
-    min_raw_mva_[kv.first] = DEFAULT_TAUID_RAW_VALUE;
-  }
+  reset();
 }
 
 void
@@ -132,6 +128,7 @@ RecoHadTauSelectorBase::set(const std::string & cut)
 
   apply_deeptau_lepton_ = false;
   const std::vector<std::string> cut_parts = edm::tokenize(cut, TAU_WP_SEPARATOR);
+  reset();
   for(const std::string & cut_part: cut_parts)
   {
     const std::string mva_type = cut_part.substr(0, 7);
@@ -474,4 +471,14 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
     set_selection_flags(hadTau);
   }
   return true;
+}
+
+void
+RecoHadTauSelectorBase::reset()
+{
+  for(const auto & kv: TauID_levels)
+  {
+    min_id_mva_[kv.first] = DEFAULT_TAUID_ID_VALUE;
+    min_raw_mva_[kv.first] = DEFAULT_TAUID_RAW_VALUE;
+  }
 }

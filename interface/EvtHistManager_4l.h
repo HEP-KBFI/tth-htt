@@ -33,6 +33,8 @@ class EvtHistManager_4l
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
+                 double massL,
+                 double mva_4l,
                  const std::string & ctrl_category,
                  double evtWeight);
 
@@ -48,6 +50,8 @@ class EvtHistManager_4l
   TH1 * histogram_numJets_;
   TH1 * histogram_numBJets_loose_;
   TH1 * histogram_numBJets_medium_;
+  TH1 * histogram_massL_;
+  TH1 * histogram_mva_4l_;
 
   // CV: used to check loss in signal efficiency in case events with high jet and b-jet multiplicity are vetoed
   // to avoid overlap with ttH, H->bb analysis (alternative: ttH, H->bb analysis adds hadronic tau veto)

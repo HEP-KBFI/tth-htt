@@ -66,6 +66,8 @@ EvtHistManager_4l::bookHistograms(TFileDirectory & dir)
   histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
+  histogram_massL_ = book1D(dir, "massL", "massL", 8, 10., 100.);
+  histogram_mva_4l_ = book1D(dir, "mva_4l", "mva_4l", 50, 0., 1.);
 }
 
 void
@@ -74,6 +76,8 @@ EvtHistManager_4l::fillHistograms(int numElectrons,
                                   int numJets,
                                   int numBJets_loose,
                                   int numBJets_medium,
+                                  double massL,
+                                  double mva_4l,
                                   const std::string & ctrl_category,
                                   double evtWeight)
 {
@@ -84,6 +88,8 @@ EvtHistManager_4l::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_massL_, massL, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mva_4l_, mva_4l, evtWeight, evtWeightErr);
 
   if(! ctrl_cateories_.empty())
   {
