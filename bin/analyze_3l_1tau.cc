@@ -92,6 +92,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 #include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tH_weight_str()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
+#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterface.h" // HHWeightInterface
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
@@ -416,6 +417,20 @@ int main(int argc, char* argv[])
   EventInfo eventInfo(isMC, isSignal);
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
+
+  //--- HH scan 
+
+  const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
+  const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
+  const HHWeightInterface * HHWeight_calc = nullptr;
+  if(isMC_HH  && hhWeight_cfg.getParameter<bool>("apply_rwgt"))
+    {
+      HHWeight_calc = new HHWeightInterface(hhWeight_cfg);
+      evt_cat_strs = HHWeight_calc->get_scan_strs();
+    }
+  const size_t Nscan = evt_cat_strs.size();
+  std::cout << "Number of points being scanned = " << Nscan << '\n';
+
   const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
   if((isMC_tH || isMC_signal) && ! tHweights.empty())
   {
@@ -1602,6 +1617,32 @@ int main(int argc, char* argv[])
     cutFlowTable.update("signal region veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
 
+    std::vector<double> WeightBM; // weights to do histograms for BMs 
+    std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
+    double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
+
+    if(HHWeight_calc)
+      {
+        WeightBM = HHWeight_calc->getJHEPWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
+        Weight_ktScan = HHWeight_calc->getScanWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
+        if(apply_HH_rwgt) evtWeightRecorder.record_bm(WeightBM[0]); // SM by default
+
+        HHWeight = WeightBM[0];
+        if(isDEBUG)
+          {
+	    std::cout << "mhh = " << eventInfo.gen_mHH          << " : "
+	      "cost "             << eventInfo.gen_cosThetaStar << " : "
+              "weight = "         << HHWeight                   << '\n'
+              ;
+	    std::cout << "Calculated " << Weight_ktScan.size() << " scan weights\n";
+            for(std::size_t bm_list = 0; bm_list < Weight_ktScan.size(); ++bm_list)
+              {
+		std::cout << "line = " << bm_list << " " << evt_cat_strs[bm_list] << "; Weight = " <<  Weight_ktScan[evt_cat_strs[bm_list]] << '\n';
+              }
+	    std::cout << '\n';
+          }
+      }
+
     const RecoLepton* selLepton1_OS = 0;
     const RecoLepton* selLepton2_OS = 0;
     if ( selLepton_lead->charge()*selHadTau->charge() < 0. ) {
@@ -1836,12 +1877,21 @@ int main(int argc, char* argv[])
           {
             continue;
           }
-          const std::string evt_cat_str_query = evt_cat_str == default_cat_str ? get_tH_SM_str() : evt_cat_str;
-          tH_weight_map[evt_cat_str] = isMC_tH ?
-            evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(central_or_shift_tH, evt_cat_str_query):
-            evtWeight
-          ;
+	  if(isMC_tH)
+            {
+              const std::string evt_cat_str_query = evt_cat_str == default_cat_str ? get_tH_SM_str() : evt_cat_str;
+              tH_weight_map[evt_cat_str] = evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(central_or_shift_tH, evt_cat_str_query);
+            }
+          else if(apply_HH_rwgt)
+            {
+              tH_weight_map[evt_cat_str] = evtWeight * Weight_ktScan[evt_cat_str] / HHWeight;
+            }
+          else
+            {
+              tH_weight_map[evt_cat_str] = evtWeight;
+            }
         }
+
         for(const auto & kv: tH_weight_map)
         {
           selHistManager->evt_[kv.first]->fillHistograms(

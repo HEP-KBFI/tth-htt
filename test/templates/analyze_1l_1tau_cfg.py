@@ -140,4 +140,17 @@ process.analyze_1l_1tau = cms.PSet(
         branchTypeYaxis = cms.string(''),
     ),
     tHweights = cms.VPSet(),
+    hhWeight_cfg = cms.PSet(
+        denominator_file = cms.string(''),
+        klScan_file      = cms.string('hhAnalysis/multilepton/data/kl_scan.dat'),
+        ktScan_file      = cms.string('hhAnalysis/multilepton/data/kt_scan.dat'),
+        coefFile         = cms.string('HHStatAnalysis/AnalyticalModels/data/coefficientsByBin_extended_3M_costHHSim_19-4.txt'),
+        histtitle        = cms.string(''),
+        isDEBUG          = cms.bool(False),
+        do_scan          = cms.bool(True),
+        do_ktscan        = cms.bool(False),
+        apply_rwgt       = cms.bool(False),
+    ),
+
+
 )
