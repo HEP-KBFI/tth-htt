@@ -106,6 +106,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterface.h" // HHWeightInterface 
 #include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterface.h"
+#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterface.h" // HHWeightInterface
+
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 #include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
@@ -152,25 +154,31 @@ int main(int argc, char* argv[])
 //--- keep track of time it takes the macro to execute
   TBenchmark clock;
   clock.Start("analyze_2lss_1tau");
+  std::cout << "ahhhhhh 000" << '\n';
 
 //--- read python configuration parameters
   if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
     throw cms::Exception("analyze_2lss_1tau")
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
+  std::cout << "ahhhhhh 0" << '\n';
 
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_2lss_1tau");
 
+  std::cout << "ahhhhhh 00" << '\n';
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
   const bool isMC_VH = process_string == "VH";
+  const bool isMC_WZ = process_string == "WZ";
+  const bool isMC_tHq = process_string == "tHq";
   const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
   const bool isMC_HH = process_string == "HH";
   const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH;
+  std::cout << "ahhhhhh " << '\n';
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -256,7 +264,7 @@ int main(int argc, char* argv[])
   bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
   std::string central_or_shift_main = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
-  const bool do_tree = (isSignal || process_string == "TTW" || process_string == "TTZ" || process_string == "TT") && !(central_or_shifts_local.size() > 1);
+  const bool do_tree = (isSignal || isMC_WZ || process_string == "TTW" || process_string == "TTZ" || process_string == "TT") && !(central_or_shifts_local.size() > 1);
 
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
@@ -411,6 +419,7 @@ int main(int argc, char* argv[])
     snm->initializeBranches();
     snm->initializeHLTBranches({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
   }
+  std::cout << "ahhhhhh 2" << '\n';
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC, isSignal);
@@ -418,11 +427,11 @@ int main(int argc, char* argv[])
   std::vector<std::string> evt_cat_strs = { default_cat_str };
 
   //--- HH scan
-
   const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
   const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
   const HHWeightInterface * HHWeight_calc = nullptr;
   if(isMC_HH  && hhWeight_cfg.getParameter<bool>("apply_rwgt"))
+
     {
       HHWeight_calc = new HHWeightInterface(hhWeight_cfg);
       evt_cat_strs = HHWeight_calc->get_scan_strs();
@@ -696,40 +705,46 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   mva_2lss_1tau_HTTMEM_SUM_M.enableBDTTransform();
 
   std::vector<std::string> mvaInputVariables_TensorFlow = {
-    "lep1_conePt", "lep1_eta", "lep1_phi", "mT_lep1", "mindr_lep1_jet",
-    "lep2_conePt", "lep2_eta", "lep2_phi", "mT_lep2", "mindr_lep2_jet",
+    "lep1_conePt", "lep1_eta", "lep1_phi", //"mT_lep1",
+    "mindr_lep1_jet",
+    "lep2_conePt", "lep2_eta", "lep2_phi", //"mT_lep2",
+    "mindr_lep2_jet",
     "tau1_pt", "tau1_eta", "tau1_phi", "mindr_tau_jet",
     "avg_dr_jet", "mbb_loose", "min_dr_Lep",
-    "mTauTauVis1", "mTauTauVis2", "eta_LepLep_los",
-    "res_HTT", "HadTop_pt",
-     "massL3",
-     "min_Deta_leadfwdJet_jet", "leadFwdJet_eta", "leadFwdJet_pt",
-     "met_LD",
-     "jet1_pt", "jet1_eta", "jet1_phi",
-     "jet2_pt", "jet2_eta", "jet2_phi",
-     "jet3_pt", "jet3_eta", "jet3_phi",
-     "nJet", "nBJetLoose", "nBJetMedium", "nJetForward", "nElectron", "sum_Lep_charge"
+    "mTauTauVis1", "mTauTauVis2", //"eta_LepLep_los",
+    "res_HTT", "HadTop_pt", //"massL3",
+    "min_Deta_leadfwdJet_jet", "leadFwdJet_eta", "leadFwdJet_pt", "met_LD",
+    "jet1_pt", "jet1_eta", "jet1_phi",
+    "jet2_pt", "jet2_eta", "jet2_phi",
+    "jet3_pt", "jet3_eta", "jet3_phi",
+    "nJet", "nBJetLoose", "nBJetMedium", "nJetForward", "nElectron", "sum_Lep_charge"
   };
+  /*
+  data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2_th_2_withWZ.pb --
+  data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2p5_th_2_withWZ.pb --
+  data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2p2_th_2_withWZ.pb --
+  data/NN_for_legacy_opt/2lss_1tau/test_sig_2p2_rest_2_th_2p2_withWZ.pb --
+  */
   std::vector<std::string> classes_TensorFlow_3l_ttH_tH_3cat = {"predictions_ttH",  "predictions_rest", "predictions_tH"};
-  std::string mvaFileName_TensorFlow_sig_1p2_rest_1_th_1p2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_1p2_rest_1_th_1p2.pb";
+  std::string mvaFileName_TensorFlow_sig_1p2_rest_1_th_1p2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_2p2_rest_2_th_2p2_withWZ.pb";
   TensorFlowInterface mva_sig_1p2_rest_1_th_1p2_TF(
     mvaFileName_TensorFlow_sig_1p2_rest_1_th_1p2,
     mvaInputVariables_TensorFlow,
     classes_TensorFlow_3l_ttH_tH_3cat
   );
-  std::string mvaFileName_TensorFlow_sig_2_rest_2p2_th_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2p2_th_2.pb";
+  std::string mvaFileName_TensorFlow_sig_2_rest_2p2_th_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2p2_th_2_withWZ.pb";
   TensorFlowInterface mva_sig_2_rest_2p2_th_2_TF(
     mvaFileName_TensorFlow_sig_2_rest_2p2_th_2,
     mvaInputVariables_TensorFlow,
     classes_TensorFlow_3l_ttH_tH_3cat
   );
-  std::string mvaFileName_TensorFlow_sig_2_rest_2_th_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2_th_2.pb";
+  std::string mvaFileName_TensorFlow_sig_2_rest_2_th_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2_th_2_withWZ.pb";
   TensorFlowInterface mva_sig_2_rest_2_th_2_TF(
     mvaFileName_TensorFlow_sig_2_rest_2_th_2,
     mvaInputVariables_TensorFlow,
     classes_TensorFlow_3l_ttH_tH_3cat
   );
-  std::string mvaFileName_TensorFlow_sig_2_rest_2p5_th_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2p5_th_2.pb";
+  std::string mvaFileName_TensorFlow_sig_2_rest_2p5_th_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2p5_th_2_withWZ.pb";
   TensorFlowInterface mva_sig_2_rest_2p5_th_2_TF(
     mvaFileName_TensorFlow_sig_2_rest_2p5_th_2,
     mvaInputVariables_TensorFlow,
@@ -958,12 +973,12 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), era_string, central_or_shift_main)
     );
     bdt_filler->register_variable<float_type>(
-      "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet",
+      "lep1_pt", "lep1_conePt", "lep1_eta",  "lep1_phi", "lep1_tth_mva", "mindr_lep1_jet",
       "mindr_lep2_jet", "mT_lep1",  "MT_met_lep1", "dr_lep1_tau",
-      "lep2_pt", "lep2_conePt", "lep2_eta", "max_lep_eta", "avg_dr_lep",
+      "lep2_pt", "lep2_conePt", "lep2_eta", "lep2_phi", "max_lep_eta", "avg_dr_lep",
       "lep2_tth_mva", "mT_lep2", "dr_lep2_tau",
       "mindr_tau_jet", "avg_dr_jet",  "nJet25_Recl", "ptmiss", "htmiss",
-      "tau_mva", "tau_pt", "tau_eta", "dr_leps",
+      "tau1_mva", "tau1_pt", "tau1_eta", "tau1_phi", "dr_leps",
       "mTauTauVis1", "mTauTauVis2",
       "memOutput_isValid",   "memOutput_errorFlag",  "memOutput_LR",
       //"memOutput_tt_LR", "memOutput_ttZ_LR",
@@ -985,13 +1000,20 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       "jet3_pt", "jet3_eta", "jet3_phi", "jet3_E",
       "jet4_pt", "jet4_eta", "jet4_phi", "jet4_E",
       "mostFwdJet_eta", "mostFwdJet_pt", "mostFwdJet_phi", "mostFwdJet_E",
-      "leadFwdJet_eta", "leadFwdJet_pt", "leadFwdJet_phi", "leadFwdJet_E"
+      "leadFwdJet_eta", "leadFwdJet_pt", "leadFwdJet_phi", "leadFwdJet_E",
+      "massL", "massL3", "massLT",
+      "selHadTau_lead_deepTauIDe",  "selHadTau_lead_deepTauIDmu", "selHadTau_lead_deepTauIDjet",
+      "selHadTau_lead_deepTauRawe", "selHadTau_lead_deepTauRawmu", "selHadTau_lead_deepTauRawjet"
     );
     bdt_filler->register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "nLep","nTau",
       "lep1_isTight", "lep2_isTight", "tau_isTight", "failsTightChargeCut",
       "nElectron", "sum_Lep_charge",
-      "hadtruth", "bWj1Wj2_isGenMatched_CSVsort4rd"
+      "hadtruth", "bWj1Wj2_isGenMatched_CSVsort4rd",
+      "nJetForward",
+      "tau1_mva_id",
+      "selHadTau_lead_genHadTau", "selHadTau_lead_genLepton",
+      "selHadTau_lead_decayMode", "selHadTau_lead_idDecayMode"
     );
     bdt_filler->bookTree(fs);
   }
@@ -1050,6 +1072,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     {
       continue;
     }
+    if ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) continue;
+    if ( (eventInfo.event % 2) && isMC_WZ ) continue;
+
     EvtWeightRecorder evtWeightRecorder(central_or_shifts_local, central_or_shift_main, isMC);
     cutFlowTable.update("run:ls:event selection", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("run:ls:event selection", evtWeightRecorder.get(central_or_shift_main));
@@ -1309,9 +1334,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       assert(electronSelection != kLoose && muonSelection != kLoose);
       selMuons = selectObjects(muonSelection, preselMuons, fakeableMuons, tightMuons);
       selElectrons = selectObjects(electronSelection, preselElectrons, fakeableElectrons, tightElectrons);
-      const std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
-      selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
     }
+    const std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
+    if(!(electronSelection == muonSelection)) selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
 
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -1343,9 +1368,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, fakeableHadTausFull) :
-      jetCleaner       (jet_ptrs, fakeableLeptonsFull, fakeableHadTausFull)
-    ;
+      jetCleanerByIndex(jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, selectBDT ? selHadTaus : fakeableHadTaus) :
+      jetCleaner       (jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, selectBDT ? selHadTaus : fakeableHadTaus)
+      ;
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -2262,12 +2287,12 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       {"lep1_conePt",     lep1_conePt},
       {"lep1_eta",        selLepton_lead -> absEta()},
       {"lep1_phi",        selLepton_lead -> phi()},
-      {"mT_lep1",         mT_lep1},
+      //{"mT_lep1",         mT_lep1},
       {"mindr_lep1_jet",  mindr_lep1_jet},
       {"lep2_conePt",     lep2_conePt},
       {"lep2_eta",        selLepton_sublead -> absEta()},
       {"lep2_phi",        selLepton_sublead -> phi()},
-      {"mT_lep2",         mT_lep2},
+      //{"mT_lep2",         mT_lep2},
       {"mindr_lep2_jet",  mindr_lep2_jet},
       {"tau1_pt",         selHadTau -> pt()},
       {"tau1_eta",        selHadTau -> absEta()},
@@ -2277,7 +2302,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       {"met_LD",          met_LD},
       {"mbb_loose",       selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : 0},
       {"min_dr_Lep",      std::min( {dr_lep1_tau, dr_lep2_tau, dr_leps})},
-      {"eta_LepLep_los",  eta_los},
+      //{"eta_LepLep_los",  eta_los},
       {"mTauTauVis1",     mTauTauVis1_sel},
       {"mTauTauVis2",     mTauTauVis2_sel},
       {"leadFwdJet_eta",  selJetsForward.size() > 0 ? selJetsForward[0] -> absEta() : 0.},
@@ -2295,7 +2320,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       {"sum_Lep_charge",  selLepton_lead -> charge() + selLepton_sublead -> charge() + selHadTau->charge()},
       {"HadTop_pt",       HadTop_pt_CSVsort4rd},
       {"res_HTT",         max_mvaOutput_HTT_CSVsort4rd},
-      {"massL3",          comp_MT_met_lep1(selLepton_lead->p4() + selLepton_sublead->p4() + selHadTau->p4(), met.pt(), met.phi())},
+      //{"massL3",          comp_MT_met_lep1(selLepton_lead->p4() + selLepton_sublead->p4() + selHadTau->p4(), met.pt(), met.phi())},
       {"nJet",            selJets.size()},
       {"nBJetLoose",      selBJets_loose.size()},
       {"nBJetMedium",     selBJets_medium.size()},
@@ -2433,9 +2458,12 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons, selHadTaus);
 
 //--- fill histograms with events passing final selection
+    std::map<std::string, double> tH_weight_map;
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
-      const double evtWeight = evtWeightRecorder.get(central_or_shift);
+      double evtWeight = evtWeightRecorder.get(central_or_shift);
+      if ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) evtWeight *=3;
+      if ( (eventInfo.event % 2) && isMC_WZ ) evtWeight *=2;
       const bool skipFilling = central_or_shift != central_or_shift_main;
       for (const GenMatchEntry* genMatch : genMatches)
       {
@@ -2460,7 +2488,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
         const std::string central_or_shift_tH = eventInfo.has_central_or_shift(central_or_shift) ? central_or_shift : central_or_shift_main;
         const double evtWeight_tH_nom = evtWeightRecorder.get_nom_tH_weight(central_or_shift_tH);
-        std::map<std::string, double> tH_weight_map;
         for(const std::string & evt_cat_str: evt_cat_strs)
         {
           if(skipFilling && evt_cat_str != default_cat_str)
@@ -2615,6 +2642,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           ("lep1_pt",                        selLepton_lead->pt())
           ("lep1_conePt",                    lep1_conePt)
           ("lep1_eta",                       selLepton_lead->absEta())
+          ("lep1_phi",                       selLepton_lead->phi())
           ("lep1_tth_mva",                   selLepton_lead->mvaRawTTH())
           ("mindr_lep1_jet",                 std::min(10., mindr_lep1_jet) )
           ("mindr_lep2_jet",                 std::min(10., mindr_lep2_jet) )
@@ -2624,6 +2652,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           ("lep2_pt",                        selLepton_sublead->pt())
           ("lep2_conePt",                    lep2_conePt)
           ("lep2_eta",                       selLepton_sublead->absEta())
+          ("lep2_phi",                       selLepton_sublead->phi())
           ("max_lep_eta",                    max_lep_eta)
           ("avg_dr_lep",                     1.0) // dr_leps??
           ("lep2_tth_mva",                   selLepton_sublead->mvaRawTTH())
@@ -2634,9 +2663,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           ("nJet25_Recl",                    nJet25_Recl)
           ("ptmiss",                         ptmiss)
           ("htmiss",                         mht_p4.pt())
-          ("tau_mva",                        selHadTau->raw_mva())
-          ("tau_pt",                         selHadTau->pt())
-          ("tau_eta",                        selHadTau->absEta())
+          ("tau1_mva",                        selHadTau->raw_mva())
+          ("tau1_pt",                         selHadTau->pt())
+          ("tau1_eta",                        selHadTau->absEta())
+          ("tau1_phi",                        selHadTau->phi())
           ("dr_leps",                        dr_leps)
           ("mTauTauVis1",                    mTauTauVis1_sel)
           ("mTauTauVis2",                    mTauTauVis2_sel)
@@ -2709,6 +2739,20 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           ("leadFwdJet_pt",       selJetsForward.size() > 0 ? selJetsForward[0] -> pt() : -1000)
           ("leadFwdJet_phi",      selJetsForward.size() > 0 ? selJetsForward[0] -> phi() : -1000)
           ("leadFwdJet_E",        selJetsForward.size() > 0 ? selJetsForward[0] -> p4().energy() : -1000)
+          ("nJetForward",          selJetsForward.size())
+          ("selHadTau_lead_deepTauRawe", selHadTau -> raw_mva(TauID::DeepTau2017v2VSe))
+          ("selHadTau_lead_deepTauRawmu", selHadTau -> raw_mva(TauID::DeepTau2017v2VSmu))
+          ("selHadTau_lead_deepTauRawjet", selHadTau -> raw_mva(TauID::DeepTau2017v2VSjet))
+          ("selHadTau_lead_deepTauIDe", selHadTau -> id_mva(TauID::DeepTau2017v2VSe))
+          ("selHadTau_lead_deepTauIDmu", selHadTau -> id_mva(TauID::DeepTau2017v2VSmu))
+          ("selHadTau_lead_deepTauIDjet", selHadTau -> id_mva(TauID::DeepTau2017v2VSjet))
+          ("selHadTau_lead_genHadTau", selHadTau->genHadTau() ? 1 : 0)
+          ("selHadTau_lead_genLepton", selHadTau->genLepton() ? 1 : 0)
+          ("selHadTau_lead_decayMode", selHadTau ->  decayMode())
+          ("selHadTau_lead_idDecayMode", selHadTau ->  idDecayMode())
+          ("tau1_mva_id",                     selHadTau->id_mva(TauID::MVAoldDMdR032017v2))
+          ("massLT",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.)
+          ("massL3",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4() + selHadTau->p4(), met.pt(), met.phi())  : 0.)
 
         .fill()
       ;

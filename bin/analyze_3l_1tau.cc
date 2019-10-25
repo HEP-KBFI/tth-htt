@@ -825,20 +825,27 @@ int main(int argc, char* argv[])
       "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet", "mT_lep1", "dr_lep1_tau",
       "lep2_pt", "lep2_conePt", "lep2_eta", "lep2_tth_mva", "mindr_lep2_jet", "mT_lep2", "dr_lep2_tau",
       "lep3_pt", "lep3_conePt", "lep3_eta", "lep3_tth_mva", "mindr_lep3_jet", "mT_lep3", "dr_lep3_tau",
-      "mindr_tau_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau_mva", "tau_pt", "tau_eta", "dr_leps",
-      "mTauTauVis1", "mTauTauVis2", "lumiScale", "genWeight", "evtWeight",
+      "mindr_tau_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau1_mva", "tau1_pt", "tau1_eta", "dr_leps",
+      "mTauTauVis1", "mTauTauVis2", "lumiScale", "genWeight", "evtWeight", "tau1_charge",
       //"memOutput_isValid", "memOutput_errorFlag", "memOutput_ttH", "memOutput_ttZ", "memOutput_LR",
       //"memOutput_ttH_Hww"
       "lep1_genLepPt", "lep2_genLepPt", "lep3_genLepPt", "tau_genTauPt",
-      "lep1_fake_prob", "lep2_fake_prob", "lep3_fake_prob", "tau_fake_prob",
-      "tau_fake_prob_test", "weight_fakeRate",
-      "lep1_frWeight", "lep2_frWeight",  "lep3_frWeight",  "tau_frWeight",
+      //"lep1_fake_prob", "lep2_fake_prob", "lep3_fake_prob", "tau_fake_prob",
+      //"tau_fake_prob_test",
+      "weight_fakeRate",
+      //"lep1_frWeight", "lep2_frWeight",  "lep3_frWeight",  "tau_frWeight",
       "mvaOutput_3l_ttV", "mvaOutput_3l_ttbar", "mvaDiscr_3l",
       "mbb_loose","mbb_medium",
-      "dr_tau_los1", "dr_tau_los2",  "dr_tau_lss", "dr_lss", "dr_los1", "dr_los2"
+      "massL", "massL_FO",   "met_LD", "has_SFOS", "massLT",
+      "dr_tau_los1", "dr_tau_los2",  "dr_tau_lss", "dr_lss", "dr_los1", "dr_los2",
+      "selHadTau_lead_deepTauIDe",  "selHadTau_lead_deepTauIDmu", "selHadTau_lead_deepTauIDjet",
+      "selHadTau_lead_deepTauRawe", "selHadTau_lead_deepTauRawmu", "selHadTau_lead_deepTauRawjet"
     );
     bdt_filler -> register_variable<int_type>(
-      "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "lep3_isTight", "tau_isTight"
+      "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "lep3_isTight", "tau_isTight",
+      "tau1_mva_id",
+      "selHadTau_lead_genHadTau", "selHadTau_lead_genLepton",
+      "selHadTau_lead_decayMode", "selHadTau_lead_idDecayMode"
     );
     bdt_filler -> bookTree(fs);
   }
@@ -1185,9 +1192,9 @@ int main(int argc, char* argv[])
       assert(electronSelection != kLoose && muonSelection != kLoose);
       selMuons = selectObjects(muonSelection, preselMuons, fakeableMuons, tightMuons);
       selElectrons = selectObjects(electronSelection, preselElectrons, fakeableElectrons, tightElectrons);
-      const std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
-      selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
     }
+    const std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
+    if(!(electronSelection == muonSelection)) selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
 
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -1216,9 +1223,9 @@ int main(int argc, char* argv[])
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, fakeableHadTausFull) :
-      jetCleaner       (jet_ptrs, fakeableLeptonsFull, fakeableHadTausFull)
-    ;
+      jetCleanerByIndex(jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, selectBDT ? selHadTaus : fakeableHadTaus) :
+      jetCleaner       (jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, selectBDT ? selHadTaus : fakeableHadTaus)
+      ;
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -1985,10 +1992,10 @@ int main(int argc, char* argv[])
 
     if ( bdt_filler ) {
 
-      double lep1_genLepPt=( selLepton_lead->genLepton() != 0 ) ? selLepton_lead->genLepton()->pt() : 0.;
-      double lep2_genLepPt=( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.;
-      double lep3_genLepPt=( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.;
-      double tau_genTauPt=( selHadTau->genHadTau() != 0 ) ? selHadTau->genHadTau()->pt() : 0.;
+      //double lep1_genLepPt=( selLepton_lead->genLepton() != 0 ) ? selLepton_lead->genLepton()->pt() : 0.;
+      //double lep2_genLepPt=( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.;
+      //double lep3_genLepPt=( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.;
+      //double tau_genTauPt=( selHadTau->genHadTau() != 0 ) ? selHadTau->genHadTau()->pt() : 0.;
 
       double dr_tau_los1=-1.;
       double dr_tau_los2=-1.;
@@ -2001,16 +2008,16 @@ int main(int argc, char* argv[])
         dr_lss=deltaR(selLepton_sublead -> p4(), selLepton_lead -> p4());
         dr_los1=deltaR(selLepton_third -> p4(), selLepton_lead -> p4());
         dr_los2=deltaR(selLepton_third  -> p4(), selLepton_sublead -> p4());
-        dr_lss=deltaR(selHadTau -> p4(), selLepton_third -> p4());
-        dr_los2=deltaR(selHadTau -> p4(), selLepton_sublead -> p4());
-        dr_los1=deltaR(selHadTau  -> p4(), selLepton_lead -> p4());
+        dr_tau_los1=deltaR(selHadTau -> p4(), selLepton_third -> p4());
+        dr_tau_los2=deltaR(selHadTau -> p4(), selLepton_sublead -> p4());
+        dr_tau_lss=deltaR(selHadTau  -> p4(), selLepton_lead -> p4());
       } else {
         dr_lss=deltaR(selLepton_third -> p4(), selLepton_lead -> p4());
         dr_los1=deltaR(selLepton_sublead -> p4(), selLepton_third -> p4());
         dr_los2=deltaR(selLepton_sublead  -> p4(), selLepton_lead -> p4());
-        dr_los1=deltaR(selHadTau -> p4(), selLepton_third -> p4());
-        dr_los2=deltaR(selHadTau -> p4(), selLepton_lead -> p4());
-        dr_lss=deltaR(selHadTau  -> p4(), selLepton_sublead -> p4());
+        dr_tau_los1=deltaR(selHadTau -> p4(), selLepton_third -> p4());
+        dr_tau_los2=deltaR(selHadTau -> p4(), selLepton_lead -> p4());
+        dr_tau_lss=deltaR(selHadTau  -> p4(), selLepton_sublead -> p4());
       }
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
@@ -2039,9 +2046,10 @@ int main(int argc, char* argv[])
           ("avg_dr_jet",          avg_dr_jet)
           ("ptmiss",              ptmiss)
           ("htmiss",              mht_p4.pt())
-          ("tau_mva",             selHadTau->raw_mva())
-          ("tau_pt",              tau_pt)
-          ("tau_eta",             selHadTau->eta())
+          ("tau1_mva",             selHadTau->raw_mva())
+          ("tau1_pt",              tau_pt)
+          ("tau1_eta",             selHadTau->eta())
+          ("tau1_charge",          selHadTau->charge())
           ("dr_leps",             dr_leps)
           ("mTauTauVis1",         mTauTauVis1_sel)
           ("mTauTauVis2",         mTauTauVis2_sel)
@@ -2049,15 +2057,15 @@ int main(int argc, char* argv[])
           ("lep2_genLepPt",       selLepton_sublead->genLepton() ? selLepton_sublead->genLepton() ->pt() : 0.)
           ("lep3_genLepPt",       selLepton_third->genLepton() ? selLepton_third->genLepton() ->pt() : 0.)
           ("tau_genTauPt",        selHadTau->genHadTau() ? selHadTau->genHadTau()->pt() : 0.)
-          ("lep1_frWeight",       lep1_genLepPt > 0 ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main))
-          ("lep2_frWeight",       lep2_genLepPt > 0 ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main))
-          ("lep3_frWeight",       lep3_genLepPt > 0 ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main))
-          ("tau_frWeight",        tau_genTauPt > 0 ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
-          ("lep1_fake_prob",      selLepton_lead->genLepton() ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main))
-          ("lep2_fake_prob",      selLepton_sublead->genLepton() ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main))
-          ("lep3_fake_prob",      selLepton_third->genLepton() ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main))
-          ("tau_fake_prob",       selHadTau->genHadTau() || selHadTau->genLepton() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
-          ("tau_fake_prob_test",  selHadTau->genHadTau() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
+          //("lep1_frWeight",       lep1_genLepPt > 0 ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main))
+          //("lep2_frWeight",       lep2_genLepPt > 0 ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main))
+          //("lep3_frWeight",       lep3_genLepPt > 0 ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main))
+          //("tau_frWeight",        tau_genTauPt > 0 ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
+          //("lep1_fake_prob",      selLepton_lead->genLepton() ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main))
+          //("lep2_fake_prob",      selLepton_sublead->genLepton() ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main))
+          //("lep3_fake_prob",      selLepton_third->genLepton() ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main))
+          //("tau_fake_prob",       selHadTau->genHadTau() || selHadTau->genLepton() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
+          //("tau_fake_prob_test",  selHadTau->genHadTau() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
           ("weight_fakeRate",     evtWeightRecorder.get_FR(central_or_shift_main))
           ("mvaOutput_3l_ttV",    mvaOutput_3l_ttV)
           ("mvaOutput_3l_ttbar",  mvaOutput_3l_ttbar)
@@ -2080,6 +2088,22 @@ int main(int argc, char* argv[])
           ("dr_lss",              dr_lss)
           ("dr_los1",             dr_los1)
           ("dr_los2",             dr_los2)
+          ("has_SFOS",       isSFOS(selLeptons))
+          ("massLT",              comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4() + selLeptons[2]->p4() + selHadTau->p4(), met.pt(), met.phi()))
+          ("massL_FO",           massL(fakeableLeptons))
+          ("massL",           massL(selLeptons))
+          ("met_LD",              met_LD)
+          ("selHadTau_lead_deepTauRawe", selHadTau -> raw_mva(TauID::DeepTau2017v2VSe))
+          ("selHadTau_lead_deepTauRawmu", selHadTau -> raw_mva(TauID::DeepTau2017v2VSmu))
+          ("selHadTau_lead_deepTauRawjet", selHadTau -> raw_mva(TauID::DeepTau2017v2VSjet))
+          ("selHadTau_lead_deepTauIDe", selHadTau -> id_mva(TauID::DeepTau2017v2VSe))
+          ("selHadTau_lead_deepTauIDmu", selHadTau -> id_mva(TauID::DeepTau2017v2VSmu))
+          ("selHadTau_lead_deepTauIDjet", selHadTau -> id_mva(TauID::DeepTau2017v2VSjet))
+          ("selHadTau_lead_genHadTau", selHadTau->genHadTau() ? 1 : 0)
+          ("selHadTau_lead_genLepton", selHadTau->genLepton() ? 1 : 0)
+          ("selHadTau_lead_decayMode", selHadTau ->  decayMode())
+          ("selHadTau_lead_idDecayMode", selHadTau ->  idDecayMode())
+          ("tau1_mva_id",                     selHadTau->id_mva(TauID::MVAoldDMdR032017v2))
         .fill()
       ;
     }

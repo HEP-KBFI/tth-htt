@@ -96,7 +96,7 @@ elif mode == "forBDTtraining":
   samples = load_samples(era, suffix = "BDT_DY")
   hadTauWP_map_relaxed = {
     'dR03mva' : 'VLoose',
-    'deepVSj' : 'VLoose',
+    'deepVSj' : 'Loose',
   }
   if args.tau_id_wp:
     tau_id = args.tau_id[:7]

@@ -166,6 +166,7 @@ int main(int argc, char* argv[])
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
   const bool isMC_VH = process_string == "VH";
+  const bool isMC_tHq = process_string == "tHq";
   const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
   const bool isMC_HH = process_string == "HH";
   bool isMC_HH_nonres = boost::starts_with(process_string, "HH");
@@ -910,7 +911,7 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    //if (!( eventInfo.event == 626693 )) continue;
+    if ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1176,9 +1177,9 @@ int main(int argc, char* argv[])
       assert(electronSelection != kLoose && muonSelection != kLoose);
       selMuons = selectObjects(muonSelection, preselMuons, fakeableMuons, tightMuons);
       selElectrons = selectObjects(electronSelection, preselElectrons, fakeableElectrons, tightElectrons);
-      const std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
-      selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
     }
+    const std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
+    if(!(electronSelection == muonSelection)) selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
 
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -1199,9 +1200,9 @@ int main(int argc, char* argv[])
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, fakeableHadTaus) :
-      jetCleaner       (jet_ptrs, fakeableLeptonsFull, fakeableHadTaus)
-    ;
+      jetCleanerByIndex(jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, fakeableHadTaus) :
+      jetCleaner       (jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, fakeableHadTaus)
+      ;
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -1907,7 +1908,9 @@ int main(int argc, char* argv[])
     std::map<std::string, double> tH_weight_map_main;
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
-      const double evtWeight = evtWeightRecorder.get(central_or_shift);
+      const double evtWeight =
+        ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) ? evtWeightRecorder.get(central_or_shift)*3 :
+        evtWeightRecorder.get(central_or_shift);
       const bool skipFilling = central_or_shift != central_or_shift_main;
       for (const GenMatchEntry* genMatch : genMatches)
       {
