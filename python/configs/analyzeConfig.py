@@ -401,7 +401,8 @@ class analyzeConfig(object):
           )
         ))
         self.kt_weights = []
-        with open(os.path.join(os.environ["CMSSW_BASE"], "src/hhAnalysis/multilepton/data/kt_scan.dat"), "r") as kt_file:
+        self.kt_scan_file = "hhAnalysis/multilepton/data/kt_scan.dat"
+        with open(os.path.join(os.environ["CMSSW_BASE"], "src", self.kt_scan_file), "r") as kt_file:
           for line in kt_file:
             kt_value = float(line.split()[1])
             if kt_value == 1.0:
@@ -566,6 +567,7 @@ class analyzeConfig(object):
             raise ValueError("Uncrecongizable sample category: %s" % sample_info['sample_category_hh'])
           jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
+          jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
           jobOptions['hhWeight_cfg.do_ktscan'] = True
           jobOptions['hhWeight_cfg.apply_rwgt'] = True 
 

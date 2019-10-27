@@ -385,11 +385,9 @@ int main(int argc, char* argv[])
   const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
   const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
   const HHWeightInterface * HHWeight_calc = nullptr;
-  //std::cout << isMC_HH  << " " << hhWeight_cfg.getParameter<bool>("apply_rwgt") << '\n';
   if(apply_HH_rwgt)
   {
     HHWeight_calc = new HHWeightInterface(hhWeight_cfg);
-    const std::vector<std::string> evt_cat_HH_strs = HHWeight_calc->get_scan_strs();
     evt_cat_strs = HHWeight_calc->get_scan_strs();
   }
   const size_t Nscan = evt_cat_strs.size();
