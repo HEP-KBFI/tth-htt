@@ -1616,8 +1616,9 @@ int main(int argc, char* argv[])
     std::vector<double> WeightBM; // weights to do histograms for BMs
     std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
     double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
-    if(HHWeight_calc)
+    if(apply_HH_rwgt)
     {
+      assert(HHWeight_calc);
       WeightBM = HHWeight_calc->getJHEPWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
       Weight_ktScan = HHWeight_calc->getScanWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
 

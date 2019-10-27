@@ -451,7 +451,7 @@ int main(int argc, char* argv[])
   const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
   const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
   const HHWeightInterface * HHWeight_calc = nullptr;
-  if(isMC_HH  && hhWeight_cfg.getParameter<bool>("apply_rwgt"))
+  if(apply_HH_rwgt)
   {
     HHWeight_calc = new HHWeightInterface(hhWeight_cfg);
     evt_cat_strs = HHWeight_calc->get_scan_strs();
@@ -1619,11 +1619,12 @@ std::string mvaFileName_1l_1tau_evtLevelSUM_TTH_16Var = "tthAnalysis/HiggsToTauT
     std::map<std::string, double> Weight_ktScan; // weights to do histograms
     double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
 
-    if(HHWeight_calc)
+    if(apply_HH_rwgt)
     {
+      assert(HHWeight_calc);
       WeightBM = HHWeight_calc->getJHEPWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
       Weight_ktScan = HHWeight_calc->getScanWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
-      if(apply_HH_rwgt) evtWeightRecorder.record_bm(WeightBM[0]); // SM by defaut
+      evtWeightRecorder.record_bm(WeightBM[0]); // SM by defaut
 
       HHWeight = WeightBM[0];
       if(isDEBUG)
