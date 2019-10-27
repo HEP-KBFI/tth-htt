@@ -1633,9 +1633,9 @@ int main(int argc, char* argv[])
       assert(HHWeight_calc);
       WeightBM = HHWeight_calc->getJHEPWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
       Weight_ktScan = HHWeight_calc->getScanWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
-      evtWeightRecorder.record_bm(WeightBM[0]); // SM by default
-
       HHWeight = WeightBM[0];
+      evtWeightRecorder.record_bm(HHWeight); // SM by default
+
       if(isDEBUG)
       {
         std::cout << "mhh = " << eventInfo.gen_mHH          << " : "
