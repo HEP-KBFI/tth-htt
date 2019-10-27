@@ -556,15 +556,18 @@ class analyzeConfig(object):
            sample_info['sample_category'] in [ 'tHq', 'tHW', 'ttH_ctcvcp', 'TH', 'TTH' ] and \
            sample_info['nof_reweighting'] > 0
 
-        if sample_info["sample_category"] == "HH":
-          assert('sample_category_hh' in sample_info)
+        is_hh_channel = 'hh' in self.channel
+        if (is_hh_channel and sample_info["sample_category"].startswith('signal_')) or \
+           (not is_hh_channel and sample_info["sample_category"] == "HH"):
+          sample_category_to_check = 'sample_category_hh' if not is_hh_channel else 'sample_category'
+          assert(sample_category_to_check in sample_info)
           hhWeight_base = ''
-          if any(decayMode in sample_info['sample_category_hh'] for decayMode in [ 'bbvv', 'bbtt' ]):
+          if any(decayMode in sample_info[sample_category_to_check] for decayMode in [ 'bbvv', 'bbtt' ]):
             hhWeight_base = 'bbww'
-          elif any(decayMode in sample_info['sample_category_hh'] for decayMode in [ 'tttt', 'wwtt', 'wwww' ]):
+          elif any(decayMode in sample_info[sample_category_to_check] for decayMode in [ 'tttt', 'wwtt', 'wwww' ]):
             hhWeight_base = 'multilepton'
           else:
-            raise ValueError("Uncrecongizable sample category: %s" % sample_info['sample_category_hh'])
+            raise ValueError("Uncrecongizable sample category: %s" % sample_info[sample_category_to_check])
           jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
           jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
