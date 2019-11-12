@@ -17,8 +17,6 @@ EvtHistManager_3l_1tau::EvtHistManager_3l_1tau(const edm::ParameterSet & cfg)
     "numBJets_medium",
     "numBJets_loose_vs_numJets",
     "numBJets_medium_vs_numJets",
-    "mvaOutput_3l_ttV",
-    "mvaOutput_3l_ttbar",
     "mTauTauVis",
     "memOutput_isValid",
     "memOutput_errorFlag",
@@ -28,15 +26,9 @@ EvtHistManager_3l_1tau::EvtHistManager_3l_1tau(const edm::ParameterSet & cfg)
     "memOutput_LR",
     "mem_logCPUTime",
     "mem_logRealTime",
-    "mvaOutput_plainKin_tt",
-    "mvaOutput_plainKin_ttV",
-    "mvaOutput_plainKin_1B_M",
-    "mvaOutput_plainKin_SUM_M",
-    "mvaOutput_plainKin_SUM_M_noRebin",
   };
   const std::vector<std::string> sysOpts_all = {
-    "mvaDiscr_3l",
-    "mvaOutput_final",
+    "mvaOutput_legacy",
     "EventCounter",
   };
   for(const std::string & sysOpt: sysOpts_central)
@@ -65,9 +57,12 @@ EvtHistManager_3l_1tau::bookHistograms(TFileDirectory & dir)
   histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
   histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
 
-  histogram_mvaOutput_3l_ttV_   = book1D(dir, "mvaOutput_3l_ttV",   "mvaOutput_3l_ttV",   40, -1., +1.);
-  histogram_mvaOutput_3l_ttbar_ = book1D(dir, "mvaOutput_3l_ttbar", "mvaOutput_3l_ttbar", 40, -1., +1.);
-  histogram_mvaDiscr_3l_        = book1D(dir, "mvaDiscr_3l",        "mvaDiscr_3l",         5,  0.5, 5.5);
+  // X: binning by quantiles/era -- we can round to the same for all eras
+  //2016: [0.0, 0.36713849092205514, 0.4889022577306826, 0.5865429137829421, 1.0]
+  //2017: [0.0, 0.36597589479860454, 0.47015027737107856, 0.5638581399225489, 1.0]
+  //2018: [0.0, 0.3555705652273914, 0.479317870754119, 0.5718070316694418, 1.0]
+  Float_t binsx[5] = { 0.0, 0.36, 0.48, 0.57, 1.0 };
+  histogram_mvaOutput_legacy_   = book1D(dir, "mvaOutput_legacy",   "mvaOutput_legacy",   4, binsx);
 
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 20, 0., 200.);
 
@@ -80,15 +75,6 @@ EvtHistManager_3l_1tau::bookHistograms(TFileDirectory & dir)
   histogram_mem_logCPUTime_              = book1D(dir, "mem_logCPUTime",              "mem_logCPUTime",              400, -20., +20.);
   histogram_mem_logRealTime_             = book1D(dir, "mem_logRealTime",             "mem_logRealTime",             400, -20., +20.);
 
-  histogram_mvaOutput_plainKin_tt_            = book1D(dir, "mvaOutput_plainKin_tt",            "mvaOutput_plainKin_tt",            100, 0., 1.);
-  histogram_mvaOutput_plainKin_ttV_           = book1D(dir, "mvaOutput_plainKin_ttV",           "mvaOutput_plainKin_ttV",           100, 0., 1.);
-  histogram_mvaOutput_plainKin_1B_M_          = book1D(dir, "mvaOutput_plainKin_1B_M",          "mvaOutput_plainKin_1B_M",          100, 0., 1.);
-  histogram_mvaOutput_plainKin_SUM_M_         = book1D(dir, "mvaOutput_plainKin_SUM_M",         "mvaOutput_plainKin_SUM_M",         100, 0., 1.);
-  histogram_mvaOutput_plainKin_SUM_M_noRebin_ = book1D(dir, "mvaOutput_plainKin_SUM_M_noRebin", "mvaOutput_plainKin_SUM_M_noRebin", 100, 0., 1.);
-
-  Float_t binsx[7] = { 0.0, 0.28, 0.35, 0.40, 0.47, 0.53, 1.0 };
-  histogram_final_ = book1D(dir, "mvaOutput_final",  "mvaOutput_final", 6, binsx);
-
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
@@ -99,17 +85,12 @@ EvtHistManager_3l_1tau::fillHistograms(int numElectrons,
                                        int numJets,
                                        int numBJets_loose,
                                        int numBJets_medium,
-                                       double mvaOutput_3l_ttV,
-                                       double mvaOutput_3l_ttbar,
-                                       double mvaDiscr_3l,
+                                       double mvaOutput_legacy,
                                        double mTauTauVis1,
                                        double mTauTauVis2,
                                        const MEMOutput_3l_1tau * memOutput_3l_1tau,
-                                       double evtWeight,
-                                       double mvaOutput_plainKin_tt,
-                                       double mvaOutput_plainKin_ttV,
-                                       double mvaOutput_plainKin_SUM_M,
-                                       double mvaOutput_plainKin_1B_M)
+                                       double evtWeight
+                                     )
 {
   const double evtWeightErr = 0.;
 
@@ -120,9 +101,7 @@ EvtHistManager_3l_1tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_3l_ttV_,   mvaOutput_3l_ttV,   evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_3l_ttbar_, mvaOutput_3l_ttbar, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaDiscr_3l_,        mvaDiscr_3l,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_legacy_,   mvaOutput_legacy,   evtWeight, evtWeightErr);
 
   const double mTauTauVisSF = mTauTauVis1 > 0. && mTauTauVis2 > 0. ? 0.5 : 1.;
   if(mTauTauVis1 > 0.)
@@ -158,13 +137,6 @@ EvtHistManager_3l_1tau::fillHistograms(int numElectrons,
   {
     fillWithOverFlow(histogram_memOutput_isValid_, -1, evtWeight, evtWeightErr);
   }
-
-  fillWithOverFlow(histogram_mvaOutput_plainKin_tt_,            mvaOutput_plainKin_tt,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_plainKin_ttV_,           mvaOutput_plainKin_ttV,   evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_plainKin_1B_M_,          mvaOutput_plainKin_1B_M,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_M_,         mvaOutput_plainKin_SUM_M, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_M_noRebin_, mvaOutput_plainKin_SUM_M, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_final_,                            mvaOutput_plainKin_SUM_M, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

@@ -92,6 +92,10 @@ MEMsample_base = "addMEM_3l1tau_{}".format(hadTau_selection)
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if sample_info["process_name_specific"].startswith("DY"):
+      sample_info["sample_category"] = "ZZ"
 elif mode == "addMEM":
   samples = load_samples(era, suffix = MEMsample_base)
   MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
@@ -171,14 +175,7 @@ if __name__ == '__main__':
     histograms_to_fit                     = {
       "EventCounter"                     : {},
       "numJets"                          : {},
-      "mvaDiscr_3l"                      : {},
-      "mTauTauVis"                       : {},
-      "mvaOutput_plainKin_tt"            : { 'quantile_rebin' : 6, 'quantile_in_fakes' : False }, # BDT2; quantile in all bkg
-      "mvaOutput_plainKin_ttV"           : { 'quantile_rebin' : 6, 'quantile_in_fakes' : False }, # BDT1; quantile in all bkg
-      "mvaOutput_plainKin_SUM_M"         : { 'explicit_binning' : [ 0.0, 0.28, 0.35, 0.40, 0.47, 0.53, 1.0 ] }, # BDT3; quantile in all bkg
-      "mvaOutput_plainKin_SUM_M_noRebin" : {},
-      "mvaOutput_plainKin_1B_M"          : {},
-      "mvaOutput_final"                  : {},
+      "mvaOutput_legacy"                 : {},
     },
     select_rle_output                     = True,
     select_root_output                    = False,

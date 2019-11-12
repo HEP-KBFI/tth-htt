@@ -32,17 +32,12 @@ class EvtHistManager_3l_1tau
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
-                 double mvaOutput_3l_ttV,
-                 double mvaOutput_3l_ttbar,
-                 double mvaDiscr_3l,
+                 double mvaOutput_legacy,
                  double mTauTauVis1,
                  double mTauTauVis2,
                  const MEMOutput_3l_1tau * memOutput_3l_1tau,
-                 double evtWeight,
-                 double mvaOutput_plainKin_tt,
-                 double mvaOutput_plainKin_ttV,
-                 double mvaOutput_plainKin_SUM_M,
-                 double mvaOutput_plainKin_1B_M);
+                 double evtWeight
+               );
 
   const TH1 *
   getHistogram_EventCounter() const;
@@ -62,10 +57,7 @@ class EvtHistManager_3l_1tau
   TH2 * histogram_numBJets_loose_vs_numJets_;
   TH2 * histogram_numBJets_medium_vs_numJets_;
 
-  TH1 * histogram_mvaOutput_3l_ttV_;
-  TH1 * histogram_mvaOutput_3l_ttbar_;
-  TH1 * histogram_mvaDiscr_3l_;
-
+  TH1 * histogram_mvaOutput_legacy_;
   TH1 * histogram_mTauTauVis_;
 
   TH1 * histogram_memOutput_isValid_;
@@ -79,13 +71,6 @@ class EvtHistManager_3l_1tau
   TH1 * histogram_mem_logRealTime_;
 
   TH1 * histogram_EventCounter_;
-
-  TH1 * histogram_mvaOutput_plainKin_tt_;
-  TH1 * histogram_mvaOutput_plainKin_ttV_;
-  TH1 * histogram_mvaOutput_plainKin_SUM_M_;
-  TH1 * histogram_mvaOutput_plainKin_SUM_M_noRebin_;
-  TH1 * histogram_final_;
-  TH1 * histogram_mvaOutput_plainKin_1B_M_;
 };
 
 #endif
