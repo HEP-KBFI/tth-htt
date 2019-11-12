@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-10-18 00:03:46 with the following command:
+# file generated at 2019-10-27 21:09:21 with the following command:
 # find_samples.py -V -m python/samples/metaDict_2018_data_DeepTauIDv2p1.py -d ../NanoAOD/test/datasets/txt/datasets_data_2018_17Sep18_22Jan19.txt -p SingleMuon EGamma DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt -v 10_2_4_patch1 -r 2018 -C +17Sep2018 +Run2018D-PromptReco +22Jan2019 x/SingleMuon/Run2018D-PromptReco-v2/MINIAOD x/EGamma/Run2018D-PromptReco-v2/MINIAOD -c python/samples/sampleLocations_2018_nanoAOD_DeepTauIDv2p1.txt
 
 meta_dictionary = OD()
@@ -51,7 +51,7 @@ meta_dictionary["/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018prompt_2019Oct18_SingleMuon__Run2018D-22Jan2019-v2"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2018D_22Jan2019_v2"),
   ("nof_db_events",         514116477),
@@ -62,11 +62,11 @@ meta_dictionary["/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [320500, 325175]),
   ("golden_run_range",      [320673, 325172]),
-  ("comment",               "status: VALID; size: 15.40TB; nevents: 514.12M; release: 10_2_5_patch1; last modified: 2019-03-03 01:54:45"),
+  ("comment",               "71.49%; status: VALID; size: 15.40TB; nevents: 514.12M; release: 10_2_5_patch1; last modified: 2019-03-03 01:54:45"),
 ])
 
 meta_dictionary["/EGamma/Run2018A-17Sep2018-v2/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018_2019Oct18_EGamma__Run2018A-17Sep2018-v2"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "EGamma_Run2018A_17Sep2018_v2"),
   ("nof_db_events",         327843843),
@@ -77,11 +77,11 @@ meta_dictionary["/EGamma/Run2018A-17Sep2018-v2/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [315257, 316995]),
   ("golden_run_range",      [315257, 316995]),
-  ("comment",               "status: VALID; size: 12.50TB; nevents: 327.84M; release: 10_2_4_patch1; last modified: 2019-01-14 22:34:35"),
+  ("comment",               "99.9%; status: VALID; size: 12.50TB; nevents: 327.84M; release: 10_2_4_patch1; last modified: 2019-01-14 22:34:35"),
 ])
 
 meta_dictionary["/EGamma/Run2018B-17Sep2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018_2019Oct18_EGamma__Run2018B-17Sep2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "EGamma_Run2018B_17Sep2018_v1"),
   ("nof_db_events",         153822427),
@@ -92,11 +92,11 @@ meta_dictionary["/EGamma/Run2018B-17Sep2018-v1/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [317080, 319310]),
   ("golden_run_range",      [317080, 319077]),
-  ("comment",               "status: VALID; size: 5.64TB; nevents: 153.82M; release: 10_2_4_patch1; last modified: 2018-11-26 16:21:55"),
+  ("comment",               "100.0%; status: VALID; size: 5.64TB; nevents: 153.82M; release: 10_2_4_patch1; last modified: 2018-11-26 16:21:55"),
 ])
 
 meta_dictionary["/EGamma/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018_2019Oct18_EGamma__Run2018C-17Sep2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "EGamma_Run2018C_17Sep2018_v1"),
   ("nof_db_events",         147827904),
@@ -107,11 +107,11 @@ meta_dictionary["/EGamma/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [319337, 320065]),
   ("golden_run_range",      [319337, 320065]),
-  ("comment",               "status: VALID; size: 5.49TB; nevents: 147.83M; release: 10_2_4_patch1; last modified: 2018-10-17 11:12:09"),
+  ("comment",               "99.86%; status: VALID; size: 5.49TB; nevents: 147.83M; release: 10_2_4_patch1; last modified: 2018-10-17 11:12:09"),
 ])
 
 meta_dictionary["/EGamma/Run2018D-22Jan2019-v2/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018prompt_2019Oct18_EGamma__Run2018D-22Jan2019-v2"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "EGamma_Run2018D_22Jan2019_v2"),
   ("nof_db_events",         754798781),
@@ -122,7 +122,7 @@ meta_dictionary["/EGamma/Run2018D-22Jan2019-v2/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [320413, 325175]),
   ("golden_run_range",      [320673, 325172]),
-  ("comment",               "status: VALID; size: 25.78TB; nevents: 754.80M; release: 10_2_5_patch1; last modified: 2019-03-16 06:02:25"),
+  ("comment",               "38.64%; status: VALID; size: 25.78TB; nevents: 754.80M; release: 10_2_5_patch1; last modified: 2019-03-16 06:02:25"),
 ])
 
 meta_dictionary["/DoubleMuon/Run2018A-17Sep2018-v2/MINIAOD"] =  OD([
@@ -302,6 +302,6 @@ meta_dictionary["/Tau/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
   ("genWeight",             False),
   ("run_range",             [320497, 325175]),
   ("golden_run_range",      [320673, 325172]),
-  ("comment",               "99.94%; status: VALID; size: 6.00TB; nevents: 167.89M; release: 10_2_1,10_2_5_patch1; last modified: 2018-08-01 10:55:12"),
+  ("comment",               "100.0%; status: VALID; size: 6.00TB; nevents: 167.89M; release: 10_2_1,10_2_5_patch1; last modified: 2018-08-01 10:55:12"),
 ])
 

@@ -385,11 +385,9 @@ int main(int argc, char* argv[])
   const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
   const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
   const HHWeightInterface * HHWeight_calc = nullptr;
-  //std::cout << isMC_HH  << " " << hhWeight_cfg.getParameter<bool>("apply_rwgt") << '\n';
   if(apply_HH_rwgt)
   {
     HHWeight_calc = new HHWeightInterface(hhWeight_cfg);
-    const std::vector<std::string> evt_cat_HH_strs = HHWeight_calc->get_scan_strs();
     evt_cat_strs = HHWeight_calc->get_scan_strs();
   }
   const size_t Nscan = evt_cat_strs.size();
@@ -1616,13 +1614,13 @@ int main(int argc, char* argv[])
     std::vector<double> WeightBM; // weights to do histograms for BMs
     std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
     double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
-    if(HHWeight_calc)
+    if(apply_HH_rwgt)
     {
+      assert(HHWeight_calc);
       WeightBM = HHWeight_calc->getJHEPWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
       Weight_ktScan = HHWeight_calc->getScanWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
-
-      evtWeightRecorder.record_bm(WeightBM[0]); // SM by default
       HHWeight = WeightBM[0];
+      evtWeightRecorder.record_bm(HHWeight); // SM by default
 
       if(isDEBUG)
       {
