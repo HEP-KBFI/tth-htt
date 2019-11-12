@@ -581,19 +581,19 @@ int main(int argc, char* argv[])
 
   // -- initialize eventlevel BDTs
   // data/NN_for_legacy_opt/1l_2tau.pkl
-  std::string mvaFileName_plainKin_ttV ="tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/1l_2tau.pkl";
+  std::string mvaFileName_plainKin_ttV ="tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/1l_2tau_DeepTauTight.xml";
   std::vector<std::string> mvaInputVariables_plainKin_ttVSort={
-    "tau1_pt", "tau2_pt", "dr_taus",
-    "dr_lep_tau_os", "dr_lep_tau_ss", "Lep_min_dr_jet",
-    "mTauTauVis", "costS_tau", "met_LD",
-    "res_HTT", "HadTop_pt", "mbb_loose",
-    "jet1_pt", "avg_dr_jet", "jet2_pt", "jet3_pt", "max_Lep_eta"
+    "tau1_pt", "tau2_pt",
+    "dr_taus", "dr_lep_tau_os", "dr_lep_tau_ss",
+    "Lep_min_dr_jet", "mTauTauVis", "costS_tau",
+    "met_LD", "massL3", "lep1_conePt", "mT_lep",
+    "res_HTT", "HadTop_pt", "mbb_loose", "avg_dr_jet", "max_Lep_eta"
   };
-  XGBInterface mva_plainKin_ttV(
+  XGBInterface mva_legacy(
     mvaFileName_plainKin_ttV,
     mvaInputVariables_plainKin_ttVSort
   );
-  //mva_plainKin_ttV.enableBDTTransform();
+  mva_legacy.enableBDTTransform();
 
   std::string mvaFileName_plainKin_tt ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_plainKin_evtLevelTT_TTH_13Var.xml";
   std::vector<std::string> mvaInputVariables_plainKin_ttSort={
@@ -603,12 +603,6 @@ int main(int argc, char* argv[])
   };
   TMVAInterface mva_plainKin_tt(mvaFileName_plainKin_tt, mvaInputVariables_plainKin_ttSort);
   mva_plainKin_tt.enableBDTTransform();
-
-  // Joint 1B
-  std::vector<std::string> mvaInputVariables_1BSort = {"BDTtt", "BDTttV"};
-  std::string mvaFileName_plainKin_1B_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_JointBDT_plainKin_1B_VT.xml";
-  TMVAInterface mva_2lss_plainKin_1B_VT(mvaFileName_plainKin_1B_VT, mvaInputVariables_1BSort);
-  mva_2lss_plainKin_1B_VT.enableBDTTransform();
 
   // SUM-BDT
   std::string mvaFileName_HTT_sum_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_HTT_evtLevelSUM_TTH_VT_17Var.xml";
@@ -620,16 +614,6 @@ int main(int argc, char* argv[])
   };
   TMVAInterface mva_HTT_sum_VT(mvaFileName_HTT_sum_VT, mvaInputVariables_HTT_sumSort);
   mva_HTT_sum_VT.enableBDTTransform();
-
-  // SUM-BDT
-  std::string mvaFileName_plainKin_sum_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_plainKin_evtLevelSUM_TTH_16Var.xml";
-  std::vector<std::string> mvaInputVariables_plainKin_sumSort={
-    "avg_dr_jet", "dr_taus", "ptmiss", "lep_conePt", "mT_lep", "mTauTauVis", "mindr_lep_jet",
-    "mindr_tau1_jet", "mindr_tau2_jet", "nJet", "dr_lep_tau_ss", "dr_lep_tau_lead",
-    "costS_tau", "nBJetLoose", "tau1_pt", "tau2_pt"
-  };
-  TMVAInterface mva_plainKin_sum_VT(mvaFileName_plainKin_sum_VT, mvaInputVariables_plainKin_sumSort);
-  mva_plainKin_sum_VT.enableBDTTransform();
 
   //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1719,31 +1703,26 @@ int main(int argc, char* argv[])
     };
     const double mvaOutput_HTT_SUM_VT = mva_HTT_sum_VT(mvaInputsHTT_sum);
 
-    //"tau1_pt", "tau2_pt", "dr_taus",
-    //"dr_lep_tau_os", "dr_lep_tau_ss", "Lep_min_dr_jet",
-    //"mTauTauVis", "costS_tau", "met_LD",
-    //"res_HTT", "HadTop_pt", "mbb_loose",
-    //"jet1_pt", "avg_dr_jet", "jet2_pt", "jet3_pt", "max_Lep_eta"
     const std::map<std::string, double> mvaInputs_legacy = {
       { "tau1_pt",         tau1_pt         },
       { "tau2_pt",         tau2_pt         },
+      { "lep1_conePt",     lep_conePt      },
+      { "mT_lep",          mT_lep          },
       { "dr_taus",         dr_taus         },
       { "dr_lep_tau_os",   deltaR(selLepton->p4(), selHadTau_OS->p4())   },
       { "dr_lep_tau_ss",   dr_lep_tau_ss   },
-      {"Lep_min_dr_jet", std::min({mindr_lep_jet, mindr_tau1_jet, mindr_tau2_jet})},
+      { "Lep_min_dr_jet", std::min({mindr_lep_jet, mindr_tau1_jet, mindr_tau2_jet})},
       { "mTauTauVis",      mTauTauVis      },
       { "costS_tau",       costS_tau       },
       { "met_LD",          met_LD       },
       { "res_HTT",         HTT             },
       { "HadTop_pt",       HadTop_pt       },
+      { "massL3",           comp_MT_met_lep1(selHadTau_lead->p4() + selHadTau_sublead->p4() + selLepton->p4(), met.pt(), met.phi())},
       { "mbb_loose",        selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : 0.},
-      { "jet1_pt",   selJets.size() > 0 ? selJets[0]->pt() : 0},
       { "avg_dr_jet",      avg_dr_jet      },
-      { "jet2_pt",   selJets.size() > 0 ? selJets[1]->pt() : 0},
-      { "jet3_pt",   selJets.size() > 0 ? selJets[2]->pt() : 0},
-      { "max_Lep_eta",  std::max({selLepton->absEta(), selHadTau_lead->absEta(), selHadTau_sublead->absEta()})},
+      { "max_Lep_eta",  std::max({selLepton->absEta(), selHadTau_lead->absEta(), selHadTau_sublead->absEta()})}
     };
-    const double mvaOutput_legacy = mva_plainKin_ttV(mvaInputs_legacy);
+    const double mvaOutput_legacy = mva_legacy(mvaInputs_legacy);
 
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons, selHadTaus);
