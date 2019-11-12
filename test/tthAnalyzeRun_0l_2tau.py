@@ -71,7 +71,7 @@ gen_matching_by_index = (gen_matching == 'by_index')
 
 hadTauWP_map = {
   'dR03mva' : 'Medium',
-  'deepVSj' : 'Loose',
+  'deepVSj' : 'Loose', # 'Medium' #
 }
 hadTau_selection = tau_id + hadTauWP_map[tau_id]
 
@@ -173,13 +173,7 @@ if __name__ == '__main__':
     histograms_to_fit                     = {
       "EventCounter"                 : {},
       "numJets"                      : {},
-      "mvaOutput_0l_2tau_ttbar"      : {},
-      "mvaOutput_0l_2tau_HTT_tt"     : {},
-      "mvaOutput_0l_2tau_HTT_ttv"    : {},
-      "mvaOutput_0l_2tau_HTT_sum"    : {},
-      "mvaDiscr_0l_2tau_HTT"         : {},
-      "mvaOutput_0l_2tau_HTT_sum_dy" : {},
-      "mva_Boosted_AK8"              : {},
+      "mvaOutput_Legacy"             : {},
       "mva_Updated"                  : {},
       "mTauTauVis"                   : {},
       "mTauTau"                      : {},

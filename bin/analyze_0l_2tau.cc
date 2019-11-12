@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
   bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
   std::string central_or_shift_main = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
-  const bool do_tree = (isSignal || process_string == "TTZ" || process_string == "TT" || process_string == "DY" ) && !(central_or_shifts_local.size() > 1);
+  const bool do_tree = false; //(isSignal || process_string == "TTZ" || process_string == "TT" || process_string == "DY" ) && !(central_or_shifts_local.size() > 1);
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   const vstring categories_evt = cfg_analyze.getParameter<vstring>("evtCategories");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
@@ -587,34 +587,21 @@ int main(int argc, char* argv[])
   HadTopTagger* hadTopTagger = new HadTopTagger();
   HadTopTagger_semi_boosted_AK8* hadTopTagger_semi_boosted_fromAK8 = new HadTopTagger_semi_boosted_AK8();
 
-  //--- initialize BDTs used to discriminate ttH vs. ttbar trained by Arun for 0l_2tau category
-  std::string mvaFileName_0l_2tau_ttbar = "tthAnalysis/HiggsToTauTau/data/0l_2tau_ttbar_BDTG.weights.xml";
-  std::vector<std::string> mvaInputVariables_0l_2tau_ttbar;
-  mvaInputVariables_0l_2tau_ttbar.push_back("nJet");
-  mvaInputVariables_0l_2tau_ttbar.push_back("nBJetLoose");
-  mvaInputVariables_0l_2tau_ttbar.push_back("nBJetMedium");
-  mvaInputVariables_0l_2tau_ttbar.push_back("mindr_tau1_jet");
-  mvaInputVariables_0l_2tau_ttbar.push_back("mindr_tau2_jet");
-  mvaInputVariables_0l_2tau_ttbar.push_back("avg_dr_jet");
-  mvaInputVariables_0l_2tau_ttbar.push_back("ptmiss");
-  mvaInputVariables_0l_2tau_ttbar.push_back("mT_tau1");
-  mvaInputVariables_0l_2tau_ttbar.push_back("mT_tau2");
-  mvaInputVariables_0l_2tau_ttbar.push_back("htmiss");
-  mvaInputVariables_0l_2tau_ttbar.push_back("tau1_pt");
-  mvaInputVariables_0l_2tau_ttbar.push_back("tau2_pt");
-  mvaInputVariables_0l_2tau_ttbar.push_back("TMath::Abs(tau1_eta)");
-  mvaInputVariables_0l_2tau_ttbar.push_back("TMath::Abs(tau2_eta)");
-  mvaInputVariables_0l_2tau_ttbar.push_back("dr_taus");
-  mvaInputVariables_0l_2tau_ttbar.push_back("mTauTauVis");
-  mvaInputVariables_0l_2tau_ttbar.push_back("mTauTau");
-  TMVAInterface mva_0l_2tau_ttbar(mvaFileName_0l_2tau_ttbar, mvaInputVariables_0l_2tau_ttbar, std::vector<std::string>({ "tau1_mva", "tau2_mva" }));
+  //--- initialize BDTs
+  std::string mvaFileName_0l_2tau_deeptauLoose_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/0l_2tau_DeepTauLoose_4.xml";
+  std::vector<std::string> mvaInputVariables_0l_2tau_deeptau_4 = {
+    "dr_taus", "mTauTauVis", "mTauTau", "cosThetaS_hadTau",
+    "tau1_pt", "tau2_pt",
+    "mbb_loose", "avg_dr_jet", "mindr_tau1_jet", "mindr_tau2_jet", "met_LD",
+    "mT_tau1", "mT_tau2", "nBJetMedium",
+    "res_HTT", "HadTop_pt", "HadTop_pt_2", "max_Lep_eta"
+  };
+  TMVAInterface mva_xgb_Legacy(
+    mvaFileName_0l_2tau_deeptauLoose_2,
+    mvaInputVariables_0l_2tau_deeptau_4
+  );
+  mva_xgb_Legacy.enableBDTTransform();
 
-  std::map<std::string, double> mvaInputs_ttbar;
-  //2D map for ttbar vs ttV
-  const LocalFileInPath mapFileName_fip("tthAnalysis/HiggsToTauTau/data/HTT_from20_to_10bins_relLepIDFalse_CumulativeBins.root");
-  TFile * fmap = TFile::Open(mapFileName_fip.fullPath().c_str(), "read");
-
-  // BDTs calculated by Xanda
   std::string mvaFileName_XGB_Updated = "tthAnalysis/HiggsToTauTau/data/BDTs_2017MC_postPAS/0l_2tau_XGB_Updated_evtLevelSUM_TTH_20Var.xml";
   std::vector<std::string> mvaInputVariables_XGB_Updated = {
     "mindr_tau1_jet", "mindr_tau2_jet",
@@ -718,7 +705,7 @@ int main(int argc, char* argv[])
           selHistManager->metFilters_->bookHistograms(fs);
         selHistManager->mvaInputVariables_ttbar_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
           Form("%s/sel/mvaInputs_ttbar", histogramDir.data()), era_string, central_or_shift));
-        selHistManager->mvaInputVariables_ttbar_->bookHistograms(fs, mvaInputVariables_0l_2tau_ttbar);
+        selHistManager->mvaInputVariables_ttbar_->bookHistograms(fs, mvaInputVariables_0l_2tau_deeptau_4);
       }
 
       for(const std::string & evt_cat_str: evt_cat_strs)
@@ -1546,7 +1533,7 @@ int main(int argc, char* argv[])
         }
       } // close loop on jetS
     } // close if 6 jets
-    //std::cout<< max_mvaOutput_HTT_CSVsort4rd_2 << " " << max_mvaOutput_HTT_CSVsort4rd << std::endl;
+    if (isDEBUG) std::cout<< max_mvaOutput_HTT_CSVsort4rd_2 << " " << max_mvaOutput_HTT_CSVsort4rd << std::endl;
 
     // compute overlaps semi-boosted resolved / semi-boosted and boosted / ...
     bool resolved_and_semi_AK8 = false;
@@ -1620,49 +1607,43 @@ int main(int argc, char* argv[])
     double mTauTau   = ( svFitAlgo.isValidSolution() ) ? static_cast<classic_svFit::HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getMass() : -1.;
     double mT_tau1   = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
     double mT_tau2   = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
-    double pZeta     = comp_pZeta(selHadTau_lead -> p4(), selHadTau_sublead -> p4(), met.p4().px(), met.p4().py());
-    double pZetaVis  = comp_pZetaVis(selHadTau_lead -> p4(), selHadTau_sublead -> p4());
+    //double pZeta     = comp_pZeta(selHadTau_lead -> p4(), selHadTau_sublead -> p4(), met.p4().px(), met.p4().py());
+    //double pZetaVis  = comp_pZetaVis(selHadTau_lead -> p4(), selHadTau_sublead -> p4());
     double pZetaComb = comp_pZetaComb(selHadTau_lead -> p4(), selHadTau_sublead -> p4(), met.p4().px(), met.p4().py());
 
     //compute di-b-jet mass
     const double mbb             = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
     const double mbb_loose       = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
-    const double pt_HHvis_loose        = selBJets_loose.size() > 1 ? (selHadTau_lead->p4()+selHadTau_sublead->p4()+selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).pt() : -1.;
-    const double pt_HHvis_medium        = selBJets_medium.size() > 1 ? (selHadTau_lead->p4()+selHadTau_sublead->p4()+selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).pt() : -1.;
+    //const double pt_HHvis_loose        = selBJets_loose.size() > 1 ? (selHadTau_lead->p4()+selHadTau_sublead->p4()+selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).pt() : -1.;
+    //const double pt_HHvis_medium        = selBJets_medium.size() > 1 ? (selHadTau_lead->p4()+selHadTau_sublead->p4()+selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).pt() : -1.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 1l_2tau category
-    mvaInputs_ttbar["nJet"]                 = selJets.size();
-    mvaInputs_ttbar["nBJetLoose"]           = selBJets_loose.size();
-    mvaInputs_ttbar["nBJetMedium"]          = selBJets_medium.size();
-    mvaInputs_ttbar["mindr_tau1_jet"]       = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
-    mvaInputs_ttbar["mindr_tau2_jet"]       = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
-    mvaInputs_ttbar["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
-    mvaInputs_ttbar["ptmiss"]               = met.pt();
-    mvaInputs_ttbar["mT_tau1"]              = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
-    mvaInputs_ttbar["mT_tau2"]              = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
-    mvaInputs_ttbar["htmiss"]               = mht_p4.pt();
-    mvaInputs_ttbar["tau1_pt"]              = selHadTau_lead->pt();
-    mvaInputs_ttbar["tau2_pt"]              = selHadTau_sublead->pt();
-    mvaInputs_ttbar["TMath::Abs(tau1_eta)"] = selHadTau_lead->absEta();
-    mvaInputs_ttbar["TMath::Abs(tau2_eta)"] = selHadTau_sublead->absEta();
-    mvaInputs_ttbar["dr_taus"]              = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
-    mvaInputs_ttbar["mTauTauVis"]           = mTauTauVis;
-    mvaInputs_ttbar["mTauTau"]              = mTauTau;
+    const double mindr_tau1_jet  = std::min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
+    const double mindr_tau2_jet  = std::min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
+    const double cosThetaS_hadTau = comp_cosThetaStar(selHadTau_lead->p4(), selHadTau_sublead->p4());
 
-    check_mvaInputs(mvaInputs_ttbar, eventInfo);
 
-    double mvaOutput_0l_2tau_ttbar = mva_0l_2tau_ttbar(mvaInputs_ttbar);
-    double mvaOutput_0l_2tau_HTT_tt = 1.0;
-    double mvaOutput_0l_2tau_HTT_sum = 1.0;
-
-    double mvaOutput_0l_2tau_HTT_ttv = 1.0;
-
-    //Get 2D map values
-    float mvaDiscr_0l_2tau_HTT = 1.0;
-
-    double mvaOutput_0l_2tau_HTT_sum_dy = 1.0;
-
-    double mva_Boosted_AK8 = 1.0;
+    const std::map<std::string, double> mvaInputs_ttbar = {
+      {"max_Lep_eta",      std::max({selHadTau_lead->absEta(), selHadTau_sublead->absEta()})},
+      {"res_HTT",          max_mvaOutput_HTT_CSVsort4rd},
+      {"HadTop_pt",        HadTop_pt_CSVsort4rd},
+      {"HadTop_pt_2",      HadTop_pt_CSVsort4rd_2},
+      {"dr_taus",          deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4())},
+      {"tau1_pt",          selHadTau_lead -> pt()},
+      {"tau2_pt",          selHadTau_sublead -> pt()},
+      {"avg_dr_jet",       comp_avg_dr_jet(selJets)},
+      {"mTauTauVis",       mTauTauVis},
+      {"mTauTau",          mTauTau},
+      {"cosThetaS_hadTau", cosThetaS_hadTau },
+      {"mbb_loose",        mbb_loose},
+      {"met_LD",           met_LD},
+      {"nBJetMedium",      selBJets_medium.size()},
+      {"mindr_tau1_jet",   TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets))},
+      {"mindr_tau2_jet",   TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets))},
+      {"mT_tau1",          comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi())},
+      {"mT_tau2",          comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi())}
+      };
+    double mva_0l_2tau_deeptauLoose_2 = mva_xgb_Legacy(mvaInputs_ttbar);
 
     // mvaInputs_XGB_Updated
     mvaInputs_XGB_Updated["mindr_tau1_jet"] = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
@@ -1750,10 +1731,11 @@ int main(int argc, char* argv[])
             selHistManager_evt->fillHistograms(
             preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-            mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
-            mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-            mva_Boosted_AK8, mva_Updated, mTauTauVis, pt_HHvis_loose, pt_HHvis_medium, mTauTau,
-            pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, kv.second
+            mva_0l_2tau_deeptauLoose_2,
+            mva_Updated,
+            mTauTauVis,
+            mTauTau,
+            kv.second
           );
           }
         }
@@ -1774,24 +1756,10 @@ int main(int argc, char* argv[])
                   selJets.size(),
                   selBJets_loose.size(),
                   selBJets_medium.size(),
-                  mvaOutput_0l_2tau_ttbar,
-                  mvaOutput_0l_2tau_HTT_tt,
-                  mvaOutput_0l_2tau_HTT_ttv,
-                  mvaOutput_0l_2tau_HTT_sum,
-                  mvaOutput_0l_2tau_HTT_sum_dy,
-                  mvaDiscr_0l_2tau_HTT,
-                  mva_Boosted_AK8,
+                  mva_0l_2tau_deeptauLoose_2,
                   mva_Updated,
                   mTauTauVis,
-            		  pt_HHvis_loose,
-            		  pt_HHvis_medium,
                   mTauTau,
-                  pZeta,
-                  pZetaVis,
-                  pZetaComb,
-                  mT_tau1,
-                  mbb,
-                  mbb_loose,
                   kv.second
                 );
               }
@@ -1822,10 +1790,11 @@ int main(int argc, char* argv[])
           selHistManager_evt_category->fillHistograms(
             preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-            mvaOutput_0l_2tau_ttbar, mvaOutput_0l_2tau_HTT_tt, mvaOutput_0l_2tau_HTT_ttv,
-            mvaOutput_0l_2tau_HTT_sum, mvaOutput_0l_2tau_HTT_sum_dy, mvaDiscr_0l_2tau_HTT,
-            mva_Boosted_AK8, mva_Updated, mTauTauVis, pt_HHvis_loose, pt_HHvis_medium, mTauTau,
-            pZeta, pZetaVis, pZetaComb, mT_tau1, mbb, mbb_loose, evtWeight
+            mva_0l_2tau_deeptauLoose_2,
+            mva_Updated,
+            mTauTauVis,
+            mTauTau,
+            evtWeight
           );
           }
         }
@@ -1861,7 +1830,6 @@ int main(int argc, char* argv[])
 
     if(bdt_filler)
     {
-      const double cosThetaS_hadTau = comp_cosThetaStar(selHadTau_lead->p4(), selHadTau_sublead->p4());
       //compute di-b-jet mass
 
       double mT2_top_3particle = -1.;
@@ -2064,8 +2032,6 @@ int main(int argc, char* argv[])
     {
       const double avg_dr_jet      = comp_avg_dr_jet(selJets);
       const double max_dr_jet      = comp_max_dr_jet(selJets);
-      const double mindr_tau1_jet  = std::min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
-      const double mindr_tau2_jet  = std::min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
       const double min_dr_tau_jet  = std::min(mindr_tau1_jet, mindr_tau2_jet);
       const double dr_taus         = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
       const int nLightJet          = selJets.size() - selBJets_loose.size() + selJetsForward.size();
@@ -2269,7 +2235,7 @@ int main(int argc, char* argv[])
   delete inputTree;
   delete snm;
 
-  fmap->Close();
+  //fmap->Close();
 
   clock.Show("analyze_0l_2tau");
 
