@@ -32,10 +32,7 @@ public:
                  double leptonPairCharge,
                  double hadTauPairCharge,
                  double evtWeight,
-                 double mvaOutput_plainKin_tt,
-                 double mvaOutput_plainKin_ttV,
-                 double mvaOutput_plainKin_SUM_VT,
-                 double mvaOutput_plainKin_1B_VT);
+                 double mvaOutput_legacy);
 
   const TH1 * getHistogram_EventCounter() const { return histogram_EventCounter_; }
 
@@ -59,11 +56,6 @@ private:
 
   TH1 * histogram_EventCounter_;
 
-  TH1 * histogram_mvaOutput_plainKin_tt_;
-  TH1 * histogram_mvaOutput_plainKin_ttV_;
-  TH1 * histogram_mvaOutput_plainKin_SUM_VT_;
-  TH1 * histogram_mvaOutput_plainKin_SUM_VT_noRebin_;
-  TH1 * histogram_mvaOutput_plainKin_1B_VT_;
   TH1 * histogram_final_;
 };
 

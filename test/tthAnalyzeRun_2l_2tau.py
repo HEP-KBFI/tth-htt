@@ -86,6 +86,10 @@ else:
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if sample_info["process_name_specific"].startswith("DY"):
+      sample_info["sample_category"] = "ZZ"
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -148,11 +152,6 @@ if __name__ == '__main__':
       "EventCounter"                      : {},
       "numJets"                           : {},
       "mTauTauVis"                        : {},
-      "mvaOutput_plainKin_tt"             : { 'quantile_rebin' : 4, 'quantile_in_fakes' : True }, # BDT2; quantiles in fakes
-      "mvaOutput_plainKin_ttV"            : { 'quantile_rebin' : 4, 'quantile_in_fakes' : True }, # BDT1; quantiles in fakes
-      "mvaOutput_plainKin_SUM_VT"         : { 'explicit_binning' : [ 0.0, 0.25, 0.50, 0.75, 1.0 ] }, # BDT3; quantiles in fakes
-      "mvaOutput_plainKin_SUM_VT_noRebin" : {},
-      "mva_2l_2tau"                       : {},
       "mvaOutput_final"                   : {},
     },
     select_rle_output                     = True,

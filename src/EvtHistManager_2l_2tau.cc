@@ -16,16 +16,11 @@ EvtHistManager_2l_2tau::EvtHistManager_2l_2tau(const edm::ParameterSet & cfg)
     "numBJets_medium_vs_numJets",
     "leptonPairCharge",
     "hadTauPairCharge",
-    "mTauTauVis",
-    "mvaOutput_plainKin_tt",
-    "mvaOutput_plainKin_ttV",
-    "mva_2l_2tau",
-    "mvaOutput_plainKin_SUM_VT",
-    "mvaOutput_plainKin_SUM_VT_noRebin",
+    "mTauTauVis"
   };
   const std::vector<std::string> sysOpts_all = {
     "EventCounter",
-    "mvaOutput_final",
+    "mvaOutput_final"
   };
   for(const std::string & sysOpt: sysOpts_central)
   {
@@ -53,14 +48,12 @@ EvtHistManager_2l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_mTauTauVis_   = book1D(dir, "mTauTauVis",   "mTauTauVis",   40,  0.,  200.);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter",  1, -0.5,  +0.5);
 
-  histogram_mvaOutput_plainKin_tt_             = book1D(dir, "mvaOutput_plainKin_tt",             "mvaOutput_plainKin_tt",             100, 0.0, 1.0);
-  histogram_mvaOutput_plainKin_ttV_            = book1D(dir, "mvaOutput_plainKin_ttV",            "mvaOutput_plainKin_ttV",            100, 0.0, 1.0);
-  histogram_mvaOutput_plainKin_1B_VT_          = book1D(dir, "mva_2l_2tau",          "mva_2l_2tau",          100, 0.0, 1.0);
-  histogram_mvaOutput_plainKin_SUM_VT_         = book1D(dir, "mvaOutput_plainKin_SUM_VT",         "mvaOutput_plainKin_SUM_VT",         100, 0.0, 1.0);
-  histogram_mvaOutput_plainKin_SUM_VT_noRebin_ = book1D(dir, "mvaOutput_plainKin_SUM_VT_noRebin", "mvaOutput_plainKin_SUM_VT_noRebin", 100, 0.0, 1.0);
-
-  Float_t binsx[5]  = { 0.0, 0.25, 0.50, 0.75, 1.0 };
-  histogram_final_ = book1D(dir, "mvaOutput_final",  "mvaOutput_final", 4, binsx);
+  // X: binning by quantiles/era can be rounded to a unique one
+  // 2018: [0.0, 0.7238368653359275, 1.0]
+  // 2017: [0.0, 0.7085418998688564, 1.0]
+  // 2016: [0.0, 0.6971249546108068, 1.0]
+  Float_t binsx[3]  = { 0.0, 0.71, 1.0 };
+  histogram_final_ = book1D(dir, "mvaOutput_final",  "mvaOutput_final", 2, binsx);
 
 }
 
@@ -75,9 +68,6 @@ EvtHistManager_2l_2tau::fillHistograms(int numElectrons,
                                        double leptonPairCharge,
                                        double hadTauPairCharge,
                                        double evtWeight,
-                                       double mvaOutput_plainKin_tt,
-                                       double mvaOutput_plainKin_ttV,
-                                       double mvaOutput_plainKin_SUM_VT,
                                        double mva_2l_2tau)
 {
   const double evtWeightErr = 0.;
@@ -95,10 +85,5 @@ EvtHistManager_2l_2tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mTauTauVis_,   mTauTauVis, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_EventCounter_, 0.,         evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_plainKin_tt_,             mvaOutput_plainKin_tt,     evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_plainKin_ttV_,            mvaOutput_plainKin_ttV,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_plainKin_1B_VT_,          mva_2l_2tau,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_VT_,         mvaOutput_plainKin_SUM_VT, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_VT_noRebin_, mvaOutput_plainKin_SUM_VT, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_final_,                             mvaOutput_plainKin_SUM_VT, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_final_, mva_2l_2tau, evtWeight, evtWeightErr);
 }

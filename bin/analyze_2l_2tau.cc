@@ -560,31 +560,12 @@ int main(int argc, char* argv[])
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
 
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
-
-  std::string mvaFileName_plainKin_tt = "tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2l_2tau_XGB_plainKin_evtLevelTT_TTH_11Var.xml";
-  std::vector<std::string> mvaInputVariables_plainKin_ttSort = {
-    "mTauTauVis", "cosThetaS_hadTau", "tau1_pt", "tau2_pt", "tau2_eta",
-    "mindr_lep1_jet", "mT_lep1", "mindr_tau_jet", "max_dr_lep_tau", "is_OS", "nBJetLoose"
-  };
-  TMVAInterface mva_plainKin_tt(mvaFileName_plainKin_tt, mvaInputVariables_plainKin_ttSort);
-  mva_plainKin_tt.enableBDTTransform();
-
-  std::string mvaFileName_plainKin_SUM_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2l_2tau_XGB_plainKin_evtLevelSUM_TTH_VT_13Var.xml";
-  std::vector<std::string> mvaInputVariables_plainKin_SUMSort = {
-    "mTauTauVis", "cosThetaS_hadTau", "tau1_pt", "tau2_pt",
-    "lep2_conePt", "mindr_lep1_jet", "mT_lep1", "mindr_tau_jet",
-    "avg_dr_jet", "avr_dr_lep_tau", "dr_taus", "is_OS", "nBJetLoose"
-  };
-  TMVAInterface mva_plainKin_SUM_VT(mvaFileName_plainKin_SUM_VT, mvaInputVariables_plainKin_SUMSort);
-  mva_plainKin_SUM_VT.enableBDTTransform();
-
   std::vector<std::string> mvaInputVariables = {
-    "Lep_min_dr_jet", "min_dr_Lep", "jet1_pt", "jet2_pt", "tau1_pt", "tau2_pt", "mTauTauVis", "cosThetaS_hadTau", "mbb_loose", "dr_leps", "dr_taus"
+    "Lep_min_dr_jet", "min_dr_Lep", "avg_dr_jet", "tau1_pt", "tau2_pt", "mTauTauVis", "cosThetaS_hadTau", "mbb_loose", "met_LD"
   };
-  std::string mvaFileName = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2l_2tau_3.pkl";
-  XGBInterface mva_2l_2tau_comp(mvaFileName, mvaInputVariables);
-  std::vector<std::string> mvaInputVariables_2l2tau = get_mvaInputVariables(mvaInputVariables_plainKin_SUMSort, mvaInputVariables);
-
+  std::string mvaFileName = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2l_2tau.xml";
+  TMVAInterface mva_2l_2tau_comp(mvaFileName, mvaInputVariables);
+  mva_2l_2tau_comp.enableBDTTransform();
 
 //--- declare histograms
   struct selHistManagerType
@@ -768,21 +749,6 @@ int main(int argc, char* argv[])
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type   int_type;
 
   //--- initialize BDTs used to discriminate ttH vs. ttV and ttbar
-  //    trained in XGB to 2l_2tau category
-
-  std::string mvaFileName_plainKin_ttV ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2l_2tau_XGB_plainKin_evtLevelTTV_TTH_14Var.xml";
-  std::vector<std::string> mvaInputVariables_plainKin_ttVSort = {
-    "mTauTauVis", "cosThetaS_hadTau", "lep1_conePt", "lep2_conePt",
-    "mT_lep1", "mT_lep2", "dr_taus", "min_dr_lep_jet", "mindr_tau1_jet",
-    "avg_dr_jet", "min_dr_lep_tau", "max_dr_lep_tau", "is_OS", "nJet"
-  };
-  TMVAInterface mva_plainKin_ttV(mvaFileName_plainKin_ttV, mvaInputVariables_plainKin_ttVSort);
-  mva_plainKin_ttV.enableBDTTransform();
-
-  std::string mvaFileName_plainKin_1B_VT ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2l_2tau_XGB_JointBDT_plainKin_1B_VT.xml";
-  std::vector<std::string> mvaInputVariables_plainKin_1BSort = {"BDTtt", "BDTttV"};
-  TMVAInterface mva_plainKin_1B_VT(mvaFileName_plainKin_1B_VT, mvaInputVariables_plainKin_1BSort);
-  mva_plainKin_1B_VT.enableBDTTransform();
 
   if ( selectBDT || do_tree ) {
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
@@ -1585,14 +1551,12 @@ int main(int argc, char* argv[])
     const double cosThetaS_hadTau = comp_cosThetaStar(selHadTau_lead->p4(), selHadTau_sublead->p4());
     const double tau1_pt          = selHadTau_lead->pt();
     const double tau2_pt          = selHadTau_sublead->pt();
-    const double tau2_eta         = selHadTau_sublead->eta();
     const double mindr_lep1_jet   = std::min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
     const double mindr_lep2_jet   = std::min(10., comp_mindr_lep2_jet(*selLepton_sublead, selJets));
     const double mT_lep1          = comp_MT_met_lep1(*selLepton_lead,    met.pt(), met.phi());
     const double mT_lep2          = comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi());
     const double mindr_tau1_jet   = comp_mindr_hadTau1_jet(*selHadTau_lead,    selJets);
     const double mindr_tau2_jet   = comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets);
-    const double mindr_tau_jet    = std::min({10., mindr_tau1_jet, mindr_tau2_jet });
     const double dr_lep1_tau1     = deltaR(selLepton_lead->p4(),    selHadTau_lead->p4());
     const double dr_lep2_tau1     = deltaR(selLepton_sublead->p4(), selHadTau_lead->p4());
     const double dr_lep1_tau2     = deltaR(selLepton_lead->p4(),    selHadTau_sublead->p4());
@@ -1608,74 +1572,17 @@ int main(int argc, char* argv[])
     const double avr_dr_lep_tau   = (dr_lep1_tau1 + dr_lep2_tau1 + dr_lep1_tau2 + dr_lep2_tau2) / 4;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar -- XGB
-    const std::map<std::string, double> mvaInputVariables_plainKin_tt = {
-      { "mTauTauVis",       mTauTauVis       },
-      { "cosThetaS_hadTau", cosThetaS_hadTau },
-      { "tau1_pt",          tau1_pt          },
-      { "tau2_pt",          tau2_pt          },
-      { "tau2_eta",         tau2_eta         },
-      { "mindr_lep1_jet",   mindr_lep1_jet   },
-      { "mT_lep1",          mT_lep1          },
-      { "mindr_tau_jet",    mindr_tau_jet    },
-      { "max_dr_lep_tau",   max_dr_lep_tau   },
-      { "is_OS",            is_OS            },
-      { "nBJetLoose",       nBJetLoose       },
-    };
-    const double mvaOutput_plainKin_tt = mva_plainKin_tt(mvaInputVariables_plainKin_tt);
-
-    const std::map<std::string, double> mvaInputVariables_plainKin_ttV = {
-      { "mTauTauVis",       mTauTauVis       },
-      { "cosThetaS_hadTau", cosThetaS_hadTau },
-      { "lep1_conePt",      lep1_conePt      },
-      { "lep2_conePt",      lep2_conePt      },
-      { "mT_lep1",          mT_lep1          },
-      { "mT_lep2",          mT_lep2          },
-      { "dr_taus",          dr_taus          },
-      { "min_dr_lep_jet",   min_dr_lep_jet   },
-      { "mindr_tau1_jet",   mindr_tau2_jet   },
-      { "avg_dr_jet",       avg_dr_jet       },
-      { "min_dr_lep_tau",   min_dr_lep_tau   },
-      { "max_dr_lep_tau",   max_dr_lep_tau   },
-      { "is_OS",            is_OS            },
-      { "nJet",             nJet             },
-    };
-    const double mvaOutput_plainKin_ttV = mva_plainKin_ttV(mvaInputVariables_plainKin_ttV);
-
-    std::map<std::string, double> mvaInputVariables_plainKin_SUM = {
-      { "mTauTauVis",       mTauTauVis       },
-      { "cosThetaS_hadTau", cosThetaS_hadTau },
-      { "tau1_pt",          tau1_pt          },
-      { "tau2_pt",          tau2_pt          },
-      { "lep2_conePt",      lep2_conePt      },
-      { "mindr_lep1_jet",   mindr_lep1_jet   },
-      { "mT_lep1",          mT_lep1          },
-      { "mindr_tau_jet",    mindr_tau_jet    },
-      { "avg_dr_jet",       avg_dr_jet       },
-      { "avr_dr_lep_tau",   avr_dr_lep_tau   },
-      { "dr_taus",          dr_taus          },
-      { "is_OS",            is_OS            },
-      { "nBJetLoose",       nBJetLoose       },
-    };
-    const double mvaOutput_plainKin_SUM_VT = mva_plainKin_SUM_VT(mvaInputVariables_plainKin_SUM);
-
-    const std::map<std::string, double> mvaInputVariables_plainKin_1B = {
-      { "BDTtt",  mvaOutput_plainKin_tt  },
-      { "BDTttV", mvaOutput_plainKin_ttV },
-    };
-    const double mvaOutput_plainKin_1B_VT = mva_plainKin_1B_VT(mvaInputVariables_plainKin_1B);
 
     const std::map<std::string, double> mvaInputsValues = {
       {"Lep_min_dr_jet",   std::min({ mindr_lep1_jet, mindr_lep2_jet, mindr_tau1_jet, mindr_tau2_jet })},
       {"min_dr_Lep",       std::min({ dr_leps, dr_taus, dr_lep1_tau2, dr_lep2_tau2, dr_lep1_tau1, dr_lep2_tau1 })},
-      {"jet1_pt",          selJets[0]->pt()},
-      {"jet2_pt",          selJets[1]->pt()},
+      {"avg_dr_jet",       avg_dr_jet},
       {"tau1_pt",          tau1_pt},
       {"tau2_pt",          tau2_pt},
       {"mTauTauVis",       mTauTauVis},
       {"cosThetaS_hadTau", cosThetaS_hadTau},
       {"mbb_loose",        selBJets_loose.size() > 1  ? (selBJets_loose[0]->p4()  + selBJets_loose[1]->p4() ).mass() : 0.},
-      {"dr_leps",          dr_leps},
-      {"dr_taus",          dr_taus}
+      {"met_LD",           met_LD}
     };
     const double mva_2l_2tau = mva_2l_2tau_comp(mvaInputsValues);
 
@@ -1736,8 +1643,7 @@ int main(int argc, char* argv[])
             selLepton_lead->charge() + selLepton_sublead->charge(),
             selHadTau_lead->charge() + selHadTau_sublead->charge(),
             kv.second,
-            mvaOutput_plainKin_tt, mvaOutput_plainKin_ttV,
-            mvaOutput_plainKin_SUM_VT, mva_2l_2tau
+            mva_2l_2tau
           );
           }
         }
@@ -1762,8 +1668,7 @@ int main(int argc, char* argv[])
                 selLepton_lead->charge() + selLepton_sublead->charge(),
                 selHadTau_lead->charge() + selHadTau_sublead->charge(),
                 kv.second,
-                mvaOutput_plainKin_tt, mvaOutput_plainKin_ttV,
-                mvaOutput_plainKin_SUM_VT, mva_2l_2tau
+                mva_2l_2tau
               );
               }
             }
@@ -2000,12 +1905,12 @@ int main(int argc, char* argv[])
       // HadTop_pt not filled
       // Hj_tagger not filled
 
-      snm->read(mvaOutput_plainKin_ttV,                 FloatVariableType::mvaOutput_plainKin_ttV);
-      snm->read(mvaOutput_plainKin_tt,                  FloatVariableType::mvaOutput_plainKin_tt);
-      snm->read(mvaOutput_plainKin_1B_VT,               FloatVariableType::mvaOutput_plainKin_1B_VT);
+      //snm->read(mvaOutput_plainKin_ttV,                 FloatVariableType::mvaOutput_plainKin_ttV);
+      //snm->read(mvaOutput_plainKin_tt,                  FloatVariableType::mvaOutput_plainKin_tt);
+      //snm->read(mvaOutput_plainKin_1B_VT,               FloatVariableType::mvaOutput_plainKin_1B_VT);
       // mvaOutput_HTT_SUM_VT not filled
 
-      snm->read(mvaOutput_plainKin_SUM_VT,              FloatVariableType::mvaOutput_plainKin_SUM_VT);
+      //snm->read(mvaOutput_plainKin_SUM_VT,              FloatVariableType::mvaOutput_plainKin_SUM_VT);
 
       // mvaOutput_2lss_ttV not filled
       // mvaOutput_2lss_tt not filled
