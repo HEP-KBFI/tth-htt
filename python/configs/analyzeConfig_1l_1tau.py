@@ -533,7 +533,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
             sample_categories.extend(self.ttHProcs)
             processes_input = []
             for process_input_base in processes_input_base :
-              processes_input.append("%s_flips" % process_input_base)
+              processes_input.append("%s_flip" % process_input_base)
             self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_flips] = {
               'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
               'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_%s_%s_cfg.py" % addBackgrounds_job_flips_tuple),
