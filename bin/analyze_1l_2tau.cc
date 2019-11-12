@@ -580,7 +580,6 @@ int main(int argc, char* argv[])
   HadTopTagger* hadTopTagger = new HadTopTagger();
 
   // -- initialize eventlevel BDTs
-  // data/NN_for_legacy_opt/1l_2tau.pkl
   std::string mvaFileName_plainKin_ttV ="tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/1l_2tau_DeepTauTight.xml";
   std::vector<std::string> mvaInputVariables_plainKin_ttVSort={
     "tau1_pt", "tau2_pt",
@@ -589,7 +588,7 @@ int main(int argc, char* argv[])
     "met_LD", "massL3", "lep1_conePt", "mT_lep",
     "res_HTT", "HadTop_pt", "mbb_loose", "avg_dr_jet", "max_Lep_eta"
   };
-  XGBInterface mva_legacy(
+  TMVAInterface mva_legacy(
     mvaFileName_plainKin_ttV,
     mvaInputVariables_plainKin_ttVSort
   );
