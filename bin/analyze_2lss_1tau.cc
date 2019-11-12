@@ -153,19 +153,16 @@ int main(int argc, char* argv[])
 //--- keep track of time it takes the macro to execute
   TBenchmark clock;
   clock.Start("analyze_2lss_1tau");
-  std::cout << "ahhhhhh 000" << '\n';
 
 //--- read python configuration parameters
   if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
     throw cms::Exception("analyze_2lss_1tau")
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
-  std::cout << "ahhhhhh 0" << '\n';
 
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_2lss_1tau");
 
-  std::cout << "ahhhhhh 00" << '\n';
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
@@ -177,7 +174,6 @@ int main(int argc, char* argv[])
   const bool isMC_HH = process_string == "HH";
   const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH;
-  std::cout << "ahhhhhh " << '\n';
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -418,7 +414,6 @@ int main(int argc, char* argv[])
     snm->initializeBranches();
     snm->initializeHLTBranches({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
   }
-  std::cout << "ahhhhhh 2" << '\n';
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC, isSignal);
@@ -615,75 +610,7 @@ int main(int argc, char* argv[])
   //--- initialize hadronic top tagger BDT
   HadTopTagger* hadTopTagger = new HadTopTagger();
 
-  // Hj-tagger
-  std::string mvaFileName_Hj_tagger = "tthAnalysis/HiggsToTauTau/data/Hj_deepcsv_BDTG_2017.weights.xml";
-  std::vector<std::string> mvaInputVariables_Hj_tagger = {
-    "Jet25_lepdrmin", "max(Jet25_bDiscriminator,0.)",
-    "max(Jet25_qg,0.)", "Jet25_lepdrmax", "Jet25_pt" };
-  TMVAInterface mva_Hj_tagger(mvaFileName_Hj_tagger, mvaInputVariables_Hj_tagger);
-
-  std::string mvaFileName_Hjj_tagger = "tthAnalysis/HiggsToTauTau/data/Hjj_csv_BDTG.weights.xml";
-  std::vector<std::string> mvaInputVariables_Hjj_tagger = {
-    "bdtJetPair_minlepmass", "bdtJetPair_sumbdt", "bdtJetPair_dr",
-    "bdtJetPair_minjdr", "bdtJetPair_mass", "bdtJetPair_minjOvermaxjdr"};
-TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagger);
-
 //--- initialize BDTs used to discriminate ttH vs. ttV and tt
-//    in 2lss_1tau category of ttH multilepton analysis
-  std::string mvaFileName_2lss_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_ttV_BDTG.weights.xml";
-  std::vector<std::string> mvaInputVariables_2lss_ttV = {
-    "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))",
-    "MT_met_lep1", "nJet25_Recl", "mindr_lep1_jet", "mindr_lep2_jet",
-    "LepGood_conePt[iF_Recl[0]]", "LepGood_conePt[iF_Recl[1]]"
-  };
-  TMVAInterface mva_2lss_ttV(mvaFileName_2lss_ttV, mvaInputVariables_2lss_ttV,
-    { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
-
-  std::string mvaFileName_2lss_tt = "tthAnalysis/HiggsToTauTau/data/2lss_ttbar_BDTG.weights.xml";
-  std::vector<std::string> mvaInputVariables_2lss_tt = {
-    "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))",
-    "nJet25_Recl", "mindr_lep1_jet", "mindr_lep2_jet", "min(met_pt,400)",
-    "avg_dr_jet", "MT_met_lep1"};
-  TMVAInterface mva_2lss_tt(mvaFileName_2lss_tt, mvaInputVariables_2lss_tt,
-    { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
-
-  // trained with XGB (March 2018)
-  std::string mvaFileName_plainKin_tt = "tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2lss_1tau_XGB_plainKin_evtLevelTT_TTH_16Var.xml";
-  std::vector<std::string> mvaInputVariables_plainKin_ttSort = {
-    "avg_dr_jet", "dr_lep1_tau", "dr_lep2_tau", "dr_leps", "lep1_conePt", "lep2_conePt",
-    "mT_lep2", "mTauTauVis1", "mTauTauVis2", "mbb", "mindr_lep1_jet",
-    "mindr_lep2_jet", "mindr_tau_jet", "nJet", "ptmiss", "tau_pt"
-  };
-  TMVAInterface mva_2lss_1tau_plainKin_tt(mvaFileName_plainKin_tt, mvaInputVariables_plainKin_ttSort);
-  mva_2lss_1tau_plainKin_tt.enableBDTTransform();
-
-  std::string mvaFileName_plainKin_ttV ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2lss_1tau_XGB_plainKin_evtLevelTTV_TTH_15Var.xml";
-  std::vector<std::string> mvaInputVariables_plainKin_ttVSort = {
-    "avg_dr_jet", "dr_lep1_tau", "dr_leps", "lep1_conePt", "lep2_conePt",
-    "mT_lep1", "mT_lep2", "mTauTauVis1", "mTauTauVis2","mindr_lep1_jet",
-    "mindr_lep2_jet", "mindr_tau_jet", "ptmiss", "max_lep_eta", "tau_pt"
-  };
-  TMVAInterface mva_2lss_1tau_plainKin_ttV(mvaFileName_plainKin_ttV, mvaInputVariables_plainKin_ttVSort);
-  mva_2lss_1tau_plainKin_ttV.enableBDTTransform();
-
-  // Joint 1B
-  std::vector<std::string> mvaInputVariables_1BSort = {"BDTtt", "BDTttV"};
-  std::string mvaFileName_plainKin_1B_M ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2lss_1tau_XGB_JointBDT_plainKin_1B_M.xml";
-  TMVAInterface mva_2lss_1tau_plainKin_1B_M(mvaFileName_plainKin_1B_M, mvaInputVariables_1BSort);
-  mva_2lss_1tau_plainKin_1B_M.enableBDTTransform();
-
-  // SUM BDTs - to all layers of variables (including HTT , and including HTT+MEM)
-  std::string mvaFileName_plainKin_SUM_M ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2lss_1tau_XGB_plainKin_evtLevelSUM_TTH_M_18Var.xml";
-  std::vector<std::string> mvaInputVariables_plainKin_SUMSort = {
-    "avg_dr_jet", "dr_lep1_tau", "dr_lep2_tau", "dr_leps",
-    "lep1_conePt", "lep2_conePt", "mT_lep1", "mT_lep2",
-    "mTauTauVis1", "mTauTauVis2", "max_lep_eta", "mbb",
-    "mindr_lep1_jet", "mindr_lep2_jet", "mindr_tau_jet",
-    "nJet", "ptmiss", "tau_pt"
-  };
-  TMVAInterface mva_2lss_1tau_plainKin_SUM_M(mvaFileName_plainKin_SUM_M, mvaInputVariables_plainKin_SUMSort);
-  mva_2lss_1tau_plainKin_SUM_M.enableBDTTransform();
-
   std::string mvaFileName_HTT_SUM_M ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2lss_1tau_XGB_HTT_evtLevelSUM_TTH_M_18Var.xml";
   std::vector<std::string> mvaInputVariables_HTT_SUMSort = {
     "avg_dr_jet", "dr_lep1_tau", "dr_lep2_tau", "dr_leps", "lep2_conePt",
@@ -694,15 +621,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
   };
   TMVAInterface mva_2lss_1tau_HTT_SUM_M(mvaFileName_HTT_SUM_M, mvaInputVariables_HTT_SUMSort);
   mva_2lss_1tau_HTT_SUM_M.enableBDTTransform();
-
-  std::string mvaFileName_HTTMEM_SUM_M ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/2lss_1tau_XGB_HTTMEM_evtLevelSUM_TTH_M_20Var.xml";
-  std::vector<std::string> mvaInputVariables_HTTMEM_SUMSort = {
-    "avg_dr_jet", "dr_lep1_tau", "dr_lep2_tau", "dr_leps", "lep2_conePt", "mT_lep1", "mT_lep2", "mTauTauVis2", "max_lep_eta",
-    "mbb", "mindr_lep1_jet", "mindr_lep2_jet", "mindr_tau_jet", "nJet", "ptmiss", "tau_pt", "memOutput_LR",
-    "HTT", "Hj_tagger", "HadTop_pt"
-  };
-  TMVAInterface mva_2lss_1tau_HTTMEM_SUM_M(mvaFileName_HTTMEM_SUM_M, mvaInputVariables_HTTMEM_SUMSort);
-  mva_2lss_1tau_HTTMEM_SUM_M.enableBDTTransform();
 
   std::vector<std::string> mvaInputVariables_TensorFlow = {
     "lep1_conePt", "lep1_eta", "lep1_phi", //"mT_lep1",
@@ -719,14 +637,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     "jet3_pt", "jet3_eta", "jet3_phi",
     "nJet", "nBJetLoose", "nBJetMedium", "nJetForward", "nElectron", "sum_Lep_charge"
   };
-  /*
-  data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2_th_2_withWZ.pb --
-  data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2p5_th_2_withWZ.pb --
-  data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2p2_th_2_withWZ.pb --
-  data/NN_for_legacy_opt/2lss_1tau/test_sig_2p2_rest_2_th_2p2_withWZ.pb --
-  */
+
   std::vector<std::string> classes_TensorFlow_3l_ttH_tH_3cat = {"predictions_ttH",  "predictions_rest", "predictions_tH"};
-  std::string mvaFileName_TensorFlow_sig_1p2_rest_1_th_1p2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_2p2_rest_2_th_2p2_withWZ.pb";
+  std::string mvaFileName_TensorFlow_sig_1p2_rest_1_th_1p2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_2p5_rest_2_th_2p5_withWZ_2.pb";
   TensorFlowInterface mva_sig_1p2_rest_1_th_1p2_TF(
     mvaFileName_TensorFlow_sig_1p2_rest_1_th_1p2,
     mvaInputVariables_TensorFlow,
@@ -738,13 +651,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     mvaInputVariables_TensorFlow,
     classes_TensorFlow_3l_ttH_tH_3cat
   );
-  std::string mvaFileName_TensorFlow_sig_2_rest_2_th_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2_th_2_withWZ.pb";
-  TensorFlowInterface mva_sig_2_rest_2_th_2_TF(
-    mvaFileName_TensorFlow_sig_2_rest_2_th_2,
-    mvaInputVariables_TensorFlow,
-    classes_TensorFlow_3l_ttH_tH_3cat
-  );
-  std::string mvaFileName_TensorFlow_sig_2_rest_2p5_th_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2p5_th_2_withWZ.pb";
+  std::string mvaFileName_TensorFlow_sig_2_rest_2p5_th_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2lss_1tau/test_sig_2_rest_2p5_th_2_withWZ_2.pb";
   TensorFlowInterface mva_sig_2_rest_2p5_th_2_TF(
     mvaFileName_TensorFlow_sig_2_rest_2p5_th_2,
     mvaInputVariables_TensorFlow,
@@ -754,8 +661,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
-
-  std::vector<std::string> mvaInputVariables_2lss = get_mvaInputVariables(mvaInputVariables_TensorFlow, mvaInputVariables_plainKin_SUMSort);
 
 //--- declare histograms
   struct selHistManagerType
@@ -773,7 +678,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     MEtHistManager* met_;
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_2lss_;
-    MVAInputVarHistManager* mvaInputVariables_2lss_1tau_;
     std::map<std::string, EvtHistManager_2lss_1tau*> evt_;
     std::map<std::string, std::map<std::string, EvtHistManager_2lss_1tau*>> evt_in_decayModes_;
     std::map<std::string, EvtHistManager_2lss_1tau*> evt_in_categories_;
@@ -790,11 +694,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     "output_NN_sig_2_rest_2p2_th_2_ttH",
     "output_NN_sig_2_rest_2p2_th_2_tH",
     "output_NN_sig_2_rest_2p2_th_2_rest"
-  };
-  const vstring categories_TensorFlow_sig_2_rest_2_th_2 = {
-    "output_NN_sig_2_rest_2_th_2_ttH",
-    "output_NN_sig_2_rest_2_th_2_tH",
-    "output_NN_sig_2_rest_2_th_2_rest"
   };
   const vstring categories_TensorFlow_sig_2_rest_2p5_th_2 = {
     "output_NN_sig_2_rest_2p5_th_2_ttH",
@@ -883,7 +782,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           fs,
           categories_TensorFlow_sig_1p2_rest_1_th_1p2,
           categories_TensorFlow_sig_2_rest_2p2_th_2,
-          categories_TensorFlow_sig_2_rest_2_th_2,
           categories_TensorFlow_sig_2_rest_2p5_th_2
         );
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
@@ -921,7 +819,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
               fs,
               categories_TensorFlow_sig_1p2_rest_1_th_1p2,
               categories_TensorFlow_sig_2_rest_2p2_th_2,
-              categories_TensorFlow_sig_2_rest_2_th_2,
               categories_TensorFlow_sig_2_rest_2p5_th_2
             );
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
@@ -988,7 +885,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       "tau_genTauPt",
       //"lep1_fake_prob", "lep2_fake_prob",  "tau_fake_prob",
       //"tau_fake_test",
-      "Hj_tagger",
       "genWeight", "evtWeight",
       "mbb_loose", "mbb_medium",
       "dr_Lep_lss", "dr_Lep_los1", "dr_Lep_los2", "eta_LepLep_los1", "eta_LepLep_los2", "eta_LepLep_los",
@@ -2018,9 +1914,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     bool max_truth_HTT_CSVsort4rd = false;
     double HadTop_pt_CSVsort4rd = 0.;
     double genTopPt_CSVsort4rd = 0.;
-    double b_pt_CSVsort4rd_1 = 0.1;
-    double Wj1_pt_CSVsort4rd_1 = 0.1;
-    double Wj2_pt_CSVsort4rd_1 = 0.1;
     bool hadtruth = false;
     for(std::vector<const RecoJet *>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet)
     {
@@ -2059,24 +1952,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
             max_mvaOutput_HTT_CSVsort4rd = bdtResult.at(kXGB_CSVsort4rd);
             HadTop_pt_CSVsort4rd = HadTop_pt;
             genTopPt_CSVsort4rd = genTopPt_teste;
-            Wj1_pt_CSVsort4rd_1 = (*selWJet1)->pt();
-            Wj2_pt_CSVsort4rd_1 = (*selWJet2)->pt();
-            b_pt_CSVsort4rd_1   = (*selBJet)->pt();
           }
         }
       }
-    }
-
-    //std::map<std::string, double> mvaOutput_Hj_tagger;
-    std::map<std::string, double> mvaInputs_Hj_tagger;
-    double mvaOutput_Hj_tagger = 0.;
-    for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin();
-	  selJet != selJets.end(); ++selJet ) {
-      if ((*selJet)->pt()==Wj1_pt_CSVsort4rd_1 || (*selJet)->pt()==Wj2_pt_CSVsort4rd_1 || (*selJet)->pt()==b_pt_CSVsort4rd_1) continue;
-      double mvaOutput = comp_mvaOutput_Hj_tagger(
-        *selJet, fakeableLeptons, mvaInputs_Hj_tagger, mva_Hj_tagger,
-        eventInfo);
-      if ( mvaOutput > mvaOutput_Hj_tagger ) mvaOutput_Hj_tagger = mvaOutput;
     }
 
 //--- compute variables BDTs used to discriminate ttH vs. ttV and ttH vs. ttba -- they will be used more than once -- Xanda
@@ -2095,7 +1973,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     const double avg_dr_jet      = comp_avg_dr_jet(selJets);
     const double lep1_conePt     = comp_lep1_conePt(*selLepton_lead);
     const double lep2_conePt     = comp_lep2_conePt(*selLepton_sublead);
-    const double minMET400       = std::min(met.pt(), 400.);
     const double mindr_tau_jet   = comp_mindr_hadTau1_jet(*selHadTau, selJets);
     const double mbb             = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
     const double mTauTauVis1_sel = (selLepton_lead->p4() + selHadTau->p4()).mass();
@@ -2136,91 +2013,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     if (dr_los1 < dr_los2) eta_los = eta_los1;
     else eta_los = eta_los2;
 
-//--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. tt
-//    in 2lss_1tau category of ttH multilepton analysis
-    std::map<std::string, double> mvaInputs_2lss = {
-      { "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", max_lep_eta                   },
-      { "MT_met_lep1",                                                    mT_lep1                       },
-      { "nJet25_Recl",                                                    nJet25_Recl                   },
-      { "mindr_lep1_jet",                                                 std::min(10., mindr_lep1_jet) },
-      { "mindr_lep2_jet",                                                 std::min(10., mindr_lep2_jet) },
-      { "LepGood_conePt[iF_Recl[0]]",                                     lep1_conePt                   },
-      { "LepGood_conePt[iF_Recl[1]]",                                     lep2_conePt                   },
-      { "min(met_pt,400)",                                                minMET400                     },
-      { "avg_dr_jet",                                                     avg_dr_jet                    },
-    };
-    check_mvaInputs(mvaInputs_2lss, eventInfo);
-    const double mvaOutput_2lss_ttV = mva_2lss_ttV(mvaInputs_2lss);
-    const double mvaOutput_2lss_tt = mva_2lss_tt(mvaInputs_2lss);
-
 //--- compute output of BDTs used to discriminate ttH vs. ttV and  tt trained with XGB
-    const std::map<std::string, double> mvaInputVariables_plainKin_tt = {
-      { "avg_dr_jet",     avg_dr_jet      },
-      { "dr_lep1_tau",    dr_lep1_tau     },
-      { "dr_lep2_tau",    dr_lep2_tau     },
-      { "dr_leps",        dr_leps         },
-      { "lep1_conePt",    lep1_conePt     },
-      { "lep2_conePt",    lep2_conePt     },
-      { "mT_lep2",        mT_lep2         },
-      { "mTauTauVis1",    mTauTauVis1_sel },
-      { "mTauTauVis2",    mTauTauVis2_sel },
-      { "mbb",            mbb             },
-      { "mindr_lep1_jet", mindr_lep1_jet  },
-      { "mindr_lep2_jet", mindr_lep2_jet  },
-      { "mindr_tau_jet",  mindr_tau_jet   },
-      { "nJet",           nJet25_Recl     },
-      { "ptmiss",         ptmiss          },
-      { "tau_pt",         tau_pt          },
-    };
-    const double mvaOutput_2lss_1tau_plainKin_tt = mva_2lss_1tau_plainKin_tt(mvaInputVariables_plainKin_tt);
-
-    const std::map<std::string, double>  mvaInputVariables_plainKin_ttV = {
-      { "avg_dr_jet",     avg_dr_jet      },
-      { "dr_lep1_tau",    dr_lep1_tau     },
-      { "dr_leps",        dr_leps         },
-      { "lep1_conePt",    lep1_conePt     },
-      { "lep2_conePt",    lep2_conePt     },
-      { "mT_lep1",        mT_lep1         },
-      { "mT_lep2",        mT_lep2         },
-      { "mTauTauVis1",    mTauTauVis1_sel },
-      { "mTauTauVis2",    mTauTauVis2_sel },
-      { "mindr_lep1_jet", mindr_lep1_jet  },
-      { "mindr_lep2_jet", mindr_lep2_jet  },
-      { "mindr_tau_jet",  mindr_tau_jet   },
-      { "ptmiss",         ptmiss          },
-      { "max_lep_eta",    max_lep_eta     },
-      { "tau_pt",         tau_pt          },
-    };
-    const double mvaOutput_2lss_1tau_plainKin_ttV = mva_2lss_1tau_plainKin_ttV(mvaInputVariables_plainKin_ttV);
-
-    const std::map<std::string, double> mvaInputVariables_plainKin_1B = {
-      { "BDTtt",  mvaOutput_2lss_1tau_plainKin_tt  },
-      { "BDTttV", mvaOutput_2lss_1tau_plainKin_ttV },
-    };
-    const double mvaOutput_2lss_1tau_plainKin_1B_M = mva_2lss_1tau_plainKin_1B_M(mvaInputVariables_plainKin_1B);
-
-    const std::map<std::string, double>  mvaInputVariables_plainKin_SUM = {
-      { "avg_dr_jet",     avg_dr_jet      },
-      { "dr_lep1_tau",    dr_lep1_tau     },
-      { "dr_lep2_tau",    dr_lep2_tau     },
-      { "dr_leps",        dr_leps         },
-      { "lep1_conePt",    lep1_conePt     },
-      { "lep2_conePt",    lep2_conePt     },
-      { "mT_lep1",        mT_lep1         },
-      { "mT_lep2",        mT_lep2         },
-      { "mTauTauVis1",    mTauTauVis1_sel },
-      { "mTauTauVis2",    mTauTauVis2_sel },
-      { "max_lep_eta",    max_lep_eta     },
-      { "mbb",            mbb             },
-      { "mindr_lep1_jet", mindr_lep1_jet  },
-      { "mindr_lep2_jet", mindr_lep2_jet  },
-      { "mindr_tau_jet",  mindr_tau_jet   },
-      { "nJet",           nJet25_Recl     },
-      { "ptmiss",         ptmiss          },
-      { "tau_pt",         tau_pt          },
-    };
-    const double mvaOutput_2lss_1tau_plainKin_SUM_M = mva_2lss_1tau_plainKin_SUM_M(mvaInputVariables_plainKin_SUM);
-
     const std::map<std::string, double> mvaInputVariables_HTT_SUM = {
       { "avg_dr_jet",     avg_dr_jet          },
       { "dr_lep1_tau",    dr_lep1_tau         },
@@ -2239,50 +2032,10 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       { "ptmiss",         ptmiss              },
       { "tau_pt",         tau_pt              },
       { "HTT",            HTT                 },
-      //{ "Hj_tagger",      mvaOutput_Hj_tagger },
       { "HadTop_pt",      HadTop_pt           },
     };
     const double mvaOutput_2lss_1tau_HTT_SUM_M = mva_2lss_1tau_HTT_SUM_M(mvaInputVariables_HTT_SUM);
 
-    const std::map<std::string, double> mvaInputVariables_HTTMEM_SUM = {
-      { "avg_dr_jet",     avg_dr_jet          },
-      { "dr_lep1_tau",    dr_lep1_tau         },
-      { "dr_lep2_tau",    dr_lep2_tau         },
-      { "dr_leps",        dr_leps             },
-      { "lep2_conePt",    lep2_conePt         },
-      { "mT_lep1",        mT_lep1             },
-      { "mT_lep2",        mT_lep2             },
-      { "mTauTauVis2",    mTauTauVis2_sel     },
-      { "max_lep_eta",    max_lep_eta         },
-      { "mbb",            mbb                 },
-      { "mindr_lep1_jet", mindr_lep1_jet      },
-      { "mindr_lep2_jet", mindr_lep2_jet      },
-      { "mindr_tau_jet",  mindr_tau_jet       },
-      { "nJet",           nJet25_Recl         },
-      { "ptmiss",         ptmiss              },
-      { "tau_pt",         tau_pt              },
-      { "memOutput_LR",   memOutput_LR        },
-      { "HTT",            HTT                 },
-      { "Hj_tagger",      mvaOutput_Hj_tagger },
-      { "HadTop_pt",      HadTop_pt           },
-    };
-    const double mvaOutput_2lss_1tau_HTTMEM_SUM_M = mva_2lss_1tau_HTTMEM_SUM_M(mvaInputVariables_HTTMEM_SUM);
-
-    /*
-    "lep1_conePt", "lep1_eta", "lep1_phi", "mT_lep1", "mindr_lep1_jet",
-    "lep2_conePt", "lep2_eta", "lep2_phi", "mT_lep2", "mindr_lep2_jet",
-    "tau1_pt", "tau1_eta", "tau1_phi", "mindr_tau_jet",
-    "avg_dr_jet", "mbb_loose", "min_dr_Lep",
-    "mTauTauVis1", "mTauTauVis2", "eta_LepLep_los",
-    "res_HTT", "HadTop_pt",
-     "massL3",
-     "min_Deta_leadfwdJet_jet", "leadFwdJet_eta", "leadFwdJet_pt",
-     "met_LD",
-     "jet1_pt", "jet1_eta", "jet1_phi",
-     "jet2_pt", "jet2_eta", "jet2_phi",
-     "jet3_pt", "jet3_eta", "jet3_phi",
-     "nJet", "nBJetLoose", "nBJetMedium", "nJetForward", "nElectron", "sum_Lep_charge"
-    */
     std::map<std::string, double> mvaInputVariables_NN = {
       {"lep1_conePt",     lep1_conePt},
       {"lep1_eta",        selLepton_lead -> absEta()},
@@ -2329,7 +2082,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       };
     std::map<std::string, double> mvaOutput_3l_ttH_tH_BKG_sig_1p2_rest_1_th_1p2_TF = mva_sig_1p2_rest_1_th_1p2_TF(mvaInputVariables_NN);
     std::map<std::string, double> mvaOutput_sig_2_rest_2p2_th_2_TF = mva_sig_2_rest_2p2_th_2_TF(mvaInputVariables_NN);
-    std::map<std::string, double> mvaOutput_sig_2_rest_2_th_2_TF = mva_sig_2_rest_2_th_2_TF(mvaInputVariables_NN);
     std::map<std::string, double> mvaOutput_sig_2_rest_2p5_th_2_TF = mva_sig_2_rest_2p5_th_2_TF(mvaInputVariables_NN);
     if ( isDebugTF ) {
       std::cout << "variables ";
@@ -2341,9 +2093,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       std::cout << std::endl;
       std::cout << "result 1p5_1p5_1_3jets ";
       for (auto elem : classes_TensorFlow_3l_ttH_tH_3cat ) std::cout << elem << " = " << mvaOutput_sig_2_rest_2p2_th_2_TF[elem] <<" ";
-      std::cout << std::endl;
-      std::cout << "result 1p5_1_1p5_3jets ";
-      for (auto elem : classes_TensorFlow_3l_ttH_tH_3cat ) std::cout << elem << " = " << mvaOutput_sig_2_rest_2_th_2_TF[elem] <<" ";
       std::cout << std::endl;
       std::cout << "result 2_2_2_3jets ";
       for (auto elem : classes_TensorFlow_3l_ttH_tH_3cat ) std::cout << elem << " = " << mvaOutput_sig_2_rest_2p5_th_2_TF[elem] <<" ";
@@ -2402,32 +2151,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         }
     } else assert(0);
 
-    std::string category_sig_2_rest_2_th_2_TF = "output_NN_sig_2_rest_2_th_2_";
-    double output_NN_sig_2_rest_2_th_2 = -10.0;
-    if (ttH_like || tH_like) {
-      if (
-        mvaOutput_sig_2_rest_2_th_2_TF["predictions_ttH"] >= mvaOutput_sig_2_rest_2_th_2_TF["predictions_rest"] &&\
-        mvaOutput_sig_2_rest_2_th_2_TF["predictions_ttH"] >= mvaOutput_sig_2_rest_2_th_2_TF["predictions_tH"]
-      ) {
-        category_sig_2_rest_2_th_2_TF += "ttH";
-        output_NN_sig_2_rest_2_th_2 = mvaOutput_sig_2_rest_2_th_2_TF["predictions_ttH"];
-      }
-      if (
-        mvaOutput_sig_2_rest_2_th_2_TF["predictions_tH"] >  mvaOutput_sig_2_rest_2_th_2_TF["predictions_ttH"] &&\
-        mvaOutput_sig_2_rest_2_th_2_TF["predictions_tH"] >= mvaOutput_sig_2_rest_2_th_2_TF["predictions_rest"]
-      ) {
-        category_sig_2_rest_2_th_2_TF += "tH";
-        output_NN_sig_2_rest_2_th_2 = mvaOutput_sig_2_rest_2_th_2_TF["predictions_tH"];
-        }
-      if (
-        mvaOutput_sig_2_rest_2_th_2_TF["predictions_rest"] > mvaOutput_sig_2_rest_2_th_2_TF["predictions_ttH"] &&\
-        mvaOutput_sig_2_rest_2_th_2_TF["predictions_rest"] > mvaOutput_sig_2_rest_2_th_2_TF["predictions_tH"]
-      ) {
-        category_sig_2_rest_2_th_2_TF += "rest";
-        output_NN_sig_2_rest_2_th_2 = mvaOutput_sig_2_rest_2_th_2_TF["predictions_rest"];
-        }
-    } else assert(0);
-
     std::string category_sig_2_rest_2p5_th_2_TF = "output_NN_sig_2_rest_2p5_th_2_";
     double output_NN_sig_2_rest_2p5_th_2 = -10.0;
     if (ttH_like || tH_like) {
@@ -2462,8 +2185,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
       double evtWeight = evtWeightRecorder.get(central_or_shift);
-      if ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) evtWeight *=3;
-      if ( (eventInfo.event % 2) && isMC_WZ ) evtWeight *=2;
+      if ( era_string == "2018" && isMC_tHq ) evtWeight *=3;
+      if ( isMC_WZ ) evtWeight *=2;
       const bool skipFilling = central_or_shift != central_or_shift_main;
       for (const GenMatchEntry* genMatch : genMatches)
       {
@@ -2521,14 +2244,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       	    selBJets_loose.size(),
       	    selBJets_medium.size(),
       	    kv.second,
-      	    mvaOutput_2lss_ttV,
-      	    mvaOutput_2lss_tt,
-      	    mvaOutput_2lss_1tau_plainKin_tt,
-      	    mvaOutput_2lss_1tau_plainKin_ttV,
-      	    mvaOutput_2lss_1tau_plainKin_1B_M,
-      	    mvaOutput_2lss_1tau_plainKin_SUM_M,
       	    mvaOutput_2lss_1tau_HTT_SUM_M,
-      	    mvaOutput_2lss_1tau_HTTMEM_SUM_M,
       	    mTauTauVis1_sel,
       	    mTauTauVis2_sel,
       	    memOutput_LR,
@@ -2536,8 +2252,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
             output_NN_sig_1p2_rest_1_th_1p2,
             category_sig_2_rest_2p2_th_2_TF,
             output_sig_2_rest_2p2_th_2,
-            category_sig_2_rest_2_th_2_TF,
-            output_NN_sig_2_rest_2_th_2,
             category_sig_2_rest_2p5_th_2_TF,
             output_NN_sig_2_rest_2p5_th_2
          );
@@ -2561,14 +2275,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
             		selBJets_loose.size(),
             		selBJets_medium.size(),
             		kv.second,
-            		mvaOutput_2lss_ttV,
-            		mvaOutput_2lss_tt,
-            		mvaOutput_2lss_1tau_plainKin_tt,
-            		mvaOutput_2lss_1tau_plainKin_ttV,
-            		mvaOutput_2lss_1tau_plainKin_1B_M,
-            		mvaOutput_2lss_1tau_plainKin_SUM_M,
             		mvaOutput_2lss_1tau_HTT_SUM_M,
-            		mvaOutput_2lss_1tau_HTTMEM_SUM_M,
             		mTauTauVis1_sel,
             		mTauTauVis2_sel,
             		memOutput_LR,
@@ -2576,8 +2283,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
                 output_NN_sig_1p2_rest_1_th_1p2,
                 category_sig_2_rest_2p2_th_2_TF,
                 output_sig_2_rest_2p2_th_2,
-                category_sig_2_rest_2_th_2_TF,
-                output_NN_sig_2_rest_2_th_2,
                 category_sig_2_rest_2p5_th_2_TF,
                 output_NN_sig_2_rest_2p5_th_2
               );
@@ -2678,7 +2383,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
           //("lep2_fake_prob",                 selLepton_sublead->genLepton()? 1.0 : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main))
           //("tau_fake_prob",                  selHadTau->genHadTau() || selHadTau->genLepton() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
           //("tau_fake_test",                  selHadTau->genHadTau() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
-          ("Hj_tagger",                      mvaOutput_Hj_tagger)
 
           ("hadtruth",               hadtruth)
           ("bWj1Wj2_isGenMatched_CSVsort4rd",              max_truth_HTT_CSVsort4rd)
@@ -2829,7 +2533,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       // cosThetaS_hadTau not filled
       snm->read(HTT,                                    FloatVariableType::HTT);
       snm->read(HadTop_pt,                              FloatVariableType::HadTop_pt);
-      snm->read(mvaOutput_Hj_tagger,                    FloatVariableType::Hj_tagger);
+      //snm->read(mvaOutput_Hj_tagger,                    FloatVariableType::Hj_tagger);
 
       // mvaOutput_plainKin_ttV not filled
       // mvaOutput_plainKin_tt not filled
@@ -2838,14 +2542,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
       // mvaOutput_plainKin_SUM_VT not filled
 
-      snm->read(mvaOutput_2lss_ttV,                     FloatVariableType::mvaOutput_2lss_ttV);
-      snm->read(mvaOutput_2lss_tt,                      FloatVariableType::mvaOutput_2lss_tt);
-      snm->read(mvaOutput_2lss_1tau_plainKin_tt,        FloatVariableType::mvaOutput_2lss_1tau_plainKin_tt);
-      snm->read(mvaOutput_2lss_1tau_plainKin_ttV,       FloatVariableType::mvaOutput_2lss_1tau_plainKin_ttV);
-      snm->read(mvaOutput_2lss_1tau_plainKin_1B_M,      FloatVariableType::mvaOutput_2lss_1tau_plainKin_1B_M);
-      snm->read(mvaOutput_2lss_1tau_plainKin_SUM_M,     FloatVariableType::mvaOutput_2lss_1tau_plainKin_SUM_M);
       snm->read(mvaOutput_2lss_1tau_HTT_SUM_M,          FloatVariableType::mvaOutput_2lss_1tau_HTT_SUM_M);
-      snm->read(mvaOutput_2lss_1tau_HTTMEM_SUM_M,       FloatVariableType::mvaOutput_2lss_1tau_HTTMEM_SUM_M);
 
       // mvaOutput_3l_ttV not filled
       // mvaOutput_3l_ttbar not filled
