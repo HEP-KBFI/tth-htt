@@ -31,7 +31,11 @@ class EvtHistManager_3l
 
   void
   bookCategories(TFileDirectory & dir,
-                 const std::vector<std::string> & categories);
+                 const std::vector<std::string> & categories,
+                 const std::vector<std::string> & categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ,
+                 const std::vector<std::string> & categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ,
+                 const std::vector<std::string> & categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ
+               );
 
   void
   fillHistograms(int numElectrons,
@@ -44,8 +48,10 @@ class EvtHistManager_3l
                  double mvaOutput_3l_ttV,
                  double mvaOutput_3l_ttbar,
                  double mvaDiscr_3l,
-                 double mvaOutput_category,
-                 const std::string & category,
+                 double mvaOutput_category, const std::string & category,
+                 double mvaOutput_category_sig_2_rest_2_th_2_withWZ,   const std::string & category_sig_2_rest_2_th_2_withWZ,
+                 double mvaOutput_category_sig_2p5_rest_2_th_2p5_withWZ,   const std::string & category_sig_2p5_rest_2_th_2p5_withWZ,
+                 double mvaOutput_category_sig_2_rest_2p5_th_2_withWZ,   const std::string & category_sig_2_rest_2p5_th_2_withWZ,
                  const MEMOutput_3l * memOutput_3l,
                  double evtWeight);
 
@@ -73,6 +79,9 @@ class EvtHistManager_3l
   TH1 * histogram_mvaDiscr_3l_;
 
   std::map<std::string, TH1 *> histograms_by_category_;
+  std::map<std::string, TH1 *> histograms_by_category_TensorFlow_3l_sig_2_rest_2_th_2_withWZ_;
+  std::map<std::string, TH1 *> histograms_by_category_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ_;
+  std::map<std::string, TH1 *> histograms_by_category_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ_;
 
   TH1 * histogram_memOutput_isValid_;
   TH1 * histogram_memOutput_errorFlag_;

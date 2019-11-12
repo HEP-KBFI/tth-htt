@@ -92,6 +92,10 @@ MEMbranch      = ''
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if sample_info["process_name_specific"].startswith("DY"):
+      sample_info["sample_category"] = "ZZ"
 elif mode == "addMEM":
   samples = load_samples(era, suffix = MEMsample_base)
   MEMbranch = 'memObjects_3l_lepFakeable'
@@ -156,6 +160,51 @@ if __name__ == '__main__':
       "EventCounter" : {},
       "numJets"      : {},
       "mvaDiscr_3l"  : {},
+      "output_NN_3l_ttH_tH_3cat_v8_ttH_bl"  : {},
+      "output_NN_3l_ttH_tH_3cat_v8_ttH_bt"  : {},
+      "output_NN_3l_ttH_tH_3cat_v8_tH_bl"  : {},
+      "output_NN_3l_ttH_tH_3cat_v8_tH_bt"  : {},
+      "output_NN_3l_ttH_tH_3cat_v8_rest_bl"  : {},
+      "output_NN_3l_ttH_tH_3cat_v8_rest_bt"  : {},
+      ###
+      "output_NN_sig_2_rest_2_th_2_withWZ_ttH_bl" : {},
+      "output_NN_sig_2_rest_2_th_2_withWZ_ttH_bt" : {},
+      "output_NN_sig_2_rest_2_th_2_withWZ_tH_bl" : {},
+      "output_NN_sig_2_rest_2_th_2_withWZ_tH_bt" : {},
+      "output_NN_sig_2_rest_2_th_2_withWZ_rest_eee_bl" : {},
+      "output_NN_sig_2_rest_2_th_2_withWZ_rest_eee_bt" : {},
+      "output_NN_sig_2_rest_2_th_2_withWZ_rest_eem_bl" : {},
+      "output_NN_sig_2_rest_2_th_2_withWZ_rest_eem_bt" : {},
+      "output_NN_sig_2_rest_2_th_2_withWZ_rest_emm_bl" : {},
+      "output_NN_sig_2_rest_2_th_2_withWZ_rest_emm_bt" : {},
+      "output_NN_sig_2_rest_2_th_2_withWZ_rest_mmm_bl" : {},
+      "output_NN_sig_2_rest_2_th_2_withWZ_rest_mmm_bt" : {},
+      ##############
+      "output_NN_sig_2p5_rest_2_th_2p5_withWZ_ttH_bl" : {},
+      "output_NN_sig_2p5_rest_2_th_2p5_withWZ_ttH_bt" : {},
+      "output_NN_sig_2p5_rest_2_th_2p5_withWZ_tH_bl" : {},
+      "output_NN_sig_2p5_rest_2_th_2p5_withWZ_tH_bt" : {},
+      "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eee_bl" : {},
+      "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eee_bt" : {},
+      "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eem_bl" : {},
+      "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eem_bt" : {},
+      "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_emm_bl" : {},
+      "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_emm_bt" : {},
+      "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_mmm_bl" : {},
+      "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_mmm_bt" : {},
+      ##############
+      "output_NN_sig_2_rest_2p5_th_2_withWZ_ttH_bl" : {},
+      "output_NN_sig_2_rest_2p5_th_2_withWZ_ttH_bt" : {},
+      "output_NN_sig_2_rest_2p5_th_2_withWZ_tH_bl" : {},
+      "output_NN_sig_2_rest_2p5_th_2_withWZ_tH_bt" : {},
+      "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eee_bl" : {},
+      "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eee_bt" : {},
+      "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eem_bl" : {},
+      "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eem_bt" : {},
+      "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_emm_bl" : {},
+      "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_emm_bt" : {},
+      "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_mmm_bl" : {},
+      "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_mmm_bt" : {}
     },
     select_rle_output                     = True,
     select_root_output                    = False,

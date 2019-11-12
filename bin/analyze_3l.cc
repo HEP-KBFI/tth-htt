@@ -563,14 +563,15 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   mvaInputVariables_3l_ttbar.push_back("mindr_lep2_jet");
   TMVAInterface mva_3l_ttbar(mvaFileName_3l_ttbar, mvaInputVariables_3l_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
+
   std::vector<std::string> mvaInputVariables_TensorFlow_3l_ttH_tH_3cat_v8 = {
     "avg_dr_jet", "ptmiss", "mbb_medium",
     "jet1_pt", "jet2_pt", "jet3_pt", "jet4_pt",
-    "max_lep_eta",
-    "lep1_mT", "lep1_conept", "lep2_mT", "lep2_conept", "lep3_mT", "lep3_conept",
-    "jetForward1_pt", "res-HTT_CSVsort4rd", "HadTop_pt_CSVsort4rd",
+    "max_Lep_eta",
+    "mT_lep1", "lep1_conePt", "mT_lep2", "lep2_conePt", "mT_lep3", "lep3_conePt",
+    "leadFwdJet_pt", "res_HTT", "HadTop_pt",
     "nJet", "nJetForward", "nBJetLoose",
-    "nBJetMedium", "nElectron", "sum_lep_charge"
+    "nBJetMedium", "nElectron", "sum_Lep_charge"
   };
   std::map<std::string, double> mvaInputs_3l_ttH_tH_3cat_v8_TF;
   std::vector<std::string> classes_TensorFlow_3l_ttH_tH_3cat = {"predictions_ttH",  "predictions_rest", "predictions_tH"};
@@ -580,8 +581,40 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     mvaInputVariables_TensorFlow_3l_ttH_tH_3cat_v8,
     classes_TensorFlow_3l_ttH_tH_3cat
   );
+  // Legacy
+  std::vector<std::string> mvaInputVariables_legacy_opt = {
+    "lep1_conePt", "lep1_eta", "lep1_phi",
+    "lep2_conePt", "lep2_eta", "lep2_phi",
+    "lep3_conePt", "lep3_eta", "lep3_phi",
+    "mindr_lep1_jet", "mindr_lep2_jet", "mindr_lep3_jet", "min_dr_Lep",
+    "avg_dr_jet", "met_LD", "mbb_loose",
+    "leadFwdJet_eta", "leadFwdJet_pt", "min_Deta_leadfwdJet_jet",
+    "jet1_pt", "jet1_eta", "jet1_phi",
+    "jet2_pt", "jet2_eta", "jet2_phi",
+    "jet3_pt", "jet3_eta", "jet3_phi",
+    "sum_Lep_charge", "HadTop_pt", "res_HTT",
+    "nJet", "nBJetLoose", "nBJetMedium", "nJetForward", "nElectron", "has_SFOS"
+  };
+  std::string mvaFileName_TensorFlow_3l_ttH_tH_sig_2_rest_2_th_2_withWZ = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/3l_0tau/test_sig_2_rest_2_th_2_withWZ_2.pb";
+  TensorFlowInterface mva_3l_sig_2_rest_2_th_2_withWZ_TF(
+    mvaFileName_TensorFlow_3l_ttH_tH_sig_2_rest_2_th_2_withWZ,
+    mvaInputVariables_legacy_opt,
+    classes_TensorFlow_3l_ttH_tH_3cat
+  );
+  std::string mvaFileName_TensorFlow_3l_ttH_tH_sig_2p5_rest_2_th_2p5_withWZ = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/3l_0tau/test_sig_2p5_rest_2_th_2p5_withWZ_2.pb";
+  TensorFlowInterface mva_3l_sig_2p5_rest_2_th_2p5_withWZ_TF(
+    mvaFileName_TensorFlow_3l_ttH_tH_sig_2p5_rest_2_th_2p5_withWZ,
+    mvaInputVariables_legacy_opt,
+    classes_TensorFlow_3l_ttH_tH_3cat
+  );
+  std::string mvaFileName_TensorFlow_3l_ttH_tH_sig_2_rest_2p5_th_2_withWZ_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/3l_0tau/test_sig_2_rest_2p5_th_2_withWZ_2.pb";
+  TensorFlowInterface mva_3l_sig_2_rest_2p5_th_2_withWZ_TF(
+    mvaFileName_TensorFlow_3l_ttH_tH_sig_2_rest_2p5_th_2_withWZ_2,
+    mvaInputVariables_legacy_opt,
+    classes_TensorFlow_3l_ttH_tH_3cat
+  );
 
-  std::vector<std::string> mvaInputVariables_3l = get_mvaInputVariables(mvaInputVariables_3l_ttV, mvaInputVariables_3l_ttbar);
+  std::vector<std::string> mvaInputVariables_3l = get_mvaInputVariables(mvaInputVariables_legacy_opt, mvaInputVariables_legacy_opt);
   std::map<std::string, double> mvaInputs_3l;
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
@@ -619,8 +652,57 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     "output_NN_3l_ttH_tH_3cat_v8_tH_bt",
     "output_NN_3l_ttH_tH_3cat_v8_rest_bl",
     "output_NN_3l_ttH_tH_3cat_v8_rest_bt",
-    "output_NN_3l_ttH_tH_3cat_v8_cr",
+    "output_NN_3l_ttH_tH_3cat_v8_cr"
   };
+
+  const vstring categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ = {
+    "output_NN_sig_2_rest_2_th_2_withWZ_ttH_bl",
+    "output_NN_sig_2_rest_2_th_2_withWZ_ttH_bt",
+    "output_NN_sig_2_rest_2_th_2_withWZ_tH_bl",
+    "output_NN_sig_2_rest_2_th_2_withWZ_tH_bt",
+    "output_NN_sig_2_rest_2_th_2_withWZ_rest_eee_bl",
+    "output_NN_sig_2_rest_2_th_2_withWZ_rest_eee_bt",
+    "output_NN_sig_2_rest_2_th_2_withWZ_rest_eem_bl",
+    "output_NN_sig_2_rest_2_th_2_withWZ_rest_eem_bt",
+    "output_NN_sig_2_rest_2_th_2_withWZ_rest_emm_bl",
+    "output_NN_sig_2_rest_2_th_2_withWZ_rest_emm_bt",
+    "output_NN_sig_2_rest_2_th_2_withWZ_rest_mmm_bl",
+    "output_NN_sig_2_rest_2_th_2_withWZ_rest_mmm_bt",
+    "output_NN_sig_2_rest_2_th_2_withWZ_cr"
+  };
+
+  const vstring categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ = {
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_ttH_bl",
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_ttH_bt",
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_tH_bl",
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_tH_bt",
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eee_bl",
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eee_bt",
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eem_bl",
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eem_bt",
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_emm_bl",
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_emm_bt",
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_mmm_bl",
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_mmm_bt",
+    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_cr"
+  };
+
+  const vstring categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ = {
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_ttH_bl",
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_ttH_bt",
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_tH_bl",
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_tH_bt",
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eee_bl",
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eee_bt",
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eem_bl",
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eem_bt",
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_emm_bl",
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_emm_bt",
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_mmm_bl",
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_mmm_bt",
+    "output_NN_sig_2_rest_2p5_th_2_withWZ_cr"
+  };
+
   vstring ctrl_categories = { "other" };
   for(int nbjets_ctrl = 0; nbjets_ctrl < 3; ++nbjets_ctrl)
   {
@@ -713,7 +795,13 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         selHistManager->evt_[evt_cat_str] = new EvtHistManager_3l(makeHistManager_cfg(
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
         ));
-        selHistManager->evt_[evt_cat_str]->bookCategories(fs, categories_TensorFlow_3l_ttH_tH_3cat_v8);
+        selHistManager->evt_[evt_cat_str]->bookCategories(
+          fs,
+          categories_TensorFlow_3l_ttH_tH_3cat_v8,
+          categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ,
+          categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ,
+          categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ
+        );
         if(isControlRegion)
         {
           selHistManager->evt_[evt_cat_str]->setCRcategories(fs, ctrl_categories);
@@ -751,7 +839,13 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_3l(makeHistManager_cfg(
               decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
             ));
-            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookCategories(fs, categories_TensorFlow_3l_ttH_tH_3cat_v8);
+            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookCategories(
+              fs,
+              categories_TensorFlow_3l_ttH_tH_3cat_v8,
+              categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ,
+              categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ,
+              categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ
+            );
             if(isControlRegion)
             {
               selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> setCRcategories(fs, ctrl_categories);
@@ -879,7 +973,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    //if (analyzedEntries > 2) break;
+    //if (analyzedEntries > 200) break;
     if ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) continue;
     if ( (eventInfo.event % 2) && isMC_WZ ) continue;
 
@@ -1425,7 +1519,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     cutFlowTable.update("HLT filter matching", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("HLT filter matching", evtWeightRecorder.get(central_or_shift_main));
-
     if ( selHadTaus.size() > 0 ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS selHadTaus veto." << std::endl;
@@ -1812,23 +1905,23 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["jet2_pt"] = selJets.size() > 1 ? selJets[1]->pt() : 0;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["jet3_pt"] = selJets.size() > 2 ? selJets[2]->pt() : 0;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["jet4_pt"] = selJets.size() > 3 ? selJets[3]->pt() : 0;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["max_lep_eta"] = max_lep_eta;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["max_Lep_eta"] = max_lep_eta;
     //mvaInputs_3l_ttH_tH_3cat_v8_TF["lep_min_dr_jet"] = lep_min_dr_jet;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep1_mT"] = mT_lep1;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep1_conept"] = lep1_conePt;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep2_mT"] = mT_lep2;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep2_conept"] = lep2_conePt;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep3_mT"] = mT_lep3;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep3_conept"] = lep3_conePt;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["jetForward1_pt"] = selJetsForward.size() > 0 ? selJetsForward[0]->pt() : 0;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["res-HTT_CSVsort4rd"] = max_truth_HTT_CSVsort4rd;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["HadTop_pt_CSVsort4rd"] = HadTop_pt_CSVsort4rd;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["mT_lep1"] = mT_lep1;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep1_conePt"] = lep1_conePt;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["mT_lep2"] = mT_lep2;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep2_conePt"] = lep2_conePt;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["mT_lep3"] = mT_lep3;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["lep3_conePt"] = lep3_conePt;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["leadFwdJet_pt"] = selJetsForward.size() > 0 ? selJetsForward[0]->pt() : 0;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["res_HTT"] = max_truth_HTT_CSVsort4rd;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["HadTop_pt"] = HadTop_pt_CSVsort4rd;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["nJet"] = selJets.size();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["nJetForward"] = selJetsForward.size();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["nBJetLoose"] = selBJets_loose.size();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["nBJetMedium"] = selBJets_medium.size();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["nElectron"] = selElectrons.size();
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["sum_lep_charge"] = sumLeptonCharge;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["sum_Lep_charge"] = sumLeptonCharge;
     //mvaInputs_3l_ttH_tH_3cat_v8_TF["mvaOutput_Hj_tagger"] = Hj_tagger_fromCSVsort4th;
     std::map<std::string, double> mvaOutput_3l_ttH_tH_3cat_v8_TF = mva_3l_ttH_tH_3cat_v8_TF(mvaInputs_3l_ttH_tH_3cat_v8_TF);
     if ( isDebugTF ) {
@@ -1873,6 +1966,196 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     else assert(0);
 
+    /*
+    "lep1_conePt", "lep1_eta", "lep1_phi",
+    "lep2_conePt", "lep2_eta", "lep2_phi",
+    "lep3_conePt", "lep3_eta", "lep3_phi",
+    "mindr_lep1_jet", "mindr_lep2_jet", "mindr_lep3_jet", "min_dr_Lep",
+    "avg_dr_jet", "met_LD", "mbb_loose",
+    "leadFwdJet_eta", "leadFwdJet_pt", "min_Deta_leadfwdJet_jet",
+    "jet1_pt", "jet1_eta", "jet1_phi",
+    "jet2_pt", "jet2_eta", "jet2_phi",
+    "jet3_pt", "jet3_eta", "jet3_phi",
+    "sum_Lep_charge", "HadTop_pt", "res_HTT",
+    "nJet", "nBJetLoose", "nBJetMedium", "nJetForward", "nElectron", "has_SFOS"
+    */
+    std::map<std::string, double> mvaInputVariables_NN = {
+      {"lep1_conePt",     lep1_conePt},
+      {"lep1_eta",        selLepton_lead -> absEta()},
+      {"lep1_phi",        selLepton_lead -> phi()},
+      {"mindr_lep1_jet",  mindr_lep1_jet},
+      {"lep2_conePt",     lep2_conePt},
+      {"lep2_eta",        selLepton_sublead -> absEta()},
+      {"lep2_phi",        selLepton_sublead -> phi()},
+      {"mindr_lep2_jet",  mindr_lep2_jet},
+      {"lep3_conePt",     lep3_conePt},
+      {"lep3_eta",        selLepton_third -> absEta()},
+      {"lep3_phi",        selLepton_third -> phi()},
+      {"mindr_lep3_jet",  mindr_lep3_jet},
+      {"avg_dr_jet",      avg_dr_jet},
+      {"met_LD",          met_LD},
+      {"mbb_loose",       selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : 0},
+      {"min_dr_Lep",      min_dr_lep},
+      {"leadFwdJet_eta",  selJetsForward.size() > 0 ? selJetsForward[0] -> absEta() : 0.},
+      {"leadFwdJet_pt",   selJetsForward.size() > 0 ? selJetsForward[0] -> pt()     : 0.},
+      {"min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet},
+      {"jet1_pt",         selJets[0]->pt()},
+      {"jet1_eta",        selJets[0]->absEta()},
+      {"jet1_phi",        selJets[0]->phi()},
+      {"jet2_pt",         selJets.size() > 1 ?  selJets[1]->pt()  : 0.},
+      {"jet2_eta",        selJets.size() > 1 ?  selJets[1]->absEta() : 0.},
+      {"jet2_phi",        selJets.size() > 1 ?  selJets[1]->phi() : 0.},
+      {"jet3_pt",         selJets.size() > 2 ?  selJets[2]->pt()  : 0.},
+      {"jet3_eta",        selJets.size() > 2 ?  selJets[2]->absEta() : 0.},
+      {"jet3_phi",        selJets.size() > 2 ?  selJets[2]->phi() : 0.},
+      {"sum_Lep_charge",  selLepton_lead -> charge() + selLepton_sublead -> charge() + selLepton_third->charge()},
+      {"HadTop_pt",       HadTop_pt_CSVsort4rd},
+      {"res_HTT",         max_mvaOutput_HTT_CSVsort4rd},
+      {"nJet",            selJets.size()},
+      {"nBJetLoose",      selBJets_loose.size()},
+      {"nBJetMedium",     selBJets_medium.size()},
+      {"nJetForward",     selJetsForward.size()},
+      {"nElectron",       selElectrons.size()},
+      {"has_SFOS",        hasSFOS}
+      };
+      std::map<std::string, double> mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF = mva_3l_sig_2_rest_2p5_th_2_withWZ_TF(mvaInputVariables_NN);
+      std::map<std::string, double> mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF = mva_3l_sig_2p5_rest_2_th_2p5_withWZ_TF(mvaInputVariables_NN);
+      std::map<std::string, double> mvaOutput_sig_2_rest_2_th_2_withWZ_TF = mva_3l_sig_2_rest_2_th_2_withWZ_TF(mvaInputVariables_NN);
+      if ( isDebugTF ) {
+        std::cout << "variables ";
+        for (auto elem : mvaInputVariables_NN) std::cout << elem.first << " " << elem.second << "\n";
+        std::cout << std::endl;
+        std::cout << std::endl;
+        std::cout << "result mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF ";
+        for (auto elem : classes_TensorFlow_3l_ttH_tH_3cat ) std::cout << elem << " = " << mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF[elem] <<" ";
+        std::cout << std::endl;
+        std::cout << "result mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF ";
+        for (auto elem : classes_TensorFlow_3l_ttH_tH_3cat ) std::cout << elem << " = " << mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF[elem] <<" ";
+        std::cout << std::endl;
+        std::cout << "result  mvaOutput_sig_2_rest_2_th_2_withWZ_TF ";
+        for (auto elem : classes_TensorFlow_3l_ttH_tH_3cat ) std::cout << elem << " = " << mvaOutput_sig_2_rest_2_th_2_withWZ_TF[elem] <<" ";
+        std::cout << std::endl;
+      }
+
+    std::string category_sig_2_rest_2_th_2_withWZ = "output_NN_sig_2_rest_2_th_2_withWZ_";
+    double output_NN_sig_2_rest_2_th_2_withWZ = -10.0;
+    if (passEvents) {
+
+      if (
+        mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_ttH"] >= mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_rest"] &&\
+        mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_ttH"] >= mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_tH"]
+      ) {
+        category_sig_2_rest_2_th_2_withWZ += "ttH";
+        output_NN_sig_2_rest_2_th_2_withWZ = mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_ttH"];
+      }
+      if (
+        mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_tH"] >  mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_ttH"] &&\
+        mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_tH"] >= mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_rest"]
+      ) {
+        category_sig_2_rest_2_th_2_withWZ += "tH";
+        output_NN_sig_2_rest_2_th_2_withWZ = mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_tH"];
+        }
+      if (
+        mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_rest"] > mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_ttH"] &&\
+        mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_rest"] > mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_tH"]
+      ) {
+        category_sig_2_rest_2_th_2_withWZ += "rest";
+        output_NN_sig_2_rest_2_th_2_withWZ = mvaOutput_sig_2_rest_2_th_2_withWZ_TF["predictions_rest"];
+        if ( selElectrons.size() == 3) category_sig_2_rest_2_th_2_withWZ += "_eee";
+        if ( selElectrons.size() == 2) category_sig_2_rest_2_th_2_withWZ += "_eem";
+        if ( selElectrons.size() == 1) category_sig_2_rest_2_th_2_withWZ += "_emm";
+        if ( selElectrons.size() == 0) category_sig_2_rest_2_th_2_withWZ += "_mmm";
+        }
+
+      if (selBJets_medium.size() >= 2) category_sig_2_rest_2_th_2_withWZ += "_bt";
+      else category_sig_2_rest_2_th_2_withWZ += "_bl";
+
+    }
+    else if(isControlRegion)
+    {
+      category_sig_2_rest_2_th_2_withWZ += "cr";
+    }
+    else assert(0);
+
+  std::string category_sig_2_rest_2p5_th_2_withWZ = "output_NN_sig_2_rest_2p5_th_2_withWZ_";
+  double output_NN_sig_2_rest_2p5_th_2_withWZ = -10.0;
+  if (passEvents) {
+
+    if (
+      mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_ttH"] >= mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_rest"] &&\
+      mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_ttH"] >= mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_tH"]
+    ) {
+      category_sig_2_rest_2p5_th_2_withWZ += "ttH";
+      output_NN_sig_2_rest_2p5_th_2_withWZ = mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_ttH"];
+    }
+    if (
+      mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_tH"] >  mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_ttH"] &&\
+      mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_tH"] >= mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_rest"]
+    ) {
+      category_sig_2_rest_2p5_th_2_withWZ += "tH";
+      output_NN_sig_2_rest_2p5_th_2_withWZ = mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_tH"];
+      }
+    if (
+      mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_rest"] > mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_ttH"] &&\
+      mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_rest"] > mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_tH"]
+    ) {
+      category_sig_2_rest_2p5_th_2_withWZ += "rest";
+      output_NN_sig_2_rest_2p5_th_2_withWZ = mvaOutput_sig_2_rest_2p5_th_2_withWZ_TF["predictions_rest"];
+      if ( selElectrons.size() == 3) category_sig_2_rest_2p5_th_2_withWZ += "_eee";
+      if ( selElectrons.size() == 2) category_sig_2_rest_2p5_th_2_withWZ += "_eem";
+      if ( selElectrons.size() == 1) category_sig_2_rest_2p5_th_2_withWZ += "_emm";
+      if ( selElectrons.size() == 0) category_sig_2_rest_2p5_th_2_withWZ += "_mmm";
+      }
+
+    if (selBJets_medium.size() >= 2) category_sig_2_rest_2p5_th_2_withWZ += "_bt";
+    else category_sig_2_rest_2p5_th_2_withWZ += "_bl";
+
+  }
+  else if(isControlRegion)
+  {
+    category_sig_2_rest_2p5_th_2_withWZ += "cr";
+  }
+  else assert(0);
+
+  std::string category_sig_2p5_rest_2_th_2p5_withWZ = "output_NN_sig_2p5_rest_2_th_2p5_withWZ_";
+  double output_NN_sig_2p5_rest_2_th_2p5_withWZ = -10.0;
+  if (passEvents) {
+
+    if (
+      mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_ttH"] >= mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_rest"] &&\
+      mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_ttH"] >= mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_tH"]
+    ) {
+      category_sig_2p5_rest_2_th_2p5_withWZ += "ttH";
+      output_NN_sig_2p5_rest_2_th_2p5_withWZ = mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_ttH"];
+    }
+    if (
+      mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_tH"] >  mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_ttH"] &&\
+      mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_tH"] >= mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_rest"]
+    ) {
+      category_sig_2p5_rest_2_th_2p5_withWZ += "tH";
+      output_NN_sig_2p5_rest_2_th_2p5_withWZ = mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_tH"];
+      }
+    if (
+      mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_rest"] > mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_ttH"] &&\
+      mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_rest"] > mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_tH"]
+    ) {
+      category_sig_2p5_rest_2_th_2p5_withWZ += "rest";
+      output_NN_sig_2p5_rest_2_th_2p5_withWZ = mvaOutput_sig_2p5_rest_2_th_2p5_withWZ_TF["predictions_rest"];
+      if ( selElectrons.size() == 3) category_sig_2p5_rest_2_th_2p5_withWZ += "_eee";
+      if ( selElectrons.size() == 2) category_sig_2p5_rest_2_th_2p5_withWZ += "_eem";
+      if ( selElectrons.size() == 1) category_sig_2p5_rest_2_th_2p5_withWZ += "_emm";
+      if ( selElectrons.size() == 0) category_sig_2p5_rest_2_th_2p5_withWZ += "_mmm";
+      }
+
+    if (selBJets_medium.size() >= 2) category_sig_2p5_rest_2_th_2p5_withWZ += "_bt";
+    else category_sig_2p5_rest_2_th_2p5_withWZ += "_bl";
+
+  }
+  else if(isControlRegion)
+  {
+    category_sig_2p5_rest_2_th_2p5_withWZ += "cr";
+  }
+  else assert(0);
 
 //--- compute integer discriminant based on both BDT outputs,
 //    as defined in Table 16 (10) of AN-2015/321 (AN-2016/211) for analysis of 2015 (2016) data
@@ -1910,8 +2193,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
       double evtWeight = evtWeightRecorder.get(central_or_shift);
-      if ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) evtWeight *=3;
-      if ( (eventInfo.event % 2) && isMC_WZ ) evtWeight *=2;
+      if ( era_string == "2018" && isMC_tHq ) evtWeight *=3;
+      if ( isMC_WZ ) evtWeight *=2;
       const bool skipFilling = central_or_shift != central_or_shift_main;
       for (const GenMatchEntry* genMatch : genMatches)
       {
@@ -1931,7 +2214,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
           selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
           selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
-          selHistManager->mvaInputVariables_3l_->fillHistograms(mvaInputs_3l, evtWeight);
+          selHistManager->mvaInputVariables_3l_->fillHistograms(mvaInputVariables_NN, evtWeight);
         }
 
         const std::string central_or_shift_tH = eventInfo.has_central_or_shift(central_or_shift) ? central_or_shift : central_or_shift_main;
@@ -1951,6 +2234,11 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         }
         for(const auto & kv: tH_weight_map)
         {
+          /*
+          categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ,
+          categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ,
+          categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ
+          */
           EvtHistManager_3l* selHistManager_evt = selHistManager->evt_[kv.first];
           if ( selHistManager_evt )
           {
@@ -1960,6 +2248,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
             ctrl_category,
             mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
             output_NN_3l_ttH_tH_3cat_v8, category,
+            output_NN_sig_2_rest_2_th_2_withWZ, category_sig_2_rest_2_th_2_withWZ,
+            output_NN_sig_2p5_rest_2_th_2p5_withWZ, category_sig_2p5_rest_2_th_2p5_withWZ,
+            output_NN_sig_2_rest_2p5_th_2_withWZ, category_sig_2_rest_2p5_th_2_withWZ,
             memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
             kv.second
           );
@@ -1988,8 +2279,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
                 mvaOutput_3l_ttV,
                 mvaOutput_3l_ttbar,
                 mvaDiscr_3l,
-                output_NN_3l_ttH_tH_3cat_v8,
-                category,
+                output_NN_3l_ttH_tH_3cat_v8, category,
+                output_NN_sig_2_rest_2_th_2_withWZ, category_sig_2_rest_2_th_2_withWZ,
+                output_NN_sig_2p5_rest_2_th_2p5_withWZ, category_sig_2p5_rest_2_th_2p5_withWZ,
+                output_NN_sig_2_rest_2p5_th_2_withWZ, category_sig_2_rest_2p5_th_2_withWZ,
                 memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
                 kv.second
               );

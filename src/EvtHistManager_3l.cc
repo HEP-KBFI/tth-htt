@@ -49,11 +49,30 @@ EvtHistManager_3l::getHistogram_EventCounter() const
 
 void
 EvtHistManager_3l::bookCategories(TFileDirectory & dir,
-                                  const std::vector<std::string> & categories)
+                                  const std::vector<std::string> & categories,
+                                  const std::vector<std::string> & categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ,
+                                  const std::vector<std::string> & categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ,
+                                  const std::vector<std::string> & categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ
+                                )
 {
   for(const std::string & category: categories)
   {
     histograms_by_category_[category] = book1D(dir, category, category, 100,  0., +1.);
+    central_or_shiftOptions_[category] = { "*" };
+  }
+  for(const std::string & category: categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ)
+  {
+    histograms_by_category_TensorFlow_3l_sig_2_rest_2_th_2_withWZ_[category] = book1D(dir, category, category, 100,  0., +1.);
+    central_or_shiftOptions_[category] = { "*" };
+  }
+  for(const std::string & category: categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ)
+  {
+    histograms_by_category_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ_[category] = book1D(dir, category, category, 100,  0., +1.);
+    central_or_shiftOptions_[category] = { "*" };
+  }
+  for(const std::string & category: categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ)
+  {
+    histograms_by_category_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ_[category] = book1D(dir, category, category, 100,  0., +1.);
     central_or_shiftOptions_[category] = { "*" };
   }
 }
@@ -115,8 +134,10 @@ EvtHistManager_3l::fillHistograms(int numElectrons,
                                   double mvaOutput_3l_ttV,
                                   double mvaOutput_3l_ttbar,
                                   double mvaDiscr_3l,
-                                  double mvaOutput_category,
-                                  const std::string & category,
+                                  double mvaOutput_category,   const std::string & category,
+                                  double mvaOutput_category_sig_2_rest_2_th_2_withWZ,   const std::string & category_sig_2_rest_2_th_2_withWZ,
+                                  double mvaOutput_category_sig_2p5_rest_2_th_2p5_withWZ,   const std::string & category_sig_2p5_rest_2_th_2p5_withWZ,
+                                  double mvaOutput_category_sig_2_rest_2p5_th_2_withWZ,   const std::string & category_sig_2_rest_2p5_th_2_withWZ,
 				  const MEMOutput_3l * memOutput_3l,
                                   double evtWeight)
 {
@@ -152,6 +173,31 @@ EvtHistManager_3l::fillHistograms(int numElectrons,
     throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category << "' was never booked";
   }
   fillWithOverFlow(histograms_by_category_[category], mvaOutput_category, evtWeight, evtWeightErr);
+
+  if(! histograms_by_category_TensorFlow_3l_sig_2_rest_2_th_2_withWZ_.count(category_sig_2_rest_2_th_2_withWZ))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_sig_2_rest_2_th_2_withWZ << "' was never booked";
+  }
+  fillWithOverFlow(histograms_by_category_TensorFlow_3l_sig_2_rest_2_th_2_withWZ_[category_sig_2_rest_2_th_2_withWZ], mvaOutput_category_sig_2_rest_2_th_2_withWZ, evtWeight, evtWeightErr);
+
+  if(! histograms_by_category_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ_.count(category_sig_2p5_rest_2_th_2p5_withWZ))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_sig_2p5_rest_2_th_2p5_withWZ << "' was never booked";
+  }
+  fillWithOverFlow(histograms_by_category_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ_[category_sig_2p5_rest_2_th_2p5_withWZ], mvaOutput_category_sig_2p5_rest_2_th_2p5_withWZ, evtWeight, evtWeightErr);
+
+  if(! histograms_by_category_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ_.count(category_sig_2_rest_2p5_th_2_withWZ))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_sig_2_rest_2p5_th_2_withWZ << "' was never booked";
+  }
+  fillWithOverFlow(histograms_by_category_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ_[category_sig_2_rest_2p5_th_2_withWZ], mvaOutput_category_sig_2_rest_2p5_th_2_withWZ, evtWeight, evtWeightErr);
+
+  /*
+  histograms_by_category_TensorFlow_3l_sig_2_rest_2_th_2_withWZ_;
+  histograms_by_category_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ_;
+  histograms_by_category_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ_;
+  */
+
 
   if(memOutput_3l)
   {
