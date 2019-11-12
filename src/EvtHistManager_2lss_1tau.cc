@@ -35,11 +35,19 @@ EvtHistManager_2lss_1tau::EvtHistManager_2lss_1tau(const edm::ParameterSet& cfg)
     "mTauTauVis1",
     "mTauTauVis2",
     "memOutput_LR",
-    "mvaOutput_final"
+    "mvaOutput_final",
+    "output_NN_sig_2_rest_2p2_th_2_ttH",
+    "output_NN_sig_2_rest_2p2_th_2_tH",
+    "output_NN_sig_2_rest_2p2_th_2_rest",
+    "output_NN_sig_2_rest_2p5_th_2_ttH",
+    "output_NN_sig_2_rest_2p5_th_2_tH",
+    "output_NN_sig_2_rest_2p5_th_2_rest"
   };
   const std::vector<std::string> sysOpts_all = {
-    "mvaOutput_final",
     "EventCounter",
+    "output_NN_sig_1p2_rest_1_th_1p2_ttH",
+    "output_NN_sig_1p2_rest_1_th_1p2_tH",
+    "output_NN_sig_1p2_rest_1_th_1p2_rest"
   };
   for(const std::string & sysOpt: sysOpts_central)
   {
