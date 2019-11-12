@@ -88,7 +88,7 @@ enum class FloatVariableType
   mvaOutput_plainKin_1B_VT,  ///< 2l+2tau (BDT4)
   mvaOutput_plainKin_SUM_VT, ///< 2l+2tau (BDT3)
 
-  mvaOutput_2lss_ttV,                 ///< 2lss+1tau
+  mvaOutput_legacy_2,                 ///< 2lss+1tau
   mvaOutput_2lss_tt,                  ///< 2lss+1tau
   mvaOutput_2lss_1tau_plainKin_tt,    ///< 2lss+1tau (BDT2)
   mvaOutput_2lss_1tau_plainKin_ttV,   ///< 2lss+1tau (BDT1)
@@ -122,8 +122,8 @@ enum class FloatVariableType
 
 //--- MEM variables
   Integral_ttH,             ///< ttH weight
-  Integral_tHq,             ///< tHq weight (specific to 3l channel)  
-  Integral_ttW,             ///< ttW weight (specific to 3l channel)    
+  Integral_tHq,             ///< tHq weight (specific to 3l channel)
+  Integral_ttW,             ///< ttW weight (specific to 3l channel)
   Integral_ttZ,             ///< ttZ weight (3l channel) / ttZ, Z->tautau weight (2lss_1tau channel)
   Integral_ttZ_Zll,         ///< ttZ, Z->ll weight (specific to 2lss_1tau channel)
   Integral_ttbar,           ///< ttbar weight

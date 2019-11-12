@@ -174,7 +174,7 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::mvaOutput_plainKin_1B_VT],  "mvaOutput_2l_2tau_plainKin_1B_VT",
     floatMap[FloatVariableType::mvaOutput_plainKin_SUM_VT], "mvaOutput_2l_2tau_plainKin_SUM_VT",
 
-    floatMap[FloatVariableType::mvaOutput_2lss_ttV],                 "mvaOutput_2lss_ttV",
+    floatMap[FloatVariableType::mvaOutput_legacy_2],                 "mvaOutput_legacy_2",
     floatMap[FloatVariableType::mvaOutput_2lss_tt],                  "mvaOutput_2lss_ttbar",
     floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_tt],    "mvaOutput_2lss_1tau_plainKin_ttbar",
     floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_ttV],   "mvaOutput_2lss_1tau_plainKin_ttV",
