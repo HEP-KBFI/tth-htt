@@ -32,12 +32,7 @@ public:
                  int numBJets_medium,
                  double mTauTauVis,
                  double mTauTau,
-                 double Pzeta, double PzetaVis, double PzetaComb,
-                 double mT_lep, 
-                 double mT_tau,
-                 double mbb,
-                 double mbb_loose,
-                 double mvaOutput_1l_1tau_16_variables,
+                 double mvaOutput_1l_1tau_DeepTauMedium,
                  double evtWeight);
 
   const TH1 *
@@ -58,16 +53,8 @@ public:
   TH2 * histogram_numBJets_medium_vs_numJets_;
 
   TH1 * histogram_mTauTauVis_;
-  TH1 * histogram_mTauTau_;  
-  TH1 * histogram_Pzeta_;
-  TH1 * histogram_PzetaVis_;
-  TH1 * histogram_PzetaMiss_;
-  TH1 * histogram_PzetaComb_;
-  TH1 * histogram_mT_lep_;
-  TH1 * histogram_mT_tau_;
-  TH1 * histogram_mbb_;
-  TH1 * histogram_mbb_loose_;
-  TH1 * histogram_mvaOutput_1l_1tau_16_variables_;
+  TH1 * histogram_mTauTau_;
+  TH1 * histogram_mvaOutput_1l_1tau_DeepTauMedium_;
   TH1 * histogram_EventCounter_;
 };
 

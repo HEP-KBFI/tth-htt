@@ -81,19 +81,13 @@ hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == "default":
    samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-   for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if sample_info["sample_category"] in [
-      "data_obs"
-    ]:
-      sample_info["use_it"] = False
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT_DY")
   hadTauWP_map_relaxed = {
     'dR03mva' : 'Loose',
-    'deepVSj' : 'Loose',
+    'deepVSj' : 'Medium',
   }
   if args.tau_id_wp:
     tau_id = args.tau_id[:7]
@@ -164,7 +158,7 @@ if __name__ == '__main__':
       "numJets"                           : {},
       "mTauTauVis"                        : {},
       "mTauTau"                           : {},
-      "mva_16Var"                         : {},
+      "mvaOutput_Legacy"                  : {}
     },
     select_rle_output                     = True,
     dry_run                               = dry_run,
