@@ -693,8 +693,9 @@ int main(int argc, char* argv[])
   std::vector<std::string> mvaInputVariables = {
     "lep1_conePt", "lep2_conePt", "lep3_conePt", "lep4_conePt", "massL4", "met_LD", "has_SFOS"
   };
-  std::string mvaFileName = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/4l_0tau_3.pkl";
-  XGBInterface mva_4l_comp(mvaFileName, mvaInputVariables);
+  std::string mvaFileName = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/4l_0tau_3.xml";
+  TMVAInterface mva_4l_comp(mvaFileName, mvaInputVariables);
+  mva_4l_comp.enableBDTTransform();
 
   NtupleFillerBDT<float, int> * bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;

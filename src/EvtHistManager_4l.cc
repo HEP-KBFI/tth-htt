@@ -17,6 +17,7 @@ EvtHistManager_4l::EvtHistManager_4l(const edm::ParameterSet & cfg)
     "numBJets_medium",
     "numBJets_loose_vs_numJets",
     "numBJets_medium_vs_numJets",
+    "massL"
   };
   const std::vector<std::string> sysOpts_all = {
     "EventCounter",
@@ -67,7 +68,8 @@ EvtHistManager_4l::bookHistograms(TFileDirectory & dir)
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
   histogram_massL_ = book1D(dir, "massL", "massL", 8, 10., 100.);
-  histogram_mva_4l_ = book1D(dir, "mva_4l", "mva_4l", 50, 0., 1.);
+  Float_t binsx[3] = { 0.0, 0.31, 1.0 };
+  histogram_mva_4l_ = book1D(dir, "mva_4l", "mva_4l", 2, binsx);
 }
 
 void
