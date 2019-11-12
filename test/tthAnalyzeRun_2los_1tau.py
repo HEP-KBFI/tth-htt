@@ -80,6 +80,10 @@ hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events': continue
+    if sample_info["process_name_specific"].startswith("DY"):
+      sample_info["sample_category"] = "ZZ"
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -133,13 +137,8 @@ if __name__ == '__main__':
     executable_addFakes       = "addBackgroundLeptonFakes",
     histograms_to_fit         = {
       "EventCounter"                              : {},
-      #"numJets"                                   : {},
-      "mvaDiscr_2lss"                             : {},
-      "mvaOutput_2los_1tau_ttbar"                 : {},
-      #"mvaOutput_2los_1tau_SUM"                   : {},
-      "mvaDiscr_2los_1tau"                        : {},
       "mTauTauVis"                                : {},
-      #"mvaOutput_2los_1tau_evtLevelSUM_TTH_19Var" : {},
+      "mvaOutput_legacy"                          : {},
     },
     select_rle_output         = True,
     dry_run                   = dry_run,
