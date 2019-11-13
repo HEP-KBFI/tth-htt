@@ -1,6 +1,6 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.common import logging
 
 class analyzeConfig_hadTopTagger(analyzeConfig):
@@ -17,7 +17,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
         outputDir,
         executable_analyze,
         cfgFile_analyze,
-        channel,
+        channel, #pylint: disable=unused-argument
         samples,
         jet_cleaning_by_index,
         gen_matching_by_index,
@@ -128,9 +128,6 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
         continue
       process_name = sample_info["process_name_specific"]
       logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
-
-      sample_category = sample_info["sample_category"]
-      is_mc = (sample_info["type"] == "mc")
 
       inputFileList = inputFileLists[sample_name]
       for jobId in inputFileList.keys():

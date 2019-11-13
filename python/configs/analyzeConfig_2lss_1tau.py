@@ -1,10 +1,9 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import re
-import os.path
 
 def get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight):
   lepton_and_hadTau_selection_and_frWeight = lepton_and_hadTau_selection
@@ -797,8 +796,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
             'cfgFile_modified' : os.path.join(self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_mcClosure_%s_sum%s_cfg.py" % (self.channel, chargeSumSelection)),
             'outputFile' : os.path.join(self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_mcClosure_%s_sum%s.png" % (self.channel, chargeSumSelection)),
-            'histogramDir_signal' : (self.histogramDir_prep_dcard % jobOptions['chargeSumSelection']),
-            'histogramDir_sideband' : (self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights") % jobOptions['chargeSumSelection'])
+            'histogramDir_signal' : (self.histogramDir_prep_dcard % chargeSumSelection),
+            'histogramDir_sideband' : (self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights") % chargeSumSelection)
           }
           self.createCfg_makePlots_mcClosure(self.jobOptions_make_plots[key_makePlots_job])
 

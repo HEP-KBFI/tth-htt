@@ -33,18 +33,16 @@ DEPENDENCIES = [
     "tthAnalysis/tthMEM",
 ]
 
-# dir for python configuration and batch script files for each analysis job
-DKEY_CFGS = "cfgs"
-# dir for ROOT files containing histograms = output of the anaysis jobs
-DKEY_HIST = "histograms"
-DKEY_PLOT = "plots"       # dir for control plots (prefit)
+DKEY_CFGS    = "cfgs"        # dir for python configuration and batch script files for each analysis job
+DKEY_HIST    = "histograms"  # dir for ROOT files containing histograms = output of the anaysis jobs
+DKEY_PLOT    = "plots"       # dir for control plots (prefit)
 DKEY_SCRIPTS = "scripts"  # dir for sbatchManagers scripts that submit analysis and hadd jobs to batch system
-DKEY_LOGS = "logs"        # dir for log files (stdout/stderr of jobs)
-DKEY_DCRD = "datacards"   # dir for the datacard
-DKEY_RLES = "output_rle"  # dir for the selected run:lumi:event numbers
-DKEY_ROOT = "output_root" # dir for the selected events dumped into a root file
+DKEY_LOGS    = "logs"        # dir for log files (stdout/stderr of jobs)
+DKEY_DCRD    = "datacards"   # dir for the datacard
+DKEY_RLES    = "output_rle"  # dir for the selected run:lumi:event numbers
+DKEY_ROOT    = "output_root" # dir for the selected events dumped into a root file
 DKEY_HADD_RT = "hadd_cfg_rt" # dir for hadd cfg files generated during the runtime
-DKEY_SYNC = 'sync_ntuple' # dir for storing sync Ntuples
+DKEY_SYNC    = 'sync_ntuple' # dir for storing sync Ntuples
 
 DIRLIST = [
     DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES, DKEY_ROOT,

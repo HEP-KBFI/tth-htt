@@ -1,10 +1,9 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import re
-import os.path
 
 def get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight):
   lepton_selection_and_frWeight = lepton_selection
@@ -295,7 +294,6 @@ class analyzeConfig_WZctrl(analyzeConfig):
 
           sample_category = sample_info["sample_category"]
           is_mc = (sample_info["type"] == "mc")
-          is_signal = sample_category in self.ttHProcs
           use_th_weights = self.runTHweights(sample_info)
 
           central_or_shift_dedicated = self.central_or_shifts if use_th_weights else self.central_or_shifts_external

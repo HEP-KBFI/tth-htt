@@ -1,6 +1,6 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.common import logging
 
 class analyzeConfig_jetToTauFakeRate(analyzeConfig):
@@ -133,29 +133,28 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       inputFiles: input file (the ROOT file produced by hadd_stage1)
       outputFile: output file of the job
     """
-    for charge_selection in self.charge_selections:
-      lines = []
-      lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-      lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
-      lines.append("process.comp_jetToTauFakeRate.looseRegion = cms.string('%s')" % jobOptions['looseRegion'])
-      lines.append("process.comp_jetToTauFakeRate.tightRegion = cms.string('%s')" % jobOptions['tightRegion'])
-      lines.append("process.comp_jetToTauFakeRate.processData = cms.string('data_obs')")
-      lines.append("process.comp_jetToTauFakeRate.processesToSubtract = cms.vstring(")
-      lines.append("    'TTt', 'TTl',")
-      lines.append("    'EWKt', 'EWKl',")
-      lines.append("    'Rarest', 'Raresl',")
-      lines.append("    'TTWt', 'TTWl', ")
-      lines.append("    'TTWWt', 'TTWWl', ")
-      lines.append("    'TTZt', 'TTZl', ")
-      lines.append("    'ttHt', 'ttHl'")
-      lines.append(")")
-      lines.append("process.comp_jetToTauFakeRate.processMC = cms.string('TTj')")
-      lines.append("process.comp_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
-      lines.append("process.comp_jetToTauFakeRate.ptBins = cms.vdouble(%s)" % jobOptions['ptBins'])
-      lines.append("process.comp_jetToTauFakeRate.decayModes = cms.vint32(%s)" % jobOptions['decayModes'])
-      lines.append("process.comp_jetToTauFakeRate.hadTauSelections = cms.vstring(%s)" % jobOptions['hadTauSelections'])
-      lines.append("process.comp_jetToTauFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
-      create_cfg(self.cfgFile_comp_jetToTauFakeRate, jobOptions['cfgFile_modified'], lines)
+    lines = []
+    lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
+    lines.append("process.comp_jetToTauFakeRate.looseRegion = cms.string('%s')" % jobOptions['looseRegion'])
+    lines.append("process.comp_jetToTauFakeRate.tightRegion = cms.string('%s')" % jobOptions['tightRegion'])
+    lines.append("process.comp_jetToTauFakeRate.processData = cms.string('data_obs')")
+    lines.append("process.comp_jetToTauFakeRate.processesToSubtract = cms.vstring(")
+    lines.append("    'TTt', 'TTl',")
+    lines.append("    'EWKt', 'EWKl',")
+    lines.append("    'Rarest', 'Raresl',")
+    lines.append("    'TTWt', 'TTWl', ")
+    lines.append("    'TTWWt', 'TTWWl', ")
+    lines.append("    'TTZt', 'TTZl', ")
+    lines.append("    'ttHt', 'ttHl'")
+    lines.append(")")
+    lines.append("process.comp_jetToTauFakeRate.processMC = cms.string('TTj')")
+    lines.append("process.comp_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
+    lines.append("process.comp_jetToTauFakeRate.ptBins = cms.vdouble(%s)" % jobOptions['ptBins'])
+    lines.append("process.comp_jetToTauFakeRate.decayModes = cms.vint32(%s)" % jobOptions['decayModes'])
+    lines.append("process.comp_jetToTauFakeRate.hadTauSelections = cms.vstring(%s)" % jobOptions['hadTauSelections'])
+    lines.append("process.comp_jetToTauFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
+    create_cfg(self.cfgFile_comp_jetToTauFakeRate, jobOptions['cfgFile_modified'], lines)
 
   def addToMakefile_comp_jetToTauFakeRate(self, lines_makefile):
     if self.is_sbatch:
