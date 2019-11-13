@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager, \
   sbatchManagerTimeoutError, sbatchManagerMemoryError, sbatchManagerSyntaxError
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import os
 import unittest
 import shutil
 import uuid
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 '''Tests sbatchManager submission and failure detection with a set erroneous jobs
 
 The aim of this test is to verify that sbatchManager can deduce some of the typical errors a job might create.
@@ -74,7 +75,7 @@ class SbatchStatusTestCase(unittest.TestCase):
     self.assertRaises(sbatchManagerMemoryError, self.manager.waitForJobs)
 
   def testTimeout(self):
-    cmd = 'python -c "import time; time.sleep(900)"'
+    cmd = "python -c 'import time; time.sleep(100)'"
     self.manager.sbatchArgs = '--time=1'
     self.manager.poll_interval = 5
 

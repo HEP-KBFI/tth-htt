@@ -76,7 +76,7 @@ class Status:
          (ExitCode == '7:0'                              and State == 'FAILED'):
           # The last condition found at: https://wiki.hpc.uconn.edu/index.php/Job_FAILED_due_to_lack_of_memory
           return Status.memory_exceeded
-      if (ExitCode == '0:1' and DerivedExitCode == '0:0' and State == 'TIMEOUT'):
+      if (ExitCode.startswith('0:') and DerivedExitCode == '0:0' and State == 'TIMEOUT'):
           return Status.timeout
       if (ExitCode == '2:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
           return Status.syntax_error

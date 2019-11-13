@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager, sbatchManagerRuntimeError
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import os
 import unittest
 import shutil
 import uuid
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
 '''Tests sbatchManager submission and failure detection with single jobs
 
 The aim of this test is to verify that sbatchManager works with minimal working units (read: that it works at all).
