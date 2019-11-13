@@ -528,7 +528,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
                                                                           "hadd_stage1_%s.root" % process_name)
 
     # initialize input and output file names for hadd_stage1_5
-    key_hadd_stage1_job = getKey(process_name)
     key_hadd_stage1_5_dir = getKey("hadd")
     key_hadd_stage1_5_job = getKey('')
     if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:

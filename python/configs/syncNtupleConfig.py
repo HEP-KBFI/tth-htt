@@ -123,8 +123,8 @@ class syncNtupleConfig:
     if self.running_method:
       additional_args += " -R %s" % self.running_method
 
-    cr_channels = { channel : False for channel in [ '3l', '4l' ] }
     mem_channels = [ '2lss_1tau', '3l', 'hh_bb2l' ]
+    cr_channels = [ '3l', '4l' ]
 
     inclusive_args = '-v %s -e %s' % (version, era)
 
@@ -135,7 +135,6 @@ class syncNtupleConfig:
     create_if_not_exists(self.output_dir)
 
     channels_extended = collections.OrderedDict()
-    cr_channels = [ '3l', '4l' ]
     for channel in channels:
       channels_extended[channel] = ''
       if channel in cr_channels:
