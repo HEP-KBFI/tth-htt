@@ -469,7 +469,7 @@ class analyzeConfig_2lss(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base:
-            processes_input.append("%s_fake" % processes_input_base)
+            processes_input.append("%s_fake" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
             'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_%s_cfg.py" % addBackgrounds_job_fakes_tuple),
@@ -491,7 +491,7 @@ class analyzeConfig_2lss(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base:
-            processes_input.append("%s_flip" % processes_input_base)
+            processes_input.append("%s_flip" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_flips] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
             'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_%s_cfg.py" % addBackgrounds_job_flips_tuple),
@@ -513,7 +513,7 @@ class analyzeConfig_2lss(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base:
-            processes_input.append("%s_Convs" % processes_input_base)
+            processes_input.append("%s_Convs" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_Convs] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
             'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_%s_cfg.py" % addBackgrounds_job_Convs_tuple),
