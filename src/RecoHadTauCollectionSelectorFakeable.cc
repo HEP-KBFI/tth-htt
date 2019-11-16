@@ -9,7 +9,7 @@ RecoHadTauSelectorFakeable::RecoHadTauSelectorFakeable(int era,
                                                        bool set_selection_flags)
   : RecoHadTauSelectorBase(era, index, debug, set_selection_flags)
 {
-  const TauID tauId = TauID::MVAoldDMdR032017v2;
+  const TauID tauId = TauID::DeepTau2017v2VSjet;
   std::string tauId_str = "";
   for(const auto & kv: TauID_PyMap)
   {

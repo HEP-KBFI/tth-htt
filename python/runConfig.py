@@ -177,7 +177,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Overwrite tau ID working point (choices: %s)' % tthAnalyzeParser.cat(choices),
     )
 
-  def add_tau_id(self, default_id = 'dR03mva'):
+  def add_tau_id(self, default_id = 'deepVSj'):
     choices = [ 'dR03mva', 'deepVSj' ]
     self.add_argument('-t', '--tau-id',
       type = str, dest = 'tau_id', metavar = 'tau ID', default = default_id, required = False, choices = choices,
