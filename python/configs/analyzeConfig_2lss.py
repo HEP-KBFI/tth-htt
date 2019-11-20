@@ -120,10 +120,10 @@ class analyzeConfig_2lss(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "WH", "ZH", "ggH", "qqH", "HH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TTW", "TTWW", "TTZ", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "WH", "ZH", "ggH", "qqH", "HH", "TTWH", "TTZH" ]
     samples_categories_MC = self.get_samples_categories_MC(self.nonfake_backgrounds)
     self.prep_dcard_processesToCopy = ["data_obs"] + samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc", "data_flips", "flips_mc"  ]
-    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tHq", "tHW", "TTZH", "TTWH" ] + [ "Convs", "data_fakes", "data_flips" ]
+    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "Rares", "tHq", "tHW", "TTZH", "TTWH" ] + [ "Convs", "data_fakes", "data_flips" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.inputFiles_hadd_stage1_6 = {}

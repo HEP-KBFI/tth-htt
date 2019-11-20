@@ -98,6 +98,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_jetToTauFakeRate_cfg.py")
     self.cfgFile_make_plots_denominator = os.path.join(self.template_dir, "makePlots_jetToTauFakeRate_denominator_cfg.py")
 
+    self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
+    self.processes_to_comp = self.make_plots_backgrounds + [ "ttH" ]
+
   def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_jetToTauFakeRate executable (analysis code)
 
@@ -140,13 +143,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     lines.append("process.comp_jetToTauFakeRate.tightRegion = cms.string('%s')" % jobOptions['tightRegion'])
     lines.append("process.comp_jetToTauFakeRate.processData = cms.string('data_obs')")
     lines.append("process.comp_jetToTauFakeRate.processesToSubtract = cms.vstring(")
-    lines.append("    'TTt', 'TTl',")
-    lines.append("    'EWKt', 'EWKl',")
-    lines.append("    'Rarest', 'Raresl',")
-    lines.append("    'TTWt', 'TTWl', ")
-    lines.append("    'TTWWt', 'TTWWl', ")
-    lines.append("    'TTZt', 'TTZl', ")
-    lines.append("    'ttHt', 'ttHl'")
+    for process in self.processes_to_comp:
+      lines.append("    '{process}t', '{process}l',".format(process = process))
     lines.append(")")
     lines.append("process.comp_jetToTauFakeRate.processMC = cms.string('TTj')")
     lines.append("process.comp_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
@@ -367,7 +365,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s.png" % self.channel),
         'histogramDir' : "jetToTauFakeRate_%s" % charge_selection,
         'label' : None,
-        'make_plots_backgrounds' : [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ],
+        'make_plots_backgrounds' : self.make_plots_backgrounds,
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
       self.cfgFile_make_plots = self.cfgFile_make_plots_denominator
@@ -383,7 +381,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
             self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_%s_denominator_%s.png" % (self.channel, charge_selection, absEtaBin)),
           'histogramDir' : "jetToTauFakeRate_%s/denominator/%s" % (charge_selection, absEtaBin),
           'label' : None,
-          'make_plots_backgrounds' : [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ],
+          'make_plots_backgrounds' : self.make_plots_backgrounds,
         }
         self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
         for hadTau_selection_numerator in self.hadTau_selections_numerator:
@@ -398,7 +396,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_%s_numerator_%s_%s.png" % (self.channel, charge_selection, hadTau_selection_numerator, absEtaBin)),
             'histogramDir' : "jetToTauFakeRate_%s/numerator/%s/%s" % (charge_selection, hadTau_selection_numerator, absEtaBin),
             'label' : None,
-            'make_plots_backgrounds' : [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ],
+            'make_plots_backgrounds' : self.make_plots_backgrounds,
           }
           self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
 

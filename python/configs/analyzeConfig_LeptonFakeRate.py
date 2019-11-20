@@ -674,16 +674,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         lepton_bins_merged.extend(lepton_bins[lepton_type][lepton_selection])
 
     if self.prep_dcard:
-      processesToCopy = []
-      signals = []
       logging.info("Creating configuration files to run 'prepareDatacards_LeptonFakeRate'")
-
-      for process in self.prep_dcard_signals:
-        signals.append(process)
-      self.prep_dcard_signals = signals
-      for process in self.prep_dcard_processesToCopy:
-        processesToCopy.append(process)
-      self.prep_dcard_processesToCopy = processesToCopy
       datacards = []
       for histogramToFit in self.histograms_to_fit:
         key_prep_dcard_dir = getKey("prepareDatacards")

@@ -144,14 +144,14 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TTW", "TTZ", "TTWW", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     samples_categories_MC = self.get_samples_categories_MC(self.nonfake_backgrounds)
     self.prep_dcard_processesToCopy = ["data_obs"] + samples_categories_MC + [ "data_fakes", "fakes_mc", "data_obs" ]
     self.histogramDir_prep_dcard = "2l_2tau_sumOS_Tight"
     self.histogramDir_prep_dcard_SS = "2l_2tau_sumSS_Tight"
-    self.make_plots_backgrounds = [  "tHq", "tHW" ] + [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "Convs", "data_fakes" ]
+    self.make_plots_backgrounds = [  "tHq", "tHW" ] + [ "TTW", "TTZ", "TTWW", "Rares", "Convs", "data_fakes" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_2l_2tau_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_2l_2tau_cfg.py") #TODO
 
