@@ -1821,6 +1821,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const double memOutput_ttW = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttW() : -100.;
     const double memOutput_ttZ = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttZ() : -100.;
     const double memOutput_tt  = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_tt()  : -100.;
+    //std::cout
+    //  << "MEM computation : "
+    //  << memOutput_3l_matched.is_initialized() << " " << memOutput_ttH << "\n";
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 3l category of ttH multilepton analysis
