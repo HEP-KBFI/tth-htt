@@ -1,10 +1,9 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import re
-import os.path
 
 def get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight):
   lepton_and_hadTau_selection_and_frWeight = lepton_and_hadTau_selection
@@ -420,9 +419,14 @@ class analyzeConfig_1l_1tau(analyzeConfig):
                 syncTrees = list(map(lambda syncTree: os.path.join(central_or_shift, syncTree) if central_or_shift != "central" else syncTree, syncTrees))
                 syncRLE = ''
                 if self.do_sync and self.rle_select:
-                  syncRLE = self.rle_select % syncTree
-                  if not os.path.isfile(syncRLE):
-                    logging.warning("Input RLE file for the sync is missing: %s; skipping the job" % syncRLE)
+                  skipSync = False
+                  for syncTree in syncTrees:
+                    syncRLE = self.rle_select % syncTree
+                    if not os.path.isfile(syncRLE):
+                      logging.warning("Input RLE file for the sync is missing: %s; skipping the job" % syncRLE)
+                      skipSync = True
+                      break
+                  if skipSync:
                     continue
                 if syncOutput:
                   self.inputFiles_sync['sync'].append(syncOutput)
@@ -479,7 +483,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
 
             # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
             for category in self.categories:
-              kkey_hadd_stage1_job = getKey(category, process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+              key_hadd_stage1_job = getKey(category, process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
               key_hadd_stage1_5_dir = getKey("hadd", lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
               hadd_stage1_5_job_tuple = (category, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
               key_hadd_stage1_5_job = getKey(*hadd_stage1_5_job_tuple)
@@ -653,7 +657,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
       for category_signal in self.categories:
         if not category_signal.find("_SS") != -1:
           continue
-        key_hadd_stage1_6 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), chargeSumSelection)
+        key_hadd_stage1_6_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), chargeSumSelection)
         key_addFlips_dir = getKey("addBackgroundLeptonFlips")
         addFlips_job_tuple = (category_signal, chargeSumSelection)
         key_addFlips_job = getKey("data_flips", *addFlips_job_tuple)

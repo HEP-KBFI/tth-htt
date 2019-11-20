@@ -47,6 +47,9 @@ class sbatchManagerCopyError(sbatchManagerError):
 class sbatchManagerValidationError(sbatchManagerError):
     pass
 
+class sbatchManagerBusError(sbatchManagerError):
+    pass
+
 # Define Status
 
 class Status:
@@ -64,6 +67,7 @@ class Status:
   missing_file     = 17
   cp_error         = 18
   validation_error = 19
+  bus_error        = 20
 
   @staticmethod
   def classify_error(ExitCode, DerivedExitCode, State):
@@ -71,12 +75,12 @@ class Status:
           return Status.running
       if (ExitCode in ['0:0', '0:1'] and DerivedExitCode in ['0:0', '0:1'] and State == 'COMPLETED'):
           return Status.completed
-      if (ExitCode == '0:0' and DerivedExitCode == '0:0' and (State == 'CANCELLED' or
-                                                              State == 'CANCELLED by 0')) or \
-         (ExitCode == '7:0'                              and State == 'FAILED'):
-          # The last condition found at: https://wiki.hpc.uconn.edu/index.php/Job_FAILED_due_to_lack_of_memory
+      if (ExitCode == '0:0' and DerivedExitCode == '0:0' and (State == 'CANCELLED' or State == 'CANCELLED by 0')):
           return Status.memory_exceeded
-      if (ExitCode == '0:1' and DerivedExitCode == '0:0' and State == 'TIMEOUT'):
+      if (ExitCode == '7:0' and State == 'FAILED'):
+          # ignoring: https://wiki.hpc.uconn.edu/index.php/Job_FAILED_due_to_lack_of_memory
+          return Status.bus_error
+      if (ExitCode.startswith('0:') and DerivedExitCode == '0:0' and State == 'TIMEOUT'):
           return Status.timeout
       if (ExitCode == '2:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
           return Status.syntax_error
@@ -116,6 +120,8 @@ class Status:
           return 'cp_error'
       if status_type == Status.validation_error:
           return 'validation_error'
+      if status_type == Status.bus_error:
+          return 'bus_error'
       if status_type == Status.other_error:
           return 'other_error'
       return 'unknown_error'
@@ -138,6 +144,8 @@ class Status:
           return sbatchManagerCopyError
       if status_type == Status.validation_error:
           return sbatchManagerValidationError
+      if status_type == Status.bus_error:
+          return sbatchManagerBusError
       return sbatchManagerError
 
 # Define JobCompletion class to hold information about finished jobs

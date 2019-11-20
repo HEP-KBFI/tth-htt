@@ -1,10 +1,9 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import re
-import os.path
 
 def get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight):
   lepton_and_hadTau_selection_and_frWeight = lepton_and_hadTau_selection
@@ -759,48 +758,47 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job])
 
       logging.info("Creating configuration files to run 'makePlots'")
-      for chargeSumSelection in self.chargeSumSelections:
-        key_hadd_stage2_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS", chargeSumSelection)
-        key_makePlots_dir = getKey("makePlots")
-        key_makePlots_job = ("SS", chargeSumSelection)
+      key_hadd_stage2_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS", chargeSumSelection)
+      key_makePlots_dir = getKey("makePlots")
+      key_makePlots_job = ("SS", chargeSumSelection)
+      self.jobOptions_make_plots[key_makePlots_job] = {
+        'executable' : self.executable_make_plots,
+        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
+        'cfgFile_modified' : os.path.join(self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_sum%s_cfg.py" % (self.channel, chargeSumSelection)),
+        'outputFile' : os.path.join(self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_sum%s.png" % (self.channel, chargeSumSelection)),
+        'histogramDir' : (self.histogramDir_prep_dcard % chargeSumSelection),
+        'label' : "2lSS+1#tau_{h}",
+        'make_plots_backgrounds' : self.make_plots_backgrounds
+      }
+      self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
+      if "OS" in self.lepton_charge_selections and chargeSumSelection == "OS":
+        make_plots_backgrounds = self.make_plots_backgrounds
+        if "data_flips" in make_plots_backgrounds:
+          make_plots_backgrounds.remove("data_flips")
+        key_hadd_stage2_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS", chargeSumSelection)
+        key_makePlots_job = getKey("OS", chargeSumSelection)
         self.jobOptions_make_plots[key_makePlots_job] = {
           'executable' : self.executable_make_plots,
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
-          'cfgFile_modified' : os.path.join(self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_sum%s_cfg.py" % (self.channel, chargeSumSelection)),
-          'outputFile' : os.path.join(self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_sum%s.png" % (self.channel, chargeSumSelection)),
-          'histogramDir' : (self.histogramDir_prep_dcard % chargeSumSelection),
-          'label' : "2lSS+1#tau_{h}",
-          'make_plots_backgrounds' : self.make_plots_backgrounds
+          'cfgFile_modified' : os.path.join(self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_lepOS_sum%s_cfg.py" % (self.channel, chargeSumSelection)),
+          'outputFile' : os.path.join(self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_lepOS_sum%s.png" % (self.channel, chargeSumSelection)),
+          'histogramDir' : (self.histogramDir_prep_dcard_OS % chargeSumSelection),
+          'label' : "2lSS+1#tau_{h} OS",
+          'make_plots_backgrounds' : make_plots_backgrounds
         }
         self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
-        if "OS" in self.lepton_charge_selections and chargeSumSelection == "OS":
-          make_plots_backgrounds = self.make_plots_backgrounds
-          if "data_flips" in make_plots_backgrounds:
-            make_plots_backgrounds.remove("data_flips")
-          key_hadd_stage2_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS", chargeSumSelection)
-          key_makePlots_job = getKey("OS", chargeSumSelection)
-          self.jobOptions_make_plots[key_makePlots_job] = {
-            'executable' : self.executable_make_plots,
-            'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
-            'cfgFile_modified' : os.path.join(self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_lepOS_sum%s_cfg.py" % (self.channel, chargeSumSelection)),
-            'outputFile' : os.path.join(self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_lepOS_sum%s.png" % (self.channel, chargeSumSelection)),
-            'histogramDir' : (self.histogramDir_prep_dcard_OS % chargeSumSelection),
-            'label' : "2lSS+1#tau_{h} OS",
-            'make_plots_backgrounds' : make_plots_backgrounds
-          }
-          self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
-        if "Fakeable_mcClosure" in self.lepton_and_hadTau_selections and chargeSumSelection == "OS": #TODO
-          key_hadd_stage2_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS", chargeSumSelection)
-          key_makePlots_job = getKey("SS", chargeSumSelection)
-          self.jobOptions_make_plots[key_makePlots_job] = {
-            'executable' : self.executable_make_plots_mcClosure,
-            'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
-            'cfgFile_modified' : os.path.join(self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_mcClosure_%s_sum%s_cfg.py" % (self.channel, chargeSumSelection)),
-            'outputFile' : os.path.join(self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_mcClosure_%s_sum%s.png" % (self.channel, chargeSumSelection)),
-            'histogramDir_signal' : (self.histogramDir_prep_dcard % jobOptions['chargeSumSelection']),
-            'histogramDir_sideband' : (self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights") % jobOptions['chargeSumSelection'])
-          }
-          self.createCfg_makePlots_mcClosure(self.jobOptions_make_plots[key_makePlots_job])
+      if "Fakeable_mcClosure" in self.lepton_and_hadTau_selections and chargeSumSelection == "OS": #TODO
+        key_hadd_stage2_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS", chargeSumSelection)
+        key_makePlots_job = getKey("SS", chargeSumSelection)
+        self.jobOptions_make_plots[key_makePlots_job] = {
+          'executable' : self.executable_make_plots_mcClosure,
+          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
+          'cfgFile_modified' : os.path.join(self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_mcClosure_%s_sum%s_cfg.py" % (self.channel, chargeSumSelection)),
+          'outputFile' : os.path.join(self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_mcClosure_%s_sum%s.png" % (self.channel, chargeSumSelection)),
+          'histogramDir_signal' : (self.histogramDir_prep_dcard % chargeSumSelection),
+          'histogramDir_sideband' : (self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights") % chargeSumSelection)
+        }
+        self.createCfg_makePlots_mcClosure(self.jobOptions_make_plots[key_makePlots_job])
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)

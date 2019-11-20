@@ -1,11 +1,10 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, add_chmodX
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import jinja2
 import codecs
-import os
 
 jinja_template_dir = os.path.join(
   os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'python', 'templates'
@@ -529,7 +528,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
                                                                           "hadd_stage1_%s.root" % process_name)
 
     # initialize input and output file names for hadd_stage1_5
-    key_hadd_stage1_job = getKey(process_name)
     key_hadd_stage1_5_dir = getKey("hadd")
     key_hadd_stage1_5_job = getKey('')
     if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:

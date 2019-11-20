@@ -1,5 +1,5 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_charge_flip import *
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile
+from tthAnalysis.HiggsToTauTau.analysisTools import create_cfg
 
 class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
   """Configuration metadata needed to run analysis in a single go.

@@ -1,20 +1,23 @@
 #!/usr/bin/env python
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager, \
-  sbatchManagerTimeoutError, sbatchManagerMemoryError, sbatchManagerSyntaxError
+  sbatchManagerTimeoutError, sbatchManagerMemoryError, sbatchManagerSyntaxError, sbatchManagerBusError
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import os
 import unittest
 import shutil
 import uuid
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+import subprocess
+
 '''Tests sbatchManager submission and failure detection with a set erroneous jobs
 
 The aim of this test is to verify that sbatchManager can deduce some of the typical errors a job might create.
 
 The test cases are:
-1) 1 job that consumes more memory than preset memory limit
-2) 1 job that runs longer than the preset time limit
-3) 1 job that has a syntax error in the batch code
+1) 1 job produces SIGBUS error
+2) 1 job that consumes more memory than preset memory limit
+3) 1 job that runs longer than the preset time limit
+4) 1 job that has a syntax error in the batch code
 Each job should raise an error in the sbatchManager instance that is specific to the created problem at hand. If any of
 the jobs do not create such errors, the tests are bound to fail.
 
@@ -24,7 +27,7 @@ $ ./sbatch_status_test.py
 
 If you see the following message
 
-> Ran 3 tests in ...s
+> Ran 4 tests in ...s
 >
 > OK
 
@@ -57,6 +60,28 @@ class SbatchStatusTestCase(unittest.TestCase):
   def tearDown(self):
     del self.manager
 
+  def testBusError(self):
+    # prepare executable that raises SIGBUS error
+    cpp_source_name = os.path.join(testDir, 'bus_error.c')
+    cmd = os.path.splitext(cpp_source_name)[0]
+    with open(cpp_source_name, 'w') as cpp_source:
+      cpp_source.write('#include <signal.h>\nint main() { raise(SIGBUS); }')
+    compile_cmd_str = 'gcc -o %s %s' % (cmd, cpp_source_name)
+    compile_cmd = subprocess.Popen(compile_cmd_str.split())
+    compile_cmd.communicate()
+
+    self.manager.poll_interval = 1
+    self.manager.submitJob(
+      inputFiles             = [],
+      executable             = cmd,
+      command_line_parameter = "",
+      outputFilePath         = "",
+      outputFiles            = [],
+      scriptFile             = os.path.join(testDir, 'dummy_bus.sh'),
+    )
+    # if passes, true negative; otherwise true positive
+    self.assertRaises(sbatchManagerBusError, self.manager.waitForJobs)
+
   def testMemory(self):
     cmd = 'python -c "`echo -e "a = []\\nwhile True:\\n\\ta.append(\' \' * 1024 * 1024)"`"'
     self.manager.max_mem = '2M'
@@ -74,7 +99,7 @@ class SbatchStatusTestCase(unittest.TestCase):
     self.assertRaises(sbatchManagerMemoryError, self.manager.waitForJobs)
 
   def testTimeout(self):
-    cmd = 'python -c "import time; time.sleep(900)"'
+    cmd = "python -c 'import time; time.sleep(100)'"
     self.manager.sbatchArgs = '--time=1'
     self.manager.poll_interval = 5
 
@@ -92,7 +117,7 @@ class SbatchStatusTestCase(unittest.TestCase):
   def testSyntax(self):
     cmd = 'echo "missing quote'
     self.manager.poll_interval = 1
-    
+
     self.manager.submitJob(
       inputFiles             = [],
       executable             = cmd,
