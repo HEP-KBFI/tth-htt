@@ -116,6 +116,13 @@ elif mode == "sync":
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
+if not mode.startswith("sync"):
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events':
+      continue
+    if re.match("(^WZTo3LNu$|^WZTo3LNu_ext(\d)?$)", sample_info["process_name_specific"]):
+      sample_info["use_it"] = True
+
 if __name__ == '__main__':
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \

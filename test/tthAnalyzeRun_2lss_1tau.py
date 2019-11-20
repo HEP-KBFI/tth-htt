@@ -9,6 +9,7 @@ from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 import os
 import sys
 import getpass
+import re
 
 # E.g. to run: ./test/tthAnalyzeRun_2lss_1tau.py -v 2017Dec13 -m default -e 2017
 
@@ -131,6 +132,13 @@ elif mode == "sync":
   samples = load_samples(era, suffix = sample_suffix)
 else:
   raise ValueError("Invalid mode: %s" % mode)
+
+if not mode.startswith("sync"):
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events':
+      continue
+    if re.match("(^WZTo3LNu$|^WZTo3LNu_ext(\d)?$)", sample_info["process_name_specific"]):
+      sample_info["use_it"] = True
 
 if __name__ == '__main__':
   logging.info(
