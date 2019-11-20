@@ -53,7 +53,7 @@ HadTopTagger::operator()(const RecoJet & recBJet,
                          double & genTopPt,
                          const std::map<int, Particle::LorentzVector> & genVar,
                          const std::map<int, Particle::LorentzVector> & genVarAnti,
-                         bool isDebug)
+                         const bool isDebug)
 {
   const Particle::LorentzVector p4_bWj1Wj2 = recBJet.p4() + recWJet1.p4() + recWJet2.p4();
   const Particle::LorentzVector p4_Wj1Wj2  = recWJet1.p4() + recWJet2.p4();
