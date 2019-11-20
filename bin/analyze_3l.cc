@@ -989,8 +989,16 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
     //if (analyzedEntries > 2000) break;
-    if ( !selectBDT && (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) continue;
-    if ( !selectBDT && (eventInfo.event % 2) && isMC_WZ ) continue;
+    if(selectBDT)
+    {
+      if(eventInfo.event % 3 == 0 && era_string == "2018" && isMC_tHq) continue;
+      if(eventInfo.event % 2 == 0 && isMC_WZ) continue;
+    }
+    else
+    {
+      if(eventInfo.event % 3 != 0 && era_string == "2018" && isMC_tHq) continue;
+      if(eventInfo.event % 2 != 0 && isMC_WZ) continue;
+    }
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {

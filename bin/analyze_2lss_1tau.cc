@@ -966,8 +966,16 @@ int main(int argc, char* argv[])
     {
       continue;
     }
-    if ( !selectBDT && (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) continue;
-    if ( !selectBDT && (eventInfo.event % 2) && isMC_WZ ) continue;
+    if(selectBDT)
+    {
+      if(eventInfo.event % 3 == 0 && era_string == "2018" && isMC_tHq) continue;
+      if(eventInfo.event % 2 == 0 && isMC_WZ) continue;
+    }
+    else
+    {
+      if(eventInfo.event % 3 != 0 && era_string == "2018" && isMC_tHq) continue;
+      if(eventInfo.event % 2 != 0 && isMC_WZ) continue;
+    }
 
     EvtWeightRecorder evtWeightRecorder(central_or_shifts_local, central_or_shift_main, isMC);
     cutFlowTable.update("run:ls:event selection", evtWeightRecorder.get(central_or_shift_main));
