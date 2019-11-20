@@ -7,20 +7,24 @@ import re
 
 def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, samples_era_hh_bbww = None, analysis_type = 'default'):
   assert(analysis_type in [ 'default', 'aux' ])
-  sum_events_base = copy.deepcopy(samples_era_base['sum_events'])
-  sum_events_hh_multilepton = copy.deepcopy(samples_era_hh_multilepton['sum_events']) if samples_era_hh_multilepton else []
-  sum_events_hh_bbww = copy.deepcopy(samples_era_hh_bbww['sum_events']) if samples_era_hh_bbww else []
+  samples_era_base_copy = copy.deepcopy(samples_era_base)
+  samples_era_hh_multilepton_copy = copy.deepcopy(samples_era_hh_multilepton) if samples_era_hh_multilepton else None
+  samples_era_hh_bbww_copy = copy.deepcopy(samples_era_hh_bbww) if samples_era_hh_bbww else None
 
-  del samples_era_base['sum_events']
-  if samples_era_hh_multilepton:
-    del samples_era_hh_multilepton['sum_events']
-  if samples_era_hh_bbww:
-    del samples_era_hh_bbww['sum_events']
+  sum_events_base = copy.deepcopy(samples_era_base_copy['sum_events'])
+  sum_events_hh_multilepton = copy.deepcopy(samples_era_hh_multilepton_copy['sum_events']) if samples_era_hh_multilepton_copy else []
+  sum_events_hh_bbww = copy.deepcopy(samples_era_hh_bbww_copy['sum_events']) if samples_era_hh_bbww_copy else []
+
+  del samples_era_base_copy['sum_events']
+  if samples_era_hh_multilepton_copy:
+    del samples_era_hh_multilepton_copy['sum_events']
+  if samples_era_hh_bbww_copy:
+    del samples_era_hh_bbww_copy['sum_events']
 
   samples = collections.OrderedDict(itertools.chain(
-    samples_era_base.items(),
-    samples_era_hh_multilepton.items() if samples_era_hh_multilepton else [],
-    samples_era_hh_bbww.items() if samples_era_hh_bbww else [],
+    samples_era_base_copy.items(),
+    samples_era_hh_multilepton_copy.items() if samples_era_hh_multilepton_copy else [],
+    samples_era_hh_bbww_copy.items() if samples_era_hh_bbww_copy else [],
   ))
 
   samples['sum_events'] = sum_events_base + sum_events_hh_multilepton + sum_events_hh_bbww
