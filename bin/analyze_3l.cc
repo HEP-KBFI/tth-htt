@@ -988,7 +988,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    //if (analyzedEntries > 200) break;
+    //if (analyzedEntries > 2000) break;
     if ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) continue;
     if ( (eventInfo.event % 2) && isMC_WZ ) continue;
 
@@ -1671,7 +1671,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     cutFlowTable.update("signal region veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
 
-    std::vector<double> WeightBM; // weights to do histograms for BMs 
+    std::vector<double> WeightBM; // weights to do histograms for BMs
     std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
     double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
 
@@ -1766,6 +1766,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
               std::cout
                 << "MEM computation was skipped for event " << eventInfo.str() << " AND "
                    "there were not enough MEM permutations in the first place\n"
+                << memOutput_3l_matched.is_initialized() << " " << memOutput_3l_matched.weight_ttH() << "\n"
               ;
             }
             else if(memOutputs_3l[mem_idx].errorFlag() == ADDMEM_3L_ERROR_JETMULTIPLICITY ||
@@ -1795,7 +1796,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
             }
             else
             {
-              std::cout << "Failed with MEM error: " << memOutput_3l_matched.errorFlag() << '\n';
+              std::cout << "Failed with MEM error: " << memOutput_3l_matched.errorFlag()  << '\n';
             }
           }
         }
@@ -1806,16 +1807,23 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         }
         if(! ignoreMEMerrors && ! memSkipError)
         {
-          throw cmsException(argv[0], __LINE__) << "No valid MEM output was found";
+          throw cmsException(argv[0], __LINE__) << "No valid MEM output was found: "
+          << " run number: " << eventInfo.run
+          << " | lumi number: " << eventInfo.lumi
+          << " | event number: " << eventInfo.event;
         }
       }
     }
+
     const double memOutput_LR  = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.LR()         : -1.;
     const double memOutput_ttH = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttH() : -100.;
     const double memOutput_tHq = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_tHq() : -100.;
     const double memOutput_ttW = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttW() : -100.;
     const double memOutput_ttZ = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttZ() : -100.;
     const double memOutput_tt  = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_tt()  : -100.;
+    //std::cout
+    //  << "MEM computation : "
+    //  << memOutput_3l_matched.is_initialized() << " " << memOutput_ttH << "\n";
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 3l category of ttH multilepton analysis
@@ -1844,7 +1852,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 
     //--- compute output of hadronic top tagger BDT
     // it returns the gen-triplets organized in top/anti-top
-    bool calculate_matching = isMC && selectBDT && !applyAdditionalEvtWeight; // DY has not matching info
+    bool calculate_matching = false;//isMC && selectBDT && !applyAdditionalEvtWeight; // DY has not matching info
     std::map<int, Particle::LorentzVector> genVar;
     std::map<int, Particle::LorentzVector> genVarAnti;
     /*
@@ -1868,7 +1876,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     if ( &(*selWJet2) == &(*selWJet1) ) continue;
     bool isGenMatched = false;
     double genTopPt_teste = 0.;
-    const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti );
+    const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti, isDebugTF );
     // genTopPt_teste is filled with the result of gen-matching
     if ( isGenMatched ) hadtruth = true;
     // save genpt of all options
@@ -1884,7 +1892,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
       }
     }
-
 
     const double mT_lep1           = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
     const double mT_lep2           = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());

@@ -27,7 +27,8 @@ public:
              bool & isGenMatched,
              double & genTopPt,
              const std::map<int, Particle::LorentzVector> & genVar,
-             const std::map<int, Particle::LorentzVector> & genVarAnti);
+             const std::map<int, Particle::LorentzVector> & genVarAnti,
+             bool isDebug = false);
 
   const std::map<std::string, double> &
   mvaInputs() const;

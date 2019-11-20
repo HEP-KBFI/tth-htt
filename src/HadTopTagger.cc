@@ -52,7 +52,8 @@ HadTopTagger::operator()(const RecoJet & recBJet,
                          bool & isGenMatched,
                          double & genTopPt,
                          const std::map<int, Particle::LorentzVector> & genVar,
-                         const std::map<int, Particle::LorentzVector> & genVarAnti)
+                         const std::map<int, Particle::LorentzVector> & genVarAnti,
+                         bool isDebug)
 {
   const Particle::LorentzVector p4_bWj1Wj2 = recBJet.p4() + recWJet1.p4() + recWJet2.p4();
   const Particle::LorentzVector p4_Wj1Wj2  = recWJet1.p4() + recWJet2.p4();
@@ -105,15 +106,15 @@ HadTopTagger::operator()(const RecoJet & recBJet,
     { "btagDisc_b",             btagDisc_b                                          },
     { "btagDisc_Wj1",           btagDisc_Wj1                                        },
     { "btagDisc_Wj2",           btagDisc_Wj2                                        },
-    { "qg_Wj1",                 recWJet2.QGDiscr()                                  },
+    { "qg_Wj1",                 recWJet1.QGDiscr()                                  },
     { "qg_Wj2",                 recWJet2.QGDiscr()                                  },
     { "m_Wj1Wj2_div_m_bWj1Wj2", p4_Wj1Wj2.mass() / p4_bWj1Wj2.mass()                },
     { "pT_Wj1Wj2",              p4_Wj1Wj2.pt()                                      },
     { "dR_Wj1Wj2",              deltaR(recWJet1.p4(), recWJet2.p4())                },
     { "m_bWj1Wj2",              p4_bWj1Wj2.mass()                                   },
     { "dR_bW",                  deltaR(recBJet.p4(), recWJet1.p4() + recWJet2.p4()) },
-    { "m_bWj1",                 deltaR(recBJet.p4(), recWJet1.p4())                 },
-    { "m_bWj2",                 deltaR(recBJet.p4(), recWJet2.p4())                 },
+    { "m_bWj1",                 (recBJet.p4() + recWJet1.p4()).mass()                },
+    { "m_bWj2",                 (recBJet.p4() + recWJet2.p4()).mass()                },
     { "mass_Wj1",               recWJet1.mass()                                     },
     { "pT_Wj2",                 recWJet2.pt()                                       },
     { "mass_Wj2",               recWJet2.mass()                                     },
@@ -121,6 +122,16 @@ HadTopTagger::operator()(const RecoJet & recBJet,
     { "mass_b",                 recBJet.mass()                                      },
   };
   const double HTT_CSVsort4rd = (*mva_xgb_HTT_CSVsort4rd_)(mvaInputsHTT);
+  if ( isDebug ) {
+    std::cout << "variables HTT \n";
+    for (auto elem : mvaInputsHTT) std::cout << elem.first << " " << elem.second << "\n";
+    std::cout << std::endl;
+    std::cout << "result: " << HTT_CSVsort4rd<< std::endl;
+    std::cout << "recWJet1.hasBtag (Btag::kDeepCSV): " << recWJet1.hasBtag (Btag::kDeepCSV) << "\n";
+    std::cout << std::endl;
+    std::cout << std::endl;
+  }
+
 
   return { { kXGB_CSVsort4rd, HTT_CSVsort4rd } };
 }
