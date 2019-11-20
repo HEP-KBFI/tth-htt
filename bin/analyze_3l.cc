@@ -933,7 +933,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       "jet3_pt", "jet3_eta", "jet3_phi", "jet3_E",
       "jet4_pt", "jet4_eta", "jet4_phi", "jet4_E",
       "sum_Lep_charge", "HadTop_pt", "res_HTT", "max_Lep_eta",
-      "massL", "massL3", "massLT", "min_Deta_mostfwdJet_jet", "min_Deta_leadfwdJet_jet"
+      "massL", "massL_FO", "massL3", "massLT", "min_Deta_mostfwdJet_jet", "min_Deta_leadfwdJet_jet"
     );
     bdt_filler -> register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "lep3_isTight", "hadtruth",
@@ -989,8 +989,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
     //if (analyzedEntries > 2000) break;
-    if ( (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) continue;
-    if ( (eventInfo.event % 2) && isMC_WZ ) continue;
+    if ( !selectBDT && (eventInfo.event % 3) && era_string == "2018" && isMC_tHq ) continue;
+    if ( !selectBDT && (eventInfo.event % 2) && isMC_WZ ) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -2492,7 +2492,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("max_Lep_eta",    max_lep_eta)
           ("massLT",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.)
           ("massL3",          selLeptons.size() > 2 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4() + selLeptons[2]->p4(), met.pt(), met.phi())  : 0.)
-          ("massL",           massL(fakeableLeptons))
+          ("massL_FO",           massL(fakeableLeptons))
+          ("massL",           massL(selLeptons))
           ("has_SFOS",       hasSFOS)
           ("min_Deta_mostfwdJet_jet", min_Deta_mostfwdJet_jet)
           ("min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet)
