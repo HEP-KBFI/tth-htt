@@ -51,6 +51,9 @@ public:
   get_bmWeight() const;
 
   double
+  get_rescaling() const;
+
+  double
   get_auxWeight(const std::string & central_or_shift) const;
 
   double
@@ -114,6 +117,9 @@ public:
 
   void
   record_lumiScale(const edm::VParameterSet & lumiScales);
+
+  void
+  record_rescaling(double rescaling);
 
   void
   record_nom_tH_weight(const EventInfo * const eventInfo);
@@ -280,6 +286,7 @@ protected:
   double chargeMisIdProb_;
   double prescale_;
   double bm_weight_;
+  double rescaling_;
   std::string central_or_shift_;
   std::vector<std::string> central_or_shifts_;
 

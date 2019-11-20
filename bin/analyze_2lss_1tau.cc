@@ -169,7 +169,6 @@ int main(int argc, char* argv[])
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
   const bool isMC_VH = process_string == "VH";
   const bool isMC_WZ = process_string == "WZ";
-  const bool isMC_tHq = process_string == "tHq";
   const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
   const bool isMC_HH = process_string == "HH";
   const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
@@ -182,6 +181,7 @@ int main(int argc, char* argv[])
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
+  const unsigned int skipEvery = cfg_analyze.getParameter<unsigned int>("skipEvery");
 
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e, "triggers_1e");
@@ -960,24 +960,42 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    //if (analyzedEntries > 1000) {break;}
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
       continue;
     }
-    if(selectBDT)
-    {
-      if(eventInfo.event % 3 == 0 && era_string == "2018" && isMC_tHq) continue;
-      if(eventInfo.event % 2 == 0 && isMC_WZ) continue;
-    }
-    else
-    {
-      if(eventInfo.event % 3 != 0 && era_string == "2018" && isMC_tHq) continue;
-      if(eventInfo.event % 2 != 0 && isMC_WZ) continue;
-    }
 
     EvtWeightRecorder evtWeightRecorder(central_or_shifts_local, central_or_shift_main, isMC);
+    if(skipEvery > 1)
+    {
+      if(selectBDT)
+      {
+        if(eventInfo.event % skipEvery == 0)
+        {
+          // skip every N-th event when running in BDT mode
+          continue;
+        }
+        else
+        {
+          // rescale event weight by N / (N - 1)
+          evtWeightRecorder.record_rescaling(skipEvery / (skipEvery - 1.));
+        }
+      }
+      else
+      {
+        if(eventInfo.event % skipEvery != 0)
+        {
+          // we enter here (N-1) times -> select every N-th event when running the analysis regularly
+          continue;
+        }
+        else
+        {
+          // rescale event weight by N
+          evtWeightRecorder.record_rescaling(skipEvery);
+        }
+      }
+    }
     cutFlowTable.update("run:ls:event selection", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("run:ls:event selection", evtWeightRecorder.get(central_or_shift_main));
 
@@ -2191,9 +2209,7 @@ int main(int argc, char* argv[])
     std::map<std::string, double> tH_weight_map;
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
-      double evtWeight = evtWeightRecorder.get(central_or_shift);
-      if ( era_string == "2018" && isMC_tHq ) evtWeight *=3;
-      if ( isMC_WZ ) evtWeight *=2;
+      const double evtWeight = evtWeightRecorder.get(central_or_shift);
       const bool skipFilling = central_or_shift != central_or_shift_main;
       for (const GenMatchEntry* genMatch : genMatches)
       {

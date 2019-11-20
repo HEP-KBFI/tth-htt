@@ -32,6 +32,7 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
   , chargeMisIdProb_(1.)
   , prescale_(1.)
   , bm_weight_(1.)
+  , rescaling_(1.)
   , central_or_shift_(central_or_shift)
   , central_or_shifts_(central_or_shifts)
 {
@@ -56,7 +57,7 @@ EvtWeightRecorder::get_inclusive(const std::string & central_or_shift) const
   return isMC_ ? get_genWeight() * get_bmWeight() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
                  get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) *
-                 get_dy_rwgt(central_or_shift)
+                 get_dy_rwgt(central_or_shift) * get_rescaling()
                : 1.
   ;
 }
@@ -71,6 +72,12 @@ double
 EvtWeightRecorder::get_bmWeight() const
 {
   return bm_weight_;
+}
+
+double
+EvtWeightRecorder::get_rescaling() const
+{
+  return rescaling_;
 }
 
 double
@@ -353,6 +360,13 @@ EvtWeightRecorder::record_lumiScale(const edm::VParameterSet & lumiScales)
       lumiScale_[central_or_shift] = lumiScale_.at(central_or_shift_);
     }
   }
+}
+
+void
+EvtWeightRecorder::record_rescaling(double rescaling)
+{
+  assert(isMC_);
+  rescaling_ = rescaling;
 }
 
 void

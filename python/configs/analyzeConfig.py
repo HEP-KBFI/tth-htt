@@ -690,6 +690,9 @@ class analyzeConfig(object):
 
         if 'hasLHE' not in jobOptions:
             jobOptions['hasLHE'] = sample_info['has_LHE']
+        if 'skipEvery' in sample_info:
+            assert('skipEvery' not in jobOptions)
+            jobOptions['skipEvery'] = sample_info['skipEvery']
 
         jobOptions_local = [
             'process',
@@ -759,10 +762,12 @@ class analyzeConfig(object):
             'hhWeight_cfg.ktScan_file',
             'hhWeight_cfg.apply_rwgt',
             'minNumJets',
+            'skipEvery',
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',
           'evtCategories'           : 'cms.vstring(%s)',
+          'skipEvery'               : 'cms.uint32(%s)',
         }
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))

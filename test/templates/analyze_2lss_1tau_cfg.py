@@ -73,6 +73,7 @@ process.analyze_2lss_1tau = cms.PSet(
     apply_lepton_and_hadTauCharge_cut = cms.bool(True),
 
     isMC = cms.bool(True),
+    skipEvery = cms.uint32(0),
     central_or_shift = cms.string(''),
     central_or_shift_local = cms.vstring(),
     lumiScale = cms.VPSet(),

@@ -122,6 +122,9 @@ if not mode.startswith("sync"):
       continue
     if re.match("(^WZTo3LNu$|^WZTo3LNu_ext(\d)?$)", sample_info["process_name_specific"]):
       sample_info["use_it"] = True
+      sample_info["skipEvery"] = 2
+    if era == "2018" and sample_info["sample_category"] == "tHq" and sample_info["use_it"]:
+      sample_info["skipEvery"] = 3
 
 if __name__ == '__main__':
   logging.info(
