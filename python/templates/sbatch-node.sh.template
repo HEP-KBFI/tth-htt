@@ -130,14 +130,6 @@ run_wrapped_executable() {
 
     echo "Time is: `date`"
 
-    if [[ "$JOB_DIR" =~ ^/scratch* ]]; then
-      echo "Copying contents of 'tthAnalysis/HiggsToTauTau/data' directory to Scratch: cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $JOB_DIR/tthAnalysis/HiggsToTauTau/data"
-      mkdir -p tthAnalysis/HiggsToTauTau/data
-      cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $JOB_DIR/tthAnalysis/HiggsToTauTau/data
-    fi
-
-    echo "Time is: `date`"
-
     CMSSW_SEARCH_PATH="$JOB_DIR:{{ cmssw_base_dir }}/src"
 
     echo "Execute command: /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &> $EXECUTABLE_LOG_FILE"
