@@ -9,6 +9,7 @@ from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 import os
 import sys
 import getpass
+import re
 
 # E.g.: ./test/tthAnalyzeRun_4l.py -v 2017Dec13 -m default -e 2017
 
@@ -88,10 +89,6 @@ else:
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if sample_info["process_name_specific"].startswith("DY"):
-      sample_info["sample_category"] = "ZZ"
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -103,11 +100,6 @@ elif mode == "sync":
   samples = load_samples(era, suffix = sample_suffix)
 else:
   raise ValueError("Invalid mode: %s" % mode)
-
-for sample_name, sample_info in samples.items():
-  if sample_name == 'sum_events': continue
-  if sample_name.startswith('/Tau/Run'):
-    sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.info(

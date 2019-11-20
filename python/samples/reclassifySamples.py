@@ -3,8 +3,10 @@ from hhAnalysis.multilepton.common import is_nonresonant
 import collections
 import itertools
 import copy
+import re
 
-def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, samples_era_hh_bbww = None):
+def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, samples_era_hh_bbww = None, analysis_type = 'default'):
+  assert(analysis_type in [ 'default', 'aux' ])
   sum_events_base = copy.deepcopy(samples_era_base['sum_events'])
   sum_events_hh_multilepton = copy.deepcopy(samples_era_hh_multilepton['sum_events']) if samples_era_hh_multilepton else []
   sum_events_hh_bbww = copy.deepcopy(samples_era_hh_bbww['sum_events']) if samples_era_hh_bbww else []
@@ -33,6 +35,18 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
         sample_info["nof_events"]['CountWeightedLHEWeightScale'] == [ 0 ]:
       sample_info["has_LHE"] = False
 
+    if analysis_type == 'default':
+      # see https://github.com/HEP-KBFI/tth-htt/issues/91
+      # https://gitlab.cern.ch/ttH_leptons/doc/blob/53e8220a045118cdecd03c85a677736417e0ea74/Legacy/datacards_and_systematics.md#12-bkg-collective-names
+      if re.match("/DY(\d)?Jets", sample_name):
+        sample_info["sample_category"] = "ZZ"
+      elif re.match("/W(\d)?Jets", sample_name):
+        sample_info["sample_category"] = "WZ"
+      elif sample_name.startswith(("/TTTo", "/TTJets")):
+        sample_info["sample_category"] = "ttZ"
+      elif sample_name.startswith("/ST_"):
+        sample_info["sample_category"] = "Rares"
+
     if sample_info["process_name_specific"].startswith('signal') and 'hh' in sample_info["process_name_specific"]:
       if is_nonresonant(sample_info["sample_category"]):
         sample_info["use_it"] = True
@@ -40,6 +54,7 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
         sample_info["sample_category"] = "HH"
         # SM XS taken from: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/LHCHXSWGHH?rev=48#Current_recommendations_for_HH_c
         sample_info["xsection"] *= 31.05 / 1000. # HH processes are normalized to 1 pb -> change it to the SM XS
+        sample_info["use_it"] = analysis_type == "default"
       else:
         # remove the HH sample for safety reasons
         del samples[sample_name]

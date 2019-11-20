@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_jetToTauFakeRate import ana
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging, load_samples
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples_aux as load_samples
 
 import os
 import sys
@@ -77,13 +77,12 @@ logging.info(
 
 samples = load_samples(era)
 for sample_name, sample_info in samples.items():
-  if sample_name == 'sum_events': continue
+  if sample_name == 'sum_events':
+    continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "1mu", "1e1mu" ]
   if sample_name.startswith(("/DoubleMuon/", "/DoubleEG/", "/Tau/")) and sample_name.find("PromptReco") == -1:
       sample_info["use_it"] = False
-  if sample_info["sample_category"] == "HH":
-    sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.info(

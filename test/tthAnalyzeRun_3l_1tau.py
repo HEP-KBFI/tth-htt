@@ -92,10 +92,6 @@ MEMsample_base = "addMEM_3l1tau_{}".format(hadTau_selection)
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if sample_info["process_name_specific"].startswith("DY"):
-      sample_info["sample_category"] = "ZZ"
 elif mode == "addMEM":
   samples = load_samples(era, suffix = MEMsample_base)
   MEMbranch        = 'memObjects_3l_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)

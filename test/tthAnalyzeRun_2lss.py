@@ -9,10 +9,11 @@ from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 import os
 import sys
 import getpass
+import re
 
 # E.g. to run: ./test/tthAnalyzeRun_2lss.py -v 2017Dec13 -m default -e 2017
 
-mode_choices     = [ 'default', 'forBDTtraining', 'sync' , 'test' ]
+mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
 sys_choices      = [ 'full' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
 
@@ -76,23 +77,11 @@ hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if sample_info["process_name_specific"].startswith("DY"):
-      sample_info["sample_category"] = "ZZ"
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
   samples = load_samples(era, suffix = "BDT")
   lepton_charge_selections = [ "SS" ]
-elif mode == "test":
-    samples = load_samples(era)
-    for sample_name, sample_info in samples.items():
-        if sample_name == 'sum_events': continue
-        if sample_info["sample_category"] == "HH" :
-            sample_info["use_it"] = True
-        else :
-            sample_info["use_it"] = False
 elif mode == "sync":
   sample_suffix = "sync" if use_nonnominal else "sync_nom"
   if use_preselected:
@@ -100,11 +89,6 @@ elif mode == "sync":
   samples = load_samples(era, suffix = sample_suffix)
 else:
   raise ValueError("Invalid mode: %s" % mode)
-
-for sample_name, sample_info in samples.items():
-  if sample_name == 'sum_events': continue
-  if sample_name.startswith('/Tau/Run'):
-    sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.info(

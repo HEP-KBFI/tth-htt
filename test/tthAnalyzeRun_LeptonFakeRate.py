@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_LeptonFakeRate import analy
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging, load_samples, load_samples_stitched
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples_aux as load_samples, load_samples_stitched
 
 import os
 import sys
@@ -72,21 +72,18 @@ else:
 
 samples = load_samples_stitched(samples, era, load_dy = 'dy' in use_stitched, load_wjets = 'wjets' in use_stitched)
 for sample_name, sample_info in samples.items():
-  if sample_name == 'sum_events': continue
-
+  if sample_name == 'sum_events':
+    continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "1mu", "2e", "2mu" ]
-
   if sample_info["sample_category"] == "QCD":
     sample_info["use_it"] = True
     if sample_info["process_name_specific"].endswith("_Mu5"):
       sample_info["use_it"] = not qcd_inclusive
     elif sample_info["process_name_specific"] == "QCD_Mu15":
       sample_info["use_it"] = qcd_inclusive
-
   if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):
     sample_info["use_it"] = False
-
   if era == "2016":
     if sample_name.startswith('/SingleElectron'):
       # SingleElectron excluded since no 1e triggers used
@@ -97,9 +94,6 @@ for sample_name, sample_info in samples.items():
       # DoubleEG excluded since no 2e triggers used
       # SingleElectron B run excluded since no useful triggers present in that dataset
       sample_info["use_it"] = False
-
-  if sample_info["sample_category"] == "HH":
-    sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.info(

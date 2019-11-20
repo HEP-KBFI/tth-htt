@@ -86,10 +86,6 @@ else:
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if sample_info["process_name_specific"].startswith("DY"):
-      sample_info["sample_category"] = "ZZ"
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")

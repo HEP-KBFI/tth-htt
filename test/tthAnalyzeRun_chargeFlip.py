@@ -4,11 +4,12 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_charge_flip import analyzeC
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging, load_samples, load_samples_stitched
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples_aux as load_samples, load_samples_stitched
 
 import os
 import sys
 import getpass
+import re
 
 # E.g.: ./test/tthAnalyzeRun_chargeFlip.py -v 2017Dec13 -e 2017
 
@@ -60,19 +61,21 @@ samples = load_samples(era, suffix = "preselected" if use_preselected else "")
 samples = load_samples_stitched(samples, era, load_dy = 'dy' in use_stitched, load_wjets = 'wjets' in use_stitched)
 
 for sample_name, sample_info in samples.items():
-  if sample_name == 'sum_events': continue
-  if sample_info["use_it"] == False: continue
+  if sample_name == 'sum_events':
+    continue
+  if sample_info["use_it"] == False:
+    continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "2e" ]
-  if sample_info["process_name_specific"].startswith("DY"):
+  if re.match("/DY(\d)?Jets", sample_name):
     sample_info["sample_category"] = "DY"
-  elif sample_info["process_name_specific"].startswith(("TTTo", "TTJets")) and sample_info["sample_category"] == "TT":
+  elif sample_info["process_name_specific"].startswith(("TTTo", "TTJets")):
     sample_info["sample_category"] = "TTbar"
-  elif sample_info["process_name_specific"].startswith(("WJetsToLNu", "W1JetsToLNu", "W2JetsToLNu", "W3JetsToLNu", "W4JetsToLNu")):
+  elif re.match("/W(\d)?Jets", sample_name):
     sample_info["sample_category"] = "WJets"
-  elif sample_info["process_name_specific"].startswith("ST_") and sample_info["sample_category"] == "TT":
+  elif sample_info["process_name_specific"].startswith("ST_"):
     sample_info["sample_category"] = "Singletop"
-  elif sample_info["process_name_specific"].startswith(("WWTo2L2Nu", "WZTo3LNu", "ZZTo4L")):
+  elif sample_info["process_name_specific"].startswith(("WWTo", "WZTo", "ZZTo")):
     sample_info["sample_category"] = "Diboson"
   elif sample_info["sample_category"] == "data_obs":
     sample_info["use_it"] = not ("Muon" in sample_name or "Tau" in sample_name)

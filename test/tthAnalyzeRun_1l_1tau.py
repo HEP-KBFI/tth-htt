@@ -9,6 +9,7 @@ from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 import os
 import sys
 import getpass
+import re
 
 # E.g.: ./test/tthAnalyzeRun_1l_1tau.py -v 2017Dec13 -m default -e 2017
 
@@ -111,8 +112,9 @@ else:
   ]
 
 for sample_name, sample_info in samples.items():
-  if sample_name == 'sum_events': continue
-  if sample_name.startswith("/DY"):
+  if sample_name == 'sum_events':
+    continue
+  if re.match("/DY(\d)?Jets", sample_name):
     sample_info["sample_category"] = "DY"
 
 if __name__ == '__main__':

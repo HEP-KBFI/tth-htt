@@ -99,10 +99,6 @@ MEMsample_base = "addMEM_2lss1tau_{}".format(hadTau_selection)
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events': continue
-    if sample_info["process_name_specific"].startswith("DY"):
-      sample_info["sample_category"] = "ZZ"
 elif mode == "addMEM":
   if not use_preselected:
     raise ValueError("MEM branches can be read only from preselected Ntuples")
