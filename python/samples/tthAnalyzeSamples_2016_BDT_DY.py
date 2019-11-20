@@ -4,8 +4,7 @@ from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2016
 from tthAnalysis.HiggsToTauTau.analysisTools import split_stitched
 
 dy_samples_inclusive, dy_samples_binned = split_stitched(samples_to_stitch_2016, 'DY')
-wj_samples_inclusive, wj_samples_binned = split_stitched(samples_to_stitch_2016, 'W')
-bdt_samples = bdt_samples_common + dy_samples_inclusive + dy_samples_binned + wj_samples_inclusive + wj_samples_binned
+bdt_samples = bdt_samples_common + dy_samples_inclusive + dy_samples_binned
 
 for sample_name, sample_info in samples_2016.items():
   if sample_name == 'sum_events': continue
