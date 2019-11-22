@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-10-07 22:15:11 with the following command:
-# find_samples.py -V -m python/samples/metaDict_2018_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2018_17Sep18_22Jan19.txt -p SingleMuon EGamma DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt -v 10_2_4_patch1 -r 2018 -C +17Sep2018 +Run2018D-PromptReco +22Jan2019 x/SingleMuon/Run2018D-PromptReco-v2/MINIAOD x/EGamma/Run2018D-PromptReco-v2/MINIAOD -c python/samples/sampleLocations_2018_nanoAOD.txt -l
+# file generated at 2019-11-22 13:35:41 with the following command:
+# find_samples.py -V -m python/samples/metaDict_2018_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2018_17Sep18.txt -p SingleMuon EGamma DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt -v 10_2_4_patch1 -r 2018 -C +17Sep2018 +Run2018D-PromptReco -c python/samples/sampleLocations_2018_nanoAOD.txt
 
 meta_dictionary = OD()
 
@@ -50,19 +50,19 @@ meta_dictionary["/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
   ("comment",               "100.0%; status: VALID; size: 3.65TB; nevents: 110.03M; release: 10_2_4_patch1; last modified: 2018-10-10 07:01:43"),
 ])
 
-meta_dictionary["/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+meta_dictionary["/SingleMuon/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
+  ("crab_string",           "2018prompt_2019Jul23_SingleMuon__Run2018D-PromptReco-v2"),
   ("sample_category",       "data_obs"),
-  ("process_name_specific", "SingleMuon_Run2018D_22Jan2019_v2"),
-  ("nof_db_events",         514116477),
-  ("nof_db_files",          5195),
-  ("fsize_db",              15398063584229),
+  ("process_name_specific", "SingleMuon_Run2018D_PromptReco_v2"),
+  ("nof_db_events",         506717754),
+  ("nof_db_files",          5533),
+  ("fsize_db",              17033911936949),
   ("xsection",              None),
   ("use_it",                True),
   ("genWeight",             False),
   ("run_range",             [320500, 325175]),
   ("golden_run_range",      [320673, 325172]),
-  ("comment",               "status: VALID; size: 15.40TB; nevents: 514.12M; release: 10_2_5_patch1; last modified: 2019-03-03 01:54:45"),
+  ("comment",               "100.0%; status: VALID; size: 17.03TB; nevents: 506.72M; release: 10_2_1,10_2_5_patch1; last modified: 2018-08-01 16:17:08"),
 ])
 
 meta_dictionary["/EGamma/Run2018A-17Sep2018-v2/MINIAOD"] =  OD([
@@ -110,19 +110,19 @@ meta_dictionary["/EGamma/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
   ("comment",               "100.0%; status: VALID; size: 5.49TB; nevents: 147.83M; release: 10_2_4_patch1; last modified: 2018-10-17 11:12:09"),
 ])
 
-meta_dictionary["/EGamma/Run2018D-22Jan2019-v2/MINIAOD"] =  OD([
-  ("crab_string",           ""),
+meta_dictionary["/EGamma/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
+  ("crab_string",           "2018prompt_2019Jul04_EGamma__Run2018D-PromptReco-v2"),
   ("sample_category",       "data_obs"),
-  ("process_name_specific", "EGamma_Run2018D_22Jan2019_v2"),
-  ("nof_db_events",         754798781),
-  ("nof_db_files",          8510),
-  ("fsize_db",              25784622857555),
+  ("process_name_specific", "EGamma_Run2018D_PromptReco_v2"),
+  ("nof_db_events",         738976078),
+  ("nof_db_files",          8663),
+  ("fsize_db",              28473919391099),
   ("xsection",              None),
   ("use_it",                True),
   ("genWeight",             False),
-  ("run_range",             [320413, 325175]),
+  ("run_range",             [320497, 325175]),
   ("golden_run_range",      [320673, 325172]),
-  ("comment",               "status: VALID; size: 25.78TB; nevents: 754.80M; release: 10_2_5_patch1; last modified: 2019-03-16 06:02:25"),
+  ("comment",               "100.0%; status: VALID; size: 28.47TB; nevents: 738.98M; release: 10_2_1,10_2_5_patch1; last modified: 2018-08-01 10:55:01"),
 ])
 
 meta_dictionary["/DoubleMuon/Run2018A-17Sep2018-v2/MINIAOD"] =  OD([

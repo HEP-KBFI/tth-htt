@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-10-09 02:41:21 with the following command:
+# file generated at 2019-11-22 17:31:58 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2016.py -p python/samples/sampleLocations_2016.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_base.py -M
 
 samples_2016 = OD()
@@ -12317,11 +12317,11 @@ samples_2016["/DoubleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
   ("nof_files",                       39),
   ("nof_db_files",                    451),
   ("nof_events",                      {
-    'Count'                                                      : [     76478554, ],
+    'Count'                                                      : [     78550935, ],
   }),
-  ("nof_tree_events",                 76478554),
+  ("nof_tree_events",                 78550935),
   ("nof_db_events",                   82535526),
-  ("fsize_local",                     30831641336), # 30.83GB, avg file size 790.55MB
+  ("fsize_local",                     31628902654), # 31.63GB, avg file size 811.00MB
   ("fsize_db",                        1734998896105), # 1.73TB, avg file size 3.85GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -12333,7 +12333,7 @@ samples_2016["/DoubleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Sep17_data_woPresel_nom_all/ntuples/DoubleMuon_Run2016B_17Jul2018_ver2_v1"),
         ("selection", "*"),
-        ("blacklist", [20]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -18755,14 +18755,14 @@ samples_2016["/MuonEG/Run2016F-17Jul2018-v1/MINIAOD"] = OD([
   ("type",                            "data"),
   ("sample_category",                 "data_obs"),
   ("process_name_specific",           "MuonEG_Run2016F_17Jul2018_v1"),
-  ("nof_files",                       7),
+  ("nof_files",                       8),
   ("nof_db_files",                    159),
   ("nof_events",                      {
-    'Count'                                                      : [     14450485, ],
+    'Count'                                                      : [     15897683, ],
   }),
-  ("nof_tree_events",                 14450485),
+  ("nof_tree_events",                 15897683),
   ("nof_db_events",                   16002165),
-  ("fsize_local",                     7691708920), # 7.69GB, avg file size 1.10GB
+  ("fsize_local",                     8469599030), # 8.47GB, avg file size 1.06GB
   ("fsize_db",                        468379134344), # 468.38GB, avg file size 2.95GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -29797,16 +29797,16 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunII
   ("nof_files",                       57),
   ("nof_db_files",                    287),
   ("nof_events",                      {
-    'Count'                                                      : [     51792999, ],
-    'CountWeighted'                                              : [     37691200,     37684543,     37694014, ],
-    'CountWeightedLHEWeightScale'                                : [     32190550,     38813199,     41071353,     30490754,     37690635,     41363349,     29212647,     36831874,     41556793, ],
-    'CountWeightedL1PrefireNom'                                  : [     37662387,     37654984,     37666176, ],
-    'CountWeightedL1Prefire'                                     : [     37662387,     37653743,     37670980, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     32163720,     38782788,     41039268,     30465874,     37661800,     41332252,     29189409,     36804507,     41526677, ],
+    'Count'                                                      : [     52225275, ],
+    'CountWeighted'                                              : [     38005149,     37998746,     38007851, ],
+    'CountWeightedLHEWeightScale'                                : [     32458709,     39136485,     41413451,     30744783,     38004574,     41707975,     29456039,     37138705,     41903043, ],
+    'CountWeightedL1PrefireNom'                                  : [     37976102,     37968939,     37979786, ],
+    'CountWeightedL1Prefire'                                     : [     37976102,     37967388,     37984765, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     32431662,     39105826,     41381104,     30719701,     37975506,     41676625,     29432611,     37111114,     41872681, ],
   }),
-  ("nof_tree_events",                 51792999),
+  ("nof_tree_events",                 52225275),
   ("nof_db_events",                   40364234),
-  ("fsize_local",                     120372614774), # 120.37GB, avg file size 2.11GB
+  ("fsize_local",                     121378570344), # 121.38GB, avg file size 2.13GB
   ("fsize_db",                        946826425333), # 946.83GB, avg file size 3.30GB
   ("use_it",                          False),
   ("xsection",                        18610.0),
@@ -29820,7 +29820,7 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunII
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Sep17_mc_woPresel_nom_all/ntuples/DYJetsToLL_M-10to50_amcatnloFXFX_ext1"),
         ("selection", "*"),
-        ("blacklist", [56]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -31201,7 +31201,7 @@ samples_2016["/DYJetsToLL_M-50_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythi
   ("fsize_local",                     4064298000), # 4.06GB, avg file size 4.06GB
   ("fsize_db",                        24982088640), # 24.98GB, avg file size 6.25GB
   ("use_it",                          False),
-  ("xsection",                        0.0040070),
+  ("xsection",                        0.004007),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33869,14 +33869,14 @@ samples_2016["/QCD_Pt_170to250_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16Min
   ("nof_files",                       10),
   ("nof_db_files",                    87),
   ("nof_events",                      {
-    'Count'                                                      : [      8862285, ],
-    'CountWeighted'                                              : [      8862870,      8860935,      8861569, ],
-    'CountWeightedL1PrefireNom'                                  : [      8506745,      8505666,      8506142, ],
-    'CountWeightedL1Prefire'                                     : [      8506745,      8423484,      8590208, ],
+    'Count'                                                      : [      9862070, ],
+    'CountWeighted'                                              : [      9863000,      9860656,      9861720, ],
+    'CountWeightedL1PrefireNom'                                  : [      9466634,      9465246,      9466134, ],
+    'CountWeightedL1Prefire'                                     : [      9466634,      9373965,      9559527, ],
   }),
-  ("nof_tree_events",                 8862285),
+  ("nof_tree_events",                 9862070),
   ("nof_db_events",                   9862070),
-  ("fsize_local",                     57407719917), # 57.41GB, avg file size 5.74GB
+  ("fsize_local",                     63888791909), # 63.89GB, avg file size 6.39GB
   ("fsize_db",                        399943710216), # 399.94GB, avg file size 4.60GB
   ("use_it",                          False),
   ("xsection",                        2130.0),
@@ -33890,7 +33890,7 @@ samples_2016["/QCD_Pt_170to250_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16Min
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Sep17_mc_woPresel_nom_all/ntuples/QCD_Pt170to250_bcToE"),
         ("selection", "*"),
-        ("blacklist", [2]),
+        ("blacklist", []),
       ]),
     ]
   ),
