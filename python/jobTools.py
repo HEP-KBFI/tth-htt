@@ -95,10 +95,6 @@ def generate_input_list(job_ids, secondary_files, primary_store, secondary_store
   for job in job_ids:
     actual_storedir = secondary_store if job in secondary_files else primary_store
     input_file = os.path.join(actual_storedir, "000" + str(job / 1000), "tree_" + str(job) + ".root")
-    #print "checking existence of input_file = '%s'" % input_file
-    if not hdfs.exists(input_file):
-      input_file = os.path.join(actual_storedir, "tree_" + str(job) + ".root")
-    #print "checking existence of input_file = '%s'" % input_file
     if not hdfs.exists(input_file):
       raise RuntimeError("File %s doesn't exists!" % input_file)
     input_list.append(input_file)
