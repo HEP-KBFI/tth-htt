@@ -148,8 +148,6 @@
 /hdfs/cms/store/user/rdewanje/2018_2019Oct23/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/2018_2019Oct23_TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1 98.63%
 /hdfs/cms/store/user/rdewanje/2018_2019Oct23/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/2018_2019Oct23_TTToHadronic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1 100.0%
 /hdfs/cms/store/user/rdewanje/2018_2019Oct23/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/2018_2019Oct23_ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2 76.32%
-/hdfs/cms/store/user/rdewanje/2018_2019Oct25/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Oct25_CHUNK1_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v1 99.96%
-/hdfs/cms/store/user/rdewanje/2018_2019Oct25/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Oct25_CHUNK2_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v1 100.0%
 /hdfs/cms/store/user/rdewanje/2018_2019Oct25/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Oct25_TTTT_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2 45.83%
 /hdfs/cms/store/user/rdewanje/2018_2019Oct25/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/2018_2019Oct25_TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1 100.0%
 /hdfs/cms/store/user/rdewanje/2018_2019Oct25/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/2018_2019Oct25_TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2 90.0%
@@ -174,3 +172,4 @@
 /hdfs/cms/store/user/rdewanje/2018prompt_2019Oct08/SingleMuon/2018prompt_2019Oct08_SingleMuon__Run2018D-PromptReco-v2 100.0%
 /hdfs/cms/store/user/rdewanje/2018prompt_2019Oct18/EGamma/2018prompt_2019Oct18_EGamma__Run2018D-22Jan2019-v2 100.0%
 /hdfs/cms/store/user/rdewanje/2018prompt_2019Oct18/SingleMuon/2018prompt_2019Oct18_SingleMuon__Run2018D-22Jan2019-v2 100.0%
+/hdfs/local/karl/ntuples/2018/2018_2019Nov24/2018_2019Oct25/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Oct25_CHUNK0_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v1 99.96%

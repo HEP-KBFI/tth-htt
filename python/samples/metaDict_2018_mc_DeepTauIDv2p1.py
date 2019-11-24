@@ -974,7 +974,7 @@ meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn
 ])
 
 meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018_2019Oct25_CHUNK0_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v1"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "DYJetsToLL_M-50_amcatnloFXFX_ext2"),
   ("nof_db_events",         193465480),
@@ -983,7 +983,7 @@ meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn
   ("xsection",              6077.22),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: VALID; size: 7.86TB; nevents: 193.47M; release: 10_2_5; last modified: 2019-07-21 22:24:18"),
+  ("comment",               "99.96%; status: VALID; size: 7.86TB; nevents: 193.47M; release: 10_2_5; last modified: 2019-07-21 22:24:18"),
 ])
 
 meta_dictionary["/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
