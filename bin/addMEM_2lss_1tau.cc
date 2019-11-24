@@ -132,7 +132,7 @@ int main(int argc,
   const std::string memPythonConfigFile =
     lowIntegrationPoints                                     ?
     "ttH_Htautau_MEM_Analysis/MEM/small_lowpoints_122016.py" :
-    "ttH_Htautau_MEM_Analysis/MEM/small_nomin_122016.py"
+    "ttH_Htautau_MEM_Analysis/MEM/small_highpoints_112019.py"
   ;
   std::cout << "MEM config: " << memPythonConfigFile << '\n';
   MEMInterface_2lss_1tau memInterface_2lss_1tau(memPythonConfigFile);
