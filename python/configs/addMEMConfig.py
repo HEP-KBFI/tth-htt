@@ -420,7 +420,8 @@ class addMEMConfig:
         sample_keys_missing = list(sorted(rle_map_keys - sample_keys))
         if sample_keys_missing:
             raise RuntimeError(
-                "Unexpected samples not found in file %s: %s" % (self.rle_filter_file, ', '.join(sample_keys_missing))
+                "Found samples in file %s that are disabled in the workflow: %s" % \
+                (self.rle_filter_file, ', '.join(sample_keys_missing))
             )
         return rle_map
 

@@ -8,6 +8,7 @@ from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 
 import os
 import getpass
+import re
 
 sys_choices          = [ 'full' ] + systematics.an_addMEM_opts
 mode_choices         = [ 'default', 'bdt', 'sync' ]
@@ -98,6 +99,13 @@ elif mode == 'sync':
     rle_filter_file = 'mem_sync_{}_{}.root'.format(era, hadTauWP)
 else:
   raise ValueError("Invalid mode: %s" % mode)
+
+if not mode.startswith("sync"):
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events':
+      continue
+    if re.match("(^WZTo3LNu$|^WZTo3LNu_ext(\d)?$)", sample_info["process_name_specific"]):
+      sample_info["use_it"] = True
 
 if rle_filter_file:
   rle_filter_file = os.path.join(
