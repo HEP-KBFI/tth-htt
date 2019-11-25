@@ -192,7 +192,7 @@ class sbatchManager:
         queue_environ = os.environ.get('SBATCH_PRIORITY')
         verbose_environ = os.environ.get('SBATCH_VERBOSE')
         sbatch_exclude = os.environ.get('SBATCH_EXCLUDE')
-        self.queue             = queue_environ if queue_environ else "small"
+        self.queue             = queue_environ if queue_environ else "main"
         self.poll_interval     = 30
         self.queuedJobs        = []
         self.maxSubmittedJobs  = max_num_submittedJobs
