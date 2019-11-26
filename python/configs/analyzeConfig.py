@@ -1,5 +1,5 @@
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version, record_software_state
-from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, is_dymc_reweighting
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, is_dymc_reweighting, is_dymc_normalization
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, get_tH_weight_str, get_tH_SM_str
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
@@ -535,7 +535,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]: return False
       if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                 return False
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):     return False
-      if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_reweighting(sample_name):     return False
+      if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):     return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():        return False
       if central_or_shift in systematics.LHE().hh and \
           not ((sample_category.startswith("signal") or sample_category == "HH") and has_LHE): return False
@@ -585,7 +585,7 @@ class analyzeConfig(object):
         if 'apply_DYMCReweighting' not in jobOptions:
           jobOptions['apply_DYMCReweighting'] = is_dymc_reweighting(sample_info["dbs_name"])
         if 'apply_DYMCNormScaleFactors' not in jobOptions:
-          jobOptions['apply_DYMCNormScaleFactors'] =  is_dymc_reweighting(sample_info["dbs_name"])
+          jobOptions['apply_DYMCNormScaleFactors'] =  is_dymc_normalization(sample_info["dbs_name"])
         if 'apply_l1PreFireWeight' not in jobOptions:
           jobOptions['apply_l1PreFireWeight'] = self.do_l1prefiring if is_mc else False
         if 'central_or_shift' not in jobOptions:
