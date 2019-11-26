@@ -535,7 +535,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]: return False
       if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                 return False
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):     return False
-      if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):     return False
+      if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):   return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():        return False
       if central_or_shift in systematics.LHE().hh and \
           not ((sample_category.startswith("signal") or sample_category == "HH") and has_LHE): return False
