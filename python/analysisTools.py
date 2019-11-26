@@ -122,7 +122,8 @@ def is_dymc_reweighting(dbs_name):
 
 def is_dymc_normalization(dbs_name):
   return dbs_name.startswith('/DY')       and \
-         'M-50' in dbs_name
+         'M-50' in dbs_name               and \
+         'amcatnloFXFX' in dbs_name
 
 def split_stitched(samples_to_stitch, startstring):
     assert(startstring in [ 'DY', 'W' ])
