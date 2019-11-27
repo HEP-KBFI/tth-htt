@@ -529,16 +529,18 @@ class analyzeConfig(object):
         return "central"
 
     def accept_central_or_shift(self, central_or_shift, sample_category, sample_name, has_LHE = False):
+      if central_or_shift in systematics.LHE().full           and not has_LHE:                              return False
       if central_or_shift in systematics.LHE().ttH            and sample_category not in self.ttHProcs:     return False
       if central_or_shift in systematics.LHE().tHq            and sample_category not in [ "tHq", "TH" ]:   return False
       if central_or_shift in systematics.LHE().tHW            and sample_category not in [ "tHW", "TH" ]:   return False
       if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]: return False
       if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                 return False
+      if central_or_shift in systematics.LHE().dy             and sample_category != "DY":                  return False
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):     return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):   return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():        return False
       if central_or_shift in systematics.LHE().hh and \
-          not ((sample_category.startswith("signal") or sample_category == "HH") and has_LHE): return False
+          not (sample_category.startswith("signal") or sample_category == "HH"): return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False, dropCtrl = False):
