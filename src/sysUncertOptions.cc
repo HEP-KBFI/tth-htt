@@ -242,6 +242,15 @@ getDYMCNormScaleFactors_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+int
+getTopPtReweighting_option(const std::string & central_or_shift)
+{
+  int central_or_shift_int = kTopPtReweighting_central;
+  if     (central_or_shift == "CMS_ttHl_topPtReweightingUp"  ) central_or_shift_int = kTopPtReweighting_shiftUp;
+  else if(central_or_shift == "CMS_ttHl_topPtReweightingDown") central_or_shift_int = kTopPtReweighting_shiftDown;
+  return central_or_shift_int;
+}
+
 void
 checkOptionValidity(const std::string & central_or_shift,
                     bool isMC)
