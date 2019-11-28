@@ -168,6 +168,7 @@ class addMEMConfig:
             pool_id                 = self.pool_id,
             use_home                = self.use_home,
             validate_outputs        = self.check_output_files,
+            max_num_submittedJobs   = 2000,
         )
 
     def addToMakefile_addMEM(self, lines_makefile):
