@@ -147,24 +147,28 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
       MEMpermutations_ttH_
     );
     result.weight_ttH_ = MEMpermutations_ttH_->resMEM_avgExl0.weight;
+    result.weight_ttH_error_ = MEMpermutations_ttH_->resMEM_avgExl0.err;
     result.kinfitscore_ttH_ = MEMpermutations_ttH_->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[9] != -1)
   {
     const Permutations * MEMpermutations_tHq = &MEMpermutations_[index_hyp_[9]];
     result.weight_tHq_ = MEMpermutations_tHq->resMEM_avgExl0.weight;
+    result.weight_tHq_error_ = MEMpermutations_tHq->resMEM_avgExl0.err;
     result.kinfitscore_tHq_ = MEMpermutations_tHq->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[3] != -1)
   {
     const Permutations * MEMpermutations_ttW = &MEMpermutations_[index_hyp_[3]];
     result.weight_ttW_ = MEMpermutations_ttW->resMEM_avgExl0.weight;
+    result.weight_ttW_error_ = MEMpermutations_ttW->resMEM_avgExl0.err;
     result.kinfitscore_ttW_ = MEMpermutations_ttW->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[0] != -1)
   {
     const Permutations * MEMpermutations_ttZ = &MEMpermutations_[index_hyp_[0]];
     result.weight_ttZ_ = MEMpermutations_ttZ->resMEM_avgExl0.weight;
+    result.weight_ttZ_error_ = MEMpermutations_ttZ->resMEM_avgExl0.err;
     result.kinfitscore_ttZ_ = MEMpermutations_ttZ->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[5] != -1 || index_hyp_[6] != -1)
@@ -175,24 +179,57 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
       MEMpermutations_tt_
     );
     result.weight_tt_ = MEMpermutations_tt_->resMEM_avgExl0.weight;
+    result.weight_tt_error_ = MEMpermutations_tt_->resMEM_avgExl0.err;
     result.kinfitscore_tt_ = MEMpermutations_tt_->resKin_maxKinFit_Int.weight;
   }
 
   const double k_tHq = 1.;
-  const double numerator = result.weight_ttH_ + k_tHq*result.weight_tHq_;
+  const double numerator =
+    result.weight_ttH_ +
+    k_tHq * result.weight_tHq_
+  ;
+  const double numerator_up =
+    result.weight_ttH_ + result.weight_ttH_error_ +
+    k_tHq * (result.weight_tHq_ + result.weight_tHq_error_)
+  ;
+  const double numerator_down =
+    result.weight_ttH_ - result.weight_ttH_error_ +
+    k_tHq * (result.weight_tHq_ - result.weight_tHq_error_)
+  ;
   const double k_ttW = 1.;
   const double k_ttZ = 1.;
   const double k_tt  = 1.;
-  const double denominator = numerator + k_ttW*result.weight_ttW_ + k_ttZ*result.weight_ttZ_ + k_tt*result.weight_tt_;
+  const double denominator =
+    numerator +
+    k_ttW * result.weight_ttW_ +
+    k_ttZ * result.weight_ttZ_ +
+    k_tt  * result.weight_tt_
+  ;
+  const double denominator_up =
+    numerator_up +
+    k_ttW * (result.weight_ttW_ - result.weight_ttW_error_) +
+    k_ttZ * (result.weight_ttZ_ - result.weight_ttZ_error_) +
+    k_tt  * (result.weight_tt_  - result.weight_tt_error_)
+  ;
+  const double denominator_down =
+    numerator_down +
+    k_ttW * (result.weight_ttW_ + result.weight_ttW_error_) +
+    k_ttZ * (result.weight_ttZ_ + result.weight_ttZ_error_) +
+    k_tt  * (result.weight_tt_  + result.weight_tt_error_)
+  ;
   if(denominator > 0.)
   {
     result.isValid_ = 1;
-    result.LR_      = numerator / denominator;
+    result.LR_            = numerator      / denominator;
+    result.LR_up_   = numerator_up   / denominator_up;
+    result.LR_down_ = numerator_down / denominator_down;
   }
   else
   {
     result.errorFlag_ = ADDMEM_3L_ERROR;
-    result.LR_        = -1.;
+    result.LR_            = -1.;
+    result.LR_up_   = -1.;
+    result.LR_down_ = -1.;
   }
 
   result.cpuTime_  = clock_->GetCpuTime(func_str.data());
@@ -200,4 +237,3 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
 
   return result;
 }
-

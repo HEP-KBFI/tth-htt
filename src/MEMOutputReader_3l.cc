@@ -23,16 +23,23 @@ MEMOutputReader_3l::MEMOutputReader_3l(const std::string & branchName_num,
   , thirdLepton_eta_(nullptr)
   , thirdLepton_phi_(nullptr)
   , weight_ttH_(nullptr)
+  , weight_ttH_error_(nullptr)
   , kinfitscore_ttH_(nullptr)
   , weight_tHq_(nullptr)
+  , weight_tHq_error_(nullptr)
   , kinfitscore_tHq_(nullptr)
   , weight_ttW_(nullptr)
+  , weight_ttW_error_(nullptr)
   , kinfitscore_ttW_(nullptr)
   , weight_ttZ_(nullptr)
+  , weight_ttZ_error_(nullptr)
   , kinfitscore_ttZ_(nullptr)
   , weight_tt_(nullptr)
+  , weight_tt_error_(nullptr)
   , kinfitscore_tt_(nullptr)
   , LR_(nullptr)
+  , LR_up_(nullptr)
+  , LR_down_(nullptr)
   , cpuTime_(nullptr)
   , realTime_(nullptr)
   , isValid_(nullptr)
@@ -59,16 +66,23 @@ MEMOutputReader_3l::~MEMOutputReader_3l()
     delete[] gInstance -> thirdLepton_eta_;
     delete[] gInstance -> thirdLepton_phi_;
     delete[] gInstance -> weight_ttH_;
+    delete[] gInstance -> weight_ttH_error_;
     delete[] gInstance -> kinfitscore_ttH_;
     delete[] gInstance -> weight_tHq_;
+    delete[] gInstance -> weight_tHq_error_;
     delete[] gInstance -> kinfitscore_tHq_;
     delete[] gInstance -> weight_ttW_;
+    delete[] gInstance -> weight_ttW_error_;
     delete[] gInstance -> kinfitscore_ttW_;
     delete[] gInstance -> weight_ttZ_;
+    delete[] gInstance -> weight_ttZ_error_;
     delete[] gInstance -> kinfitscore_ttZ_;
     delete[] gInstance -> weight_tt_;
+    delete[] gInstance -> weight_tt_error_;
     delete[] gInstance -> kinfitscore_tt_;
     delete[] gInstance -> LR_;
+    delete[] gInstance -> LR_up_;
+    delete[] gInstance -> LR_down_;
     delete[] gInstance -> cpuTime_;
     delete[] gInstance -> realTime_;
     delete[] gInstance -> isValid_;
@@ -92,16 +106,23 @@ MEMOutputReader_3l::setBranchNames()
     branchName_thirdLepton_eta_   = Form("%s_%s", branchName_obj_.data(), "thirdLepton_eta");
     branchName_thirdLepton_phi_   = Form("%s_%s", branchName_obj_.data(), "thirdLepton_phi");
     branchName_weight_ttH_        = Form("%s_%s", branchName_obj_.data(), "weight_ttH");
+    branchName_weight_ttH_error_  = Form("%s_%s", branchName_obj_.data(), "weight_ttH_error");
     branchName_kinfitscore_ttH_   = Form("%s_%s", branchName_obj_.data(), "kinfitscore_ttH");
     branchName_weight_tHq_        = Form("%s_%s", branchName_obj_.data(), "weight_tHq");
+    branchName_weight_tHq_error_  = Form("%s_%s", branchName_obj_.data(), "weight_tHq_error");
     branchName_kinfitscore_tHq_   = Form("%s_%s", branchName_obj_.data(), "kinfitscore_tHq");
     branchName_weight_ttW_        = Form("%s_%s", branchName_obj_.data(), "weight_ttW");
+    branchName_weight_ttW_error_  = Form("%s_%s", branchName_obj_.data(), "weight_ttW_error");
     branchName_kinfitscore_ttW_   = Form("%s_%s", branchName_obj_.data(), "kinfitscore_ttW");
     branchName_weight_ttZ_        = Form("%s_%s", branchName_obj_.data(), "weight_ttZ");
+    branchName_weight_ttZ_error_  = Form("%s_%s", branchName_obj_.data(), "weight_ttZ_error");
     branchName_kinfitscore_ttZ_   = Form("%s_%s", branchName_obj_.data(), "kinfitscore_ttZ");
     branchName_weight_tt_         = Form("%s_%s", branchName_obj_.data(), "weight_tt");
+    branchName_weight_tt_error_   = Form("%s_%s", branchName_obj_.data(), "weight_tt_error");
     branchName_kinfitscore_tt_    = Form("%s_%s", branchName_obj_.data(), "kinfitscore_tt");
     branchName_LR_                = Form("%s_%s", branchName_obj_.data(), "LR");
+    branchName_LR_up_             = Form("%s_%s", branchName_obj_.data(), "LR_up");
+    branchName_LR_down_           = Form("%s_%s", branchName_obj_.data(), "LR_down");
     branchName_cpuTime_           = Form("%s_%s", branchName_obj_.data(), "cpuTime");
     branchName_realTime_          = Form("%s_%s", branchName_obj_.data(), "realTime");
     branchName_isValid_           = Form("%s_%s", branchName_obj_.data(), "isValid");
@@ -139,16 +160,23 @@ MEMOutputReader_3l::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(thirdLepton_eta_, branchName_thirdLepton_eta_);
     bai.setBranchAddress(thirdLepton_phi_, branchName_thirdLepton_phi_);
     bai.setBranchAddress(weight_ttH_, branchName_weight_ttH_);
+    bai.setBranchAddress(weight_ttH_error_, branchName_weight_ttH_error_);
     bai.setBranchAddress(kinfitscore_ttH_, branchName_kinfitscore_ttH_);
     bai.setBranchAddress(weight_tHq_, branchName_weight_tHq_);
+    bai.setBranchAddress(weight_tHq_error_, branchName_weight_tHq_error_);
     bai.setBranchAddress(kinfitscore_tHq_, branchName_kinfitscore_tHq_);
     bai.setBranchAddress(weight_ttW_, branchName_weight_ttW_);
+    bai.setBranchAddress(weight_ttW_error_, branchName_weight_ttW_error_);
     bai.setBranchAddress(kinfitscore_ttW_, branchName_kinfitscore_ttW_);
     bai.setBranchAddress(weight_ttZ_, branchName_weight_ttZ_);
+    bai.setBranchAddress(weight_ttZ_error_, branchName_weight_ttZ_error_);
     bai.setBranchAddress(kinfitscore_ttZ_, branchName_kinfitscore_ttZ_);
     bai.setBranchAddress(weight_tt_, branchName_weight_tt_);
+    bai.setBranchAddress(weight_tt_error_, branchName_weight_tt_error_);
     bai.setBranchAddress(kinfitscore_tt_, branchName_kinfitscore_tt_);
     bai.setBranchAddress(LR_, branchName_LR_);
+    bai.setBranchAddress(LR_up_, branchName_LR_up_);
+    bai.setBranchAddress(LR_down_, branchName_LR_down_);
     bai.setBranchAddress(cpuTime_, branchName_cpuTime_);
     bai.setBranchAddress(realTime_, branchName_realTime_);
     bai.setBranchAddress(errorFlag_, branchName_errorFlag_);
@@ -186,16 +214,23 @@ MEMOutputReader_3l::read() const
       memOutput.thirdLepton_eta_   = gInstance -> thirdLepton_eta_[idxMEMOutput];
       memOutput.thirdLepton_phi_   = gInstance -> thirdLepton_phi_[idxMEMOutput];
       memOutput.weight_ttH_        = gInstance -> weight_ttH_[idxMEMOutput];
+      memOutput.weight_ttH_error_  = gInstance -> weight_ttH_error_[idxMEMOutput];
       memOutput.kinfitscore_ttH_   = gInstance -> kinfitscore_ttH_[idxMEMOutput];
       memOutput.weight_tHq_        = gInstance -> weight_tHq_[idxMEMOutput];
+      memOutput.weight_tHq_error_  = gInstance -> weight_tHq_error_[idxMEMOutput];
       memOutput.kinfitscore_tHq_   = gInstance -> kinfitscore_tHq_[idxMEMOutput];
       memOutput.weight_ttW_        = gInstance -> weight_ttW_[idxMEMOutput];
+      memOutput.weight_ttW_error_  = gInstance -> weight_ttW_error_[idxMEMOutput];
       memOutput.kinfitscore_ttW_   = gInstance -> kinfitscore_ttW_[idxMEMOutput];
       memOutput.weight_ttZ_        = gInstance -> weight_ttZ_[idxMEMOutput];
+      memOutput.weight_ttZ_error_  = gInstance -> weight_ttZ_error_[idxMEMOutput];
       memOutput.kinfitscore_ttZ_   = gInstance -> kinfitscore_ttZ_[idxMEMOutput];
       memOutput.weight_tt_         = gInstance -> weight_tt_[idxMEMOutput];
+      memOutput.weight_tt_error_   = gInstance -> weight_tt_error_[idxMEMOutput];
       memOutput.kinfitscore_tt_    = gInstance -> kinfitscore_tt_[idxMEMOutput];
       memOutput.LR_                = gInstance -> LR_[idxMEMOutput];
+      memOutput.LR_up_             = gInstance -> LR_up_[idxMEMOutput];
+      memOutput.LR_down_           = gInstance -> LR_down_[idxMEMOutput];
       memOutput.cpuTime_           = gInstance -> cpuTime_[idxMEMOutput];
       memOutput.realTime_          = gInstance -> realTime_[idxMEMOutput];
       memOutput.isValid_           = gInstance -> isValid_[idxMEMOutput];
