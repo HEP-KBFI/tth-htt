@@ -243,7 +243,7 @@ double
 EvtWeightRecorder::get_data_to_MC_correction(const std::string & central_or_shift) const
 {
   return isMC_ ? get_sf_triggerEff(central_or_shift) * get_leptonSF() * get_tauSF(central_or_shift) *
-                 get_btag(central_or_shift) * get_dy_norm(central_or_shift)
+                 get_btag(central_or_shift) * get_dy_norm(central_or_shift) * get_toppt_rwgt(central_or_shift)
                : 1.
   ;
 }
