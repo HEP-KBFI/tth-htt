@@ -90,6 +90,9 @@ public:
   get_dy_norm(const std::string & central_or_shift) const;
 
   double
+  get_toppt_rwgt(const std::string & central_or_shift) const;
+  
+  double
   get_sf_triggerEff(const std::string & central_or_shift) const;
 
   virtual double
@@ -115,6 +118,9 @@ public:
                  int nBLoose,
                  int nBMedium);
 
+  void
+  record_toppt_rwgt(const std::vector<GenParticle> & genTopQuarks);
+  
   void
   record_lumiScale(const edm::VParameterSet & lumiScales);
 
@@ -295,6 +301,7 @@ protected:
   std::map<PUsys, double> weights_pu_;
   std::map<int, double> weights_dy_norm_;
   std::map<int, double> weights_dy_rwgt_;
+  std::map<int, double> weights_toppt_rwgt_;
   std::map<int, double> weights_btag_;
   std::map<TriggerSFsys, double> weights_leptonTriggerEff_;
   std::map<TriggerSFsys, double> weights_tauTriggerEff_;
