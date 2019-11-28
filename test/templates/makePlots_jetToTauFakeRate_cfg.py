@@ -130,7 +130,27 @@ process.makePlots.distributions = cms.VPSet(
         histogramName = cms.string("BJets_medium/$PROCESS/phi"),
         xAxisTitle = cms.string("b-jet (medium) #phi"),
         yAxisTitle = cms.string("dN/d#phi")
-        ),
+    ),
+    cms.PSet(
+        histogramName = cms.string("evt/$PROCESS/numJets_for_numBJets_mediumGe2"),
+        xAxisTitle = cms.string("jet Multiplicity"),
+        yAxisTitle = cms.string("N")
+    ),
+    cms.PSet(
+        histogramName = cms.string("evt/$PROCESS/numJets_for_numBJets_mediumEq1_and_looseGe2"),
+        xAxisTitle = cms.string("jet Multiplicity"),
+        yAxisTitle = cms.string("N")
+    ),
+    cms.PSet(
+        histogramName = cms.string("evt/$PROCESS/numJets_for_numBJets_mediumEq1_and_looseEq1"),
+        xAxisTitle = cms.string("jet Multiplicity"),
+        yAxisTitle = cms.string("N")
+    ),
+    cms.PSet(
+        histogramName = cms.string("evt/$PROCESS/numJets_for_numBJets_mediumEq0_and_looseGe2"),
+        xAxisTitle = cms.string("jet Multiplicity"),
+        yAxisTitle = cms.string("N")
+    ),
     cms.PSet(
         histogramName = cms.string("met/$PROCESS/met_pt"),
         xAxisTitle = cms.string("E_{T}^{miss} [GeV]"),

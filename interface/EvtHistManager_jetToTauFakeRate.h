@@ -44,6 +44,11 @@ private:
   TH1 * histogram_numBJets_loose_;
   TH1 * histogram_numBJets_medium_;
 
+  TH1 * histogram_numJets_for_numBJets_mediumGe2_;
+  TH1 * histogram_numJets_for_numBJets_mediumEq1_and_looseGe2_;
+  TH1 * histogram_numJets_for_numBJets_mediumEq1_and_looseEq1_;
+  TH1 * histogram_numJets_for_numBJets_mediumEq0_and_looseGe2_;
+
   TH1 * histogram_m_ll_;
   TH1 * histogram_m_bb_;
   TH1 * histogram_mT_e_;
