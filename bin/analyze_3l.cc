@@ -170,8 +170,7 @@ int main(int argc, char* argv[])
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
   const bool isControlRegion = cfg_analyze.getParameter<bool>("isControlRegion");
-  //const unsigned int skipEvery = cfg_analyze.getParameter<unsigned int>("skipEvery");
-  const unsigned int skipEvery = 1;
+  const unsigned int skipEvery = cfg_analyze.getParameter<unsigned int>("skipEvery");
 
   // single lepton triggers
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
@@ -396,7 +395,7 @@ int main(int argc, char* argv[])
 
   //--- HH scan
 
-  const edm::ParameterSet hhWeight_cfg; // = cfg_analyze.getParameterSet("hhWeight_cfg");
+  const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
   const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
   const HHWeightInterface * HHWeight_calc = nullptr;
   if(apply_HH_rwgt)
@@ -1001,9 +1000,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    //if (( eventInfo.event == 494829711 || eventInfo.event == 23244563 )) isDEBUG = true;
-    //else continue;
-    //if ( analyzedEntries > 300000 ) break;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1509,8 +1505,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 
 //--- apply data/MC corrections for efficiencies for lepton to pass loose identification and isolation criteria
       evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose());
-      if ( isDEBUG ) std::cout << "event " << eventInfo.str() << " getSF_leptonID_and_Iso_looset " << dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose() << "\n";
-
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
@@ -1715,8 +1709,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     cutFlowTable.update("signal region veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
-    if ( isDEBUG ) std::cout << "event " << eventInfo.str() << " evtweight " << evtWeightRecorder << "\n";
-    //std::cout << evtWeightRecorder << '\n';
+    if(isDEBUG)
+    {
+      std::cout << "event " << eventInfo.str() << " evtweight: " << evtWeightRecorder << '\n';
+    }
 
     std::vector<double> WeightBM; // weights to do histograms for BMs
     std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs

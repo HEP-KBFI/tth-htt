@@ -931,8 +931,6 @@ int main(int argc, char* argv[])
                 << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
-    //if (!( eventInfo.event == 2983422 )) continue;
-    //if (analyzedEntries > 1000) break;
     histogram_analyzedEntries->Fill(0.);
 
     if ( isDEBUG ) {
