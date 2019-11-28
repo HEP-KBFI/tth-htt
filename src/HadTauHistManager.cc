@@ -3,6 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // TauID::
 
 #include <TMath.h> // TMath::Pi()
 
@@ -53,6 +54,8 @@ void HadTauHistManager::bookHistograms(TFileDirectory& dir)
   histogram_abs_genPdgId_       = book1D(dir, "abs_genPdgId",     "abs_genPdgId",    22, -0.5, +21.5);
 
   if ( option_ == kOption_allHistograms ) {
+    const int & anti_e_bins = TauID_levels.at(TauID::DeepTau2017v2VSe);
+    const int & anti_mu_bins = TauID_levels.at(TauID::DeepTau2017v2VSmu);
     histogram_decayMode_        = book1D(dir, "decayMode",        "decayMode",       12, -0.5, +11.5);
     histogram_mass_             = book1D(dir, "mass",             "mass",            40,  0.,    2.);
     histogram_charge_           = book1D(dir, "charge",           "charge",           3, -1.5,  +1.5);
@@ -60,8 +63,8 @@ void HadTauHistManager::bookHistograms(TFileDirectory& dir)
     histogram_dxy_              = book1D(dir, "dxy",              "dxy",             40, -0.1,  +0.1);
     histogram_decayModeFinding_ = book1D(dir, "decayModeFinding", "decayModeFinding", 2, -0.5, +1.5);
     histogram_id_mva_           = book1D(dir, "id_mva",          "id_mva",            9, -0.5, +8.5);
-    histogram_antiElectron_     = book1D(dir, "antiElectron",     "antiElectron",     6, -0.5, +5.5);
-    histogram_antiMuon_         = book1D(dir, "antiMuon",         "antiMuon",         3, -0.5, +2.5);
+    histogram_antiElectron_     = book1D(dir, "antiElectron",     "antiElectron",     anti_e_bins,  -0.5, anti_e_bins  - 0.5);
+    histogram_antiMuon_         = book1D(dir, "antiMuon",         "antiMuon",         anti_mu_bins, -0.5, anti_mu_bins - 0.5);
   }
 }
 
@@ -84,15 +87,15 @@ HadTauHistManager::fillHistograms(const RecoHadTau & hadTau,
   fillWithOverFlow(histogram_abs_genPdgId_, abs_genPdgId, evtWeight, evtWeightErr);
 
   if ( option_ == kOption_allHistograms ) {
-    fillWithOverFlow(histogram_decayMode_,        hadTau.decayMode(),    evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_mass_,             hadTau.mass(),         evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_charge_,           hadTau.charge(),       evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_dz_,               hadTau.dz(),           evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_dxy_,              hadTau.dxy(),          evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_decayModeFinding_, hadTau.idDecayMode(),  evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_id_mva_,           hadTau.id_mva(),       evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_antiElectron_,     hadTau.antiElectron(), evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_antiMuon_,         hadTau.antiMuon(),     evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_decayMode_,        hadTau.decayMode(),                      evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_mass_,             hadTau.mass(),                           evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_charge_,           hadTau.charge(),                         evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_dz_,               hadTau.dz(),                             evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_dxy_,              hadTau.dxy(),                            evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_decayModeFinding_, hadTau.idDecayMode(),                    evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_id_mva_,           hadTau.id_mva(),                         evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_antiElectron_,     hadTau.id_mva(TauID::DeepTau2017v2VSe),  evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_antiMuon_,         hadTau.id_mva(TauID::DeepTau2017v2VSmu), evtWeight, evtWeightErr);
   }
 }
 

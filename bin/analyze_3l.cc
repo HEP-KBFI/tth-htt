@@ -659,62 +659,75 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     WeightHistManager* weights_;
   };
 
-  const vstring categories_TensorFlow_3l_ttH_tH_3cat_v8 = {
-    "output_NN_3l_ttH_tH_3cat_v8_ttH_bl",
-    "output_NN_3l_ttH_tH_3cat_v8_ttH_bt",
-    "output_NN_3l_ttH_tH_3cat_v8_tH_bl",
-    "output_NN_3l_ttH_tH_3cat_v8_tH_bt",
-    "output_NN_3l_ttH_tH_3cat_v8_rest_bl",
-    "output_NN_3l_ttH_tH_3cat_v8_rest_bt",
-    "output_NN_3l_ttH_tH_3cat_v8_cr"
+  const std::map<std::string, std::vector<double>> categories_TensorFlow_3l_ttH_tH_3cat_v8 = {
+    {"output_NN_3l_ttH_tH_3cat_v8_ttH_bl",  {}},
+    {"output_NN_3l_ttH_tH_3cat_v8_ttH_bt",  {}},
+    {"output_NN_3l_ttH_tH_3cat_v8_tH_bl",   {}},
+    {"output_NN_3l_ttH_tH_3cat_v8_tH_bt",   {}},
+    {"output_NN_3l_ttH_tH_3cat_v8_rest_bl", {}},
+    {"output_NN_3l_ttH_tH_3cat_v8_rest_bt", {}},
+    {"output_NN_3l_ttH_tH_3cat_v8_cr",      {}}
   };
 
-  const vstring categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ = {
-    "output_NN_sig_2_rest_2_th_2_withWZ_ttH_bl",
-    "output_NN_sig_2_rest_2_th_2_withWZ_ttH_bt",
-    "output_NN_sig_2_rest_2_th_2_withWZ_tH_bl",
-    "output_NN_sig_2_rest_2_th_2_withWZ_tH_bt",
-    "output_NN_sig_2_rest_2_th_2_withWZ_rest_eee_bl",
-    "output_NN_sig_2_rest_2_th_2_withWZ_rest_eee_bt",
-    "output_NN_sig_2_rest_2_th_2_withWZ_rest_eem_bl",
-    "output_NN_sig_2_rest_2_th_2_withWZ_rest_eem_bt",
-    "output_NN_sig_2_rest_2_th_2_withWZ_rest_emm_bl",
-    "output_NN_sig_2_rest_2_th_2_withWZ_rest_emm_bt",
-    "output_NN_sig_2_rest_2_th_2_withWZ_rest_mmm_bl",
-    "output_NN_sig_2_rest_2_th_2_withWZ_rest_mmm_bt",
-    "output_NN_sig_2_rest_2_th_2_withWZ_cr"
+  const std::map<std::string, std::vector<double>> categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ = {
+    {"output_NN_sig_2_rest_2_th_2_withWZ_ttH_bl",      {0.0, 0.45, 0.51, 0.57, 0.66, 1.0}},
+    {"output_NN_sig_2_rest_2_th_2_withWZ_ttH_bt",      {0.0, 0.51, 0.60, 0.70, 1.0}},
+    {"output_NN_sig_2_rest_2_th_2_withWZ_tH_bl",       {0.0, 0.43, 0.47, 0.50, 0.55, 0.61, 0.71, 1.0}},
+    {"output_NN_sig_2_rest_2_th_2_withWZ_tH_bt",       {0.0, 0.46, 0.58, 1.0}},
+    {"output_NN_sig_2_rest_2_th_2_withWZ_rest_eee",    {0, 1}},
+    {"output_NN_sig_2_rest_2_th_2_withWZ_rest_eem_bl", {0.0, 0.48, 0.52, 0.59, 1.0}},
+    {"output_NN_sig_2_rest_2_th_2_withWZ_rest_eem_bt", {0, 1}},
+    {"output_NN_sig_2_rest_2_th_2_withWZ_rest_emm_bl", {0.0, 0.47, 0.53, 0.58, 1.0}},
+    {"output_NN_sig_2_rest_2_th_2_withWZ_rest_emm_bt", {0, 1}},
+    {"output_NN_sig_2_rest_2_th_2_withWZ_rest_mmm_bl", {0.0, 0.50, 0.58, 1.0}},
+    {"output_NN_sig_2_rest_2_th_2_withWZ_rest_mmm_bt", {0, 1}},
+    {"output_NN_sig_2_rest_2_th_2_withWZ_cr",          {0, 1}}
+  };
+  /*
+  ttH_bl, 5, [0.0, 0.45, 0.51, 0.57, 0.66, 1.0]
+  ttH_bt, 4, [0.0, 0.51, 0.60, 0.70, 1.0]
+  tHq_bl, 7, [0.0, 0.43, 0.47, 0.50, 0.55, 0.61, 0.71, 1.0]
+  tHq_bt,  3,  [0.0, 0.46, 0.58, 1.0]
+  BKG_eee,  1,  [0, 1]
+  BKG_eem_bl,  4,  [0.0, 0.48, 0.52, 0.59, 1.0]
+  BKG_eem_bt,  1,  [0, 1]
+  BKG_emm_bl,  4,  [0.0, 0.47, 0.53, 0.58, 1.0]
+  BKG_emm_bt,  1, [0, 1]
+  BKG_mmm_bl,  3,  [0.0, 0.50, 0.58, 1.0]
+  BKG_mmm_bt,  1,  [0, 1]
+  */
+
+
+  const std::map<std::string, std::vector<double>> categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ = {
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_ttH_bl",      {}},
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_ttH_bt",      {}},
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_tH_bl",       {}},
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_tH_bt",       {}},
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eee_bl", {}},
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eee_bt", {}},
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eem_bl", {}},
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eem_bt", {}},
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_emm_bl", {}},
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_emm_bt", {}},
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_mmm_bl", {}},
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_mmm_bt", {}},
+    {"output_NN_sig_2p5_rest_2_th_2p5_withWZ_cr",          {}}
   };
 
-  const vstring categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ = {
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_ttH_bl",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_ttH_bt",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_tH_bl",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_tH_bt",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eee_bl",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eee_bt",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eem_bl",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eem_bt",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_emm_bl",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_emm_bt",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_mmm_bl",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_mmm_bt",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_cr"
-  };
-
-  const vstring categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ = {
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_ttH_bl",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_ttH_bt",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_tH_bl",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_tH_bt",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eee_bl",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eee_bt",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eem_bl",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eem_bt",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_emm_bl",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_emm_bt",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_mmm_bl",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_mmm_bt",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_cr"
+  const std::map<std::string, std::vector<double>> categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ = {
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_ttH_bl",      {}},
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_ttH_bt",      {}},
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_tH_bl",       {}},
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_tH_bt",       {}},
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eee_bl", {}},
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eee_bt", {}},
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eem_bl", {}},
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eem_bt", {}},
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_rest_emm_bl", {}},
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_rest_emm_bt", {}},
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_rest_mmm_bl", {}},
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_rest_mmm_bt", {}},
+    {"output_NN_sig_2_rest_2p5_th_2_withWZ_cr",          {}}
   };
 
   vstring ctrl_categories = { "other" };
@@ -1337,7 +1350,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
       jetCleanerByIndex(jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, fakeableHadTaus) :
       jetCleaner       (jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, fakeableHadTaus)
-      ;
+    ;
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -1696,6 +1709,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     cutFlowTable.update("signal region veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
+    if(isDEBUG)
+    {
+      std::cout << "event " << eventInfo.str() << " evtweight: " << evtWeightRecorder << '\n';
+    }
 
     std::vector<double> WeightBM; // weights to do histograms for BMs
     std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
@@ -2139,8 +2156,11 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         if ( selElectrons.size() == 0) category_sig_2_rest_2_th_2_withWZ += "_mmm";
         }
 
-      if (selBJets_medium.size() >= 2) category_sig_2_rest_2_th_2_withWZ += "_bt";
-      else category_sig_2_rest_2_th_2_withWZ += "_bl";
+      if ( category_sig_2_rest_2_th_2_withWZ.find("_eee") == std::string::npos)
+      {
+        if (selBJets_medium.size() >= 2) category_sig_2_rest_2_th_2_withWZ += "_bt";
+        else category_sig_2_rest_2_th_2_withWZ += "_bl";
+      }
 
     }
     else if(isControlRegion)

@@ -688,7 +688,6 @@ int main(int argc, char* argv[])
   cutFlowTableType cutFlowTable;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
-    //if (!( eventInfo.event == 16732188)) continue; // :
     if(inputTree -> canReport(reportEvery))
     {
       std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()

@@ -1178,18 +1178,10 @@ int main(int argc, char* argv[])
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets;
-    if (!selectBDT) {
-      cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, fakeableHadTausFull) :
-      jetCleaner       (jet_ptrs, fakeableLeptonsFull, fakeableHadTausFull)
-      ;
-    } else {
-      cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, selLeptons_full, selHadTaus) :
-      jetCleaner       (jet_ptrs, selLeptons_full, selHadTaus)
-      ;
-    }
+    const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
+      jetCleanerByIndex(jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, selectBDT ? selHadTaus : fakeableHadTausFull) :
+      jetCleaner       (jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, selectBDT ? selHadTaus : fakeableHadTausFull)
+    ;
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);

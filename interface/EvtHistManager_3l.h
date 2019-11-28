@@ -31,10 +31,10 @@ class EvtHistManager_3l
 
   void
   bookCategories(TFileDirectory & dir,
-                 const std::vector<std::string> & categories,
-                 const std::vector<std::string> & categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ,
-                 const std::vector<std::string> & categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ,
-                 const std::vector<std::string> & categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ
+                 const std::map<std::string, std::vector<double>> & categories,
+                 const std::map<std::string, std::vector<double>> & categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ,
+                 const std::map<std::string, std::vector<double>> & categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ,
+                 const std::map<std::string, std::vector<double>> & categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ
                );
 
   void

@@ -407,7 +407,6 @@ main(int argc,
                 << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
-    //if (!( eventInfo.event == 126120 )) continue; 
 
     if(run_lumi_eventSelector && ! (*run_lumi_eventSelector)(eventInfo))
     {
