@@ -126,8 +126,12 @@ for sample_name, sample_info in samples.items():
     sample_info["triggers"] = [ "2tau" ]
   if sample_info["type"] == "data":
     sample_info["use_it"] = sample_name.startswith("/Tau/") and mode == "default"
-  if re.match("/DY(\d)?Jets", sample_name):
+  elif re.match("/DY(\d)?Jets", sample_name):
     sample_info["sample_category"] = "DY"
+  elif sample_name.startswith('/TTJets'):
+    sample_info["use_it"] = mode == "forBDTtraining"
+  elif sample_name.startswith('/TTTo'):
+    sample_info["use_it"] = mode == "default"
 
 if __name__ == '__main__':
   logging.info(
