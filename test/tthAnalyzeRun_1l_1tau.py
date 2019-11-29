@@ -118,8 +118,10 @@ for sample_name, sample_info in samples.items():
     sample_info["sample_category"] = "DY"
   elif sample_name.startswith('/TTJets'):
     sample_info["use_it"] = mode == "forBDTtraining"
+    sample_info["sample_category"] = "TT"
   elif sample_name.startswith('/TTTo'):
     sample_info["use_it"] = mode == "default"
+    sample_info["sample_category"] = "TT"
 
 if __name__ == '__main__':
   logging.info(
