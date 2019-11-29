@@ -318,8 +318,8 @@ m = sbatchManager(
   verbose               = {{verbose}}, 
   dry_run               = {{dry_run}}, 
   use_home              = {{use_home}}, 
-  min_file_size         = {{min_file_size}}
-  max_num_submittedJobs = {{max_num_submittedJobs}}
+  min_file_size         = {{min_file_size}},
+  max_num_submittedJobs = {{max_num_submittedJobs}},
 )
 m.setWorkingDir('{{working_dir}}')
 m.log_completion = {{verbose}}
