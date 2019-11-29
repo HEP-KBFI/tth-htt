@@ -31,6 +31,7 @@ parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_sideband()
+parser.do_MC_only()
 args = parser.parse_args()
 
 # Common arguments
@@ -58,6 +59,7 @@ jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 sideband          = args.sideband
 tau_id            = args.tau_id
+MC_only           = args.MC_only
 
 # Use the arguments
 central_or_shifts = []
@@ -113,6 +115,11 @@ if mode == "default" and len(central_or_shifts) <= 1:
   ]
 else:
   evtCategories = []
+
+if MC_only :
+  for sample_name, sample_info in samples.items():
+    if sample_info["type"] == "data" :
+      sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.info(

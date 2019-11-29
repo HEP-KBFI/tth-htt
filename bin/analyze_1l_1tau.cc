@@ -642,13 +642,23 @@ int main(int argc, char* argv[])
   HadTopTagger_semi_boosted_AK8* hadTopTagger_semi_boosted_fromAK8 = new HadTopTagger_semi_boosted_AK8();
 
 //--- initialize eventlevel BDTs
+  /*
+  'lep_conePt', 'avg_dr_jet',
+  'mT_lep', 'mT_tau',
+  'tau_pt', 'dr_lep_tau',
+  'costS', 'mTauTauVis', 'mTauTau',
+  'res_HTT', 'res_HTT_2',
+  'mbb_loose', 'met_LD', 'nJet', 'nBJetLoose',
+  'charge_lep_tau',
+  'max_Lep_eta', 'Lep_min_dr_jet'
+  */
   std::vector<std::string> mvaInputVariables_1l_1tau_opt ={
     "lep_conePt", "avg_dr_jet",
     "mT_lep", "mT_tau",
     "tau_pt", "dr_lep_tau",
     "costS", "mTauTauVis", "mTauTau",
     "res_HTT", "res_HTT_2",
-    "mbb_loose", "met_LD",
+    "mbb_loose", "met_LD", "nJet", "nBJetLoose",
     "charge_lep_tau",
     "max_Lep_eta", "Lep_min_dr_jet"
   };
@@ -1866,11 +1876,12 @@ int main(int argc, char* argv[])
        {"dr_lep_tau",       dr_lep_tau},
        {"costS",            costS},
        {"mTauTauVis",       mTauTauVis},
-       {"PzetaComb",        comp_pZetaComb(selLepton->p4(), selHadTau->p4(), met.p4().px(), met.p4().py())},
+       //{"PzetaComb",        comp_pZetaComb(selLepton->p4(), selHadTau->p4(), met.p4().px(), met.p4().py())},
        {"res-HTT_CSVsort4rd",  max_mvaOutput_HTT_CSVsort4rd},
        {"res-HTT_CSVsort4rd_2",  max_mvaOutput_HTT_CSVsort4rd_2},
        {"HadTop_pt_CSVsort4rd",  HadTop_pt_CSVsort4rd},
        {"nBJetMedium",       selBJets_medium.size()},
+       {"nBJetLoose",        selBJets_loose.size()},
        {"HadTop_pt_boosted", 1.0},
        {"mTauTau",		mTauTau},
        {"nJet",		selJets.size()},

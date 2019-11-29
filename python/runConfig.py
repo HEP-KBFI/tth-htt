@@ -123,7 +123,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       dest = 'debug', action = 'store_true', default = False,
       help = 'R|Enable debugging flag in the analysis',
     )
-    
+
 
   def add_files_per_job(self, files_per_job = 20):
     self.add_argument('-j', '--files-per-job',
@@ -212,7 +212,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       type = str, dest = 'jet_cleaning', metavar = 'method', default = default_jet_cleaning, required = False, choices = choices,
       help = 'R|Jet cleaning method (choices: %s)' % tthAnalyzeParser.cat(choices),
     )
-  
+
   def add_gen_matching(self, default_gen_matching = 'by_index'):
     choices = [ 'by_index', 'by_dr' ]
     self.add_argument('-g', '--gen-matching',
@@ -224,6 +224,12 @@ class tthAnalyzeParser(argparse.ArgumentParser):
     self.add_argument('-c', '--control-region',
       dest = 'control_region', action = 'store_true', default = False,
       help = 'R|Run control region instead',
+    )
+
+  def do_MC_only(self):
+    self.add_argument('-M', '--MC-only',
+        dest = 'MC_only', action = 'store_true', default = False,
+        help = 'M|do not run data',
     )
 
   def add_stitched(self, use_dy = False, use_wj = False):
