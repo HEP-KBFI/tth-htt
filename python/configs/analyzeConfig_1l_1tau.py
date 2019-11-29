@@ -483,7 +483,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
 
             # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
             for category in self.categories:
-              key_hadd_stage1_job = getKey(category, process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+              key_hadd_stage1_job = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
               key_hadd_stage1_5_dir = getKey("hadd", lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
               hadd_stage1_5_job_tuple = (category, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
               key_hadd_stage1_5_job = getKey(*hadd_stage1_5_job_tuple)
