@@ -28,8 +28,8 @@ public:
   inline Float_t weight_ttH_hww()       const { return weight_ttH_hww_; }
   inline Float_t weight_ttH_hww_error() const { return weight_ttH_hww_error_; }
   inline Float_t LR()                   const { return LR_; }
-  inline Float_t LR_up()          const { return LR_up_; }
-  inline Float_t LR_down()        const { return LR_down_; }
+  inline Float_t LR_up()                const { return LR_up_; }
+  inline Float_t LR_down()              const { return LR_down_; }
   inline Float_t cpuTime()              const { return cpuTime_; }
   inline Float_t realTime()             const { return realTime_; }
   inline Int_t   isValid()              const { return isValid_; }

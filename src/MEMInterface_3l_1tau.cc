@@ -87,8 +87,8 @@ MEMInterface_3l_1tau::operator()(const RecoLepton * selLepton_lead,
     result.weight_ttH_hww_       = tmpResult.prob_tth_h2ww;
     result.weight_ttH_hww_error_ = tmpResult.prob_tth_h2ww_err;
     result.LR_                   = tmpResult.lr;
-    result.LR_up_          = tmpResult.lr_up;
-    result.LR_down_        = tmpResult.lr_down;
+    result.LR_up_                = tmpResult.lr_up;
+    result.LR_down_              = tmpResult.lr_down;
     result.isValid_              = ! tmpResult.err ? 1 : 0;
     result.errorFlag_            = tmpResult.err;
 

@@ -220,14 +220,14 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
   if(denominator > 0.)
   {
     result.isValid_ = 1;
-    result.LR_            = numerator      / denominator;
+    result.LR_      = numerator      / denominator;
     result.LR_up_   = numerator_up   / denominator_up;
     result.LR_down_ = numerator_down / denominator_down;
   }
   else
   {
     result.errorFlag_ = ADDMEM_3L_ERROR;
-    result.LR_            = -1.;
+    result.LR_      = -1.;
     result.LR_up_   = -1.;
     result.LR_down_ = -1.;
   }

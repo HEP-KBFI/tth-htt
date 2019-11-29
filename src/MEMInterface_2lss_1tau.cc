@@ -272,14 +272,14 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
   if(denominator > 0.)
   {
     result.isValid_ = 1;
-    result.LR_            = numerator      / denominator;
+    result.LR_      = numerator      / denominator;
     result.LR_up_   = numerator_up   / denominator_up;
     result.LR_down_ = numerator_down / denominator_down;
   }
   else
   {
     result.errorFlag_ = ADDMEM_2LSS1TAU_ERROR;
-    result.LR_            = -1.;
+    result.LR_      = -1.;
     result.LR_up_   = -1.;
     result.LR_down_ = -1.;
   }
@@ -301,15 +301,15 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
   ;
   if(denominator_ttZ_LR > 0.)
   {
-    result.isValid_ttZ_LR_    = 1;
-    result.ttZ_LR_            = numerator      / denominator_ttZ_LR;
+    result.isValid_ttZ_LR_ = 1;
+    result.ttZ_LR_      = numerator      / denominator_ttZ_LR;
     result.ttZ_LR_up_   = numerator_up   / denominator_ttZ_LR_up;
     result.ttZ_LR_down_ = numerator_down / denominator_ttZ_LR_down;
   }
   else
   {
     result.errorFlag_ttZ_LR_  = ADDMEM_2LSS1TAU_ERROR;
-    result.ttZ_LR_            = -1.;
+    result.ttZ_LR_      = -1.;
     result.ttZ_LR_up_   = -1.;
     result.ttZ_LR_down_ = -1.;
   }
@@ -320,14 +320,14 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
   if(denominator_ttbar_LR > 0.)
   {
     result.isValid_ttbar_LR_ = 1;
-    result.ttbar_LR_            = numerator      / denominator_ttbar_LR;
+    result.ttbar_LR_      = numerator      / denominator_ttbar_LR;
     result.ttbar_LR_up_   = numerator_up   / denominator_ttbar_LR_up;
     result.ttbar_LR_down_ = numerator_down / denominator_ttbar_LR_down;
   }
   else
   {
-    result.errorFlag_ttbar_LR_  = ADDMEM_2LSS1TAU_ERROR;
-    result.ttbar_LR_            = -1.;
+    result.errorFlag_ttbar_LR_ = ADDMEM_2LSS1TAU_ERROR;
+    result.ttbar_LR_      = -1.;
     result.ttbar_LR_up_   = -1.;
     result.ttbar_LR_down_ = -1.;
   }

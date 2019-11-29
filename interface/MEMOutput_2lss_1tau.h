@@ -38,14 +38,14 @@ public:
   inline Float_t weight_tt()            const { return weight_tt_; }
   inline Float_t weight_tt_error()      const { return weight_tt_error_; }
   inline Float_t LR()                   const { return LR_; }
-  inline Float_t LR_up()          const { return LR_up_; }
-  inline Float_t LR_down()        const { return LR_down_; }
+  inline Float_t LR_up()                const { return LR_up_; }
+  inline Float_t LR_down()              const { return LR_down_; }
   inline Float_t ttZ_LR()               const { return ttZ_LR_; }
-  inline Float_t ttZ_LR_up()      const { return ttZ_LR_up_; }
-  inline Float_t ttZ_LR_down()    const { return ttZ_LR_down_; }
+  inline Float_t ttZ_LR_up()            const { return ttZ_LR_up_; }
+  inline Float_t ttZ_LR_down()          const { return ttZ_LR_down_; }
   inline Float_t ttbar_LR()             const { return ttbar_LR_; }
-  inline Float_t ttbar_LR_up()    const { return ttbar_LR_up_; }
-  inline Float_t ttbar_LR_down()  const { return ttbar_LR_down_; }
+  inline Float_t ttbar_LR_up()          const { return ttbar_LR_up_; }
+  inline Float_t ttbar_LR_down()        const { return ttbar_LR_down_; }
   inline Float_t cpuTime()              const { return cpuTime_; }
   inline Float_t realTime()             const { return realTime_; }
   inline Int_t isValid()                const { return isValid_; }
