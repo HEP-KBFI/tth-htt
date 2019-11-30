@@ -194,7 +194,7 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
   ;
   const double numerator_down =
     result.weight_ttH_ - result.weight_ttH_error_ +
-    k_tHq * (result.weight_tHq_ - result.weight_tHq_error_)
+    k_tHq * std::max(result.weight_tHq_ - result.weight_tHq_error_, 0.f)
   ;
   const double k_ttW = 1.;
   const double k_ttZ = 1.;
@@ -207,9 +207,9 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
   ;
   const double denominator_up =
     numerator_up +
-    k_ttW * (result.weight_ttW_ - result.weight_ttW_error_) +
-    k_ttZ * (result.weight_ttZ_ - result.weight_ttZ_error_) +
-    k_tt  * (result.weight_tt_  - result.weight_tt_error_)
+    k_ttW * std::max(result.weight_ttW_ - result.weight_ttW_error_, 0.f) +
+    k_ttZ * std::max(result.weight_ttZ_ - result.weight_ttZ_error_, 0.f) +
+    k_tt  * std::max(result.weight_tt_  - result.weight_tt_error_,  0.f)
   ;
   const double denominator_down =
     numerator_down +
@@ -220,9 +220,9 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
   if(denominator > 0.)
   {
     result.isValid_ = 1;
-    result.LR_      = numerator      / denominator;
-    result.LR_up_   = numerator_up   / denominator_up;
-    result.LR_down_ = numerator_down / denominator_down;
+    result.LR_      =                         numerator      / denominator;
+    result.LR_up_   = denominator_up   > 0. ? numerator_up   / denominator_up   : 0.;
+    result.LR_down_ = denominator_down > 0. ? numerator_down / denominator_down : 0.;
   }
   else
   {
