@@ -91,10 +91,10 @@ int main(int argc,
   const vstring central_or_shifts           = cfg_addMEM.getParameter<vstring>("central_or_shift");
   const std::string treeName                = cfg_addMEM.getParameter<std::string>("treeName");
   const std::string selEventsFileName_input = cfg_addMEM.getParameter<std::string>("selEventsFileName_input");
+  const std::string integration_choice      = cfg_addMEM.getParameter<std::string>("integration_choice");
   const bool isMC                           = cfg_addMEM.getParameter<bool>("isMC");
   const bool isDEBUG                        = cfg_addMEM.getParameter<bool>("isDEBUG");
   const bool dryRun                         = cfg_addMEM.getParameter<bool>("dryRun");
-  const bool lowIntegrationPoints           = cfg_addMEM.getParameter<bool>("lowIntegrationPoints");
   const bool copy_all_branches              = cfg_addMEM.getParameter<bool>("copy_all_branches");
   const bool readGenObjects                 = cfg_addMEM.getParameter<bool>("readGenObjects");
   const bool jetCleaningByIndex             = cfg_addMEM.getParameter<bool>("jetCleaningByIndex");
@@ -129,11 +129,12 @@ int main(int argc,
     throw cms::Exception(argv[0]) << "central_or_shift cannot be empty! provide at least 'central'!";
   }
 
-  const std::string memPythonConfigFile =
-    lowIntegrationPoints                                     ?
-    "ttH_Htautau_MEM_Analysis/MEM/small_lowpoints_122016.py" :
-    "ttH_Htautau_MEM_Analysis/MEM/small_highpoints_112019.py"
-  ;
+  std::string memPythonConfigFile;
+  if     (integration_choice == "low")     memPythonConfigFile = "ttH_Htautau_MEM_Analysis/MEM/small_lowpoints_122016.py";
+  else if(integration_choice == "nominal") memPythonConfigFile = "ttH_Htautau_MEM_Analysis/MEM/small_nomin_122016.py";
+  else if(integration_choice == "high")    memPythonConfigFile = "ttH_Htautau_MEM_Analysis/MEM/small_highpoints_112019.py";
+  else throw cmsException(__func__, __LINE__) << "Unexpected integration choice: " << integration_choice;
+
   std::cout << "MEM config: " << memPythonConfigFile << '\n';
   MEMInterface_2lss_1tau memInterface_2lss_1tau(memPythonConfigFile);
 

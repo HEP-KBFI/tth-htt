@@ -20,7 +20,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
         mem_integrations_per_job,
         max_mem_integrations,
         num_parallel_jobs,
-        lowIntegrationPoints,
+        integration_choice,
         isDebug,
         jet_cleaning_by_index,
         central_or_shift,
@@ -45,7 +45,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
       num_parallel_jobs        = num_parallel_jobs,
       leptonSelection          = leptonSelection,
       hadTauSelection          = hadTauSelection,
-      lowIntegrationPoints     = lowIntegrationPoints,
+      integration_choice       = integration_choice,
       jet_cleaning_by_index    = jet_cleaning_by_index,
       dry_run                  = dry_run,
       use_nonnominal           = use_nonnominal,
@@ -96,7 +96,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
     lines.append("process.addMEM_2lss_1tau.leptonSelection = cms.string('%s')" % self.leptonSelection)
     lines.append("process.addMEM_2lss_1tau.hadTauSelection = cms.string('%s')" % self.hadTauSelection)
     lines.append("process.addMEM_2lss_1tau.isMC = cms.bool(%s)" % isMC)
-    lines.append("process.addMEM_2lss_1tau.lowIntegrationPoints = cms.bool(%s)" % self.lowIntegrationPoints)
+    lines.append("process.addMEM_2lss_1tau.integration_choice = cms.string('%s')" % self.integration_choice)
     lines.append("process.addMEM_2lss_1tau.isDEBUG = cms.bool(%s)" % self.isDebug)
     lines.append("process.addMEM_2lss_1tau.central_or_shift = cms.vstring(%s)" % self.central_or_shift)
     lines.append("process.addMEM_2lss_1tau.dryRun = cms.bool(%s)" % self.dry_run)
