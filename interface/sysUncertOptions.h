@@ -203,6 +203,11 @@ enum
   kDYMCNormScaleFactors_shiftUp, kDYMCNormScaleFactors_shiftDown
 };
 
+enum class MEMsys
+{
+  nominal, up, down
+};
+
 bool
 isValidJESsource(int era,
                  int central_or_shift);
@@ -269,6 +274,9 @@ getDYMCNormScaleFactors_option(const std::string & central_or_shift);
 
 int
 getTopPtReweighting_option(const std::string & central_or_shift);
+
+MEMsys
+getMEMsys_option(const std::string & central_or_shift);
 
 void
 checkOptionValidity(const std::string & central_or_shift,

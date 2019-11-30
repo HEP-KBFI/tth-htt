@@ -293,11 +293,15 @@ int main(int argc, char* argv[])
   const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift_main, isMC);
   const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected      : getHadTauPt_option(central_or_shift_main);
 
+  const MEMsys mem_option_main = getMEMsys_option(central_or_shift_main);
+  assert(mem_option_main == MEMsys::nominal);
+
   std::cout
-    << "central_or_shift = "    << central_or_shift_main << "\n"
-       " -> hadTauPt_option = " << hadTauPt_option       << "\n"
-       " -> met_option      = " << met_option            << "\n"
-       " -> jetPt_option    = " << jetPt_option          << '\n'
+    << "central_or_shift    = " << central_or_shift_main       << "\n"
+       " -> hadTauPt_option = " << hadTauPt_option             << "\n"
+       " -> met_option      = " << met_option                  << "\n"
+       " -> jetPt_option    = " << jetPt_option                << "\n"
+       " -> MEMsys option   = " << as_integer(mem_option_main) << '\n'
   ;
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
@@ -1858,12 +1862,12 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       }
     }
 
-    const double memOutput_LR  = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.LR()         : -1.;
-    const double memOutput_ttH = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttH() : -100.;
-    const double memOutput_tHq = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_tHq() : -100.;
-    const double memOutput_ttW = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttW() : -100.;
-    const double memOutput_ttZ = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_ttZ() : -100.;
-    const double memOutput_tt  = memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.weight_tt()  : -100.;
+    const std::map<MEMsys, double> memOutput_LR = memOutput_3l_matched.get_LR_map();
+    const double memOutput_ttH = memOutput_3l_matched.isValid() ? memOutput_3l_matched.weight_ttH() : -100.;
+    const double memOutput_tHq = memOutput_3l_matched.isValid() ? memOutput_3l_matched.weight_tHq() : -100.;
+    const double memOutput_ttW = memOutput_3l_matched.isValid() ? memOutput_3l_matched.weight_ttW() : -100.;
+    const double memOutput_ttZ = memOutput_3l_matched.isValid() ? memOutput_3l_matched.weight_ttZ() : -100.;
+    const double memOutput_tt  = memOutput_3l_matched.isValid() ? memOutput_3l_matched.weight_tt()  : -100.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 3l category of ttH multilepton analysis
@@ -2485,7 +2489,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("memOutput_ttW",       memOutput_ttW)
           ("memOutput_ttZ",       memOutput_ttZ)
           ("memOutput_tt",        memOutput_tt)
-          ("memOutput_LR",        memOutput_LR)
+          ("memOutput_LR",        memOutput_LR.at(mem_option_main))
           ("lumiScale",           evtWeightRecorder.get_lumiScale(central_or_shift_main))
           ("genWeight",           eventInfo.genWeight)
           ("evtWeight",           evtWeightRecorder.get(central_or_shift_main))
@@ -2673,7 +2677,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       // Integral_ttZ_Zll not filled
       snm->read(memOutput_tt,                           FloatVariableType::Integral_ttbar);
       // integration_type not filled
-      snm->read(memOutput_LR,                           FloatVariableType::MEM_LR);
+      snm->read(memOutput_LR.at(MEMsys::nominal),       FloatVariableType::MEM_LR);
+      snm->read(memOutput_LR.at(MEMsys::up),            FloatVariableType::MEM_LR_up);
+      snm->read(memOutput_LR.at(MEMsys::down),          FloatVariableType::MEM_LR_down);
 
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 

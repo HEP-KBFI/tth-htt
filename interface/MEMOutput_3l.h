@@ -16,6 +16,7 @@
 
 // forward declarations
 class RecoLepton;
+enum class MEMsys;
 
 class MEMOutput_3l
 {
@@ -51,6 +52,9 @@ public:
   inline Int_t errorFlag()          const { return errorFlag_; }
 
   inline bool is_initialized() const { return eventInfo_.is_initialized(); }
+
+  std::map<MEMsys, double>
+  get_LR_map() const;
 
   friend class MEMInterface_3l;
   friend class MEMOutputReader_3l;

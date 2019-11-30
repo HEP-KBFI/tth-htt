@@ -178,7 +178,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
          not (self.applyFakeRateWeights == "2lepton" and central_or_shift in systematics.FR_t and is_mc):
         # If the FRs are applied only to the leptons, the tau FR is compensated with data-to-MC SF, even in the SR
         return False
-      if not is_mc and not isFR_shape_shift:
+      if not is_mc and not isFR_shape_shift and central_or_shift not in systematics.MEM_2lss_1tau:
         return False
       if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
         return False

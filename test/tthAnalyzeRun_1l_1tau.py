@@ -14,8 +14,8 @@ import re
 # E.g.: ./test/tthAnalyzeRun_1l_1tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
-sys_choices      = [ 'full' ] + systematics.an_extended_opts
-systematics.full = systematics.an_extended
+sys_choices      = [ 'full' ] + systematics.an_extended_opts + [ 'topPtReweighting' ]
+systematics.full = systematics.an_extended + systematics.topPtReweighting
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)

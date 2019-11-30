@@ -160,7 +160,7 @@ class analyzeConfig_3l(analyzeConfig):
         return False
       if isFR_shape_shift and lepton_selection == "Tight":
         return False
-      if not is_mc and not isFR_shape_shift:
+      if not is_mc and not isFR_shape_shift and central_or_shift not in systematics.MEM_3l:
         return False
       if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
         return False

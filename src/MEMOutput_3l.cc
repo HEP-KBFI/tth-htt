@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l.h" // MEMOutput_3l
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // MEMsys::
 
 MEMOutput_3l::MEMOutput_3l()
   : leadLepton_eta_(0.)
@@ -32,6 +33,16 @@ MEMOutput_3l::MEMOutput_3l()
   , realTime_(-1.)
   , isValid_(0)
 {}
+
+std::map<MEMsys, double>
+MEMOutput_3l::get_LR_map() const
+{
+  return {
+    { MEMsys::nominal, isValid() ? LR()      : -1. },
+    { MEMsys::up,      isValid() ? LR_up()   : -1. },
+    { MEMsys::down,    isValid() ? LR_down() : -1. },
+  };
+}
 
 void
 MEMOutput_3l::fillInputs(const RecoLepton * leadLepton,

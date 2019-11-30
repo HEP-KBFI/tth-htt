@@ -2,6 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // MEMsys::
 
 MEMOutput_2lss_1tau::MEMOutput_2lss_1tau()
   : leadLepton_eta_(0.)
@@ -37,6 +38,16 @@ MEMOutput_2lss_1tau::MEMOutput_2lss_1tau()
   , isValid_ttbar_LR_(0)
   , errorFlag_ttbar_LR_(0)
 {}
+
+std::map<MEMsys, double>
+MEMOutput_2lss_1tau::get_LR_map() const
+{
+  return {
+    { MEMsys::nominal, isValid() ? LR()      : -1. },
+    { MEMsys::up,      isValid() ? LR_up()   : -1. },
+    { MEMsys::down,    isValid() ? LR_down() : -1. },
+  };
+}
 
 void
 MEMOutput_2lss_1tau::fillInputs(const RecoLepton * leadLepton,

@@ -129,6 +129,8 @@ enum class FloatVariableType
   Integral_ttbar,           ///< ttbar weight
   integration_type,
   MEM_LR,                   ///< MEM likelihood ratio (the final score)
+  MEM_LR_up,                ///< MEM likelihood ratio (the final score, shifted up)
+  MEM_LR_down,              ///< MEM likelihood ratio (the final score, shifted down)
 
 //--- custom additional branches (not necessary in sync)
   genWeight
