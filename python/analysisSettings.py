@@ -46,6 +46,11 @@ class systematics(object):
   MET_ResponseSyst     = [ "MET_RespUp",                      "MET_RespDown"                      ]
   MET_ResolutionSyst   = [ "MET_ResolUp",                     "MET_ResolDown"                     ]
 
+  MEM_3l        = [ "CMS_ttHl_MEM_3l_LRUp",        "CMS_ttHl_MEM_3l_LRDown"        ]
+  MEM_2lss_1tau = [ "CMS_ttHl_MEM_2lss_1tau_LRUp", "CMS_ttHl_MEM_2lss_1tau_LRDown" ]
+  MEM_3l_1tau   = [ "CMS_ttHl_MEM_3l_1tau_LRUp",   "CMS_ttHl_MEM_3l_1tau_LRDown"   ]
+  MEM = MEM_3l + MEM_2lss_1tau + MEM_3l_1tau
+
   class L1PreFiring_(object):
     up   = "CMS_ttHl_l1PreFireUp"
     down = "CMS_ttHl_l1PreFireDown"
@@ -281,5 +286,5 @@ class systematics(object):
   an_extended_hh      = an_extended
   an_extended_opts_hh = an_extended_opts
 
-  an_internal      =    central +  tauIDSF +  btag +  FR_t +  lhe +  triggerSF +  PU +  L1PreFiring +  FRe_shape +  FRm_shape +  DYMCReweighting  + DYMCNormScaleFactors  + topPtReweighting
-  an_internal_opts = [ "central", "tauIDSF", "btag", "FR_t", "lhe", "triggerSF", "PU", "L1PreFiring", "FRe_shape", "FRm_shape", "DYMCReweighting", "DYMCNormScaleFactors", "topPtReweighting" ]
+  an_internal      =    central +  tauIDSF +  btag +  FR_t +  lhe +  triggerSF +  PU +  L1PreFiring +  FRe_shape +  FRm_shape +  DYMCReweighting  + DYMCNormScaleFactors  + topPtReweighting +  MEM
+  an_internal_opts = [ "central", "tauIDSF", "btag", "FR_t", "lhe", "triggerSF", "PU", "L1PreFiring", "FRe_shape", "FRm_shape", "DYMCReweighting", "DYMCNormScaleFactors", "topPtReweighting", "MEM" ]

@@ -251,6 +251,18 @@ getTopPtReweighting_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+MEMsys
+getMEMsys_option(const std::string & central_or_shift)
+{
+  MEMsys central_or_shift_int = MEMsys::nominal;
+  if(boost::starts_with(central_or_shift, "CMS_ttHl_MEM"))
+  {
+    if     (boost::ends_with(central_or_shift, "Up")  ) central_or_shift_int = MEMsys::up;
+    else if(boost::ends_with(central_or_shift, "Down")) central_or_shift_int = MEMsys::down;
+  }
+  return central_or_shift_int;
+}
+
 void
 checkOptionValidity(const std::string & central_or_shift,
                     bool isMC)

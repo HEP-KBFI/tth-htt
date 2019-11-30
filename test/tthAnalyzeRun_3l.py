@@ -16,8 +16,8 @@ import re
 mode_choices     = [
   'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
 ]
-sys_choices      = [ 'full' ] + systematics.an_extended_opts
-systematics.full = systematics.an_extended
+sys_choices      = [ 'full' ] + systematics.an_extended_opts + [ 'MEM_3l' ]
+systematics.full = systematics.an_extended + systematics.MEM_3l
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -67,6 +67,8 @@ central_or_shifts = []
 for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):
     if central_or_shift not in central_or_shifts:
+      if central_or_shift in systematics.MEM_3l and "MEM" not in mode:
+        continue
       central_or_shifts.append(central_or_shift)
 do_sync = mode.startswith('sync')
 lumi = get_lumi(era)

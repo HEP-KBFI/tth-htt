@@ -10,6 +10,7 @@
 // forward declarations
 class RecoLepton;
 class RecoHadTau;
+enum class MEMsys;
 
 class MEMOutput_3l_1tau
 {
@@ -36,6 +37,9 @@ public:
   inline Int_t   errorFlag()            const { return errorFlag_; }
 
   inline bool is_initialized() const { return eventInfo_.is_initialized(); }
+
+  std::map<MEMsys, double>
+  get_LR_map() const;
 
   void
   fillInputs(const RecoLepton * leadLepton,

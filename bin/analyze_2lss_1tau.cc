@@ -305,11 +305,15 @@ int main(int argc, char* argv[])
   const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift_main, isMC);
   const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected      : getHadTauPt_option(central_or_shift_main);
 
+  const MEMsys mem_option_main = getMEMsys_option(central_or_shift_main);
+  assert(mem_option_main == MEMsys::nominal);
+
   std::cout
-    << "central_or_shift    = " << central_or_shift_main << "\n"
-       " -> hadTauPt_option = " << hadTauPt_option       << "\n"
-       " -> met_option      = " << met_option            << "\n"
-       " -> jetPt_option    = " << jetPt_option          << '\n'
+    << "central_or_shift    = " << central_or_shift_main       << "\n"
+       " -> hadTauPt_option = " << hadTauPt_option             << "\n"
+       " -> met_option      = " << met_option                  << "\n"
+       " -> jetPt_option    = " << jetPt_option                << "\n"
+       " -> MEMsys option   = " << as_integer(mem_option_main) << '\n'
   ;
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
@@ -1922,7 +1926,7 @@ int main(int argc, char* argv[])
         }
       }
     }
-    double memOutput_LR = ( memOutput_2lss_1tau_matched.isValid() ) ? memOutput_2lss_1tau_matched.LR() : -1.;
+    const std::map<MEMsys, double> memOutput_LR = memOutput_2lss_1tau_matched.get_LR_map();
 
     //--- compute output of hadronic top tagger BDT
     // it returns the gen-triplets organized in top/anti-top
@@ -2215,6 +2219,7 @@ int main(int argc, char* argv[])
       {
         selHistManagerType* selHistManager = selHistManagers[central_or_shift][genMatch->getIdx()];
         assert(selHistManager);
+        const MEMsys mem_option = getMEMsys_option(central_or_shift);
         if(! skipFilling)
         {
           selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
@@ -2272,7 +2277,7 @@ int main(int argc, char* argv[])
       	    mvaOutput_2lss_1tau_HTT_SUM_M,
       	    mTauTauVis1_sel,
       	    mTauTauVis2_sel,
-      	    memOutput_LR,
+            memOutput_LR.at(mem_option),
             category_3l_sig_1p2_rest_1_th_1p2_TF,
             output_NN_sig_1p2_rest_1_th_1p2,
             category_sig_2_rest_2p2_th_2_TF,
@@ -2294,16 +2299,16 @@ int main(int argc, char* argv[])
               {
               selHistManager_evt_category_decayModes->fillHistograms(
                 selElectrons.size(),
-            		selMuons.size(),
-            		selHadTaus.size(),
-            		selJets.size(),
-            		selBJets_loose.size(),
-            		selBJets_medium.size(),
-            		kv.second,
-            		mvaOutput_2lss_1tau_HTT_SUM_M,
-            		mTauTauVis1_sel,
-            		mTauTauVis2_sel,
-            		memOutput_LR,
+                selMuons.size(),
+                selHadTaus.size(),
+                selJets.size(),
+                selBJets_loose.size(),
+                selBJets_medium.size(),
+                kv.second,
+                mvaOutput_2lss_1tau_HTT_SUM_M,
+                mTauTauVis1_sel,
+                mTauTauVis2_sel,
+                memOutput_LR.at(mem_option),
                 category_3l_sig_1p2_rest_1_th_1p2_TF,
                 output_NN_sig_1p2_rest_1_th_1p2,
                 category_sig_2_rest_2p2_th_2_TF,
@@ -2401,7 +2406,7 @@ int main(int argc, char* argv[])
           ("mTauTauVis2",                    mTauTauVis2_sel)
           ("memOutput_isValid",              memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.isValid()   : -100.)
           ("memOutput_errorFlag",            memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.errorFlag() : -100.)
-          ("memOutput_LR",                   memOutput_LR)
+          ("memOutput_LR",                   memOutput_LR.at(mem_option_main))
           ("lep1_genLepPt",                  lep1_genLepPt)
           ("lep2_genLepPt",                  lep2_genLepPt)
           ("tau_genTauPt",                   tau_genTauPt)
@@ -2590,7 +2595,9 @@ int main(int argc, char* argv[])
       snm->read(memOutput_ttZ_Zll,                      FloatVariableType::Integral_ttZ_Zll);
       snm->read(memOutput_tt,                           FloatVariableType::Integral_ttbar);
       snm->read(memOutput_type,                         FloatVariableType::integration_type);
-      snm->read(memOutput_LR,                           FloatVariableType::MEM_LR);
+      snm->read(memOutput_LR.at(MEMsys::nominal),       FloatVariableType::MEM_LR);
+      snm->read(memOutput_LR.at(MEMsys::up),            FloatVariableType::MEM_LR_up);
+      snm->read(memOutput_LR.at(MEMsys::down),          FloatVariableType::MEM_LR_down);
 
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 

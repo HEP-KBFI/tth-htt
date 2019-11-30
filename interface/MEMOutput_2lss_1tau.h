@@ -17,6 +17,7 @@
 // forward declarations
 class RecoLepton;
 class RecoHadTau;
+enum class MEMsys;
 
 class MEMOutput_2lss_1tau
 {
@@ -56,6 +57,9 @@ public:
   inline Int_t errorFlag_ttbar_LR()     const { return errorFlag_ttbar_LR_; }
 
   inline bool is_initialized() const { return eventInfo_.is_initialized(); }
+
+  std::map<MEMsys, double>
+  get_LR_map() const;
 
   friend class MEMInterface_2lss_1tau;
   friend class MEMOutputReader_2lss_1tau;
