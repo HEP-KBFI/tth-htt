@@ -155,7 +155,9 @@ Data_to_MC_CorrectionInterface_2016::getWeight_leptonTriggerEff() const
 double
 Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
+  // see Table 4 in AN2017/029v5
   double sf = 1.;
+  double sfErr = 0.;
 
   if(numElectrons_ == 1 && numMuons_ == 0)
   {
@@ -172,18 +174,32 @@ Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central
   else if(numElectrons_ == 2 && numMuons_ == 0)
   {
     sf = 1.01;
+    sfErr = 0.02;
   }
   else if(numElectrons_ == 1 && numMuons_ == 1)
   {
     sf = 1.01;
+    sfErr = 0.01;
   }
   else if(numElectrons_ == 0 && numMuons_ == 2)
   {
     sf = 1.;
+    sfErr = 0.01;
   }
   else
   {
     sf = 1.;
+    sfErr = 0.03;
+  }
+
+  switch(central_or_shift)
+  {
+    case TriggerSFsys::central:   return sf;
+    case TriggerSFsys::shiftUp:   return sf + sfErr;
+    case TriggerSFsys::shiftDown: return sf - sfErr;
+    default: throw cmsException(this, __func__, __LINE__)
+                     << "Invalid option: " << static_cast<int>(central_or_shift)
+                   ;
   }
 
   return sf;
@@ -227,36 +243,39 @@ Data_to_MC_CorrectionInterface_2016::getSF_eToTauFakeRate(FRet central_or_shift)
       const double hadTau_absEta = std::fabs(hadTau_eta_[idxHadTau]);
       if(hadTauSelection_antiElectron_[idxHadTau] > 0)
       {
+        // https://twiki.cern.ch/twiki/bin/view/CMS/TauIDRecommendation13TeV?rev=78#Electron_to_tau_fake_rate
+        const double barrelEta = 1.460;
+        const double endcapEta = 1.558;
         switch(hadTauSelection_antiElectron_[idxHadTau])
         {
           case 1: // vLoose
           {
-            if(hadTau_absEta < 1.479) { sf_tmp = 1.21; sfErr = 0.06; }
-            else                      { sf_tmp = 1.38; sfErr = 0.04; }
+            if     (hadTau_absEta < barrelEta) { sf_tmp = 1.21; sfErr = 0.06; }
+            else if(hadTau_absEta > endcapEta) { sf_tmp = 1.38; sfErr = 0.04; }
             break;
           }
           case 2: // Loose
           {
-            if(hadTau_absEta < 1.479) { sf_tmp = 1.32; sfErr = 0.03; }
-            else                      { sf_tmp = 1.38; sfErr = 0.04; }
+            if     (hadTau_absEta < barrelEta) { sf_tmp = 1.32; sfErr = 0.03; }
+            else if(hadTau_absEta > endcapEta) { sf_tmp = 1.38; sfErr = 0.04; }
             break;
           }
           case 3: // Medium
           {
-            if(hadTau_absEta < 1.479) { sf_tmp = 1.32; sfErr = 0.07; }
-            else                      { sf_tmp = 1.53; sfErr = 0.13; }
+            if     (hadTau_absEta < barrelEta) { sf_tmp = 1.32; sfErr = 0.07; }
+            else if(hadTau_absEta > endcapEta) { sf_tmp = 1.53; sfErr = 0.13; }
             break;
           }
           case 4: // Tight
           {
-            if(hadTau_absEta < 1.479) { sf_tmp = 1.40; sfErr = 0.12; }
-            else                      { sf_tmp = 1.90; sfErr = 0.30; }
+            if     (hadTau_absEta < barrelEta) { sf_tmp = 1.40; sfErr = 0.12; }
+            else if(hadTau_absEta > endcapEta) { sf_tmp = 1.90; sfErr = 0.30; }
             break;
           }
           case 5: // vTight
           {
-            if(hadTau_absEta < 1.479) { sf_tmp = 1.21; sfErr = 0.17; }
-            else                      { sf_tmp = 1.97; sfErr = 0.45; }
+            if     (hadTau_absEta < barrelEta) { sf_tmp = 1.21; sfErr = 0.17; }
+            else if(hadTau_absEta > endcapEta) { sf_tmp = 1.97; sfErr = 0.45; }
             break;
           }
           default: throw cmsException(this, __func__, __LINE__)
@@ -300,6 +319,7 @@ Data_to_MC_CorrectionInterface_2016::getSF_muToTauFakeRate(FRmt central_or_shift
       {
         switch(hadTauSelection_antiMuon_[idxHadTau])
         {
+          // https://twiki.cern.ch/twiki/bin/view/CMS/TauIDRecommendation13TeV?rev=78#Muon_to_tau_fake_rate
           case 1: // Loose
           {
             if     (hadTau_absEta < 0.4) { sf_tmp = 1.15; sfErr = 0.04; }
