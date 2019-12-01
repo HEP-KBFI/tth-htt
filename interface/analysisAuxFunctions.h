@@ -73,8 +73,10 @@ const std::map<TauID, int> TauID_levels = {
 };
 
 const std::map<int, std::vector<std::string>> TauID_level_strings = {
-  { 1, {                                                     "Tight" } },
-  { 4, {                        "VLoose", "Loose" ,"Medium", "Tight" } },
+  { 1, {                                                     "Tight"                      } },
+  { 2, {                                  "Loose",           "Tight"                      } },
+  { 4, {                        "VLoose", "Loose", "Medium", "Tight"                      } },
+  { 5, {                        "VLoose", "Loose", "Medium", "Tight", "VTight"            } },
   { 6, {                        "VLoose", "Loose", "Medium", "Tight", "VTight", "VVTight" } },
   { 7, {             "VVLoose", "VLoose", "Loose", "Medium", "Tight", "VTight", "VVTight" } },
   { 8, { "VVVLoose", "VVLoose", "VLoose", "Loose", "Medium", "Tight", "VTight", "VVTight" } },
@@ -373,11 +375,6 @@ get_BtagWeight(const std::vector<const RecoJet *> & jets);
 double
 get_BtagWeight(const std::vector<const RecoJet *> & jets,
                int central_or_shift);
-
-double
-getHadTauEScorrFactor(int era,
-                      int decayMode,
-                      int central_or_shift);
 
 /**
  * @brief Compute MHT
