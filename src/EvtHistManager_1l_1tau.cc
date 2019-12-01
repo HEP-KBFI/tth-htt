@@ -49,7 +49,7 @@ EvtHistManager_1l_1tau::bookHistograms(TFileDirectory & dir)
 
   histogram_mTauTauVis_   = book1D(dir, "mTauTauVis", "mTauTauVis",  40,    0.,   200.);
   histogram_mTauTau_      = book1D(dir, "mTauTau",    "mTauTau",     30,    0.,   300.);
-  histogram_mvaOutput_1l_1tau_DeepTauMedium_     = book1D(dir, "mvaOutput_Legacy",   "mvaOutput_Legacy",    8,    0.,   1.);
+  histogram_mvaOutput_1l_1tau_DeepTauMedium_     = book1D(dir, "mvaOutput_Legacy",   "mvaOutput_Legacy",    100,    0.,   1.);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }

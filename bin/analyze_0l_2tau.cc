@@ -589,12 +589,21 @@ int main(int argc, char* argv[])
   HadTopTagger_semi_boosted_AK8* hadTopTagger_semi_boosted_fromAK8 = new HadTopTagger_semi_boosted_AK8();
 
   //--- initialize BDTs
-  std::string mvaFileName_0l_2tau_deeptauLoose_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/0l_2tau_DeepTauLoose_4.xml";
+  std::string mvaFileName_0l_2tau_deeptauLoose_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/0l_2tau_DeepTauMedium_4.xml";
+  /*
+  'dr_taus', 'mTauTauVis', 'mTauTau', 'cosThetaS_hadTau',
+  'tau1_pt', 'tau2_pt',
+  'mbb_loose', 'avg_dr_jet', 'mindr_tau1_jet', 'mindr_tau2_jet', 'met_LD',
+  'nJet', 'nBJetLoose',
+  'mT_tau1', 'mT_tau2',
+  'res_HTT', 'HadTop_pt', 'HadTop_pt_2', 'max_Lep_eta'
+  */
   std::vector<std::string> mvaInputVariables_0l_2tau_deeptau_4 = {
     "dr_taus", "mTauTauVis", "mTauTau", "cosThetaS_hadTau",
     "tau1_pt", "tau2_pt",
     "mbb_loose", "avg_dr_jet", "mindr_tau1_jet", "mindr_tau2_jet", "met_LD",
-    "mT_tau1", "mT_tau2", "nBJetMedium",
+    "nJet", "nBJetLoose",
+    "mT_tau1", "mT_tau2",
     "res_HTT", "HadTop_pt", "HadTop_pt_2", "max_Lep_eta"
   };
   TMVAInterface mva_xgb_Legacy(
@@ -1641,7 +1650,8 @@ int main(int argc, char* argv[])
       {"cosThetaS_hadTau", cosThetaS_hadTau },
       {"mbb_loose",        mbb_loose},
       {"met_LD",           met_LD},
-      {"nBJetMedium",      selBJets_medium.size()},
+      {"nBJetLoose",        selBJets_loose.size()},
+      {"nJet",		selJets.size()},
       {"mindr_tau1_jet",   TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets))},
       {"mindr_tau2_jet",   TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets))},
       {"mT_tau1",          comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi())},
