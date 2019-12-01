@@ -11,12 +11,16 @@
 Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const edm::ParameterSet & cfg)
   : Data_to_MC_CorrectionInterface_Base(cfg)
 {
+  // Reconstruction efficiencies of electrons with pT < 20 GeV, measured by EGamma POG
+  // https://twiki.cern.ch/twiki/pub/CMS/Egamma2017DataRecommendations/egammaEffi.txt_EGM2D_runBCDEF_passingRECO_lowEt.root
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_gsf_ptLt20.root",
     "EGamma_SF2D",
     lut::kXetaYpt, -2.5, +2.5, lut::kLimit, -1., 20., lut::kLimit_and_Cut
   ));
+  // Reconstruction efficiencies of electrons with pT > 20 GeV, measured by EGamma POG
+  // https://twiki.cern.ch/twiki/pub/CMS/Egamma2017DataRecommendations/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_gsf_ptGt20.root",
@@ -24,6 +28,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 20., -1., lut::kLimit_and_Cut
   ));
 
+  // Efficiency of electron isolation (and track vertex cuts)?
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_trkVtxCut_and_isoEff.root",
@@ -31,6 +36,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 10., 500., lut::kLimit
   ));
 
+  // Loose-to-tight electron ID SFs, measured by the CERN group
   sfElectronID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_e_3l.root",
@@ -44,12 +50,14 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXptYabsEta
   ));
 
+  // Tracking efficiency for muons with pT < 10 GeV, measured by Muon POG (?)
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkEff_ptLt10.root",
     "ratio_eff_eta3_tk0_dr030e030_corr",
     lut::kXetaYpt, -2.4, +2.4, lut::kLimit, -1., 10., lut::kCut
   ));
+  // Tracking efficiency for muons with pT > 10 GeV, measured by Muon POG (?)
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkEff_ptGt10.root",
@@ -57,6 +65,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXetaYpt, -2.4, +2.4, lut::kLimit, 10., -1., lut::kCut
   ));
 
+  // Identification efficiencies of loose muons with pT < 20 GeV, measured by Muon POG
   // https://twiki.cern.ch/twiki/pub/CMS/MuonReferenceEffs2017/RunBCDEF_SF_ID_JPsi.root
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
@@ -64,6 +73,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     "NUM_LooseID_DEN_genTracks_pt_abseta",
     lut::kXptYabsEta, -1., 20., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
   ));
+  // Identification efficiencies of loose muons with pT > 20 GeV, measured by Muon POG
   // https://twiki.cern.ch/twiki/pub/CMS/MuonReferenceEffs2017/RunBCDEF_SF_ID.root
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
@@ -72,6 +82,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXptYabsEta, 20., -1., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
   ));
 
+  // Efficiency of muon isolation (and track vertex cuts)
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkVtxCut_and_isoEff.root",
@@ -79,6 +90,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXptYabsEta, 10., 120., lut::kLimit, 0., 2.4, lut::kLimit
   ));
 
+  // Loose-to-tight muon ID SFs, measured by the CERN group
   sfMuonID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_m_3l.root",
