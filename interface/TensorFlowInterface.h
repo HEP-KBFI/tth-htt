@@ -20,7 +20,7 @@ class MVAInputVarTransformer;
 class TensorFlowInterface
 {
 public:
-  TensorFlowInterface(const std::string & mvaFileName,
+  /*TensorFlowInterface(const std::string & mvaFileName,
                       const std::vector<std::string> & mvaInputVariables,
                       const std::vector<std::string> classes,
                       const std::vector<double> & mvaInputVariables_mean = {},
@@ -38,16 +38,14 @@ public:
                       const std::vector<double> & mvaInputVariables_mean_odd = {},
 		      const std::vector<double> & mvaInputVariables_mean_even = {},
                       const std::vector<double> & mvaInputVariables_var_odd = {},
-                      const std::vector<double> & mvaInputVariables_var_even = {});
+                      const std::vector<double> & mvaInputVariables_var_even = {});*/
   TensorFlowInterface(const std::string & mvaFileName_odd,
-		      const std::string & mvaFileName_even,
                       const std::vector<std::string> & mvaInputVariables,
                       const std::vector<std::string> classes,
-		      const std::string & fitFunctionFileName,
-                      const std::vector<double> & mvaInputVariables_mean_odd = {},
-		      const std::vector<double> & mvaInputVariables_mean_even = {},
-                      const std::vector<double> & mvaInputVariables_var_odd = {},
-                      const std::vector<double> & mvaInputVariables_var_even = {});
+		                  const std::string & mvaFileName_even = "",
+		                  const std::string & fitFunctionFileName = "",
+                      const std::vector<double> & mvaInputVariables_mean = {},
+                      const std::vector<double> & mvaInputVariables_var = {});
   ~TensorFlowInterface();
 
   /**
@@ -55,26 +53,25 @@ public:
    * @param mvaInputs Values of MVA input variables (stored in std::map with key = MVA input variable name)
    * @return          MVA output
    */
-  std::map<std::string, double>
-  operator()(const std::map<std::string, double> & mvaInputs) const;
+  /*std::map<std::string, double>
+  operator()(const std::map<std::string, double> & mvaInputs) const;*/
 
   std::map<std::string, double>
-    operator()(const std::map<std::string, double> & mvaInputs, int event_number) const;
+    operator()(
+      const std::map<std::string, double> & mvaInputs,
+      int event_number = -1
+    ) const;
 
 
 private:
-  enum Mode{
-    k_old, k_odd_even
-  };
-  int mode_;
+  //enum Mode{
+  //  k_old, k_odd_even
+  //};
+  //int mode_;
   std::string mvaFileName_;
   tensorflow::GraphDef * graphDef_;
   tensorflow::Session * session_;
   const std::vector<std::string> classes_;
-  std::string input_layer_name;
-  std::string output_layer_name;
-  int n_input_layer;
-  int n_output_layer;
   std::string mvaFileName_odd_;
   tensorflow::GraphDef * graphDef_odd_;
   tensorflow::Session * session_odd_;
