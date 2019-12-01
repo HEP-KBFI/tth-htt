@@ -38,7 +38,7 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , genHadTauReader_(nullptr)
   , genJetReader_(nullptr)
   , readGenMatching_(readGenMatching)
-  , tauID_(TauID::MVAoldDMdR032017v2)
+  , tauID_(TauID::DeepTau2017v2VSjet)
   , hadTauPt_option_(kHadTauPt_central)
   , hadTau_pt_(nullptr)
   , hadTau_eta_(nullptr)
