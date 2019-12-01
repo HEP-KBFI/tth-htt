@@ -40,7 +40,7 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , genJetReader_(nullptr)
   , readGenMatching_(readGenMatching)
   , tauID_(TauID::DeepTau2017v2VSjet)
-  , tauESTool_(isMC_ ? new TauESTool(era_, kHadTauPt_central, true) : nullptr)
+  , tauESTool_(isMC_ ? new TauESTool(era_, kHadTauPt_central, false) : nullptr)
   , hadTau_pt_(nullptr)
   , hadTau_eta_(nullptr)
   , hadTau_phi_(nullptr)
