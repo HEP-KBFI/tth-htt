@@ -155,7 +155,9 @@ Data_to_MC_CorrectionInterface_2016::getWeight_leptonTriggerEff() const
 double
 Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
+  // see Table 4 in AN2017/029v5
   double sf = 1.;
+  double sfErr = 0.;
 
   if(numElectrons_ == 1 && numMuons_ == 0)
   {
@@ -172,18 +174,32 @@ Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central
   else if(numElectrons_ == 2 && numMuons_ == 0)
   {
     sf = 1.01;
+    sfErr = 0.02;
   }
   else if(numElectrons_ == 1 && numMuons_ == 1)
   {
     sf = 1.01;
+    sfErr = 0.01;
   }
   else if(numElectrons_ == 0 && numMuons_ == 2)
   {
     sf = 1.;
+    sfErr = 0.01;
   }
   else
   {
     sf = 1.;
+    sfErr = 0.03;
+  }
+
+  switch(central_or_shift)
+  {
+    case TriggerSFsys::central:   return sf;
+    case TriggerSFsys::shiftUp:   return sf + sfErr;
+    case TriggerSFsys::shiftDown: return sf - sfErr;
+    default: throw cmsException(this, __func__, __LINE__)
+                     << "Invalid option: " << static_cast<int>(central_or_shift)
+                   ;
   }
 
   return sf;
