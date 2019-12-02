@@ -57,7 +57,7 @@ version = "%s_%s" % (version, mode)
 if mode == 'sync':
   samples = load_samples(era, False, suffix = 'sync')
 elif mode == 'all':
-  samples = load_samples(era, False)
+  samples = load_samples(era, False, suffix = 'DeepTauIDv2p1')
 elif mode == 'hh':
   samples = load_samples(era, False, base = 'hh_multilepton')
 elif mode == 'hh_bbww':
