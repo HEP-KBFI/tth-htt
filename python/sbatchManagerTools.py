@@ -6,6 +6,18 @@ from tthAnalysis.HiggsToTauTau.common import logging
 import os
 import jinja2
 
+def find_duplicates(input_file_names):
+  input_file_names_occurrence = {}
+  for input_file_name in input_file_names:
+    if input_file_name not in input_file_names_occurrence:
+      input_file_names_occurrence[input_file_name] = 0
+    input_file_names_occurrence[input_file_name] += 1
+  input_file_names_duplicates = [
+    input_file_name for input_file_name in input_file_names_occurrence \
+    if input_file_names_occurrence[input_file_name] > 1
+  ]
+  return input_file_names_duplicates
+
 def createScript_sbatch(
     sbatch_script_file_name,
     executable,
@@ -210,6 +222,13 @@ def generate_sbatch_line(
     if type(input_file_names) is str:
         input_file_names = [ input_file_names ]
 
+    input_file_names_duplicates = find_duplicates(input_file_names)
+    if input_file_names_duplicates:
+      raise RuntimeError(
+        "Found duplicate input files to produce output file %s: %s" % \
+        (output_file_name, ", ".join(input_file_names_duplicates))
+      )
+
     submissionStatement = "m.submitJob(\n"                            \
       "  inputFiles             = {input_file_names},\n"              \
       "  executable             = '{executable}',\n"                  \
@@ -309,6 +328,14 @@ def generate_sbatch_lines_hadd(
     }
     if not pool_id:
         raise ValueError('pool_id is empty')
+
+    input_file_names_duplicates = find_duplicates(input_file_names)
+    if input_file_names_duplicates:
+      raise RuntimeError(
+        "Found duplicate input files to produce output file %s: %s" % \
+        (output_file_name, ", ".join(input_file_names_duplicates))
+      )
+
     sbatch_template = """
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 from tthAnalysis.HiggsToTauTau.ClusterHistogramAggregator import ClusterHistogramAggregator
