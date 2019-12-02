@@ -24,6 +24,7 @@ EventInfoReader::EventInfoReader(EventInfo * info,
   , branchName_nLHEReweightingWeight(Form("n%s", branchName_LHEReweightingWeight.data()))
   , branchName_gen_mHH("mHH_lhe")
   , branchName_gen_cosThetaStar("cosThetaStar_lhe")
+  , branchName_topPtRwgt("topPtRwgt")
 {}
 
 EventInfoReader::~EventInfoReader()
@@ -54,6 +55,10 @@ EventInfoReader::setBranchAddresses(TTree * tree)
       bai.setBranchAddress(info_ -> pileupWeight, getBranchName_pileup(PUsys::central));
       bai.setBranchAddress(info_ -> pileupWeightUp, getBranchName_pileup(PUsys::up));
       bai.setBranchAddress(info_ -> pileupWeightDown, getBranchName_pileup(PUsys::down));
+    }
+    if(info_ -> is_ttbar_rwgt())
+    {
+      bai.setBranchAddress(info_ -> topPtRwgtSF, branchName_topPtRwgt);
     }
   }
   if(info_ -> is_mc() && ! info_ -> tH_sf.empty())

@@ -37,7 +37,8 @@ EventInfo::EventInfo()
 
 EventInfo::EventInfo(bool is_mc,
                      bool is_signal,
-                     bool is_hh_nonresonant)
+                     bool is_hh_nonresonant,
+                     bool is_ttbar_rwgt)
   : run(0)
   , lumi(0)
   , event(0)
@@ -48,9 +49,11 @@ EventInfo::EventInfo(bool is_mc,
   , genDiHiggsDecayMode(-1)
   , gen_mHH(0.)
   , gen_cosThetaStar(-2.)
+  , topPtRwgtSF(-1.)
   , is_signal_(is_signal)
   , is_mc_(is_mc)
   , is_hh_nonresonant_(is_hh_nonresonant)
+  , is_ttbar_rwgt_(is_ttbar_rwgt)
   , central_or_shift_("central")
   , nLHEReweightingWeight(0)
   , LHEReweightingWeight(nullptr)
@@ -91,6 +94,7 @@ EventInfo::copy(const EventInfo & eventInfo)
   is_hh_nonresonant_ = eventInfo.is_hh_nonresonant_;
   gen_mHH = eventInfo.gen_mHH;
   gen_cosThetaStar = eventInfo.gen_cosThetaStar;
+  topPtRwgtSF = eventInfo.topPtRwgtSF;
 
   nLHEReweightingWeight = eventInfo.nLHEReweightingWeight;
   if(eventInfo.LHEReweightingWeight)
@@ -263,6 +267,12 @@ bool
 EventInfo::is_hh_nonresonant() const
 {
   return is_hh_nonresonant_;
+}
+
+bool
+EventInfo::is_ttbar_rwgt() const
+{
+  return is_ttbar_rwgt_;
 }
 
 std::string

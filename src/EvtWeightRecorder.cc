@@ -394,6 +394,26 @@ EvtWeightRecorder::record_toppt_rwgt(const std::vector<GenParticle> & genTopQuar
     else assert(0);
   }
 }
+
+void
+EvtWeightRecorder::record_toppt_rwgt(double sf)
+{
+  assert(isMC_);
+  weights_toppt_rwgt_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const int topPtReweighting_option = getTopPtReweighting_option(central_or_shift);
+    if(weights_toppt_rwgt_.count(topPtReweighting_option))
+    {
+      continue;
+    }
+
+    if      (topPtReweighting_option == kTopPtReweighting_central  ) weights_toppt_rwgt_[topPtReweighting_option] = sf;
+    else if (topPtReweighting_option == kTopPtReweighting_shiftUp  ) weights_toppt_rwgt_[topPtReweighting_option] = sf * sf;
+    else if (topPtReweighting_option == kTopPtReweighting_shiftDown) weights_toppt_rwgt_[topPtReweighting_option] = 1.;
+    else assert(0);
+  }
+}
  
 void
 EvtWeightRecorder::record_lumiScale(const edm::VParameterSet & lumiScales)

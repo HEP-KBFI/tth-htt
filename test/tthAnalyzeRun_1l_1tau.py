@@ -124,6 +124,7 @@ for sample_name, sample_info in samples.items():
   elif sample_name.startswith('/TTTo'):
     sample_info["use_it"] = mode == "default"
     sample_info["sample_category"] = "TT"
+    sample_info["apply_toppt_rwgt"] = True
   if MC_only :
     if sample_info["type"] == "data" :
       sample_info["use_it"] = False

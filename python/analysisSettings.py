@@ -42,7 +42,6 @@ class systematics(object):
   triggerSF            = [ "CMS_ttHl_triggerUp",              "CMS_ttHl_triggerDown"              ]
   DYMCReweighting      = [ "CMS_ttHl_DYMCReweightingUp",      "CMS_ttHl_DYMCReweightingDown"      ]
   DYMCNormScaleFactors = [ "CMS_ttHl_DYMCNormScaleFactorsUp", "CMS_ttHl_DYMCNormScaleFactorsDown" ]
-  topPtReweighting     = [ "CMS_ttHl_topPtReweightingUp",     "CMS_ttHl_topPtReweightingDown"     ]
   MET_ResponseSyst     = [ "MET_RespUp",                      "MET_RespDown"                      ]
   MET_ResolutionSyst   = [ "MET_ResolUp",                     "MET_ResolDown"                     ]
 
@@ -64,6 +63,13 @@ class systematics(object):
     full = [ up, down ]
 
   PU = PU_().full
+
+  class topPtReweighting_(object):
+    up   = "CMS_ttHl_topPtReweightingUp"
+    down = "CMS_ttHl_topPtReweightingDown"
+    full = [ up, down ]
+
+  topPtReweighting = topPtReweighting_().full
 
   class LHE(object):
 

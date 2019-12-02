@@ -529,6 +529,7 @@ class analyzeConfig(object):
         return "central"
 
     def accept_central_or_shift(self, central_or_shift, sample_category, sample_name, has_LHE = False):
+      #TODO use the full sample_info
       if central_or_shift in systematics.LHE().full           and not has_LHE:                              return False
       if central_or_shift in systematics.LHE().ttH            and sample_category not in self.ttHProcs:     return False
       if central_or_shift in systematics.LHE().tHq            and sample_category not in [ "tHq", "TH" ]:   return False
@@ -593,6 +594,9 @@ class analyzeConfig(object):
           jobOptions['apply_l1PreFireWeight'] = self.do_l1prefiring if is_mc else False
         if 'central_or_shift' not in jobOptions:
           jobOptions['central_or_shift'] = 'central'
+        if 'apply_topPtReweighting' not in jobOptions:
+          jobOptions['apply_topPtReweighting'] = sample_info['apply_toppt_rwgt'] if 'apply_toppt_rwgt' in sample_info else False
+          jobOptions['read_topPtReweighting'] = False #TODO: until there are samples with the branch available
         if 'lumiScale' not in jobOptions:
 
           nof_reweighting = sample_info['nof_reweighting']
@@ -640,6 +644,16 @@ class analyzeConfig(object):
               elif central_or_shift == jobOptions['central_or_shift']:
                 nof_events_label = 'CountWeighted{}'.format(count_suffix)
                 nof_events_idx = 0 # central
+
+              if jobOptions['apply_topPtReweighting'] and jobOptions['read_topPtReweighting']:
+                assert(is_mc)
+                if central_or_shift not in systematics.topPtReweighting:
+                  nof_events_label += "TopPtRwgtSF"
+                elif central_or_shift == systematics.topPtReweighting_().down:
+                  # no SF is applied
+                  pass
+                elif central_or_shift == systematics.topPtReweighting_().up:
+                  nof_events_label += "TopPtRwgtSFSquared"
 
               if nof_events_idx >= 0 and nof_events_label:
                 nof_events[central_or_shift] = sample_info["nof_events"][nof_events_label][nof_events_idx]
@@ -766,6 +780,8 @@ class analyzeConfig(object):
             'hhWeight_cfg.apply_rwgt',
             'minNumJets',
             'skipEvery',
+            'apply_topPtReweighting',
+            'read_topPtReweighting',
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',

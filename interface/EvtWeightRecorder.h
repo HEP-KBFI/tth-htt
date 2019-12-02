@@ -120,6 +120,9 @@ public:
 
   void
   record_toppt_rwgt(const std::vector<GenParticle> & genTopQuarks);
+
+  void
+  record_toppt_rwgt(double sf);
   
   void
   record_lumiScale(const edm::VParameterSet & lumiScales);

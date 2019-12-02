@@ -15,7 +15,8 @@ public:
   EventInfo();
   EventInfo(bool is_mc,
             bool is_signal = false,
-            bool is_hh_nonresonant = false);
+            bool is_hh_nonresonant = false,
+            bool is_ttbar_rwgt = false);
   EventInfo(const EventInfo & eventInfo);
   EventInfo &
   operator=(const EventInfo & eventInfo);
@@ -34,6 +35,7 @@ public:
   Int_t     genDiHiggsDecayMode; ///< Decay mode of both Higgs bosons (only if HH signal MC)
   Float_t   gen_mHH;             ///< LHE parton-level di-Higgs mass
   Float_t   gen_cosThetaStar;    ///< LHE parton-level cos(theta*) variable
+  Float_t   topPtRwgtSF;         ///< SF correct ttbar samples in top quark pT distribution (only if MC)
 
   double
   genWeight_tH() const;
@@ -76,6 +78,9 @@ public:
   is_hh_nonresonant() const;
 
   bool
+  is_ttbar_rwgt() const;
+
+  bool
   is_initialized() const;
 
   std::string
@@ -104,6 +109,7 @@ protected:
   bool is_signal_;
   bool is_mc_;
   bool is_hh_nonresonant_;
+  bool is_ttbar_rwgt_;
   std::string central_or_shift_;
 
   UInt_t nLHEReweightingWeight;
