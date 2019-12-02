@@ -146,6 +146,7 @@ int main(int argc, char* argv[])
   const bool isMC_tHW = process_string == "tHW";
   const bool isMC_tH = isMC_tHq || isMC_tHW;
   const bool isMC_VH = process_string == "VH";
+  const bool isMC_HH = process_string == "HH";
   const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
 
@@ -345,7 +346,7 @@ int main(int argc, char* argv[])
   }
 
 //--- declare event-level variables
-  EventInfo eventInfo(isMC, isSignal);
+  EventInfo eventInfo(isMC, isSignal, isMC_HH);
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
   const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
