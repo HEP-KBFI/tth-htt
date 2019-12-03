@@ -528,8 +528,13 @@ class analyzeConfig(object):
         #    return central_or_shift
         return "central"
 
-    def accept_central_or_shift(self, central_or_shift, sample_category, sample_name, has_LHE = False):
-      #TODO use the full sample_info
+    def accept_central_or_shift(self, central_or_shift, sample_info):
+      sample_name = sample_info["dbs_name"]
+      sample_category = sample_info["sample_category"]
+      has_LHE = sample_info["has_LHE"]
+      enable_toppt_rwgt = sample_info["apply_toppt_rwgt"] if "apply_toppt_rwgt" in sample_info else False
+      is_HHmc = sample_category.startswith("signal") or sample_category == "HH"
+
       if central_or_shift in systematics.LHE().full           and not has_LHE:                              return False
       if central_or_shift in systematics.LHE().ttH            and sample_category not in self.ttHProcs:     return False
       if central_or_shift in systematics.LHE().tHq            and sample_category not in [ "tHq", "TH" ]:   return False
@@ -541,8 +546,8 @@ class analyzeConfig(object):
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):     return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):   return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():        return False
-      if central_or_shift in systematics.LHE().hh and \
-          not (sample_category.startswith("signal") or sample_category == "HH"): return False
+      if central_or_shift in systematics.topPtReweighting     and not enable_toppt_rwgt:                    return False
+      if central_or_shift in systematics.LHE().hh             and not is_HHmc:                              return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False, dropCtrl = False):
@@ -609,7 +614,7 @@ class analyzeConfig(object):
             else:
               central_or_shifts = [ jobOptions['central_or_shift'] ]
             for central_or_shift in central_or_shifts:
-              if not self.accept_central_or_shift(central_or_shift, sample_info["sample_category"], sample_info["process_name_specific"]):
+              if not self.accept_central_or_shift(central_or_shift, sample_info):
                 continue
               nof_events_label = ''
               nof_events_idx = -1
