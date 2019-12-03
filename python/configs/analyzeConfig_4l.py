@@ -462,6 +462,7 @@ class analyzeConfig_4l(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base:
+            if "HH" in process_input_base : continue
             processes_input.append("%s_fake" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
@@ -484,6 +485,7 @@ class analyzeConfig_4l(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base:
+            if "HH" in process_input_base : continue
             processes_input.append("%s_Convs" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_Convs] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
