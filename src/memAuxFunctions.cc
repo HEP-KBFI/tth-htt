@@ -84,6 +84,13 @@ square_product_sum(const std::vector<double> & lhs,
   );
 }
 
+double
+nan_protection(double value,
+               double reset_value)
+{
+  return std::isnan(value) ? reset_value : value;
+}
+
 std::tuple<double, double, bool>
 compMEMLR(const std::vector<double> & signal_probabilities,
           const std::vector<double> & background_probabilities,

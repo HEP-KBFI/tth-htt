@@ -148,28 +148,28 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
       MEMpermutations_ttH_
     );
     result.weight_ttH_ = MEMpermutations_ttH_->resMEM_avgExl0.weight;
-    result.weight_ttH_error_ = MEMpermutations_ttH_->resMEM_avgExl0.err;
+    result.weight_ttH_error_ = nan_protection(MEMpermutations_ttH_->resMEM_avgExl0.err);
     result.kinfitscore_ttH_ = MEMpermutations_ttH_->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[9] != -1)
   {
     const Permutations * MEMpermutations_tHq = &MEMpermutations_[index_hyp_[9]];
     result.weight_tHq_ = MEMpermutations_tHq->resMEM_avgExl0.weight;
-    result.weight_tHq_error_ = MEMpermutations_tHq->resMEM_avgExl0.err;
+    result.weight_tHq_error_ = nan_protection(MEMpermutations_tHq->resMEM_avgExl0.err);
     result.kinfitscore_tHq_ = MEMpermutations_tHq->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[3] != -1)
   {
     const Permutations * MEMpermutations_ttW = &MEMpermutations_[index_hyp_[3]];
     result.weight_ttW_ = MEMpermutations_ttW->resMEM_avgExl0.weight;
-    result.weight_ttW_error_ = MEMpermutations_ttW->resMEM_avgExl0.err;
+    result.weight_ttW_error_ = nan_protection(MEMpermutations_ttW->resMEM_avgExl0.err);
     result.kinfitscore_ttW_ = MEMpermutations_ttW->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[0] != -1)
   {
     const Permutations * MEMpermutations_ttZ = &MEMpermutations_[index_hyp_[0]];
     result.weight_ttZ_ = MEMpermutations_ttZ->resMEM_avgExl0.weight;
-    result.weight_ttZ_error_ = MEMpermutations_ttZ->resMEM_avgExl0.err;
+    result.weight_ttZ_error_ = nan_protection(MEMpermutations_ttZ->resMEM_avgExl0.err);
     result.kinfitscore_ttZ_ = MEMpermutations_ttZ->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[5] != -1 || index_hyp_[6] != -1)
@@ -180,7 +180,7 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
       MEMpermutations_tt_
     );
     result.weight_tt_ = MEMpermutations_tt_->resMEM_avgExl0.weight;
-    result.weight_tt_error_ = MEMpermutations_tt_->resMEM_avgExl0.err;
+    result.weight_tt_error_ = nan_protection(MEMpermutations_tt_->resMEM_avgExl0.err);
     result.kinfitscore_tt_ = MEMpermutations_tt_->resKin_maxKinFit_Int.weight;
   }
 

@@ -56,7 +56,11 @@ reset_or_assign(const std::vector<T> & original_values,
 
 double
 square_product_sum(const std::vector<double> & lhs,
-           const std::vector<double> & rhs);
+                   const std::vector<double> & rhs);
+
+double
+nan_protection(double value,
+               double reset_value = 0.);
 
 std::tuple<double, double, bool>
 compMEMLR(const std::vector<double> & signal_probabilities,

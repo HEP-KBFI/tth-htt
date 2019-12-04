@@ -220,13 +220,13 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
   result.fillInputs(selLepton_lead, selLepton_sublead, selHadTau);
   result.type_                 = inputs[0].integration_type_;
   result.weight_ttH_           = inputs[0].weight_ttH_;
-  result.weight_ttH_error_     = inputs[0].weight_error_ttH_;
+  result.weight_ttH_error_     = nan_protection(inputs[0].weight_error_ttH_);
   result.weight_ttZ_           = inputs[0].weight_ttZ_;
-  result.weight_ttZ_error_     = inputs[0].weight_error_ttZ_;
+  result.weight_ttZ_error_     = nan_protection(inputs[0].weight_error_ttZ_);
   result.weight_ttZ_Zll_       = inputs[0].weight_ttZ_Zll_;
-  result.weight_ttZ_Zll_error_ = inputs[0].weight_error_ttZ_Zll_;
+  result.weight_ttZ_Zll_error_ = nan_protection(inputs[0].weight_error_ttZ_Zll_);
   result.weight_tt_            = inputs[0].weight_ttbar_DL_fakelep_;
-  result.weight_tt_error_      = inputs[0].weight_error_ttbar_DL_fakelep_;
+  result.weight_tt_error_      = nan_protection(inputs[0].weight_error_ttbar_DL_fakelep_);
 
   // compute MEM likelihood ratio
   // (kappa coefficients taken from Table 7 in AN-2016/363 v2)
@@ -308,4 +308,3 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
 
   return result;
 }
-
