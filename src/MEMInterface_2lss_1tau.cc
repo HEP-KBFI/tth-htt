@@ -259,8 +259,9 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
   );
   result.isValid_ = static_cast<int>(std::get<2>(LR));
   result.LR_ = std::get<0>(LR);
-  result.LR_up_ = result.isValid_ ? std::min(result.LR_ + std::get<1>(LR), 1.) : -1.;
-  result.LR_down_ = result.isValid_ ? std::max(result.LR_ - std::get<1>(LR), 0.) : -1.;
+  result.LR_error_ = std::get<1>(LR);
+  result.LR_up_ = result.isValid_ ? std::min(result.LR_ + result.LR_error_, 1.f) : -1.;
+  result.LR_down_ = result.isValid_ ? std::max(result.LR_ - result.LR_error_, 0.f) : -1.;
   if(! result.isValid_)
   {
     result.errorFlag_ = ADDMEM_2LSS1TAU_ERROR;
@@ -276,8 +277,9 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
   );
   result.isValid_ttZ_LR_ = static_cast<int>(std::get<2>(ttZ_LR));
   result.ttZ_LR_ = std::get<0>(ttZ_LR);
-  result.ttZ_LR_up_ = result.isValid_ttZ_LR_ ? std::min(result.ttZ_LR_ + std::get<1>(ttZ_LR), 1.) : -1.;
-  result.ttZ_LR_down_ = result.isValid_ttZ_LR_ ? std::max(result.ttZ_LR_ - std::get<1>(ttZ_LR), 0.) : -1.;
+  result.ttZ_LR_error_ = std::get<1>(ttZ_LR);
+  result.ttZ_LR_up_ = result.isValid_ttZ_LR_ ? std::min(result.ttZ_LR_ + result.ttZ_LR_error_, 1.f) : -1.;
+  result.ttZ_LR_down_ = result.isValid_ttZ_LR_ ? std::max(result.ttZ_LR_ - result.ttZ_LR_error_, 0.f) : -1.;
   if(! result.isValid_ttZ_LR_)
   {
     result.errorFlag_ttZ_LR_ = ADDMEM_2LSS1TAU_ERROR;
@@ -293,8 +295,9 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
   );
   result.isValid_ttbar_LR_ = static_cast<int>(std::get<2>(ttbar_LR));
   result.ttbar_LR_ = std::get<0>(ttbar_LR);
-  result.ttbar_LR_up_ = result.isValid_ttbar_LR_ ? std::min(result.ttbar_LR_ + std::get<1>(ttbar_LR), 1.) : -1.;
-  result.ttbar_LR_down_ = result.isValid_ttbar_LR_ ? std::max(result.ttbar_LR_ - std::get<1>(ttbar_LR), 0.) : -1.;
+  result.ttbar_LR_error_ = std::get<1>(ttbar_LR);
+  result.ttbar_LR_up_ = result.isValid_ttbar_LR_ ? std::min(result.ttbar_LR_ + result.ttbar_LR_error_, 1.f) : -1.;
+  result.ttbar_LR_down_ = result.isValid_ttbar_LR_ ? std::max(result.ttbar_LR_ - result.ttbar_LR_error_, 0.f) : -1.;
   if(! result.isValid_ttbar_LR_)
   {
     result.errorFlag_ttbar_LR_ = ADDMEM_2LSS1TAU_ERROR;

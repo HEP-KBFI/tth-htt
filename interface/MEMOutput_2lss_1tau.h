@@ -39,6 +39,7 @@ public:
   inline Float_t weight_tt()            const { return weight_tt_; }
   inline Float_t weight_tt_error()      const { return weight_tt_error_; }
   inline Float_t LR()                   const { return LR_; }
+  inline Float_t LR_error()             const { return LR_error_; }
   inline Float_t LR_up()                const { return LR_up_; }
   inline Float_t LR_down()              const { return LR_down_; }
   inline Float_t ttZ_LR()               const { return ttZ_LR_; }
@@ -88,12 +89,15 @@ protected:
   Float_t weight_tt_; // tt+jets (dilepton)
   Float_t weight_tt_error_;
   Float_t LR_;
+  Float_t LR_error_;
   Float_t LR_up_;
   Float_t LR_down_;
   Float_t ttZ_LR_;
+  Float_t ttZ_LR_error_;
   Float_t ttZ_LR_up_;
   Float_t ttZ_LR_down_;
   Float_t ttbar_LR_;
+  Float_t ttbar_LR_error_;
   Float_t ttbar_LR_up_;
   Float_t ttbar_LR_down_;
   Float_t cpuTime_;

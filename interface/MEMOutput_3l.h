@@ -44,6 +44,7 @@ public:
   inline Float_t weight_tt_error()  const { return weight_tt_error_; }
   inline Float_t kinfitscore_tt()   const { return kinfitscore_tt_; }
   inline Float_t LR()               const { return LR_; }
+  inline Float_t LR_error()         const { return LR_error_; }
   inline Float_t LR_up()            const { return LR_up_; }
   inline Float_t LR_down()          const { return LR_down_; }
   inline Float_t cpuTime()          const { return cpuTime_; }
@@ -89,6 +90,7 @@ protected:
   Float_t weight_tt_error_;
   Float_t kinfitscore_tt_; 
   Float_t LR_;
+  Float_t LR_error_;
   Float_t LR_up_;
   Float_t LR_down_;
   Float_t cpuTime_;

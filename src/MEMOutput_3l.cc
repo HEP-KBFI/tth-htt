@@ -27,6 +27,7 @@ MEMOutput_3l::MEMOutput_3l()
   , weight_tt_error_(-1.)
   , kinfitscore_tt_(-1.)
   , LR_(-1.)
+  , LR_error_(-1.)
   , LR_up_(-1.)
   , LR_down_(-1.)
   , cpuTime_(-1.)
@@ -88,8 +89,7 @@ std::ostream& operator<<(std::ostream& stream,
             " +/- "            << memOutput.weight_tt_error()  <<
             " (kinfitscore = " << memOutput.kinfitscore_tt()   << ")\n"
             " LR = "           << memOutput.LR()               <<
-            " + "              << memOutput.LR_up()            <<
-            "/- "              << memOutput.LR_down()          << "\n"
+            " +/- "            << memOutput.LR_error()         << "\n"
             " isValid = "     << memOutput.isValid()        << "\n"
             " errorFlag = "   << memOutput.errorFlag()      << "\n"
             " cpuTime = "     << memOutput.cpuTime()        << "\n"
