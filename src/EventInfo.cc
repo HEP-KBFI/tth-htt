@@ -26,6 +26,7 @@ const std::map<std::string, Int_t> EventInfo::decayMode_idString_diHiggs =
   { "tttt",       15 },
   { "zzzz",       23 },
   { "wwww",       24 },
+  { "bbtt",  5000015 },
   { "bbzz",  5000023 },
   { "bbww",  5000024 },
   { "ttzz", 15000023 },
