@@ -95,17 +95,17 @@ elif mode == 'hh':
   if preselection:
     raise ValueError("Preselection not possible for %s mode" % mode)
 
-  samples = load_samples(era, False, base = 'hh_multilepton')
+  samples = load_samples(era, False, base = 'hh_multilepton', suffix = 'DeepTauIDv2p1')
   pileup = os.path.join(
-    os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_{}.root'.format(era)
+    os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_{}_DeepTauIDv2p1.root'.format(era)
   )
 elif mode == 'hh_bbww':
   if preselection:
     raise ValueError("Preselection not possible for %s mode" % mode)
 
-  samples = load_samples(era, False, base = 'hh_bbww')
+  samples = load_samples(era, False, base = 'hh_bbww', suffix = 'DeepTauIDv2p1')
   pileup = os.path.join(
-    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}.root'.format(era)
+    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}_DeepTauIDv2p1.root'.format(era)
   )
 elif mode == 'hh_wjets':
   if preselection:
