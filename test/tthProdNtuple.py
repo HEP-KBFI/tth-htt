@@ -116,7 +116,7 @@ elif mode == 'hh_wjets':
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_wjets_{}.root'.format(era)
   )
 else:
-  samples = load_samples(era, preselection, suffix = 'base' if preselection else 'DeepTauIDv2p1')
+  samples = load_samples(era, preselection, suffix = 'DeepTauIDv2p1_base' if preselection else 'DeepTauIDv2p1')
 
 if era == "2016":
   golden_json = golden_json_2016
