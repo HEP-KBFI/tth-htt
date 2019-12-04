@@ -24182,9 +24182,9 @@ samples_2017["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17M
   ("nof_db_files",                    389),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 15816993),
+  ("nof_tree_events",                 15717546),
   ("nof_db_events",                   17114527),
-  ("fsize_local",                     44569739447), # 44.57GB, avg file size 259.13MB
+  ("fsize_local",                     44289404724), # 44.29GB, avg file size 257.50MB
   ("fsize_db",                        1061424382303), # 1.06TB, avg file size 2.73GB
   ("use_it",                          False),
   ("xsection",                        3.276),
@@ -24198,7 +24198,7 @@ samples_2017["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17M
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Sep28/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2017v2_2019Sep28_QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190929_014255"),
         ("selection", "*"),
-        ("blacklist", [3, 4, 36, 41, 65, 68, 69, 83, 92, 112, 113, 117, 165]),
+        ("blacklist", [3, 4, 36, 41, 65, 68, 69, 81, 83, 92, 112, 113, 117, 165]),
       ]),
     ]
   ),
