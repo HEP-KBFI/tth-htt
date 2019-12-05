@@ -234,6 +234,7 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_mass_systematics_[ptMassOption_], branchNames_mass_systematics_[ptMassOption_]);
     if(isMC_ && read_ptMass_systematics_)
     {
+      bai.ignoreErrors(true);
       for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerDown; ++idxShift)
       {
         if(! isValidJESsource(era_, idxShift))
@@ -247,6 +248,7 @@ RecoJetReader::setBranchAddresses(TTree * tree)
         bai.setBranchAddress(jet_pt_systematics_[idxShift],   branchNames_pt_systematics_[idxShift]);
         bai.setBranchAddress(jet_mass_systematics_[idxShift], branchNames_mass_systematics_[idxShift]);
       }
+      bai.ignoreErrors(false);
     }
     bai.setBranchAddress(nJets_, branchName_num_);
     bai.setBranchAddress(jet_eta_, branchName_eta_);

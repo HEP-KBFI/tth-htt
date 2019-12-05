@@ -30,67 +30,22 @@ enum
 {
   kJetMET_central_nonNominal,  // for data and sync Ntuples
   kJetMET_central,             // for MC
-  kJetMET_jesUp,                                 kJetMET_jesDown, // total JES
-  kJetMET_jesAbsoluteFlavMapUp,                  kJetMET_jesAbsoluteFlavMapDown,
-  kJetMET_jesAbsoluteMPFBiasUp,                  kJetMET_jesAbsoluteMPFBiasDown,
-  kJetMET_jesAbsoluteSampleUp,                   kJetMET_jesAbsoluteSampleDown, // not in 2016, 2017
-  kJetMET_jesAbsoluteScaleUp,                    kJetMET_jesAbsoluteScaleDown,
-  kJetMET_jesAbsoluteStatUp,                     kJetMET_jesAbsoluteStatDown,
-  kJetMET_jesCorrelationGroupbJESUp,             kJetMET_jesCorrelationGroupbJESDown,
-  kJetMET_jesCorrelationGroupFlavorUp,           kJetMET_jesCorrelationGroupFlavorDown,
-  kJetMET_jesCorrelationGroupIntercalibrationUp, kJetMET_jesCorrelationGroupIntercalibrationDown,
-  kJetMET_jesCorrelationGroupMPFInSituUp,        kJetMET_jesCorrelationGroupMPFInSituDown,
-  kJetMET_jesCorrelationGroupUncorrelatedUp,     kJetMET_jesCorrelationGroupUncorrelatedDown,
-  kJetMET_jesFlavorPhotonJetUp,                  kJetMET_jesFlavorPhotonJetDown,
-  kJetMET_jesFlavorPureBottomUp,                 kJetMET_jesFlavorPureBottomDown,
-  kJetMET_jesFlavorPureCharmUp,                  kJetMET_jesFlavorPureCharmDown,
-  kJetMET_jesFlavorPureGluonUp,                  kJetMET_jesFlavorPureGluonDown,
-  kJetMET_jesFlavorPureQuarkUp,                  kJetMET_jesFlavorPureQuarkDown,
-  kJetMET_jesFlavorQCDUp,                        kJetMET_jesFlavorQCDDown,
-  kJetMET_jesFlavorZJetUp,                       kJetMET_jesFlavorZJetDown,
-  kJetMET_jesFragmentationUp,                    kJetMET_jesFragmentationDown,
-  kJetMET_jesPileUpDataMCUp,                     kJetMET_jesPileUpDataMCDown,
-  kJetMET_jesPileUpEnvelopeUp,                   kJetMET_jesPileUpEnvelopeDown,
-  kJetMET_jesPileUpMuZeroUp,                     kJetMET_jesPileUpMuZeroDown,
-  kJetMET_jesPileUpPtBBUp,                       kJetMET_jesPileUpPtBBDown,
-  kJetMET_jesPileUpPtEC1Up,                      kJetMET_jesPileUpPtEC1Down,
-  kJetMET_jesPileUpPtEC2Up,                      kJetMET_jesPileUpPtEC2Down,
-  kJetMET_jesPileUpPtHFUp,                       kJetMET_jesPileUpPtHFDown,
-  kJetMET_jesPileUpPtRefUp,                      kJetMET_jesPileUpPtRefDown,
-  kJetMET_jesRelativeBalUp,                      kJetMET_jesRelativeBalDown,
-  kJetMET_jesRelativeFSRUp,                      kJetMET_jesRelativeFSRDown,
-  kJetMET_jesRelativeJEREC1Up,                   kJetMET_jesRelativeJEREC1Down,
-  kJetMET_jesRelativeJEREC2Up,                   kJetMET_jesRelativeJEREC2Down,
-  kJetMET_jesRelativeJERHFUp,                    kJetMET_jesRelativeJERHFDown,
-  kJetMET_jesRelativePtBBUp,                     kJetMET_jesRelativePtBBDown,
-  kJetMET_jesRelativePtEC1Up,                    kJetMET_jesRelativePtEC1Down,
-  kJetMET_jesRelativePtEC2Up,                    kJetMET_jesRelativePtEC2Down,
-  kJetMET_jesRelativePtHFUp,                     kJetMET_jesRelativePtHFDown,
-  kJetMET_jesRelativeSampleUp,                   kJetMET_jesRelativeSampleDown,
-  kJetMET_jesRelativeStatECUp,                   kJetMET_jesRelativeStatECDown,
-  kJetMET_jesRelativeStatFSRUp,                  kJetMET_jesRelativeStatFSRDown,
-  kJetMET_jesRelativeStatHFUp,                   kJetMET_jesRelativeStatHFDown,
-  kJetMET_jesSinglePionECALUp,                   kJetMET_jesSinglePionECALDown,
-  kJetMET_jesSinglePionHCALUp,                   kJetMET_jesSinglePionHCALDown,
-  kJetMET_jesSubTotalAbsoluteUp,                 kJetMET_jesSubTotalAbsoluteDown,
-  kJetMET_jesSubTotalMCUp,                       kJetMET_jesSubTotalMCDown,
-  kJetMET_jesSubTotalPileUpUp,                   kJetMET_jesSubTotalPileUpDown,
-  kJetMET_jesSubTotalPtUp,                       kJetMET_jesSubTotalPtDown,
-  kJetMET_jesSubTotalRelativeUp,                 kJetMET_jesSubTotalRelativeDown,
-  kJetMET_jesSubTotalScaleUp,                    kJetMET_jesSubTotalScaleDown,
-  kJetMET_jesTimePtEtaUp,                        kJetMET_jesTimePtEtaDown,
-  kJetMET_jesTimeRunBUp,                         kJetMET_jesTimeRunBDown, // not in 2016, 2018
-  kJetMET_jesTimeRunBCDUp,                       kJetMET_jesTimeRunBCDDown, // not in 2017, 2018
-  kJetMET_jesTimeRunCUp,                         kJetMET_jesTimeRunCDown, // not in 2016, 2018
-  kJetMET_jesTimeRunDEUp,                        kJetMET_jesTimeRunDEDown, // not in 2016, 2018
-  kJetMET_jesTimeRunEFUp,                        kJetMET_jesTimeRunEFDown, // not in 2017, 2018
-  kJetMET_jesTimeRunFUp,                         kJetMET_jesTimeRunFDown, // not in 2016, 2018
-  kJetMET_jesTimeRunGHUp,                        kJetMET_jesTimeRunGHDown, // not in 2017, 2018
-  kJetMET_jesTotalNoFlavorUp,                    kJetMET_jesTotalNoFlavorDown,
-  kJetMET_jesTotalNoFlavorNoTimeUp,              kJetMET_jesTotalNoFlavorNoTimeDown,
-  kJetMET_jesTotalNoTimeUp,                      kJetMET_jesTotalNoTimeDown,
-  kJetMET_jerUp,                                 kJetMET_jerDown, // total JER
-  kJetMET_UnclusteredEnUp,                       kJetMET_UnclusteredEnDown, // unclustered energy (only for MET)
+  kJetMET_jesUp,                   kJetMET_jesDown, // total JES
+  // regrouped, sources with era in their names are treated as uncorrelated, the remaining are correlated
+  kJetMET_jesAbsoluteUp,           kJetMET_jesAbsoluteDown,
+  kJetMET_jesAbsolute_EraUp,       kJetMET_jesAbsolute_EraDown,
+  kJetMET_jesBBEC1Up,              kJetMET_jesBBEC1Down,
+  kJetMET_jesBBEC1_EraUp,          kJetMET_jesBBEC1_EraDown,
+  kJetMET_jesEC2Up,                kJetMET_jesEC2Down,
+  kJetMET_jesEC2_EraUp,            kJetMET_jesEC2_EraDown,
+  kJetMET_jesFlavorQCDUp,          kJetMET_jesFlavorQCDDown,
+  kJetMET_jesHFUp,                 kJetMET_jesHFDown,
+  kJetMET_jesHF_EraUp,             kJetMET_jesHF_EraDown,
+  kJetMET_jesRelativeBalUp,        kJetMET_jesRelativeBalDown,
+  kJetMET_jesRelativeSample_EraUp, kJetMET_jesRelativeSample_EraDown,
+  // additional sources
+  kJetMET_jerUp,                   kJetMET_jerDown, // total JER
+  kJetMET_UnclusteredEnUp,         kJetMET_UnclusteredEnDown, // unclustered energy (only for MET)
 };
 
 enum class METSyst

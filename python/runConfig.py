@@ -232,6 +232,12 @@ class tthAnalyzeParser(argparse.ArgumentParser):
         help = 'M|do not run data',
     )
 
+  def enable_regrouped_jec(self):
+    self.add_argument('-G', '--enable-regrouped-jec',
+      dest = 'enable_regrouped_jec', action = 'store_true', default = False,
+      help = 'R|Enable regrouped JEC',
+    )
+
   def add_stitched(self, use_dy = False, use_wj = False):
     choices = [ 'dy', 'wjets' ]
     default = []
