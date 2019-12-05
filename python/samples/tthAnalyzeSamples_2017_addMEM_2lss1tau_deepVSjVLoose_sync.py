@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-12-01 10:05:37 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2017_sync.py -p /hdfs/local/karl/addMEM/2017/2019Nov30_sync_nonNom_high/final_ntuples/2lss_1tau -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_addMEM_2lss1tau_deepVSjVLoose_sync.py -M
+# file generated at 2019-12-05 12:35:11 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2017_sync.py -p /hdfs/local/karl/addMEM/2017/2019Dec04_sync_nonNom_high/final_ntuples/2lss_1tau -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_addMEM_2lss1tau_deepVSjVLoose_sync.py -M
 
 samples_2017 = OD()
 samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
@@ -20,7 +20,7 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   }),
   ("nof_tree_events",                 14776),
   ("nof_db_events",                   9779592),
-  ("fsize_local",                     164490400), # 164.49MB, avg file size 164.49MB
+  ("fsize_local",                     164516240), # 164.52MB, avg file size 164.52MB
   ("fsize_db",                        625507074411), # 625.51GB, avg file size 3.01GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -32,7 +32,7 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/addMEM/2017/2019Nov30_sync_nonNom_high/final_ntuples/2lss_1tau/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/addMEM/2017/2019Dec04_sync_nonNom_high/final_ntuples/2lss_1tau/ttHJetToNonbb_M125_amcatnlo"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
