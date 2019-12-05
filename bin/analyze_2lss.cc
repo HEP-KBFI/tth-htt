@@ -496,7 +496,7 @@ int main(int argc, char* argv[])
       genLeptonReader = new GenLeptonReader(branchName_genLeptons);
       inputTree -> registerReader(genLeptonReader);
       genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
-      inputTree -> registerReader(genPhotonReader);
+      inputTree -> registerReader(genHadTauReader);
       genJetReader = new GenJetReader(branchName_genJets);
       inputTree -> registerReader(genJetReader);
 
@@ -520,8 +520,8 @@ int main(int argc, char* argv[])
       }
       else
       {
-        inputTree -> registerReader(genHadTauReader);
         genPhotonReader = new GenPhotonReader(branchName_genPhotons);
+        inputTree -> registerReader(genPhotonReader);
       }
     }
     lheInfoReader = new LHEInfoReader(hasLHE);
