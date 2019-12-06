@@ -230,11 +230,11 @@ RecoJetReader::setBranchAddresses(TTree * tree)
       genHadTauReader_->setBranchAddresses(tree);
       genJetReader_->setBranchAddresses(tree);
     }
+    bai.ignoreErrors(true);
     bai.setBranchAddress(jet_pt_systematics_[ptMassOption_],   branchNames_pt_systematics_[ptMassOption_]);
     bai.setBranchAddress(jet_mass_systematics_[ptMassOption_], branchNames_mass_systematics_[ptMassOption_]);
     if(isMC_ && read_ptMass_systematics_)
     {
-      bai.ignoreErrors(true);
       for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerDown; ++idxShift)
       {
         if(! isValidJESsource(era_, idxShift))
@@ -248,8 +248,8 @@ RecoJetReader::setBranchAddresses(TTree * tree)
         bai.setBranchAddress(jet_pt_systematics_[idxShift],   branchNames_pt_systematics_[idxShift]);
         bai.setBranchAddress(jet_mass_systematics_[idxShift], branchNames_mass_systematics_[idxShift]);
       }
-      bai.ignoreErrors(false);
     }
+    bai.ignoreErrors(false);
     bai.setBranchAddress(nJets_, branchName_num_);
     bai.setBranchAddress(jet_eta_, branchName_eta_);
     bai.setBranchAddress(jet_phi_, branchName_phi_);
