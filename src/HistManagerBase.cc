@@ -29,6 +29,25 @@ HistManagerBase::writeHistograms()
 }
 
 TH1 *
+HistManagerBase::book1D(TDirectory * dir,
+                        const std::string & distribution,
+                        const std::string & title,
+                        int numBins,
+                        double min,
+                        double max)
+{
+  dir->cd();
+  TH1 * const retVal = new TH1D(getHistogramName(distribution).data(), title.data(), numBins, min, max);
+  if(! retVal->GetSumw2N())
+  {
+    retVal->Sumw2();
+  }
+  histograms_.push_back(retVal);
+  gHistograms_[dir].push_back(retVal);
+  return retVal;
+}
+
+TH1 *
 HistManagerBase::book1D(TFileDirectory & dir,
                         const std::string & distribution,
                         const std::string & title,
@@ -37,15 +56,7 @@ HistManagerBase::book1D(TFileDirectory & dir,
                         double max)
 {
   TDirectory * const subdir = createHistogramSubdirectory(dir);
-  subdir->cd();
-  TH1 * const retVal = new TH1D(getHistogramName(distribution).data(), title.data(), numBins, min, max);
-  if(! retVal->GetSumw2N())
-  {
-    retVal->Sumw2();
-  }
-  histograms_.push_back(retVal);
-  gHistograms_[subdir].push_back(retVal);
-  return retVal;
+  return book1D(subdir, distribution, title, numBins, min, max);
 }
 
 TH1 *
