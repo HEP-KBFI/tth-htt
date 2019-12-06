@@ -488,7 +488,7 @@ class analyzeConfig(object):
         self.hadTau_selection_relaxed = None
         if self.era in [ '2016', '2017', '2018' ]:
             self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_{}.root".format(self.era)
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_2017_woVSe_woVSmu.root"
         else:
             raise ValueError('Invalid era: %s' % self.era)
         self.isBDTtraining = False
