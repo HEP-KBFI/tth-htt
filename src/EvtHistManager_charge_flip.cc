@@ -21,7 +21,7 @@ EvtHistManager_charge_flip::bookHistograms(TFileDirectory & dir)
 
   for(const std::string & category_eta_and_pT: categories_eta_and_pT)
   {
-    std::string subdirName_SS = Form("%s/SS/%s/%s", category_eta_and_pT.data(), process_.data());
+    std::string subdirName_SS = Form("SS/%s/%s", category_eta_and_pT.data(), process_.data());
     if(! category_.empty())
     {
       subdirName_SS += Form("/%s", category_.data());
