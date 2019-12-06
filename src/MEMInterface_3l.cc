@@ -199,8 +199,9 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
   );
   result.isValid_ = static_cast<int>(std::get<2>(LR));
   result.LR_ = std::get<0>(LR);
-  result.LR_up_ = result.isValid_ ? std::min(result.LR_ + std::get<1>(LR), 1.) : -1.;
-  result.LR_down_ = result.isValid_ ? std::max(result.LR_ - std::get<1>(LR), 0.) : -1.;
+  result.LR_error_ = std::get<1>(LR);
+  result.LR_up_ = result.isValid_ ? std::min(result.LR_ + result.LR_error_, 1.f) : -1.;
+  result.LR_down_ = result.isValid_ ? std::max(result.LR_ - result.LR_error_, 0.f) : -1.;
   if(! result.isValid_)
   {
     result.errorFlag_ = ADDMEM_3L_ERROR;
