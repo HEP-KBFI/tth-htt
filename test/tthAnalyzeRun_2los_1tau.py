@@ -99,6 +99,8 @@ else:
 
 if MC_only :
   for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events':
+      continue
     if sample_info["type"] == "data" :
       sample_info["use_it"] = False
 
@@ -142,6 +144,9 @@ if __name__ == '__main__':
       "EventCounter"                              : {},
       "mTauTauVis"                                : {},
       "mvaOutput_legacy"                          : {},
+      "mvaOutput_legacy_2"                          : {},
+      "mvaOutput_legacy_3"                          : {},
+      "mvaOutput_legacy_4"                          : {},
     },
     select_rle_output         = True,
     dry_run                   = dry_run,

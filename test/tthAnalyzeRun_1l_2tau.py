@@ -118,6 +118,8 @@ else:
 
 if MC_only :
   for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events':
+      continue
     if sample_info["type"] == "data" :
       sample_info["use_it"] = False
 
