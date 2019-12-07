@@ -48,7 +48,7 @@ EvtHistManager_0l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
   histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
 
-  histogram_mvaOutput_Legacy_      = book1D(dir, "mvaOutput_Legacy",      "mvaOutput_Legacy",      100, 0., +1.);
+  histogram_mvaOutput_Legacy_      = book1D(dir, "mvaOutput_Legacy",      "mvaOutput_Legacy",      15, 0., +1.);
   histogram_mva_Updated_           = book1D(dir, "mva_Updated",            "mva_Updated",          7,  0.,  1.);
 
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis",  40,    0.,   200.);

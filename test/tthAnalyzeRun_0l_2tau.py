@@ -181,7 +181,6 @@ if __name__ == '__main__':
       "EventCounter"                 : {},
       "numJets"                      : {},
       "mvaOutput_Legacy"             : {},
-      "mva_Updated"                  : {},
       "mTauTauVis"                   : {},
       "mTauTau"                      : {},
     },
