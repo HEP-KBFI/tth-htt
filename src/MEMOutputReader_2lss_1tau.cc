@@ -32,6 +32,7 @@ MEMOutputReader_2lss_1tau::MEMOutputReader_2lss_1tau(const std::string & branchN
   , weight_tt_(nullptr)
   , weight_tt_error_(nullptr)
   , LR_(nullptr)
+  , LR_error_(nullptr)
   , LR_up_(nullptr)
   , LR_down_(nullptr)
   , cpuTime_(nullptr)
@@ -69,6 +70,7 @@ MEMOutputReader_2lss_1tau::~MEMOutputReader_2lss_1tau()
     delete[] gInstance -> weight_tt_;
     delete[] gInstance -> weight_tt_error_;
     delete[] gInstance -> LR_;
+    delete[] gInstance -> LR_error_;
     delete[] gInstance -> LR_up_;
     delete[] gInstance -> LR_down_;
     delete[] gInstance -> cpuTime_;
@@ -103,6 +105,7 @@ MEMOutputReader_2lss_1tau::setBranchNames()
     branchName_weight_tt_            = Form("%s_%s", branchName_obj_.data(), "weight_tt");
     branchName_weight_tt_error_      = Form("%s_%s", branchName_obj_.data(), "weight_tt_error");
     branchName_LR_                   = Form("%s_%s", branchName_obj_.data(), "LR");
+    branchName_LR_error_             = Form("%s_%s", branchName_obj_.data(), "LR_error");
     branchName_LR_up_                = Form("%s_%s", branchName_obj_.data(), "LR_up");
     branchName_LR_down_              = Form("%s_%s", branchName_obj_.data(), "LR_down");
     branchName_cpuTime_              = Form("%s_%s", branchName_obj_.data(), "cpuTime");
@@ -151,6 +154,7 @@ MEMOutputReader_2lss_1tau::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(weight_tt_, branchName_weight_tt_);
     bai.setBranchAddress(weight_tt_error_, branchName_weight_tt_error_);
     bai.setBranchAddress(LR_, branchName_LR_);
+    bai.setBranchAddress(LR_error_, branchName_LR_error_);
     bai.setBranchAddress(LR_up_, branchName_LR_up_);
     bai.setBranchAddress(LR_down_, branchName_LR_down_);
     bai.setBranchAddress(cpuTime_, branchName_cpuTime_);
@@ -198,6 +202,7 @@ MEMOutputReader_2lss_1tau::read() const
       memOutput.weight_tt_            = gInstance -> weight_tt_[idxMEMOutput];
       memOutput.weight_tt_error_      = gInstance -> weight_tt_error_[idxMEMOutput];
       memOutput.LR_                   = gInstance -> LR_[idxMEMOutput];
+      memOutput.LR_error_             = gInstance -> LR_error_[idxMEMOutput];
       memOutput.LR_up_                = gInstance -> LR_up_[idxMEMOutput];
       memOutput.LR_down_              = gInstance -> LR_down_[idxMEMOutput];
       memOutput.cpuTime_              = gInstance -> cpuTime_[idxMEMOutput];

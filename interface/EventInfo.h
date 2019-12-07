@@ -120,7 +120,7 @@ protected:
 
   std::map<std::string, std::map<std::string, std::pair<int, double>>> tH_sf;
   static const std::map<std::string, Int_t> decayMode_idString_singleHiggs;
-  static const std::map<std::string, Int_t> decayMode_idString_diHiggs_multilepton;
+  static const std::map<std::string, Int_t> decayMode_idString_diHiggs;
 
   std::string
   getDecayModeString(const std::map<std::string, Int_t> & decayMode_idString) const;

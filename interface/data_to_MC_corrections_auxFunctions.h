@@ -116,7 +116,8 @@ namespace aux
                                      std::map<std::string, TFile *> & inputFiles);
 
   getTriggerEfficiencyFunc
-  getTriggerFuncMC(TriggerSFsys triggerSF_option);
+  getTriggerFuncMC(TriggerSFsys triggerSF_option,
+                   bool flip = true);
 
   getTriggerEfficiencyFunc
   getTriggerFuncData(TriggerSFsys triggerSF_option);

@@ -21,11 +21,14 @@ const std::map<std::string, Int_t> EventInfo::decayMode_idString_singleHiggs =
   { "hmm",     13 },
 };
 
-const std::map<std::string, Int_t> EventInfo::decayMode_idString_diHiggs_multilepton =
+const std::map<std::string, Int_t> EventInfo::decayMode_idString_diHiggs =
 {
   { "tttt",       15 },
   { "zzzz",       23 },
   { "wwww",       24 },
+  { "bbtt",  5000015 },
+  { "bbzz",  5000023 },
+  { "bbww",  5000024 },
   { "ttzz", 15000023 },
   { "ttww", 15000024 },
   { "zzww", 23000024 },
@@ -284,7 +287,7 @@ EventInfo::getDecayModeString() const
 std::string
 EventInfo::getDiHiggsDecayModeString() const
 {
-  return EventInfo::getDecayModeString(decayMode_idString_diHiggs_multilepton);
+  return EventInfo::getDecayModeString(decayMode_idString_diHiggs);
 }
 
 std::string
@@ -316,7 +319,7 @@ EventInfo::getDecayModes()
 std::vector<std::string>
 EventInfo::getDiHiggsDecayModes()
 {
-  return getDecayModes(decayMode_idString_diHiggs_multilepton);
+  return getDecayModes(decayMode_idString_diHiggs);
 }
 
 std::vector<std::string>

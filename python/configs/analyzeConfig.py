@@ -436,7 +436,7 @@ class analyzeConfig(object):
         self.ttHProcs = [ "ttH" ]# , "ttH_ctcvcp" ]
         self.prep_dcard_processesToCopy = [  ]
         self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
-        self.decayModes_HH = [ "tttt",  "zzzz",  "wwww",  "ttzz",  "ttww",  "zzww"]
+        self.decayModes_HH = [ "tttt",  "zzzz",  "wwww",  "ttzz",  "ttww",  "zzww", "bbtt", "bbww", "bbzz" ]
         self.procsWithDecayModes = self.ttHProcs + [ "WH", "ZH", "tHW", "tHq", "ggH", "qqH", "TTWH", "TTZH" ]
         self.prep_dcard_signals = self.ttHProcs + [
           "{}_{}".format(proc, decMode) for proc in self.ttHProcs for decMode in self.decayModes + [ 'fake' ]
@@ -488,7 +488,7 @@ class analyzeConfig(object):
         self.hadTau_selection_relaxed = None
         if self.era in [ '2016', '2017', '2018' ]:
             self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_{}.root".format(self.era)
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_2017_woVSe_woVSmu.root"
         else:
             raise ValueError('Invalid era: %s' % self.era)
         self.isBDTtraining = False
@@ -601,7 +601,7 @@ class analyzeConfig(object):
           jobOptions['central_or_shift'] = 'central'
         if 'apply_topPtReweighting' not in jobOptions:
           jobOptions['apply_topPtReweighting'] = sample_info['apply_toppt_rwgt'] if 'apply_toppt_rwgt' in sample_info else False
-          jobOptions['read_topPtReweighting'] = False #TODO: until there are samples with the branch available
+          jobOptions['read_topPtReweighting'] = jobOptions['apply_topPtReweighting'] and self.era == "2017" #TODO: until there are samples with the branch available
         if 'lumiScale' not in jobOptions:
 
           nof_reweighting = sample_info['nof_reweighting']

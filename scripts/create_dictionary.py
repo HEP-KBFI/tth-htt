@@ -529,6 +529,16 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
       for histogram_name in HISTOGRAM_COUNT_EXTENDED_MC:
         histogram_names[histogram_name] = -1
 
+  if key.startswith('/TTTo'):
+    histogram_names_extend = []
+    for histogram_name in histogram_names:
+      if histogram_name == HISTOGRAM_COUNT:
+        continue
+      for topPtSuffix in ['TopPtRwgtSF', 'TopPtRwgtSFSquared']:
+        histogram_names_extend.append('{}{}'.format(histogram_name, topPtSuffix))
+    for histogram_name in histogram_names_extend:
+        histogram_names[histogram_name] = -1
+
   lheScaleArr = copy.deepcopy(LHESCALEARR)
   if is_rwgt:
     for tH_idx in TH_INDICES:

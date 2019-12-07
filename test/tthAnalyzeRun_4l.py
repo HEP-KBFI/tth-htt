@@ -31,6 +31,7 @@ parser.add_gen_matching()
 parser.add_sideband()
 parser.add_tau_id()
 parser.add_control_region()
+parser.enable_regrouped_jec()
 args = parser.parse_args()
 
 # Common arguments
@@ -59,6 +60,12 @@ gen_matching      = args.gen_matching
 sideband          = args.sideband
 tau_id            = args.tau_id
 control_region    = args.control_region
+regroup_jec       = args.enable_regrouped_jec
+
+if regroup_jec:
+  if 'full' not in systematics_label:
+    raise RuntimeError("Regrouped JEC was enabled but not running with full systematics")
+  systematics.full.extend(systematics.JEC_regrouped)
 
 # Use the arguments
 central_or_shifts = []

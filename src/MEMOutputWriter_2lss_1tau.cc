@@ -26,6 +26,7 @@ MEMOutputWriter_2lss_1tau::MEMOutputWriter_2lss_1tau(const std::string & branchN
   , weight_tt_(nullptr)
   , weight_tt_error_(nullptr)
   , LR_(nullptr)
+  , LR_error_(nullptr)
   , LR_up_(nullptr)
   , LR_down_(nullptr)
   , cpuTime_(nullptr)
@@ -57,6 +58,7 @@ MEMOutputWriter_2lss_1tau::~MEMOutputWriter_2lss_1tau()
   delete[] weight_tt_;
   delete[] weight_tt_error_;
   delete[] LR_;
+  delete[] LR_error_;
   delete[] LR_up_;
   delete[] LR_down_;
   delete[] cpuTime_;
@@ -86,6 +88,7 @@ void MEMOutputWriter_2lss_1tau::setBranchNames()
   branchName_weight_tt_ = Form("%s_%s", branchName_obj_.data(), "weight_tt");
   branchName_weight_tt_error_ = Form("%s_%s", branchName_obj_.data(), "weight_tt_error");
   branchName_LR_ = Form("%s_%s", branchName_obj_.data(), "LR");
+  branchName_LR_error_ = Form("%s_%s", branchName_obj_.data(), "LR_error");
   branchName_LR_up_ = Form("%s_%s", branchName_obj_.data(), "LR_up");
   branchName_LR_down_ = Form("%s_%s", branchName_obj_.data(), "LR_down");
   branchName_cpuTime_ = Form("%s_%s", branchName_obj_.data(), "cpuTime");
@@ -118,6 +121,7 @@ MEMOutputWriter_2lss_1tau::setBranches(TTree * tree)
   bai.setBranch(weight_tt_, branchName_weight_tt_);
   bai.setBranch(weight_tt_error_, branchName_weight_tt_error_);
   bai.setBranch(LR_, branchName_LR_);
+  bai.setBranch(LR_error_, branchName_LR_error_);
   bai.setBranch(LR_up_, branchName_LR_up_);
   bai.setBranch(LR_down_, branchName_LR_down_);
   bai.setBranch(cpuTime_, branchName_cpuTime_);
@@ -159,6 +163,7 @@ void MEMOutputWriter_2lss_1tau::write(const std::vector<MEMOutput_2lss_1tau> & m
     weight_tt_[idxMEMOutput] = memOutput.weight_tt();
     weight_tt_error_[idxMEMOutput] = memOutput.weight_tt_error();
     LR_[idxMEMOutput] = memOutput.LR();
+    LR_error_[idxMEMOutput] = memOutput.LR_error();
     LR_up_[idxMEMOutput] = memOutput.LR_up();
     LR_down_[idxMEMOutput] = memOutput.LR_down();
     cpuTime_[idxMEMOutput] = memOutput.cpuTime();

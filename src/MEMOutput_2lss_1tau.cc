@@ -22,12 +22,15 @@ MEMOutput_2lss_1tau::MEMOutput_2lss_1tau()
   , weight_tt_(-1.)
   , weight_tt_error_(-1.)
   , LR_(-1.)
+  , LR_error_(-1.)
   , LR_up_(-1.)
   , LR_down_(-1.)
   , ttZ_LR_(-1.)
+  , ttZ_LR_error_(-1.)
   , ttZ_LR_up_(-1.)
   , ttZ_LR_down_(-1.)
   , ttbar_LR_(-1.)
+  , ttbar_LR_error_(-1.)
   , ttbar_LR_up_(-1.)
   , ttbar_LR_down_(-1.)
   , cpuTime_(-1.)
@@ -82,8 +85,7 @@ std::ostream& operator<<(std::ostream& stream,
             "  ttZ = "        << memOutput.weight_ttZ()     << " (+/- " << memOutput.weight_ttZ_error()     << ")\n"
             "  ttZ(Z->ll) = " << memOutput.weight_ttZ_Zll() << " (+/- " << memOutput.weight_ttZ_Zll_error() << ")\n"
             "  tt = "         << memOutput.weight_tt()      << " (+/- " << memOutput.weight_tt_error()      << ")\n"
-            " LR = "          << memOutput.LR()             << " (+ " << memOutput.LR_up()
-                                                            << " /- " << memOutput.LR_down()                << ")\n"
+            " LR = "          << memOutput.LR()             << " (+/- " << memOutput.LR_error()             << ")\n"
             " isValid = "     << memOutput.isValid()        << "\n"
             " errorFlag = "   << memOutput.errorFlag()      << "\n"
             " cpuTime = "     << memOutput.cpuTime()        << "\n"

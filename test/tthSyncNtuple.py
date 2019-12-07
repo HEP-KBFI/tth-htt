@@ -131,7 +131,7 @@ clean    = args.clean
 with_mem = args.with_mem
 
 for systematic_label in systematics_label:
-  if systematics_label != 'full':
+  if 'full' not in systematics_label:
     if not hasattr(systematics, systematic_label):
       raise ValueError('Invalid option for systematic uncertainty: %s' % systematic_label)
 

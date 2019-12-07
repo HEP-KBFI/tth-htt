@@ -60,6 +60,7 @@ protected:
   std::string branchName_weight_tt_error_;
   std::string branchName_kinfitscore_tt_;
   std::string branchName_LR_;
+  std::string branchName_LR_error_;
   std::string branchName_LR_up_;
   std::string branchName_LR_down_;
   std::string branchName_cpuTime_;
@@ -93,6 +94,7 @@ protected:
   Float_t * weight_tt_error_;
   Float_t * kinfitscore_tt_;
   Float_t * LR_;
+  Float_t * LR_error_;
   Float_t * LR_up_;
   Float_t * LR_down_;
   Float_t * cpuTime_;
