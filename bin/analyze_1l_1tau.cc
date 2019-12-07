@@ -643,32 +643,22 @@ int main(int argc, char* argv[])
   HadTopTagger_semi_boosted_AK8* hadTopTagger_semi_boosted_fromAK8 = new HadTopTagger_semi_boosted_AK8();
 
 //--- initialize eventlevel BDTs
-  /*
-  'lep_conePt', 'avg_dr_jet',
-  'mT_lep', 'mT_tau',
-  'tau_pt', 'dr_lep_tau',
-  'costS', 'mTauTauVis', 'mTauTau',
-  'res_HTT', 'res_HTT_2',
-  'mbb_loose', 'met_LD', 'nJet', 'nBJetLoose',
-  'charge_lep_tau',
-  'max_Lep_eta', 'Lep_min_dr_jet'
-  */
   std::vector<std::string> mvaInputVariables_1l_1tau_opt ={
     "lep_conePt", "avg_dr_jet",
     "mT_lep", "mT_tau",
     "tau_pt", "dr_lep_tau",
     "costS", "mTauTauVis", "mTauTau",
     "res_HTT", "res_HTT_2",
-    "mbb_loose", "met_LD", "nJet", "nBJetLoose",
+    "mbb_loose", "met_LD",
     "charge_lep_tau",
     "max_Lep_eta", "Lep_min_dr_jet"
   };
-  std::string mvaFileName_1l_1tau_DeepTauMedium = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/1l_1tau_DeepTauMedium_4.xml";
-  TMVAInterface mva_1l_1tau_Legacy(
-    mvaFileName_1l_1tau_DeepTauMedium,
+  std::string mvaFileName_1l_1tau_DeepTauMedium_6 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/1l_1tau_DeepTauLoose_6.xml";
+  TMVAInterface mva_1l_1tau_Legacy_6(
+    mvaFileName_1l_1tau_DeepTauMedium_6,
     mvaInputVariables_1l_1tau_opt
   );
-  mva_1l_1tau_Legacy.enableBDTTransform();
+  mva_1l_1tau_Legacy_6.enableBDTTransform();
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1892,10 +1882,10 @@ int main(int argc, char* argv[])
        {"res-HTT_CSVsort4rd_2",  max_mvaOutput_HTT_CSVsort4rd_2},
        {"HadTop_pt_CSVsort4rd",  HadTop_pt_CSVsort4rd},
        {"nBJetMedium",       selBJets_medium.size()},
-       {"nBJetLoose",        selBJets_loose.size()},
+       //{"nBJetLoose",        selBJets_loose.size()},
        {"HadTop_pt_boosted", 1.0},
        {"mTauTau",		mTauTau},
-       {"nJet",		selJets.size()},
+       //{"nJet",		selJets.size()},
        {"lep_pt",		    lep_conePt},
        {"lep_conePt",		lep_conePt},
        {"charge_lep_tau",   selLepton->charge() + selHadTau->charge()},
@@ -1906,7 +1896,7 @@ int main(int argc, char* argv[])
        {"max_Lep_eta", std::max(selHadTau->absEta(), selLepton->absEta())},
        {"Lep_min_dr_jet", std::min(comp_mindr_lep1_jet(*selLepton, selJets), comp_mindr_hadTau1_jet(*selHadTau, selJets))},
     };
-    const double mvaOutput_1l_1tau_DeepTauMedium = mva_1l_1tau_Legacy(mvaInputVariables_mva_XGB_1l_1tau_16_variables);
+    const double mvaOutput_1l_1tau_DeepTauMedium_6 = mva_1l_1tau_Legacy_6(mvaInputVariables_mva_XGB_1l_1tau_16_variables);
 
     double min_Deta_leadfwdJet_jet = 0;
     if (selJetsForward.size() > 0 && selJets.size() > 0)
@@ -1981,7 +1971,7 @@ int main(int argc, char* argv[])
             selBJets_loose.size(),
             selBJets_medium.size(),
             mTauTauVis, mTauTau,
-            mvaOutput_1l_1tau_DeepTauMedium,
+            mvaOutput_1l_1tau_DeepTauMedium_6,
             kv.second
           );
           }
@@ -2004,7 +1994,7 @@ int main(int argc, char* argv[])
                 selBJets_loose.size(),
                 selBJets_medium.size(),
                 mTauTauVis, mTauTau,
-                mvaOutput_1l_1tau_DeepTauMedium,
+                mvaOutput_1l_1tau_DeepTauMedium_6,
                 kv.second
               );
               }
@@ -2079,7 +2069,7 @@ int main(int argc, char* argv[])
               selBJets_loose.size(),
               selBJets_medium.size(),
               mTauTauVis, mTauTau,
-              mvaOutput_1l_1tau_DeepTauMedium,
+              mvaOutput_1l_1tau_DeepTauMedium_6,
               evtWeight_category
             );
           }
@@ -2102,7 +2092,7 @@ int main(int argc, char* argv[])
                     selBJets_loose.size(),
                     selBJets_medium.size(),
                     mTauTauVis, mTauTau,
-                    mvaOutput_1l_1tau_DeepTauMedium,
+                    mvaOutput_1l_1tau_DeepTauMedium_6,
                     kv.second * prob_chargeMisId_sum
                   );
                 }

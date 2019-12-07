@@ -172,7 +172,7 @@ if __name__ == '__main__':
       "numJets"                           : {},
       "mTauTauVis"                        : {},
       "mTauTau"                           : {},
-      "mvaOutput_Legacy"                  : {}
+      "mvaOutput_Legacy_6"                  : {},
     },
     select_rle_output                     = True,
     dry_run                               = dry_run,
