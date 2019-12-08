@@ -233,6 +233,7 @@ class prodNtupleConfig:
             dry_run                 = self.dry_run,
             use_home                = self.use_home,
             validate_outputs        = self.check_output_files,
+            max_num_submittedJobs   = 3000,
         )
         return num_jobs
 
