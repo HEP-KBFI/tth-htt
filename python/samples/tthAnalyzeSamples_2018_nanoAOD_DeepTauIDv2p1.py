@@ -16085,7 +16085,7 @@ samples_2018["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIIAutumn18MiniAOD-
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/2018_2019Sep29_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_205508"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [75]),
       ]),
     ]
   ),
