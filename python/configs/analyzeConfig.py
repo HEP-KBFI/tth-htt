@@ -601,7 +601,7 @@ class analyzeConfig(object):
           jobOptions['central_or_shift'] = 'central'
         if 'apply_topPtReweighting' not in jobOptions:
           jobOptions['apply_topPtReweighting'] = sample_info['apply_toppt_rwgt'] if 'apply_toppt_rwgt' in sample_info else False
-          jobOptions['read_topPtReweighting'] = jobOptions['apply_topPtReweighting'] and self.era == "2017" #TODO: until there are samples with the branch available
+          jobOptions['read_topPtReweighting'] = jobOptions['apply_topPtReweighting'] and self.era != "2016" #TODO: until there are samples with the branch available
         if 'lumiScale' not in jobOptions:
 
           nof_reweighting = sample_info['nof_reweighting']
