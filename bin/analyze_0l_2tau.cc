@@ -636,6 +636,7 @@ int main(int argc, char* argv[])
     MEtHistManager* met_;
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_ttbar_;
+    MVAInputVarHistManager* mvaInputVariables_ttbar_unweight_;
     std::map<std::string, EvtHistManager_0l_2tau*> evt_;
     std::map<std::string, std::map<std::string, EvtHistManager_0l_2tau*>> evt_in_decayModes_;
     std::map<std::string, std::map<std::string, std::map<int, EvtHistManager_0l_2tau*>>> evt_in_decayModes_scan_;
@@ -707,6 +708,9 @@ int main(int argc, char* argv[])
         selHistManager->mvaInputVariables_ttbar_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
           Form("%s/sel/mvaInputs_ttbar", histogramDir.data()), era_string, central_or_shift));
         selHistManager->mvaInputVariables_ttbar_->bookHistograms(fs, mvaInputVariables_0l_2tau_deeptau_4);
+	selHistManager->mvaInputVariables_ttbar_unweight_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
+	  Form("%s/sel/mvaInputs_ttbar_unweight", histogramDir.data()), era_string, central_or_shift));
+        selHistManager->mvaInputVariables_ttbar_unweight_->bookHistograms(fs, mvaInputVariables_0l_2tau_deeptau_4);
       }
 
       for(const std::string & evt_cat_str: evt_cat_strs)
@@ -1691,6 +1695,7 @@ int main(int argc, char* argv[])
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
       const double evtWeight = evtWeightRecorder.get(central_or_shift);
+      const double evtWeight_noDYNorm = evtWeight/evtWeightRecorder.get_dy_norm(central_or_shift);
       const bool skipFilling = central_or_shift != central_or_shift_main;
       for (const GenMatchEntry* genMatch : genMatches)
       {
@@ -1713,6 +1718,7 @@ int main(int argc, char* argv[])
           selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
           selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
           selHistManager->mvaInputVariables_ttbar_->fillHistograms(mvaInputs_ttbar, evtWeight);
+	  selHistManager->mvaInputVariables_ttbar_unweight_->fillHistograms(mvaInputs_ttbar, evtWeight_noDYNorm);
         }
 
         const std::string central_or_shift_tH = eventInfo.has_central_or_shift(central_or_shift) ? central_or_shift : central_or_shift_main;

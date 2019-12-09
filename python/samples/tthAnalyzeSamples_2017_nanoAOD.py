@@ -19856,9 +19856,9 @@ samples_2017["/TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv
   ("nof_db_files",                    71),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 1326044),
+  ("nof_tree_events",                 2074260),
   ("nof_db_events",                   2273928),
-  ("fsize_local",                     5406754652), # 5.41GB, avg file size 117.54MB
+  ("fsize_local",                     8455592618), # 8.46GB, avg file size 183.82MB
   ("fsize_db",                        177857452203), # 177.86GB, avg file size 2.51GB
   ("use_it",                          True),
   ("xsection",                        0.008213),
@@ -19872,7 +19872,7 @@ samples_2017["/TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Nov24/TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/2017v2_2019Nov24_TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/191124_191930"),
         ("selection", "*"),
-        ("blacklist", [1, 2, 3, 4, 9, 11, 15, 16, 21, 25, 26, 30, 34, 36, 38, 41, 42, 43, 45]),
+        ("blacklist", [11, 16, 21, 45]),
       ]),
     ]
   ),
