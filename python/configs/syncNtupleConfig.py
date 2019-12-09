@@ -76,6 +76,7 @@ class syncNtupleConfig:
         use_preselected,
         jet_cleaning,
         gen_matching,
+        regroup_jec = False,
         project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau'),
         file_pattern = 'tthAnalyzeRun_%s.py',
         suffix = '',
@@ -122,6 +123,8 @@ class syncNtupleConfig:
       additional_args += " -w %s" % tau_id_wp
     if self.running_method:
       additional_args += " -R %s" % self.running_method
+    if regroup_jec:
+      additional_args += " -G"
 
     mem_channels = [ '2lss_1tau', '3l', 'hh_bb2l' ]
     cr_channels = [ '3l', '4l' ]
