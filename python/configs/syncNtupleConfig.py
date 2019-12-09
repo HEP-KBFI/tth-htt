@@ -262,7 +262,7 @@ class syncNtupleConfig:
     make_cmd = "make -f %s -j %d %s 2>%s 1>%s" % \
       (self.makefile_path, nof_parallel_jobs, target, self.stderr_file_path, self.stdout_file_path)
     if self.running_method.lower() == "makefile":
-      run_dir = re.sub('^/home', '/scratch', self.config_dir)
+      run_dir = re.sub('^/home', '/scratch/1', self.config_dir)
       create_if_not_exists(run_dir)
       make_cmd = re.sub('^make', 'make -C {}'.format(run_dir), make_cmd)
     logging.info("Running the make command: %s" % make_cmd)
