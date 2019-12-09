@@ -228,8 +228,8 @@ protected:
         if(genMatch->genPartFlav() != recParticle->genPartFlav())
         {
           throw cmsException(this, __func__, __LINE__)
-            << "Parton flavor of generator level object = " << genMatch->genPartFlav()
-            << " does not equal to parton flavor of reconstructed object = " << recParticle->genPartFlav()
+            << "Parton flavor of generator level object = " << static_cast<int>(genMatch->genPartFlav())
+            << " does not equal to parton flavor of reconstructed object = " << static_cast<int>(recParticle->genPartFlav())
           ;
         }
 
