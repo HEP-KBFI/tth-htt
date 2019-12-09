@@ -366,11 +366,11 @@ int main(int argc, char* argv[])
       if(genMatchingByIndex)
       {
         genMatchToMuonReader = new GenParticleReader(branchName_muonGenMatch);
-        genMatchToMuonReader -> readGenPartFlav(false);
+        genMatchToMuonReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToMuonReader);
 
         genMatchToElectronReader = new GenParticleReader(branchName_electronGenMatch);
-        genMatchToElectronReader -> readGenPartFlav(false);
+        genMatchToElectronReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToElectronReader);
       }
       else
