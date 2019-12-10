@@ -167,7 +167,9 @@ XGBInterface::XGBInterface(const std::string & mvaFileName,
     throw cmsException(this, __func__, __LINE__) << "Using wrong Mode for this constructor";
   }
 
-  Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map
+  if (fitFunctionFileName_ != ""){
+    Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map
+  }
 
   // AC: limit number of threads running in python to one
   setenv("OMP_NUM_THREADS", "1", 0);
@@ -225,7 +227,9 @@ XGBInterface::XGBInterface(const std::string & mvaFileName_odd,
     throw cmsException(this, __func__, __LINE__) << "Using wrong Mode for this constructor";
   }
 
-  Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map
+  if (fitFunctionFileName_ != "") {
+    Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map
+  }
 
   // AC: limit number of threads running in python to one
   setenv("OMP_NUM_THREADS", "1", 0);
@@ -351,7 +355,7 @@ XGBInterface::operator()(const std::map<std::string, double> & mvaInputs) const
 {
   std::map<std::string, double> mvaInputs_final;
 
-  if(! fitFunctionFileName_.empty())
+  if(fitFunctionFileName_ != "")
   {
     mvaInputs_final = Transform_Ptr_->TransformMVAInputVars(mvaInputs); // Re-weight Input Var.s
   }
@@ -401,7 +405,7 @@ XGBInterface::operator()(const std::map<std::string, double> & mvaInputs,
 {
   std::map<std::string, double> mvaInputs_final;
 
-  if(! fitFunctionFileName_.empty())
+  if(fitFunctionFileName_ != "")
   {
     mvaInputs_final = Transform_Ptr_->TransformMVAInputVars(mvaInputs); // Re-weight Input Var.s
   }

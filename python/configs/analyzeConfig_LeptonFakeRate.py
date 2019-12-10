@@ -401,7 +401,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           if central_or_shift_or_dummy in [ "hadd", "addBackgrounds" ] and process_name_or_dummy in [ "hadd" ]:
             if not is_mc:
               continue
-            if not self.accept_central_or_shift(central_or_shift_or_dummy, sample_category, sample_name):
+            if not self.accept_central_or_shift(central_or_shift_or_dummy, sample_info):
               continue
           
           key_dir = getKey(process_name_or_dummy, central_or_shift_or_dummy)
@@ -472,7 +472,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         if central_or_shift != "central" and not is_mc:
           continue
 
-        if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
+        if not self.accept_central_or_shift(central_or_shift, sample_info):
           continue
 
         key_analyze_dir = getKey(process_name, central_or_shift)

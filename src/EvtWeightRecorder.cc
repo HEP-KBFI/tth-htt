@@ -243,7 +243,7 @@ double
 EvtWeightRecorder::get_data_to_MC_correction(const std::string & central_or_shift) const
 {
   return isMC_ ? get_sf_triggerEff(central_or_shift) * get_leptonSF() * get_tauSF(central_or_shift) *
-                 get_btag(central_or_shift) * get_dy_norm(central_or_shift)
+                 get_btag(central_or_shift) * get_dy_norm(central_or_shift) * get_toppt_rwgt(central_or_shift)
                : 1.
   ;
 }
@@ -390,6 +390,26 @@ EvtWeightRecorder::record_toppt_rwgt(const std::vector<GenParticle> & genTopQuar
     
     if      (topPtReweighting_option == kTopPtReweighting_central  ) weights_toppt_rwgt_[topPtReweighting_option] = topPtWeight;
     else if (topPtReweighting_option == kTopPtReweighting_shiftUp  ) weights_toppt_rwgt_[topPtReweighting_option] = topPtWeight*topPtWeight;
+    else if (topPtReweighting_option == kTopPtReweighting_shiftDown) weights_toppt_rwgt_[topPtReweighting_option] = 1.;
+    else assert(0);
+  }
+}
+
+void
+EvtWeightRecorder::record_toppt_rwgt(double sf)
+{
+  assert(isMC_);
+  weights_toppt_rwgt_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const int topPtReweighting_option = getTopPtReweighting_option(central_or_shift);
+    if(weights_toppt_rwgt_.count(topPtReweighting_option))
+    {
+      continue;
+    }
+
+    if      (topPtReweighting_option == kTopPtReweighting_central  ) weights_toppt_rwgt_[topPtReweighting_option] = sf;
+    else if (topPtReweighting_option == kTopPtReweighting_shiftUp  ) weights_toppt_rwgt_[topPtReweighting_option] = sf * sf;
     else if (topPtReweighting_option == kTopPtReweighting_shiftDown) weights_toppt_rwgt_[topPtReweighting_option] = 1.;
     else assert(0);
   }

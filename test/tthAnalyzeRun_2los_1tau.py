@@ -28,6 +28,8 @@ parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
+parser.do_MC_only()
+parser.enable_regrouped_jec()
 args = parser.parse_args()
 
 # Common arguments
@@ -54,6 +56,13 @@ use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 tau_id            = args.tau_id
+MC_only           = args.MC_only
+regroup_jec       = args.enable_regrouped_jec
+
+if regroup_jec:
+  if 'full' not in systematics_label:
+    raise RuntimeError("Regrouped JEC was enabled but not running with full systematics")
+  systematics.full.extend(systematics.JEC_regrouped)
 
 # Use the arguments
 central_or_shifts = []
@@ -95,6 +104,13 @@ elif mode == "sync":
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
+if MC_only :
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events':
+      continue
+    if sample_info["type"] == "data" :
+      sample_info["use_it"] = False
+
 if __name__ == '__main__':
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
@@ -135,6 +151,9 @@ if __name__ == '__main__':
       "EventCounter"                              : {},
       "mTauTauVis"                                : {},
       "mvaOutput_legacy"                          : {},
+      "mvaOutput_legacy_2"                          : {},
+      "mvaOutput_legacy_3"                          : {},
+      "mvaOutput_legacy_4"                          : {},
     },
     select_rle_output         = True,
     dry_run                   = dry_run,

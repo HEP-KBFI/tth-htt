@@ -263,7 +263,7 @@ int main(int argc, char* argv[])
     if(genMatchingByIndex)
     {
       genMatchToJetReader = new GenParticleReader(branchName_jetGenMatch);
-      genMatchToJetReader -> readGenPartFlav(false);
+      genMatchToJetReader -> readGenPartFlav(true);
       inputTree -> registerReader(genMatchToJetReader);
     }
 

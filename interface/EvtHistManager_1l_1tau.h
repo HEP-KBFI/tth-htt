@@ -32,7 +32,7 @@ public:
                  int numBJets_medium,
                  double mTauTauVis,
                  double mTauTau,
-                 double mvaOutput_1l_1tau_DeepTauMedium,
+                 double mvaOutput_1l_1tau_DeepTauMedium_6,
                  double evtWeight);
 
   const TH1 *
@@ -54,7 +54,7 @@ public:
 
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_mTauTau_;
-  TH1 * histogram_mvaOutput_1l_1tau_DeepTauMedium_;
+  TH1 * histogram_mvaOutput_1l_1tau_DeepTauMedium_6_;
   TH1 * histogram_EventCounter_;
 };
 

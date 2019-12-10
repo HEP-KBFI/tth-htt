@@ -42,9 +42,27 @@ class systematics(object):
   triggerSF            = [ "CMS_ttHl_triggerUp",              "CMS_ttHl_triggerDown"              ]
   DYMCReweighting      = [ "CMS_ttHl_DYMCReweightingUp",      "CMS_ttHl_DYMCReweightingDown"      ]
   DYMCNormScaleFactors = [ "CMS_ttHl_DYMCNormScaleFactorsUp", "CMS_ttHl_DYMCNormScaleFactorsDown" ]
-  topPtReweighting     = [ "CMS_ttHl_topPtReweightingUp",     "CMS_ttHl_topPtReweightingDown"     ]
   MET_ResponseSyst     = [ "MET_RespUp",                      "MET_RespDown"                      ]
   MET_ResolutionSyst   = [ "MET_ResolUp",                     "MET_ResolDown"                     ]
+
+  JEC_regrouped = [
+    "CMS_ttHl_JESAbsoluteUp",           "CMS_ttHl_JESAbsoluteDown",
+    "CMS_ttHl_JESAbsolute_EraUp",       "CMS_ttHl_JESAbsolute_EraDown",
+    "CMS_ttHl_JESBBEC1Up",              "CMS_ttHl_JESBBEC1Down",
+    "CMS_ttHl_JESBBEC1_EraUp",          "CMS_ttHl_JESBBEC1_EraDown",
+    "CMS_ttHl_JESEC2Up",                "CMS_ttHl_JESEC2Down",
+    "CMS_ttHl_JESEC2_EraUp",            "CMS_ttHl_JESEC2_EraDown",
+    "CMS_ttHl_JESFlavorQCDUp",          "CMS_ttHl_JESFlavorQCDDown",
+    "CMS_ttHl_JESHFUp",                 "CMS_ttHl_JESHFDown",
+    "CMS_ttHl_JESHF_EraUp",             "CMS_ttHl_JESHF_EraDown",
+    "CMS_ttHl_JESRelativeBalUp",        "CMS_ttHl_JESRelativeBalDown",
+    "CMS_ttHl_JESRelativeSample_EraUp", "CMS_ttHl_JESRelativeSample_EraDown",
+  ]
+
+  MEM_3l        = [ "CMS_ttHl_MEM_3l_LRUp",        "CMS_ttHl_MEM_3l_LRDown"        ]
+  MEM_2lss_1tau = [ "CMS_ttHl_MEM_2lss_1tau_LRUp", "CMS_ttHl_MEM_2lss_1tau_LRDown" ]
+  MEM_3l_1tau   = [ "CMS_ttHl_MEM_3l_1tau_LRUp",   "CMS_ttHl_MEM_3l_1tau_LRDown"   ]
+  MEM = MEM_3l + MEM_2lss_1tau + MEM_3l_1tau
 
   class L1PreFiring_(object):
     up   = "CMS_ttHl_l1PreFireUp"
@@ -59,6 +77,13 @@ class systematics(object):
     full = [ up, down ]
 
   PU = PU_().full
+
+  class topPtReweighting_(object):
+    up   = "CMS_ttHl_topPtReweightingUp"
+    down = "CMS_ttHl_topPtReweightingDown"
+    full = [ up, down ]
+
+  topPtReweighting = topPtReweighting_().full
 
   class LHE(object):
 
@@ -160,20 +185,35 @@ class systematics(object):
 
       full = x1_().full + y1_().full
 
-    ttH = TTH().full
-    tHq = THQ().full
-    tHW = THW().full
-    ttW = TTW().full
-    ttZ = TTZ().full
-    hh  = HH().full
-    dy  = DY().full
+    class TT(object):
+      class x1_(object):
 
-    x1_up   = [ TTH().x1_().up,   THQ().x1_().up,   THW().x1_().up,   TTW().x1_().up,   TTZ().x1_().up,   HH().x1_().up   ]
-    y1_up   = [ TTH().y1_().up,   THQ().y1_().up,   THW().y1_().up,   TTW().y1_().up,   TTZ().y1_().up,   HH().y1_().up   ]
-    x1_down = [ TTH().x1_().down, THQ().x1_().down, THW().x1_().down, TTW().x1_().down, TTZ().x1_().down, HH().x1_().down ]
-    y1_down = [ TTH().y1_().down, THQ().y1_().down, THW().y1_().down, TTW().y1_().down, TTZ().y1_().down, HH().y1_().down ]
+        up   = "CMS_ttHl_thu_shape_TT_x1Up"
+        down = "CMS_ttHl_thu_shape_TT_x1Down"
+        full = [ up, down ]
 
-    full = ttH + tHq + tHW + ttW + ttZ + dy + hh
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_TT_y1Up"
+        down = "CMS_ttHl_thu_shape_TT_y1Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full
+
+    ttH   = TTH().full
+    tHq   = THQ().full
+    tHW   = THW().full
+    ttW   = TTW().full
+    ttZ   = TTZ().full
+    hh    = HH().full
+    dy    = DY().full
+    ttbar = TT().full
+
+    x1_up   = [ TTH().x1_().up,   THQ().x1_().up,   THW().x1_().up,   TTW().x1_().up,   TTZ().x1_().up,   HH().x1_().up,   DY().x1_().up,   TT().x1_().up   ]
+    y1_up   = [ TTH().y1_().up,   THQ().y1_().up,   THW().y1_().up,   TTW().y1_().up,   TTZ().y1_().up,   HH().y1_().up,   DY().y1_().up,   TT().y1_().up   ]
+    x1_down = [ TTH().x1_().down, THQ().x1_().down, THW().x1_().down, TTW().x1_().down, TTZ().x1_().down, HH().x1_().down, DY().x1_().down, TT().x1_().down ]
+    y1_down = [ TTH().y1_().down, THQ().y1_().down, THW().y1_().down, TTW().y1_().down, TTZ().y1_().down, HH().y1_().down, DY().y1_().down, TT().y1_().down ]
+
+    full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar
 
   class Btag(object):
 
@@ -266,5 +306,5 @@ class systematics(object):
   an_extended_hh      = an_extended
   an_extended_opts_hh = an_extended_opts
 
-  an_internal      =    central +  tauIDSF +  btag +  FR_t +  lhe +  triggerSF +  PU +  L1PreFiring +  FRe_shape +  FRm_shape +  DYMCReweighting  + DYMCNormScaleFactors
-  an_internal_opts = [ "central", "tauIDSF", "btag", "FR_t", "lhe", "triggerSF", "PU", "L1PreFiring", "FRe_shape", "FRm_shape", "DYMCReweighting", "DYMCNormScaleFactors" ]
+  an_internal      =    central +  tauIDSF +  btag +  FR_t +  lhe +  triggerSF +  PU +  L1PreFiring +  FRe_shape +  FRm_shape +  DYMCReweighting  + DYMCNormScaleFactors  + topPtReweighting +  MEM
+  an_internal_opts = [ "central", "tauIDSF", "btag", "FR_t", "lhe", "triggerSF", "PU", "L1PreFiring", "FRe_shape", "FRm_shape", "DYMCReweighting", "DYMCNormScaleFactors", "topPtReweighting", "MEM" ]

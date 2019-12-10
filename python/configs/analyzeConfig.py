@@ -436,7 +436,7 @@ class analyzeConfig(object):
         self.ttHProcs = [ "ttH" ]# , "ttH_ctcvcp" ]
         self.prep_dcard_processesToCopy = [  ]
         self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
-        self.decayModes_HH = [ "tttt",  "zzzz",  "wwww",  "ttzz",  "ttww",  "zzww"]
+        self.decayModes_HH = [ "tttt",  "zzzz",  "wwww",  "ttzz",  "ttww",  "zzww", "bbtt", "bbww", "bbzz" ]
         self.procsWithDecayModes = self.ttHProcs + [ "WH", "ZH", "tHW", "tHq", "ggH", "qqH", "TTWH", "TTZH" ]
         self.prep_dcard_signals = self.ttHProcs + [
           "{}_{}".format(proc, decMode) for proc in self.ttHProcs for decMode in self.decayModes + [ 'fake' ]
@@ -488,7 +488,7 @@ class analyzeConfig(object):
         self.hadTau_selection_relaxed = None
         if self.era in [ '2016', '2017', '2018' ]:
             self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_{}.root".format(self.era)
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_2017_woVSe_woVSmu.root"
         else:
             raise ValueError('Invalid era: %s' % self.era)
         self.isBDTtraining = False
@@ -528,19 +528,26 @@ class analyzeConfig(object):
         #    return central_or_shift
         return "central"
 
-    def accept_central_or_shift(self, central_or_shift, sample_category, sample_name, has_LHE = False):
+    def accept_central_or_shift(self, central_or_shift, sample_info):
+      sample_name = sample_info["dbs_name"]
+      sample_category = sample_info["sample_category"]
+      has_LHE = sample_info["has_LHE"]
+      enable_toppt_rwgt = sample_info["apply_toppt_rwgt"] if "apply_toppt_rwgt" in sample_info else False
+      is_HHmc = sample_category.startswith("signal") or sample_category == "HH"
+
       if central_or_shift in systematics.LHE().full           and not has_LHE:                              return False
       if central_or_shift in systematics.LHE().ttH            and sample_category not in self.ttHProcs:     return False
       if central_or_shift in systematics.LHE().tHq            and sample_category not in [ "tHq", "TH" ]:   return False
       if central_or_shift in systematics.LHE().tHW            and sample_category not in [ "tHW", "TH" ]:   return False
       if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]: return False
       if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                 return False
+      if central_or_shift in systematics.LHE().ttbar          and sample_category != "TT":                  return False
       if central_or_shift in systematics.LHE().dy             and sample_category != "DY":                  return False
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):     return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):   return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():        return False
-      if central_or_shift in systematics.LHE().hh and \
-          not (sample_category.startswith("signal") or sample_category == "HH"): return False
+      if central_or_shift in systematics.topPtReweighting     and not enable_toppt_rwgt:                    return False
+      if central_or_shift in systematics.LHE().hh             and not is_HHmc:                              return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False, dropCtrl = False):
@@ -557,7 +564,7 @@ class analyzeConfig(object):
            sample_info['nof_reweighting'] > 0
 
         is_hh_channel = 'hh' in self.channel
-        if (is_hh_channel and sample_info["sample_category"].startswith('signal_')) or \
+        if (is_hh_channel and sample_info["sample_category"].startswith('signal_') and not "spin" in sample_info["sample_category"]) or \
            (not is_hh_channel and sample_info["sample_category"] == "HH"):
           sample_category_to_check = 'sample_category_hh' if not is_hh_channel else 'sample_category'
           assert(sample_category_to_check in sample_info)
@@ -572,7 +579,7 @@ class analyzeConfig(object):
           jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
           jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
           jobOptions['hhWeight_cfg.do_ktscan'] = True
-          jobOptions['hhWeight_cfg.apply_rwgt'] = True 
+          jobOptions['hhWeight_cfg.apply_rwgt'] = True
 
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
@@ -592,6 +599,9 @@ class analyzeConfig(object):
           jobOptions['apply_l1PreFireWeight'] = self.do_l1prefiring if is_mc else False
         if 'central_or_shift' not in jobOptions:
           jobOptions['central_or_shift'] = 'central'
+        if 'apply_topPtReweighting' not in jobOptions:
+          jobOptions['apply_topPtReweighting'] = sample_info['apply_toppt_rwgt'] if 'apply_toppt_rwgt' in sample_info else False
+          jobOptions['read_topPtReweighting'] = jobOptions['apply_topPtReweighting'] and self.era != "2016" #TODO: until there are samples with the branch available
         if 'lumiScale' not in jobOptions:
 
           nof_reweighting = sample_info['nof_reweighting']
@@ -604,7 +614,7 @@ class analyzeConfig(object):
             else:
               central_or_shifts = [ jobOptions['central_or_shift'] ]
             for central_or_shift in central_or_shifts:
-              if not self.accept_central_or_shift(central_or_shift, sample_info["sample_category"], sample_info["process_name_specific"]):
+              if not self.accept_central_or_shift(central_or_shift, sample_info):
                 continue
               nof_events_label = ''
               nof_events_idx = -1
@@ -639,6 +649,16 @@ class analyzeConfig(object):
               elif central_or_shift == jobOptions['central_or_shift']:
                 nof_events_label = 'CountWeighted{}'.format(count_suffix)
                 nof_events_idx = 0 # central
+
+              if jobOptions['apply_topPtReweighting'] and jobOptions['read_topPtReweighting']:
+                assert(is_mc)
+                if central_or_shift not in systematics.topPtReweighting:
+                  nof_events_label += "TopPtRwgtSF"
+                elif central_or_shift == systematics.topPtReweighting_().down:
+                  # no SF is applied
+                  pass
+                elif central_or_shift == systematics.topPtReweighting_().up:
+                  nof_events_label += "TopPtRwgtSFSquared"
 
               if nof_events_idx >= 0 and nof_events_label:
                 nof_events[central_or_shift] = sample_info["nof_events"][nof_events_label][nof_events_idx]
@@ -765,6 +785,8 @@ class analyzeConfig(object):
             'hhWeight_cfg.apply_rwgt',
             'minNumJets',
             'skipEvery',
+            'apply_topPtReweighting',
+            'read_topPtReweighting',
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',

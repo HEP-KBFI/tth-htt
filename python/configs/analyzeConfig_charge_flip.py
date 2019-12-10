@@ -137,7 +137,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
             if central_or_shift_or_dummy != "central" and central_or_shift_or_dummy not in central_or_shift_extensions:
               if not is_mc:
                 continue
-              if not self.accept_central_or_shift(central_or_shift_or_dummy, sample_category, sample_name):
+              if not self.accept_central_or_shift(central_or_shift_or_dummy, sample_info):
                 continue
 
             key_dir = getKey(process_name_or_dummy, lepton_selection, central_or_shift_or_dummy)

@@ -87,6 +87,18 @@ protected:
                          const std::vector<double> & lepton_eta,
                          const std::vector<lutWrapperBase *> & corrections) const;
 
+  void
+  initAntiEle_tauIDSFs(const std::string & era_str);
+
+  void
+  initAntiMu_tauIDSFs(const std::string & era_str);
+
+  void
+  init_tauIDSFs(const std::string & era_str,
+                std::map<int, TauIDSFTool *> & tauIDSF_map,
+                const std::string & tauID_str,
+                int nof_levels);
+
   //-----------------------------------------------------------------------------
   // data/MC corrections for electron and muon identification and isolation efficiency,
   // including the cut on the ttH multilepton MVA
@@ -117,6 +129,8 @@ protected:
   int hadTauSelection_antiMuon_[4];
 
   TauIDSFTool * tauIdSFs_;
+  std::map<int, TauIDSFTool *> tauIDSFs_antiEle_;
+  std::map<int, TauIDSFTool *> tauIDSFs_antiMu_;
   bool applyHadTauSF_;
 
   std::size_t numLeptons_;

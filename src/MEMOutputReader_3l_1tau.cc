@@ -25,9 +25,14 @@ MEMOutputReader_3l_1tau::MEMOutputReader_3l_1tau(const std::string & branchName_
   , hadTau_eta_(nullptr)
   , hadTau_phi_(nullptr)
   , weight_ttH_(nullptr)
+  , weight_ttH_error_(nullptr)
   , weight_ttZ_(nullptr)
+  , weight_ttZ_error_(nullptr)
   , weight_ttH_hww_(nullptr)
+  , weight_ttH_hww_error_(nullptr)
   , LR_(nullptr)
+  , LR_up_(nullptr)
+  , LR_down_(nullptr)
   , cpuTime_(nullptr)
   , realTime_(nullptr)
   , isValid_(nullptr)
@@ -56,9 +61,14 @@ MEMOutputReader_3l_1tau::~MEMOutputReader_3l_1tau()
     delete[] gInstance -> hadTau_eta_;
     delete[] gInstance -> hadTau_phi_;
     delete[] gInstance -> weight_ttH_;
+    delete[] gInstance -> weight_ttH_error_;
     delete[] gInstance -> weight_ttZ_;
+    delete[] gInstance -> weight_ttZ_error_;
     delete[] gInstance -> weight_ttH_hww_;
+    delete[] gInstance -> weight_ttH_hww_error_;
     delete[] gInstance -> LR_;
+    delete[] gInstance -> LR_up_;
+    delete[] gInstance -> LR_down_;
     delete[] gInstance -> cpuTime_;
     delete[] gInstance -> realTime_;
     delete[] gInstance -> isValid_;
@@ -72,25 +82,30 @@ MEMOutputReader_3l_1tau::setBranchNames()
 {
   if(numInstances_[branchName_obj_] == 0)
   {
-    branchName_run_               = Form("%s_%s", branchName_obj_.data(), "run");
-    branchName_lumi_              = Form("%s_%s", branchName_obj_.data(), "lumi");
-    branchName_evt_               = Form("%s_%s", branchName_obj_.data(), "evt");
-    branchName_leadLepton_eta_    = Form("%s_%s", branchName_obj_.data(), "leadLepton_eta");
-    branchName_leadLepton_phi_    = Form("%s_%s", branchName_obj_.data(), "leadLepton_phi");
-    branchName_subleadLepton_eta_ = Form("%s_%s", branchName_obj_.data(), "subleadLepton_eta");
-    branchName_subleadLepton_phi_ = Form("%s_%s", branchName_obj_.data(), "subleadLepton_phi");
-    branchName_thirdLepton_eta_   = Form("%s_%s", branchName_obj_.data(), "thirdLepton_eta");
-    branchName_thirdLepton_phi_   = Form("%s_%s", branchName_obj_.data(), "thirdLepton_phi");
-    branchName_hadTau_eta_        = Form("%s_%s", branchName_obj_.data(), "hadTau_eta");
-    branchName_hadTau_phi_        = Form("%s_%s", branchName_obj_.data(), "hadTau_phi");
-    branchName_weight_ttH_        = Form("%s_%s", branchName_obj_.data(), "weight_ttH");
-    branchName_weight_ttZ_        = Form("%s_%s", branchName_obj_.data(), "weight_ttZ");
-    branchName_weight_ttH_hww_    = Form("%s_%s", branchName_obj_.data(), "weight_ttH_hww");
-    branchName_LR_                = Form("%s_%s", branchName_obj_.data(), "LR");
-    branchName_cpuTime_           = Form("%s_%s", branchName_obj_.data(), "cpuTime");
-    branchName_realTime_          = Form("%s_%s", branchName_obj_.data(), "realTime");
-    branchName_isValid_           = Form("%s_%s", branchName_obj_.data(), "isValid");
-    branchName_errorFlag_         = Form("%s_%s", branchName_obj_.data(), "errorFlag");
+    branchName_run_                  = Form("%s_%s", branchName_obj_.data(), "run");
+    branchName_lumi_                 = Form("%s_%s", branchName_obj_.data(), "lumi");
+    branchName_evt_                  = Form("%s_%s", branchName_obj_.data(), "evt");
+    branchName_leadLepton_eta_       = Form("%s_%s", branchName_obj_.data(), "leadLepton_eta");
+    branchName_leadLepton_phi_       = Form("%s_%s", branchName_obj_.data(), "leadLepton_phi");
+    branchName_subleadLepton_eta_    = Form("%s_%s", branchName_obj_.data(), "subleadLepton_eta");
+    branchName_subleadLepton_phi_    = Form("%s_%s", branchName_obj_.data(), "subleadLepton_phi");
+    branchName_thirdLepton_eta_      = Form("%s_%s", branchName_obj_.data(), "thirdLepton_eta");
+    branchName_thirdLepton_phi_      = Form("%s_%s", branchName_obj_.data(), "thirdLepton_phi");
+    branchName_hadTau_eta_           = Form("%s_%s", branchName_obj_.data(), "hadTau_eta");
+    branchName_hadTau_phi_           = Form("%s_%s", branchName_obj_.data(), "hadTau_phi");
+    branchName_weight_ttH_           = Form("%s_%s", branchName_obj_.data(), "weight_ttH");
+    branchName_weight_ttH_error_     = Form("%s_%s", branchName_obj_.data(), "weight_ttH_error");
+    branchName_weight_ttZ_           = Form("%s_%s", branchName_obj_.data(), "weight_ttZ");
+    branchName_weight_ttZ_error_     = Form("%s_%s", branchName_obj_.data(), "weight_ttZ_error");
+    branchName_weight_ttH_hww_       = Form("%s_%s", branchName_obj_.data(), "weight_ttH_hww");
+    branchName_weight_ttH_hww_error_ = Form("%s_%s", branchName_obj_.data(), "weight_ttH_hww_error");
+    branchName_LR_                   = Form("%s_%s", branchName_obj_.data(), "LR");
+    branchName_LR_up_                = Form("%s_%s", branchName_obj_.data(), "LR_up");
+    branchName_LR_down_              = Form("%s_%s", branchName_obj_.data(), "LR_down");
+    branchName_cpuTime_              = Form("%s_%s", branchName_obj_.data(), "cpuTime");
+    branchName_realTime_             = Form("%s_%s", branchName_obj_.data(), "realTime");
+    branchName_isValid_              = Form("%s_%s", branchName_obj_.data(), "isValid");
+    branchName_errorFlag_            = Form("%s_%s", branchName_obj_.data(), "errorFlag");
     instances_[branchName_obj_] = this;
   }
   else
@@ -126,9 +141,14 @@ MEMOutputReader_3l_1tau::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_eta_, branchName_hadTau_eta_);
     bai.setBranchAddress(hadTau_phi_, branchName_hadTau_phi_);
     bai.setBranchAddress(weight_ttH_, branchName_weight_ttH_);
+    bai.setBranchAddress(weight_ttH_error_, branchName_weight_ttH_error_);
     bai.setBranchAddress(weight_ttZ_, branchName_weight_ttZ_);
+    bai.setBranchAddress(weight_ttZ_error_, branchName_weight_ttZ_error_);
     bai.setBranchAddress(weight_ttH_hww_, branchName_weight_ttH_hww_);
+    bai.setBranchAddress(weight_ttH_hww_error_, branchName_weight_ttH_hww_error_);
     bai.setBranchAddress(LR_, branchName_LR_);
+    bai.setBranchAddress(LR_up_, branchName_LR_up_);
+    bai.setBranchAddress(LR_down_, branchName_LR_down_);
     bai.setBranchAddress(cpuTime_, branchName_cpuTime_);
     bai.setBranchAddress(realTime_, branchName_realTime_);
     bai.setBranchAddress(errorFlag_, branchName_errorFlag_);
@@ -156,25 +176,30 @@ MEMOutputReader_3l_1tau::read() const
     for(Int_t idxMEMOutput = 0; idxMEMOutput < nMEMOutputs; ++idxMEMOutput)
     {
       MEMOutput_3l_1tau memOutput;
-      memOutput.eventInfo_.run     = gInstance -> run_[idxMEMOutput];
-      memOutput.eventInfo_.lumi    = gInstance -> lumi_[idxMEMOutput];
-      memOutput.eventInfo_.event   = gInstance -> evt_[idxMEMOutput];
-      memOutput.leadLepton_eta_    = gInstance -> leadLepton_eta_[idxMEMOutput];
-      memOutput.leadLepton_phi_    = gInstance -> leadLepton_phi_[idxMEMOutput];
-      memOutput.subleadLepton_eta_ = gInstance -> subleadLepton_eta_[idxMEMOutput];
-      memOutput.subleadLepton_phi_ = gInstance -> subleadLepton_phi_[idxMEMOutput];
-      memOutput.thirdLepton_eta_   = gInstance -> thirdLepton_eta_[idxMEMOutput];
-      memOutput.thirdLepton_phi_   = gInstance -> thirdLepton_phi_[idxMEMOutput];
-      memOutput.hadTau_eta_        = gInstance -> hadTau_eta_[idxMEMOutput];
-      memOutput.hadTau_phi_        = gInstance -> hadTau_phi_[idxMEMOutput];
-      memOutput.weight_ttH_        = gInstance -> weight_ttH_[idxMEMOutput];
-      memOutput.weight_ttZ_        = gInstance -> weight_ttZ_[idxMEMOutput];
-      memOutput.weight_ttH_hww_    = gInstance -> weight_ttH_hww_[idxMEMOutput];
-      memOutput.LR_                = gInstance -> LR_[idxMEMOutput];
-      memOutput.cpuTime_           = gInstance -> cpuTime_[idxMEMOutput];
-      memOutput.realTime_          = gInstance -> realTime_[idxMEMOutput];
-      memOutput.isValid_           = gInstance -> isValid_[idxMEMOutput];
-      memOutput.errorFlag_         = gInstance -> errorFlag_[idxMEMOutput];
+      memOutput.eventInfo_.run        = gInstance -> run_[idxMEMOutput];
+      memOutput.eventInfo_.lumi       = gInstance -> lumi_[idxMEMOutput];
+      memOutput.eventInfo_.event      = gInstance -> evt_[idxMEMOutput];
+      memOutput.leadLepton_eta_       = gInstance -> leadLepton_eta_[idxMEMOutput];
+      memOutput.leadLepton_phi_       = gInstance -> leadLepton_phi_[idxMEMOutput];
+      memOutput.subleadLepton_eta_    = gInstance -> subleadLepton_eta_[idxMEMOutput];
+      memOutput.subleadLepton_phi_    = gInstance -> subleadLepton_phi_[idxMEMOutput];
+      memOutput.thirdLepton_eta_      = gInstance -> thirdLepton_eta_[idxMEMOutput];
+      memOutput.thirdLepton_phi_      = gInstance -> thirdLepton_phi_[idxMEMOutput];
+      memOutput.hadTau_eta_           = gInstance -> hadTau_eta_[idxMEMOutput];
+      memOutput.hadTau_phi_           = gInstance -> hadTau_phi_[idxMEMOutput];
+      memOutput.weight_ttH_           = gInstance -> weight_ttH_[idxMEMOutput];
+      memOutput.weight_ttH_error_     = gInstance -> weight_ttH_error_[idxMEMOutput];
+      memOutput.weight_ttZ_           = gInstance -> weight_ttZ_[idxMEMOutput];
+      memOutput.weight_ttZ_error_     = gInstance -> weight_ttZ_error_[idxMEMOutput];
+      memOutput.weight_ttH_hww_       = gInstance -> weight_ttH_hww_[idxMEMOutput];
+      memOutput.weight_ttH_hww_error_ = gInstance -> weight_ttH_hww_error_[idxMEMOutput];
+      memOutput.LR_                   = gInstance -> LR_[idxMEMOutput];
+      memOutput.LR_up_                = gInstance -> LR_up_[idxMEMOutput];
+      memOutput.LR_down_              = gInstance -> LR_down_[idxMEMOutput];
+      memOutput.cpuTime_              = gInstance -> cpuTime_[idxMEMOutput];
+      memOutput.realTime_             = gInstance -> realTime_[idxMEMOutput];
+      memOutput.isValid_              = gInstance -> isValid_[idxMEMOutput];
+      memOutput.errorFlag_            = gInstance -> errorFlag_[idxMEMOutput];
       memOutputs.push_back(memOutput);
     }
   }

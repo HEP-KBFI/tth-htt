@@ -50,7 +50,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
                              const std::vector<std::string> & mvaInputVariables,
                              const std::vector<std::string> & spectators)
   : mode_(Mode::k_odd_even)
-  , mva_(nullptr) 
+  , mva_(nullptr)
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
   , isBDTTransform_(false)
@@ -94,7 +94,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName,
                              const std::vector<std::string> & mvaInputVariables,
                              const std::string & fitFunctionFileName,
                              const std::vector<std::string> & spectators)
-  : mode_(Mode::k_old) 
+  : mode_(Mode::k_old)
   , mva_(nullptr)
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
@@ -108,7 +108,10 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName,
     throw cmsException(this, __func__, __LINE__) << "Using wrong Mode for this constructor";
   }
 
-  Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map and extracts the TF1s
+  if (fitFunctionFileName_ != "")
+  {
+    Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map and extracts the TF1s
+  }
 
   const LocalFileInPath mvaFileName_fip(mvaFileName);
   mvaFileName_ = mvaFileName_fip.fullPath();
@@ -136,7 +139,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
                              const std::vector<std::string> & spectators)
 
   : mode_(Mode::k_odd_even)
-  , mva_(nullptr) 
+  , mva_(nullptr)
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
   , isBDTTransform_(false)
@@ -149,7 +152,10 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
     throw cmsException(this, __func__, __LINE__) << "Using wrong Mode for this constructor";
   }
 
-  Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_);
+  if (fitFunctionFileName_ != "")
+  {
+    Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_);
+  }
 
   const LocalFileInPath mvaFileName_odd_fip(mvaFileName_odd);
   mvaFileName_odd_ = mvaFileName_odd_fip.fullPath();
@@ -205,7 +211,7 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
                           int event_number) const
 {
     std::map<std::string, double> mvaInputs_final;
-    if(! fitFunctionFileName_.empty())
+    if(fitFunctionFileName_ != "")
     {
       mvaInputs_final = Transform_Ptr_->TransformMVAInputVars(mvaInputs); // Re-weight Input Var.s
     }
@@ -228,7 +234,7 @@ double
 TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs) const
 {
     std::map<std::string, double> mvaInputs_final;
-    if(! fitFunctionFileName_.empty())
+    if(fitFunctionFileName_ != "")
     {
       mvaInputs_final = Transform_Ptr_->TransformMVAInputVars(mvaInputs);       // Re-weight Input Var.s
     }
@@ -263,7 +269,7 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
   {
     mvaOutput = 1. / (1. + std::sqrt((1. - mvaOutput) / (1. + mvaOutput)));
   }
-  
+
   //std::cout << "TMVA: mvaOutput " << mvaOutput << '\n';
   return mvaOutput;
 }

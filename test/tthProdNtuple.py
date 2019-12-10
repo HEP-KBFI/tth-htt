@@ -51,7 +51,7 @@ use_home       = args.use_home
 # Custom arguments
 preselection = args.enable_preselection
 pileup       = os.path.join(
-  os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s.root' % era
+  os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s_DeepTauIDv2p1.root' % era
 )
 golden_json_2016 = os.path.join(
   os.environ['CMSSW_BASE'], 'src/tthAnalysis/NanoAOD/data',
@@ -89,23 +89,23 @@ elif mode == 'hh_bbww_sync':
 
   samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync')
   pileup = os.path.join(
-    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}.root'.format(era)
+    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}_sync.root'.format(era)
   )
 elif mode == 'hh':
   if preselection:
     raise ValueError("Preselection not possible for %s mode" % mode)
 
-  samples = load_samples(era, False, base = 'hh_multilepton')
+  samples = load_samples(era, False, base = 'hh_multilepton', suffix = 'DeepTauIDv2p1' if era != '2017' else '')
   pileup = os.path.join(
-    os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_{}.root'.format(era)
+    os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_{}{}.root'.format(era, '_DeepTauIDv2p1' if era != '2017' else '')
   )
 elif mode == 'hh_bbww':
   if preselection:
     raise ValueError("Preselection not possible for %s mode" % mode)
 
-  samples = load_samples(era, False, base = 'hh_bbww')
+  samples = load_samples(era, False, base = 'hh_bbww', suffix = 'DeepTauIDv2p1' if era != '2017' else '')
   pileup = os.path.join(
-    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}.root'.format(era)
+    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}{}.root'.format(era, '_DeepTauIDv2p1' if era != '2017' else '')
   )
 elif mode == 'hh_wjets':
   if preselection:
@@ -116,7 +116,7 @@ elif mode == 'hh_wjets':
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_wjets_{}.root'.format(era)
   )
 else:
-  samples = load_samples(era, preselection, suffix = 'base' if preselection else '')
+  samples = load_samples(era, preselection, suffix = 'DeepTauIDv2p1_base' if preselection else 'DeepTauIDv2p1')
 
 if era == "2016":
   golden_json = golden_json_2016

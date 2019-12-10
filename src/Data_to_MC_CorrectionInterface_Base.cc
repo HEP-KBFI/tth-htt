@@ -6,6 +6,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_tau_id_wp_int()
 
+#include "TauPOG/TauIDSFs/interface/TauIDSFTool.h" // TauIDSFTool
+
 #include <TString.h> // Form()
 #include <TFile.h> // TFile
 
@@ -102,6 +104,18 @@ Data_to_MC_CorrectionInterface_Base::~Data_to_MC_CorrectionInterface_Base()
   for(auto & kv: inputFiles_)
   {
     delete kv.second;
+  }
+  if(applyHadTauSF_)
+  {
+    delete tauIdSFs_;
+    for(auto & kv: tauIDSFs_antiEle_)
+    {
+      delete kv.second;
+    }
+    for(auto & kv: tauIDSFs_antiMu_)
+    {
+      delete kv.second;
+    }
   }
 }
 
@@ -256,6 +270,31 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso(std::size_t numLepto
   return sf;
 }
 
+void
+Data_to_MC_CorrectionInterface_Base::initAntiEle_tauIDSFs(const std::string & era_str)
+{
+  return init_tauIDSFs(era_str, tauIDSFs_antiEle_, "antiEleMVA6", 5);
+}
+
+void
+Data_to_MC_CorrectionInterface_Base::initAntiMu_tauIDSFs(const std::string & era_str)
+{
+  return init_tauIDSFs(era_str, tauIDSFs_antiMu_, "antiMu3", 2);
+}
+
+void
+Data_to_MC_CorrectionInterface_Base::init_tauIDSFs(const std::string & era_str,
+                                                   std::map<int, TauIDSFTool *> & tauIDSF_map,
+                                                   const std::string & tauID_str,
+                                                   int nof_levels)
+{
+  const std::vector<std::string> levels = TauID_level_strings.at(nof_levels);
+  for(int level = 0; level < nof_levels; ++level)
+  {
+    tauIDSF_map[level + 1] = new TauIDSFTool(era_str, tauID_str, levels.at(level), false);
+  }
+}
+
 double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose() const
 {
@@ -295,23 +334,83 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
 double
 Data_to_MC_CorrectionInterface_Base::getSF_hadTauID_and_Iso(TauIDSFsys central_or_shift) const
 {
-  throw cmsException(this, __func__, __LINE__)
-    << "Cannot call from base class"
-  ;
+  double sf = 1.;
+  if(applyHadTauSF_)
+  {
+    for(std::size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau)
+    {
+      if(hadTau_genPdgId_[idxHadTau] == 15)
+      {
+        switch(central_or_shift)
+        {
+          case TauIDSFsys::central:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau]);         break;
+          case TauIDSFsys::shiftUp:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Up");   break;
+          case TauIDSFsys::shiftDown: sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Down"); break;
+        }
+      }
+    }
+  }
+  return sf;
 }
 
 double
 Data_to_MC_CorrectionInterface_Base::getSF_eToTauFakeRate(FRet central_or_shift) const
 {
-  throw cmsException(this, __func__, __LINE__)
-    << "Cannot call from base class"
-  ;
+  double sf = 1.;
+  if(applyHadTauSF_)
+  {
+    for(std::size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau)
+    {
+      const int hadTauSelection_antiElectron = hadTauSelection_antiElectron_[idxHadTau];
+      const int hadTau_genPdgId = std::abs(hadTau_genPdgId_[idxHadTau]);
+      if(hadTauSelection_antiElectron > 0 && hadTau_genPdgId  == 11)
+      {
+        if(! tauIDSFs_antiEle_.count(hadTauSelection_antiElectron))
+        {
+          throw cmsException(this, __func__, __LINE__) << "Anti-e SFs not initalized for WP " << hadTauSelection_antiElectron;
+        }
+        const TauIDSFTool * const tauIDSF_antiEle = tauIDSFs_antiEle_.at(hadTauSelection_antiElectron);
+        const double hadTau_absEta = std::fabs(hadTau_eta_[idxHadTau]);
+
+        switch(central_or_shift)
+        {
+          case FRet::shiftUp:   sf *= tauIDSF_antiEle->getSFvsEta(hadTau_absEta, 1, "Up");   break;
+          case FRet::shiftDown: sf *= tauIDSF_antiEle->getSFvsEta(hadTau_absEta, 1, "Down"); break;
+          case FRet::central:   sf *= tauIDSF_antiEle->getSFvsEta(hadTau_absEta, 1);         break;
+        }
+      }
+    }
+  }
+  return sf;
 }
 
 double
 Data_to_MC_CorrectionInterface_Base::getSF_muToTauFakeRate(FRmt central_or_shift) const
 {
-  throw cmsException(this, __func__, __LINE__)
-    << "Cannot call from base class"
-  ;
+  double sf = 1.;
+  if(applyHadTauSF_)
+  {
+    for(std::size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau)
+    {
+      const int hadTauSelection_antiMuon = hadTauSelection_antiMuon_[idxHadTau];
+      const int hadTau_genPdgId = std::abs(hadTau_genPdgId_[idxHadTau]);
+      if(hadTauSelection_antiMuon > 0 && hadTau_genPdgId  == 13)
+      {
+        if(! tauIDSFs_antiMu_.count(hadTauSelection_antiMuon))
+        {
+          throw cmsException(this, __func__, __LINE__) << "Anti-mu SFs not initalized for WP " << hadTauSelection_antiMuon;
+        }
+        const TauIDSFTool * const tauIDSF_antiMu = tauIDSFs_antiMu_.at(hadTauSelection_antiMuon);
+        const double hadTau_absEta = std::fabs(hadTau_eta_[idxHadTau]);
+
+        switch(central_or_shift)
+        {
+          case FRmt::shiftUp:   sf *= tauIDSF_antiMu->getSFvsEta(hadTau_absEta, 2, "Up");   break;
+          case FRmt::shiftDown: sf *= tauIDSF_antiMu->getSFvsEta(hadTau_absEta, 2, "Down"); break;
+          case FRmt::central:   sf *= tauIDSF_antiMu->getSFvsEta(hadTau_absEta, 2);         break;
+        }
+      }
+    }
+  }
+  return sf;
 }

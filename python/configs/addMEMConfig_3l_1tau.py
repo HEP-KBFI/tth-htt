@@ -43,7 +43,7 @@ class addMEMConfig_3l_1tau(addMEMConfig):
       num_parallel_jobs        = num_parallel_jobs,
       leptonSelection          = leptonSelection,
       hadTauSelection          = hadTauSelection,
-      lowIntegrationPoints     = False,
+      integration_choice       = '',
       jet_cleaning_by_index    = jet_cleaning_by_index,
       dry_run                  = dry_run,
       use_nonnominal           = use_nonnominal,

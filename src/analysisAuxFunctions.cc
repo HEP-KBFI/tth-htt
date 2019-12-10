@@ -211,49 +211,6 @@ get_BtagWeight(const std::vector<const RecoJet *> & jets,
   return btag_weight;
 }
 
-double
-getHadTauEScorrFactor(int era,
-                      int decayMode,
-                      int central_or_shift)
-{
-  double sf = 0.;
-  double sfShift = 0.;
-  if(era == kEra_2016)
-  {
-    if     (decayMode == 0                  ) { sf = -0.6; sfShift = 1.0; } // 1-prong + 0pi0
-    else if(decayMode == 1 || decayMode == 2) { sf = -0.5; sfShift = 0.9; } // 1-prong + 1pi0 or 1-prong + 2pi0
-    else if(decayMode == 10                 ) { sf =  0.0; sfShift = 1.1; } // 3-prong + 0pi0
-  }
-  else if(era == kEra_2017)
-  {
-    if     (decayMode == 0                  ) { sf =  0.7; sfShift = 0.8; } // 1-prong + 0pi0
-    else if(decayMode == 1 || decayMode == 2) { sf = -0.2; sfShift = 0.8; } // 1-prong + 1pi0 or 1-prong + 2pi0
-    else if(decayMode == 10                 ) { sf =  0.1; sfShift = 0.9; } // 3-prong + 0pi0
-    else if(decayMode == 11                 ) { sf = -0.1; sfShift = 1.0; } // 3-prong + 1pi0
-  }
-  else if(era == kEra_2018)
-  {
-    if     (decayMode == 0                  ) { sf = -1.3; sfShift = 1.1; } // 1-prong + 0pi0
-    else if(decayMode == 1 || decayMode == 2) { sf = -0.5; sfShift = 0.9; } // 1-prong + 1pi0 or 1-prong + 2pi0
-    else if(decayMode == 10                 ) { sf = -1.2; sfShift = 0.8; } // 3-prong + 0pi0
-  }
-  else
-  {
-    throw cmsException(__func__, __LINE__) << "Invalid era: " << era;
-  }
-  assert(sfShift >= 0.);
-  switch(central_or_shift)
-  {
-    case kHadTauPt_central:                    break;
-    case kHadTauPt_shiftUp:     sf += sfShift; break;
-    case kHadTauPt_shiftDown:   sf -= sfShift; break;
-    case kHadTauPt_uncorrected: sf = 0.;       break;
-    default: throw cmsException(__func__, __LINE__) << "Invalid central_or_shift option: " << central_or_shift;
-  }
-  sf /= 100.;
-  return 1. + sf;
-}
-
 Particle::LorentzVector
 compMHT(const std::vector<const RecoLepton *> & leptons,
         const std::vector<const RecoHadTau *> & hadTaus,

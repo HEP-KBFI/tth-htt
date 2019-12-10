@@ -54,7 +54,7 @@ class addMEMConfig:
             num_parallel_jobs,
             leptonSelection,
             hadTauSelection,
-            lowIntegrationPoints,
+            integration_choice,
             jet_cleaning_by_index,
             dry_run,
             use_nonnominal,
@@ -87,10 +87,10 @@ class addMEMConfig:
             self.hadTauDefinition = None
             self.hadTauWorkingPoint = None
         self.maxPermutations_branchName = None
-        self.lowIntegrationPoints = lowIntegrationPoints
+        self.integration_choice = integration_choice
         self.jet_cleaning_by_index = jet_cleaning_by_index
         logging.info(
-            "Using %s number of integration points" % ("low" if self.lowIntegrationPoints else "full")
+            "Number of integration points: %s" % self.integration_choice
         )
         if running_method.lower() not in ["sbatch", "makefile"]:
             raise ValueError("Invalid running method: %s" % running_method)
@@ -170,6 +170,7 @@ class addMEMConfig:
             pool_id                 = self.pool_id,
             use_home                = self.use_home,
             validate_outputs        = self.check_output_files,
+            max_num_submittedJobs   = 2000,
         )
 
     def addToMakefile_addMEM(self, lines_makefile):

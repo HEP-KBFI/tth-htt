@@ -22,7 +22,7 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0
   , era_(get_era(era_str_))
   , hadTauSelection_(cfg.getParameter<std::string>("hadTauSelection"))
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
-  , allowedDecayModes_({ 0, 1, 10 })
+  , allowedDecayModes_({ 0, 1, 2, 10 })
   , hadTau1_genPdgId_(0)
   , hadTau1_pt_(0.)
   , hadTau1_eta_(0.)
@@ -60,12 +60,12 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::setHadTaus(double hadTau1_pt, do
   hadTau1_pt_        = hadTau1_pt;
   hadTau1_eta_       = hadTau1_eta;
   hadTau1_phi_       = hadTau1_phi;
-  hadTau1_decayMode_ = hadTau1_decayMode;
+  hadTau1_decayMode_ = aux::dmCheck(hadTau1_decayMode);
 
   hadTau2_pt_        = hadTau2_pt;
   hadTau2_eta_       = hadTau2_eta;
   hadTau2_phi_       = hadTau2_phi;
-  hadTau2_decayMode_ = hadTau2_decayMode;
+  hadTau2_decayMode_ = aux::dmCheck(hadTau2_decayMode);
 }
 
 double

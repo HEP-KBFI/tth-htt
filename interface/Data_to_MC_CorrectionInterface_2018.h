@@ -21,19 +21,6 @@ public:
   double
   getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const override;
   //-----------------------------------------------------------------------------
-
-  //-----------------------------------------------------------------------------
-  // data/MC corrections for hadronic tau identification efficiency,
-  // and for e->tau and mu->tau misidentification rates
-  double
-  getSF_hadTauID_and_Iso(TauIDSFsys central_or_shift) const override;
-
-  double
-  getSF_eToTauFakeRate(FRet central_or_shift) const override;
-
-  double
-  getSF_muToTauFakeRate(FRmt central_or_shift) const override;
-  //-----------------------------------------------------------------------------
 };
 
 #endif // tthAnalysis_HiggsToTauTau_data_to_MC_corrections_2018_h

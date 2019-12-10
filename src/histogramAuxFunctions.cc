@@ -312,8 +312,16 @@ addHistograms(const std::string & newHistogramName,
                    "sumBinContent = "           << sumBinContent << ", "
                    "sumBinError2 = "            << sumBinError2 << '\n';
     }
+    if (!(sumBinError2 >= 0.))
+      {
+        std::cout << "Infinite: bin #" << iBin << " (x =  " << newHistogram->GetBinCenter(iBin) << "): "
+                     "sumBinContent = "           << sumBinContent << ", "
+                     "sumBinError2 = "            << sumBinError2 << '\n';
+        sumBinError2 = 0;
+        sumBinContent = 0;
+      }
     newHistogram->SetBinContent(iBin, sumBinContent);
-    assert(sumBinError2 >= 0.);
+    //assert(sumBinError2 >= 0.);
     newHistogram->SetBinError(iBin, std::sqrt(sumBinError2));
   }
   return newHistogram;
@@ -799,8 +807,8 @@ getRebinnedHistogram2d(const TH1 * histoOriginal,
   return histoRebinned;
 }
 
-TArrayD 
-getRebinnedBinning(TH1 * histogram, 
+TArrayD
+getRebinnedBinning(TH1 * histogram,
                    double minEvents)
 {
   std::cout << __func__ << ":\n";
@@ -857,20 +865,20 @@ compRatioHistogram(const std::string & ratioHistogramName,
                    const TH1 * denominator)
 {
   TH1 * histogramRatio = nullptr;
-  
+
   if(numerator->GetDimension() == denominator->GetDimension() &&
      numerator->GetNbinsX() == denominator->GetNbinsX()        )
   {
     histogramRatio = static_cast<TH1 *>(numerator->Clone(ratioHistogramName.data()));
     histogramRatio->Divide(denominator);
-    
+
     const int nBins = histogramRatio->GetNbinsX();
     for(int iBin = 1; iBin <= nBins; ++iBin)
     {
       const double binContent = histogramRatio->GetBinContent(iBin);
       histogramRatio->SetBinContent(iBin, binContent - 1.);
     }
-    
+
     histogramRatio->SetLineColor(numerator->GetLineColor());
     histogramRatio->SetLineWidth(numerator->GetLineWidth());
     histogramRatio->SetMarkerColor(numerator->GetMarkerColor());

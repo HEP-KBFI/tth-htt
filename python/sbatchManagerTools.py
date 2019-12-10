@@ -6,6 +6,18 @@ from tthAnalysis.HiggsToTauTau.common import logging
 import os
 import jinja2
 
+def find_duplicates(input_file_names):
+  input_file_names_occurrence = {}
+  for input_file_name in input_file_names:
+    if input_file_name not in input_file_names_occurrence:
+      input_file_names_occurrence[input_file_name] = 0
+    input_file_names_occurrence[input_file_name] += 1
+  input_file_names_duplicates = [
+    input_file_name for input_file_name in input_file_names_occurrence \
+    if input_file_names_occurrence[input_file_name] > 1
+  ]
+  return input_file_names_duplicates
+
 def createScript_sbatch(
     sbatch_script_file_name,
     executable,
@@ -13,18 +25,19 @@ def createScript_sbatch(
     input_file_names,
     output_file_names,
     script_file_names,
-    log_file_names    = None,
-    working_dir       = None,
-    max_num_jobs      = -1,
-    cvmfs_error_log   = None,
-    pool_id           = '',
-    cmssw_base_dir    = None,
-    verbose           = False,
-    job_template_file = 'sbatch-node.sh.template',
-    dry_run           = False,
-    validate_outputs  = True,
-    min_file_size     = 20000,
-    use_home          = False,
+    log_file_names        = None,
+    working_dir           = None,
+    max_num_jobs          = -1,
+    cvmfs_error_log       = None,
+    pool_id               = '',
+    cmssw_base_dir        = None,
+    verbose               = False,
+    job_template_file     = 'sbatch-node.sh.template',
+    dry_run               = False,
+    validate_outputs      = True,
+    min_file_size         = 20000,
+    max_num_submittedJobs = 5000,
+    use_home              = False,
   ):
     """Creates the python script necessary to submit analysis and/or Ntuple production jobs to the batch system
     """
@@ -53,6 +66,7 @@ def createScript_sbatch(
         dry_run                 = dry_run,
         validate_outputs        = validate_outputs,
         min_file_size           = min_file_size,
+        max_num_submittedJobs   = max_num_submittedJobs,
         use_home                = use_home,
     )
     createFile(sbatch_script_file_name, sbatch_analyze_lines)
@@ -67,23 +81,24 @@ def generate_sbatch_lines(
     log_file_names,
     working_dir,
     max_num_jobs,
-    cvmfs_error_log   = None,
-    pool_id           = '',
-    cmssw_base_dir    = None,
-    verbose           = False,
-    job_template_file = 'sbatch-node.sh.template',
-    dry_run           = False,
-    validate_outputs  = True,
-    min_file_size     = 20000,
-    use_home          = False,
+    cvmfs_error_log       = None,
+    pool_id               = '',
+    cmssw_base_dir        = None,
+    verbose               = False,
+    job_template_file     = 'sbatch-node.sh.template',
+    dry_run               = False,
+    validate_outputs      = True,
+    min_file_size         = 20000,
+    max_num_submittedJobs = 5000,
+    use_home              = False,
   ):
     if not pool_id:
         raise ValueError('pool_id is empty')
     lines_sbatch = [
         "from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager",
         "",
-        "m = sbatchManager('%s', verbose = %s, dry_run = %s, use_home = %s, min_file_size = %d)" % \
-          (pool_id, verbose, dry_run, use_home, min_file_size),
+        "m = sbatchManager('%s', verbose = %s, dry_run = %s, use_home = %s, min_file_size = %d, max_num_submittedJobs = %d)" % \
+          (pool_id, verbose, dry_run, use_home, min_file_size, max_num_submittedJobs),
         "m.setWorkingDir('%s')"     % working_dir,
         "m.setcmssw_base_dir('%s')" % cmssw_base_dir,
         "m.log_completion = %s"     % verbose,
@@ -207,6 +222,13 @@ def generate_sbatch_line(
     if type(input_file_names) is str:
         input_file_names = [ input_file_names ]
 
+    input_file_names_duplicates = find_duplicates(input_file_names)
+    if input_file_names_duplicates:
+      raise RuntimeError(
+        "Found duplicate input files to produce output file %s: %s" % \
+        (output_file_name, ", ".join(input_file_names_duplicates))
+      )
+
     submissionStatement = "m.submitJob(\n"                            \
       "  inputFiles             = {input_file_names},\n"              \
       "  executable             = '{executable}',\n"                  \
@@ -245,6 +267,7 @@ def createScript_sbatch_hadd(
     max_input_files_per_job = 10,
     use_home                = False,
     min_file_size           = 20000,
+    max_num_submittedJobs   = 5000,
   ):
     """Creates the python script necessary to submit 'hadd' jobs to the batch system
     """
@@ -266,6 +289,7 @@ def createScript_sbatch_hadd(
         max_input_files_per_job = max_input_files_per_job,
         use_home                = use_home,
         min_file_size           = min_file_size,
+        max_num_submittedJobs   = max_num_submittedJobs,
     )
     createFile(sbatch_script_file_name, sbatch_hadd_lines)
     return num_jobs
@@ -284,6 +308,7 @@ def generate_sbatch_lines_hadd(
     max_input_files_per_job = 10,
     use_home                = False,
     min_file_size           = 20000,
+    max_num_submittedJobs   = 5000,
   ):
     template_vars = {
         'working_dir'             : working_dir,
@@ -299,19 +324,29 @@ def generate_sbatch_lines_hadd(
         'dry_run'                 : dry_run,
         'use_home'                : use_home,
         'min_file_size'           : min_file_size,
+        'max_num_submittedJobs'   : max_num_submittedJobs,
     }
     if not pool_id:
         raise ValueError('pool_id is empty')
+
+    input_file_names_duplicates = find_duplicates(input_file_names)
+    if input_file_names_duplicates:
+      raise RuntimeError(
+        "Found duplicate input files to produce output file %s: %s" % \
+        (output_file_name, ", ".join(input_file_names_duplicates))
+      )
+
     sbatch_template = """
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 from tthAnalysis.HiggsToTauTau.ClusterHistogramAggregator import ClusterHistogramAggregator
 
 m = sbatchManager(
   '{{pool_id}}', 
-  verbose       = {{verbose}}, 
-  dry_run       = {{dry_run}}, 
-  use_home      = {{use_home}}, 
-  min_file_size = {{min_file_size}}
+  verbose               = {{verbose}}, 
+  dry_run               = {{dry_run}}, 
+  use_home              = {{use_home}}, 
+  min_file_size         = {{min_file_size}},
+  max_num_submittedJobs = {{max_num_submittedJobs}},
 )
 m.setWorkingDir('{{working_dir}}')
 m.log_completion = {{verbose}}

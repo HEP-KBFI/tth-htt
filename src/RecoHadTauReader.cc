@@ -8,6 +8,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kHadTauPt_*
+#include "tthAnalysis/HiggsToTauTau/interface/TauESTool.h" // TauESTool
 
 #include <TFile.h> // TFile
 #include <TGraphAsymmErrors.h> // TGraphAsymmErrors
@@ -38,8 +39,8 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , genHadTauReader_(nullptr)
   , genJetReader_(nullptr)
   , readGenMatching_(readGenMatching)
-  , tauID_(TauID::MVAoldDMdR032017v2)
-  , hadTauPt_option_(kHadTauPt_central)
+  , tauID_(TauID::DeepTau2017v2VSjet)
+  , tauESTool_(isMC_ ? new TauESTool(era_, kHadTauPt_central, false) : nullptr)
   , hadTau_pt_(nullptr)
   , hadTau_eta_(nullptr)
   , hadTau_phi_(nullptr)
@@ -113,7 +114,10 @@ RecoHadTauReader::~RecoHadTauReader()
 void
 RecoHadTauReader::setHadTauPt_central_or_shift(int hadTauPt_option)
 {
-  hadTauPt_option_ = hadTauPt_option;
+  if(tauESTool_)
+  {
+    tauESTool_->set_central_or_shift(hadTauPt_option);
+  }
 }
 
 void
@@ -220,7 +224,10 @@ RecoHadTauReader::read() const
     hadTaus.reserve(nHadTaus);
     for(Int_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau)
     {
-      const double corrFactor = getHadTauEScorrFactor(era_, gInstance->hadTau_decayMode_[idxHadTau], hadTauPt_option_);
+      const double corrFactor = tauESTool_ ? tauESTool_->getTES(
+          gInstance->hadTau_decayMode_[idxHadTau], gInstance->hadTau_genPartFlav_[idxHadTau]
+        ) : 1.
+      ;
       const double hadTau_pt   = gInstance->hadTau_pt_  [idxHadTau] * corrFactor;
       const double hadTau_mass = gInstance->hadTau_mass_[idxHadTau] * corrFactor;
 

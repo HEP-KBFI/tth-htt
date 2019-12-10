@@ -7,18 +7,10 @@
 #include <boost/algorithm/string/predicate.hpp> // boost::algorithm::starts_with(), boost::algorithm::ends_with()
 
 bool
-isValidJESsource(int era,
-                 int central_or_shift)
+isValidJESsource(int __attribute__((unused)) era,
+                 int __attribute__((unused)) central_or_shift)
 {
-  assert(era == kEra_2016 || era == kEra_2017 || era == kEra_2018);
-  if((central_or_shift == kJetMET_jesAbsoluteSampleUp || central_or_shift == kJetMET_jesAbsoluteSampleDown) && era != kEra_2018) return false;
-  if((central_or_shift == kJetMET_jesTimeRunBUp       || central_or_shift == kJetMET_jesTimeRunBDown)       && era != kEra_2017) return false;
-  if((central_or_shift == kJetMET_jesTimeRunBCDUp     || central_or_shift == kJetMET_jesTimeRunBCDDown)     && era != kEra_2016) return false;
-  if((central_or_shift == kJetMET_jesTimeRunCUp       || central_or_shift == kJetMET_jesTimeRunCDown)       && era != kEra_2017) return false;
-  if((central_or_shift == kJetMET_jesTimeRunDEUp      || central_or_shift == kJetMET_jesTimeRunDEDown)      && era != kEra_2017) return false;
-  if((central_or_shift == kJetMET_jesTimeRunEFUp      || central_or_shift == kJetMET_jesTimeRunEFDown)      && era != kEra_2016) return false;
-  if((central_or_shift == kJetMET_jesTimeRunFUp       || central_or_shift == kJetMET_jesTimeRunFDown)       && era != kEra_2017) return false;
-  if((central_or_shift == kJetMET_jesTimeRunGHUp      || central_or_shift == kJetMET_jesTimeRunGHDown)      && era != kEra_2016) return false;
+  // keeping for future compatibility
   return true;
 }
 
@@ -52,10 +44,23 @@ getJet_option(const std::string & central_or_shift,
               bool isMC)
 {
   int central_or_shift_int = isMC ? kJetMET_central : kJetMET_central_nonNominal;
-  if     (central_or_shift == "CMS_ttHl_JESUp"  ) central_or_shift_int = kJetMET_jesUp;
-  else if(central_or_shift == "CMS_ttHl_JESDown") central_or_shift_int = kJetMET_jesDown;
-  else if(central_or_shift == "CMS_ttHl_JERUp"  ) central_or_shift_int = kJetMET_jerUp;
-  else if(central_or_shift == "CMS_ttHl_JERDown") central_or_shift_int = kJetMET_jerDown;
+  if     (central_or_shift == "CMS_ttHl_JESUp"             ) central_or_shift_int = kJetMET_jesUp;
+  else if(central_or_shift == "CMS_ttHl_JESDown"           ) central_or_shift_int = kJetMET_jesDown;
+  else if(central_or_shift == "CMS_ttHl_JERUp"             ) central_or_shift_int = kJetMET_jerUp;
+  else if(central_or_shift == "CMS_ttHl_JERDown"           ) central_or_shift_int = kJetMET_jerDown;
+  else if(central_or_shift == "CMS_ttHl_JESAbsoluteUp"     ) central_or_shift_int = kJetMET_jesAbsoluteUp;
+  else if(central_or_shift == "CMS_ttHl_JESAbsoluteDown"   ) central_or_shift_int = kJetMET_jesAbsoluteDown;
+  else if(central_or_shift == "CMS_ttHl_JESBBEC1Up"        ) central_or_shift_int = kJetMET_jesBBEC1Up;
+  else if(central_or_shift == "CMS_ttHl_JESBBEC1Down"      ) central_or_shift_int = kJetMET_jesBBEC1Down;
+  else if(central_or_shift == "CMS_ttHl_JESEC2Up"          ) central_or_shift_int = kJetMET_jesEC2Up;
+  else if(central_or_shift == "CMS_ttHl_JESEC2Down"        ) central_or_shift_int = kJetMET_jesEC2Down;
+  else if(central_or_shift == "CMS_ttHl_JESFlavorQCDUp"    ) central_or_shift_int = kJetMET_jesFlavorQCDUp;
+  else if(central_or_shift == "CMS_ttHl_JESFlavorQCDDown"  ) central_or_shift_int = kJetMET_jesFlavorQCDDown;
+  else if(central_or_shift == "CMS_ttHl_JESHFUp"           ) central_or_shift_int = kJetMET_jesHFUp;
+  else if(central_or_shift == "CMS_ttHl_JESHFDown"         ) central_or_shift_int = kJetMET_jesHFDown;
+  else if(central_or_shift == "CMS_ttHl_JESRelativeBalUp"  ) central_or_shift_int = kJetMET_jesRelativeBalUp;
+  else if(central_or_shift == "CMS_ttHl_JESRelativeBalDown") central_or_shift_int = kJetMET_jesRelativeBalDown;
+  //
   return central_or_shift_int;
 }
 
@@ -251,6 +256,18 @@ getTopPtReweighting_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+MEMsys
+getMEMsys_option(const std::string & central_or_shift)
+{
+  MEMsys central_or_shift_int = MEMsys::nominal;
+  if(boost::starts_with(central_or_shift, "CMS_ttHl_MEM"))
+  {
+    if     (boost::ends_with(central_or_shift, "Up")  ) central_or_shift_int = MEMsys::up;
+    else if(boost::ends_with(central_or_shift, "Down")) central_or_shift_int = MEMsys::down;
+  }
+  return central_or_shift_int;
+}
+
 void
 checkOptionValidity(const std::string & central_or_shift,
                     bool isMC)
@@ -313,6 +330,15 @@ getBranchName_jetMET(const std::string & default_branchName,
   static std::map<int, std::string> branchNames_sys;
   const bool isJet = default_branchName == "Jet";
   const bool isMET = default_branchName == "MET";
+  const std::string era_str = [era]() -> std::string {
+    switch(era)
+    {
+      case kEra_2016 : return "2016";
+      case kEra_2017 : return "2017";
+      case kEra_2018 : return "2018";
+      default: throw cmsException(__func__, __LINE__) << "Invalid era: " << era;
+    }
+  }();
   if(! isJet && ! isMET)
   {
     throw cmsException(__func__, __LINE__) << "Invalid branch name provided: " << default_branchName;
@@ -320,131 +346,41 @@ getBranchName_jetMET(const std::string & default_branchName,
   branchNames_sys[kJetMET_central_nonNominal] = Form(
     "%s_%s", default_branchName.data(), isPt ? "pt" : (isJet ? "mass" : "phi")
   );
-  branchNames_sys[kJetMET_central]                                 = branchNames_sys[kJetMET_central_nonNominal] + "_nom";
-  branchNames_sys[kJetMET_jesUp]                                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesTotalUp";
-  branchNames_sys[kJetMET_jesDown]                                 = branchNames_sys[kJetMET_central_nonNominal] + "_jesTotalDown";
-  branchNames_sys[kJetMET_jesAbsoluteFlavMapUp]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesAbsoluteFlavMapUp";
-  branchNames_sys[kJetMET_jesAbsoluteFlavMapDown]                  = branchNames_sys[kJetMET_central_nonNominal] + "_jesAbsoluteFlavMapDown";
-  branchNames_sys[kJetMET_jesAbsoluteMPFBiasUp]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesAbsoluteMPFBiasUp";
-  branchNames_sys[kJetMET_jesAbsoluteMPFBiasDown]                  = branchNames_sys[kJetMET_central_nonNominal] + "_jesAbsoluteMPFBiasDown";
-  branchNames_sys[kJetMET_jesAbsoluteSampleUp]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesAbsoluteSampleUp";
-  branchNames_sys[kJetMET_jesAbsoluteSampleDown]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesAbsoluteSampleDown";
-  branchNames_sys[kJetMET_jesAbsoluteScaleUp]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesAbsoluteScaleUp";
-  branchNames_sys[kJetMET_jesAbsoluteScaleDown]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesAbsoluteScaleDown";
-  branchNames_sys[kJetMET_jesAbsoluteStatUp]                       = branchNames_sys[kJetMET_central_nonNominal] + "_jesAbsoluteStatUp";
-  branchNames_sys[kJetMET_jesAbsoluteStatDown]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesAbsoluteStatDown";
-  branchNames_sys[kJetMET_jesCorrelationGroupbJESUp]               = branchNames_sys[kJetMET_central_nonNominal] + "_jesCorrelationGroupbJESUp";
-  branchNames_sys[kJetMET_jesCorrelationGroupbJESDown]             = branchNames_sys[kJetMET_central_nonNominal] + "_jesCorrelationGroupbJESDown";
-  branchNames_sys[kJetMET_jesCorrelationGroupFlavorUp]             = branchNames_sys[kJetMET_central_nonNominal] + "_jesCorrelationGroupFlavorUp";
-  branchNames_sys[kJetMET_jesCorrelationGroupFlavorDown]           = branchNames_sys[kJetMET_central_nonNominal] + "_jesCorrelationGroupFlavorDown";
-  branchNames_sys[kJetMET_jesCorrelationGroupIntercalibrationUp]   = branchNames_sys[kJetMET_central_nonNominal] + "_jesCorrelationGroupIntercalibrationUp";
-  branchNames_sys[kJetMET_jesCorrelationGroupIntercalibrationDown] = branchNames_sys[kJetMET_central_nonNominal] + "_jesCorrelationGroupIntercalibrationDown";
-  branchNames_sys[kJetMET_jesCorrelationGroupMPFInSituUp]          = branchNames_sys[kJetMET_central_nonNominal] + "_jesCorrelationGroupMPFInSituUp";
-  branchNames_sys[kJetMET_jesCorrelationGroupMPFInSituDown]        = branchNames_sys[kJetMET_central_nonNominal] + "_jesCorrelationGroupMPFInSituDown";
-  branchNames_sys[kJetMET_jesCorrelationGroupUncorrelatedUp]       = branchNames_sys[kJetMET_central_nonNominal] + "_jesCorrelationGroupUncorrelatedUp";
-  branchNames_sys[kJetMET_jesCorrelationGroupUncorrelatedDown]     = branchNames_sys[kJetMET_central_nonNominal] + "_jesCorrelationGroupUncorrelatedDown";
-  branchNames_sys[kJetMET_jesFlavorPhotonJetUp]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorPhotonJetUp";
-  branchNames_sys[kJetMET_jesFlavorPhotonJetDown]                  = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorPhotonJetDown";
-  branchNames_sys[kJetMET_jesFlavorPureBottomUp]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorPureBottomUp";
-  branchNames_sys[kJetMET_jesFlavorPureBottomDown]                 = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorPureBottomDown";
-  branchNames_sys[kJetMET_jesFlavorPureCharmUp]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorPureCharmUp";
-  branchNames_sys[kJetMET_jesFlavorPureCharmDown]                  = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorPureCharmDown";
-  branchNames_sys[kJetMET_jesFlavorPureGluonUp]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorPureGluonUp";
-  branchNames_sys[kJetMET_jesFlavorPureGluonDown]                  = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorPureGluonDown";
-  branchNames_sys[kJetMET_jesFlavorPureQuarkUp]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorPureQuarkUp";
-  branchNames_sys[kJetMET_jesFlavorPureQuarkDown]                  = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorPureQuarkDown";
-  branchNames_sys[kJetMET_jesFlavorQCDUp]                          = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorQCDUp";
-  branchNames_sys[kJetMET_jesFlavorQCDDown]                        = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorQCDDown";
-  branchNames_sys[kJetMET_jesFlavorZJetUp]                         = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorZJetUp";
-  branchNames_sys[kJetMET_jesFlavorZJetDown]                       = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorZJetDown";
-  branchNames_sys[kJetMET_jesFragmentationUp]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesFragmentationUp";
-  branchNames_sys[kJetMET_jesFragmentationDown]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesFragmentationDown";
-  branchNames_sys[kJetMET_jesPileUpDataMCUp]                       = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpDataMCUp";
-  branchNames_sys[kJetMET_jesPileUpDataMCDown]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpDataMCDown";
-  branchNames_sys[kJetMET_jesPileUpEnvelopeUp]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpEnvelopeUp";
-  branchNames_sys[kJetMET_jesPileUpEnvelopeDown]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpEnvelopeDown";
-  branchNames_sys[kJetMET_jesPileUpMuZeroUp]                       = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpMuZeroUp";
-  branchNames_sys[kJetMET_jesPileUpMuZeroDown]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpMuZeroDown";
-  branchNames_sys[kJetMET_jesPileUpPtBBUp]                         = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpPtBBUp";
-  branchNames_sys[kJetMET_jesPileUpPtBBDown]                       = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpPtBBDown";
-  branchNames_sys[kJetMET_jesPileUpPtEC1Up]                        = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpPtEC1Up";
-  branchNames_sys[kJetMET_jesPileUpPtEC1Down]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpPtEC1Down";
-  branchNames_sys[kJetMET_jesPileUpPtEC2Up]                        = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpPtEC2Up";
-  branchNames_sys[kJetMET_jesPileUpPtEC2Down]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpPtEC2Down";
-  branchNames_sys[kJetMET_jesPileUpPtHFUp]                         = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpPtHFUp";
-  branchNames_sys[kJetMET_jesPileUpPtHFDown]                       = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpPtHFDown";
-  branchNames_sys[kJetMET_jesPileUpPtRefUp]                        = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpPtRefUp";
-  branchNames_sys[kJetMET_jesPileUpPtRefDown]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesPileUpPtRefDown";
-  branchNames_sys[kJetMET_jesRelativeBalUp]                        = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeBalUp";
-  branchNames_sys[kJetMET_jesRelativeBalDown]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeBalDown";
-  branchNames_sys[kJetMET_jesRelativeFSRUp]                        = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeFSRUp";
-  branchNames_sys[kJetMET_jesRelativeFSRDown]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeFSRDown";
-  branchNames_sys[kJetMET_jesRelativeJEREC1Up]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeJEREC1Up";
-  branchNames_sys[kJetMET_jesRelativeJEREC1Down]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeJEREC1Down";
-  branchNames_sys[kJetMET_jesRelativeJEREC2Up]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeJEREC2Up";
-  branchNames_sys[kJetMET_jesRelativeJEREC2Down]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeJEREC2Down";
-  branchNames_sys[kJetMET_jesRelativeJERHFUp]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeJERHFUp";
-  branchNames_sys[kJetMET_jesRelativeJERHFDown]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeJERHFDown";
-  branchNames_sys[kJetMET_jesRelativePtBBUp]                       = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativePtBBUp";
-  branchNames_sys[kJetMET_jesRelativePtBBDown]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativePtBBDown";
-  branchNames_sys[kJetMET_jesRelativePtEC1Up]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativePtEC1Up";
-  branchNames_sys[kJetMET_jesRelativePtEC1Down]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativePtEC1Down";
-  branchNames_sys[kJetMET_jesRelativePtEC2Up]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativePtEC2Up";
-  branchNames_sys[kJetMET_jesRelativePtEC2Down]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativePtEC2Down";
-  branchNames_sys[kJetMET_jesRelativePtHFUp]                       = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativePtHFUp";
-  branchNames_sys[kJetMET_jesRelativePtHFDown]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativePtHFDown";
-  branchNames_sys[kJetMET_jesRelativeSampleUp]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeSampleUp";
-  branchNames_sys[kJetMET_jesRelativeSampleDown]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeSampleDown";
-  branchNames_sys[kJetMET_jesRelativeStatECUp]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeStatECUp";
-  branchNames_sys[kJetMET_jesRelativeStatECDown]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeStatECDown";
-  branchNames_sys[kJetMET_jesRelativeStatFSRUp]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeStatFSRUp";
-  branchNames_sys[kJetMET_jesRelativeStatFSRDown]                  = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeStatFSRDown";
-  branchNames_sys[kJetMET_jesRelativeStatHFUp]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeStatHFUp";
-  branchNames_sys[kJetMET_jesRelativeStatHFDown]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeStatHFDown";
-  branchNames_sys[kJetMET_jesSinglePionECALUp]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesSinglePionECALUp";
-  branchNames_sys[kJetMET_jesSinglePionECALDown]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesSinglePionECALDown";
-  branchNames_sys[kJetMET_jesSinglePionHCALUp]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesSinglePionHCALUp";
-  branchNames_sys[kJetMET_jesSinglePionHCALDown]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesSinglePionHCALDown";
-  branchNames_sys[kJetMET_jesSubTotalAbsoluteUp]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesSubTotalAbsoluteUp";
-  branchNames_sys[kJetMET_jesSubTotalAbsoluteDown]                 = branchNames_sys[kJetMET_central_nonNominal] + "_jesSubTotalAbsoluteDown";
-  branchNames_sys[kJetMET_jesSubTotalMCUp]                         = branchNames_sys[kJetMET_central_nonNominal] + "_jesSubTotalMCUp";
-  branchNames_sys[kJetMET_jesSubTotalMCDown]                       = branchNames_sys[kJetMET_central_nonNominal] + "_jesSubTotalMCDown";
-  branchNames_sys[kJetMET_jesSubTotalPileUpUp]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesSubTotalPileUpUp";
-  branchNames_sys[kJetMET_jesSubTotalPileUpDown]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesSubTotalPileUpDown";
-  branchNames_sys[kJetMET_jesSubTotalPtUp]                         = branchNames_sys[kJetMET_central_nonNominal] + "_jesSubTotalPtUp";
-  branchNames_sys[kJetMET_jesSubTotalPtDown]                       = branchNames_sys[kJetMET_central_nonNominal] + "_jesSubTotalPtDown";
-  branchNames_sys[kJetMET_jesSubTotalRelativeUp]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesSubTotalRelativeUp";
-  branchNames_sys[kJetMET_jesSubTotalRelativeDown]                 = branchNames_sys[kJetMET_central_nonNominal] + "_jesSubTotalRelativeDown";
-  branchNames_sys[kJetMET_jesSubTotalScaleUp]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesSubTotalScaleUp";
-  branchNames_sys[kJetMET_jesSubTotalScaleDown]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesSubTotalScaleDown";
-  branchNames_sys[kJetMET_jesTimePtEtaUp]                          = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimePtEtaUp";
-  branchNames_sys[kJetMET_jesTimePtEtaDown]                        = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimePtEtaDown";
-  branchNames_sys[kJetMET_jesTimeRunBUp]                           = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunBUp";
-  branchNames_sys[kJetMET_jesTimeRunBDown]                         = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunBDown";
-  branchNames_sys[kJetMET_jesTimeRunBCDUp]                         = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunBCDUp";
-  branchNames_sys[kJetMET_jesTimeRunBCDDown]                       = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunBCDDown";
-  branchNames_sys[kJetMET_jesTimeRunCUp]                           = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunCUp";
-  branchNames_sys[kJetMET_jesTimeRunCDown]                         = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunCDown";
-  branchNames_sys[kJetMET_jesTimeRunDEUp]                          = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunDEUp";
-  branchNames_sys[kJetMET_jesTimeRunDEDown]                        = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunDEDown";
-  branchNames_sys[kJetMET_jesTimeRunEFUp]                          = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunEFUp";
-  branchNames_sys[kJetMET_jesTimeRunEFDown]                        = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunEFDown";
-  branchNames_sys[kJetMET_jesTimeRunFUp]                           = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunFUp";
-  branchNames_sys[kJetMET_jesTimeRunFDown]                         = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunFDown";
-  branchNames_sys[kJetMET_jesTimeRunGHUp]                          = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunGHUp";
-  branchNames_sys[kJetMET_jesTimeRunGHDown]                        = branchNames_sys[kJetMET_central_nonNominal] + "_jesTimeRunGHDown";
-  branchNames_sys[kJetMET_jesTotalNoFlavorUp]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesTotalNoFlavorUp";
-  branchNames_sys[kJetMET_jesTotalNoFlavorDown]                    = branchNames_sys[kJetMET_central_nonNominal] + "_jesTotalNoFlavorDown";
-  branchNames_sys[kJetMET_jesTotalNoFlavorNoTimeUp]                = branchNames_sys[kJetMET_central_nonNominal] + "_jesTotalNoFlavorNoTimeUp";
-  branchNames_sys[kJetMET_jesTotalNoFlavorNoTimeDown]              = branchNames_sys[kJetMET_central_nonNominal] + "_jesTotalNoFlavorNoTimeDown";
-  branchNames_sys[kJetMET_jesTotalNoTimeUp]                        = branchNames_sys[kJetMET_central_nonNominal] + "_jesTotalNoTimeUp";
-  branchNames_sys[kJetMET_jesTotalNoTimeDown]                      = branchNames_sys[kJetMET_central_nonNominal] + "_jesTotalNoTimeDown";
-  branchNames_sys[kJetMET_jerUp]                                   = branchNames_sys[kJetMET_central_nonNominal] + "_jerUp";
-  branchNames_sys[kJetMET_jerDown]                                 = branchNames_sys[kJetMET_central_nonNominal] + "_jerDown";
-  branchNames_sys[kJetMET_UnclusteredEnUp]                         = branchNames_sys[kJetMET_central_nonNominal] + "_unclustEnUp";
-  branchNames_sys[kJetMET_UnclusteredEnDown]                       = branchNames_sys[kJetMET_central_nonNominal] + "_unclustEnDown";
+  branchNames_sys[kJetMET_central]                   = branchNames_sys[kJetMET_central_nonNominal] + "_nom";
+  branchNames_sys[kJetMET_jesUp]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jesTotalUp";
+  branchNames_sys[kJetMET_jesDown]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesTotalDown";
+  //
+  branchNames_sys[kJetMET_jesAbsoluteUp]             = branchNames_sys[kJetMET_central_nonNominal] + "_jesAbsoluteUp";
+  branchNames_sys[kJetMET_jesAbsoluteDown]           = branchNames_sys[kJetMET_central_nonNominal] + "_jesAbsoluteDown";
+  branchNames_sys[kJetMET_jesAbsolute_EraUp]         = branchNames_sys[kJetMET_central_nonNominal] + Form("_jesAbsolute_%sUp",    era_str.data());
+  branchNames_sys[kJetMET_jesAbsolute_EraDown]       = branchNames_sys[kJetMET_central_nonNominal] + Form("_jesAbsolute_%sDown", era_str.data());
+  branchNames_sys[kJetMET_jesBBEC1Up]                = branchNames_sys[kJetMET_central_nonNominal] + "_jesBBEC1Up";
+  branchNames_sys[kJetMET_jesBBEC1Down]              = branchNames_sys[kJetMET_central_nonNominal] + "_jesBBEC1Down";
+  branchNames_sys[kJetMET_jesBBEC1_EraUp]            = branchNames_sys[kJetMET_central_nonNominal] + Form("_jesBBEC1_%sUp",   era_str.data());
+  branchNames_sys[kJetMET_jesBBEC1_EraDown]          = branchNames_sys[kJetMET_central_nonNominal] + Form("_jesBBEC1_%sDown", era_str.data());
+  branchNames_sys[kJetMET_jesEC2Up]                  = branchNames_sys[kJetMET_central_nonNominal] + "_jesEC2Up";
+  branchNames_sys[kJetMET_jesEC2Down]                = branchNames_sys[kJetMET_central_nonNominal] + "_jesEC2Down";
+  branchNames_sys[kJetMET_jesEC2_EraUp]              = branchNames_sys[kJetMET_central_nonNominal] + Form("_jesEC2_%sUp",   era_str.data());
+  branchNames_sys[kJetMET_jesEC2_EraDown]            = branchNames_sys[kJetMET_central_nonNominal] + Form("_jesEC2_%sDown", era_str.data());
+  branchNames_sys[kJetMET_jesFlavorQCDUp]            = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorQCDUp";
+  branchNames_sys[kJetMET_jesFlavorQCDDown]          = branchNames_sys[kJetMET_central_nonNominal] + "_jesFlavorQCDDown";
+  branchNames_sys[kJetMET_jesHFUp]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jesHFUp";
+  branchNames_sys[kJetMET_jesHFDown]                 = branchNames_sys[kJetMET_central_nonNominal] + "_jesHFDown";
+  branchNames_sys[kJetMET_jesHF_EraUp]               = branchNames_sys[kJetMET_central_nonNominal] + Form("_jesHF_%sUp",   era_str.data());
+  branchNames_sys[kJetMET_jesHF_EraDown]             = branchNames_sys[kJetMET_central_nonNominal] + Form("_jesHF_%sDown", era_str.data());
+  branchNames_sys[kJetMET_jesRelativeBalUp]          = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeBalUp";
+  branchNames_sys[kJetMET_jesRelativeBalDown]        = branchNames_sys[kJetMET_central_nonNominal] + "_jesRelativeBalDown";
+  branchNames_sys[kJetMET_jesRelativeSample_EraUp]   = branchNames_sys[kJetMET_central_nonNominal] + Form("_jesRelativeSample_%sUp",   era_str.data());
+  branchNames_sys[kJetMET_jesRelativeSample_EraDown] = branchNames_sys[kJetMET_central_nonNominal] + Form("_jesRelativeSample_%sDown", era_str.data());
+  //
+  branchNames_sys[kJetMET_jerUp]                     = branchNames_sys[kJetMET_central_nonNominal] + "_jerUp";
+  branchNames_sys[kJetMET_jerDown]                   = branchNames_sys[kJetMET_central_nonNominal] + "_jerDown";
+  branchNames_sys[kJetMET_UnclusteredEnUp]           = branchNames_sys[kJetMET_central_nonNominal] + "_unclustEnUp";
+  branchNames_sys[kJetMET_UnclusteredEnDown]         = branchNames_sys[kJetMET_central_nonNominal] + "_unclustEnDown";
+  //
   assert(branchNames_sys.count(central_or_shift));
   assert(isValidJESsource(era, central_or_shift));
+  assert((isJet && central_or_shift != kJetMET_UnclusteredEnUp && central_or_shift != kJetMET_UnclusteredEnDown) || ! isJet);
   return branchNames_sys.at(central_or_shift);
 }
 

@@ -128,6 +128,8 @@ RecoHadTauSelectorBase::set(const std::string & cut)
 
   apply_deeptau_lepton_ = false;
   const std::vector<std::string> cut_parts = edm::tokenize(cut, TAU_WP_SEPARATOR);
+  const std::size_t nof_cut_parts = cut_parts.size();
+  assert(nof_cut_parts);
   reset();
   for(const std::string & cut_part: cut_parts)
   {
@@ -149,10 +151,19 @@ RecoHadTauSelectorBase::set(const std::string & cut)
       apply_decayModeFinding_ = false;
       decayMode_blacklist_ = { 5, 6 }; // exclude DMs 5 & 6
     }
-    //apply_deeptau_lepton_ |= tauId == TauID::DeepTau2017v2VSjet;
+    // Apply anti-e and anti-mu DeepTauID discriminators if cut on anti-jet DeepTauID is requested
+    apply_deeptau_lepton_ |= tauId == TauID::DeepTau2017v2VSjet;
   }
 
-  apply_deeptau_lepton_ &= cut_parts.size() == 1 && ! disable_deeptau_lepton_;
+  apply_deeptau_lepton_ &= nof_cut_parts == 1 && ! disable_deeptau_lepton_;
+  if(nof_cut_parts > 1)
+  {
+    // Reset DM whitelist and blacklist if tau is required to pass an OR of multiple tau IDs
+    // This is relevant only in Ntuple post-production and MEM workflows
+    decayMode_whitelist_.clear();
+    decayMode_blacklist_.clear();
+  }
+
   if(apply_deeptau_lepton_)
   {
     // If the DeepTau ID discriminator is the only tau ID we're cutting on, then we should also cut on the loosest
@@ -316,7 +327,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
   {
     if(debug_)
     {
-      std::cout << "FAILS decay mode cut DM (=" << hadTau.decayMode() << ") NOT in ";
+      std::cout << "FAILS decay mode cut DM (=" << hadTau.decayMode() << ") in ";
       for(unsigned decayModeIdx = 0; decayModeIdx < decayMode_blacklist_.size(); ++decayModeIdx)
       {
         std::cout << decayMode_blacklist_.at(decayModeIdx);
@@ -330,13 +341,14 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
         }
       }
     }
+    return false;
   }
   if(! decayMode_whitelist_.empty() &&
      std::find(decayMode_whitelist_.begin(), decayMode_whitelist_.end(), hadTau.decayMode()) == decayMode_whitelist_.end())
   {
     if(debug_)
     {
-      std::cout << "FAILS decay mode cut DM (=" << hadTau.decayMode() << ") in ";
+      std::cout << "FAILS decay mode cut DM (=" << hadTau.decayMode() << ") NOT in ";
       for(unsigned decayModeIdx = 0; decayModeIdx < decayMode_whitelist_.size(); ++decayModeIdx)
       {
         std::cout << decayMode_whitelist_.at(decayModeIdx);
@@ -350,6 +362,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
         }
       }
     }
+    return false;
   }
 
   std::vector<TauID> min_id_mva_cuts;
@@ -430,7 +443,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
 
   if(apply_deeptau_lepton_)
   {
-    if(hadTau.id_mva(TauID::DeepTau2017v2VSmu) < 1)
+    if(hadTau.id_mva(TauID::DeepTau2017v2VSmu) < 1) // corresponds to cut on VLoose WP
     {
       if(debug_)
       {
@@ -438,7 +451,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
       }
       return false;
     }
-    if(hadTau.id_mva(TauID::DeepTau2017v2VSe) < 1)
+    if(hadTau.id_mva(TauID::DeepTau2017v2VSe) < 1) // corresponds to cut on VVVLoose WP
     {
       if(debug_)
       {

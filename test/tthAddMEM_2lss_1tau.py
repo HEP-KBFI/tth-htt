@@ -12,14 +12,11 @@ import re
 sys_choices               = [ 'full' ] + systematics.an_addMEM_opts
 max_mem_integrations      = 20000
 systematics.full          = systematics.an_addMEM
-integration_point_choices = {
-  'small' : True,
-  'full'  : False,
-}
+integration_point_choices = [ 'low', 'nominal', 'high' ]
 mode_choices = {
-  'default' : 'full',
-  'bdt'     : 'small',
-  'sync'    : 'full',
+  'default' : 'nominal',
+  'bdt'     : 'nominal',
+  'sync'    : 'high',
 }
 
 parser = tthAnalyzeParser(isAddMEM = True)
@@ -33,9 +30,9 @@ parser.add_use_home(False)
 parser.add_jet_cleaning()
 parser.add_argument('-i', '--integration-points',
   type = str, dest = 'integration_points', metavar = 'choice',
-  choices = integration_point_choices.keys(), default = None, required = False,
+  choices = integration_point_choices, default = '', required = False,
   help = 'R|Number of integration points to use, default depends on mode (choices: %s)' % \
-         tthAnalyzeParser(integration_point_choices.keys()),
+         tthAnalyzeParser(integration_point_choices),
 )
 parser.add_argument('-n', '--max-mem-integrations',
   type = int, dest = 'max_mem_integrations', metavar = 'integer', default = max_mem_integrations,
@@ -81,11 +78,8 @@ for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):
     if central_or_shift not in central_or_shifts:
       central_or_shifts.append(central_or_shift)
-integration_choice = integration_point_choices[integration_points] if integration_points \
-                       else integration_point_choices[mode_choices[mode]]
-version            = "%s_%s_%s_%s" % (
-  version, mode, 'nonNom' if use_nonnominal else 'nom', 'small' if integration_choice else 'full'
-)
+integration_choice = integration_points if integration_points else mode_choices[mode]
+version            = "%s_%s_%s_%s" % (version, mode, 'nonNom' if use_nonnominal else 'nom', integration_choice)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 
 hadTauSelection = "Tight"
@@ -173,7 +167,7 @@ if __name__ == '__main__':
     num_parallel_jobs        = num_parallel_jobs,
     leptonSelection          = leptonSelection,
     hadTauSelection          = hadTauSelectionAndWP,
-    lowIntegrationPoints     = integration_choice, # if False, use full integration points
+    integration_choice       = integration_choice, # if False, use full integration points
     isDebug                  = debug,
     jet_cleaning_by_index    = jet_cleaning_by_index,
     central_or_shift         = central_or_shifts,

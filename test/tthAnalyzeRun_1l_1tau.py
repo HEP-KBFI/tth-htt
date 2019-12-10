@@ -14,8 +14,8 @@ import re
 # E.g.: ./test/tthAnalyzeRun_1l_1tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
-sys_choices      = [ 'full' ] + systematics.an_extended_opts
-systematics.full = systematics.an_extended
+sys_choices      = [ 'full' ] + systematics.an_extended_opts + [ 'topPtReweighting' ]
+systematics.full = systematics.an_extended + systematics.topPtReweighting
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -30,6 +30,8 @@ parser.add_files_per_job(files_per_job = 2)
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
+parser.do_MC_only()
+parser.enable_regrouped_jec()
 args = parser.parse_args()
 
 # Common arguments
@@ -56,6 +58,13 @@ use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 tau_id            = args.tau_id
+MC_only           = args.MC_only
+regroup_jec       = args.enable_regrouped_jec
+
+if regroup_jec:
+  if 'full' not in systematics_label:
+    raise RuntimeError("Regrouped JEC was enabled but not running with full systematics")
+  systematics.full.extend(systematics.JEC_regrouped)
 
 # Use the arguments
 central_or_shifts = []
@@ -118,8 +127,14 @@ for sample_name, sample_info in samples.items():
     sample_info["sample_category"] = "DY"
   elif sample_name.startswith('/TTJets'):
     sample_info["use_it"] = mode == "forBDTtraining"
+    sample_info["sample_category"] = "TT"
   elif sample_name.startswith('/TTTo'):
     sample_info["use_it"] = mode == "default"
+    sample_info["sample_category"] = "TT"
+    sample_info["apply_toppt_rwgt"] = True
+  if MC_only :
+    if sample_info["type"] == "data" :
+      sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.info(
@@ -164,7 +179,7 @@ if __name__ == '__main__':
       "numJets"                           : {},
       "mTauTauVis"                        : {},
       "mTauTau"                           : {},
-      "mvaOutput_Legacy"                  : {}
+      "mvaOutput_Legacy_6"                  : {},
     },
     select_rle_output                     = True,
     dry_run                               = dry_run,

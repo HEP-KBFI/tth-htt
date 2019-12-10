@@ -31,6 +31,8 @@ parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_sideband()
+parser.do_MC_only()
+parser.enable_regrouped_jec()
 args = parser.parse_args()
 
 # Common arguments
@@ -58,6 +60,13 @@ jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 sideband          = args.sideband
 tau_id            = args.tau_id
+MC_only           = args.MC_only
+regroup_jec       = args.enable_regrouped_jec
+
+if regroup_jec:
+  if 'full' not in systematics_label:
+    raise RuntimeError("Regrouped JEC was enabled but not running with full systematics")
+  systematics.full.extend(systematics.JEC_regrouped)
 
 # Use the arguments
 central_or_shifts = []
@@ -113,6 +122,13 @@ if mode == "default" and len(central_or_shifts) <= 1:
   ]
 else:
   evtCategories = []
+
+if MC_only :
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events':
+      continue
+    if sample_info["type"] == "data" :
+      sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.info(

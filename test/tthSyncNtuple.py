@@ -83,6 +83,7 @@ parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_sys(sys_choices)
+parser.enable_regrouped_jec()
 parser.add_preselect()
 parser.add_argument('-c', '--channels',
   type = str, nargs = '+', dest = 'channels', metavar = 'channel', choices = channel_choices,
@@ -123,6 +124,7 @@ use_preselected   = args.use_preselected
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 tau_id            = args.tau_id
+regroup_jec       = args.enable_regrouped_jec
 
 # Custom arguments
 channels = args.channels
@@ -131,7 +133,7 @@ clean    = args.clean
 with_mem = args.with_mem
 
 for systematic_label in systematics_label:
-  if systematics_label != 'full':
+  if 'full' not in systematics_label:
     if not hasattr(systematics, systematic_label):
       raise ValueError('Invalid option for systematic uncertainty: %s' % systematic_label)
 
@@ -158,6 +160,7 @@ if __name__ == '__main__':
     use_preselected    = use_preselected,
     jet_cleaning       = jet_cleaning,
     gen_matching       = gen_matching,
+    regroup_jec        = regroup_jec,
   )
 
   job_statistics = analysis.create()

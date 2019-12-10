@@ -27,18 +27,9 @@ EvtHistManager_charge_flip::bookHistograms(TFileDirectory & dir)
       subdirName_SS += Form("/%s", category_.data());
     }
     TDirectory * const subdir_SS = createSubdirectory_recursively(dir, subdirName_SS, false);
-    subdir_SS->cd();
-    TH1 * const histogram_m_ee_SS = new TH1D(getHistogramName("mass_ll").data(), "m_{ll}", 60,  60., 120. );
-    histogram_m_ee_SS->Sumw2();
-    histograms_m_ee_SS_[category_eta_and_pT] = histogram_m_ee_SS;
-    
-    TH1 * const histogram_m_ee_SS_mllBelow100 = new TH1D(getHistogramName("mass_ll_Below100").data(), "m_{ll}", 40,  60., 100. );
-    histogram_m_ee_SS_mllBelow100->Sumw2();
-    histograms_m_ee_SS_mllBelow100_[category_eta_and_pT] = histogram_m_ee_SS_mllBelow100;
-    TH1 * const histogram_m_ee_SS_mllAbove100 = new TH1D(getHistogramName("mass_ll_Above100").data(), "m_{ll}", 20,  100., 120. );
-    histogram_m_ee_SS_mllAbove100->Sumw2();
-    histograms_m_ee_SS_mllAbove100_[category_eta_and_pT] = histogram_m_ee_SS_mllAbove100;
-     
+    histograms_m_ee_SS_[category_eta_and_pT]             = book1D(subdir_SS, "mass_ll", "m_{ll}", 60,  60., 120.);
+    histograms_m_ee_SS_mllBelow100_[category_eta_and_pT] = book1D(subdir_SS, "mass_ll_Below100", "m_{ll}", 40,  60., 100.);
+    histograms_m_ee_SS_mllAbove100_[category_eta_and_pT] = book1D(subdir_SS, "mass_ll_Above100", "m_{ll}", 20,  100., 120.);
 
     std::string subdirName_OS = Form("OS/%s/%s", category_eta_and_pT.data(), process_.data());
     if(! category_.empty())
@@ -46,18 +37,9 @@ EvtHistManager_charge_flip::bookHistograms(TFileDirectory & dir)
       subdirName_OS += Form("/%s", category_.data());
     }
     TDirectory * const subdir_OS = createSubdirectory_recursively(dir, subdirName_OS, false);
-    subdir_OS->cd();
-    TH1 * const histogram_m_ee_OS = new TH1D(getHistogramName("mass_ll").data(), "m_{ll}", 60,  60., 120. );
-    histogram_m_ee_OS->Sumw2();
-    histograms_m_ee_OS_[category_eta_and_pT] = histogram_m_ee_OS;
-
-    TH1 * const histogram_m_ee_OS_mllBelow100 = new TH1D(getHistogramName("mass_ll_Below100").data(), "m_{ll}", 40,  60., 100. );
-    histogram_m_ee_OS_mllBelow100->Sumw2();
-    histograms_m_ee_OS_mllBelow100_[category_eta_and_pT] = histogram_m_ee_OS_mllBelow100;
-    TH1 * const histogram_m_ee_OS_mllAbove100 = new TH1D(getHistogramName("mass_ll_Above100").data(), "m_{ll}", 20,  100., 120. );
-    histogram_m_ee_OS_mllAbove100->Sumw2();
-    histograms_m_ee_OS_mllAbove100_[category_eta_and_pT] = histogram_m_ee_OS_mllAbove100;
-    
+    histograms_m_ee_OS_[category_eta_and_pT]             = book1D(subdir_OS, "mass_ll", "m_{ll}", 60,  60., 120.);
+    histograms_m_ee_OS_mllBelow100_[category_eta_and_pT] = book1D(subdir_OS, "mass_ll_Below100", "m_{ll}", 40,  60., 100.);
+    histograms_m_ee_OS_mllAbove100_[category_eta_and_pT] = book1D(subdir_OS, "mass_ll_Above100", "m_{ll}", 20,  100., 120.);
   }
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);

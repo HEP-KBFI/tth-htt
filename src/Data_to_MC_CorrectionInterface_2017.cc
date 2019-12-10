@@ -11,12 +11,16 @@
 Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const edm::ParameterSet & cfg)
   : Data_to_MC_CorrectionInterface_Base(cfg)
 {
+  // Reconstruction efficiencies of electrons with pT < 20 GeV, measured by EGamma POG
+  // https://twiki.cern.ch/twiki/pub/CMS/Egamma2017DataRecommendations/egammaEffi.txt_EGM2D_runBCDEF_passingRECO_lowEt.root
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_gsf_ptLt20.root",
     "EGamma_SF2D",
     lut::kXetaYpt, -2.5, +2.5, lut::kLimit, -1., 20., lut::kLimit_and_Cut
   ));
+  // Reconstruction efficiencies of electrons with pT > 20 GeV, measured by EGamma POG
+  // https://twiki.cern.ch/twiki/pub/CMS/Egamma2017DataRecommendations/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_gsf_ptGt20.root",
@@ -24,6 +28,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 20., -1., lut::kLimit_and_Cut
   ));
 
+  // Efficiency of electron isolation (and track vertex cuts)?
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_trkVtxCut_and_isoEff.root",
@@ -31,6 +36,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 10., 500., lut::kLimit
   ));
 
+  // Loose-to-tight electron ID SFs, measured by the CERN group
   sfElectronID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_e_3l.root",
@@ -44,12 +50,14 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXptYabsEta
   ));
 
+  // Tracking efficiency for muons with pT < 10 GeV, measured by Muon POG (?)
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkEff_ptLt10.root",
     "ratio_eff_eta3_tk0_dr030e030_corr",
     lut::kXetaYpt, -2.4, +2.4, lut::kLimit, -1., 10., lut::kCut
   ));
+  // Tracking efficiency for muons with pT > 10 GeV, measured by Muon POG (?)
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkEff_ptGt10.root",
@@ -57,19 +65,24 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXetaYpt, -2.4, +2.4, lut::kLimit, 10., -1., lut::kCut
   ));
 
+  // Identification efficiencies of loose muons with pT < 20 GeV, measured by Muon POG
+  // https://twiki.cern.ch/twiki/pub/CMS/MuonReferenceEffs2017/RunBCDEF_SF_ID_JPsi.root
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
-    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_ptLt30.root",
+    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_ptLt20.root",
     "NUM_LooseID_DEN_genTracks_pt_abseta",
-    lut::kXptYabsEta, -1., 30., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
+    lut::kXptYabsEta, -1., 20., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
   ));
+  // Identification efficiencies of loose muons with pT > 20 GeV, measured by Muon POG
+  // https://twiki.cern.ch/twiki/pub/CMS/MuonReferenceEffs2017/RunBCDEF_SF_ID.root
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
-    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_ptGt30.root",
+    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_ptGt20.root",
     "NUM_LooseID_DEN_genTracks_pt_abseta",
-    lut::kXptYabsEta, 30., -1., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
+    lut::kXptYabsEta, 20., -1., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
   ));
 
+  // Efficiency of muon isolation (and track vertex cuts)
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkVtxCut_and_isoEff.root",
@@ -77,6 +90,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXptYabsEta, 10., 120., lut::kLimit, 0., 2.4, lut::kLimit
   ));
 
+  // Loose-to-tight muon ID SFs, measured by the CERN group
   sfMuonID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_m_3l.root",
@@ -92,14 +106,15 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
 
   if(applyHadTauSF_)
   {
-    tauIdSFs_ = new TauIDSFTool("2017ReReco", tauIDSF_str_, tauIDSF_level_str_, false);
+    const std::string tauIDSFTool_era = "2017ReReco";
+    tauIdSFs_ = new TauIDSFTool(tauIDSFTool_era, tauIDSF_str_, tauIDSF_level_str_, false);
+    initAntiEle_tauIDSFs(tauIDSFTool_era);
+    initAntiMu_tauIDSFs(tauIDSFTool_era);
   }
 }
 
 Data_to_MC_CorrectionInterface_2017::~Data_to_MC_CorrectionInterface_2017()
-{
-  delete tauIdSFs_;
-}
+{}
 
 double
 Data_to_MC_CorrectionInterface_2017::getWeight_leptonTriggerEff() const
@@ -112,6 +127,7 @@ Data_to_MC_CorrectionInterface_2017::getWeight_leptonTriggerEff() const
 double
 Data_to_MC_CorrectionInterface_2017::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
+  // see Table 12 in AN2018/098v18
   double sf = 1.;
   double sfErr = 0.;
 
@@ -148,157 +164,5 @@ Data_to_MC_CorrectionInterface_2017::getSF_leptonTriggerEff(TriggerSFsys central
                    ;
   }
 
-  return sf;
-}
-
-double
-Data_to_MC_CorrectionInterface_2017::getSF_hadTauID_and_Iso(TauIDSFsys central_or_shift) const
-{
-  double sf = 1.;
-  if(applyHadTauSF_)
-  {
-    for(std::size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau)
-    {
-      if(hadTau_genPdgId_[idxHadTau] == 15)
-      {
-        switch(central_or_shift)
-        {
-          case TauIDSFsys::central:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau]);         break;
-          case TauIDSFsys::shiftUp:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Up");   break;
-          case TauIDSFsys::shiftDown: sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Down"); break;
-        }
-      }
-    }
-  }
-  return sf;
-}
-
-double
-Data_to_MC_CorrectionInterface_2017::getSF_eToTauFakeRate(FRet central_or_shift) const
-{
-  double sf = 1.;
-  for(std::size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau)
-  {
-    if(hadTau_genPdgId_[idxHadTau] == 11)
-    {
-      double sf_tmp = 1.;
-      double sfErr = 0.;
-
-      const double hadTau_absEta = std::fabs(hadTau_eta_[idxHadTau]);
-      if(hadTauSelection_antiElectron_[idxHadTau] > 0)
-      {
-        switch(hadTauSelection_antiElectron_[idxHadTau])
-        {
-          case 1: // vLoose
-          {
-            if     (hadTau_absEta < 1.479) { sf_tmp = 1.09; sfErr = 0.01; }
-            else if(hadTau_absEta > 1.558) { sf_tmp = 1.19; sfErr = 0.01; }
-            break;
-          }
-          case 2: // Loose
-          {
-            if     (hadTau_absEta < 1.479) { sf_tmp = 1.17; sfErr = 0.04; }
-            else if(hadTau_absEta > 1.558) { sf_tmp = 1.25; sfErr = 0.06; }
-            break;
-          }
-          case 3: // Medium
-          {
-            if     (hadTau_absEta < 1.479) { sf_tmp = 1.40; sfErr = 0.12; }
-            else if(hadTau_absEta > 1.558) { sf_tmp = 1.21; sfErr = 0.26; }
-            break;
-          }
-          case 4: // Tight
-          {
-            if     (hadTau_absEta < 1.479) { sf_tmp = 1.80; sfErr = 0.20; }
-            else if(hadTau_absEta > 1.558) { sf_tmp = 1.53; sfErr = 0.60; }
-            break;
-          }
-          case 5: // vTight
-          {
-            if     (hadTau_absEta < 1.479) { sf_tmp = 1.96; sfErr = 0.27; }
-            else if(hadTau_absEta > 1.558) { sf_tmp = 1.66; sfErr = 0.80; }
-            break;
-          }
-          default: throw cmsException(this, __func__, __LINE__)
-                     << "Invalid parameter 'hadTauSelection_antiElectron' = "
-                     << hadTauSelection_antiElectron_[idxHadTau]
-                   ;
-        }
-      }
-
-      switch(central_or_shift)
-      {
-        case FRet::shiftUp:   sf_tmp += sfErr; break;
-        case FRet::shiftDown: sf_tmp -= sfErr; break;
-        case FRet::central:                    break;
-        default:              throw cmsException(this, __func__, __LINE__)
-                                << "Invalid parameter 'central_or_shift' = "
-                                << as_integer(central_or_shift)
-                              ;
-      }
-
-      sf_tmp = std::max(sf_tmp, 0.); // CV: require e->tau fake-rates to be positive
-      sf *= sf_tmp;
-    }
-  }
-  return sf;
-}
-
-double
-Data_to_MC_CorrectionInterface_2017::getSF_muToTauFakeRate(FRmt central_or_shift) const
-{
-  double sf = 1.;
-  for(std::size_t idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau)
-  {
-    if(hadTau_genPdgId_[idxHadTau] == 13)
-    {
-      double sf_tmp = 1.;
-      double sfErr = 0.;
-
-      const double hadTau_absEta = std::fabs(hadTau_eta_[idxHadTau]);
-      if(hadTauSelection_antiMuon_[idxHadTau] > 0)
-      {
-        switch(hadTauSelection_antiMuon_[idxHadTau])
-        {
-          case 1: // Loose
-          {
-            if     (hadTau_absEta < 0.4) { sf_tmp = 1.06; sfErr = 0.05; }
-            else if(hadTau_absEta < 0.8) { sf_tmp = 1.02; sfErr = 0.04; }
-            else if(hadTau_absEta < 1.2) { sf_tmp = 1.10; sfErr = 0.04; }
-            else if(hadTau_absEta < 1.7) { sf_tmp = 1.03; sfErr = 0.18; }
-            else                         { sf_tmp = 1.94; sfErr = 0.35; }
-            break;
-          }
-          case 2: // Tight
-          {
-            if     (hadTau_absEta < 0.4) { sf_tmp = 1.17; sfErr = 0.12; }
-            else if(hadTau_absEta < 0.8) { sf_tmp = 1.29; sfErr = 0.30; }
-            else if(hadTau_absEta < 1.2) { sf_tmp = 1.14; sfErr = 0.05; }
-            else if(hadTau_absEta < 1.7) { sf_tmp = 0.93; sfErr = 0.60; }
-            else                         { sf_tmp = 1.61; sfErr = 0.60; }
-            break;
-          }
-          default: throw cmsException(__func__, __LINE__)
-                     << "Invalid parameter 'hadTauSelection_antiMuon' = "
-                     << hadTauSelection_antiMuon_[idxHadTau]
-                   ;
-        }
-      }
-
-      switch(central_or_shift)
-      {
-        case FRmt::shiftUp:   sf_tmp += sfErr; break;
-        case FRmt::shiftDown: sf_tmp -= sfErr; break;
-        case FRmt::central:                    break;
-        default:              throw cmsException(this, __func__, __LINE__)
-                                << "Invalid parameter 'central_or_shift' = "
-                                << as_integer(central_or_shift)
-                              ;
-      }
-
-      sf_tmp = std::max(sf_tmp, 0.); // CV: require mu->tau fake-rates to be positive
-      sf *= sf_tmp;
-    }
-  }
   return sf;
 }

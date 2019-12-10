@@ -207,6 +207,7 @@ class prodNtupleConfig:
             "process_name        = '%s'" % jobOptions['process_name'],
             "skip_tools_step     = %s" % self.skip_tools_step,
             "remove_intermediate = %s" % (not self.do_sync),
+            "compTopRwgt         = %s" % jobOptions['compTopRwgt'],
         ]
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
@@ -232,6 +233,7 @@ class prodNtupleConfig:
             dry_run                 = self.dry_run,
             use_home                = self.use_home,
             validate_outputs        = self.check_output_files,
+            max_num_submittedJobs   = 3000,
         )
         return num_jobs
 
@@ -336,6 +338,7 @@ class prodNtupleConfig:
                     'category_name'    : sample_info["sample_category"],
                     'triggers'         : hlt_paths,
                     'HLTcuts'          : hlt_cuts,
+                    'compTopRwgt'      : sample_name.startswith('/TTTo'),
                 }
                 self.createCfg_prodNtuple(jobOptions)
 

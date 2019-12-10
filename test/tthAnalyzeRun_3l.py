@@ -16,8 +16,8 @@ import re
 mode_choices     = [
   'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
 ]
-sys_choices      = [ 'full' ] + systematics.an_extended_opts
-systematics.full = systematics.an_extended
+sys_choices      = [ 'full' ] + systematics.an_extended_opts + [ 'MEM_3l' ]
+systematics.full = systematics.an_extended + systematics.MEM_3l
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -33,6 +33,7 @@ parser.add_gen_matching()
 parser.add_sideband()
 parser.add_tau_id()
 parser.add_control_region()
+parser.enable_regrouped_jec()
 args = parser.parse_args()
 
 # Common arguments
@@ -61,12 +62,20 @@ gen_matching      = args.gen_matching
 sideband          = args.sideband
 tau_id            = args.tau_id
 control_region    = args.control_region
+regroup_jec       = args.enable_regrouped_jec
+
+if regroup_jec:
+  if 'full' not in systematics_label:
+    raise RuntimeError("Regrouped JEC was enabled but not running with full systematics")
+  systematics.full.extend(systematics.JEC_regrouped)
 
 # Use the arguments
 central_or_shifts = []
 for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):
     if central_or_shift not in central_or_shifts:
+      if central_or_shift in systematics.MEM_3l and "MEM" not in mode:
+        continue
       central_or_shifts.append(central_or_shift)
 do_sync = mode.startswith('sync')
 lumi = get_lumi(era)

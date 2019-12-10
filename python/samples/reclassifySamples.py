@@ -47,7 +47,7 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
       elif re.match("/W(\d)?Jets", sample_name):
         sample_info["sample_category"] = "WZ"
       elif sample_name.startswith(("/TTTo", "/TTJets")):
-        sample_info["sample_category"] = "ttZ"
+        sample_info["sample_category"] = "TTZ"
       elif sample_name.startswith("/ST_"):
         sample_info["sample_category"] = "Rares"
 

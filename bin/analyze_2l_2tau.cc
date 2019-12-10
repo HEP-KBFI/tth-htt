@@ -407,7 +407,7 @@ int main(int argc, char* argv[])
   }
 
 //--- declare event-level variables
-  EventInfo eventInfo(isMC, isSignal);
+  EventInfo eventInfo(isMC, isSignal, isMC_HH);
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
 
@@ -541,19 +541,19 @@ int main(int argc, char* argv[])
       if(genMatchingByIndex)
       {
         genMatchToMuonReader = new GenParticleReader(branchName_muonGenMatch);
-        genMatchToMuonReader -> readGenPartFlav(false);
+        genMatchToMuonReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToMuonReader);
 
         genMatchToElectronReader = new GenParticleReader(branchName_electronGenMatch);
-        genMatchToElectronReader -> readGenPartFlav(false);
+        genMatchToElectronReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToElectronReader);
 
         genMatchToHadTauReader = new GenParticleReader(branchName_hadTauGenMatch);
-        genMatchToHadTauReader -> readGenPartFlav(false);
+        genMatchToHadTauReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToHadTauReader);
 
         genMatchToJetReader = new GenParticleReader(branchName_jetGenMatch);
-        genMatchToJetReader -> readGenPartFlav(false);
+        genMatchToJetReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToJetReader);
       }
       else
@@ -1099,9 +1099,9 @@ int main(int argc, char* argv[])
       assert(electronSelection != kLoose && muonSelection != kLoose);
       selMuons = selectObjects(muonSelection, preselMuons, fakeableMuons, tightMuons);
       selElectrons = selectObjects(electronSelection, preselElectrons, fakeableElectrons, tightElectrons);
-      const std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
-      selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
     }
+    const std::vector<const RecoLepton*> selLeptons_full = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
+    if(!(electronSelection == muonSelection)) selLeptons = getIntersection(fakeableLeptons, selLeptons_full, isHigherConePt);
 
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -1130,8 +1130,8 @@ int main(int argc, char* argv[])
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptonsFull, fakeableHadTausFull) :
-      jetCleaner       (jet_ptrs, fakeableLeptonsFull, fakeableHadTausFull)
+      jetCleanerByIndex(jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, selectBDT ? selHadTaus : fakeableHadTausFull) :
+      jetCleaner       (jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, selectBDT ? selHadTaus : fakeableHadTausFull)
     ;
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);

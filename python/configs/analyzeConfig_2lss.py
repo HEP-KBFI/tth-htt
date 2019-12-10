@@ -150,7 +150,7 @@ class analyzeConfig_2lss(analyzeConfig):
     self.lepton_frWeights  = [ "disabled" ]
     self.isBDTtraining     = True
 
-  def accept_systematics(self, central_or_shift, is_mc, lepton_selection, lepton_charge_selection, sample_category, sample_name):
+  def accept_systematics(self, central_or_shift, is_mc, lepton_selection, lepton_charge_selection, sample_info):
     if central_or_shift != "central":
       isFR_shape_shift = (central_or_shift in self.central_or_shifts_fr)
       if not ((lepton_selection == "Fakeable" and lepton_charge_selection == "SS" and isFR_shape_shift) or
@@ -160,7 +160,7 @@ class analyzeConfig_2lss(analyzeConfig):
         return False
       if not is_mc and not isFR_shape_shift:
         return False
-      if not self.accept_central_or_shift(central_or_shift, sample_category, sample_name):
+      if not self.accept_central_or_shift(central_or_shift, sample_info):
         return False
     return True
 
@@ -224,7 +224,7 @@ class analyzeConfig_2lss(analyzeConfig):
                   continue
 
                 if central_or_shift_or_dummy not in central_or_shift_extensions and not self.accept_systematics(
-                    central_or_shift_or_dummy, is_mc, lepton_selection, lepton_charge_selection, sample_category, sample_name
+                    central_or_shift_or_dummy, is_mc, lepton_selection, lepton_charge_selection, sample_info
                 ):
                   continue
 
@@ -328,7 +328,7 @@ class analyzeConfig_2lss(analyzeConfig):
             central_or_shift_dedicated = self.central_or_shifts if use_th_weights else self.central_or_shifts_external
             for central_or_shift in central_or_shift_dedicated:
               if not self.accept_systematics(
-                  central_or_shift, is_mc, lepton_selection, lepton_charge_selection, sample_category, sample_name
+                  central_or_shift, is_mc, lepton_selection, lepton_charge_selection, sample_info
               ):
                 continue
 
@@ -336,7 +336,7 @@ class analyzeConfig_2lss(analyzeConfig):
               if central_or_shift == "central" and not use_th_weights:
                 for central_or_shift_local in self.central_or_shifts_internal:
                   if self.accept_systematics(
-                      central_or_shift_local, is_mc, lepton_selection, lepton_charge_selection, sample_category, sample_name
+                      central_or_shift_local, is_mc, lepton_selection, lepton_charge_selection, sample_info
                   ):
                     central_or_shifts_local.append(central_or_shift_local)
 
@@ -468,6 +468,7 @@ class analyzeConfig_2lss(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base:
+            if "HH" in process_input_base : continue
             processes_input.append("%s_fake" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
@@ -490,6 +491,7 @@ class analyzeConfig_2lss(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base:
+            if "HH" in process_input_base : continue
             processes_input.append("%s_flip" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_flips] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
@@ -512,6 +514,7 @@ class analyzeConfig_2lss(analyzeConfig):
           sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base:
+            if "HH" in process_input_base : continue
             processes_input.append("%s_Convs" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_Convs] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],

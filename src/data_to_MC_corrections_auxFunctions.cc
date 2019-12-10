@@ -147,6 +147,18 @@ namespace aux
     return sf;
   }
 
+  double
+  compSF(double eff_data,
+         double eff_mc)
+  {
+    if(eff_data == 0. && eff_mc == 0.)
+    {
+      std::cout << "WARNING: efficiency in data and in MC are both zero -> returning SF = 1 instead";
+      return 1.;
+    }
+    return std::min(eff_data / std::max(1.e-6, eff_mc), 1.e+1);
+  }
+
   bool
   hasDecayMode(const std::vector<int> & allowedDecayModes,
                int hadTau_decayMode)
@@ -513,13 +525,16 @@ namespace aux
   }
 
   getTriggerEfficiencyFunc
-  getTriggerFuncMC(TriggerSFsys triggerSF_option)
+  getTriggerFuncMC(TriggerSFsys triggerSF_option,
+                   bool flip)
   {
     switch(triggerSF_option)
     {
-      case TriggerSFsys::central:   return &TauTriggerSFs2017::getTriggerEfficiencyMC;           break;
-      case TriggerSFsys::shiftUp:   return &TauTriggerSFs2017::getTriggerEfficiencyMCUncertUp;   break;
-      case TriggerSFsys::shiftDown: return &TauTriggerSFs2017::getTriggerEfficiencyMCUncertDown; break;
+      case TriggerSFsys::central:   return        &TauTriggerSFs2017::getTriggerEfficiencyMC;
+      case TriggerSFsys::shiftUp:   return flip ? &TauTriggerSFs2017::getTriggerEfficiencyMCUncertDown :
+                                                  &TauTriggerSFs2017::getTriggerEfficiencyMCUncertUp;
+      case TriggerSFsys::shiftDown: return flip ? &TauTriggerSFs2017::getTriggerEfficiencyMCUncertUp :
+                                                  &TauTriggerSFs2017::getTriggerEfficiencyMCUncertDown;
     }
     return nullptr;
   }

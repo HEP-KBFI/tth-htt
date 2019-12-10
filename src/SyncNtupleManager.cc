@@ -215,6 +215,8 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::Integral_ttbar],           "Integral_ttbar",
     floatMap[FloatVariableType::integration_type],         "integration_type",
     floatMap[FloatVariableType::MEM_LR],                   "memOutput_LR",
+    floatMap[FloatVariableType::MEM_LR_up],                "memOutput_LR_up",
+    floatMap[FloatVariableType::MEM_LR_down],              "memOutput_LR_down",
 
 //--- custom additional branches (not necessary in sync)
     floatMap[FloatVariableType::genWeight],                "genWeight"

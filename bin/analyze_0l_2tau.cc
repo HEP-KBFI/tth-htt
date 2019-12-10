@@ -182,7 +182,6 @@ int main(int argc, char* argv[])
   const bool isMC_VH = process_string == "VH";
   const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
   const bool isMC_HH = process_string == "HH";
-  bool isMC_HH_nonres = boost::starts_with(process_string, "HH");
   const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH || isMC_H ;
 
@@ -233,6 +232,7 @@ int main(int argc, char* argv[])
   bool apply_DYMCReweighting = cfg_analyze.getParameter<bool>("apply_DYMCReweighting");
   bool apply_DYMCNormScaleFactors = cfg_analyze.getParameter<bool>("apply_DYMCNormScaleFactors");
   bool apply_topPtReweighting = cfg_analyze.getParameter<bool>("apply_topPtReweighting");
+  bool read_topPtReweighting = cfg_analyze.getParameter<bool>("read_topPtReweighting");
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
@@ -396,7 +396,7 @@ int main(int argc, char* argv[])
   }
 
 //--- declare event-level variables
-  EventInfo eventInfo(isMC, isSignal, isMC_HH_nonres);
+  EventInfo eventInfo(isMC, isSignal, isMC_HH, read_topPtReweighting);
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
 
@@ -559,19 +559,19 @@ int main(int argc, char* argv[])
       if(genMatchingByIndex)
       {
         genMatchToMuonReader = new GenParticleReader(branchName_muonGenMatch);
-        genMatchToMuonReader -> readGenPartFlav(false);
+        genMatchToMuonReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToMuonReader);
 
         genMatchToElectronReader = new GenParticleReader(branchName_electronGenMatch);
-        genMatchToElectronReader -> readGenPartFlav(false);
+        genMatchToElectronReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToElectronReader);
 
         genMatchToHadTauReader = new GenParticleReader(branchName_hadTauGenMatch);
-        genMatchToHadTauReader -> readGenPartFlav(false);
+        genMatchToHadTauReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToHadTauReader);
 
         genMatchToJetReader = new GenParticleReader(branchName_jetGenMatch);
-        genMatchToJetReader -> readGenPartFlav(false);
+        genMatchToJetReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToJetReader);
       }
       else
@@ -589,13 +589,13 @@ int main(int argc, char* argv[])
   HadTopTagger_semi_boosted_AK8* hadTopTagger_semi_boosted_fromAK8 = new HadTopTagger_semi_boosted_AK8();
 
   //--- initialize BDTs
-  std::string mvaFileName_0l_2tau_deeptauLoose_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/0l_2tau_DeepTauLoose_4.xml";
+  std::string mvaFileName_0l_2tau_deeptauLoose_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/0l_2tau_DeepTauLoose_7.xml";
   std::vector<std::string> mvaInputVariables_0l_2tau_deeptau_4 = {
     "dr_taus", "mTauTauVis", "mTauTau", "cosThetaS_hadTau",
     "tau1_pt", "tau2_pt",
     "mbb_loose", "avg_dr_jet", "mindr_tau1_jet", "mindr_tau2_jet", "met_LD",
-    "mT_tau1", "mT_tau2", "nBJetMedium",
-    "res_HTT", "HadTop_pt", "HadTop_pt_2", "max_Lep_eta"
+    "mT_tau1", "mT_tau2",
+    "res_HTT", "max_Lep_eta"
   };
   TMVAInterface mva_xgb_Legacy(
     mvaFileName_0l_2tau_deeptauLoose_2,
@@ -636,6 +636,7 @@ int main(int argc, char* argv[])
     MEtHistManager* met_;
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_ttbar_;
+    MVAInputVarHistManager* mvaInputVariables_ttbar_unweight_;
     std::map<std::string, EvtHistManager_0l_2tau*> evt_;
     std::map<std::string, std::map<std::string, EvtHistManager_0l_2tau*>> evt_in_decayModes_;
     std::map<std::string, std::map<std::string, std::map<int, EvtHistManager_0l_2tau*>>> evt_in_decayModes_scan_;
@@ -707,6 +708,9 @@ int main(int argc, char* argv[])
         selHistManager->mvaInputVariables_ttbar_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
           Form("%s/sel/mvaInputs_ttbar", histogramDir.data()), era_string, central_or_shift));
         selHistManager->mvaInputVariables_ttbar_->bookHistograms(fs, mvaInputVariables_0l_2tau_deeptau_4);
+	selHistManager->mvaInputVariables_ttbar_unweight_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
+	  Form("%s/sel/mvaInputs_ttbar_unweight", histogramDir.data()), era_string, central_or_shift));
+        selHistManager->mvaInputVariables_ttbar_unweight_->bookHistograms(fs, mvaInputVariables_0l_2tau_deeptau_4);
       }
 
       for(const std::string & evt_cat_str: evt_cat_strs)
@@ -931,8 +935,6 @@ int main(int argc, char* argv[])
                 << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
-    //if (!( eventInfo.event == 2983422 )) continue;
-    //if (analyzedEntries > 1000) break;
     histogram_analyzedEntries->Fill(0.);
 
     if ( isDEBUG ) {
@@ -1021,9 +1023,19 @@ int main(int argc, char* argv[])
     {
       if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
       if(apply_DYMCReweighting)   evtWeightRecorder.record_dy_rwgt(dyReweighting, genTauLeptons);
-      if(apply_topPtReweighting)  evtWeightRecorder.record_toppt_rwgt(genTopQuarks);
       if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
       if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
+      if(apply_topPtReweighting)
+      {
+        if(read_topPtReweighting)
+        {
+          evtWeightRecorder.record_toppt_rwgt(eventInfo.topPtRwgtSF);
+        }
+        else
+        {
+          evtWeightRecorder.record_toppt_rwgt(genTopQuarks);
+        }
+      }
       lheInfoReader->read();
       evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
       evtWeightRecorder.record_puWeight(&eventInfo);
@@ -1632,8 +1644,8 @@ int main(int argc, char* argv[])
     const std::map<std::string, double> mvaInputs_ttbar = {
       {"max_Lep_eta",      std::max({selHadTau_lead->absEta(), selHadTau_sublead->absEta()})},
       {"res_HTT",          max_mvaOutput_HTT_CSVsort4rd},
-      {"HadTop_pt",        HadTop_pt_CSVsort4rd},
-      {"HadTop_pt_2",      HadTop_pt_CSVsort4rd_2},
+      //{"HadTop_pt",        HadTop_pt_CSVsort4rd},
+      //{"HadTop_pt_2",      HadTop_pt_CSVsort4rd_2},
       {"dr_taus",          deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4())},
       {"tau1_pt",          selHadTau_lead -> pt()},
       {"tau2_pt",          selHadTau_sublead -> pt()},
@@ -1643,7 +1655,8 @@ int main(int argc, char* argv[])
       {"cosThetaS_hadTau", cosThetaS_hadTau },
       {"mbb_loose",        mbb_loose},
       {"met_LD",           met_LD},
-      {"nBJetMedium",      selBJets_medium.size()},
+      //{"nBJetLoose",        selBJets_loose.size()},
+      //{"nJet",		selJets.size()},
       {"mindr_tau1_jet",   TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets))},
       {"mindr_tau2_jet",   TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets))},
       {"mT_tau1",          comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi())},
@@ -1682,6 +1695,7 @@ int main(int argc, char* argv[])
     for(const std::string & central_or_shift: central_or_shifts_local)
     {
       const double evtWeight = evtWeightRecorder.get(central_or_shift);
+      const double evtWeight_noDYNorm = evtWeight/evtWeightRecorder.get_dy_norm(central_or_shift);
       const bool skipFilling = central_or_shift != central_or_shift_main;
       for (const GenMatchEntry* genMatch : genMatches)
       {
@@ -1704,6 +1718,7 @@ int main(int argc, char* argv[])
           selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
           selHistManager->metFilters_->fillHistograms(metFilters, evtWeight);
           selHistManager->mvaInputVariables_ttbar_->fillHistograms(mvaInputs_ttbar, evtWeight);
+	  selHistManager->mvaInputVariables_ttbar_unweight_->fillHistograms(mvaInputs_ttbar, evtWeight_noDYNorm);
         }
 
         const std::string central_or_shift_tH = eventInfo.has_central_or_shift(central_or_shift) ? central_or_shift : central_or_shift_main;

@@ -10,6 +10,7 @@
 // forward declarations
 class RecoLepton;
 class RecoHadTau;
+enum class MEMsys;
 
 class MEMOutput_3l_1tau
 {
@@ -21,16 +22,24 @@ public:
    * @brief Funtions to access data-members
    * @return Values of data-members
    */
-  inline Float_t weight_ttH()     const { return weight_ttH_; }
-  inline Float_t weight_ttZ()     const { return weight_ttZ_; }
-  inline Float_t weight_ttH_hww() const { return weight_ttH_hww_; }
-  inline Float_t LR()             const { return LR_; }
-  inline Float_t cpuTime()        const { return cpuTime_; }
-  inline Float_t realTime()       const { return realTime_; }
-  inline Int_t   isValid()        const { return isValid_; }
-  inline Int_t   errorFlag()      const { return errorFlag_; }
+  inline Float_t weight_ttH()           const { return weight_ttH_; }
+  inline Float_t weight_ttH_error()     const { return weight_ttH_error_; }
+  inline Float_t weight_ttZ()           const { return weight_ttZ_; }
+  inline Float_t weight_ttZ_error()     const { return weight_ttZ_error_; }
+  inline Float_t weight_ttH_hww()       const { return weight_ttH_hww_; }
+  inline Float_t weight_ttH_hww_error() const { return weight_ttH_hww_error_; }
+  inline Float_t LR()                   const { return LR_; }
+  inline Float_t LR_up()                const { return LR_up_; }
+  inline Float_t LR_down()              const { return LR_down_; }
+  inline Float_t cpuTime()              const { return cpuTime_; }
+  inline Float_t realTime()             const { return realTime_; }
+  inline Int_t   isValid()              const { return isValid_; }
+  inline Int_t   errorFlag()            const { return errorFlag_; }
 
   inline bool is_initialized() const { return eventInfo_.is_initialized(); }
+
+  std::map<MEMsys, double>
+  get_LR_map() const;
 
   void
   fillInputs(const RecoLepton * leadLepton,
@@ -53,9 +62,14 @@ public:
 
 protected:
   Float_t weight_ttH_;
+  Float_t weight_ttH_error_;
   Float_t weight_ttZ_;
+  Float_t weight_ttZ_error_;
   Float_t weight_ttH_hww_;
+  Float_t weight_ttH_hww_error_;
   Float_t LR_;
+  Float_t LR_up_;
+  Float_t LR_down_;
   Float_t cpuTime_;
   Float_t realTime_;
   Int_t isValid_;

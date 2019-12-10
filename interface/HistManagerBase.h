@@ -32,6 +32,13 @@ public:
 
 protected:
   TH1 *
+  book1D(TDirectory * dir,
+         const std::string & distribution,
+         const std::string & title,
+         int numBins,
+         double min,
+         double max);
+  TH1 *
   book1D(TFileDirectory & dir,
          const std::string & distribution,
          const std::string & title,

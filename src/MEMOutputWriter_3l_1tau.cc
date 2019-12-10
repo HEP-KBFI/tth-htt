@@ -19,9 +19,14 @@ MEMOutputWriter_3l_1tau::MEMOutputWriter_3l_1tau(const std::string & branchName_
   , hadTau_eta_(nullptr)
   , hadTau_phi_(nullptr)
   , weight_ttH_(nullptr)
+  , weight_ttH_error_(nullptr)
   , weight_ttZ_(nullptr)
+  , weight_ttZ_error_(nullptr)
   , weight_ttH_hww_(nullptr)
+  , weight_ttH_hww_error_(nullptr)
   , LR_(nullptr)
+  , LR_up_(nullptr)
+  , LR_down_(nullptr)
   , cpuTime_(nullptr)
   , realTime_(nullptr)
   , isValid_(nullptr)
@@ -44,9 +49,14 @@ MEMOutputWriter_3l_1tau::~MEMOutputWriter_3l_1tau()
   delete[] hadTau_eta_;
   delete[] hadTau_phi_;
   delete[] weight_ttH_;
+  delete[] weight_ttH_error_;
   delete[] weight_ttZ_;
+  delete[] weight_ttZ_error_;
   delete[] weight_ttH_hww_;
+  delete[] weight_ttH_hww_error_;
   delete[] LR_;
+  delete[] LR_up_;
+  delete[] LR_down_;
   delete[] cpuTime_;
   delete[] realTime_;
   delete[] isValid_;
@@ -67,9 +77,14 @@ void MEMOutputWriter_3l_1tau::setBranchNames()
   branchName_hadTau_eta_ = Form("%s_%s", branchName_obj_.data(), "hadTau_eta");
   branchName_hadTau_phi_ = Form("%s_%s", branchName_obj_.data(), "hadTau_phi");
   branchName_weight_ttH_ = Form("%s_%s", branchName_obj_.data(), "weight_ttH");
+  branchName_weight_ttH_error_ = Form("%s_%s", branchName_obj_.data(), "weight_ttH_error");
   branchName_weight_ttZ_ = Form("%s_%s", branchName_obj_.data(), "weight_ttZ");
+  branchName_weight_ttZ_error_ = Form("%s_%s", branchName_obj_.data(), "weight_ttZ_error");
   branchName_weight_ttH_hww_ = Form("%s_%s", branchName_obj_.data(), "weight_ttH_hww");
+  branchName_weight_ttH_hww_error_ = Form("%s_%s", branchName_obj_.data(), "weight_ttH_hww_error");
   branchName_LR_ = Form("%s_%s", branchName_obj_.data(), "LR");
+  branchName_LR_up_ = Form("%s_%s", branchName_obj_.data(), "LR_up");
+  branchName_LR_down_ = Form("%s_%s", branchName_obj_.data(), "LR_down");
   branchName_cpuTime_ = Form("%s_%s", branchName_obj_.data(), "cpuTime");
   branchName_realTime_ = Form("%s_%s", branchName_obj_.data(), "realTime");
   branchName_isValid_ = Form("%s_%s", branchName_obj_.data(), "isValid");
@@ -92,9 +107,14 @@ void MEMOutputWriter_3l_1tau::setBranches(TTree * tree)
   bai.setBranch(hadTau_eta_, branchName_hadTau_eta_);
   bai.setBranch(hadTau_phi_, branchName_hadTau_phi_);
   bai.setBranch(weight_ttH_, branchName_weight_ttH_);
+  bai.setBranch(weight_ttH_error_, branchName_weight_ttH_error_);
   bai.setBranch(weight_ttZ_, branchName_weight_ttZ_);
+  bai.setBranch(weight_ttZ_error_, branchName_weight_ttZ_error_);
   bai.setBranch(weight_ttH_hww_, branchName_weight_ttH_hww_);
+  bai.setBranch(weight_ttH_hww_error_, branchName_weight_ttH_hww_error_);
   bai.setBranch(LR_, branchName_LR_);
+  bai.setBranch(LR_up_, branchName_LR_up_);
+  bai.setBranch(LR_down_, branchName_LR_down_);
   bai.setBranch(cpuTime_, branchName_cpuTime_);
   bai.setBranch(realTime_, branchName_realTime_);
   bai.setBranch(isValid_, branchName_isValid_);
@@ -126,9 +146,14 @@ void MEMOutputWriter_3l_1tau::write(const std::vector<MEMOutput_3l_1tau> & memOu
     hadTau_eta_[idxMEMOutput] = memOutput.hadTau_eta_;
     hadTau_phi_[idxMEMOutput] = memOutput.hadTau_phi_;
     weight_ttH_[idxMEMOutput] = memOutput.weight_ttH();
+    weight_ttH_error_[idxMEMOutput] = memOutput.weight_ttH_error();
     weight_ttZ_[idxMEMOutput] = memOutput.weight_ttZ();
+    weight_ttZ_error_[idxMEMOutput] = memOutput.weight_ttZ_error();
     weight_ttH_hww_[idxMEMOutput] = memOutput.weight_ttH_hww();
+    weight_ttH_hww_error_[idxMEMOutput] = memOutput.weight_ttH_hww_error();
     LR_[idxMEMOutput] = memOutput.LR();
+    LR_up_[idxMEMOutput] = memOutput.LR_up();
+    LR_down_[idxMEMOutput] = memOutput.LR_down();
     cpuTime_[idxMEMOutput] = memOutput.cpuTime();
     realTime_[idxMEMOutput] = memOutput.realTime();
     isValid_[idxMEMOutput] = memOutput.isValid();

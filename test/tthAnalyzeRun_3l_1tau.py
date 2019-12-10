@@ -32,6 +32,7 @@ parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_sideband()
+parser.enable_regrouped_jec()
 args = parser.parse_args()
 
 # Common arguments
@@ -59,12 +60,20 @@ jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 sideband          = args.sideband
 tau_id            = args.tau_id
+regroup_jec       = args.enable_regrouped_jec
+
+if regroup_jec:
+  if 'full' not in systematics_label:
+    raise RuntimeError("Regrouped JEC was enabled but not running with full systematics")
+  systematics.full.extend(systematics.JEC_regrouped)
 
 # Use the arguments
 central_or_shifts = []
 for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):
     if central_or_shift not in central_or_shifts:
+      if central_or_shift in systematics.MEM_3l_1tau and "MEM" not in mode:
+        continue
       central_or_shifts.append(central_or_shift)
 do_sync = mode.startswith('sync')
 lumi = get_lumi(era)

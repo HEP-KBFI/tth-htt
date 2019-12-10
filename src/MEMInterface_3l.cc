@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMInterface_3l.h" 
 
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherCSV()
+#include "tthAnalysis/HiggsToTauTau/interface/memAuxFunctions.h" // compMEMLR()
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // get_human_line()
@@ -147,24 +148,28 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
       MEMpermutations_ttH_
     );
     result.weight_ttH_ = MEMpermutations_ttH_->resMEM_avgExl0.weight;
+    result.weight_ttH_error_ = nan_protection(MEMpermutations_ttH_->resMEM_avgExl0.err);
     result.kinfitscore_ttH_ = MEMpermutations_ttH_->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[9] != -1)
   {
     const Permutations * MEMpermutations_tHq = &MEMpermutations_[index_hyp_[9]];
     result.weight_tHq_ = MEMpermutations_tHq->resMEM_avgExl0.weight;
+    result.weight_tHq_error_ = nan_protection(MEMpermutations_tHq->resMEM_avgExl0.err);
     result.kinfitscore_tHq_ = MEMpermutations_tHq->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[3] != -1)
   {
     const Permutations * MEMpermutations_ttW = &MEMpermutations_[index_hyp_[3]];
     result.weight_ttW_ = MEMpermutations_ttW->resMEM_avgExl0.weight;
+    result.weight_ttW_error_ = nan_protection(MEMpermutations_ttW->resMEM_avgExl0.err);
     result.kinfitscore_ttW_ = MEMpermutations_ttW->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[0] != -1)
   {
     const Permutations * MEMpermutations_ttZ = &MEMpermutations_[index_hyp_[0]];
     result.weight_ttZ_ = MEMpermutations_ttZ->resMEM_avgExl0.weight;
+    result.weight_ttZ_error_ = nan_protection(MEMpermutations_ttZ->resMEM_avgExl0.err);
     result.kinfitscore_ttZ_ = MEMpermutations_ttZ->resKin_maxKinFit_Int.weight;
   }
   if(index_hyp_[5] != -1 || index_hyp_[6] != -1)
@@ -175,24 +180,31 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
       MEMpermutations_tt_
     );
     result.weight_tt_ = MEMpermutations_tt_->resMEM_avgExl0.weight;
+    result.weight_tt_error_ = nan_protection(MEMpermutations_tt_->resMEM_avgExl0.err);
     result.kinfitscore_tt_ = MEMpermutations_tt_->resKin_maxKinFit_Int.weight;
   }
 
   const double k_tHq = 1.;
-  const double numerator = result.weight_ttH_ + k_tHq*result.weight_tHq_;
   const double k_ttW = 1.;
   const double k_ttZ = 1.;
   const double k_tt  = 1.;
-  const double denominator = numerator + k_ttW*result.weight_ttW_ + k_ttZ*result.weight_ttZ_ + k_tt*result.weight_tt_;
-  if(denominator > 0.)
-  {
-    result.isValid_ = 1;
-    result.LR_      = numerator / denominator;
-  }
-  else
+
+  const std::tuple<double, double, bool> LR = compMEMLR(
+    { result.weight_ttH_, result.weight_tHq_ },
+    { result.weight_ttW_, result.weight_ttZ_, result.weight_tt_ },
+    { result.weight_ttH_error_, result.weight_tHq_error_ },
+    { result.weight_ttW_error_, result.weight_ttZ_error_, result.weight_tt_error_ },
+    { 1., k_tHq },
+    { k_ttW, k_ttZ, k_tt }
+  );
+  result.isValid_ = static_cast<int>(std::get<2>(LR));
+  result.LR_ = std::get<0>(LR);
+  result.LR_error_ = std::get<1>(LR);
+  result.LR_up_ = result.isValid_ ? std::min(result.LR_ + result.LR_error_, 1.f) : -1.;
+  result.LR_down_ = result.isValid_ ? std::max(result.LR_ - result.LR_error_, 0.f) : -1.;
+  if(! result.isValid_)
   {
     result.errorFlag_ = ADDMEM_3L_ERROR;
-    result.LR_        = -1.;
   }
 
   result.cpuTime_  = clock_->GetCpuTime(func_str.data());
@@ -200,4 +212,3 @@ MEMInterface_3l::operator()(const RecoLepton * selLepton_lead,
 
   return result;
 }
-

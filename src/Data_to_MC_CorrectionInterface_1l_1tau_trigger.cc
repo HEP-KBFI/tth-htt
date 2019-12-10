@@ -22,7 +22,7 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::Data_to_MC_CorrectionInterface_1
   , era_(get_era(era_str_))
   , hadTauSelection_(cfg.getParameter<std::string>("hadTauSelection"))
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
-  , allowedDecayModes_({ 0, 1, 10 })
+  , allowedDecayModes_({ 0, 1, 2, 10 })
   , lepton_type_(-1)
   , lepton_pt_(0.)
   , lepton_eta_(0.)
@@ -118,7 +118,7 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::setHadTaus(double hadTau_pt, dou
   hadTau_pt_        = hadTau_pt;
   hadTau_eta_       = hadTau_eta;
   hadTau_phi_       = hadTau_phi;
-  hadTau_decayMode_ = hadTau_decayMode;
+  hadTau_decayMode_ = aux::dmCheck(hadTau_decayMode);
 }
 
 double

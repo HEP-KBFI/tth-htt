@@ -14,8 +14,8 @@ import re
 # E.g.: ./test/tthAnalyzeRun_0l_2tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
-sys_choices      = [ 'full' ] + systematics.an_common_opts
-systematics.full = systematics.an_common
+sys_choices      = [ 'full' ] + systematics.an_common_opts + [ 'topPtReweighting' ]
+systematics.full = systematics.an_common + systematics.topPtReweighting
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -31,6 +31,8 @@ parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_sideband()
+parser.do_MC_only()
+parser.enable_regrouped_jec()
 args = parser.parse_args()
 
 # Common arguments
@@ -58,6 +60,13 @@ jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 sideband          = args.sideband
 tau_id            = args.tau_id
+MC_only           = args.MC_only
+regroup_jec       = args.enable_regrouped_jec
+
+if regroup_jec:
+  if 'full' not in systematics_label:
+    raise RuntimeError("Regrouped JEC was enabled but not running with full systematics")
+  systematics.full.extend(systematics.JEC_regrouped)
 
 # Use the arguments
 central_or_shifts = []
@@ -90,8 +99,8 @@ if mode == "default":
   for sample_name, sample_info in samples.items():
     if sample_name == 'sum_events':
       continue
-    if sample_info["process_name_specific"].startswith("DYBBJetsToLL_M-50"):
-      sample_info["use_it"] = True
+    #if sample_info["process_name_specific"].startswith("DYBBJetsToLL_M-50"):
+    #sample_info["use_it"] = True
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -130,8 +139,14 @@ for sample_name, sample_info in samples.items():
     sample_info["sample_category"] = "DY"
   elif sample_name.startswith('/TTJets'):
     sample_info["use_it"] = mode == "forBDTtraining"
+    sample_info["sample_category"] = "TT"
   elif sample_name.startswith('/TTTo'):
     sample_info["use_it"] = mode == "default"
+    sample_info["sample_category"] = "TT"
+    sample_info["apply_toppt_rwgt"] = True
+  if MC_only :
+    if sample_info["type"] == "data" :
+      sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.info(
@@ -173,7 +188,6 @@ if __name__ == '__main__':
       "EventCounter"                 : {},
       "numJets"                      : {},
       "mvaOutput_Legacy"             : {},
-      "mva_Updated"                  : {},
       "mTauTauVis"                   : {},
       "mTauTau"                      : {},
     },

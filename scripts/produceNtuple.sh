@@ -37,11 +37,13 @@ PROCESS_NAME=$(python -c "execfile('$SCRIPT'); print(process_name)")
 GOLDEN_JSON=$(python -c "execfile('$SCRIPT'); print(golden_json)")
 SKIP_TOOLS_STEP=$(python -c "execfile('$SCRIPT'); print(skip_tools_step)")
 REMOVE_INTERMEDIATE=$(python -c "execfile('$SCRIPT'); print(remove_intermediate)")
+COMP_TOP_RWGT=$(python -c "execfile('$SCRIPT'); print(compTopRwgt)")
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
 echo "Is MC? '$IS_MC'"
 echo "Skip tools step? '$SKIP_TOOLS_STEP'"
 echo "Remove intermediate file? '$REMOVE_INTERMEDIATE'"
+echo "Compute SFs for top reweighting? '$COMP_TOP_RWGT'"
 
 if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   echo "Executable '$EXECUTABLE' not in \$PATH";
@@ -73,12 +75,16 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
     nano_postproc.py -s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $NANO_MODULES . $F
     test_exit_code $?
     echo "Creating counter histograms: $F_i -> $F_ii"
+    COUNTHISTOGRAM_MODULE="countHistogramAll"
     if [ "$IS_MC" == "True" ]; then
-      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules countHistogramAll \
+      if [ "$COMP_TOP_RWGT" == "True" ]; then
+        COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}CompTopRwgt"
+      fi
+      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $COUNTHISTOGRAM_MODULE \
                        . $F_i
     else
-      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules countHistogramAll \
-                       -J $GOLDEN_JSON                                                              \
+      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $COUNTHISTOGRAM_MODULE \
+                       -J $GOLDEN_JSON                                                                   \
                        . $F_i
     fi
     test_exit_code $?

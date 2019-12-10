@@ -490,7 +490,7 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc,
     yMax = 1.e+1;
   } else {
     yMin = 0.;
-    yMax = 0.20;
+    yMax = 0.50;
   }
   dummyHistogram->SetMinimum(yMin);
   dummyHistogram->SetMaximum(yMax);

@@ -36,6 +36,10 @@ process.comp_jetToTauFakeRate = cms.PSet(
     fitFunction = cms.string("[0] + [1]*x"),
     xMin = cms.double(0.),
     xMax = cms.double(200.),
+    initialParameters = cms.PSet(
+        p0 = cms.double( 0.95),
+        p1 = cms.double(-0.01),
+    ),
 
     outputFileName = cms.string("")
 )

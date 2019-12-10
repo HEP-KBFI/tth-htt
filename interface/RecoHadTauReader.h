@@ -14,6 +14,7 @@ class TTree;
 class GenLeptonReader;
 class GenHadTauReader;
 class GenJetReader;
+class TauESTool;
 
 class RecoHadTauReader
   : public ReaderBase
@@ -94,7 +95,7 @@ protected:
   std::map<TauID, std::string> branchNames_rawMVA_;
 
   TauID tauID_;
-  int hadTauPt_option_;
+  TauESTool * const tauESTool_;
 
   UInt_t nHadTaus_;
   Float_t * hadTau_pt_;
