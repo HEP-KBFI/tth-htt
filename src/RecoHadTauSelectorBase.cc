@@ -149,7 +149,8 @@ RecoHadTauSelectorBase::set(const std::string & cut)
       apply_decayModeFinding_ = false;
       decayMode_blacklist_ = { 5, 6 }; // exclude DMs 5 & 6
     }
-    //apply_deeptau_lepton_ |= tauId == TauID::DeepTau2017v2VSjet;
+    // Apply anti-e and anti-mu DeepTauID discriminators if cut on anti-jet DeepTauID is requested
+    apply_deeptau_lepton_ |= tauId == TauID::DeepTau2017v2VSjet;
   }
 
   apply_deeptau_lepton_ &= cut_parts.size() == 1 && ! disable_deeptau_lepton_;
@@ -316,7 +317,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
   {
     if(debug_)
     {
-      std::cout << "FAILS decay mode cut DM (=" << hadTau.decayMode() << ") NOT in ";
+      std::cout << "FAILS decay mode cut DM (=" << hadTau.decayMode() << ") in ";
       for(unsigned decayModeIdx = 0; decayModeIdx < decayMode_blacklist_.size(); ++decayModeIdx)
       {
         std::cout << decayMode_blacklist_.at(decayModeIdx);
@@ -330,13 +331,14 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
         }
       }
     }
+    return false;
   }
   if(! decayMode_whitelist_.empty() &&
      std::find(decayMode_whitelist_.begin(), decayMode_whitelist_.end(), hadTau.decayMode()) == decayMode_whitelist_.end())
   {
     if(debug_)
     {
-      std::cout << "FAILS decay mode cut DM (=" << hadTau.decayMode() << ") in ";
+      std::cout << "FAILS decay mode cut DM (=" << hadTau.decayMode() << ") NOT in ";
       for(unsigned decayModeIdx = 0; decayModeIdx < decayMode_whitelist_.size(); ++decayModeIdx)
       {
         std::cout << decayMode_whitelist_.at(decayModeIdx);
@@ -350,6 +352,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
         }
       }
     }
+    return false;
   }
 
   std::vector<TauID> min_id_mva_cuts;
@@ -430,7 +433,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
 
   if(apply_deeptau_lepton_)
   {
-    if(hadTau.id_mva(TauID::DeepTau2017v2VSmu) < 1)
+    if(hadTau.id_mva(TauID::DeepTau2017v2VSmu) < 1) // corresponds to cut on VLoose WP
     {
       if(debug_)
       {
@@ -438,7 +441,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
       }
       return false;
     }
-    if(hadTau.id_mva(TauID::DeepTau2017v2VSe) < 1)
+    if(hadTau.id_mva(TauID::DeepTau2017v2VSe) < 1) // corresponds to cut on VVVLoose WP
     {
       if(debug_)
       {

@@ -60,12 +60,12 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::setHadTaus(double hadTau1_pt, do
   hadTau1_pt_        = hadTau1_pt;
   hadTau1_eta_       = hadTau1_eta;
   hadTau1_phi_       = hadTau1_phi;
-  hadTau1_decayMode_ = hadTau1_decayMode;
+  hadTau1_decayMode_ = aux::dmCheck(hadTau1_decayMode);
 
   hadTau2_pt_        = hadTau2_pt;
   hadTau2_eta_       = hadTau2_eta;
   hadTau2_phi_       = hadTau2_phi;
-  hadTau2_decayMode_ = hadTau2_decayMode;
+  hadTau2_decayMode_ = aux::dmCheck(hadTau2_decayMode);
 }
 
 double
