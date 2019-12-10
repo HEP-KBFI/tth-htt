@@ -128,7 +128,7 @@ RecoHadTauSelectorBase::set(const std::string & cut)
 
   apply_deeptau_lepton_ = false;
   const std::vector<std::string> cut_parts = edm::tokenize(cut, TAU_WP_SEPARATOR);
-  std::size_t nof_cut_parts = cut_parts.size();
+  const std::size_t nof_cut_parts = cut_parts.size();
   assert(nof_cut_parts);
   reset();
   for(const std::string & cut_part: cut_parts)
