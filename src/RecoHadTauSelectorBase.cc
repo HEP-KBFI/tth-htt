@@ -128,6 +128,8 @@ RecoHadTauSelectorBase::set(const std::string & cut)
 
   apply_deeptau_lepton_ = false;
   const std::vector<std::string> cut_parts = edm::tokenize(cut, TAU_WP_SEPARATOR);
+  std::size_t nof_cut_parts = cut_parts.size();
+  assert(nof_cut_parts);
   reset();
   for(const std::string & cut_part: cut_parts)
   {
@@ -153,7 +155,15 @@ RecoHadTauSelectorBase::set(const std::string & cut)
     apply_deeptau_lepton_ |= tauId == TauID::DeepTau2017v2VSjet;
   }
 
-  apply_deeptau_lepton_ &= cut_parts.size() == 1 && ! disable_deeptau_lepton_;
+  apply_deeptau_lepton_ &= nof_cut_parts == 1 && ! disable_deeptau_lepton_;
+  if(nof_cut_parts > 1)
+  {
+    // Reset DM whitelist and blacklist if tau is required to pass an OR of multiple tau IDs
+    // This is relevant only in Ntuple post-production and MEM workflows
+    decayMode_whitelist_.clear();
+    decayMode_blacklist_.clear();
+  }
+
   if(apply_deeptau_lepton_)
   {
     // If the DeepTau ID discriminator is the only tau ID we're cutting on, then we should also cut on the loosest
