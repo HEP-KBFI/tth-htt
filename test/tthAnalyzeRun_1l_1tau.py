@@ -132,6 +132,8 @@ for sample_name, sample_info in samples.items():
     sample_info["use_it"] = mode == "default"
     sample_info["sample_category"] = "TT"
     sample_info["apply_toppt_rwgt"] = True
+  elif sample_info["process_name_specific"] in [ "WZTo2L2Q", "ZZTo2L2Q" ]:
+    sample_info["use_it"] = True
   if MC_only :
     if sample_info["type"] == "data" :
       sample_info["use_it"] = False
