@@ -391,7 +391,7 @@ int main(int argc, char* argv[])
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
 
-  //--- HH scan 
+  //--- HH scan
 
   const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
   const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
@@ -527,6 +527,14 @@ int main(int argc, char* argv[])
   };
   TMVAInterface mva_XGB_Legacy(mvaFileName_XGB_Legacy, mvaInputVariables_XGB_Legacy);
   mva_XGB_Legacy.enableBDTTransform();
+  std::string mvaFileName_XGB_Legacy_2 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2los_1tau_DeepTau_2.pkl";
+  XGBInterface mva_XGB_Legacy_2(mvaFileName_XGB_Legacy_2, mvaInputVariables_XGB_Legacy);
+  //
+  std::string mvaFileName_XGB_Legacy_3 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2los_1tau_DeepTau_3.pkl";
+  XGBInterface mva_XGB_Legacy_3(mvaFileName_XGB_Legacy_3, mvaInputVariables_XGB_Legacy);
+  //
+  std::string mvaFileName_XGB_Legacy_4 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2los_1tau_DeepTau_4.pkl";
+  XGBInterface mva_XGB_Legacy_4(mvaFileName_XGB_Legacy_4, mvaInputVariables_XGB_Legacy);
 
 //--- declare generator level information
   GenLeptonReader * genLeptonReader = nullptr;
@@ -1548,7 +1556,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("signal region veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
 
-    std::vector<double> WeightBM; // weights to do histograms for BMs 
+    std::vector<double> WeightBM; // weights to do histograms for BMs
     std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
     double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
 
@@ -1751,7 +1759,10 @@ int main(int argc, char* argv[])
       { "mT_lep2", comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi())},
       { "max_Lep_eta", std::max({selHadTau->absEta(), selLepton_lead->absEta(), selLepton_sublead->absEta()})}
     };
-    const double mvaOutput_legacy_2 = mva_XGB_Legacy(mvaInputVariables_mva_XGB_Legacy);
+    const double mvaOutput_legacy = mva_XGB_Legacy(mvaInputVariables_mva_XGB_Legacy);
+    const double mvaOutput_legacy_2 = mva_XGB_Legacy_2(mvaInputVariables_mva_XGB_Legacy);
+    const double mvaOutput_legacy_3 = mva_XGB_Legacy_3(mvaInputVariables_mva_XGB_Legacy);
+    const double mvaOutput_legacy_4 = mva_XGB_Legacy_4(mvaInputVariables_mva_XGB_Legacy);
 
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons, selHadTaus);
@@ -1815,7 +1826,10 @@ int main(int argc, char* argv[])
             selElectrons.size(), selMuons.size(), selHadTaus.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mTauTauVis_sel,
+            mvaOutput_legacy,
             mvaOutput_legacy_2,
+            mvaOutput_legacy_3,
+            mvaOutput_legacy_4,
             kv.second
           );
           }
@@ -1839,7 +1853,10 @@ int main(int argc, char* argv[])
                 selBJets_loose.size(),
                 selBJets_medium.size(),
                 mTauTauVis_sel,
+                mvaOutput_legacy,
                 mvaOutput_legacy_2,
+                mvaOutput_legacy_3,
+                mvaOutput_legacy_4,
                 kv.second
               );
               }
@@ -2112,7 +2129,7 @@ int main(int argc, char* argv[])
 
       // mvaOutput_plainKin_SUM_VT not filled
 
-      snm->read(mvaOutput_legacy_2,                     FloatVariableType::mvaOutput_legacy_2);
+      snm->read(mvaOutput_legacy,                     FloatVariableType::mvaOutput_legacy_2);
       //snm->read(mvaOutput_2lss_ttbar,                   FloatVariableType::mvaOutput_2lss_tt);
       // mvaOutput_2lss_1tau_plainKin_tt not filled
       // mvaOutput_2lss_1tau_plainKin_ttV not filled
