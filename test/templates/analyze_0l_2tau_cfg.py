@@ -58,7 +58,6 @@ process.analyze_0l_2tau = cms.PSet(
     apply_DYMCReweighting = cms.bool(False),
     apply_DYMCNormScaleFactors = cms.bool(False),
     apply_topPtReweighting = cms.bool(False),
-    read_topPtReweighting = cms.bool(False),
     apply_l1PreFireWeight = cms.bool(True),
     apply_hlt_filter = cms.bool(False),
     apply_met_filters = cms.bool(True),

@@ -356,46 +356,6 @@ EvtWeightRecorder::record_dy_norm(const DYMCNormScaleFactors * const dyNormScale
 }
 
 void
-EvtWeightRecorder::record_toppt_rwgt(const std::vector<GenParticle> & genTopQuarks)
-{
-  assert(isMC_);
-  weights_toppt_rwgt_.clear();
-
-  // find generator-level top and anti-top quark
-  const GenParticle* genTopQuark     = nullptr;
-  const GenParticle* genAntiTopQuark = nullptr;
-  for (std::vector<GenParticle>::const_iterator genQuark = genTopQuarks.begin(); genQuark != genTopQuarks.end(); ++genQuark)
-  {
-    if ( genQuark->pdgId() == +6 ) genTopQuark     = &(*genQuark);
-    if ( genQuark->pdgId() == -6 ) genAntiTopQuark = &(*genQuark);
-  }
-
-  double topPtWeight = 1.;
-  if (genTopQuark && genAntiTopQuark)
-  {
-    // CV: coefficients for top pT reweighting for Run 2 data vs POWHEG MC taken from
-    //       https://twiki.cern.ch/twiki/bin/view/CMS/TopPtReweighting#Use_case_3_ttbar_MC_is_used_to_m
-    const double a =  0.0615;
-    const double b = -0.0005;
-    topPtWeight = sqrt(exp(a + b*genTopQuark->pt())*exp(a + b*genAntiTopQuark->pt()));
-  }
-
-  for(const std::string & central_or_shift: central_or_shifts_)
-  {
-    const int topPtReweighting_option = getTopPtReweighting_option(central_or_shift);
-    if(weights_toppt_rwgt_.count(topPtReweighting_option))
-    {
-      continue;
-    }
-    
-    if      (topPtReweighting_option == kTopPtReweighting_central  ) weights_toppt_rwgt_[topPtReweighting_option] = topPtWeight;
-    else if (topPtReweighting_option == kTopPtReweighting_shiftUp  ) weights_toppt_rwgt_[topPtReweighting_option] = topPtWeight*topPtWeight;
-    else if (topPtReweighting_option == kTopPtReweighting_shiftDown) weights_toppt_rwgt_[topPtReweighting_option] = 1.;
-    else assert(0);
-  }
-}
-
-void
 EvtWeightRecorder::record_toppt_rwgt(double sf)
 {
   assert(isMC_);
