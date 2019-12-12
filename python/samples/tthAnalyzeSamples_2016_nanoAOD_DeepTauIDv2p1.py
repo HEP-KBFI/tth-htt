@@ -29709,7 +29709,7 @@ samples_2016["/DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
       OD([
         ("path",      "/hdfs/local/karl/ntuples/2016/2019Dec08/2016v3_2019Sep30/DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/2016v3_2019Sep30_CHUNK0_DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/000000_000000"),
         ("selection", "*"),
-        ("blacklist", [30, 120, 133, 150, 278, 309, 311, 323, 328, 350, 367, 413, 458, 524, 530, 644]),
+        ("blacklist", [30, 120, 133, 150, 180, 239, 240, 278, 309, 311, 323, 328, 350, 367, 371, 413, 434, 458, 524, 525, 527, 530, 533, 644]),
       ]),
     ]
   ),
