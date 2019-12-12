@@ -44,11 +44,14 @@ namespace aux
                int hadTau_decayMode,
                bool isDEBUG);
 
-  double constexpr
+  double
   compSF(double eff_data,
-         double eff_mc)
+         double eff_mc);
+
+  constexpr int
+  dmCheck(int dm)
   {
-    return std::min(eff_data / std::max(1.e-6, eff_mc), 1.e+1);
+    return dm == 11 ? 10 : dm;
   }
 
   bool

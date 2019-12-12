@@ -245,17 +245,17 @@ std::ostream &
 operator<<(std::ostream & stream,
            const RecoHadTau & hadTau)
 {
-  stream << static_cast<const GenHadTau &>(hadTau)                           << ",\n"
-            " decayMode = "        << hadTau.decayMode()                     << ","
-            " oldDecayModeID = "   << hadTau.idDecayMode()                   << ","
-            " id_mva = "           << hadTau.id_mva()                        <<
-            " (raw = "             << hadTau.raw_mva()                       << "),\n"
-            " genPartFlav = "      << static_cast<int>(hadTau.genPartFlav()) << ", "
-            " antiElectron = "     << hadTau.antiElectron()                  << ","
-            " antiMuon = "         << hadTau.antiMuon()                      << ",\n"
-            " is loose/fakeable/tight = " << hadTau.isLoose()                << '/'
-                                          << hadTau.isFakeable()             << '/'
-                                          << hadTau.isTight()                << ",\n"
+  stream << static_cast<const GenHadTau &>(hadTau)                            << ",\n"
+            " decayMode = "        << hadTau.decayMode()                      << ","
+            " oldDecayModeID = "   << hadTau.idDecayMode()                    << ","
+            " id_mva = "           << hadTau.id_mva()                         <<
+            " (raw = "             << hadTau.raw_mva()                        << "),\n"
+            " genPartFlav = "      << static_cast<int>(hadTau.genPartFlav())  << ", "
+            " antiElectron = "     << hadTau.id_mva(TauID::DeepTau2017v2VSe)  << ","
+            " antiMuon = "         << hadTau.id_mva(TauID::DeepTau2017v2VSmu) << ",\n"
+            " is loose/fakeable/tight = " << hadTau.isLoose()                 << '/'
+                                          << hadTau.isFakeable()              << '/'
+                                          << hadTau.isTight()                 << ",\n"
             " gen. matching:";
   stream << ",\n  lepton = " << hadTau.genLepton();
   if(hadTau.genLepton())

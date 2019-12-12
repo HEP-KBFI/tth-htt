@@ -147,6 +147,18 @@ namespace aux
     return sf;
   }
 
+  double
+  compSF(double eff_data,
+         double eff_mc)
+  {
+    if(eff_data == 0. && eff_mc == 0.)
+    {
+      std::cout << "WARNING: efficiency in data and in MC are both zero -> returning SF = 1 instead";
+      return 1.;
+    }
+    return std::min(eff_data / std::max(1.e-6, eff_mc), 1.e+1);
+  }
+
   bool
   hasDecayMode(const std::vector<int> & allowedDecayModes,
                int hadTau_decayMode)
