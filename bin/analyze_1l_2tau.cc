@@ -594,44 +594,19 @@ int main(int argc, char* argv[])
   HadTopTagger* hadTopTagger = new HadTopTagger();
 
   // -- initialize eventlevel BDTs
-  std::string mvaFileName_plainKin_ttV ="tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/1l_2tau_DeepTauTight_2.pkl"; //"1l_2tau_DeepTauTight.xml";
+  std::string mvaFileName_plainKin_ttV ="tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/1l_2tau_DeepTauTight_2.xml";
   std::vector<std::string> mvaInputVariables_plainKin_ttVSort={
-    /*"tau1_pt", "tau2_pt",
-    "dr_taus", "dr_lep_tau_os", "dr_lep_tau_ss",
-    "Lep_min_dr_jet", "mTauTauVis", "costS_tau",
-    "met_LD", "massL3", "lep1_conePt", "mT_lep",
-    "res_HTT", "HadTop_pt", "mbb_loose", "avg_dr_jet", "max_Lep_eta"*/
     "tau1_pt", "tau2_pt",
     "dr_taus", "dr_lep_tau_os", "dr_lep_tau_ss",
     "Lep_min_dr_jet", "mTauTauVis", "costS_tau",
     "met_LD", "massL3", "lep1_conePt", "mT_lep",
     "res_HTT", "HadTop_pt", "mbb_loose", "avg_dr_jet", "max_Lep_eta"
   };
-  XGBInterface mva_legacy(
+  TMVAInterface mva_legacy(
     mvaFileName_plainKin_ttV,
     mvaInputVariables_plainKin_ttVSort
   );
-  //mva_legacy.enableBDTTransform();
-
-  std::string mvaFileName_plainKin_tt ="tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/1l_2tau_XGB_plainKin_evtLevelTT_TTH_13Var.xml";
-  std::vector<std::string> mvaInputVariables_plainKin_ttSort={
-    "avg_dr_jet", "dr_taus", "ptmiss", "mT_lep", "nJet",
-    "mTauTauVis", "mindr_lep_jet", "mindr_tau1_jet", "mindr_tau2_jet",
-    "dr_lep_tau_lead", "nBJetLoose", "tau1_pt", "tau2_pt"
-  };
-  TMVAInterface mva_plainKin_tt(mvaFileName_plainKin_tt, mvaInputVariables_plainKin_ttSort);
-  mva_plainKin_tt.enableBDTTransform();
-
-  // SUM-BDT
-  std::string mvaFileName_HTT_sum_VT ="tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/1l_2tau_DeepTauTight_3.pkl";//evtLevel_2018March/1l_2tau_XGB_HTT_evtLevelSUM_TTH_VT_17Var.xml";
-  /*std::vector<std::string> mvaInputVariables_HTT_sumSort={
-    "avg_dr_jet", "dr_taus", "ptmiss", "lep_conePt", "mT_lep", "mTauTauVis", "mindr_lep_jet",
-    "mindr_tau1_jet", "mindr_tau2_jet", "dr_lep_tau_ss", "dr_lep_tau_lead",
-    "costS_tau", "nBJetLoose", "tau1_pt",
-    "tau2_pt", "HTT", "HadTop_pt"
-  };*/
-  XGBInterface mva_HTT_sum_VT(mvaFileName_HTT_sum_VT, mvaInputVariables_plainKin_ttVSort);//mvaInputVariables_HTT_sumSort);
-  //mva_HTT_sum_VT.enableBDTTransform();
+  mva_legacy.enableBDTTransform();
 
   //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1719,27 +1694,6 @@ int main(int argc, char* argv[])
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Matthias for 1l_2tau category
 
-    /*const std::map<std::string, double> mvaInputsHTT_sum = {
-      { "avg_dr_jet",      avg_dr_jet      },
-      { "dr_taus",         dr_taus         },
-      { "ptmiss",          ptmiss          },
-      { "lep_conePt",      lep_conePt      },
-      { "mT_lep",          mT_lep          },
-      { "mTauTauVis",      mTauTauVis      },
-      { "mindr_lep_jet",   mindr_lep_jet   },
-      { "mindr_tau1_jet",  mindr_tau1_jet  },
-      { "mindr_tau2_jet",  mindr_tau2_jet  },
-      { "dr_lep_tau_ss",   dr_lep_tau_ss   },
-      { "dr_lep_tau_lead", dr_lep_tau_lead },
-      { "costS_tau",       costS_tau       },
-      { "nBJetLoose",      nBJetLoose      },
-      { "tau1_pt",         tau1_pt         },
-      { "tau2_pt",         tau2_pt         },
-      { "HTT",             HTT             },
-      { "HadTop_pt",       HadTop_pt       },
-    };*/
-    //const double mvaOutput_HTT_SUM_VT = mva_HTT_sum_VT(mvaInputsHTT_sum);
-
     const std::map<std::string, double> mvaInputs_legacy = {
       { "tau1_pt",         tau1_pt         },
       { "tau2_pt",         tau2_pt         },
@@ -1760,7 +1714,6 @@ int main(int argc, char* argv[])
       { "max_Lep_eta",  std::max({selLepton->absEta(), selHadTau_lead->absEta(), selHadTau_sublead->absEta()})}
     };
     const double mvaOutput_legacy = mva_legacy(mvaInputs_legacy);
-    const double mvaOutput_HTT_SUM_VT = mva_HTT_sum_VT(mvaInputs_legacy);
 
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons, selHadTaus);
@@ -1829,7 +1782,6 @@ int main(int argc, char* argv[])
             selJets.size(),
             selBJets_loose.size(),
             selBJets_medium.size(),
-            mvaOutput_HTT_SUM_VT,
             mTauTauVis,
             mvaOutput_legacy,
             kv.second);
@@ -1852,7 +1804,6 @@ int main(int argc, char* argv[])
                 selJets.size(),
                 selBJets_loose.size(),
                 selBJets_medium.size(),
-                mvaOutput_HTT_SUM_VT,
                 mTauTauVis,
                 mvaOutput_legacy,
                 kv.second
@@ -1892,7 +1843,6 @@ int main(int argc, char* argv[])
           selHistManager->evt_in_categories_[category]->fillHistograms(
             preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-            mvaOutput_HTT_SUM_VT,
             mTauTauVis,
             mvaOutput_legacy,
             evtWeight
@@ -2123,7 +2073,7 @@ int main(int argc, char* argv[])
       snm->read(HadTop_pt,                              FloatVariableType::HadTop_pt);
       // Hj_tagger not filled
 
-      snm->read(mvaOutput_HTT_SUM_VT,                   FloatVariableType::mvaOutput_HTT_SUM_VT);
+      snm->read(mvaOutput_legacy,                   FloatVariableType::mvaOutput_HTT_SUM_VT);
 
       // mvaOutput_2lss_ttV not filled
       // mvaOutput_2lss_tt not filled
