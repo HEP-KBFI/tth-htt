@@ -774,6 +774,7 @@ int main(int argc, char* argv[])
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
+  bool isDebugTF = true;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
@@ -786,7 +787,7 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    //if ( analyzedEntries > 1 ) break;
+    //if ( analyzedEntries > 1000 ) break;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1443,8 +1444,8 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
 
     std::vector<double> WeightBM; // weights to do histograms for BMs
-    std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs 
-    double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code 
+    std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
+    double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
 
     if(apply_HH_rwgt)
     {
@@ -1481,6 +1482,15 @@ int main(int argc, char* argv[])
           {"has_SFOS",       isSFOS(selLeptons)}
         };
         const double mva_4l = mva_4l_comp(mvaInputsValues);
+        if ( isDebugTF ) {
+          std::cout << "event " << eventInfo.str() << "\n";
+          std::cout << "variables ";
+          for (auto elem : mvaInputsValues) std::cout << elem.first << " " << elem.second << "\n";
+          std::cout << std::endl;
+          std::cout << "result  " << mva_4l;
+          std::cout << std::endl;
+          std::cout << std::endl;
+        }
 
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
