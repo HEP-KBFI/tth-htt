@@ -735,11 +735,11 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   };
 
   vstring ctrl_categories = { "other" };
-  for(int nbjets_ctrl = 0; nbjets_ctrl < 3; ++nbjets_ctrl)
+  for(int nele_ctrl = 0; nele_ctrl < 4; ++nele_ctrl)
   {
-    for(int njets_ctrl = std::min(2, nbjets_ctrl + 1); njets_ctrl < std::min(nbjets_ctrl + 5, 6); ++njets_ctrl)
+    for(int nbjets_ctrl = 0; nbjets_ctrl < 3; ++nbjets_ctrl)
     {
-      for(int nele_ctrl = 0; nele_ctrl < 4; ++nele_ctrl)
+      for(int njets_ctrl = std::min(2, nbjets_ctrl + 1); njets_ctrl < std::min(nbjets_ctrl + 5, 6); ++njets_ctrl)
       {
         int nmu_ctrl = 3 - nele_ctrl;
         const std::string ele_ctrl_str(nele_ctrl, 'e');
