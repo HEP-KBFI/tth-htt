@@ -232,7 +232,6 @@ int main(int argc, char* argv[])
   bool apply_DYMCReweighting = cfg_analyze.getParameter<bool>("apply_DYMCReweighting");
   bool apply_DYMCNormScaleFactors = cfg_analyze.getParameter<bool>("apply_DYMCNormScaleFactors");
   bool apply_topPtReweighting = cfg_analyze.getParameter<bool>("apply_topPtReweighting");
-  bool read_topPtReweighting = cfg_analyze.getParameter<bool>("read_topPtReweighting");
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
@@ -396,7 +395,7 @@ int main(int argc, char* argv[])
   }
 
 //--- declare event-level variables
-  EventInfo eventInfo(isMC, isSignal, isMC_HH, read_topPtReweighting);
+  EventInfo eventInfo(isMC, isSignal, isMC_HH, apply_topPtReweighting);
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
 
@@ -559,19 +558,19 @@ int main(int argc, char* argv[])
       if(genMatchingByIndex)
       {
         genMatchToMuonReader = new GenParticleReader(branchName_muonGenMatch);
-        genMatchToMuonReader -> readGenPartFlav(false);
+        genMatchToMuonReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToMuonReader);
 
         genMatchToElectronReader = new GenParticleReader(branchName_electronGenMatch);
-        genMatchToElectronReader -> readGenPartFlav(false);
+        genMatchToElectronReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToElectronReader);
 
         genMatchToHadTauReader = new GenParticleReader(branchName_hadTauGenMatch);
-        genMatchToHadTauReader -> readGenPartFlav(false);
+        genMatchToHadTauReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToHadTauReader);
 
         genMatchToJetReader = new GenParticleReader(branchName_jetGenMatch);
-        genMatchToJetReader -> readGenPartFlav(false);
+        genMatchToJetReader -> readGenPartFlav(true);
         inputTree -> registerReader(genMatchToJetReader);
       }
       else
@@ -1013,11 +1012,6 @@ int main(int argc, char* argv[])
     {
       genTauLeptons = genTauLeptonReader->read();
     }
-    std::vector<GenParticle> genTopQuarks;
-    if(isMC)
-    {
-      genTopQuarks = genTopQuarkReader->read();
-    }
 
     if(isMC)
     {
@@ -1025,17 +1019,7 @@ int main(int argc, char* argv[])
       if(apply_DYMCReweighting)   evtWeightRecorder.record_dy_rwgt(dyReweighting, genTauLeptons);
       if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
       if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
-      if(apply_topPtReweighting)
-      {
-        if(read_topPtReweighting)
-        {
-          evtWeightRecorder.record_toppt_rwgt(eventInfo.topPtRwgtSF);
-        }
-        else
-        {
-          evtWeightRecorder.record_toppt_rwgt(genTopQuarks);
-        }
-      }
+      if(apply_topPtReweighting)  evtWeightRecorder.record_toppt_rwgt(eventInfo.topPtRwgtSF);
       lheInfoReader->read();
       evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
       evtWeightRecorder.record_puWeight(&eventInfo);
@@ -1059,11 +1043,13 @@ int main(int argc, char* argv[])
       }
     }
 
+    std::vector<GenParticle> genTopQuarks;
     std::vector<GenParticle> genBJets;
     std::vector<GenParticle> genWBosons;
     std::vector<GenParticle> genWJets;
     std::vector<GenParticle> genQuarkFromTop;
     if ( isMC ) {
+      genTopQuarks = genTopQuarkReader->read();
       genBJets = genBJetReader->read();
       genWBosons = genWBosonReader->read();
       genWJets = genWJetReader->read();

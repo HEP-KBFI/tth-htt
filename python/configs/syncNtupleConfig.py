@@ -76,6 +76,7 @@ class syncNtupleConfig:
         use_preselected,
         jet_cleaning,
         gen_matching,
+        regroup_jec = False,
         project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau'),
         file_pattern = 'tthAnalyzeRun_%s.py',
         suffix = '',
@@ -122,6 +123,8 @@ class syncNtupleConfig:
       additional_args += " -w %s" % tau_id_wp
     if self.running_method:
       additional_args += " -R %s" % self.running_method
+    if regroup_jec:
+      additional_args += " -G"
 
     mem_channels = [ '2lss_1tau', '3l', 'hh_bb2l' ]
     cr_channels = [ '3l', '4l' ]
@@ -262,7 +265,7 @@ class syncNtupleConfig:
     make_cmd = "make -f %s -j %d %s 2>%s 1>%s" % \
       (self.makefile_path, nof_parallel_jobs, target, self.stderr_file_path, self.stdout_file_path)
     if self.running_method.lower() == "makefile":
-      run_dir = re.sub('^/home', '/scratch', self.config_dir)
+      run_dir = re.sub('^/home', '/scratch/1', self.config_dir)
       create_if_not_exists(run_dir)
       make_cmd = re.sub('^make', 'make -C {}'.format(run_dir), make_cmd)
     logging.info("Running the make command: %s" % make_cmd)

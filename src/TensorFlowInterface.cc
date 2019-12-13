@@ -16,13 +16,9 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName_odd,
                     const std::vector<std::string> & mvaInputVariables,
                     const std::vector<std::string> classes,
                     const std::string & mvaFileName_even,
-                    const std::string & fitFunctionFileName,
-                    const std::vector<double> & mvaInputVariables_mean,
-                    const std::vector<double> & mvaInputVariables_var)
-  :  mvaFileName_odd_(mvaFileName_odd)
-  , mvaInputVariables_(mvaInputVariables)
-  , mvaInputVariables_mean_(mvaInputVariables_mean)
-  , mvaInputVariables_var_(mvaInputVariables_var)
+                    const std::string & fitFunctionFileName)
+  : classes_(classes)
+  , mvaFileName_odd_(mvaFileName_odd)
   , graphDef_odd_(nullptr)
   , session_odd_(nullptr)
   , n_input_layer_odd(0)
@@ -32,13 +28,16 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName_odd,
   , session_even_(nullptr)
   , n_input_layer_even(0)
   , n_output_layer_even(0)
+  , mvaInputVariables_(mvaInputVariables)
+  , fitFunctionFileName_(fitFunctionFileName)
   , Transform_Ptr_(nullptr)
   , isDEBUG_(false)
 {
 
-  if (fitFunctionFileName_ != "")
+  if(! fitFunctionFileName_.empty())
   {
-    Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables_, LocalFileInPath(fitFunctionFileName_).fullPath()); // Intializing the new map and extracts the TF1s
+    // Intializing the new map and extracts the TF1s
+    Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables_, LocalFileInPath(fitFunctionFileName_).fullPath());
   }
 
 // loading the model
@@ -47,14 +46,18 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName_odd,
 
   graphDef_odd_ = tensorflow::loadGraphDef(LocalFileInPath(mvaFileName_odd_).fullPath());
   session_odd_ = tensorflow::createSession(graphDef_odd_);
-  if ( mvaFileName_even != "" )
+
+  if(! mvaFileName_even_.empty())
   {
     std::cout << "Loaded Odd Evt. No. file: " << mvaFileName_odd_ << '\n';
-
     graphDef_even_ = tensorflow::loadGraphDef(LocalFileInPath(mvaFileName_even_).fullPath());
     session_even_ = tensorflow::createSession(graphDef_even_);
-    std::cout << "Loaded Even Evt. No. file: " << mvaFileName_even << '\n';
-  } else std::cout << "Loaded file: " << mvaFileName_odd << '\n';
+    std::cout << "Loaded Even Evt. No. file: " << mvaFileName_even_ << '\n';
+  }
+  else
+  {
+    std::cout << "Loaded file: " << mvaFileName_odd_ << '\n';
+  }
 
   // getting elements to evaluate -- the number of the input/output layer deppends of how the model was exported
   int shape_variables_odd = 0;
@@ -85,7 +88,7 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName_odd,
     }
   }
 
-  if ( mvaFileName_even != "" )
+  if(! mvaFileName_even_.empty())
   {
     int shape_variables_even = 0;
     for(int idx_node = 0; idx_node < graphDef_even_->node_size(); idx_node++)
@@ -123,7 +126,7 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName_odd,
     }
   }
 
-  if(mvaFileName_even != "" and shape_variables_odd != static_cast<int>(mvaInputVariables_.size()))
+  if(! mvaFileName_even_.empty() && shape_variables_odd != static_cast<int>(mvaInputVariables_.size()))
   {
     throw cmsException(this)
       << "number of variables declared ("<< mvaInputVariables_.size() << ") does not match the expected inputs for "
@@ -133,7 +136,7 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName_odd,
 
   //  int shape_classes = 0;
   std::string last_layer =  (classes.size() > 0) ? "/Softmax" : "/Sigmoid";
-  for (int idx_node = 0; idx_node < graphDef_odd_->node_size(); idx_node++)
+  for(int idx_node = 0; idx_node < graphDef_odd_->node_size(); idx_node++)
   {
     output_layer_name_odd  = graphDef_odd_->node(idx_node).name();
 
@@ -149,9 +152,9 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName_odd,
     }
   }
 
-  if ( ! mvaFileName_even_.empty() )
+  if(! mvaFileName_even_.empty())
   {
-    for (int idx_node = 0; idx_node < graphDef_even_->node_size(); idx_node++)
+    for(int idx_node = 0; idx_node < graphDef_even_->node_size(); idx_node++)
     {
       output_layer_name_even  = graphDef_even_->node(idx_node).name();
       const bool is_output = boost::contains(output_layer_name_even, last_layer);
@@ -183,7 +186,7 @@ TensorFlowInterface::operator()(const std::map<std::string, double> & mvaInputs,
 {
 
   std::map<std::string, double> mvaInputs_final;
-  if(fitFunctionFileName_ != "")
+  if(! fitFunctionFileName_.empty())
   {
     mvaInputs_final = Transform_Ptr_->TransformMVAInputVars(mvaInputs);       // Re-weight Input Var.s
   }
@@ -191,10 +194,11 @@ TensorFlowInterface::operator()(const std::map<std::string, double> & mvaInputs,
   {
     mvaInputs_final = mvaInputs;
   }
-  if ( isDEBUG_ ) {
+  if(isDEBUG_)
+  {
     std::cout << "Input variables ";
     for (auto elem : mvaInputs_final ) std::cout << elem.first << " " << elem.second << "\n";
-    std::cout << std::endl;
+    std::cout << '\n';
   }
 
   const int nofInputs = mvaInputVariables_.size();
@@ -204,37 +208,20 @@ TensorFlowInterface::operator()(const std::map<std::string, double> & mvaInputs,
   // the order of input variables should be the same as during the training
   for(int idx_input = 0; idx_input < nofInputs; ++idx_input)
   {
-  	if(mvaInputs_final.count(mvaInputVariables_[idx_input]))
-  	  {
-  	    if(! mvaInputVariables_mean_odd_.empty())
-  	    {
-      		inputs.matrix<float>()(0, idx_input) = (static_cast<float>(mvaInputs_final.at(mvaInputVariables_[idx_input])) - mvaInputVariables_mean_[idx_input])
-      		  / mvaInputVariables_var_[idx_input];
-
-      		if(isDEBUG_)
-      		  {
-      		    std::cout << mvaInputVariables_[idx_input]
-      			      << " = " << mvaInputs_final.at(mvaInputVariables_[idx_input])
-      			      << " = " << mvaInputVariables_mean_odd_[idx_input]
-      			      << " = " << mvaInputVariables_var_odd_[idx_input]
-      			      << '\n';
-      		  }
-  	    }
-  	    else
-  	    {
-      		inputs.matrix<float>()(0, idx_input) = static_cast<float>(mvaInputs_final.at(mvaInputVariables_[idx_input]));
-      		if(isDEBUG_)
-      		  {
-      		    std::cout << mvaInputVariables_[idx_input]  << " = " << mvaInputs_final.at(mvaInputVariables_[idx_input]) << '\n';
-      		  }
-  	    }
-  	  }
-  	else
-  	  {
-  	    throw cmsException(this, __func__, __LINE__)
-  	      << "Missing value for MVA input variable = '" << mvaInputVariables_[idx_input] << '\''
-  	      ;
-  	  }
+    if(mvaInputs_final.count(mvaInputVariables_[idx_input]))
+    {
+      inputs.matrix<float>()(0, idx_input) = static_cast<float>(mvaInputs_final.at(mvaInputVariables_.at(idx_input)));
+      if(isDEBUG_)
+      {
+        std::cout << mvaInputVariables_[idx_input]  << " = " << mvaInputs_final.at(mvaInputVariables_.at(idx_input)) << '\n';
+      }
+    }
+    else
+    {
+      throw cmsException(this, __func__, __LINE__)
+        << "Missing value for MVA input variable = '" << mvaInputVariables_[idx_input] << '\''
+        ;
+    }
   }
 
   tensorflow::GraphDef * graphDef = (event_number % 2 || event_number == -1) ? graphDef_odd_ : graphDef_even_;
@@ -242,39 +229,41 @@ TensorFlowInterface::operator()(const std::map<std::string, double> & mvaInputs,
   const int node_count = graphDef->node_size();
   if(isDEBUG_)
   {
-  	for (int idx_node = 0; idx_node < node_count; ++idx_node)
-  	  {
-  	    const auto node = graphDef->node(idx_node);
-  	    std::cout << "Names : " << node.name() << '\n';
-  	  }
+    for (int idx_node = 0; idx_node < node_count; ++idx_node)
+    {
+      const auto node = graphDef->node(idx_node);
+      std::cout << "Names : " << node.name() << '\n';
+    }
   }
 
   std::vector<tensorflow::Tensor> outputs;
-  int n_input_layer  = (event_number % 2 || event_number == -1) ? n_input_layer_odd  : n_input_layer_even;
-  int n_output_layer = (event_number % 2 || event_number == -1) ? n_output_layer_odd : n_output_layer_even;
+  const int n_input_layer  = (event_number % 2 || event_number == -1) ? n_input_layer_odd  : n_input_layer_even;
+  const int n_output_layer = (event_number % 2 || event_number == -1) ? n_output_layer_odd : n_output_layer_even;
   if(isDEBUG_)
   {
     std::cout
-	  << "start run " << event_number << " " << graphDef->node(n_input_layer).name()
-	  << ' '          << graphDef->node(n_output_layer).name()
-	  << '\n';
+          << "start run " << event_number << " " << graphDef->node(n_input_layer).name()
+          << ' '          << graphDef->node(n_output_layer).name()
+          << '\n';
   }
   tensorflow::run(
-	    session_odd_,
-	    { { graphDef->node(n_input_layer).name(), inputs } },
-	    { graphDef->node(n_output_layer).name() },
-	    &outputs
-	    );
+    session_odd_,
+    { { graphDef->node(n_input_layer).name(), inputs } },
+    { graphDef->node(n_output_layer).name() },
+    &outputs
+  );
 
   // store the output
   std::map<std::string, double> mvaOutputs;
-  if ( classes_.size() > 0 )
+  if(! classes_.empty())
   {
     for(unsigned int idx_class = 0; idx_class < classes_.size(); idx_class++)
-      {
-	       mvaOutputs[classes_[idx_class]] = outputs[0].matrix<float>()(0, idx_class);
-      }
-  } else {
+    {
+      mvaOutputs[classes_[idx_class]] = outputs[0].matrix<float>()(0, idx_class);
+    }
+  }
+  else
+  {
     mvaOutputs = {
       {"output", outputs[0].matrix<float>()(0, 0)}
     };

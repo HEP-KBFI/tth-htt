@@ -61,7 +61,8 @@ class addMEMConfig:
             use_home,
             channel,
             rle_filter_file = '',
-            pool_id = ''
+            pool_id = '',
+            max_jobs_per_sample = -1 
           ):
 
         self.treeName = treeName
@@ -71,6 +72,7 @@ class addMEMConfig:
         self.mem_integrations_per_job = mem_integrations_per_job
         self.max_files_per_job = max_files_per_job
         self.max_mem_integrations = max_mem_integrations
+        self.max_jobs_per_sample = max_jobs_per_sample
         self.samples = samples
         self.era = era
         self.check_output_files = check_output_files
@@ -260,6 +262,7 @@ class addMEMConfig:
         apply_rle_filter = bool(self.rle_filter_file)
         for filesetId, inputFileSet in inputFileList.iteritems():
             memJobDict_common = { 'fileset_id' : filesetId, 'input_fileset' : inputFileSet }
+            print("Processing file %s" % inputFileSet)
             ch = ROOT.TChain(self.treeName)
             for fn in inputFileSet:
                 # chaining a file
@@ -296,11 +299,15 @@ class addMEMConfig:
             ch.SetBranchAddress("run",             run)
             ch.SetBranchAddress("luminosityBlock", luminosityBlock)
             ch.SetBranchAddress("event",           event)
-            ch.SetBranchAddress(self.maxPermutations_branchName, maxPermutations_addMEM)
+            if self.maxPermutations_branchName is not None and self.maxPermutations_branchName != "":
+              ch.SetBranchAddress(self.maxPermutations_branchName, maxPermutations_addMEM)
+            else:
+              maxPermutations_addMEM[0] = 1
 
             for i in range(nof_entries):
                 ch.GetEntry(i)
                 if i > 0 and i % 10000 == 0:
+	            print(" Processing event %i/%i" % (i, nof_entries))
                     logging.debug("Processing event %i/%i" % (i, nof_entries))
 
                 rle = ':'.join(map(lambda nr: str(nr[0]), [ run, luminosityBlock, event ]))
@@ -374,6 +381,7 @@ class addMEMConfig:
             assert(bool(evt_ranges))
 
             for i in range(len(evt_ranges)):
+              if self.max_jobs_per_sample == -1 or jobId < self.max_jobs_per_sample:
                 jobId += 1
                 memJobDict[jobId] = dict({
                     'event_range'     : evt_ranges[i],

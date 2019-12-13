@@ -30,7 +30,6 @@ public:
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
-                 double mvaOutput_HTT_SUM_VT,
                  double mTauTauVis,
                  double mvaOutput_legacy,
                  double evtWeight);

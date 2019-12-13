@@ -1,3 +1,0 @@
-/hdfs/local/karl/ttHNtupleProduction/2017/2019Sep17_data_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2017/2019Sep07_wPresel_nom_all/ntuples
-
