@@ -59,9 +59,6 @@
 
 typedef std::vector<std::string> vstring;
 
-const int hadTauSelection_antiElectron = -1; // not applied
-const int hadTauSelection_antiMuon = -1; // not applied
-
 /**
  * @brief Run sync Ntuple in inclusive mode
  */
@@ -315,14 +312,10 @@ main(int argc,
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
   fakeableHadTauSelector.set_if_looser(hadTauSelection_tauIdWP);
-  fakeableHadTauSelector.set_min_antiElectron(-1);
-  fakeableHadTauSelector.set_min_antiMuon(-1);
 
   // X: it is used just for cleaning of AK8 jets, that is used only in channels using Medium WP tau as the tight tau
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era, -1, isDEBUG);
   tightHadTauSelector.set(hadTauAk8Clean_tauIdWP);
-  tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);

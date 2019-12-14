@@ -121,13 +121,6 @@ typedef std::vector<std::string> vstring;
 
 enum { kFR_disabled, kFR_2lepton, kFR_3L, kFR_1tau };
 
-//const int hadTauSelection_antiElectron = 1; // vLoose
-//const int hadTauSelection_antiMuon = 1; // Loose
-const int hadTauSelection_antiElectron = -1; // not applied
-const int hadTauSelection_antiMuon = -1; // not applied
-const int hadTauSelection_veto_antiElectron = -1; // Karl: needs to match anti-electron discriminator applied in 2l+2tau category
-const int hadTauSelection_veto_antiMuon = -1; // Karl: needs to match anti-muon discriminator applied in 2l+2tau category
-
 /**
  * @brief Produce datacard and control plots for 2los_1tau categories.
  */
@@ -289,8 +282,6 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -463,16 +454,10 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
   fakeableHadTauSelector.set_if_looser(hadTauSelection_part2);
-  fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  fakeableHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
   tightHadTauSelector.set(hadTauSelection_part2);
-  tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauSelectorTight tightHadTauFilter(era);
   tightHadTauFilter.set(hadTauSelection_part2);
-  tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
-  tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
   switch(hadTauSelection)
   {
     case kFakeable: tauLevel = std::min(tauLevel, get_tau_id_wp_int(fakeableHadTauSelector.getSelector().get())); break;
@@ -483,8 +468,6 @@ int main(int argc, char* argv[])
   // Karl: veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
   RecoHadTauCollectionSelectorTight vetoHadTauSelector(era, -1, isDEBUG);
   vetoHadTauSelector.set(hadTauSelection_veto);
-  vetoHadTauSelector.set_min_antiElectron(hadTauSelection_veto_antiElectron);
-  vetoHadTauSelector.set_min_antiMuon(hadTauSelection_veto_antiMuon);
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);

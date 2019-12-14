@@ -114,11 +114,6 @@ typedef std::vector<std::string> vstring;
 
 enum { kFR_disabled, kFR_3lepton, kFR_4L, kFR_1tau };
 
-//const int hadTauSelection_antiElectron = 1; // vLoose
-//const int hadTauSelection_antiMuon = 1; // Loose
-const int hadTauSelection_antiElectron = -1; // not applied
-const int hadTauSelection_antiMuon = -1; // not applied
-
 /**
  * @brief Produce datacard and control plots for 3l_1tau categories.
  */
@@ -310,8 +305,6 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -493,16 +486,10 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
   fakeableHadTauSelector.set_if_looser(hadTauSelection_part2);
-  fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  fakeableHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era, -1, isDEBUG);
   tightHadTauSelector.set(hadTauSelection_part2);
-  tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauSelectorTight tightHadTauFilter(era, -1, isDEBUG);
   tightHadTauFilter.set(hadTauSelection_part2);
-  tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
-  tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
   switch(hadTauSelection)
   {
     case kFakeable: tauLevel = std::min(tauLevel, get_tau_id_wp_int(fakeableHadTauSelector.getSelector().get())); break;

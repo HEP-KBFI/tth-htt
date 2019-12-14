@@ -106,9 +106,6 @@ typedef std::vector<std::string> vstring;
 
 enum { kFR_disabled, kFR_3lepton };
 
-const int hadTauSelection_antiElectron = -1; // not applied
-const int hadTauSelection_antiMuon = -1; // not applied
-
 /**
  * @brief Produce datacard and control plots for WZctrl categories.
  */
@@ -276,8 +273,6 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -422,12 +417,8 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
   fakeableHadTauSelector.set_if_looser(hadTauSelection_part2);
-  fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  fakeableHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorTight hadTauSelector(era);
   hadTauSelector.set(hadTauSelection_part2);
-  hadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  hadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);

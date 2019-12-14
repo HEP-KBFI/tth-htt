@@ -277,8 +277,6 @@ main(int argc,
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
   fakeableHadTauSelector.disable_deeptau_lepton();
   fakeableHadTauSelector.set(hadTauSelection_tauIDwp);
-  fakeableHadTauSelector.set_min_antiElectron(-1);
-  fakeableHadTauSelector.set_min_antiMuon(-1);
   // CV: lower thresholds on hadronic taus by 2 GeV 
   //     with respect to thresholds applied on analysis level 
   //     to allow for tau-ES uncertainties to be estimated

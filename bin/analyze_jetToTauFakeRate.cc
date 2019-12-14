@@ -96,11 +96,6 @@ typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
 typedef std::vector<int> vint;
 
-//const int hadTauSelection_antiElectron = 1; // vLoose
-//const int hadTauSelection_antiMuon = 1; // Loose
-const int hadTauSelection_antiElectron = -1; // not applied
-const int hadTauSelection_antiMuon = -1; // not applied
-
 /**
  * @brief Auxiliary class for filling histograms for denominator
  */
@@ -135,8 +130,6 @@ struct denominatorHistManagers
     if ( decayMode != -1 ) subdir_.append(Form("_dm%i", decayMode));
     fakeableHadTauSelector_ = new RecoHadTauSelectorFakeable(era_);
     fakeableHadTauSelector_->set(hadTauSelection_denominator);
-    fakeableHadTauSelector_->set_min_antiElectron(hadTauSelection_antiElectron);
-    fakeableHadTauSelector_->set_min_antiMuon(hadTauSelection_antiMuon);
   }
   ~denominatorHistManagers()
   {
@@ -259,8 +252,6 @@ struct numeratorSelector_and_HistManagers : public denominatorHistManagers
     if ( decayMode != -1 ) subdir_.append(Form("_dm%i", decayMode));
     tightHadTauSelector_ = new RecoHadTauSelectorTight(era_);
     tightHadTauSelector_->set(hadTauSelection_numerator);
-    tightHadTauSelector_->set_min_antiElectron(hadTauSelection_antiElectron);
-    tightHadTauSelector_->set_min_antiMuon(hadTauSelection_antiMuon);
   }
   ~numeratorSelector_and_HistManagers()
   {
@@ -403,8 +394,6 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTau_selection_tight); // has no effect (will be overwritten)
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -506,12 +495,8 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorFakeable preselHadTauSelector(era);
   preselHadTauSelector.set(hadTauSelection_denominator);
-  preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
   tightHadTauSelector.set(hadTau_selection_tight);
-  tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);

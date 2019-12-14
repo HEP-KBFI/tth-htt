@@ -220,12 +220,8 @@ int main(int argc,
   RecoHadTauCollectionSelectorTight    tightHadTauSelector   (era);
   fakeableHadTauSelector.disable_deeptau_lepton();
   fakeableHadTauSelector.set_if_looser(hadTauSelection_part2);
-  fakeableHadTauSelector.set_min_antiElectron(-1);
-  fakeableHadTauSelector.set_min_antiMuon(-1);
   tightHadTauSelector.disable_deeptau_lepton();
   tightHadTauSelector.set(hadTauSelection_part2);
-  tightHadTauSelector.set_min_antiElectron(-1);
-  tightHadTauSelector.set_min_antiMuon(-1);
   // CV: lower thresholds on hadronic taus by 2 GeV 
   //     with respect to thresholds applied on analysis level (in analyze_2lss_1tau.cc)
   fakeableHadTauSelector.set_min_pt(18.);
