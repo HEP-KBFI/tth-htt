@@ -50,6 +50,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -483,6 +484,8 @@ int main(int argc, char* argv[])
   inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
+  RecoHadTauCollectionSelectorLoose looseHadTauSelector(era, -1, isDEBUG);
+  looseHadTauSelector.set_if_looser(hadTauSelection_part2);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
   fakeableHadTauSelector.set_if_looser(hadTauSelection_part2);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era, -1, isDEBUG);
@@ -1124,7 +1127,8 @@ int main(int argc, char* argv[])
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     const std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    const std::vector<const RecoHadTau*> fakeableHadTausFull = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau*> looseHadTaus = looseHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau*> fakeableHadTausFull = fakeableHadTauSelector(looseHadTaus, isHigherPt);
     const std::vector<const RecoHadTau*> tightHadTausFull = tightHadTauSelector(fakeableHadTausFull, isHigherPt);
 
     const std::vector<const RecoHadTau*> fakeableHadTaus = pickFirstNobjects(fakeableHadTausFull, 2);
@@ -1132,6 +1136,7 @@ int main(int argc, char* argv[])
     const std::vector<const RecoHadTau*> selHadTaus = selectObjects(hadTauSelection, fakeableHadTaus, tightHadTaus);
     if(isDEBUG || run_lumi_eventSelector)
     {
+      printCollection("looseHadTaus",    looseHadTaus);
       printCollection("fakeableHadTaus", fakeableHadTaus);
       printCollection("tightHadTaus",    tightHadTaus);
     }
@@ -1148,8 +1153,8 @@ int main(int argc, char* argv[])
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, selectBDT ? selHadTaus : fakeableHadTausFull) :
-      jetCleaner       (jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, selectBDT ? selHadTaus : fakeableHadTausFull)
+      jetCleanerByIndex(jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, selectBDT ? selHadTaus : looseHadTaus) :
+      jetCleaner       (jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, selectBDT ? selHadTaus : looseHadTaus)
     ;
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
@@ -1255,7 +1260,7 @@ int main(int argc, char* argv[])
 
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
-    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptonsFull, fakeableHadTausFull, selJets);
+    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptonsFull, looseHadTaus, selJets);
     const double met_LD = compMEt_LD(met.p4(), mht_p4);
 
 	//--- apply final event selection
@@ -2006,7 +2011,7 @@ int main(int argc, char* argv[])
       snm->read(selLeptons);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
-      snm->read(fakeableHadTausFull);
+      snm->read(looseHadTaus);
       snm->read(selJets);
 
       snm->read({ triggers_1e, triggers_1e1tau, triggers_1mu, triggers_1mu1tau });
