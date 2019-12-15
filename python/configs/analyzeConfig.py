@@ -880,7 +880,7 @@ class analyzeConfig(object):
               lines.append(sync_opts)
             elif 'syncTree' in jobOptions:
               lines.append(
-                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree', os.path.basename(jobOptions['syncTree']), len = max_option_len)
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree', jobOptions['syncTree'], len = max_option_len)
               )
               if 'syncGenMatch' in jobOptions:
                 lines.append(
