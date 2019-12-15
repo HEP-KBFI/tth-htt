@@ -88,7 +88,7 @@ enum class FloatVariableType
   mvaOutput_plainKin_1B_VT,  ///< 2l+2tau (BDT4)
   mvaOutput_plainKin_SUM_VT, ///< 2l+2tau (BDT3)
 
-  mvaOutput_legacy_2,                 ///< 2lss+1tau
+  mvaOutput_legacy,                 ///< 2lss+1tau
   mvaOutput_2lss_tt,                  ///< 2lss+1tau
   mvaOutput_2lss_1tau_plainKin_tt,    ///< 2lss+1tau (BDT2)
   mvaOutput_2lss_1tau_plainKin_ttV,   ///< 2lss+1tau (BDT1)
